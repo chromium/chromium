@@ -452,8 +452,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   unsigned RuleCount() const { return rule_count_; }
 
   void CompactRulesIfNeeded() {
-    if (need_compaction_)
+    if (need_compaction_) {
       CompactRules();
+    }
   }
 
   bool HasSlottedRules() const {
@@ -557,8 +558,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 #endif
 
   CascadeLayer* EnsureImplicitOuterLayer() {
-    if (!implicit_outer_layer_)
+    if (!implicit_outer_layer_) {
       implicit_outer_layer_ = MakeGarbageCollected<CascadeLayer>();
+    }
     return implicit_outer_layer_;
   }
 

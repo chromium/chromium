@@ -28,8 +28,9 @@ PrepopulatedComputedStylePropertyMap::PrepopulatedComputedStylePropertyMap(
   for (const auto& property_id : native_properties) {
     // Silently drop shorthand properties.
     DCHECK_NE(property_id, CSSPropertyID::kInvalid);
-    if (CSSProperty::Get(property_id).IsShorthand())
+    if (CSSProperty::Get(property_id).IsShorthand()) {
       continue;
+    }
 
     UpdateNativeProperty(style, property_id);
   }
@@ -73,8 +74,9 @@ void PrepopulatedComputedStylePropertyMap::UpdateCustomProperty(
   const CSSValue* value = ref.GetProperty().CSSValueFromComputedStyle(
       style, /*layout_object=*/nullptr,
       /*allow_visited_style=*/false);
-  if (!value)
+  if (!value) {
     value = CSSUnparsedValue::Create()->ToCSSValue();
+  }
 
   custom_values_.Set(property_name, value);
 }
@@ -111,8 +113,9 @@ void PrepopulatedComputedStylePropertyMap::ForEachProperty(
     return ComputedStylePropertyMap::ComparePropertyNames(a.first, b.first);
   });
 
-  for (const auto& value : values)
+  for (const auto& value : values) {
     visitor(value.first, *value.second);
+  }
 }
 
 String PrepopulatedComputedStylePropertyMap::SerializationForShorthand(

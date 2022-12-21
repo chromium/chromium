@@ -37,13 +37,15 @@ using cssvalue::CSSLinearGradientValue;
 using cssvalue::CSSRadialGradientValue;
 
 Image* GeneratedImageCache::GetImage(const gfx::SizeF& size) const {
-  if (size.IsEmpty())
+  if (size.IsEmpty()) {
     return nullptr;
+  }
 
   DCHECK(sizes_.find(size) != sizes_.end());
   GeneratedImageMap::const_iterator image_iter = images_.find(size);
-  if (image_iter == images_.end())
+  if (image_iter == images_.end()) {
     return nullptr;
+  }
   return image_iter->value.get();
 }
 
@@ -96,8 +98,9 @@ void CSSImageGeneratorValue::RemoveClient(const ImageResourceObserver* client) {
     size_count.size = gfx::SizeF();
   }
 
-  if (!--size_count.count)
+  if (!--size_count.count) {
     clients_.erase(client);
+  }
 
   if (clients_.empty()) {
     DCHECK(keep_alive_);

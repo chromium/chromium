@@ -47,8 +47,9 @@
 namespace blink {
 
 void PrintTo(const CSSLengthArray& length_array, ::std::ostream* os) {
-  for (double x : length_array.values)
+  for (double x : length_array.values) {
     *os << x << ' ';
+  }
 }
 
 namespace {
@@ -304,8 +305,9 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
     // max(1px, 1px + max(1px, 1px + max(1px, 1px)))
     // clamp(1px, 1px, 1px + clamp(1px, 1px, 1px + clamp(1px, 1px, 1px)))
     for (int i = 0; i < test_case.nest_num; i++) {
-      if (i)
+      if (i) {
         ss << " + ";
+      }
       switch (test_case.kind) {
         case kCalc:
           ss << "calc(1px";

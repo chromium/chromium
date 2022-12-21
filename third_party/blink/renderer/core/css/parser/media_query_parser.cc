@@ -31,8 +31,9 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
       : parser_mode_(parser_mode) {}
 
   bool IsAllowed(const String& feature) const override {
-    if (feature == media_feature_names::kImmersiveMediaFeature)
+    if (feature == media_feature_names::kImmersiveMediaFeature) {
       return parser_mode_ == kUASheetMode;
+    }
     if (feature == media_feature_names::kInlineSizeMediaFeature ||
         feature == media_feature_names::kMinInlineSizeMediaFeature ||
         feature == media_feature_names::kMaxInlineSizeMediaFeature ||
@@ -202,26 +203,31 @@ bool IsGtGe(MediaQueryOperator op) {
 
 MediaQuery::RestrictorType MediaQueryParser::ConsumeRestrictor(
     CSSParserTokenRange& range) {
-  if (ConsumeIfIdent(range, "not"))
+  if (ConsumeIfIdent(range, "not")) {
     return MediaQuery::RestrictorType::kNot;
-  if (ConsumeIfIdent(range, "only"))
+  }
+  if (ConsumeIfIdent(range, "only")) {
     return MediaQuery::RestrictorType::kOnly;
+  }
   return MediaQuery::RestrictorType::kNone;
 }
 
 String MediaQueryParser::ConsumeType(CSSParserTokenRange& range) {
-  if (range.Peek().GetType() != kIdentToken)
+  if (range.Peek().GetType() != kIdentToken) {
     return g_null_atom;
-  if (IsRestrictorOrLogicalOperator(range.Peek()))
+  }
+  if (IsRestrictorOrLogicalOperator(range.Peek())) {
     return g_null_atom;
+  }
   return range.ConsumeIncludingWhitespace().Value().ToString();
 }
 
 MediaQueryOperator MediaQueryParser::ConsumeComparison(
     CSSParserTokenRange& range) {
   const CSSParserToken& first = range.Peek();
-  if (first.GetType() != kDelimiterToken)
+  if (first.GetType() != kDelimiterToken) {
     return MediaQueryOperator::kNone;
+  }
   DCHECK(IsComparisonDelimiter(first.Delimiter()));
   switch (first.Delimiter()) {
     case '=':
@@ -229,14 +235,16 @@ MediaQueryOperator MediaQueryParser::ConsumeComparison(
       return MediaQueryOperator::kEq;
     case '<':
       range.Consume();
-      if (ConsumeIfDelimiter(range, '='))
+      if (ConsumeIfDelimiter(range, '=')) {
         return MediaQueryOperator::kLe;
+      }
       range.ConsumeWhitespace();
       return MediaQueryOperator::kLt;
     case '>':
       range.Consume();
-      if (ConsumeIfDelimiter(range, '='))
+      if (ConsumeIfDelimiter(range, '=')) {
         return MediaQueryOperator::kGe;
+      }
       range.ConsumeWhitespace();
       return MediaQueryOperator::kGt;
   }
@@ -247,14 +255,17 @@ MediaQueryOperator MediaQueryParser::ConsumeComparison(
 
 String MediaQueryParser::ConsumeAllowedName(CSSParserTokenRange& range,
                                             const FeatureSet& feature_set) {
-  if (range.Peek().GetType() != kIdentToken)
+  if (range.Peek().GetType() != kIdentToken) {
     return g_null_atom;
+  }
   String name = range.Peek().Value().ToString();
-  if (!feature_set.IsCaseSensitive(name))
+  if (!feature_set.IsCaseSensitive(name)) {
     name = name.LowerASCII();
+  }
   name = AttemptStaticStringCreation(name);
-  if (!feature_set.IsAllowed(name))
+  if (!feature_set.IsAllowed(name)) {
     return g_null_atom;
+  }
   range.ConsumeIncludingWhitespace();
   return name;
 }
@@ -262,10 +273,12 @@ String MediaQueryParser::ConsumeAllowedName(CSSParserTokenRange& range,
 String MediaQueryParser::ConsumeUnprefixedName(CSSParserTokenRange& range,
                                                const FeatureSet& feature_set) {
   String name = ConsumeAllowedName(range, feature_set);
-  if (name.IsNull())
+  if (name.IsNull()) {
     return name;
-  if (name.StartsWith("min-") || name.StartsWith("max-"))
+  }
+  if (name.StartsWith("min-") || name.StartsWith("max-")) {
     return g_null_atom;
+  }
   return name;
 }
 
@@ -275,23 +288,27 @@ const MediaQueryExpNode* MediaQueryParser::ParseNameValueComparison(
     CSSParserTokenRange rhs,
     NameAffinity name_affinity,
     const FeatureSet& feature_set) {
-  if (name_affinity == NameAffinity::kRight)
+  if (name_affinity == NameAffinity::kRight) {
     std::swap(lhs, rhs);
+  }
 
   String feature_name = ConsumeUnprefixedName(lhs, feature_set);
-  if (feature_name.IsNull() || !lhs.AtEnd())
+  if (feature_name.IsNull() || !lhs.AtEnd()) {
     return nullptr;
+  }
 
   auto value = MediaQueryExpValue::Consume(feature_name, rhs, fake_context_);
 
-  if (!value || !rhs.AtEnd())
+  if (!value || !rhs.AtEnd()) {
     return nullptr;
+  }
 
   auto left = MediaQueryExpComparison();
   auto right = MediaQueryExpComparison(*value, op);
 
-  if (name_affinity == NameAffinity::kRight)
+  if (name_affinity == NameAffinity::kRight) {
     std::swap(left, right);
+  }
 
   return MakeGarbageCollected<MediaQueryFeatureExpNode>(
       MediaQueryExp::Create(feature_name, MediaQueryExpBounds(left, right)));
@@ -330,16 +347,19 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
   if (range.Peek().GetType() == kColonToken) {
     range.ConsumeIncludingWhitespace();
     String feature_name = ConsumeAllowedName(segment1, feature_set);
-    if (feature_name.IsNull() || !segment1.AtEnd())
+    if (feature_name.IsNull() || !segment1.AtEnd()) {
       return nullptr;
+    }
     auto exp = MediaQueryExp::Create(feature_name, range, fake_context_);
-    if (!exp.IsValid() || !range.AtEnd())
+    if (!exp.IsValid() || !range.AtEnd()) {
       return nullptr;
+    }
     return MakeGarbageCollected<MediaQueryFeatureExpNode>(exp);
   }
 
-  if (!feature_set.SupportsRange())
+  if (!feature_set.SupportsRange()) {
     return nullptr;
+  }
 
   // Otherwise <mf-range>:
   //
@@ -379,32 +399,38 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
   // This grammar is easier to deal with, since <mf-name> can only appear
   // at <segment2>.
   MediaQueryOperator op2 = ConsumeComparison(range);
-  if (op2 == MediaQueryOperator::kNone)
+  if (op2 == MediaQueryOperator::kNone) {
     return nullptr;
+  }
 
   // Mixing [lt, le] and [gt, ge] is not allowed by the grammar.
   const bool both_lt_le = IsLtLe(op1) && IsLtLe(op2);
   const bool both_gt_ge = IsGtGe(op1) && IsGtGe(op2);
-  if (!(both_lt_le || both_gt_ge))
+  if (!(both_lt_le || both_gt_ge)) {
     return nullptr;
+  }
 
-  if (range.AtEnd())
+  if (range.AtEnd()) {
     return nullptr;
+  }
 
   String feature_name = ConsumeUnprefixedName(segment2, feature_set);
-  if (feature_name.IsNull() || !segment2.AtEnd())
+  if (feature_name.IsNull() || !segment2.AtEnd()) {
     return nullptr;
+  }
 
   auto left_value =
       MediaQueryExpValue::Consume(feature_name, segment1, fake_context_);
-  if (!left_value || !segment1.AtEnd())
+  if (!left_value || !segment1.AtEnd()) {
     return nullptr;
+  }
 
   CSSParserTokenRange& segment3 = range;
   auto right_value =
       MediaQueryExpValue::Consume(feature_name, segment3, fake_context_);
-  if (!right_value || !segment3.AtEnd())
+  if (!right_value || !segment3.AtEnd()) {
     return nullptr;
+  }
 
   return MakeGarbageCollected<MediaQueryFeatureExpNode>(MediaQueryExp::Create(
       feature_name,
@@ -416,8 +442,9 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeCondition(
     CSSParserTokenRange& range,
     ConditionMode mode) {
   // <media-not>
-  if (ConsumeIfIdent(range, "not"))
+  if (ConsumeIfIdent(range, "not")) {
     return MediaQueryExpNode::Not(ConsumeInParens(range));
+  }
 
   // Otherwise:
   // <media-in-parens> [ <media-and>* | <media-or>* ]
@@ -451,15 +478,17 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeInParens(
 
     // ( <media-condition> )
     const MediaQueryExpNode* condition = ConsumeCondition(block);
-    if (condition && block.AtEnd())
+    if (condition && block.AtEnd()) {
       return MediaQueryExpNode::Nested(condition);
+    }
     block = original_block;
 
     // ( <media-feature> )
     const MediaQueryExpNode* feature =
         ConsumeFeature(block, MediaQueryFeatureSet(mode_));
-    if (feature && block.AtEnd())
+    if (feature && block.AtEnd()) {
       return MediaQueryExpNode::Nested(feature);
+    }
   }
   range = original_range;
 
@@ -482,8 +511,9 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeGeneralEnclosed(
   // Note that <any-value> is optional in <general-enclosed>, so having an
   // empty block is fine.
   if (!block.AtEnd()) {
-    if (!ConsumeAnyValue(block) || !block.AtEnd())
+    if (!ConsumeAnyValue(block) || !block.AtEnd()) {
       return nullptr;
+    }
   }
 
   // TODO(crbug.com/962417): This is not well specified.
@@ -523,8 +553,9 @@ MediaQuery* MediaQueryParser::ConsumeQuery(CSSParserTokenRange& range) {
   String type = ConsumeType(range);
 
   if (!type.IsNull()) {
-    if (!ConsumeIfIdent(range, "and"))
+    if (!ConsumeIfIdent(range, "and")) {
       return MakeGarbageCollected<MediaQuery>(restrictor, type, nullptr);
+    }
     if (const MediaQueryExpNode* node =
             ConsumeCondition(range, ConditionMode::kWithoutOr)) {
       return MakeGarbageCollected<MediaQuery>(restrictor, type, node);
@@ -546,11 +577,13 @@ MediaQuerySet* MediaQueryParser::ParseImpl(CSSParserTokenRange range) {
 
   // Note that we currently expect an empty input to evaluate to an empty
   // MediaQuerySet, rather than "not all".
-  if (range.AtEnd())
+  if (range.AtEnd()) {
     return MakeGarbageCollected<MediaQuerySet>();
+  }
 
-  if (parser_type_ == kMediaConditionParser)
+  if (parser_type_ == kMediaConditionParser) {
     return ConsumeSingleCondition(range);
+  }
 
   DCHECK_EQ(parser_type_, kMediaQuerySetParser);
 

@@ -48,8 +48,9 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
                      CSSPrimitiveValue::UnitType type,
                      T& result) const {
     double temp_result;
-    if (!ComputeLengthImpl(value, type, temp_result))
+    if (!ComputeLengthImpl(value, type, temp_result)) {
       return false;
+    }
     result = ClampTo<T>(temp_result);
     return true;
   }

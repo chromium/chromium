@@ -18,8 +18,9 @@ FontVariantAlternatesParser::ConsumeAlternates(
     const CSSParserContext& context) {
   // Handled in longhand parsing implementation.
   DCHECK(range.Peek().Id() != CSSValueID::kNormal);
-  if (!ConsumeHistoricalForms(range) && !ConsumeAlternate(range, context))
+  if (!ConsumeHistoricalForms(range) && !ConsumeAlternate(range, context)) {
     return ParseResult::kUnknownValue;
+  }
   return ParseResult::kConsumedValue;
 }
 
@@ -30,34 +31,41 @@ bool FontVariantAlternatesParser::ConsumeAlternate(
   cssvalue::CSSAlternateValue** value_to_set = nullptr;
   switch (peek) {
     case CSSValueID::kStylistic:
-      if (!stylistic_)
+      if (!stylistic_) {
         value_to_set = &stylistic_;
+      }
       break;
     case CSSValueID::kStyleset:
-      if (!styleset_)
+      if (!styleset_) {
         value_to_set = &styleset_;
+      }
       break;
     case CSSValueID::kCharacterVariant:
-      if (!character_variant_)
+      if (!character_variant_) {
         value_to_set = &character_variant_;
+      }
       break;
     case CSSValueID::kSwash:
-      if (!swash_)
+      if (!swash_) {
         value_to_set = &swash_;
+      }
       break;
     case CSSValueID::kOrnaments:
-      if (!ornaments_)
+      if (!ornaments_) {
         value_to_set = &ornaments_;
+      }
       break;
     case CSSValueID::kAnnotation:
-      if (!annotation_)
+      if (!annotation_) {
         value_to_set = &annotation_;
+      }
       break;
     default:
       break;
   }
-  if (!value_to_set)
+  if (!value_to_set) {
     return false;
+  }
 
   bool multiple_idents_allowed =
       peek == CSSValueID::kStyleset || peek == CSSValueID::kCharacterVariant;
@@ -83,8 +91,9 @@ bool FontVariantAlternatesParser::ConsumeAlternate(
 
 bool FontVariantAlternatesParser::ConsumeHistoricalForms(
     CSSParserTokenRange& range) {
-  if (range.Peek().Id() != CSSValueID::kHistoricalForms)
+  if (range.Peek().Id() != CSSValueID::kHistoricalForms) {
     return false;
+  }
   historical_forms_ =
       css_parsing_utils::ConsumeIdent<CSSValueID::kHistoricalForms>(range);
   return true;
@@ -92,23 +101,31 @@ bool FontVariantAlternatesParser::ConsumeHistoricalForms(
 
 CSSValue* FontVariantAlternatesParser::FinalizeValue() {
   alternates_list_ = CSSValueList::CreateSpaceSeparated();
-  if (stylistic_)
+  if (stylistic_) {
     alternates_list_->Append(*stylistic_);
-  if (historical_forms_)
+  }
+  if (historical_forms_) {
     alternates_list_->Append(*historical_forms_);
-  if (styleset_)
+  }
+  if (styleset_) {
     alternates_list_->Append(*styleset_);
-  if (character_variant_)
+  }
+  if (character_variant_) {
     alternates_list_->Append(*character_variant_);
-  if (swash_)
+  }
+  if (swash_) {
     alternates_list_->Append(*swash_);
-  if (ornaments_)
+  }
+  if (ornaments_) {
     alternates_list_->Append(*ornaments_);
-  if (annotation_)
+  }
+  if (annotation_) {
     alternates_list_->Append(*annotation_);
+  }
 
-  if (alternates_list_->length())
+  if (alternates_list_->length()) {
     return alternates_list_;
+  }
   return CSSIdentifierValue::Create(CSSValueID::kNormal);
 }
 

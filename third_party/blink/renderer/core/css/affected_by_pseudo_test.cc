@@ -122,8 +122,9 @@ void AffectedByPseudoTest::CheckAffectedByFlagsForHas(
         break;
     }
     DCHECK(flag_name);
-    if (iter.second == actual)
+    if (iter.second == actual) {
       continue;
+    }
 
     ADD_FAILURE() << "#" << element_id << " : " << flag_name << " should be "
                   << (iter.second ? "true" : "false") << " but "

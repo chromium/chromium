@@ -11,4 +11,4 @@ void CSSValuePair::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(second_);
   CSSValue::TraceAfterDispatch(visitor);
 }
-}
+}  // namespace blink

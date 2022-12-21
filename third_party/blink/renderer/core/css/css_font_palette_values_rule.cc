@@ -64,20 +64,23 @@ String CSSFontPaletteValuesRule::name() const {
 }
 
 String CSSFontPaletteValuesRule::fontFamily() const {
-  if (const CSSValue* value = font_palette_values_rule_->GetFontFamily())
+  if (const CSSValue* value = font_palette_values_rule_->GetFontFamily()) {
     return value->CssText();
+  }
   return String();
 }
 
 String CSSFontPaletteValuesRule::basePalette() const {
-  if (const CSSValue* value = font_palette_values_rule_->GetBasePalette())
+  if (const CSSValue* value = font_palette_values_rule_->GetBasePalette()) {
     return value->CssText();
+  }
   return String();
 }
 
 String CSSFontPaletteValuesRule::overrideColors() const {
-  if (const CSSValue* value = font_palette_values_rule_->GetOverrideColors())
+  if (const CSSValue* value = font_palette_values_rule_->GetOverrideColors()) {
     return value->CssText();
+  }
   return String();
 }
 

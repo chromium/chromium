@@ -48,8 +48,9 @@ const Path& StylePath::GetPath() const {
 }
 
 float StylePath::length() const {
-  if (std::isnan(path_length_))
+  if (std::isnan(path_length_)) {
     path_length_ = GetPath().length();
+  }
   return path_length_;
 }
 

@@ -169,8 +169,9 @@ const CSSFunctionValue* CSSRotate::ToCSSValue() const {
     const CSSValue* x = x_->ToCSSValue();
     const CSSValue* y = y_->ToCSSValue();
     const CSSValue* z = z_->ToCSSValue();
-    if (!x || !y || !z)
+    if (!x || !y || !z) {
       return nullptr;
+    }
 
     result->Append(*x);
     result->Append(*y);
@@ -178,8 +179,9 @@ const CSSFunctionValue* CSSRotate::ToCSSValue() const {
   }
 
   const CSSValue* angle = angle_->ToCSSValue();
-  if (!angle)
+  if (!angle) {
     return nullptr;
+  }
 
   DCHECK(x_->to(CSSPrimitiveValue::UnitType::kNumber));
   DCHECK(y_->to(CSSPrimitiveValue::UnitType::kNumber));

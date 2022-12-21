@@ -42,8 +42,9 @@ String CSSImportRule::href() const {
 }
 
 MediaList* CSSImportRule::media() {
-  if (!media_cssom_wrapper_)
+  if (!media_cssom_wrapper_) {
     media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(this);
+  }
   return media_cssom_wrapper_.Get();
 }
 
@@ -78,18 +79,21 @@ String CSSImportRule::cssText() const {
 CSSStyleSheet* CSSImportRule::styleSheet() const {
   // TODO(yukishiino): CSSImportRule.styleSheet attribute is not nullable,
   // thus this function must not return nullptr.
-  if (!import_rule_->GetStyleSheet())
+  if (!import_rule_->GetStyleSheet()) {
     return nullptr;
+  }
 
-  if (!style_sheet_cssom_wrapper_)
+  if (!style_sheet_cssom_wrapper_) {
     style_sheet_cssom_wrapper_ = MakeGarbageCollected<CSSStyleSheet>(
         import_rule_->GetStyleSheet(), const_cast<CSSImportRule*>(this));
+  }
   return style_sheet_cssom_wrapper_.Get();
 }
 
 String CSSImportRule::layerName() const {
-  if (!import_rule_->IsLayered())
+  if (!import_rule_->IsLayered()) {
     return g_null_atom;
+  }
   return import_rule_->GetLayerNameAsString();
 }
 

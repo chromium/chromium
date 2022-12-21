@@ -150,8 +150,9 @@ void CSSGroupingRule::deleteRule(unsigned index,
 
   group_rule_->WrapperRemoveRule(index);
 
-  if (child_rule_cssom_wrappers_[index])
+  if (child_rule_cssom_wrappers_[index]) {
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);
+  }
   child_rule_cssom_wrappers_.EraseAt(index);
 }
 
@@ -264,8 +265,9 @@ unsigned CSSGroupingRule::length() const {
 }
 
 CSSRule* CSSGroupingRule::Item(unsigned index) const {
-  if (index >= length())
+  if (index >= length()) {
     return nullptr;
+  }
   DCHECK_EQ(child_rule_cssom_wrappers_.size(),
             group_rule_->ChildRules().size());
   Member<CSSRule>& rule = child_rule_cssom_wrappers_[index];
@@ -289,9 +291,10 @@ void CSSGroupingRule::Reattach(StyleRuleBase* rule) {
   DCHECK(rule);
   group_rule_ = static_cast<StyleRuleGroup*>(rule);
   for (unsigned i = 0; i < child_rule_cssom_wrappers_.size(); ++i) {
-    if (child_rule_cssom_wrappers_[i])
+    if (child_rule_cssom_wrappers_[i]) {
       child_rule_cssom_wrappers_[i]->Reattach(
           group_rule_->ChildRules()[i].Get());
+    }
   }
 }
 

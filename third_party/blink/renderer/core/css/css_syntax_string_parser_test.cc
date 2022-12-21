@@ -14,10 +14,12 @@ class CSSSyntaxStringParserTest : public testing::Test {
   absl::optional<CSSSyntaxComponent> ParseSingleComponent(
       const String& syntax) {
     auto definition = CSSSyntaxStringParser(syntax).Parse();
-    if (!definition)
+    if (!definition) {
       return absl::nullopt;
-    if (definition->Components().size() != 1)
+    }
+    if (definition->Components().size() != 1) {
       return absl::nullopt;
+    }
     return definition->Components()[0];
   }
 
@@ -29,15 +31,17 @@ class CSSSyntaxStringParserTest : public testing::Test {
 
   String ParseSingleIdent(const String& syntax) {
     auto component = ParseSingleComponent(syntax);
-    if (!component || component->GetType() != CSSSyntaxType::kIdent)
+    if (!component || component->GetType() != CSSSyntaxType::kIdent) {
       return g_empty_string;
+    }
     return component->GetString();
   }
 
   size_t ParseNumberOfComponents(const String& syntax) {
     auto definition = CSSSyntaxStringParser(syntax).Parse();
-    if (!definition)
+    if (!definition) {
       return 0;
+    }
     return definition->Components().size();
   }
 

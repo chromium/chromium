@@ -40,8 +40,9 @@ CSSNumericValue* FromSingleValue(const CSSValue& value) {
     }
   }
 
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value))
+  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
     return CSSNumericValue::FromCSSValue(*primitive_value);
+  }
 
   const auto& pair = To<CSSValuePair>(value);
   DCHECK(IsA<CSSIdentifierValue>(pair.First()));
@@ -89,15 +90,17 @@ CSSPositionValue* CSSPositionValue::Create(CSSNumericValue* x,
 
 CSSPositionValue* CSSPositionValue::Create(CSSNumericValue* x,
                                            CSSNumericValue* y) {
-  if (!IsValidPositionCoord(x) || !IsValidPositionCoord(y))
+  if (!IsValidPositionCoord(x) || !IsValidPositionCoord(y)) {
     return nullptr;
+  }
   return MakeGarbageCollected<CSSPositionValue>(x, y);
 }
 
 CSSPositionValue* CSSPositionValue::FromCSSValue(const CSSValue& value) {
   const auto* pair = DynamicTo<CSSValuePair>(&value);
-  if (!pair)
+  if (!pair) {
     return nullptr;
+  }
   CSSNumericValue* x = FromSingleValue(pair->First());
   CSSNumericValue* y = FromSingleValue(pair->Second());
   DCHECK(x);
@@ -129,8 +132,9 @@ void CSSPositionValue::setY(CSSNumericValue* y,
 const CSSValue* CSSPositionValue::ToCSSValue() const {
   const CSSValue* x = x_->ToCSSValue();
   const CSSValue* y = y_->ToCSSValue();
-  if (!x || !y)
+  if (!x || !y) {
     return nullptr;
+  }
   return MakeGarbageCollected<CSSValuePair>(x, y,
                                             CSSValuePair::kKeepIdenticalValues);
 }

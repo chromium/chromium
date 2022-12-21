@@ -51,8 +51,9 @@ CSSSelectorList* CSSSelectorList::Copy() const {
   CSSSelectorList* list = MakeGarbageCollected<CSSSelectorList>(
       AdditionalBytes(sizeof(CSSSelector) * (length - 1)),
       base::PassKey<CSSSelectorList>());
-  for (unsigned i = 0; i < length; ++i)
+  for (unsigned i = 0; i < length; ++i) {
     new (&list->first_selector_[i]) CSSSelector(first_selector_[i]);
+  }
 
   return list;
 }
@@ -79,19 +80,22 @@ CSSSelectorList* CSSSelectorList::AdoptSelectorVector(
 }
 
 unsigned CSSSelectorList::ComputeLength() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return 0;
+  }
   const CSSSelector* current = First();
-  while (!current->IsLastInSelectorList())
+  while (!current->IsLastInSelectorList()) {
     ++current;
+  }
   return SelectorIndex(*current) + 1;
 }
 
 unsigned CSSSelectorList::MaximumSpecificity() const {
   unsigned specificity = 0;
 
-  for (const CSSSelector* s = First(); s; s = Next(*s))
+  for (const CSSSelector* s = First(); s; s = Next(*s)) {
     specificity = std::max(specificity, s->Specificity());
+  }
 
   return specificity;
 }
@@ -100,8 +104,9 @@ String CSSSelectorList::SelectorsText(const CSSSelector* first) {
   StringBuilder result;
 
   for (const CSSSelector* s = first; s; s = Next(*s)) {
-    if (s != first)
+    if (s != first) {
       result.Append(", ");
+    }
     result.Append(s->SelectorText());
   }
 

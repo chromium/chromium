@@ -60,15 +60,17 @@ void MediaQueryList::removeDeprecatedListener(V8EventListener* listener) {
 }
 
 void MediaQueryList::AddListener(MediaQueryListListener* listener) {
-  if (!listener)
+  if (!listener) {
     return;
+  }
 
   listeners_.insert(listener);
 }
 
 void MediaQueryList::RemoveListener(MediaQueryListListener* listener) {
-  if (!listener)
+  if (!listener) {
     return;
+  }
 
   listeners_.erase(listener);
 }
@@ -86,8 +88,9 @@ void MediaQueryList::ContextDestroyed() {
 bool MediaQueryList::MediaFeaturesChanged(
     HeapVector<Member<MediaQueryListListener>>* listeners_to_notify) {
   matches_dirty_ = true;
-  if (!UpdateMatches())
+  if (!UpdateMatches()) {
     return false;
+  }
   for (const auto& listener : listeners_) {
     listeners_to_notify->push_back(listener);
   }

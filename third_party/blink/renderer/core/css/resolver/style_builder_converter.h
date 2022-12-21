@@ -384,10 +384,12 @@ T StyleBuilderConverter::ConvertFlags(StyleResolverState& state,
                                       const CSSValue& value) {
   T flags = static_cast<T>(0);
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (identifier_value && identifier_value->GetValueID() == ZeroValue)
+  if (identifier_value && identifier_value->GetValueID() == ZeroValue) {
     return flags;
-  for (auto& flag_value : To<CSSValueList>(value))
+  }
+  for (auto& flag_value : To<CSSValueList>(value)) {
     flags |= To<CSSIdentifierValue>(*flag_value).ConvertTo<T>();
+  }
   return flags;
 }
 
@@ -423,8 +425,9 @@ T StyleBuilderConverter::ConvertLineWidth(StyleResolverState& state,
   // device pixels.  Consider clamping it to device pixels or zoom adjusted CSS
   // pixels instead of raw CSS pixels.
   double zoomed_result = state.StyleBuilder().EffectiveZoom() * result;
-  if (zoomed_result > 0.0 && zoomed_result < 1.0)
+  if (zoomed_result > 0.0 && zoomed_result < 1.0) {
     return 1.0;
+  }
   return ClampTo<T>(RoundForImpreciseConversion<T>(result),
                     DefaultMinimumForClamp<T>(), DefaultMaximumForClamp<T>());
 }
@@ -434,8 +437,9 @@ Length StyleBuilderConverter::ConvertPositionLength(StyleResolverState& state,
                                                     const CSSValue& value) {
   if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
     Length length = StyleBuilderConverter::ConvertLength(state, pair->Second());
-    if (To<CSSIdentifierValue>(pair->First()).GetValueID() == cssValueFor0)
+    if (To<CSSIdentifierValue>(pair->First()).GetValueID() == cssValueFor0) {
       return length;
+    }
     DCHECK_EQ(To<CSSIdentifierValue>(pair->First()).GetValueID(),
               cssValueFor100);
     return length.SubtractFromOneHundredPercent();
@@ -461,8 +465,9 @@ Length StyleBuilderConverter::ConvertPositionLength(StyleResolverState& state,
 template <CSSValueID IdForNone>
 AtomicString StyleBuilderConverter::ConvertString(StyleResolverState&,
                                                   const CSSValue& value) {
-  if (auto* string_value = DynamicTo<CSSStringValue>(value))
+  if (auto* string_value = DynamicTo<CSSStringValue>(value)) {
     return AtomicString(string_value->Value());
+  }
   DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), IdForNone);
   return g_null_atom;
 }

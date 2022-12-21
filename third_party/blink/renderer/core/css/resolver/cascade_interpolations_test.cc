@@ -18,8 +18,9 @@ TEST(CascadeInterpolationsTest, Limit) {
   ActiveInterpolationsMap map;
 
   CascadeInterpolations interpolations;
-  for (size_t i = 0; i <= max; ++i)
+  for (size_t i = 0; i <= max; ++i) {
     interpolations.Add(&map, CascadeOrigin::kAuthor);
+  }
 
   // At maximum
   EXPECT_FALSE(interpolations.IsEmpty());

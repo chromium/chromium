@@ -45,8 +45,9 @@ class ContainerQueryTest : public PageTestBase, private ScopedLayoutNGForTest {
       UnknownHandling unknown_handling = UnknownHandling::kError) {
     auto* rule = DynamicTo<StyleRuleContainer>(
         css_test_helpers::ParseRule(GetDocument(), rule_string));
-    if ((unknown_handling == UnknownHandling::kError) && HasUnknown(rule))
+    if ((unknown_handling == UnknownHandling::kError) && HasUnknown(rule)) {
       return nullptr;
+    }
     return rule;
   }
 
@@ -55,8 +56,9 @@ class ContainerQueryTest : public PageTestBase, private ScopedLayoutNGForTest {
       UnknownHandling unknown_handling = UnknownHandling::kError) {
     String rule = "@container " + query + " {}";
     StyleRuleContainer* container = ParseAtContainer(rule, unknown_handling);
-    if (!container)
+    if (!container) {
       return nullptr;
+    }
     return &container->GetContainerQuery();
   }
 
@@ -64,22 +66,25 @@ class ContainerQueryTest : public PageTestBase, private ScopedLayoutNGForTest {
       String query_string) {
     ContainerQuery* query =
         ParseContainerQuery(query_string, UnknownHandling::kAllow);
-    if (!query)
+    if (!query) {
       return absl::nullopt;
+    }
     return GetInnerQuery(*query).CollectFeatureFlags();
   }
 
   ContainerSelector ContainerSelectorFrom(String query_string) {
     ContainerQuery* query =
         ParseContainerQuery(query_string, UnknownHandling::kAllow);
-    if (!query)
+    if (!query) {
       return ContainerSelector();
+    }
     return ContainerSelector(g_null_atom, GetInnerQuery(*query));
   }
 
   String SerializeCondition(StyleRuleContainer* container) {
-    if (!container)
+    if (!container) {
       return "";
+    }
     return container->GetContainerQuery().ToString();
   }
 
@@ -97,16 +102,18 @@ class ContainerQueryTest : public PageTestBase, private ScopedLayoutNGForTest {
   }
 
   String ComputedValueString(Element* element, String property_name) {
-    if (const CSSValue* value = ComputedValue(element, property_name))
+    if (const CSSValue* value = ComputedValue(element, property_name)) {
       return value->CssText();
+    }
     return g_null_atom;
   }
 
   // Get animations count for a specific element without force-updating
   // style and layout-tree.
   size_t GetAnimationsCount(Element* element) {
-    if (auto* element_animations = element->GetElementAnimations())
+    if (auto* element_animations = element->GetElementAnimations()) {
       return element_animations->Animations().size();
+    }
     return 0;
   }
 

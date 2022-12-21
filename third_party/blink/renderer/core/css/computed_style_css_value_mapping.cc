@@ -50,8 +50,9 @@ ComputedStyleCSSValueMapping::GetVariables(const ComputedStyle& style,
   for (const AtomicString& name : style.GetVariableNames()) {
     const CSSValue* value =
         ComputedStyleCSSValueMapping::Get(name, style, registry);
-    if (value)
+    if (value) {
       variables.Set(name, value);
+    }
   }
 
   return variables;

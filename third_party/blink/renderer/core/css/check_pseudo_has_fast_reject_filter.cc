@@ -42,19 +42,22 @@ void CheckPseudoHasFastRejectFilter::AddElementIdentifierHashes(
     const Element& element) {
   DCHECK(filter_.get());
   filter_->Add(GetTagHash(element.LocalNameForSelectorMatching()));
-  if (element.HasID())
+  if (element.HasID()) {
     filter_->Add(GetIdHash(element.IdForStyleResolution()));
+  }
   if (element.HasClass()) {
     const SpaceSplitString& class_names = element.ClassNames();
     wtf_size_t count = class_names.size();
-    for (wtf_size_t i = 0; i < count; ++i)
+    for (wtf_size_t i = 0; i < count; ++i) {
       filter_->Add(GetClassHash(class_names[i]));
+    }
   }
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
     auto attribute_name = attribute_item.LocalName();
-    if (IsExcludedAttribute(attribute_name))
+    if (IsExcludedAttribute(attribute_name)) {
       continue;
+    }
     auto lower = attribute_name.IsLowerASCII() ? attribute_name
                                                : attribute_name.LowerASCII();
     filter_->Add(GetAttributeHash(lower));
@@ -64,11 +67,13 @@ void CheckPseudoHasFastRejectFilter::AddElementIdentifierHashes(
 bool CheckPseudoHasFastRejectFilter::FastReject(
     const Vector<unsigned>& pseudo_has_argument_hashes) const {
   DCHECK(filter_.get());
-  if (pseudo_has_argument_hashes.empty())
+  if (pseudo_has_argument_hashes.empty()) {
     return false;
+  }
   for (unsigned hash : pseudo_has_argument_hashes) {
-    if (!filter_->MayContain(hash))
+    if (!filter_->MayContain(hash)) {
       return true;
+    }
   }
   return false;
 }
@@ -80,13 +85,15 @@ void CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
   DCHECK(simple_selector);
   switch (simple_selector->Match()) {
     case CSSSelector::kId:
-      if (simple_selector->Value().empty())
+      if (simple_selector->Value().empty()) {
         break;
+      }
       pseudo_has_argument_hashes.push_back(GetIdHash(simple_selector->Value()));
       break;
     case CSSSelector::kClass:
-      if (simple_selector->Value().empty())
+      if (simple_selector->Value().empty()) {
         break;
+      }
       pseudo_has_argument_hashes.push_back(
           GetClassHash(simple_selector->Value()));
       break;
@@ -105,8 +112,9 @@ void CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
     case CSSSelector::kAttributeEnd:
     case CSSSelector::kAttributeHyphen: {
       auto attribute_name = simple_selector->Attribute().LocalName();
-      if (IsExcludedAttribute(attribute_name))
+      if (IsExcludedAttribute(attribute_name)) {
         break;
+      }
       auto lower_name = attribute_name.IsLowerASCII()
                             ? attribute_name
                             : attribute_name.LowerASCII();
@@ -118,8 +126,9 @@ void CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
 }
 
 void CheckPseudoHasFastRejectFilter::AllocateBloomFilter() {
-  if (filter_)
+  if (filter_) {
     return;
+  }
   filter_ = std::make_unique<FastRejectFilter>();
 }
 

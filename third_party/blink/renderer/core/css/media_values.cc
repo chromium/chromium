@@ -72,20 +72,23 @@ mojom::blink::PreferredContrast CSSValueIDToPreferredContrast(CSSValueID id) {
 }
 
 absl::optional<double> MediaValues::InlineSize() const {
-  if (blink::IsHorizontalWritingMode(GetWritingMode()))
+  if (blink::IsHorizontalWritingMode(GetWritingMode())) {
     return Width();
+  }
   return Height();
 }
 
 absl::optional<double> MediaValues::BlockSize() const {
-  if (blink::IsHorizontalWritingMode(GetWritingMode()))
+  if (blink::IsHorizontalWritingMode(GetWritingMode())) {
     return Height();
+  }
   return Width();
 }
 
 MediaValues* MediaValues::CreateDynamicIfFrameExists(LocalFrame* frame) {
-  if (frame)
+  if (frame) {
     return MediaValuesDynamic::Create(frame);
+  }
   return MakeGarbageCollected<MediaValuesCached>();
 }
 
@@ -193,8 +196,9 @@ int MediaValues::CalculateColorBitsPerComponent(LocalFrame* frame) {
   DCHECK(frame->GetPage());
   const display::ScreenInfo& screen_info =
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame);
-  if (screen_info.is_monochrome)
+  if (screen_info.is_monochrome) {
     return 0;
+  }
   return screen_info.depth_per_component;
 }
 
@@ -203,8 +207,9 @@ int MediaValues::CalculateMonochromeBitsPerComponent(LocalFrame* frame) {
   DCHECK(frame->GetPage());
   const display::ScreenInfo& screen_info =
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame);
-  if (!screen_info.is_monochrome)
+  if (!screen_info.is_monochrome) {
     return 0;
+  }
   return screen_info.depth_per_component;
 }
 
@@ -251,8 +256,9 @@ float MediaValues::CalculateLineHeight(LocalFrame* frame) {
 
 const String MediaValues::CalculateMediaType(LocalFrame* frame) {
   DCHECK(frame);
-  if (!frame->View())
+  if (!frame->View()) {
     return g_empty_atom;
+  }
   return frame->View()->MediaType();
 }
 
@@ -261,12 +267,14 @@ mojom::blink::DisplayMode MediaValues::CalculateDisplayMode(LocalFrame* frame) {
 
   blink::mojom::DisplayMode mode =
       frame->GetPage()->GetSettings().GetDisplayModeOverride();
-  if (mode != mojom::blink::DisplayMode::kUndefined)
+  if (mode != mojom::blink::DisplayMode::kUndefined) {
     return mode;
+  }
 
   FrameWidget* widget = frame->GetWidgetForLocalRoot();
-  if (!widget)  // Is null in non-ordinary Pages.
+  if (!widget) {  // Is null in non-ordinary Pages.
     return mojom::blink::DisplayMode::kBrowser;
+  }
 
   return widget->DisplayMode();
 }
@@ -383,8 +391,9 @@ NavigationControls MediaValues::CalculateNavigationControls(LocalFrame* frame) {
 }
 
 int MediaValues::CalculateHorizontalViewportSegments(LocalFrame* frame) {
-  if (!frame->GetWidgetForLocalRoot())
+  if (!frame->GetWidgetForLocalRoot()) {
     return 1;
+  }
 
   WebVector<gfx::Rect> window_segments =
       frame->GetWidgetForLocalRoot()->WindowSegments();
@@ -398,8 +407,9 @@ int MediaValues::CalculateHorizontalViewportSegments(LocalFrame* frame) {
 }
 
 int MediaValues::CalculateVerticalViewportSegments(LocalFrame* frame) {
-  if (!frame->GetWidgetForLocalRoot())
+  if (!frame->GetWidgetForLocalRoot()) {
     return 1;
+  }
 
   WebVector<gfx::Rect> window_segments =
       frame->GetWidgetForLocalRoot()->WindowSegments();
@@ -420,8 +430,9 @@ device::mojom::blink::DevicePostureType MediaValues::CalculateDevicePosture(
 bool MediaValues::ComputeLengthImpl(double value,
                                     CSSPrimitiveValue::UnitType type,
                                     double& result) const {
-  if (!CSSPrimitiveValue::IsLength(type))
+  if (!CSSPrimitiveValue::IsLength(type)) {
     return false;
+  }
   result = ZoomedComputedPixels(value, type);
   return true;
 }

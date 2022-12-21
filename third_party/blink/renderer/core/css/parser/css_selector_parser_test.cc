@@ -264,15 +264,17 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     EXPECT_EQ(!vector.empty(), test_case.valid);
-    if (!test_case.valid)
+    if (!test_case.valid) {
       continue;
+    }
 
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     ASSERT_TRUE(list->HasOneSelector());
 
     auto* selector = list->First();
-    while (selector->TagHistory())
+    while (selector->TagHistory()) {
       selector = selector->TagHistory();
+    }
 
     EXPECT_EQ(selector->GetPseudoType(), test_case.type);
     EXPECT_EQ(selector->Argument(), test_case.argument);

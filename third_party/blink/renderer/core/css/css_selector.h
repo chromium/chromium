@@ -609,8 +609,9 @@ inline bool CSSSelector::IsCaseSensitiveAttribute() const {
 
 inline bool CSSSelector::IsASCIILower(const AtomicString& value) {
   for (wtf_size_t i = 0; i < value.length(); ++i) {
-    if (IsASCIIUpper(value[i]))
+    if (IsASCIIUpper(value[i])) {
       return false;
+    }
   }
   return true;
 }
@@ -698,14 +699,15 @@ inline CSSSelector::CSSSelector(CSSSelector&& o)
 }
 
 inline CSSSelector::~CSSSelector() {
-  if (match_ == kTag)
+  if (match_ == kTag) {
     data_.tag_q_name_.~QualifiedName();
-  else if (match_ == kPseudoClass && pseudo_type_ == kPseudoParent)
+  } else if (match_ == kPseudoClass && pseudo_type_ == kPseudoParent)
     ;  // Nothing to do.
   else if (has_rare_data_)
     ;  // Nothing to do.
-  else
+  else {
     data_.value_.~AtomicString();
+  }
 }
 
 inline CSSSelector& CSSSelector::operator=(CSSSelector&& other) {
@@ -727,15 +729,17 @@ inline const StyleRule* CSSSelector::ParentRule() const {
 
 inline const AtomicString& CSSSelector::Value() const {
   DCHECK_NE(match_, static_cast<unsigned>(kTag));
-  if (has_rare_data_)
+  if (has_rare_data_) {
     return data_.rare_data_->matching_value_;
+  }
   return data_.value_;
 }
 
 inline const AtomicString& CSSSelector::SerializingValue() const {
   DCHECK_NE(match_, static_cast<unsigned>(kTag));
-  if (has_rare_data_)
+  if (has_rare_data_) {
     return data_.rare_data_->serializing_value_;
+  }
   return data_.value_;
 }
 

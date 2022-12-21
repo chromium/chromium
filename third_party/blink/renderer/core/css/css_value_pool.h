@@ -143,23 +143,28 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   CSSColor* GetOrCreateColor(const Color& color) {
     // These are the empty and deleted values of the hash table.
     // See ColorHashTraitsForCSSValuePool.
-    if (color == Color::kTransparent)
+    if (color == Color::kTransparent) {
       return TransparentColor();
-    if (color == Color::kWhite)
+    }
+    if (color == Color::kWhite) {
       return WhiteColor();
+    }
 
     // Just because it is common.
-    if (color == Color::kBlack)
+    if (color == Color::kBlack) {
       return BlackColor();
+    }
 
     // Just wipe out the cache and start rebuilding if it gets too big.
-    if (color_value_cache_.size() > kMaximumColorCacheSize)
+    if (color_value_cache_.size() > kMaximumColorCacheSize) {
       color_value_cache_.clear();
+    }
 
     ColorValueCache::AddResult entry =
         color_value_cache_.insert(color, nullptr);
-    if (entry.is_new_entry)
+    if (entry.is_new_entry) {
       entry.stored_value->value = MakeGarbageCollected<CSSColor>(color);
+    }
     return entry.stored_value->value;
   }
   FontFamilyValueCache::AddResult GetFontFamilyCacheEntry(
@@ -169,8 +174,9 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   FontFaceValueCache::AddResult GetFontFaceCacheEntry(
       const AtomicString& string) {
     // Just wipe out the cache and start rebuilding if it gets too big.
-    if (font_face_value_cache_.size() > kMaximumFontFaceCacheSize)
+    if (font_face_value_cache_.size() > kMaximumFontFaceCacheSize) {
       font_face_value_cache_.clear();
+    }
     return font_face_value_cache_.insert(string, nullptr);
   }
 

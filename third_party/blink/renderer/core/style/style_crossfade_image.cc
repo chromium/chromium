@@ -20,8 +20,9 @@ StyleCrossfadeImage::StyleCrossfadeImage(cssvalue::CSSCrossfadeValue& value,
 StyleCrossfadeImage::~StyleCrossfadeImage() = default;
 
 bool StyleCrossfadeImage::IsEqual(const StyleImage& other) const {
-  if (!other.IsCrossfadeImage())
+  if (!other.IsCrossfadeImage()) {
     return false;
+  }
   return original_value_ == To<StyleCrossfadeImage>(other).original_value_;
 }
 
@@ -67,8 +68,9 @@ bool StyleCrossfadeImage::IsAccessAllowed(String& failing_url) const {
 gfx::SizeF StyleCrossfadeImage::ImageSize(float multiplier,
                                           const gfx::SizeF& default_object_size,
                                           RespectImageOrientationEnum) const {
-  if (!from_image_ || !to_image_)
+  if (!from_image_ || !to_image_) {
     return gfx::SizeF();
+  }
 
   // TODO(fs): Consider |respect_orientation|?
   gfx::SizeF from_image_size = from_image_->ImageSize(
@@ -79,8 +81,9 @@ gfx::SizeF StyleCrossfadeImage::ImageSize(float multiplier,
   // Rounding issues can cause transitions between images of equal size to
   // return a different fixed size; avoid performing the interpolation if the
   // images are the same size.
-  if (from_image_size == to_image_size)
+  if (from_image_size == to_image_size) {
     return from_image_size;
+  }
 
   float percentage = original_value_->Percentage().GetFloatValue();
   float inverse_percentage = 1 - percentage;
@@ -98,24 +101,30 @@ bool StyleCrossfadeImage::HasIntrinsicSize() const {
 void StyleCrossfadeImage::AddClient(ImageResourceObserver* observer) {
   const bool had_clients = original_value_->HasClients();
   original_value_->AddClient(observer);
-  if (had_clients)
+  if (had_clients) {
     return;
+  }
   ImageResourceObserver* proxy_observer = original_value_->GetObserverProxy();
-  if (from_image_)
+  if (from_image_) {
     from_image_->AddClient(proxy_observer);
-  if (to_image_)
+  }
+  if (to_image_) {
     to_image_->AddClient(proxy_observer);
+  }
 }
 
 void StyleCrossfadeImage::RemoveClient(ImageResourceObserver* observer) {
   original_value_->RemoveClient(observer);
-  if (original_value_->HasClients())
+  if (original_value_->HasClients()) {
     return;
+  }
   ImageResourceObserver* proxy_observer = original_value_->GetObserverProxy();
-  if (from_image_)
+  if (from_image_) {
     from_image_->RemoveClient(proxy_observer);
-  if (to_image_)
+  }
+  if (to_image_) {
     to_image_->RemoveClient(proxy_observer);
+  }
 }
 
 scoped_refptr<Image> StyleCrossfadeImage::GetImage(
@@ -123,10 +132,12 @@ scoped_refptr<Image> StyleCrossfadeImage::GetImage(
     const Document& document,
     const ComputedStyle& style,
     const gfx::SizeF& target_size) const {
-  if (target_size.IsEmpty())
+  if (target_size.IsEmpty()) {
     return nullptr;
-  if (!from_image_ || !to_image_)
+  }
+  if (!from_image_ || !to_image_) {
     return Image::NullImage();
+  }
   const gfx::SizeF resolved_size =
       ImageSize(style.EffectiveZoom(), target_size, kRespectImageOrientation);
   const ImageResourceObserver* proxy_observer =

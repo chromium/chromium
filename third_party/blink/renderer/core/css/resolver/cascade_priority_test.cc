@@ -57,13 +57,15 @@ TEST(CascadePriorityTest, OriginOperators) {
     }
   }
 
-  for (CascadePriority priority : priorities)
+  for (CascadePriority priority : priorities) {
     EXPECT_EQ(priority, priority);
+  }
 
   for (size_t i = 0; i < priorities.size(); ++i) {
     for (size_t j = 0; j < priorities.size(); ++j) {
-      if (i == j)
+      if (i == j) {
         continue;
+      }
       EXPECT_NE(priorities[i], priorities[j]);
     }
   }
@@ -82,8 +84,9 @@ TEST(CascadePriorityTest, OriginImportance) {
       CascadePriority(CascadeOrigin::kNone, false, 0, false, 0, 0)};
 
   for (size_t i = 0; i < priorities.size(); ++i) {
-    for (size_t j = i; j < priorities.size(); ++j)
+    for (size_t j = i; j < priorities.size(); ++j) {
       EXPECT_GE(priorities[i], priorities[j]);
+    }
   }
 }
 
@@ -123,10 +126,12 @@ TEST(CascadePriorityTest, GetOrigin) {
   }
 
   for (CascadeOrigin origin : all_origins) {
-    if (origin == CascadeOrigin::kAnimation)
+    if (origin == CascadeOrigin::kAnimation) {
       continue;
-    if (origin == CascadeOrigin::kTransition)
+    }
+    if (origin == CascadeOrigin::kTransition) {
       continue;
+    }
     EXPECT_EQ(CascadePriority(origin, true, 0, false, 0, 0).GetOrigin(),
               origin);
   }
@@ -134,10 +139,11 @@ TEST(CascadePriorityTest, GetOrigin) {
 
 TEST(CascadePriorityTest, HasOrigin) {
   for (CascadeOrigin origin : all_origins) {
-    if (origin != CascadeOrigin::kNone)
+    if (origin != CascadeOrigin::kNone) {
       EXPECT_TRUE(CascadePriority(origin).HasOrigin());
-    else
+    } else {
       EXPECT_FALSE(CascadePriority(origin).HasOrigin());
+    }
   }
   EXPECT_FALSE(CascadePriority().HasOrigin());
 }

@@ -35,16 +35,18 @@ CSSMatrixComponent* CSSMatrixComponent::Create(
 }
 
 DOMMatrix* CSSMatrixComponent::toMatrix(ExceptionState&) const {
-  if (is2D() && !matrix_->is2D())
+  if (is2D() && !matrix_->is2D()) {
     return To2DMatrix(matrix_);
+  }
   return DOMMatrix::Create(matrix_.Get());
 }
 
 CSSMatrixComponent* CSSMatrixComponent::FromCSSValue(
     const CSSFunctionValue& value) {
   WTF::Vector<double> entries;
-  for (const auto& item : value)
+  for (const auto& item : value) {
     entries.push_back(To<CSSPrimitiveValue>(*item).GetDoubleValue());
+  }
 
   return CSSMatrixComponent::Create(
       DOMMatrixReadOnly::CreateForSerialization(entries.data(), entries.size()),

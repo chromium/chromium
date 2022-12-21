@@ -40,8 +40,9 @@ class DataRef {
   const T* operator->() const { return Get(); }
 
   T* Access() {
-    if (!data_->HasOneRef())
+    if (!data_->HasOneRef()) {
       data_ = data_->Copy();
+    }
     return data_.get();
   }
 

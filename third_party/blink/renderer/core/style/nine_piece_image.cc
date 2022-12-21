@@ -30,8 +30,9 @@ namespace blink {
 
 static DataRef<NinePieceImageData>& DefaultData() {
   static DataRef<NinePieceImageData>* data = new DataRef<NinePieceImageData>;
-  if (!data->Get())
+  if (!data->Get()) {
     data->Init();
+  }
   return *data;
 }
 

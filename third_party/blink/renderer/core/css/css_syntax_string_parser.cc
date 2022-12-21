@@ -17,38 +17,52 @@ namespace {
 
 // https://drafts.css-houdini.org/css-properties-values-api-1/#supported-names
 absl::optional<CSSSyntaxType> ParseSyntaxType(StringView type) {
-  if (type == "length")
+  if (type == "length") {
     return CSSSyntaxType::kLength;
-  if (type == "number")
+  }
+  if (type == "number") {
     return CSSSyntaxType::kNumber;
-  if (type == "percentage")
+  }
+  if (type == "percentage") {
     return CSSSyntaxType::kPercentage;
-  if (type == "length-percentage")
+  }
+  if (type == "length-percentage") {
     return CSSSyntaxType::kLengthPercentage;
-  if (type == "color")
+  }
+  if (type == "color") {
     return CSSSyntaxType::kColor;
+  }
   if (RuntimeEnabledFeatures::CSSVariables2ImageValuesEnabled()) {
-    if (type == "image")
+    if (type == "image") {
       return CSSSyntaxType::kImage;
+    }
   }
-  if (type == "url")
+  if (type == "url") {
     return CSSSyntaxType::kUrl;
-  if (type == "integer")
-    return CSSSyntaxType::kInteger;
-  if (type == "angle")
-    return CSSSyntaxType::kAngle;
-  if (type == "time")
-    return CSSSyntaxType::kTime;
-  if (type == "resolution")
-    return CSSSyntaxType::kResolution;
-  if (RuntimeEnabledFeatures::CSSVariables2TransformValuesEnabled()) {
-    if (type == "transform-function")
-      return CSSSyntaxType::kTransformFunction;
-    if (type == "transform-list")
-      return CSSSyntaxType::kTransformList;
   }
-  if (type == "custom-ident")
+  if (type == "integer") {
+    return CSSSyntaxType::kInteger;
+  }
+  if (type == "angle") {
+    return CSSSyntaxType::kAngle;
+  }
+  if (type == "time") {
+    return CSSSyntaxType::kTime;
+  }
+  if (type == "resolution") {
+    return CSSSyntaxType::kResolution;
+  }
+  if (RuntimeEnabledFeatures::CSSVariables2TransformValuesEnabled()) {
+    if (type == "transform-function") {
+      return CSSSyntaxType::kTransformFunction;
+    }
+    if (type == "transform-list") {
+      return CSSSyntaxType::kTransformList;
+    }
+  }
+  if (type == "custom-ident") {
     return CSSSyntaxType::kCustomIdent;
+  }
   return absl::nullopt;
 }
 
@@ -62,23 +76,28 @@ CSSSyntaxStringParser::CSSSyntaxStringParser(const String& string)
     : string_(string.StripWhiteSpace()), input_(string_) {}
 
 absl::optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
-  if (string_.empty())
+  if (string_.empty()) {
     return absl::nullopt;
-  if (string_.length() == 1 && string_[0] == '*')
+  }
+  if (string_.length() == 1 && string_[0] == '*') {
     return CSSSyntaxDefinition::CreateUniversal();
+  }
 
   Vector<CSSSyntaxComponent> components;
 
   while (true) {
-    if (!ConsumeSyntaxComponent(components))
+    if (!ConsumeSyntaxComponent(components)) {
       return absl::nullopt;
+    }
     input_.AdvanceUntilNonWhitespace();
     UChar cc = input_.NextInputChar();
     input_.Advance();
-    if (cc == '\0')
+    if (cc == '\0') {
       break;
-    if (cc == '|')
+    }
+    if (cc == '|') {
       continue;
+    }
     return absl::nullopt;
   }
 
@@ -96,14 +115,16 @@ bool CSSSyntaxStringParser::ConsumeSyntaxComponent(
   input_.Advance();
 
   if (cc == '<') {
-    if (!ConsumeDataTypeName(type))
+    if (!ConsumeDataTypeName(type)) {
       return false;
+    }
   } else if (IsNameStartCodePoint(cc) || cc == '\\') {
     if (NextCharsAreIdentifier(cc, input_)) {
       input_.PushBack(cc);
       type = CSSSyntaxType::kIdent;
-      if (!ConsumeIdent(ident))
+      if (!ConsumeIdent(ident)) {
         return false;
+      }
     }
   } else {
     return false;
@@ -133,8 +154,9 @@ CSSSyntaxRepeat CSSSyntaxStringParser::ConsumeRepeatIfPresent() {
 bool CSSSyntaxStringParser::ConsumeDataTypeName(CSSSyntaxType& type) {
   for (unsigned size = 0;; ++size) {
     UChar cc = input_.PeekWithoutReplacement(size);
-    if (IsNameCodePoint(cc))
+    if (IsNameCodePoint(cc)) {
       continue;
+    }
     if (cc == '>') {
       unsigned start = input_.Offset();
       input_.Advance(size + 1);

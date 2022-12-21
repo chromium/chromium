@@ -49,8 +49,9 @@ StyleRuleKeyframes::StyleRuleKeyframes(const StyleRuleKeyframes& o) = default;
 StyleRuleKeyframes::~StyleRuleKeyframes() = default;
 
 void StyleRuleKeyframes::ParserAppendKeyframe(StyleRuleKeyframe* keyframe) {
-  if (!keyframe)
+  if (!keyframe) {
     return;
+  }
   keyframes_.push_back(keyframe);
 }
 
@@ -68,11 +69,13 @@ int StyleRuleKeyframes::FindKeyframeIndex(const CSSParserContext* context,
                                           const String& key) const {
   std::unique_ptr<Vector<KeyframeOffset>> keys =
       CSSParser::ParseKeyframeKeyList(context, key);
-  if (!keys)
+  if (!keys) {
     return -1;
+  }
   for (wtf_size_t i = keyframes_.size(); i--;) {
-    if (keyframes_[i]->Keys() == *keys)
+    if (keyframes_[i]->Keys() == *keys) {
       return static_cast<int>(i);
+    }
   }
   return -1;
 }
@@ -108,8 +111,9 @@ void CSSKeyframesRule::appendRule(const ExecutionContext* execution_context,
       ParserContext(execution_context->GetSecureContextMode()), style_sheet);
   StyleRuleKeyframe* keyframe =
       CSSParser::ParseKeyframeRule(context, rule_text);
-  if (!keyframe)
+  if (!keyframe) {
     return;
+  }
 
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
 
@@ -127,15 +131,17 @@ void CSSKeyframesRule::deleteRule(const ExecutionContext* execution_context,
       ParserContext(execution_context->GetSecureContextMode());
 
   int i = keyframes_rule_->FindKeyframeIndex(parser_context, s);
-  if (i < 0)
+  if (i < 0) {
     return;
+  }
 
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
 
   keyframes_rule_->WrapperRemoveKeyframe(i);
 
-  if (child_rule_cssom_wrappers_[i])
+  if (child_rule_cssom_wrappers_[i]) {
     child_rule_cssom_wrappers_[i]->SetParentRule(nullptr);
+  }
   child_rule_cssom_wrappers_.EraseAt(i);
 }
 
@@ -151,10 +157,11 @@ CSSKeyframeRule* CSSKeyframesRule::findRule(
 
 String CSSKeyframesRule::cssText() const {
   StringBuilder result;
-  if (IsVendorPrefixed())
+  if (IsVendorPrefixed()) {
     result.Append("@-webkit-keyframes ");
-  else
+  } else {
     result.Append("@keyframes ");
+  }
   result.Append(name());
   result.Append(" { \n");
 
@@ -173,8 +180,9 @@ unsigned CSSKeyframesRule::length() const {
 }
 
 CSSKeyframeRule* CSSKeyframesRule::Item(unsigned index) const {
-  if (index >= length())
+  if (index >= length()) {
     return nullptr;
+  }
 
   DCHECK_EQ(child_rule_cssom_wrappers_.size(),
             keyframes_rule_->Keyframes().size());

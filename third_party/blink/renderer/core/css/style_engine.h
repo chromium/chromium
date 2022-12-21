@@ -451,10 +451,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                               Element& removed_element,
                                               Element& after_element);
   void ScheduleNthPseudoInvalidations(ContainerNode&);
-  void ScheduleInvalidationsForRuleSets(TreeScope&,
-                                        const HeapHashSet<Member<RuleSet>>&,
-                                        InvalidationScope =
-                                            kInvalidateCurrentScope);
+  void ScheduleInvalidationsForRuleSets(
+      TreeScope&,
+      const HeapHashSet<Member<RuleSet>>&,
+      InvalidationScope = kInvalidateCurrentScope);
   void ScheduleCustomElementInvalidations(HashSet<AtomicString> tag_names);
   void ScheduleInvalidationsForHasPseudoAffectedByInsertion(
       Element* parent,
@@ -579,8 +579,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   Element* GetContainerForContainerStyleRecalc() const {
     // The To<Element>() should not fail because the style_recalc_root_ is set
     // to the container element when doing a container query style recalc.
-    if (InContainerQueryStyleRecalc())
+    if (InContainerQueryStyleRecalc()) {
       return To<Element>(style_recalc_root_.GetRootNode());
+    }
     return nullptr;
   }
   void ChangeRenderingForHTMLSelect(HTMLSelectElement& select);
@@ -595,8 +596,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
            "MarkForLayoutTreeChangesAfterLayout when LayoutObjects are "
            "detached";
 #endif  // DCHECK_IS_ON()
-    if (in_detach_scope_)
+    if (in_detach_scope_) {
       parent_for_detached_subtree_ = parent;
+    }
   }
 
   void SetPageColorSchemes(const CSSValue* color_scheme);
@@ -726,8 +728,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateActiveStyleSheets();
   void UpdateGlobalRuleSet() {
     DCHECK(!NeedsActiveStyleSheetUpdate());
-    if (global_rule_set_)
+    if (global_rule_set_) {
       global_rule_set_->Update(GetDocument());
+    }
   }
   const MediaQueryEvaluator& EnsureMediaQueryEvaluator();
   void UpdateStyleSheetList(TreeScope&);

@@ -65,8 +65,9 @@ String MediaQuery::Serialize() const {
     result.Append(" and ");
   }
 
-  if (exp_node)
+  if (exp_node) {
     result.Append(exp_node->Serialize());
+  }
 
   return result.ReleaseString();
 }
@@ -116,8 +117,9 @@ bool MediaQuery::operator==(const MediaQuery& other) const {
 
 // https://drafts.csswg.org/cssom/#serialize-a-list-of-media-queries
 String MediaQuery::CssText() const {
-  if (serialization_cache_.IsNull())
+  if (serialization_cache_.IsNull()) {
     const_cast<MediaQuery*>(this)->serialization_cache_ = Serialize();
+  }
 
   return serialization_cache_;
 }

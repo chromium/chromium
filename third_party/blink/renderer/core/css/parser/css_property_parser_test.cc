@@ -26,8 +26,9 @@ namespace blink {
 static int ComputeNumberOfTracks(const CSSValueList* value_list) {
   int number_of_tracks = 0;
   for (auto& value : *value_list) {
-    if (value->IsGridLineNamesValue())
+    if (value->IsGridLineNamesValue()) {
       continue;
+    }
     if (auto* repeat_value =
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(*value)) {
       number_of_tracks +=

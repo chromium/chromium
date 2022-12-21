@@ -53,8 +53,9 @@ static String StringForPosition(const NamedGridAreaMap& grid_area_map,
   for (const auto& item : grid_area_map) {
     const GridArea& area = item.value;
     if (row >= area.rows.StartLine() && row < area.rows.EndLine() &&
-        column >= area.columns.StartLine() && column < area.columns.EndLine())
+        column >= area.columns.StartLine() && column < area.columns.EndLine()) {
       return item.key;
+    }
   }
 
   return ".";
@@ -66,12 +67,14 @@ String CSSGridTemplateAreasValue::CustomCSSText() const {
     builder.Append('"');
     for (wtf_size_t column = 0; column < column_count_; ++column) {
       builder.Append(StringForPosition(grid_area_map_, row, column));
-      if (column != column_count_ - 1)
+      if (column != column_count_ - 1) {
         builder.Append(' ');
+      }
     }
     builder.Append('"');
-    if (row != row_count_ - 1)
+    if (row != row_count_ - 1) {
       builder.Append(' ');
+    }
   }
   return builder.ReleaseString();
 }

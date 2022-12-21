@@ -40,8 +40,9 @@ class CORE_EXPORT ComputedStyleUtils {
   inline static CSSValue* ZoomAdjustedPixelValueOrAuto(
       const Length& length,
       const ComputedStyle& style) {
-    if (length.IsAuto())
+    if (length.IsAuto()) {
       return CSSIdentifierValue::Create(CSSValueID::kAuto);
+    }
     return ZoomAdjustedPixelValue(length.Value(), style);
   }
 

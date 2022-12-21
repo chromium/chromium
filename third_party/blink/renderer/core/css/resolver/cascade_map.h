@@ -198,10 +198,11 @@ CascadeMap::CascadePriorityList::Iterator::operator->() const {
 
 inline CascadeMap::CascadePriorityList::Iterator&
 CascadeMap::CascadePriorityList::Iterator::operator++() {
-  if (!backing_node_->next_index)
+  if (!backing_node_->next_index) {
     backing_node_ = nullptr;
-  else
+  } else {
     backing_node_ = &backing_vector_->at(backing_node_->next_index - 1);
+  }
   return *this;
 }
 
@@ -215,8 +216,9 @@ inline bool CascadeMap::CascadePriorityList::Iterator::operator!=(
 inline CascadeMap::CascadePriorityList::Iterator
 CascadeMap::CascadePriorityList ::Begin(
     const BackingVector& backing_vector) const {
-  if (!head_index_)
+  if (!head_index_) {
     return Iterator(&backing_vector, nullptr);
+  }
   return Iterator(&backing_vector, &backing_vector[head_index_ - 1]);
 }
 

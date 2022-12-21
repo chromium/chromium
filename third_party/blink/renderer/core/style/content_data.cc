@@ -116,8 +116,9 @@ LayoutObject* QuoteContentData::CreateLayoutObject(
     LegacyLayout legacy) const {
   LayoutObject* layout_object =
       MakeGarbageCollected<LayoutQuote>(pseudo, quote_);
-  if (legacy == LegacyLayout::kForce)
+  if (legacy == LegacyLayout::kForce) {
     layout_object->SetForceLegacyLayout();
+  }
   layout_object->SetPseudoElementStyle(&pseudo_style);
   return layout_object;
 }

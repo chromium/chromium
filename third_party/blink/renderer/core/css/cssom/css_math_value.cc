@@ -11,8 +11,9 @@ namespace blink {
 
 const CSSValue* CSSMathValue::ToCSSValue() const {
   CSSMathExpressionNode* node = ToCalcExpressionNode();
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
   return CSSMathFunctionValue::Create(node);
 }
 

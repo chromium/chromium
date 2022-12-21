@@ -48,8 +48,9 @@ bool NGGridTrackRepeater::operator==(const NGGridTrackRepeater& other) const {
 wtf_size_t NGGridTrackList::RepeatCount(const wtf_size_t index,
                                         const wtf_size_t auto_value) const {
   DCHECK_LT(index, RepeaterCount());
-  if (index == auto_repeater_index_)
+  if (index == auto_repeater_index_) {
     return auto_value;
+  }
   return repeaters_[index].repeat_count;
 }
 
@@ -96,8 +97,9 @@ bool NGGridTrackList::AddRepeater(
     const Vector<GridTrackSize, 1>& repeater_track_sizes,
     NGGridTrackRepeater::RepeatType repeat_type,
     wtf_size_t repeat_count) {
-  if (repeat_count == 0u || repeater_track_sizes.empty())
+  if (repeat_count == 0u || repeater_track_sizes.empty()) {
     return false;
+  }
 
   // If the repeater is auto or there isn't a repeater, the repeat_count should
   // be 1.
@@ -110,14 +112,16 @@ bool NGGridTrackList::AddRepeater(
   switch (repeat_type) {
     case NGGridTrackRepeater::RepeatType::kNoRepeat:
     case NGGridTrackRepeater::RepeatType::kInteger:
-      if (repeat_size > AvailableTrackCount() / repeat_count)
+      if (repeat_size > AvailableTrackCount() / repeat_count) {
         return false;
+      }
       track_count_without_auto_repeat_ += repeat_size * repeat_count;
       break;
     case NGGridTrackRepeater::RepeatType::kAutoFill:
     case NGGridTrackRepeater::RepeatType::kAutoFit:  // Intentional Fallthrough.
-      if (HasAutoRepeater() || repeat_size > AvailableTrackCount())
+      if (HasAutoRepeater() || repeat_size > AvailableTrackCount()) {
         return false;
+      }
       // Update auto repeater index and append repeater.
       auto_repeater_index_ = repeaters_.size();
       break;
@@ -135,8 +139,9 @@ String NGGridTrackList::ToString() const {
   for (wtf_size_t i = 0; i < repeaters_.size(); ++i) {
     builder.Append(" ");
     builder.Append(repeaters_[i].ToString());
-    if (i + 1 != repeaters_.size())
+    if (i + 1 != repeaters_.size()) {
       builder.Append(", ");
+    }
   }
   builder.Append(" } ");
   return builder.ToString();
@@ -170,16 +175,18 @@ GridTrackList::GridTrackList(const GridTrackList& other) {
 }
 
 GridTrackList::GridTrackList(const GridTrackSize& default_track_size) {
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     ng_track_list_.AddRepeater({default_track_size});
+  }
 
   legacy_track_list_.push_back(default_track_size);
 }
 
 GridTrackList::GridTrackList(Vector<GridTrackSize, 1>& legacy_tracks)
     : legacy_track_list_(std::move(legacy_tracks)) {
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     ng_track_list_.AddRepeater(legacy_track_list_);
+  }
 }
 
 Vector<GridTrackSize, 1>& GridTrackList::LegacyTrackList() {
@@ -209,8 +216,9 @@ void GridTrackList::operator=(const GridTrackList& other) {
 }
 
 bool GridTrackList::operator==(const GridTrackList& other) const {
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     return ng_track_list_ == other.ng_track_list_;
+  }
 
   return LegacyTrackList() == other.LegacyTrackList();
 }
@@ -220,8 +228,9 @@ bool GridTrackList::operator!=(const GridTrackList& other) const {
 }
 
 void GridTrackList::AssignFrom(const GridTrackList& other) {
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     ng_track_list_ = other.ng_track_list_;
+  }
 
   legacy_track_list_ = other.legacy_track_list_;
 }

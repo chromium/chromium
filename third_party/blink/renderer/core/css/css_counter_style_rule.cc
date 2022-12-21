@@ -115,62 +115,72 @@ String CSSCounterStyleRule::name() const {
 }
 
 String CSSCounterStyleRule::system() const {
-  if (const CSSValue* value = counter_style_rule_->GetSystem())
+  if (const CSSValue* value = counter_style_rule_->GetSystem()) {
     return value->CssText();
+  }
   return String();
 }
 
 String CSSCounterStyleRule::symbols() const {
-  if (const CSSValue* value = counter_style_rule_->GetSymbols())
+  if (const CSSValue* value = counter_style_rule_->GetSymbols()) {
     return value->CssText();
+  }
   return String();
 }
 
 String CSSCounterStyleRule::additiveSymbols() const {
-  if (const CSSValue* value = counter_style_rule_->GetAdditiveSymbols())
+  if (const CSSValue* value = counter_style_rule_->GetAdditiveSymbols()) {
     return value->CssText();
+  }
   return String();
 }
 
 String CSSCounterStyleRule::negative() const {
-  if (const CSSValue* value = counter_style_rule_->GetNegative())
+  if (const CSSValue* value = counter_style_rule_->GetNegative()) {
     return value->CssText();
+  }
   return String();
 }
 
 String CSSCounterStyleRule::prefix() const {
-  if (const CSSValue* value = counter_style_rule_->GetPrefix())
+  if (const CSSValue* value = counter_style_rule_->GetPrefix()) {
     return value->CssText();
+  }
   return String();
 }
 
 String CSSCounterStyleRule::suffix() const {
-  if (const CSSValue* value = counter_style_rule_->GetSuffix())
+  if (const CSSValue* value = counter_style_rule_->GetSuffix()) {
     return value->CssText();
+  }
   return String();
 }
 
 String CSSCounterStyleRule::range() const {
-  if (const CSSValue* value = counter_style_rule_->GetRange())
+  if (const CSSValue* value = counter_style_rule_->GetRange()) {
     return value->CssText();
+  }
   return String();
 }
 
 String CSSCounterStyleRule::pad() const {
-  if (const CSSValue* value = counter_style_rule_->GetPad())
+  if (const CSSValue* value = counter_style_rule_->GetPad()) {
     return value->CssText();
+  }
   return String();
 }
 
 String CSSCounterStyleRule::speakAs() const {
-  if (const CSSValue* value = counter_style_rule_->GetSpeakAs())
+  if (const CSSValue* value = counter_style_rule_->GetSpeakAs()) {
     return value->CssText();
+  }
   return String();
 }
 
 String CSSCounterStyleRule::fallback() const {
-  if (const CSSValue* value = counter_style_rule_->GetFallback())
+  if (const CSSValue* value = counter_style_rule_->GetFallback()) {
     return value->CssText();
+  }
   return String();
 }
 
@@ -187,8 +197,9 @@ void CSSCounterStyleRule::SetterInternal(
   CSSValue* new_value = AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
       descriptor_id, token_range, context);
   if (!new_value ||
-      !counter_style_rule_->NewValueInvalidOrEqual(descriptor_id, new_value))
+      !counter_style_rule_->NewValueInvalidOrEqual(descriptor_id, new_value)) {
     return;
+  }
 
   // TODO(xiaochengh): RuleMutationScope causes all rules of the tree scope to
   // be re-collected and the entire CounterStyleMap rebuilt, while we only need
@@ -196,8 +207,9 @@ void CSSCounterStyleRule::SetterInternal(
   CSSStyleSheet::RuleMutationScope rule_mutation_scope(this);
 
   counter_style_rule_->SetDescriptorValue(descriptor_id, new_value);
-  if (Document* document = style_sheet->OwnerDocument())
+  if (Document* document = style_sheet->OwnerDocument()) {
     document->GetStyleEngine().MarkCounterStylesNeedUpdate();
+  }
 }
 
 void CSSCounterStyleRule::setName(const ExecutionContext* execution_context,
@@ -210,16 +222,18 @@ void CSSCounterStyleRule::setName(const ExecutionContext* execution_context,
   CSSParserTokenRange token_range(tokens);
   AtomicString name =
       css_parsing_utils::ConsumeCounterStyleNameInPrelude(token_range, context);
-  if (!name || name == counter_style_rule_->GetName())
+  if (!name || name == counter_style_rule_->GetName()) {
     return;
+  }
 
   // Changing name may affect cascade result, which requires re-collecting all
   // the rules and re-constructing the CounterStyleMap to handle.
   CSSStyleSheet::RuleMutationScope rule_mutation_scope(this);
 
   counter_style_rule_->SetName(name);
-  if (Document* document = style_sheet->OwnerDocument())
+  if (Document* document = style_sheet->OwnerDocument()) {
     document->GetStyleEngine().MarkCounterStylesNeedUpdate();
+  }
 }
 
 void CSSCounterStyleRule::setSystem(const ExecutionContext* execution_context,

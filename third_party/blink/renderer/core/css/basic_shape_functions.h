@@ -37,7 +37,7 @@
 namespace gfx {
 class PointF;
 class SizeF;
-}
+}  // namespace gfx
 
 namespace blink {
 

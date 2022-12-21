@@ -24,4 +24,4 @@ namespace blink {
 MediaQueryListListener::MediaQueryListListener() {
   // only for use by subclasses
 }
-}
+}  // namespace blink

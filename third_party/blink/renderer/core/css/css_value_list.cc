@@ -55,8 +55,9 @@ bool CSSValueList::RemoveAll(const CSSValue& val) {
 
 bool CSSValueList::HasValue(const CSSValue& val) const {
   for (const auto& value : values_) {
-    if (value && *value == val)
+    if (value && *value == val) {
       return true;
+    }
   }
   return false;
 }
@@ -98,8 +99,9 @@ String CSSValueList::CustomCSSText() const {
 
   StringBuilder result;
   for (const auto& value : values_) {
-    if (!result.empty())
+    if (!result.empty()) {
       result.Append(separator);
+    }
     // TODO(crbug.com/1213338): value_[i] can be null by CSSMathExpressionNode
     // which is implemented by css-values-3. Until fully implement the
     // css-values-4 features, we should append empty string to remove
@@ -116,23 +118,26 @@ bool CSSValueList::Equals(const CSSValueList& other) const {
 
 bool CSSValueList::HasFailedOrCanceledSubresources() const {
   for (const auto& value : values_) {
-    if (value->HasFailedOrCanceledSubresources())
+    if (value->HasFailedOrCanceledSubresources()) {
       return true;
+    }
   }
   return false;
 }
 
 bool CSSValueList::MayContainUrl() const {
   for (const auto& value : values_) {
-    if (value->MayContainUrl())
+    if (value->MayContainUrl()) {
       return true;
+    }
   }
   return false;
 }
 
 void CSSValueList::ReResolveUrl(const Document& document) const {
-  for (const auto& value : values_)
+  for (const auto& value : values_) {
     value->ReResolveUrl(document);
+  }
 }
 
 void CSSValueList::TraceAfterDispatch(blink::Visitor* visitor) const {

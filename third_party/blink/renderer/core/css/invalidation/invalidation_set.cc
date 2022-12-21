@@ -49,11 +49,13 @@ bool BackingEqual(const InvalidationSet::BackingFlags& a_flags,
                   const InvalidationSet::Backing<type>& a,
                   const InvalidationSet::BackingFlags& b_flags,
                   const InvalidationSet::Backing<type>& b) {
-  if (a.Size(a_flags) != b.Size(b_flags))
+  if (a.Size(a_flags) != b.Size(b_flags)) {
     return false;
+  }
   for (const AtomicString& value : a.Items(a_flags)) {
-    if (!b.Contains(b_flags, value))
+    if (!b.Contains(b_flags, value)) {
       return false;
+    }
   }
   return true;
 }
@@ -74,8 +76,9 @@ void InvalidationSetDeleter::Destruct(const InvalidationSet* obj) {
 }
 
 bool InvalidationSet::operator==(const InvalidationSet& other) const {
-  if (GetType() != other.GetType())
+  if (GetType() != other.GetType()) {
     return false;
+  }
 
   if (GetType() == InvalidationType::kInvalidateSiblings) {
     const auto& this_sibling = To<SiblingInvalidationSet>(*this);
@@ -90,10 +93,12 @@ bool InvalidationSet::operator==(const InvalidationSet& other) const {
     }
   }
 
-  if (invalidation_flags_ != other.invalidation_flags_)
+  if (invalidation_flags_ != other.invalidation_flags_) {
     return false;
-  if (invalidates_self_ != other.invalidates_self_)
+  }
+  if (invalidates_self_ != other.invalidates_self_) {
     return false;
+  }
 
   return BackingEqual(backing_flags_, classes_, other.backing_flags_,
                       other.classes_) &&
@@ -115,8 +120,9 @@ InvalidationSet::InvalidationSet(InvalidationType type)
       is_alive_(true) {}
 
 bool InvalidationSet::InvalidatesElement(Element& element) const {
-  if (invalidation_flags_.WholeSubtreeInvalid())
+  if (invalidation_flags_.WholeSubtreeInvalid()) {
     return true;
+  }
 
   if (HasTagNames() && HasTagName(element.LocalNameForSelectorMatching())) {
     TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
@@ -192,62 +198,76 @@ void InvalidationSet::Combine(const InvalidationSet& other) {
 
     siblings.UpdateMaxDirectAdjacentSelectors(
         other_siblings.MaxDirectAdjacentSelectors());
-    if (other_siblings.SiblingDescendants())
+    if (other_siblings.SiblingDescendants()) {
       siblings.EnsureSiblingDescendants().Combine(
           *other_siblings.SiblingDescendants());
-    if (other_siblings.Descendants())
+    }
+    if (other_siblings.Descendants()) {
       siblings.EnsureDescendants().Combine(*other_siblings.Descendants());
+    }
   }
 
   if (other.InvalidatesSelf()) {
     SetInvalidatesSelf();
-    if (other.IsSelfInvalidationSet())
+    if (other.IsSelfInvalidationSet()) {
       return;
+    }
   }
 
   // No longer bother combining data structures, since the whole subtree is
   // deemed invalid.
-  if (WholeSubtreeInvalid())
+  if (WholeSubtreeInvalid()) {
     return;
+  }
 
   if (other.WholeSubtreeInvalid()) {
     SetWholeSubtreeInvalid();
     return;
   }
 
-  if (other.CustomPseudoInvalid())
+  if (other.CustomPseudoInvalid()) {
     SetCustomPseudoInvalid();
+  }
 
-  if (other.TreeBoundaryCrossing())
+  if (other.TreeBoundaryCrossing()) {
     SetTreeBoundaryCrossing();
+  }
 
-  if (other.InsertionPointCrossing())
+  if (other.InsertionPointCrossing()) {
     SetInsertionPointCrossing();
+  }
 
-  if (other.InvalidatesSlotted())
+  if (other.InvalidatesSlotted()) {
     SetInvalidatesSlotted();
+  }
 
-  if (other.InvalidatesParts())
+  if (other.InvalidatesParts()) {
     SetInvalidatesParts();
+  }
 
-  for (const auto& class_name : other.Classes())
+  for (const auto& class_name : other.Classes()) {
     AddClass(class_name);
+  }
 
-  for (const auto& id : other.Ids())
+  for (const auto& id : other.Ids()) {
     AddId(id);
+  }
 
-  for (const auto& tag_name : other.TagNames())
+  for (const auto& tag_name : other.TagNames()) {
     AddTagName(tag_name);
+  }
 
-  for (const auto& attribute : other.Attributes())
+  for (const auto& attribute : other.Attributes()) {
     AddAttribute(attribute);
+  }
 }
 
 void InvalidationSet::Destroy() const {
-  if (auto* invalidation_set = DynamicTo<DescendantInvalidationSet>(this))
+  if (auto* invalidation_set = DynamicTo<DescendantInvalidationSet>(this)) {
     delete invalidation_set;
-  else
+  } else {
     delete To<SiblingInvalidationSet>(this);
+  }
 }
 
 void InvalidationSet::ClearAllBackings() {
@@ -268,15 +288,17 @@ StringImpl* InvalidationSet::FindAnyClass(Element& element) const {
   wtf_size_t size = class_names.size();
   if (StringImpl* string_impl = classes_.GetStringImpl(backing_flags_)) {
     for (wtf_size_t i = 0; i < size; ++i) {
-      if (Equal(string_impl, class_names[i].Impl()))
+      if (Equal(string_impl, class_names[i].Impl())) {
         return string_impl;
+      }
     }
   }
   if (const HashSet<AtomicString>* set = classes_.GetHashSet(backing_flags_)) {
     for (wtf_size_t i = 0; i < size; ++i) {
       auto item = set->find(class_names[i]);
-      if (item != set->end())
+      if (item != set->end()) {
         return item->Impl();
+      }
     }
   }
   return nullptr;
@@ -284,50 +306,57 @@ StringImpl* InvalidationSet::FindAnyClass(Element& element) const {
 
 StringImpl* InvalidationSet::FindAnyAttribute(Element& element) const {
   if (StringImpl* string_impl = attributes_.GetStringImpl(backing_flags_)) {
-    if (element.HasAttributeIgnoringNamespace(AtomicString(string_impl)))
+    if (element.HasAttributeIgnoringNamespace(AtomicString(string_impl))) {
       return string_impl;
+    }
   }
   if (const HashSet<AtomicString>* set =
           attributes_.GetHashSet(backing_flags_)) {
     for (const auto& attribute : *set) {
-      if (element.HasAttributeIgnoringNamespace(attribute))
+      if (element.HasAttributeIgnoringNamespace(attribute)) {
         return attribute.Impl();
+      }
     }
   }
   return nullptr;
 }
 
 void InvalidationSet::AddClass(const AtomicString& class_name) {
-  if (WholeSubtreeInvalid())
+  if (WholeSubtreeInvalid()) {
     return;
+  }
   CHECK(!class_name.empty());
   classes_.Add(backing_flags_, class_name);
 }
 
 void InvalidationSet::AddId(const AtomicString& id) {
-  if (WholeSubtreeInvalid())
+  if (WholeSubtreeInvalid()) {
     return;
+  }
   CHECK(!id.empty());
   ids_.Add(backing_flags_, id);
 }
 
 void InvalidationSet::AddTagName(const AtomicString& tag_name) {
-  if (WholeSubtreeInvalid())
+  if (WholeSubtreeInvalid()) {
     return;
+  }
   CHECK(!tag_name.empty());
   tag_names_.Add(backing_flags_, tag_name);
 }
 
 void InvalidationSet::AddAttribute(const AtomicString& attribute) {
-  if (WholeSubtreeInvalid())
+  if (WholeSubtreeInvalid()) {
     return;
+  }
   CHECK(!attribute.empty());
   attributes_.Add(backing_flags_, attribute);
 }
 
 void InvalidationSet::SetWholeSubtreeInvalid() {
-  if (invalidation_flags_.WholeSubtreeInvalid())
+  if (invalidation_flags_.WholeSubtreeInvalid()) {
     return;
+  }
 
   invalidation_flags_.SetWholeSubtreeInvalid(true);
   invalidation_flags_.SetInvalidateCustomPseudo(false);
@@ -370,18 +399,24 @@ void InvalidationSet::WriteIntoTrace(perfetto::TracedValue context) const {
 
   dict.Add("id", DescendantInvalidationSetToIdString(*this));
 
-  if (invalidation_flags_.WholeSubtreeInvalid())
+  if (invalidation_flags_.WholeSubtreeInvalid()) {
     dict.Add("allDescendantsMightBeInvalid", true);
-  if (invalidation_flags_.InvalidateCustomPseudo())
+  }
+  if (invalidation_flags_.InvalidateCustomPseudo()) {
     dict.Add("customPseudoInvalid", true);
-  if (invalidation_flags_.TreeBoundaryCrossing())
+  }
+  if (invalidation_flags_.TreeBoundaryCrossing()) {
     dict.Add("treeBoundaryCrossing", true);
-  if (invalidation_flags_.InsertionPointCrossing())
+  }
+  if (invalidation_flags_.InsertionPointCrossing()) {
     dict.Add("insertionPointCrossing", true);
-  if (invalidation_flags_.InvalidatesSlotted())
+  }
+  if (invalidation_flags_.InvalidatesSlotted()) {
     dict.Add("invalidatesSlotted", true);
-  if (invalidation_flags_.InvalidatesParts())
+  }
+  if (invalidation_flags_.InvalidatesParts()) {
     dict.Add("invalidatesParts", true);
+  }
 
   if (HasIds()) {
     dict.Add("ids", Ids());
@@ -405,13 +440,15 @@ String InvalidationSet::ToString() const {
     StringBuilder builder;
 
     Vector<AtomicString> names;
-    for (const auto& str : range)
+    for (const auto& str : range) {
       names.push_back(str);
+    }
     std::sort(names.begin(), names.end(), WTF::CodeUnitCompareLessThan);
 
     for (const auto& name : names) {
-      if (!builder.empty())
+      if (!builder.empty()) {
         builder.Append(" ");
+      }
       builder.Append(prefix);
       builder.Append(name);
       builder.Append(suffix);
@@ -422,8 +459,9 @@ String InvalidationSet::ToString() const {
 
   StringBuilder features;
 
-  if (HasIds())
+  if (HasIds()) {
     features.Append(format_backing(Ids(), "#", ""));
+  }
   if (HasClasses()) {
     features.Append(!features.empty() ? " " : "");
     features.Append(format_backing(Classes(), ".", ""));
@@ -439,13 +477,16 @@ String InvalidationSet::ToString() const {
 
   auto format_max_direct_adjancent = [](const InvalidationSet* set) -> String {
     const auto* sibling = DynamicTo<SiblingInvalidationSet>(set);
-    if (!sibling)
+    if (!sibling) {
       return g_empty_atom;
+    }
     unsigned max = sibling->MaxDirectAdjacentSelectors();
-    if (max == SiblingInvalidationSet::kDirectAdjacentMax)
+    if (max == SiblingInvalidationSet::kDirectAdjacentMax) {
       return "~";
-    if (max != 1)
+    }
+    if (max != 1) {
       return String::Number(max);
+    }
     return g_empty_atom;
   };
 
@@ -485,14 +526,16 @@ SiblingInvalidationSet::SiblingInvalidationSet()
       max_direct_adjacent_selectors_(kDirectAdjacentMax) {}
 
 DescendantInvalidationSet& SiblingInvalidationSet::EnsureSiblingDescendants() {
-  if (!sibling_descendant_invalidation_set_)
+  if (!sibling_descendant_invalidation_set_) {
     sibling_descendant_invalidation_set_ = DescendantInvalidationSet::Create();
+  }
   return *sibling_descendant_invalidation_set_;
 }
 
 DescendantInvalidationSet& SiblingInvalidationSet::EnsureDescendants() {
-  if (!descendant_invalidation_set_)
+  if (!descendant_invalidation_set_) {
     descendant_invalidation_set_ = DescendantInvalidationSet::Create();
+  }
   return *descendant_invalidation_set_;
 }
 

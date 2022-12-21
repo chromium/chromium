@@ -71,8 +71,9 @@ inline void CollectElementIdentifierHashes(
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
     auto attribute_name = attribute_item.LocalName();
-    if (IsExcludedAttribute(attribute_name))
+    if (IsExcludedAttribute(attribute_name)) {
       continue;
+    }
     auto lower = attribute_name.IsLowerASCII() ? attribute_name
                                                : attribute_name.LowerASCII();
     identifier_hashes.push_back(lower.Impl()->ExistingHash() * kAttributeSalt);
@@ -91,12 +92,14 @@ inline void CollectDescendantSelectorIdentifierHashes(
     unsigned* end) {
   switch (selector.Match()) {
     case CSSSelector::kId:
-      if (!selector.Value().empty())
+      if (!selector.Value().empty()) {
         (*hash++) = selector.Value().Impl()->ExistingHash() * kIdSalt;
+      }
       break;
     case CSSSelector::kClass:
-      if (!selector.Value().empty())
+      if (!selector.Value().empty()) {
         (*hash++) = selector.Value().Impl()->ExistingHash() * kClassSalt;
+      }
       break;
     case CSSSelector::kTag:
       if (selector.TagQName().LocalName() !=
@@ -113,8 +116,9 @@ inline void CollectDescendantSelectorIdentifierHashes(
     case CSSSelector::kAttributeEnd:
     case CSSSelector::kAttributeHyphen: {
       auto attribute_name = selector.Attribute().LocalName();
-      if (IsExcludedAttribute(attribute_name))
+      if (IsExcludedAttribute(attribute_name)) {
         break;
+      }
       auto lower_name = attribute_name.IsLowerASCII()
                             ? attribute_name
                             : attribute_name.LowerASCII();
@@ -156,8 +160,9 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
     // Only collect identifiers that match ancestors.
     switch (relation) {
       case CSSSelector::kSubSelector:
-        if (!skip_over_subselectors)
+        if (!skip_over_subselectors) {
           CollectDescendantSelectorIdentifierHashes(*current, hash, end);
+        }
         break;
       case CSSSelector::kDirectAdjacent:
       case CSSSelector::kIndirectAdjacent:
@@ -178,8 +183,9 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
         NOTREACHED();
         break;
     }
-    if (hash == end)
+    if (hash == end) {
       return;
+    }
     relation = current->Relation();
   }
 }
@@ -197,8 +203,9 @@ void SelectorFilter::PushParentStackFrame(Element& parent) {
   // The filter is used for fast rejection of child and descendant selectors.
   CollectElementIdentifierHashes(parent, parent_frame.identifier_hashes);
   wtf_size_t count = parent_frame.identifier_hashes.size();
-  for (wtf_size_t i = 0; i < count; ++i)
+  for (wtf_size_t i = 0; i < count; ++i) {
     ancestor_identifier_filter_->Add(parent_frame.identifier_hashes[i]);
+  }
 }
 
 void SelectorFilter::PopParentStackFrame() {
@@ -206,8 +213,9 @@ void SelectorFilter::PopParentStackFrame() {
   DCHECK(ancestor_identifier_filter_);
   const ParentStackFrame& parent_frame = parent_stack_.back();
   wtf_size_t count = parent_frame.identifier_hashes.size();
-  for (wtf_size_t i = 0; i < count; ++i)
+  for (wtf_size_t i = 0; i < count; ++i) {
     ancestor_identifier_filter_->Remove(parent_frame.identifier_hashes[i]);
+  }
   parent_stack_.pop_back();
   if (parent_stack_.empty()) {
 #if DCHECK_IS_ON()
@@ -230,8 +238,10 @@ void SelectorFilter::PushParent(Element& parent) {
   DCHECK(ancestor_identifier_filter_);
   // We may get invoked for some random elements in some wacky cases during
   // style resolve. Pause maintaining the stack in this case.
-  if (parent_stack_.back().element != FlatTreeTraversal::ParentElement(parent))
+  if (parent_stack_.back().element !=
+      FlatTreeTraversal::ParentElement(parent)) {
     return;
+  }
   PushParentStackFrame(parent);
 }
 
@@ -240,8 +250,9 @@ void SelectorFilter::PopParent(Element& parent) {
   DCHECK(parent.InActiveDocument());
   // Note that we may get invoked for some random elements in some wacky cases
   // during style resolve. Pause maintaining the stack in this case.
-  if (!ParentStackIsConsistent(&parent))
+  if (!ParentStackIsConsistent(&parent)) {
     return;
+  }
   PopParentStackFrame();
 }
 

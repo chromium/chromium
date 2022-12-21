@@ -33,8 +33,9 @@ const CSSValue* MaybeConsumeCSSWideKeyword(CSSParserTokenRange& range) {
   CSSParserTokenRange original_range = range;
 
   if (CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(range)) {
-    if (range.AtEnd())
+    if (range.AtEnd()) {
       return value;
+    }
   }
 
   range = original_range;
@@ -89,11 +90,13 @@ bool CSSPropertyParser::ParseValue(
   }
 
   // This doesn't count UA style sheets
-  if (parse_success)
+  if (parse_success) {
     context->Count(context->Mode(), unresolved_property);
+  }
 
-  if (!parse_success)
+  if (!parse_success) {
     parsed_properties.Shrink(parsed_properties_size);
+  }
 
   return parse_success;
 }
@@ -105,31 +108,36 @@ const CSSValue* CSSPropertyParser::ParseSingleValue(
   DCHECK(context);
   range.ConsumeWhitespace();
 
-  if (const CSSValue* value = MaybeConsumeCSSWideKeyword(range))
+  if (const CSSValue* value = MaybeConsumeCSSWideKeyword(range)) {
     return value;
+  }
 
   const CSSValue* value =
       ParseLonghand(property, CSSPropertyID::kInvalid, *context, range);
-  if (!value || !range.AtEnd())
+  if (!value || !range.AtEnd()) {
     return nullptr;
+  }
   return value;
 }
 
 bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
                                         StyleRule::RuleType rule_type,
                                         bool important) {
-  if (ConsumeCSSWideKeyword(unresolved_property, important, rule_type))
+  if (ConsumeCSSWideKeyword(unresolved_property, important, rule_type)) {
     return true;
+  }
 
   CSSParserTokenRange original_range = range_;
   CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
   const CSSProperty& property = CSSProperty::Get(property_id);
   // If a CSSPropertyID is only a known descriptor (@fontface, @property), not a
   // style property, it will not be a valid declaration.
-  if (!property.IsProperty())
+  if (!property.IsProperty()) {
     return false;
-  if (!IsPropertyAllowedInRule(property, rule_type))
+  }
+  if (!IsPropertyAllowedInRule(property, rule_type)) {
     return false;
+  }
   bool is_shorthand = property.IsShorthand();
   DCHECK(context_);
   if (is_shorthand) {
@@ -140,8 +148,9 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
     // Variable references will fail to parse here and will fall out to the
     // variable ref parser below.
     if (To<Shorthand>(property).ParseShorthand(
-            important, range_, *context_, local_context, *parsed_properties_))
+            important, range_, *context_, local_context, *parsed_properties_)) {
       return true;
+    }
   } else {
     if (const CSSValue* parsed_value = ParseLonghand(
             unresolved_property, CSSPropertyID::kInvalid, *context_, range_)) {
@@ -196,8 +205,9 @@ static inline bool QuasiLowercaseIntoBuffer(const UChar* src,
                                             char* dst) {
   for (unsigned i = 0; i < length; ++i) {
     UChar c = src[i];
-    if (c == 0 || c >= 0x7F)  // illegal character
+    if (c == 0 || c >= 0x7F) {  // illegal character
       return false;
+    }
     dst[i] = ToASCIILower(c);
   }
   dst[length] = '\0';
@@ -268,12 +278,15 @@ static CSSPropertyID UnresolvedCSSPropertyID(
     const CharacterType* property_name,
     unsigned length,
     CSSParserMode mode) {
-  if (length == 0)
+  if (length == 0) {
     return CSSPropertyID::kInvalid;
-  if (length >= 3 && property_name[0] == '-' && property_name[1] == '-')
+  }
+  if (length >= 3 && property_name[0] == '-' && property_name[1] == '-') {
     return CSSPropertyID::kVariable;
-  if (length > kMaxCSSPropertyNameLength)
+  }
+  if (length > kMaxCSSPropertyNameLength) {
     return CSSPropertyID::kInvalid;
+  }
 
   char buffer[kMaxCSSPropertyNameLength + 1];  // 1 for null character
   if (!QuasiLowercaseIntoBuffer(property_name, length, buffer)) {
@@ -344,10 +357,12 @@ static CSSValueID CssValueKeywordID(const CharacterType* value_keyword,
 
 CSSValueID CssValueKeywordID(StringView string) {
   unsigned length = string.length();
-  if (!length)
+  if (!length) {
     return CSSValueID::kInvalid;
-  if (length > maxCSSValueKeywordLength)
+  }
+  if (length > maxCSSValueKeywordLength) {
     return CSSValueID::kInvalid;
+  }
 
   return string.Is8Bit() ? CssValueKeywordID(string.Characters8(), length)
                          : CssValueKeywordID(string.Characters16(), length);
@@ -359,20 +374,23 @@ bool CSSPropertyParser::ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
   CSSParserTokenRange range_copy = range_;
 
   const CSSValue* value = MaybeConsumeCSSWideKeyword(range_copy);
-  if (!value)
+  if (!value) {
     return false;
+  }
 
   if (value->IsRevertValue() || value->IsRevertLayerValue()) {
     // Declarations in @try are not cascaded and cannot be reverted.
-    if (rule_type == StyleRule::kTry)
+    if (rule_type == StyleRule::kTry) {
       return false;
+    }
   }
 
   CSSPropertyID property = ResolveCSSPropertyID(unresolved_property);
   const StylePropertyShorthand& shorthand = shorthandForProperty(property);
   if (!shorthand.length()) {
-    if (!CSSProperty::Get(property).IsProperty())
+    if (!CSSProperty::Get(property).IsProperty()) {
       return false;
+    }
     AddProperty(property, CSSPropertyID::kInvalid, *value, important,
                 IsImplicitProperty::kNotImplicit, *parsed_properties_);
   } else {
@@ -388,12 +406,14 @@ bool CSSPropertyParser::ParseFontFaceDescriptor(
   // TODO(meade): This function should eventually take an AtRuleDescriptorID.
   const AtRuleDescriptorID id =
       CSSPropertyIDAsAtRuleDescriptor(resolved_property);
-  if (id == AtRuleDescriptorID::Invalid)
+  if (id == AtRuleDescriptorID::Invalid) {
     return false;
+  }
   CSSValue* parsed_value =
       AtRuleDescriptorParser::ParseFontFaceDescriptor(id, range_, *context_);
-  if (!parsed_value)
+  if (!parsed_value) {
     return false;
+  }
 
   AddProperty(resolved_property,
               CSSPropertyID::kInvalid /* current_shorthand */, *parsed_value,

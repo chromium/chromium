@@ -261,8 +261,9 @@ TEST_P(CSSPaintValueTest, CustomInvalidationPropertiesWithNoGenerator) {
 }
 
 TEST_P(CSSPaintValueTest, PrintingMustFallbackToMainThread) {
-  if (!RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled())
+  if (!RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
     return;
+  }
 
   NiceMock<MockCSSPaintImageGenerator>* mock_generator =
       MakeGarbageCollected<NiceMock<MockCSSPaintImageGenerator>>();

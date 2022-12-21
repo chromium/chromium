@@ -396,8 +396,10 @@ inline const CSSValue& CSSPropertyValueSet::PropertyReference::PropertyValue()
 }
 
 inline unsigned CSSPropertyValueSet::PropertyCount() const {
-  if (auto* mutable_property_set = DynamicTo<MutableCSSPropertyValueSet>(this))
+  if (auto* mutable_property_set =
+          DynamicTo<MutableCSSPropertyValueSet>(this)) {
     return mutable_property_set->property_vector_.size();
+  }
   return array_size_;
 }
 
@@ -407,8 +409,10 @@ inline bool CSSPropertyValueSet::IsEmpty() const {
 
 template <typename T>
 inline int CSSPropertyValueSet::FindPropertyIndex(const T& property) const {
-  if (auto* mutable_property_set = DynamicTo<MutableCSSPropertyValueSet>(this))
+  if (auto* mutable_property_set =
+          DynamicTo<MutableCSSPropertyValueSet>(this)) {
     return mutable_property_set->FindPropertyIndex(property);
+  }
   return To<ImmutableCSSPropertyValueSet>(this)->FindPropertyIndex(property);
 }
 

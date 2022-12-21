@@ -119,8 +119,9 @@ TEST_F(StyleAdjusterTest, TouchActionRestrictedByLowerAncestor) {
 TEST_F(StyleAdjusterTest, TouchActionContentEditableArea) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
-  if (!::features::IsSwipeToMoveCursorEnabled())
+  if (!::features::IsSwipeToMoveCursorEnabled()) {
     return;
+  }
 
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   SetBodyInnerHTML(R"HTML(
@@ -171,8 +172,9 @@ TEST_F(StyleAdjusterTest, TouchActionContentEditableArea) {
 TEST_F(StyleAdjusterTest, TouchActionNoPanXScrollsWhenNoPanX) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({::features::kSwipeToMoveCursor}, {});
-  if (!::features::IsSwipeToMoveCursorEnabled())
+  if (!::features::IsSwipeToMoveCursorEnabled()) {
     return;
+  }
 
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   SetBodyInnerHTML(R"HTML(

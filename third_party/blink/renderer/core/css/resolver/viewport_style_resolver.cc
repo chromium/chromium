@@ -96,8 +96,9 @@ void ViewportStyleResolver::SetNeedsUpdate() {
 }
 
 void ViewportStyleResolver::UpdateViewport() {
-  if (!needs_update_)
+  if (!needs_update_) {
     return;
+  }
   Reset();
   Resolve();
   needs_update_ = false;

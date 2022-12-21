@@ -47,13 +47,15 @@ void CSSKeyframeRule::setKeyText(const ExecutionContext* execution_context,
                                  ExceptionState& exception_state) {
   CSSStyleSheet::RuleMutationScope rule_mutation_scope(this);
 
-  if (!keyframe_->SetKeyText(execution_context, key_text))
+  if (!keyframe_->SetKeyText(execution_context, key_text)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "The key '" + key_text + "' is invalid and cannot be parsed");
+  }
 
-  if (auto* parent = To<CSSKeyframesRule>(parentRule()))
+  if (auto* parent = To<CSSKeyframesRule>(parentRule())) {
     parent->StyleChanged();
+  }
 }
 
 CSSStyleDeclaration* CSSKeyframeRule::style() const {

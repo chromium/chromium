@@ -85,8 +85,9 @@ bool HasSymbols(CounterStyleSystem system) {
 }
 
 String SymbolToString(const CSSValue& value) {
-  if (const CSSStringValue* string = DynamicTo<CSSStringValue>(value))
+  if (const CSSStringValue* string = DynamicTo<CSSStringValue>(value)) {
     return string->Value();
+  }
   return To<CSSCustomIdentValue>(value).Value();
 }
 
@@ -116,8 +117,9 @@ Vector<wtf_size_t> CyclicAlgorithm(int value, wtf_size_t num_symbols) {
   DCHECK(num_symbols);
   value %= static_cast<int>(num_symbols);
   value -= 1;
-  if (value < 0)
+  if (value < 0) {
     value += num_symbols;
+  }
   return {static_cast<wtf_size_t>(value)};
 }
 
@@ -126,28 +128,32 @@ Vector<wtf_size_t> FixedAlgorithm(int value,
                                   int first_symbol_value,
                                   wtf_size_t num_symbols) {
   if (value < first_symbol_value ||
-      static_cast<unsigned>(value - first_symbol_value) >= num_symbols)
+      static_cast<unsigned>(value - first_symbol_value) >= num_symbols) {
     return Vector<wtf_size_t>();
+  }
   return {static_cast<wtf_size_t>(value - first_symbol_value)};
 }
 
 // https://drafts.csswg.org/css-counter-styles/#symbolic-system
 Vector<wtf_size_t> SymbolicAlgorithm(unsigned value, wtf_size_t num_symbols) {
   DCHECK(num_symbols);
-  if (!value)
+  if (!value) {
     return Vector<wtf_size_t>();
+  }
   wtf_size_t index = (value - 1) % num_symbols;
   wtf_size_t repetitions = (value + num_symbols - 1) / num_symbols;
-  if (repetitions > kCounterLengthLimit)
+  if (repetitions > kCounterLengthLimit) {
     return Vector<wtf_size_t>();
+  }
   return Vector<wtf_size_t>(repetitions, index);
 }
 
 // https://drafts.csswg.org/css-counter-styles/#alphabetic-system
 Vector<wtf_size_t> AlphabeticAlgorithm(unsigned value, wtf_size_t num_symbols) {
   DCHECK(num_symbols);
-  if (!value)
+  if (!value) {
     return Vector<wtf_size_t>();
+  }
   Vector<wtf_size_t> result;
   while (value) {
     value -= 1;
@@ -164,8 +170,9 @@ Vector<wtf_size_t> AlphabeticAlgorithm(unsigned value, wtf_size_t num_symbols) {
 // https://drafts.csswg.org/css-counter-styles/#numeric-system
 Vector<wtf_size_t> NumericAlgorithm(unsigned value, wtf_size_t num_symbols) {
   DCHECK_GT(num_symbols, 1u);
-  if (!value)
+  if (!value) {
     return {0};
+  }
 
   Vector<wtf_size_t> result;
   while (value) {
@@ -184,8 +191,9 @@ Vector<wtf_size_t> AdditiveAlgorithm(unsigned value,
                                      const Vector<unsigned>& weights) {
   DCHECK(weights.size());
   if (!value) {
-    if (weights.back() == 0u)
+    if (weights.back() == 0u) {
       return {weights.size() - 1};
+    }
     return Vector<wtf_size_t>();
   }
 
@@ -194,14 +202,16 @@ Vector<wtf_size_t> AdditiveAlgorithm(unsigned value,
        ++index) {
     wtf_size_t repetitions = value / weights[index];
     if (repetitions) {
-      if (result.size() + repetitions > kCounterLengthLimit)
+      if (result.size() + repetitions > kCounterLengthLimit) {
         return Vector<wtf_size_t>();
+      }
       result.AppendVector(Vector<wtf_size_t>(repetitions, index));
     }
     value %= weights[index];
   }
-  if (value)
+  if (value) {
     return Vector<wtf_size_t>();
+  }
   return result;
 }
 
@@ -237,8 +247,9 @@ String CJKIdeoGraphicAlgorithm(unsigned number,
     kDigit9
   };
 
-  if (number == 0)
+  if (number == 0) {
     return String(&table[kDigit0], 1u);
+  }
 
   const unsigned kGroupLength =
       9;  // 4 digits, 3 digit markers, group marker of size 2.
@@ -263,37 +274,44 @@ String CJKIdeoGraphicAlgorithm(unsigned number,
     if (digit_value) {
       bool drop_one = table[kLang] == kKorean && cjk_style == kInformal &&
                       digit_value == 1 && i > 0;
-      if (!drop_one)
+      if (!drop_one) {
         group[6] = static_cast<AbstractCJKChar>(kDigit0 + (group_value % 10));
+      }
     }
     if (number != 0 || group_value > 9) {
       digit_value = ((group_value / 10) % 10);
       bool drop_one =
           table[kLang] == kKorean && cjk_style == kInformal && digit_value == 1;
-      if ((digit_value && !drop_one) || (!digit_value && !trailing_zero))
+      if ((digit_value && !drop_one) || (!digit_value && !trailing_zero)) {
         group[4] = static_cast<AbstractCJKChar>(kDigit0 + digit_value);
+      }
       trailing_zero &= !digit_value;
-      if (digit_value)
+      if (digit_value) {
         group[5] = kSecondDigitMarker;
+      }
     }
     if (number != 0 || group_value > 99) {
       digit_value = ((group_value / 100) % 10);
       bool drop_one =
           table[kLang] == kKorean && cjk_style == kInformal && digit_value == 1;
-      if ((digit_value && !drop_one) || (!digit_value && !trailing_zero))
+      if ((digit_value && !drop_one) || (!digit_value && !trailing_zero)) {
         group[2] = static_cast<AbstractCJKChar>(kDigit0 + digit_value);
+      }
       trailing_zero &= !digit_value;
-      if (digit_value)
+      if (digit_value) {
         group[3] = kThirdDigitMarker;
+      }
     }
     if (number != 0 || group_value > 999) {
       digit_value = group_value / 1000;
       bool drop_one =
           table[kLang] == kKorean && cjk_style == kInformal && digit_value == 1;
-      if ((digit_value && !drop_one) || (!digit_value && !trailing_zero))
+      if ((digit_value && !drop_one) || (!digit_value && !trailing_zero)) {
         group[0] = static_cast<AbstractCJKChar>(kDigit0 + digit_value);
-      if (digit_value)
+      }
+      if (digit_value) {
         group[1] = kFourthDigitMarker;
+      }
     }
 
     if (trailing_zero && i > 0) {
@@ -310,8 +328,9 @@ String CJKIdeoGraphicAlgorithm(unsigned number,
       group[4] = kNoChar;
     }
 
-    if (number == 0)
+    if (number == 0) {
       break;
+    }
   }
 
   // Convert into characters, omitting consecutive runs of Digit0 and
@@ -328,16 +347,18 @@ String CJKIdeoGraphicAlgorithm(unsigned number,
           characters[length++] = table[a];
           if (table[kLang] == kKorean &&
               (a == kSecondGroupMarker || a == kThirdGroupMarker ||
-               a == kFourthGroupMarker))
+               a == kFourthGroupMarker)) {
             characters[length++] = ' ';
+          }
         }
       }
       last = a;
     }
   }
   if ((table[kLang] == kChinese && last == kDigit0) ||
-      characters[length - 1] == ' ')
+      characters[length - 1] == ' ') {
     --length;
+  }
 
   return String(characters, length);
 }
@@ -411,8 +432,9 @@ String HebrewAlgorithmUnder1000(unsigned number) {
     letters.Append(static_cast<UChar>(1511 + 3));
   }
   number %= 400;
-  if (number / 100)
+  if (number / 100) {
     letters.Append(static_cast<UChar>(1511 + (number / 100) - 1));
+  }
   number %= 100;
   if (number == 15 || number == 16) {
     letters.Append(static_cast<UChar>(1487 + 9));
@@ -423,24 +445,27 @@ String HebrewAlgorithmUnder1000(unsigned number) {
                                            1505, 1506, 1508, 1510};
       letters.Append(kHebrewTens[tens - 1]);
     }
-    if (unsigned ones = number % 10)
+    if (unsigned ones = number % 10) {
       letters.Append(static_cast<UChar>(1487 + ones));
+    }
   }
   return letters.ReleaseString();
 }
 
 String HebrewAlgorithm(unsigned number) {
   // FIXME: CSS3 mentions ways to make this work for much larger numbers.
-  if (number > 999999)
+  if (number > 999999) {
     return String();
+  }
 
   if (number == 0) {
     static const UChar kHebrewZero[3] = {0x05D0, 0x05E4, 0x05E1};
     return String(kHebrewZero, 3u);
   }
 
-  if (number <= 999)
+  if (number <= 999) {
     return HebrewAlgorithmUnder1000(number);
+  }
 
   return HebrewAlgorithmUnder1000(number / 1000) +
          kHebrewPunctuationGereshCharacter +
@@ -458,40 +483,46 @@ String ArmenianAlgorithmUnder10000(unsigned number,
   if (unsigned thousands = number / 1000) {
     if (thousands == 7) {
       letters.Append(static_cast<UChar>(0x0552 + lower_offset));
-      if (add_circumflex)
+      if (add_circumflex) {
         letters.Append(static_cast<UChar>(0x0302));
+      }
     } else {
       letters.Append(
           static_cast<UChar>((0x054C - 1 + lower_offset) + thousands));
-      if (add_circumflex)
+      if (add_circumflex) {
         letters.Append(static_cast<UChar>(0x0302));
+      }
     }
   }
 
   if (unsigned hundreds = (number / 100) % 10) {
     letters.Append(static_cast<UChar>((0x0543 - 1 + lower_offset) + hundreds));
-    if (add_circumflex)
+    if (add_circumflex) {
       letters.Append(static_cast<UChar>(0x0302));
+    }
   }
 
   if (unsigned tens = (number / 10) % 10) {
     letters.Append(static_cast<UChar>((0x053A - 1 + lower_offset) + tens));
-    if (add_circumflex)
+    if (add_circumflex) {
       letters.Append(static_cast<UChar>(0x0302));
+    }
   }
 
   if (unsigned ones = number % 10) {
     letters.Append(static_cast<UChar>((0x531 - 1 + lower_offset) + ones));
-    if (add_circumflex)
+    if (add_circumflex) {
       letters.Append(static_cast<UChar>(0x0302));
+    }
   }
 
   return letters.ReleaseString();
 }
 
 String ArmenianAlgorithm(unsigned number, bool upper) {
-  if (!number || number > 99999999)
+  if (!number || number > 99999999) {
     return String();
+  }
   return ArmenianAlgorithmUnder10000(number / 10000, upper, true) +
          ArmenianAlgorithmUnder10000(number % 10000, upper, false);
 }
@@ -504,10 +535,12 @@ String EthiopicNumericAlgorithm(unsigned value) {
   // Ethiopic characters for 10, 20, ..., 90
   static const UChar tens[9] = {0x1372, 0x1373, 0x1374, 0x1375, 0x1376,
                                 0x1377, 0x1378, 0x1379, 0x137A};
-  if (!value)
+  if (!value) {
     return String();
-  if (value < 10u)
+  }
+  if (value < 10u) {
     return String(&units[value - 1], 1u);
+  }
 
   // Generate characters in the reversed ordering
   Vector<UChar> result;
@@ -518,18 +551,21 @@ String EthiopicNumericAlgorithm(unsigned value) {
       // This adds an extra character for group 0. We'll remove it in the end.
       result.push_back(kEthiopicNumberTenThousandCharacter);
     } else {
-      if (group_value)
+      if (group_value) {
         result.push_back(kEthiopicNumberHundredCharacter);
+      }
     }
     bool most_significant_group = !value;
     bool remove_digits = !group_value ||
                          (group_value == 1 && most_significant_group) ||
                          (group_value == 1 && odd_group);
     if (!remove_digits) {
-      if (unsigned unit = group_value % 10)
+      if (unsigned unit = group_value % 10) {
         result.push_back(units[unit - 1]);
-      if (unsigned ten = group_value / 10)
+      }
+      if (unsigned ten = group_value / 10) {
         result.push_back(tens[ten - 1]);
+      }
     }
   }
 
@@ -554,8 +590,9 @@ CounterStyle& CounterStyle::GetDecimal() {
 // static
 CounterStyleSystem CounterStyle::ToCounterStyleSystemEnum(
     const CSSValue* value) {
-  if (!value)
+  if (!value) {
     return CounterStyleSystem::kSymbolic;
+  }
 
   CSSValueID system_keyword;
   if (const auto* id = DynamicTo<CSSIdentifierValue>(value)) {
@@ -637,8 +674,9 @@ AtomicString CounterStyle::GetName() const {
 
 // static
 CounterStyle* CounterStyle::Create(const StyleRuleCounterStyle& rule) {
-  if (!rule.HasValidSymbols())
+  if (!rule.HasValidSymbols()) {
     return nullptr;
+  }
 
   return MakeGarbageCollected<CounterStyle>(rule);
 }
@@ -657,8 +695,9 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
     }
   }
 
-  if (const CSSValue* fallback = rule.GetFallback())
+  if (const CSSValue* fallback = rule.GetFallback()) {
     fallback_name_ = To<CSSCustomIdentValue>(fallback)->Value();
+  }
 
   if (HasSymbols(system_)) {
     if (system_ == CounterStyleSystem::kAdditive) {
@@ -670,8 +709,9 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
         symbols_.push_back(SymbolToString(pair.Second()));
       }
     } else {
-      for (const CSSValue* symbol : To<CSSValueList>(*rule.GetSymbols()))
+      for (const CSSValue* symbol : To<CSSValueList>(*rule.GetSymbols())) {
         symbols_.push_back(SymbolToString(*symbol));
+      }
     }
   }
 
@@ -695,15 +735,18 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
       DCHECK_EQ(CSSValueID::kAuto, To<CSSIdentifierValue>(range)->GetValueID());
       // Empty |range_| already means 'auto'.
     } else {
-      for (const CSSValue* bounds : To<CSSValueList>(*range))
+      for (const CSSValue* bounds : To<CSSValueList>(*range)) {
         range_.push_back(BoundsToIntegerPair(To<CSSValuePair>(*bounds)));
+      }
     }
   }
 
-  if (const CSSValue* prefix = rule.GetPrefix())
+  if (const CSSValue* prefix = rule.GetPrefix()) {
     prefix_ = SymbolToString(*prefix);
-  if (const CSSValue* suffix = rule.GetSuffix())
+  }
+  if (const CSSValue* suffix = rule.GetSuffix()) {
     suffix_ = SymbolToString(*suffix);
+  }
 
   if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()) {
     if (const CSSValue* speak_as = rule.GetSpeakAs()) {
@@ -724,8 +767,9 @@ void CounterStyle::ResolveExtends(CounterStyle& extended) {
 
   system_ = extended.system_;
 
-  if (system_ == CounterStyleSystem::kFixed)
+  if (system_ == CounterStyleSystem::kFixed) {
     first_symbol_value_ = extended.first_symbol_value_;
+  }
 
   if (!style_rule_->GetFallback()) {
     fallback_name_ = extended.fallback_name_;
@@ -733,8 +777,9 @@ void CounterStyle::ResolveExtends(CounterStyle& extended) {
   }
 
   symbols_ = extended.symbols_;
-  if (system_ == CounterStyleSystem::kAdditive)
+  if (system_ == CounterStyleSystem::kAdditive) {
     additive_weights_ = extended.additive_weights_;
+  }
 
   if (!style_rule_->GetNegative()) {
     negative_prefix_ = extended.negative_prefix_;
@@ -746,13 +791,16 @@ void CounterStyle::ResolveExtends(CounterStyle& extended) {
     pad_symbol_ = extended.pad_symbol_;
   }
 
-  if (!style_rule_->GetRange())
+  if (!style_rule_->GetRange()) {
     range_ = extended.range_;
+  }
 
-  if (!style_rule_->GetPrefix())
+  if (!style_rule_->GetPrefix()) {
     prefix_ = extended.prefix_;
-  if (!style_rule_->GetSuffix())
+  }
+  if (!style_rule_->GetSuffix()) {
     suffix_ = extended.suffix_;
+  }
 
   if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()) {
     if (!style_rule_->GetSpeakAs()) {
@@ -766,8 +814,9 @@ void CounterStyle::ResolveExtends(CounterStyle& extended) {
 bool CounterStyle::RangeContains(int value) const {
   if (range_.size()) {
     for (const auto& bounds : range_) {
-      if (value >= bounds.first && value <= bounds.second)
+      if (value >= bounds.first && value <= bounds.second) {
         return true;
+      }
     }
     return false;
   }
@@ -803,8 +852,9 @@ bool CounterStyle::RangeContains(int value) const {
 }
 
 bool CounterStyle::NeedsNegativeSign(int value) const {
-  if (value >= 0)
+  if (value >= 0) {
     return false;
+  }
   switch (system_) {
     case CounterStyleSystem::kSymbolic:
     case CounterStyleSystem::kAlphabetic:
@@ -844,12 +894,14 @@ String CounterStyle::GenerateFallbackRepresentation(int value) const {
 String CounterStyle::GenerateRepresentation(int value) const {
   DCHECK(!IsDirty());
 
-  if (pad_length_ > kCounterLengthLimit)
+  if (pad_length_ > kCounterLengthLimit) {
     return GenerateFallbackRepresentation(value);
+  }
 
   String initial_representation = GenerateInitialRepresentation(value);
-  if (initial_representation.IsNull())
+  if (initial_representation.IsNull()) {
     return GenerateFallbackRepresentation(value);
+  }
 
   wtf_size_t initial_length = NumGraphemeClusters(initial_representation);
 
@@ -862,19 +914,23 @@ String CounterStyle::GenerateRepresentation(int value) const {
       pad_length_ > initial_length ? pad_length_ - initial_length : 0;
 
   StringBuilder result;
-  if (NeedsNegativeSign(value))
+  if (NeedsNegativeSign(value)) {
     result.Append(negative_prefix_);
-  for (wtf_size_t i = 0; i < pad_copies; ++i)
+  }
+  for (wtf_size_t i = 0; i < pad_copies; ++i) {
     result.Append(pad_symbol_);
+  }
   result.Append(initial_representation);
-  if (NeedsNegativeSign(value))
+  if (NeedsNegativeSign(value)) {
     result.Append(negative_suffix_);
+  }
   return result.ReleaseString();
 }
 
 String CounterStyle::GenerateInitialRepresentation(int value) const {
-  if (!RangeContains(value))
+  if (!RangeContains(value)) {
     return String();
+  }
 
   unsigned abs_value =
       value == std::numeric_limits<int>::min()
@@ -929,19 +985,22 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
 
 String CounterStyle::IndexesToString(
     const Vector<wtf_size_t>& symbol_indexes) const {
-  if (symbol_indexes.empty())
+  if (symbol_indexes.empty()) {
     return String();
+  }
 
   StringBuilder result;
-  for (wtf_size_t index : symbol_indexes)
+  for (wtf_size_t index : symbol_indexes) {
     result.Append(symbols_[index]);
+  }
   return result.ReleaseString();
 }
 
 void CounterStyle::TraverseAndMarkDirtyIfNeeded(
     HeapHashSet<Member<CounterStyle>>& visited_counter_styles) {
-  if (IsPredefined() || visited_counter_styles.Contains(this))
+  if (IsPredefined() || visited_counter_styles.Contains(this)) {
     return;
+  }
   visited_counter_styles.insert(this);
 
   if (has_inexistent_references_ ||
@@ -1007,8 +1066,10 @@ CounterStyleSpeakAs CounterStyle::EffectiveSpeakAs() const {
 }
 
 String CounterStyle::GenerateTextAlternative(int value) const {
-  if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled())
+  if (!RuntimeEnabledFeatures::
+          CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()) {
     return GenerateRepresentationWithPrefixAndSuffix(value);
+  }
 
   String text_without_prefix_suffix =
       GenerateTextAlternativeWithoutPrefixSuffix(value);
@@ -1016,8 +1077,9 @@ String CounterStyle::GenerateTextAlternative(int value) const {
   // 'bullets' requires "a UA-defined phrase or audio cue", so we cannot use
   // custom prefix or suffix. Use the suffix of the predefined symbolic
   // styles instead.
-  if (EffectiveSpeakAs() == CounterStyleSpeakAs::kBullets)
+  if (EffectiveSpeakAs() == CounterStyleSpeakAs::kBullets) {
     return text_without_prefix_suffix + " ";
+  }
 
   return prefix_ + text_without_prefix_suffix + suffix_;
 }
@@ -1032,8 +1094,9 @@ String CounterStyle::GenerateTextAlternativeWithoutPrefixSuffix(
     case CounterStyleSpeakAs::kNumbers:
       return GetDecimal().GenerateRepresentation(value);
     case CounterStyleSpeakAs::kBullets:
-      if (IsPredefinedSymbolMarker())
+      if (IsPredefinedSymbolMarker()) {
         return GenerateRepresentation(value);
+      }
       return GetDisc().GenerateRepresentation(value);
     case CounterStyleSpeakAs::kWords:
       return GenerateRepresentation(value);

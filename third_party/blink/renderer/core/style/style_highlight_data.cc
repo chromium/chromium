@@ -29,16 +29,18 @@ StyleHighlightData::StyleHighlightData(const StyleHighlightData& other)
 // comparison function on the values.
 bool HighlightStyleMapEquals(const CustomHighlightsStyleMap& a,
                              const CustomHighlightsStyleMap& b) {
-  if (a.size() != b.size())
+  if (a.size() != b.size()) {
     return false;
+  }
 
   CustomHighlightsStyleMap::const_iterator a_end = a.end();
   CustomHighlightsStyleMap::const_iterator b_end = b.end();
   for (CustomHighlightsStyleMap::const_iterator it = a.begin(); it != a_end;
        ++it) {
     CustomHighlightsStyleMap::const_iterator b_pos = b.find(it->key);
-    if (b_pos == b_end || !base::ValuesEquivalent(it->value, b_pos->value))
+    if (b_pos == b_end || !base::ValuesEquivalent(it->value, b_pos->value)) {
       return false;
+    }
   }
 
   return true;
@@ -93,8 +95,9 @@ const ComputedStyle* StyleHighlightData::CustomHighlight(
     const AtomicString& highlight_name) const {
   if (highlight_name) {
     auto iter = custom_highlights_.find(highlight_name);
-    if (iter != custom_highlights_.end())
+    if (iter != custom_highlights_.end()) {
       return iter->value.get();
+    }
   }
   return nullptr;
 }

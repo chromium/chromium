@@ -31,19 +31,22 @@ class FontVariantEastAsianParser {
       case CSSValueID::kJis04:
       case CSSValueID::kSimplified:
       case CSSValueID::kTraditional:
-        if (east_asian_form_value_)
+        if (east_asian_form_value_) {
           return ParseResult::kDisallowedValue;
+        }
         east_asian_form_value_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       case CSSValueID::kFullWidth:
       case CSSValueID::kProportionalWidth:
-        if (east_asian_width_value_)
+        if (east_asian_width_value_) {
           return ParseResult::kDisallowedValue;
+        }
         east_asian_width_value_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       case CSSValueID::kRuby:
-        if (ruby_value_)
+        if (ruby_value_) {
           return ParseResult::kDisallowedValue;
+        }
         ruby_value_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       default:
@@ -66,8 +69,9 @@ class FontVariantEastAsianParser {
       ruby_value_ = nullptr;
     }
 
-    if (!result->length())
+    if (!result->length()) {
       return CSSIdentifierValue::Create(CSSValueID::kNormal);
+    }
     return result;
   }
 

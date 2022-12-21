@@ -22,10 +22,11 @@ CSSNumericSumValue::UnitMap MultiplyUnitMaps(
         a.Contains(unit_exponent.key) ? a.at(unit_exponent.key) : 0;
 
     // Remove any zero entries
-    if (old_value + unit_exponent.value == 0)
+    if (old_value + unit_exponent.value == 0) {
       a.erase(unit_exponent.key);
-    else
+    } else {
       a.Set(unit_exponent.key, old_value + unit_exponent.value);
+    }
   }
   return a;
 }
@@ -67,8 +68,9 @@ absl::optional<CSSNumericSumValue> CSSMathProduct::SumValue() const {
 
   for (const auto& value : NumericValues()) {
     const auto child_sum = value->SumValue();
-    if (!child_sum.has_value())
+    if (!child_sum.has_value()) {
       return absl::nullopt;
+    }
 
     CSSNumericSumValue new_sum;
     for (const auto& a : sum.terms) {
@@ -91,8 +93,9 @@ CSSMathExpressionNode* CSSMathProduct::ToCalcExpressionNode() const {
 void CSSMathProduct::BuildCSSText(Nested nested,
                                   ParenLess paren_less,
                                   StringBuilder& result) const {
-  if (paren_less == ParenLess::kNo)
+  if (paren_less == ParenLess::kNo) {
     result.Append(nested == Nested::kYes ? "(" : "calc(");
+  }
 
   const auto& values = NumericValues();
   DCHECK(!values.empty());
@@ -110,8 +113,9 @@ void CSSMathProduct::BuildCSSText(Nested nested,
     }
   }
 
-  if (paren_less == ParenLess::kNo)
+  if (paren_less == ParenLess::kNo) {
     result.Append(")");
+  }
 }
 
 }  // namespace blink

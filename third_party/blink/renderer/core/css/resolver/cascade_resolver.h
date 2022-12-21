@@ -51,8 +51,9 @@ class CORE_EXPORT CascadeResolver {
   bool AllowSubstitution(CSSVariableData*) const;
 
   bool Rejects(const CSSProperty& property) {
-    if (!filter_.Rejects(property))
+    if (!filter_.Rejects(property)) {
       return false;
+    }
     rejected_flags_ |= property.GetFlags();
     return true;
   }

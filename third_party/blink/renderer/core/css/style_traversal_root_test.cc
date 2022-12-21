@@ -33,8 +33,9 @@ class StyleTraversalRootTestImpl : public StyleTraversalRoot {
   bool IsCommonRoot() const { return root_type_ == RootType::kCommonRoot; }
 
   void SubtreeModified(ContainerNode& parent) override {
-    if (!GetRootNode() || GetRootNode()->isConnected())
+    if (!GetRootNode() || GetRootNode()->isConnected()) {
       return;
+    }
     Clear();
   }
 

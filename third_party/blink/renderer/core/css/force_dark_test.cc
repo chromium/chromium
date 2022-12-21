@@ -65,8 +65,9 @@ TEST_F(ForceDarkTest, ForcedColorScheme) {
       {"t7", true, false}, {"t8", true, true},
   };
 
-  for (const auto& test_case : test_cases_preferred_dark)
+  for (const auto& test_case : test_cases_preferred_dark) {
     run_test(test_case);
+  }
 
   GetDocument().GetSettings()->SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kLight);
@@ -78,8 +79,9 @@ TEST_F(ForceDarkTest, ForcedColorScheme) {
       {"t7", true, true}, {"t8", true, true},
   };
 
-  for (const auto& test_case : test_cases_preferred_light)
+  for (const auto& test_case : test_cases_preferred_light) {
     run_test(test_case);
+  }
 }
 
 TEST_F(ForceDarkTest, ForcedColorSchemeInvalidation) {
@@ -126,8 +128,9 @@ TEST_F(ForceDarkTest, ForcedColorSchemeInvalidation) {
       {"t3", true, false, true},
   };
 
-  for (const TestCase& test_case : test_cases_disable_force)
+  for (const TestCase& test_case : test_cases_disable_force) {
     run_test(test_case);
+  }
 
   UpdateAllLifecyclePhasesForTest();
   GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
@@ -141,8 +144,9 @@ TEST_F(ForceDarkTest, ForcedColorSchemeInvalidation) {
       {"t3", true, true, true},
   };
 
-  for (const TestCase& test_case : test_cases_enable_force)
+  for (const TestCase& test_case : test_cases_enable_force) {
     run_test(test_case);
+  }
 }
 
 }  // namespace blink

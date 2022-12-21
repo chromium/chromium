@@ -31,8 +31,9 @@ namespace blink {
 namespace cssvalue {
 
 String CSSFontStyleRangeValue::CustomCSSText() const {
-  if (!oblique_values_)
+  if (!oblique_values_) {
     return font_style_value_->CssText();
+  }
 
   StringBuilder builder;
   builder.Append(font_style_value_->CssText());
@@ -42,8 +43,9 @@ String CSSFontStyleRangeValue::CustomCSSText() const {
 }
 
 bool CSSFontStyleRangeValue::Equals(const CSSFontStyleRangeValue& other) const {
-  if (!oblique_values_)
+  if (!oblique_values_) {
     return font_style_value_ == other.font_style_value_;
+  }
   return font_style_value_ == other.font_style_value_ &&
          *oblique_values_ == *other.oblique_values_;
 }

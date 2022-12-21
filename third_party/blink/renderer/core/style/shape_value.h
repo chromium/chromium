@@ -65,8 +65,9 @@ class ShapeValue final : public GarbageCollected<ShapeValue> {
   StyleImage* GetImage() const { return image_.Get(); }
   void SetImage(StyleImage* image) {
     DCHECK_EQ(GetType(), kImage);
-    if (image_ != image)
+    if (image_ != image) {
       image_ = image;
+    }
   }
   CSSBoxType CssBox() const { return css_box_; }
 
@@ -82,8 +83,9 @@ class ShapeValue final : public GarbageCollected<ShapeValue> {
 };
 
 inline bool ShapeValue::operator==(const ShapeValue& other) const {
-  if (GetType() != other.GetType())
+  if (GetType() != other.GetType()) {
     return false;
+  }
 
   switch (GetType()) {
     case kShape:

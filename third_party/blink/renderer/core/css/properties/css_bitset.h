@@ -70,8 +70,9 @@ class CORE_EXPORT CSSBitsetBase {
 
   inline bool HasAny() const {
     for (uint64_t chunk : chunks_) {
-      if (chunk)
+      if (chunk) {
         return true;
+      }
     }
     return false;
   }

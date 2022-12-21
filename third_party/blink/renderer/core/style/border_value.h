@@ -57,11 +57,13 @@ class BorderValue {
   // (in ComputedStyle itself)
   bool VisuallyEqual(const BorderValue& o) const {
     if (style_ == static_cast<unsigned>(EBorderStyle::kNone) &&
-        o.style_ == static_cast<unsigned>(EBorderStyle::kNone))
+        o.style_ == static_cast<unsigned>(EBorderStyle::kNone)) {
       return true;
+    }
     if (style_ == static_cast<unsigned>(EBorderStyle::kHidden) &&
-        o.style_ == static_cast<unsigned>(EBorderStyle::kHidden))
+        o.style_ == static_cast<unsigned>(EBorderStyle::kHidden)) {
       return true;
+    }
     return *this == o;
   }
 
@@ -95,8 +97,9 @@ class BorderValue {
     // Avoid min()/max() from std here in the header, because that would require
     // inclusion of <algorithm>, which is slow to compile.
     int raw_width = width.RawValue();
-    if (raw_width > kMaxValue)
+    if (raw_width > kMaxValue) {
       raw_width = kMaxValue;
+    }
     return static_cast<unsigned>(raw_width);
   }
 

@@ -30,8 +30,9 @@ CSSStyleVariableReferenceValue* CSSStyleVariableReferenceValue::Create(
 CSSStyleVariableReferenceValue* CSSStyleVariableReferenceValue::Create(
     const String& variable,
     CSSUnparsedValue* fallback) {
-  if (!variable.StartsWith("--"))
+  if (!variable.StartsWith("--")) {
     return nullptr;
+  }
   return MakeGarbageCollected<CSSStyleVariableReferenceValue>(variable,
                                                               fallback);
 }

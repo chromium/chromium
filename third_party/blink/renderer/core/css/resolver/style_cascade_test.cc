@@ -190,8 +190,9 @@ class TestCascade {
 
     // Add to cascade:
     const auto& update = state_.AnimationUpdate();
-    if (update.IsEmpty())
+    if (update.IsEmpty()) {
       return;
+    }
 
     cascade_.AddInterpolations(&update.ActiveInterpolationsForAnimations(),
                                CascadeOrigin::kAnimation);
@@ -262,8 +263,9 @@ class TestCascade {
   }
 
   void EnsureAtLeast(CascadeOrigin origin) {
-    while (current_origin_ < origin)
+    while (current_origin_ < origin) {
       FinishOrigin();
+    }
   }
 
   void CalculateInterpolationUpdate() {
@@ -3486,8 +3488,9 @@ TEST_F(StyleCascadeTest, InitialColor) {
 
 TEST_F(StyleCascadeTest, MaxSubstitutionTokens) {
   StringBuilder builder;
-  for (size_t i = 0; i < StyleCascade::kMaxSubstitutionTokens; ++i)
+  for (size_t i = 0; i < StyleCascade::kMaxSubstitutionTokens; ++i) {
     builder.Append(':');  // <colon-token>
+  }
 
   String at_limit = builder.ToString();
   String above_limit = builder.ToString() + ":";

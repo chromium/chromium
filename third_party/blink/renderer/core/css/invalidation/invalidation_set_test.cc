@@ -22,8 +22,9 @@ bool HasAny(const Backing<type>& backing,
             const BackingFlags& flags,
             std::initializer_list<const char*> args) {
   for (const char* str : args) {
-    if (backing.Contains(flags, str))
+    if (backing.Contains(flags, str)) {
       return true;
+    }
   }
   return false;
 }
@@ -33,8 +34,9 @@ bool HasAll(const Backing<type>& backing,
             const BackingFlags& flags,
             std::initializer_list<const char*> args) {
   for (const char* str : args) {
-    if (!backing.Contains(flags, str))
+    if (!backing.Contains(flags, str)) {
       return false;
+    }
   }
   return true;
 }
@@ -202,8 +204,9 @@ TEST(InvalidationSetTest, Backing_Iterator) {
     Backing<BackingType::kClasses> backing;
 
     Vector<AtomicString> strings;
-    for (const AtomicString& str : backing.Items(flags))
+    for (const AtomicString& str : backing.Items(flags)) {
       strings.push_back(str);
+    }
     ASSERT_EQ(0u, strings.size());
   }
 
@@ -214,8 +217,9 @@ TEST(InvalidationSetTest, Backing_Iterator) {
 
     backing.Add(flags, "test1");
     Vector<AtomicString> strings;
-    for (const AtomicString& str : backing.Items(flags))
+    for (const AtomicString& str : backing.Items(flags)) {
       strings.push_back(str);
+    }
     ASSERT_EQ(1u, strings.size());
     ASSERT_TRUE(strings.Contains("test1"));
     backing.Clear(flags);
@@ -230,8 +234,9 @@ TEST(InvalidationSetTest, Backing_Iterator) {
     backing.Add(flags, "test2");
     backing.Add(flags, "test3");
     Vector<AtomicString> strings;
-    for (const AtomicString& str : backing.Items(flags))
+    for (const AtomicString& str : backing.Items(flags)) {
       strings.push_back(str);
+    }
     ASSERT_EQ(3u, strings.size());
     ASSERT_TRUE(strings.Contains("test1"));
     ASSERT_TRUE(strings.Contains("test2"));

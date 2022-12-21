@@ -90,13 +90,15 @@ class CORE_EXPORT StyleRecalcChange {
             FlagsForChildren(element)};
   }
   StyleRecalcChange ForPseudoElement() const {
-    if (propagate_ == kUpdatePseudoElements)
+    if (propagate_ == kUpdatePseudoElements) {
       return {kRecalcChildren, flags_};
+    }
     return *this;
   }
   StyleRecalcChange EnsureAtLeast(Propagate propagate) const {
-    if (propagate > propagate_)
+    if (propagate > propagate_) {
       return {propagate, flags_};
+    }
     return {propagate_, flags_};
   }
   StyleRecalcChange ForceRecalcDescendants() const {

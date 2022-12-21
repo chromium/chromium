@@ -422,8 +422,9 @@ TEST(RuleSetTest, SelectorIndexLimit) {
   // We use 13 bits to storing the selector start index in RuleData. This is a
   // test to check that we don't regress. We WONTFIX issues asking for more
   // since 2^13 simple selectors in a style rule is already excessive.
-  for (unsigned i = 0; i < 8191; i++)
+  for (unsigned i = 0; i < 8191; i++) {
     builder.Append("div,");
+  }
 
   builder.Append("b,span {}");
 

@@ -19,50 +19,59 @@ namespace {
 
 absl::optional<ColorSpaceGamut> ConvertColorGamut(
     const MediaQueryExpValue& value) {
-  if (!value.IsValid())
+  if (!value.IsValid()) {
     return absl::nullopt;
-  if (value.Id() == CSSValueID::kSRGB)
+  }
+  if (value.Id() == CSSValueID::kSRGB) {
     return ColorSpaceGamut::SRGB;
-  if (value.Id() == CSSValueID::kP3)
+  }
+  if (value.Id() == CSSValueID::kP3) {
     return ColorSpaceGamut::P3;
+  }
   // Rec. 2020 is also known as ITU-R-Empfehlung BT.2020.
-  if (value.Id() == CSSValueID::kRec2020)
+  if (value.Id() == CSSValueID::kRec2020) {
     return ColorSpaceGamut::BT2020;
+  }
   return absl::nullopt;
 }
 
 absl::optional<mojom::blink::PreferredColorScheme> ConvertPreferredColorScheme(
     const MediaQueryExpValue& value) {
-  if (!value.IsValid())
+  if (!value.IsValid()) {
     return absl::nullopt;
+  }
   return CSSValueIDToPreferredColorScheme(value.Id());
 }
 
 absl::optional<mojom::blink::PreferredContrast> ConvertPreferredContrast(
     const MediaQueryExpValue& value) {
-  if (!value.IsValid())
+  if (!value.IsValid()) {
     return absl::nullopt;
+  }
   return CSSValueIDToPreferredContrast(value.Id());
 }
 
 absl::optional<bool> ConvertPrefersReducedMotion(
     const MediaQueryExpValue& value) {
-  if (!value.IsValid())
+  if (!value.IsValid()) {
     return absl::nullopt;
+  }
   return value.Id() == CSSValueID::kReduce;
 }
 
 absl::optional<bool> ConvertPrefersReducedData(
     const MediaQueryExpValue& value) {
-  if (!value.IsValid())
+  if (!value.IsValid()) {
     return absl::nullopt;
+  }
   return value.Id() == CSSValueID::kReduce;
 }
 
 absl::optional<ForcedColors> ConvertForcedColors(
     const MediaQueryExpValue& value) {
-  if (!value.IsValid())
+  if (!value.IsValid()) {
     return absl::nullopt;
+  }
   return CSSValueIDToForcedColors(value.Id());
 }
 

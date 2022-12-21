@@ -1553,8 +1553,9 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
                                CSSValueID::kContents,
                                CSSValueID::kFlowRoot,
                                CSSValueID::kNone};
-  if (RuntimeEnabledFeatures::MathMLCoreEnabled())
+  if (RuntimeEnabledFeatures::MathMLCoreEnabled()) {
     display_types.push_back(CSSValueID::kMath);
+  }
 
   for (auto contain :
        {CSSValueID::kNone, CSSValueID::kLayout, CSSValueID::kPaint,

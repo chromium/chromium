@@ -110,13 +110,15 @@ bool TransformBuilder::HasRelativeLengths(const CSSValueList& value_list) {
     for (const CSSValue* item : *transform_value) {
       const auto& primitive_value = To<CSSPrimitiveValue>(*item);
       if (primitive_value.IsCalculated()) {
-        if (To<CSSMathFunctionValue>(primitive_value).MayHaveRelativeUnit())
+        if (To<CSSMathFunctionValue>(primitive_value).MayHaveRelativeUnit()) {
           return true;
+        }
       } else {
         CSSPrimitiveValue::UnitType unit_type =
             To<CSSNumericLiteralValue>(primitive_value).GetType();
-        if (CSSPrimitiveValue::IsRelativeUnit(unit_type))
+        if (CSSPrimitiveValue::IsRelativeUnit(unit_type)) {
           return true;
+        }
       }
     }
   }
@@ -190,9 +192,9 @@ TransformOperations TransformBuilder::CreateTransformOperations(
             To<CSSPrimitiveValue>(transform_value->Item(0));
         Length tx = Length::Fixed(0);
         Length ty = Length::Fixed(0);
-        if (transform_type == TransformOperation::kTranslateY)
+        if (transform_type == TransformOperation::kTranslateY) {
           ty = ConvertToFloatLength(first_value, conversion_data);
-        else {
+        } else {
           tx = ConvertToFloatLength(first_value, conversion_data);
           if (transform_type != TransformOperation::kTranslateX) {
             if (transform_value->length() > 1) {
@@ -282,9 +284,9 @@ TransformOperations TransformBuilder::CreateTransformOperations(
         double angle_x = 0;
         double angle_y = 0;
         double angle = first_value.ComputeDegrees();
-        if (transform_type == TransformOperation::kSkewY)
+        if (transform_type == TransformOperation::kSkewY) {
           angle_y = angle;
-        else {
+        } else {
           angle_x = angle;
           if (transform_type == TransformOperation::kSkew) {
             if (transform_value->length() > 1) {

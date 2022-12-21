@@ -86,8 +86,9 @@ static CSSValue* ValueForCenterCoordinate(
     const ComputedStyle& style,
     const BasicShapeCenterCoordinate& center,
     EBoxOrient orientation) {
-  if (center.GetDirection() == BasicShapeCenterCoordinate::kTopLeft)
+  if (center.GetDirection() == BasicShapeCenterCoordinate::kTopLeft) {
     return CSSValue::Create(center.length(), style.EffectiveZoom());
+  }
 
   CSSValueID keyword = orientation == EBoxOrient::kHorizontal
                            ? CSSValueID::kRight
@@ -230,8 +231,9 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
       const BasicShapeRect* rect = To<BasicShapeRect>(basic_shape);
 
       auto get_length = [&](const Length& length) -> CSSValue* {
-        if (length.GetType() == Length::kAuto)
+        if (length.GetType() == Length::kAuto) {
           return CSSIdentifierValue::Create(CSSValueID::kAuto);
+        }
 
         return CSSPrimitiveValue::CreateFromLength(length,
                                                    style.EffectiveZoom());
@@ -273,15 +275,17 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
 
 static Length ConvertToLength(const StyleResolverState& state,
                               const CSSPrimitiveValue* value) {
-  if (!value)
+  if (!value) {
     return Length::Fixed(0);
+  }
   return value->ConvertToLength(state.CssToLengthConversionData());
 }
 
 static LengthSize ConvertToLengthSize(const StyleResolverState& state,
                                       const CSSValuePair* value) {
-  if (!value)
+  if (!value) {
     return LengthSize(Length::Fixed(0), Length::Fixed(0));
+  }
 
   return LengthSize(
       ConvertToLength(state, &To<CSSPrimitiveValue>(value->First())),
@@ -332,8 +336,9 @@ static BasicShapeCenterCoordinate ConvertToCenterCoordinate(
 static BasicShapeRadius CssValueToBasicShapeRadius(
     const StyleResolverState& state,
     const CSSValue* radius) {
-  if (!radius)
+  if (!radius) {
     return BasicShapeRadius(BasicShapeRadius::kClosestSide);
+  }
 
   if (auto* radius_identifier_value = DynamicTo<CSSIdentifierValue>(radius)) {
     switch (radius_identifier_value->GetValueID()) {
@@ -391,9 +396,10 @@ scoped_refptr<BasicShape> BasicShapeForValue(
     polygon->SetWindRule(polygon_value.GetWindRule());
     const HeapVector<Member<CSSPrimitiveValue>>& values =
         polygon_value.Values();
-    for (unsigned i = 0; i < values.size(); i += 2)
+    for (unsigned i = 0; i < values.size(); i += 2) {
       polygon->AppendPoint(ConvertToLength(state, values.at(i).Get()),
                            ConvertToLength(state, values.at(i + 1).Get()));
+    }
 
     basic_shape = std::move(polygon);
   } else if (IsA<cssvalue::CSSBasicShapeInsetValue>(basic_shape_value)) {

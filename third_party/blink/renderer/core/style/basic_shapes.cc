@@ -84,12 +84,14 @@ float BasicShapeEllipse::FloatValueForRadiusInBox(
     const BasicShapeRadius& radius,
     float center,
     float box_width_or_height) const {
-  if (radius.GetType() == BasicShapeRadius::kValue)
+  if (radius.GetType() == BasicShapeRadius::kValue) {
     return FloatValueForLength(radius.Value(), box_width_or_height);
+  }
 
   float width_or_height_delta = std::abs(box_width_or_height - center);
-  if (radius.GetType() == BasicShapeRadius::kClosestSide)
+  if (radius.GetType() == BasicShapeRadius::kClosestSide) {
     return std::min(std::abs(center), width_or_height_delta);
+  }
 
   DCHECK_EQ(radius.GetType(), BasicShapeRadius::kFarthestSide);
   return std::max(center, width_or_height_delta);
@@ -115,8 +117,9 @@ void BasicShapePolygon::GetPath(Path& path,
   DCHECK(!(values_.size() % 2));
   wtf_size_t length = values_.size();
 
-  if (!length)
+  if (!length) {
     return;
+  }
 
   path.MoveTo(
       gfx::PointF(FloatValueForLength(values_.at(0), bounding_box.width()) +

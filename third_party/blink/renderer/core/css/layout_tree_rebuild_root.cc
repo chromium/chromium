@@ -25,13 +25,16 @@ Element& LayoutTreeRebuildRoot::RootElement() const {
   if (IsSingleRoot() || root_node->IsDirtyForRebuildLayoutTree() ||
       !root_node->GetLayoutObject()) {
     Element* root_element = root_node->GetReattachParent();
-    while (root_element && !root_element->GetLayoutObject())
+    while (root_element && !root_element->GetLayoutObject()) {
       root_element = root_element->GetReattachParent();
-    if (root_element)
+    }
+    if (root_element) {
       return *root_element;
+    }
   }
-  if (Element* element = DynamicTo<Element>(root_node))
+  if (Element* element = DynamicTo<Element>(root_node)) {
     return *element;
+  }
   return *root_node->GetDocument().documentElement();
 }
 
@@ -50,10 +53,12 @@ bool LayoutTreeRebuildRoot::IsDirty(const Node& node) const {
 }
 
 void LayoutTreeRebuildRoot::SubtreeModified(ContainerNode& parent) {
-  if (!GetRootNode())
+  if (!GetRootNode()) {
     return;
-  if (GetRootNode()->isConnected())
+  }
+  if (GetRootNode()->isConnected()) {
     return;
+  }
   // LayoutTreeRebuildRoot is only used for marking for layout tree rebuild
   // during style recalc. We do not allow DOM modifications during style recalc
   // or the layout tree rebuild that happens right after. The only time we

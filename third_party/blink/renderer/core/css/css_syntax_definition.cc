@@ -24,15 +24,17 @@ namespace {
 //
 // TODO(https://crbug.com/1344170): This code may be unneeded.
 bool IsReservedIdentToken(const CSSParserToken& token) {
-  if (token.GetType() != kIdentToken)
+  if (token.GetType() != kIdentToken) {
     return false;
+  }
   return css_parsing_utils::IsDefaultKeyword(token.Value());
 }
 
 bool CouldConsumeReservedKeyword(CSSParserTokenRange range) {
   range.ConsumeWhitespace();
-  if (IsReservedIdentToken(range.ConsumeIncludingWhitespace()))
+  if (IsReservedIdentToken(range.ConsumeIncludingWhitespace())) {
     return range.AtEnd();
+  }
   return false;
 }
 
@@ -106,8 +108,9 @@ const CSSValue* ConsumeSyntaxComponent(const CSSSyntaxComponent& syntax,
     CSSValueList* list = CSSValueList::CreateSpaceSeparated();
     while (!range.AtEnd()) {
       const CSSValue* value = ConsumeSingleType(syntax, range, context);
-      if (!value)
+      if (!value) {
         return nullptr;
+      }
       list->Append(*value);
     }
     return list->length() ? list : nullptr;
@@ -116,15 +119,17 @@ const CSSValue* ConsumeSyntaxComponent(const CSSSyntaxComponent& syntax,
     CSSValueList* list = CSSValueList::CreateCommaSeparated();
     do {
       const CSSValue* value = ConsumeSingleType(syntax, range, context);
-      if (!value)
+      if (!value) {
         return nullptr;
+      }
       list->Append(*value);
     } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(range));
     return list->length() ? list : nullptr;
   }
   const CSSValue* result = ConsumeSingleType(syntax, range, context);
-  if (!range.AtEnd())
+  if (!range.AtEnd()) {
     return nullptr;
+  }
   return result;
 }
 
@@ -136,16 +141,18 @@ const CSSValue* CSSSyntaxDefinition::Parse(CSSParserTokenRange range,
   if (IsUniversal()) {
     // The 'default' keyword is reserved despite not being a CSS-wide keyword.
     // TODO(https://crbug.com/1344170): This code may be unneeded.
-    if (CouldConsumeReservedKeyword(range))
+    if (CouldConsumeReservedKeyword(range)) {
       return nullptr;
+    }
     return CSSVariableParser::ParseVariableReferenceValue(range, context,
                                                           is_animation_tainted);
   }
   range.ConsumeWhitespace();
   for (const CSSSyntaxComponent& component : syntax_components_) {
     if (const CSSValue* result =
-            ConsumeSyntaxComponent(component, range, context))
+            ConsumeSyntaxComponent(component, range, context)) {
       return result;
+    }
   }
   return nullptr;
 }

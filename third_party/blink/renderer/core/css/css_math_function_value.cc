@@ -35,8 +35,9 @@ CSSMathFunctionValue::CSSMathFunctionValue(
 CSSMathFunctionValue* CSSMathFunctionValue::Create(
     const CSSMathExpressionNode* expression,
     CSSPrimitiveValue::ValueRange range) {
-  if (!expression)
+  if (!expression) {
     return nullptr;
+  }
   return MakeGarbageCollected<CSSMathFunctionValue>(expression, range);
 }
 
@@ -90,8 +91,9 @@ bool CSSMathFunctionValue::AccumulateLengthArray(CSSLengthArray& length_array,
 
 Length CSSMathFunctionValue::ConvertToLength(
     const CSSLengthResolver& length_resolver) const {
-  if (IsLength())
+  if (IsLength()) {
     return Length::Fixed(ComputeLengthPx(length_resolver));
+  }
   return Length(ToCalcValue(length_resolver));
 }
 
@@ -134,8 +136,9 @@ double CSSMathFunctionValue::ClampToPermittedRange(double value) const {
 }
 
 bool CSSMathFunctionValue::IsZero() const {
-  if (expression_->ResolvedUnitType() == UnitType::kUnknown)
+  if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
     return false;
+  }
   return expression_->IsZero();
 }
 

@@ -128,15 +128,17 @@ inline CSSReflectionDirection CSSIdentifierValue::ConvertTo() const {
 
 template <>
 inline EBorderStyle CSSIdentifierValue::ConvertTo() const {
-  if (value_id_ == CSSValueID::kAuto)  // Valid for CSS outline-style
+  if (value_id_ == CSSValueID::kAuto) {  // Valid for CSS outline-style
     return EBorderStyle::kDotted;
+  }
   return detail::cssValueIDToPlatformEnumGenerated<EBorderStyle>(value_id_);
 }
 
 template <>
 inline OutlineIsAuto CSSIdentifierValue::ConvertTo() const {
-  if (value_id_ == CSSValueID::kAuto)
+  if (value_id_ == CSSValueID::kAuto) {
     return OutlineIsAuto::kOn;
+  }
   return OutlineIsAuto::kOff;
 }
 
@@ -308,10 +310,12 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
 
 template <>
 inline ControlPart CSSIdentifierValue::ConvertTo() const {
-  if (value_id_ == CSSValueID::kNone)
+  if (value_id_ == CSSValueID::kNone) {
     return kNoControlPart;
-  if (value_id_ == CSSValueID::kAuto)
+  }
+  if (value_id_ == CSSValueID::kAuto) {
     return kAutoPart;
+  }
   return ControlPart(static_cast<int>(value_id_) -
                      static_cast<int>(CSSValueID::kCheckbox) + kCheckboxPart);
 }

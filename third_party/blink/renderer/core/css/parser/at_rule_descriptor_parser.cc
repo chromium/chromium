@@ -30,18 +30,21 @@ CSSValue* ConsumeFontVariantList(CSSParserTokenRange& range) {
       // the old css3 draft:
       // http://www.w3.org/TR/2002/WD-css3-webfonts-20020802/#font-variant
       // 'all' is only allowed in @font-face and with no other values.
-      if (values->length())
+      if (values->length()) {
         return nullptr;
+      }
       return css_parsing_utils::ConsumeIdent(range);
     }
     CSSIdentifierValue* font_variant =
         css_parsing_utils::ConsumeFontVariantCSS21(range);
-    if (font_variant)
+    if (font_variant) {
       values->Append(*font_variant);
+    }
   } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(range));
 
-  if (values->length())
+  if (values->length()) {
     return values;
+  }
 
   return nullptr;
 }
@@ -57,13 +60,15 @@ CSSValueList* ConsumeFontFaceUnicodeRange(CSSParserTokenRange& range) {
 
   do {
     const CSSParserToken& token = range.ConsumeIncludingWhitespace();
-    if (token.GetType() != kUnicodeRangeToken)
+    if (token.GetType() != kUnicodeRangeToken) {
       return nullptr;
+    }
 
     UChar32 start = token.UnicodeRangeStart();
     UChar32 end = token.UnicodeRangeEnd();
-    if (start > end)
+    if (start > end) {
       return nullptr;
+    }
     values->Append(
         *MakeGarbageCollected<cssvalue::CSSUnicodeRangeValue>(start, end));
   } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(range));
@@ -114,8 +119,9 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
 
   String url =
       css_parsing_utils::ConsumeUrlAsStringView(range, context).ToString();
-  if (url.IsNull())
+  if (url.IsNull()) {
     return nullptr;
+  }
   CSSFontFaceSrcValue* uri_value(CSSFontFaceSrcValue::Create(
       url, context.CompleteURL(url), context.GetReferrer(),
       context.JavascriptWorld(),
@@ -129,8 +135,9 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
       (range.Peek().GetType() != CSSParserTokenType::kFunctionToken ||
        (range.Peek().FunctionId() != CSSValueID::kFormat &&
         (range.Peek().FunctionId() != CSSValueID::kTech ||
-         !RuntimeEnabledFeatures::CSSFontFaceSrcTechParsingEnabled()))))
+         !RuntimeEnabledFeatures::CSSFontFaceSrcTechParsingEnabled())))) {
     return nullptr;
+  }
 
   if (range.Peek().FunctionId() == CSSValueID::kFormat) {
     CSSParserTokenRange format_args = css_parsing_utils::ConsumeFunction(range);
@@ -145,8 +152,9 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
     if (peek_type == kIdentToken) {
       CSSIdentifierValue* font_format =
           css_parsing_utils::ConsumeFontFormatIdent(format_args);
-      if (!font_format)
+      if (!font_format) {
         return nullptr;
+      }
       sanitized_format = font_format->CssText();
     }
 
@@ -155,15 +163,17 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
     }
 
     tech_format_unsupported |= !IsSupportedFontFormat(sanitized_format);
-    if (!tech_format_unsupported)
+    if (!tech_format_unsupported) {
       uri_value->SetFormat(sanitized_format);
+    }
 
     format_args.ConsumeWhitespace();
 
     // After one argument to the format function, there shouldn't be anything
     // else, for example not a comma.
-    if (!format_args.AtEnd())
+    if (!format_args.AtEnd()) {
       return nullptr;
+    }
   }
 
   if (RuntimeEnabledFeatures::CSSFontFaceSrcTechParsingEnabled() &&
@@ -171,8 +181,9 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
     CSSParserTokenRange tech_args = css_parsing_utils::ConsumeFunction(range);
 
     // One or more tech args expected.
-    if (tech_args.AtEnd())
+    if (tech_args.AtEnd()) {
       return nullptr;
+    }
 
     do {
       CSSIdentifierValue* technology_value =
@@ -183,8 +194,9 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
       tech_format_unsupported |= !css_parsing_utils::IsSupportedKeywordTech(
           technology_value->GetValueID());
       if (!tech_args.AtEnd() &&
-          tech_args.Peek().GetType() != CSSParserTokenType::kCommaToken)
+          tech_args.Peek().GetType() != CSSParserTokenType::kCommaToken) {
         return nullptr;
+      }
       if (!tech_format_unsupported) {
         uri_value->AppendTechnology(
             ValueIDToTechnology(technology_value->GetValueID()));
@@ -200,8 +212,9 @@ CSSValue* ConsumeFontFaceSrcLocal(CSSParserTokenRange& range,
   CSSParserTokenRange args = css_parsing_utils::ConsumeFunction(range);
   if (args.Peek().GetType() == kStringToken) {
     const CSSParserToken& arg = args.ConsumeIncludingWhitespace();
-    if (!args.AtEnd())
+    if (!args.AtEnd()) {
       return nullptr;
+    }
     return CSSFontFaceSrcValue::CreateLocal(
         arg.Value().ToString(), context.JavascriptWorld(),
         context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
@@ -209,10 +222,12 @@ CSSValue* ConsumeFontFaceSrcLocal(CSSParserTokenRange& range,
   }
   if (args.Peek().GetType() == kIdentToken) {
     String family_name = css_parsing_utils::ConcatenateFamilyName(args);
-    if (!args.AtEnd())
+    if (!args.AtEnd()) {
       return nullptr;
-    if (family_name.empty())
+    }
+    if (family_name.empty()) {
       return nullptr;
+    }
     return CSSFontFaceSrcValue::CreateLocal(
         family_name, context.JavascriptWorld(),
         context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
@@ -237,10 +252,12 @@ CSSValueList* ConsumeFontFaceSrc(CSSParserTokenRange& range,
           ConsumeFontFaceSrcURI(range, context, tech_format_unsupported);
     }
     // Parsing error encountered, drop whole src: line.
-    if (!parsed_value)
+    if (!parsed_value) {
       return nullptr;
-    if (!tech_format_unsupported)
+    }
+    if (!tech_format_unsupported) {
       values->Append(*parsed_value);
+    }
   } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(range));
   return values;
 }
@@ -309,8 +326,9 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
       // ConsumeGenericFamily will take care of excluding the former while the
       // ConsumeFamilyName will take care of excluding the latter.
       // See https://drafts.csswg.org/css-fonts/#family-name-syntax,
-      if (css_parsing_utils::ConsumeGenericFamily(range))
+      if (css_parsing_utils::ConsumeGenericFamily(range)) {
         return nullptr;
+      }
       parsed_value = css_parsing_utils::ConsumeFamilyName(range);
       break;
     case AtRuleDescriptorID::Src:  // This is a list of urls or local
@@ -361,8 +379,9 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
       break;
   }
 
-  if (!parsed_value || !range.AtEnd())
+  if (!parsed_value || !range.AtEnd()) {
     return nullptr;
+  }
 
   return parsed_value;
 }
@@ -384,8 +403,9 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDeclaration(
   const CSSParserToken& token = range.ConsumeIncludingWhitespace();
   AtRuleDescriptorID id = token.ParseAsAtRuleDescriptorID();
 
-  if (range.Consume().GetType() != kColonToken)
+  if (range.Consume().GetType() != kColonToken) {
     return nullptr;  // Parse error
+  }
 
   return ParseFontFaceDescriptor(id, range, context);
 }
@@ -415,8 +435,9 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
       break;
   }
 
-  if (!parsed_value || !range.AtEnd())
+  if (!parsed_value || !range.AtEnd()) {
     return nullptr;
+  }
 
   return parsed_value;
 }
@@ -429,8 +450,9 @@ bool AtRuleDescriptorParser::ParseAtRule(
     HeapVector<CSSPropertyValue, 64>& parsed_descriptors) {
   CSSValue* result = ConsumeDescriptor(rule_type, id, tokenized_value, context);
 
-  if (!result)
+  if (!result) {
     return false;
+  }
   // Convert to CSSPropertyID for legacy compatibility,
   // TODO(crbug.com/752745): Refactor CSSParserImpl to avoid using
   // the CSSPropertyID.

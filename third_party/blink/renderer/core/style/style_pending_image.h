@@ -97,8 +97,9 @@ struct DowncastTraits<StylePendingImage> {
 };
 
 inline bool StylePendingImage::IsEqual(const StyleImage& other) const {
-  if (!other.IsPendingImage())
+  if (!other.IsPendingImage()) {
     return false;
+  }
   const auto& other_pending = To<StylePendingImage>(other);
   return base::ValuesEquivalent(value_, other_pending.value_);
 }

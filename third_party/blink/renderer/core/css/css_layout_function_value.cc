@@ -16,8 +16,9 @@ CSSLayoutFunctionValue::CSSLayoutFunctionValue(CSSCustomIdentValue* name,
 
 String CSSLayoutFunctionValue::CustomCSSText() const {
   StringBuilder result;
-  if (is_inline_)
+  if (is_inline_) {
     result.Append("inline-");
+  }
   result.Append("layout(");
   result.Append(name_->CustomCSSText());
   result.Append(')');

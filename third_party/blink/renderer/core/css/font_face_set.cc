@@ -30,8 +30,9 @@ void FontFaceSet::HandlePendingEventsAndPromisesSoon() {
 
 void FontFaceSet::HandlePendingEventsAndPromises() {
   pending_task_queued_ = false;
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return;
+  }
   FireLoadingEvent();
   FireDoneEventIfPossible();
 }
@@ -48,31 +49,37 @@ FontFaceSet* FontFaceSet::addForBinding(ScriptState*,
                                         FontFace* font_face,
                                         ExceptionState&) {
   DCHECK(font_face);
-  if (!InActiveContext())
+  if (!InActiveContext()) {
     return this;
-  if (non_css_connected_faces_.Contains(font_face))
+  }
+  if (non_css_connected_faces_.Contains(font_face)) {
     return this;
-  if (IsCSSConnectedFontFace(font_face))
+  }
+  if (IsCSSConnectedFontFace(font_face)) {
     return this;
+  }
   FontSelector* font_selector = GetFontSelector();
   non_css_connected_faces_.insert(font_face);
   font_selector->GetFontFaceCache()->AddFontFace(font_face, false);
-  if (font_face->LoadStatus() == FontFace::kLoading)
+  if (font_face->LoadStatus() == FontFace::kLoading) {
     AddToLoadingFonts(font_face);
+  }
   font_selector->FontFaceInvalidated(
       FontInvalidationReason::kGeneralInvalidation);
   return this;
 }
 
 void FontFaceSet::clearForBinding(ScriptState*, ExceptionState&) {
-  if (!InActiveContext() || non_css_connected_faces_.empty())
+  if (!InActiveContext() || non_css_connected_faces_.empty()) {
     return;
+  }
   FontSelector* font_selector = GetFontSelector();
   FontFaceCache* font_face_cache = font_selector->GetFontFaceCache();
   for (const auto& font_face : non_css_connected_faces_) {
     font_face_cache->RemoveFontFace(font_face.Get(), false);
-    if (font_face->LoadStatus() == FontFace::kLoading)
+    if (font_face->LoadStatus() == FontFace::kLoading) {
       RemoveFromLoadingFonts(font_face);
+    }
   }
   non_css_connected_faces_.clear();
   font_selector->FontFaceInvalidated(
@@ -83,16 +90,18 @@ bool FontFaceSet::deleteForBinding(ScriptState*,
                                    FontFace* font_face,
                                    ExceptionState&) {
   DCHECK(font_face);
-  if (!InActiveContext())
+  if (!InActiveContext()) {
     return false;
+  }
   HeapLinkedHashSet<Member<FontFace>>::iterator it =
       non_css_connected_faces_.find(font_face);
   if (it != non_css_connected_faces_.end()) {
     non_css_connected_faces_.erase(it);
     FontSelector* font_selector = GetFontSelector();
     font_selector->GetFontFaceCache()->RemoveFontFace(font_face, false);
-    if (font_face->LoadStatus() == FontFace::kLoading)
+    if (font_face->LoadStatus() == FontFace::kLoading) {
       RemoveFromLoadingFonts(font_face);
+    }
     font_selector->FontFaceInvalidated(
         FontInvalidationReason::kFontFaceDeleted);
     return true;
@@ -104,8 +113,9 @@ bool FontFaceSet::hasForBinding(ScriptState*,
                                 FontFace* font_face,
                                 ExceptionState&) const {
   DCHECK(font_face);
-  if (!InActiveContext())
+  if (!InActiveContext()) {
     return false;
+  }
   return non_css_connected_faces_.Contains(font_face) ||
          IsCSSConnectedFontFace(font_face);
 }
@@ -122,22 +132,25 @@ void FontFaceSet::Trace(Visitor* visitor) const {
 }
 
 wtf_size_t FontFaceSet::size() const {
-  if (!InActiveContext())
+  if (!InActiveContext()) {
     return non_css_connected_faces_.size();
+  }
   return CSSConnectedFontFaceList().size() + non_css_connected_faces_.size();
 }
 
 void FontFaceSet::AddFontFacesToFontFaceCache(FontFaceCache* font_face_cache) {
-  for (const auto& font_face : non_css_connected_faces_)
+  for (const auto& font_face : non_css_connected_faces_) {
     font_face_cache->AddFontFace(font_face, false);
+  }
 }
 
 void FontFaceSet::AddToLoadingFonts(FontFace* font_face) {
   if (!is_loading_) {
     is_loading_ = true;
     should_fire_loading_event_ = true;
-    if (ready_->GetState() != ReadyProperty::kPending)
+    if (ready_->GetState() != ReadyProperty::kPending) {
       ready_->Reset();
+    }
     HandlePendingEventsAndPromisesSoon();
   }
   loading_fonts_.insert(font_face);
@@ -146,8 +159,9 @@ void FontFaceSet::AddToLoadingFonts(FontFace* font_face) {
 
 void FontFaceSet::RemoveFromLoadingFonts(FontFace* font_face) {
   loading_fonts_.erase(font_face);
-  if (loading_fonts_.empty())
+  if (loading_fonts_.empty()) {
     HandlePendingEventsAndPromisesSoon();
+  }
 }
 
 void FontFaceSet::LoadFontPromiseResolver::LoadFonts() {
@@ -165,8 +179,9 @@ void FontFaceSet::LoadFontPromiseResolver::LoadFonts() {
 ScriptPromise FontFaceSet::load(ScriptState* script_state,
                                 const String& font_string,
                                 const String& text) {
-  if (!InActiveContext())
+  if (!InActiveContext()) {
     return ScriptPromise();
+  }
 
   Font font;
   if (!ResolveFontStyle(font_string, font)) {
@@ -182,12 +197,14 @@ ScriptPromise FontFaceSet::load(ScriptState* script_state,
   FontFaceArray* faces = MakeGarbageCollected<FontFaceArray>();
   for (const FontFamily* f = &font.GetFontDescription().Family(); f;
        f = f->Next()) {
-    if (f->FamilyIsGeneric())
+    if (f->FamilyIsGeneric()) {
       continue;
+    }
     CSSSegmentedFontFace* segmented_font_face =
         font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
-    if (segmented_font_face)
+    if (segmented_font_face) {
       segmented_font_face->Match(text, faces);
+    }
   }
 
   auto* resolver =
@@ -201,8 +218,9 @@ ScriptPromise FontFaceSet::load(ScriptState* script_state,
 bool FontFaceSet::check(const String& font_string,
                         const String& text,
                         ExceptionState& exception_state) {
-  if (!InActiveContext())
+  if (!InActiveContext()) {
     return false;
+  }
 
   Font font;
   if (!ResolveFontStyle(font_string, font)) {
@@ -218,23 +236,27 @@ bool FontFaceSet::check(const String& font_string,
   bool has_loaded_faces = false;
   for (const FontFamily* f = &font.GetFontDescription().Family(); f;
        f = f->Next()) {
-    if (f->FamilyIsGeneric())
+    if (f->FamilyIsGeneric()) {
       continue;
+    }
     CSSSegmentedFontFace* face =
         font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
     if (face) {
-      if (!face->CheckFont(text))
+      if (!face->CheckFont(text)) {
         return false;
+      }
       has_loaded_faces = true;
     }
   }
-  if (has_loaded_faces)
+  if (has_loaded_faces) {
     return true;
+  }
   for (const FontFamily* f = &font.GetFontDescription().Family(); f;
        f = f->Next()) {
     if (font_selector->IsPlatformFamilyMatchAvailable(font.GetFontDescription(),
-                                                      *f))
+                                                      *f)) {
       return true;
+    }
   }
   return false;
 }
@@ -253,24 +275,28 @@ void FontFaceSet::FireDoneEvent() {
     }
     is_loading_ = false;
     DispatchEvent(*done_event);
-    if (error_event)
+    if (error_event) {
       DispatchEvent(*error_event);
+    }
   }
 
-  if (ready_->GetState() == ReadyProperty::kPending)
+  if (ready_->GetState() == ReadyProperty::kPending) {
     ready_->Resolve(this);
+  }
 }
 
 bool FontFaceSet::ShouldSignalReady() const {
-  if (!loading_fonts_.empty())
+  if (!loading_fonts_.empty()) {
     return false;
+  }
   return is_loading_ || ready_->GetState() == ReadyProperty::kPending;
 }
 
 void FontFaceSet::LoadFontPromiseResolver::NotifyLoaded(FontFace* font_face) {
   num_loading_--;
-  if (num_loading_ || error_occured_)
+  if (num_loading_ || error_occured_) {
     return;
+  }
 
   resolver_->Resolve(font_faces_);
 }
@@ -292,8 +318,9 @@ void FontFaceSet::LoadFontPromiseResolver::Trace(Visitor* visitor) const {
 bool FontFaceSet::IterationSource::FetchNextItem(ScriptState*,
                                                  FontFace*& value,
                                                  ExceptionState&) {
-  if (font_faces_.size() <= index_)
+  if (font_faces_.size() <= index_) {
     return false;
+  }
   value = font_faces_[index_++];
   return true;
 }
@@ -310,10 +337,12 @@ FontFaceSetIterable::IterationSource* FontFaceSet::CreateIterationSource(
         CSSConnectedFontFaceList();
     font_faces.ReserveInitialCapacity(css_connected_faces.size() +
                                       non_css_connected_faces_.size());
-    for (const auto& font_face : css_connected_faces)
+    for (const auto& font_face : css_connected_faces) {
       font_faces.push_back(font_face);
-    for (const auto& font_face : non_css_connected_faces_)
+    }
+    for (const auto& font_face : non_css_connected_faces_) {
       font_faces.push_back(font_face);
+    }
   }
   return MakeGarbageCollected<IterationSource>(std::move(font_faces));
 }

@@ -75,8 +75,9 @@ CSSImageSetValue::ImageWithScale CSSImageSetValue::BestImageForScaleFactor(
   wtf_size_t number_of_images = images_in_set_.size();
   for (wtf_size_t i = 0; i < number_of_images; ++i) {
     image = images_in_set_.at(i);
-    if (image.scale_factor >= scale_factor)
+    if (image.scale_factor >= scale_factor) {
       return image;
+    }
   }
   return image;
 }
@@ -95,8 +96,9 @@ StyleImage* CSSImageSetValue::CacheImage(
     float device_scale_factor,
     FetchParameters::ImageRequestBehavior,
     CrossOriginAttributeValue cross_origin) {
-  if (!images_in_set_.size())
+  if (!images_in_set_.size()) {
     FillImageSet();
+  }
 
   if (IsCachePending(device_scale_factor)) {
     // FIXME: In the future, we want to take much more than deviceScaleFactor
@@ -121,16 +123,18 @@ StyleImage* CSSImageSetValue::CacheImage(
 String CSSImageSetValue::CustomCSSText() const {
   StringBuilder result;
 
-  if (is_webkit_prefixed_)
+  if (is_webkit_prefixed_) {
     result.Append("-webkit-");
+  }
 
   result.Append("image-set(");
 
   wtf_size_t length = this->length();
   wtf_size_t i = 0;
   while (i < length) {
-    if (i > 0)
+    if (i > 0) {
       result.Append(", ");
+    }
 
     const CSSValue& image_value = Item(i);
     result.Append(image_value.CssText());
@@ -153,10 +157,12 @@ String CSSImageSetValue::CustomCSSText() const {
 }
 
 bool CSSImageSetValue::HasFailedOrCanceledSubresources() const {
-  if (!cached_image_)
+  if (!cached_image_) {
     return false;
-  if (ImageResourceContent* cached_content = cached_image_->CachedImage())
+  }
+  if (ImageResourceContent* cached_content = cached_image_->CachedImage()) {
     return cached_content->LoadFailedOrCanceled();
+  }
   return true;
 }
 
@@ -173,8 +179,9 @@ CSSImageSetValue* CSSImageSetValue::ValueWithURLsMadeAbsolute() {
                 : value->Append(*item);
   }
 
-  if (is_webkit_prefixed_)
+  if (is_webkit_prefixed_) {
     value->MarkWebkitPrefixed();
+  }
 
   return value;
 }

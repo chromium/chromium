@@ -34,8 +34,9 @@ class StyleAutoColor : public StyleColor {
 };
 
 inline bool operator==(const StyleAutoColor& a, const StyleAutoColor& b) {
-  if (a.IsAutoColor() || b.IsAutoColor())
+  if (a.IsAutoColor() || b.IsAutoColor()) {
     return a.IsAutoColor() && b.IsAutoColor();
+  }
   return a.ToStyleColor() == b.ToStyleColor();
 }
 

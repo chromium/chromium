@@ -150,8 +150,9 @@ StyleImage* StyleImageLoader::CrossfadeArgument(
   }
   // Reject paint() functions. They make assumptions about the client (being
   // a LayoutObject) that we can't meet with the current implementation.
-  if (IsA<CSSPaintValue>(value))
+  if (IsA<CSSPaintValue>(value)) {
     return nullptr;
+  }
   return Load(value, FetchParameters::ImageRequestBehavior::kNone,
               cross_origin);
 }
@@ -178,25 +179,30 @@ ElementStyleResources::ElementStyleResources(Element& element,
       pseudo_element_(pseudo_element) {}
 
 bool ElementStyleResources::IsPending(const CSSValue& value) const {
-  if (auto* img_value = DynamicTo<CSSImageValue>(value))
+  if (auto* img_value = DynamicTo<CSSImageValue>(value)) {
     return img_value->IsCachePending();
+  }
 
   // paint(...) is always treated as pending because it needs to call
   // AddPaintImage() on the ComputedStyle.
-  if (IsA<CSSPaintValue>(value))
+  if (IsA<CSSPaintValue>(value)) {
     return true;
+  }
 
   // cross-fade(...) is always treated as pending (to avoid adding more complex
   // recursion).
-  if (IsA<cssvalue::CSSCrossfadeValue>(value))
+  if (IsA<cssvalue::CSSCrossfadeValue>(value)) {
     return true;
+  }
 
   // Gradient functions are never pending.
-  if (IsA<cssvalue::CSSGradientValue>(value))
+  if (IsA<cssvalue::CSSGradientValue>(value)) {
     return false;
+  }
 
-  if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value))
+  if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value)) {
     return img_set_value->IsCachePending(device_scale_factor_);
+  }
 
   NOTREACHED();
   return false;
@@ -220,8 +226,9 @@ StyleImage* ElementStyleResources::CachedStyleImage(
                                                      container_sizes);
   }
 
-  if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value))
+  if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value)) {
     return img_set_value->CachedImage(device_scale_factor_);
+  }
 
   NOTREACHED();
   return nullptr;
@@ -267,10 +274,12 @@ static void LoadResourcesForFilter(
   for (const auto& filter_operation : filter_operations) {
     auto* reference_operation =
         DynamicTo<ReferenceFilterOperation>(filter_operation.Get());
-    if (!reference_operation)
+    if (!reference_operation) {
       continue;
-    if (SVGResource* resource = reference_operation->Resource())
+    }
+    if (SVGResource* resource = reference_operation->Resource()) {
       resource->Load(document);
+    }
   }
 }
 
@@ -293,8 +302,9 @@ void ElementStyleResources::LoadPendingSVGResources(
 }
 
 static CSSValue* PendingCssValue(StyleImage* style_image) {
-  if (auto* pending_image = DynamicTo<StylePendingImage>(style_image))
+  if (auto* pending_image = DynamicTo<StylePendingImage>(style_image)) {
     return pending_image->CssValue();
+  }
   return nullptr;
 }
 
@@ -355,21 +365,24 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
       case CSSPropertyID::kCursor: {
         if (CursorList* cursor_list = builder.Cursors()) {
           for (CursorData& cursor : *cursor_list) {
-            if (auto* pending_value = PendingCssValue(cursor.GetImage()))
+            if (auto* pending_value = PendingCssValue(cursor.GetImage())) {
               cursor.SetImage(loader.Load(*pending_value));
+            }
           }
         }
         break;
       }
       case CSSPropertyID::kListStyleImage: {
-        if (auto* pending_value = PendingCssValue(builder.ListStyleImage()))
+        if (auto* pending_value = PendingCssValue(builder.ListStyleImage())) {
           builder.SetListStyleImage(loader.Load(*pending_value));
+        }
         break;
       }
       case CSSPropertyID::kBorderImageSource: {
         if (auto* pending_value =
-                PendingCssValue(builder.BorderImage().GetImage()))
+                PendingCssValue(builder.BorderImage().GetImage())) {
           builder.SetBorderImageSource(loader.Load(*pending_value));
+        }
         break;
       }
       case CSSPropertyID::kWebkitBoxReflect: {
@@ -386,8 +399,10 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
         break;
       }
       case CSSPropertyID::kWebkitMaskBoxImageSource: {
-        if (auto* pending_value = PendingCssValue(builder.MaskBoxImageSource()))
+        if (auto* pending_value =
+                PendingCssValue(builder.MaskBoxImageSource())) {
           builder.SetMaskBoxImageSource(loader.Load(*pending_value));
+        }
         break;
       }
       case CSSPropertyID::kWebkitMaskImage: {

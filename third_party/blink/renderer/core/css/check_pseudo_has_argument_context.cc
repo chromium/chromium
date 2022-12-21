@@ -20,8 +20,9 @@ CheckPseudoHasArgumentContext::GetCurrentRelationAndNextCompound(
         pseudo_has_argument_hashes_, simple_selector);
 
     relation = simple_selector->Relation();
-    if (relation != CSSSelector::kSubSelector)
+    if (relation != CSSSelector::kSubSelector) {
       return simple_selector->TagHistory();
+    }
   }
   return nullptr;
 }
@@ -61,8 +62,9 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
           sibling_combinator_between_child_or_descendant_combinator_ = true;
         }
         contains_child_or_descendant_combinator = true;
-        if (DepthFixed())
+        if (DepthFixed()) {
           depth_limit_++;
+        }
         adjacent_distance_limit_ = 0;
         break;
 
@@ -70,22 +72,25 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
         leftmost_relation_ = relation;
         [[fallthrough]];
       case CSSSelector::kDirectAdjacent:
-        if (contains_child_or_descendant_combinator)
+        if (contains_child_or_descendant_combinator) {
           sibling_combinator_at_leftmost = true;
-        else
+        } else {
           sibling_combinator_at_rightmost_ = true;
-        if (AdjacentDistanceFixed())
+        }
+        if (AdjacentDistanceFixed()) {
           adjacent_distance_limit_++;
+        }
         break;
 
       case CSSSelector::kRelativeIndirectAdjacent:
         leftmost_relation_ = relation;
         [[fallthrough]];
       case CSSSelector::kIndirectAdjacent:
-        if (contains_child_or_descendant_combinator)
+        if (contains_child_or_descendant_combinator) {
           sibling_combinator_at_leftmost = true;
-        else
+        } else {
           sibling_combinator_at_rightmost_ = true;
+        }
         adjacent_distance_limit_ = kInfiniteAdjacentDistance;
         break;
 
@@ -101,33 +106,37 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
   switch (leftmost_relation_) {
     case CSSSelector::kRelativeDescendant:
     case CSSSelector::kRelativeChild:
-      if (DepthFixed())
+      if (DepthFixed()) {
         traversal_scope_ = kFixedDepthDescendants;
-      else
+      } else {
         traversal_scope_ = kSubtree;
+      }
       siblings_affected_by_has_flags_ =
           SiblingsAffectedByHasFlags::kNoSiblingsAffectedByHasFlags;
       break;
     case CSSSelector::kRelativeIndirectAdjacent:
     case CSSSelector::kRelativeDirectAdjacent:
       if (DepthLimit() == 0) {
-        if (AdjacentDistanceFixed())
+        if (AdjacentDistanceFixed()) {
           traversal_scope_ = kOneNextSibling;
-        else
+        } else {
           traversal_scope_ = kAllNextSiblings;
+        }
         siblings_affected_by_has_flags_ =
             SiblingsAffectedByHasFlags::kFlagForSiblingRelationship;
       } else {
         if (AdjacentDistanceFixed()) {
-          if (DepthFixed())
+          if (DepthFixed()) {
             traversal_scope_ = kOneNextSiblingFixedDepthDescendants;
-          else
+          } else {
             traversal_scope_ = kOneNextSiblingSubtree;
+          }
         } else {
-          if (DepthFixed())
+          if (DepthFixed()) {
             traversal_scope_ = kAllNextSiblingsFixedDepthDescendants;
-          else
+          } else {
             traversal_scope_ = kAllNextSiblingSubtrees;
+          }
         }
         siblings_affected_by_has_flags_ =
             SiblingsAffectedByHasFlags::kFlagForSiblingDescendantRelationship;
@@ -157,8 +166,9 @@ CheckPseudoHasArgumentTraversalIterator::
     Element* last_sibling =
         ElementTraversal::LastChild(*has_anchor_element_->parentNode());
     current_element_ = LastWithin(last_sibling);
-    if (!current_element_)
+    if (!current_element_) {
       current_element_ = last_sibling;
+    }
   } else if (context.AdjacentDistanceLimit() == 0) {
     DCHECK_GT(context.DepthLimit(), 0);
     // Set the last_element_ as the first child of the :has() anchor element,
@@ -186,12 +196,14 @@ CheckPseudoHasArgumentTraversalIterator::
     if (sibling) {
       sibling_at_fixed_distance_ = sibling;
       current_element_ = LastWithin(sibling_at_fixed_distance_);
-      if (!current_element_)
+      if (!current_element_) {
         current_element_ = sibling_at_fixed_distance_;
+      }
     } else {
       current_element_ = old_sibling;
-      if (!current_element_)
+      if (!current_element_) {
         return;
+      }
       // set the depth_limit_ to 0 so that the iterator only traverse to the
       // siblings of the :has() anchor element.
       depth_limit_ = 0;
@@ -202,8 +214,9 @@ CheckPseudoHasArgumentTraversalIterator::
 
 Element* CheckPseudoHasArgumentTraversalIterator::LastWithin(Element* element) {
   // If the current depth is at the depth limit, return null.
-  if (current_depth_ == depth_limit_)
+  if (current_depth_ == depth_limit_) {
     return nullptr;
+  }
 
   // Return the last element of the pre-order traversal starting from the passed
   // in element without exceeding the depth limit.
@@ -211,8 +224,9 @@ Element* CheckPseudoHasArgumentTraversalIterator::LastWithin(Element* element) {
   for (Element* descendant = ElementTraversal::LastChild(*element); descendant;
        descendant = ElementTraversal::LastChild(*descendant)) {
     last_descendant = descendant;
-    if (++current_depth_ == depth_limit_)
+    if (++current_depth_ == depth_limit_) {
       break;
+    }
   }
   return last_descendant;
 }

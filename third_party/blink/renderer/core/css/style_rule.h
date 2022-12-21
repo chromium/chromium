@@ -229,8 +229,9 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   wtf_size_t IndexOfNextSelectorAfter(wtf_size_t index) const {
     const CSSSelector& current = SelectorAt(index);
     const CSSSelector* next = CSSSelectorList::Next(current);
-    if (!next)
+    if (!next) {
       return kNotFound;
+    }
     return SelectorIndex(*next);
   }
   String SelectorsText() const {

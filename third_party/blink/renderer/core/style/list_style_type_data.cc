@@ -39,8 +39,9 @@ bool ListStyleTypeData::IsCounterStyleReferenceValid(Document& document) const {
     return true;
   }
 
-  if (!counter_style_ || counter_style_->IsDirty())
+  if (!counter_style_ || counter_style_->IsDirty()) {
     return false;
+  }
 
   // Even if the referenced counter style is clean, it may still be stale if new
   // counter styles have been inserted, in which case the same (scope, name) now

@@ -61,8 +61,9 @@ struct CrossThreadCopier<
   static Type Copy(const Type& value) {
     Type result;
     result.ReserveInitialCapacity(value.size());
-    for (const auto& element : value)
+    for (const auto& element : value) {
       result.push_back(element.IsolatedCopy());
+    }
     return result;
   }
 };

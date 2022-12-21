@@ -54,8 +54,9 @@ namespace blink {
 ScopedStyleResolver* ScopedStyleResolver::Parent() const {
   for (TreeScope* scope = GetTreeScope().ParentTreeScope(); scope;
        scope = scope->ParentTreeScope()) {
-    if (ScopedStyleResolver* resolver = scope->GetScopedStyleResolver())
+    if (ScopedStyleResolver* resolver = scope->GetScopedStyleResolver()) {
       return resolver;
+    }
   }
   return nullptr;
 }
@@ -63,21 +64,24 @@ ScopedStyleResolver* ScopedStyleResolver::Parent() const {
 void ScopedStyleResolver::AddKeyframeRules(const RuleSet& rule_set) {
   const HeapVector<Member<StyleRuleKeyframes>> keyframes_rules =
       rule_set.KeyframesRules();
-  for (auto rule : keyframes_rules)
+  for (auto rule : keyframes_rules) {
     AddKeyframeStyle(rule);
+  }
 }
 
 CounterStyleMap& ScopedStyleResolver::EnsureCounterStyleMap() {
-  if (!counter_style_map_)
+  if (!counter_style_map_) {
     counter_style_map_ = CounterStyleMap::CreateAuthorCounterStyleMap(*scope_);
+  }
   return *counter_style_map_;
 }
 
 void ScopedStyleResolver::AddFontFaceRules(const RuleSet& rule_set) {
   // TODO(crbug.com/336876): We don't add @font-face rules of scoped style
   // sheets for the moment.
-  if (!GetTreeScope().RootNode().IsDocumentNode())
+  if (!GetTreeScope().RootNode().IsDocumentNode()) {
     return;
+  }
 
   Document& document = GetTreeScope().GetDocument();
   CSSFontSelector* css_font_selector =
@@ -86,16 +90,19 @@ void ScopedStyleResolver::AddFontFaceRules(const RuleSet& rule_set) {
       rule_set.FontFaceRules();
   for (auto& font_face_rule : font_face_rules) {
     if (FontFace* font_face = FontFace::Create(&document, font_face_rule,
-                                               false /* is_user_style */))
+                                               false /* is_user_style */)) {
       css_font_selector->GetFontFaceCache()->Add(font_face_rule, font_face);
+    }
   }
-  if (font_face_rules.size())
+  if (font_face_rules.size()) {
     document.GetStyleResolver().InvalidateMatchedPropertiesCache();
+  }
 }
 
 void ScopedStyleResolver::AddCounterStyleRules(const RuleSet& rule_set) {
-  if (rule_set.CounterStyleRules().empty())
+  if (rule_set.CounterStyleRules().empty()) {
     return;
+  }
   EnsureCounterStyleMap().AddCounterStyles(rule_set);
 }
 
@@ -106,8 +113,9 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
        active_iterator != active_sheets.end(); active_iterator++) {
     CSSStyleSheet* sheet = active_iterator->first;
     media_query_result_flags_.Add(sheet->GetMediaQueryResultFlags());
-    if (!active_iterator->second)
+    if (!active_iterator->second) {
       continue;
+    }
     const RuleSet& rule_set = *active_iterator->second;
     style_sheets_.push_back(sheet);
     AddKeyframeRules(rule_set);
@@ -127,8 +135,9 @@ void ScopedStyleResolver::CollectFeaturesTo(
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     StyleSheetContents* contents = sheet->Contents();
     if (contents->HasOneClient() ||
-        visited_shared_style_sheet_contents.insert(contents).is_new_entry)
+        visited_shared_style_sheet_contents.insert(contents).is_new_entry) {
       features.Merge(contents->GetRuleSet().Features());
+    }
   }
 }
 
@@ -137,20 +146,23 @@ void ScopedStyleResolver::ResetStyle() {
   media_query_result_flags_.Clear();
   keyframes_rule_map_.clear();
   position_fallback_rule_map_.clear();
-  if (counter_style_map_)
+  if (counter_style_map_) {
     counter_style_map_->Dispose();
+  }
   cascade_layer_map_ = nullptr;
   needs_append_all_sheets_ = false;
 }
 
 StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
     const AtomicString& animation_name) {
-  if (keyframes_rule_map_.empty())
+  if (keyframes_rule_map_.empty()) {
     return nullptr;
+  }
 
   KeyframesRuleMap::iterator it = keyframes_rule_map_.find(animation_name);
-  if (it == keyframes_rule_map_.end())
+  if (it == keyframes_rule_map_.end()) {
     return nullptr;
+  }
 
   return it->value.Get();
 }
@@ -168,8 +180,9 @@ void ScopedStyleResolver::AddKeyframeStyle(StyleRuleKeyframes* rule) {
 bool ScopedStyleResolver::KeyframeStyleShouldOverride(
     const StyleRuleKeyframes* new_rule,
     const StyleRuleKeyframes* existing_rule) const {
-  if (new_rule->IsVendorPrefixed() != existing_rule->IsVendorPrefixed())
+  if (new_rule->IsVendorPrefixed() != existing_rule->IsVendorPrefixed()) {
     return existing_rule->IsVendorPrefixed();
+  }
   return !cascade_layer_map_ || cascade_layer_map_->CompareLayerOrder(
                                     existing_rule->GetCascadeLayer(),
                                     new_rule->GetCascadeLayer()) <= 0;
@@ -178,8 +191,9 @@ bool ScopedStyleResolver::KeyframeStyleShouldOverride(
 Element& ScopedStyleResolver::InvalidationRootForTreeScope(
     const TreeScope& tree_scope) {
   DCHECK(tree_scope.GetDocument().documentElement());
-  if (tree_scope.RootNode() == tree_scope.GetDocument())
+  if (tree_scope.RootNode() == tree_scope.GetDocument()) {
     return *tree_scope.GetDocument().documentElement();
+  }
   return To<ShadowRoot>(tree_scope.RootNode()).host();
 }
 
@@ -188,8 +202,9 @@ void ScopedStyleResolver::KeyframesRulesAdded(const TreeScope& tree_scope) {
   // TreeScope. @keyframes rules may apply to animations on elements in the
   // same TreeScope as the stylesheet, or the host element in the parent
   // TreeScope if the TreeScope is a shadow tree.
-  if (!tree_scope.GetDocument().documentElement())
+  if (!tree_scope.GetDocument().documentElement()) {
     return;
+  }
 
   ScopedStyleResolver* resolver = tree_scope.GetScopedStyleResolver();
   ScopedStyleResolver* parent_resolver =
@@ -290,15 +305,17 @@ void ScopedStyleResolver::RebuildCascadeLayerMap(
 void ScopedStyleResolver::AddPositionFallbackRules(const RuleSet& rule_set) {
   for (StyleRulePositionFallback* rule : rule_set.PositionFallbackRules()) {
     auto result = position_fallback_rule_map_.insert(rule->Name(), rule);
-    if (result.is_new_entry)
+    if (result.is_new_entry) {
       continue;
+    }
     Member<StyleRulePositionFallback>& stored_rule = result.stored_value->value;
     const bool should_override =
         !cascade_layer_map_ ||
         cascade_layer_map_->CompareLayerOrder(stored_rule->GetCascadeLayer(),
                                               rule->GetCascadeLayer()) <= 0;
-    if (should_override)
+    if (should_override) {
       stored_rule = rule;
+    }
   }
 }
 
@@ -306,8 +323,9 @@ StyleRulePositionFallback* ScopedStyleResolver::PositionFallbackForName(
     const AtomicString& fallback_name) {
   DCHECK(fallback_name);
   auto iter = position_fallback_rule_map_.find(fallback_name);
-  if (iter != position_fallback_rule_map_.end())
+  if (iter != position_fallback_rule_map_.end()) {
     return iter->value;
+  }
   return nullptr;
 }
 

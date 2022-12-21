@@ -61,8 +61,9 @@ DOMMatrix* CSSSkewX::toMatrix(ExceptionState&) const {
 
 const CSSFunctionValue* CSSSkewX::ToCSSValue() const {
   const CSSValue* ax = ax_->ToCSSValue();
-  if (!ax)
+  if (!ax) {
     return nullptr;
+  }
 
   CSSFunctionValue* result =
       MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kSkewX);

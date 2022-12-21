@@ -30,26 +30,30 @@ class FontVariantLigaturesParser {
     switch (value_id) {
       case CSSValueID::kNoCommonLigatures:
       case CSSValueID::kCommonLigatures:
-        if (saw_common_ligatures_value_)
+        if (saw_common_ligatures_value_) {
           return ParseResult::kDisallowedValue;
+        }
         saw_common_ligatures_value_ = true;
         break;
       case CSSValueID::kNoDiscretionaryLigatures:
       case CSSValueID::kDiscretionaryLigatures:
-        if (saw_discretionary_ligatures_value_)
+        if (saw_discretionary_ligatures_value_) {
           return ParseResult::kDisallowedValue;
+        }
         saw_discretionary_ligatures_value_ = true;
         break;
       case CSSValueID::kNoHistoricalLigatures:
       case CSSValueID::kHistoricalLigatures:
-        if (saw_historical_ligatures_value_)
+        if (saw_historical_ligatures_value_) {
           return ParseResult::kDisallowedValue;
+        }
         saw_historical_ligatures_value_ = true;
         break;
       case CSSValueID::kNoContextual:
       case CSSValueID::kContextual:
-        if (saw_contextual_ligatures_value_)
+        if (saw_contextual_ligatures_value_) {
           return ParseResult::kDisallowedValue;
+        }
         saw_contextual_ligatures_value_ = true;
         break;
       default:
@@ -60,8 +64,9 @@ class FontVariantLigaturesParser {
   }
 
   CSSValue* FinalizeValue() {
-    if (!result_->length())
+    if (!result_->length()) {
       return CSSIdentifierValue::Create(CSSValueID::kNormal);
+    }
     CSSValue* result = result_;
     result_ = nullptr;
     return result;

@@ -20,9 +20,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
-#include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 
@@ -44,8 +44,9 @@ StyleRuleCSSStyleDeclaration::StyleRuleCSSStyleDeclaration(
 StyleRuleCSSStyleDeclaration::~StyleRuleCSSStyleDeclaration() = default;
 
 void StyleRuleCSSStyleDeclaration::WillMutate() {
-  if (parent_rule_ && parent_rule_->parentStyleSheet())
+  if (parent_rule_ && parent_rule_->parentStyleSheet()) {
     parent_rule_->parentStyleSheet()->WillMutateRules();
+  }
 }
 
 void StyleRuleCSSStyleDeclaration::DidMutate(MutationType type) {

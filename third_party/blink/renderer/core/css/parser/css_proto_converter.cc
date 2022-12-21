@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
 #include "third_party/blink/renderer/core/css/parser/css_proto_converter.h"
+#include <string>
 
 // TODO(metzman): Figure out how to remove this include and use DCHECK.
 #include "base/notreached.h"
@@ -203,7 +203,9 @@ const std::string Converter::kImportLookupTable[] = {
 
 const std::string Converter::kEncodingLookupTable[] = {
     "",  // This is just to fill the zeroth spot. It should not be used.
-    "UTF-8", "UTF-16", "UTF-32",
+    "UTF-8",
+    "UTF-16",
+    "UTF-32",
 };
 
 #include "third_party/blink/renderer/core/css/parser/css_proto_converter_generated.h"
@@ -220,19 +222,25 @@ void Converter::Visit(const Unicode& unicode) {
   string_ += "\\";
   string_ += static_cast<char>(unicode.ascii_value_1());
 
-  if (unicode.has_ascii_value_2())
+  if (unicode.has_ascii_value_2()) {
     string_ += static_cast<char>(unicode.ascii_value_2());
-  if (unicode.has_ascii_value_3())
+  }
+  if (unicode.has_ascii_value_3()) {
     string_ += static_cast<char>(unicode.ascii_value_3());
-  if (unicode.has_ascii_value_4())
+  }
+  if (unicode.has_ascii_value_4()) {
     string_ += static_cast<char>(unicode.ascii_value_4());
-  if (unicode.has_ascii_value_5())
+  }
+  if (unicode.has_ascii_value_5()) {
     string_ += static_cast<char>(unicode.ascii_value_5());
-  if (unicode.has_ascii_value_6())
+  }
+  if (unicode.has_ascii_value_6()) {
     string_ += static_cast<char>(unicode.ascii_value_6());
+  }
 
-  if (unicode.has_unrepeated_w())
+  if (unicode.has_unrepeated_w()) {
     Visit(unicode.unrepeated_w());
+  }
 }
 
 void Converter::Visit(const Escape& escape) {
@@ -245,33 +253,38 @@ void Converter::Visit(const Escape& escape) {
 }
 
 void Converter::Visit(const Nmstart& nmstart) {
-  if (nmstart.has_ascii_value())
+  if (nmstart.has_ascii_value()) {
     string_ += static_cast<char>(nmstart.ascii_value());
-  else if (nmstart.has_escape())
+  } else if (nmstart.has_escape()) {
     Visit(nmstart.escape());
+  }
 }
 
 void Converter::Visit(const Nmchar& nmchar) {
-  if (nmchar.has_ascii_value())
+  if (nmchar.has_ascii_value()) {
     string_ += static_cast<char>(nmchar.ascii_value());
-  else if (nmchar.has_escape())
+  } else if (nmchar.has_escape()) {
     Visit(nmchar.escape());
+  }
 }
 
 void Converter::Visit(const String& string) {
   bool use_single_quotes = string.use_single_quotes();
-  if (use_single_quotes)
+  if (use_single_quotes) {
     string_ += "'";
-  else
+  } else {
     string_ += "\"";
+  }
 
-  for (auto& string_char_quote : string.string_char_quotes())
+  for (auto& string_char_quote : string.string_char_quotes()) {
     Visit(string_char_quote, use_single_quotes);
+  }
 
-  if (use_single_quotes)
+  if (use_single_quotes) {
     string_ += "'";
-  else
+  } else {
     string_ += "\"";
+  }
 }
 
 void Converter::Visit(const StringCharOrQuote& string_char_quote,
@@ -279,35 +292,40 @@ void Converter::Visit(const StringCharOrQuote& string_char_quote,
   if (string_char_quote.has_string_char()) {
     Visit(string_char_quote.string_char());
   } else if (string_char_quote.quote_char()) {
-    if (using_single_quote)
+    if (using_single_quote) {
       string_ += "\"";
-    else
+    } else {
       string_ += "'";
+    }
   }
 }
 
 void Converter::Visit(const StringChar& string_char) {
-  if (string_char.has_url_char())
+  if (string_char.has_url_char()) {
     Visit(string_char.url_char());
-  else if (string_char.has_space())
+  } else if (string_char.has_space()) {
     string_ += " ";
-  else if (string_char.has_nl())
+  } else if (string_char.has_nl()) {
     Visit(string_char.nl());
+  }
 }
 
 void Converter::Visit(const Ident& ident) {
-  if (ident.starting_minus())
+  if (ident.starting_minus()) {
     string_ += "-";
+  }
   Visit(ident.nmstart());
-  for (auto& nmchar : ident.nmchars())
+  for (auto& nmchar : ident.nmchars()) {
     Visit(nmchar);
+  }
 }
 
 void Converter::Visit(const Num& num) {
-  if (num.has_float_value())
+  if (num.has_float_value()) {
     string_ += std::to_string(num.float_value());
-  else
+  } else {
     string_ += std::to_string(num.signed_int_value());
+  }
 }
 
 void Converter::Visit(const UrlChar& url_char) {
@@ -321,61 +339,66 @@ void Converter::Visit(const UnrepeatedW& unrepeated_w) {
 
 void Converter::Visit(const Nl& nl) {
   string_ += "\\";
-  if (nl.newline_kind() == Nl::CR_LF)
+  if (nl.newline_kind() == Nl::CR_LF) {
     string_ += "\r\n";
-  else  // Otherwise newline_kind is the ascii value of the char we want.
+  } else {  // Otherwise newline_kind is the ascii value of the char we want.
     string_ += static_cast<char>(nl.newline_kind());
+  }
 }
 
 void Converter::Visit(const Length& length) {
   Visit(length.num());
-  if (length.unit() == Length::PX)
+  if (length.unit() == Length::PX) {
     string_ += "px";
-  else if (length.unit() == Length::CM)
+  } else if (length.unit() == Length::CM) {
     string_ += "cm";
-  else if (length.unit() == Length::MM)
+  } else if (length.unit() == Length::MM) {
     string_ += "mm";
-  else if (length.unit() == Length::IN)
+  } else if (length.unit() == Length::IN) {
     string_ += "in";
-  else if (length.unit() == Length::PT)
+  } else if (length.unit() == Length::PT) {
     string_ += "pt";
-  else if (length.unit() == Length::PC)
+  } else if (length.unit() == Length::PC) {
     string_ += "pc";
-  else
+  } else {
     NOTREACHED();
+  }
 }
 
 void Converter::Visit(const Angle& angle) {
   Visit(angle.num());
-  if (angle.unit() == Angle::DEG)
+  if (angle.unit() == Angle::DEG) {
     string_ += "deg";
-  else if (angle.unit() == Angle::RAD)
+  } else if (angle.unit() == Angle::RAD) {
     string_ += "rad";
-  else if (angle.unit() == Angle::GRAD)
+  } else if (angle.unit() == Angle::GRAD) {
     string_ += "grad";
-  else
+  } else {
     NOTREACHED();
+  }
 }
 
 void Converter::Visit(const Time& time) {
   Visit(time.num());
-  if (time.unit() == Time::MS)
+  if (time.unit() == Time::MS) {
     string_ += "ms";
-  else if (time.unit() == Time::S)
+  } else if (time.unit() == Time::S) {
     string_ += "s";
-  else
+  } else {
     NOTREACHED();
+  }
 }
 
 void Converter::Visit(const Freq& freq) {
   Visit(freq.num());
   // Hack around really dumb build bug
-  if (freq.unit() == Freq::_HZ)
+  if (freq.unit() == Freq::_HZ) {
     string_ += "Hz";
-  else if (freq.unit() == Freq::KHZ)
+  } else if (freq.unit() == Freq::KHZ) {
     string_ += "kHz";
-  else
+  } else {
     NOTREACHED();
+  }
 }
 
 void Converter::Visit(const Uri& uri) {
@@ -388,14 +411,18 @@ void Converter::Visit(const FunctionToken& function_token) {
 }
 
 void Converter::Visit(const StyleSheet& style_sheet) {
-  if (style_sheet.has_charset_declaration())
+  if (style_sheet.has_charset_declaration()) {
     Visit(style_sheet.charset_declaration());
-  for (auto& import : style_sheet.imports())
+  }
+  for (auto& import : style_sheet.imports()) {
     Visit(import);
-  for (auto& _namespace : style_sheet.namespaces())
+  }
+  for (auto& _namespace : style_sheet.namespaces()) {
     Visit(_namespace);
-  for (auto& nested_at_rule : style_sheet.nested_at_rules())
+  }
+  for (auto& nested_at_rule : style_sheet.nested_at_rules()) {
     Visit(nested_at_rule);
+  }
 }
 
 void Converter::Visit(const ViewportValue& viewport_value) {
@@ -428,29 +455,33 @@ void Converter::Visit(const CharsetDeclaration& charset_declaration) {
 
 void Converter::Visit(const AtRuleOrRulesets& at_rule_or_rulesets, int depth) {
   Visit(at_rule_or_rulesets.first(), depth);
-  for (auto& later : at_rule_or_rulesets.laters())
+  for (auto& later : at_rule_or_rulesets.laters()) {
     Visit(later, depth);
+  }
 }
 
 void Converter::Visit(const AtRuleOrRuleset& at_rule_or_ruleset, int depth) {
-  if (at_rule_or_ruleset.has_at_rule())
+  if (at_rule_or_ruleset.has_at_rule()) {
     Visit(at_rule_or_ruleset.at_rule(), depth);
-  else  // Default.
+  } else {  // Default.
     Visit(at_rule_or_ruleset.ruleset());
+  }
 }
 
 void Converter::Visit(const NestedAtRule& nested_at_rule, int depth) {
-  if (++depth > kAtRuleDepthLimit)
+  if (++depth > kAtRuleDepthLimit) {
     return;
+  }
 
-  if (nested_at_rule.has_ruleset())
+  if (nested_at_rule.has_ruleset()) {
     Visit(nested_at_rule.ruleset());
-  else if (nested_at_rule.has_media())
+  } else if (nested_at_rule.has_media()) {
     Visit(nested_at_rule.media());
-  else if (nested_at_rule.has_viewport())
+  } else if (nested_at_rule.has_viewport()) {
     Visit(nested_at_rule.viewport());
-  else if (nested_at_rule.has_supports_rule())
+  } else if (nested_at_rule.has_supports_rule()) {
     Visit(nested_at_rule.supports_rule(), depth);
+  }
   // Else apppend nothing.
   // TODO(metzman): Support pages and font-faces.
 }
@@ -459,8 +490,9 @@ void Converter::Visit(const SupportsRule& supports_rule, int depth) {
   string_ += "@supports ";
   Visit(supports_rule.supports_condition(), depth);
   string_ += " { ";
-  for (auto& at_rule_or_ruleset : supports_rule.at_rule_or_rulesets())
+  for (auto& at_rule_or_ruleset : supports_rule.at_rule_or_rulesets()) {
     Visit(at_rule_or_ruleset, depth);
+  }
   string_ += " } ";
 }
 
@@ -476,8 +508,9 @@ void Converter::AppendBinarySupportsCondition(
 void Converter::Visit(const SupportsCondition& supports_condition, int depth) {
   bool under_depth_limit = ++depth <= kSupportsConditionDepthLimit;
 
-  if (supports_condition.not_condition())
+  if (supports_condition.not_condition()) {
     string_ += " not ";
+  }
 
   string_ += "(";
 
@@ -503,35 +536,39 @@ void Converter::Visit(const Import& import) {
   AppendTableValue<Import_SrcId_SrcId_ARRAYSIZE>(import.src_id(),
                                                  kImportLookupTable);
   string_ += " ";
-  if (import.has_media_query_list())
+  if (import.has_media_query_list()) {
     Visit(import.media_query_list());
+  }
   string_ += "; ";
 }
 
 void Converter::Visit(const MediaQueryList& media_query_list) {
   bool first = true;
   for (auto& media_query : media_query_list.media_queries()) {
-    if (first)
+    if (first) {
       first = false;
-    else
+    } else {
       string_ += ", ";
+    }
     Visit(media_query);
   }
 }
 
 void Converter::Visit(const MediaQuery& media_query) {
-  if (media_query.has_media_query_part_two())
+  if (media_query.has_media_query_part_two()) {
     Visit(media_query.media_query_part_two());
-  else
+  } else {
     Visit(media_query.media_condition());
+  }
 }
 
 void Converter::Visit(const MediaQueryPartTwo& media_query_part_two) {
   if (media_query_part_two.has_not_or_only()) {
-    if (media_query_part_two.not_or_only() == MediaQueryPartTwo::NOT)
+    if (media_query_part_two.not_or_only() == MediaQueryPartTwo::NOT) {
       string_ += " not ";
-    else
+    } else {
       string_ += " only ";
+    }
   }
   Visit(media_query_part_two.media_type());
   if (media_query_part_two.has_media_condition_without_or()) {
@@ -634,12 +671,15 @@ void Converter::Visit(const MfValue& mf_value) {
 
 void Converter::Visit(const Namespace& _namespace) {
   string_ += "@namespace ";
-  if (_namespace.has_namespace_prefix())
+  if (_namespace.has_namespace_prefix()) {
     Visit(_namespace.namespace_prefix());
-  if (_namespace.has_string())
+  }
+  if (_namespace.has_string()) {
     Visit(_namespace.string());
-  if (_namespace.has_uri())
+  }
+  if (_namespace.has_uri()) {
     Visit(_namespace.uri());
+  }
 
   string_ += "; ";
 }
@@ -654,18 +694,21 @@ void Converter::Visit(const Media& media) {
 
   Visit(media.media_query_list());
   string_ += " { ";
-  for (auto& ruleset : media.rulesets())
+  for (auto& ruleset : media.rulesets()) {
     Visit(ruleset);
+  }
   string_ += " } ";
 }
 
 void Converter::Visit(const Page& page) {
   // PAGE_SYM
   string_ += "@page ";  // PAGE_SYM
-  if (page.has_ident())
+  if (page.has_ident()) {
     Visit(page.ident());
-  if (page.has_pseudo_page())
+  }
+  if (page.has_pseudo_page()) {
     Visit(page.pseudo_page());
+  }
   string_ += " { ";
   Visit(page.declaration_list());
   string_ += " } ";
@@ -692,8 +735,9 @@ void Converter::Visit(const FontFace& font_face) {
 }
 
 void Converter::Visit(const Operator& _operator) {
-  if (_operator.has_ascii_value())
+  if (_operator.has_ascii_value()) {
     string_ += static_cast<char>(_operator.ascii_value());
+  }
 }
 
 void Converter::Visit(const UnaryOperator& unary_operator) {
@@ -746,22 +790,25 @@ void Converter::Visit(const Selector& selector, bool is_first) {
       string_ += static_cast<char>(selector.attr().type());
       string_ += +"= " + val2;
     }
-    if (selector.attr().attr_i())
+    if (selector.attr().attr_i()) {
       string_ += " i";
+    }
     string_ += "]";
   }
   if (selector.has_pseudo_value_id()) {
     string_ += ":";
-    if (selector.pseudo_type() == PseudoType::ELEMENT)
+    if (selector.pseudo_type() == PseudoType::ELEMENT) {
       string_ += ":";
+    }
     AppendTableValue<Selector_PseudoValueId_PseudoValueId_ARRAYSIZE>(
         selector.pseudo_value_id(), kPseudoLookupTable);
   }
 }
 
 void Converter::Visit(const Declaration& declaration) {
-  if (declaration.has_property_and_value())
+  if (declaration.has_property_and_value()) {
     Visit(declaration.property_and_value());
+  }
   // else empty
 }
 
@@ -769,11 +816,13 @@ void Converter::Visit(const PropertyAndValue& property_and_value) {
   Visit(property_and_value.property());
   string_ += " : ";
   int value_id = 0;
-  if (property_and_value.has_value_id())
+  if (property_and_value.has_value_id()) {
     value_id = property_and_value.value_id();
+  }
   Visit(property_and_value.expr(), value_id);
-  if (property_and_value.has_prio())
+  if (property_and_value.has_prio()) {
     string_ += " !important ";
+  }
 }
 
 void Converter::Visit(const Expr& expr, int declaration_value_id) {
@@ -783,8 +832,9 @@ void Converter::Visit(const Expr& expr, int declaration_value_id) {
     AppendTableValue<PropertyAndValue_ValueId_ValueId_ARRAYSIZE>(
         declaration_value_id, kValueLookupTable);
   }
-  for (auto& operator_term : expr.operator_terms())
+  for (auto& operator_term : expr.operator_terms()) {
     Visit(operator_term);
+  }
 }
 
 void Converter::Visit(const OperatorTerm& operator_term) {
@@ -793,33 +843,40 @@ void Converter::Visit(const OperatorTerm& operator_term) {
 }
 
 void Converter::Visit(const Term& term) {
-  if (term.has_unary_operator())
+  if (term.has_unary_operator()) {
     Visit(term.unary_operator());
+  }
 
-  if (term.has_term_part())
+  if (term.has_term_part()) {
     Visit(term.term_part());
-  else if (term.has_string())
+  } else if (term.has_string()) {
     Visit(term.string());
+  }
 
-  if (term.has_ident())
+  if (term.has_ident()) {
     Visit(term.ident());
-  if (term.has_uri())
+  }
+  if (term.has_uri()) {
     Visit(term.uri());
-  if (term.has_hexcolor())
+  }
+  if (term.has_hexcolor()) {
     Visit(term.hexcolor());
+  }
 }
 
 void Converter::Visit(const TermPart& term_part) {
-  if (term_part.has_number())
+  if (term_part.has_number()) {
     Visit(term_part.number());
+  }
   // S* | PERCENTAGE
   if (term_part.has_percentage()) {
     Visit(term_part.percentage());
     string_ += "%";
   }
   // S* | LENGTH
-  if (term_part.has_length())
+  if (term_part.has_length()) {
     Visit(term_part.length());
+  }
   // S* | EMS
   if (term_part.has_ems()) {
     Visit(term_part.ems());
@@ -831,14 +888,17 @@ void Converter::Visit(const TermPart& term_part) {
     string_ += "ex";
   }
   // S* | Angle
-  if (term_part.has_angle())
+  if (term_part.has_angle()) {
     Visit(term_part.angle());
+  }
   // S* | TIME
-  if (term_part.has_time())
+  if (term_part.has_time()) {
     Visit(term_part.time());
+  }
   // S* | FREQ
-  if (term_part.has_freq())
+  if (term_part.has_freq()) {
     Visit(term_part.freq());
+  }
   // S* | function
   if (term_part.has_function()) {
     Visit(term_part.function());
@@ -854,8 +914,9 @@ void Converter::Visit(const Function& function) {
 void Converter::Visit(const Hexcolor& hexcolor) {
   string_ += "#";
   Visit(hexcolor.first_three());
-  if (hexcolor.has_last_three())
+  if (hexcolor.has_last_three()) {
     Visit(hexcolor.last_three());
+  }
 }
 
 void Converter::Visit(const HexcolorThree& hexcolor_three) {
@@ -885,7 +946,8 @@ void Converter::AppendPropertyAndValue(
   AppendTableValue<EnumSize>(property_and_value.property().id(), lookup_table);
   string_ += " : ";
   Visit(property_and_value.value());
-  if (append_semicolon)
+  if (append_semicolon) {
     string_ += "; ";
+  }
 }
 }  // namespace css_proto_converter

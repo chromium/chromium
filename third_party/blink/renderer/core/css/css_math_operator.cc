@@ -10,8 +10,9 @@
 namespace blink {
 
 CSSMathOperator ParseCSSArithmeticOperator(const CSSParserToken& token) {
-  if (token.GetType() != kDelimiterToken)
+  if (token.GetType() != kDelimiterToken) {
     return CSSMathOperator::kInvalid;
+  }
   switch (token.Delimiter()) {
     case '+':
       return CSSMathOperator::kAdd;

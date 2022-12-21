@@ -129,8 +129,9 @@ inline bool SelectorFilter::FastRejectSelector(
   DCHECK(ancestor_identifier_filter_);
   for (unsigned n = 0; n < maximumIdentifierCount && identifier_hashes[n];
        ++n) {
-    if (!ancestor_identifier_filter_->MayContain(identifier_hashes[n]))
+    if (!ancestor_identifier_filter_->MayContain(identifier_hashes[n])) {
       return true;
+    }
   }
   return false;
 }

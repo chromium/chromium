@@ -42,8 +42,9 @@ std::unique_ptr<CachedCSSTokenizer> CSSTokenizer::CreateCachedTokenizer(
     const CSSParserToken token = tokenizer.NextToken();
     tokens.push_back(token);
     offsets.push_back(tokenizer.Offset());
-    if (token.GetType() == kEOFToken)
+    if (token.GetType() == kEOFToken) {
       break;
+    }
   }
   return std::make_unique<CachedCSSTokenizer>(
       input, std::move(tokens), std::move(offsets),
@@ -98,8 +99,9 @@ CSSParserToken CSSTokenizer::TokenizeSingle() {
   while (true) {
     prev_offset_ = input_.Offset();
     const CSSParserToken token = NextToken();
-    if (token.GetType() == kCommentToken)
+    if (token.GetType() == kCommentToken) {
       continue;
+    }
     return token;
   }
 }
@@ -183,8 +185,9 @@ CSSParserToken CSSTokenizer::PlusOrFullStop(UChar cc) {
 
 CSSParserToken CSSTokenizer::Asterisk(UChar cc) {
   DCHECK_EQ(cc, '*');
-  if (ConsumeIfNext('='))
+  if (ConsumeIfNext('=')) {
     return CSSParserToken(kSubstringMatchToken);
+  }
   return CSSParserToken(kDelimiterToken, '*');
 }
 
@@ -252,38 +255,44 @@ CSSParserToken CSSTokenizer::Hash(UChar cc) {
 
 CSSParserToken CSSTokenizer::CircumflexAccent(UChar cc) {
   DCHECK_EQ(cc, '^');
-  if (ConsumeIfNext('='))
+  if (ConsumeIfNext('=')) {
     return CSSParserToken(kPrefixMatchToken);
+  }
   return CSSParserToken(kDelimiterToken, '^');
 }
 
 CSSParserToken CSSTokenizer::DollarSign(UChar cc) {
   DCHECK_EQ(cc, '$');
-  if (ConsumeIfNext('='))
+  if (ConsumeIfNext('=')) {
     return CSSParserToken(kSuffixMatchToken);
+  }
   return CSSParserToken(kDelimiterToken, '$');
 }
 
 CSSParserToken CSSTokenizer::VerticalLine(UChar cc) {
   DCHECK_EQ(cc, '|');
-  if (ConsumeIfNext('='))
+  if (ConsumeIfNext('=')) {
     return CSSParserToken(kDashMatchToken);
-  if (ConsumeIfNext('|'))
+  }
+  if (ConsumeIfNext('|')) {
     return CSSParserToken(kColumnToken);
+  }
   return CSSParserToken(kDelimiterToken, '|');
 }
 
 CSSParserToken CSSTokenizer::Tilde(UChar cc) {
   DCHECK_EQ(cc, '~');
-  if (ConsumeIfNext('='))
+  if (ConsumeIfNext('=')) {
     return CSSParserToken(kIncludeMatchToken);
+  }
   return CSSParserToken(kDelimiterToken, '~');
 }
 
 CSSParserToken CSSTokenizer::CommercialAt(UChar cc) {
   DCHECK_EQ(cc, '@');
-  if (NextCharsAreIdentifier())
+  if (NextCharsAreIdentifier()) {
     return CSSParserToken(kAtKeywordToken, ConsumeName());
+  }
   return CSSParserToken(kDelimiterToken, '@');
 }
 
@@ -343,8 +352,9 @@ CSSParserToken CSSTokenizer::NextToken() {
   }
 
   ++token_count_;
-  if (code_point_func)
+  if (code_point_func) {
     return ((this)->*(code_point_func))(cc);
+  }
   return CSSParserToken(kDelimiterToken, cc);
 }
 
@@ -399,10 +409,11 @@ CSSParserToken CSSTokenizer::ConsumeNumber() {
 // http://www.w3.org/TR/css3-syntax/#consume-a-numeric-token
 CSSParserToken CSSTokenizer::ConsumeNumericToken() {
   CSSParserToken token = ConsumeNumber();
-  if (NextCharsAreIdentifier())
+  if (NextCharsAreIdentifier()) {
     token.ConvertToDimensionWithUnit(ConsumeName());
-  else if (ConsumeIfNext('%'))
+  } else if (ConsumeIfNext('%')) {
     token.ConvertToPercentage();
+  }
   return token;
 }
 
@@ -415,8 +426,9 @@ CSSParserToken CSSTokenizer::ConsumeIdentLikeToken() {
       // tokens, but they wouldn't be used and this is easier.
       input_.AdvanceUntilNonWhitespace();
       UChar next = input_.PeekWithoutReplacement(0);
-      if (next != '"' && next != '\'')
+      if (next != '"' && next != '\'') {
         return ConsumeUrlToken();
+      }
     }
     return BlockStart(kLeftParenthesisToken, kFunctionToken, name);
   }
@@ -437,8 +449,9 @@ CSSParserToken CSSTokenizer::ConsumeStringTokenUntil(UChar ending_code_point) {
       input_.Advance(size);
       return CSSParserToken(kBadStringToken);
     }
-    if (cc == '\0' || cc == '\\')
+    if (cc == '\0' || cc == '\\') {
       break;
+    }
   }
 
   StringBuilder output;
@@ -453,12 +466,14 @@ CSSParserToken CSSTokenizer::ConsumeStringTokenUntil(UChar ending_code_point) {
       return CSSParserToken(kBadStringToken);
     }
     if (cc == '\\') {
-      if (input_.NextInputChar() == kEndOfFileMarker)
+      if (input_.NextInputChar() == kEndOfFileMarker) {
         continue;
-      if (IsCSSNewLine(input_.PeekWithoutReplacement(0)))
+      }
+      if (IsCSSNewLine(input_.PeekWithoutReplacement(0))) {
         ConsumeSingleWhitespaceIfNext();  // This handles \r\n for us
-      else
+      } else {
         output.Append(ConsumeEscape());
+      }
     } else {
       output.Append(cc);
     }
@@ -518,15 +533,17 @@ CSSParserToken CSSTokenizer::ConsumeUrlToken() {
       return CSSParserToken(kUrlToken, input_.RangeAt(start_offset, size));
     }
     if (cc <= ' ' || cc == '\\' || cc == '"' || cc == '\'' || cc == '(' ||
-        cc == '\x7f')
+        cc == '\x7f') {
       break;
+    }
   }
 
   StringBuilder result;
   while (true) {
     UChar cc = Consume();
-    if (cc == ')' || cc == kEndOfFileMarker)
+    if (cc == ')' || cc == kEndOfFileMarker) {
       return CSSParserToken(kUrlToken, RegisterString(result.ReleaseString()));
+    }
 
     if (IsHTMLSpace(cc)) {
       input_.AdvanceUntilNonWhitespace();
@@ -537,8 +554,9 @@ CSSParserToken CSSTokenizer::ConsumeUrlToken() {
       break;
     }
 
-    if (cc == '"' || cc == '\'' || cc == '(' || IsNonPrintableCodePoint(cc))
+    if (cc == '"' || cc == '\'' || cc == '(' || IsNonPrintableCodePoint(cc)) {
       break;
+    }
 
     if (cc == '\\') {
       if (TwoCharsAreValidEscape(cc, input_.PeekWithoutReplacement(0))) {
@@ -559,10 +577,12 @@ CSSParserToken CSSTokenizer::ConsumeUrlToken() {
 void CSSTokenizer::ConsumeBadUrlRemnants() {
   while (true) {
     UChar cc = Consume();
-    if (cc == ')' || cc == kEndOfFileMarker)
+    if (cc == ')' || cc == kEndOfFileMarker) {
       return;
-    if (TwoCharsAreValidEscape(cc, input_.PeekWithoutReplacement(0)))
+    }
+    if (TwoCharsAreValidEscape(cc, input_.PeekWithoutReplacement(0))) {
       ConsumeEscape();
+    }
   }
 }
 
@@ -573,15 +593,17 @@ void CSSTokenizer::ConsumeSingleWhitespaceIfNext() {
 void CSSTokenizer::ConsumeUntilCommentEndFound() {
   UChar c = Consume();
   while (true) {
-    if (c == kEndOfFileMarker)
+    if (c == kEndOfFileMarker) {
       return;
+    }
     if (c != '*') {
       c = Consume();
       continue;
     }
     c = Consume();
-    if (c == '/')
+    if (c == '/') {
       return;
+    }
   }
 }
 
@@ -602,15 +624,18 @@ StringView CSSTokenizer::ConsumeName() {
   // Names without escapes get handled without allocations
   for (unsigned size = 0;; ++size) {
     UChar cc = input_.PeekWithoutReplacement(size);
-    if (IsNameCodePoint(cc))
+    if (IsNameCodePoint(cc)) {
       continue;
+    }
     // peekWithoutReplacement will return NUL when we hit the end of the
     // input. In that case we want to still use the rangeAt() fast path
     // below.
-    if (cc == '\0' && input_.Offset() + size < input_.length())
+    if (cc == '\0' && input_.Offset() + size < input_.length()) {
       break;
-    if (cc == '\\')
+    }
+    if (cc == '\\') {
       break;
+    }
     unsigned start_offset = input_.Offset();
     input_.Advance(size);
     return input_.RangeAt(start_offset, size);
@@ -632,13 +657,16 @@ bool CSSTokenizer::NextTwoCharsAreValidEscape() {
 // http://www.w3.org/TR/css3-syntax/#starts-with-a-number
 bool CSSTokenizer::NextCharsAreNumber(UChar first) {
   UChar second = input_.PeekWithoutReplacement(0);
-  if (IsASCIIDigit(first))
+  if (IsASCIIDigit(first)) {
     return true;
-  if (first == '+' || first == '-')
+  }
+  if (first == '+' || first == '-') {
     return ((IsASCIIDigit(second)) ||
             (second == '.' && IsASCIIDigit(input_.PeekWithoutReplacement(1))));
-  if (first == '.')
+  }
+  if (first == '.') {
     return (IsASCIIDigit(second));
+  }
   return false;
 }
 

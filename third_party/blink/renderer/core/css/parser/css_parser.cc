@@ -232,11 +232,13 @@ const CSSValue* CSSParser::ParseSingleValue(CSSPropertyID property_id,
                                             const String& string,
                                             const CSSParserContext* context) {
   DCHECK(ThreadState::Current()->IsAllocationAllowed());
-  if (string.empty())
+  if (string.empty()) {
     return nullptr;
+  }
   if (CSSValue* value = CSSParserFastPaths::MaybeParseValue(property_id, string,
-                                                            context->Mode()))
+                                                            context->Mode())) {
     return value;
+  }
   CSSTokenizer tokenizer(string);
   const auto tokens = tokenizer.TokenizeToEOF();
   return CSSPropertyParser::ParseSingleValue(
@@ -290,16 +292,18 @@ bool CSSParser::ParseSupportsCondition(
   CSSParserImpl parser(context);
   CSSSupportsParser::Result result =
       CSSSupportsParser::ConsumeSupportsCondition(stream, parser);
-  if (!stream.AtEnd())
+  if (!stream.AtEnd()) {
     result = CSSSupportsParser::Result::kParseFailure;
+  }
 
   return result == CSSSupportsParser::Result::kSupported;
 }
 
 bool CSSParser::ParseColor(Color& color, const String& string, bool strict) {
   DCHECK(ThreadState::Current()->IsAllocationAllowed());
-  if (string.empty())
+  if (string.empty()) {
     return false;
+  }
 
   // The regular color parsers don't resolve named colors, so explicitly
   // handle these first.
@@ -322,8 +326,9 @@ bool CSSParser::ParseColor(Color& color, const String& string, bool strict) {
   }
 
   auto* color_value = DynamicTo<cssvalue::CSSColor>(value);
-  if (!color_value)
+  if (!color_value) {
     return false;
+  }
 
   color = color_value->Value();
   return true;
@@ -333,8 +338,9 @@ bool CSSParser::ParseSystemColor(Color& color,
                                  const String& color_string,
                                  mojom::blink::ColorScheme color_scheme) {
   CSSValueID id = CssValueKeywordID(color_string);
-  if (!StyleColor::IsSystemColorIncludingDeprecated(id))
+  if (!StyleColor::IsSystemColorIncludingDeprecated(id)) {
     return false;
+  }
 
   color = LayoutTheme::GetTheme().SystemColor(id, color_scheme);
   return true;
@@ -355,8 +361,9 @@ const CSSValue* CSSParser::ParseFontFaceDescriptor(
 CSSPrimitiveValue* CSSParser::ParseLengthPercentage(
     const String& string,
     const CSSParserContext* context) {
-  if (string.empty() || !context)
+  if (string.empty() || !context) {
     return nullptr;
+  }
   CSSTokenizer tokenizer(string);
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
@@ -372,14 +379,17 @@ MutableCSSPropertyValueSet* CSSParser::ParseFont(
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   ParseValue(set, CSSPropertyID::kFont, string, true /* important */,
              execution_context);
-  if (set->IsEmpty())
+  if (set->IsEmpty()) {
     return nullptr;
+  }
   const CSSValue* font_size =
       set->GetPropertyCSSValue(CSSPropertyID::kFontSize);
-  if (!font_size || font_size->IsCSSWideKeyword())
+  if (!font_size || font_size->IsCSSWideKeyword()) {
     return nullptr;
-  if (font_size->IsPendingSubstitutionValue())
+  }
+  if (font_size->IsPendingSubstitutionValue()) {
     return nullptr;
+  }
   return set;
 }
 

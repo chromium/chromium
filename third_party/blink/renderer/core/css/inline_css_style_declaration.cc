@@ -35,11 +35,13 @@ MutableCSSPropertyValueSet& InlineCSSStyleDeclaration::PropertySet() const {
 }
 
 void InlineCSSStyleDeclaration::DidMutate(MutationType type) {
-  if (type == kNoChanges)
+  if (type == kNoChanges) {
     return;
+  }
 
-  if (!parent_element_)
+  if (!parent_element_) {
     return;
+  }
 
   parent_element_->NotifyInlineStyleMutation();
   parent_element_->ClearMutableInlineStyleIfEmpty();

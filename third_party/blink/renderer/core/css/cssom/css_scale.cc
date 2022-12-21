@@ -19,8 +19,9 @@ bool IsValidScaleCoord(CSSNumericValue* coord) {
   // constructor to resolve the valid type for 'calc'.
   if (coord && coord->GetType() != CSSStyleValue::StyleValueType::kUnitType) {
     const CSSMathExpressionNode* node = coord->ToCalcExpressionNode();
-    if (!node)
+    if (!node) {
       return false;
+    }
     CSSPrimitiveValue::UnitType resolved_type = node->ResolvedUnitType();
     return (resolved_type == CSSPrimitiveValue::UnitType::kNumber ||
             resolved_type == CSSPrimitiveValue::UnitType::kInteger);
@@ -179,10 +180,11 @@ DOMMatrix* CSSScale::toMatrix(ExceptionState& exception_state) const {
   }
 
   DOMMatrix* matrix = DOMMatrix::Create();
-  if (is2D())
+  if (is2D()) {
     matrix->scaleSelf(x->value(), y->value());
-  else
+  } else {
     matrix->scaleSelf(x->value(), y->value(), z->value());
+  }
 
   return matrix;
 }
@@ -190,8 +192,9 @@ DOMMatrix* CSSScale::toMatrix(ExceptionState& exception_state) const {
 const CSSFunctionValue* CSSScale::ToCSSValue() const {
   const CSSValue* x = x_->ToCSSValue();
   const CSSValue* y = y_->ToCSSValue();
-  if (!x || !y)
+  if (!x || !y) {
     return nullptr;
+  }
 
   CSSFunctionValue* result = MakeGarbageCollected<CSSFunctionValue>(
       is2D() ? CSSValueID::kScale : CSSValueID::kScale3d);
@@ -199,8 +202,9 @@ const CSSFunctionValue* CSSScale::ToCSSValue() const {
   result->Append(*y);
   if (!is2D()) {
     const CSSValue* z = z_->ToCSSValue();
-    if (!z)
+    if (!z) {
       return nullptr;
+    }
     result->Append(*z);
   }
   return result;

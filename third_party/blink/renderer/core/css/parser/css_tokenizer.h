@@ -36,8 +36,9 @@ class CORE_EXPORT CachedCSSTokenizer {
 
   wtf_size_t Offset() const { return offsets_[index_]; }
   wtf_size_t PreviousOffset() const {
-    if (index_ == 0)
+    if (index_ == 0) {
       return 0;
+    }
     return offsets_[index_ - 1];
   }
 
@@ -48,8 +49,9 @@ class CORE_EXPORT CachedCSSTokenizer {
   CSSParserToken TokenizeSingle() {
     while (true) {
       const CSSParserToken token = NextToken();
-      if (token.GetType() == kCommentToken)
+      if (token.GetType() == kCommentToken) {
         continue;
+      }
       return token;
     }
   }

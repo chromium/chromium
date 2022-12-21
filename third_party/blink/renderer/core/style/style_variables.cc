@@ -14,18 +14,22 @@ using OptionalData = StyleVariables::OptionalData;
 using OptionalValue = StyleVariables::OptionalValue;
 
 bool IsEqual(const OptionalData& a, const OptionalData& b) {
-  if (a.has_value() != b.has_value())
+  if (a.has_value() != b.has_value()) {
     return false;
-  if (!a.has_value())
+  }
+  if (!a.has_value()) {
     return true;
+  }
   return base::ValuesEquivalent(a.value(), b.value());
 }
 
 bool IsEqual(const OptionalValue& a, const OptionalValue& b) {
-  if (a.has_value() != b.has_value())
+  if (a.has_value() != b.has_value()) {
     return false;
-  if (!a.has_value())
+  }
+  if (!a.has_value()) {
     return true;
+  }
   return base::ValuesEquivalent(a.value(), b.value());
 }
 
@@ -45,8 +49,9 @@ StyleVariables& StyleVariables::operator=(const StyleVariables& other) {
 
 bool StyleVariables::operator==(const StyleVariables& other) const {
   if (data_.size() != other.data_.size() ||
-      values_->size() != other.values_->size())
+      values_->size() != other.values_->size()) {
     return false;
+  }
 
   if (equality_cache_partner_ == &other &&
       other.equality_cache_partner_ == this) {
@@ -78,16 +83,18 @@ bool StyleVariables::operator==(const StyleVariables& other) const {
 StyleVariables::OptionalData StyleVariables::GetData(
     const AtomicString& name) const {
   auto i = data_.find(name);
-  if (i != data_.end())
+  if (i != data_.end()) {
     return i->value.get();
+  }
   return absl::nullopt;
 }
 
 StyleVariables::OptionalValue StyleVariables::GetValue(
     const AtomicString& name) const {
   auto i = values_->find(name);
-  if (i != values_->end())
+  if (i != values_->end()) {
     return i->value;
+  }
   return absl::nullopt;
 }
 
@@ -107,8 +114,9 @@ bool StyleVariables::IsEmpty() const {
 }
 
 void StyleVariables::CollectNames(HashSet<AtomicString>& names) const {
-  for (const auto& pair : data_)
+  for (const auto& pair : data_) {
     names.insert(pair.key);
+  }
 }
 
 }  // namespace blink

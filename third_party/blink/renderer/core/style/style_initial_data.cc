@@ -13,8 +13,9 @@ StyleInitialData::StyleInitialData(Document& document,
                                    const PropertyRegistry& registry) {
   for (const auto& entry : registry) {
     const CSSValue* specified_initial_value = entry.value->Initial();
-    if (!specified_initial_value)
+    if (!specified_initial_value) {
       continue;
+    }
 
     const CSSValue* computed_initial_value =
         &StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(

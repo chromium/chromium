@@ -47,12 +47,14 @@ static String BuildCircleString(const String& radius,
   char separator[] = " ";
   StringBuilder result;
   result.Append("circle(");
-  if (!radius.IsNull())
+  if (!radius.IsNull()) {
     result.Append(radius);
+  }
 
   if (!center_x.IsNull() || !center_y.IsNull()) {
-    if (!radius.IsNull())
+    if (!radius.IsNull()) {
       result.Append(separator);
+    }
     result.Append(at);
     result.Append(separator);
     result.Append(center_x);
@@ -71,8 +73,10 @@ static String SerializePositionOffset(const CSSValuePair& offset,
            CSSValueID::kTop) ||
       (To<CSSIdentifierValue>(offset.First()).GetValueID() ==
            CSSValueID::kTop &&
-       To<CSSIdentifierValue>(other.First()).GetValueID() == CSSValueID::kLeft))
+       To<CSSIdentifierValue>(other.First()).GetValueID() ==
+           CSSValueID::kLeft)) {
     return offset.Second().CssText();
+  }
   return offset.CssText();
 }
 
@@ -105,12 +109,13 @@ static CSSValuePair* BuildSerializablePositionOffset(CSSValue* offset,
     amount = CSSNumericLiteralValue::Create(
         50, CSSPrimitiveValue::UnitType::kPercentage);
   } else if (!amount || (amount->IsLength() && amount->IsZero())) {
-    if (side == CSSValueID::kRight || side == CSSValueID::kBottom)
+    if (side == CSSValueID::kRight || side == CSSValueID::kBottom) {
       amount = CSSNumericLiteralValue::Create(
           100, CSSPrimitiveValue::UnitType::kPercentage);
-    else
+    } else {
       amount = CSSNumericLiteralValue::Create(
           0, CSSPrimitiveValue::UnitType::kPercentage);
+    }
     side = default_side;
   }
 
@@ -129,8 +134,9 @@ String CSSBasicShapeCircleValue::CustomCSSText() const {
   auto* radius_identifier_value = DynamicTo<CSSIdentifierValue>(radius_.Get());
   if (radius_ &&
       !(radius_identifier_value &&
-        radius_identifier_value->GetValueID() == CSSValueID::kClosestSide))
+        radius_identifier_value->GetValueID() == CSSValueID::kClosestSide)) {
     radius = radius_->CssText();
+  }
 
   return BuildCircleString(
       radius, SerializePositionOffset(*normalized_cx, *normalized_cy),
@@ -166,15 +172,17 @@ static String BuildEllipseString(const String& radius_x,
     needs_separator = true;
   }
   if (!radius_y.IsNull()) {
-    if (needs_separator)
+    if (needs_separator) {
       result.Append(separator);
+    }
     result.Append(radius_y);
     needs_separator = true;
   }
 
   if (!center_x.IsNull() || !center_y.IsNull()) {
-    if (needs_separator)
+    if (needs_separator) {
       result.Append(separator);
+    }
     result.Append(at);
     result.Append(separator);
     result.Append(center_x);
@@ -251,21 +259,24 @@ static String BuildPolygonString(const WindRule& wind_rule,
   // Compute the required capacity in advance to reduce allocations.
   wtf_size_t length = sizeof(kEvenOddOpening) - 1;
   for (wtf_size_t i = 0; i < points.size(); i += 2) {
-    if (i)
+    if (i) {
       length += (sizeof(kCommaSeparator) - 1);
+    }
     // add length of two strings, plus one for the space separator.
     length += points[i].length() + 1 + points[i + 1].length();
   }
   result.ReserveCapacity(length);
 
-  if (wind_rule == RULE_EVENODD)
+  if (wind_rule == RULE_EVENODD) {
     result.Append(kEvenOddOpening);
-  else
+  } else {
     result.Append(kNonZeroOpening);
+  }
 
   for (wtf_size_t i = 0; i < points.size(); i += 2) {
-    if (i)
+    if (i) {
       result.Append(kCommaSeparator);
+    }
     result.Append(points[i]);
     result.Append(' ');
     result.Append(points[i + 1]);
@@ -279,8 +290,9 @@ String CSSBasicShapePolygonValue::CustomCSSText() const {
   Vector<String> points;
   points.ReserveInitialCapacity(values_.size());
 
-  for (wtf_size_t i = 0; i < values_.size(); ++i)
+  for (wtf_size_t i = 0; i < values_.size(); ++i) {
     points.push_back(values_.at(i)->CssText());
+  }
 
   return BuildPolygonString(wind_rule_, points);
 }
@@ -308,12 +320,15 @@ static bool BuildInsetRadii(Vector<String>& radii,
       show_bottom_right || (top_right_radius != top_left_radius);
 
   radii.push_back(top_left_radius);
-  if (show_top_right)
+  if (show_top_right) {
     radii.push_back(top_right_radius);
-  if (show_bottom_right)
+  }
+  if (show_bottom_right) {
     radii.push_back(bottom_right_radius);
-  if (show_bottom_left)
+  }
+  if (show_bottom_left) {
     radii.push_back(bottom_left_radius);
+  }
 
   return radii.size() == 1 && radii[0] == "0px";
 }
@@ -449,8 +464,9 @@ static inline void UpdateCornerRadiusWidthAndHeight(
     const CSSValuePair* corner_radius,
     String& width,
     String& height) {
-  if (!corner_radius)
+  if (!corner_radius) {
     return;
+  }
 
   width = corner_radius->First().CssText();
   height = corner_radius->Second().CssText();

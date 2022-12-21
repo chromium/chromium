@@ -57,8 +57,9 @@ class CORE_EXPORT CSSMathClamp final : public CSSMathValue {
   StyleValueType GetType() const final { return CSSStyleValue::kClampType; }
 
   bool Equals(const CSSNumericValue& other) const final {
-    if (GetType() != other.GetType())
+    if (GetType() != other.GetType()) {
       return false;
+    }
 
     // We can safely cast here as we know 'other' has the same type as us.
     const auto& other_variadic = static_cast<const CSSMathClamp&>(other);
@@ -75,8 +76,9 @@ class CORE_EXPORT CSSMathClamp final : public CSSMathValue {
                                        bool& error) {
     error = false;
     auto final_type = op(lower->Type(), value->Type(), error);
-    if (error)
+    if (error) {
       return final_type;
+    }
 
     return op(final_type, upper->Type(), error);
   }

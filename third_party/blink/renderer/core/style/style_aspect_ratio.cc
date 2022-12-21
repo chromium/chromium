@@ -13,10 +13,12 @@ PhysicalSize StyleAspectRatio::LayoutRatioFromSizeF(gfx::SizeF ratio) {
   LayoutUnit width(ratio.width()), height(ratio.height());
   if ((width.ToFloat() == ratio.width() &&
        height.ToFloat() == ratio.height()) ||
-      ratio.IsEmpty())
+      ratio.IsEmpty()) {
     return {width, height};
-  if (ratio.width() == ratio.height())
+  }
+  if (ratio.width() == ratio.height()) {
     return {LayoutUnit(1), LayoutUnit(1)};
+  }
 
   // If we can't get a precise ratio we use the continued fraction algorithm to
   // get an approximation. See: https://en.wikipedia.org/wiki/Continued_fraction
@@ -31,12 +33,14 @@ PhysicalSize StyleAspectRatio::LayoutRatioFromSizeF(gfx::SizeF ratio) {
   // iterations to reach our desired error.
   for (wtf_size_t i = 0; i < 16; ++i) {
     // Break if we've gone Inf, or NaN.
-    if (!std::isfinite(x))
+    if (!std::isfinite(x)) {
       break;
+    }
     // Break if we've hit a good approximation.
     float estimate = static_cast<float>(h1) / k1;
-    if (fabs(initial - estimate) < 0.000001f)
+    if (fabs(initial - estimate) < 0.000001f) {
       break;
+    }
 
     int a = floorf(x);
     ClampedInt h2 = (h1 * a) + h0;
@@ -44,8 +48,9 @@ PhysicalSize StyleAspectRatio::LayoutRatioFromSizeF(gfx::SizeF ratio) {
 
     // Break if we've saturated (the ratio becomes meaningless).
     if (h2 == std::numeric_limits<int>::max() ||
-        k2 == std::numeric_limits<int>::max())
+        k2 == std::numeric_limits<int>::max()) {
       break;
+    }
 
     // Update our convergents.
     h0 = h1, k0 = k1, h1 = h2, k1 = k2;
@@ -53,8 +58,9 @@ PhysicalSize StyleAspectRatio::LayoutRatioFromSizeF(gfx::SizeF ratio) {
   }
 
   // Don't return an invalid ratio - instead just return the truncated ratio.
-  if (h1 == 0 || k1 == 0)
+  if (h1 == 0 || k1 == 0) {
     return {width, height};
+  }
 
   return {LayoutUnit::FromRawValue(h1.RawValue()),
           LayoutUnit::FromRawValue(k1.RawValue())};

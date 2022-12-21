@@ -27,26 +27,31 @@ CSSValueList* CreateBorderImageValue(CSSValue* image,
                                      CSSValue* outset,
                                      CSSValue* repeat) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (image)
+  if (image) {
     list->Append(*image);
+  }
 
   if (border_slice || outset) {
     CSSValueList* list_slash = CSSValueList::CreateSlashSeparated();
-    if (image_slice)
+    if (image_slice) {
       list_slash->Append(*image_slice);
+    }
 
-    if (border_slice)
+    if (border_slice) {
       list_slash->Append(*border_slice);
+    }
 
-    if (outset)
+    if (outset) {
       list_slash->Append(*outset);
+    }
 
     list->Append(*list_slash);
   } else if (image_slice) {
     list->Append(*image_slice);
   }
-  if (repeat)
+  if (repeat) {
     list->Append(*repeat);
+  }
   return list;
 }
 

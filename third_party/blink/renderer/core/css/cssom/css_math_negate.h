@@ -46,8 +46,9 @@ class CORE_EXPORT CSSMathNegate : public CSSMathValue {
   }
 
   bool Equals(const CSSNumericValue& other) const final {
-    if (other.GetType() != kNegateType)
+    if (other.GetType() != kNegateType) {
       return false;
+    }
 
     // We can safely cast here as we know 'other' has the same type as us.
     const auto& other_negate = static_cast<const CSSMathNegate&>(other);

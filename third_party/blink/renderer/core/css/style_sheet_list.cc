@@ -42,8 +42,9 @@ inline const HeapVector<Member<StyleSheet>>& StyleSheetList::StyleSheets()
 }
 
 unsigned StyleSheetList::length() {
-  if (!tree_scope_)
+  if (!tree_scope_) {
     return style_sheet_vector_.size();
+  }
   return StyleSheets().size();
 }
 
@@ -57,8 +58,9 @@ StyleSheet* StyleSheetList::item(unsigned index) {
 }
 
 HTMLStyleElement* StyleSheetList::GetNamedItem(const AtomicString& name) const {
-  if (!tree_scope_)
+  if (!tree_scope_) {
     return nullptr;
+  }
 
   // IE also supports retrieving a stylesheet by name, using the name/id of the
   // <style> tag (this is consistent with all the other collections) ### Bad
@@ -76,8 +78,9 @@ CSSStyleSheet* StyleSheetList::AnonymousNamedGetter(const AtomicString& name) {
                       WebFeature::kStyleSheetListAnonymousNamedGetter);
   }
   HTMLStyleElement* item = GetNamedItem(name);
-  if (!item)
+  if (!item) {
     return nullptr;
+  }
   CSSStyleSheet* sheet = item->sheet();
   if (sheet) {
     UseCounter::Count(*GetDocument(),

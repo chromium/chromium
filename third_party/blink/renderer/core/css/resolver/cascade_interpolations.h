@@ -69,8 +69,9 @@ class CORE_EXPORT CascadeInterpolations {
   const Vector<Entry, 4>& GetEntries() const {
     using EntryVector = Vector<Entry, 4>;
     DEFINE_STATIC_LOCAL(EntryVector, empty, ());
-    if (entries_.size() > kMaxEntryIndex + 1)
+    if (entries_.size() > kMaxEntryIndex + 1) {
       return empty;
+    }
     return entries_;
   }
 

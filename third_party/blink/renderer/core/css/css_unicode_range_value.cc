@@ -31,8 +31,9 @@ namespace blink {
 namespace cssvalue {
 
 String CSSUnicodeRangeValue::CustomCSSText() const {
-  if (from_ == to_)
+  if (from_ == to_) {
     return String::Format("U+%X", from_);
+  }
   return String::Format("U+%X-%X", from_, to_);
 }
 

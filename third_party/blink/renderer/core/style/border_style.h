@@ -49,11 +49,13 @@ class BorderStyle {
   // (in ComputedStyle itself)
   bool VisuallyEqual(const BorderStyle& o) const {
     if (style_ == static_cast<unsigned>(EBorderStyle::kNone) &&
-        o.style_ == static_cast<unsigned>(EBorderStyle::kNone))
+        o.style_ == static_cast<unsigned>(EBorderStyle::kNone)) {
       return true;
+    }
     if (style_ == static_cast<unsigned>(EBorderStyle::kHidden) &&
-        o.style_ == static_cast<unsigned>(EBorderStyle::kHidden))
+        o.style_ == static_cast<unsigned>(EBorderStyle::kHidden)) {
       return true;
+    }
     return *this == o;
   }
 

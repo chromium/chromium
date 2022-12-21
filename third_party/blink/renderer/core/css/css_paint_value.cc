@@ -66,16 +66,18 @@ String CSSPaintValue::GetName() const {
 const Vector<CSSPropertyID>* CSSPaintValue::NativeInvalidationProperties(
     const Document& document) const {
   auto it = generators_.find(&document);
-  if (it == generators_.end())
+  if (it == generators_.end()) {
     return nullptr;
+  }
   return &it->value->NativeInvalidationProperties();
 }
 
 const Vector<AtomicString>* CSSPaintValue::CustomInvalidationProperties(
     const Document& document) const {
   auto it = generators_.find(&document);
-  if (it == generators_.end())
+  if (it == generators_.end()) {
     return nullptr;
+  }
   return &it->value->CustomInvalidationProperties();
 }
 
@@ -83,8 +85,9 @@ bool CSSPaintValue::IsUsingCustomProperty(
     const AtomicString& custom_property_name,
     const Document& document) const {
   auto it = generators_.find(&document);
-  if (it == generators_.end() || !it->value->IsImageGeneratorReady())
+  if (it == generators_.end() || !it->value->IsImageGeneratorReady()) {
     return false;
+  }
   return it->value->CustomInvalidationProperties().Contains(
       custom_property_name);
 }
@@ -106,19 +109,22 @@ scoped_refptr<Image> CSSPaintValue::GetImage(
     const gfx::SizeF& target_size) {
   // https://crbug.com/835589: early exit when paint target is associated with
   // a link.
-  if (style.InsideLink() != EInsideLink::kNotInsideLink)
+  if (style.InsideLink() != EInsideLink::kNotInsideLink) {
     return nullptr;
+  }
 
   CSSPaintImageGenerator& generator = EnsureGenerator(document);
 
   // If the generator isn't ready yet, we have nothing to paint. Our
   // |paint_image_generator_observer_| will cause us to be called again once the
   // generator is ready.
-  if (!generator.IsImageGeneratorReady())
+  if (!generator.IsImageGeneratorReady()) {
     return nullptr;
+  }
 
-  if (!ParseInputArguments(document))
+  if (!ParseInputArguments(document)) {
     return nullptr;
+  }
 
   // TODO(crbug.com/946515): Break dependency on LayoutObject.
   const LayoutObject& layout_object = static_cast<const LayoutObject&>(client);
@@ -171,8 +177,9 @@ scoped_refptr<Image> CSSPaintValue::GetImage(
 void CSSPaintValue::BuildInputArgumentValues(
     Vector<std::unique_ptr<CrossThreadStyleValue>>&
         cross_thread_input_arguments) {
-  if (!parsed_input_arguments_)
+  if (!parsed_input_arguments_) {
     return;
+  }
   for (const auto& style_value : *parsed_input_arguments_) {
     std::unique_ptr<CrossThreadStyleValue> cross_thread_style =
         ComputedStyleUtils::CrossThreadStyleValueFromCSSStyleValue(style_value);
@@ -181,12 +188,14 @@ void CSSPaintValue::BuildInputArgumentValues(
 }
 
 bool CSSPaintValue::ParseInputArguments(const Document& document) {
-  if (input_arguments_invalid_)
+  if (input_arguments_invalid_) {
     return false;
+  }
 
   if (parsed_input_arguments_ ||
-      !RuntimeEnabledFeatures::CSSPaintAPIArgumentsEnabled())
+      !RuntimeEnabledFeatures::CSSPaintAPIArgumentsEnabled()) {
     return true;
+  }
 
   auto it = generators_.find(&document);
   if (it == generators_.end()) {

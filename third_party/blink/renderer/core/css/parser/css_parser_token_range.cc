@@ -18,10 +18,12 @@ void CSSParserTokenRange::InitStaticEOFToken() {
 CSSParserTokenRange CSSParserTokenRange::MakeSubRange(
     const CSSParserToken* first,
     const CSSParserToken* last) const {
-  if (first == &g_static_eof_token)
+  if (first == &g_static_eof_token) {
     first = last_;
-  if (last == &g_static_eof_token)
+  }
+  if (last == &g_static_eof_token) {
     last = last_;
+  }
   DCHECK_LE(first, last);
   return CSSParserTokenRange(first, last);
 }
@@ -32,14 +34,16 @@ CSSParserTokenRange CSSParserTokenRange::ConsumeBlock() {
   unsigned nesting_level = 0;
   do {
     const CSSParserToken& token = Consume();
-    if (token.GetBlockType() == CSSParserToken::kBlockStart)
+    if (token.GetBlockType() == CSSParserToken::kBlockStart) {
       nesting_level++;
-    else if (token.GetBlockType() == CSSParserToken::kBlockEnd)
+    } else if (token.GetBlockType() == CSSParserToken::kBlockEnd) {
       nesting_level--;
+    }
   } while (nesting_level && first_ < last_);
 
-  if (nesting_level)
+  if (nesting_level) {
     return MakeSubRange(start, first_);  // Ended at EOF
+  }
   return MakeSubRange(start, first_ - 1);
 }
 
@@ -50,10 +54,11 @@ void CSSParserTokenRange::ConsumeComponentValue() {
   unsigned nesting_level = 0;
   do {
     const CSSParserToken& token = Consume();
-    if (token.GetBlockType() == CSSParserToken::kBlockStart)
+    if (token.GetBlockType() == CSSParserToken::kBlockStart) {
       nesting_level++;
-    else if (token.GetBlockType() == CSSParserToken::kBlockEnd)
+    } else if (token.GetBlockType() == CSSParserToken::kBlockEnd) {
       nesting_level--;
+    }
   } while (nesting_level && first_ < last_);
 }
 
@@ -63,8 +68,9 @@ String CSSParserTokenRange::Serialize() const {
   // and CSS Paint API arguments we just get these cases wrong and avoid the
   // additional complexity.
   StringBuilder builder;
-  for (const CSSParserToken* it = first_; it != last_; ++it)
+  for (const CSSParserToken* it = first_; it != last_; ++it) {
     it->Serialize(builder);
+  }
   return builder.ReleaseString();
 }
 

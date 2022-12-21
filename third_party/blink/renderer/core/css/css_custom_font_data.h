@@ -40,8 +40,9 @@ class CSSCustomFontData final : public CustomFontData {
   ~CSSCustomFontData() override = default;
 
   bool ShouldSkipDrawing() const override {
-    if (font_face_source_)
+    if (font_face_source_) {
       font_face_source_->PaintRequested();
+    }
     return fallback_visibility_ == kInvisibleFallback && is_loading_;
   }
 
@@ -63,8 +64,9 @@ class CSSCustomFontData final : public CustomFontData {
  private:
   CSSCustomFontData(CSSFontFaceSource* source, FallbackVisibility visibility)
       : font_face_source_(source), fallback_visibility_(visibility) {
-    if (source)
+    if (source) {
       is_loading_ = source->IsLoading();
+    }
   }
 
   // TODO(Oilpan): consider moving (Custom)FontFace hierarchy to the heap,

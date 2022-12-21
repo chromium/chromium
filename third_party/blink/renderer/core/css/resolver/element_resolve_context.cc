@@ -40,8 +40,9 @@ ElementResolveContext::ElementResolveContext(Element& element)
   layout_parent_ = LayoutTreeBuilderTraversal::LayoutParent(element);
 
   if (auto* document_element = element.GetDocument().documentElement()) {
-    if (element != document_element)
+    if (element != document_element) {
       root_element_style_ = document_element->GetComputedStyle();
+    }
   }
 }
 

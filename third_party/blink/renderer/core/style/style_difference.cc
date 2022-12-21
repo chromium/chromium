@@ -37,8 +37,9 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
   for (int i = 0; i < StyleDifference::kPropertyDifferenceCount; i++) {
     unsigned bit_test = 1 << i;
     if (diff.property_specific_differences_ & bit_test) {
-      if (diff_count++ > 0)
+      if (diff_count++ > 0) {
         out << "|";
+      }
       switch (bit_test) {
         case StyleDifference::kTransformPropertyChanged:
           out << "TransformPropertyChanged";

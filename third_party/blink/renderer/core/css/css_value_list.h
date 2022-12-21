@@ -30,7 +30,6 @@
 namespace blink {
 
 class CORE_EXPORT CSSValueList : public CSSValue {
-
  public:
   using iterator = HeapVector<Member<const CSSValue>, 4>::iterator;
   using const_iterator = HeapVector<Member<const CSSValue>, 4>::const_iterator;

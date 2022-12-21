@@ -23,8 +23,9 @@ Element* ClosestInclusiveAncestorContainer(Element& element,
       NOTREACHED();
       return nullptr;
     }
-    if (style->IsContainerForSizeContainerQueries())
+    if (style->IsContainerForSizeContainerQueries()) {
       return container;
+    }
   }
   return nullptr;
 }
@@ -38,8 +39,9 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
 
 StyleRecalcContext StyleRecalcContext::FromAncestors(Element& element) {
   // TODO(crbug.com/1145970): Avoid this work if we're not inside a container
-  if (Element* shadow_including_parent = element.ParentOrShadowHostElement())
+  if (Element* shadow_including_parent = element.ParentOrShadowHostElement()) {
     return FromInclusiveAncestors(*shadow_including_parent);
+  }
   return StyleRecalcContext();
 }
 
@@ -47,14 +49,16 @@ StyleRecalcContext StyleRecalcContext::ForSlotChildren(
     const HTMLSlotElement& slot) const {
   // If the container is in a different tree scope, it is already in the shadow-
   // including inclusive ancestry of the host.
-  if (!container || container->GetTreeScope() != slot.GetTreeScope())
+  if (!container || container->GetTreeScope() != slot.GetTreeScope()) {
     return *this;
+  }
 
   // No assigned nodes means we will render the light tree children of the
   // slot as a fallback. Those children are in the same tree scope as the slot
   // which means the current container is the correct one.
-  if (slot.AssignedNodes().empty())
+  if (slot.AssignedNodes().empty()) {
     return *this;
+  }
 
   // The slot's flat tree children are children of the slot's shadow host, and
   // their container is in the shadow-including inclusive ancestors of the host.
@@ -80,8 +84,9 @@ StyleRecalcContext StyleRecalcContext::ForSlottedRules(
 StyleRecalcContext StyleRecalcContext::ForPartRules(Element& host) const {
   DCHECK(IsShadowHost(host));
 
-  if (!container)
+  if (!container) {
     return *this;
+  }
 
   // The closest container for matching ::part rules is the originating host.
   return StyleRecalcContext{ClosestInclusiveAncestorContainer(host)};

@@ -21,8 +21,9 @@ String StyleRuleKeyframe::KeyText() const {
 
   StringBuilder key_text;
   for (unsigned i = 0; i < keys_.size(); ++i) {
-    if (i)
+    if (i) {
       key_text.Append(", ");
+    }
     if (keys_.at(i).phase != Timing::TimelineNamedPhase::kNone) {
       key_text.Append(Timing::TimelineRangeNameToString(keys_.at(i).phase));
       key_text.Append(" ");
@@ -42,8 +43,9 @@ bool StyleRuleKeyframe::SetKeyText(const ExecutionContext* execution_context,
 
   std::unique_ptr<Vector<KeyframeOffset>> keys =
       CSSParser::ParseKeyframeKeyList(context, key_text);
-  if (!keys || keys->empty())
+  if (!keys || keys->empty()) {
     return false;
+  }
 
   keys_ = *keys;
   return true;
@@ -54,8 +56,9 @@ const Vector<KeyframeOffset>& StyleRuleKeyframe::Keys() const {
 }
 
 MutableCSSPropertyValueSet& StyleRuleKeyframe::MutableProperties() {
-  if (!properties_->IsMutable())
+  if (!properties_->IsMutable()) {
     properties_ = properties_->MutableCopy();
+  }
   return *To<MutableCSSPropertyValueSet>(properties_.Get());
 }
 
@@ -65,8 +68,9 @@ String StyleRuleKeyframe::CssText() const {
   result.Append(" { ");
   String decls = properties_->AsText();
   result.Append(decls);
-  if (!decls.empty())
+  if (!decls.empty()) {
     result.Append(' ');
+  }
   result.Append('}');
   return result.ReleaseString();
 }

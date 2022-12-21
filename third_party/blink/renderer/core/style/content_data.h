@@ -96,8 +96,9 @@ class ImageContentData final : public ContentData {
                                    LegacyLayout) const override;
 
   bool Equals(const ContentData& data) const override {
-    if (!data.IsImage())
+    if (!data.IsImage()) {
       return false;
+    }
     return *static_cast<const ImageContentData&>(data).GetImage() ==
            *GetImage();
   }
@@ -135,8 +136,9 @@ class TextContentData final : public ContentData {
                                    LegacyLayout) const override;
 
   bool Equals(const ContentData& data) const override {
-    if (!data.IsText())
+    if (!data.IsText()) {
       return false;
+    }
     return static_cast<const TextContentData&>(data).GetText() == GetText();
   }
 
@@ -168,8 +170,9 @@ class AltTextContentData final : public ContentData {
                                    LegacyLayout) const override;
 
   bool Equals(const ContentData& data) const override {
-    if (!data.IsAltText())
+    if (!data.IsAltText()) {
       return false;
+    }
     return static_cast<const AltTextContentData&>(data).GetText() == GetText();
   }
 
@@ -219,8 +222,9 @@ class CounterContentData final : public ContentData {
   }
 
   bool Equals(const ContentData& data) const override {
-    if (!data.IsCounter())
+    if (!data.IsCounter()) {
       return false;
+    }
     const CounterContentData& other =
         static_cast<const CounterContentData&>(data);
     return Identifier() == other.Identifier() &&
@@ -257,8 +261,9 @@ class QuoteContentData final : public ContentData {
                                    LegacyLayout) const override;
 
   bool Equals(const ContentData& data) const override {
-    if (!data.IsQuote())
+    if (!data.IsQuote()) {
       return false;
+    }
     return static_cast<const QuoteContentData&>(data).Quote() == Quote();
   }
 
@@ -317,12 +322,15 @@ inline bool operator==(const ContentData& a, const ContentData& b) {
 // element, there can be at most one piece of image content data, followed by
 // some optional alternative text.
 inline bool ShouldUseContentDataForElement(const ContentData* content_data) {
-  if (!content_data)
+  if (!content_data) {
     return false;
-  if (!content_data->IsImage())
+  }
+  if (!content_data->IsImage()) {
     return false;
-  if (content_data->Next() && !content_data->Next()->IsAltText())
+  }
+  if (content_data->Next() && !content_data->Next()->IsAltText()) {
     return false;
+  }
 
   return true;
 }

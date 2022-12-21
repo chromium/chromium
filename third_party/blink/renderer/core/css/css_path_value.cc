@@ -49,8 +49,9 @@ const CSSPathValue& CSSPathValue::EmptyPathValue() {
 String CSSPathValue::CustomCSSText() const {
   StringBuilder result;
   result.Append("path(");
-  if (style_path_->GetWindRule() == RULE_EVENODD)
+  if (style_path_->GetWindRule() == RULE_EVENODD) {
     result.Append("evenodd, ");
+  }
   result.Append("\"");
   result.Append(BuildStringFromByteStream(ByteStream(), serialization_format_));
   result.Append("\")");

@@ -14,8 +14,9 @@ CSSStyleValue* CrossThreadKeywordValue::ToCSSStyleValue() {
 
 bool CrossThreadKeywordValue::operator==(
     const CrossThreadStyleValue& other) const {
-  if (auto* o = DynamicTo<CrossThreadKeywordValue>(other))
+  if (auto* o = DynamicTo<CrossThreadKeywordValue>(other)) {
     return keyword_value_ == o->keyword_value_;
+  }
   return false;
 }
 

@@ -110,8 +110,9 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   wtf_size_t IndexOfNextSelectorAfter(wtf_size_t index) const {
     const CSSSelector& current = SelectorAt(index);
     const CSSSelector* next = Next(current);
-    if (!next)
+    if (!next) {
       return kNotFound;
+    }
     return SelectorIndex(*next);
   }
 
@@ -146,8 +147,9 @@ inline const CSSSelector* CSSSelectorList::Next(const CSSSelector& current) {
 inline CSSSelector* CSSSelectorList::Next(CSSSelector& current) {
   // Skip subparts of compound selectors.
   CSSSelector* last = &current;
-  while (!last->IsLastInTagHistory())
+  while (!last->IsLastInTagHistory()) {
     last++;
+  }
   return last->IsLastInSelectorList() ? nullptr : last + 1;
 }
 

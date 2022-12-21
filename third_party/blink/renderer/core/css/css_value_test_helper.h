@@ -50,7 +50,7 @@ namespace internal {
 //
 // Work around is to define this custom IsNullLiteralHelper.
 char (&IsNullLiteralHelper(const blink::CSSValue&))[2];
-}
+}  // namespace internal
 }  // namespace testing
 
 namespace blink {

@@ -179,8 +179,9 @@ StyleEngineTest::ScheduleInvalidationsForRules(TreeScope& tree_scope,
       sheet->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()),
                            kRuleHasDocumentSecurityOrigin);
   rule_set.CompactRulesIfNeeded();
-  if (rule_set.NeedsFullRecalcForRuleSetInvalidation())
+  if (rule_set.NeedsFullRecalcForRuleSetInvalidation()) {
     return kRuleSetInvalidationFullRecalc;
+  }
   rule_sets.insert(&rule_set);
   GetStyleEngine().ScheduleInvalidationsForRuleSets(tree_scope, rule_sets);
   return kRuleSetInvalidationsScheduled;
@@ -5656,8 +5657,9 @@ TEST_F(StyleEngineSimTest, ContainerQueryLegacyNoWarning) {
 
 TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddContainer) {
   // For the ng-disabled bots:
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
     return;
+  }
 
   ScopedLayoutNGTableFragmentationForTest disabled_scope(false);
 
@@ -5689,8 +5691,9 @@ TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddContainer) {
 
 TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddTable) {
   // For the ng-disabled bots:
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
     return;
+  }
 
   ScopedLayoutNGTableFragmentationForTest disabled_scope(false);
 
@@ -5722,8 +5725,9 @@ TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddTable) {
 
 TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddColumns) {
   // For the ng-disabled bots:
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
     return;
+  }
 
   ScopedLayoutNGTableFragmentationForTest disabled_scope(false);
 

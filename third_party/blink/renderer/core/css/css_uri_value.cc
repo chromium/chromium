@@ -28,16 +28,18 @@ CSSURIValue::CSSURIValue(const AtomicString& relative_url, const KURL& url)
 CSSURIValue::~CSSURIValue() = default;
 
 SVGResource* CSSURIValue::EnsureResourceReference() const {
-  if (!resource_)
+  if (!resource_) {
     resource_ = MakeGarbageCollected<ExternalSVGResource>(AbsoluteUrl());
+  }
   return resource_;
 }
 
 void CSSURIValue::ReResolveUrl(const Document& document) const {
   KURL url = document.CompleteURL(relative_url_);
   AtomicString url_string(url.GetString());
-  if (url_string == absolute_url_)
+  if (url_string == absolute_url_) {
     return;
+  }
   absolute_url_ = url_string;
   resource_ = nullptr;
 }
@@ -81,10 +83,12 @@ bool CSSURIValue::IsLocal(const Document& document) const {
 
 bool CSSURIValue::Equals(const CSSURIValue& other) const {
   // If only one has the 'local url' flag set, the URLs can't match.
-  if (is_local_ != other.is_local_)
+  if (is_local_ != other.is_local_) {
     return false;
-  if (is_local_)
+  }
+  if (is_local_) {
     return relative_url_ == other.relative_url_;
+  }
   return absolute_url_ == other.absolute_url_;
 }
 

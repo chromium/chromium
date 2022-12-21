@@ -201,10 +201,11 @@ class CORE_EXPORT CSSParserTokenStream {
       const CSSParserToken& token = UncheckedConsumeInternal();
       buffer_.push_back(token);
 
-      if (token.GetBlockType() == CSSParserToken::kBlockStart)
+      if (token.GetBlockType() == CSSParserToken::kBlockStart) {
         nesting_level++;
-      else if (token.GetBlockType() == CSSParserToken::kBlockEnd)
+      } else if (token.GetBlockType() == CSSParserToken::kBlockEnd) {
         nesting_level--;
+      }
     } while (!PeekInternal().IsEOF() && nesting_level);
   }
 

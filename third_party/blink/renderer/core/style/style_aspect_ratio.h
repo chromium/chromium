@@ -27,8 +27,9 @@ class CORE_EXPORT StyleAspectRatio {
   // 0/x and x/0 are valid (and computed style needs to serialize them
   // as such), but they are not useful for layout, so we map it to auto here.
   EAspectRatioType GetType() const {
-    if (layout_ratio_.IsEmpty())
+    if (layout_ratio_.IsEmpty()) {
       return EAspectRatioType::kAuto;
+    }
     return GetTypeForComputedStyle();
   }
 

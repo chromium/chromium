@@ -23,22 +23,26 @@ ASSERT_SIZE(CSSPropertyName, SameSizeAsCSSPropertyName);
 }  // namespace
 
 bool CSSPropertyName::operator==(const CSSPropertyName& other) const {
-  if (value_ != other.value_)
+  if (value_ != other.value_) {
     return false;
-  if (value_ != static_cast<int>(CSSPropertyID::kVariable))
+  }
+  if (value_ != static_cast<int>(CSSPropertyID::kVariable)) {
     return true;
+  }
   return custom_property_name_ == other.custom_property_name_;
 }
 
 AtomicString CSSPropertyName::ToAtomicString() const {
-  if (IsCustomProperty())
+  if (IsCustomProperty()) {
     return custom_property_name_;
+  }
   return CSSProperty::Get(Id()).GetPropertyNameAtomicString();
 }
 
 unsigned CSSPropertyName::GetHash() const {
-  if (IsCustomProperty())
+  if (IsCustomProperty()) {
     return AtomicStringHash::GetHash(custom_property_name_);
+  }
   return value_;
 }
 

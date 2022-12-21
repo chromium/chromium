@@ -73,11 +73,13 @@ void StyleFetchedImage::Prefinalize() {
 }
 
 bool StyleFetchedImage::IsEqual(const StyleImage& other) const {
-  if (!other.IsImageResource())
+  if (!other.IsImageResource()) {
     return false;
+  }
   const auto& other_image = To<StyleFetchedImage>(other);
-  if (image_ != other_image.image_)
+  if (image_ != other_image.image_) {
     return false;
+  }
   return url_ == other_image.url_;
 }
 
@@ -115,8 +117,9 @@ bool StyleFetchedImage::ErrorOccurred() const {
 
 bool StyleFetchedImage::IsAccessAllowed(String& failing_url) const {
   DCHECK(image_->IsLoaded());
-  if (image_->IsAccessAllowed())
+  if (image_->IsAccessAllowed()) {
     return true;
+  }
   failing_url = image_->Url().ElidedString();
   return false;
 }
@@ -139,8 +142,9 @@ gfx::SizeF StyleFetchedImage::ImageSize(
 
 bool StyleFetchedImage::HasIntrinsicSize() const {
   const Image& image = *image_->GetImage();
-  if (auto* svg_image = DynamicTo<SVGImage>(image))
+  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     return HasIntrinsicDimensionsForSVGImage(*svg_image);
+  }
   return image.HasIntrinsicSize();
 }
 
@@ -153,8 +157,9 @@ void StyleFetchedImage::RemoveClient(ImageResourceObserver* observer) {
 }
 
 void StyleFetchedImage::ImageNotifyFinished(ImageResourceContent*) {
-  if (!document_)
+  if (!document_) {
     return;
+  }
 
   if (image_ && image_->HasImage()) {
     Image& image = *image_->GetImage();
@@ -171,8 +176,9 @@ void StyleFetchedImage::ImageNotifyFinished(ImageResourceContent*) {
     image_->RecordDecodedImageType(document_->GetExecutionContext());
   }
 
-  if (LocalDOMWindow* window = document_->domWindow())
+  if (LocalDOMWindow* window = document_->domWindow()) {
     ImageElementTiming::From(*window).NotifyBackgroundImageFinished(this);
+  }
 
   // Oilpan: do not prolong the Document's lifetime.
   document_.Clear();
@@ -190,8 +196,9 @@ scoped_refptr<Image> StyleFetchedImage::GetImage(
   }
 
   auto* svg_image = DynamicTo<SVGImage>(image);
-  if (!svg_image)
+  if (!svg_image) {
     return image;
+  }
   return SVGImageForContainer::Create(
       svg_image, target_size, style.EffectiveZoom(), url_,
       document.GetStyleEngine().ResolveColorSchemeForEmbedding(&style));
@@ -213,12 +220,14 @@ RespectImageOrientationEnum StyleFetchedImage::ForceOrientationIfNecessary(
     RespectImageOrientationEnum default_orientation) const {
   // SVG Images don't have orientation and assert on loading when
   // IsAccessAllowed is called.
-  if (image_->GetImage()->IsSVGImage())
+  if (image_->GetImage()->IsSVGImage()) {
     return default_orientation;
+  }
   // Cross-origin images must always respect orientation to prevent
   // potentially private data leakage.
-  if (!image_->IsAccessAllowed())
+  if (!image_->IsAccessAllowed()) {
     return kRespectImageOrientation;
+  }
   return default_orientation;
 }
 

@@ -119,25 +119,30 @@ CSSValue* CSSValue::Create(const Length& value, float zoom) {
 }
 
 bool CSSValue::HasFailedOrCanceledSubresources() const {
-  if (IsValueList())
+  if (IsValueList()) {
     return To<CSSValueList>(this)->HasFailedOrCanceledSubresources();
-  if (GetClassType() == kFontFaceSrcClass)
+  }
+  if (GetClassType() == kFontFaceSrcClass) {
     return To<CSSFontFaceSrcValue>(this)->HasFailedOrCanceledSubresources();
-  if (GetClassType() == kImageClass)
+  }
+  if (GetClassType() == kImageClass) {
     return To<CSSImageValue>(this)->HasFailedOrCanceledSubresources();
+  }
   if (GetClassType() == kCrossfadeClass) {
     return To<cssvalue::CSSCrossfadeValue>(this)
         ->HasFailedOrCanceledSubresources();
   }
-  if (GetClassType() == kImageSetClass)
+  if (GetClassType() == kImageSetClass) {
     return To<CSSImageSetValue>(this)->HasFailedOrCanceledSubresources();
+  }
 
   return false;
 }
 
 bool CSSValue::MayContainUrl() const {
-  if (IsValueList())
+  if (IsValueList()) {
     return To<CSSValueList>(*this).MayContainUrl();
+  }
   return IsImageValue() || IsURIValue();
 }
 

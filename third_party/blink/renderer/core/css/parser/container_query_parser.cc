@@ -30,17 +30,20 @@ namespace {
 template <typename Func>
 const MediaQueryExpNode* ConsumeNotAndOr(Func func,
                                          CSSParserTokenRange& range) {
-  if (ConsumeIfIdent(range, "not"))
+  if (ConsumeIfIdent(range, "not")) {
     return MediaQueryExpNode::Not(func(range));
+  }
 
   const MediaQueryExpNode* result = func(range);
 
   if (AtIdent(range.Peek(), "and")) {
-    while (result && ConsumeIfIdent(range, "and"))
+    while (result && ConsumeIfIdent(range, "and")) {
       result = MediaQueryExpNode::And(result, func(range));
+    }
   } else if (AtIdent(range.Peek(), "or")) {
-    while (ConsumeIfIdent(range, "or"))
+    while (ConsumeIfIdent(range, "or")) {
       result = MediaQueryExpNode::Or(result, func(range));
+    }
   }
 
   return result;
@@ -119,8 +122,9 @@ const MediaQueryExpNode* ContainerQueryParser::ParseCondition(
     CSSParserTokenRange range) {
   range.ConsumeWhitespace();
   const MediaQueryExpNode* node = ConsumeContainerCondition(range);
-  if (!range.AtEnd())
+  if (!range.AtEnd()) {
     return nullptr;
+  }
   return node;
 }
 
@@ -141,14 +145,16 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
     CSSParserTokenRange original_block = block;
     // <size-feature>
     const MediaQueryExpNode* query = ConsumeFeature(block, SizeFeatureSet());
-    if (query && block.AtEnd())
+    if (query && block.AtEnd()) {
       return MediaQueryExpNode::Nested(query);
+    }
     block = original_block;
 
     // <container-condition>
     const MediaQueryExpNode* condition = ConsumeContainerCondition(block);
-    if (condition && block.AtEnd())
+    if (condition && block.AtEnd()) {
       return MediaQueryExpNode::Nested(condition);
+    }
   } else if (RuntimeEnabledFeatures::CSSStyleQueriesEnabled() &&
              range.Peek().GetType() == kFunctionToken &&
              range.Peek().FunctionId() == CSSValueID::kStyle) {
@@ -182,8 +188,9 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQuery(
     const FeatureSet& feature_set) {
   CSSParserTokenRange original_range = range;
 
-  if (const MediaQueryExpNode* feature = ConsumeFeature(range, feature_set))
+  if (const MediaQueryExpNode* feature = ConsumeFeature(range, feature_set)) {
     return feature;
+  }
   range = original_range;
 
   if (const MediaQueryExpNode* node =
@@ -204,8 +211,9 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQueryInParens(
     block.ConsumeWhitespace();
     range.ConsumeWhitespace();
     const MediaQueryExpNode* query = ConsumeFeatureQuery(block, feature_set);
-    if (query && block.AtEnd())
+    if (query && block.AtEnd()) {
       return MediaQueryExpNode::Nested(query);
+    }
   }
   range = original_range;
 

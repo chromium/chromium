@@ -20,8 +20,9 @@ namespace blink {
 
 unsigned int ComputedStylePropertyMap::size() const {
   const ComputedStyle* style = UpdateStyle();
-  if (!style)
+  if (!style) {
     return 0;
+  }
 
   DCHECK(StyledElement());
   const Document& document = StyledElement()->GetDocument();
@@ -38,8 +39,9 @@ bool ComputedStylePropertyMap::ComparePropertyNames(
     const CSSPropertyName& name_b) {
   AtomicString a = name_a.ToAtomicString();
   AtomicString b = name_b.ToAtomicString();
-  if (a.StartsWith("--"))
+  if (a.StartsWith("--")) {
     return b.StartsWith("--") && WTF::CodeUnitCompareLessThan(a, b);
+  }
   if (a.StartsWith("-")) {
     return b.StartsWith("--") ||
            (b.StartsWith("-") && WTF::CodeUnitCompareLessThan(a, b));
@@ -86,8 +88,9 @@ const ComputedStyle* ComputedStylePropertyMap::UpdateStyle() const {
 const CSSValue* ComputedStylePropertyMap::GetProperty(
     CSSPropertyID property_id) const {
   const ComputedStyle* style = UpdateStyle();
-  if (!style)
+  if (!style) {
     return nullptr;
+  }
 
   return ComputedStyleUtils::ComputedPropertyValue(
       CSSProperty::Get(property_id), *style);
@@ -96,8 +99,9 @@ const CSSValue* ComputedStylePropertyMap::GetProperty(
 const CSSValue* ComputedStylePropertyMap::GetCustomProperty(
     const AtomicString& property_name) const {
   const ComputedStyle* style = UpdateStyle();
-  if (!style)
+  if (!style) {
     return nullptr;
+  }
   CSSPropertyRef ref(property_name, element_->GetDocument());
   return ref.GetProperty().CSSValueFromComputedStyle(
       *style, nullptr /* layout_object */, false /* allow_visited_style */);
@@ -105,8 +109,9 @@ const CSSValue* ComputedStylePropertyMap::GetCustomProperty(
 
 void ComputedStylePropertyMap::ForEachProperty(IterationFunction visitor) {
   const ComputedStyle* style = UpdateStyle();
-  if (!style)
+  if (!style) {
     return;
+  }
 
   DCHECK(StyledElement());
   const Document& document = StyledElement()->GetDocument();
@@ -120,8 +125,9 @@ void ComputedStylePropertyMap::ForEachProperty(IterationFunction visitor) {
     DCHECK(!property->IDEquals(CSSPropertyID::kVariable));
     const CSSValue* value = property->CSSValueFromComputedStyle(
         *style, nullptr /* layout_object */, false);
-    if (value)
+    if (value) {
       values.emplace_back(CSSPropertyName(property->PropertyID()), value);
+    }
   }
 
   const PropertyRegistry* registry = document.GetPropertyRegistry();
@@ -135,16 +141,18 @@ void ComputedStylePropertyMap::ForEachProperty(IterationFunction visitor) {
     return ComparePropertyNames(a.first, b.first);
   });
 
-  for (const auto& value : values)
+  for (const auto& value : values) {
     visitor(value.first, *value.second);
+  }
 }
 
 String ComputedStylePropertyMap::SerializationForShorthand(
     const CSSProperty& property) const {
   DCHECK(property.IsShorthand());
   const ComputedStyle* style = UpdateStyle();
-  if (!style)
+  if (!style) {
     return "";
+  }
 
   if (const CSSValue* value = property.CSSValueFromComputedStyle(
           *style, nullptr /* layout_object */, false)) {

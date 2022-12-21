@@ -32,9 +32,10 @@ namespace blink {
 namespace cssvalue {
 
 String CSSReflectValue::CustomCSSText() const {
-  if (mask_)
+  if (mask_) {
     return direction_->CssText() + ' ' + offset_->CssText() + ' ' +
            mask_->CssText();
+  }
   return direction_->CssText() + ' ' + offset_->CssText();
 }
 

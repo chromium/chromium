@@ -44,25 +44,31 @@ bool CalculationExpressionAnchorQueryNode::operator==(
     const CalculationExpressionNode& other) const {
   const auto* other_anchor_query =
       DynamicTo<CalculationExpressionAnchorQueryNode>(other);
-  if (!other_anchor_query)
+  if (!other_anchor_query) {
     return false;
-  if (type_ != other_anchor_query->type_)
+  }
+  if (type_ != other_anchor_query->type_) {
     return false;
-  if (!base::ValuesEquivalent(anchor_name_, other_anchor_query->anchor_name_))
+  }
+  if (!base::ValuesEquivalent(anchor_name_, other_anchor_query->anchor_name_)) {
     return false;
+  }
   if (type_ == AnchorQueryType::kAnchor) {
-    if (AnchorSide() != other_anchor_query->AnchorSide())
+    if (AnchorSide() != other_anchor_query->AnchorSide()) {
       return false;
+    }
     if (AnchorSide() == AnchorValue::kPercentage &&
         AnchorSidePercentage() != other_anchor_query->AnchorSidePercentage()) {
       return false;
     }
   } else {
-    if (AnchorSize() != other_anchor_query->AnchorSize())
+    if (AnchorSize() != other_anchor_query->AnchorSize()) {
       return false;
+    }
   }
-  if (fallback_ != other_anchor_query->fallback_)
+  if (fallback_ != other_anchor_query->fallback_) {
     return false;
+  }
   return true;
 }
 

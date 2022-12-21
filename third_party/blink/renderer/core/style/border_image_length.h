@@ -72,8 +72,9 @@ class BorderImageLength {
   }
 
   bool IsZero() const {
-    if (IsLength())
+    if (IsLength()) {
       return length_.IsZero();
+    }
 
     DCHECK(IsNumber());
     return !number_;

@@ -57,16 +57,19 @@ String CSSMediaRule::conditionText() const {
 }
 
 String CSSMediaRule::ConditionTextInternal() const {
-  if (!MediaQueries())
+  if (!MediaQueries()) {
     return String();
+  }
   return MediaQueries()->MediaText();
 }
 
 MediaList* CSSMediaRule::media() {
-  if (!MediaQueries())
+  if (!MediaQueries()) {
     return nullptr;
-  if (!media_cssom_wrapper_)
+  }
+  if (!media_cssom_wrapper_) {
     media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(this);
+  }
   return media_cssom_wrapper_.Get();
 }
 

@@ -52,10 +52,11 @@ class CORE_EXPORT CSSNumericValueType {
   void SetExponent(BaseType type, int new_value) {
     DCHECK_LT(type, BaseType::kNumBaseTypes);
     int& old_value = exponents_[static_cast<unsigned>(type)];
-    if (old_value == 0 && new_value != 0)
+    if (old_value == 0 && new_value != 0) {
       num_non_zero_entries_++;
-    else if (old_value != 0 && new_value == 0)
+    } else if (old_value != 0 && new_value == 0) {
       num_non_zero_entries_--;
+    }
     old_value = new_value;
   }
 

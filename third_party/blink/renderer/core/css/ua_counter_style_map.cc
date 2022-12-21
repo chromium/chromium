@@ -16,8 +16,9 @@ bool IsPredefinedSymbolMarkerName(const AtomicString& name) {
   static const char* predefined_symbol_markers[] = {
       "disc", "square", "circle", "disclosure-open", "disclosure-closed"};
   for (const char* predefined_name : predefined_symbol_markers) {
-    if (predefined_name == name)
+    if (predefined_name == name) {
       return true;
+    }
   }
   return false;
 }
@@ -487,8 +488,9 @@ CounterStyleMap* CounterStyleMap::CreateUACounterStyleMap() {
   // For UA counter style map, we only insert the names now, and defer the
   // creation of the CounterStyle objects until requested, so that we don't
   // waste memory on unused rules.
-  for (const AtomicString& name : GetUACounterStyleRules().Keys())
+  for (const AtomicString& name : GetUACounterStyleRules().Keys()) {
     map->counter_styles_.Set(name, nullptr);
+  }
   return map;
 }
 
@@ -512,14 +514,17 @@ CounterStyle& CounterStyleMap::CreateUACounterStyle(const AtomicString& name) {
   DCHECK(counter_style) << "Predefined counter style " << name
                         << " has invalid symbols";
   counter_style->SetIsPredefined();
-  if (IsPredefinedSymbolMarkerName(name))
+  if (IsPredefinedSymbolMarkerName(name)) {
     counter_style->SetIsPredefinedSymbolMarker();
+  }
   counter_styles_.Set(name, counter_style);
 
-  if (counter_style->HasUnresolvedExtends())
+  if (counter_style->HasUnresolvedExtends()) {
     ResolveExtendsFor(*counter_style);
-  if (counter_style->HasUnresolvedFallback())
+  }
+  if (counter_style->HasUnresolvedFallback()) {
     ResolveFallbackFor(*counter_style);
+  }
 
   return *counter_style;
 }

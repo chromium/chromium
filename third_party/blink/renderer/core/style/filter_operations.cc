@@ -42,13 +42,15 @@ FilterOperations& FilterOperations::operator=(const FilterOperations& other) =
     default;
 
 bool FilterOperations::operator==(const FilterOperations& o) const {
-  if (operations_.size() != o.operations_.size())
+  if (operations_.size() != o.operations_.size()) {
     return false;
+  }
 
   unsigned s = operations_.size();
   for (unsigned i = 0; i < s; i++) {
-    if (*operations_[i] != *o.operations_[i])
+    if (*operations_[i] != *o.operations_[i]) {
       return false;
+    }
   }
 
   return true;
@@ -66,8 +68,9 @@ bool FilterOperations::CanInterpolateWith(const FilterOperations& other) const {
   wtf_size_t common_size =
       std::min(Operations().size(), other.Operations().size());
   for (wtf_size_t i = 0; i < common_size; ++i) {
-    if (!Operations()[i]->IsSameType(*other.Operations()[i]))
+    if (!Operations()[i]->IsSameType(*other.Operations()[i])) {
       return false;
+    }
   }
   return true;
 }
@@ -100,15 +103,17 @@ bool FilterOperations::HasReferenceFilter() const {
 
 void FilterOperations::AddClient(SVGResourceClient& client) const {
   for (FilterOperation* operation : operations_) {
-    if (operation->GetType() == FilterOperation::OperationType::kReference)
+    if (operation->GetType() == FilterOperation::OperationType::kReference) {
       To<ReferenceFilterOperation>(*operation).AddClient(client);
+    }
   }
 }
 
 void FilterOperations::RemoveClient(SVGResourceClient& client) const {
   for (FilterOperation* operation : operations_) {
-    if (operation->GetType() == FilterOperation::OperationType::kReference)
+    if (operation->GetType() == FilterOperation::OperationType::kReference) {
       To<ReferenceFilterOperation>(*operation).RemoveClient(client);
+    }
   }
 }
 

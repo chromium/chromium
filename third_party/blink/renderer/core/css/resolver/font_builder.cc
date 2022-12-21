@@ -64,8 +64,9 @@ FontFamily FontBuilder::StandardFontFamily() const {
 AtomicString FontBuilder::StandardFontFamilyName() const {
   if (document_) {
     Settings* settings = document_->GetSettings();
-    if (settings)
+    if (settings) {
       return settings->GetGenericFontFamilySettings().Standard();
+    }
   }
   return AtomicString();
 }
@@ -255,8 +256,9 @@ void FontBuilder::SetSize(FontDescription& font_description,
                           const FontDescription::Size& size) {
   float specified_size = size.value;
 
-  if (specified_size < 0)
+  if (specified_size < 0) {
     return;
+  }
 
   Set(PropertySetFlag::kSize);
 
@@ -284,8 +286,9 @@ float FontBuilder::GetComputedSizeFromSpecifiedSize(
   float zoom_factor = effective_zoom;
   // Apply the text zoom factor preference. The preference is exposed in
   // accessibility settings in Chrome for Android to improve readability.
-  if (LocalFrame* frame = document_->GetFrame())
+  if (LocalFrame* frame = document_->GetFrame()) {
     zoom_factor *= frame->TextZoomFactor();
+  }
 
   return FontSizeFunctions::GetComputedSizeFromSpecifiedSize(
       document_, zoom_factor, font_description.IsAbsoluteSize(),
@@ -296,16 +299,19 @@ void FontBuilder::CheckForGenericFamilyChange(
     const FontDescription& parent_description,
     FontDescription& new_description) {
   DCHECK(document_);
-  if (new_description.IsAbsoluteSize())
+  if (new_description.IsAbsoluteSize()) {
     return;
+  }
 
-  if (new_description.IsMonospace() == parent_description.IsMonospace())
+  if (new_description.IsMonospace() == parent_description.IsMonospace()) {
     return;
+  }
 
   // For now, lump all families but monospace together.
   if (new_description.GenericFamily() != FontDescription::kMonospaceFamily &&
-      parent_description.GenericFamily() != FontDescription::kMonospaceFamily)
+      parent_description.GenericFamily() != FontDescription::kMonospaceFamily) {
     return;
+  }
 
   // We know the parent is monospace or the child is monospace, and that font
   // size was unspecified. We want to scale our font size as appropriate.
@@ -336,9 +342,10 @@ void FontBuilder::UpdateSpecifiedSize(
     const FontDescription& parent_description) {
   float specified_size = font_description.SpecifiedSize();
 
-  if (!specified_size && font_description.KeywordSize())
+  if (!specified_size && font_description.KeywordSize()) {
     specified_size = FontSizeForKeyword(font_description.KeywordSize(),
                                         font_description.IsMonospace());
+  }
   font_description.SetSpecifiedSize(specified_size);
 
   CheckForGenericFamilyChange(parent_description, font_description);
@@ -351,8 +358,9 @@ void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
   // without font-size-adjust applied and apply the font-size-adjust to end up
   // at a new adjusted_size.
   const float computed_size = font_description.ComputedSize();
-  if (!font_description.HasSizeAdjust() || !computed_size)
+  if (!font_description.HasSizeAdjust() || !computed_size) {
     return;
+  }
 
   // We need to create a temporal Font to get xHeight of a primary font.
   // The aspect value is based on the xHeight of the font for the computed font
@@ -364,8 +372,9 @@ void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
 
   const SimpleFontData* font_data = font.PrimaryFont();
 
-  if (!font_data || !font_data->GetFontMetrics().HasXHeight())
+  if (!font_data || !font_data->GetFontMetrics().HasXHeight()) {
     return;
+  }
 
   const float size_adjust = font_description.SizeAdjust();
   float aspect_value = font_data->GetFontMetrics().XHeight() / computed_size;
@@ -396,28 +405,39 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
     description.SetIsAbsoluteSize(font_description_.IsAbsoluteSize());
   }
 
-  if (IsSet(PropertySetFlag::kSizeAdjust))
+  if (IsSet(PropertySetFlag::kSizeAdjust)) {
     description.SetSizeAdjust(font_description_.SizeAdjust());
-  if (IsSet(PropertySetFlag::kWeight))
+  }
+  if (IsSet(PropertySetFlag::kWeight)) {
     description.SetWeight(font_description_.Weight());
-  if (IsSet(PropertySetFlag::kStretch))
+  }
+  if (IsSet(PropertySetFlag::kStretch)) {
     description.SetStretch(font_description_.Stretch());
-  if (IsSet(PropertySetFlag::kFeatureSettings))
+  }
+  if (IsSet(PropertySetFlag::kFeatureSettings)) {
     description.SetFeatureSettings(font_description_.FeatureSettings());
-  if (IsSet(PropertySetFlag::kLocale))
+  }
+  if (IsSet(PropertySetFlag::kLocale)) {
     description.SetLocale(font_description_.Locale());
-  if (IsSet(PropertySetFlag::kStyle))
+  }
+  if (IsSet(PropertySetFlag::kStyle)) {
     description.SetStyle(font_description_.Style());
-  if (IsSet(PropertySetFlag::kVariantCaps))
+  }
+  if (IsSet(PropertySetFlag::kVariantCaps)) {
     description.SetVariantCaps(font_description_.VariantCaps());
-  if (IsSet(PropertySetFlag::kVariantEastAsian))
+  }
+  if (IsSet(PropertySetFlag::kVariantEastAsian)) {
     description.SetVariantEastAsian(font_description_.VariantEastAsian());
-  if (IsSet(PropertySetFlag::kVariantLigatures))
+  }
+  if (IsSet(PropertySetFlag::kVariantLigatures)) {
     description.SetVariantLigatures(font_description_.GetVariantLigatures());
-  if (IsSet(PropertySetFlag::kVariantNumeric))
+  }
+  if (IsSet(PropertySetFlag::kVariantNumeric)) {
     description.SetVariantNumeric(font_description_.VariantNumeric());
-  if (IsSet(PropertySetFlag::kVariationSettings))
+  }
+  if (IsSet(PropertySetFlag::kVariationSettings)) {
     description.SetVariationSettings(font_description_.VariationSettings());
+  }
   if (IsSet(PropertySetFlag::kFontSynthesisWeight)) {
     description.SetFontSynthesisWeight(
         font_description_.GetFontSynthesisWeight());
@@ -430,23 +450,29 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
     description.SetFontSynthesisSmallCaps(
         font_description_.GetFontSynthesisSmallCaps());
   }
-  if (IsSet(PropertySetFlag::kTextRendering))
+  if (IsSet(PropertySetFlag::kTextRendering)) {
     description.SetTextRendering(font_description_.TextRendering());
-  if (IsSet(PropertySetFlag::kKerning))
+  }
+  if (IsSet(PropertySetFlag::kKerning)) {
     description.SetKerning(font_description_.GetKerning());
-  if (IsSet(PropertySetFlag::kFontOpticalSizing))
+  }
+  if (IsSet(PropertySetFlag::kFontOpticalSizing)) {
     description.SetFontOpticalSizing(font_description_.FontOpticalSizing());
-  if (IsSet(PropertySetFlag::kFontPalette))
+  }
+  if (IsSet(PropertySetFlag::kFontPalette)) {
     description.SetFontPalette(font_description_.GetFontPalette());
+  }
   if (IsSet(PropertySetFlag::kFontVariantAlternates)) {
     description.SetFontVariantAlternates(
         font_description_.GetFontVariantAlternates());
   }
-  if (IsSet(PropertySetFlag::kFontSmoothing))
+  if (IsSet(PropertySetFlag::kFontSmoothing)) {
     description.SetFontSmoothing(font_description_.FontSmoothing());
+  }
   if (IsSet(PropertySetFlag::kTextOrientation) ||
-      IsSet(PropertySetFlag::kWritingMode))
+      IsSet(PropertySetFlag::kWritingMode)) {
     description.SetOrientation(font_orientation);
+  }
   if (IsSet(PropertySetFlag::kVariantPosition)) {
     description.SetVariantPosition(font_description_.VariantPosition());
   }
@@ -459,8 +485,9 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
 
   description.SetSpecifiedSize(size);
   description.SetComputedSize(size);
-  if (size && description.HasSizeAdjust())
+  if (size && description.HasSizeAdjust()) {
     description.SetAdjustedSize(size);
+  }
 }
 
 FontSelector* FontBuilder::FontSelectorFromTreeScope(
@@ -477,18 +504,20 @@ FontSelector* FontBuilder::FontSelectorFromTreeScope(
 
 FontSelector* FontBuilder::ComputeFontSelector(
     const ComputedStyleBuilder& builder) {
-  if (IsSet(PropertySetFlag::kFamily))
+  if (IsSet(PropertySetFlag::kFamily)) {
     return FontSelectorFromTreeScope(family_tree_scope_);
-  else
+  } else {
     return builder.GetFont().GetFontSelector();
+  }
 }
 
 void FontBuilder::CreateFont(ComputedStyleBuilder& builder,
                              const ComputedStyle* parent_style) {
   DCHECK(document_);
 
-  if (!flags_)
+  if (!flags_) {
     return;
+  }
 
   // TODO(crbug.com/1086680): Avoid nullptr parent style.
   const FontDescription& parent_description =

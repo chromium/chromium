@@ -181,13 +181,15 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
                                             const String& value) {
   base::CheckedNumeric<unsigned> first_dimension_size = first_dimension;
   ++first_dimension_size;
-  if (!first_dimension_size.IsValid())
+  if (!first_dimension_size.IsValid()) {
     return;
+  }
 
   base::CheckedNumeric<unsigned> second_dimension_size = second_dimension;
   ++second_dimension_size;
-  if (!second_dimension_size.IsValid())
+  if (!second_dimension_size.IsValid()) {
     return;
+  }
 
   CSSTokenizer tokenizer(value);
   Vector<CSSParserToken> tokens;
@@ -206,8 +208,9 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
     values_to_set = &it->value;
   }
 
-  if (first_dimension_size.ValueOrDie() > values_to_set->size())
+  if (first_dimension_size.ValueOrDie() > values_to_set->size()) {
     values_to_set->Grow(first_dimension_size.ValueOrDie());
+  }
 
   if (second_dimension_size.ValueOrDie() >
       (*values_to_set)[first_dimension].size()) {
@@ -254,20 +257,24 @@ CSSVariableData* StyleEnvironmentVariables::ResolveVariable(
     WTF::Vector<unsigned> indices) {
   if (indices.size() == 0u) {
     auto result = data_.find(name);
-    if (result == data_.end() && parent_)
+    if (result == data_.end() && parent_) {
       return parent_->ResolveVariable(name, std::move(indices));
-    if (result == data_.end())
+    }
+    if (result == data_.end()) {
       return nullptr;
+    }
     return result->value.get();
   } else if (indices.size() == 2u) {
     auto result = two_dimension_data_.find(name);
-    if (result == two_dimension_data_.end() && parent_)
+    if (result == two_dimension_data_.end() && parent_) {
       return parent_->ResolveVariable(name, std::move(indices));
+    }
 
     unsigned first_dimension = indices[0];
     unsigned second_dimension = indices[1];
-    if (result == two_dimension_data_.end())
+    if (result == two_dimension_data_.end()) {
       return nullptr;
+    }
     if (first_dimension >= result->value.size() ||
         second_dimension >= result->value[first_dimension].size()) {
       return nullptr;
@@ -283,8 +290,9 @@ void StyleEnvironmentVariables::DetachFromParent() {
 
   // Remove any reference the |parent| has to |this|.
   auto it = parent_->children_.Find(this);
-  if (it != kNotFound)
+  if (it != kNotFound) {
     parent_->children_.EraseAt(it);
+  }
 
   parent_ = nullptr;
 }
@@ -301,8 +309,9 @@ void StyleEnvironmentVariables::ClearForTesting() {
   data_.clear();
 
   // If we are the root then we should re-apply the default variables.
-  if (!parent_)
+  if (!parent_) {
     SetDefaultEnvironmentVariables(this);
+  }
 }
 
 void StyleEnvironmentVariables::BindToParent(
@@ -323,8 +332,9 @@ void StyleEnvironmentVariables::ParentInvalidatedVariable(
 }
 
 void StyleEnvironmentVariables::InvalidateVariable(const AtomicString& name) {
-  for (auto& it : children_)
+  for (auto& it : children_) {
     it->ParentInvalidatedVariable(name);
+  }
 }
 
 }  // namespace blink

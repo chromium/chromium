@@ -27,8 +27,7 @@ namespace blink {
 const char FontFaceSetWorker::kSupplementName[] = "FontFaceSetWorker";
 
 FontFaceSetWorker::FontFaceSetWorker(WorkerGlobalScope& worker)
-    : FontFaceSet(worker), Supplement<WorkerGlobalScope>(worker) {
-}
+    : FontFaceSet(worker), Supplement<WorkerGlobalScope>(worker) {}
 
 FontFaceSetWorker::~FontFaceSetWorker() = default;
 
@@ -61,24 +60,28 @@ ScriptPromise FontFaceSetWorker::ready(ScriptState* script_state) {
 }
 
 void FontFaceSetWorker::FireDoneEventIfPossible() {
-  if (should_fire_loading_event_)
+  if (should_fire_loading_event_) {
     return;
-  if (!ShouldSignalReady())
+  }
+  if (!ShouldSignalReady()) {
     return;
+  }
 
   FireDoneEvent();
 }
 
 bool FontFaceSetWorker::ResolveFontStyle(const String& font_string,
                                          Font& font) {
-  if (font_string.empty())
+  if (font_string.empty()) {
     return false;
+  }
 
   // Interpret fontString in the same way as the 'font' attribute of
   // CanvasRenderingContext2D.
   auto* parsed_style = CSSParser::ParseFont(font_string, GetExecutionContext());
-  if (!parsed_style)
+  if (!parsed_style) {
     return false;
+  }
 
   FontFamily font_family;
   font_family.SetFamily(

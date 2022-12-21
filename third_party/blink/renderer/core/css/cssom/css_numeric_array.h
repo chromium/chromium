@@ -27,8 +27,9 @@ class CORE_EXPORT CSSNumericArray final : public ScriptWrappable {
 
   unsigned length() const { return values_.size(); }
   CSSNumericValue* AnonymousIndexedGetter(unsigned index) {
-    if (index < values_.size())
+    if (index < values_.size()) {
       return values_[index].Get();
+    }
     return nullptr;
   }
 

@@ -35,8 +35,9 @@ StyleRuleFontPaletteValues::StyleRuleFontPaletteValues(
 StyleRuleFontPaletteValues::~StyleRuleFontPaletteValues() = default;
 
 AtomicString StyleRuleFontPaletteValues::GetFontFamilyAsString() const {
-  if (!font_family_ || !font_family_->IsFontFamilyValue())
+  if (!font_family_ || !font_family_->IsFontFamilyValue()) {
     return g_empty_atom;
+  }
 
   return To<CSSFontFamilyValue>(*font_family_).Value();
 }
@@ -72,8 +73,9 @@ FontPalette::BasePaletteValue StyleRuleFontPaletteValues::GetBasePaletteIndex()
 
 Vector<FontPalette::FontPaletteOverride>
 StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
-  if (!override_colors_ || !override_colors_->IsValueList())
+  if (!override_colors_ || !override_colors_->IsValueList()) {
     return {};
+  }
 
   // Note: This function should not allocate Oilpan object, e.g. `CSSValue`,
   // because this function is called in font threads to determine primary

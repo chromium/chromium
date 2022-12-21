@@ -59,8 +59,9 @@ String CSSPropertyRule::name() const {
 }
 
 String CSSPropertyRule::syntax() const {
-  if (const CSSValue* syntax = property_rule_->GetSyntax())
+  if (const CSSValue* syntax = property_rule_->GetSyntax()) {
     return To<CSSStringValue>(*syntax).Value();
+  }
   return g_null_atom;
 }
 
@@ -80,8 +81,9 @@ bool CSSPropertyRule::inherits() const {
 }
 
 String CSSPropertyRule::initialValue() const {
-  if (const CSSValue* initial = property_rule_->GetInitialValue())
+  if (const CSSValue* initial = property_rule_->GetInitialValue()) {
     return initial->CssText();
+  }
   return g_null_atom;
 }
 

@@ -31,8 +31,9 @@ class CSSPropertyTest : public PageTestBase {
   const CSSValue* Parse(String name, String value) {
     auto* set = css_test_helpers::ParseDeclarationBlock(name + ":" + value);
     DCHECK(set);
-    if (set->PropertyCount() != 1)
+    if (set->PropertyCount() != 1) {
       return nullptr;
+    }
     return &set->PropertyAt(0).Value();
   }
 
@@ -100,8 +101,9 @@ TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
   for (CSSPropertyID property_id : CSSPropertyIDList()) {
     const CSSProperty& property = CSSProperty::Get(property_id);
     const CSSProperty* visited = property.GetVisitedProperty();
-    if (!visited)
+    if (!visited) {
       continue;
+    }
 
     // Get any value compatible with 'property'. The initial value will do.
     const CSSValue* initial_value = property.CSSValueFromComputedStyle(

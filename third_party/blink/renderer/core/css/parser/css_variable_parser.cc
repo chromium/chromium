@@ -29,13 +29,15 @@ bool ClassifyBlock(CSSParserTokenRange range, bool& has_references) {
       // and used as fallbacks.
       switch (token.FunctionId()) {
         case CSSValueID::kVar:
-          if (!IsValidVariableReference(range.ConsumeBlock()))
+          if (!IsValidVariableReference(range.ConsumeBlock())) {
             return false;  // Invalid reference.
+          }
           has_references = true;
           continue;
         case CSSValueID::kEnv:
-          if (!IsValidEnvVariableReference(range.ConsumeBlock()))
+          if (!IsValidEnvVariableReference(range.ConsumeBlock())) {
             return false;  // Invalid reference.
+          }
           has_references = true;
           continue;
         default:
@@ -51,8 +53,9 @@ bool ClassifyBlock(CSSParserTokenRange range, bool& has_references) {
     } else {
       switch (token.GetType()) {
         case kDelimiterToken: {
-          if (token.Delimiter() == '!' && block_stack_size == 0)
+          if (token.Delimiter() == '!' && block_stack_size == 0) {
             return false;
+          }
           break;
         }
         case kRightParenthesisToken:
@@ -62,8 +65,9 @@ bool ClassifyBlock(CSSParserTokenRange range, bool& has_references) {
         case kBadUrlToken:
           return false;
         case kSemicolonToken:
-          if (block_stack_size == 0)
+          if (block_stack_size == 0) {
             return false;
+          }
           break;
         default:
           break;
@@ -76,13 +80,16 @@ bool ClassifyBlock(CSSParserTokenRange range, bool& has_references) {
 bool IsValidVariableReference(CSSParserTokenRange range) {
   range.ConsumeWhitespace();
   if (!CSSVariableParser::IsValidVariableName(
-          range.ConsumeIncludingWhitespace()))
+          range.ConsumeIncludingWhitespace())) {
     return false;
-  if (range.AtEnd())
+  }
+  if (range.AtEnd()) {
     return true;
+  }
 
-  if (range.Consume().GetType() != kCommaToken)
+  if (range.Consume().GetType() != kCommaToken) {
     return false;
+  }
 
   bool has_references = false;
   return ClassifyBlock(range, has_references);
@@ -91,34 +98,40 @@ bool IsValidVariableReference(CSSParserTokenRange range) {
 bool IsValidEnvVariableReference(CSSParserTokenRange range) {
   range.ConsumeWhitespace();
   auto token = range.ConsumeIncludingWhitespace();
-  if (token.GetType() != CSSParserTokenType::kIdentToken)
+  if (token.GetType() != CSSParserTokenType::kIdentToken) {
     return false;
-  if (range.AtEnd())
+  }
+  if (range.AtEnd()) {
     return true;
+  }
 
   if (RuntimeEnabledFeatures::CSSFoldablesEnabled()) {
     // Consume any number of integer values that indicate the indices for a
     // multi-dimensional variable.
     token = range.ConsumeIncludingWhitespace();
     while (token.GetType() == kNumberToken) {
-      if (token.GetNumericValueType() != kIntegerValueType)
+      if (token.GetNumericValueType() != kIntegerValueType) {
         return false;
-      if (token.NumericValue() < 0.)
+      }
+      if (token.NumericValue() < 0.) {
         return false;
+      }
       token = range.ConsumeIncludingWhitespace();
     }
 
     // If that's all we had (either ident then integers or just the ident) then
     // the env() is valid.
-    if (token.GetType() == kEOFToken)
+    if (token.GetType() == kEOFToken) {
       return true;
+    }
   } else {
     token = range.Consume();
   }
 
   // Otherwise we need a comma followed by an optional fallback value.
-  if (token.GetType() != kCommaToken)
+  if (token.GetType() != kCommaToken) {
     return false;
+  }
 
   bool has_references = false;
   return ClassifyBlock(range, has_references);
@@ -138,8 +151,9 @@ CSSValue* ParseCSSWideValue(CSSParserTokenRange range) {
 }  // namespace
 
 bool CSSVariableParser::IsValidVariableName(const CSSParserToken& token) {
-  if (token.GetType() != kIdentToken)
+  if (token.GetType() != kIdentToken) {
     return false;
+  }
 
   StringView value = token.Value();
   return value.length() >= 3 && value[0] == '-' && value[1] == '-';
@@ -159,8 +173,9 @@ CSSValue* CSSVariableParser::ParseDeclarationIncludingCSSWide(
     const CSSTokenizedValue& tokenized_value,
     bool is_animation_tainted,
     const CSSParserContext& context) {
-  if (CSSValue* css_wide = ParseCSSWideValue(tokenized_value.range))
+  if (CSSValue* css_wide = ParseCSSWideValue(tokenized_value.range)) {
     return css_wide;
+  }
   return ParseDeclarationValue(tokenized_value, is_animation_tainted, context);
 }
 
@@ -169,8 +184,9 @@ CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
     bool is_animation_tainted,
     const CSSParserContext& context) {
   bool has_references;
-  if (!IsValidVariable(tokenized_value.range, has_references))
+  if (!IsValidVariable(tokenized_value.range, has_references)) {
     return nullptr;
+  }
   return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
       CSSVariableData::Create(tokenized_value, is_animation_tainted,
                               has_references),
@@ -181,14 +197,17 @@ CSSVariableReferenceValue* CSSVariableParser::ParseVariableReferenceValue(
     CSSParserTokenRange range,
     const CSSParserContext& context,
     bool is_animation_tainted) {
-  if (range.AtEnd())
+  if (range.AtEnd()) {
     return nullptr;
+  }
 
   bool has_references;
-  if (!IsValidVariable(range, has_references))
+  if (!IsValidVariable(range, has_references)) {
     return nullptr;
-  if (ParseCSSWideValue(range))
+  }
+  if (ParseCSSWideValue(range)) {
     return nullptr;
+  }
   return MakeGarbageCollected<CSSVariableReferenceValue>(
       CSSVariableData::Create({range, StringView()}, is_animation_tainted,
                               has_references),

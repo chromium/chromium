@@ -55,8 +55,9 @@ void ShadowTreeStyleSheetCollection::CollectStyleSheets(
     DCHECK(!candidate.IsXSL());
 
     StyleSheet* sheet = candidate.Sheet();
-    if (!sheet)
+    if (!sheet) {
       continue;
+    }
 
     collection.AppendSheetForList(sheet);
     if (candidate.CanBeActivated(g_null_atom)) {
@@ -65,12 +66,14 @@ void ShadowTreeStyleSheetCollection::CollectStyleSheets(
           css_sheet, rule_set_scope.RuleSetForSheet(engine, css_sheet)));
     }
   }
-  if (!GetTreeScope().HasAdoptedStyleSheets())
+  if (!GetTreeScope().HasAdoptedStyleSheets()) {
     return;
+  }
 
   for (CSSStyleSheet* sheet : *GetTreeScope().AdoptedStyleSheets()) {
-    if (!sheet || !sheet->CanBeActivated(g_null_atom))
+    if (!sheet || !sheet->CanBeActivated(g_null_atom)) {
       continue;
+    }
     DCHECK_EQ(GetTreeScope().GetDocument(), sheet->ConstructorDocument());
     collection.AppendActiveStyleSheet(
         std::make_pair(sheet, engine.RuleSetForSheet(*sheet)));

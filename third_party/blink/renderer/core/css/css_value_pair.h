@@ -53,8 +53,9 @@ class CORE_EXPORT CSSValuePair : public CSSValue {
   String CustomCSSText() const {
     String first = first_->CssText();
     String second = second_->CssText();
-    if (identical_values_policy_ == kDropIdenticalValues && first == second)
+    if (identical_values_policy_ == kDropIdenticalValues && first == second) {
       return first;
+    }
     return first + ' ' + second;
   }
 

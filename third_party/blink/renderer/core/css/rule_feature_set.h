@@ -285,27 +285,31 @@ class CORE_EXPORT RuleFeatureSet {
     bool HasIdClassOrAttribute() const;
 
     void NarrowToClass(const AtomicString& class_name) {
-      if (Size() == 1 && (!ids.empty() || !classes.empty()))
+      if (Size() == 1 && (!ids.empty() || !classes.empty())) {
         return;
+      }
       ClearFeatures();
       classes.push_back(class_name);
     }
     void NarrowToAttribute(const AtomicString& attribute) {
       if (Size() == 1 &&
-          (!ids.empty() || !classes.empty() || !attributes.empty()))
+          (!ids.empty() || !classes.empty() || !attributes.empty())) {
         return;
+      }
       ClearFeatures();
       attributes.push_back(attribute);
     }
     void NarrowToId(const AtomicString& id) {
-      if (Size() == 1 && !ids.empty())
+      if (Size() == 1 && !ids.empty()) {
         return;
+      }
       ClearFeatures();
       ids.push_back(id);
     }
     void NarrowToTag(const AtomicString& tag_name) {
-      if (Size() == 1)
+      if (Size() == 1) {
         return;
+      }
       ClearFeatures();
       tag_names.push_back(tag_name);
     }
@@ -384,8 +388,9 @@ class CORE_EXPORT RuleFeatureSet {
           original_value_(features ? features->max_direct_adjacent_selectors
                                    : 0) {}
     ~AutoRestoreMaxDirectAdjacentSelectors() {
-      if (features_)
+      if (features_) {
         features_->max_direct_adjacent_selectors = original_value_;
+      }
     }
 
    private:
@@ -426,8 +431,9 @@ class CORE_EXPORT RuleFeatureSet {
         : features_(features),
           original_value_(features ? features->descendant_features_depth : 0) {}
     ~AutoRestoreDescendantFeaturesDepth() {
-      if (features_)
+      if (features_) {
         features_->descendant_features_depth = original_value_;
+      }
     }
 
    private:

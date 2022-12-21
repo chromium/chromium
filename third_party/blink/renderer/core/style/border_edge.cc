@@ -16,8 +16,9 @@ BorderEdge::BorderEdge(float edge_width,
       is_present(edge_is_present),
       style(static_cast<unsigned>(edge_style)),
       width_(edge_width) {
-  if (style == static_cast<unsigned>(EBorderStyle::kDouble) && edge_width < 3)
+  if (style == static_cast<unsigned>(EBorderStyle::kDouble) && edge_width < 3) {
     style = static_cast<unsigned>(EBorderStyle::kSolid);
+  }
 }
 
 BorderEdge::BorderEdge()
@@ -38,25 +39,29 @@ bool BorderEdge::PresentButInvisible() const {
 
 bool BorderEdge::ObscuresBackgroundEdge() const {
   if (!is_present || color.HasAlpha() ||
-      style == static_cast<unsigned>(EBorderStyle::kHidden))
+      style == static_cast<unsigned>(EBorderStyle::kHidden)) {
     return false;
+  }
 
   if (style == static_cast<unsigned>(EBorderStyle::kDotted) ||
-      style == static_cast<unsigned>(EBorderStyle::kDashed))
+      style == static_cast<unsigned>(EBorderStyle::kDashed)) {
     return false;
+  }
 
   return true;
 }
 
 bool BorderEdge::ObscuresBackground() const {
   if (!is_present || color.HasAlpha() ||
-      style == static_cast<unsigned>(EBorderStyle::kHidden))
+      style == static_cast<unsigned>(EBorderStyle::kHidden)) {
     return false;
+  }
 
   if (style == static_cast<unsigned>(EBorderStyle::kDotted) ||
       style == static_cast<unsigned>(EBorderStyle::kDashed) ||
-      style == static_cast<unsigned>(EBorderStyle::kDouble))
+      style == static_cast<unsigned>(EBorderStyle::kDouble)) {
     return false;
+  }
 
   return true;
 }

@@ -56,11 +56,13 @@ void StyleFetchedImageSet::Prefinalize() {
 }
 
 bool StyleFetchedImageSet::IsEqual(const StyleImage& other) const {
-  if (!other.IsImageResourceSet())
+  if (!other.IsImageResourceSet()) {
     return false;
+  }
   const auto& other_image = To<StyleFetchedImageSet>(other);
-  if (best_fit_image_ != other_image.best_fit_image_)
+  if (best_fit_image_ != other_image.best_fit_image_) {
     return false;
+  }
   return url_ == other_image.url_;
 }
 
@@ -97,8 +99,9 @@ bool StyleFetchedImageSet::ErrorOccurred() const {
 
 bool StyleFetchedImageSet::IsAccessAllowed(String& failing_url) const {
   DCHECK(best_fit_image_->IsLoaded());
-  if (best_fit_image_->IsAccessAllowed())
+  if (best_fit_image_->IsAccessAllowed()) {
     return true;
+  }
   failing_url = best_fit_image_->Url().ElidedString();
   return false;
 }
@@ -119,8 +122,9 @@ gfx::SizeF StyleFetchedImageSet::ImageSize(
 
 bool StyleFetchedImageSet::HasIntrinsicSize() const {
   const Image& image = *best_fit_image_->GetImage();
-  if (auto* svg_image = DynamicTo<SVGImage>(image))
+  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     return HasIntrinsicDimensionsForSVGImage(*svg_image);
+  }
   return image.HasIntrinsicSize();
 }
 
@@ -144,8 +148,9 @@ scoped_refptr<Image> StyleFetchedImageSet::GetImage(
   }
 
   auto* svg_image = DynamicTo<SVGImage>(image);
-  if (!svg_image)
+  if (!svg_image) {
     return image;
+  }
   return SVGImageForContainer::Create(
       svg_image, target_size, style.EffectiveZoom(), url_,
       document.GetStyleEngine().ResolveColorSchemeForEmbedding(&style));
@@ -160,12 +165,14 @@ RespectImageOrientationEnum StyleFetchedImageSet::ForceOrientationIfNecessary(
     RespectImageOrientationEnum default_orientation) const {
   // SVG Images don't have orientation and assert on loading when
   // IsAccessAllowed is called.
-  if (best_fit_image_->GetImage()->IsSVGImage())
+  if (best_fit_image_->GetImage()->IsSVGImage()) {
     return default_orientation;
+  }
   // Cross-origin images must always respect orientation to prevent
   // potentially private data leakage.
-  if (!best_fit_image_->IsAccessAllowed())
+  if (!best_fit_image_->IsAccessAllowed()) {
     return kRespectImageOrientation;
+  }
   return default_orientation;
 }
 

@@ -15,13 +15,15 @@ StyleSVGResource::StyleSVGResource(SVGResource* resource,
 StyleSVGResource::~StyleSVGResource() = default;
 
 void StyleSVGResource::AddClient(SVGResourceClient& client) {
-  if (resource_)
+  if (resource_) {
     resource_->AddClient(client);
+  }
 }
 
 void StyleSVGResource::RemoveClient(SVGResourceClient& client) {
-  if (resource_)
+  if (resource_) {
     resource_->RemoveClient(client);
+  }
 }
 
 }  // namespace blink

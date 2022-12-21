@@ -28,11 +28,13 @@ const CSSParserContext* CSSLazyParsingState::Context() {
 
   // Try as best as possible to grab a valid Document if the old Document has
   // gone away so we can still use UseCounter.
-  if (!document_)
+  if (!document_) {
     document_ = owning_contents_->AnyOwnerDocument();
+  }
 
-  if (!context_->IsDocumentHandleEqual(document_))
+  if (!context_->IsDocumentHandleEqual(document_)) {
     context_ = MakeGarbageCollected<CSSParserContext>(context_, document_);
+  }
   return context_;
 }
 

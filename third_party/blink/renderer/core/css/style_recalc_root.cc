@@ -15,15 +15,17 @@ namespace blink {
 Element& StyleRecalcRoot::RootElement() const {
   Node* root_node = GetRootNode();
   DCHECK(root_node);
-  if (root_node->IsDocumentNode())
+  if (root_node->IsDocumentNode()) {
     return *root_node->GetDocument().documentElement();
+  }
   if (root_node->IsPseudoElement()) {
     // We could possibly have called UpdatePseudoElement, but start at the
     // originating element for simplicity.
     return *root_node->parentElement();
   }
-  if (root_node->IsTextNode())
+  if (root_node->IsTextNode()) {
     root_node = root_node->GetStyleRecalcParent();
+  }
   return To<Element>(*root_node);
 }
 
@@ -51,17 +53,20 @@ absl::optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
     return parent.ParentOrShadowHostElement();
   }
   ShadowRoot* root = parent.GetShadowRoot();
-  if (!root)
+  if (!root) {
     return To<Element>(&parent);
-  if (!root->HasSlotAssignment())
+  }
+  if (!root->HasSlotAssignment()) {
     return absl::nullopt;
+  }
   // The child has already been removed, so we cannot look up its slot
   // assignment directly. Find the slot which was part of the ancestor chain
   // before the removal by checking the child-dirty bits. Since the recalc root
   // was removed, there is at most one such child-dirty slot.
   for (const auto& slot : root->GetSlotAssignment().Slots()) {
-    if (slot->ChildNeedsStyleRecalc())
+    if (slot->ChildNeedsStyleRecalc()) {
       return slot;
+    }
   }
   // The slot has also been removed. Fall back to using the light tree parent as
   // the new recalc root.
@@ -69,8 +74,9 @@ absl::optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
 }
 
 bool IsFlatTreeConnected(const Node& root) {
-  if (!root.isConnected())
+  if (!root.isConnected()) {
     return false;
+  }
   // If the recalc root is removed from the flat tree because its assigned slot
   // is removed from the flat tree, the recalc flags will be cleared in
   // DetachLayoutTree() with performing_reattach=false. We use that to decide if
@@ -81,12 +87,15 @@ bool IsFlatTreeConnected(const Node& root) {
 }  // namespace
 
 void StyleRecalcRoot::SubtreeModified(ContainerNode& parent) {
-  if (!GetRootNode())
+  if (!GetRootNode()) {
     return;
-  if (GetRootNode()->IsDocumentNode())
+  }
+  if (GetRootNode()->IsDocumentNode()) {
     return;
-  if (IsFlatTreeConnected(*GetRootNode()))
+  }
+  if (IsFlatTreeConnected(*GetRootNode())) {
     return;
+  }
   // We are notified with the light tree parent of the node(s) which were
   // removed from the DOM. If 'parent' is a shadow host, there are elements in
   // its shadow tree which are marked child-dirty which needs to be cleared in
@@ -119,10 +128,12 @@ void StyleRecalcRoot::SubtreeModified(ContainerNode& parent) {
 }
 
 void StyleRecalcRoot::RemovedFromFlatTree(const Node& node) {
-  if (!GetRootNode())
+  if (!GetRootNode()) {
     return;
-  if (GetRootNode()->IsDocumentNode())
+  }
+  if (GetRootNode()->IsDocumentNode()) {
     return;
+  }
   DCHECK(node.parentElement());
   SubtreeModified(*node.parentElement());
 }

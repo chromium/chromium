@@ -42,10 +42,11 @@ class Longhand : public CSSProperty {
     NOTREACHED();
   }
   void ApplyUnset(StyleResolverState& state) const {
-    if (state.IsInheritedForUnset(*this))
+    if (state.IsInheritedForUnset(*this)) {
       ApplyInherit(state);
-    else
+    } else {
       ApplyInitial(state);
+    }
   }
   virtual const blink::Color ColorIncludingFallback(
       bool,

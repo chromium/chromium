@@ -7,6 +7,4 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 
-namespace blink {
-
-}  // namespace blink
+namespace blink {}  // namespace blink

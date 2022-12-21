@@ -26,19 +26,22 @@ static void TestMediaQuery(const char* input,
   wtf_size_t j = 0;
   while (j < query_set.QueryVector().size()) {
     const MediaQuery& query = *query_set.QueryVector()[j];
-    if (!unknown_substitute.IsNull() && query.HasUnknown())
+    if (!unknown_substitute.IsNull() && query.HasUnknown()) {
       actual.Append(unknown_substitute);
-    else
+    } else {
       actual.Append(query.CssText());
+    }
     ++j;
-    if (j >= query_set.QueryVector().size())
+    if (j >= query_set.QueryVector().size()) {
       break;
+    }
     actual.Append(", ");
   }
-  if (output)
+  if (output) {
     ASSERT_EQ(output, actual.ToString());
-  else
+  } else {
     ASSERT_EQ(input, actual.ToString());
+  }
 }
 
 TEST(MediaQuerySetTest, Basic) {

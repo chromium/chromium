@@ -18,10 +18,11 @@ TEST(CSSMathInvert, TypeIsNegationOfArgumentType) {
   for (unsigned i = 0; i < CSSNumericValueType::kNumBaseTypes; i++) {
     const auto base_type = static_cast<CSSNumericValueType::BaseType>(i);
     EXPECT_FALSE(type.HasPercentHint());
-    if (base_type == CSSNumericValueType::BaseType::kLength)
+    if (base_type == CSSNumericValueType::BaseType::kLength) {
       EXPECT_EQ(type.Exponent(base_type), -1);
-    else
+    } else {
       EXPECT_EQ(type.Exponent(base_type), 0);
+    }
   }
 }
 

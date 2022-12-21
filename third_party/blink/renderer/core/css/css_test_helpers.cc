@@ -60,10 +60,11 @@ RuleSet& TestStyleSheet::GetRuleSet() {
 void TestStyleSheet::AddCSSRules(const String& css_text, bool is_empty_sheet) {
   unsigned sheet_length = style_sheet_->length();
   style_sheet_->Contents()->ParseString(css_text);
-  if (!is_empty_sheet)
+  if (!is_empty_sheet) {
     ASSERT_GT(style_sheet_->length(), sheet_length);
-  else
+  } else {
     ASSERT_EQ(style_sheet_->length(), sheet_length);
+  }
 }
 
 CSSStyleSheet* CreateStyleSheet(Document& document) {
@@ -111,8 +112,9 @@ void RegisterProperty(Document& document,
   property_definition->setName(name);
   property_definition->setSyntax(syntax);
   property_definition->setInherits(is_inherited);
-  if (initial_value)
+  if (initial_value) {
     property_definition->setInitialValue(initial_value.value());
+  }
   PropertyRegistration::registerProperty(document.GetExecutionContext(),
                                          property_definition, exception_state);
 }
@@ -148,12 +150,14 @@ void DeclareProperty(Document& document,
 
   auto* rule =
       DynamicTo<StyleRuleProperty>(ParseRule(document, builder.ToString()));
-  if (!rule)
+  if (!rule) {
     return;
+  }
   auto* registration = PropertyRegistration::MaybeCreateForDeclaredProperty(
       document, AtomicString(name), *rule);
-  if (!registration)
+  if (!registration) {
     return;
+  }
   document.EnsurePropertyRegistry().DeclareProperty(AtomicString(name),
                                                     *registration);
   document.GetStyleEngine().PropertyRegistryChanged();
@@ -177,8 +181,9 @@ const CSSValue* ParseLonghand(Document& document,
                               const CSSProperty& property,
                               const String& value) {
   const auto* longhand = DynamicTo<Longhand>(property);
-  if (!longhand)
+  if (!longhand) {
     return nullptr;
+  }
 
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
   CSSParserLocalContext local_context;
@@ -205,8 +210,9 @@ StyleRuleBase* ParseRule(Document& document, String text) {
 
 const CSSValue* ParseValue(Document& document, String syntax, String value) {
   auto syntax_definition = CSSSyntaxStringParser(syntax).Parse();
-  if (!syntax_definition.has_value())
+  if (!syntax_definition.has_value()) {
     return nullptr;
+  }
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
   CSSTokenizer tokenizer(value);
   auto tokens = tokenizer.TokenizeToEOF();

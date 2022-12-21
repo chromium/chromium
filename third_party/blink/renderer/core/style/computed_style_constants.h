@@ -170,10 +170,12 @@ enum class EFillBox : unsigned { kBorder, kPadding, kContent, kText };
 inline EFillBox EnclosingFillBox(EFillBox box_a, EFillBox box_b) {
   // background-clip:text is clipped to the border box.
   if (box_a == EFillBox::kBorder || box_a == EFillBox::kText ||
-      box_b == EFillBox::kBorder || box_b == EFillBox::kText)
+      box_b == EFillBox::kBorder || box_b == EFillBox::kText) {
     return EFillBox::kBorder;
-  if (box_a == EFillBox::kPadding || box_b == EFillBox::kPadding)
+  }
+  if (box_a == EFillBox::kPadding || box_b == EFillBox::kPadding) {
     return EFillBox::kPadding;
+  }
   DCHECK_EQ(box_a, EFillBox::kContent);
   DCHECK_EQ(box_b, EFillBox::kContent);
   return EFillBox::kContent;

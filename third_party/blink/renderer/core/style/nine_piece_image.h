@@ -156,8 +156,9 @@ class CORE_EXPORT NinePieceImage {
 
   static LayoutUnit ComputeOutset(const BorderImageLength& outset_side,
                                   int border_side) {
-    if (outset_side.IsNumber())
+    if (outset_side.IsNumber()) {
       return LayoutUnit(outset_side.Number() * border_side);
+    }
     return LayoutUnit(outset_side.length().Value());
   }
 

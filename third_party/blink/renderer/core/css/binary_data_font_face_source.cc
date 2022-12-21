@@ -18,12 +18,14 @@ BinaryDataFontFaceSource::BinaryDataFontFaceSource(CSSFontFace* css_font_face,
                                                    String& ots_parse_message)
     : custom_platform_data_(
           FontCustomPlatformData::Create(data, ots_parse_message)) {
-  if (!css_font_face || !css_font_face->GetFontFace())
+  if (!css_font_face || !css_font_face->GetFontFace()) {
     return;
+  }
   FontFace* font_face = css_font_face->GetFontFace();
   ExecutionContext* context = font_face->GetExecutionContext();
-  if (!context)
+  if (!context) {
     return;
+  }
   probe::FontsUpdated(context, font_face, String(),
                       custom_platform_data_.get());
 }

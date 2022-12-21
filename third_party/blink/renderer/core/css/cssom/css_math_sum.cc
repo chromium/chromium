@@ -77,8 +77,9 @@ CSSMathSum* CSSMathSum::Create(CSSNumericValueVector values,
             : MakeGarbageCollected<CSSMathSum>(
                   MakeGarbageCollected<CSSNumericArray>(std::move(values)),
                   final_type);
-  if (!result)
+  if (!result) {
     exception_state.ThrowTypeError("Incompatible types");
+  }
 
   return result;
 }
@@ -87,21 +88,24 @@ absl::optional<CSSNumericSumValue> CSSMathSum::SumValue() const {
   CSSNumericSumValue sum;
   for (const auto& value : NumericValues()) {
     const auto child_sum = value->SumValue();
-    if (!child_sum.has_value())
+    if (!child_sum.has_value()) {
       return absl::nullopt;
+    }
 
     // Collect like-terms
     for (const auto& term : child_sum->terms) {
       wtf_size_t index = sum.terms.Find(UnitMapComparator{term});
-      if (index == kNotFound)
+      if (index == kNotFound) {
         sum.terms.push_back(term);
-      else
+      } else {
         sum.terms[index].value += term.value;
+      }
     }
   }
 
-  if (!CanCreateNumericTypeFromSumValue(sum))
+  if (!CanCreateNumericTypeFromSumValue(sum)) {
     return absl::nullopt;
+  }
 
   return sum;
 }
@@ -113,8 +117,9 @@ CSSMathExpressionNode* CSSMathSum::ToCalcExpressionNode() const {
 void CSSMathSum::BuildCSSText(Nested nested,
                               ParenLess paren_less,
                               StringBuilder& result) const {
-  if (paren_less == ParenLess::kNo)
+  if (paren_less == ParenLess::kNo) {
     result.Append(nested == Nested::kYes ? "(" : "calc(");
+  }
 
   const auto& values = NumericValues();
   DCHECK(!values.empty());
@@ -132,8 +137,9 @@ void CSSMathSum::BuildCSSText(Nested nested,
     }
   }
 
-  if (paren_less == ParenLess::kNo)
+  if (paren_less == ParenLess::kNo) {
     result.Append(")");
+  }
 }
 
 }  // namespace blink

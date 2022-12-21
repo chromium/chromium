@@ -110,18 +110,20 @@ void StyleBuilder::ApplyPhysicalProperty(const CSSProperty& property,
     state.ParentStyle()->SetChildHasExplicitInheritance();
   } else if (value.IsUnsetValue()) {
     DCHECK(!is_inherit && !is_initial);
-    if (is_inherited_for_unset)
+    if (is_inherited_for_unset) {
       is_inherit = true;
-    else
+    } else {
       is_initial = true;
+    }
   }
 
-  if (is_initial)
+  if (is_initial) {
     To<Longhand>(property).ApplyInitial(state);
-  else if (is_inherit)
+  } else if (is_inherit) {
     To<Longhand>(property).ApplyInherit(state);
-  else
+  } else {
     To<Longhand>(property).ApplyValue(state, scoped_value);
+  }
 }
 
 }  // namespace blink

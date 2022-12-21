@@ -37,34 +37,39 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
   CSSSelectorList* to = nullptr;
 
   prelude.ConsumeWhitespace();
-  if (prelude.Peek().GetType() != kLeftParenthesisToken)
+  if (prelude.Peek().GetType() != kLeftParenthesisToken) {
     return nullptr;
+  }
 
   // <scope-start>
   {
     auto block = prelude.ConsumeBlock();
     from = CSSSelectorParser::ParseScopeBoundary(block, context, style_sheet);
-    if (!from)
+    if (!from) {
       return nullptr;
+    }
   }
 
   prelude.ConsumeWhitespace();
 
   // to (<scope-end>)
   if (css_parsing_utils::ConsumeIfIdent(prelude, "to")) {
-    if (prelude.Peek().GetType() != kLeftParenthesisToken)
+    if (prelude.Peek().GetType() != kLeftParenthesisToken) {
       return nullptr;
+    }
 
     auto block = prelude.ConsumeBlock();
     to = CSSSelectorParser::ParseScopeBoundary(block, context, style_sheet);
-    if (!to)
+    if (!to) {
       return nullptr;
+    }
   }
 
   prelude.ConsumeWhitespace();
 
-  if (!prelude.AtEnd())
+  if (!prelude.AtEnd()) {
     return nullptr;
+  }
 
   return MakeGarbageCollected<StyleScope>(from, to);
 }

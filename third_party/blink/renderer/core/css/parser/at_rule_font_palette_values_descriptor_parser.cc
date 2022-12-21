@@ -18,8 +18,9 @@ namespace {
 
 CSSValue* ConsumeFontFamily(CSSParserTokenRange& range,
                             const CSSParserContext& context) {
-  if (CSSValue* string = css_parsing_utils::ConsumeFamilyName(range))
+  if (CSSValue* string = css_parsing_utils::ConsumeFamilyName(range)) {
     return string;
+  }
   return nullptr;
 }
 
@@ -40,23 +41,27 @@ CSSValue* ConsumeColorOverride(CSSParserTokenRange& range,
   do {
     CSSValue* color_index =
         css_parsing_utils::ConsumeInteger(range, context, 0);
-    if (!color_index)
+    if (!color_index) {
       return nullptr;
+    }
     range.ConsumeWhitespace();
     CSSValue* color = css_parsing_utils::ConsumeColor(
         range, context, false,
         css_parsing_utils::AllowedColorKeywords::kNoSystemColor);
-    if (!color)
+    if (!color) {
       return nullptr;
+    }
     CSSIdentifierValue* color_identifier = DynamicTo<CSSIdentifierValue>(color);
     if (color_identifier &&
-        color_identifier->GetValueID() == CSSValueID::kCurrentcolor)
+        color_identifier->GetValueID() == CSSValueID::kCurrentcolor) {
       return nullptr;
+    }
     list->Append(*MakeGarbageCollected<CSSValuePair>(
         color_index, color, CSSValuePair::kKeepIdenticalValues));
   } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(range));
-  if (!range.AtEnd() || !list->length())
+  if (!range.AtEnd() || !list->length()) {
     return nullptr;
+  }
 
   return list;
 }
@@ -86,8 +91,9 @@ CSSValue* AtRuleDescriptorParser::ParseAtFontPaletteValuesDescriptor(
       break;
   }
 
-  if (!parsed_value || !range.AtEnd())
+  if (!parsed_value || !range.AtEnd()) {
     return nullptr;
+  }
 
   return parsed_value;
 }

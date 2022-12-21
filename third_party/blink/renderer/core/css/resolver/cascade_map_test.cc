@@ -184,8 +184,9 @@ TEST(CascadeMapTest, AllHighPriorityBits) {
   uint64_t expected = 0;
   for (CSSPropertyID id : CSSPropertyIDList()) {
     if (IsHighPriority(id)) {
-      if (CSSProperty::Get(id).IsSurrogate())
+      if (CSSProperty::Get(id).IsSurrogate()) {
         continue;
+      }
       map.Add(CSSPropertyName(id), CascadeOrigin::kAuthor);
       expected |= (1ull << static_cast<uint64_t>(id));
     }

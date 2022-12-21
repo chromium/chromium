@@ -64,8 +64,9 @@ MediaQuerySet::MediaQuerySet(HeapVector<Member<const MediaQuery>> queries)
 MediaQuerySet* MediaQuerySet::Create(
     const String& media_string,
     const ExecutionContext* execution_context) {
-  if (media_string.empty())
+  if (media_string.empty()) {
     return MediaQuerySet::Create();
+  }
 
   return MediaQueryParser::ParseMediaQuerySet(media_string, execution_context);
 }
@@ -83,8 +84,9 @@ const MediaQuerySet* MediaQuerySet::CopyAndAdd(
   MediaQuerySet* result = Create(query_string, execution_context);
 
   // Only continue if exactly one media query is found, as described above.
-  if (result->queries_.size() != 1)
+  if (result->queries_.size() != 1) {
     return nullptr;
+  }
 
   const MediaQuery* new_query = result->queries_[0].Get();
   DCHECK(new_query);
@@ -93,8 +95,9 @@ const MediaQuerySet* MediaQuerySet::CopyAndAdd(
   // queries returns true terminate these steps.
   for (wtf_size_t i = 0; i < queries_.size(); ++i) {
     const MediaQuery& query = *queries_[i];
-    if (query == *new_query)
+    if (query == *new_query) {
       return nullptr;
+    }
   }
 
   HeapVector<Member<const MediaQuery>> new_queries = queries_;
@@ -112,8 +115,9 @@ const MediaQuerySet* MediaQuerySet::CopyAndRemove(
   MediaQuerySet* result = Create(query_string_to_remove, execution_context);
 
   // Only continue if exactly one media query is found, as described above.
-  if (result->queries_.size() != 1)
+  if (result->queries_.size() != 1) {
     return this;
+  }
 
   const MediaQuery* new_query = result->queries_[0];
   DCHECK(new_query);
@@ -132,8 +136,9 @@ const MediaQuerySet* MediaQuerySet::CopyAndRemove(
     }
   }
 
-  if (!found)
+  if (!found) {
     return nullptr;
+  }
 
   return MakeGarbageCollected<MediaQuerySet>(std::move(new_queries));
 }
@@ -143,10 +148,11 @@ String MediaQuerySet::MediaText() const {
 
   bool first = true;
   for (wtf_size_t i = 0; i < queries_.size(); ++i) {
-    if (!first)
+    if (!first) {
       text.Append(", ");
-    else
+    } else {
       first = false;
+    }
     text.Append(queries_[i]->CssText());
   }
   return text.ReleaseString();
@@ -172,15 +178,17 @@ void MediaList::setMediaText(const ExecutionContext* execution_context,
 
   Owner()->SetMediaQueries(MediaQuerySet::Create(value, execution_context));
 
-  if (parent_style_sheet_)
+  if (parent_style_sheet_) {
     parent_style_sheet_->DidMutate(CSSStyleSheet::Mutation::kSheet);
+  }
 }
 
 String MediaList::item(unsigned index) const {
   const HeapVector<Member<const MediaQuery>>& queries =
       Queries()->QueryVector();
-  if (index < queries.size())
+  if (index < queries.size()) {
     return queries[index]->CssText();
+  }
   return String();
 }
 
@@ -197,8 +205,9 @@ void MediaList::deleteMedium(const ExecutionContext* execution_context,
     return;
   }
   Owner()->SetMediaQueries(new_media_queries);
-  if (parent_style_sheet_)
+  if (parent_style_sheet_) {
     parent_style_sheet_->DidMutate(CSSStyleSheet::Mutation::kSheet);
+  }
 }
 
 void MediaList::appendMedium(const ExecutionContext* execution_context,
@@ -207,12 +216,14 @@ void MediaList::appendMedium(const ExecutionContext* execution_context,
 
   const MediaQuerySet* new_media_queries =
       Queries()->CopyAndAdd(medium, execution_context);
-  if (!new_media_queries)
+  if (!new_media_queries) {
     return;
+  }
   Owner()->SetMediaQueries(new_media_queries);
 
-  if (parent_style_sheet_)
+  if (parent_style_sheet_) {
     parent_style_sheet_->DidMutate(CSSStyleSheet::Mutation::kSheet);
+  }
 }
 
 const MediaQuerySet* MediaList::Queries() const {

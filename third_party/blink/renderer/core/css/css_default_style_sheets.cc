@@ -57,8 +57,9 @@ String OverflowForReplacedElementRules() {
 }
 
 String OverflowForSVGRules() {
-  if (!RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled())
+  if (!RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled()) {
     return "";
+  }
 
   // SVG uses an overflow value of 'hidden' for backwards compatibility with
   // flex layout. 'overflow-clip-margin' below still applies because the used
@@ -228,8 +229,9 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
   }
   // Add to print and forced color for all namespaces.
   default_print_style_->AddRulesFromSheet(rules, PrintEval());
-  if (default_forced_color_style_)
+  if (default_forced_color_style_) {
     default_forced_color_style_->AddRulesFromSheet(rules, ForcedColorsEval());
+  }
 }
 
 bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
@@ -342,12 +344,14 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
     PseudoId pseudo_id) {
   switch (pseudo_id) {
     case kPseudoIdMarker: {
-      if (marker_style_sheet_)
+      if (marker_style_sheet_) {
         return false;
+      }
       marker_style_sheet_ =
           ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_MARKER_CSS));
-      if (!default_pseudo_element_style_)
+      if (!default_pseudo_element_style_) {
         default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
+      }
       default_pseudo_element_style_->AddRulesFromSheet(MarkerStyleSheet(),
                                                        ScreenEval());
       return true;
@@ -363,8 +367,9 @@ void CSSDefaultStyleSheets::SetMediaControlsStyleSheetLoader(
 }
 
 bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForXrOverlay() {
-  if (webxr_overlay_style_sheet_)
+  if (webxr_overlay_style_sheet_) {
     return false;
+  }
 
   webxr_overlay_style_sheet_ = ParseUASheet(
       UncompressResourceAsASCIIString(IDR_UASTYLE_WEBXR_OVERLAY_CSS));
@@ -374,8 +379,9 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForXrOverlay() {
 }
 
 void CSSDefaultStyleSheets::EnsureDefaultStyleSheetForFullscreen() {
-  if (fullscreen_style_sheet_)
+  if (fullscreen_style_sheet_) {
     return;
+  }
 
   String fullscreen_rules =
       UncompressResourceAsASCIIString(IDR_UASTYLE_FULLSCREEN_CSS) +
@@ -385,8 +391,9 @@ void CSSDefaultStyleSheets::EnsureDefaultStyleSheetForFullscreen() {
 }
 
 bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
-  if (forced_colors_style_sheet_)
+  if (forced_colors_style_sheet_) {
     return false;
+  }
 
   String forced_colors_rules =
       RuntimeEnabledFeatures::ForcedColorsEnabled()
@@ -394,8 +401,9 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
           : String();
   forced_colors_style_sheet_ = ParseUASheet(forced_colors_rules);
 
-  if (!default_forced_color_style_)
+  if (!default_forced_color_style_) {
     default_forced_color_style_ = MakeGarbageCollected<RuleSet>();
+  }
   default_forced_color_style_->AddRulesFromSheet(DefaultStyleSheet(),
                                                  ForcedColorsEval());
   default_forced_color_style_->AddRulesFromSheet(ForcedColorsStyleSheet(),
@@ -418,14 +426,18 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
 
 void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
                                               RuleFeatureSet& features) {
-  if (DefaultHtmlStyle())
+  if (DefaultHtmlStyle()) {
     features.Merge(DefaultHtmlStyle()->Features());
-  if (DefaultMediaControlsStyle())
+  }
+  if (DefaultMediaControlsStyle()) {
     features.Merge(DefaultMediaControlsStyle()->Features());
-  if (DefaultMathMLStyle())
+  }
+  if (DefaultMathMLStyle()) {
     features.Merge(DefaultMathMLStyle()->Features());
-  if (document.IsViewSource() && DefaultViewSourceStyle())
+  }
+  if (document.IsViewSource() && DefaultViewSourceStyle()) {
     features.Merge(DefaultViewSourceStyle()->Features());
+  }
 }
 
 void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {

@@ -30,8 +30,9 @@ void CSSFontFeatureValuesRule::setFontFamily(const String& font_family) {
 
   for (auto family : families) {
     String stripped = family.StripWhiteSpace();
-    if (!stripped.empty())
+    if (!stripped.empty()) {
       filtered_families.push_back(AtomicString(stripped));
+    }
   }
 
   font_feature_values_rule_->SetFamilies(std::move(filtered_families));

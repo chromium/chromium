@@ -173,8 +173,9 @@ struct GridSpan {
 
 #if DCHECK_IS_ON()
     DCHECK_LT(start_line_, end_line_);
-    if (type == kTranslatedDefinite)
+    if (type == kTranslatedDefinite) {
       DCHECK_GE(start_line_, 0);
+    }
 #endif
   }
 
@@ -200,10 +201,11 @@ struct GridArea {
   }
 
   void SetSpan(const GridSpan& span, GridTrackSizingDirection track_direction) {
-    if (track_direction == kForColumns)
+    if (track_direction == kForColumns) {
       columns = span;
-    else
+    } else {
       rows = span;
+    }
   }
 
   wtf_size_t StartLine(GridTrackSizingDirection track_direction) const {

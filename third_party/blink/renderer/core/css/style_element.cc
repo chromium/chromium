@@ -72,16 +72,18 @@ StyleElement::ProcessingResult StyleElement::ProcessStyleSheet(
 
   registered_as_candidate_ = true;
   document.GetStyleEngine().AddStyleSheetCandidateNode(element);
-  if (!has_finished_parsing_children_)
+  if (!has_finished_parsing_children_) {
     return kProcessingSuccessful;
+  }
 
   return Process(element);
 }
 
 void StyleElement::RemovedFrom(Element& element,
                                ContainerNode& insertion_point) {
-  if (!insertion_point.isConnected())
+  if (!insertion_point.isConnected()) {
     return;
+  }
 
   Document& document = element.GetDocument();
   if (registered_as_candidate_) {
@@ -90,13 +92,15 @@ void StyleElement::RemovedFrom(Element& element,
     registered_as_candidate_ = false;
   }
 
-  if (sheet_)
+  if (sheet_) {
     ClearSheet(element);
+  }
 }
 
 StyleElement::ProcessingResult StyleElement::ChildrenChanged(Element& element) {
-  if (!has_finished_parsing_children_)
+  if (!has_finished_parsing_children_) {
     return kProcessingSuccessful;
+  }
   probe::WillChangeStyleElement(&element);
   return Process(element);
 }
@@ -109,8 +113,9 @@ StyleElement::ProcessingResult StyleElement::FinishParsingChildren(
 }
 
 StyleElement::ProcessingResult StyleElement::Process(Element& element) {
-  if (!element.isConnected())
+  if (!element.isConnected()) {
     return kProcessingSuccessful;
+  }
   return CreateSheet(element, element.TextFromChildren());
 }
 
@@ -156,8 +161,9 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
   // Use a strong reference to keep the cache entry (which is a weak reference)
   // alive after ClearSheet().
   Persistent<CSSStyleSheet> old_sheet = sheet_;
-  if (old_sheet)
+  if (old_sheet) {
     ClearSheet(element);
+  }
 
   CSSStyleSheet* new_sheet = nullptr;
 
@@ -193,22 +199,25 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
   }
 
   sheet_ = new_sheet;
-  if (sheet_)
+  if (sheet_) {
     sheet_->Contents()->CheckLoaded();
+  }
 
   return passes_content_security_policy_checks ? kProcessingSuccessful
                                                : kProcessingFatalError;
 }
 
 bool StyleElement::IsLoading() const {
-  if (loading_)
+  if (loading_) {
     return true;
+  }
   return sheet_ ? sheet_->IsLoading() : false;
 }
 
 bool StyleElement::SheetLoaded(Document& document) {
-  if (IsLoading())
+  if (IsLoading()) {
     return false;
+  }
 
   DCHECK(IsSameObject(*sheet_->ownerNode()));
   if (pending_sheet_type_ != PendingSheetType::kNonBlocking) {
@@ -235,8 +244,9 @@ void StyleElement::BlockingAttributeChanged(Element& element) {
   // rendering on this element. Note that Parser-inserted stylesheets are
   // render-blocking by default, so removing `blocking=render` does not unblock
   // rendering.
-  if (pending_sheet_type_ != PendingSheetType::kDynamicRenderBlocking)
+  if (pending_sheet_type_ != PendingSheetType::kDynamicRenderBlocking) {
     return;
+  }
   if (!IsA<HTMLElement>(element) ||
       To<HTMLElement>(element).IsPotentiallyRenderBlocking()) {
     return;

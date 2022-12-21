@@ -20,6 +20,7 @@ class ExecutionContext;
 // including custom properties.
 class CORE_EXPORT CSSPropertyName {
   DISALLOW_NEW();
+
  public:
   explicit CSSPropertyName(CSSPropertyID property_id)
       : value_(static_cast<int>(property_id)) {
@@ -37,10 +38,12 @@ class CORE_EXPORT CSSPropertyName {
       const ExecutionContext* execution_context,
       const String& value) {
     const CSSPropertyID property_id = CssPropertyID(execution_context, value);
-    if (property_id == CSSPropertyID::kInvalid)
+    if (property_id == CSSPropertyID::kInvalid) {
       return absl::nullopt;
-    if (property_id == CSSPropertyID::kVariable)
+    }
+    if (property_id == CSSPropertyID::kVariable) {
       return absl::make_optional(CSSPropertyName(AtomicString(value)));
+    }
     return absl::make_optional(CSSPropertyName(property_id));
   }
 

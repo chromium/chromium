@@ -13,10 +13,11 @@ namespace cssvalue {
 
 String CSSCounterValue::CustomCSSText() const {
   StringBuilder result;
-  if (Separator().empty())
+  if (Separator().empty()) {
     result.Append("counter(");
-  else
+  } else {
     result.Append("counters(");
+  }
 
   result.Append(Identifier());
   if (!Separator().empty()) {

@@ -12,8 +12,9 @@ StringView CSSParserTokenStream::StringRangeAt(wtf_size_t start,
 }
 
 void CSSParserTokenStream::ConsumeWhitespace() {
-  while (Peek().GetType() == kWhitespaceToken)
+  while (Peek().GetType() == kWhitespaceToken) {
     UncheckedConsume();
+  }
 }
 
 CSSParserToken CSSParserTokenStream::ConsumeIncludingWhitespace() {
@@ -44,10 +45,11 @@ void CSSParserTokenStream::UncheckedConsumeComponentValue() {
   unsigned nesting_level = 0;
   do {
     const CSSParserToken& token = UncheckedConsumeInternal();
-    if (token.GetBlockType() == CSSParserToken::kBlockStart)
+    if (token.GetBlockType() == CSSParserToken::kBlockStart) {
       nesting_level++;
-    else if (token.GetBlockType() == CSSParserToken::kBlockEnd)
+    } else if (token.GetBlockType() == CSSParserToken::kBlockEnd) {
       nesting_level--;
+    }
   } while (!PeekInternal().IsEOF() && nesting_level);
 }
 
@@ -58,10 +60,11 @@ void CSSParserTokenStream::UncheckedSkipToEndOfBlock() {
   unsigned nesting_level = 1;
   do {
     const CSSParserToken& token = UncheckedConsumeInternal();
-    if (token.GetBlockType() == CSSParserToken::kBlockStart)
+    if (token.GetBlockType() == CSSParserToken::kBlockStart) {
       nesting_level++;
-    else if (token.GetBlockType() == CSSParserToken::kBlockEnd)
+    } else if (token.GetBlockType() == CSSParserToken::kBlockEnd) {
       nesting_level--;
+    }
   } while (nesting_level && !PeekInternal().IsEOF());
 }
 

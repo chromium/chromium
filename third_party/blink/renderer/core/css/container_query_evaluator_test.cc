@@ -53,8 +53,9 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     String rule = "@container " + query + " {}";
     auto* style_rule = DynamicTo<StyleRuleContainer>(
         css_test_helpers::ParseRule(GetDocument(), rule));
-    if (!style_rule)
+    if (!style_rule) {
       return nullptr;
+    }
     return &style_rule->GetContainerQuery();
   }
 

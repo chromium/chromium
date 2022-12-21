@@ -24,8 +24,9 @@ bool CounterStyleShouldOverride(Document& document,
   const CascadeLayerMap* cascade_layer_map =
       tree_scope ? tree_scope->GetScopedStyleResolver()->GetCascadeLayerMap()
                  : document.GetStyleEngine().GetUserCascadeLayerMap();
-  if (!cascade_layer_map)
+  if (!cascade_layer_map) {
     return true;
+  }
   return cascade_layer_map->CompareLayerOrder(existing_rule.GetCascadeLayer(),
                                               new_rule.GetCascadeLayer()) <= 0;
 }
@@ -40,8 +41,9 @@ CounterStyleMap* CounterStyleMap::GetUserCounterStyleMap(Document& document) {
 // static
 CounterStyleMap* CounterStyleMap::GetAuthorCounterStyleMap(
     const TreeScope& scope) {
-  if (!scope.GetScopedStyleResolver())
+  if (!scope.GetScopedStyleResolver()) {
     return nullptr;
+  }
   return scope.GetScopedStyleResolver()->GetCounterStyleMap();
 }
 
@@ -61,16 +63,18 @@ CounterStyleMap* CounterStyleMap::CreateAuthorCounterStyleMap(
 CounterStyleMap::CounterStyleMap(Document* document, TreeScope* tree_scope)
     : owner_document_(document), tree_scope_(tree_scope) {
 #if DCHECK_IS_ON()
-  if (tree_scope)
+  if (tree_scope) {
     DCHECK_EQ(document, &tree_scope->GetDocument());
+  }
 #endif
 }
 
 void CounterStyleMap::AddCounterStyles(const RuleSet& rule_set) {
   DCHECK(owner_document_);
 
-  if (!rule_set.CounterStyleRules().size())
+  if (!rule_set.CounterStyleRules().size()) {
     return;
+  }
 
   for (StyleRuleCounterStyle* rule : rule_set.CounterStyleRules()) {
     AtomicString name = rule->GetName();
@@ -82,10 +86,12 @@ void CounterStyleMap::AddCounterStyles(const RuleSet& rule_set) {
       }
     }
     CounterStyle* counter_style = CounterStyle::Create(*rule);
-    if (!counter_style)
+    if (!counter_style) {
       continue;
-    if (replaced_iter != counter_styles_.end())
+    }
+    if (replaced_iter != counter_styles_.end()) {
       replaced_iter->value->SetIsDirty();
+    }
     counter_styles_.Set(rule->GetName(), counter_style);
   }
 
@@ -97,18 +103,21 @@ CounterStyleMap* CounterStyleMap::GetAncestorMap() const {
     // Resursively walk up to parent scope to find an author CounterStyleMap.
     for (TreeScope* scope = tree_scope_->ParentTreeScope(); scope;
          scope = scope->ParentTreeScope()) {
-      if (CounterStyleMap* map = GetAuthorCounterStyleMap(*scope))
+      if (CounterStyleMap* map = GetAuthorCounterStyleMap(*scope)) {
         return map;
+      }
     }
 
     // Fallback to user counter style map
-    if (CounterStyleMap* user_map = GetUserCounterStyleMap(*owner_document_))
+    if (CounterStyleMap* user_map = GetUserCounterStyleMap(*owner_document_)) {
       return user_map;
+    }
   }
 
   // Author and user counter style maps fall back to UA
-  if (owner_document_)
+  if (owner_document_) {
     return GetUACounterStyleMap();
+  }
 
   // UA counter style map doesn't have any fallback
   return nullptr;
@@ -118,15 +127,18 @@ CounterStyle* CounterStyleMap::FindCounterStyleAcrossScopes(
     const AtomicString& name) const {
   if (!owner_document_) {
     const auto& iter = counter_styles_.find(name);
-    if (iter == counter_styles_.end())
+    if (iter == counter_styles_.end()) {
       return nullptr;
-    if (iter->value)
+    }
+    if (iter->value) {
       return iter->value;
+    }
     return &const_cast<CounterStyleMap*>(this)->CreateUACounterStyle(name);
   }
   auto it = counter_styles_.find(name);
-  if (it != counter_styles_.end())
+  if (it != counter_styles_.end()) {
     return it->value;
+  }
   return GetAncestorMap()->FindCounterStyleAcrossScopes(name);
 }
 
@@ -236,31 +248,37 @@ void CounterStyleMap::ResolveSpeakAsReferenceFor(CounterStyle& counter_style) {
 
 void CounterStyleMap::ResolveReferences(
     HeapHashSet<Member<CounterStyleMap>>& visited_maps) {
-  if (visited_maps.Contains(this))
+  if (visited_maps.Contains(this)) {
     return;
+  }
   visited_maps.insert(this);
 
   // References in ancestor scopes must be resolved first.
-  if (CounterStyleMap* ancestor_map = GetAncestorMap())
+  if (CounterStyleMap* ancestor_map = GetAncestorMap()) {
     ancestor_map->ResolveReferences(visited_maps);
+  }
 
   for (CounterStyle* counter_style : counter_styles_.Values()) {
-    if (counter_style->HasUnresolvedExtends())
+    if (counter_style->HasUnresolvedExtends()) {
       ResolveExtendsFor(*counter_style);
-    if (counter_style->HasUnresolvedFallback())
+    }
+    if (counter_style->HasUnresolvedFallback()) {
       ResolveFallbackFor(*counter_style);
+    }
     if (RuntimeEnabledFeatures::
             CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()) {
-      if (counter_style->HasUnresolvedSpeakAsReference())
+      if (counter_style->HasUnresolvedSpeakAsReference()) {
         ResolveSpeakAsReferenceFor(*counter_style);
+      }
     }
   }
 }
 
 void CounterStyleMap::MarkDirtyCounterStyles(
     HeapHashSet<Member<CounterStyle>>& visited_counter_styles) {
-  for (CounterStyle* counter_style : counter_styles_.Values())
+  for (CounterStyle* counter_style : counter_styles_.Values()) {
     counter_style->TraverseAndMarkDirtyIfNeeded(visited_counter_styles);
+  }
 
   // Replace dirty CounterStyles by clean ones with unresolved references.
   for (Member<CounterStyle>& counter_style_ref : counter_styles_.Values()) {
@@ -283,15 +301,18 @@ void CounterStyleMap::MarkAllDirtyCounterStyles(
 
   HeapHashSet<Member<CounterStyle>> visited_counter_styles;
 
-  if (CounterStyleMap* user_map = GetUserCounterStyleMap(document))
+  if (CounterStyleMap* user_map = GetUserCounterStyleMap(document)) {
     user_map->MarkDirtyCounterStyles(visited_counter_styles);
+  }
 
-  if (CounterStyleMap* document_map = GetAuthorCounterStyleMap(document))
+  if (CounterStyleMap* document_map = GetAuthorCounterStyleMap(document)) {
     document_map->MarkDirtyCounterStyles(visited_counter_styles);
+  }
 
   for (const TreeScope* scope : active_tree_scopes) {
-    if (CounterStyleMap* scoped_map = GetAuthorCounterStyleMap(*scope))
+    if (CounterStyleMap* scoped_map = GetAuthorCounterStyleMap(*scope)) {
       scoped_map->MarkDirtyCounterStyles(visited_counter_styles);
+    }
   }
 }
 
@@ -307,11 +328,13 @@ void CounterStyleMap::ResolveAllReferences(
   HeapHashSet<Member<CounterStyleMap>> visited_maps;
   visited_maps.insert(GetUACounterStyleMap());
 
-  if (CounterStyleMap* user_map = GetUserCounterStyleMap(document))
+  if (CounterStyleMap* user_map = GetUserCounterStyleMap(document)) {
     user_map->ResolveReferences(visited_maps);
+  }
 
-  if (CounterStyleMap* document_map = GetAuthorCounterStyleMap(document))
+  if (CounterStyleMap* document_map = GetAuthorCounterStyleMap(document)) {
     document_map->ResolveReferences(visited_maps);
+  }
 
   for (const TreeScope* scope : active_tree_scopes) {
     if (CounterStyleMap* scoped_map = GetAuthorCounterStyleMap(*scope)) {
@@ -330,15 +353,18 @@ void CounterStyleMap::ResolveAllReferences(
 }
 
 void CounterStyleMap::Dispose() {
-  if (!counter_styles_.size())
+  if (!counter_styles_.size()) {
     return;
+  }
 
-  for (CounterStyle* counter_style : counter_styles_.Values())
+  for (CounterStyle* counter_style : counter_styles_.Values()) {
     counter_style->SetIsDirty();
+  }
   counter_styles_.clear();
 
-  if (owner_document_)
+  if (owner_document_) {
     owner_document_->GetStyleEngine().MarkCounterStylesNeedUpdate();
+  }
 }
 
 void CounterStyleMap::Trace(Visitor* visitor) const {

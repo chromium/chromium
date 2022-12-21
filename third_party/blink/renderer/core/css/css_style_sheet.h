@@ -297,13 +297,15 @@ inline CSSStyleSheet::RuleMutationScope::RuleMutationScope(CSSStyleSheet* sheet)
 
 inline CSSStyleSheet::RuleMutationScope::RuleMutationScope(CSSRule* rule)
     : style_sheet_(rule ? rule->parentStyleSheet() : nullptr) {
-  if (style_sheet_)
+  if (style_sheet_) {
     style_sheet_->WillMutateRules();
+  }
 }
 
 inline CSSStyleSheet::RuleMutationScope::~RuleMutationScope() {
-  if (style_sheet_)
+  if (style_sheet_) {
     style_sheet_->DidMutate(Mutation::kRules);
+  }
 }
 
 template <>

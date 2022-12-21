@@ -121,9 +121,10 @@ class CORE_EXPORT CSSParserToken {
       return StringView(reinterpret_cast<const LChar*>(value_data_char_inline_),
                         value_length_);
     }
-    if (value_is_8bit_)
+    if (value_is_8bit_) {
       return StringView(reinterpret_cast<const LChar*>(value_data_char_raw_),
                         value_length_);
+    }
     return StringView(reinterpret_cast<const UChar*>(value_data_char_raw_),
                       value_length_);
   }

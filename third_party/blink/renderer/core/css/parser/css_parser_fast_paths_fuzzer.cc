@@ -12,8 +12,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static blink::BlinkFuzzerTestSupport test_support =
       blink::BlinkFuzzerTestSupport();
 
-  if (size <= 4)
+  if (size <= 4) {
     return 0;
+  }
 
   blink::FuzzedDataProvider provider(data, size);
 

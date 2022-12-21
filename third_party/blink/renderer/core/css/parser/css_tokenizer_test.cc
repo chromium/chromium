@@ -74,8 +74,9 @@ void TestTokens(const String& string,
   expected_tokens.push_back(token1);
   if (token2.GetType() != kEOFToken) {
     expected_tokens.push_back(token2);
-    if (token3.GetType() != kEOFToken)
+    if (token3.GetType() != kEOFToken) {
       expected_tokens.push_back(token3);
+    }
   }
 
   CSSParserTokenRange expected(expected_tokens);
@@ -87,8 +88,9 @@ void TestTokens(const String& string,
   // Just check that serialization doesn't hit any asserts
   actual.Serialize();
 
-  while (!expected.AtEnd() || !actual.AtEnd())
+  while (!expected.AtEnd() || !actual.AtEnd()) {
     CompareTokens(expected.Consume(), actual.Consume());
+  }
 }
 
 static CSSParserToken Ident(const String& string) {
@@ -507,8 +509,9 @@ TEST_P(CachedCSSTokenizerTest, CachedTokenizer) {
     EXPECT_EQ(tokenizer1.Offset(), tokenizer2.Offset());
     EXPECT_EQ(tokenizer1.PreviousOffset(), tokenizer2.PreviousOffset());
     EXPECT_EQ(GetLastTokenRange(tokenizer1), GetLastTokenRange(tokenizer2));
-    if (last_token_eof)
+    if (last_token_eof) {
       break;
+    }
 
     // Perform one more iteration of the loop to make sure behavior is the same
     // if TokenizeSingle() is called beyond EOF.

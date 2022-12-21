@@ -28,29 +28,35 @@ StyleInheritedVariables::StyleInheritedVariables(
 
 StyleVariables::OptionalData StyleInheritedVariables::GetData(
     const AtomicString& name) const {
-  if (auto data = variables_.GetData(name))
+  if (auto data = variables_.GetData(name)) {
     return *data;
-  if (root_)
+  }
+  if (root_) {
     return root_->variables_.GetData(name);
+  }
   return absl::nullopt;
 }
 
 StyleVariables::OptionalValue StyleInheritedVariables::GetValue(
     const AtomicString& name) const {
-  if (auto data = variables_.GetValue(name))
+  if (auto data = variables_.GetValue(name)) {
     return *data;
-  if (root_)
+  }
+  if (root_) {
     return root_->variables_.GetValue(name);
+  }
   return absl::nullopt;
 }
 
 void StyleInheritedVariables::CollectNames(HashSet<AtomicString>& names) const {
   if (root_) {
-    for (const auto& pair : root_->Data())
+    for (const auto& pair : root_->Data()) {
       names.insert(pair.key);
+    }
   }
-  for (const auto& pair : Data())
+  for (const auto& pair : Data()) {
     names.insert(pair.key);
+  }
 }
 
 }  // namespace blink

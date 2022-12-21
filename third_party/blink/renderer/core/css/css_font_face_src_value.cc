@@ -78,8 +78,9 @@ String TechnologyToString(CSSFontFaceSrcValue::FontTechnology font_technology) {
 bool CSSFontFaceSrcValue::IsSupportedFormat() const {
   // format() syntax is already checked at parse time, see
   // AtRuleDescriptorParser.
-  if (!format_.empty())
+  if (!format_.empty()) {
     return true;
+  }
 
   // Normally we would just check the format, but in order to avoid conflicts
   // with the old WinIE style of font-face, we will also check to see if the URL
@@ -90,8 +91,9 @@ bool CSSFontFaceSrcValue::IsSupportedFormat() const {
 }
 
 void CSSFontFaceSrcValue::AppendTechnology(FontTechnology technology) {
-  if (!technologies_.Contains(technology))
+  if (!technologies_.Contains(technology)) {
     technologies_.push_back(technology);
+  }
 }
 
 String CSSFontFaceSrcValue::CustomCSSText() const {
@@ -139,12 +141,14 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
         ReferrerUtils::MojoReferrerPolicyResolveDefault(
             referrer_.referrer_policy));
     resource_request.SetReferrerString(referrer_.referrer);
-    if (is_ad_related_)
+    if (is_ad_related_) {
       resource_request.SetIsAdResource();
+    }
     ResourceLoaderOptions options(world_);
     options.initiator_info.name = fetch_initiator_type_names::kCSS;
-    if (referrer_.referrer != Referrer::ClientReferrerString())
+    if (referrer_.referrer != Referrer::ClientReferrerString()) {
       options.initiator_info.referrer = referrer_.referrer;
+    }
     FetchParameters params(std::move(resource_request), options);
     if (base::FeatureList::IsEnabled(
             features::kWebFontsCacheAwareTimeoutAdaption)) {

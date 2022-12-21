@@ -120,8 +120,9 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
     void MaySetDataSource(DataSource);
 
     static DataSource DataSourceForLoadFinish(const FontResource* font) {
-      if (font->Url().ProtocolIsData())
+      if (font->Url().ProtocolIsData()) {
         return kFromDataURL;
+      }
       return font->GetResponse().WasCached() ? kFromDiskCache : kFromNetwork;
     }
 

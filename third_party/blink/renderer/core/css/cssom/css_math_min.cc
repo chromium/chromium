@@ -40,17 +40,20 @@ CSSMathMin* CSSMathMin::Create(CSSNumericValueVector values) {
 
 absl::optional<CSSNumericSumValue> CSSMathMin::SumValue() const {
   auto cur_min = NumericValues()[0]->SumValue();
-  if (!cur_min.has_value() || cur_min->terms.size() != 1)
+  if (!cur_min.has_value() || cur_min->terms.size() != 1) {
     return absl::nullopt;
+  }
 
   for (const auto& value : NumericValues()) {
     const auto child_sum = value->SumValue();
     if (!child_sum.has_value() || child_sum->terms.size() != 1 ||
-        child_sum->terms[0].units != cur_min->terms[0].units)
+        child_sum->terms[0].units != cur_min->terms[0].units) {
       return absl::nullopt;
+    }
 
-    if (child_sum->terms[0].value < cur_min->terms[0].value)
+    if (child_sum->terms[0].value < cur_min->terms[0].value) {
       cur_min = child_sum;
+    }
   }
   return cur_min;
 }
@@ -60,8 +63,9 @@ void CSSMathMin::BuildCSSText(Nested, ParenLess, StringBuilder& result) const {
 
   bool first_iteration = true;
   for (const auto& value : NumericValues()) {
-    if (!first_iteration)
+    if (!first_iteration) {
       result.Append(", ");
+    }
     first_iteration = false;
 
     value->BuildCSSText(Nested::kYes, ParenLess::kYes, result);

@@ -22,15 +22,15 @@ StringView FindVariableName(CSSParserTokenRange& range) {
   return range.Consume().Value();
 }
 
-V8CSSUnparsedSegment*
-VariableReferenceValue(const StringView& variable_name,
-                       const HeapVector<Member<V8CSSUnparsedSegment>>& tokens
-) {
+V8CSSUnparsedSegment* VariableReferenceValue(
+    const StringView& variable_name,
+    const HeapVector<Member<V8CSSUnparsedSegment>>& tokens) {
   CSSUnparsedValue* unparsed_value;
-  if (tokens.size() == 0)
+  if (tokens.size() == 0) {
     unparsed_value = nullptr;
-  else
+  } else {
     unparsed_value = CSSUnparsedValue::Create(tokens);
+  }
 
   CSSStyleVariableReferenceValue* variable_reference =
       CSSStyleVariableReferenceValue::Create(variable_name.ToString(),
@@ -38,8 +38,8 @@ VariableReferenceValue(const StringView& variable_name,
   return MakeGarbageCollected<V8CSSUnparsedSegment>(variable_reference);
 }
 
-HeapVector<Member<V8CSSUnparsedSegment>>
-ParserTokenRangeToTokens(CSSParserTokenRange range) {
+HeapVector<Member<V8CSSUnparsedSegment>> ParserTokenRangeToTokens(
+    CSSParserTokenRange range) {
   HeapVector<Member<V8CSSUnparsedSegment>> tokens;
   StringBuilder builder;
   while (!range.AtEnd()) {
@@ -52,8 +52,9 @@ ParserTokenRangeToTokens(CSSParserTokenRange range) {
       CSSParserTokenRange block = range.ConsumeBlock();
       StringView variable_name = FindVariableName(block);
       block.ConsumeWhitespace();
-      if (block.Peek().GetType() == CSSParserTokenType::kCommaToken)
+      if (block.Peek().GetType() == CSSParserTokenType::kCommaToken) {
         block.Consume();
+      }
       tokens.push_back(VariableReferenceValue(variable_name,
                                               ParserTokenRangeToTokens(block)));
     } else {

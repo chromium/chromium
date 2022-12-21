@@ -23,8 +23,9 @@ PostStyleUpdateScope::CurrentAnimationData() {
 
 PostStyleUpdateScope::PostStyleUpdateScope(Document& document)
     : document_(document) {
-  if (!current_)
+  if (!current_) {
     current_ = this;
+  }
 }
 
 PostStyleUpdateScope::~PostStyleUpdateScope() {
@@ -44,8 +45,9 @@ void PostStyleUpdateScope::Apply() {
 
   for (auto& element : pending) {
     ElementAnimations* element_animations = element->GetElementAnimations();
-    if (!element_animations)
+    if (!element_animations) {
       continue;
+    }
     element_animations->CssAnimations().MaybeApplyPendingUpdate(element.Get());
   }
 
@@ -69,8 +71,9 @@ void PostStyleUpdateScope::AnimationData::StoreOldStyleIfNeeded(
 const ComputedStyle* PostStyleUpdateScope::AnimationData::GetOldStyle(
     Element& element) const {
   auto iter = old_styles_.find(&element);
-  if (iter == old_styles_.end())
+  if (iter == old_styles_.end()) {
     return element.GetComputedStyle();
+  }
   return iter->value.get();
 }
 

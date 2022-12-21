@@ -71,8 +71,9 @@ String CSSStepsTimingFunctionValue::CustomCSSText() const {
   // https://drafts.csswg.org/css-easing-1/#serialization
   // If the step position is jump-end or end, serialize as steps(<integer>).
   // Otherwise, serialize as steps(<integer>, <step-position>).
-  if (step_position_string.empty())
+  if (step_position_string.empty()) {
     return "steps(" + String::Number(steps_) + ')';
+  }
 
   return "steps(" + String::Number(steps_) + ", " + step_position_string + ')';
 }

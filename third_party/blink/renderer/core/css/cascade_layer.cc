@@ -10,11 +10,13 @@ namespace blink {
 
 CascadeLayer* CascadeLayer::FindDirectSubLayer(const AtomicString& name) const {
   // Anonymous layers are all distinct.
-  if (name == g_empty_atom)
+  if (name == g_empty_atom) {
     return nullptr;
+  }
   for (const auto& sub_layer : direct_sub_layers_) {
-    if (sub_layer->GetName() == name)
+    if (sub_layer->GetName() == name) {
       return sub_layer;
+    }
   }
   return nullptr;
 }
@@ -44,8 +46,9 @@ void CascadeLayer::ToStringInternal(StringBuilder& result,
   for (const auto& sub_layer : direct_sub_layers_) {
     AtomicString name =
         sub_layer->name_.length() ? sub_layer->name_ : "(anonymous)";
-    if (result.length())
+    if (result.length()) {
       result.Append(",");
+    }
     result.Append(prefix);
     result.Append(name);
     sub_layer->ToStringInternal(result, prefix + name + ".");

@@ -41,8 +41,9 @@ String CSSBorderImageSliceValue::CustomCSSText() const {
   String text = slices_->CssText();
 
   // Now the fill keywords if it is present.
-  if (fill_)
+  if (fill_) {
     return text + " fill";
+  }
   return text;
 }
 

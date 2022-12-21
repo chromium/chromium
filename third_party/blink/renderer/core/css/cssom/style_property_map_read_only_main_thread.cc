@@ -35,8 +35,9 @@ class StylePropertyMapIterationSource final
                      String& key,
                      CSSStyleValueVector& value,
                      ExceptionState&) override {
-    if (index_ >= values_.size())
+    if (index_ >= values_.size()) {
       return false;
+    }
 
     const StylePropertyMapReadOnlyMainThread::StylePropertyMapEntry& pair =
         values_.at(index_++);
@@ -70,14 +71,16 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::get(
     return nullptr;
   }
 
-  if (CSSProperty::IsShorthand(*name))
+  if (CSSProperty::IsShorthand(*name)) {
     return GetShorthandProperty(*name);
+  }
 
   const CSSValue* value = (name->IsCustomProperty())
                               ? GetCustomProperty(name->ToAtomicString())
                               : GetProperty(name->Id());
-  if (!value)
+  if (!value) {
     return nullptr;
+  }
 
   // Custom properties count as repeated whenever we have a CSSValueList.
   if (CSSProperty::IsRepeated(*name) ||
@@ -104,16 +107,18 @@ CSSStyleValueVector StylePropertyMapReadOnlyMainThread::getAll(
 
   if (CSSProperty::IsShorthand(*name)) {
     CSSStyleValueVector values;
-    if (CSSStyleValue* value = GetShorthandProperty(*name))
+    if (CSSStyleValue* value = GetShorthandProperty(*name)) {
       values.push_back(value);
+    }
     return values;
   }
 
   const CSSValue* value = (name->IsCustomProperty())
                               ? GetCustomProperty(name->ToAtomicString())
                               : GetProperty(name->Id());
-  if (!value)
+  if (!value) {
     return CSSStyleValueVector();
+  }
 
   return StyleValueFactory::CssValueToStyleValueVector(*name, *value);
 }
@@ -145,8 +150,9 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::GetShorthandProperty(
   DCHECK(CSSProperty::IsShorthand(name));
   const CSSProperty& property = CSSProperty::Get(name.Id());
   const auto serialization = SerializationForShorthand(property);
-  if (serialization.empty())
+  if (serialization.empty()) {
     return nullptr;
+  }
   return MakeGarbageCollected<CSSUnsupportedStyleValue>(
       CSSPropertyName(property.PropertyID()), serialization);
 }

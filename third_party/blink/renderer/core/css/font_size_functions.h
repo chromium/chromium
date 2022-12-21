@@ -52,8 +52,9 @@ class CORE_EXPORT FontSizeFunctions {
   static unsigned KeywordSize(CSSValueID value_id) {
     DCHECK(IsValidValueID(value_id));
 
-    if (value_id == CSSValueID::kWebkitXxxLarge)
+    if (value_id == CSSValueID::kWebkitXxxLarge) {
       value_id = CSSValueID::kXxxLarge;
+    }
 
     return static_cast<int>(value_id) - static_cast<int>(CSSValueID::kXxSmall) +
            1;

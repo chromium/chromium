@@ -27,10 +27,12 @@ TEST(InlineStylePropertyMapTest, PendingSubstitutionValueCrash) {
   // reifying all longhands.
   for (CSSPropertyID property_id : CSSPropertyIDList()) {
     const CSSProperty& shorthand = CSSProperty::Get(property_id);
-    if (!shorthand.IsShorthand())
+    if (!shorthand.IsShorthand()) {
       continue;
-    if (shorthand.Exposure() == CSSExposure::kNone)
+    }
+    if (shorthand.Exposure() == CSSExposure::kNone) {
       continue;
+    }
     div->SetInlineStyleProperty(property_id, "var(--dummy)");
     const StylePropertyShorthand& longhands = shorthandForProperty(property_id);
     for (unsigned i = 0; i < longhands.length(); i++) {

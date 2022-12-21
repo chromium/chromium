@@ -45,8 +45,9 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
                             const String& value) {
   CSSPropertyID unresolved_property =
       UnresolvedCSSPropertyID(execution_context, property);
-  if (unresolved_property == CSSPropertyID::kInvalid)
+  if (unresolved_property == CSSPropertyID::kInvalid) {
     return false;
+  }
   if (unresolved_property == CSSPropertyID::kVariable) {
     auto* dummy_style =
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);

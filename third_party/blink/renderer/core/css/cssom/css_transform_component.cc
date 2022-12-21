@@ -18,8 +18,9 @@ namespace blink {
 CSSTransformComponent* CSSTransformComponent::FromCSSValue(
     const CSSValue& value) {
   const auto* function_value = DynamicTo<CSSFunctionValue>(value);
-  if (!function_value)
+  if (!function_value) {
     return nullptr;
+  }
 
   switch (function_value->FunctionType()) {
     case CSSValueID::kMatrix:

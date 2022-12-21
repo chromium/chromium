@@ -28,8 +28,9 @@ bool CSSColorMixValue::NormalizePercentages(
     p2 = ClampTo<double>(percentage2->GetDoubleValue(), 0.0, 100.0) / 100.0;
   }
 
-  if (p1 == 0.0 && p2 == 0.0)
+  if (p1 == 0.0 && p2 == 0.0) {
     return false;
+  }
 
   alpha_multiplier = 1.0;
 
@@ -37,13 +38,15 @@ bool CSSColorMixValue::NormalizePercentages(
   if (scale != 0.0) {
     p1 /= scale;
     p2 /= scale;
-    if (scale <= 1.0)
+    if (scale <= 1.0) {
       alpha_multiplier = scale;
+    }
   }
 
   mix_amount = p1;
-  if (p2 == 0.0)
+  if (p2 == 0.0) {
     mix_amount = 1.0;
+  }
 
   return true;
 }

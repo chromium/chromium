@@ -61,8 +61,9 @@ class CORE_EXPORT CSSUnresolvedProperty {
 
  protected:
   static const CSSUnresolvedProperty& GetNonAliasProperty(CSSPropertyID id) {
-    if (id == CSSPropertyID::kVariable)
+    if (id == CSSPropertyID::kVariable) {
       return GetCSSPropertyVariableInternal();
+    }
     return *kPropertyClasses[static_cast<int>(id)];
   }
 

@@ -37,16 +37,19 @@ StyleGeneratedImage::StyleGeneratedImage(const CSSImageGeneratorValue& value,
     : image_generator_value_(const_cast<CSSImageGeneratorValue*>(&value)),
       container_sizes_(container_sizes) {
   is_generated_image_ = true;
-  if (value.IsPaintValue())
+  if (value.IsPaintValue()) {
     is_paint_image_ = true;
+  }
 }
 
 bool StyleGeneratedImage::IsEqual(const StyleImage& other) const {
-  if (!other.IsGeneratedImage())
+  if (!other.IsGeneratedImage()) {
     return false;
+  }
   const auto& other_generated = To<StyleGeneratedImage>(other);
-  if (!container_sizes_.SizesEqual(other_generated.container_sizes_))
+  if (!container_sizes_.SizesEqual(other_generated.container_sizes_)) {
     return false;
+  }
   return image_generator_value_ == other_generated.image_generator_value_;
 }
 

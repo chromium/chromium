@@ -158,8 +158,9 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
           no_lookup, no_lookup, no_lookup, no_lookup, no_lookup, no_lookup);
     }
 
-    if (new_alternates)
+    if (new_alternates) {
       request_description.SetFontVariantAlternates(new_alternates);
+    }
   }
 
   if (!font_family.FamilyIsGeneric()) {
@@ -176,8 +177,9 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
   // handed the generic font family name.
   AtomicString settings_family_name =
       FamilyNameFromSettings(request_description, font_family);
-  if (settings_family_name.empty())
+  if (settings_family_name.empty()) {
     return nullptr;
+  }
 
   ReportFontFamilyLookupByGenericFamily(
       family_name, request_description.GetScript(),
@@ -193,8 +195,9 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
 }
 
 void CSSFontSelector::UpdateGenericFontFamilySettings(Document& document) {
-  if (!document.GetSettings())
+  if (!document.GetSettings()) {
     return;
+  }
   generic_font_family_settings_ =
       document.GetSettings()->GetGenericFontFamilySettings();
   FontCacheInvalidated();

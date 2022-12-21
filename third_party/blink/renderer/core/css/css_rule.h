@@ -102,8 +102,9 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
   CSSStyleSheet* parentStyleSheet() const {
-    if (parent_is_rule_)
+    if (parent_is_rule_) {
       return parent_ ? ParentAsCSSRule()->parentStyleSheet() : nullptr;
+    }
     return ParentAsCSSStyleSheet();
   }
 

@@ -72,11 +72,13 @@ struct DowncastTraits<ShapeClipPathOperation> {
 
 inline bool ShapeClipPathOperation::operator==(
     const ClipPathOperation& o) const {
-  if (!IsSameType(o))
+  if (!IsSameType(o)) {
     return false;
+  }
   BasicShape* other_shape = To<ShapeClipPathOperation>(o).shape_.get();
-  if (!shape_.get() || !other_shape)
+  if (!shape_.get() || !other_shape) {
     return static_cast<bool>(shape_.get()) == static_cast<bool>(other_shape);
+  }
   return *shape_ == *other_shape;
 }
 

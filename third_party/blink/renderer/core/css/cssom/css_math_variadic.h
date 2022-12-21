@@ -15,7 +15,6 @@ namespace blink {
 
 // Represents an arithmetic operation with one or more CSSNumericValues.
 class CORE_EXPORT CSSMathVariadic : public CSSMathValue {
-
  public:
   CSSMathVariadic(const CSSMathVariadic&) = delete;
   CSSMathVariadic& operator=(const CSSMathVariadic&) = delete;
@@ -32,8 +31,9 @@ class CORE_EXPORT CSSMathVariadic : public CSSMathValue {
   }
 
   bool Equals(const CSSNumericValue& other) const final {
-    if (GetType() != other.GetType())
+    if (GetType() != other.GetType()) {
       return false;
+    }
 
     // We can safely cast here as we know 'other' has the same type as us.
     const auto& other_variadic = static_cast<const CSSMathVariadic&>(other);
@@ -55,8 +55,9 @@ class CORE_EXPORT CSSMathVariadic : public CSSMathValue {
     CSSNumericValueType final_type = values.front()->Type();
     for (wtf_size_t i = 1; i < values.size(); i++) {
       final_type = op(final_type, values[i]->Type(), error);
-      if (error)
+      if (error) {
         return final_type;
+      }
     }
 
     return final_type;
@@ -65,13 +66,15 @@ class CORE_EXPORT CSSMathVariadic : public CSSMathValue {
   CSSMathExpressionNode* ToCalcExporessionNodeForVariadic(
       CSSMathOperator op) const {
     CSSMathExpressionNode* node = NumericValues()[0]->ToCalcExpressionNode();
-    if (!node)
+    if (!node) {
       return nullptr;
+    }
     for (wtf_size_t i = 1; i < NumericValues().size(); i++) {
       CSSMathExpressionNode* next_arg =
           NumericValues()[i]->ToCalcExpressionNode();
-      if (!next_arg)
+      if (!next_arg) {
         return nullptr;
+      }
       node = CSSMathExpressionOperation::CreateArithmeticOperation(
           node, next_arg, op);
     }

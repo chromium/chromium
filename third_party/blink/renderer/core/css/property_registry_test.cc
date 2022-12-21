@@ -51,8 +51,9 @@ class PropertyRegistryTest : public PageTestBase {
 
   HeapVector<Member<const PropertyRegistration>> AllRegistrations() {
     HeapVector<Member<const PropertyRegistration>> vector;
-    for (auto entry : Registry())
+    for (auto entry : Registry()) {
       vector.push_back(entry.value);
+    }
     return vector;
   }
 };

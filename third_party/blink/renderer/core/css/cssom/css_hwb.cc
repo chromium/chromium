@@ -67,10 +67,11 @@ V8CSSNumberish* CSSHWB::alpha() const {
 }
 
 void CSSHWB::setH(CSSNumericValue* hue, ExceptionState& exception_state) {
-  if (CSSOMTypes::IsCSSStyleValueAngle(*hue))
+  if (CSSOMTypes::IsCSSStyleValueAngle(*hue)) {
     h_ = hue;
-  else
+  } else {
     exception_state.ThrowTypeError("Hue must be a CSS angle type.");
+  }
 }
 
 void CSSHWB::setW(const V8CSSNumberish* white,

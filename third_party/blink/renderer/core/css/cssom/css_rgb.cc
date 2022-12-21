@@ -27,12 +27,11 @@ CSSRGB::CSSRGB(CSSNumericValue* r,
                CSSNumericValue* alpha)
     : r_(r), g_(g), b_(b), alpha_(alpha) {}
 
-CSSRGB* CSSRGB::Create(
-    const V8CSSNumberish* red,
-    const V8CSSNumberish* green,
-    const V8CSSNumberish* blue,
-    const V8CSSNumberish* alpha,
-    ExceptionState& exception_state) {
+CSSRGB* CSSRGB::Create(const V8CSSNumberish* red,
+                       const V8CSSNumberish* green,
+                       const V8CSSNumberish* blue,
+                       const V8CSSNumberish* alpha,
+                       ExceptionState& exception_state) {
   CSSNumericValue* r;
   CSSNumericValue* g;
   CSSNumericValue* b;
@@ -68,9 +67,7 @@ V8CSSNumberish* CSSRGB::alpha() const {
   return MakeGarbageCollected<V8CSSNumberish>(alpha_);
 }
 
-void CSSRGB::setR(
-    const V8CSSNumberish* red,
-    ExceptionState& exception_state) {
+void CSSRGB::setR(const V8CSSNumberish* red, ExceptionState& exception_state) {
   if (auto* value = ToNumberOrPercentage(red)) {
     r_ = value;
   } else {
@@ -79,9 +76,8 @@ void CSSRGB::setR(
   }
 }
 
-void CSSRGB::setG(
-    const V8CSSNumberish* green,
-    ExceptionState& exception_state) {
+void CSSRGB::setG(const V8CSSNumberish* green,
+                  ExceptionState& exception_state) {
   if (auto* value = ToNumberOrPercentage(green)) {
     g_ = value;
   } else {
@@ -90,9 +86,7 @@ void CSSRGB::setG(
   }
 }
 
-void CSSRGB::setB(
-    const V8CSSNumberish* blue,
-    ExceptionState& exception_state) {
+void CSSRGB::setB(const V8CSSNumberish* blue, ExceptionState& exception_state) {
   if (auto* value = ToNumberOrPercentage(blue)) {
     b_ = value;
   } else {
@@ -101,9 +95,8 @@ void CSSRGB::setB(
   }
 }
 
-void CSSRGB::setAlpha(
-    const V8CSSNumberish* alpha,
-    ExceptionState& exception_state) {
+void CSSRGB::setAlpha(const V8CSSNumberish* alpha,
+                      ExceptionState& exception_state) {
   if (auto* value = ToPercentage(alpha)) {
     alpha_ = value;
   } else {

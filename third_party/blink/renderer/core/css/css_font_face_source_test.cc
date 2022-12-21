@@ -49,7 +49,7 @@ unsigned SimulateHashCalculation(float size) {
   return font_description.CacheKey(FontFaceCreationParams(), is_unique_match)
       .GetHash();
 }
-}
+}  // namespace
 
 TEST(CSSFontFaceSourceTest, HashCollision) {
   DummyFontFaceSource font_face_source;

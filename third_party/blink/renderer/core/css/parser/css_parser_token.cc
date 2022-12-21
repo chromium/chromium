@@ -108,18 +108,22 @@ AtRuleDescriptorID CSSParserToken::ParseAsAtRuleDescriptorID() const {
 }
 
 CSSValueID CSSParserToken::Id() const {
-  if (type_ != kIdentToken)
+  if (type_ != kIdentToken) {
     return CSSValueID::kInvalid;
-  if (id_ < 0)
+  }
+  if (id_ < 0) {
     id_ = static_cast<int>(CssValueKeywordID(Value()));
+  }
   return static_cast<CSSValueID>(id_);
 }
 
 CSSValueID CSSParserToken::FunctionId() const {
-  if (type_ != kFunctionToken)
+  if (type_ != kFunctionToken) {
     return CSSValueID::kInvalid;
-  if (id_ < 0)
+  }
+  if (id_ < 0) {
     id_ = static_cast<int>(CssValueKeywordID(Value()));
+  }
   return static_cast<CSSValueID>(id_);
 }
 
@@ -142,12 +146,14 @@ CSSParserToken CSSParserToken::CopyWithUpdatedString(
 }
 
 bool CSSParserToken::ValueDataCharRawEqual(const CSSParserToken& other) const {
-  if (value_length_ != other.value_length_)
+  if (value_length_ != other.value_length_) {
     return false;
+  }
 
   if (ValueDataCharRaw() == other.ValueDataCharRaw() &&
-      value_is_8bit_ == other.value_is_8bit_)
+      value_is_8bit_ == other.value_is_8bit_) {
     return true;
+  }
 
   if (value_is_8bit_) {
     return other.value_is_8bit_
@@ -169,14 +175,16 @@ bool CSSParserToken::ValueDataCharRawEqual(const CSSParserToken& other) const {
 }
 
 bool CSSParserToken::operator==(const CSSParserToken& other) const {
-  if (type_ != other.type_)
+  if (type_ != other.type_) {
     return false;
+  }
   switch (type_) {
     case kDelimiterToken:
       return Delimiter() == other.Delimiter();
     case kHashToken:
-      if (hash_token_type_ != other.hash_token_type_)
+      if (hash_token_type_ != other.hash_token_type_) {
         return false;
+      }
       [[fallthrough]];
     case kIdentToken:
     case kFunctionToken:
@@ -184,8 +192,9 @@ bool CSSParserToken::operator==(const CSSParserToken& other) const {
     case kUrlToken:
       return ValueDataCharRawEqual(other);
     case kDimensionToken:
-      if (!ValueDataCharRawEqual(other))
+      if (!ValueDataCharRawEqual(other)) {
         return false;
+      }
       [[fallthrough]];
     case kNumberToken:
     case kPercentageToken:
@@ -224,8 +233,9 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
       SerializeIdentifier(Value().ToString(), builder);
       return builder.Append(')');
     case kDelimiterToken:
-      if (Delimiter() == '\\')
+      if (Delimiter() == '\\') {
         return builder.Append("\\\n");
+      }
       return builder.Append(Delimiter());
     case kNumberToken:
       // These won't properly preserve the NumericValueType flag

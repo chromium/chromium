@@ -47,8 +47,9 @@ StyleRuleImport::StyleRuleImport(const String& href,
       media_queries_(media),
       loading_(false),
       origin_clean_(origin_clean) {
-  if (!media_queries_)
+  if (!media_queries_) {
     media_queries_ = MediaQuerySet::Create(String(), nullptr);
+  }
 }
 
 StyleRuleImport::~StyleRuleImport() = default;
@@ -66,8 +67,9 @@ void StyleRuleImport::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 void StyleRuleImport::NotifyFinished(Resource* resource) {
-  if (style_sheet_)
+  if (style_sheet_) {
     style_sheet_->ClearOwnerRule();
+  }
 
   auto* cached_style_sheet = To<CSSStyleSheetResource>(resource);
   Document* document = nullptr;
@@ -90,8 +92,9 @@ void StyleRuleImport::NotifyFinished(Resource* resource) {
       Referrer(cached_style_sheet->GetResponse().ResponseUrl(),
                cached_style_sheet->GetReferrerPolicy()),
       cached_style_sheet->Encoding(), document);
-  if (cached_style_sheet->GetResourceRequest().IsAdResource())
+  if (cached_style_sheet->GetResourceRequest().IsAdResource()) {
     context->SetIsAdRelated();
+  }
 
   style_sheet_ = MakeGarbageCollected<StyleSheetContents>(
       context, cached_style_sheet->Url(), this);
@@ -110,15 +113,18 @@ bool StyleRuleImport::IsLoading() const {
 }
 
 void StyleRuleImport::RequestStyleSheet() {
-  if (!parent_style_sheet_)
+  if (!parent_style_sheet_) {
     return;
+  }
   Document* document = parent_style_sheet_->SingleOwnerDocument();
-  if (!document)
+  if (!document) {
     return;
+  }
 
   ResourceFetcher* fetcher = document->Fetcher();
-  if (!fetcher)
+  if (!fetcher) {
     return;
+  }
 
   KURL abs_url;
   if (!parent_style_sheet_->BaseURL().IsNull()) {
@@ -135,8 +141,9 @@ void StyleRuleImport::RequestStyleSheet() {
        sheet = sheet->ParentStyleSheet()) {
     if (EqualIgnoringFragmentIdentifier(abs_url, sheet->BaseURL()) ||
         EqualIgnoringFragmentIdentifier(
-            abs_url, document->CompleteURL(sheet->OriginalURL())))
+            abs_url, document->CompleteURL(sheet->OriginalURL()))) {
       return;
+    }
     root_sheet = sheet;
   }
 
@@ -148,8 +155,9 @@ void StyleRuleImport::RequestStyleSheet() {
   ResourceRequest resource_request(abs_url);
   resource_request.SetReferrerString(referrer.referrer);
   resource_request.SetReferrerPolicy(referrer.referrer_policy);
-  if (parser_context->IsAdRelated())
+  if (parser_context->IsAdRelated()) {
     resource_request.SetIsAdResource();
+  }
   FetchParameters params(std::move(resource_request), options);
   params.SetCharset(parent_style_sheet_->Charset());
   params.SetFromOriginDirtyStyleSheet(origin_clean_ != OriginClean::kTrue);

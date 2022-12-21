@@ -62,20 +62,24 @@ bool HasCSSPropertyNamePrefix(const AtomicString& property_name,
                               const char* prefix) {
 #if DCHECK_IS_ON()
   DCHECK(*prefix);
-  for (const char* p = prefix; *p; ++p)
+  for (const char* p = prefix; *p; ++p) {
     DCHECK(IsASCIILower(*p));
+  }
   DCHECK(property_name.length());
 #endif
 
-  if (ToASCIILower(property_name[0]) != prefix[0])
+  if (ToASCIILower(property_name[0]) != prefix[0]) {
     return false;
+  }
 
   unsigned length = property_name.length();
   for (unsigned i = 1; i < length; ++i) {
-    if (!prefix[i])
+    if (!prefix[i]) {
       return IsASCIIUpper(property_name[i]);
-    if (property_name[i] != prefix[i])
+    }
+    if (property_name[i] != prefix[i]) {
       return false;
+    }
   }
   return false;
 }
@@ -83,8 +87,9 @@ bool HasCSSPropertyNamePrefix(const AtomicString& property_name,
 CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
                                  const AtomicString& property_name) {
   unsigned length = property_name.length();
-  if (!length)
+  if (!length) {
     return CSSPropertyID::kInvalid;
+  }
 
   StringBuilder builder;
   builder.ReserveCapacity(length);
@@ -92,10 +97,11 @@ CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
   unsigned i = 0;
   bool has_seen_dash = false;
 
-  if (HasCSSPropertyNamePrefix(property_name, "webkit"))
+  if (HasCSSPropertyNamePrefix(property_name, "webkit")) {
     builder.Append('-');
-  else if (IsASCIIUpper(property_name[0]))
+  } else if (IsASCIIUpper(property_name[0])) {
     return CSSPropertyID::kInvalid;
+  }
 
   bool has_seen_upper = IsASCIIUpper(property_name[i]);
 
@@ -104,8 +110,9 @@ CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
   for (; i < length; ++i) {
     UChar c = property_name[i];
     if (!IsASCIIUpper(c)) {
-      if (c == '-')
+      if (c == '-') {
         has_seen_dash = true;
+      }
       builder.Append(c);
     } else {
       has_seen_upper = true;
@@ -116,8 +123,9 @@ CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
 
   // Reject names containing both dashes and upper-case characters, such as
   // "border-rightColor".
-  if (has_seen_dash && has_seen_upper)
+  if (has_seen_dash && has_seen_upper) {
     return CSSPropertyID::kInvalid;
+  }
 
   String prop_name = builder.ReleaseString();
   return UnresolvedCSSPropertyID(execution_context, prop_name);
@@ -137,13 +145,15 @@ CSSPropertyID CssPropertyInfo(const ExecutionContext* execution_context,
   typedef HashMap<String, CSSPropertyID> CSSPropertyIDMap;
   DEFINE_STATIC_LOCAL(CSSPropertyIDMap, map, ());
   CSSPropertyIDMap::iterator iter = map.find(name);
-  if (iter != map.end())
+  if (iter != map.end()) {
     return iter->value;
+  }
 
   CSSPropertyID unresolved_property =
       ParseCSSPropertyID(execution_context, name);
-  if (unresolved_property == CSSPropertyID::kVariable)
+  if (unresolved_property == CSSPropertyID::kVariable) {
     unresolved_property = CSSPropertyID::kInvalid;
+  }
   // Only cache known-exposed properties (i.e. properties without any
   // associated runtime flag). This is because the web-exposure of properties
   // that are not known-exposed can change dynamically, for example when
@@ -184,8 +194,9 @@ String CSSStyleDeclaration::AnonymousNamedGetter(const AtomicString& name) {
       CssPropertyInfo(GetExecutionContext(), name);
 
   // Do not handle non-property names.
-  if (!IsValidCSSPropertyID(unresolved_property))
+  if (!IsValidCSSPropertyID(unresolved_property)) {
     return String();
+  }
 
   return GetPropertyValueInternal(ResolveCSSPropertyID(unresolved_property));
 }
@@ -196,11 +207,13 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
     v8::Local<v8::Value> value) {
   const ExecutionContext* execution_context =
       ExecutionContext::From(script_state);
-  if (!execution_context)
+  if (!execution_context) {
     return NamedPropertySetterResult::kDidNotIntercept;
+  }
   CSSPropertyID unresolved_property = CssPropertyInfo(execution_context, name);
-  if (!IsValidCSSPropertyID(unresolved_property))
+  if (!IsValidCSSPropertyID(unresolved_property)) {
     return NamedPropertySetterResult::kDidNotIntercept;
+  }
   // We create the ExceptionState manually due to performance issues: adding
   // [RaisesException] to the IDL causes the bindings layer to expensively
   // create a std::string to set the ExceptionState's |property_name| argument,
@@ -216,13 +229,15 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   auto&& string_value =
       NativeValueTraits<IDLStringTreatNullAsEmptyString>::NativeValue(
           script_state->GetIsolate(), value, exception_state);
-  if (UNLIKELY(exception_state.HadException()))
+  if (UNLIKELY(exception_state.HadException())) {
     return NamedPropertySetterResult::kIntercepted;
+  }
   SetPropertyInternal(unresolved_property, String(), string_value, false,
                       execution_context->GetSecureContextMode(),
                       exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return NamedPropertySetterResult::kIntercepted;
+  }
   return NamedPropertySetterResult::kIntercepted;
 }
 
@@ -244,14 +259,16 @@ void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
     for (CSSPropertyID property_id : CSSPropertyIDList()) {
       const CSSProperty& property_class =
           CSSProperty::Get(ResolveCSSPropertyID(property_id));
-      if (property_class.IsWebExposed(execution_context))
+      if (property_class.IsWebExposed(execution_context)) {
         property_names.push_back(property_class.GetJSPropertyName());
+      }
     }
     for (CSSPropertyID property_id : kCSSPropertyAliasList) {
       const CSSUnresolvedProperty* property_class =
           CSSUnresolvedProperty::GetAliasProperty(property_id);
-      if (property_class->IsWebExposed(execution_context))
+      if (property_class->IsWebExposed(execution_context)) {
         property_names.push_back(property_class->GetJSPropertyName());
+      }
     }
     std::sort(property_names.begin(), property_names.end(),
               WTF::CodeUnitCompareLessThan);

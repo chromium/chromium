@@ -61,15 +61,17 @@ CSSNumericValue* CSSColorValue::ToNumberOrPercentage(
 CSSNumericValue* CSSColorValue::ToPercentage(const V8CSSNumberish* input) {
   CSSNumericValue* value = CSSNumericValue::FromPercentish(input);
   DCHECK(value);
-  if (!CSSOMTypes::IsCSSStyleValuePercentage(*value))
+  if (!CSSOMTypes::IsCSSStyleValuePercentage(*value)) {
     return nullptr;
+  }
 
   return value;
 }
 
 float CSSColorValue::ComponentToColorInput(CSSNumericValue* input) {
-  if (CSSOMTypes::IsCSSStyleValuePercentage(*input))
+  if (CSSOMTypes::IsCSSStyleValuePercentage(*input)) {
     return input->to(CSSPrimitiveValue::UnitType::kPercentage)->value() / 100;
+  }
   return input->to(CSSPrimitiveValue::UnitType::kNumber)->value();
 }
 

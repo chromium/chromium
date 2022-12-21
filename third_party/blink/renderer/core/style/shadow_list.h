@@ -40,7 +40,7 @@
 namespace gfx {
 class OutsetsF;
 class RectF;
-}
+}  // namespace gfx
 
 namespace blink {
 

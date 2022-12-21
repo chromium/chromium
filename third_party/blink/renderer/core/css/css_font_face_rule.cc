@@ -49,8 +49,9 @@ String CSSFontFaceRule::cssText() const {
   result.Append("@font-face { ");
   String descs = font_face_rule_->Properties().AsText();
   result.Append(descs);
-  if (!descs.empty())
+  if (!descs.empty()) {
     result.Append(' ');
+  }
   result.Append('}');
   return result.ReleaseString();
 }
@@ -58,8 +59,9 @@ String CSSFontFaceRule::cssText() const {
 void CSSFontFaceRule::Reattach(StyleRuleBase* rule) {
   DCHECK(rule);
   font_face_rule_ = To<StyleRuleFontFace>(rule);
-  if (properties_cssom_wrapper_)
+  if (properties_cssom_wrapper_) {
     properties_cssom_wrapper_->Reattach(font_face_rule_->MutableProperties());
+  }
 }
 
 void CSSFontFaceRule::Trace(Visitor* visitor) const {

@@ -40,8 +40,9 @@ static RuleSet* RuleSetFromSingleRule(Document& document, const String& text) {
 class ElementRuleCollectorTest : public PageTestBase {
  public:
   EInsideLink InsideLink(Element* element) {
-    if (!element)
+    if (!element) {
       return EInsideLink::kNotInsideLink;
+    }
     if (element->IsLink()) {
       ElementResolveContext context(*element);
       return context.ElementLinkState();
@@ -64,8 +65,9 @@ class ElementRuleCollectorTest : public PageTestBase {
 
     String rule = selector + " { color: green }";
     RuleSet* rule_set = RuleSetFromSingleRule(GetDocument(), rule);
-    if (!rule_set)
+    if (!rule_set) {
       return absl::nullopt;
+    }
 
     MatchRequest request(rule_set, scope);
 
@@ -73,16 +75,18 @@ class ElementRuleCollectorTest : public PageTestBase {
     collector.SortAndTransferMatchedRules();
 
     const MatchedPropertiesVector& vector = result.GetMatchedProperties();
-    if (!vector.size())
+    if (!vector.size()) {
       return absl::nullopt;
+    }
 
     // Either the normal rules matched, the visited dependent rules matched,
     // or both. There should be nothing else.
     DCHECK(vector.size() == 1 || vector.size() == 2);
 
     unsigned link_match_type = 0;
-    for (const auto& matched_propeties : vector)
+    for (const auto& matched_propeties : vector) {
       link_match_type |= matched_propeties.types_.link_match_type;
+    }
     return link_match_type;
   }
 
@@ -316,8 +320,9 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     auto* sheet = MakeGarbageCollected<StyleSheetContents>(parser_context);
     sheet->ParserAddNamespace("bar", "http://example.org/bar");
-    if (defaultNamespace)
+    if (defaultNamespace) {
       sheet->ParserAddNamespace(g_null_atom, *defaultNamespace);
+    }
     MediaQueryEvaluator* medium =
         MakeGarbageCollected<MediaQueryEvaluator>(GetDocument().GetFrame());
     RuleSet& rules = sheet->EnsureRuleSet(*medium, kRuleHasNoSpecialState);
@@ -339,10 +344,11 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     args.Append(">, ");
     args.Append(selector);
     args.Append(", ");
-    if (defaultNamespace)
+    if (defaultNamespace) {
       args.Append(String("\"" + *defaultNamespace + "\""));
-    else
+    } else {
       args.Append("{}");
+    }
     args.Append(")");
 
     return result.HasNonUniversalHighlightPseudoStyles();

@@ -27,8 +27,9 @@ SizesAttributeParser::SizesAttributeParser(
 }
 
 float SizesAttributeParser::length() {
-  if (is_valid_)
+  if (is_valid_) {
     return EffectiveSize();
+  }
   return EffectiveSizeDefaultValue();
 }
 
@@ -38,8 +39,9 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
   CSSParserTokenType type = start_token.GetType();
   if (type == kDimensionToken) {
     double length;
-    if (!CSSPrimitiveValue::IsLength(start_token.GetUnitType()))
+    if (!CSSPrimitiveValue::IsLength(start_token.GetUnitType())) {
       return false;
+    }
     if ((media_values_->ComputeLength(start_token.NumericValue(),
                                       start_token.GetUnitType(), length)) &&
         (length >= 0)) {
@@ -48,8 +50,9 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
     }
   } else if (type == kFunctionToken) {
     SizesMathFunctionParser calc_parser(range, media_values_);
-    if (!calc_parser.IsValid())
+    if (!calc_parser.IsValid()) {
       return false;
+    }
     result = calc_parser.Result();
     return true;
   } else if (type == kNumberToken && !start_token.NumericValue()) {
@@ -86,13 +89,15 @@ bool SizesAttributeParser::Parse(CSSParserTokenRange range) {
 
     float length;
     if (!CalculateLengthInPixels(
-            range.MakeSubRange(length_token_start, length_token_end), length))
+            range.MakeSubRange(length_token_start, length_token_end), length)) {
       continue;
+    }
     MediaQuerySet* media_condition = MediaQueryParser::ParseMediaCondition(
         range.MakeSubRange(media_condition_start, length_token_start),
         execution_context_);
-    if (!media_condition || !MediaConditionMatches(*media_condition))
+    if (!media_condition || !MediaConditionMatches(*media_condition)) {
       continue;
+    }
     length_ = length;
     length_was_set_ = true;
     return true;
@@ -101,8 +106,9 @@ bool SizesAttributeParser::Parse(CSSParserTokenRange range) {
 }
 
 float SizesAttributeParser::EffectiveSize() {
-  if (length_was_set_)
+  if (length_was_set_) {
     return length_;
+  }
   return EffectiveSizeDefaultValue();
 }
 

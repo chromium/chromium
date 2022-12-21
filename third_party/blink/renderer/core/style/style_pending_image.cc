@@ -42,20 +42,25 @@ CSSValue* ComputedCSSValueBuilder::CrossfadeArgument(CSSValue* value) const {
 }
 
 CSSValue* ComputedCSSValueBuilder::Build(CSSValue* value) const {
-  if (auto* image_value = DynamicTo<CSSImageValue>(value))
+  if (auto* image_value = DynamicTo<CSSImageValue>(value)) {
     return image_value->ValueWithURLMadeAbsolute();
-  if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value))
+  }
+  if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
     return image_set_value->ValueWithURLsMadeAbsolute();
+  }
   if (auto* image_crossfade = DynamicTo<cssvalue::CSSCrossfadeValue>(value)) {
     return MakeGarbageCollected<cssvalue::CSSCrossfadeValue>(
         CrossfadeArgument(&image_crossfade->From()),
         CrossfadeArgument(&image_crossfade->To()),
         &image_crossfade->Percentage());
   }
-  if (IsA<CSSPaintValue>(value))
+  if (IsA<CSSPaintValue>(value)) {
     return value;
-  if (auto* image_gradient_value = DynamicTo<cssvalue::CSSGradientValue>(value))
+  }
+  if (auto* image_gradient_value =
+          DynamicTo<cssvalue::CSSGradientValue>(value)) {
     return image_gradient_value->ComputedCSSValue(style_, allow_visited_style_);
+  }
   NOTREACHED();
   return value;
 }

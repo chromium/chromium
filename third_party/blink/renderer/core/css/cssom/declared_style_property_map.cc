@@ -18,30 +18,34 @@ DeclaredStylePropertyMap::DeclaredStylePropertyMap(CSSStyleRule* owner_rule)
     : StylePropertyMap(), owner_rule_(owner_rule) {}
 
 unsigned int DeclaredStylePropertyMap::size() const {
-  if (!GetStyleRule())
+  if (!GetStyleRule()) {
     return 0;
+  }
   return GetStyleRule()->Properties().PropertyCount();
 }
 
 const CSSValue* DeclaredStylePropertyMap::GetProperty(
     CSSPropertyID property_id) const {
-  if (!GetStyleRule())
+  if (!GetStyleRule()) {
     return nullptr;
+  }
   return GetStyleRule()->Properties().GetPropertyCSSValue(property_id);
 }
 
 const CSSValue* DeclaredStylePropertyMap::GetCustomProperty(
     const AtomicString& property_name) const {
-  if (!GetStyleRule())
+  if (!GetStyleRule()) {
     return nullptr;
+  }
   return GetStyleRule()->Properties().GetPropertyCSSValue(property_name);
 }
 
 void DeclaredStylePropertyMap::SetProperty(CSSPropertyID property_id,
                                            const CSSValue& value) {
   DCHECK_NE(property_id, CSSPropertyID::kVariable);
-  if (!GetStyleRule())
+  if (!GetStyleRule()) {
     return;
+  }
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
   GetStyleRule()->MutableProperties().SetProperty(property_id, value);
 }
@@ -60,8 +64,9 @@ bool DeclaredStylePropertyMap::SetShorthandProperty(
 void DeclaredStylePropertyMap::SetCustomProperty(
     const AtomicString& property_name,
     const CSSValue& value) {
-  if (!GetStyleRule())
+  if (!GetStyleRule()) {
     return;
+  }
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
 
   const auto& variable_value = To<CSSVariableReferenceValue>(value);
@@ -73,30 +78,34 @@ void DeclaredStylePropertyMap::SetCustomProperty(
 }
 
 void DeclaredStylePropertyMap::RemoveProperty(CSSPropertyID property_id) {
-  if (!GetStyleRule())
+  if (!GetStyleRule()) {
     return;
+  }
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
   GetStyleRule()->MutableProperties().RemoveProperty(property_id);
 }
 
 void DeclaredStylePropertyMap::RemoveCustomProperty(
     const AtomicString& property_name) {
-  if (!GetStyleRule())
+  if (!GetStyleRule()) {
     return;
+  }
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
   GetStyleRule()->MutableProperties().RemoveProperty(property_name);
 }
 
 void DeclaredStylePropertyMap::RemoveAllProperties() {
-  if (!GetStyleRule())
+  if (!GetStyleRule()) {
     return;
+  }
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
   GetStyleRule()->MutableProperties().Clear();
 }
 
 void DeclaredStylePropertyMap::ForEachProperty(IterationFunction visitor) {
-  if (!GetStyleRule())
+  if (!GetStyleRule()) {
     return;
+  }
   const CSSPropertyValueSet& declared_style_set = GetStyleRule()->Properties();
   for (unsigned i = 0; i < declared_style_set.PropertyCount(); i++) {
     const auto& property_reference = declared_style_set.PropertyAt(i);
@@ -105,8 +114,9 @@ void DeclaredStylePropertyMap::ForEachProperty(IterationFunction visitor) {
 }
 
 StyleRule* DeclaredStylePropertyMap::GetStyleRule() const {
-  if (!owner_rule_)
+  if (!owner_rule_) {
     return nullptr;
+  }
   return owner_rule_->GetStyleRule();
 }
 

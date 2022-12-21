@@ -80,10 +80,11 @@ static inline ValidPropertyFilter DetermineValidPropertyFilter(
       case CSSSelector::kPseudoTargetText:
       case CSSSelector::kPseudoGrammarError:
       case CSSSelector::kPseudoSpellingError:
-        if (RuntimeEnabledFeatures::HighlightInheritanceEnabled())
+        if (RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
           return ValidPropertyFilter::kHighlight;
-        else
+        } else {
           return ValidPropertyFilter::kHighlightLegacy;
+        }
       case CSSSelector::kPseudoHighlight:
         return ValidPropertyFilter::kHighlight;
       default:
@@ -171,8 +172,9 @@ static void ExtractSelectorValues(const CSSSelector* selector,
       break;
     case CSSSelector::kTag:
       if (selector->TagQName().LocalName() !=
-          CSSSelector::UniversalSelectorAtom())
+          CSSSelector::UniversalSelectorAtom()) {
         tag_name = selector->TagQName().LocalName();
+      }
       break;
     case CSSSelector::kPseudoClass:
     case CSSSelector::kPseudoElement:
@@ -398,8 +400,9 @@ void RuleSet::AddRule(StyleRule* rule,
   ++rule_count_;
   if (features_.CollectFeaturesFromSelector(rule_data.Selector(),
                                             style_scope) ==
-      RuleFeatureSet::kSelectorNeverMatches)
+      RuleFeatureSet::kSelectorNeverMatches) {
     return;
+  }
 
   if (!FindBestRuleSetAndAdd(rule_data.Selector(), rule_data)) {
     // If we didn't find a specialized map to stick it in, file under universal
@@ -433,13 +436,16 @@ void RuleSet::AddRuleToLayerIntervals(const CascadeLayer* cascade_layer,
   const CascadeLayer* last_interval_layer =
       layer_intervals_.empty() ? implicit_outer_layer_.Get()
                                : layer_intervals_.back().value.Get();
-  if (!cascade_layer)
+  if (!cascade_layer) {
     cascade_layer = implicit_outer_layer_;
-  if (cascade_layer == last_interval_layer)
+  }
+  if (cascade_layer == last_interval_layer) {
     return;
+  }
 
-  if (!cascade_layer)
+  if (!cascade_layer) {
     cascade_layer = EnsureImplicitOuterLayer();
+  }
   layer_intervals_.push_back(Interval<CascadeLayer>(cascade_layer, position));
 }
 
@@ -451,8 +457,9 @@ static void AddRuleToIntervals(const T* value,
                                HeapVector<RuleSet::Interval<T>>& intervals) {
   const T* last_value =
       intervals.empty() ? nullptr : intervals.back().value.Get();
-  if (value == last_value)
+  if (value == last_value) {
     return;
+  }
 
   intervals.push_back(RuleSet::Interval<T>(value, position));
 }
@@ -565,12 +572,14 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                     container_query, sub_layer, style_scope);
     } else if (auto* layer_statement_rule =
                    DynamicTo<StyleRuleLayerStatement>(rule)) {
-      for (const auto& layer_name : layer_statement_rule->GetNames())
+      for (const auto& layer_name : layer_statement_rule->GetNames()) {
         GetOrAddSubLayer(cascade_layer, layer_name);
+      }
     } else if (auto* scope_rule = DynamicTo<StyleRuleScope>(rule)) {
       const StyleScope* inner_style_scope = &scope_rule->GetStyleScope();
-      if (style_scope)
+      if (style_scope) {
         inner_style_scope = inner_style_scope->CopyWithParent(style_scope);
+      }
       AddChildRules(scope_rule->ChildRules(), medium, add_rule_flags,
                     container_query, cascade_layer, inner_style_scope);
     }
@@ -579,8 +588,9 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
 
 bool RuleSet::MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
                                     const MediaQuerySet* media_queries) {
-  if (!media_queries)
+  if (!media_queries) {
     return true;
+  }
   bool match_media =
       evaluator.Eval(*media_queries, &features_.MutableMediaQueryResultFlags());
   media_query_set_results_.push_back(
@@ -597,16 +607,18 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
   DCHECK(sheet);
 
   for (const auto& pre_import_layer : sheet->PreImportLayerStatementRules()) {
-    for (const auto& name : pre_import_layer->GetNames())
+    for (const auto& name : pre_import_layer->GetNames()) {
       GetOrAddSubLayer(cascade_layer, name);
+    }
   }
 
   const HeapVector<Member<StyleRuleImport>>& import_rules =
       sheet->ImportRules();
   for (unsigned i = 0; i < import_rules.size(); ++i) {
     StyleRuleImport* import_rule = import_rules[i].Get();
-    if (!MatchMediaForAddRules(medium, import_rule->MediaQueries()))
+    if (!MatchMediaForAddRules(medium, import_rule->MediaQueries())) {
       continue;
+    }
     CascadeLayer* import_layer = cascade_layer;
     if (import_rule->IsLayered()) {
       import_layer =
@@ -644,16 +656,18 @@ void RuleSet::AddStyleRule(StyleRule* style_rule,
 
 CascadeLayer* RuleSet::GetOrAddSubLayer(CascadeLayer* cascade_layer,
                                         const StyleRuleBase::LayerName& name) {
-  if (!cascade_layer)
+  if (!cascade_layer) {
     cascade_layer = EnsureImplicitOuterLayer();
+  }
   return cascade_layer->GetOrAddSubLayer(name);
 }
 
 void RuleMap::Add(const AtomicString& key, const RuleData& rule_data) {
   RuleMap::Extent& rules =
       buckets.insert(key, RuleMap::Extent()).stored_value->value;
-  if (rules.length == 0)
+  if (rules.length == 0) {
     rules.bucket_number = num_buckets++;
+  }
   RuleData rule_data_copy = rule_data;
   rule_data_copy.SetBucketInformation(rules.bucket_number,
                                       /*order_in_bucket=*/rules.length++);
@@ -890,8 +904,9 @@ bool IsRuleListSorted(const RuleList& rules) {
   unsigned last_position = 0;
   bool first_rule = true;
   for (const RuleData& rule : rules) {
-    if (!first_rule && rule.GetPosition() <= last_position)
+    if (!first_rule && rule.GetPosition() <= last_position) {
       return false;
+    }
     first_rule = false;
     last_position = rule.GetPosition();
   }
@@ -934,11 +949,13 @@ bool RuleSet::DidMediaQueryResultsChange(
 
 const CascadeLayer* RuleSet::GetLayerForTest(const RuleData& rule) const {
   if (!layer_intervals_.size() ||
-      layer_intervals_[0].start_position > rule.GetPosition())
+      layer_intervals_[0].start_position > rule.GetPosition()) {
     return implicit_outer_layer_;
+  }
   for (unsigned i = 1; i < layer_intervals_.size(); ++i) {
-    if (layer_intervals_[i].start_position > rule.GetPosition())
+    if (layer_intervals_[i].start_position > rule.GetPosition()) {
       return layer_intervals_[i - 1].value;
+    }
   }
   return layer_intervals_.back().value;
 }
@@ -989,8 +1006,9 @@ void RuleSet::Trace(Visitor* visitor) const {
 
 #ifndef NDEBUG
 void RuleSet::Show() const {
-  for (const RuleData& rule : all_rules_)
+  for (const RuleData& rule : all_rules_) {
     rule.Selector().Show();
+  }
 }
 #endif
 

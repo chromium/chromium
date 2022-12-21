@@ -97,8 +97,9 @@ TEST(CSSParserTokenStreamTest, ConsumeIncludingWhitespace) {
 TEST(CSSParserTokenStreamTest, RangesDoNotGetInvalidatedWhenConsuming) {
   StringBuilder s;
   s.Append("1 ");
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < 100; i++) {
     s.Append("A ");
+  }
 
   CSSTokenizer tokenizer(s.ToString());
   CSSParserTokenStream stream(tokenizer);
@@ -109,8 +110,9 @@ TEST(CSSParserTokenStreamTest, RangesDoNotGetInvalidatedWhenConsuming) {
   EXPECT_EQ(kNumberToken, range.Peek().GetType());
 
   // Consume remaining tokens to try to invalidate the range.
-  while (!stream.AtEnd())
+  while (!stream.AtEnd()) {
     stream.ConsumeIncludingWhitespace();
+  }
 
   EXPECT_EQ(kNumberToken, range.ConsumeIncludingWhitespace().GetType());
   EXPECT_TRUE(range.AtEnd());

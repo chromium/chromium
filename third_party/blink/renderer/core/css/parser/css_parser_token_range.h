@@ -36,14 +36,16 @@ class CORE_EXPORT CSSParserTokenRange {
   wtf_size_t size() const { return static_cast<wtf_size_t>(last_ - first_); }
 
   const CSSParserToken& Peek(wtf_size_t offset = 0) const {
-    if (first_ + offset >= last_)
+    if (first_ + offset >= last_) {
       return g_static_eof_token;
+    }
     return *(first_ + offset);
   }
 
   const CSSParserToken& Consume() {
-    if (first_ == last_)
+    if (first_ == last_) {
       return g_static_eof_token;
+    }
     return *first_++;
   }
 
@@ -59,8 +61,9 @@ class CORE_EXPORT CSSParserTokenRange {
   void ConsumeComponentValue();
 
   void ConsumeWhitespace() {
-    while (Peek().GetType() == kWhitespaceToken)
+    while (Peek().GetType() == kWhitespaceToken) {
       ++first_;
+    }
   }
 
   String Serialize() const;

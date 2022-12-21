@@ -43,8 +43,9 @@ unsigned indexOfShorthandForLonghand(
     CSSPropertyID shorthand_id,
     const Vector<StylePropertyShorthand, 4>& shorthands) {
   for (unsigned i = 0; i < shorthands.size(); ++i) {
-    if (shorthands.at(i).id() == shorthand_id)
+    if (shorthands.at(i).id() == shorthand_id) {
       return i;
+    }
   }
   NOTREACHED();
   return 0;

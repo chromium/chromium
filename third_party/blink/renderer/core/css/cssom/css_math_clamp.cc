@@ -57,8 +57,9 @@ absl::optional<CSSNumericSumValue> CSSMathClamp::SumValue() const {
   for (const auto& value : {lower_, value_, upper_}) {
     const auto child_sum = value->SumValue();
     if (!child_sum.has_value() || child_sum->terms.size() != 1 ||
-        child_sum->terms[0].units != lower->terms[0].units)
+        child_sum->terms[0].units != lower->terms[0].units) {
       return absl::nullopt;
+    }
   }
 
   auto value = value_->SumValue();

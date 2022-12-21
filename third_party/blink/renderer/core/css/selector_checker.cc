@@ -111,19 +111,22 @@ static bool MatchesMultiSelectFocusPseudoClass(const Element& element) {
 
 static bool MatchesTagName(const Element& element,
                            const QualifiedName& tag_q_name) {
-  if (tag_q_name == AnyQName())
+  if (tag_q_name == AnyQName()) {
     return true;
+  }
   const AtomicString& local_name = tag_q_name.LocalName();
   if (local_name != CSSSelector::UniversalSelectorAtom() &&
       local_name != element.localName()) {
-    if (element.IsHTMLElement() || !IsA<HTMLDocument>(element.GetDocument()))
+    if (element.IsHTMLElement() || !IsA<HTMLDocument>(element.GetDocument())) {
       return false;
+    }
     // Non-html elements in html documents are normalized to their camel-cased
     // version during parsing if applicable. Yet, type selectors are lower-cased
     // for selectors in html documents. Compare the upper case converted names
     // instead to allow matching SVG elements like foreignObject.
-    if (element.TagQName().LocalNameUpper() != tag_q_name.LocalNameUpper())
+    if (element.TagQName().LocalNameUpper() != tag_q_name.LocalNameUpper()) {
       return false;
+    }
   }
   const AtomicString& namespace_uri = tag_q_name.NamespaceURI();
   return namespace_uri == g_star_atom ||
@@ -140,8 +143,9 @@ static Element* ParentElement(
   //   (b) Otherwise, should not walk up from a shadow root to a shadow host.
   if (context.scope &&
       (context.scope == context.element->ContainingShadowRoot() ||
-       context.scope->GetTreeScope() == context.element->GetTreeScope()))
+       context.scope->GetTreeScope() == context.element->GetTreeScope())) {
     return context.element->ParentOrShadowHostElement();
+  }
   return context.element->parentElement();
 }
 
@@ -149,21 +153,24 @@ static Element* ParentElement(
 // the assigned slot for scope-less matching of ::slotted pseudo element.
 static const HTMLSlotElement* FindSlotElementInScope(
     const SelectorChecker::SelectorCheckingContext& context) {
-  if (!context.scope)
+  if (!context.scope) {
     return context.element->AssignedSlot();
+  }
 
   for (const HTMLSlotElement* slot = context.element->AssignedSlot(); slot;
        slot = slot->AssignedSlot()) {
-    if (slot->GetTreeScope() == context.scope->GetTreeScope())
+    if (slot->GetTreeScope() == context.scope->GetTreeScope()) {
       return slot;
+    }
   }
   return nullptr;
 }
 
 static inline bool NextSelectorExceedsScope(
     const SelectorChecker::SelectorCheckingContext& context) {
-  if (context.scope && context.scope->IsInShadowTree())
+  if (context.scope && context.scope->IsInShadowTree()) {
     return context.element == context.scope->OwnerShadowHost();
+  }
 
   return false;
 }
@@ -173,21 +180,26 @@ static bool ShouldMatchHoverOrActive(
   // If we're in quirks mode, then :hover and :active should never match anchors
   // with no href and *:hover and *:active should not match anything. This is
   // specified in https://quirks.spec.whatwg.org/#the-:active-and-:hover-quirk
-  if (!context.element->GetDocument().InQuirksMode())
+  if (!context.element->GetDocument().InQuirksMode()) {
     return true;
-  if (context.is_sub_selector)
+  }
+  if (context.is_sub_selector) {
     return true;
-  if (context.element->IsLink())
+  }
+  if (context.element->IsLink()) {
     return true;
+  }
   const CSSSelector* selector = context.selector;
   while (selector->Relation() == CSSSelector::kSubSelector &&
          selector->TagHistory()) {
     selector = selector->TagHistory();
-    if (selector->Match() != CSSSelector::kPseudoClass)
+    if (selector->Match() != CSSSelector::kPseudoClass) {
       return true;
+    }
     if (selector->GetPseudoType() != CSSSelector::kPseudoHover &&
-        selector->GetPseudoType() != CSSSelector::kPseudoActive)
+        selector->GetPseudoType() != CSSSelector::kPseudoActive) {
       return true;
+    }
   }
   return false;
 }
@@ -218,11 +230,13 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
 
   if (UNLIKELY(context.vtt_originating_element)) {
     // A kUAShadow combinator is required for VTT matching.
-    if (context.selector->IsLastInTagHistory())
+    if (context.selector->IsLastInTagHistory()) {
       return false;
+    }
   }
-  if (MatchSelector(context, result) != kSelectorMatches)
+  if (MatchSelector(context, result) != kSelectorMatches) {
     return false;
+  }
   if (context.style_scope != nullptr &&
       RuntimeEnabledFeatures::CSSScopeEnabled() &&
       !CheckInStyleScope(context, result)) {
@@ -242,25 +256,29 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
     const SelectorCheckingContext& context,
     MatchResult& result) const {
   SubResult sub_result(result);
-  if (!CheckOne(context, sub_result))
+  if (!CheckOne(context, sub_result)) {
     return kSelectorFailsLocally;
+  }
 
   if (sub_result.dynamic_pseudo != kPseudoIdNone) {
     result.dynamic_pseudo = sub_result.dynamic_pseudo;
     result.custom_highlight_name = std::move(sub_result.custom_highlight_name);
   }
 
-  if (context.selector->IsLastInTagHistory())
+  if (context.selector->IsLastInTagHistory()) {
     return kSelectorMatches;
+  }
 
   MatchStatus match;
   if (context.selector->Relation() != CSSSelector::kSubSelector) {
-    if (NextSelectorExceedsScope(context))
+    if (NextSelectorExceedsScope(context)) {
       return kSelectorFailsCompletely;
+    }
 
     if (context.pseudo_id != kPseudoIdNone &&
-        context.pseudo_id != result.dynamic_pseudo)
+        context.pseudo_id != result.dynamic_pseudo) {
       return kSelectorFailsCompletely;
+    }
 
     base::AutoReset<PseudoId> dynamic_pseudo_scope(&result.dynamic_pseudo,
                                                    kPseudoIdNone);
@@ -320,8 +338,9 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
   // anything else than an ancestor.
   if ((!context.is_sub_selector || context.in_nested_complex_selector) &&
       (context.element->IsLink() || (relation != CSSSelector::kDescendant &&
-                                     relation != CSSSelector::kChild)))
+                                     relation != CSSSelector::kChild))) {
     next_context.is_inside_visited_link = false;
+  }
 
   next_context.in_rightmost_compound = false;
   next_context.is_sub_selector = false;
@@ -336,20 +355,24 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kDescendant:
       if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoScope) {
         if (next_context.selector->IsLastInTagHistory()) {
-          if (context.scope->IsDocumentFragment())
+          if (context.scope->IsDocumentFragment()) {
             return kSelectorMatches;
+          }
         }
       }
       for (next_context.element = ParentElement(next_context);
            next_context.element;
            next_context.element = ParentElement(next_context)) {
         MatchStatus match = MatchSelector(next_context, result);
-        if (match == kSelectorMatches || match == kSelectorFailsCompletely)
+        if (match == kSelectorMatches || match == kSelectorFailsCompletely) {
           return match;
-        if (NextSelectorExceedsScope(next_context))
+        }
+        if (NextSelectorExceedsScope(next_context)) {
           return kSelectorFailsCompletely;
-        if (next_context.element->IsLink())
+        }
+        if (next_context.element->IsLink()) {
           next_context.is_inside_visited_link = false;
+        }
       }
       return kSelectorFailsCompletely;
     case CSSSelector::kRelativeChild:
@@ -358,8 +381,9 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       [[fallthrough]];
     case CSSSelector::kChild: {
       next_context.element = ParentElement(next_context);
-      if (!next_context.element)
+      if (!next_context.element) {
         return kSelectorFailsCompletely;
+      }
       return MatchSelector(next_context, result);
     }
     case CSSSelector::kRelativeDirectAdjacent:
@@ -369,13 +393,15 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kDirectAdjacent:
       if (mode_ == kResolvingStyle) {
         if (ContainerNode* parent =
-                context.element->ParentElementOrShadowRoot())
+                context.element->ParentElementOrShadowRoot()) {
           parent->SetChildrenAffectedByDirectAdjacentRules();
+        }
       }
       next_context.element =
           ElementTraversal::PreviousSibling(*context.element);
-      if (!next_context.element)
+      if (!next_context.element) {
         return kSelectorFailsAllSiblings;
+      }
       return MatchSelector(next_context, result);
     case CSSSelector::kRelativeIndirectAdjacent:
       DCHECK(result.has_argument_leftmost_compound_matches);
@@ -384,8 +410,9 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kIndirectAdjacent:
       if (mode_ == kResolvingStyle) {
         if (ContainerNode* parent =
-                context.element->ParentElementOrShadowRoot())
+                context.element->ParentElementOrShadowRoot()) {
           parent->SetChildrenAffectedByIndirectAdjacentRules();
+        }
       }
       next_context.element =
           ElementTraversal::PreviousSibling(*context.element);
@@ -394,8 +421,9 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
                ElementTraversal::PreviousSibling(*next_context.element)) {
         MatchStatus match = MatchSelector(next_context, result);
         if (match == kSelectorMatches || match == kSelectorFailsAllSiblings ||
-            match == kSelectorFailsCompletely)
+            match == kSelectorFailsCompletely) {
           return match;
+        }
       }
       return kSelectorFailsAllSiblings;
 
@@ -404,26 +432,31 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       // a kUAShadow combinator would escape that and thus the scope.
       if (context.scope && context.scope->OwnerShadowHost() &&
           context.scope->OwnerShadowHost()->GetTreeScope() ==
-              context.element->GetTreeScope())
+              context.element->GetTreeScope()) {
         return kSelectorFailsCompletely;
+      }
 
       Element* shadow_host = context.element->OwnerShadowHost();
-      if (!shadow_host)
+      if (!shadow_host) {
         return kSelectorFailsCompletely;
+      }
       // Match against featureless-like Element described by spec:
       // https://w3c.github.io/webvtt/#obtaining-css-boxes
-      if (context.vtt_originating_element)
+      if (context.vtt_originating_element) {
         shadow_host = context.vtt_originating_element;
+      }
       next_context.element = shadow_host;
       return MatchSelector(next_context, result);
     }
 
     case CSSSelector::kShadowSlot: {
-      if (ToHTMLSlotElementIfSupportsAssignmentOrNull(*context.element))
+      if (ToHTMLSlotElementIfSupportsAssignmentOrNull(*context.element)) {
         return kSelectorFailsCompletely;
+      }
       const HTMLSlotElement* slot = FindSlotElementInScope(context);
-      if (!slot)
+      if (!slot) {
         return kSelectorFailsCompletely;
+      }
 
       next_context.element = const_cast<HTMLSlotElement*>(slot);
       return MatchSelector(next_context, result);
@@ -435,8 +468,9 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       // that host.
       while (next_context.element) {
         next_context.element = next_context.element->OwnerShadowHost();
-        if (!next_context.element)
+        if (!next_context.element) {
           return kSelectorFailsCompletely;
+        }
 
         // Generally a ::part() rule needs to be in the host’s tree scope, but
         // if (and only if) we are preceded by :host or :host(), then the rule
@@ -446,8 +480,9 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
                 ? *context.scope->GetTreeScope().ParentTreeScope()
                 : context.scope->GetTreeScope();
 
-        if (next_context.element->GetTreeScope() == host_tree_scope)
+        if (next_context.element->GetTreeScope() == host_tree_scope) {
           return MatchSelector(next_context, result);
+        }
       }
       return kSelectorFailsCompletely;
     case CSSSelector::kSubSelector:
@@ -463,32 +498,37 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
                                   TextCaseSensitivity case_sensitivity) {
   // TODO(esprehn): How do we get here with a null value?
   const AtomicString& value = attribute_item.Value();
-  if (value.IsNull())
+  if (value.IsNull()) {
     return false;
+  }
 
   switch (match) {
     case CSSSelector::kAttributeExact:
-      if (case_sensitivity == kTextCaseSensitive)
+      if (case_sensitivity == kTextCaseSensitive) {
         return selector_value == value;
+      }
       return EqualIgnoringASCIICase(selector_value, value);
     case CSSSelector::kAttributeSet:
       return true;
     case CSSSelector::kAttributeList: {
       // Ignore empty selectors or selectors containing HTML spaces
       if (selector_value.empty() ||
-          selector_value.Find(&IsHTMLSpace<UChar>) != kNotFound)
+          selector_value.Find(&IsHTMLSpace<UChar>) != kNotFound) {
         return false;
+      }
 
       unsigned start_search_at = 0;
       while (true) {
         wtf_size_t found_pos =
             value.Find(selector_value, start_search_at, case_sensitivity);
-        if (found_pos == kNotFound)
+        if (found_pos == kNotFound) {
           return false;
+        }
         if (!found_pos || IsHTMLSpace<UChar>(value[found_pos - 1])) {
           unsigned end_str = found_pos + selector_value.length();
-          if (end_str == value.length() || IsHTMLSpace<UChar>(value[end_str]))
+          if (end_str == value.length() || IsHTMLSpace<UChar>(value[end_str])) {
             break;  // We found a match.
+          }
         }
 
         // No match. Keep looking.
@@ -497,26 +537,32 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
       return true;
     }
     case CSSSelector::kAttributeContain:
-      if (selector_value.empty())
+      if (selector_value.empty()) {
         return false;
+      }
       return value.Contains(selector_value, case_sensitivity);
     case CSSSelector::kAttributeBegin:
-      if (selector_value.empty())
+      if (selector_value.empty()) {
         return false;
+      }
       return value.StartsWith(selector_value, case_sensitivity);
     case CSSSelector::kAttributeEnd:
-      if (selector_value.empty())
+      if (selector_value.empty()) {
         return false;
+      }
       return value.EndsWith(selector_value, case_sensitivity);
     case CSSSelector::kAttributeHyphen:
-      if (value.length() < selector_value.length())
+      if (value.length() < selector_value.length()) {
         return false;
-      if (!value.StartsWith(selector_value, case_sensitivity))
+      }
+      if (!value.StartsWith(selector_value, case_sensitivity)) {
         return false;
+      }
       // It they start the same, check for exact match or following '-':
       if (value.length() != selector_value.length() &&
-          value[selector_value.length()] != '-')
+          value[selector_value.length()] != '-') {
         return false;
+      }
       return true;
     default:
       NOTREACHED();
@@ -546,8 +592,10 @@ static bool AnyAttributeMatches(Element& element,
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
     if (!attribute_item.Matches(selector_attr)) {
-      if (element.IsHTMLElement() || !IsA<HTMLDocument>(element.GetDocument()))
+      if (element.IsHTMLElement() ||
+          !IsA<HTMLDocument>(element.GetDocument())) {
         continue;
+      }
       // Non-html attributes in html documents are normalized to their camel-
       // cased version during parsing if applicable. Yet, attribute selectors
       // are lower-cased for selectors in html documents. Compare the selector
@@ -556,17 +604,20 @@ static bool AnyAttributeMatches(Element& element,
       //
       // NOTE: If changing this behavior, be sure to also update the bucketing
       // in ElementRuleCollector::CollectMatchingRules() accordingly.
-      if (!attribute_item.MatchesCaseInsensitive(selector_attr))
+      if (!attribute_item.MatchesCaseInsensitive(selector_attr)) {
         continue;
+      }
     }
 
     if (AttributeValueMatches(attribute_item, match, selector_value,
-                              case_sensitivity))
+                              case_sensitivity)) {
       return true;
+    }
 
     if (case_sensitivity == kTextCaseASCIIInsensitive) {
-      if (selector_attr.NamespaceURI() != g_star_atom)
+      if (selector_attr.NamespaceURI() != g_star_atom) {
         return false;
+      }
       continue;
     }
 
@@ -593,8 +644,9 @@ static bool AnyAttributeMatches(Element& element,
                         WebFeature::kCaseInsensitiveAttrSelectorMatch);
       return true;
     }
-    if (selector_attr.NamespaceURI() != g_star_atom)
+    if (selector_attr.NamespaceURI() != g_star_atom) {
       return false;
+    }
   }
 
   return false;
@@ -614,8 +666,9 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
       (!selector.IsHostPseudoClass() &&
        selector.GetPseudoType() != CSSSelector::kPseudoScope &&
        !context.treat_shadow_host_as_normal_scope &&
-       selector.Match() != CSSSelector::kPseudoElement))
+       selector.Match() != CSSSelector::kPseudoElement)) {
     return false;
+  }
 
   switch (selector.Match()) {
     case CSSSelector::kTag:
@@ -660,8 +713,9 @@ bool SelectorChecker::CheckPseudoNot(const SelectorCheckingContext& context,
        sub_context.selector;
        sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
     SubResult sub_result(result);
-    if (MatchSelector(sub_context, sub_result) == kSelectorMatches)
+    if (MatchSelector(sub_context, sub_result) == kSelectorMatches) {
       return false;
+    }
   }
   return true;
 }
@@ -686,14 +740,17 @@ inline bool CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
     for (auto leftmost : has_argument_leftmost_compound_matches) {
       for (Element* has_matched_element = next(leftmost); has_matched_element;
            has_matched_element = next(has_matched_element)) {
-        if (has_matched_element == has_anchor_element)
+        if (has_matched_element == has_anchor_element) {
           selector_matched = true;
+        }
         uint8_t old_result =
             cache_scope_context.SetMatchedAndGetOldResult(has_matched_element);
-        if (old_result == kCheckPseudoHasResultNotCached)
+        if (old_result == kCheckPseudoHasResultNotCached) {
           continue;
-        if (old_result & kCheckPseudoHasResultMatched)
+        }
+        if (old_result & kCheckPseudoHasResultMatched) {
           break;
+        }
       }
     }
     return selector_matched;
@@ -702,8 +759,9 @@ inline bool CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
   for (auto leftmost : has_argument_leftmost_compound_matches) {
     for (Element* has_matched_element = next(leftmost); has_matched_element;
          has_matched_element = next(has_matched_element)) {
-      if (has_matched_element == has_anchor_element)
+      if (has_matched_element == has_anchor_element) {
         return true;
+      }
     }
   }
   return false;
@@ -719,8 +777,9 @@ inline bool CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
     for (auto leftmost : has_argument_leftmost_compound_matches) {
       if (Element* has_matched_element = next(leftmost)) {
         cache_scope_context.SetMatchedAndGetOldResult(has_matched_element);
-        if (has_matched_element == has_anchor_element)
+        if (has_matched_element == has_anchor_element) {
           selector_matched = true;
+        }
       }
     }
     return selector_matched;
@@ -728,8 +787,9 @@ inline bool CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
 
   for (auto leftmost : has_argument_leftmost_compound_matches) {
     if (Element* has_matched_element = next(leftmost)) {
-      if (has_matched_element == has_anchor_element)
+      if (has_matched_element == has_anchor_element) {
         return true;
+      }
     }
   }
   return false;
@@ -776,8 +836,9 @@ uint8_t SetHasAnchorElementAsCheckedAndGetOldResult(
             CSSSelector::kPseudoHas);
   Element* has_anchor_element = has_checking_context.element;
   uint8_t previous_result = cache_scope_context.GetResult(has_anchor_element);
-  if (previous_result & kCheckPseudoHasResultChecked)
+  if (previous_result & kCheckPseudoHasResultChecked) {
     return previous_result;
+  }
 
   // If the selector checking context is for the subject :has() in the argument
   // of the JavaScript API 'matches()', skip to check whether the :has() anchor
@@ -786,8 +847,9 @@ uint8_t SetHasAnchorElementAsCheckedAndGetOldResult(
       cache_scope_context.AlreadyChecked(has_anchor_element)) {
     // If the element already have cache item, set the element as checked.
     // Otherwise, skip to set to prevent increasing unnecessary cache item.
-    if (previous_result != kCheckPseudoHasResultNotCached)
+    if (previous_result != kCheckPseudoHasResultNotCached) {
       cache_scope_context.SetChecked(has_anchor_element);
+    }
 
     // If the :has() anchor element was already checked previously, return the
     // previous result with the kCheckPseudoHasResultChecked flag set.
@@ -832,8 +894,9 @@ void SetAffectedByHasFlagsForHasAnchorElement(
 void SetAffectedByHasFlagsForHasAnchorSiblings(
     CheckPseudoHasArgumentContext& argument_context,
     Element* has_anchor_element) {
-  if (argument_context.AdjacentDistanceLimit() == 0)
+  if (argument_context.AdjacentDistanceLimit() == 0) {
     return;
+  }
   int distance = 1;
   for (Element* sibling = ElementTraversal::NextSibling(*has_anchor_element);
        sibling && distance <= argument_context.AdjacentDistanceLimit();
@@ -939,8 +1002,9 @@ bool SkipCheckingHasArgument(
     CheckPseudoHasArgumentTraversalIterator& iterator) {
   // Siblings of the :has() anchor element cannot be a subject of :has()
   // argument if the argument selector has child or descendant combinator.
-  if (context.DepthLimit() > 0 && iterator.CurrentDepth() == 0)
+  if (context.DepthLimit() > 0 && iterator.CurrentDepth() == 0) {
     return true;
+  }
 
   // The current element of the iterator cannot be a subject of :has() argument
   // if the :has() argument selector only matches on the elements at a fixed
@@ -948,8 +1012,10 @@ bool SkipCheckingHasArgument(
   // (e.g. For the style rule '.a:has(> .b > .c) {}', a child of '.a' or a great
   // grand child of '.a' cannot be a subject of the argument '> .b > .c'. Only
   // the grand child of '.a' can be a subject of the argument)
-  if (context.DepthFixed() && (iterator.CurrentDepth() != context.DepthLimit()))
+  if (context.DepthFixed() &&
+      (iterator.CurrentDepth() != context.DepthLimit())) {
     return true;
+  }
 
   return false;
 }
@@ -977,16 +1043,18 @@ void SetAllElementsInTraversalScopeAsChecked(
   // Find last element and last depth of the argument traversal iterator.
   Element* last_element = has_anchor_element;
   int last_depth = 0;
-  if (argument_context.AdjacentDistanceLimit() > 0)
+  if (argument_context.AdjacentDistanceLimit() > 0) {
     last_element = ElementTraversal::NextSibling(*last_element);
+  }
   if (last_element) {
     if (argument_context.DepthLimit() > 0) {
       last_element = ElementTraversal::FirstChild(*last_element);
       last_depth = 1;
     }
   }
-  if (!last_element)
+  if (!last_element) {
     return;
+  }
   cache_scope_context.SetAllTraversedElementsAsChecked(last_element,
                                                        last_depth);
 }
@@ -1003,8 +1071,9 @@ EarlyBreakOnHasArgumentChecking CheckEarlyBreakForHasArgument(
     CheckPseudoHasArgumentContext& argument_context,
     CheckPseudoHasCacheScope::Context& cache_scope_context,
     bool& update_affected_by_has_flags) {
-  if (!cache_scope_context.CacheAllowed())
+  if (!cache_scope_context.CacheAllowed()) {
     return kNoEarlyBreak;
+  }
 
   // Get the cached :has() checking result of the element to skip :has()
   // argument checking.
@@ -1036,8 +1105,9 @@ EarlyBreakOnHasArgumentChecking CheckEarlyBreakForHasArgument(
   // filter creation overhead. If the :has() anchor element has the
   // AffectedByMultipleHas flag set, use fast reject filter even if on the first
   // check since there can be more checks on the anchor element.
-  if (is_new_entry && !has_anchor_element->AffectedByMultipleHas())
+  if (is_new_entry && !has_anchor_element->AffectedByMultipleHas()) {
     return kNoEarlyBreak;
+  }
 
   // The bloom filter in the fast reject filter is allocated and initialized on
   // the second check. We can check fast rejection with the filter after the
@@ -1105,10 +1175,11 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     EarlyBreakOnHasArgumentChecking early_break = CheckEarlyBreakForHasArgument(
         context, has_anchor_element, argument_context, cache_scope_context,
         update_affected_by_has_flags);
-    if (early_break == kBreakEarlyAndReturnAsMatched)
+    if (early_break == kBreakEarlyAndReturnAsMatched) {
       return true;
-    else if (early_break == kBreakEarlyAndMoveToNextArgument)
+    } else if (early_break == kBreakEarlyAndMoveToNextArgument) {
       continue;
+    }
 
     sub_context.selector = selector;
     sub_context.relative_anchor_element = has_anchor_element;
@@ -1125,8 +1196,9 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
                                                iterator.CurrentDepth());
       }
 
-      if (SkipCheckingHasArgument(argument_context, iterator))
+      if (SkipCheckingHasArgument(argument_context, iterator)) {
         continue;
+      }
 
       sub_context.element = iterator.CurrentElement();
       HeapVector<Member<Element>> has_argument_leftmost_compound_matches;
@@ -1143,8 +1215,9 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
           leftmost_relation, has_anchor_element,
           has_argument_leftmost_compound_matches, cache_scope_context);
 
-      if (selector_matched)
+      if (selector_matched) {
         break;
+      }
     }
 
     if (cache_scope_context.CacheAllowed() && last_argument_checked_element) {
@@ -1152,8 +1225,9 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
           last_argument_checked_element, last_argument_checked_depth);
     }
 
-    if (!selector_matched)
+    if (!selector_matched) {
       continue;
+    }
 
     if (update_affected_by_has_flags) {
       SetAffectedByHasForArgumentMatchedElement(
@@ -1205,44 +1279,51 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                           WebFeature::kCSSSelectorEmptyWhitespaceOnlyFail);
         is_empty = false;
       }
-      if (mode_ == kResolvingStyle)
+      if (mode_ == kResolvingStyle) {
         element.SetStyleAffectedByEmpty();
+      }
       return is_empty;
     }
     case CSSSelector::kPseudoFirstChild:
       if (mode_ == kResolvingStyle) {
-        if (ContainerNode* parent = element.ParentElementOrDocumentFragment())
+        if (ContainerNode* parent = element.ParentElementOrDocumentFragment()) {
           parent->SetChildrenAffectedByFirstChildRules();
+        }
         element.SetAffectedByFirstChildRules();
       }
       return IsFirstChild(element);
     case CSSSelector::kPseudoFirstOfType:
       if (mode_ == kResolvingStyle) {
-        if (ContainerNode* parent = element.ParentElementOrDocumentFragment())
+        if (ContainerNode* parent = element.ParentElementOrDocumentFragment()) {
           parent->SetChildrenAffectedByForwardPositionalRules();
+        }
       }
       return IsFirstOfType(element, element.TagQName());
     case CSSSelector::kPseudoLastChild: {
       ContainerNode* parent = element.ParentElementOrDocumentFragment();
       if (mode_ == kResolvingStyle) {
-        if (parent)
+        if (parent) {
           parent->SetChildrenAffectedByLastChildRules();
+        }
         element.SetAffectedByLastChildRules();
       }
       if (mode_ != kQueryingRules && parent &&
-          !parent->IsFinishedParsingChildren())
+          !parent->IsFinishedParsingChildren()) {
         return false;
+      }
       return IsLastChild(element);
     }
     case CSSSelector::kPseudoLastOfType: {
       ContainerNode* parent = element.ParentElementOrDocumentFragment();
       if (mode_ == kResolvingStyle) {
-        if (parent)
+        if (parent) {
           parent->SetChildrenAffectedByBackwardPositionalRules();
+        }
       }
       if (mode_ != kQueryingRules && parent &&
-          !parent->IsFinishedParsingChildren())
+          !parent->IsFinishedParsingChildren()) {
         return false;
+      }
       return IsLastOfType(element, element.TagQName());
     }
     case CSSSelector::kPseudoOnlyChild: {
@@ -1268,8 +1349,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         element.SetAffectedByLastChildRules();
       }
       if (mode_ != kQueryingRules && parent &&
-          !parent->IsFinishedParsingChildren())
+          !parent->IsFinishedParsingChildren()) {
         return false;
+      }
       return IsFirstChild(element) && IsLastChild(element);
     }
     case CSSSelector::kPseudoOnlyOfType: {
@@ -1280,43 +1362,51 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         parent->SetChildrenAffectedByBackwardPositionalRules();
       }
       if (mode_ != kQueryingRules && parent &&
-          !parent->IsFinishedParsingChildren())
+          !parent->IsFinishedParsingChildren()) {
         return false;
+      }
       return IsFirstOfType(element, element.TagQName()) &&
              IsLastOfType(element, element.TagQName());
     }
     case CSSSelector::kPseudoPlaceholderShown:
-      if (auto* text_control = ToTextControlOrNull(element))
+      if (auto* text_control = ToTextControlOrNull(element)) {
         return text_control->IsPlaceholderVisible();
+      }
       break;
     case CSSSelector::kPseudoNthChild:
       if (mode_ == kResolvingStyle) {
-        if (ContainerNode* parent = element.ParentElementOrDocumentFragment())
+        if (ContainerNode* parent = element.ParentElementOrDocumentFragment()) {
           parent->SetChildrenAffectedByForwardPositionalRules();
+        }
       }
       return selector.MatchNth(NthIndexCache::NthChildIndex(element));
     case CSSSelector::kPseudoNthOfType:
       if (mode_ == kResolvingStyle) {
-        if (ContainerNode* parent = element.ParentElementOrDocumentFragment())
+        if (ContainerNode* parent = element.ParentElementOrDocumentFragment()) {
           parent->SetChildrenAffectedByForwardPositionalRules();
+        }
       }
       return selector.MatchNth(NthIndexCache::NthOfTypeIndex(element));
     case CSSSelector::kPseudoNthLastChild: {
       ContainerNode* parent = element.ParentElementOrDocumentFragment();
-      if (mode_ == kResolvingStyle && parent)
+      if (mode_ == kResolvingStyle && parent) {
         parent->SetChildrenAffectedByBackwardPositionalRules();
+      }
       if (mode_ != kQueryingRules && parent &&
-          !parent->IsFinishedParsingChildren())
+          !parent->IsFinishedParsingChildren()) {
         return false;
+      }
       return selector.MatchNth(NthIndexCache::NthLastChildIndex(element));
     }
     case CSSSelector::kPseudoNthLastOfType: {
       ContainerNode* parent = element.ParentElementOrDocumentFragment();
-      if (mode_ == kResolvingStyle && parent)
+      if (mode_ == kResolvingStyle && parent) {
         parent->SetChildrenAffectedByBackwardPositionalRules();
+      }
       if (mode_ != kQueryingRules && parent &&
-          !parent->IsFinishedParsingChildren())
+          !parent->IsFinishedParsingChildren()) {
         return false;
+      }
       return selector.MatchNth(NthIndexCache::NthLastOfTypeIndex(element));
     }
     case CSSSelector::kPseudoSelectorFragmentAnchor:
@@ -1324,8 +1414,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoTarget:
       probe::ForcePseudoState(&element, CSSSelector::kPseudoTarget,
                               &force_pseudo_state);
-      if (force_pseudo_state)
+      if (force_pseudo_state) {
         return true;
+      }
       return element == element.GetDocument().CssTarget();
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
@@ -1339,8 +1430,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
            sub_context.selector; sub_context.selector = CSSSelectorList::Next(
                                      *sub_context.selector)) {
         SubResult sub_result(result);
-        if (MatchSelector(sub_context, sub_result) == kSelectorMatches)
+        if (MatchSelector(sub_context, sub_result) == kSelectorMatches) {
           return true;
+        }
       }
       break;
     }
@@ -1367,19 +1459,22 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element.IsLink() && context.is_inside_visited_link;
     case CSSSelector::kPseudoDrag:
       if (mode_ == kResolvingStyle) {
-        if (!context.in_rightmost_compound)
+        if (!context.in_rightmost_compound) {
           element.SetChildrenOrSiblingsAffectedByDrag();
+        }
       }
-      if (context.in_rightmost_compound)
+      if (context.in_rightmost_compound) {
         result.SetFlag(MatchFlag::kAffectedByDrag);
+      }
       return element.IsDragged();
     case CSSSelector::kPseudoFocus:
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           element.SetAncestorsOrSiblingsAffectedByFocusInHas();
         } else {
-          if (!context.in_rightmost_compound)
+          if (!context.in_rightmost_compound) {
             element.SetChildrenOrSiblingsAffectedByFocus();
+          }
         }
       }
       return MatchesFocusPseudoClass(element);
@@ -1388,8 +1483,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           element.SetAncestorsOrSiblingsAffectedByFocusVisibleInHas();
         } else {
-          if (!context.in_rightmost_compound)
+          if (!context.in_rightmost_compound) {
             element.SetChildrenOrSiblingsAffectedByFocusVisible();
+          }
         }
       }
       return MatchesFocusVisiblePseudoClass(element);
@@ -1401,12 +1497,14 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           element.SetChildrenOrSiblingsAffectedByFocusWithin();
         }
       }
-      if (context.in_rightmost_compound)
+      if (context.in_rightmost_compound) {
         result.SetFlag(MatchFlag::kAffectedByFocusWithin);
+      }
       probe::ForcePseudoState(&element, CSSSelector::kPseudoFocusWithin,
                               &force_pseudo_state);
-      if (force_pseudo_state)
+      if (force_pseudo_state) {
         return true;
+      }
       return element.HasFocusWithin();
     case CSSSelector::kPseudoHover:
       if (mode_ == kResolvingStyle) {
@@ -1416,14 +1514,17 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           element.SetChildrenOrSiblingsAffectedByHover();
         }
       }
-      if (context.in_rightmost_compound)
+      if (context.in_rightmost_compound) {
         result.SetFlag(MatchFlag::kAffectedByHover);
-      if (!ShouldMatchHoverOrActive(context))
+      }
+      if (!ShouldMatchHoverOrActive(context)) {
         return false;
+      }
       probe::ForcePseudoState(&element, CSSSelector::kPseudoHover,
                               &force_pseudo_state);
-      if (force_pseudo_state)
+      if (force_pseudo_state) {
         return true;
+      }
       return element.IsHovered();
     case CSSSelector::kPseudoActive:
       if (mode_ == kResolvingStyle) {
@@ -1433,14 +1534,17 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           element.SetChildrenOrSiblingsAffectedByActive();
         }
       }
-      if (context.in_rightmost_compound)
+      if (context.in_rightmost_compound) {
         result.SetFlag(MatchFlag::kAffectedByActive);
-      if (!ShouldMatchHoverOrActive(context))
+      }
+      if (!ShouldMatchHoverOrActive(context)) {
         return false;
+      }
       probe::ForcePseudoState(&element, CSSSelector::kPseudoActive,
                               &force_pseudo_state);
-      if (force_pseudo_state)
+      if (force_pseudo_state) {
         return true;
+      }
       return element.IsActive();
     case CSSSelector::kPseudoEnabled:
       return element.MatchesEnabledPseudoClass();
@@ -1471,8 +1575,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         // behind the scenes and just obey the CSS spec here in the
         // test for matching the pseudo.
         if (input_element->ShouldAppearChecked() &&
-            !input_element->ShouldAppearIndeterminate())
+            !input_element->ShouldAppearIndeterminate()) {
           return true;
+        }
       } else if (auto* option_element = DynamicTo<HTMLOptionElement>(element)) {
         if (option_element->Selected()) {
           return true;
@@ -1490,25 +1595,29 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                                        : element.ComputeInheritedLanguage();
       const AtomicString& argument = selector.Argument();
       if (value.empty() ||
-          !value.StartsWith(argument, kTextCaseASCIIInsensitive))
+          !value.StartsWith(argument, kTextCaseASCIIInsensitive)) {
         break;
+      }
       if (value.length() != argument.length() &&
-          value[argument.length()] != '-')
+          value[argument.length()] != '-') {
         break;
+      }
       return true;
     }
     case CSSSelector::kPseudoDir: {
       const AtomicString& argument = selector.Argument();
-      if (argument.empty())
+      if (argument.empty()) {
         break;
+      }
 
       TextDirection direction;
-      if (EqualIgnoringASCIICase(argument, "ltr"))
+      if (EqualIgnoringASCIICase(argument, "ltr")) {
         direction = TextDirection::kLtr;
-      else if (EqualIgnoringASCIICase(argument, "rtl"))
+      } else if (EqualIgnoringASCIICase(argument, "rtl")) {
         direction = TextDirection::kRtl;
-      else
+      } else {
         break;
+      }
 
       if (auto* html_element = DynamicTo<HTMLElement>(element)) {
         return html_element->CachedDirectionality() == direction;
@@ -1613,15 +1722,17 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoHostHasAppearance:
       DCHECK(is_ua_rule_);
       if (ShadowRoot* root = element.ContainingShadowRoot()) {
-        if (!root->IsUserAgent())
+        if (!root->IsUserAgent()) {
           return false;
+        }
         const ComputedStyle* style = root->host().GetComputedStyle();
         return style && style->HasEffectiveAppearance();
       }
       return false;
     case CSSSelector::kPseudoWindowInactive:
-      if (!context.has_selection_pseudo)
+      if (!context.has_selection_pseudo) {
         return false;
+      }
       return !element.GetDocument().GetPage()->GetFocusController().IsActive();
     case CSSSelector::kPseudoState: {
       return element.DidAttachInternals() &&
@@ -1639,10 +1750,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoCornerPresent:
       return false;
     case CSSSelector::kPseudoModal:
-      if (Fullscreen::IsFullscreenElement(element))
+      if (Fullscreen::IsFullscreenElement(element)) {
         return true;
-      if (const auto* dialog_element = DynamicTo<HTMLDialogElement>(element))
+      }
+      if (const auto* dialog_element = DynamicTo<HTMLDialogElement>(element)) {
         return dialog_element->IsModal();
+      }
       return false;
     case CSSSelector::kPseudoHas:
       if (mode_ == kResolvingStyle) {
@@ -1653,16 +1766,19 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         // of a :has() anchor element, we may need to invalidate the subject
         // element of the style rule containing the :has() pseudo class because
         // the mutation can affect the state of the :has().
-        if (context.in_rightmost_compound)
+        if (context.in_rightmost_compound) {
           element.SetAffectedBySubjectHas();
-        else
+        } else {
           element.SetAffectedByNonSubjectHas();
+        }
 
-        if (selector.ContainsPseudoInsideHasPseudoClass())
+        if (selector.ContainsPseudoInsideHasPseudoClass()) {
           element.SetAffectedByPseudoInHas();
+        }
 
-        if (selector.ContainsComplexLogicalCombinationsInsideHasPseudoClass())
+        if (selector.ContainsComplexLogicalCombinationsInsideHasPseudoClass()) {
           element.SetAffectedByLogicalCombinationsInHas();
+        }
       }
       return CheckPseudoHas(context, result);
     case CSSSelector::kPseudoRelativeAnchor:
@@ -1677,8 +1793,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       CSSToggle* toggle = CSSToggle::FindToggleInScope(element, name);
       // An element matches :toggle() if the element is in scope for a toggle
       // with the name given by <custom-ident>, and ...
-      if (!toggle)
+      if (!toggle) {
         return false;
+      }
 
       if (value) {
         // ... either the toggle’s value matches the provided <toggle-value>,
@@ -1726,16 +1843,18 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
            sub_context.selector; sub_context.selector = CSSSelectorList::Next(
                                      *sub_context.selector)) {
         SubResult sub_result(result);
-        if (MatchSelector(sub_context, sub_result) == kSelectorMatches)
+        if (MatchSelector(sub_context, sub_result) == kSelectorMatches) {
           return true;
+        }
       }
       return false;
     }
     case CSSSelector::kPseudoPart:
       DCHECK(part_names_);
       for (const auto& part_name : *selector.PartNames()) {
-        if (!part_names_->Contains(part_name))
+        if (!part_names_->Contains(part_name)) {
           return false;
+        }
       }
       return true;
     case CSSSelector::kPseudoFileSelectorButton:
@@ -1760,8 +1879,9 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       DCHECK(!CSSSelectorList::Next(*selector.SelectorList()->First()));
       sub_context.selector = selector.SelectorList()->First();
       SubResult sub_result(result);
-      if (MatchSelector(sub_context, sub_result) != kSelectorMatches)
+      if (MatchSelector(sub_context, sub_result) != kSelectorMatches) {
         return false;
+      }
       return true;
     }
     case CSSSelector::kPseudoHighlight: {
@@ -1811,17 +1931,20 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
 
   // :host only matches a shadow host when :host is in a shadow tree of the
   // shadow host.
-  if (!context.scope)
+  if (!context.scope) {
     return false;
+  }
   const ContainerNode* shadow_host = context.scope->OwnerShadowHost();
-  if (!shadow_host || shadow_host != element)
+  if (!shadow_host || shadow_host != element) {
     return false;
+  }
   DCHECK(IsShadowHost(element));
   DCHECK(element.GetShadowRoot());
 
   // For the case with no parameters, i.e. just :host.
-  if (!selector.SelectorList())
+  if (!selector.SelectorList()) {
     return true;
+  }
 
   DCHECK(selector.SelectorList()->HasOneSelector());
 
@@ -1837,13 +1960,15 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
   do {
     SubResult sub_result(result);
     host_context.element = next_element;
-    if (MatchSelector(host_context, sub_result) == kSelectorMatches)
+    if (MatchSelector(host_context, sub_result) == kSelectorMatches) {
       return true;
+    }
     host_context.treat_shadow_host_as_normal_scope = false;
     host_context.scope = nullptr;
 
-    if (selector.GetPseudoType() == CSSSelector::kPseudoHost)
+    if (selector.GetPseudoType() == CSSSelector::kPseudoHost) {
       break;
+    }
 
     host_context.in_rightmost_compound = false;
     next_element = FlatTreeTraversal::ParentElement(*next_element);
@@ -1871,10 +1996,12 @@ bool SelectorChecker::CheckPseudoScope(const SelectorCheckingContext& context,
     }
     return false;
   }
-  if (!context.scope)
+  if (!context.scope) {
     return false;
-  if (context.scope->IsElementNode())
+  }
+  if (context.scope->IsElementNode()) {
     return context.scope == &element;
+  }
   return element == element.GetDocument().documentElement();
 }
 
@@ -1883,20 +2010,23 @@ bool SelectorChecker::CheckScrollbarPseudoClass(
     MatchResult& result) const {
   const CSSSelector& selector = *context.selector;
 
-  if (selector.GetPseudoType() == CSSSelector::kPseudoNot)
+  if (selector.GetPseudoType() == CSSSelector::kPseudoNot) {
     return CheckPseudoNot(context, result);
+  }
 
   // FIXME: This is a temporary hack for resizers and scrollbar corners.
   // Eventually :window-inactive should become a real
   // pseudo class and just apply to everything.
-  if (selector.GetPseudoType() == CSSSelector::kPseudoWindowInactive)
+  if (selector.GetPseudoType() == CSSSelector::kPseudoWindowInactive) {
     return !context.element->GetDocument()
                 .GetPage()
                 ->GetFocusController()
                 .IsActive();
+  }
 
-  if (!scrollbar_)
+  if (!scrollbar_) {
     return false;
+  }
 
   switch (selector.GetPseudoType()) {
     case CSSSelector::kPseudoEnabled:
@@ -1905,20 +2035,24 @@ bool SelectorChecker::CheckScrollbarPseudoClass(
       return !scrollbar_->Enabled();
     case CSSSelector::kPseudoHover: {
       ScrollbarPart hovered_part = scrollbar_->HoveredPart();
-      if (scrollbar_part_ == kScrollbarBGPart)
+      if (scrollbar_part_ == kScrollbarBGPart) {
         return hovered_part != kNoPart;
-      if (scrollbar_part_ == kTrackBGPart)
+      }
+      if (scrollbar_part_ == kTrackBGPart) {
         return hovered_part == kBackTrackPart ||
                hovered_part == kForwardTrackPart || hovered_part == kThumbPart;
+      }
       return scrollbar_part_ == hovered_part;
     }
     case CSSSelector::kPseudoActive: {
       ScrollbarPart pressed_part = scrollbar_->PressedPart();
-      if (scrollbar_part_ == kScrollbarBGPart)
+      if (scrollbar_part_ == kScrollbarBGPart) {
         return pressed_part != kNoPart;
-      if (scrollbar_part_ == kTrackBGPart)
+      }
+      if (scrollbar_part_ == kTrackBGPart) {
         return pressed_part == kBackTrackPart ||
                pressed_part == kForwardTrackPart || pressed_part == kThumbPart;
+      }
       return scrollbar_part_ == pressed_part;
     }
     case CSSSelector::kPseudoHorizontal:
@@ -1945,15 +2079,17 @@ bool SelectorChecker::CheckScrollbarPseudoClass(
       // :double-button matches nothing on all platforms.
       return false;
     case CSSSelector::kPseudoSingleButton:
-      if (!scrollbar_->GetTheme().NativeThemeHasButtons())
+      if (!scrollbar_->GetTheme().NativeThemeHasButtons()) {
         return false;
+      }
       return scrollbar_part_ == kBackButtonStartPart ||
              scrollbar_part_ == kForwardButtonEndPart ||
              scrollbar_part_ == kBackTrackPart ||
              scrollbar_part_ == kForwardTrackPart;
     case CSSSelector::kPseudoNoButton:
-      if (scrollbar_->GetTheme().NativeThemeHasButtons())
+      if (scrollbar_->GetTheme().NativeThemeHasButtons()) {
         return false;
+      }
       return scrollbar_part_ == kBackTrackPart ||
              scrollbar_part_ == kForwardTrackPart;
     case CSSSelector::kPseudoCornerPresent:
@@ -1978,8 +2114,9 @@ bool SelectorChecker::MatchesFocusPseudoClass(const Element& element) {
   bool force_pseudo_state = false;
   probe::ForcePseudoState(const_cast<Element*>(&element),
                           CSSSelector::kPseudoFocus, &force_pseudo_state);
-  if (force_pseudo_state)
+  if (force_pseudo_state) {
     return true;
+  }
   return element.IsFocused() && IsFrameFocused(element);
 }
 
@@ -1988,17 +2125,20 @@ bool SelectorChecker::MatchesFocusVisiblePseudoClass(const Element& element) {
   probe::ForcePseudoState(const_cast<Element*>(&element),
                           CSSSelector::kPseudoFocusVisible,
                           &force_pseudo_state);
-  if (force_pseudo_state)
+  if (force_pseudo_state) {
     return true;
+  }
 
-  if (!element.IsFocused() || !IsFrameFocused(element))
+  if (!element.IsFocused() || !IsFrameFocused(element)) {
     return false;
+  }
 
   const Document& document = element.GetDocument();
   // Exclude shadow hosts with non-UA ShadowRoot.
   if (document.FocusedElement() != element && element.GetShadowRoot() &&
-      !element.GetShadowRoot()->IsUserAgent())
+      !element.GetShadowRoot()->IsUserAgent()) {
     return false;
+  }
 
   const Settings* settings = document.GetSettings();
   bool always_show_focus = settings->GetAccessibilityAlwaysShowFocus();
@@ -2016,11 +2156,13 @@ bool SelectorChecker::MatchesFocusVisiblePseudoClass(const Element& element) {
 // static
 bool SelectorChecker::MatchesSpatialNavigationInterestPseudoClass(
     const Element& element) {
-  if (!IsSpatialNavigationEnabled(element.GetDocument().GetFrame()))
+  if (!IsSpatialNavigationEnabled(element.GetDocument().GetFrame())) {
     return false;
+  }
 
-  if (!RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled())
+  if (!RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled()) {
     return false;
+  }
 
   DCHECK(element.GetDocument().GetPage());
   Element* interested_element = element.GetDocument()
@@ -2074,8 +2216,9 @@ const SelectorChecker::Activations* SelectorChecker::CalculateActivations(
     const Activations& outer_activations) const {
   auto* activations = MakeGarbageCollected<Activations>();
 
-  if (outer_activations.empty())
+  if (outer_activations.empty()) {
     return activations;
+  }
 
   const Activations* parent_activations = nullptr;
 
@@ -2148,8 +2291,9 @@ bool SelectorChecker::CheckInStyleScope(const SelectorCheckingContext& context,
 
   for (; local_context.element;
        local_context.element = ParentElement(local_context)) {
-    if (CheckPseudoScope(local_context, result))
+    if (CheckPseudoScope(local_context, result)) {
       return true;
+    }
     // TODO(crbug.com/1280240): Early-out if there are no activations.
   }
 

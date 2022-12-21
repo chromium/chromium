@@ -18,8 +18,9 @@ class FakeCSSStyleImageValue : public CSSStyleImageValue {
 
   // CSSStyleImageValue
   absl::optional<gfx::Size> IntrinsicSize() const final {
-    if (cache_pending_)
+    if (cache_pending_) {
       return absl::nullopt;
+    }
     return size_;
   }
 
@@ -33,8 +34,9 @@ class FakeCSSStyleImageValue : public CSSStyleImageValue {
     return nullptr;
   }
   ResourceStatus Status() const final {
-    if (cache_pending_)
+    if (cache_pending_) {
       return ResourceStatus::kNotStarted;
+    }
     return ResourceStatus::kCached;
   }
   bool IsAccelerated() const final { return false; }

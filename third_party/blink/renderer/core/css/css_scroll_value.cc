@@ -14,11 +14,13 @@ CSSScrollValue::CSSScrollValue(const CSSValue* axis, const CSSValue* scroller)
 String CSSScrollValue::CustomCSSText() const {
   StringBuilder result;
   result.Append("scroll(");
-  if (axis_)
+  if (axis_) {
     result.Append(axis_->CssText());
+  }
   if (scroller_) {
-    if (axis_)
+    if (axis_) {
       result.Append(' ');
+    }
     result.Append(scroller_->CssText());
   }
   result.Append(")");

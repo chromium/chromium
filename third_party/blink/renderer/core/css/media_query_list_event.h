@@ -35,10 +35,12 @@ class MediaQueryListEvent final : public Event {
   MediaQueryListEvent(const AtomicString& event_type,
                       const MediaQueryListEventInit* initializer)
       : Event(event_type, initializer), matches_(false) {
-    if (initializer->hasMedia())
+    if (initializer->hasMedia()) {
       media_ = initializer->media();
-    if (initializer->hasMatches())
+    }
+    if (initializer->hasMatches()) {
       matches_ = initializer->matches();
+    }
   }
 
   String media() const {

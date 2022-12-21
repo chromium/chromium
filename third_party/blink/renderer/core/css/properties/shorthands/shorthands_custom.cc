@@ -251,14 +251,16 @@ bool ConsumeAnimationDelayItemInto(CSSParserTokenRange& range,
   if (!start_delay) {
     range = original_range;
     const CSSValue* range_name = ConsumeTimelineRangeName(range);
-    if (!range_name)
+    if (!range_name) {
       return false;
+    }
     start_delay = RangeOffsetValue(range_name, 0);
     end_delay = RangeOffsetValue(range_name, 100);
   }
 
-  if (!start_delay)
+  if (!start_delay) {
     return false;
+  }
 
   // If the <animation-delay-end> value is omitted, it is set to zero.
   //
@@ -300,8 +302,9 @@ bool AlternativeAnimationDelay::ParseShorthand(
   CSSValueList* end_list = CSSValueList::CreateCommaSeparated();
 
   do {
-    if (!ConsumeAnimationDelayItemInto(range, context, start_list, end_list))
+    if (!ConsumeAnimationDelayItemInto(range, context, start_list, end_list)) {
       return false;
+    }
   } while (ConsumeCommaIncludingWhitespace(range));
 
   DCHECK(start_list->length());
@@ -331,8 +334,9 @@ const CSSValue* AlternativeAnimationDelay::CSSValueFromComputedStyleInternal(
           ? style.Animations()->DelayEndList()
           : Vector<Timing::Delay>{CSSAnimationData::InitialDelayEnd()};
 
-  if (delay_start_list.size() != delay_end_list.size())
+  if (delay_start_list.size() != delay_end_list.size()) {
     return nullptr;
+  }
 
   auto* outer_list = CSSValueList::CreateCommaSeparated();
 
@@ -392,8 +396,9 @@ bool BackgroundPosition::ParseShorthand(
   if (!css_parsing_utils::ConsumeBackgroundPosition(
           range, context, css_parsing_utils::UnitlessQuirk::kAllow, result_x,
           result_y) ||
-      !range.AtEnd())
+      !range.AtEnd()) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kBackgroundPositionX, CSSPropertyID::kBackgroundPosition,
@@ -426,8 +431,9 @@ bool BackgroundRepeat::ParseShorthand(
   bool implicit = false;
   if (!css_parsing_utils::ConsumeRepeatStyle(range, result_x, result_y,
                                              implicit) ||
-      !range.AtEnd())
+      !range.AtEnd()) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kBackgroundRepeatX, CSSPropertyID::kBackgroundRepeat,
@@ -858,8 +864,9 @@ bool BorderRadius::ParseShorthand(
 
   if (!css_parsing_utils::ConsumeRadii(horizontal_radii, vertical_radii, range,
                                        context,
-                                       local_context.UseAliasParsing()))
+                                       local_context.UseAliasParsing())) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kBorderTopLeftRadius, CSSPropertyID::kBorderRadius,
@@ -926,16 +933,18 @@ bool BorderSpacing::ParseShorthand(
   CSSValue* horizontal_spacing =
       ConsumeLength(range, context, CSSPrimitiveValue::ValueRange::kNonNegative,
                     css_parsing_utils::UnitlessQuirk::kAllow);
-  if (!horizontal_spacing)
+  if (!horizontal_spacing) {
     return false;
+  }
   CSSValue* vertical_spacing = horizontal_spacing;
   if (!range.AtEnd()) {
     vertical_spacing = ConsumeLength(
         range, context, CSSPrimitiveValue::ValueRange::kNonNegative,
         css_parsing_utils::UnitlessQuirk::kAllow);
   }
-  if (!vertical_spacing || !range.AtEnd())
+  if (!vertical_spacing || !range.AtEnd()) {
     return false;
+  }
   css_parsing_utils::AddProperty(
       CSSPropertyID::kWebkitBorderHorizontalSpacing,
       CSSPropertyID::kBorderSpacing, *horizontal_spacing, important,
@@ -1037,17 +1046,21 @@ bool Columns::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* column_width = nullptr;
   CSSValue* column_count = nullptr;
-  if (!css_parsing_utils::ConsumeColumnWidthOrCount(range, context,
-                                                    column_width, column_count))
+  if (!css_parsing_utils::ConsumeColumnWidthOrCount(
+          range, context, column_width, column_count)) {
     return false;
+  }
   css_parsing_utils::ConsumeColumnWidthOrCount(range, context, column_width,
                                                column_count);
-  if (!range.AtEnd())
+  if (!range.AtEnd()) {
     return false;
-  if (!column_width)
+  }
+  if (!column_width) {
     column_width = CSSIdentifierValue::Create(CSSValueID::kAuto);
-  if (!column_count)
+  }
+  if (!column_count) {
     column_count = CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
   css_parsing_utils::AddProperty(
       CSSPropertyID::kColumnWidth, CSSPropertyID::kInvalid, *column_width,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
@@ -1100,17 +1113,20 @@ bool Container::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* name =
       css_parsing_utils::ConsumeContainerName(range, context);
-  if (!name)
+  if (!name) {
     return false;
+  }
 
   const CSSValue* type = CSSIdentifierValue::Create(CSSValueID::kNormal);
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
-    if (!(type = css_parsing_utils::ConsumeContainerType(range)))
+    if (!(type = css_parsing_utils::ConsumeContainerType(range))) {
       return false;
+    }
   }
 
-  if (!range.AtEnd())
+  if (!range.AtEnd()) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kContainerName, CSSPropertyID::kContainer, *name,
@@ -1153,8 +1169,9 @@ bool Flex::ParseShorthand(bool important,
     while (!range.AtEnd() && index++ < 3) {
       double num;
       if (css_parsing_utils::ConsumeNumberRaw(range, context, num)) {
-        if (num < 0)
+        if (num < 0) {
           return false;
+        }
         if (flex_grow == kUnsetValue) {
           flex_grow = num;
         } else if (flex_shrink == kUnsetValue) {
@@ -1179,24 +1196,29 @@ bool Flex::ParseShorthand(bool important,
           flex_basis = css_parsing_utils::ConsumeLengthOrPercent(
               range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
         }
-        if (index == 2 && !range.AtEnd())
+        if (index == 2 && !range.AtEnd()) {
           return false;
+        }
       }
     }
-    if (index == 0)
+    if (index == 0) {
       return false;
-    if (flex_grow == kUnsetValue)
+    }
+    if (flex_grow == kUnsetValue) {
       flex_grow = 1;
-    if (flex_shrink == kUnsetValue)
+    }
+    if (flex_shrink == kUnsetValue) {
       flex_shrink = 1;
+    }
     if (!flex_basis) {
       flex_basis = CSSNumericLiteralValue::Create(
           0, CSSPrimitiveValue::UnitType::kPercentage);
     }
   }
 
-  if (!range.AtEnd())
+  if (!range.AtEnd()) {
     return false;
+  }
   css_parsing_utils::AddProperty(
       CSSPropertyID::kFlexGrow, CSSPropertyID::kFlex,
       *CSSNumericLiteralValue::Create(ClampTo<float>(flex_grow),
@@ -1249,8 +1271,9 @@ bool ConsumeSystemFont(bool important,
                        HeapVector<CSSPropertyValue, 64>& properties) {
   CSSValueID system_font_id = range.ConsumeIncludingWhitespace().Id();
   DCHECK(CSSParserFastPaths::IsValidSystemFont(system_font_id));
-  if (!range.AtEnd())
+  if (!range.AtEnd()) {
     return false;
+  }
 
   css_parsing_utils::AddExpandedPropertyForValue(
       CSSPropertyID::kFont,
@@ -1279,8 +1302,9 @@ bool ConsumeFont(bool important,
     if (!font_style &&
         (id == CSSValueID::kItalic || id == CSSValueID::kOblique)) {
       font_style = css_parsing_utils::ConsumeFontStyle(range, context);
-      if (!font_style)
+      if (!font_style) {
         return false;
+      }
       continue;
     }
     if (!font_variant_caps && id == CSSValueID::kSmallCaps) {
@@ -1288,13 +1312,15 @@ bool ConsumeFont(bool important,
       // small-caps.
       // See https://drafts.csswg.org/css-fonts/#propdef-font
       font_variant_caps = css_parsing_utils::ConsumeFontVariantCSS21(range);
-      if (font_variant_caps)
+      if (font_variant_caps) {
         continue;
+      }
     }
     if (!font_weight) {
       font_weight = css_parsing_utils::ConsumeFontWeight(range, context);
-      if (font_weight)
+      if (font_weight) {
         continue;
+      }
     }
     // Stretch in the font shorthand can only take the CSS Fonts Level 3
     // keywords, not arbitrary values, compare
@@ -1304,13 +1330,15 @@ bool ConsumeFont(bool important,
     // shorthand, compare: [ [ <‘font-style’> || <font-variant-css21> ||
     // <‘font-weight’> || <font-stretch-css3> ]?
     if (font_stretch ||
-        !(font_stretch =
-              css_parsing_utils::ConsumeFontStretchKeywordOnly(range, context)))
+        !(font_stretch = css_parsing_utils::ConsumeFontStretchKeywordOnly(
+              range, context))) {
       break;
+    }
   }
 
-  if (range.AtEnd())
+  if (range.AtEnd()) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kFontStyle, CSSPropertyID::kFont,
@@ -1364,8 +1392,9 @@ bool ConsumeFont(bool important,
 
   // Now a font size _must_ come.
   CSSValue* font_size = css_parsing_utils::ConsumeFontSize(range, context);
-  if (!font_size || range.AtEnd())
+  if (!font_size || range.AtEnd()) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kFontSize, CSSPropertyID::kFont, *font_size, important,
@@ -1374,8 +1403,9 @@ bool ConsumeFont(bool important,
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
     CSSValue* line_height =
         css_parsing_utils::ConsumeLineHeight(range, context);
-    if (!line_height)
+    if (!line_height) {
       return false;
+    }
     css_parsing_utils::AddProperty(
         CSSPropertyID::kLineHeight, CSSPropertyID::kFont, *line_height,
         important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
@@ -1389,8 +1419,9 @@ bool ConsumeFont(bool important,
 
   // Font family must come now.
   CSSValue* parsed_family_value = css_parsing_utils::ConsumeFontFamily(range);
-  if (!parsed_family_value)
+  if (!parsed_family_value) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kFontFamily, CSSPropertyID::kFont, *parsed_family_value,
@@ -1412,8 +1443,9 @@ bool Font::ParseShorthand(bool important,
                           const CSSParserLocalContext&,
                           HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSParserToken& token = range.Peek();
-  if (CSSParserFastPaths::IsValidSystemFont(token.Id()))
+  if (CSSParserFastPaths::IsValidSystemFont(token.Id())) {
     return ConsumeSystemFont(important, range, properties);
+  }
   return ConsumeFont(important, range, context, properties);
 }
 
@@ -1487,8 +1519,9 @@ bool FontVariant::ParseShorthand(
         east_asian_parse_result ==
             FontVariantEastAsianParser::ParseResult::kConsumedValue ||
         alternates_parse_result ==
-            FontVariantAlternatesParser::ParseResult::kConsumedValue)
+            FontVariantAlternatesParser::ParseResult::kConsumedValue) {
       continue;
+    }
 
     if (ligatures_parse_result ==
             FontVariantLigaturesParser::ParseResult::kDisallowedValue ||
@@ -1497,8 +1530,9 @@ bool FontVariant::ParseShorthand(
         east_asian_parse_result ==
             FontVariantEastAsianParser::ParseResult::kDisallowedValue ||
         alternates_parse_result ==
-            FontVariantAlternatesParser::ParseResult::kDisallowedValue)
+            FontVariantAlternatesParser::ParseResult::kDisallowedValue) {
       return false;
+    }
 
     CSSValueID id = range.Peek().Id();
     switch (id) {
@@ -1509,15 +1543,17 @@ bool FontVariant::ParseShorthand(
       case CSSValueID::kUnicase:
       case CSSValueID::kTitlingCaps:
         // Only one caps value permitted in font-variant grammar.
-        if (caps_value)
+        if (caps_value) {
           return false;
+        }
         caps_value = css_parsing_utils::ConsumeIdent(range);
         break;
       case CSSValueID::kSub:
       case CSSValueID::kSuper:
         // Only one position value permitted in font-variant grammar.
-        if (position_value)
+        if (position_value) {
           return false;
+        }
         position_value = css_parsing_utils::ConsumeIdent(range);
         break;
       default:
@@ -1598,18 +1634,21 @@ bool FontSynthesis::ParseShorthand(
     CSSValueID id = range.ConsumeIncludingWhitespace().Id();
     switch (id) {
       case CSSValueID::kWeight:
-        if (font_synthesis_weight)
+        if (font_synthesis_weight) {
           return false;
+        }
         font_synthesis_weight = CSSIdentifierValue::Create(CSSValueID::kAuto);
         break;
       case CSSValueID::kStyle:
-        if (font_synthesis_style)
+        if (font_synthesis_style) {
           return false;
+        }
         font_synthesis_style = CSSIdentifierValue::Create(CSSValueID::kAuto);
         break;
       case CSSValueID::kSmallCaps:
-        if (font_synthesis_small_caps)
+        if (font_synthesis_small_caps) {
           return false;
+        }
         font_synthesis_small_caps =
             CSSIdentifierValue::Create(CSSValueID::kAuto);
         break;
@@ -1656,10 +1695,12 @@ bool Gap::ParseShorthand(bool important,
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kGap).length(), 2u);
   CSSValue* row_gap = css_parsing_utils::ConsumeGapLength(range, context);
   CSSValue* column_gap = css_parsing_utils::ConsumeGapLength(range, context);
-  if (!row_gap || !range.AtEnd())
+  if (!row_gap || !range.AtEnd()) {
     return false;
-  if (!column_gap)
+  }
+  if (!column_gap) {
     column_gap = row_gap;
+  }
   css_parsing_utils::AddProperty(
       CSSPropertyID::kRowGap, CSSPropertyID::kGap, *row_gap, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
@@ -1687,28 +1728,33 @@ bool GridArea::ParseShorthand(
 
   CSSValue* row_start_value =
       css_parsing_utils::ConsumeGridLine(range, context);
-  if (!row_start_value)
+  if (!row_start_value) {
     return false;
+  }
   CSSValue* column_start_value = nullptr;
   CSSValue* row_end_value = nullptr;
   CSSValue* column_end_value = nullptr;
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
     column_start_value = css_parsing_utils::ConsumeGridLine(range, context);
-    if (!column_start_value)
+    if (!column_start_value) {
       return false;
+    }
     if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
       row_end_value = css_parsing_utils::ConsumeGridLine(range, context);
-      if (!row_end_value)
+      if (!row_end_value) {
         return false;
+      }
       if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
         column_end_value = css_parsing_utils::ConsumeGridLine(range, context);
-        if (!column_end_value)
+        if (!column_end_value) {
           return false;
+        }
       }
     }
   }
-  if (!range.AtEnd())
+  if (!range.AtEnd()) {
     return false;
+  }
   if (!column_start_value) {
     column_start_value = row_start_value->IsCustomIdentValue()
                              ? row_start_value
@@ -1796,8 +1842,9 @@ bool GridColumnGap::ParseShorthand(
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* gap_length = css_parsing_utils::ConsumeGapLength(range, context);
-  if (!gap_length || !range.AtEnd())
+  if (!gap_length || !range.AtEnd()) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kColumnGap, CSSPropertyID::kGridColumnGap, *gap_length,
@@ -1827,16 +1874,20 @@ CSSValueList* ConsumeImplicitAutoFlow(
   } else {
     dense_algorithm =
         css_parsing_utils::ConsumeIdent<CSSValueID::kDense>(range);
-    if (!dense_algorithm)
+    if (!dense_algorithm) {
       return nullptr;
-    if (!css_parsing_utils::ConsumeIdent<CSSValueID::kAutoFlow>(range))
+    }
+    if (!css_parsing_utils::ConsumeIdent<CSSValueID::kAutoFlow>(range)) {
       return nullptr;
+    }
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (flow_direction.GetValueID() == CSSValueID::kColumn || !dense_algorithm)
+  if (flow_direction.GetValueID() == CSSValueID::kColumn || !dense_algorithm) {
     list->Append(flow_direction);
-  if (dense_algorithm)
+  }
+  if (dense_algorithm) {
     list->Append(*dense_algorithm);
+  }
   return list;
 }
 
@@ -1908,23 +1959,27 @@ bool Grid::ParseShorthand(bool important,
     // 2- [ auto-flow && dense? ] <grid-auto-rows>? / <grid-template-columns>
     grid_auto_flow = ConsumeImplicitAutoFlow(
         range, *CSSIdentifierValue::Create(CSSValueID::kRow));
-    if (!grid_auto_flow)
+    if (!grid_auto_flow) {
       return false;
+    }
     if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
       auto_rows_value =
           To<Longhand>(GetCSSPropertyGridAutoRows()).InitialValue();
     } else {
       auto_rows_value = css_parsing_utils::ConsumeGridTrackList(
           range, context, css_parsing_utils::TrackListType::kGridAuto);
-      if (!auto_rows_value)
+      if (!auto_rows_value) {
         return false;
-      if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range))
+      }
+      if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
         return false;
+      }
     }
     if (!(template_columns =
               css_parsing_utils::ConsumeGridTemplatesRowsOrColumns(range,
-                                                                   context)))
+                                                                   context))) {
       return false;
+    }
     template_rows =
         To<Longhand>(GetCSSPropertyGridTemplateRows()).InitialValue();
     auto_columns_value =
@@ -1933,30 +1988,35 @@ bool Grid::ParseShorthand(bool important,
     // 3- <grid-template-rows> / [ auto-flow && dense? ] <grid-auto-columns>?
     template_rows =
         css_parsing_utils::ConsumeGridTemplatesRowsOrColumns(range, context);
-    if (!template_rows)
+    if (!template_rows) {
       return false;
-    if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range))
+    }
+    if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
       return false;
+    }
     grid_auto_flow = ConsumeImplicitAutoFlow(
         range, *CSSIdentifierValue::Create(CSSValueID::kColumn));
-    if (!grid_auto_flow)
+    if (!grid_auto_flow) {
       return false;
+    }
     if (range.AtEnd()) {
       auto_columns_value =
           To<Longhand>(GetCSSPropertyGridAutoColumns()).InitialValue();
     } else {
       auto_columns_value = css_parsing_utils::ConsumeGridTrackList(
           range, context, css_parsing_utils::TrackListType::kGridAuto);
-      if (!auto_columns_value)
+      if (!auto_columns_value) {
         return false;
+      }
     }
     template_columns =
         To<Longhand>(GetCSSPropertyGridTemplateColumns()).InitialValue();
     auto_rows_value = To<Longhand>(GetCSSPropertyGridAutoRows()).InitialValue();
   }
 
-  if (!range.AtEnd())
+  if (!range.AtEnd()) {
     return false;
+  }
 
   // It can only be specified the explicit or the implicit grid properties in a
   // single grid declaration. The sub-properties not specified are set to their
@@ -2009,10 +2069,12 @@ bool GridGap::ParseShorthand(
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kGridGap).length(), 2u);
   CSSValue* row_gap = css_parsing_utils::ConsumeGapLength(range, context);
   CSSValue* column_gap = css_parsing_utils::ConsumeGapLength(range, context);
-  if (!row_gap || !range.AtEnd())
+  if (!row_gap || !range.AtEnd()) {
     return false;
-  if (!column_gap)
+  }
+  if (!column_gap) {
     column_gap = row_gap;
+  }
   css_parsing_utils::AddProperty(
       CSSPropertyID::kRowGap, CSSPropertyID::kGap, *row_gap, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
@@ -2074,8 +2136,9 @@ bool GridRowGap::ParseShorthand(
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* gap_length = css_parsing_utils::ConsumeGapLength(range, context);
-  if (!gap_length || !range.AtEnd())
+  if (!gap_length || !range.AtEnd()) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kRowGap, CSSPropertyID::kGridRowGap, *gap_length,
@@ -2103,8 +2166,9 @@ bool GridTemplate::ParseShorthand(
   const CSSValue* template_areas = nullptr;
   if (!css_parsing_utils::ConsumeGridTemplateShorthand(
           important, range, context, template_rows, template_columns,
-          template_areas))
+          template_areas)) {
     return false;
+  }
 
   DCHECK(template_rows);
   DCHECK(template_columns);
@@ -2205,39 +2269,44 @@ bool ListStyle::ParseShorthand(
   do {
     if (!none) {
       none = css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(range);
-      if (none)
+      if (none) {
         continue;
+      }
     }
     if (!list_style_position) {
       list_style_position = css_parsing_utils::ParseLonghand(
           CSSPropertyID::kListStylePosition, CSSPropertyID::kListStyle, context,
           range);
-      if (list_style_position)
+      if (list_style_position) {
         continue;
+      }
     }
     if (!list_style_image) {
       list_style_image = css_parsing_utils::ParseLonghand(
           CSSPropertyID::kListStyleImage, CSSPropertyID::kListStyle, context,
           range);
-      if (list_style_image)
+      if (list_style_image) {
         continue;
+      }
     }
     if (!list_style_type) {
       list_style_type = css_parsing_utils::ParseLonghand(
           CSSPropertyID::kListStyleType, CSSPropertyID::kListStyle, context,
           range);
-      if (list_style_type)
+      if (list_style_type) {
         continue;
+      }
     }
     return false;
   } while (!range.AtEnd());
   if (none) {
-    if (!list_style_type)
+    if (!list_style_type) {
       list_style_type = none;
-    else if (!list_style_image)
+    } else if (!list_style_image) {
       list_style_image = none;
-    else
+    } else {
       return false;
+    }
   }
 
   if (list_style_position) {
@@ -2357,8 +2426,9 @@ bool Marker::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* marker = css_parsing_utils::ParseLonghand(
       CSSPropertyID::kMarkerStart, CSSPropertyID::kMarker, context, range);
-  if (!marker || !range.AtEnd())
+  if (!marker || !range.AtEnd()) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kMarkerStart, CSSPropertyID::kMarker, *marker, important,
@@ -2418,15 +2488,18 @@ bool Offset::ParseShorthand(
     offset_anchor =
         To<Longhand>(GetCSSPropertyOffsetAnchor())
             .ParseSingleValue(range, context, CSSParserLocalContext());
-    if (!offset_anchor)
+    if (!offset_anchor) {
       return false;
+    }
   }
-  if ((!offset_position && !offset_path) || !range.AtEnd())
+  if ((!offset_position && !offset_path) || !range.AtEnd()) {
     return false;
+  }
 
   if ((offset_position || offset_anchor) &&
-      !RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled())
+      !RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
     return false;
+  }
 
   if (offset_position) {
     css_parsing_utils::AddProperty(
@@ -2533,8 +2606,9 @@ const CSSValue* Overflow::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*CSSIdentifierValue::Create(style.OverflowX()));
-  if (style.OverflowX() != style.OverflowY())
+  if (style.OverflowX() != style.OverflowY()) {
     list->Append(*CSSIdentifierValue::Create(style.OverflowY()));
+  }
 
   return list;
 }
@@ -2555,8 +2629,9 @@ const CSSValue* OverscrollBehavior::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*CSSIdentifierValue::Create(style.OverscrollBehaviorX()));
-  if (style.OverscrollBehaviorX() != style.OverscrollBehaviorY())
+  if (style.OverscrollBehaviorX() != style.OverscrollBehaviorY()) {
     list->Append(*CSSIdentifierValue::Create(style.OverscrollBehaviorY()));
+  }
 
   return list;
 }
@@ -2713,8 +2788,9 @@ bool PlaceContent::ParseShorthand(
   const CSSValue* align_content_value =
       To<Longhand>(GetCSSPropertyAlignContent())
           .ParseSingleValue(range, context, local_context);
-  if (!align_content_value)
+  if (!align_content_value) {
     return false;
+  }
 
   const CSSValue* justify_content_value = nullptr;
   if (range.AtEnd()) {
@@ -2732,8 +2808,9 @@ bool PlaceContent::ParseShorthand(
             .ParseSingleValue(range, context, local_context);
   }
 
-  if (!justify_content_value || !range.AtEnd())
+  if (!justify_content_value || !range.AtEnd()) {
     return false;
+  }
 
   DCHECK(align_content_value);
   DCHECK(justify_content_value);
@@ -2770,17 +2847,20 @@ bool PlaceItems::ParseShorthand(
   const CSSValue* align_items_value =
       To<Longhand>(GetCSSPropertyAlignItems())
           .ParseSingleValue(range, context, local_context);
-  if (!align_items_value)
+  if (!align_items_value) {
     return false;
+  }
 
-  if (range.AtEnd())
+  if (range.AtEnd()) {
     range = range_copy;
+  }
 
   const CSSValue* justify_items_value =
       To<Longhand>(GetCSSPropertyJustifyItems())
           .ParseSingleValue(range, context, local_context);
-  if (!justify_items_value || !range.AtEnd())
+  if (!justify_items_value || !range.AtEnd()) {
     return false;
+  }
 
   DCHECK(align_items_value);
   DCHECK(justify_items_value);
@@ -2817,17 +2897,20 @@ bool PlaceSelf::ParseShorthand(
   const CSSValue* align_self_value =
       To<Longhand>(GetCSSPropertyAlignSelf())
           .ParseSingleValue(range, context, local_context);
-  if (!align_self_value)
+  if (!align_self_value) {
     return false;
+  }
 
-  if (range.AtEnd())
+  if (range.AtEnd()) {
     range = range_copy;
+  }
 
   const CSSValue* justify_self_value =
       To<Longhand>(GetCSSPropertyJustifySelf())
           .ParseSingleValue(range, context, local_context);
-  if (!justify_self_value || !range.AtEnd())
+  if (!justify_self_value || !range.AtEnd()) {
     return false;
+  }
 
   DCHECK(align_self_value);
   DCHECK(justify_self_value);
@@ -3014,8 +3097,9 @@ const CSSValue* TextDecoration::CSSValueFromComputedStyleInternal(
         CSSPropertyID::kTextDecorationThickness) {
       if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
         CSSValueID value_id = identifier_value->GetValueID();
-        if (value_id == CSSValueID::kAuto)
+        if (value_id == CSSValueID::kAuto) {
           continue;
+        }
       }
     }
     DCHECK(value);
@@ -3069,8 +3153,9 @@ bool Transition::ParseShorthand(
   for (unsigned i = 0; i < longhand_count; ++i) {
     if (shorthand.properties()[i]->IDEquals(
             CSSPropertyID::kTransitionProperty) &&
-        !css_parsing_utils::IsValidPropertyList(*longhands[i]))
+        !css_parsing_utils::IsValidPropertyList(*longhands[i])) {
       return false;
+    }
   }
 
   for (unsigned i = 0; i < longhand_count; ++i) {
@@ -3137,12 +3222,14 @@ bool ConsumeViewTimelineItemInto(CSSParserTokenRange& range,
   // value accepted as an axis is also accepted as a name.
   CSSValue* name = ConsumeSingleTimelineName(range, context);
 
-  if (!name)
+  if (!name) {
     return false;
+  }
 
   CSSValue* axis = ConsumeSingleTimelineAxis(range);
-  if (!axis)
+  if (!axis) {
     axis = CSSIdentifierValue::Create(CSSValueID::kBlock);
+  }
 
   name_list->Append(*name);
   axis_list->Append(*axis);
@@ -3171,8 +3258,9 @@ bool ViewTimeline::ParseShorthand(
   CSSValueList* axis_list = CSSValueList::CreateCommaSeparated();
 
   do {
-    if (!ConsumeViewTimelineItemInto(range, context, name_list, axis_list))
+    if (!ConsumeViewTimelineItemInto(range, context, name_list, axis_list)) {
       return false;
+    }
   } while (ConsumeCommaIncludingWhitespace(range));
 
   DCHECK(name_list->length());
@@ -3365,8 +3453,9 @@ bool WebkitMaskPosition::ParseShorthand(
   if (!css_parsing_utils::ConsumeBackgroundPosition(
           range, context, css_parsing_utils::UnitlessQuirk::kAllow, result_x,
           result_y) ||
-      !range.AtEnd())
+      !range.AtEnd()) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kWebkitMaskPositionX, CSSPropertyID::kWebkitMaskPosition,
@@ -3399,8 +3488,9 @@ bool WebkitMaskRepeat::ParseShorthand(
   bool implicit = false;
   if (!css_parsing_utils::ConsumeRepeatStyle(range, result_x, result_y,
                                              implicit) ||
-      !range.AtEnd())
+      !range.AtEnd()) {
     return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kWebkitMaskRepeatX, CSSPropertyID::kWebkitMaskRepeat,
@@ -3462,8 +3552,9 @@ bool Toggle::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* toggle_root = css_parsing_utils::ParseLonghand(
       CSSPropertyID::kToggleRoot, CSSPropertyID::kToggle, context, range);
-  if (!toggle_root || !range.AtEnd())
+  if (!toggle_root || !range.AtEnd()) {
     return false;
+  }
 
   const CSSValue* toggle_trigger;
   if (const auto* ident = DynamicTo<CSSIdentifierValue>(toggle_root)) {
@@ -3503,8 +3594,9 @@ const CSSValue* Toggle::CSSValueFromComputedStyleInternal(
           style, layout_object, allow_visited_style);
 
   if (!StylePropertySerializer::IsValidToggleShorthand(toggle_root,
-                                                       toggle_trigger))
+                                                       toggle_trigger)) {
     return nullptr;
+  }
 
   return toggle_root;
 }

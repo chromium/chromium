@@ -39,8 +39,9 @@ namespace blink {
 gfx::OutsetsF ShadowList::RectOutsetsIncludingOriginal() const {
   gfx::OutsetsF outsets;
   for (const ShadowData& shadow : Shadows()) {
-    if (shadow.Style() == ShadowStyle::kInset)
+    if (shadow.Style() == ShadowStyle::kInset) {
       continue;
+    }
     outsets.SetToMax(shadow.RectOutsets());
   }
   return outsets;

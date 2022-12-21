@@ -78,8 +78,9 @@ class CounterDirectives {
   int CombinedValue() const {
     // If there is a counter-set, it overrides over values.
     // https://drafts.csswg.org/css-lists-3/#auto-numbering
-    if (IsSet())
+    if (IsSet()) {
       return SetValue();
+    }
 
     // According to the spec, if an increment would overflow or underflow the
     // counter, we are allowed to ignore the increment.

@@ -42,8 +42,9 @@ void ReferenceFilterOperation::Trace(Visitor* visitor) const {
 
 gfx::RectF ReferenceFilterOperation::MapRect(const gfx::RectF& rect) const {
   const auto* last_effect = filter_ ? filter_->LastEffect() : nullptr;
-  if (!last_effect)
+  if (!last_effect) {
     return rect;
+  }
   return last_effect->MapRect(rect);
 }
 
@@ -54,13 +55,15 @@ ReferenceFilterOperation::ReferenceFilterOperation(const AtomicString& url,
       resource_(resource) {}
 
 void ReferenceFilterOperation::AddClient(SVGResourceClient& client) {
-  if (resource_)
+  if (resource_) {
     resource_->AddClient(client);
+  }
 }
 
 void ReferenceFilterOperation::RemoveClient(SVGResourceClient& client) {
-  if (resource_)
+  if (resource_) {
     resource_->RemoveClient(client);
+  }
 }
 
 bool ReferenceFilterOperation::IsEqualAssumingSameType(

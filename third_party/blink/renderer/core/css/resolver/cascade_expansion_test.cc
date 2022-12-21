@@ -87,10 +87,12 @@ class CascadeExpansionTest : public PageTestBase {
     Vector<CSSPropertyID> all;
     for (CSSPropertyID id : CSSPropertyIDList()) {
       const CSSProperty& property = CSSProperty::Get(id);
-      if (!IsInAllExpansion(id))
+      if (!IsInAllExpansion(id)) {
         continue;
-      if (filter.Rejects(property))
+      }
+      if (filter.Rejects(property)) {
         continue;
+      }
       all.push_back(id);
     }
     return all;
@@ -108,8 +110,9 @@ class CascadeExpansionTest : public PageTestBase {
                    const CSSValue& css_value [[maybe_unused]],
                    uint16_t tree_order [[maybe_unused]]) {
           EXPECT_EQ(name, css_property.GetCSSPropertyName());
-          if (css_property.IsVisited())
+          if (css_property.IsVisited()) {
             visited.push_back(css_property.PropertyID());
+          }
         });
 
     return visited;
@@ -485,7 +488,8 @@ TEST_F(CascadeExpansionTest, FilterHighlightLegacy) {
   result.FinishAddingUserRules();
   result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
-      ParseDeclarationBlock("display:block;background-color:lime;forced-color-adjust:none"),
+      ParseDeclarationBlock(
+          "display:block;background-color:lime;forced-color-adjust:none"),
       AddMatchedPropertiesOptions::Builder()
           .SetValidPropertyFilter(ValidPropertyFilter::kHighlightLegacy)
           .Build());
@@ -507,7 +511,8 @@ TEST_F(CascadeExpansionTest, FilterHighlight) {
   result.FinishAddingUserRules();
   result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
-      ParseDeclarationBlock("display:block;background-color:lime;forced-color-adjust:none"),
+      ParseDeclarationBlock(
+          "display:block;background-color:lime;forced-color-adjust:none"),
       AddMatchedPropertiesOptions::Builder()
           .SetValidPropertyFilter(ValidPropertyFilter::kHighlight)
           .Build());
@@ -701,13 +706,15 @@ TEST_F(CascadeExpansionTest, MatchedPropertiesLimit) {
   auto* set = ParseDeclarationBlock("left:1px");
 
   MatchResult result;
-  for (wtf_size_t i = 0; i < max + 3; ++i)
+  for (wtf_size_t i = 0; i < max + 3; ++i) {
     result.AddMatchedProperties(set);
+  }
 
   ASSERT_EQ(max + 3u, result.GetMatchedProperties().size());
 
-  for (wtf_size_t i = 0; i < max + 1; ++i)
+  for (wtf_size_t i = 0; i < max + 1; ++i) {
     EXPECT_GT(ExpansionAt(result, i).size(), 0u);
+  }
 
   // The indices beyond the max should not yield anything.
   EXPECT_EQ(0u, ExpansionAt(result, max + 1).size());

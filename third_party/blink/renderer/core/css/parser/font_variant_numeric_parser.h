@@ -24,30 +24,35 @@ class FontVariantNumericParser {
     switch (value_id) {
       case CSSValueID::kLiningNums:
       case CSSValueID::kOldstyleNums:
-        if (numeric_figure_)
+        if (numeric_figure_) {
           return ParseResult::kDisallowedValue;
+        }
         numeric_figure_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       case CSSValueID::kProportionalNums:
       case CSSValueID::kTabularNums:
-        if (numeric_spacing_)
+        if (numeric_spacing_) {
           return ParseResult::kDisallowedValue;
+        }
         numeric_spacing_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       case CSSValueID::kDiagonalFractions:
       case CSSValueID::kStackedFractions:
-        if (numeric_fraction_)
+        if (numeric_fraction_) {
           return ParseResult::kDisallowedValue;
+        }
         numeric_fraction_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       case CSSValueID::kOrdinal:
-        if (ordinal_)
+        if (ordinal_) {
           return ParseResult::kDisallowedValue;
+        }
         ordinal_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       case CSSValueID::kSlashedZero:
-        if (slashed_zero_)
+        if (slashed_zero_) {
           return ParseResult::kDisallowedValue;
+        }
         slashed_zero_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       default:
@@ -57,18 +62,24 @@ class FontVariantNumericParser {
 
   CSSValue* FinalizeValue() {
     CSSValueList* result = CSSValueList::CreateSpaceSeparated();
-    if (numeric_figure_)
+    if (numeric_figure_) {
       result->Append(*numeric_figure_);
-    if (numeric_spacing_)
+    }
+    if (numeric_spacing_) {
       result->Append(*numeric_spacing_);
-    if (numeric_fraction_)
+    }
+    if (numeric_fraction_) {
       result->Append(*numeric_fraction_);
-    if (ordinal_)
+    }
+    if (ordinal_) {
       result->Append(*ordinal_);
-    if (slashed_zero_)
+    }
+    if (slashed_zero_) {
       result->Append(*slashed_zero_);
-    if (result->length() > 0)
+    }
+    if (result->length() > 0) {
       return result;
+    }
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
 

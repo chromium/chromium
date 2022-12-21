@@ -17,15 +17,17 @@ CheckPseudoHasCacheScope::CheckPseudoHasCacheScope(Document* document)
     : document_(document) {
   DCHECK(document_);
 
-  if (document_->GetCheckPseudoHasCacheScope())
+  if (document_->GetCheckPseudoHasCacheScope()) {
     return;
+  }
 
   document_->SetCheckPseudoHasCacheScope(this);
 }
 
 CheckPseudoHasCacheScope::~CheckPseudoHasCacheScope() {
-  if (document_->GetCheckPseudoHasCacheScope() != this)
+  if (document_->GetCheckPseudoHasCacheScope() != this) {
     return;
+  }
 
   document_->SetCheckPseudoHasCacheScope(nullptr);
 }
@@ -171,8 +173,9 @@ void CheckPseudoHasCacheScope::Context::SetAllTraversedElementsAsChecked(
       Element* parent = element->parentElement();
       int depth = last_traversed_depth;
       for (; depth > 0; --depth) {
-        if (element)
+        if (element) {
           SetTraversedElementAsChecked(element, parent);
+        }
         element = ElementTraversal::NextSibling(*parent);
         parent = parent->parentElement();
       }
@@ -212,11 +215,13 @@ bool CheckPseudoHasCacheScope::Context::
   for (Element* sibling = ElementTraversal::PreviousSibling(*element); sibling;
        sibling = ElementTraversal::PreviousSibling(*sibling)) {
     CheckPseudoHasResult sibling_result = GetResult(sibling);
-    if (sibling_result == kCheckPseudoHasResultNotCached)
+    if (sibling_result == kCheckPseudoHasResultNotCached) {
       continue;
+    }
     if (sibling_result &
-        kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked)
+        kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked) {
       return true;
+    }
   }
   return false;
 }
@@ -227,14 +232,17 @@ bool CheckPseudoHasCacheScope::Context::
   for (Element* parent = element->parentElement(); parent;
        element = parent, parent = element->parentElement()) {
     CheckPseudoHasResult parent_result = GetResult(parent);
-    if (parent_result == kCheckPseudoHasResultNotCached)
+    if (parent_result == kCheckPseudoHasResultNotCached) {
       continue;
+    }
     if (parent_result &
-        kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked)
+        kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked) {
       return true;
+    }
     if (parent_result & kCheckPseudoHasResultSomeChildrenChecked) {
-      if (HasSiblingsWithAllDescendantsOrNextSiblingsChecked(element))
+      if (HasSiblingsWithAllDescendantsOrNextSiblingsChecked(element)) {
         return true;
+      }
     }
   }
   return false;
@@ -248,8 +256,9 @@ bool CheckPseudoHasCacheScope::Context::AlreadyChecked(Element* element) const {
       return HasAncestorsWithAllDescendantsOrNextSiblingsChecked(element);
     case CheckPseudoHasArgumentTraversalScope::kAllNextSiblings:
       if (Element* parent = element->parentElement()) {
-        if (!(GetResult(parent) & kCheckPseudoHasResultSomeChildrenChecked))
+        if (!(GetResult(parent) & kCheckPseudoHasResultSomeChildrenChecked)) {
           return false;
+        }
         return HasSiblingsWithAllDescendantsOrNextSiblingsChecked(element);
       }
       break;
@@ -276,10 +285,12 @@ CheckPseudoHasCacheScope::Context::EnsureFastRejectFilter(Element* element,
       for (Element* parent = element->parentElement(); parent;
            parent = parent->parentElement()) {
         auto iterator = fast_reject_filter_map_->find(parent);
-        if (iterator == fast_reject_filter_map_->end())
+        if (iterator == fast_reject_filter_map_->end()) {
           continue;
-        if (!iterator->value->BloomFilterAllocated())
+        }
+        if (!iterator->value->BloomFilterAllocated()) {
           continue;
+        }
         return *iterator->value.get();
       }
       break;
@@ -291,13 +302,16 @@ CheckPseudoHasCacheScope::Context::EnsureFastRejectFilter(Element* element,
              sibling && i >= 0;
              sibling = ElementTraversal::PreviousSibling(*sibling), --i) {
         }
-        if (!sibling)
+        if (!sibling) {
           continue;
+        }
         auto iterator = fast_reject_filter_map_->find(sibling);
-        if (iterator == fast_reject_filter_map_->end())
+        if (iterator == fast_reject_filter_map_->end()) {
           continue;
-        if (!iterator->value->BloomFilterAllocated())
+        }
+        if (!iterator->value->BloomFilterAllocated()) {
           continue;
+        }
         return *iterator->value.get();
       }
       break;
@@ -307,10 +321,12 @@ CheckPseudoHasCacheScope::Context::EnsureFastRejectFilter(Element* element,
         for (Element* sibling = ElementTraversal::PreviousSibling(*parent);
              sibling; sibling = ElementTraversal::PreviousSibling(*sibling)) {
           auto iterator = fast_reject_filter_map_->find(sibling);
-          if (iterator == fast_reject_filter_map_->end())
+          if (iterator == fast_reject_filter_map_->end()) {
             continue;
-          if (!iterator->value->BloomFilterAllocated())
+          }
+          if (!iterator->value->BloomFilterAllocated()) {
             continue;
+          }
           return *iterator->value.get();
         }
       }
@@ -319,10 +335,12 @@ CheckPseudoHasCacheScope::Context::EnsureFastRejectFilter(Element* element,
       for (Element* sibling = ElementTraversal::PreviousSibling(*element);
            sibling; sibling = ElementTraversal::PreviousSibling(*sibling)) {
         auto iterator = fast_reject_filter_map_->find(sibling);
-        if (iterator == fast_reject_filter_map_->end())
+        if (iterator == fast_reject_filter_map_->end()) {
           continue;
-        if (!iterator->value->BloomFilterAllocated())
+        }
+        if (!iterator->value->BloomFilterAllocated()) {
           continue;
+        }
         return *iterator->value.get();
       }
       break;
@@ -344,12 +362,14 @@ CheckPseudoHasCacheScope::Context::EnsureFastRejectFilter(Element* element,
 size_t
 CheckPseudoHasCacheScope::Context::GetBloomFilterAllocationCountForTesting()
     const {
-  if (!cache_allowed_)
+  if (!cache_allowed_) {
     return 0;
+  }
   size_t bloom_filter_allocation_count = 0;
   for (const auto& iterator : *fast_reject_filter_map_) {
-    if (iterator.value->BloomFilterAllocated())
+    if (iterator.value->BloomFilterAllocated()) {
       bloom_filter_allocation_count++;
+    }
   }
   return bloom_filter_allocation_count;
 }

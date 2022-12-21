@@ -14,8 +14,9 @@ CSSStyleValue* CrossThreadUnitValue::ToCSSStyleValue() {
 
 bool CrossThreadUnitValue::operator==(
     const CrossThreadStyleValue& other) const {
-  if (auto* o = DynamicTo<CrossThreadUnitValue>(other))
+  if (auto* o = DynamicTo<CrossThreadUnitValue>(other)) {
     return value_ == o->value_ && unit_ == o->unit_;
+  }
   return false;
 }
 

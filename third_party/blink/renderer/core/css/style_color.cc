@@ -232,13 +232,16 @@ Color StyleColor::Resolve(const Color& current_color,
         current_color);
   }
 
-  if (is_current_color)
+  if (is_current_color) {
     *is_current_color = IsCurrentColor();
-  if (IsCurrentColor())
+  }
+  if (IsCurrentColor()) {
     return current_color;
+  }
   if (EffectiveColorKeyword() != CSSValueID::kInvalid ||
-      (is_forced_color && IsSystemColorIncludingDeprecated()))
+      (is_forced_color && IsSystemColorIncludingDeprecated())) {
     return ColorFromKeyword(color_keyword_, color_scheme);
+  }
   return GetColor();
 }
 
@@ -256,9 +259,10 @@ Color StyleColor::ResolveWithAlpha(Color current_color,
 Color StyleColor::ColorFromKeyword(CSSValueID keyword,
                                    mojom::blink::ColorScheme color_scheme) {
   if (const char* value_name = getValueName(keyword)) {
-    if (const NamedColor* named_color =
-            FindColor(value_name, static_cast<wtf_size_t>(strlen(value_name))))
+    if (const NamedColor* named_color = FindColor(
+            value_name, static_cast<wtf_size_t>(strlen(value_name)))) {
       return Color::FromRGBA32(named_color->argb_value);
+    }
   }
   return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme);
 }

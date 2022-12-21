@@ -96,8 +96,9 @@ Vector<uint32_t> FontFeatureValuesStorage::ResolveInternal(
     const FontFeatureAliases& aliases,
     AtomicString alias) {
   auto find_result = aliases.find(alias);
-  if (find_result == aliases.end())
+  if (find_result == aliases.end()) {
     return {};
+  }
   return find_result->value;
 }
 
@@ -131,8 +132,9 @@ String StyleRuleFontFeatureValues::FamilyAsString() const {
   StringBuilder families;
   for (wtf_size_t i = 0; i < families_.size(); ++i) {
     families.Append(families_[i]);
-    if (i < families_.size() - 1)
+    if (i < families_.size() - 1) {
       families.Append(", ");
+    }
   }
   return families.ReleaseString();
 }

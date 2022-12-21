@@ -112,8 +112,9 @@ class CORE_EXPORT MediaQueryExpValue {
 
   String CssText() const;
   bool operator==(const MediaQueryExpValue& other) const {
-    if (type_ != other.type_)
+    if (type_ != other.type_) {
       return false;
+    }
     switch (type_) {
       case Type::kInvalid:
         return true;

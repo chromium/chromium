@@ -15,8 +15,9 @@ const String& CSSURLImageValue::url() const {
 }
 
 absl::optional<gfx::Size> CSSURLImageValue::IntrinsicSize() const {
-  if (Status() != ResourceStatus::kCached)
+  if (Status() != ResourceStatus::kCached) {
     return absl::nullopt;
+  }
 
   DCHECK(!value_->IsCachePending());
   ImageResourceContent* resource_content = value_->CachedImage()->CachedImage();
@@ -27,8 +28,9 @@ absl::optional<gfx::Size> CSSURLImageValue::IntrinsicSize() const {
 }
 
 ResourceStatus CSSURLImageValue::Status() const {
-  if (value_->IsCachePending())
+  if (value_->IsCachePending()) {
     return ResourceStatus::kNotStarted;
+  }
   return value_->CachedImage()->CachedImage()->GetContentStatus();
 }
 
@@ -42,8 +44,9 @@ scoped_refptr<Image> CSSURLImageValue::GetSourceImageForCanvas(
 }
 
 scoped_refptr<Image> CSSURLImageValue::GetImage() const {
-  if (value_->IsCachePending())
+  if (value_->IsCachePending()) {
     return nullptr;
+  }
   // cachedImage can be null if image is StyleInvalidImage
   ImageResourceContent* cached_image = value_->CachedImage()->CachedImage();
   if (cached_image) {

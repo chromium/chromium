@@ -28,15 +28,19 @@ bool StyleRecalcChange::TraverseChild(const Node& node) const {
 }
 
 bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
-  if (flags_ & kSuppressRecalc)
+  if (flags_ & kSuppressRecalc) {
     return false;
-  if (RecalcChildren())
+  }
+  if (RecalcChildren()) {
     return true;
-  if (node.NeedsStyleRecalc())
+  }
+  if (node.NeedsStyleRecalc()) {
     return true;
+  }
   // Early exit before getting the computed style.
-  if (!RecalcContainerQueryDependent())
+  if (!RecalcContainerQueryDependent()) {
     return false;
+  }
   const ComputedStyle* old_style = node.GetComputedStyle();
   // Container queries may affect display:none elements, and we since we store
   // that dependency on ComputedStyle we need to recalc style for display:none
@@ -50,14 +54,18 @@ bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
 
 bool StyleRecalcChange::ShouldUpdatePseudoElement(
     const PseudoElement& pseudo_element) const {
-  if (UpdatePseudoElements())
+  if (UpdatePseudoElements()) {
     return true;
-  if (pseudo_element.NeedsStyleRecalc())
+  }
+  if (pseudo_element.NeedsStyleRecalc()) {
     return true;
-  if (pseudo_element.NeedsLayoutSubtreeUpdate())
+  }
+  if (pseudo_element.NeedsLayoutSubtreeUpdate()) {
     return true;
-  if (!RecalcSizeContainerQueryDependent())
+  }
+  if (!RecalcSizeContainerQueryDependent()) {
     return false;
+  }
   const ComputedStyle& style = pseudo_element.ComputedStyleRef();
   return (RecalcSizeContainerQueryDependent() &&
           style.DependsOnSizeContainerQueries()) ||
@@ -126,8 +134,9 @@ String StyleRecalcChange::ToString() const {
 
 StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
     const Element& element) const {
-  if (!flags_)
+  if (!flags_) {
     return 0;
+  }
 
   // TODO(crbug.com/1302630): This is not correct for shadow hosts. Style recalc
   // traversal happens in flat tree order while query containers are found among
@@ -151,8 +160,9 @@ StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
       // changes, we will enter another container query recalc for this subtree
       // from layout.
       const ComputedStyle* old_style = element.GetComputedStyle();
-      if (old_style && old_style->CanMatchSizeContainerQueries(element))
+      if (old_style && old_style->CanMatchSizeContainerQueries(element)) {
         result &= ~kRecalcSizeContainer;
+      }
     }
   }
 
@@ -160,10 +170,11 @@ StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
   // for children. Also make sure the kMarkReattach flag survives one level past
   // the container for ::first-line re-attachments initiated from
   // UpdateStyleAndLayoutTreeForContainer().
-  if (result & kSuppressRecalc)
+  if (result & kSuppressRecalc) {
     result &= ~kSuppressRecalc;
-  else
+  } else {
     result &= ~kMarkReattach;
+  }
 
   return result;
 }

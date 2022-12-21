@@ -27,8 +27,9 @@ CSSTransformValue* CSSTransformValue::Create(
 
 CSSTransformValue* CSSTransformValue::Create(
     const HeapVector<Member<CSSTransformComponent>>& transform_components) {
-  if (transform_components.empty())
+  if (transform_components.empty()) {
     return nullptr;
+  }
   return MakeGarbageCollected<CSSTransformValue>(transform_components);
 }
 
@@ -42,8 +43,9 @@ CSSTransformValue* CSSTransformValue::FromCSSValue(const CSSValue& css_value) {
   for (const CSSValue* value : *css_value_list) {
     CSSTransformComponent* component =
         CSSTransformComponent::FromCSSValue(*value);
-    if (!component)
+    if (!component) {
       return nullptr;
+    }
     components.push_back(component);
   }
   return CSSTransformValue::Create(components);
@@ -72,8 +74,9 @@ const CSSValue* CSSTransformValue::ToCSSValue() const {
   for (wtf_size_t i = 0; i < transform_components_.size(); i++) {
     const CSSValue* component = transform_components_[i]->ToCSSValue();
     // TODO(meade): Remove this check once numbers and lengths are rewritten.
-    if (!component)
+    if (!component) {
       return nullptr;
+    }
     transform_css_value->Append(*component);
   }
   return transform_css_value;

@@ -78,8 +78,9 @@ class CORE_EXPORT StyleInvalidator {
     pending_nth_sets_.push_back(&nth_set);
   }
   void PushNthSiblingInvalidationSets(SiblingData& sibling_data) {
-    for (const auto* invalidation_set : pending_nth_sets_)
+    for (const auto* invalidation_set : pending_nth_sets_) {
       sibling_data.PushInvalidationSet(*invalidation_set);
+    }
     ClearPendingNthSiblingInvalidationSets();
   }
   void ClearPendingNthSiblingInvalidationSets() { pending_nth_sets_.resize(0); }
