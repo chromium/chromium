@@ -9,6 +9,12 @@
 
 @class TabSwitcherItem;
 
+// Wrapper structure that helps to make explicit that parameter of this type
+// should use ItemList indexing.
+struct ItemListIndex {
+  NSUInteger value;
+};
+
 // Supports idempotent insert/delete/updates tabs to a collection view.
 @protocol TabCollectionConsumer
 
@@ -29,7 +35,7 @@
 // ID to be `selectedItemID`. It's an error if `item`'s ID duplicates an
 // ID already passed to the consumer (and not yet removed).
 - (void)insertItem:(TabSwitcherItem*)item
-           atIndex:(NSUInteger)index
+           atIndex:(ItemListIndex)index
     selectedItemID:(NSString*)selectedItemID;
 
 // Tells the consumer to remove the item with ID `removedItemID` and update the
@@ -48,7 +54,7 @@
 // Tells the consumer to move the item with id `itemID` to `toIndex`. Note that
 // the ID of the selected item isn't changed by this method, although the index
 // of that item might be.
-- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex;
+- (void)moveItemWithID:(NSString*)itemID toIndex:(ItemListIndex)toIndex;
 
 // Dismisses any presented modal UI.
 - (void)dismissModals;

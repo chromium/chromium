@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
@@ -87,7 +88,12 @@ NSArray* CreateItemsOrderedByLastActiveTime(WebStateList* web_state_list) {
   DCHECK(IsTabGridSortedByRecency());
   NSMutableArray* items = [[NSMutableArray alloc] init];
   std::vector<web::WebState*> web_states;
-  for (int i = 0; i < web_state_list->count(); i++) {
+
+  int firstIndex = web_state_list->GetIndexOfFirstNonPinnedWebState();
+  DCHECK(firstIndex == 0 || IsPinnedTabsEnabled());
+
+  for (int i = firstIndex; i < web_state_list->count(); i++) {
+    DCHECK(!web_state_list->IsWebStatePinnedAt(i));
     web_states.push_back(web_state_list->GetWebStateAt(i));
   }
   std::sort(web_states.begin(), web_states.end(),
@@ -106,7 +112,12 @@ NSArray* CreateItemsOrderedByLastActiveTime(WebStateList* web_state_list) {
 NSArray* CreateItemsOrderedByIndex(WebStateList* web_state_list) {
   DCHECK(!IsTabGridSortedByRecency());
   NSMutableArray* items = [[NSMutableArray alloc] init];
-  for (int i = 0; i < web_state_list->count(); i++) {
+
+  int firstIndex = web_state_list->GetIndexOfFirstNonPinnedWebState();
+  DCHECK(firstIndex == 0 || IsPinnedTabsEnabled());
+
+  for (int i = firstIndex; i < web_state_list->count(); i++) {
+    DCHECK(!web_state_list->IsWebStatePinnedAt(i));
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
     [items addObject:CreateItem(web_state)];
   }
@@ -121,14 +132,24 @@ NSArray* CreateItems(WebStateList* web_state_list) {
   return CreateItemsOrderedByIndex(web_state_list);
 }
 
-// Returns the ID of the active tab in `web_state_list`.
-NSString* GetActiveTabId(WebStateList* web_state_list) {
+// Returns the ID of the active regular (non-pinned) WebState in the
+// `web_state_list`.
+NSString* GetActiveRegularWebStateId(WebStateList* web_state_list) {
   if (!web_state_list)
     return nil;
 
-  web::WebState* web_state = web_state_list->GetActiveWebState();
-  if (!web_state)
+  int web_state_index = web_state_list->active_index();
+  if (web_state_index == WebStateList::kInvalidIndex) {
     return nil;
+  }
+
+  if (IsPinnedTabsEnabled() &&
+      web_state_list->IsWebStatePinnedAt(web_state_index)) {
+    return nil;
+  }
+
+  // WebState cannot be null, so no need to check here.
+  web::WebState* web_state = web_state_list->GetWebStateAt(web_state_index);
   return web_state->GetStableIdentifier();
 }
 
@@ -299,9 +320,17 @@ void RecordTabGridCloseTabsCount(int count) {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress())
     return;
+
+  if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
+    [self.consumer selectItemWithID:GetActiveRegularWebStateId(webStateList)];
+    return;
+  }
+
+  ItemListIndex itemListIndex = [self itemListIndexFromWebStateListIndex:index];
   [self.consumer insertItem:CreateItem(webState)
-                    atIndex:index
-             selectedItemID:GetActiveTabId(webStateList)];
+                    atIndex:itemListIndex
+             selectedItemID:GetActiveRegularWebStateId(webStateList)];
+
   _scopedWebStateObservation->AddObservation(webState);
 }
 
@@ -312,8 +341,15 @@ void RecordTabGridCloseTabsCount(int count) {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress())
     return;
+
+  if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(toIndex)) {
+    return;
+  }
+
+  ItemListIndex itemListIndex =
+      [self itemListIndexFromWebStateListIndex:toIndex];
   [self.consumer moveItemWithID:webState->GetStableIdentifier()
-                        toIndex:toIndex];
+                        toIndex:itemListIndex];
 }
 
 - (void)webStateList:(WebStateList*)webStateList
@@ -323,8 +359,14 @@ void RecordTabGridCloseTabsCount(int count) {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress())
     return;
+
+  if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
+    return;
+  }
+
   [self.consumer replaceItemID:oldWebState->GetStableIdentifier()
                       withItem:CreateItem(newWebState)];
+
   _scopedWebStateObservation->RemoveObservation(oldWebState);
   _scopedWebStateObservation->AddObservation(newWebState);
 }
@@ -335,10 +377,15 @@ void RecordTabGridCloseTabsCount(int count) {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress())
     return;
-  if (!webStateList)
+
+  if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
+    [self.consumer selectItemWithID:GetActiveRegularWebStateId(webStateList)];
     return;
+  }
+
   [self.consumer removeItemWithID:webState->GetStableIdentifier()
-                   selectedItemID:GetActiveTabId(webStateList)];
+                   selectedItemID:GetActiveRegularWebStateId(webStateList)];
+
   _scopedWebStateObservation->RemoveObservation(webState);
 }
 
@@ -350,6 +397,7 @@ void RecordTabGridCloseTabsCount(int count) {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress())
     return;
+
   // If the selected index changes as a result of the last webstate being
   // detached, atIndex will be kInvalidIndex.
   if (atIndex == WebStateList::kInvalidIndex) {
@@ -357,7 +405,29 @@ void RecordTabGridCloseTabsCount(int count) {
     return;
   }
 
+  if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(atIndex)) {
+    [self.consumer selectItemWithID:nil];
+    return;
+  }
+
   [self.consumer selectItemWithID:newWebState->GetStableIdentifier()];
+}
+
+- (void)webStateList:(WebStateList*)webStateList
+    didChangePinnedStateForWebState:(web::WebState*)webState
+                            atIndex:(int)index {
+  DCHECK_EQ(_webStateList, webStateList);
+
+  if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
+    [self.consumer removeItemWithID:webState->GetStableIdentifier()
+                     selectedItemID:GetActiveRegularWebStateId(webStateList)];
+  } else {
+    ItemListIndex itemListIndex =
+        [self itemListIndexFromWebStateListIndex:index];
+    [self.consumer insertItem:CreateItem(webState)
+                      atIndex:itemListIndex
+               selectedItemID:GetActiveRegularWebStateId(webStateList)];
+  }
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
@@ -372,7 +442,7 @@ void RecordTabGridCloseTabsCount(int count) {
     _scopedWebStateObservation->AddObservation(webState);
   }
   [self.consumer populateItems:CreateItems(self.webStateList)
-                selectedItemID:GetActiveTabId(self.webStateList)];
+                selectedItemID:GetActiveRegularWebStateId(self.webStateList)];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -411,17 +481,24 @@ void RecordTabGridCloseTabsCount(int count) {
 #pragma mark - GridCommands
 
 - (void)addNewItem {
-  [self insertNewItemAtIndex:self.webStateList->count()];
+  ItemListIndex lastItemIndex =
+      [self itemListIndexFromWebStateListIndex:self.webStateList->count()];
+  [self insertNewItemAtIndex:lastItemIndex];
 }
 
-- (void)insertNewItemAtIndex:(NSUInteger)index {
+- (void)insertNewItemAtIndex:(ItemListIndex)index {
   [self insertNewItemAtIndex:index withURL:GURL(kChromeUINewTabURL)];
 }
 
-- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)destinationIndex {
+- (void)moveItemWithID:(NSString*)itemID
+               toIndex:(ItemListIndex)destinationIndex {
   int sourceIndex = GetIndexOfTabWithId(self.webStateList, itemID);
-  if (sourceIndex != WebStateList::kInvalidIndex)
-    self.webStateList->MoveWebStateAt(sourceIndex, destinationIndex);
+  if (sourceIndex != WebStateList::kInvalidIndex) {
+    int destinationWebStateListIndex =
+        [self webStateListIndexFromItemListIndex:destinationIndex];
+    self.webStateList->MoveWebStateAt(sourceIndex,
+                                      destinationWebStateListIndex);
+  }
 }
 
 - (void)selectItemWithID:(NSString*)itemID {
@@ -728,7 +805,8 @@ void RecordTabGridCloseTabsCount(int count) {
 
 #pragma mark GridCommands helpers
 
-- (void)insertNewItemAtIndex:(NSUInteger)index withURL:(const GURL&)newTabURL {
+- (void)insertNewItemAtIndex:(ItemListIndex)index
+                     withURL:(const GURL&)newTabURL {
   // The incognito mediator's Browser is briefly set to nil after the last
   // incognito tab is closed.  This occurs because the incognito BrowserState
   // needs to be destroyed to correctly clear incognito browsing data.  Don't
@@ -754,8 +832,10 @@ void RecordTabGridCloseTabsCount(int count) {
   loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
   webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
+  int webStateListIndex = [self webStateListIndexFromItemListIndex:index];
+
   self.webStateList->InsertWebState(
-      base::checked_cast<int>(index), std::move(webState),
+      base::checked_cast<int>(webStateListIndex), std::move(webState),
       (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
       WebStateOpener());
 }
@@ -820,16 +900,16 @@ void RecordTabGridCloseTabsCount(int count) {
       return;
     }
     // Reorder tab within same grid.
-    int sourceIndex = GetIndexOfTabWithId(self.webStateList, tabInfo.tabID);
-    if (sourceIndex != WebStateList::kInvalidIndex)
-      self.webStateList->MoveWebStateAt(sourceIndex, destinationIndex);
+    ItemListIndex itemListIndex = ItemListIndex{destinationIndex};
+    [self moveItemWithID:tabInfo.tabID toIndex:itemListIndex];
     return;
   }
 
   // Handle URLs from within Chrome synchronously using a local object.
   if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {
     URLInfo* droppedURL = static_cast<URLInfo*>(dragItem.localObject);
-    [self insertNewItemAtIndex:destinationIndex withURL:droppedURL.URL];
+    ItemListIndex itemListIndex = ItemListIndex{destinationIndex};
+    [self insertNewItemAtIndex:itemListIndex withURL:droppedURL.URL];
     return;
   }
 }
@@ -848,7 +928,8 @@ void RecordTabGridCloseTabsCount(int count) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [placeholderContext deletePlaceholder];
       NSURL* droppedURL = static_cast<NSURL*>(providedItem);
-      [self insertNewItemAtIndex:destinationIndex
+      ItemListIndex itemListIndex = ItemListIndex{destinationIndex};
+      [self insertNewItemAtIndex:itemListIndex
                          withURL:net::GURLWithNSURL(droppedURL)];
     });
   };
@@ -950,7 +1031,7 @@ void RecordTabGridCloseTabsCount(int count) {
 // Calls `-populateItems:selectedItemID:` on the consumer.
 - (void)populateConsumerItems {
   [self.consumer populateItems:CreateItems(self.webStateList)
-                selectedItemID:GetActiveTabId(self.webStateList)];
+                selectedItemID:GetActiveRegularWebStateId(self.webStateList)];
 }
 
 // Removes `self.syncedClosedTabsCount` most recent entries from the
@@ -1021,6 +1102,38 @@ void RecordTabGridCloseTabsCount(int count) {
     [URLs addObject:URL];
   }
   return URLs;
+}
+
+// Converts the WebStateList indexes to the collection view's item indexes by
+// shifting indexes by the number of pinned WebStates.
+- (ItemListIndex)itemListIndexFromWebStateListIndex:(int)index {
+  if (!IsPinnedTabsEnabled()) {
+    return ItemListIndex{NSUInteger(index)};
+  }
+
+  // If WebStateList's index is invalid or it's inside of pinned WebStates
+  // range return invalid ItemListIndex.
+  if (index == WebStateList::kInvalidIndex ||
+      index < self.webStateList->GetIndexOfFirstNonPinnedWebState()) {
+    return ItemListIndex{NSNotFound};
+  }
+
+  return ItemListIndex{NSUInteger(
+      index - self.webStateList->GetIndexOfFirstNonPinnedWebState())};
+}
+
+// Converts the collection view's item indexes to the WebStateList indexes by
+// shifting indexes by the number of pinned WebStates.
+- (int)webStateListIndexFromItemListIndex:(ItemListIndex)index {
+  if (!IsPinnedTabsEnabled()) {
+    return index.value;
+  }
+
+  if (index.value == NSNotFound) {
+    return WebStateList::kInvalidIndex;
+  }
+
+  return index.value + self.webStateList->GetIndexOfFirstNonPinnedWebState();
 }
 
 @end

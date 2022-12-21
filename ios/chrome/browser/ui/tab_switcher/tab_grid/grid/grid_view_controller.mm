@@ -1082,7 +1082,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)insertItem:(TabSwitcherItem*)item
-           atIndex:(NSUInteger)index
+           atIndex:(ItemListIndex)index
     selectedItemID:(NSString*)selectedItemID {
   if (_mode == TabGridModeSearch) {
     // Prevent inserting items while viewing search results.
@@ -1093,7 +1093,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // (using DCHECK rather than DCHECK_EQ to avoid a checked_cast on NSNotFound).
   DCHECK([self indexOfItemWithID:item.identifier] == NSNotFound);
   auto modelUpdates = ^{
-    [self.items insertObject:item atIndex:index];
+    [self.items insertObject:item atIndex:index.value];
     self.selectedItemID = selectedItemID;
     self.lastInsertedItemID = item.identifier;
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
@@ -1101,7 +1101,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   };
   auto collectionViewUpdates = ^{
     [self removeEmptyStateAnimated:YES];
-    [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
+    [self.collectionView
+        insertItemsAtIndexPaths:@[ CreateIndexPath(index.value) ]];
   };
   NSString* previouslySelectedItemID = self.selectedItemID;
   auto completion = ^(BOOL finished) {
@@ -1203,7 +1204,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self configureCell:cell withItem:item];
 }
 
-- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex {
+- (void)moveItemWithID:(NSString*)itemID toIndex:(ItemListIndex)toIndex {
   if (_mode == TabGridModeSearch) {
     // Prevent moving items while viewing search results.
     return;
@@ -1211,21 +1212,22 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   NSUInteger fromIndex = [self indexOfItemWithID:itemID];
   // If this move would be a no-op, early return and avoid spurious UI updates.
-  if (fromIndex == toIndex)
+  if (fromIndex == toIndex.value) {
     return;
+  }
   auto modelUpdates = ^{
     TabSwitcherItem* item = self.items[fromIndex];
     [self.items removeObjectAtIndex:fromIndex];
-    [self.items insertObject:item atIndex:toIndex];
+    [self.items insertObject:item atIndex:toIndex.value];
   };
   auto collectionViewUpdates = ^{
     [self.collectionView moveItemAtIndexPath:CreateIndexPath(fromIndex)
-                                 toIndexPath:CreateIndexPath(toIndex)];
+                                 toIndexPath:CreateIndexPath(toIndex.value)];
   };
   auto completion = ^(BOOL finished) {
     // Bring back selected halo only for the moved cell, which lost it during
     // the move (drag & drop).
-    if (self.selectedIndex != toIndex) {
+    if (self.selectedIndex != toIndex.value) {
       return;
     }
     // Force reload of the selected cell now to avoid extra delay for the

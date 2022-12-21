@@ -2324,10 +2324,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)gridViewController:(GridViewController*)gridViewController
          didMoveItemWithID:(NSString*)itemID
                    toIndex:(NSUInteger)destinationIndex {
+  ItemListIndex itemListIndex = ItemListIndex{destinationIndex};
   if (gridViewController == self.regularTabsViewController) {
-    [self.regularTabsDelegate moveItemWithID:itemID toIndex:destinationIndex];
+    [self.regularTabsDelegate moveItemWithID:itemID toIndex:itemListIndex];
   } else if (gridViewController == self.incognitoTabsViewController) {
-    [self.incognitoTabsDelegate moveItemWithID:itemID toIndex:destinationIndex];
+    [self.incognitoTabsDelegate moveItemWithID:itemID toIndex:itemListIndex];
   }
 }
 
