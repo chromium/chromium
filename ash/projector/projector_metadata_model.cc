@@ -13,9 +13,6 @@
 namespace ash {
 namespace {
 
-using base::ListValue;
-using base::Value;
-
 constexpr base::StringPiece kStartOffsetKey = "startOffset";
 constexpr base::StringPiece kEndOffsetKey = "endOffset";
 constexpr base::StringPiece kTextKey = "text";

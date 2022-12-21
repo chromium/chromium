@@ -5,6 +5,7 @@
 #include "ash/system/network/network_info_bubble.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -143,14 +144,15 @@ class NetworkInfoBubbleTest : public AshTestBase {
     network_config_helper_.network_state_helper().ip_config_test()->AddIPConfig(
         kIPv6ConfigPath, ipv6);
 
-    base::ListValue ip_configs;
+    base::Value::List ip_configs;
     ip_configs.Append(kIPv4ConfigPath);
     ip_configs.Append(kIPv6ConfigPath);
 
     network_config_helper_.network_state_helper()
         .device_test()
         ->SetDeviceProperty(kStubWiFiDevicePath, shill::kIPConfigsProperty,
-                            ip_configs, /*notify_changed=*/true);
+                            base::Value(std::move(ip_configs)),
+                            /*notify_changed=*/true);
 
     network_config_helper_.network_state_helper().service_test()->AddService(
         kWiFiServicePath, kWiFiServiceGuid, kWiFiServiceName, shill::kTypeWifi,

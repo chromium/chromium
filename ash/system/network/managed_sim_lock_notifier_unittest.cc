@@ -113,7 +113,7 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
         allow_cellular_sim_lock);
     managed_network_configuration_handler()->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-        base::ListValue(), global_config);
+        base::Value(base::Value::Type::LIST), global_config);
     base::RunLoop().RunUntilIdle();
   }
 

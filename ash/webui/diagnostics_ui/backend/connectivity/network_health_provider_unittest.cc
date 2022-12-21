@@ -4,6 +4,8 @@
 
 #include "ash/webui/diagnostics_ui/backend/connectivity/network_health_provider.h"
 
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
@@ -184,8 +186,8 @@ class NetworkHealthProviderTest : public testing::Test {
     managed_network_configuration_handler->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY,
         /*userhash=*/std::string(),
-        /*network_configs_onc=*/base::ListValue(),
-        /*global_network_config=*/base::DictionaryValue());
+        /*network_configs_onc=*/base::Value(base::Value::Type::LIST),
+        /*global_network_config=*/base::Value(base::Value::Type::DICTIONARY));
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     network_health_provider_ = std::make_unique<NetworkHealthProvider>();
@@ -449,10 +451,10 @@ class NetworkHealthProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetNameServersForIPConfig(const base::ListValue& dns_servers) {
-    ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),
-                                            shill::kNameServersProperty,
-                                            dns_servers, base::DoNothing());
+  void SetNameServersForIPConfig(base::Value::List dns_servers) {
+    ShillIPConfigClient::Get()->SetProperty(
+        dbus::ObjectPath(kTestIPConfigPath), shill::kNameServersProperty,
+        base::Value(std::move(dns_servers)), base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -1246,12 +1248,12 @@ TEST_F(NetworkHealthProviderTest, IPConfig) {
   SetIPAddressForIPConfig(ip_address);
   const int routing_prefix = 1;
   SetRoutingPrefixForIPConfig(routing_prefix);
-  base::ListValue dns_servers;
+  base::Value::List dns_servers;
   const std::string dns_server_1 = "192.168.1.100";
   const std::string dns_server_2 = "192.168.1.101";
   dns_servers.Append(dns_server_1);
   dns_servers.Append(dns_server_2);
-  SetNameServersForIPConfig(dns_servers);
+  SetNameServersForIPConfig(std::move(dns_servers));
 
   AssociateWifiWithIPConfig();
   SetWifiOnline();
