@@ -245,6 +245,10 @@ void DialogClientView::ChildVisibilityChanged(View* child) {
   InvalidateLayout();
 }
 
+void DialogClientView::TriggerInputProtection() {
+  input_protector_.UpdateViewShownTimeStamp();
+}
+
 void DialogClientView::OnDialogChanged() {
   UpdateDialogButtons();
 }

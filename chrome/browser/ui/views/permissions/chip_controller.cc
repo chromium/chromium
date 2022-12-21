@@ -167,7 +167,22 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
   }
 
   widget->RemoveObserver(this);
+
   CollapsePrompt(/*allow_restart=*/false);
+}
+
+void ChipController::OnWidgetActivationChanged(views::Widget* widget,
+                                               bool active) {
+  // This logic prevents clickjacking. See https://crbug.com/1160485
+  auto* prompt_bubble_widget = GetBubbleWidget();
+  if (active && !parent_was_visible_when_activation_changed_) {
+    // If the widget is active and the primary window wasn't active the last
+    // time activation changed, we know that the window just came to the
+    // foreground and trigger input protection.
+    GetPromptBubbleView()->AsDialogDelegate()->TriggerInputProtection();
+  }
+  parent_was_visible_when_activation_changed_ =
+      prompt_bubble_widget->GetPrimaryWindowWidget()->IsVisible();
 }
 
 bool ChipController::ShouldWaitForConfirmationToComplete() {
@@ -487,7 +502,7 @@ void ChipController::OpenPermissionPromptBubble() {
   // It is possible that a Chip got reset while the permission prompt bubble was
   // displayed.
   if (permission_prompt_model_ && IsBubbleShowing()) {
-    GetBubbleWidget()->AddObserver(this);
+    ObservePromptBubble();
     permission_prompt_model_->GetDelegate().value()->SetPromptShown();
   }
 }
@@ -504,9 +519,11 @@ void ChipController::RecordRequestChipButtonPressed(const char* recordKey) {
 }
 
 void ChipController::ObservePromptBubble() {
-  views::Widget* promptBubbleWidget = GetBubbleWidget();
-  if (promptBubbleWidget) {
-    promptBubbleWidget->AddObserver(this);
+  views::Widget* prompt_bubble_widget = GetBubbleWidget();
+  if (prompt_bubble_widget) {
+    parent_was_visible_when_activation_changed_ =
+        prompt_bubble_widget->GetPrimaryWindowWidget()->IsVisible();
+    prompt_bubble_widget->AddObserver(this);
   }
 }
 
@@ -626,5 +643,16 @@ LocationBarView* ChipController::GetLocationBarView() {
 }
 
 views::Widget* ChipController::GetBubbleWidget() {
+  // We can't call GetPromptBubbleView() here, because the bubble_tracker may
+  // hold objects that aren't of typ `PermissionPromptBubbleView`.
   return bubble_tracker_.view() ? bubble_tracker_.view()->GetWidget() : nullptr;
+}
+
+PermissionPromptBubbleView* ChipController::GetPromptBubbleView() {
+  // The tracked bubble view is a `PermissionPromptBubbleView` only when `kChip`
+  // is used.
+  CHECK_EQ(permission_prompt_model_->GetPromptStyle(),
+           PermissionPromptStyle::kChip);
+  auto* view = bubble_tracker_.view();
+  return view ? static_cast<PermissionPromptBubbleView*>(view) : nullptr;
 }
