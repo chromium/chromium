@@ -326,6 +326,16 @@ void ProxyMain::BeginMainFrame(
     return;
   }
 
+  // The devtools "Commit" step includes the update layers pipeline stage
+  // through to the actual commit to the impl thread. This is done for
+  // simplicity and it follows
+  // https://developer.chrome.com/articles/renderingng-architecture.
+  //
+  // TODO(paint-dev): It is not clear how to best show the interlacing of main
+  // thread tasks with commit (non-blocking commit) (crbug.com/1277952).
+  commit_trace_ = std::make_unique<devtools_instrumentation::ScopedCommitTrace>(
+      layer_tree_host_->GetId(), frame_args.frame_id.sequence_number);
+
   // If UI resources were evicted on the impl thread, we need a commit.
   if (begin_main_frame_state->evicted_ui_resources)
     final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
@@ -347,9 +357,6 @@ void ProxyMain::BeginMainFrame(
   // If updating the layers resulted in a content update, we need a commit.
   if (updated)
     final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
-
-  commit_trace_ = std::make_unique<devtools_instrumentation::ScopedCommitTrace>(
-      layer_tree_host_->GetId(), frame_args.frame_id.sequence_number);
 
   auto completion_event_ptr = std::make_unique<CompletionEvent>(
       base::WaitableEvent::ResetPolicy::MANUAL);

@@ -172,8 +172,8 @@ class CC_EXPORT ProxyMain : public Proxy {
   // Only used when defer_commits_ is active and must be set in such cases.
   base::TimeTicks commits_restart_time_;
 
-  // TODO(paint-dev): it's not clear how devtools will handle interlacing of
-  // main thread tasks with commit tracing (crbug.com/1277952).
+  // TODO(paint-dev): It is not clear how to best show the interlacing of main
+  // thread tasks with commit (non-blocking commit) (crbug.com/1277952).
   std::unique_ptr<devtools_instrumentation::ScopedCommitTrace> commit_trace_;
 
   // ProxyImpl is created and destroyed on the impl thread, and should only be
