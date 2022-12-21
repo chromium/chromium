@@ -18,23 +18,19 @@ import './os_bluetooth_device_detail_subpage.js';
 import './os_bluetooth_pairing_dialog.js';
 
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {BluetoothSystemProperties, BluetoothSystemState, SystemPropertiesObserverInterface, SystemPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {BluetoothSystemProperties, BluetoothSystemState, SystemPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
 import {getTemplate} from './os_bluetooth_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- */
-const SettingsBluetoothPageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const SettingsBluetoothPageElementBase = PrefsMixin(I18nMixin(PolymerElement));
 
-/** @polymer */
 class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
   static get is() {
-    return 'os-settings-bluetooth-page';
+    return 'os-settings-bluetooth-page' as const;
   }
 
   static get template() {
@@ -43,18 +39,8 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
-       * @private {!BluetoothSystemProperties}
-       */
       systemProperties_: Object,
 
-      /** @private */
       shouldShowPairingDialog_: {
         type: Boolean,
         value: false,
@@ -63,27 +49,24 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
       /**
        * Set by Saved Devices subpage. Controls spinner and loading label
        * visibility in the subpage.
-       * @private
        */
       showSavedDevicesLoadingIndicators_: Boolean,
     };
   }
 
+  private showSavedDevicesLoadingIndicators_: boolean;
+  private shouldShowPairingDialog_: boolean;
+  private systemProperties_: BluetoothSystemProperties;
+  private systemPropertiesObserverReceiver_: SystemPropertiesObserverReceiver;
+
   constructor() {
     super();
 
-    /**
-     * @private {!SystemPropertiesObserverReceiver}
-     */
     this.systemPropertiesObserverReceiver_ =
-        new SystemPropertiesObserverReceiver(
-            /**
-             * @type {!SystemPropertiesObserverInterface}
-             */
-            (this));
+        new SystemPropertiesObserverReceiver(this);
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
     getBluetoothConfig().observeSystemProperties(
         this.systemPropertiesObserverReceiver_.$.bindNewPipeAndPassRemote());
@@ -91,28 +74,20 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
 
   /**
    * SystemPropertiesObserverInterface override
-   * @param {!BluetoothSystemProperties}
-   *     properties
    */
-  onPropertiesUpdated(properties) {
+  onPropertiesUpdated(properties: BluetoothSystemProperties): void {
     this.systemProperties_ = properties;
   }
 
-  /** @private */
-  onStartPairing_() {
+  private onStartPairing_(): void {
     this.shouldShowPairingDialog_ = true;
   }
 
-  /** @private */
-  onClosePairingDialog_() {
+  private onClosePairingDialog_(): void {
     this.shouldShowPairingDialog_ = false;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowPairNewDevice_() {
+  private shouldShowPairNewDevice_(): boolean {
     if (!this.systemProperties_) {
       return false;
     }
@@ -120,6 +95,12 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
     return this.systemProperties_.systemState ===
         BluetoothSystemState.kEnabled ||
         this.systemProperties_.systemState === BluetoothSystemState.kEnabling;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothPageElement.is]: SettingsBluetoothPageElement;
   }
 }
 

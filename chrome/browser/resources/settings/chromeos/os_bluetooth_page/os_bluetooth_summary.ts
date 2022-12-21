@@ -14,44 +14,35 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import {getDeviceName} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
-import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
-import {Router} from '../router.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './os_bluetooth_summary.html.js';
 
 /**
  * Refers to Bluetooth secondary text label, used to distinguish between
  * accessibility string and UI text string.
- * @enum {number}
  */
-const LabelType = {
-  A11Y: 1,
-  DISPLAYED_TEXT: 2,
-};
+enum LabelType {
+  A11Y = 1,
+  DISPLAYED_TEXT = 2,
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {RouteOriginBehaviorInterface}
- */
-const SettingsBluetoothSummaryElementBase = mixinBehaviors(
-    [I18nBehavior, RouteObserverBehavior, RouteOriginBehavior], PolymerElement);
+const SettingsBluetoothSummaryElementBase =
+    RouteOriginMixin(I18nMixin(PolymerElement));
 
 /** @polymer */
 class SettingsBluetoothSummaryElement extends
     SettingsBluetoothSummaryElementBase {
   static get is() {
-    return 'os-settings-bluetooth-summary';
+    return 'os-settings-bluetooth-summary' as const;
   }
 
   static get template() {
@@ -60,9 +51,6 @@ class SettingsBluetoothSummaryElement extends
 
   static get properties() {
     return {
-      /**
-       * @type {!BluetoothSystemProperties}
-       */
       systemProperties: {
         type: Object,
         observer: 'onSystemPropertiesChanged_',
@@ -72,14 +60,12 @@ class SettingsBluetoothSummaryElement extends
        * Reflects the current state of the toggle button. This will be set when
        * the |systemProperties| state changes or when the user presses the
        * toggle.
-       * @private
        */
       isBluetoothToggleOn_: {
         type: Boolean,
         observer: 'onBluetoothToggleChanged_',
       },
 
-      /** @private */
       LabelType: {
         type: Object,
         value: LabelType,
@@ -87,7 +73,6 @@ class SettingsBluetoothSummaryElement extends
 
       /**
        * Whether the user is a secondary user.
-       * @private
        */
       isSecondaryUser_: {
         type: Boolean,
@@ -111,22 +96,28 @@ class SettingsBluetoothSummaryElement extends
     };
   }
 
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
+  LabelType: LabelType;
+  systemProperties: BluetoothSystemProperties;
+  private isBluetoothToggleOn_: boolean;
+  private isSecondaryUser_: boolean;
+  private primaryUserEmail_: string;
+  private route_: Route;
+
   constructor() {
     super();
 
-    /** RouteOriginBehaviorInterface override */
+    /** RouteOriginMixin override */
     this.route_ = routes.BASIC;
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(routes.BLUETOOTH_DEVICES, '.subpage-arrow');
   }
 
-  /** @private */
-  onSystemPropertiesChanged_() {
+  private onSystemPropertiesChanged_(): void {
     this.isBluetoothToggleOn_ =
         this.systemProperties.systemState === BluetoothSystemState.kEnabled ||
         this.systemProperties.systemState === BluetoothSystemState.kEnabling;
@@ -135,11 +126,9 @@ class SettingsBluetoothSummaryElement extends
   /**
    * Observer for isBluetoothToggleOn_ that returns early until the previous
    * value was not undefined to avoid wrongly toggling the Bluetooth state.
-   * @param {boolean} newValue
-   * @param {boolean} oldValue
-   * @private
    */
-  onBluetoothToggleChanged_(newValue, oldValue) {
+  private onBluetoothToggleChanged_(_newValue: boolean, oldValue?: boolean):
+      void {
     if (oldValue === undefined) {
       return;
     }
@@ -152,11 +141,7 @@ class SettingsBluetoothSummaryElement extends
     getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isToggleDisabled_() {
+  private isToggleDisabled_(): boolean {
     if (!this.systemProperties) {
       return false;
     }
@@ -166,12 +151,7 @@ class SettingsBluetoothSummaryElement extends
         BluetoothSystemState.kUnavailable;
   }
 
-  /**
-   * @param {LabelType} labelType
-   * @return {string}
-   * @private
-   */
-  getSecondaryLabel_(labelType) {
+  private getSecondaryLabel_(labelType: LabelType): string {
     if (!this.isBluetoothToggleOn_) {
       return this.i18n('bluetoothSummaryPageOff');
     }
@@ -212,11 +192,7 @@ class SettingsBluetoothSummaryElement extends
             firstConnectedDeviceName, connectedDevices.length - 1);
   }
 
-  /**
-   * @return {Array<?PairedBluetoothDeviceProperties>}
-   * @private
-   */
-  getConnectedDevices_() {
+  private getConnectedDevices_(): PairedBluetoothDeviceProperties[] {
     const pairedDevices = this.systemProperties.pairedDevices;
     if (!pairedDevices) {
       return [];
@@ -227,11 +203,7 @@ class SettingsBluetoothSummaryElement extends
             DeviceConnectionState.kConnected);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getBluetoothStatusIconName_() {
+  private getBluetoothStatusIconName_(): string {
     if (!this.isBluetoothToggleOn_) {
       return 'os-settings:bluetooth-disabled';
     }
@@ -242,11 +214,7 @@ class SettingsBluetoothSummaryElement extends
     return 'cr:bluetooth';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowSubpageArrow_() {
+  private shouldShowSubpageArrow_(): boolean {
     if (this.isToggleDisabled_()) {
       return false;
     }
@@ -254,22 +222,16 @@ class SettingsBluetoothSummaryElement extends
     return this.isBluetoothToggleOn_;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onSubpageArrowClick_(e) {
+  private onSubpageArrowClick_(e: Event): void {
     this.navigateToBluetoothDevicesSubpage_();
     e.stopPropagation();
   }
 
-  /** @private */
-  navigateToBluetoothDevicesSubpage_() {
+  private navigateToBluetoothDevicesSubpage_(): void {
     Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
   }
 
-  /** @private */
-  onWrapperClick_() {
+  private onWrapperClick_(): void {
     if (this.isToggleDisabled_()) {
       return;
     }
@@ -282,19 +244,23 @@ class SettingsBluetoothSummaryElement extends
     this.navigateToBluetoothDevicesSubpage_();
   }
 
-  /** @private */
-  onPairNewDeviceBtnClick_() {
+  private onPairNewDeviceBtnClick_(): void {
     this.dispatchEvent(new CustomEvent('start-pairing', {
       bubbles: true,
       composed: true,
     }));
   }
 
-  /** @private */
-  annouceBluetoothStateChange_() {
+  private annouceBluetoothStateChange_(): void {
     getAnnouncerInstance().announce(
         this.isBluetoothToggleOn_ ? this.i18n('bluetoothEnabledA11YLabel') :
                                     this.i18n('bluetoothDisabledA11YLabel'));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothSummaryElement.is]: SettingsBluetoothSummaryElement;
   }
 }
 

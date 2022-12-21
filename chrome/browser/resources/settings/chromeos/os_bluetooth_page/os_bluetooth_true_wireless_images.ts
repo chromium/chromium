@@ -11,28 +11,22 @@
 import '../../settings_shared.css.js';
 import 'chrome://resources/ash/common/bluetooth/bluetooth_battery_icon_percentage.js';
 
-import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {getBatteryPercentage, hasAnyDetailedBatteryInfo, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {BluetoothDeviceProperties, DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './os_bluetooth_true_wireless_images.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const SettingsBluetoothTrueWirelessImagesElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    I18nMixin(PolymerElement);
 
-/** @polymer */
 export class SettingsBluetoothTrueWirelessImagesElement extends
     SettingsBluetoothTrueWirelessImagesElementBase {
   static get is() {
-    return 'os-settings-bluetooth-true-wireless-images';
+    return 'os-settings-bluetooth-true-wireless-images' as const;
   }
 
   static get template() {
@@ -41,9 +35,6 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
 
   static get properties() {
     return {
-      /**
-       * @type {!BluetoothDeviceProperties}
-       */
       device: {
         type: Object,
       },
@@ -52,8 +43,6 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
        * Enum used as an ID for specific UI elements.
        * A BatteryType is passed between html and JS for
        * certain UI elements to determine their state.
-       *
-       * @type {!BatteryType}
        */
       BatteryType: {
         type: Object,
@@ -62,17 +51,16 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
     };
   }
 
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
+  BatteryType: BatteryType;
+  device: BluetoothDeviceProperties;
+
   /**
    * Only show specific battery information if the device is
    * Connected and there exists information for that device.
-   *
-   * @param {!BluetoothDeviceProperties}
-   *     device
-   * @param {!BatteryType} batteryType
-   * @return {boolean}
-   * @protected
    */
-  shouldShowBatteryTypeInfo_(device, batteryType) {
+  private shouldShowBatteryTypeInfo_(
+      device: BluetoothDeviceProperties, batteryType: BatteryType): boolean {
     if (device.connectionState !== DeviceConnectionState.kConnected ||
         !hasTrueWirelessImages(device)) {
       return false;
@@ -86,13 +74,8 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
    * for that device, fallback to showing the default image with default info.
    * We also display the default image alongside the "Disconnected" label when
    * the device is disconnected.
-   *
-   * @param {!BluetoothDeviceProperties}
-   *     device
-   * @return {boolean}
-   * @protected
    */
-  shouldShowDefaultInfo_(device) {
+  private shouldShowDefaultInfo_(device: BluetoothDeviceProperties): boolean {
     if (!hasDefaultImage(device)) {
       return false;
     }
@@ -108,26 +91,13 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
         getBatteryPercentage(device, BatteryType.DEFAULT) !== undefined;
   }
 
-
-  /**
-   * @param {!BluetoothDeviceProperties}
-   *     device
-   * @return {boolean}
-   * @protected
-   */
-  isDeviceNotConnected_(device) {
+  private isDeviceNotConnected_(device: BluetoothDeviceProperties): boolean {
     return device.connectionState === DeviceConnectionState.kNotConnected ||
         device.connectionState === DeviceConnectionState.kConnecting;
   }
 
-  /**
-   * @param {!BluetoothDeviceProperties}
-   *     device
-   * @param {!BatteryType} batteryType
-   * @return {string}
-   * @protected
-   */
-  getBatteryTypeString_(device, batteryType) {
+  private getBatteryTypeString_(
+      _device: BluetoothDeviceProperties, batteryType: BatteryType): string {
     switch (batteryType) {
       case BatteryType.LEFT_BUD:
         return this.i18n('bluetoothTrueWirelessLeftBudLabel');
@@ -140,26 +110,27 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
     }
   }
 
-  /**
-   * @param {!BluetoothDeviceProperties}
-   *     device
-   * @param {!BatteryType} batteryType
-   * @return {string}
-   * @private
-   */
-  getImageSrc_(device, batteryType) {
+  private getImageSrc_(
+      device: BluetoothDeviceProperties, batteryType: BatteryType): string {
     switch (batteryType) {
       case BatteryType.DEFAULT:
-        return this.device.imageInfo.defaultImageUrl.url;
+        return device.imageInfo!.defaultImageUrl!.url;
       case BatteryType.LEFT_BUD:
-        return this.device.imageInfo.trueWirelessImages.leftBudImageUrl.url;
+        return device.imageInfo!.trueWirelessImages!.leftBudImageUrl.url;
       case BatteryType.CASE:
-        return this.device.imageInfo.trueWirelessImages.caseImageUrl.url;
+        return device.imageInfo!.trueWirelessImages!.caseImageUrl.url;
       case BatteryType.RIGHT_BUD:
-        return this.device.imageInfo.trueWirelessImages.rightBudImageUrl.url;
+        return device.imageInfo!.trueWirelessImages!.rightBudImageUrl.url;
       default:
         assertNotReached();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothTrueWirelessImagesElement.is]:
+        SettingsBluetoothTrueWirelessImagesElement;
   }
 }
 
