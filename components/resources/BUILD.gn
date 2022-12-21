@@ -64,6 +64,10 @@ grit("components_resources") {
       "//components/safe_browsing/content/resources:make_file_types_protobuf",
     ]
   }
+
+  if (is_android && safe_browsing_mode == 2) {
+    deps += [ "//components/safe_browsing/content/resources/real_time_url_checks_allowlist:make_real_time_url_allowlist_protobuf" ]
+  }
 }
 
 grit("dev_ui_components_resources") {

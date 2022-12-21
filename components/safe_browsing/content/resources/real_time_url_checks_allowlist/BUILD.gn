@@ -1,0 +1,82 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/safe_browsing/buildflags.gni")
+
+if (is_android && safe_browsing_mode == 2) {
+  # Generate the android real time allowlist binary proto from the ascii proto.
+  action("make_real_time_url_allowlist_protobuf") {
+    script = "gen_real_time_url_allowlist_proto.py"
+
+    # The output goes in $target_gen_dir since that's where
+    # components/resources/safe_browsing_resources.grdp will look for it.
+
+    input_filename = "real_time_url_allowlist.asciipb"
+    output_dir = target_gen_dir
+    output_basename = "real_time_url_checks_allowlist.pb"
+    python_path_root = "$root_out_dir/pyproto"
+    python_path_safe_browsing =
+        "$python_path_root/components/safe_browsing/android/proto"
+
+    inputs = [ input_filename ]
+
+    deps = [
+      "//components/safe_browsing/android:realtimeallowlist_proto",
+      "//third_party/protobuf:py_proto",
+    ]
+
+    outputs = [ "$output_dir/$output_basename" ]
+
+    args = [
+      "-w",
+      "-i",
+      rebase_path(input_filename, root_build_dir),
+      "-d",
+      rebase_path(output_dir, root_build_dir),
+      "-o",
+      output_basename,
+      "-p",
+      rebase_path(python_path_root, root_build_dir),
+      "-p",
+      rebase_path(python_path_safe_browsing, root_build_dir),
+    ]
+  }
+
+  # Generate the android real time allowlist binary proto.  This is only run
+  # manually when pushing the file to GCS for the component-updater to pick up.
+  action("make_real_time_url_allowlist_protobuf_for_gcs") {
+    script = "gen_real_time_url_allowlist_proto.py"
+
+    input_filename = "real_time_url_allowlist.asciipb"
+    output_dir = "$target_gen_dir/allowlist"
+    output_basename = "real_time_url_checks_allowlist.pb"
+    python_path_root = "$root_build_dir/pyproto"
+    python_path_safe_browsing =
+        "$python_path_root/components/safe_browsing/android/proto"
+
+    inputs = [ input_filename ]
+
+    deps = [
+      "//components/safe_browsing/android:realtimeallowlist_proto",
+      "//third_party/protobuf:py_proto",
+    ]
+
+    outputs = [ output_dir ]
+
+    args = [
+      "-w",
+      "-g",
+      "-i",
+      rebase_path(input_filename, root_build_dir),
+      "-d",
+      rebase_path(output_dir, root_build_dir),
+      "-o",
+      output_basename,
+      "-p",
+      rebase_path(python_path_root, root_build_dir),
+      "-p",
+      rebase_path(python_path_safe_browsing, root_build_dir),
+    ]
+  }
+}

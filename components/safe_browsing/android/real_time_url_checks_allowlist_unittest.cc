@@ -128,7 +128,11 @@ TEST_F(RealTimeUrlChecksAllowlistTest,
   EXPECT_EQ(allowlist_.IsInAllowlist(example_url),
             RealTimeUrlChecksAllowlist::IsInAllowlistResult::kNotInAllowlist);
 
-  allowlist_.PopulateFromDynamicUpdate(serialized_valid_hca_);
+  // Make sure the new version id is bigger than the resource file's version
+  HighConfidenceAllowlist new_allowlist = CreateHighConfidenceAllowlist(
+      std::numeric_limits<int>::max(), valid_hca_.scheme_id(),
+      valid_hca_.url_hashes());
+  allowlist_.PopulateFromDynamicUpdate(new_allowlist.SerializeAsString());
   CheckPopulateHistogramResult(
       "DynamicUpdate", RealTimeUrlChecksAllowlist::PopulateResult::kSuccess, 1);
   EXPECT_EQ(allowlist_.IsInAllowlist(fb_url),

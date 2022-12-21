@@ -1148,6 +1148,10 @@ grit("generate_components_resources") {
       "//components/safe_browsing/content/resources:make_file_types_protobuf",
     ]
   }
+
+  if (safe_browsing_mode == 2) {
+    deps += [ "//components/safe_browsing/content/resources/real_time_url_checks_allowlist:make_real_time_url_allowlist_protobuf" ]
+  }
 }
 
 grit("generate_components_scaled_resources") {

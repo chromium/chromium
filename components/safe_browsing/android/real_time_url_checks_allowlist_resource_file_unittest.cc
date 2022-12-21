@@ -16,7 +16,7 @@
 namespace safe_browsing {
 
 // This test validates the contents of the backup resource file,
-// components/safe_browsing/content/resources/real_time_url_checks_allowlist.pb
+// real_time_url_checks_allowlist.pb
 class RealTimeUrlChecksAllowlistResourceFileTest : public testing::Test {
  protected:
   RealTimeUrlChecksAllowlistResourceFileTest() = default;

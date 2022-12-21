@@ -653,9 +653,6 @@ test("components_unittests") {
     ]
   } else if (safe_browsing_mode == 2) {
     deps += [ "//components/safe_browsing/android:unit_tests_mobile" ]
-
-    # Used by real_time_url_checks_allowlist_unittest.cc
-    data += [ "//components/safe_browsing/content/resources/real_time_url_checks_allowlist.pb" ]
   }
 
   if (safe_browsing_mode == 1) {

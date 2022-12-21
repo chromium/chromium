@@ -2913,8 +2913,6 @@ static_library("browser") {
       "component_updater/crow_domain_list_component_installer.h",
       "component_updater/desktop_sharing_hub_component_remover.cc",
       "component_updater/desktop_sharing_hub_component_remover.h",
-      "component_updater/real_time_url_checks_allowlist_component_installer.cc",
-      "component_updater/real_time_url_checks_allowlist_component_installer.h",
       "content_creation/notes/internal/android/note_service_bridge_factory.cc",
       "content_creation/notes/internal/note_service_factory.cc",
       "content_creation/notes/internal/note_service_factory.h",
@@ -3406,7 +3404,6 @@ static_library("browser") {
       "//components/reading_list/features:flags",
       "//components/resources:android_resources",
       "//components/resources:components_resources",
-      "//components/safe_browsing/android:real_time_url_checks_allowlist",
       "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
       "//components/search:start_suggest",
       "//components/security_state/content/android",
@@ -3443,6 +3440,16 @@ static_library("browser") {
       "//url:gurl_android",
       "//url:origin_android",
     ]
+
+    if (safe_browsing_mode == 2) {
+      sources += [
+        "component_updater/real_time_url_checks_allowlist_component_installer.cc",
+        "component_updater/real_time_url_checks_allowlist_component_installer.h",
+      ]
+      deps += [
+        "//components/safe_browsing/android:real_time_url_checks_allowlist",
+      ]
+    }
 
     deps -= [ "//components/storage_monitor" ]
 
