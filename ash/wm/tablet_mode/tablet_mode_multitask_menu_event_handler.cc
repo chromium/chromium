@@ -138,6 +138,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
       }
       break;
     case ui::ET_SCROLL_FLING_CANCEL:
+    case ui::ET_SCROLL_FLING_START:
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_GESTURE_END:
       if (multitask_menu_) {
