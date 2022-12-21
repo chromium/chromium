@@ -173,6 +173,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kNetworkingCastPrivate, "networking.castPrivate"},
     {APIPermissionID::kPasswordsPrivate, "passwordsPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
+    {APIPermissionID::kPdfViewerPrivate, "pdfViewerPrivate"},
     {APIPermissionID::kResourcesPrivate, "resourcesPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kRtcPrivate, "rtcPrivate",

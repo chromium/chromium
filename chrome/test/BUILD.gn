@@ -3174,6 +3174,10 @@ if (!is_android) {
         sources += [ "../browser/extensions/background_app_browsertest.cc" ]
       }
 
+      if (enable_pdf) {
+        sources += [ "../browser/extensions/api/pdf_viewer_private/pdf_viewer_private_apitest.cc" ]
+      }
+
       if (is_win || is_linux || is_mac) {
         sources += [
           "../browser/enterprise/idle/idle_service_browsertest.cc",

@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
+import("//pdf/features.gni")
 
 assert(enable_extensions)
 
@@ -128,6 +129,10 @@ if (enable_service_discovery) {
 
 if (is_linux || is_mac || is_win) {
   schema_sources_ += [ "system_indicator.idl" ]
+}
+
+if (enable_pdf) {
+  schema_sources_ += [ "pdf_viewer_private.idl" ]
 }
 
 uncompiled_sources_ = [

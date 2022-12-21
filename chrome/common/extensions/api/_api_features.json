@@ -716,6 +716,10 @@
     "internal": true,
     "contexts": ["blessed_extension"]
   }],
+  "pdfViewerPrivate": {
+    "dependencies": ["permission:pdfViewerPrivate"],
+    "contexts": ["blessed_extension"]
+  },
   "printing": {
     "dependencies": ["permission:printing"],
     "contexts": ["blessed_extension"]

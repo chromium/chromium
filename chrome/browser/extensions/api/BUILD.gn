@@ -5,6 +5,7 @@
 import("//chrome/common/extensions/api/api_sources.gni")
 import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
 assert(enable_extensions,
@@ -29,6 +30,10 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/page_capture",
     "//chrome/browser/extensions/api/scripting",
   ]
+
+  if (enable_pdf) {
+    public_deps += [ "//chrome/browser/extensions/api/pdf_viewer_private" ]
+  }
 }
 
 # The step necessary to generate the code to register the corresponding

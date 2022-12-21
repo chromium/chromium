@@ -841,6 +841,7 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kMediaRouterPrivate);
   skip.insert(APIPermissionID::kMetricsPrivate);
   skip.insert(APIPermissionID::kNetworkingCastPrivate);
+  skip.insert(APIPermissionID::kPdfViewerPrivate);
   skip.insert(APIPermissionID::kImageWriterPrivate);
   skip.insert(APIPermissionID::kResourcesPrivate);
   skip.insert(APIPermissionID::kRtcPrivate);

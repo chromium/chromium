@@ -682,6 +682,13 @@
     "extension_types": ["extension", "platform_app"],
     "location": "component"
   },
+  "pdfViewerPrivate": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "allowlist": [
+      "CBCC42ABED43A4B58FE3810E62AFFA010EB0349F"  // PDF Viewer
+    ]
+  },
   "platformKeys": [{
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
