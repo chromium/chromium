@@ -77,24 +77,30 @@ class TabProxy extends ITabProxy.Stub {
     @Override
     public void executeScript(String script, boolean useSeparateIsolate, IStringCallback callback) {
         mHandler.post(() -> {
-            getTab().executeScript(script, useSeparateIsolate, (String result) -> {
+            try {
+                getTab().executeScript(script, useSeparateIsolate,
+                        new org.chromium.weblayer_private.interfaces.IStringCallback.Stub() {
+                            @Override
+                            public void onResult(String result) {
+                                try {
+                                    callback.onResult(result);
+                                } catch (RemoteException e) {
+                                }
+                            }
+                            @Override
+                            public void onException(@ExceptionType int type, String msg) {
+                                try {
+                                    callback.onException(ExceptionHelper.convertType(type), msg);
+                                } catch (RemoteException e) {
+                                }
+                            }
+                        });
+            } catch (RuntimeException e) {
                 try {
-                    if (result != null) {
-                        callback.onResult(result);
-                    } else {
-                        // TODO(crbug.com/1392110): Pass a useful exception message.
-                        try {
-                            callback.onException(ExceptionType.RESTRICTED_API, "");
-                        } catch (RemoteException e) {
-                        }
-                    }
-                } catch (RemoteException e) {
-                    try {
-                        callback.onException(ExceptionType.UNKNOWN, e.getMessage());
-                    } catch (RemoteException e2) {
-                    }
+                    callback.onException(ExceptionType.UNKNOWN, e.getMessage());
+                } catch (RemoteException re) {
                 }
-            });
+            }
         });
     }
 

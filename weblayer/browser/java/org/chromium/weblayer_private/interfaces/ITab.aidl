@@ -19,6 +19,7 @@ import org.chromium.weblayer_private.interfaces.IMediaCaptureCallbackClient;
 import org.chromium.weblayer_private.interfaces.INavigationController;
 import org.chromium.weblayer_private.interfaces.INavigationControllerClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IStringCallback;
 import org.chromium.weblayer_private.interfaces.ITabClient;
 import org.chromium.weblayer_private.interfaces.IWebMessageCallbackClient;
 
@@ -33,7 +34,7 @@ interface ITab {
 
   void setFullscreenCallbackClient(in IFullscreenCallbackClient client) = 4;
 
-  void executeScript(in String script, boolean useSeparateIsolate, in IObjectWrapper callback) = 5;
+  void executeScript(in String script, boolean useSeparateIsolate, in IStringCallback callback) = 5;
 
   void setNewTabsEnabled(in boolean enabled) = 6;
 

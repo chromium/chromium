@@ -540,6 +540,7 @@ android_library("interfaces_java") {
     "org/chromium/weblayer_private/interfaces/DarkModeStrategy.java",
     "org/chromium/weblayer_private/interfaces/DownloadError.java",
     "org/chromium/weblayer_private/interfaces/DownloadState.java",
+    "org/chromium/weblayer_private/interfaces/ExceptionType.java",
     "org/chromium/weblayer_private/interfaces/ExternalIntentInIncognitoUserDecision.java",
     "org/chromium/weblayer_private/interfaces/GoogleAccountServiceType.java",
     "org/chromium/weblayer_private/interfaces/LoadError.java",
@@ -547,7 +548,6 @@ android_library("interfaces_java") {
     "org/chromium/weblayer_private/interfaces/NavigationState.java",
     "org/chromium/weblayer_private/interfaces/NewTabType.java",
     "org/chromium/weblayer_private/interfaces/RemoteMediaServiceConstants.java",
-    "org/chromium/weblayer_private/interfaces/RestrictedAPIException.java",
     "org/chromium/weblayer_private/interfaces/ScrollNotificationType.java",
     "org/chromium/weblayer_private/interfaces/SettingType.java",
     "org/chromium/weblayer_private/interfaces/WebLayerVersionConstants.java",
@@ -605,6 +605,7 @@ android_aidl("base_module_aidl") {
 android_aidl("aidl") {
   import_include = [ "." ]
   sources = [
+    "org/chromium/weblayer_private/interfaces/IBooleanCallback.aidl",
     "org/chromium/weblayer_private/interfaces/IBrowser.aidl",
     "org/chromium/weblayer_private/interfaces/IBrowserClient.aidl",
     "org/chromium/weblayer_private/interfaces/IBrowserFragment.aidl",
@@ -637,6 +638,7 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/IProfile.aidl",
     "org/chromium/weblayer_private/interfaces/IProfileClient.aidl",
     "org/chromium/weblayer_private/interfaces/IRemoteFragment.aidl",
+    "org/chromium/weblayer_private/interfaces/IStringCallback.aidl",
     "org/chromium/weblayer_private/interfaces/ITab.aidl",
     "org/chromium/weblayer_private/interfaces/ITabClient.aidl",
     "org/chromium/weblayer_private/interfaces/IUserIdentityCallbackClient.aidl",

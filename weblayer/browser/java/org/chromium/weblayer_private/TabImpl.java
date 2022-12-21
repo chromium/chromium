@@ -61,6 +61,7 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.ExceptionType;
 import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
 import org.chromium.weblayer_private.interfaces.IExternalIntentInIncognitoCallbackClient;
@@ -72,6 +73,7 @@ import org.chromium.weblayer_private.interfaces.IGoogleAccountsCallbackClient;
 import org.chromium.weblayer_private.interfaces.IMediaCaptureCallbackClient;
 import org.chromium.weblayer_private.interfaces.INavigationControllerClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IStringCallback;
 import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.ITabClient;
 import org.chromium.weblayer_private.interfaces.IWebMessageCallbackClient;
@@ -703,7 +705,7 @@ public final class TabImpl extends ITab.Stub {
     }
 
     @Override
-    public void executeScript(String script, boolean useSeparateIsolate, IObjectWrapper callback) {
+    public void executeScript(String script, boolean useSeparateIsolate, IStringCallback callback) {
         StrictModeWorkaround.apply();
 
         WebLayerOriginVerificationScheduler originVerifier =
@@ -715,19 +717,21 @@ public final class TabImpl extends ITab.Stub {
                 return;
             }
 
-            ValueCallback<String> unwrappedCallback =
-                    (ValueCallback<String>) ObjectWrapper.unwrap(callback, ValueCallback.class);
-            assert unwrappedCallback != null;
-
             if (!verified) {
-                // TODO(crbug.com/1392110): Pass a RestrictedAPIException.
-                unwrappedCallback.onReceiveValue(null);
+                try {
+                    callback.onException(ExceptionType.RESTRICTED_API,
+                            "Application does not have permissions to modify " + url);
+                } catch (RemoteException e) {
+                }
             }
 
             Callback<String> nativeCallback = new Callback<String>() {
                 @Override
                 public void onResult(String result) {
-                    unwrappedCallback.onReceiveValue(result);
+                    try {
+                        callback.onResult(result);
+                    } catch (RemoteException e) {
+                    }
                 }
             };
             TabImplJni.get().executeScript(mNativeTab, script, useSeparateIsolate, nativeCallback);

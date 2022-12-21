@@ -4,17 +4,17 @@
 
 package org.chromium.weblayer;
 
-import org.chromium.weblayer_private.interfaces.RestrictedAPIException;
+import org.chromium.weblayer_private.interfaces.ExceptionType;
 
 class ExceptionHelper {
-    /**
-     * Children of RuntimeExceptions lose their specific type when passed through AIDL-interfaces.
-     * This function identifies the exception type and reraises the according child exception.
-     */
-    static void reraise(RuntimeException e) {
-        if (RestrictedAPIException.isInstance(e)) {
-            throw new RestrictedAPIException();
+    static @ExceptionType int convertType(@ExceptionType int type) {
+        switch (type) {
+            case ExceptionType.RESTRICTED_API:
+                return org.chromium.webengine.interfaces.ExceptionType.RESTRICTED_API;
+            case ExceptionType.UNKNOWN:
+                return org.chromium.webengine.interfaces.ExceptionType.UNKNOWN;
         }
-        throw e;
+        assert false : "Unexpected ExceptionType: " + String.valueOf(type);
+        return org.chromium.webengine.interfaces.ExceptionType.UNKNOWN;
     }
 }

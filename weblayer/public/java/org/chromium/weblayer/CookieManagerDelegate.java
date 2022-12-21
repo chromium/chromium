@@ -31,18 +31,23 @@ class CookieManagerDelegate extends ICookieManagerDelegate.Stub {
     public void setCookie(String uri, String value, IBooleanCallback callback) {
         mHandler.post(() -> {
             try {
-                mCookieManager.setCookie(Uri.parse(uri), value, (Boolean result) -> {
-                    try {
-                        if (!result) {
-                            // TODO(crbug.com/1392110): Pass a useful exception message.
-                            // TODO(crbug.com/1392110): Distinguish exceptions from failures.
-                            callback.onException(ExceptionType.RESTRICTED_API, "");
-                        } else {
-                            callback.onResult(true);
-                        }
-                    } catch (RemoteException e) {
-                    }
-                });
+                mCookieManager.setCookie(Uri.parse(uri), value,
+                        new org.chromium.weblayer_private.interfaces.IBooleanCallback.Stub() {
+                            @Override
+                            public void onResult(boolean result) {
+                                try {
+                                    callback.onResult(result);
+                                } catch (RemoteException e) {
+                                }
+                            }
+                            @Override
+                            public void onException(@ExceptionType int type, String msg) {
+                                try {
+                                    callback.onException(ExceptionHelper.convertType(type), msg);
+                                } catch (RemoteException e) {
+                                }
+                            }
+                        });
             } catch (APICallException e) {
                 try {
                     callback.onException(ExceptionType.UNKNOWN, e.getMessage());
@@ -56,17 +61,23 @@ class CookieManagerDelegate extends ICookieManagerDelegate.Stub {
     public void getCookie(String uri, IStringCallback callback) {
         mHandler.post(() -> {
             try {
-                mCookieManager.getCookie(Uri.parse(uri), (String result) -> {
-                    try {
-                        if (result == null) {
-                            // TODO(crbug.com/1392110): Pass a useful exception message.
-                            callback.onException(ExceptionType.RESTRICTED_API, "");
-                        } else {
-                            callback.onResult(result);
-                        }
-                    } catch (RemoteException e) {
-                    }
-                });
+                mCookieManager.getCookie(Uri.parse(uri),
+                        new org.chromium.weblayer_private.interfaces.IStringCallback.Stub() {
+                            @Override
+                            public void onResult(String result) {
+                                try {
+                                    callback.onResult(result);
+                                } catch (RemoteException e) {
+                                }
+                            }
+                            @Override
+                            public void onException(@ExceptionType int type, String msg) {
+                                try {
+                                    callback.onException(ExceptionHelper.convertType(type), msg);
+                                } catch (RemoteException e) {
+                                }
+                            }
+                        });
             } catch (APICallException e) {
                 try {
                     callback.onException(ExceptionType.UNKNOWN, e.getMessage());

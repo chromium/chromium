@@ -12,9 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.IBooleanCallback;
 import org.chromium.weblayer_private.interfaces.ICookieChangedCallbackClient;
 import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IProfile;
+import org.chromium.weblayer_private.interfaces.IStringCallback;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
@@ -55,15 +57,10 @@ class CookieManager {
      * @throws IllegalArgumentException if the cookie is invalid.
      */
     public void setCookie(
-            @NonNull Uri uri, @NonNull String value, @Nullable Callback<Boolean> callback) {
+            @NonNull Uri uri, @NonNull String value, @NonNull IBooleanCallback callback) {
         ThreadCheck.ensureOnUiThread();
         try {
-            ValueCallback<Boolean> valueCallback = (Boolean result) -> {
-                if (callback != null) {
-                    callback.onResult(result);
-                }
-            };
-            mImpl.setCookie(uri.toString(), value, ObjectWrapper.wrap(valueCallback));
+            mImpl.setCookie(uri.toString(), value, callback);
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -76,13 +73,10 @@ class CookieManager {
      * @param callback a callback to be executed with the cookie value in the format of the 'Cookie'
      *     HTTP request header. If there is no cookie, this will be called with an empty string.
      */
-    public void getCookie(@NonNull Uri uri, @NonNull Callback<String> callback) {
+    public void getCookie(@NonNull Uri uri, @NonNull IStringCallback callback) {
         ThreadCheck.ensureOnUiThread();
         try {
-            ValueCallback<String> valueCallback = (String result) -> {
-                callback.onResult(result);
-            };
-            mImpl.getCookie(uri.toString(), ObjectWrapper.wrap(valueCallback));
+            mImpl.getCookie(uri.toString(), callback);
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
