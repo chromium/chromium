@@ -48,17 +48,6 @@ SkColor AppListColorProviderImpl::GetFolderBackgroundColor(
       kColorAshShieldAndBase80);
 }
 
-SkColor AppListColorProviderImpl::GetFolderNameBorderColor(
-    bool active,
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  if (!active)
-    return SK_ColorTRANSPARENT;
-
-  return app_list_widget->GetColorProvider()->GetColor(ui::kColorAshFocusRing);
-}
-
 SkColor AppListColorProviderImpl::GetFolderNotificationBadgeColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
@@ -94,46 +83,6 @@ SkColor AppListColorProviderImpl::GetGridBackgroundCardInactiveColor(
 
   return app_list_widget->GetColorProvider()->GetColor(
       kColorAshControlBackgroundColorInactive);
-}
-
-SkColor AppListColorProviderImpl::GetFocusRingColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(ui::kColorAshFocusRing);
-}
-
-SkColor AppListColorProviderImpl::GetInkDropBaseColor(
-    const views::Widget* app_list_widget,
-    SkColor bg_color) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      kColorAshInkDropOpaqueColor);
-}
-
-float AppListColorProviderImpl::GetInkDropOpacity(
-    const views::Widget* app_list_widget,
-    SkColor bg_color) const {
-  DCHECK(app_list_widget);
-
-  if (bg_color == gfx::kPlaceholderColor) {
-    bg_color = ColorUtil::GetBackgroundThemedColor(
-        app_list_widget->GetColorProvider()->GetColor(
-            kColorAshShieldAndBaseOpaque),
-        IsDarkModeEnabled());
-  }
-
-  return color_utils::IsDark(bg_color) ? kLightInkDropOpacity
-                                       : kDarkInkDropOpacity;
-}
-
-SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      kColorAshHighlightColorHover);
 }
 
 }  // namespace ash

@@ -13,11 +13,11 @@
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -65,9 +65,6 @@ class SearchResultActionButton : public IconButton {
   void UpdateOnStateChanged();
 
  private:
-  // views::ImageButton:
-  void OnPaintBackground(gfx::Canvas* canvas) override;
-
   int GetButtonRadius() const;
   const char* GetClassName() const override;
 
@@ -91,6 +88,11 @@ SearchResultActionButton::SearchResultActionButton(
       parent_(parent) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetVisible(false);
+
+  StyleUtil::SetUpFocusRingForView(this);
+  views::FocusRing::Get(this)->SetHasFocusPredicate([&](View* view) -> bool {
+    return view->HasFocus() || parent_->GetSelectedAction() == tag();
+  });
 }
 
 void SearchResultActionButton::OnGestureEvent(ui::GestureEvent* event) {
@@ -127,13 +129,7 @@ void SearchResultActionButton::UpdateOnStateChanged() {
   // Show button if the associated result row is hovered or selected, or one
   // of the action buttons is selected.
   SetVisible(parent_->IsSearchResultHoveredOrSelected());
-}
-
-void SearchResultActionButton::OnPaintBackground(gfx::Canvas* canvas) {
-  if (HasFocus() || parent_->GetSelectedAction() == tag()) {
-    PaintFocusRing(canvas, GetLocalBounds().CenterPoint(), GetButtonRadius(),
-                   GetWidget());
-  }
+  views::FocusRing::Get(this)->SchedulePaint();
 }
 
 int SearchResultActionButton::GetButtonRadius() const {

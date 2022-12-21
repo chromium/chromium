@@ -376,9 +376,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Creates dragged view hover animation if it does not exist.
   void CreateDraggedViewHoverAnimation();
 
-  // Modifies AppListItemView bounds to match the selected highlight bounds.
-  void AdaptBoundsForSelectionHighlight(gfx::Rect* rect);
-
   // Calculates the transform between the icon scaled by |icon_scale| and the
   // normal size icon.
   gfx::Transform GetScaleTransform(float icon_scale);

@@ -5,7 +5,6 @@
 #include "ash/shortcut_viewer/views/ksv_search_box_view.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/search_box/search_box_view_base.h"
@@ -22,6 +21,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/widget/widget.h"
 
 namespace keyboard_shortcut_viewer {
 
@@ -159,8 +159,7 @@ void KSVSearchBoxView::CloseButtonPressed() {
 }
 
 SkColor KSVSearchBoxView::GetBackgroundColor() {
-  return GetWidget()->GetColorProvider()->GetColor(
-      cros_tokens::kToolbarSearchBgColor);
+  return GetColorProvider()->GetColor(cros_tokens::kToolbarSearchBgColor);
 }
 
 SkColor KSVSearchBoxView::GetBorderColor() {
@@ -168,13 +167,7 @@ SkColor KSVSearchBoxView::GetBorderColor() {
     return SK_ColorTRANSPARENT;
   }
 
-  constexpr SkColor kActiveBorderLightColor =
-      SkColorSetARGB(0x7F, 0x1A, 0x73, 0xE8);
-  const SkColor kActiveBorderDarkColor =
-      ash::AppListColorProvider::Get()->GetFocusRingColor(GetWidget());
-
-  return ShouldUseDarkThemeColors() ? kActiveBorderDarkColor
-                                    : kActiveBorderLightColor;
+  return GetColorProvider()->GetColor(ui::kColorAshFocusRing);
 }
 
 SkColor KSVSearchBoxView::GetCloseButtonColor() {

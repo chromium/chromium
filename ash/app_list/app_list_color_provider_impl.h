@@ -18,24 +18,11 @@ class AppListColorProviderImpl : public AppListColorProvider {
       const views::Widget* app_list_widget) const override;
   SkColor GetFolderBackgroundColor(
       const views::Widget* app_list_widget) const override;
-  SkColor GetFolderNameBorderColor(
-      bool active,
-      const views::Widget* app_list_widget) const override;
   SkColor GetFolderNotificationBadgeColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetGridBackgroundCardActiveColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetGridBackgroundCardInactiveColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetFocusRingColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetInkDropBaseColor(
-      const views::Widget* app_list_widget,
-      SkColor bg_color = gfx::kPlaceholderColor) const override;
-  float GetInkDropOpacity(
-      const views::Widget* app_list_widget,
-      SkColor bg_color = gfx::kPlaceholderColor) const override;
-  SkColor GetSearchResultViewHighlightColor(
       const views::Widget* app_list_widget) const override;
 };
 

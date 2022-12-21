@@ -8,7 +8,6 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/style/ash_color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -138,7 +137,7 @@ gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
 void PaintFocusBar(gfx::Canvas* canvas,
                    const gfx::Point& content_origin,
                    int height,
-                   const views::Widget* widget) {
+                   SkColor color) {
   SkPath path;
   gfx::Rect focus_bar_bounds(content_origin.x() - kFocusBarThickness,
                              content_origin.y(), kFocusBarThickness * 2,
@@ -149,26 +148,13 @@ void PaintFocusBar(gfx::Canvas* canvas,
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(AppListColorProvider::Get()->GetFocusRingColor(widget));
+  flags.setColor(color);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kFocusBarThickness);
   gfx::Point top_point = content_origin + gfx::Vector2d(kFocusBarThickness, 0);
   gfx::Point bottom_point =
       content_origin + gfx::Vector2d(kFocusBarThickness, height);
   canvas->DrawLine(top_point, bottom_point, flags);
-}
-
-void PaintFocusRing(gfx::Canvas* canvas,
-                    const gfx::Point& content_origin,
-                    int outer_radius,
-                    const views::Widget* widget) {
-  cc::PaintFlags circle_flags;
-  circle_flags.setAntiAlias(true);
-  circle_flags.setColor(AppListColorProvider::Get()->GetFocusRingColor(widget));
-  circle_flags.setStyle(cc::PaintFlags::kStroke_Style);
-  circle_flags.setStrokeWidth(kFocusBorderThickness);
-  canvas->DrawCircle(content_origin, outer_radius - kFocusBorderThickness,
-                     circle_flags);
 }
 
 void SetViewIgnoredForAccessibility(views::View* view, bool ignored) {
