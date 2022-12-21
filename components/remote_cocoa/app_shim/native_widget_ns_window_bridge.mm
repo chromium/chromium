@@ -1045,7 +1045,7 @@ void NativeWidgetNSWindowBridge::OnSystemControlTintChanged() {
   host_->OnWindowNativeThemeChanged();
 }
 
-void NativeWidgetNSWindowBridge::OnBackingPropertiesChanged() {
+void NativeWidgetNSWindowBridge::OnScreenOrBackingPropertiesChanged() {
   UpdateWindowDisplay();
 }
 
