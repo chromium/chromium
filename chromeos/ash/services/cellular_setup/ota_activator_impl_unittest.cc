@@ -94,8 +94,8 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
           false /* notify_changed */);
 
       base::DictionaryValue home_provider;
-      home_provider.SetString(shill::kOperatorNameKey,
-                              kTestCellularDeviceCarrier);
+      home_provider.GetDict().Set(shill::kOperatorNameKey,
+                                  kTestCellularDeviceCarrier);
       device_test->SetDeviceProperty(kTestCellularDevicePath,
                                      shill::kHomeProviderProperty,
                                      home_provider, false /* notify_changed */);
@@ -144,12 +144,12 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
 
     if (has_valid_payment_info) {
       base::DictionaryValue payment_portal;
-      payment_portal.SetString(shill::kPaymentPortalURL,
-                               kTestCellularServicePaymentUrl);
-      payment_portal.SetString(shill::kPaymentPortalMethod,
-                               kPaymentPortalMethodPost);
-      payment_portal.SetString(shill::kPaymentPortalPostData,
-                               kTestCellularServicePaymentPostData);
+      payment_portal.GetDict().Set(shill::kPaymentPortalURL,
+                                   kTestCellularServicePaymentUrl);
+      payment_portal.GetDict().Set(shill::kPaymentPortalMethod,
+                                   kPaymentPortalMethodPost);
+      payment_portal.GetDict().Set(shill::kPaymentPortalPostData,
+                                   kTestCellularServicePaymentPostData);
       service_test->SetServiceProperty(kTestCellularServicePath,
                                        shill::kPaymentPortalProperty,
                                        payment_portal);
