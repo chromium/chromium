@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
 <translation id="2584559707064218956">Untuk menyiapkan, buka Setelan</translation>
 <translation id="2597774443162333062">File akan dikirim ke Google untuk proses debug</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Pemindaian selesai. 1 halaman dipindai}other{Pemindaian selesai. {NUMBER_OF_PAGES} halaman dipindai}}</translation>
 <translation id="2619761439309613843">Muat Ulang Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2638662041295312666">Gambar login</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">Untuk mendapatkan bantuan lebih lanjut, buka <ph name="BEGIN_LINK" />Pusat Bantuan<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritme kompresi</translation>
 <translation id="4794140124556169553">Menjalankan pengujian CPU dapat memengaruhi performa sistem Anda</translation>
+<translation id="4798078634453489142">Hapus APN untuk menambahkan APN baru</translation>
 <translation id="4800589996161293643">Komunitas Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Tugas pencetakan <ph name="DOCUMENT_TITLE" /> dibatalkan</translation>

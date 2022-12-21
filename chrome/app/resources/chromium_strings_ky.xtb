@@ -82,6 +82,7 @@
 <translation id="2977470724722393594">Chromium жаңырган</translation>
 <translation id="2977506796191543575">Эгер сайт сырсөзүңүздү уурдоого аракет кылса же кооптуу файлды жүктөп алсаңыз, Chromium URL даректерди, анын ичинде барактагы мазмундун үлгүлөрүн Коопсуз серептөөгө жөнөтүшү мүмкүн</translation>
 <translation id="2983934633046890458">Chromium cырсөздөрдү өзгөртүүгө аракет кылууда.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium HID түзмөгүнө туташтырылган}other{Chromium HID түзмөктөрүнө туташтырылган}}</translation>
 <translation id="3032706164202344641">Chromium сырсөздөрүңүздү текшере албай жатат. Кийинчерээк кайталаңыз.</translation>
 <translation id="3032787606318309379">Chromium'га кошууда…</translation>
 <translation id="3038232873781883849">Орнотулушу күтүлүүдө...</translation>

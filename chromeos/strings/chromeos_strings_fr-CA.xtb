@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Le test <ph name="TEST_NAME" /> est en cours d'exécution…</translation>
 <translation id="2584559707064218956">Pour configurer le réseau, accédez à Paramètres</translation>
 <translation id="2597774443162333062">Les fichiers seront envoyés à Google pour un débogage</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page a été numérisée}one{Numérisation terminée. {NUMBER_OF_PAGES} page a été numérisée}other{Numérisation terminée. {NUMBER_OF_PAGES} pages ont été numérisées}}</translation>
 <translation id="2619761439309613843">Actualiser tous les jours</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2638662041295312666">Image de connexion</translation>

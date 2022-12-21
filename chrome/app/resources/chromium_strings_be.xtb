@@ -82,6 +82,7 @@
 <translation id="2977470724722393594">Chromium абноўлены</translation>
 <translation id="2977506796191543575">Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chromium можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі</translation>
 <translation id="2983934633046890458">Chromium спрабуе змяніць паролі.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Браўзер Chromium падключаны да прылады HID}one{Браўзер Chromium падключаны да прылад HID}few{Браўзер Chromium падключаны да прылад HID}many{Браўзер Chromium падключаны да прылад HID}other{Браўзер Chromium падключаны да прылад HID}}</translation>
 <translation id="3032706164202344641">Браўзеру Chromium не ўдаецца праверыць паролі. Паўтарыце спробу пазней.</translation>
 <translation id="3032787606318309379">Дадаецца ў Chromium...</translation>
 <translation id="3038232873781883849">Чаканне ўсталявання...</translation>

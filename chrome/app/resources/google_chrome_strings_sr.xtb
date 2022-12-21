@@ -129,6 +129,7 @@
 <translation id="3140883423282498090">Промене ће ступити на снагу када следећи пут поново покренете Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome апликације</translation>
 <translation id="3169523567916669830">Током проба можете да видите и уклањате интересовања која сајтови користе да би вам приказивали огласе. Chrome процењује ваша интересовања на основу недавне историје прегледања.</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome је повезан са HID уређајем}one{Google Chrome је повезан са HID уређајима}few{Google Chrome је повезан са HID уређајима}other{Google Chrome је повезан са HID уређајима}}</translation>
 <translation id="3245429137663807393">Ако делите и Chrome извештаје о коришћењу, ти извештаји обухватају URL-ове које посећујете</translation>
 <translation id="3282568296779691940">Пријављивање у Chrome</translation>
 <translation id="3286538390144397061">Рестартуј одмах</translation>

@@ -584,6 +584,7 @@
 <translation id="1560279917909364275">將允許在 <ph name="PRODUCT_OS_NAME" /> 螢幕鎖定畫面上使用的筆記應用程式加入許可清單</translation>
 <translation id="1561424797596341174">針對遠端存取主機的偵錯版本覆寫政策</translation>
 <translation id="1561967320164410511">用於個人認證的 U2F 和擴充功能</translation>
+<translation id="1562846754315919408">偵測到 USB 裝置時顯示通知</translation>
 <translation id="1567718448549957373">如果將這項政策設為啟用或不設定，將可透過不安全的 HTTP 連線接收 <ph name="BASIC_AUTH" /> 驗證要求。
 
       如果將這項政策設為停用，則會禁止不安全的 HTTP 要求使用 <ph name="BASIC_AUTH" /> 驗證機制，只能採用安全的 HTTPS。
@@ -2054,6 +2055,7 @@
       如果將這項政策設為 False，<ph name="BOREALIS_NAME" /> 就不適用於該使用者。如果不設定這項政策或設為 True，<ph name="BOREALIS_NAME" /> 只要未遭到其他政策或設定所停用，便適用於這位使用者。</translation>
 <translation id="2964373560810620158">禁止使用者使用 <ph name="LACROS_NAME" /> 瀏覽器</translation>
 <translation id="2968177167006045252">允許網站使用 SharedArrayBuffers</translation>
+<translation id="2969489219271682844">偵測到 USB 裝置時不顯示通知</translation>
 <translation id="2969568582351417848">針對網域上的特定檔案類型，停用檔案類型副檔名下載警告</translation>
 <translation id="2969797921412053304">這項政策會設定哪些網址可在登入畫面的 SAML 流程中，取得使用裝置身分遠端認證機制的存取權。
 
@@ -2201,6 +2203,7 @@
 <translation id="3092059499596000593">將系統預設印表機設為列印預覽的預設選項</translation>
 <translation id="309416443108680956">指定當透過安全性權杖 (例如智慧型卡片) 驗證的使用者在工作階段中將該權杖移除時，系統要執行的動作。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不執行任何動作。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：鎖定螢幕，直到使用者再次驗證為止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：結束工作階段，並將使用者登出。如果不設定這項政策，系統會預設為 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
 <translation id="3096595567015595053">啟用的外掛程式清單</translation>
+<translation id="309885424548342662">啟用 Microsoft® 雲端驗證</translation>
 <translation id="3101035417394748390">可透過剪貼簿同步功能在用戶端和主機之間傳輸的大小上限 (以位元組為單位)</translation>
 <translation id="3101501961102569744">選擇如何指定 Proxy 伺服器設定</translation>
 <translation id="3101709781009526431">日期與時間</translation>
@@ -2864,6 +2867,7 @@
       如果你啟用這項設定或未設定任何值，使用者就能自行管理自動填入功能。也就是說，使用者可以設定自動填入設定檔，並可自行決定是否要開啟自動填入功能。</translation>
 <translation id="3733014427925403568">限制時段的開始及結束時間分別是星期幾。</translation>
 <translation id="3736879847913515635">允許在使用者管理工具中新增使用者</translation>
+<translation id="3744984310825999317">允許 <ph name="PEPPER_NAME" /> 使用新的解碼器進行硬體加速影片解碼。</translation>
 <translation id="3749259744154402564">不支援</translation>
 <translation id="3749511622128647337">停用音訊輸出</translation>
 <translation id="3750220015372671395">禁止在這些網站上使用金鑰產生功能</translation>
@@ -2930,6 +2934,7 @@
 
       如要進一步瞭解 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> 工作階段，請參閱 <ph name="WEBXR_AR_MODULE_API_NAME" />規範。</translation>
 <translation id="3788662722837364290">使用者進入閒置狀態時的電源管理設定</translation>
+<translation id="3788876528643861853">停用 Microsoft® 雲端驗證</translation>
 <translation id="3790085888761753785">如果啟用這項設定，使用者將可透過 Smart Lock 登入帳戶。一般 Smart Lock 只能讓使用者解鎖螢幕畫面，相較之下這項設定提供了更高的權限。
 
       如果停用這項設定，使用者將無法透過 Smart Lock 登入帳戶。
@@ -3012,6 +3017,7 @@
 
       每個清單項目都含有目錄，其中的「extension-id」欄位必須包含擴充功能 ID，且「update-url」欄位必須包含更新網址。</translation>
 <translation id="3869180930654347954">為所有受影響的使用者停用 First-Party Sets 功能</translation>
+<translation id="3869566220234507038">一律載入 <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> 瀏覽器</translation>
 <translation id="3870035799352372700">不允許 Google 助理在互動期間存取畫面內容</translation>
 <translation id="3870059789954671543">在登入畫面上啟用鍵盤焦點醒目顯示無障礙功能。
 
@@ -3777,6 +3783,7 @@
 <translation id="4660356908994631271">在「新分頁」頁面的搜尋框中顯示 Google 智慧鏡頭按鈕。</translation>
 <translation id="4661889655253181651">內容設定可讓你指定特定內容類型 (例如 Cookie、圖片或 JavaScript) 的處理方式。</translation>
 <translation id="4663509616441994711">禁止合併使用者層級的雲端政策。</translation>
+<translation id="4663588423815449593">強制 <ph name="PEPPER_NAME" /> 使用舊版影片解碼器。</translation>
 <translation id="4665897631924472251">擴充功能管理設定</translation>
 <translation id="4666930704271463612">指定系統尋找伺服器印表機時，要查詢符合何種條件的列印伺服器。
 
@@ -3885,6 +3892,23 @@
 
       如果設定這項政策，使用者將無法變更。如果未設定，使用者可自行決定是否要自動隱藏檔案櫃。</translation>
 <translation id="4812309945046430049">紅色鍵盤背光顏色</translation>
+<translation id="4812410063101047442">這項設定會指定要使用的 <ph name="LACROS_NAME" /> 瀏覽器。
+
+如果將這項政策設為 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />，使用者就可以決定要載入的 <ph name="LACROS_NAME" /> 瀏覽器：<ph name="LACROS_ROOTFS_NAME" /> 或 <ph name="LACROS_STATEFUL_NAME" /> 分區的二進位檔。
+如果使用者未指定任何偏好設定，系統將選擇最新版的二進位檔。
+
+如果將這項政策設為 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，系統一律會載入 <ph name="LACROS_NAME" /> 瀏覽器的 <ph name="LACROS_ROOTFS_NAME" /> 二進位檔。
+
+如果將這項政策設為 <ph name="LACROS_SELECTION_STATEFUL_VALUE" />，系統一律會載入 <ph name="LACROS_NAME" /> 瀏覽器的 <ph name="LACROS_STATEFUL_NAME" /> 二進位檔。
+在 <ph name="LACROS_STATEFUL_NAME" /> 瀏覽器的版本低於 <ph name="PRODUCT_OS_NAME" /> 版本的情況下，使用這個值可能會造成非預期行為。
+系統並不支援這種做法，也不保證可正常運作。
+
+如果未設定這項政策，受企業管理使用者的預設值為 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，其他未受管理使用者的預設值則為 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />。
+
+      請注意，假如 <ph name="LACROS_NAME" /> 瀏覽器版本因政策值變更而變為更舊的版本，可能會導致瀏覽器資料遺失，例如政策值從 <ph name="LACROS_SELECTION_STATEFUL_VALUE" /> 改成 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，而前者已經更新，就可能會造成資料遺失。另外一個可能會造成資料遺失的例子是 <ph name="PRODUCT_OS_NAME" /> 已和 <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> 瀏覽器一起更新，而 <ph name="LACROS_STATEFUL_NAME" /> 尚未更新。
+在這樣的情況下，系統不保證可正常遷移資料。
+
+為了安全起見，建議使用 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> 或 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />。此外，從 <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> 改用 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> 也是安全的做法。</translation>
 <translation id="4812714598405913256">設定 DeviceMinimumVersion 政策的自動更新期限訊息</translation>
 <translation id="4815581264328351694">顯示系統匣選單中的無障礙選項</translation>
 <translation id="4816674326202173458">允許企業使用者成為主要或次要使用者 (非管理化環境中使用者的預設行為)</translation>
@@ -4345,6 +4369,7 @@
 
       如果未設定這項政策，使用者無法在已註冊的 <ph name="PRODUCT_OS_NAME" />上玩恐龍復活節彩蛋遊戲，但可以在其他環境下玩這個遊戲。</translation>
 <translation id="5293285950307241933">清除所有本機使用者資料</translation>
+<translation id="5293619885162445352">允許 <ph name="PEPPER_NAME" /> 使用新版影片解碼器。</translation>
 <translation id="529457411593078576">在第一次執行 CCT 時啟用《服務條款》</translation>
 <translation id="5297948043665200363">允許使用者在帳戶驗證狀態失效後保持登入狀態</translation>
 <translation id="5298949392804966105">不對受管理帳戶設定限制</translation>
@@ -4617,6 +4642,15 @@
 <translation id="5563240289883266691">啟用 Linux 應用程式使用情形報告功能</translation>
 <translation id="5565178130821694365">每兩天 (48 小時) 須輸入一次密碼</translation>
 <translation id="5566210228171064229">不論是否使用 PIN 碼，都允許列印</translation>
+<translation id="5569504149646180067">設定讓使用者自動登入 Microsoft® 雲端識別資訊提供者服務支援的帳戶。
+
+如果將這項政策設為 1 (<ph name="POLICY_VALUE_ENABLED" />)，無論是使用者以 Microsoft® 雲端識別資訊提供者服務 (即 <ph name="MS_AAD_NAME" /> 或消費者 Microsoft® 帳戶識別資訊提供者服務) 支援的帳戶登入電腦，還是在 <ph name="MS_WIN_NAME" /> 中新增公司或學校帳戶，都能使用該識別資訊自動登入網站資源。在每次的驗證事件中，系統都會將與使用者裝置和帳戶相關的資訊傳送給使用者的雲端識別資訊提供者服務。
+
+如果將這項政策設為 0 (<ph name="POLICY_VALUE_DISABLED" />) 或未設定，系統就會停用上述的自動登入機制。
+
+這項功能自 <ph name="WIN_NAME" /> 10 起開放使用。
+
+注意：這項政策不適用於無痕或訪客模式。</translation>
 <translation id="5572971233886879856">指定系統尋找伺服器印表機時，要查詢符合何種條件的列印伺服器。這項設定僅適用於 <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> 政策。
 
       如果使用這項政策，使用者只能透過裝置政策使用 ID 符合本政策值的伺服器印表機。
@@ -5258,6 +5292,12 @@
       請注意，我們之前宣布將在 <ph name="PRODUCT_NAME" /> 第 82 版中移除這項政策，但改為在第 84 版中移除。</translation>
 <translation id="6276087670023098167">停用機器識別資訊報告功能</translation>
 <translation id="627672037430076089">禁止與這部裝置建立遠端支援連線</translation>
+<translation id="6277043520666738324">這項政策會控管 <ph name="PEPPER_NAME" /> 外掛程式是否可使用新版解碼器 (而非舊版影片解碼器) 與硬體解碼器進行通訊。
+
+遷移作業只會影響內部實作詳細資料，且不應該變更任何行為。不過，如有任何 PPAPI 應用程式未正常運作，也可以使用這項政策。
+
+如果這項政策未設定或設為啟用，瀏覽器就會判斷要使用的影片解碼器。
+如果將這項政策設為停用，瀏覽器就會在這項政策失效前使用舊版影片解碼器。</translation>
 <translation id="6277314550042130537">在 HTTP 驗證期間使用 KDC 政策的核准結果</translation>
 <translation id="6278428485366576908">主題</translation>
 <translation id="6279722058145292462">你可以透過這項政策，指定用戶端變更本機帳戶密碼的頻率 (以天為單位)。這個密碼是由用戶端隨機產生，不會向使用者顯示。如果停用這項政策或設定較長的天數，潛在的攻擊者就有較多時間找出本機帳戶密碼並加以利用，這樣可能會對安全性造成負面影響。
@@ -5536,6 +5576,11 @@
       如果未設定、設為讓使用者決定或設為 None，使用者將可透過 chrome://settings 中的一般控制項來控制自動偵測時區的功能。</translation>
 <translation id="6532769014584932288">允許使用 Wake Lock</translation>
 <translation id="6533881418188970751">下載檔案前先向使用者詢問儲存位置</translation>
+<translation id="653616551212414363">如果這項設定已啟用，系統就會在 USB 裝置插入 <ph name="PRODUCT_OS_NAME" /> 裝置時顯示通知。
+
+      如果這項設定未啟用，系統就不會在插入 USB 裝置時顯示相關通知。
+
+      如果未設定這項政策，使用者將在 USB 裝置插入時收到相關通知。</translation>
 <translation id="6536600139108165863">裝置關機時自動重新啟動</translation>
 <translation id="6538653424603921690">在登入畫面上一律停用隱私保護功能</translation>
 <translation id="6539246272469751178">這項政策對 Android 應用程式沒有影響。Android 應用程式會一律使用預設的下載目錄，無法存取任何由 <ph name="PRODUCT_OS_NAME" />下載到非預設下載目錄的檔案。</translation>
@@ -5609,6 +5654,7 @@
 <translation id="6575944031719151455">你可以透過這項政策指定裝置本機帳戶清單，系統會在登入畫面上顯示這些帳戶。可透過 ID 來分辨不同的裝置本機帳戶。
 
       如果不設定這項政策或設為空白清單，系統不會顯示任何裝置本機帳戶。</translation>
+<translation id="6577760914164385949">允許自動登入 Microsoft® 雲端識別資訊提供者</translation>
 <translation id="6580851705156412587">在裝置暫停或機蓋蓋上時鎖定裝置</translation>
 <translation id="6581048059229620221">如果停用這項政策，就無法啟動遠端支援主機，也無法將主機設為接受外來連線。
 
@@ -6077,6 +6123,7 @@
 <translation id="7002040773317582266">已啟用主頁框網址的即時檢查功能。</translation>
 <translation id="7003746348783715221"><ph name="PRODUCT_NAME" /> 偏好設定</translation>
 <translation id="7007283257527015835">布林值標記，表示是否應將通訊協定處理常式設為預設值。</translation>
+<translation id="7007403084376547341">選取 <ph name="LACROS_NAME" /> 瀏覽器二進位檔</translation>
 <translation id="7008308728445338159">已啟用 DNS 攔截檢查功能</translation>
 <translation id="7009043124653876961">在使用者輸入內容時不顯示表情符號建議</translation>
 <translation id="7010006999849135962">針對遠端存取主機啟用無 PIN 碼驗證機制</translation>
@@ -6282,6 +6329,7 @@
 <translation id="7202925763179776247">允許下載限制</translation>
 <translation id="7207095846245296855">強制啟用 Google 安全搜尋模式</translation>
 <translation id="7211368186050418507">一律不自動偵測時區</translation>
+<translation id="721617466745658461">允許使用者選取 <ph name="LACROS_NAME" /> 瀏覽器二進位檔</translation>
 <translation id="7216442368414164495">允許使用者採用安全瀏覽模式的進階回報功能</translation>
 <translation id="721970071627370558">停用裝置電源狀態回報功能</translation>
 <translation id="7221574724100909818">使用鎖頭圖示代表安全連線</translation>
@@ -7780,6 +7828,7 @@
 <translation id="8707790573162457301">在登入期間執行自動清理磁碟作業</translation>
 <translation id="8713535263782304771">停用安全瀏覽功能</translation>
 <translation id="8715885991031124968">允許從不同來源子頁框觸發的 JavaScript 對話方塊。</translation>
+<translation id="8719374569086645837">一律載入 <ph name="LACROS_STATEFUL_NAME" /> <ph name="LACROS_NAME" /> 瀏覽器</translation>
 <translation id="8720547069538712402">允許使用者啟用/停用拼字檢查功能</translation>
 <translation id="8726080977639508431">這項政策可控管 <ph name="PRODUCT_NAME" /> 如何解讀舊版瀏覽器支援功能的網站清單/可疑項目清單政策，影響範圍涵蓋以下政策：<ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
 
@@ -8201,6 +8250,7 @@
 <translation id="913195841488580904">禁止存取清單中的網址</translation>
 <translation id="9133526448421932754">黃色鍵盤背光顏色</translation>
 <translation id="9135033364005346124">啟用 <ph name="CLOUD_PRINT_NAME" /> Proxy</translation>
+<translation id="9135095804754272364">偵測到 USB 裝置時顯示通知</translation>
 <translation id="9136212796239682721">停用下載對話框 UI</translation>
 <translation id="9136399279941091445">發布指定裝置政策時的停機時間間隔</translation>
 <translation id="9142561920976791097">系統將使用在已停用表單控制項上傳送事件的新行為。</translation>

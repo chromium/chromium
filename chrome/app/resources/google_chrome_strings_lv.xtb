@@ -126,6 +126,7 @@
 <translation id="3140883423282498090">Jūsu izmaiņas stāsies spēkā nākamajā reizē, kad atkārtoti palaidīsiet pārlūku Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome lietotnes</translation>
 <translation id="3169523567916669830">Izmēģinājuma laikā varat skatīt un noņemt interešu tēmas, kas vietnēs tika izmantotas reklāmu rādīšanai. Pārlūkā Chrome tiek aptuveni noteiktas jūsu intereses, ņemot vērā neseno pārlūkošanas vēsturi.</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīci}zero{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīcēm}one{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīcēm}other{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīcēm}}</translation>
 <translation id="3245429137663807393">Ja kopīgojat arī Chrome lietojuma pārskatus, šajos pārskatos tiek iekļauti jūsu apmeklētie vietrāži URL.</translation>
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3286538390144397061">Restartēt tūlīt</translation>

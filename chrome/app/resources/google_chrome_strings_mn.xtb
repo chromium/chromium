@@ -129,6 +129,7 @@
 <translation id="3140883423282498090">Таны оруулсан өөрчлөлт дараа дахин Google Chrome-г ашиглах үед идэвхжинэ.</translation>
 <translation id="3149510190863420837">Chrome Аппликейшнууд</translation>
 <translation id="3169523567916669830">Та туршилтын хугацааны үеэр танд зар харуулахад ашиглах сонирхлын сайтуудын сэдвийг харах болон хасах боломжтой. Chrome таны сонирхлыг саяхны хөтчийн түүхэд тань тулгуурлан тооцоолно.</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome HID төхөөрөмжтэй холбогдсон байна}other{Google Chrome HID төхөөрөмжүүдтэй холбогдсон байна}}</translation>
 <translation id="3245429137663807393">Хэрэв та мөн Chrome-н ашиглалтын тайланг хуваалцвал тэдгээр тайланд таны зочилсон URL багтана</translation>
 <translation id="3282568296779691940">Chrome руу нэвтрэх</translation>
 <translation id="3286538390144397061">Одоо дахин эхлүүлнэ үү</translation>

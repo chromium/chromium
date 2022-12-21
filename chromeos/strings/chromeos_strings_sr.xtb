@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">Покреће се тест <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Да бисте подесили мрежу, идите у Подешавања</translation>
 <translation id="2597774443162333062">Фајлови ће се послати Google-у ради отклањања грешака</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Скенирање је завршено. Скенирана је 1 страница}one{Скенирање је завршено. Скенирана је {NUMBER_OF_PAGES} страница}few{Скенирање је завршено. Скениране су {NUMBER_OF_PAGES} странице}other{Скенирање је завршено. Скенирано је {NUMBER_OF_PAGES} страница}}</translation>
 <translation id="2619761439309613843">Дневно освежавање</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2638662041295312666">Слика за пријављивање</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">Додатну помоћ потражите у <ph name="BEGIN_LINK" />центру за помоћ<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритам компримовања</translation>
 <translation id="4794140124556169553">Покретање теста процесора може да утиче на учинак система</translation>
+<translation id="4798078634453489142">Уклоните назив приступне тачке да бисте додали нов назив приступне тачке</translation>
 <translation id="4800589996161293643">Chromebook заједница</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Отказан је задатак штампања <ph name="DOCUMENT_TITLE" /></translation>

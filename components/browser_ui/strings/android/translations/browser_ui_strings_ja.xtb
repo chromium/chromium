@@ -32,7 +32,7 @@
 <translation id="1717218214683051432">モーション センサー</translation>
 <translation id="1743802530341753419">サイトがデバイスに接続する前に確認する（推奨）</translation>
 <translation id="1779089405699405702">画像デコーダー</translation>
-<translation id="1785415724048343560">利便性を高めるため推奨</translation>
+<translation id="1785415724048343560">利便性が向上します（推奨）</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> に AR の使用を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
 <translation id="1864927262126810325">ソース: <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">関連サイトはグループでのアクティビティを確認できます</translation>
@@ -243,6 +243,7 @@
 <translation id="5975083100439434680">縮小する</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />～<ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">このサイトによるデバイスへのアクセスを管理します</translation>
+<translation id="6018815681665454784">データを削除してリセットしますか？</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6064125863973209585">完了したダウンロード</translation>
@@ -322,6 +323,7 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7667547420449112975">オズの魔法使い</translation>
 <translation id="7690549345586282764">ズームを表示</translation>
+<translation id="7695658402549134106"><ph name="SITE_NAME" /> のサイト設定</translation>
 <translation id="7719367874908701697">ページのズーム</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>

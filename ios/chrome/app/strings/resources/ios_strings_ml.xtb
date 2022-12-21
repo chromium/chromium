@@ -148,7 +148,9 @@
 <translation id="2074131957428911366">എന്തൊക്കെ സമന്വയിക്കണമെന്നത് <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> നിങ്ങൾക്ക് എപ്പോഴും തിരഞ്ഞെടുക്കാം.</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
 <translation id="2080769225927880590">സാധുവായ അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="2090878303988764231">നിങ്ങൾ കാണുന്ന ഉള്ളടക്കം മാനേജ് ചെയ്യാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2103075008456228677">history.google.com തുറക്കുക</translation>
+<translation id="21133533946938348">ടാബ് പിൻ ചെയ്യുക</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ഇനങ്ങൾ നീക്കി</translation>
 <translation id="2122754583996902531">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യപ്പെടുന്നു. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് ചേർക്കാൻ ആവശ്യപ്പെടുക</translation>
@@ -190,6 +192,7 @@
 <translation id="2421044535038393232">എഡിറ്റ് ചെയ്യുന്നത് തുടരുക</translation>
 <translation id="2434405374328098816">നിങ്ങൾ "<ph name="USERNAME" />" എന്നതിനുള്ള പാസ്‍വേഡ് <ph name="WEBSITE" /> എന്ന വെബ്സൈറ്റിൽ മുമ്പേ സംരക്ഷിച്ചു</translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
+<translation id="2451654228769116489">ടാബ് പിൻ ചെയ്യുക</translation>
 <translation id="2461070143328828326">പാസ്‌വേഡ് ക്രമീകരണം</translation>
 <translation id="2469960372084740698">സുരക്ഷിത ബ്രൗസിംഗ് ഓഫാക്കണോ?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> എന്നതിനുള്ള പാസ്‌വേഡ് നിങ്ങൾ മുമ്പേ സംരക്ഷിച്ചു</translation>
@@ -675,6 +678,7 @@
 <translation id="6059830886158432458">നിങ്ങളുടെ സ്‌റ്റോറികളും ആക്റ്റിവിറ്റികളും ഇവിടെ നിയന്ത്രിക്കുക</translation>
 <translation id="6064824697233747382">സമന്വയിപ്പിക്കൽ ഓഫാക്കാൻ നിങ്ങളുടെ സ്ഥാപനം ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="6066301408025741299">റദ്ദാക്കുന്നതിന് ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="6071409777669089905">ടാബ് അൺപിൻ ചെയ്യുക</translation>
 <translation id="60829778314739003">അംഗീകരിച്ച് തുടരുക</translation>
 <translation id="6084848228346514841">ടാബുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6103540626693881831">ഉപകരണത്തിലെ എൻക്രിപ്ഷൻ</translation>
@@ -975,6 +979,7 @@
 <translation id="8197543752516192074">പേജ് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="8205564605687841303">റദ്ദാക്കുക</translation>
 <translation id="8206354486702514201">ഈ ക്രമീകരണം നിങ്ങളുടെ അഡ്‌മിനി‌സ്‌ട്രേറ്റർ നടപ്പിലാക്കിയതാണ്.</translation>
+<translation id="821809831108207540">നിങ്ങളുടെ ഡിസ്ക്കവർ ഫീഡും Chrome-ഉം വ്യക്തിപരമാക്കാൻ, സൈൻ ഇൻ ചെയ്‌ത് സമന്വയം ഓണാക്കുക.</translation>
 <translation id="8225985093977202398">കാഷെ ചെയ്‌ത ചിത്രങ്ങളും ഫയലുകളും</translation>
 <translation id="8237382152611443140">'പാസ്‌വേഡ് സ്വയമേവ പൂരിപ്പിക്കൽ' ക്രമീകരണം തുറക്കുക</translation>
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
@@ -1102,6 +1107,7 @@
 <translation id="9219154867334666734">ടാബുകൾ തിരയുക…</translation>
 <translation id="9223358826628549784">ക്രാഷ് റിപ്പോർട്ട് അയച്ചു.</translation>
 <translation id="941747855997058526">പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക...</translation>
+<translation id="948048872540558976">പുതിയ ടാബ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="952704832371081537">റദ്ദാക്കുക</translation>
 <translation id="953008885340860025">Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്തു</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> എന്നത് നിങ്ങൾ പിന്തുടരുന്നു</translation>

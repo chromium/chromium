@@ -243,6 +243,7 @@
 <translation id="5975083100439434680">축소</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
 <translation id="6015775454662021376">기기에 대한 이 사이트의 액세스를 제어합니다.</translation>
+<translation id="6018815681665454784">삭제 및 재설정하시겠습니까?</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6042308850641462728">자세히</translation>
 <translation id="6064125863973209585">다운로드 완료</translation>
@@ -322,6 +323,7 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="7667547420449112975">오즈의 마법사</translation>
 <translation id="7690549345586282764">확대/축소 표시</translation>
+<translation id="7695658402549134106"><ph name="SITE_NAME" /> 사이트 환경설정</translation>
 <translation id="7719367874908701697">페이지 확대/축소</translation>
 <translation id="7781829728241885113">어제</translation>
 <translation id="7791543448312431591">추가</translation>

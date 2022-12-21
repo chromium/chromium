@@ -150,7 +150,9 @@
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2080769225927880590">التسجيل باستخدام حساب صالح</translation>
+<translation id="2090878303988764231">تسجيل الدخول لإدارة المحتوى الذي تراه</translation>
 <translation id="2103075008456228677">‏فتح history.google.com</translation>
+<translation id="21133533946938348">تثبيت علامة التبويب</translation>
 <translation id="2116625576999540962">تم نقل <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> من العناصر</translation>
 <translation id="2122754583996902531">تتم إدارة متصفّحك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">طلب الإضافة إلى "قائمة القراءة"</translation>
@@ -192,6 +194,7 @@
 <translation id="2421044535038393232">متابعة التعديل</translation>
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
+<translation id="2451654228769116489">‏Pin Tab (تثبيت علامة تبويب)</translation>
 <translation id="2461070143328828326">إعدادات كلمة المرور</translation>
 <translation id="2469960372084740698">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
 <translation id="2473876017985765807">سبق أن حفظت كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
@@ -678,6 +681,7 @@
 <translation id="6059830886158432458">يمكنك التحكُّم بقصصك ونشاطك هنا.</translation>
 <translation id="6064824697233747382">تفرض عليك مؤسستك إيقاف المزامنة.</translation>
 <translation id="6066301408025741299">انقر للإلغاء.</translation>
+<translation id="6071409777669089905">‏Unpin Tab (إزالة تثبيت علامة تبويب)</translation>
 <translation id="60829778314739003">قبول ومتابعة</translation>
 <translation id="6084848228346514841">اختيار علامات التبويب</translation>
 <translation id="6103540626693881831">التشفير على الجهاز فقط</translation>
@@ -978,6 +982,7 @@
 <translation id="8197543752516192074">ترجمة الصفحة</translation>
 <translation id="8205564605687841303">إلغاء</translation>
 <translation id="8206354486702514201">تم فرض هذا الإعداد بواسطة المشرف.</translation>
+<translation id="821809831108207540">‏لتخصيص متصفّح Chrome وخلاصة "اقتراحات"، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="8225985093977202398">الصور والملفات المُخزنة مؤقتًا</translation>
 <translation id="8237382152611443140">‏فتح AutoFill Password Settings (إعدادات الملء التلقائي لكلمات المرور)</translation>
 <translation id="8261506727792406068">حذف</translation>
@@ -1105,6 +1110,7 @@
 <translation id="9219154867334666734">البحث في علامات التبويب…</translation>
 <translation id="9223358826628549784">تم إرسال تقرير الأعطال.</translation>
 <translation id="941747855997058526">اختيار كلمة مرور…</translation>
+<translation id="948048872540558976">إنشاء علامة تبويب جديدة</translation>
 <translation id="952704832371081537">إلغاء</translation>
 <translation id="953008885340860025">‏تم تسجيل الخروج من Chrome</translation>
 <translation id="959066944189734975">تتم حاليًا متابعة <ph name="CHANNEL_NAME" /></translation>

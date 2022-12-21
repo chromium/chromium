@@ -111,7 +111,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> har bytts ut mot <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Visa alla förslag</translation>
 <translation id="1503394326855300303">Det här ägarkontot måste vara det första inloggade kontot i en session med flera inloggningar.</translation>
-<translation id="1510238584712386396">Startprogram</translation>
+<translation id="1510238584712386396">Starttangent</translation>
 <translation id="1516740043221086139">Stör ej har aktiverats.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Visa aviseringsinställningar. Aviseringar har inaktiverats för 1 app}other{Visa aviseringsinställningar. Aviseringar har inaktiverats för # appar}}</translation>
 <translation id="1525508553941733066">IGNORERA</translation>
@@ -120,6 +120,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="15373452373711364">Stor muspekare</translation>
 <translation id="1546492247443594934">Skrivbord 2</translation>
 <translation id="1546930421365146760">Be administratören att konfigurera enheten i Googles administratörskonsol</translation>
+<translation id="1550406609415860283">Tillgängliga enheter</translation>
 <translation id="1550523713251050646">Klicka här för fler alternativ</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
@@ -127,6 +128,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
+<translation id="163517899691012366">Aviseringar hörs inte när Stör ej är aktiverat</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1639239467298939599">Profilen läses in</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
@@ -179,7 +181,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1862380676329487333">Uppdatera och logga ut</translation>
 <translation id="1864454756846565995">USB-C-enhet (bakre port)</translation>
 <translation id="1869497990620230175">Snabbfiler</translation>
-<translation id="1871703283152909317">Aktivera båda åtkomster</translation>
 <translation id="1879018240766558464">Inkognitofönster stöds inte för närvarande. Andra appar sparas.</translation>
 <translation id="1882814835921407042">Inget mobilnätverk</translation>
 <translation id="1882897271359938046">Spegling av <ph name="DISPLAY_NAME" /></translation>
@@ -376,6 +377,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3047761520276763270">Testa att säga detta:</translation>
 <translation id="3051189971848907985">Byter namn på profilen. Vänta några minuter.</translation>
 <translation id="3055162170959710888">Du har använt den här enheten i <ph name="USED_TIME" /> i dag</translation>
+<translation id="3062298103034426069">Stöds inte</translation>
 <translation id="3068711042108640621">Hyllan till vänster</translation>
 <translation id="3077734595579995578">skift</translation>
 <translation id="3081696990447829002">Utöka menyn</translation>
@@ -410,6 +412,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3249513730522716925">Fönstret <ph name="WINDOW_TITLE" /> flyttades från skrivbordet <ph name="ACTIVE_DESK" /> till skrivbordet <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Konfiguration</translation>
 <translation id="3255483164551725916">Vad kan du göra?</translation>
+<translation id="3260969790895726815">Tal behandlas lokalt och diktering fungerar offline, men vissa röstkommandon fungerar inte.</translation>
 <translation id="3269597722229482060">Högerklicka</translation>
 <translation id="3289544412142055976">Linux-appar stöds inte för närvarande</translation>
 <translation id="3289674678944039601">Laddas via adapter</translation>
@@ -457,9 +460,11 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3513798432020909783">Kontot hanteras av <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Uppdatera enheten inom 1 minut}other{Uppdatera enheten inom # minuter}}</translation>
 <translation id="353086728817903341">Ansluten till <ph name="NUM_DEVICES" /> enheter</translation>
+<translation id="3533126039236445965">Appar på hyllan</translation>
 <translation id="3542066395059568317">Rekommendationer visas så att du kan fortsätta där du slutade. Du kan ta bort rekommendationer genom att högerklicka.</translation>
 <translation id="3552189655002856821">wifi är inaktiverat</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> har fästs</translation>
+<translation id="3560174576767922131">Spela in video</translation>
 <translation id="3563775809269155755">Aktivera surfzon</translation>
 <translation id="3566240529365775567">Öppnades nyss</translation>
 <translation id="3571734092741541777">Konfigurera</translation>
@@ -652,6 +657,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4577274620589681794">Tiden är ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Visa förhandsgranskningar</translation>
 <translation id="4578906031062871102">Inställningsmenyn har öppnats</translation>
+<translation id="458210817642223147">Spela in gif</translation>
 <translation id="4585337515783392668">Sluta casta till en okänd mottagare</translation>
 <translation id="4596144739579517758">Mörkt tema är av</translation>
 <translation id="4611292653554630842">Logga in</translation>
@@ -731,6 +737,7 @@ Anslut enheten till en strömkälla.</translation>
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Skrivbord 16</translation>
 <translation id="5003993274120026347">Nästa mening</translation>
+<translation id="5004607513195820459">Nätverket hanteras</translation>
 <translation id="5016558321564993266">Aktivera och inaktivera märkpennan. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Åtkomst till enhetens mikrofon har aktiverats</translation>
 <translation id="5030687792513154421">Tiden är slut</translation>
@@ -790,9 +797,11 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5331975486040154427">USB-C-enhet (bakre porten på vänster sida)</translation>
 <translation id="533282197239610265">Visa cast-enheter</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (höger)</translation>
+<translation id="5351427059191534258">Vill du inaktivera kameraåtkomst?</translation>
 <translation id="5352250171825660495">Mörkt tema är på</translation>
 <translation id="5356963482258194581">Byt mellan ljust och mörkt tema. Högerklicka på skrivbordet och välj Bakgrund och stil.</translation>
 <translation id="536019650977002321">Administratören tillåter inte ljudinspelning. Kontakta administratören för mer information.</translation>
+<translation id="5361524080961918551">Filer med tal på <ph name="LANGUAGE" /> har delvis laddats ned</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Öppna den här fliken</translation>
 <translation id="5377367976106153749">Vill du aktivera kameraåtkomst?</translation>
 <translation id="5379115545237091094">För många försök</translation>
@@ -902,6 +911,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5980301590375426705">Avsluta gästsession</translation>
 <translation id="598407983968395253">Använd mall</translation>
 <translation id="598882571027504733">Starta om Chromebook-enheten med tangentbordet tillkopplat för att uppdatera.</translation>
+<translation id="6002179289567220515">Du inaktiverade en kamera med det fysiska reglaget. Du kan även inaktivera åtkomsten för alla kameror.</translation>
 <translation id="6012623610530968780">Sida <ph name="SELECTED_PAGE" /> av <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Spegelläge avslutas</translation>
 <translation id="602001110135236999">Scrolla åt vänster</translation>
@@ -926,7 +936,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6095008505822982596">Talhastighet</translation>
 <translation id="6099678161144790572">Redigerades under den senaste månaden</translation>
 <translation id="6103838137565245112">system</translation>
-<translation id="6107292179555508368">Mikrofon- och kameraåtkomster är inaktiverade på den här enheten</translation>
 <translation id="6114505516289286752">Filerna för taligenkänning på <ph name="LANGUAGE" /> har laddats ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bekräfta nedladdning <ph name="FILENAME" /></translation>
@@ -943,9 +952,11 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="619279033188484792">Visa de senaste bilderna, mediefilerna och aviseringar från telefonen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Ladda fullt nu</translation>
 <translation id="6193431488227440296">Utvecklare</translation>
+<translation id="6200515304866777730">Stöds inte av appen</translation>
 <translation id="6210042900243040400">Anslut <ph name="NAME" /> som tidigare sparats i <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Nu kan du spela in dig själv och skärmen på samma gång</translation>
 <translation id="622484624075952240">Ner</translation>
+<translation id="623116199192908855">Casta skärmen på en Chromebook</translation>
 <translation id="6231419273573514727">Kringutrustningens prestanda kan vara begränsad</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> använder just nu kameran och mikrofonen</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -953,7 +964,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6259254695169772643">Välj något med e-pennan</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiverar ...</translation>
 <translation id="6274202259872570803">Screencast</translation>
-<translation id="6282694724099204652">Aktivera åtkomst för att tillåta appar och webbsidor med behörighet att använda mikrofonen och kameran på denna enhet.</translation>
 <translation id="6283712521836204486">Stör ej är inaktiverat.</translation>
 <translation id="6284232397434400372">Upplösningen har ändrats</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan läggas till igen senare med en förälders tillstånd.</translation>
@@ -988,8 +998,10 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> kräver att du uppdaterar din <ph name="DEVICE_TYPE" /> före deadline</translation>
 <translation id="649452524636452238">Pinkod till smartkort</translation>
 <translation id="6495400115277918834">Bild-i-bild har startats, tryck på Alt + Skift + V för att välja fokus</translation>
+<translation id="6497418457565568043">Stör ej är aktiverat</translation>
 <translation id="6500896621837555595">Uppdatera</translation>
 <translation id="6501401484702599040">Skärmen castas till <ph name="RECEIVER_NAME" /></translation>
+<translation id="6508923215158854599">Kontrollera att Chromebook är ansluten till samma wifi-nätverk som Chromecast-enheten.</translation>
 <translation id="6515727200518652613">Kameran kopplades från. Försöker återansluta.</translation>
 <translation id="6520517963145875092">Välj ett fönster att ta en bild av</translation>
 <translation id="652139407789908527">Det är tomt på skärmen längre än vanligt (i upp till en minut) under den här uppdateringen. Tryck inte på av/på-knappen medan uppdateringen pågår.</translation>
@@ -1071,6 +1083,7 @@ Nyligen installerad</translation>
 <translation id="6901883536534621389">Testa att navigera med rörelser</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
 <translation id="6931576957638141829">Spara i</translation>
+<translation id="6942518653766415536">Meny för inspelningsformat</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6960565108681981554">Inte aktiverat. Kontakta operatören.</translation>
 <translation id="6961121602502368900">Funktionen Inga telefonljud är inte tillgänglig i jobbprofilen</translation>

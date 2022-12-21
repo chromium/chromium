@@ -186,6 +186,7 @@
 <translation id="2570743873672969996">កំពុងដំណើរការតេស្ត <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">ដើម្បីរៀបចំ សូមចូលទៅកាន់ការកំណត់</translation>
 <translation id="2597774443162333062">ឯកសារ​នឹង​ត្រូវបាន​ផ្ញើ​ទៅ Google សម្រាប់​ការជួសជុល</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{បានបញ្ចប់ការស្កេន។ បានស្កេន 1 ទំព័រ}other{បានបញ្ចប់ការស្កេន។ បានស្កេន {NUMBER_OF_PAGES} ទំព័រ}}</translation>
 <translation id="2619761439309613843">ការផ្ទុក​ឡើងវិញ​ប្រចាំថ្ងៃ</translation>
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
 <translation id="2638662041295312666">រូបភាពចូលគណនី</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">សម្រាប់ជំនួយបន្ថែម សូមចូលទៅកាន់<ph name="BEGIN_LINK" />មជ្ឈមណ្ឌលជំនួយ<ph name="END_LINK" />។</translation>
 <translation id="4793756956024303490">ក្បួនបង្ហាប់</translation>
 <translation id="4794140124556169553">ការធ្វើតេស្ត CPU អាច​ប៉ះពាល់ដល់​ប្រតិបត្តិការប្រព័ន្ធរបស់អ្នក</translation>
+<translation id="4798078634453489142">ដក APN មួយ​ចេញ ដើម្បី​បញ្ចូល​ APN ថ្មី</translation>
 <translation id="4800589996161293643">សហគមន៍ Chromebook</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">បានបោះបង់​ការងារបោះពុម្ព <ph name="DOCUMENT_TITLE" /></translation>

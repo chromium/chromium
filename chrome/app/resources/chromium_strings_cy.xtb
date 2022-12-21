@@ -82,6 +82,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="2977470724722393594">Mae Chromium yn gyfoes</translation>
 <translation id="2977506796191543575">Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chromium hefyd anfon cyfeiriadau URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel</translation>
 <translation id="2983934633046890458">Mae Chromium yn ceisio golygu cyfrineiriau.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Mae Chromium wedi'i gysylltu â dyfais HID}zero{Mae Chromium wedi'i gysylltu â dyfeisiau HID}two{Mae Chromium wedi'i gysylltu â dyfeisiau HID}few{Mae Chromium wedi'i gysylltu â dyfeisiau HID}many{Mae Chromium wedi'i gysylltu â dyfeisiau HID}other{Mae Chromium wedi'i gysylltu â dyfeisiau HID}}</translation>
 <translation id="3032706164202344641">Ni all Chromium wirio'ch cyfrineiriau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="3032787606318309379">Wrthi'n ychwanegu at Chromium...</translation>
 <translation id="3038232873781883849">Wrthi'n aros i osod...</translation>

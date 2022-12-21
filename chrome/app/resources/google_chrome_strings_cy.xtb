@@ -129,6 +129,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="3140883423282498090">Bydd eich newidiadau yn dod i rym y tro nesaf y byddwch yn ail-lansio Google Chrome.</translation>
 <translation id="3149510190863420837">Apiau Chrome</translation>
 <translation id="3169523567916669830">Yn ystod y profion, gallwch weld a chael gwared ar bynciau sydd o ddiddordeb y mae gwefannau yn eu defnyddio i ddangos hysbysebion i chi. Mae Chrome yn amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori diweddar.</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Mae Google Chrome wedi'i gysylltu â dyfais HID}zero{Mae Google Chrome wedi'i gysylltu â dyfeisiau HID}two{Mae Google Chrome wedi'i gysylltu â dyfeisiau HID}few{Mae Google Chrome wedi'i gysylltu â dyfeisiau HID}many{Mae Google Chrome wedi'i gysylltu â dyfeisiau HID}other{Mae Google Chrome wedi'i gysylltu â dyfeisiau HID}}</translation>
 <translation id="3245429137663807393">Os ydych hefyd yn rhannu adroddiadau defnydd Chrome, mae'r adroddiadau hynny'n cynnwys y cyfeiriadau URL rydych yn ymweld â nhw</translation>
 <translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
 <translation id="3286538390144397061">Ailddechrau Nawr</translation>

@@ -126,6 +126,7 @@
 <translation id="3140883423282498090">Ձեր փոփոխություններն ուժի մեջ կմտնեն հաջորդ անգամ Google Chrome-ը գործարկելիս:</translation>
 <translation id="3149510190863420837">Chrome-ի հավելվածներ</translation>
 <translation id="3169523567916669830">Փորձարկումների ընթացքում դուք կարող եք տեսնել և հեռացնել հետաքրքրությունները, որոնք կայքերն օգտագործում են ձեզ գովազդ ցուցադրելու համար։ Chrome-ը որոշում է ձեր հետաքրքրությունները ձեր վերջին այցելությունների պատմության հիման վրա։</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome-ը միացված է HID սարքի}one{Google Chrome-ը միացված է HID սարքի}other{Google Chrome-ը միացված է HID սարքերի}}</translation>
 <translation id="3245429137663807393">Եթե դուք նաև ուղարկում եք Chrome-ի օգտագործման զեկույցներ, դրանցում կներառվեն ձեր այցելած URL-ները</translation>
 <translation id="3282568296779691940">Մուտք գործել Chrome</translation>
 <translation id="3286538390144397061">Վերագործարկել հիմա</translation>

@@ -81,6 +81,7 @@
 <translation id="2977470724722393594">Chromium अद्ययावत आहे</translation>
 <translation id="2977506796191543575">साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानिकारक फाइल डाउनलोड केल्यास, Chromium कदाचित पेज आशयाच्या भागांसह, URLs देखील सुरक्षित ब्राउझिंग ला पाठवेल</translation>
 <translation id="2983934633046890458">Chromium पासवर्ड संपादित करण्याचा प्रयत्‍न करत आहे.</translation>
+<translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium हे HID डिव्हाइसशी कनेक्ट केले आहे}other{Chromium हे HID डिव्हाइसशी कनेक्ट केले आहे}}</translation>
 <translation id="3032706164202344641">Chromium तुमचे पासवर्ड तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="3032787606318309379">Chromium वर जोडत आहे...</translation>
 <translation id="3038232873781883849">इंस्टॉल करण्यासाठी प्रतीक्षा करत आहे...</translation>

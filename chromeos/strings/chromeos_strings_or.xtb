@@ -186,6 +186,7 @@
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ପରୀକ୍ଷା ଚଲାଯାଉଛି...</translation>
 <translation id="2584559707064218956">ସେଟ ଅପ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2597774443162333062">ଡିବଗିଂ ପାଇଁ ଫାଇଲଗୁଡ଼ିକ Googleକୁ ପଠାଯିବ</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ସ୍କାନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି। 1ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ କରାଯାଇଛି}other{ସ୍କାନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି। {NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ କରାଯାଇଛି}}</translation>
 <translation id="2619761439309613843">ଦୈନିକ ରିଫ୍ରେଶ୍</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
 <translation id="2638662041295312666">ସାଇନ୍-ଇନ୍ ଛବି</translation>
@@ -392,6 +393,7 @@
 <translation id="4793710386569335688">ଅଧିକ ସହାୟତା ପାଇଁ, <ph name="BEGIN_LINK" />ସହାୟତା କେନ୍ଦ୍ର<ph name="END_LINK" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="4793756956024303490">କମ୍ପ୍ରେସନ ଆଲଗୋରିଦମ</translation>
 <translation id="4794140124556169553">ଏକ CPU ଟେଷ୍ଟ ଚଲାଇବା ଫଳରେ ଏହା ଆପଣଙ୍କ ସିଷ୍ଟମର ପରଫରମାନ୍ସକୁ ପ୍ରଭାବିତ କରିପାରେ</translation>
+<translation id="4798078634453489142">ନୂଆ APN ଯୋଗ କରିବା ପାଇଁ କୌଣସି APNକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="4800589996161293643">Chromebook କମ୍ୟୁନିଟୀ</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ <ph name="DOCUMENT_TITLE" /> ବାତିଲ୍ କରାଯାଇଛି</translation>

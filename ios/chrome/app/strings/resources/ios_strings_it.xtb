@@ -148,7 +148,9 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2074131957428911366">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2080769225927880590">Accedi con un account valido</translation>
+<translation id="2090878303988764231">Accedi per gestire i contenuti visualizzati</translation>
 <translation id="2103075008456228677">Apri la pagina history.google.com</translation>
+<translation id="21133533946938348">Blocca scheda</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementi spostati</translation>
 <translation id="2122754583996902531">Il tuo browser è gestito. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">Attiva o disattiva Aggiungi all'elenco di lettura</translation>
@@ -190,6 +192,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2421044535038393232">Continua a modificare</translation>
 <translation id="2434405374328098816">Hai già salvato una password per "<ph name="USERNAME" />" su <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostra password</translation>
+<translation id="2451654228769116489">Blocca scheda</translation>
 <translation id="2461070143328828326">Impostazioni password</translation>
 <translation id="2469960372084740698">Vuoi disattivare Navigazione sicura?</translation>
 <translation id="2473876017985765807">Hai già salvato una password per <ph name="WEBSITE" /></translation>
@@ -557,7 +560,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5184329579814168207">Apri in Chrome</translation>
 <translation id="5186185447130319458">Privata</translation>
 <translation id="5188482106078495165">L'impostazione relativa ai cookie viene applicata a tutte le schede. Per applicare una nuova impostazione a una scheda aperta, ricarica la scheda.</translation>
-<translation id="5190835502935405962">Barra dei Preferiti</translation>
+<translation id="5190835502935405962">Barra dei preferiti</translation>
 <translation id="519530786644929958">Download non riuscito. Impossibile riprovare.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5219295696240154694">Contribuisci a migliorare la sicurezza sul Web per tutti</translation>
@@ -675,6 +678,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
 <translation id="6064824697233747382">La tua organizzazione richiede di disattivare la sincronizzazione.</translation>
 <translation id="6066301408025741299">Tocca per annullare.</translation>
+<translation id="6071409777669089905">Sblocca scheda</translation>
 <translation id="60829778314739003">Accetta e continua</translation>
 <translation id="6084848228346514841">Seleziona schede</translation>
 <translation id="6103540626693881831">Crittografia on-device</translation>
@@ -975,6 +979,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8197543752516192074">Traduci la pagina</translation>
 <translation id="8205564605687841303">Annulla</translation>
 <translation id="8206354486702514201">Questa impostazione è stata applicata dall'amministratore.</translation>
+<translation id="821809831108207540">Per personalizzare il tuo feed di Discover e Chrome, accedi e attiva la sincronizzazione.</translation>
 <translation id="8225985093977202398">Immagini e file memorizzati nella cache</translation>
 <translation id="8237382152611443140">Apri le Impostazioni Riempimento automatico password</translation>
 <translation id="8261506727792406068">Elimina</translation>
@@ -1091,7 +1096,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9097506547406246598">Non è possibile non seguire più questi contenuti. Si è verificato un errore.</translation>
 <translation id="9100610230175265781">Passphrase obbligatoria</translation>
 <translation id="9107664647686727385">Controlla eventuali password compromesse</translation>
-<translation id="9124387962554796433">Google potrebbe usare la tua cronologia per personalizzare la Ricerca e altri servizi Google.</translation>
+<translation id="9124387962554796433">Google può utilizzare la tua cronologia per personalizzare la Ricerca e altri servizi Google.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
 <translation id="9157836665414082580">Elimina finestre di dialogo</translation>
@@ -1102,6 +1107,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9219154867334666734">Cerca tra le schede…</translation>
 <translation id="9223358826628549784">Report sugli arresti anomali inviato.</translation>
 <translation id="941747855997058526">Seleziona password…</translation>
+<translation id="948048872540558976">Crea nuova scheda</translation>
 <translation id="952704832371081537">Annulla</translation>
 <translation id="953008885340860025">Chrome è disconnesso</translation>
 <translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>
