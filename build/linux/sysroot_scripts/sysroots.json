@@ -12,8 +12,8 @@
         "Tarball": "debian_bullseye_arm_sysroot.tar.xz"
     },
     "bullseye_arm64": {
-        "Key": "20221105T211506Z-0",
-        "Sha1Sum": "286feb74e2209a7a70add5497609ac27685022fa",
+        "Key": "20221105T211506Z-1",
+        "Sha1Sum": "6553f74237ef4a99240a740f0084e1ade71aec6f",
         "SysrootDir": "debian_bullseye_arm64-sysroot",
         "Tarball": "debian_bullseye_arm64_sysroot.tar.xz"
     },
