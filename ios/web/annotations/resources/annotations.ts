@@ -140,7 +140,7 @@ function decorateAnnotations(annotations: Annotation[]): void {
   // Last checks when bubbling up event.
   document.addEventListener('click', handleTopTap.bind(document));
 
-  removeOverlappingAnnotations(annotations);
+  annotations = removeOverlappingAnnotations(annotations);
 
   // Reparse page finding annotations and styling them.
   let annotationIndex = 0;
@@ -424,15 +424,15 @@ function highlightAnnotation(annotation: HTMLElement) {
  * Sorts and removes olverlappings annotations.
  * @param annotations - input annotations, cleaned in-place.
  */
-function removeOverlappingAnnotations(annotations: Annotation[]): void {
-  // Sort the annotations.
+function removeOverlappingAnnotations(annotations: Annotation[]): Annotation[] {
+  // Sort the annotations, in place.
   annotations.sort((a, b) => {
     return a.start - b.start;
   });
 
   // Remove overlaps (lower indexed annotation has priority).
   let previous: Annotation|undefined = undefined;
-  annotations.filter((annotation) => {
+  return annotations.filter((annotation) => {
     if (previous && previous.start < annotation.end &&
         previous.end > annotation.start) {
       return false;
