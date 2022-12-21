@@ -132,6 +132,12 @@ void PredictionModelStore::Initialize(PrefService* local_state,
   local_state_ = local_state;
   base_store_dir_ = base_store_dir;
 
+  PurgeInactiveModels();
+
+  // Clean up any model files that were slated for deletion in previous
+  // sessions.
+  CleanUpOldModelFiles();
+
   background_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&RecordModelStorageMetrics, base_store_dir_));
 }
@@ -150,26 +156,32 @@ bool PredictionModelStore::HasModel(
     proto::OptimizationTarget optimization_target,
     const proto::ModelCacheKey& model_cache_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
-             local_state_, optimization_target, model_cache_key)
-      .has_value();
+  auto metadata = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
+      local_state_, optimization_target, model_cache_key);
+  if (!metadata) {
+    return false;
+  }
+  // Check the existence of model dir as an indication of validity.
+  return metadata->GetModelBaseDir().has_value();
 }
 
 bool PredictionModelStore::HasModelWithVersion(
     proto::OptimizationTarget optimization_target,
     const proto::ModelCacheKey& model_cache_key,
-    int64_t version) const {
+    int64_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto metadata = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
       local_state_, optimization_target, model_cache_key);
   if (!metadata) {
     return false;
   }
-  if (!metadata->GetVersion()) {
-    // TODO(b/244649670): Remove the invalid model.
+  auto actual_version = metadata->GetVersion();
+  if (!actual_version) {
+    RemoveModel(optimization_target, model_cache_key,
+                PredictionModelStoreModelRemovalReason::kModelVersionInvalid);
     return false;
   }
-  return *metadata->GetVersion() == version;
+  return *actual_version == version;
 }
 
 void PredictionModelStore::LoadModel(
@@ -186,13 +198,16 @@ void PredictionModelStore::LoadModel(
   }
   if (!metadata->GetKeepBeyondValidDuration() &&
       metadata->GetExpiryTime() <= base::Time::Now()) {
-    // TODO(b/244649670): Remove the invalid model.
+    RemoveModel(
+        optimization_target, model_cache_key,
+        PredictionModelStoreModelRemovalReason::kModelExpiredOnLoadModel);
     std::move(callback).Run(nullptr);
     return;
   }
   auto base_model_dir = metadata->GetModelBaseDir();
   if (!base_model_dir) {
-    // TODO(b/244649670): Remove the invalid model.
+    RemoveModel(optimization_target, model_cache_key,
+                PredictionModelStoreModelRemovalReason::kInvalidModelDir);
     std::move(callback).Run(nullptr);
     return;
   }
@@ -241,7 +256,8 @@ void PredictionModelStore::OnModelLoaded(
     std::unique_ptr<proto::PredictionModel> model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!model) {
-    // TODO(b/244649670): Remove the invalid model.
+    RemoveModel(optimization_target, model_cache_key,
+                PredictionModelStoreModelRemovalReason::kModelLoadFailed);
     std::move(callback).Run(nullptr);
     return;
   }
@@ -310,7 +326,9 @@ void PredictionModelStore::OnModelUpdateVerified(
     bool model_paths_exist) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!model_paths_exist) {
-    // TODO(b/244649670): Remove the invalid model.
+    RemoveModel(optimization_target, model_cache_key,
+                PredictionModelStoreModelRemovalReason::
+                    kModelUpdateFilePathVerifyFailed);
   }
   std::move(callback).Run();
 }
@@ -337,6 +355,72 @@ void PredictionModelStore::UpdateModelCacheKeyMapping(
   ModelStoreMetadataEntryUpdater::UpdateModelCacheKeyMapping(
       local_state_, optimization_target, client_model_cache_key,
       server_model_cache_key);
+}
+
+void PredictionModelStore::RemoveModel(
+    proto::OptimizationTarget optimization_target,
+    const proto::ModelCacheKey& model_cache_key,
+    PredictionModelStoreModelRemovalReason model_remove_reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!local_state_) {
+    return;
+  }
+
+  RecordPredictionModelStoreModelRemovalVersionHistogram(model_remove_reason);
+  ModelStoreMetadataEntryUpdater metadata(local_state_, optimization_target,
+                                          model_cache_key);
+  auto base_model_dir = metadata.GetModelBaseDir();
+  if (base_model_dir) {
+    DCHECK(base_store_dir_.IsParent(*base_model_dir));
+    ScopedDictPrefUpdate pref_update(
+        local_state_, prefs::localstate::kStoreFilePathsToDelete);
+    pref_update->Set(FilePathToString(*base_model_dir), true);
+  }
+  // Continue removing the metadata even if the model dirs does not exist.
+  metadata.ClearMetadata();
+}
+
+void PredictionModelStore::PurgeInactiveModels() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(local_state_);
+  for (const auto& expired_model_dir :
+       ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(local_state_)) {
+    DCHECK(base_store_dir_.IsParent(expired_model_dir));
+    // This is called at startup. So no need to schedule the deletion of the
+    // model dirs, and instead can be deleted immediately.
+    background_task_runner_->PostTask(
+        FROM_HERE, base::GetDeletePathRecursivelyCallback(expired_model_dir));
+  }
+}
+
+void PredictionModelStore::CleanUpOldModelFiles() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(local_state_);
+  for (const auto entry :
+       local_state_->GetDict(prefs::localstate::kStoreFilePathsToDelete)) {
+    auto path_to_delete = StringToFilePath(entry.first);
+    DCHECK(path_to_delete);
+    DCHECK(base_store_dir_.IsParent(*path_to_delete));
+    background_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&base::DeletePathRecursively, *path_to_delete),
+        base::BindOnce(&PredictionModelStore::OnFilePathDeleted,
+                       weak_ptr_factory_.GetWeakPtr(), entry.first));
+  }
+}
+
+void PredictionModelStore::OnFilePathDeleted(const std::string& path_to_delete,
+                                             bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(local_state_);
+  if (!success) {
+    // Try to delete again later.
+    return;
+  }
+
+  ScopedDictPrefUpdate pref_update(local_state_,
+                                   prefs::localstate::kStoreFilePathsToDelete);
+  pref_update->Remove(path_to_delete);
 }
 
 }  // namespace optimization_guide

@@ -12,10 +12,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/model_enums.h"
 #include "components/optimization_guide/core/model_store_metadata_entry.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -54,6 +56,8 @@ class PredictionModelStoreTest : public testing::Test {
          features::kOptimizationGuideModelDownloading,
          features::kOptimizationGuideInstallWideModelStore},
         {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kDebugLoggingEnabled);
   }
 
   void SetUp() override {
@@ -117,7 +121,8 @@ class PredictionModelStoreTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_models_dir_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
   std::unique_ptr<proto::PredictionModel> last_loaded_prediction_model_;
@@ -199,8 +204,8 @@ TEST_F(PredictionModelStoreTest, InvalidModelAdditionalFile) {
       kTestOptimizationTargetFoo, model_cache_key, model_detail.model_info,
       model_detail.base_model_dir, base::DoNothing());
   RunUntilIdle();
-  EXPECT_TRUE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
-                                                model_cache_key));
+  EXPECT_FALSE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
+                                                 model_cache_key));
 
   WaitForModeLoad(kTestOptimizationTargetFoo, model_cache_key);
   EXPECT_FALSE(last_loaded_prediction_model());
@@ -323,6 +328,103 @@ TEST_F(PredictionModelStoreTest, ModelStorageMetrics) {
               .GetTotalCountsForPrefix(
                   "OptimizationGuide.PredictionModelStore.TotalDirectorySize.")
               .size());
+}
+
+TEST_F(PredictionModelStoreTest, ExpiredModelRemoved) {
+  base::HistogramTester histogram_tester;
+
+  auto model_cache_key = CreateModelCacheKey(kTestLocaleFoo);
+  auto model_detail =
+      CreateTestModelFiles(kTestOptimizationTargetFoo, model_cache_key, {});
+  prediction_model_store_->UpdateModel(
+      kTestOptimizationTargetFoo, model_cache_key, model_detail.model_info,
+      model_detail.base_model_dir, base::DoNothing());
+  RunUntilIdle();
+
+  // Fast forward so that the model has expired.
+  task_environment_.FastForwardBy(features::StoredModelsValidDuration() +
+                                  base::Seconds(1));
+
+  // Recreate the store and it will remove the expired model.
+  prediction_model_store_ =
+      PredictionModelStore::CreatePredictionModelStoreForTesting(
+          local_state_prefs_.get(), temp_models_dir_.GetPath());
+  RunUntilIdle();
+  EXPECT_FALSE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
+                                                 model_cache_key));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
+      PredictionModelStoreModelRemovalReason::kModelExpired, 1);
+}
+
+TEST_F(PredictionModelStoreTest, ExpiredModelRemovedOnLoadModel) {
+  base::HistogramTester histogram_tester;
+
+  auto model_cache_key = CreateModelCacheKey(kTestLocaleFoo);
+  auto model_detail =
+      CreateTestModelFiles(kTestOptimizationTargetFoo, model_cache_key, {});
+  prediction_model_store_->UpdateModel(
+      kTestOptimizationTargetFoo, model_cache_key, model_detail.model_info,
+      model_detail.base_model_dir, base::DoNothing());
+  RunUntilIdle();
+
+  // Fast forward so that the model has expired.
+  task_environment_.FastForwardBy(features::StoredModelsValidDuration() +
+                                  base::Seconds(1));
+
+  WaitForModeLoad(kTestOptimizationTargetFoo, model_cache_key);
+  EXPECT_FALSE(last_loaded_prediction_model());
+  EXPECT_FALSE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
+                                                 model_cache_key));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
+      PredictionModelStoreModelRemovalReason::kModelExpiredOnLoadModel, 1);
+}
+
+TEST_F(PredictionModelStoreTest, InvalidModelDirModelRemoved) {
+  base::HistogramTester histogram_tester;
+
+  auto model_cache_key = CreateModelCacheKey(kTestLocaleFoo);
+  auto model_detail =
+      CreateTestModelFiles(kTestOptimizationTargetFoo, model_cache_key, {});
+  prediction_model_store_->UpdateModel(
+      kTestOptimizationTargetFoo, model_cache_key, model_detail.model_info,
+      model_detail.base_model_dir, base::DoNothing());
+  RunUntilIdle();
+
+  // Delete the model file to make it invalid.
+  base::DeleteFile(
+      model_detail.base_model_dir.Append(GetBaseFileNameForModels()));
+
+  WaitForModeLoad(kTestOptimizationTargetFoo, model_cache_key);
+  EXPECT_FALSE(last_loaded_prediction_model());
+  EXPECT_FALSE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
+                                                 model_cache_key));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
+      PredictionModelStoreModelRemovalReason::kModelLoadFailed, 1);
+}
+
+TEST_F(PredictionModelStoreTest, InvalidModelDirModelUpdate) {
+  base::HistogramTester histogram_tester;
+
+  auto model_cache_key = CreateModelCacheKey(kTestLocaleFoo);
+  auto model_detail =
+      CreateTestModelFiles(kTestOptimizationTargetFoo, model_cache_key, {});
+  // Delete the model file to make it invalid.
+  base::DeleteFile(
+      model_detail.base_model_dir.Append(GetBaseFileNameForModels()));
+  prediction_model_store_->UpdateModel(
+      kTestOptimizationTargetFoo, model_cache_key, model_detail.model_info,
+      model_detail.base_model_dir, base::DoNothing());
+  RunUntilIdle();
+
+  EXPECT_FALSE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
+                                                 model_cache_key));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
+      PredictionModelStoreModelRemovalReason::kModelUpdateFilePathVerifyFailed,
+      1);
 }
 
 }  // namespace optimization_guide

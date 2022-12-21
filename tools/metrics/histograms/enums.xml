@@ -75338,6 +75338,22 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OptimizationGuidePredictionModelStoreModelRemovalReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ModelExpired">Model was expired.</int>
+  <int value="2" label="ModelExpiredOnLoadModel">
+    Model was found to be expired when the model is loaded.
+  </int>
+  <int value="3" label="InvalidModelDir">Model dirs were invalid.</int>
+  <int value="4" label="ModelLoadFailed">
+    Failed when loading the model files from the store.
+  </int>
+  <int value="5" label="ModelUpdateFilePathVerifyFailed">
+    Model file path verification failed on a model update.
+  </int>
+  <int value="6" label="ModelVersionInvalid">Model version is invalid.</int>
+</enum>
+
 <enum name="OptimizationGuideProcessHintsResult">
   <int value="0" label="Success">
     Hints were processed and at least one supported hint was stored.

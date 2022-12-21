@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/hash/legacy_hash.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -207,6 +208,13 @@ std::string GetModelCacheKeyHash(proto::ModelCacheKey model_cache_key) {
   // Convert the hash to hex encoding and not as base64 and other encodings,
   // since it will be used as filepath names.
   return base::HexEncode(base::as_bytes(base::make_span(&hash, 1)));
+}
+
+void RecordPredictionModelStoreModelRemovalVersionHistogram(
+    PredictionModelStoreModelRemovalReason model_removal_reason) {
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
+      model_removal_reason);
 }
 
 }  // namespace optimization_guide

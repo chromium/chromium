@@ -52,6 +52,28 @@ enum class PredictionManagerModelStatus {
   kMaxValue = kStoreUnavailableModelUnknown,
 };
 
+// The various reasons a prediction model in the model store is being removed.
+// Keep in sync with OptimizationGuidePredictionModelStoreModelRemovalReason in
+// enums.xml.
+enum class PredictionModelStoreModelRemovalReason {
+  kUnknown = 0,
+  // Model was expired.
+  kModelExpired = 1,
+  // Model was found to be expired when the model is loaded.
+  kModelExpiredOnLoadModel = 2,
+  // Model dirs were invalid.
+  kInvalidModelDir = 3,
+  // Failed when loading the model files from the store.
+  kModelLoadFailed = 4,
+  // Model file path verification failed on a model update.
+  kModelUpdateFilePathVerifyFailed = 5,
+  // Model version is invalid.
+  kModelVersionInvalid = 6,
+
+  // Add new values above this line.
+  kMaxValue = kModelVersionInvalid,
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_

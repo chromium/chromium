@@ -1287,6 +1287,17 @@ chromium-metrics-reviews@google.com.
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
+<histogram name="OptimizationGuide.PredictionModelStore.ModelRemovalReason"
+    enum="OptimizationGuidePredictionModelStoreModelRemovalReason"
+    expires_after="M112">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the reason the prediction model was removed from the model store.
+    Recorded when the model is removed.
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.PredictionModelStore.TotalDirectorySize.{OptimizationTarget}"
     units="MB" expires_after="M112">

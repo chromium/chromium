@@ -158,4 +158,49 @@ void ModelStoreMetadataEntryUpdater::SetKeepBeyondValidDuration(
                                keep_beyond_valid_duration);
 }
 
+void ModelStoreMetadataEntryUpdater::ClearMetadata() {
+  metadata_entry_updater_->clear();
+}
+
+std::vector<base::FilePath>
+ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(
+    PrefService* local_state) {
+  ScopedDictPrefUpdate updater(local_state,
+                               prefs::localstate::kModelStoreMetadata);
+  std::vector<base::FilePath> inactive_model_dirs;
+  for (auto optimization_target_entry : *updater) {
+    if (!optimization_target_entry.second.is_dict()) {
+      continue;
+    }
+    for (auto model_cache_key_hash :
+         optimization_target_entry.second.GetDict()) {
+      if (!model_cache_key_hash.second.is_dict()) {
+        continue;
+      }
+      bool should_remove_model =
+          switches::ShouldPurgeModelAndFeaturesStoreOnStartup();
+
+      // Check if the model expired.
+      auto metadata =
+          ModelStoreMetadataEntry(&model_cache_key_hash.second.GetDict());
+      if (!should_remove_model && !metadata.GetKeepBeyondValidDuration() &&
+          metadata.GetExpiryTime() <= base::Time::Now()) {
+        should_remove_model = true;
+        RecordPredictionModelStoreModelRemovalVersionHistogram(
+            PredictionModelStoreModelRemovalReason::kModelExpired);
+      }
+
+      if (should_remove_model) {
+        auto base_model_dir = metadata.GetModelBaseDir();
+        if (base_model_dir) {
+          inactive_model_dirs.emplace_back(*base_model_dir);
+        }
+        optimization_target_entry.second.GetDict().Remove(
+            model_cache_key_hash.first);
+      }
+    }
+  }
+  return inactive_model_dirs;
+}
+
 }  // namespace optimization_guide

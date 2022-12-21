@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "components/optimization_guide/core/model_enums.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -53,6 +54,10 @@ bool CheckAllPathsExist(const std::vector<base::FilePath>& file_paths_to_check);
 // Returns the hash of |model_cache_key| that can be used as key in a
 // persistent dict, or can be used as file paths.
 std::string GetModelCacheKeyHash(proto::ModelCacheKey model_cache_key);
+
+// Records the model remove version histogram.
+void RecordPredictionModelStoreModelRemovalVersionHistogram(
+    PredictionModelStoreModelRemovalReason model_removal_reason);
 
 }  // namespace optimization_guide
 

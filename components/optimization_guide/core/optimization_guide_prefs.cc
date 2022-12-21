@@ -66,6 +66,11 @@ const char kModelStoreMetadata[] = "optimization_guide.model_store_metadata";
 const char kModelCacheKeyMapping[] =
     "optimization_guide.model_cache_key_mapping";
 
+// A dictionary pref that stores the file paths that need to be deleted as keys.
+// The value will not be used.
+const char kStoreFilePathsToDelete[] =
+    "optimization_guide.store_file_paths_to_delete";
+
 }  // namespace localstate
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -93,6 +98,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(localstate::kModelStoreMetadata);
   registry->RegisterDictionaryPref(localstate::kModelCacheKeyMapping);
+  registry->RegisterDictionaryPref(localstate::kStoreFilePathsToDelete);
 }
 
 }  // namespace prefs

@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -112,6 +113,7 @@ class PredictionModelStoreBrowserTest : public InProcessBrowserTest {
             .spec());
     cmd->AppendSwitchASCII("host-rules", "MAP * 127.0.0.1");
     cmd->AppendSwitchASCII("force-variation-ids", "4");
+    cmd->AppendSwitch(switches::kDebugLoggingEnabled);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     cmd->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
