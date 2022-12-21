@@ -3172,7 +3172,7 @@
   },
   {
     "name": "enable-touchpads-in-diagnostics-app",
-    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
+    "owners": [ "jimmyxgong", "michaelcheco", "cros-peripherals@google.com" ],
     "expiry_milestone": 120
   },
   {
