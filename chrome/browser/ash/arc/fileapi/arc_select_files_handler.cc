@@ -78,6 +78,8 @@ const char kScriptGetElements[] =
 
 namespace {
 
+constexpr char kRecentAllFakePath[] = "/.fake-entry/recent/all";
+
 void ConvertToElementVector(
     const base::Value* list_value,
     std::vector<mojom::FileSelectorElementPtr>* elements) {
@@ -133,11 +135,11 @@ ui::SelectFileDialog::Type GetDialogType(
 base::FilePath GetInitialFilePath(const mojom::SelectFilesRequestPtr& request) {
   const mojom::DocumentPathPtr& document_path = request->initial_document_path;
   if (!document_path)
-    return base::FilePath();
+    return base::FilePath(kRecentAllFakePath);
 
   if (document_path->path.empty()) {
     LOG(ERROR) << "path should at least contain root Document ID.";
-    return base::FilePath();
+    return base::FilePath(kRecentAllFakePath);
   }
 
   const std::string& root_document_id = document_path->path[0];

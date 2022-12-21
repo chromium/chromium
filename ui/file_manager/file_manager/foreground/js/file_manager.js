@@ -1334,38 +1334,42 @@ export class FileManager extends EventTarget {
     // Resolve the selectionURL to selectionEntry or to currentDirectoryEntry in
     // case of being a display root or a default directory to open files.
     if (this.launchParams_.selectionURL) {
-      try {
-        const inEntry = await new Promise((resolve, reject) => {
-          window.webkitResolveLocalFileSystemURL(
-              this.launchParams_.selectionURL, resolve, reject);
-        });
-        const locationInfo = this.volumeManager_.getLocationInfo(inEntry);
-        // If location information is not available, then the volume is no
-        // longer (or never) available.
-        if (locationInfo) {
-          // If the selection is root, then use it as a current directory
-          // instead. This is because, selecting a root entry is done as opening
-          // it.
-          if (locationInfo.isRootEntry) {
-            nextCurrentDirEntry = inEntry;
-          }
+      if (this.launchParams_.selectionURL == this.recentEntry_.toURL()) {
+        nextCurrentDirEntry = this.recentEntry_;
+      } else {
+        try {
+          const inEntry = await new Promise((resolve, reject) => {
+            window.webkitResolveLocalFileSystemURL(
+                this.launchParams_.selectionURL, resolve, reject);
+          });
+          const locationInfo = this.volumeManager_.getLocationInfo(inEntry);
+          // If location information is not available, then the volume is no
+          // longer (or never) available.
+          if (locationInfo) {
+            // If the selection is root, use it as a current directory instead.
+            // This is because selecting a root is the same as opening it.
+            if (locationInfo.isRootEntry) {
+              nextCurrentDirEntry = inEntry;
+            }
 
-          // If the |selectionURL| is a directory make it the current directory.
-          if (inEntry.isDirectory) {
-            nextCurrentDirEntry = inEntry;
-          }
+            // If the |selectionURL| is a directory make it the current
+            // directory.
+            if (inEntry.isDirectory) {
+              nextCurrentDirEntry = inEntry;
+            }
 
-          // By default, the selection should be selected entry and the parent
-          // directory of it should be the current directory.
-          if (!nextCurrentDirEntry) {
-            selectionEntry = inEntry;
+            // By default, the selection should be selected entry and the parent
+            // directory of it should be the current directory.
+            if (!nextCurrentDirEntry) {
+              selectionEntry = inEntry;
+            }
           }
-        }
-      } catch (error) {
-        // If `selectionURL` doesn't exist we just don't select it, thus we
-        // don't need to log the failure.
-        if (error.name !== 'NotFoundError') {
-          console.warn(error.stack || error);
+        } catch (error) {
+          // If `selectionURL` doesn't exist we just don't select it, thus we
+          // don't need to log the failure.
+          if (error.name !== 'NotFoundError') {
+            console.warn(error.stack || error);
+          }
         }
       }
     }

@@ -66,6 +66,9 @@ const int kFileManagerHeight = 640;  // pixels
 const int kFileManagerMinimumWidth = 640;  // pixels
 const int kFileManagerMinimumHeight = 240;  // pixels
 
+constexpr char kFakeEntryURLScheme[] = "fake-entry://";
+constexpr char kFakeEntryPath[] = "/.fake-entry";
+
 // Holds references to file manager dialogs that have callbacks pending
 // to their listeners.
 class PendingDialog {
@@ -364,6 +367,18 @@ GURL SelectFileDialogExtension::MakeDialogURL(
     bool show_android_picker_apps,
     std::vector<std::string> volume_filter,
     Profile* profile) {
+  base::FilePath relative_path;
+  if (base::FilePath(kFakeEntryPath)
+          .AppendRelativePath(default_path, &relative_path)) {
+    GURL selection_url = GURL(kFakeEntryURLScheme + relative_path.value());
+    GURL current_directory_url =
+        GURL(kFakeEntryURLScheme + relative_path.DirName().value());
+    return file_manager::util::GetFileManagerMainPageUrlWithParams(
+        type, title, current_directory_url, selection_url, /*target_name=*/"",
+        file_types, file_type_index, search_query, show_android_picker_apps,
+        std::move(volume_filter));
+  }
+
   base::FilePath download_default_path(
       DownloadPrefs::FromBrowserContext(profile)->DownloadPath());
   base::FilePath selection_path =
