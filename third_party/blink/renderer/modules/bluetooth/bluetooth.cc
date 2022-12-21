@@ -549,7 +549,7 @@ void Bluetooth::AdvertisingEvent(
   auto* event = MakeGarbageCollected<BluetoothAdvertisingEvent>(
       event_type_names::kAdvertisementreceived,
       GetBluetoothDeviceRepresentingDevice(std::move(advertising_event->device),
-                                           GetSupplementable()->DomWindow()),
+                                           GetExecutionContext()),
       std::move(advertising_event));
   DispatchEvent(*event);
 }
