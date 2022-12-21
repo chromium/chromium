@@ -176,7 +176,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
    * Handler for tapping the "Browsing data" item.
    */
   private onBrowsingDataTap_(): void {
-    window.open('chrome://settings/clearBrowserData');
+    this.browserProxy_.openBrowsingDataSettings();
   }
 
   /**

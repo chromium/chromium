@@ -81,6 +81,7 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   void HandleOpenMyFiles(const base::Value::List& unused_args);
   void HandleOpenArcStorage(const base::Value::List& unused_args);
   void HandleUpdateExternalStorages(const base::Value::List& unused_args);
+  void HandleOpenBrowsingDataSettings(const base::Value::List& unused_args);
 
   // Updates storage row on the UI.
   void UpdateStorageItem(

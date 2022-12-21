@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -104,6 +106,10 @@ void StorageHandler::RegisterMessages() {
       "updateExternalStorages",
       base::BindRepeating(&StorageHandler::HandleUpdateExternalStorages,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openBrowsingDataSettings",
+      base::BindRepeating(&StorageHandler::HandleOpenBrowsingDataSettings,
+                          base::Unretained(this)));
 }
 
 void StorageHandler::OnJavascriptAllowed() {
@@ -165,6 +171,15 @@ void StorageHandler::HandleOpenArcStorage(
       arc::ArcStorageManager::GetForBrowserContext(profile_);
   if (arc_storage_manager)
     arc_storage_manager->OpenPrivateVolumeSettings();
+}
+
+void StorageHandler::HandleOpenBrowsingDataSettings(
+    const base::Value::List& unused_args) {
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(chrome::kChromeUISettingsURL)
+          .Resolve(chrome::kClearBrowserDataSubPage),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void StorageHandler::HandleUpdateExternalStorages(

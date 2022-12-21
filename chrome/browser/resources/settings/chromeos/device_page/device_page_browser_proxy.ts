@@ -208,6 +208,8 @@ export interface DevicePageBrowserProxy {
   updateStorageInfo(): void;
 
   openMyFiles(): void;
+
+  openBrowsingDataSettings(): void;
 }
 
 let instance: DevicePageBrowserProxy|null = null;
@@ -314,5 +316,9 @@ export class DevicePageBrowserProxyImpl implements DevicePageBrowserProxy {
 
   openMyFiles(): void {
     chrome.send('openMyFiles');
+  }
+
+  openBrowsingDataSettings(): void {
+    chrome.send('openBrowsingDataSettings');
   }
 }

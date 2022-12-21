@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/containers/adapters.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -33,6 +34,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -48,6 +50,15 @@ class TestStorageHandler : public StorageHandler {
 
   // Pull WebUIMessageHandler::set_web_ui() into public so tests can call it.
   using StorageHandler::set_web_ui;
+};
+
+class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
 };
 
 class StorageHandlerTest : public testing::Test {
@@ -82,26 +93,27 @@ class StorageHandlerTest : public testing::Test {
     // Initialize storage handler.
     content::WebUIDataSource* html_source =
         content::WebUIDataSource::Create(chrome::kChromeUIOSSettingsHost);
-    handler_ = std::make_unique<TestStorageHandler>(profile_, html_source);
-    handler_->set_web_ui(&web_ui_);
+    auto handler = std::make_unique<TestStorageHandler>(profile_, html_source);
+    handler_ = handler.get();
+    web_ui_ = std::make_unique<content::TestWebUI>();
+    web_ui_->AddMessageHandler(std::move(handler));
     handler_->AllowJavascriptForTesting();
     content::WebUIDataSource::Add(profile_, html_source);
 
     // Initialize tests APIs.
     total_disk_space_test_api_ =
-        std::make_unique<TotalDiskSpaceTestAPI>(handler_.get(), profile_);
+        std::make_unique<TotalDiskSpaceTestAPI>(handler_, profile_);
     free_disk_space_test_api_ =
-        std::make_unique<FreeDiskSpaceTestAPI>(handler_.get(), profile_);
+        std::make_unique<FreeDiskSpaceTestAPI>(handler_, profile_);
     my_files_size_test_api_ =
-        std::make_unique<MyFilesSizeTestAPI>(handler_.get(), profile_);
+        std::make_unique<MyFilesSizeTestAPI>(handler_, profile_);
     browsing_data_size_test_api_ =
-        std::make_unique<BrowsingDataSizeTestAPI>(handler_.get(), profile_);
-    apps_size_test_api_ =
-        std::make_unique<AppsSizeTestAPI>(handler_.get(), profile_);
+        std::make_unique<BrowsingDataSizeTestAPI>(handler_, profile_);
+    apps_size_test_api_ = std::make_unique<AppsSizeTestAPI>(handler_, profile_);
     crostini_size_test_api_ =
-        std::make_unique<CrostiniSizeTestAPI>(handler_.get(), profile_);
+        std::make_unique<CrostiniSizeTestAPI>(handler_, profile_);
     other_users_size_test_api_ =
-        std::make_unique<OtherUsersSizeTestAPI>(handler_.get());
+        std::make_unique<OtherUsersSizeTestAPI>(handler_);
 
     // Create and register My files directory.
     // By emulating chromeos running, GetMyFilesFolderForProfile will return the
@@ -114,10 +126,17 @@ class StorageHandlerTest : public testing::Test {
         file_manager::util::GetDownloadsMountPointName(profile_),
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         my_files_path));
+
+    auto instance = std::make_unique<MockNewWindowDelegate>();
+    auto primary = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_primary_ = primary.get();
+    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
+        std::move(instance), std::move(primary));
   }
 
   void TearDown() override {
-    handler_.reset();
+    new_window_provider_.reset();
+    web_ui_.reset();
     total_disk_space_test_api_.reset();
     free_disk_space_test_api_.reset();
     my_files_size_test_api_.reset();
@@ -152,7 +171,7 @@ class StorageHandlerTest : public testing::Test {
   // data.
   const base::Value* GetWebUICallbackMessage(const std::string& event_name) {
     for (const std::unique_ptr<content::TestWebUI::CallData>& data :
-         base::Reversed(web_ui_.call_data())) {
+         base::Reversed(web_ui_->call_data())) {
       const std::string* name = data->arg1()->GetIfString();
       if (data->function_name() != "cr.webUIListenerCallback" || !name) {
         continue;
@@ -195,8 +214,8 @@ class StorageHandlerTest : public testing::Test {
     ASSERT_EQ(expected_size, stat.st_size);
   }
 
-  std::unique_ptr<TestStorageHandler> handler_;
-  content::TestWebUI web_ui_;
+  TestStorageHandler* handler_;
+  std::unique_ptr<content::TestWebUI> web_ui_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   Profile* profile_;
@@ -207,10 +226,12 @@ class StorageHandlerTest : public testing::Test {
   std::unique_ptr<AppsSizeTestAPI> apps_size_test_api_;
   std::unique_ptr<CrostiniSizeTestAPI> crostini_size_test_api_;
   std::unique_ptr<OtherUsersSizeTestAPI> other_users_size_test_api_;
+  MockNewWindowDelegate* new_window_delegate_primary_;
 
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
+  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
 };
 
 TEST_F(StorageHandlerTest, RoundByteSize) {
@@ -517,6 +538,16 @@ TEST_F(StorageHandlerTest, SystemSize) {
   callback = GetWebUICallbackMessage("storage-system-size-changed");
   ASSERT_TRUE(callback) << "No 'storage-system-size-changed' callback";
   EXPECT_EQ("120 GB", callback->GetString());
+}
+
+TEST_F(StorageHandlerTest, OpenBrowsingDataSettings) {
+  EXPECT_CALL(*new_window_delegate_primary_,
+              OpenUrl(GURL(chrome::kChromeUISettingsURL)
+                          .Resolve(chrome::kClearBrowserDataSubPage),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab));
+  base::Value::List empty_args;
+  web_ui_->HandleReceivedMessage("openBrowsingDataSettings", empty_args);
 }
 
 }  // namespace
