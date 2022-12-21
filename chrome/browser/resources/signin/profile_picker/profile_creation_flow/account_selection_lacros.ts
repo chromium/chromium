@@ -72,6 +72,9 @@ export class AccountSelectionLacrosElement extends
         (accounts: AvailableAccount[]) =>
             this.handleAvailableAccountsChanged_(accounts));
     this.manageProfilesBrowserProxy_.getAvailableAccounts();
+
+    this.addWebUiListener(
+        'reauth-dialog-closed', () => this.accountSelected_ = false);
   }
 
   override ready() {

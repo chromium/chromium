@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/json/values_util.h"
@@ -33,12 +34,37 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/lacros/account_manager/get_account_information_helper.h"
+#include "chrome/browser/lacros/identity_manager_lacros.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #include "ui/gfx/image/image_unittest_util.h"
+
 const char kTestCallbackId[] = "test-callback-id";
 #endif
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class MockIdentityManagerLacros : public IdentityManagerLacros {
+ public:
+  MockIdentityManagerLacros() = default;
+  ~MockIdentityManagerLacros() override = default;
+
+  MOCK_METHOD(
+      void,
+      GetAccountEmail,
+      (const std::string& gaia_id,
+       crosapi::mojom::IdentityManager::GetAccountEmailCallback callback));
+
+  MOCK_METHOD(
+      void,
+      HasAccountWithPersistentError,
+      (const std::string& gaia_id,
+       crosapi::mojom::IdentityManager::HasAccountWithPersistentErrorCallback
+           callback));
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void VerifyProfileEntry(const base::Value& value,
                         ProfileAttributesEntry* entry) {
@@ -58,6 +84,8 @@ void VerifyProfileEntry(const base::Value& value,
             AccountInfo::IsManaged(entry->GetHostedDomain()));
 }
 
+}  // namespace
+
 class ProfilePickerHandlerTest : public testing::Test {
  public:
   ProfilePickerHandlerTest()
@@ -66,6 +94,7 @@ class ProfilePickerHandlerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
 
+    handler_ = std::make_unique<ProfilePickerHandler>();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Configure a mock account manager facade.
     ON_CALL(mock_account_manager_facade_, GetAccounts(testing::_))
@@ -88,8 +117,11 @@ class ProfilePickerHandlerTest : public testing::Test {
             &mock_account_manager_facade_,
             profile_manager()->profile_attributes_storage(),
             profile_manager()->local_state()->Get()));
+
+    handler_->identity_manager_lacros_ =
+        std::make_unique<MockIdentityManagerLacros>();
+
 #endif
-    handler_ = std::make_unique<ProfilePickerHandler>();
     web_ui_profile_ = GetWebUIProfile();
     web_ui_.set_web_contents(
         web_contents_factory_.CreateWebContents(web_ui_profile_));
@@ -153,6 +185,34 @@ class ProfilePickerHandlerTest : public testing::Test {
   void CompleteFacadeGetAccounts(
       const std::vector<account_manager::Account>& accounts) {
     std::move(facade_get_accounts_callback_).Run(accounts);
+  }
+
+  MockIdentityManagerLacros* mock_identity_manager_lacros() {
+    return static_cast<MockIdentityManagerLacros*>(
+        handler_->identity_manager_lacros_.get());
+  }
+
+  // Set the account check to return in error and the proper email based on the
+  // given gaia id through callbacks.
+  void SetAccountInErrorRequestResponse(const std::string& gaia_id,
+                                        const std::string& email,
+                                        bool account_in_error_response) {
+    ON_CALL(*mock_identity_manager_lacros(),
+            GetAccountEmail(testing::_, testing::_))
+        .WillByDefault(testing::Invoke(
+            [email](const std::string& gaia_id,
+                    crosapi::mojom::IdentityManager::GetAccountEmailCallback
+                        callback) { std::move(callback).Run(email); }));
+
+    ON_CALL(*mock_identity_manager_lacros(),
+            HasAccountWithPersistentError(gaia_id, testing::_))
+        .WillByDefault(testing::Invoke(
+            [account_in_error_response](
+                const std::string& gaia_id,
+                crosapi::mojom::IdentityManager::
+                    HasAccountWithPersistentErrorCallback callback) {
+              std::move(callback).Run(account_in_error_response);
+            }));
   }
 #endif
 
@@ -436,18 +496,31 @@ TEST_F(ProfilePickerHandlerTest, ProfilePickerObservesAvailableAccounts) {
 }
 
 TEST_F(ProfilePickerHandlerTest, CreateProfileExistingAccount) {
+  const std::string kGaiaId = "some_gaia_id";
+  const std::string kEmail = "example@gmail.com";
+  SetAccountInErrorRequestResponse(kGaiaId, kEmail,
+                                   /*account_in_error_response=*/false);
+
   // Lacros always expects a default profile.
   CreateTestingProfile("Default");
 
   // Add account to the facade.
-  const std::string kGaiaId = "some_gaia_id";
   CompleteFacadeGetAccounts({account_manager::Account{
       account_manager::AccountKey{kGaiaId, account_manager::AccountType::kGaia},
-      "example@gmail.com"}});
+      kEmail}});
 
   // OS account addition flow should not trigger.
   EXPECT_CALL(*mock_account_manager_facade(),
               ShowAddAccountDialog(testing::_, testing::_))
+      .Times(0);
+
+  // Expecting the account in error check call.
+  EXPECT_CALL(*mock_identity_manager_lacros(),
+              HasAccountWithPersistentError(kGaiaId, testing::_))
+      .Times(1);
+  // Since the account is not in error there is no call to getting the email.
+  EXPECT_CALL(*mock_identity_manager_lacros(),
+              GetAccountEmail(kGaiaId, testing::_))
       .Times(0);
 
   // Request profile creation with the existing account.
@@ -483,6 +556,40 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileExistingAccount) {
   EXPECT_EQ("load-signin-finished", data.arg1()->GetString());
   bool success = data.arg2()->GetBool();
   EXPECT_TRUE(success);
+}
+
+TEST_F(ProfilePickerHandlerTest, CreateProfileExistingAccountInError) {
+  const std::string kGaiaId = "some_gaia_id";
+  const std::string kEmail = "example@gmail.com";
+  SetAccountInErrorRequestResponse(kGaiaId, kEmail,
+                                   /*account_in_error_response=*/true);
+
+  // Add account to the facade.
+  CompleteFacadeGetAccounts({account_manager::Account{
+      account_manager::AccountKey{kGaiaId, account_manager::AccountType::kGaia},
+      kEmail}});
+
+  // Since account is in error, AccountManagerFacade will try to display the
+  // Reauth Account dialog after getting the email. Testing version directly
+  // redirects to the callback simulating the reauth dialog closed.
+  EXPECT_CALL(*mock_identity_manager_lacros(),
+              HasAccountWithPersistentError(kGaiaId, testing::_))
+      .Times(1);
+
+  EXPECT_CALL(*mock_identity_manager_lacros(),
+              GetAccountEmail(kGaiaId, testing::_))
+      .Times(1);
+
+  base::Value::List args;
+  args.Append(/*color=*/base::Value());
+  args.Append(/*gaiaId=*/kGaiaId);
+  web_ui()->HandleReceivedMessage("selectExistingAccountLacros", args);
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
+  EXPECT_EQ("reauth-dialog-closed", data.arg1()->GetString());
 }
 
 TEST_F(ProfilePickerHandlerTest, CreateProfileNewAccount) {
@@ -753,6 +860,40 @@ TEST_F(ProfilePickerHandlerInUserProfileTest, NoAvailableAccount) {
   base::Value::List args;
   args.Append(/*color=*/base::Value());
   web_ui()->HandleReceivedMessage("selectNewAccount", args);
+}
+
+TEST_F(ProfilePickerHandlerInUserProfileTest,
+       ExistingProfileExistingAccountInError) {
+  const std::string kGaiaId = "some_gaia_id";
+  const std::string kEmail = "example@gmail.com";
+  SetAccountInErrorRequestResponse(kGaiaId, kEmail,
+                                   /*account_in_error_response=*/true);
+
+  // Add account to the facade.
+  CompleteFacadeGetAccounts({account_manager::Account{
+      account_manager::AccountKey{kGaiaId, account_manager::AccountType::kGaia},
+      kEmail}});
+
+  // Since account is in error, AccountManagerFacade will try to display the
+  // Reauth Account dialog after getting the email. Testing version directly
+  // redirects to the callback simulating the reauth dialog closed.
+  EXPECT_CALL(*mock_identity_manager_lacros(),
+              HasAccountWithPersistentError(kGaiaId, testing::_))
+      .Times(1);
+  EXPECT_CALL(*mock_identity_manager_lacros(),
+              GetAccountEmail(kGaiaId, testing::_))
+      .Times(1);
+
+  base::Value::List args;
+  args.Append(/*color=*/base::Value());
+  args.Append(/*gaiaId=*/kGaiaId);
+  web_ui()->HandleReceivedMessage("selectExistingAccountLacros", args);
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
+  EXPECT_EQ("reauth-dialog-closed", data.arg1()->GetString());
 }
 
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)

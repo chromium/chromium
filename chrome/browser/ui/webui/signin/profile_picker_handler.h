@@ -25,13 +25,15 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/lacros/account_manager/get_account_information_helper.h"
+#include "chrome/browser/lacros/identity_manager_lacros.h"
+#include "chrome/browser/ui/webui/signin/profile_picker_lacros_sign_in_provider.h"
 
 class ProfilePickerLacrosSignInProvider;
 
 namespace account_manager {
 struct Account;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // The handler for Javascript messages related to the profile picker main view.
 class ProfilePickerHandler : public content::WebUIMessageHandler,
@@ -153,6 +155,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void OnProfileForDialogLoaded(Profile* profile);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // GaiaId as input string.
+  using AddAccountCallback = base::OnceCallback<void(const std::string&)>;
+
   // Opens the Ash account settings page in a new window.
   void HandleOpenAshAccountSettingsPage(const base::Value::List& args);
 
@@ -176,6 +181,39 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // omitted, ephemeral, and has a primary kSignin account.
   void OnLacrosSignedInProfileCreated(absl::optional<SkColor> profile_color,
                                       Profile* profile);
+
+  // `AddAccountCallback` used with `ResultAccountInPersistentError`.
+  void AddExistingAccountToNewProfile(
+      ProfilePickerLacrosSignInProvider::SignedInCallback signed_in_callback,
+      const std::string& gaia_id);
+
+  // `AddAccountCallback` used with `ResultAccountInPersistentError`.
+  void AddExistingAccountToExistingProfile(
+      AccountProfileMapper* mapper,
+      AccountProfileMapper::AddAccountCallback add_account_callback,
+      const std::string& gaia_id);
+
+  // Callback result of IdentityManagerLacros to check if the input account is
+  // in persistent error. Shows reauth screen on account in error, or calls
+  // `add_account_callback` on success.
+  // - `gaia_id`: id of account to check.
+  // - `add_account_callback`: callback on success.
+  // - `source`: Reauth screen source.
+  // - `persistent_error`: account check result.
+  void ResultAccountInPersistentError(
+      const std::string& gaia_id,
+      AddAccountCallback add_account_callback,
+      account_manager::AccountManagerFacade::AccountAdditionSource source,
+      bool persistent_error);
+
+  // Displays the reauth screen with the given email and source.
+  void ShowReauthWithEmail(
+      account_manager::AccountManagerFacade::AccountAdditionSource source,
+      const std::string& email);
+
+  // Resets account_selected state through JS to allow another account to be
+  // selected, also resets `lacros_sign_in_provider_`.
+  void OnReauthDialogClosed();
 
   // AccountProfileMapper::Observer:
   void OnAccountUpserted(const base::FilePath& profile_path,
@@ -218,6 +256,8 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Observes AccountProfileMapper to react to changes in available accounts.
   base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
       account_profile_mapper_observation_{this};
+
+  std::unique_ptr<IdentityManagerLacros> identity_manager_lacros_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // The order of the profiles when the picker was first shown. This is used
