@@ -45,9 +45,9 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
   ~HighEfficiencyChipViewBrowserTest() override = default;
 
   void SetUp() override {
-    iph_features_.InitAndEnableFeaturesWithParameters(
-        {{feature_engagement::kIPHHighEfficiencyInfoModeFeature, {}},
-         {performance_manager::features::kHighEfficiencyModeAvailable,
+    iph_features_.InitForDemo(
+        feature_engagement::kIPHHighEfficiencyInfoModeFeature,
+        {{performance_manager::features::kHighEfficiencyModeAvailable,
           {{"default_state", "true"}, {"time_before_discard", "5s"}}}});
 
     InProcessBrowserTest::SetUp();
