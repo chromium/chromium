@@ -1,6 +1,6 @@
 {
-  "version": "14.29",
-  "log_list_timestamp": "2022-11-14T12:54:37Z",
+  "version": "17.20",
+  "log_list_timestamp": "2022-12-21T12:55:21Z",
   "operators": [
     {
       "name": "Google",
@@ -47,8 +47,8 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2024/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
@@ -95,8 +95,8 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2024/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
@@ -204,8 +204,8 @@
           "url": "https://ct.cloudflare.com/logs/nimbus2024/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-09-21T17:00:00Z"
+            "usable": {
+              "timestamp": "2022-11-30T17:00:00Z"
             }
           },
           "temporal_interval": {
@@ -284,8 +284,8 @@
           "url": "https://yeti2024.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
@@ -300,8 +300,8 @@
           "url": "https://yeti2025.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
@@ -348,8 +348,8 @@
           "url": "https://nessie2024.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
@@ -364,8 +364,8 @@
           "url": "https://nessie2025.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
@@ -468,8 +468,8 @@
           "url": "https://oak.ct.letsencrypt.org/2024h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-09-21T17:00:00Z"
+            "usable": {
+              "timestamp": "2022-11-30T17:00:00Z"
             }
           },
           "temporal_interval": {
@@ -484,8 +484,8 @@
           "url": "https://oak.ct.letsencrypt.org/2024h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-09-21T17:00:00Z"
+            "usable": {
+              "timestamp": "2022-11-30T17:00:00Z"
             }
           },
           "temporal_interval": {
@@ -531,6 +531,22 @@
           "temporal_interval": {
             "start_inclusive": "2023-01-01T00:00:00Z",
             "end_exclusive": "2024-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Trust Asia Log2024-2",
+          "log_id": "h0+1DcAp2ZMd5XPp8omejkUzs5LTiwpGJXS/D+6y/B4=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEp2TieYE/YdfsxvhlKB2gtGYzwyXVCpV4nI/+pCrYj35y4P6of/ixLYXAjhJ0DS+Mq9d/eh7ZhDM56P2JX5ZICA==",
+          "url": "https://ct2024.trustasia.com/log2024/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2022-11-22T00:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2024-01-01T00:00:00Z",
+            "end_exclusive": "2025-01-01T00:00:00Z"
           }
         }
       ]
