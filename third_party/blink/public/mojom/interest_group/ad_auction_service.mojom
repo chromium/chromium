@@ -10,8 +10,7 @@ import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-// TODO(https://crbug.com/1400677): Too generic a name for this namespace.
-struct Replacement {
+struct AdKeywordReplacement {
   string match;
   string replacement;
 };
@@ -168,5 +167,5 @@ interface AdAuctionService {
   // TODO(crbug.com/1253118): Remove this function when we remove support for
   // showing FLEDGE ads in iframes.
   DeprecatedReplaceInURN(url.mojom.Url uuid_url,
-                         array<Replacement> replacements) => ();
+                         array<AdKeywordReplacement> replacements) => ();
 };

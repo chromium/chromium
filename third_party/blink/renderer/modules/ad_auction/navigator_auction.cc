@@ -1756,7 +1756,7 @@ ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
     exception_state.ThrowTypeError("Passed URL must be a valid URN URL.");
     return ScriptPromise();
   }
-  Vector<mojom::blink::ReplacementPtr> replacements_list;
+  Vector<mojom::blink::AdKeywordReplacementPtr> replacements_list;
   for (const auto& replacement : replacements) {
     if (!(replacement.first.StartsWith("${") &&
           replacement.first.EndsWith("}")) &&
@@ -1766,8 +1766,8 @@ ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
           "Replacements must be of the form '${...}' or '%%...%%'");
       return ScriptPromise();
     }
-    replacements_list.push_back(
-        mojom::blink::Replacement::New(replacement.first, replacement.second));
+    replacements_list.push_back(mojom::blink::AdKeywordReplacement::New(
+        replacement.first, replacement.second));
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
