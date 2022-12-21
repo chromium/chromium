@@ -202,7 +202,7 @@ class AX_EXPORT AXTree {
   }
 
   // Return a multi-line indented string representation, for logging.
-  std::string ToString() const;
+  std::string ToString(bool verbose = true) const;
 
   // A string describing the error from an unsuccessful Unserialize,
   // for testing and debugging.

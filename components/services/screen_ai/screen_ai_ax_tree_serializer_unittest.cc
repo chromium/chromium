@@ -64,12 +64,12 @@ TEST(ScreenAIAXTreeSerializerTest, Serialize) {
 
   const std::string expected_update(
       "AXTreeUpdate tree data: title=Screen AI\n"
-      "AXTreeUpdate: root id 1\nid=1 pdfRoot (0, 0)-(0, 0) child_ids=2,4\n  "
-      "id=2 region (0, 0)-(0, 0) is_page_breaking_object=true child_ids=3\n    "
-      "id=3 staticText (0, 0)-(0, 0) name_from=contents name=some text on page "
-      "1 is_line_breaking_object=true\n  id=4 region (0, 0)-(0, 0) "
-      "is_page_breaking_object=true child_ids=5\n    id=5 staticText (0, "
-      "0)-(0, 0) name_from=contents name=some text on page 2\n");
+      "AXTreeUpdate: root id 1\nid=1 pdfRoot child_ids=2,4 (0, 0)-(0, 0)\n  "
+      "id=2 region child_ids=3 (0, 0)-(0, 0) is_page_breaking_object=true\n    "
+      "id=3 staticText name=some text on page 1 (0, 0)-(0, 0) "
+      "is_line_breaking_object=true\n  id=4 region child_ids=5 (0, 0)-(0, 0) "
+      "is_page_breaking_object=true\n    id=5 staticText name=some "
+      "text on page 2 (0, 0)-(0, 0)\n");
   EXPECT_EQ(expected_update, update.ToString());
 }
 

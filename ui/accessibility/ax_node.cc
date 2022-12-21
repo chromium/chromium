@@ -1227,7 +1227,7 @@ std::string AXNode::GetValueForControl() const {
 }
 
 std::ostream& operator<<(std::ostream& stream, const AXNode& node) {
-  return stream << node.data().ToString();
+  return stream << node.data().ToString(/*verbose*/ false);
 }
 
 bool AXNode::IsTable() const {

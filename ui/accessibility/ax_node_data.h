@@ -341,7 +341,7 @@ struct AX_BASE_EXPORT AXNodeData {
   bool SupportsExpandCollapse() const;
 
   // Return a string representation of this data, for debugging.
-  virtual std::string ToString() const;
+  virtual std::string ToString(bool verbose = true) const;
 
   // Returns the approximate size in bytes.
   size_t ByteSize() const;

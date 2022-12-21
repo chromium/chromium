@@ -1487,7 +1487,7 @@ void BrowserAccessibilityManager::OnNodeReparented(ui::AXTree* tree,
   // triggers this condition.
   SANITIZER_CHECK(iter != id_wrapper_map_.end())
       << "Missing BrowserAccessibility* for node: " << *node
-      << "\nTree: " << tree->ToString();
+      << "\nTree: " << tree->ToString(/*verbose*/ false);
   if (iter == id_wrapper_map_.end())
     return;
   BrowserAccessibility* wrapper = iter->second.get();

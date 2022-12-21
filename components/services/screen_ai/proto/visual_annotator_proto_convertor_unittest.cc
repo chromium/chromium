@@ -51,7 +51,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         VisualAnnotationToAXTreeUpdate(serialized_annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "id=1 dialog (0, 0)-(800, 900) child_ids=2,3\n"
+        "id=1 dialog child_ids=2,3 (0, 0)-(800, 900)\n"
         "  id=2 button offset_container_id=1 (0, 1)-(2, 3)"
         " transform=[ 0 -1 0 0\n  1 0 0 0\n  0 0 1 0\n  0 0 0 1 ]\n"
         "\n"
@@ -118,14 +118,14 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         VisualAnnotationToAXTreeUpdate(serialized_annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "id=1 region (0, 0)-(800, 900) is_page_breaking_object=true "
-        "child_ids=2\n"
-        "  id=2 staticText offset_container_id=1 (100, 100)-(500, 20) "
-        "name_from=contents text_direction=rtl name=Hello world language=en "
-        "child_ids=3\n"
-        "    id=3 inlineTextBox (100, 100)-(500, 20) name_from=contents "
+        "id=1 region child_ids=2 (0, 0)-(800, 900) "
+        "is_page_breaking_object=true\n"
+        "  id=2 staticText name=Hello world child_ids=3 offset_container_id=1 "
+        "(100, 100)-(500, 20) "
+        "text_direction=rtl language=en\n"
+        "    id=3 inlineTextBox name=Hello world (100, 100)-(500, 20) "
         "background_color=&C350 color=&61A8 text_direction=rtl language=en "
-        "name=Hello world word_starts=0,6 word_ends=6,11\n");
+        "word_starts=0,6 word_ends=6,11\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 }

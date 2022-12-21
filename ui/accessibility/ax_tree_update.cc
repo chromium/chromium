@@ -16,7 +16,7 @@ AXTreeUpdate::AXTreeUpdate(const ui::AXTreeUpdate& other) = default;
 
 AXTreeUpdate::~AXTreeUpdate() = default;
 
-std::string AXTreeUpdate::ToString() const {
+std::string AXTreeUpdate::ToString(bool verbose) const {
   std::string result;
 
   if (has_tree_data) {
@@ -55,7 +55,7 @@ std::string AXTreeUpdate::ToString() const {
   for (const AXNodeData& node_data : nodes) {
     int indent = id_to_indentation[node_data.id];
     result += std::string(2 * indent, ' ');
-    result += node_data.ToString() + "\n";
+    result += node_data.ToString(/*verbose*/ verbose) + "\n";
     for (AXNodeID child_id : node_data.child_ids)
       id_to_indentation[child_id] = indent + 1;
   }

@@ -336,17 +336,19 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
 
   // Check completeness of tree output.
   ExpectTree(
-      "id=100 window FOCUSABLE (0, 0)-(0, 0) modal=true child_ids=10\n"
-      "  id=10 genericContainer INVISIBLE (0, 0)-(0, 0) restriction=disabled"
-      " child_ids=11,12\n"
-      "    id=11 genericContainer IGNORED (100, 100)-(50, 100)"
-      " restriction=disabled child_ids=1\n"
-      "      id=1 button FOCUSABLE (100, 100)-(10, 100) name_from=attribute"
-      " restriction=disabled class_name=android.widget.Button name=button1\n"
-      "    id=12 genericContainer IGNORED (100, 100)-(500, 100)"
-      " restriction=disabled child_ids=2\n"
-      "      id=2 button FOCUSABLE (100, 100)-(100, 100) name_from=attribute"
-      " restriction=disabled class_name=android.widget.Button name=button2\n");
+      "id=100 window FOCUSABLE child_ids=10 (0, 0)-(0, 0) modal=true\n"
+      "  id=10 genericContainer INVISIBLE child_ids=11,12 (0, 0)-(0, 0) "
+      "restriction=disabled\n"
+      "    id=11 genericContainer IGNORED child_ids=1 (100, 100)-(50, 100)"
+      " restriction=disabled\n"
+      "      id=1 button FOCUSABLE class_name=android.widget.Button"
+      " name=button1 name_from=attribute (100, 100)-(10, 100)"
+      " restriction=disabled\n"
+      "    id=12 genericContainer IGNORED child_ids=2 (100, 100)-(500, 100)"
+      " restriction=disabled\n"
+      "      id=2 button FOCUSABLE class_name=android.widget.Button"
+      " name=button2 name_from=attribute (100, 100)-(100, 100)"
+      " restriction=disabled\n");
 }
 
 TEST_F(AXTreeSourceArcTest, AccessibleNameComputationWindow) {
@@ -1064,11 +1066,11 @@ TEST_F(AXTreeSourceArcTest, SerializeAndUnserialize) {
   CallNotifyAccessibilityEvent(event.get());
   EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kFocus));
   ExpectTree(
-      "id=100 window FOCUSABLE (0, 0)-(0, 0) modal=true child_ids=10\n"
-      "  id=10 genericContainer IGNORED INVISIBLE (0, 0)-(0, 0) "
-      "restriction=disabled child_ids=1\n"
-      "    id=1 genericContainer IGNORED INVISIBLE (0, 0)-(0, 0) "
-      "restriction=disabled child_ids=2\n"
+      "id=100 window FOCUSABLE child_ids=10 (0, 0)-(0, 0) modal=true\n"
+      "  id=10 genericContainer IGNORED INVISIBLE child_ids=1 (0, 0)-(0, 0) "
+      "restriction=disabled\n"
+      "    id=1 genericContainer IGNORED INVISIBLE child_ids=2 (0, 0)-(0, 0) "
+      "restriction=disabled\n"
       "      id=2 genericContainer IGNORED INVISIBLE (0, 0)-(0, 0) "
       "restriction=disabled\n");
 
@@ -1086,15 +1088,15 @@ TEST_F(AXTreeSourceArcTest, SerializeAndUnserialize) {
 
   CallNotifyAccessibilityEvent(event.get());
   ExpectTree(
-      "id=100 window FOCUSABLE (0, 0)-(0, 0) modal=true child_ids=10\n"
-      "  id=10 genericContainer INVISIBLE (0, 0)-(0, 0) "
-      "restriction=disabled child_ids=1\n"
-      "    id=1 genericContainer IGNORED INVISIBLE (0, 0)-(0, 0) "
-      "restriction=disabled child_ids=2\n"
-      "      id=2 genericContainer IGNORED INVISIBLE (0, 0)-(0, 0) "
-      "restriction=disabled child_ids=3\n"
-      "        id=3 genericContainer INVISIBLE (0, 0)-(0, 0) "
-      "name_from=attribute restriction=disabled name=some text\n");
+      "id=100 window FOCUSABLE child_ids=10 (0, 0)-(0, 0) modal=true\n"
+      "  id=10 genericContainer INVISIBLE child_ids=1 (0, 0)-(0, 0) "
+      "restriction=disabled\n"
+      "    id=1 genericContainer IGNORED INVISIBLE child_ids=2 (0, 0)-(0, 0) "
+      "restriction=disabled\n"
+      "      id=2 genericContainer IGNORED INVISIBLE child_ids=3 (0, 0)-(0, 0) "
+      "restriction=disabled\n"
+      "        id=3 genericContainer INVISIBLE name=some text "
+      "name_from=attribute (0, 0)-(0, 0) restriction=disabled\n");
   EXPECT_EQ(1U, tree()->GetFromId(10)->GetUnignoredChildCount());
 }
 

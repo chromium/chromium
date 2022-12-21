@@ -83,7 +83,7 @@ struct AX_BASE_EXPORT AXTreeUpdate {
   std::vector<AXEventIntent> event_intents;
 
   // Return a multi-line indented string representation, for logging.
-  std::string ToString() const;
+  std::string ToString(bool verbose = true) const;
 };
 
 }  // namespace ui

@@ -1170,14 +1170,84 @@ bool AXNodeData::SupportsExpandCollapse() const {
   return ui::SupportsExpandCollapse(role);
 }
 
-std::string AXNodeData::ToString() const {
+// TODO(accessibility) Consider reusing code from AXTreeFormatterBlink, where
+// the |verbose| parameter alters the property filter. Would remove ~800 lines.
+std::string AXNodeData::ToString(bool verbose) const {
   std::string result;
 
+  // Most important properties are provided first.
   result += "id=" + base::NumberToString(id);
   result += " ";
   result += ui::ToString(role);
 
   result += StateBitfieldToString(state);
+
+  if (HasStringAttribute(ax::mojom::StringAttribute::kHtmlTag)) {
+    result += base::StringPrintf(
+        " <%s",
+        GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag).c_str());
+    if (HasStringAttribute(ax::mojom::StringAttribute::kClassName)) {
+      result += base::StringPrintf(
+          ".%s",
+          GetStringAttribute(ax::mojom::StringAttribute::kClassName).c_str());
+    }
+    std::string id_attr;
+    if (GetHtmlAttribute("id", &id_attr)) {
+      result += base::StringPrintf("#%s", id_attr.c_str());
+    }
+    result += ">";
+  } else if (HasStringAttribute(ax::mojom::StringAttribute::kClassName)) {
+    result += " class_name=" +
+              GetStringAttribute(ax::mojom::StringAttribute::kClassName);
+  }
+
+  if (HasStringAttribute(ax::mojom::StringAttribute::kRole)) {
+    result += " aria_role=";
+    result += GetStringAttribute(ax::mojom::StringAttribute::kRole);
+  }
+
+  if (HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+    result += " name=";
+    result += GetStringAttribute(ax::mojom::StringAttribute::kName);
+  }
+
+  // TODO(accessibility) Blink a11y shouldn't serialize name_from field for
+  // text, because it's always contents, and is just adding noise.
+  if (!ui::IsText(role) &&
+      HasIntAttribute(ax::mojom::IntAttribute::kNameFrom)) {
+    result += " name_from=";
+    result += ui::ToString(static_cast<ax::mojom::NameFrom>(
+        GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)));
+  }
+
+  if (HasStringAttribute(ax::mojom::StringAttribute::kUrl)) {
+    result += " url=";
+    result += GetStringAttribute(ax::mojom::StringAttribute::kUrl);
+  }
+
+  if (HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
+    result += " has_child_tree";
+  }
+
+  if (HasBoolAttribute(ax::mojom::BoolAttribute::kBusy)) {
+    result += " busy";
+  }
+
+  if (HasStringAttribute(ax::mojom::StringAttribute::kDisplay)) {
+    result += " display=";
+    result +=
+        GetStringAttribute(ax::mojom::StringAttribute::kDisplay).substr(0, 30);
+  }
+
+  if (!child_ids.empty()) {
+    result += " child_ids=" + IntVectorToString(child_ids);
+  }
+
+  if (!verbose) {
+    return result;
+  }
+
+  // Properties of lesser importance are provided if verbose is set to true.
 
   result += " " + relative_bounds.ToString();
 
@@ -1287,9 +1357,7 @@ std::string AXNodeData::ToString() const {
         }
         break;
       case ax::mojom::IntAttribute::kNameFrom:
-        result += " name_from=";
-        result += ui::ToString(
-            static_cast<ax::mojom::NameFrom>(int_attribute.second));
+        // Already provided in default (non-verbose) section above.
         break;
       case ax::mojom::IntAttribute::kDescriptionFrom:
         result += " description_from=";
@@ -1568,23 +1636,16 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::StringAttribute::kChildTreeNodeAppId:
         result += " child_tree_node_app_id=" + value.substr(0, 8);
         break;
-      case ax::mojom::StringAttribute::kClassName:
-        result += " class_name=" + value;
-        break;
       case ax::mojom::StringAttribute::kDescription:
         result += " description=" + value;
         break;
       case ax::mojom::StringAttribute::kDisplay:
-        result += " display=" + value;
         break;
       case ax::mojom::StringAttribute::kDoDefaultLabel:
         result += " doDefaultLabel=" + value;
         break;
       case ax::mojom::StringAttribute::kFontFamily:
         result += " font-family=" + value;
-        break;
-      case ax::mojom::StringAttribute::kHtmlTag:
-        result += " html_tag=" + value;
         break;
       case ax::mojom::StringAttribute::kImageAnnotation:
         result += " image_annotation=" + value;
@@ -1624,9 +1685,6 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::StringAttribute::kPlaceholder:
         result += " placeholder=" + value;
         break;
-      case ax::mojom::StringAttribute::kRole:
-        result += " role=" + value;
-        break;
       case ax::mojom::StringAttribute::kRoleDescription:
         result += " role_description=" + value;
         break;
@@ -1636,17 +1694,18 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::StringAttribute::kTooltip:
         result += " tooltip=" + value;
         break;
-      case ax::mojom::StringAttribute::kUrl:
-        result += " url=" + value;
-        break;
-      case ax::mojom::StringAttribute::kName:
-        result += " name=" + value;
-        break;
       case ax::mojom::StringAttribute::kValue:
         result += " value=" + value;
         break;
       case ax::mojom::StringAttribute::kVirtualContent:
         result += " virtual_content=" + value;
+        break;
+      case ax::mojom::StringAttribute::kClassName:
+      case ax::mojom::StringAttribute::kHtmlTag:
+      case ax::mojom::StringAttribute::kRole:
+      case ax::mojom::StringAttribute::kUrl:
+      case ax::mojom::StringAttribute::kName:
+        // Already provided in default (non-verbose) section above.
         break;
       case ax::mojom::StringAttribute::kNone:
         break;
@@ -1697,7 +1756,7 @@ std::string AXNodeData::ToString() const {
         result += " atomic=" + value;
         break;
       case ax::mojom::BoolAttribute::kBusy:
-        result += " busy=" + value;
+        // Already provided in default (non-verbose) section above.
         break;
       case ax::mojom::BoolAttribute::kContainerLiveAtomic:
         result += " container_atomic=" + value;
@@ -1886,9 +1945,6 @@ std::string AXNodeData::ToString() const {
 
   if (actions)
     result += " actions=" + ActionsBitfieldToString(actions);
-
-  if (!child_ids.empty())
-    result += " child_ids=" + IntVectorToString(child_ids);
 
   return result;
 }

@@ -40,15 +40,15 @@ namespace ui {
 
 namespace {
 
-std::string TreeToStringHelper(const AXNode* node, int indent) {
+std::string TreeToStringHelper(const AXNode* node, int indent, bool verbose) {
   if (!node)
     return "";
 
   return std::accumulate(
       node->children().cbegin(), node->children().cend(),
-      std::string(2 * indent, ' ') + node->data().ToString() + "\n",
-      [indent](const std::string& str, const auto* child) {
-        return str + TreeToStringHelper(child, indent + 1);
+      std::string(2 * indent, ' ') + node->data().ToString(verbose) + "\n",
+      [indent, verbose](const std::string& str, const auto* child) {
+        return str + TreeToStringHelper(child, indent + 1, verbose);
       });
 }
 
@@ -1420,8 +1420,9 @@ AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
   return table_info;
 }
 
-std::string AXTree::ToString() const {
-  return "AXTree" + data_.ToString() + "\n" + TreeToStringHelper(root_, 0);
+std::string AXTree::ToString(bool verbose) const {
+  return "AXTree" + data_.ToString() + "\n" +
+         TreeToStringHelper(root_, 0, verbose);
 }
 
 AXNode* AXTree::CreateNode(AXNode* parent,
@@ -2261,7 +2262,8 @@ bool AXTree::CreateNewChildVector(AXNode* node,
                         ? *update_state->pending_root_id
                         : kInvalidAXNodeID)
                 << "\nTree update: "
-                << update_state->pending_tree_update->ToString();
+                << update_state->pending_tree_update->ToString(
+                       /*verbose*/ false);
 
           // Add a crash key so we can figure out why this is happening.
           static crash_reporter::CrashKeyString<256> ax_tree_error(
@@ -2751,15 +2753,18 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
   base::debug::SetCrashKeyString(ax_tree_error_key, new_error);
   base::debug::SetCrashKeyString(ax_tree_update_key,
                                  update_state.pending_tree_update->ToString());
-  base::debug::SetCrashKeyString(ax_tree_key, TreeToStringHelper(root_, 1));
+  base::debug::SetCrashKeyString(ax_tree_key,
+                                 TreeToStringHelper(root_, 1, false));
   base::debug::SetCrashKeyString(ax_tree_data_key, data().ToString());
 
   // In fast-failing-builds, crash immediately with a message, otherwise
   // rely on AccessibilityFatalError(), which will not crash until multiple
   // errors occur.
   SANITIZER_NOTREACHED() << new_error << "\n"
-                         << update_state.pending_tree_update->ToString() << "\n"
-                         << ToString();
+                         << update_state.pending_tree_update->ToString(
+                                /*verbose*/ false)
+                         << "\n"
+                         << ToString(/*verbose*/ false);
 }
 
 }  // namespace ui
