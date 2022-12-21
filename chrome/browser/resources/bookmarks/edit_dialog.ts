@@ -153,7 +153,7 @@ export class BookmarksEditDialogElement extends PolymerElement {
     } else {
       edit['parentId'] = this.parentId_;
       trackUpdatedItems();
-      chrome.bookmarks.create(edit).then(highlightUpdatedItems);
+      chrome.bookmarks.create(edit, highlightUpdatedItems);
     }
     this.$.dialog.close();
   }

@@ -17,11 +17,9 @@ suite('<bookmarks-edit-dialog>', function() {
     chrome.bookmarks.update = function(id, edit) {
       lastUpdate.id = id;
       lastUpdate.edit = edit;
-      return Promise.resolve({id: '', title: ''});
     };
     chrome.bookmarks.create = function(node) {
       lastCreation = node;
-      return Promise.resolve({id: '', title: ''});
     };
   });
 

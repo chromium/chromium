@@ -83,12 +83,14 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   }
 
   getFolders() {
-    return chrome.bookmarks.getTree().then(results => {
-      if (results[0] && results[0].children) {
-        return results[0].children;
-      }
-      return [];
-    });
+    return new Promise<chrome.bookmarks.BookmarkTreeNode[]>(
+        resolve => chrome.bookmarks.getTree(results => {
+          if (results[0] && results[0].children) {
+            resolve(results[0].children);
+            return;
+          }
+          resolve([]);
+        }));
   }
 
   openBookmark(
