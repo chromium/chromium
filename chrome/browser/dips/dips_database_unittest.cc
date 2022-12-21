@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_database.h"
 
@@ -41,7 +42,7 @@ class TestDatabase : public DIPSDatabase {
  public:
   explicit TestDatabase(const absl::optional<base::FilePath>& db_path)
       : DIPSDatabase(db_path) {}
-  void ComputeDatabaseMetricsForTesting() { ComputeDatabaseMetrics(); }
+  void LogDatabaseMetricsForTesting() { LogDatabaseMetrics(); }
 };
 
 enum ColumnType { kSiteStorage, kUserInteraction, kStatefulBounce, kBounce };
@@ -49,6 +50,9 @@ enum ColumnType { kSiteStorage, kUserInteraction, kStatefulBounce, kBounce };
 class DIPSDatabaseTest : public testing::Test {
  public:
   explicit DIPSDatabaseTest(bool in_memory) : in_memory_(in_memory) {}
+
+  // Small delta used to test before/after timestamps made with FromDoubleT.
+  base::TimeDelta tiny_delta = base::Milliseconds(1);
 
  protected:
   base::SimpleTestClock clock_;
@@ -327,197 +331,181 @@ TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredInteractions) {
 INSTANTIATE_TEST_SUITE_P(All, DIPSDatabaseInteractionTest, ::testing::Bool());
 
 // A test class that verifies the behavior of the methods used to query the
-// DIPSDatabase for information more efficiently than using DIPSDatabase::Read.
-//
-// Parameterized over whether the db is in memory.
+// DIPSDatabase to find all sites which should have their state cleared by DIPS.
 class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
-                              public testing::WithParamInterface<bool> {
+                              public testing::WithParamInterface<
+                                  std::tuple<bool, DIPSTriggeringAction>> {
  public:
-  DIPSDatabaseQueryTest() : DIPSDatabaseTest(GetParam()) {}
+  using QueryMethod = base::RepeatingCallback<std::vector<std::string>(void)>;
+  DIPSDatabaseQueryTest() : DIPSDatabaseTest(std::get<0>(GetParam())) {
+    // Set a constant interaction_ttl = 1 year for testing
+    // This means sites protected by an interaction will stay protected until
+    // the interaction expires a year later.
+    int year_in_hours = base::Days(365).InHours();
+    // Set a constant grace_period = 10s for testing.
+    features_.InitAndEnableFeatureWithParameters(
+        dips::kFeature,
+        {{"interaction_ttl", base::StringPrintf("%dh", year_in_hours)},
+         {"grace_period", "10s"}});
+  }
 
   void SetUp() override {
     DIPSDatabaseTest::SetUp();
-    // Use inf ttl to prevent interactions from expiring unintentionally.
-    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
-                                                 {{"interaction_ttl", "inf"}});
-    DCHECK(db_);
-    // Add entries to the database filling in the columns we want to test.
-    // These test entries correspond with the following cases:
-    // - a site accesses the browser's storage only
-    // - a site redirects the user while accessing storage
-    // - a site redirects the user (without regard to storage access)
-    //  All of these entries include a user interaction.
-    db_->Write("storage-only.test", storage_times, interaction_times,
-               /*stateful_bounce_times=*/{}, /*bounce_times=*/{});
-    db_->Write("stateful-bounce.test", storage_times, interaction_times,
-               stateful_bounce_times,
-               /*bounce_times=*/stateful_bounce_times);
-    db_->Write("stateless-bounce.test",
-               /*storage_times=*/{}, interaction_times,
-               /*stateful_bounce_times=*/{}, bounce_times);
+    ASSERT_EQ(dips::kGracePeriod.Get(), base::Seconds(10));
+    grace_period = dips::kGracePeriod.Get();
+    ASSERT_EQ(dips::kInteractionTtl.Get(), base::Days(365));
+    interaction_ttl = dips::kInteractionTtl.Get();
+  }
+
+  // Returns the DIPS-triggering action we're testing.
+  DIPSTriggeringAction CurrentAction() { return std::get<1>(GetParam()); }
+
+  // Returns a callback for the respective querying method we want to test.
+  QueryMethod GetQueryMethodUnderTest() {
+    switch (CurrentAction()) {
+      case DIPSTriggeringAction::kBounce:
+        return base::BindLambdaForTesting(
+            [&]() { return db_->GetSitesThatBounced(); });
+      case DIPSTriggeringAction::kStorage:
+        return base::BindLambdaForTesting(
+            [&]() { return db_->GetSitesThatUsedStorage(); });
+      case DIPSTriggeringAction::kStatefulBounce:
+        return base::BindLambdaForTesting(
+            [&]() { return db_->GetSitesThatBouncedWithState(); });
+    }
+  }
+
+  void WriteForCurrentAction(const std::string& site,
+                             TimestampRange event_times,
+                             TimestampRange interactions) {
+    switch (CurrentAction()) {
+      case DIPSTriggeringAction::kBounce:
+        db_->Write(site, /*storage_times=*/{}, interactions,
+                   /*stateful_bounce_times=*/{},
+                   /*bounce_times=*/event_times);
+        break;
+      case DIPSTriggeringAction::kStorage:
+        db_->Write(site, /*storage_times=*/event_times, interactions,
+                   /*stateful_bounce_times=*/{}, /*bounce_times=*/{});
+        break;
+      case DIPSTriggeringAction::kStatefulBounce:
+        db_->Write(site, /*storage_times=*/{}, interactions,
+                   /*stateful_bounce_times=*/event_times,
+                   /*bounce_times=*/event_times);
+        break;
+    }
   }
 
  protected:
-  // Rewrites the entries that were wrote in SetUp() to not have interactions.
-  void ClearAllInteractions() {
-    db_->Write("storage-only.test", storage_times,
-               /*interaction_times=*/{},
-               /*stateful_bounce_times=*/{}, /*bounce_times=*/{});
-    db_->Write("stateful-bounce.test", storage_times,
-               /*interaction_times=*/{}, stateful_bounce_times,
-               /*bounce_times=*/stateful_bounce_times);
-    db_->Write("stateless-bounce.test",
-               /*storage_times=*/{}, /*interaction_times=*/{},
-               /*stateful_bounce_times=*/{}, bounce_times);
-  }
-  // For ease of testings if a site has an entry in its `user_interaction`
-  // column the timestamp is at t=1 and so on.
-  base::Time interaction = Time::FromDoubleT(1);
-  base::Time storage = Time::FromDoubleT(2);
-  base::Time stateful_bounce = Time::FromDoubleT(3);
-  base::Time stateless_bounce = Time::FromDoubleT(4);
-
-  // Extra times used for testing querying at various times before or after the
-  // events being recorded to the db.
-  base::Time before_interaction = Time::FromDoubleT(0.9999);
-  base::Time after_interaction = Time::FromDoubleT(1.0001);
-  base::Time before_storage = Time::FromDoubleT(1.9999);
-  base::Time after_storage = Time::FromDoubleT(2.0001);
-  base::Time before_stateful_bounce = Time::FromDoubleT(2.9999);
-  base::Time after_stateful_bounce = Time::FromDoubleT(3.0001);
-  base::Time after_stateless_bounce = Time::FromDoubleT(4.0001);
-
-  TimestampRange interaction_times = {interaction, interaction};
-  TimestampRange storage_times = {storage, storage};
-  TimestampRange stateful_bounce_times = {stateful_bounce, stateful_bounce};
-  TimestampRange bounce_times = {stateless_bounce, stateless_bounce};
+  base::TimeDelta grace_period;
+  base::TimeDelta interaction_ttl;
 };
 
-TEST_P(DIPSDatabaseQueryTest, VerifyInteractionsNonNull) {
-  ClearAllInteractions();
-  EXPECT_THAT(db_->GetSitesThatBounced(before_storage, interaction),
-              testing::IsEmpty());
-  EXPECT_THAT(db_->GetSitesThatUsedStorage(before_storage, interaction),
-              testing::IsEmpty());
-  EXPECT_THAT(db_->GetSitesThatBouncedWithState(before_storage, interaction),
-              testing::IsEmpty());
+TEST_P(DIPSDatabaseQueryTest, ProtectedDuringGracePeriod) {
+  // The result of running `query` shouldn't include sites which are currently
+  // in their grace period after first performing a DIPS-triggering event.
+  QueryMethod query = GetQueryMethodUnderTest();
+
+  base::Time event = Time::FromDoubleT(1);
+  TimestampRange event_times = {event, event};
+  // Set up an interaction that will arrive too late to protect the event.
+  base::Time late_interaction = event + grace_period + base::Hours(1);
+  TimestampRange interaction_times = {late_interaction, late_interaction};
+
+  WriteForCurrentAction("site.test", event_times, interaction_times);
+
+  // Time-travel to the start of the grace period of the triggering event.
+  AdvanceTimeTo(event);
+  EXPECT_THAT(query.Run(), testing::IsEmpty());
+
+  // Time-travel to within the grace period of the triggering event.
+  AdvanceTimeTo(event + (grace_period / 2));
+  EXPECT_THAT(query.Run(), testing::IsEmpty());
+
+  // Time-travel to the end of the grace period of the triggering event.
+  AdvanceTimeTo(event + grace_period);
+  EXPECT_THAT(query.Run(), testing::IsEmpty());
 }
 
-TEST_P(DIPSDatabaseQueryTest, GetSitesThatBounced_InteractionTest) {
-  // All queries should be for the entire range (range_start > before_storage)
-  // so that we can test the behavior of this method for different values of
-  // last_interaction.
-  base::Time earliest_range_start = before_storage;
+TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionBeforeGracePeriod) {
+  // The result of running `query` shouldn't include sites who've received
+  // interactions from the user before performing a DIPS-triggering event.
+  QueryMethod query = GetQueryMethodUnderTest();
 
-  // No sites are expected since all of their interactions happen later on.
-  EXPECT_THAT(
-      db_->GetSitesThatBounced(earliest_range_start, before_interaction),
-      testing::IsEmpty());
+  // Set up an interaction that happens before the event.
+  base::Time interaction = Time::FromDoubleT(1);
+  TimestampRange interaction_times = {interaction, interaction};
+  base::Time event = Time::FromDoubleT(2);
+  TimestampRange event_times = {event, event};
 
-  // No sites are expected since the last_interaction_time check is strictly
-  // less, and not less than or equal to.
-  EXPECT_THAT(db_->GetSitesThatBounced(earliest_range_start, interaction),
-              testing::IsEmpty());
+  WriteForCurrentAction("site.test", event_times, interaction_times);
 
-  // When the last_interaction bound is `after_interaction`, both sites that
-  // bounced are returned since they had user interaction before it.
-  EXPECT_THAT(
-      db_->GetSitesThatBounced(earliest_range_start, after_interaction),
-      testing::ElementsAre("stateful-bounce.test", "stateless-bounce.test"));
+  // 'site.test' shouldn't be returned when querying after the grace period
+  // as the early interaction protects it from being cleared.
+  AdvanceTimeTo(event + grace_period + tiny_delta);
+  EXPECT_THAT(query.Run(), testing::IsEmpty());
+
+  // "site.test" should still be protected up until the interaction expires.
+  AdvanceTimeTo(interaction + interaction_ttl - tiny_delta);
+  EXPECT_THAT(query.Run(), testing::IsEmpty());
+  // Once the interaction expires, "site.test" is no longer protected.
+  AdvanceTimeTo(interaction + interaction_ttl + tiny_delta);
+  EXPECT_THAT(query.Run(), testing::ElementsAre("site.test"));
 }
 
-TEST_P(DIPSDatabaseQueryTest, GetSitesThatBounced_RangeStartTest) {
-  EXPECT_THAT(
-      db_->GetSitesThatBounced(before_storage, after_interaction),
-      testing::ElementsAre("stateful-bounce.test", "stateless-bounce.test"));
-  // When the range begins after the stateful bounce happened,
-  // "stateless-bounce.test" is returned since it bounces later.
-  EXPECT_THAT(
-      db_->GetSitesThatBounced(after_stateful_bounce, after_interaction),
-      testing::ElementsAre("stateless-bounce.test"));
-  // When the range begins after the stateless bounce happened, neither are
-  // returned since both sites bounced before this.
-  EXPECT_THAT(
-      db_->GetSitesThatBounced(after_stateless_bounce, after_interaction),
-      testing::IsEmpty());
+TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionDuringGracePeriod) {
+  // The result of running `query` shouldn't include sites who've received
+  // interactions during the grace period following a DIPS-triggering event.
+  QueryMethod query = GetQueryMethodUnderTest();
+
+  // Set up an interaction that happens during the event's grace period.
+  base::Time event = Time::FromDoubleT(1);
+  TimestampRange event_times = {event, event};
+  base::Time interaction = Time::FromDoubleT(4);
+  TimestampRange interaction_times = {interaction, interaction};
+  ASSERT_TRUE(interaction < event + grace_period);
+
+  WriteForCurrentAction("site.test", event_times, interaction_times);
+
+  // 'site.test' shouldn't be returned as the interaction protects
+  // it from being cleared.
+  AdvanceTimeTo(event + grace_period + tiny_delta);
+  EXPECT_THAT(query.Run(), testing::IsEmpty());
+
+  // "site.test" should still be protected up until the interaction expires.
+  AdvanceTimeTo(interaction + interaction_ttl - tiny_delta);
+  EXPECT_THAT(query.Run(), testing::IsEmpty());
+  // Once the interaction expires, "site.test" is no longer protected.
+  AdvanceTimeTo(interaction + interaction_ttl + tiny_delta);
+  EXPECT_THAT(query.Run(), testing::ElementsAre("site.test"));
 }
 
-TEST_P(DIPSDatabaseQueryTest, GetSitesThatBouncedWithState_InteractionTest) {
-  // All queries should be for the entire range (range_start > before_storage)
-  // so that we can test the behavior of this method for different values of
-  // last_interaction.
-  base::Time earliest_range_start = before_storage;
+TEST_P(DIPSDatabaseQueryTest, SiteWithoutInteractionsAreUnprotected) {
+  // The result of running `query` should include sites who've never received
+  // interaction from the user before, or during the grace period after,
+  // performing a DIPS-triggering event.
+  base::RepeatingCallback<std::vector<std::string>(void)> query =
+      GetQueryMethodUnderTest();
 
-  // No sites are expected since all of their interactions happen later on.
-  EXPECT_THAT(db_->GetSitesThatBouncedWithState(earliest_range_start,
-                                                before_interaction),
-              testing::IsEmpty());
+  // Set up an event with no corresponding interaction.
+  base::Time event = Time::FromDoubleT(2);
+  TimestampRange event_times = {event, event};
 
-  // No sites are expected since the last_interaction_time check is strictly
-  // less, and not less than or equal to.
-  EXPECT_THAT(
-      db_->GetSitesThatBouncedWithState(earliest_range_start, interaction),
-      testing::IsEmpty());
+  WriteForCurrentAction("site.test", event_times, {});
 
-  // When the last_interaction bound is `after_interaction`, the site that
-  // did a stateful bounce is returned since it had user interaction before it.
-  EXPECT_THAT(db_->GetSitesThatBouncedWithState(earliest_range_start,
-                                                after_interaction),
-              testing::ElementsAre("stateful-bounce.test"));
+  // 'site.test' is returned since there is no interaction protecting it.
+  AdvanceTimeTo(event + grace_period + tiny_delta);
+  EXPECT_THAT(query.Run(), testing::ElementsAre("site.test"));
 }
 
-TEST_P(DIPSDatabaseQueryTest, GetSitesThatBouncedWithState_RangeStartTest) {
-  EXPECT_THAT(
-      db_->GetSitesThatBouncedWithState(before_storage, after_interaction),
-      testing::ElementsAre("stateful-bounce.test"));
-  // When the range begins after the stateful bounce happened, no other sites
-  // are returned (since no other site did a stateful bounce after this time).
-  EXPECT_THAT(db_->GetSitesThatBouncedWithState(after_stateful_bounce,
-                                                after_interaction),
-              testing::IsEmpty());
-}
-
-TEST_P(DIPSDatabaseQueryTest, GetSitesThatUsedStorage_InteractionTest) {
-  // All queries should be for the entire range (range_start > before_storage)
-  // so that we can test the behavior of this method for different values of
-  // last_interaction.
-  base::Time earliest_range_start = before_storage;
-
-  // No sites are expected since all of their interactions happen later on.
-  EXPECT_THAT(
-      db_->GetSitesThatUsedStorage(earliest_range_start, before_interaction),
-      testing::IsEmpty());
-
-  // No sites are expected since the last_interaction_time check is strictly
-  // less, and not less than or equal to.
-  EXPECT_THAT(db_->GetSitesThatUsedStorage(earliest_range_start, interaction),
-              testing::IsEmpty());
-
-  // When the last_interaction bound is `after_interaction`, both sites that
-  // used storage are returned since they had user interaction before it.
-  EXPECT_THAT(
-      db_->GetSitesThatUsedStorage(earliest_range_start, after_interaction),
-      testing::ElementsAre("stateful-bounce.test", "storage-only.test"));
-}
-
-TEST_P(DIPSDatabaseQueryTest, GetSitesThatUsedStorage_RangeStartTest) {
-  // When the range begins at 0, both sites that used storage are returned since
-  // they did so after t=0.
-  EXPECT_THAT(
-      db_->GetSitesThatUsedStorage(before_storage, after_interaction),
-      testing::ElementsAre("stateful-bounce.test", "storage-only.test"));
-  // When the range begins after "storage-only.test" used storage, only
-  // "stateful_bounce.test" is returned since it uses storage later.
-  EXPECT_THAT(db_->GetSitesThatUsedStorage(after_storage, after_interaction),
-              testing::ElementsAre("stateful-bounce.test"));
-  // When the range begins after the stateful bounce happened, no other sites
-  // are returned (since no other site used storage after this time).
-  EXPECT_THAT(
-      db_->GetSitesThatUsedStorage(after_stateful_bounce, after_interaction),
-      testing::IsEmpty());
-}
-
-INSTANTIATE_TEST_SUITE_P(All, DIPSDatabaseQueryTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DIPSDatabaseQueryTest,
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Values(DIPSTriggeringAction::kBounce,
+                          DIPSTriggeringAction::kStorage,
+                          DIPSTriggeringAction::kStatefulBounce)));
 
 // A test class that verifies DIPSDatabase garbage collection behavior.
 class DIPSDatabaseGarbageCollectionTest
@@ -528,8 +516,10 @@ class DIPSDatabaseGarbageCollectionTest
 
   void SetUp() override {
     DIPSDatabaseTest::SetUp();
-    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
-                                                 {{"interaction_ttl", "inf"}});
+    features_.InitAndEnableFeatureWithParameters(
+        dips::kFeature,
+        {{"interaction_ttl",
+          base::StringPrintf("%dh", base::Days(90).InHours())}});
 
     DCHECK(db_);
     db_->SetMaxEntriesForTesting(200);
@@ -587,13 +577,13 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, RemovesRecentOverMax) {
             db_->GetMaxEntries() - db_->GetPurgeEntries());
 }
 
-// Less than |max_entries_| entries, some with expired user interaction and some
-// with recent; no entries should be garbage collected.
+// Less than |max_entries_| entries, none of which are expired;
+// no entries should be garbage collected.
 TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesUnderMax) {
   BloatBouncesForGC(
       /*num_recent_entries=*/(db_->GetMaxEntries() - db_->GetPurgeEntries()) /
-          4,
-      /*num_old_entries=*/(db_->GetMaxEntries() - db_->GetPurgeEntries()) / 4);
+          2,
+      /*num_old_entries=*/0);
 
   EXPECT_EQ(db_->GarbageCollect(), static_cast<size_t>(0));
 
@@ -601,15 +591,26 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesUnderMax) {
             (db_->GetMaxEntries() - db_->GetPurgeEntries()) / 2);
 }
 
-// Exactly |max_entries_| entries, some with expired user interaction and some
-// with recent; no entries should be garbage collected.
+// Exactly |max_entries_| entries, none of which are expired;
+// no entries should be garbage collected.
 TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesMax) {
-  BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() / 2,
-                    /*num_old_entries=*/db_->GetMaxEntries() / 2);
+  BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries(),
+                    /*num_old_entries=*/0);
 
   EXPECT_EQ(db_->GarbageCollect(), static_cast<size_t>(0));
-
   EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries());
+}
+
+// More than |max_entries_| entries with recent user interaction and a few with
+// expired user interaction; only entries with expired user interaction should
+// be garbage collected by pure expiration.
+TEST_P(DIPSDatabaseGarbageCollectionTest, ExpirationPreservesRecent) {
+  BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() * 2,
+                    /*num_old_entries=*/db_->GetMaxEntries() / 2);
+
+  EXPECT_EQ(db_->ClearRowsWithExpiredInteractions(), db_->GetMaxEntries() / 2);
+
+  EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries() * 2);
 }
 
 // The entries with the oldest interaction and storage times should be deleted
@@ -687,7 +688,7 @@ TEST_F(DIPSDatabaseHistogramTest, HealthMetrics) {
   db_->Write("url1.test", {},
              /*interaction_times=*/{Time::FromDoubleT(1), Time::FromDoubleT(1)},
              {}, {});
-  db_->ComputeDatabaseMetricsForTesting();
+  db_->LogDatabaseMetricsForTesting();
 
   // These should be unchanged.
   histograms().ExpectTotalCount("Privacy.DIPS.DatabaseErrors", 0);

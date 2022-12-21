@@ -37,6 +37,17 @@ bool TimestampRange::IsNullOrWithin(TimestampRange other) const {
          last.value() <= other.last.value();
 }
 
+std::ostream& operator<<(std::ostream& os, absl::optional<base::Time> time) {
+  if (time.has_value()) {
+    return os << time.value();
+  }
+  return os << "NULL";
+}
+
+std::ostream& operator<<(std::ostream& os, TimestampRange range) {
+  return os << "[" << range.first << ", " << range.last << "]";
+}
+
 // CookieAccessType:
 base::StringPiece CookieAccessTypeToString(CookieAccessType type) {
   switch (type) {

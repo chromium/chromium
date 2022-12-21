@@ -334,12 +334,12 @@ sql::InitStatus DIPSDatabase::Init() {
   base::UmaHistogramExactLinear("Privacy.DIPS.DatabaseInit", attempts, 3);
 
   last_health_metrics_time_ = clock_->Now();
-  ComputeDatabaseMetrics();
+  LogDatabaseMetrics();
 
   return status;
 }
 
-void DIPSDatabase::ComputeDatabaseMetrics() {
+void DIPSDatabase::LogDatabaseMetrics() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeTicks start_time = base::TimeTicks::Now();
 
@@ -355,7 +355,7 @@ void DIPSDatabase::ComputeDatabaseMetrics() {
                           base::TimeTicks::Now() - start_time);
 }
 
-bool DIPSDatabase::CheckDBInit() {
+bool DIPSDatabase::CheckDBInit() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_ || !db_->is_open())
     return false;
@@ -365,7 +365,7 @@ bool DIPSDatabase::CheckDBInit() {
   base::Time now = clock_->Now();
   if (now > last_health_metrics_time_ + kMetricsInterval) {
     last_health_metrics_time_ = now;
-    ComputeDatabaseMetrics();
+    LogDatabaseMetrics();
   }
 
   return true;
@@ -409,7 +409,7 @@ bool DIPSDatabase::Write(const std::string& site,
   return statement.Run();
 }
 
-absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
+absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit())
     return absl::nullopt;
@@ -454,10 +454,11 @@ absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
                                    ColumnOptionalTime(&statement, 8)}};
 }
 
-std::vector<std::string> DIPSDatabase::GetAllSitesForTesting() {
+std::vector<std::string> DIPSDatabase::GetAllSitesForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return {};
+  }
 
   static constexpr char kReadSql[] =  // clang-format off
       "SELECT site FROM bounces ORDER BY site";
@@ -473,28 +474,25 @@ std::vector<std::string> DIPSDatabase::GetAllSitesForTesting() {
   return sites;
 }
 
-std::vector<std::string> DIPSDatabase::GetSitesThatBounced(
-    base::Time range_start,
-    base::Time last_interaction) {
+std::vector<std::string> DIPSDatabase::GetSitesThatBounced() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return {};
-  ClearRowsWithExpiredInteractions();
-
-  static constexpr char kReadSql[] =  // clang-format off
+  }
+  static constexpr char kBounceSql[] =  // clang-format off
       "SELECT site FROM bounces "
-        "WHERE (last_stateful_bounce_time > ? "
-        "OR last_bounce_time > ?) AND "
-        "last_user_interaction_time < ? "
-        "ORDER BY site";
-  // clang-format on
-
-  DCHECK(db_->IsSQLValid(kReadSql));
-
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kReadSql));
-  statement.BindTime(0, range_start);
-  statement.BindTime(1, range_start);
-  statement.BindTime(2, last_interaction);
+        "WHERE first_bounce_time < ? AND "
+        "(last_user_interaction_time IS NULL OR "
+        // Only return a protected site if its protection has expired.
+        // Note: protected => expired ≡ (NOT protected) OR expired.
+        "NOT(first_user_interaction_time <= first_bounce_time + ?) OR "
+        "last_user_interaction_time < ?) "
+        "ORDER BY site";  // clang-format on
+  DCHECK(db_->IsSQLValid(kBounceSql));
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kBounceSql));
+  statement.BindTime(0, clock_->Now() - dips::kGracePeriod.Get());
+  statement.BindTimeDelta(1, dips::kGracePeriod.Get());
+  statement.BindTime(2, clock_->Now() - dips::kInteractionTtl.Get());
 
   std::vector<std::string> sites;
   while (statement.Step()) {
@@ -503,27 +501,26 @@ std::vector<std::string> DIPSDatabase::GetSitesThatBounced(
   return sites;
 }
 
-std::vector<std::string> DIPSDatabase::GetSitesThatBouncedWithState(
-    base::Time range_start,
-    base::Time last_interaction) {
+std::vector<std::string> DIPSDatabase::GetSitesThatBouncedWithState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return {};
-  ClearRowsWithExpiredInteractions();
-
-  static constexpr char kReadSql[] =  // clang-format off
+  }
+  static constexpr char kStatefulBounceSql[] =  // clang-format off
       "SELECT site FROM bounces "
-        "WHERE last_stateful_bounce_time > ? AND "
-        "last_site_storage_time > ? AND "
-        "last_user_interaction_time < ? "
-        "ORDER BY site";
-  // clang-format on
-  DCHECK(db_->IsSQLValid(kReadSql));
-
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kReadSql));
-  statement.BindTime(0, range_start);
-  statement.BindTime(1, range_start);
-  statement.BindTime(2, last_interaction);
+        "WHERE first_stateful_bounce_time < ? AND "
+        "(last_user_interaction_time IS NULL OR "
+        // Only return a protected site if its protection has expired.
+        // Note: protected => expired ≡ (NOT protected) OR expired.
+        "NOT(first_user_interaction_time <= first_stateful_bounce_time + ?) OR "
+        "last_user_interaction_time < ?) "
+        "ORDER BY site";  // clang-format on
+  DCHECK(db_->IsSQLValid(kStatefulBounceSql));
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kStatefulBounceSql));
+  statement.BindTime(0, clock_->Now() - dips::kGracePeriod.Get());
+  statement.BindTimeDelta(1, dips::kGracePeriod.Get());
+  statement.BindTime(2, clock_->Now() - dips::kInteractionTtl.Get());
 
   std::vector<std::string> sites;
   while (statement.Step()) {
@@ -532,27 +529,25 @@ std::vector<std::string> DIPSDatabase::GetSitesThatBouncedWithState(
   return sites;
 }
 
-std::vector<std::string> DIPSDatabase::GetSitesThatUsedStorage(
-    base::Time range_start,
-    base::Time last_interaction) {
+std::vector<std::string> DIPSDatabase::GetSitesThatUsedStorage() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit())
+  if (!CheckDBInit()) {
     return {};
-  ClearRowsWithExpiredInteractions();
-
-  static constexpr char kReadSql[] =  // clang-format off
-      "SELECT site FROM bounces "
-        "WHERE (last_site_storage_time > ? OR "
-        "last_stateful_bounce_time > ?) AND "
-        "last_user_interaction_time < ? "
-        "ORDER BY site";
-  // clang-format on
-  DCHECK(db_->IsSQLValid(kReadSql));
-
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kReadSql));
-  statement.BindTime(0, range_start);
-  statement.BindTime(1, range_start);
-  statement.BindTime(2, last_interaction);
+  }
+  static constexpr char kStorageSql[] =  // clang-format off
+    "SELECT site FROM bounces "
+      "WHERE first_site_storage_time < ? AND "
+        "(last_user_interaction_time IS NULL OR "
+        // Only return a protected site if its protection has expired.
+        // Note: protected => expired ≡ (NOT protected) OR expired.
+        "NOT(first_user_interaction_time <= first_site_storage_time + ?) OR "
+        "last_user_interaction_time < ?) "
+      "ORDER BY site";  // clang-format on
+  DCHECK(db_->IsSQLValid(kStorageSql));
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kStorageSql));
+  statement.BindTime(0, clock_->Now() - dips::kGracePeriod.Get());
+  statement.BindTimeDelta(1, dips::kGracePeriod.Get());
+  statement.BindTime(2, clock_->Now() - dips::kInteractionTtl.Get());
 
   std::vector<std::string> sites;
   while (statement.Step()) {
@@ -959,11 +954,10 @@ bool DIPSDatabase::RemoveEmptyRows() {
   return s_clean.Run();
 }
 
-size_t DIPSDatabase::GetEntryCount() {
+size_t DIPSDatabase::GetEntryCount() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit())
     return 0;
-  ClearRowsWithExpiredInteractions();
 
   sql::Statement s_entry_count(
       db_->GetCachedStatement(SQL_FROM_HERE, "SELECT COUNT(*) FROM bounces"));
@@ -975,12 +969,13 @@ size_t DIPSDatabase::GarbageCollect() {
   if (!CheckDBInit())
     return 0;
 
+  size_t num_deleted = ClearRowsWithExpiredInteractions();
+  ;
   size_t num_entries = GetEntryCount();
-  size_t num_deleted = 0;
   int purge_goal = num_entries - (max_entries_ - purge_entries_);
 
   if (num_entries <= max_entries_)
-    return 0;
+    return num_deleted;
 
   DCHECK_GT(purge_goal, 0);
 
