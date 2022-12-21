@@ -45,8 +45,8 @@ class StatusIconMac : public StatusIcon {
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, CreateMenu);
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, MenuToolTip);
 
-  void SetToolTip(NSString* toolTip);
-  void CreateMenu(ui::MenuModel* model, NSString* toolTip);
+  void SetToolTip(NSString* tool_tip);
+  void CreateMenu(ui::MenuModel* model, NSString* tool_tip);
 
   // Getter for item_ that allows lazy initialization.
   NSStatusItem* item();
