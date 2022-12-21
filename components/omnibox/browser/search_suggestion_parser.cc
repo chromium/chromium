@@ -294,8 +294,9 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
 
 SearchSuggestionParser::SuggestResult::~SuggestResult() {}
 
-SearchSuggestionParser::SuggestResult& SearchSuggestionParser::SuggestResult::
-operator=(const SuggestResult& rhs) = default;
+SearchSuggestionParser::SuggestResult&
+SearchSuggestionParser::SuggestResult::operator=(const SuggestResult& rhs) =
+    default;
 
 void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
     const bool allow_bolding_all,
@@ -797,10 +798,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::u16string match_contents_prefix;
       SuggestionAnswer answer;
       bool answer_parsed_successfully = false;
-      std::string image_dominant_color;
-      std::string image_url;
-      std::string additional_query_params;
-      std::string entity_id;
       absl::optional<int> suggestion_group_id;
       omnibox::EntityInfo entity_info;
 
@@ -824,16 +821,16 @@ bool SearchSuggestionParser::ParseSuggestResults(
               FindStringKeyOrEmpty(suggestion_detail, "dc"));
           entity_info.set_image_url(
               FindStringKeyOrEmpty(suggestion_detail, "i"));
-          entity_info.set_entity_id(
-              FindStringKeyOrEmpty(suggestion_detail, "zae"));
           entity_info.set_suggest_search_parameters(
               FindStringKeyOrEmpty(suggestion_detail, "q"));
+          entity_info.set_entity_id(
+              FindStringKeyOrEmpty(suggestion_detail, "zae"));
         }
 
-        match_contents = base::UTF8ToUTF16(entity_info.name());
-        if (match_contents.empty()) {
-          match_contents = suggestion;
-        }
+        if (!entity_info.annotation().empty())
+          annotation = base::UTF8ToUTF16(entity_info.annotation());
+        if (!entity_info.name().empty())
+          match_contents = base::UTF8ToUTF16(entity_info.name());
 
         match_contents_prefix =
             base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "mp"));
@@ -863,7 +860,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       results->suggest_results.push_back(SuggestResult(
           suggestion, match_type, subtypes[index],
           base::CollapseWhitespace(match_contents, false),
-          match_contents_prefix, base::UTF8ToUTF16(entity_info.annotation()),
+          match_contents_prefix, annotation,
           entity_info.suggest_search_parameters(), entity_info.entity_id(),
           deletion_url, entity_info.dominant_color(), entity_info.image_url(),
           is_keyword_result, relevance, relevances != nullptr, should_prefetch,
