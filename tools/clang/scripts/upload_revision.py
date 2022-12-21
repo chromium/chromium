@@ -364,32 +364,21 @@ def main():
 
   # TODO: Turn the nightly dates into git hashes?
 
-  clang_change = None
-  if clang_version.short_git_hash != old_clang_version.short_git_hash:
-    new = clang_version.short_git_hash
-    old = old_clang_version.short_git_hash
-    clang_change = f'{GOB_LLVM_URL}/+log/{old}..{new}'
+  clang_change = f'{old_clang_version} : {clang_version}'
+  clang_change_log = (
+      f'{GOB_LLVM_URL}/+log/'
+      f'{old_clang_version.short_git_hash}..{clang_version.short_git_hash}')
 
-  rust_change = None
-  if (rust_version.string_without_dashes() !=
-      old_rust_version.string_without_dashes()):
-    new = rust_version.string_without_dashes()
-    old = old_rust_version.string_without_dashes()
-    rust_change = f'{old}..{new}'
+  rust_change = (
+      f'{old_rust_version.string_without_dashes(with_sub_revision = True)} '
+      f': {rust_version.string_without_dashes(with_sub_revision = True)}')
 
-  if not clang_change and not rust_change:
-    clang_sub_change = f'{old_clang_version}..{clang_version.sub_revision}'
-    rust_sub_change = f'{old_rust_version}..{rust_version.sub_revision}'
-    title = f'New sub-rev for clang+rust {clang_sub_change} / {rust_sub_change}'
-  elif not rust_change:
-    title = f'Roll clang {clang_change}'
-  elif not clang_change:
-    title = f'Roll rust {rust_change}'
-  else:
-    title = f'Roll clang+rust {clang_change} / {rust_change}'
+  title = f'Roll clang+rust {clang_change} / {rust_change}'
 
-  cmd = ' \\\n        '.join(sys.argv)
-  commit_message = (f'{title}\n\nRan: {cmd}\n{COMMIT_FOOTER}')
+  cmd = ' '.join(sys.argv)
+  body = f'{clang_change_log}\n\nRan: {cmd}'
+
+  commit_message = f'{title}\n\n{body}\n{COMMIT_FOOTER}'
 
   Git('add',
       CLANG_UPDATE_PY_PATH,
