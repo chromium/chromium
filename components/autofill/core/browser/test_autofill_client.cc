@@ -293,21 +293,21 @@ bool TestAutofillClient::HasCreditCardScanFeature() {
 
 void TestAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {}
 
+bool TestAutofillClient::TryToShowFastCheckout(const FormData& form,
+                                               const FormFieldData& field,
+                                               AutofillDriver* driver) {
+  return false;
+}
+
+void TestAutofillClient::HideFastCheckout(bool allow_further_runs) {}
+
 bool TestAutofillClient::IsFastCheckoutSupported() {
   return false;
 }
 
-bool TestAutofillClient::IsFastCheckoutTriggerForm(const FormData& form,
-                                                   const FormFieldData& field) {
+bool TestAutofillClient::IsShowingFastCheckoutUI() {
   return false;
 }
-
-bool TestAutofillClient::ShowFastCheckout(
-    base::WeakPtr<FastCheckoutDelegate> delegate) {
-  return false;
-}
-
-void TestAutofillClient::HideFastCheckout() {}
 
 bool TestAutofillClient::IsTouchToFillCreditCardSupported() {
   return false;

@@ -384,20 +384,16 @@ bool ChromeAutofillClientIOS::IsFastCheckoutSupported() {
   return false;
 }
 
-bool ChromeAutofillClientIOS::IsFastCheckoutTriggerForm(
-    const FormData& form,
-    const FormFieldData& field) {
+bool ChromeAutofillClientIOS::TryToShowFastCheckout(const FormData& form,
+                                                    const FormFieldData& field,
+                                                    AutofillDriver* driver) {
   return false;
 }
 
-bool ChromeAutofillClientIOS::ShowFastCheckout(
-    base::WeakPtr<FastCheckoutDelegate> delegate) {
-  NOTREACHED();
-  return false;
-}
+void ChromeAutofillClientIOS::HideFastCheckout(bool allow_further_runs) {}
 
-void ChromeAutofillClientIOS::HideFastCheckout() {
-  NOTREACHED();
+bool ChromeAutofillClientIOS::IsShowingFastCheckoutUI() {
+  return false;
 }
 
 bool ChromeAutofillClientIOS::IsTouchToFillCreditCardSupported() {

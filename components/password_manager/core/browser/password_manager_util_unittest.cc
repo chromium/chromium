@@ -228,14 +228,13 @@ class MockAutofillClient : public autofill::AutofillClient {
   MOCK_METHOD(void, ScanCreditCard, (CreditCardScanCallback), (override));
   MOCK_METHOD(bool, IsFastCheckoutSupported, (), (override));
   MOCK_METHOD(bool,
-              IsFastCheckoutTriggerForm,
-              (const autofill::FormData&, const autofill::FormFieldData&),
+              TryToShowFastCheckout,
+              (const autofill::FormData&,
+               const autofill::FormFieldData&,
+               autofill::AutofillDriver*),
               (override));
-  MOCK_METHOD(bool,
-              ShowFastCheckout,
-              (base::WeakPtr<autofill::FastCheckoutDelegate>),
-              (override));
-  MOCK_METHOD(void, HideFastCheckout, (), (override));
+  MOCK_METHOD(void, HideFastCheckout, (bool), (override));
+  MOCK_METHOD(bool, IsShowingFastCheckoutUI, (), (override));
   MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
