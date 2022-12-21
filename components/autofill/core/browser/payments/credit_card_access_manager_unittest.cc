@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -2177,7 +2178,7 @@ TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
-      AutofillMetrics::ServerCardUnmaskResult::kRiskBasedUnmasked, 1);
+      autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked, 1);
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -2207,7 +2208,7 @@ TEST_F(CreditCardAccessManagerTest,
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.Otp",
-      AutofillMetrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
 }
 
 // Ensures the virtual card risk-based unmasking response is handled correctly
@@ -2284,7 +2285,7 @@ TEST_F(CreditCardAccessManagerTest,
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 2);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.Otp",
-      AutofillMetrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
   // TODO(crbug/1370329): Add metrics checks for Virtual Card CVC auth result.
 }
 
@@ -2363,7 +2364,7 @@ TEST_F(CreditCardAccessManagerTest,
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.Fido",
-      AutofillMetrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
 }
 
 // Ensures that the virtual card risk-based unmasking response is handled
@@ -2429,7 +2430,7 @@ TEST_F(
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.Fido",
-      AutofillMetrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
 }
 
 // Ensures that the virtual card risk-based unmasking response is handled
@@ -2460,7 +2461,7 @@ TEST_F(
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.Otp",
-      AutofillMetrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
 }
 
 // Ensures that the virtual card risk-based unmasking response is handled
@@ -2491,7 +2492,7 @@ TEST_F(
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.OtpFallbackFromFido",
-      AutofillMetrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
 }
 
 // Ensures that the virtual card risk-based unmasking response is handled
@@ -2539,7 +2540,7 @@ TEST_F(
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.Fido",
-      AutofillMetrics::ServerCardUnmaskResult::kOnlyFidoAvailableButNotOptedIn,
+      autofill_metrics::ServerCardUnmaskResult::kOnlyFidoAvailableButNotOptedIn,
       1);
 }
 
@@ -2591,7 +2592,7 @@ TEST_F(CreditCardAccessManagerTest,
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
-      AutofillMetrics::ServerCardUnmaskResult::kAuthenticationError, 1);
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationError, 1);
 }
 
 // Ensures that the virtual card risk-based unmasking response is handled
@@ -2641,7 +2642,7 @@ TEST_F(CreditCardAccessManagerTest,
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
-      AutofillMetrics::ServerCardUnmaskResult::kVirtualCardRetrievalError, 1);
+      autofill_metrics::ServerCardUnmaskResult::kVirtualCardRetrievalError, 1);
 }
 
 TEST_F(CreditCardAccessManagerTest,
@@ -2675,7 +2676,7 @@ TEST_F(CreditCardAccessManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
-      AutofillMetrics::ServerCardUnmaskResult::kVirtualCardRetrievalError, 1);
+      autofill_metrics::ServerCardUnmaskResult::kVirtualCardRetrievalError, 1);
 }
 
 TEST_F(CreditCardAccessManagerTest,
@@ -2718,7 +2719,7 @@ TEST_F(CreditCardAccessManagerTest,
       "Autofill.ServerCardUnmask.VirtualCard.Attempt", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
-      AutofillMetrics::ServerCardUnmaskResult::kFlowCancelled, 1);
+      autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
 }
 
 }  // namespace autofill

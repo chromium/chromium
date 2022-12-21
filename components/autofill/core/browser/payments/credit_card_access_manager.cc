@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
@@ -255,7 +256,7 @@ void CreditCardAccessManager::FetchCreditCard(
   // card or virtual card.
   CreditCard::RecordType record_type = card->record_type();
   if (ShouldLogServerCardUnmaskAttemptMetrics(record_type)) {
-    AutofillMetrics::LogServerCardUnmaskAttempt(
+    autofill_metrics::LogServerCardUnmaskAttempt(
         record_type == CreditCard::VIRTUAL_CARD
             ? AutofillClient::PaymentsRpcCardType::kVirtualCard
             : AutofillClient::PaymentsRpcCardType::kServerCard);
@@ -273,10 +274,10 @@ void CreditCardAccessManager::FetchCreditCard(
                                    : "Autofill.UsedCachedServerCard";
     base::UmaHistogramCounts1000(metrics_name, ++it->second.cache_uses);
     if (card->record_type() == CreditCard::VIRTUAL_CARD) {
-      AutofillMetrics::LogServerCardUnmaskResult(
-          AutofillMetrics::ServerCardUnmaskResult::kLocalCacheHit,
+      autofill_metrics::LogServerCardUnmaskResult(
+          autofill_metrics::ServerCardUnmaskResult::kLocalCacheHit,
           AutofillClient::PaymentsRpcCardType::kVirtualCard,
-          AutofillMetrics::VirtualCardUnmaskFlowType::kUnspecified);
+          autofill_metrics::VirtualCardUnmaskFlowType::kUnspecified);
     }
 
     Reset();
@@ -386,11 +387,11 @@ void CreditCardAccessManager::GetAuthenticationTypeForVirtualCard(
         AutofillErrorDialogContext::WithPermanentOrTemporaryError(
             /*is_permanent_error=*/true));
     Reset();
-    AutofillMetrics::LogServerCardUnmaskResult(
-        AutofillMetrics::ServerCardUnmaskResult::
+    autofill_metrics::LogServerCardUnmaskResult(
+        autofill_metrics::ServerCardUnmaskResult::
             kOnlyFidoAvailableButNotOptedIn,
         AutofillClient::PaymentsRpcCardType::kVirtualCard,
-        AutofillMetrics::VirtualCardUnmaskFlowType::kFidoOnly);
+        autofill_metrics::VirtualCardUnmaskFlowType::kFidoOnly);
     return;
   }
 
@@ -645,10 +646,10 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
         unmask_auth_flow_type_);
     if (card_->record_type() == CreditCard::VIRTUAL_CARD) {
-      AutofillMetrics::LogServerCardUnmaskResult(
-          AutofillMetrics::ServerCardUnmaskResult::kAuthenticationUnmasked,
+      autofill_metrics::LogServerCardUnmaskResult(
+          autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked,
           AutofillClient::PaymentsRpcCardType::kVirtualCard,
-          AutofillMetrics::VirtualCardUnmaskFlowType::kFidoOnly);
+          autofill_metrics::VirtualCardUnmaskFlowType::kFidoOnly);
     }
     Reset();
   } else if (
@@ -672,10 +673,10 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     accessor_->OnCreditCardFetched(result, nullptr, u"");
 
     if (card_->record_type() == CreditCard::VIRTUAL_CARD) {
-      AutofillMetrics::LogServerCardUnmaskResult(
-          AutofillMetrics::ServerCardUnmaskResult::kVirtualCardRetrievalError,
+      autofill_metrics::LogServerCardUnmaskResult(
+          autofill_metrics::ServerCardUnmaskResult::kVirtualCardRetrievalError,
           AutofillClient::PaymentsRpcCardType::kVirtualCard,
-          AutofillMetrics::VirtualCardUnmaskFlowType::kFidoOnly);
+          autofill_metrics::VirtualCardUnmaskFlowType::kFidoOnly);
     }
     Reset();
   } else {
@@ -710,28 +711,29 @@ void CreditCardAccessManager::OnOtpAuthenticationComplete(
           : CreditCardFetchResult::kTransientError,
       response.card, response.cvc);
 
-  AutofillMetrics::ServerCardUnmaskResult result;
+  autofill_metrics::ServerCardUnmaskResult result;
   switch (response.result) {
     case CreditCardOtpAuthenticator::OtpAuthenticationResponse::Result::
         kSuccess:
-      result = AutofillMetrics::ServerCardUnmaskResult::kAuthenticationUnmasked;
+      result =
+          autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked;
       break;
     case CreditCardOtpAuthenticator::OtpAuthenticationResponse::Result::
         kFlowCancelled:
-      result = AutofillMetrics::ServerCardUnmaskResult::kFlowCancelled;
+      result = autofill_metrics::ServerCardUnmaskResult::kFlowCancelled;
       break;
     case CreditCardOtpAuthenticator::OtpAuthenticationResponse::Result::
         kGenericError:
-      result = AutofillMetrics::ServerCardUnmaskResult::kUnexpectedError;
+      result = autofill_metrics::ServerCardUnmaskResult::kUnexpectedError;
       break;
     case CreditCardOtpAuthenticator::OtpAuthenticationResponse::Result::
         kAuthenticationError:
-      result = AutofillMetrics::ServerCardUnmaskResult::kAuthenticationError;
+      result = autofill_metrics::ServerCardUnmaskResult::kAuthenticationError;
       break;
     case CreditCardOtpAuthenticator::OtpAuthenticationResponse::Result::
         kVirtualCardRetrievalError:
       result =
-          AutofillMetrics::ServerCardUnmaskResult::kVirtualCardRetrievalError;
+          autofill_metrics::ServerCardUnmaskResult::kVirtualCardRetrievalError;
       break;
     case CreditCardOtpAuthenticator::OtpAuthenticationResponse::Result::
         kUnknown:
@@ -739,15 +741,15 @@ void CreditCardAccessManager::OnOtpAuthenticationComplete(
       return;
   }
 
-  AutofillMetrics::VirtualCardUnmaskFlowType flow_type;
+  autofill_metrics::VirtualCardUnmaskFlowType flow_type;
   if (unmask_auth_flow_type_ == UnmaskAuthFlowType::kOtp) {
-    flow_type = AutofillMetrics::VirtualCardUnmaskFlowType::kOtpOnly;
+    flow_type = autofill_metrics::VirtualCardUnmaskFlowType::kOtpOnly;
   } else {
     DCHECK(unmask_auth_flow_type_ == UnmaskAuthFlowType::kOtpFallbackFromFido);
     flow_type =
-        AutofillMetrics::VirtualCardUnmaskFlowType::kOtpFallbackFromFido;
+        autofill_metrics::VirtualCardUnmaskFlowType::kOtpFallbackFromFido;
   }
-  AutofillMetrics::LogServerCardUnmaskResult(
+  autofill_metrics::LogServerCardUnmaskResult(
       result, AutofillClient::PaymentsRpcCardType::kVirtualCard, flow_type);
 
   HandleFidoOptInStatusChange();
@@ -978,10 +980,10 @@ void CreditCardAccessManager::FetchVirtualCard() {
   if (!last_committed_primary_main_frame_origin.has_value()) {
     accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
                                    nullptr, u"");
-    AutofillMetrics::LogServerCardUnmaskResult(
-        AutofillMetrics::ServerCardUnmaskResult::kUnexpectedError,
+    autofill_metrics::LogServerCardUnmaskResult(
+        autofill_metrics::ServerCardUnmaskResult::kUnexpectedError,
         AutofillClient::PaymentsRpcCardType::kVirtualCard,
-        AutofillMetrics::VirtualCardUnmaskFlowType::kUnspecified);
+        autofill_metrics::VirtualCardUnmaskFlowType::kUnspecified);
     Reset();
     return;
   }
@@ -1033,10 +1035,10 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
           base::UTF8ToUTF16(response_details.expiration_year));
       accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card,
                                      base::UTF8ToUTF16(response_details.dcvv));
-      AutofillMetrics::LogServerCardUnmaskResult(
-          AutofillMetrics::ServerCardUnmaskResult::kRiskBasedUnmasked,
+      autofill_metrics::LogServerCardUnmaskResult(
+          autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked,
           AutofillClient::PaymentsRpcCardType::kVirtualCard,
-          AutofillMetrics::VirtualCardUnmaskFlowType::kUnspecified);
+          autofill_metrics::VirtualCardUnmaskFlowType::kUnspecified);
       Reset();
       return;
     }
@@ -1061,20 +1063,20 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
   accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
                                  nullptr, u"");
 
-  AutofillMetrics::ServerCardUnmaskResult unmask_result;
+  autofill_metrics::ServerCardUnmaskResult unmask_result;
   if (result ==
           AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
       result ==
           AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
     unmask_result =
-        AutofillMetrics::ServerCardUnmaskResult::kVirtualCardRetrievalError;
+        autofill_metrics::ServerCardUnmaskResult::kVirtualCardRetrievalError;
   } else {
     unmask_result =
-        AutofillMetrics::ServerCardUnmaskResult::kAuthenticationError;
+        autofill_metrics::ServerCardUnmaskResult::kAuthenticationError;
   }
-  AutofillMetrics::LogServerCardUnmaskResult(
+  autofill_metrics::LogServerCardUnmaskResult(
       unmask_result, AutofillClient::PaymentsRpcCardType::kVirtualCard,
-      AutofillMetrics::VirtualCardUnmaskFlowType::kUnspecified);
+      autofill_metrics::VirtualCardUnmaskFlowType::kUnspecified);
 
   if (response_details.autofill_error_dialog_context) {
     DCHECK(
@@ -1170,17 +1172,17 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
     client_->GetOtpAuthenticator()->Reset();
   }
 
-  AutofillMetrics::VirtualCardUnmaskFlowType flow_type;
+  autofill_metrics::VirtualCardUnmaskFlowType flow_type;
   switch (unmask_auth_flow_type_) {
     case UnmaskAuthFlowType::kOtp:
-      flow_type = AutofillMetrics::VirtualCardUnmaskFlowType::kOtpOnly;
+      flow_type = autofill_metrics::VirtualCardUnmaskFlowType::kOtpOnly;
       break;
     case UnmaskAuthFlowType::kOtpFallbackFromFido:
       flow_type =
-          AutofillMetrics::VirtualCardUnmaskFlowType::kOtpFallbackFromFido;
+          autofill_metrics::VirtualCardUnmaskFlowType::kOtpFallbackFromFido;
       break;
     case UnmaskAuthFlowType::kNone:
-      flow_type = AutofillMetrics::VirtualCardUnmaskFlowType::kUnspecified;
+      flow_type = autofill_metrics::VirtualCardUnmaskFlowType::kUnspecified;
       break;
     case UnmaskAuthFlowType::kFido:
     case UnmaskAuthFlowType::kCvcThenFido:
@@ -1192,8 +1194,8 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
       Reset();
       return;
   }
-  AutofillMetrics::LogServerCardUnmaskResult(
-      AutofillMetrics::ServerCardUnmaskResult::kFlowCancelled,
+  autofill_metrics::LogServerCardUnmaskResult(
+      autofill_metrics::ServerCardUnmaskResult::kFlowCancelled,
       AutofillClient::PaymentsRpcCardType::kVirtualCard, flow_type);
   Reset();
 }

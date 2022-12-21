@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/validation.h"
@@ -251,7 +252,7 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     // Log BetterAuth.FlowEvents.
     RecordCardUnmaskFlowEvent(current_authentication_flow_,
                               UnmaskAuthFlowEvent::kFormSubmitted);
-    AutofillMetrics::LogServerCardUnmaskFormSubmission(
+    autofill_metrics::LogServerCardUnmaskFormSubmission(
         AutofillClient::PaymentsRpcCardType::kVirtualCard);
   } else if (logged_suggestion_filled_was_server_data_) {
     Log(FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE, form);
