@@ -33,6 +33,13 @@ extern const CGFloat kPinnedCelldWidth;
 extern const CGFloat kPinnedCellCornerRadius;
 extern const CGFloat kPinnedCellHorizontalPadding;
 extern const CGFloat kPinnedCellTitleLeadingPadding;
+extern const CGFloat kPinnedCellFaviconWidth;
+extern const CGFloat kPinnedCellFaviconContainerWidth;
+extern const CGFloat kPinnedCellFaviconBorderWidth;
+extern const CGFloat kPinnedCellFaviconContainerCornerRadius;
+extern const CGFloat kPinnedCellFaviconCornerRadius;
+
+// Pinned cell collection view layout constraints.
 extern const CGFloat kPinnedCellVerticalLayoutInsets;
 extern const CGFloat kPinnedCellHorizontalLayoutInsets;
 

@@ -11,7 +11,7 @@
 // Pinned view dimensions.
 const CGFloat kPinnedViewDragEnabledHeight = 94.0f;
 const CGFloat kPinnedViewDefaultHeight = 68.0f;
-const CGFloat kPinnedViewCornerRadius = 15.0f;
+const CGFloat kPinnedViewCornerRadius = 25.0f;
 
 // Pinned view constraints.
 const CGFloat kPinnedViewHorizontalPadding = 6.0f;
@@ -31,9 +31,14 @@ const CGFloat kPinnedCelldHeight = 36.0f;
 const CGFloat kPinnedCelldWidth = 168.0f;
 
 // Pinned cell constraints.
-const CGFloat kPinnedCellCornerRadius = 15.0f;
+const CGFloat kPinnedCellCornerRadius = 13.0f;
 const CGFloat kPinnedCellHorizontalPadding = 8.0f;
 const CGFloat kPinnedCellTitleLeadingPadding = 4.0f;
+const CGFloat kPinnedCellFaviconWidth = 16.0f;
+const CGFloat kPinnedCellFaviconContainerWidth = 24.0f;
+const CGFloat kPinnedCellFaviconBorderWidth = 1.5f;
+const CGFloat kPinnedCellFaviconContainerCornerRadius = 9.0f;
+const CGFloat kPinnedCellFaviconCornerRadius = 7.0f;
 
 // Pinned cell collection view layout constraints.
 const CGFloat kPinnedCellVerticalLayoutInsets = 16.0f;
