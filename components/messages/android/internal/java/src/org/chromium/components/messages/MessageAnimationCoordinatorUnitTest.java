@@ -19,6 +19,7 @@ import static org.robolectric.Shadows.shadowOf;
 import static org.robolectric.annotation.LooperMode.Mode.PAUSED;
 
 import android.animation.Animator;
+import android.animation.ValueAnimator;
 
 import androidx.test.filters.SmallTest;
 
@@ -43,6 +44,7 @@ import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageStateHandler.Position;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Unit tests for {@link MessageAnimationCoordinator}.
@@ -101,18 +103,30 @@ public class MessageAnimationCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testShowMessages_withoutStacking() {
+    public void testShowMessages_withoutStacking() throws TimeoutException {
         // Initial values should be null.
         var currentMessage = mAnimationCoordinator.getCurrentDisplayedMessage();
         Assert.assertNull(currentMessage);
 
         MessageState m1 = buildMessageState();
         MessageState m2 = buildMessageState();
-        mAnimationCoordinator.updateWithoutStacking(m1, false, () -> {});
+        CallbackHelper callbackHelper = new CallbackHelper();
+        var animator = ValueAnimator.ofInt(0, 1);
+        animator.setDuration(100);
+        doReturn(animator).when(m1.handler).show(Position.INVISIBLE, Position.FRONT);
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        mAnimationCoordinator.updateWithoutStacking(m1, false, callbackHelper::notifyCalled);
 
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
 
+        verify(mContainer).runAfterInitialMessageLayout(captor.capture());
+        Assert.assertEquals("Callback should only be triggered when animation is finished.", 0,
+                callbackHelper.getCallCount());
+        captor.getValue().run();
+
+        shadowOf(getMainLooper()).idle();
+        callbackHelper.waitForCallback(0);
         currentMessage = mAnimationCoordinator.getCurrentDisplayedMessage();
         Assert.assertEquals(m1, currentMessage);
     }
