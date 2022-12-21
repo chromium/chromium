@@ -152,19 +152,9 @@ public class AppLanguagePreferenceDelegate {
             mRestartAction = action;
         }
 
-        // SnackbarController implementation.
         @Override
         public void onAction(Object actionData) {
-            // TODO (https://crbug.com/1196144): Add logging.
             if (mRestartAction != null) mRestartAction.restart();
-        }
-
-        /**
-         * Override SnackbarManager.SnackbarController onDismissNoAction.
-         */
-        @Override
-        public void onDismissNoAction(Object actionData) {
-            // TODO (https://crbug.com/1196144): Add logging.
         }
     }
 }
