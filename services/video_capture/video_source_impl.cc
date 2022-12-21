@@ -83,9 +83,11 @@ void VideoSourceImpl::CreatePushSubscription(
 void VideoSourceImpl::OnClientDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // We need to stop devices when VideoSource remote discarded with active
-  // subscription.
-  device_factory_->StopDeviceInProcess(device_id_);
+  if (device_status_ != DeviceStatus::kStoppingAsynchronously) {
+    // We need to stop devices when VideoSource remote discarded with active
+    // subscription.
+    device_factory_->StopDeviceInProcess(device_id_);
+  }
 
   if (receivers_.empty()) {
     // Note: Invoking this callback may synchronously trigger the destruction of
