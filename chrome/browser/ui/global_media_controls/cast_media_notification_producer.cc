@@ -31,20 +31,17 @@ bool ShouldHideNotification(const raw_ptr<Profile> profile,
   if (route.is_connecting()) {
     return true;
   }
-
+  std::unique_ptr<media_router::CastMediaSource> source =
+      media_router::CastMediaSource::FromMediaSource(route.media_source());
   if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
-    // Hide a route if it's a mirroring route.
-    if (route.media_source().IsTabMirroringSource() ||
-        route.media_source().IsDesktopMirroringSource())
+    // Hide a route if it contains a Streaming App, i.e. Tab/Desktop Mirroring,
+    // Site-initiated Mirroring and Remote Playback routes.
+    if (source && source->ContainsStreamingApp()) {
       return true;
+    }
   } else if (route.controller_type() !=
              media_router::RouteControllerType::kGeneric) {
     // Hide a route if it doesn't have a generic controller (play, pause etc.).
-    return true;
-  }
-
-  if (base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen) &&
-      route.media_source().IsRemotePlaybackSource()) {
     return true;
   }
 
@@ -52,8 +49,7 @@ bool ShouldHideNotification(const raw_ptr<Profile> profile,
   if (!route.media_source().IsCastPresentationUrl()) {
     return false;
   }
-  std::unique_ptr<media_router::CastMediaSource> source =
-      media_router::CastMediaSource::FromMediaSource(route.media_source());
+
   // If the session is multizone member, then it would appear as a duplicate of
   // the multizone group's session, so it should instead be hidden.
   return source && source->GetAppIds().size() == 1 &&
