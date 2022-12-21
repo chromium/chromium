@@ -1612,7 +1612,6 @@ virtual/scalefactor200/fast/hidpi/static/validation-bubble-appearance-hidpi.html
 virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error-downgraded.tentative.html
 virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-mi_error.tentative.html
 virtual/stable/media/stable/video-object-fit-stable.html
-virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html
 virtual/text-antialias/apply-start-width-after-skipped-text.html
 virtual/text-antialias/atomic-inline-before-ellipsis.html
 virtual/text-antialias/atsui-multiple-renderers.html

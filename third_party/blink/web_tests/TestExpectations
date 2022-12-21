@@ -4965,7 +4965,6 @@ crbug.com/1341227 [ Mac ] http/tests/inspector-protocol/network/navigate-iframe-
 
 # Sheriff 2021-02-21
 crbug.com/1180491 [ Linux ] external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
-crbug.com/1180491 [ Linux ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
 
 # Sheriff 2021-02-24
 crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface/test-analyser-output.html [ Failure Pass ]
@@ -5345,9 +5344,6 @@ crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Failu
 # Sheriff 2021-06-29
 # Flaky on Mac11 Tests
 crbug.com/1197464 [ Mac ] plugins/refcount-leaks.html [ Failure Pass ]
-
-# Sheriff 2021-07-05
-crbug.com/1226445 [ Mac ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
 
 # Sheriff 2021-07-12
 crbug.com/1228432 [ Linux ] external/wpt/video-rvfc/request-video-frame-callback-before-xr-session.https.html [ Pass Timeout ]
@@ -6870,9 +6866,7 @@ crbug.com/1371395 external/wpt/performance-timeline/not-restored-reasons/perform
 
 # Test is flaky because of test_driver.bless, see crbug.com/1066891
 crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
-crbug.com/1382865 virtual/storage-access-api/external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
 crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
-crbug.com/1382865 virtual/storage-access-api/external/wpt/storage-access-api/requestStorageAccess-nested-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
 
 # Missing priority hints interfaces.
 crbug.com/1345601 external/wpt/priority-hints/iframe-attr-fetchpriority.tentative.html [ Failure ]
