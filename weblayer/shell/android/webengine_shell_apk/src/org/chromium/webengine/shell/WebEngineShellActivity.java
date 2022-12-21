@@ -4,15 +4,17 @@
 
 package org.chromium.webengine.shell;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -21,11 +23,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.chromium.base.Log;
 import org.chromium.webengine.CookieManager;
 import org.chromium.webengine.Navigation;
-import org.chromium.webengine.NavigationObserver;
 import org.chromium.webengine.Tab;
-import org.chromium.webengine.TabListObserver;
 import org.chromium.webengine.TabManager;
-import org.chromium.webengine.TabObserver;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebMessageCallback;
@@ -37,6 +36,14 @@ import java.util.List;
 
 /**
  * Activity for managing the Demo Shell.
+ *
+ * TODO(swestphal):
+ *  - Add url bar
+ *  - UI to add/remove/switch tabs
+ *  - Progress bar when navigation is ongoing
+ *  - Expose some tab/navigation events in the UI
+ *  - Move cookie test to manual-test activity
+ *  - Move registerWebMessageCallback to manual-test activity
  */
 public class WebEngineShellActivity extends AppCompatActivity {
     private static final String TAG = "WebEngineShell";
@@ -51,10 +58,10 @@ public class WebEngineShellActivity extends AppCompatActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.main);
-
         mContext = getApplicationContext();
+
+        setupActivitySpinner((Spinner) findViewById(R.id.activity_nav), this, 0);
 
         ListenableFuture<WebSandbox> webSandboxFuture = WebSandbox.create(mContext);
         Futures.addCallback(webSandboxFuture, new FutureCallback<WebSandbox>() {
@@ -66,35 +73,16 @@ public class WebEngineShellActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable thrown) {}
         }, mContext.getMainExecutor());
+    }
 
-        final Button createTabButton = findViewById(R.id.create_tab);
-        final Button navigateButton = findViewById(R.id.navigate_tab);
-        final Button shutdownButton = findViewById(R.id.shut_down);
-
-        createTabButton.setOnClickListener((View v) -> {
-            if (mTabManager == null) return;
-            ListenableFuture<Tab> newTabFuture = mTabManager.createTab();
-            Futures.addCallback(newTabFuture, new FutureCallback<Tab>() {
-                @Override
-                public void onSuccess(Tab newTab) {
-                    navigateButton.setEnabled(true);
-                    newTab.getNavigationController().navigate("https://google.com");
-                    // TODO(swestphal): Call this in a Tab-loaded-callback instead.
-                    navigateButton.setOnClickListener((View v) -> {
-                        navigateButton.setEnabled(false);
-                        newTab.setActive();
-                    });
-                }
-                @Override
-                public void onFailure(Throwable thrown) {}
-            }, mContext.getMainExecutor());
-        });
-
-        shutdownButton.setOnClickListener((View v) -> {
-            if (mWebSandbox != null) {
-                mWebSandbox.shutdown();
-            }
-        });
+    @Override
+    public void startActivity(Intent intent) {
+        if (mWebSandbox != null) {
+            // Shutdown sandbox before another activity is opened.
+            mWebSandbox.shutdown();
+            mWebSandbox = null;
+        }
+        super.startActivity(intent);
     }
 
     private void onWebSandboxReady(WebSandbox webSandbox) {
@@ -122,15 +110,31 @@ public class WebEngineShellActivity extends AppCompatActivity {
     }
 
     private void onWebEngineReady(WebEngine webEngine) {
-        WebFragment fragment = webEngine.getFragment();
         mTabManager = webEngine.getTabManager();
         CookieManager cookieManager = webEngine.getCookieManager();
 
         Tab activeTab = mTabManager.getActiveTab();
 
-        // A new tab is created and set to active when WebEngine is started with no Persistence ID,
-        // so this should never be null.
-        assert activeTab != null;
+        activeTab.registerTabObserver(new DefaultObservers.DefaultTabObserver());
+        activeTab.getNavigationController().registerNavigationObserver(
+                new DefaultObservers.DefaultNavigationObserver() {
+                    @Override
+                    public void onNavigationCompleted(@NonNull Navigation navigation) {
+                        super.onNavigationCompleted(navigation);
+                        ListenableFuture<String> scriptResultFuture =
+                                activeTab.executeScript("1+1", true);
+                        Futures.addCallback(scriptResultFuture, new FutureCallback<String>() {
+                            @Override
+                            public void onSuccess(String result) {
+                                Log.w(TAG, "executeScript result: " + result);
+                            }
+                            @Override
+                            public void onFailure(Throwable thrown) {
+                                Log.w(TAG, "executeScript failed: " + thrown);
+                            }
+                        }, mContext.getMainExecutor());
+                    }
+                });
 
         activeTab.getNavigationController().navigate("https://google.com");
 
@@ -148,99 +152,7 @@ public class WebEngineShellActivity extends AppCompatActivity {
             public void onWebMessageReplyProxyActiveStateChanged(WebMessageReplyProxy proxy) {}
         }, "x", Arrays.asList("*"));
 
-        mTabManager.registerTabListObserver(new TabListObserver() {
-            @Override
-            public void onActiveTabChanged(@Nullable Tab activeTab) {
-                Log.i(TAG, "received TabList Event: 'onActiveTabChanged'-event");
-            }
-
-            @Override
-            public void onTabAdded(@NonNull Tab tab) {
-                Log.i(TAG, "received TabList Event: 'onTabAdded'-event");
-                tab.registerTabObserver(new TabObserver() {
-                    @Override
-                    public void onVisibleUriChanged(@NonNull String uri) {
-                        Log.i(TAG, "received Tab Event: 'onVisibleUriChanged(" + uri + ")'");
-                    }
-
-                    @Override
-                    public void onTitleUpdated(@NonNull String title) {
-                        Log.i(TAG, "received Tab Event: 'onTitleUpdated(" + title + ")'");
-                    }
-
-                    @Override
-                    public void onRenderProcessGone() {
-                        Log.i(TAG, "received Tab Event: 'onRenderProcessGone()'");
-                    }
-                });
-                tab.getNavigationController().registerNavigationObserver(new NavigationObserver() {
-                    @Override
-                    public void onNavigationFailed(@NonNull Navigation navigation) {
-                        Log.i(TAG, "received NavigationEvent: 'onNavigationFailed()';");
-                        Log.i(TAG,
-                                "Navigation: url:" + navigation.getUri()
-                                        + ", HTTP-StatusCode: " + navigation.getStatusCode()
-                                        + ", samePage: " + navigation.isSameDocument());
-                    }
-
-                    @Override
-                    public void onNavigationCompleted(@NonNull Navigation navigation) {
-                        Log.i(TAG, "received NavigationEvent: 'onNavigationCompleted()';");
-                        Log.i(TAG,
-                                "Navigation: url:" + navigation.getUri()
-                                        + ", HTTP-StatusCode: " + navigation.getStatusCode()
-                                        + ", samePage: " + navigation.isSameDocument());
-                        ListenableFuture<String> scriptResultFuture =
-                                tab.executeScript("1+1", true);
-                        Futures.addCallback(scriptResultFuture, new FutureCallback<String>() {
-                            @Override
-                            public void onSuccess(String result) {
-                                Log.w(TAG, "executeScript result: " + result);
-                            }
-                            @Override
-                            public void onFailure(Throwable thrown) {
-                                Log.w(TAG, "executeScript failed: " + thrown);
-                            }
-                        }, mContext.getMainExecutor());
-                    }
-
-                    @Override
-                    public void onNavigationStarted(@NonNull Navigation navigation) {
-                        Log.i(TAG, "received NavigationEvent: 'onNavigationStarted()'");
-                        Log.i(TAG,
-                                "Navigation: url:" + navigation.getUri()
-                                        + ", HTTP-StatusCode: " + navigation.getStatusCode()
-                                        + ", samePage: " + navigation.isSameDocument());
-                    }
-
-                    @Override
-                    public void onNavigationRedirected(@NonNull Navigation navigation) {
-                        Log.i(TAG, "received NavigationEvent: 'onNavigationRedirected()'");
-                        Log.i(TAG,
-                                "Navigation: url:" + navigation.getUri()
-                                        + ", HTTP-StatusCode: " + navigation.getStatusCode()
-                                        + ", samePage: " + navigation.isSameDocument());
-                    }
-
-                    @Override
-                    public void onLoadProgressChanged(double progress) {
-                        Log.i(TAG,
-                                "received NavigationEvent: 'onLoadProgressChanged(" + progress
-                                        + ")'");
-                    }
-                });
-            }
-
-            @Override
-            public void onTabRemoved(@NonNull Tab tab) {
-                Log.i(TAG, "received TabList Event: 'onTabRemoved'-event");
-            }
-
-            @Override
-            public void onWillDestroyFragmentAndAllTabs() {
-                Log.i(TAG, "received TabList Event: 'onWillDestroyFragmentAndAllTabs'-event");
-            }
-        });
+        mTabManager.registerTabListObserver(new DefaultObservers.DefaultTabListObserver());
 
         ListenableFuture<Void> setCookieFuture =
                 cookieManager.setCookie("https://sadchonks.com", "foo=bar123");
@@ -266,10 +178,10 @@ public class WebEngineShellActivity extends AppCompatActivity {
             }
         }, mContext.getMainExecutor());
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
+        getSupportFragmentManager()
+                .beginTransaction()
                 .setReorderingAllowed(true)
-                .add(R.id.fragment_container_view, fragment, WEB_FRAGMENT_TAG)
+                .add(R.id.fragment_container_view, webEngine.getFragment(), WEB_FRAGMENT_TAG)
                 .commit();
     }
 
@@ -291,8 +203,41 @@ public class WebEngineShellActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(Throwable thrown) {
+                if (mWebSandbox != null) {
+                    mWebSandbox.shutdown();
+                }
                 WebEngineShellActivity.super.onBackPressed();
             }
         }, mContext.getMainExecutor());
+    }
+
+    // TODO(swestphal): Move this to a helper class.
+    static void setupActivitySpinner(Spinner spinner, Activity activity, int index) {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                activity, R.array.activities_drop_down, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(index, false);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                final Intent intent;
+                switch (pos) {
+                    case 0:
+                        intent = new Intent(activity, WebEngineShellActivity.class);
+                        break;
+                    case 1:
+                        intent = new Intent(activity, WebEngineStateTestActivity.class);
+                        break;
+                    default:
+                        assert false : "Unhandled item: " + String.valueOf(pos);
+                        intent = null;
+                }
+                activity.startActivity(intent);
+                activity.finish();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
     }
 }

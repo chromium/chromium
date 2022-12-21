@@ -84,10 +84,10 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
     public void notifyTabRemoved(@NonNull ITabParams tabParams) {
         mHandler.post(() -> {
             Tab tab = mTabRegistry.getOrCreateTab(tabParams);
+            mTabRegistry.removeTab(tab);
             for (TabListObserver observer : mTabListObservers) {
                 observer.onTabRemoved(tab);
             }
-            mTabRegistry.removeTab(tab);
         });
     }
 

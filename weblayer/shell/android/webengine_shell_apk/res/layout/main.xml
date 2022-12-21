@@ -9,31 +9,13 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
-        android:orientation="horizontal"
+    <Spinner
+        android:id="@+id/activity_nav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/create_tab"
-            android:text="Create and Preload Tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Button
-            android:id="@+id/navigate_tab"
-            android:text="Open Tab"
-            android:enabled="false"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Button
-            android:id="@+id/shut_down"
-            android:text="Shut Down"
-            android:enabled="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-      </LinearLayout>
-      <androidx.fragment.app.FragmentContainerView
-          android:id="@+id/fragment_container_view"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>
 

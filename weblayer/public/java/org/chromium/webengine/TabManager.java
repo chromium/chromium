@@ -149,6 +149,7 @@ public class TabManager {
         return mTabRegistry.getTabs();
     }
 
+    // TODO(swestphal): Move this to TabNavigationController.
     /**
      * Tries to navigate back inside the Fragment session and returns a Future with a Boolean
      * which is true if the back navigation was successful.
