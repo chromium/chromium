@@ -97,27 +97,12 @@ void CenterVertically(NSView* view) {
 - (void)loadView {
   const int kDialogWidth = 480;
 
-  BOOL isDarkMode = NO;
-  if (@available(macOS 10.14, *)) {
-    NSAppearanceName appearance =
-        [[NSApp effectiveAppearance] bestMatchFromAppearancesWithNames:@[
-          NSAppearanceNameAqua, NSAppearanceNameDarkAqua
-        ]];
-    isDarkMode = [appearance isEqual:NSAppearanceNameDarkAqua];
-  }
-  NSColor* topBoxColor = isDarkMode
-                             ? [NSColor colorWithCalibratedRed:0x32 / 255.0
-                                                         green:0x36 / 255.0
-                                                          blue:0x39 / 255.0
-                                                         alpha:1.0]
-                             : [NSColor whiteColor];
-
   NSBox* topBox = [[[NSBox alloc]
       initWithFrame:NSMakeRect(0, 137, kDialogWidth, 52)] autorelease];
-  [topBox setFillColor:topBoxColor];
-  [topBox setBoxType:NSBoxCustom];
-  [topBox setBorderType:NSNoBorder];
-  [topBox setContentViewMargins:NSZeroSize];
+  topBox.boxType = NSBoxCustom;
+  topBox.contentViewMargins = NSZeroSize;
+  topBox.fillColor = NSColor.controlColor;
+  topBox.borderWidth = 0;
 
   // This string starts with the app name, which is strongly LTR, so force the
   // correct layout.

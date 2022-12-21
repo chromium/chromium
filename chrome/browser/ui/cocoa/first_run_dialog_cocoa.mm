@@ -36,7 +36,7 @@ namespace {
 
 class FirstRunShowBridge : public base::RefCounted<FirstRunShowBridge> {
  public:
-  FirstRunShowBridge(FirstRunDialogController* controller);
+  explicit FirstRunShowBridge(FirstRunDialogController* controller);
 
   void ShowDialog(base::OnceClosure quit_closure);
 
@@ -59,7 +59,7 @@ void FirstRunShowBridge::ShowDialog(base::OnceClosure quit_closure) {
   std::move(quit_closure).Run();
 }
 
-FirstRunShowBridge::~FirstRunShowBridge() {}
+FirstRunShowBridge::~FirstRunShowBridge() = default;
 
 void ShowFirstRunModal() {
   base::scoped_nsobject<FirstRunDialogController> dialog(
