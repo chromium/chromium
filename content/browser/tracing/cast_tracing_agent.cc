@@ -184,8 +184,10 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   // Called from the tracing::PerfettoProducer on its sequence.
   void StopTracingImpl(base::OnceClosure stop_complete_callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
-    DCHECK(producer_);
     DCHECK(session_);
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    DCHECK(producer_);
+#endif
     if (!session_started_) {
       session_started_callback_ =
           base::BindOnce(&CastDataSource::StopTracing, base::Unretained(this),
