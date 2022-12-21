@@ -15,6 +15,7 @@
 #include "absl/log/internal/proto.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -143,7 +144,9 @@ ABSL_MUST_USE_RESULT absl::Span<char> EncodeMessageStart(
 
 void EncodeMessageLength(absl::Span<char> msg, const absl::Span<char> *buf) {
   if (!msg.data()) return;
-  const size_t length_size = msg.size();
+  assert(buf->data() >= msg.data());
+  if (buf->data() < msg.data()) return;
+  const uint64_t length_size = msg.size();
   EncodeRawVarint(static_cast<uint64_t>(buf->data() - msg.data()) - length_size,
                   length_size, &msg);
 }

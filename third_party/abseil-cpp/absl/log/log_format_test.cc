@@ -36,6 +36,7 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/optional.h"
 
 namespace {
 using ::absl::log_internal::AsString;
@@ -1702,18 +1703,18 @@ size_t MaxLogFieldLengthNoPrefix() {
   class StringLengthExtractorSink : public absl::LogSink {
    public:
     void Send(const absl::LogEntry& entry) override {
-      CHECK_EQ(size_, -1);
+      CHECK(!size_.has_value());
       CHECK_EQ(entry.text_message().find_first_not_of('x'),
                absl::string_view::npos);
-      size_ = entry.text_message().size();
+      size_.emplace(entry.text_message().size());
     }
     size_t size() const {
-      CHECK_GT(size_, 0);
-      return size_;
+      CHECK(size_.has_value());
+      return *size_;
     }
 
    private:
-    size_t size_ = -1;
+    absl::optional<size_t> size_;
   } extractor_sink;
   LOG(INFO).NoPrefix().ToSinkOnly(&extractor_sink)
       << std::string(2 * absl::log_internal::kLogMessageBufferSize, 'x');

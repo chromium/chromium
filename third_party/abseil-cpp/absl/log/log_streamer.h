@@ -30,7 +30,7 @@
 
 #include "absl/base/config.h"
 #include "absl/base/log_severity.h"
-#include "absl/log/log.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/internal/ostringstream.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
@@ -99,7 +99,7 @@ class LogStreamer final {
     that.stream_.reset();
   }
   LogStreamer& operator=(LogStreamer&& that) {
-    LOG_IF(LEVEL(severity_), stream_).AtLocation(file_, line_) << buf_;
+    ABSL_LOG_IF(LEVEL(severity_), stream_).AtLocation(file_, line_) << buf_;
     severity_ = that.severity_;
     file_ = std::move(that.file_);
     line_ = that.line_;
@@ -114,7 +114,7 @@ class LogStreamer final {
   //
   // Logs this LogStreamer's buffered content as if by LOG.
   ~LogStreamer() {
-    LOG_IF(LEVEL(severity_), stream_.has_value()).AtLocation(file_, line_)
+    ABSL_LOG_IF(LEVEL(severity_), stream_.has_value()).AtLocation(file_, line_)
         << buf_;
   }
 

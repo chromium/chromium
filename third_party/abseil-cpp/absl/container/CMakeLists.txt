@@ -711,6 +711,7 @@ absl_cc_library(
     absl::meta
     absl::optional
     absl::prefetch
+    absl::raw_logging_internal
     absl::utility
     absl::hashtablez_sampler
   PUBLIC

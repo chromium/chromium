@@ -29,7 +29,7 @@ ABSL_DEFAULT_COPTS = select({
     "//conditions:default": ABSL_GCC_FLAGS,
 })
 
-ABSL_TEST_COPTS = ABSL_DEFAULT_COPTS + select({
+ABSL_TEST_COPTS = select({
     "//absl:msvc_compiler": ABSL_MSVC_TEST_FLAGS,
     "//absl:clang-cl_compiler": ABSL_CLANG_CL_TEST_FLAGS,
     "//absl:clang_compiler": ABSL_LLVM_TEST_FLAGS,

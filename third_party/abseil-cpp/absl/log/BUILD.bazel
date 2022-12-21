@@ -186,7 +186,7 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        ":log",
+        ":absl_log",
         "//absl/base:config",
         "//absl/base:log_severity",
         "//absl/strings",
@@ -421,6 +421,7 @@ cc_test(
         "//absl/log/internal:test_matchers",
         "//absl/strings",
         "//absl/strings:str_format",
+        "//absl/types:optional",
         "@com_google_googletest//:gtest_main",
     ],
 )

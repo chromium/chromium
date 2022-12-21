@@ -150,8 +150,7 @@ function(absl_cc_library)
   endif()
 
   # Generate a pkg-config file for every library:
-  if((_build_type STREQUAL "static" OR _build_type STREQUAL "shared")
-     AND ABSL_ENABLE_INSTALL)
+  if(ABSL_ENABLE_INSTALL)
     if(NOT ABSL_CC_LIB_TESTONLY)
       if(absl_VERSION)
         set(PC_VERSION "${absl_VERSION}")
@@ -160,11 +159,28 @@ function(absl_cc_library)
       endif()
       foreach(dep ${ABSL_CC_LIB_DEPS})
         if(${dep} MATCHES "^absl::(.*)")
-	  # Join deps with commas.
-          if(PC_DEPS)
-            set(PC_DEPS "${PC_DEPS},")
+          # for DLL builds many libs are not created, but add
+          # the pkgconfigs nevertheless, pointing to the dll.
+          if(_build_type STREQUAL "dll")
+            # hide this MATCHES in an if-clause so it doesn't overwrite
+            # the CMAKE_MATCH_1 from (${dep} MATCHES "^absl::(.*)")
+            if(NOT PC_DEPS MATCHES "abseil_dll")
+              # Join deps with commas.
+              if(PC_DEPS)
+                set(PC_DEPS "${PC_DEPS},")
+              endif()
+              # don't duplicate dll-dep if it exists already
+              set(PC_DEPS "${PC_DEPS} abseil_dll = ${PC_VERSION}")
+              set(LNK_LIB "${LNK_LIB} -labseil_dll")
+            endif()
+          else()
+            # Join deps with commas.
+            if(PC_DEPS)
+              set(PC_DEPS "${PC_DEPS},")
+            endif()
+            set(PC_DEPS "${PC_DEPS} absl_${CMAKE_MATCH_1} = ${PC_VERSION}")
+            set(LNK_LIB "${LNK_LIB} -labsl_${_NAME}")
           endif()
-          set(PC_DEPS "${PC_DEPS} absl_${CMAKE_MATCH_1} = ${PC_VERSION}")
         endif()
       endforeach()
       foreach(cflag ${ABSL_CC_LIB_COPTS})
@@ -192,7 +208,7 @@ Description: Abseil ${_NAME} library\n\
 URL: https://abseil.io/\n\
 Version: ${PC_VERSION}\n\
 Requires:${PC_DEPS}\n\
-Libs: -L\${libdir} ${PC_LINKOPTS} $<$<NOT:$<BOOL:${ABSL_CC_LIB_IS_INTERFACE}>>:-labsl_${_NAME}>\n\
+Libs: -L\${libdir} ${PC_LINKOPTS} $<$<NOT:$<BOOL:${ABSL_CC_LIB_IS_INTERFACE}>>:${LNK_LIB}>\n\
 Cflags: -I\${includedir}${PC_CFLAGS}\n")
       INSTALL(FILES "${CMAKE_BINARY_DIR}/lib/pkgconfig/absl_${_NAME}.pc"
               DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")

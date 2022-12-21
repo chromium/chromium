@@ -26,11 +26,14 @@ namespace container_internal {
 
 // A single block of empty control bytes for tables without any slots allocated.
 // This enables removing a branch in the hot path of find().
-alignas(16) ABSL_CONST_INIT ABSL_DLL const ctrl_t kEmptyGroup[16] = {
+// We have 17 bytes because there may be a generation counter. Any constant is
+// fine for the generation counter.
+alignas(16) ABSL_CONST_INIT ABSL_DLL const ctrl_t kEmptyGroup[17] = {
     ctrl_t::kSentinel, ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
     ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
     ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
-    ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty};
+    ctrl_t::kEmpty,    ctrl_t::kEmpty, ctrl_t::kEmpty, ctrl_t::kEmpty,
+    static_cast<ctrl_t>(0)};
 
 #ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
 constexpr size_t Group::kWidth;
@@ -190,24 +193,24 @@ void EraseMetaOnly(CommonFields& c, ctrl_t* it, size_t slot_size) {
 
   SetCtrl(c, index, was_never_full ? ctrl_t::kEmpty : ctrl_t::kDeleted,
           slot_size);
-  c.growth_left_ += (was_never_full ? 1 : 0);
+  c.growth_left() += (was_never_full ? 1 : 0);
   c.infoz().RecordErase();
 }
 
 void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
                        bool reuse) {
+  c.size_ = 0;
   if (reuse) {
-    c.size_ = 0;
     ResetCtrl(c, policy.slot_size);
     c.infoz().RecordStorageChanged(0, c.capacity_);
   } else {
     void* set = &c;
     (*policy.dealloc)(set, policy, c.control_, c.slots_, c.capacity_);
     c.control_ = EmptyGroup();
+    c.set_generation_ptr(EmptyGeneration());
     c.slots_ = nullptr;
-    c.size_ = 0;
     c.capacity_ = 0;
-    c.growth_left_ = 0;
+    c.growth_left() = 0;
     c.infoz().RecordClearedReservation();
     assert(c.size_ == 0);
     c.infoz().RecordStorageChanged(0, 0);

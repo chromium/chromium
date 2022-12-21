@@ -600,6 +600,33 @@ function(absl_make_dll)
       ${ABSL_DEFAULT_COPTS}
   )
 
+  foreach(cflag ${ABSL_CC_LIB_COPTS})
+    if(${cflag} MATCHES "^(-Wno|/wd)")
+      # These flags are needed to suppress warnings that might fire in our headers.
+      set(PC_CFLAGS "${PC_CFLAGS} ${cflag}")
+    elseif(${cflag} MATCHES "^(-W|/w[1234eo])")
+      # Don't impose our warnings on others.
+    else()
+      set(PC_CFLAGS "${PC_CFLAGS} ${cflag}")
+    endif()
+  endforeach()
+  string(REPLACE ";" " " PC_LINKOPTS "${ABSL_CC_LIB_LINKOPTS}")
+
+  FILE(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/lib/pkgconfig/abseil_dll.pc" CONTENT "\
+prefix=${CMAKE_INSTALL_PREFIX}\n\
+exec_prefix=\${prefix}\n\
+libdir=${CMAKE_INSTALL_FULL_LIBDIR}\n\
+includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}\n\
+\n\
+Name: abseil_dll\n\
+Description: Abseil DLL library\n\
+URL: https://abseil.io/\n\
+Version: ${absl_VERSION}\n\
+Libs: -L\${libdir} ${PC_LINKOPTS} $<$<NOT:$<BOOL:${ABSL_CC_LIB_IS_INTERFACE}>>:-labseil_dll>\n\
+Cflags: -I\${includedir}${PC_CFLAGS}\n")
+  INSTALL(FILES "${CMAKE_BINARY_DIR}/lib/pkgconfig/abseil_dll.pc"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+
   target_compile_definitions(
     abseil_dll
     PRIVATE

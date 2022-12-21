@@ -604,7 +604,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::config
-    absl::log
+    absl::absl_log
     absl::log_severity
     absl::optional
     absl::strings
@@ -859,6 +859,7 @@ absl_cc_test(
     absl::check
     absl::log
     absl::log_internal_test_matchers
+    absl::optional
     absl::scoped_mock_log
     absl::str_format
     absl::strings
