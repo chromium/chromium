@@ -11,6 +11,6 @@
   [HighEntropy, MeasureAs=NavigatorUAData_Brands] readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
   [HighEntropy=Direct, MeasureAs=NavigatorUAData_Mobile]  readonly attribute boolean mobile;
   [HighEntropy=Direct, MeasureAs=NavigatorUAData_Platform] readonly attribute DOMString platform;
-  [CallWith=ScriptState] Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
-  [CallWith=ScriptState] object toJSON();
+  [HighEntropy, CallWith=ScriptState] Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
+  [HighEntropy, CallWith=ScriptState] object toJSON();
 };
