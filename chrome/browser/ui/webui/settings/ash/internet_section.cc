@@ -871,6 +871,10 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIGURE_BUTTON},
       {"hotspotConnectedDeviceCountLabel",
        IDS_SETTINGS_INTERNET_HOTSPOT_CONNECTED_DEVICE_COUNT_LABEL},
+      {"hotspotAutoDisableLabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_AUTO_DISABLED_LABEL},
+      {"hotspotAutoDisableSublabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_AUTO_DISABLED_SUBLABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

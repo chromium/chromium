@@ -2912,6 +2912,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONNECTED_DEVICE_COUNT_LABEL" desc="Label for showing the current connected device count in the hotspot subpage.">
     Devices currently connected to hotspot
   </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_AUTO_DISABLED_LABEL" desc="Label for showing if hotspot should be turned off automatically when no devices are connected in the hotspot subpage.">
+    Turn off hotspot automatically
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_AUTO_DISABLED_SUBLABEL" desc="Sublabel for showing if hotspot should be turned off automatically when no devices are connected in the hotspot subpage.">
+    When no devices are connected
+  </message>
   <message name="IDS_SETTINGS_INTERNET_WIFI_NETWORKS" desc="Name of the settings page which displays a list of Wi-Fi networks which the user can choose to connect to.">
     Wi-Fi networks
   </message>

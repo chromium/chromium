@@ -5,7 +5,7 @@
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
-import {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState, WiFiSecurityMode} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
+import {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState, SetHotspotConfigResult, WiFiSecurityMode} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -51,6 +51,7 @@ suite('HotspotSubpageTest', function() {
       allowStatus: HotspotAllowStatus.kAllowed,
       clientCount: 0,
       config: {
+        autoDisable: true,
         ssid: 'test_ssid',
         passphrase: 'test_passphrase',
       },
@@ -61,6 +62,7 @@ suite('HotspotSubpageTest', function() {
   }
 
   teardown(function() {
+    hotspotConfig.reset();
     hotspotSubpage.remove();
     hotspotSubpage = null;
     Router.getInstance().resetRouteForTesting();
@@ -201,5 +203,32 @@ suite('HotspotSubpageTest', function() {
     hotspotConfig.setFakeHotspotConfig(null);
     await flushAsync();
     assertEquals('', hotspotNameElement.textContent.trim());
+  });
+
+  test('Auto disable toggle', async function() {
+    await init();
+    let autoDisableToggle =
+        hotspotSubpage.shadowRoot.querySelector('#hotspotAutoDisableToggle');
+    assertTrue(!!autoDisableToggle);
+    assertTrue(autoDisableToggle.checked);
+
+    hotspotConfig.setFakeSetHotspotConfigResult(
+        SetHotspotConfigResult.kSuccess);
+    autoDisableToggle.click();
+    await flushAsync();
+    assertFalse(autoDisableToggle.checked);
+
+    hotspotConfig.setFakeSetHotspotConfigResult(
+        SetHotspotConfigResult.kFailedInvalidConfiguration);
+    autoDisableToggle.click();
+    await flushAsync();
+    assertFalse(autoDisableToggle.checked);
+
+    // Verifies that the toggle should be hidden if the hotspot config is null.
+    hotspotConfig.setFakeHotspotConfig(null);
+    await flushAsync();
+    autoDisableToggle =
+        hotspotSubpage.shadowRoot.querySelector('#hotspotAutoDisableToggle');
+    assertEquals(null, autoDisableToggle);
   });
 });

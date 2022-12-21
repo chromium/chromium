@@ -8,12 +8,14 @@
  */
 
 import '../../settings_shared.css.js';
+import '../../controls/settings_toggle_button.js';
+import '../../prefs/prefs.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
+import {HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState, SetHotspotConfigResult} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -51,15 +53,32 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
         type: Boolean,
         observer: 'onHotspotToggleChanged_',
       },
+
+      /**
+       * Hotspot auto disabled state.
+       * @private {!chrome.settingsPrivate.PrefObject}
+       */
+      autoDisableVirtualPref_: {
+        type: Object,
+        value() {
+          return {
+            key: 'fakeAutoDisablePref',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          };
+        },
+      },
     };
   }
 
   /** @private */
   onHotspotInfoChanged_() {
     assert(this.hotspotInfo);
+
     this.isHotspotToggleOn_ =
         this.hotspotInfo.state === HotspotState.kEnabled ||
         this.hotspotInfo.state === HotspotState.kEnabling;
+    this.updateAutoDisablePref_();
   }
 
   /**
@@ -81,6 +100,21 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
     }
 
     this.setHotspotEnabledState_(this.isHotspotToggleOn_);
+  }
+
+  /**
+   * @private
+   */
+  updateAutoDisablePref_() {
+    if (!this.hotspotInfo || !this.hotspotInfo.config) {
+      return;
+    }
+    const newPrefValue = {
+      key: 'fakeAutoDisablePref',
+      value: this.hotspotInfo.config.autoDisable,
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    };
+    this.autoDisableVirtualPref_ = newPrefValue;
   }
 
   /**
@@ -141,6 +175,33 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
    */
   getHotspotConnectedDeviceCount_() {
     return this.hotspotInfo?.clientCount || 0;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showHotspotAutoDisableToggle_() {
+    return !!this.hotspotInfo?.config;
+  }
+
+  /**
+   * @private
+   */
+  async onAutoDisableChange_() {
+    assert(this.hotspotInfo.config);
+    const configToSet = this.hotspotInfo.config;
+    configToSet.autoDisable = !!this.autoDisableVirtualPref_.value;
+    const response = await getHotspotConfig().setHotspotConfig(configToSet);
+    if (response.result !== SetHotspotConfigResult.kSuccess) {
+      // Flip back the toggle if not set successfully.
+      const newPrefValue = {
+        key: 'fakeEnabledPref',
+        value: !configToSet.autoDisable,
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      };
+      this.autoDisableVirtualPref_ = newPrefValue;
+    }
   }
 }
 

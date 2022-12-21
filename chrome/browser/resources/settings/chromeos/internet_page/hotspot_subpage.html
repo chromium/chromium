@@ -42,6 +42,14 @@
     $i18n{hotspotConfigureButton}
   </cr-button>
 </div>
+<template is="dom-if" if="[[showHotspotAutoDisableToggle_(hotspotInfo)]]"
+    restamp>
+  <settings-toggle-button id="hotspotAutoDisableToggle" class="hr"
+      label="$i18n{hotspotAutoDisableLabel}"
+      sub-label="$i18n{hotspotAutoDisableSublabel}"
+      pref="{{autoDisableVirtualPref_}}" on-change="onAutoDisableChange_">
+  </settings-toggle-button>
+</template>
 <div id="connectedDeviceCountRow"
     class="settings-box settings-box-text two-line single-column stretch">
   <div id="connectedDeviceCountLabel">
