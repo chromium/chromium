@@ -103,7 +103,7 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
   dict_value.Set("e", std::move(nested_empty_dict));
   dict_value.Set("f", std::move(nested_empty_list));
 
-  base::ListValue list_value;
+  base::Value list_value(base::Value::Type::LIST);
   list_value.Append(true);
   list_value.Append(100);
   list_value.Append(1.0);
