@@ -5,7 +5,6 @@
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 
 #include "base/strings/stringprintf.h"
-#include "base/test/values_test_util.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/manifest.h"
@@ -24,10 +23,8 @@ class SidePanelManifestTest : public ChromeManifestTest {
         "manifest_version": %d,
         "side_panel": %s
       })";
-    base::Value manifest_value = base::test::ParseJson(base::StringPrintf(
+    return ManifestData::FromJSON(base::StringPrintf(
         kManifestStub, manifest_version, side_panel.c_str()));
-    EXPECT_TRUE(manifest_value.is_dict());
-    return ManifestData(std::move(manifest_value).TakeDict());
   }
 };
 

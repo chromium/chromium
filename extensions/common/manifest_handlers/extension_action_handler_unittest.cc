@@ -9,7 +9,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/api/extension_action/action_info.h"
@@ -103,10 +102,8 @@ TEST_F(ExtensionActionHandlerManifestTest, NoActionSpecified_ManifestV2) {
            "version": "0.1"
          })";
 
-  base::Value manifest_value = base::test::ParseJson(kManifest);
-  ASSERT_TRUE(manifest_value.is_dict());
   scoped_refptr<const Extension> extension =
-      LoadAndExpectSuccess(ManifestData(std::move(manifest_value).TakeDict()));
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension);
 
   const ActionInfo* action_info =
@@ -122,10 +119,8 @@ TEST_F(ExtensionActionHandlerManifestTest, NoActionSpecified_ManifestV3) {
            "version": "0.1"
          })";
 
-  base::Value manifest_value = base::test::ParseJson(kManifest);
-  ASSERT_TRUE(manifest_value.is_dict());
   scoped_refptr<const Extension> extension =
-      LoadAndExpectSuccess(ManifestData(std::move(manifest_value).TakeDict()));
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension);
 
   const ActionInfo* action_info =
@@ -162,10 +157,8 @@ class ExtensionActionManifestTest
     const char* action_key =
         ActionInfo::GetManifestKeyForActionType(GetParam());
 
-    base::Value manifest_value = base::test::ParseJson(
+    return ManifestData::FromJSON(
         base::StringPrintf(kManifestStub, action_key, action_spec));
-    EXPECT_TRUE(manifest_value.is_dict());
-    return ManifestData(std::move(manifest_value).TakeDict());
   }
 
   scoped_refptr<Extension> LoadExtensionWithDefaultPopup(

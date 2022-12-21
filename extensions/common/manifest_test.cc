@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_paths.h"
@@ -95,6 +96,14 @@ ManifestTest::ManifestData::GetManifest(const base::FilePath& test_data_dir,
     manifest_ = LoadManifestFile(manifest_path, error);
   }
   return manifest_;
+}
+
+// static
+ManifestTest::ManifestData ManifestTest::ManifestData::FromJSON(
+    base::StringPiece json) {
+  // ParseJsonDict() will ADD_FAILURE() if `json` is not a valid dict.
+  base::Value::Dict manifest_dict = base::test::ParseJsonDict(json);
+  return ManifestData(std::move(manifest_dict));
 }
 
 std::string ManifestTest::GetTestExtensionID() const {

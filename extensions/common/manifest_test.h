@@ -45,6 +45,10 @@ class ManifestTest : public testing::Test {
     ManifestData(ManifestData&& other);
     ~ManifestData();
 
+    // Constructs a ManifestData object from the given `json` string.
+    // Calls ADD_FAILURE() if `json` is not valid JSON.
+    static ManifestData FromJSON(base::StringPiece json);
+
     const std::string& name() const { return name_; }
 
     const absl::optional<base::Value::Dict>& GetManifest(
