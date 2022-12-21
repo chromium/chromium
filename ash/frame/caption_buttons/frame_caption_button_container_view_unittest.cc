@@ -343,19 +343,57 @@ TEST_F(FrameCaptionButtonContainerViewTest, ResizeButtonRestoreBehavior) {
 }
 
 // Test float button requires kFloatWindow feature to be enabled during setup.
-class WindowFloatTest : public FrameCaptionButtonContainerViewTest {
+class WindowFloatButtonTest : public FrameCaptionButtonContainerViewTest {
  public:
-  WindowFloatTest()
+  WindowFloatButtonTest()
       : scoped_feature_list_(chromeos::wm::features::kFloatWindow) {}
-  WindowFloatTest(const WindowFloatTest&) = delete;
-  WindowFloatTest& operator=(const WindowFloatTest&) = delete;
-  ~WindowFloatTest() override = default;
+  WindowFloatButtonTest(const WindowFloatButtonTest&) = delete;
+  WindowFloatButtonTest& operator=(const WindowFloatButtonTest&) = delete;
+  ~WindowFloatButtonTest() override = default;
+
+  void ClickFloatButton(FrameCaptionButtonContainerView::TestApi* test_api) {
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    auto* float_button = test_api->float_button();
+    generator->MoveMouseTo(float_button->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(WindowFloatTest, TabletSizeButtonVisibility) {
+TEST_F(WindowFloatButtonTest, TestFloatButtonBehavior) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kAshDeveloperShortcuts);
+
+  auto* widget = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                                  CLOSE_BUTTON_VISIBLE);
+  auto* window = widget->GetNativeWindow();
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(ash::AppType::BROWSER));
+  widget->Show();
+
+  FrameCaptionButtonContainerView container(widget);
+  InitContainer(&container);
+  widget->GetContentsView()->AddChildView(&container);
+  views::test::RunScheduledLayout(&container);
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+
+  ClickFloatButton(&testApi);
+  auto* window_state = WindowState::Get(window);
+  // Check if window is floated.
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_EQ(window->GetProperty(chromeos::kWindowStateTypeKey),
+            chromeos::WindowStateType::kFloated);
+
+  ClickFloatButton(&testApi);
+  // Check if window is unfloated.
+  EXPECT_FALSE(window_state->IsFloated());
+  EXPECT_EQ(window->GetProperty(chromeos::kWindowStateTypeKey),
+            chromeos::WindowStateType::kNormal);
+}
+
+TEST_F(WindowFloatButtonTest, TabletSizeButtonVisibility) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // Create a window in tablet mode. It should be maximized and the size button

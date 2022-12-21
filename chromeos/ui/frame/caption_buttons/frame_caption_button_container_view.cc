@@ -149,6 +149,27 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
         return frame_->widget_delegate()->ShouldShowCloseButton();
       case views::CAPTION_BUTTON_ICON_CUSTOM:
         return true;
+      case views::CAPTION_BUTTON_ICON_FLOAT: {
+        if (!chromeos::wm::features::IsFloatWindowEnabled() ||
+            !frame_->IsNativeWidgetInitialized()) {
+          return false;
+        }
+        // In tablet mode, only show the float/unfloat button if the window is
+        // floated.
+        if (chromeos::TabletState::Get()->InTabletMode()) {
+          return frame_->GetNativeWindow()->GetProperty(kWindowStateTypeKey) ==
+                 WindowStateType::kFloated;
+        }
+        // In clamshell mode, its harder to differentiate a non floated window
+        // with a floated window sometimes. Keep the pin button around for
+        // floatable windows if the developer flag is present. This is temporary
+        // until the float feature is launched, so instead of modifying build
+        // dependencies so lacros will depend on ash/constants, we use the
+        // string directly.
+        return base::CommandLine::ForCurrentProcess()->HasSwitch(
+                   "ash-dev-shortcuts") &&
+               chromeos::wm::CanFloatWindow(frame_->GetNativeWindow());
+      }
       // No back or menu button by default.
       case views::CAPTION_BUTTON_ICON_BACK:
       case views::CAPTION_BUTTON_ICON_MENU:
@@ -211,6 +232,16 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
   AddChildView(minimize_button_.get());
 
+  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    float_button_ = AddChildView(std::make_unique<views::FrameCaptionButton>(
+        base::BindRepeating(
+            &FrameCaptionButtonContainerView::FloatButtonPressed,
+            base::Unretained(this)),
+        views::CAPTION_BUTTON_ICON_FLOAT, HTMENU));
+    float_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_MULTITASK_MENU_FLOAT_BUTTON_NAME));
+  }
+
   size_button_ = new FrameSizeButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::SizeButtonPressed,
                           base::Unretained(this)),
@@ -227,13 +258,22 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
   AddChildView(close_button_.get());
 
+  SetButtonImage(views::CAPTION_BUTTON_ICON_FLOAT, chromeos::kFloatButtonIcon);
   SetButtonImage(views::CAPTION_BUTTON_ICON_MENU, chromeos::kFloatWindowIcon);
   SetButtonImage(views::CAPTION_BUTTON_ICON_MINIMIZE,
                  views::kWindowControlMinimizeIcon);
   SetButtonImage(views::CAPTION_BUTTON_ICON_CLOSE,
                  views::kWindowControlCloseIcon);
 
-  UpdateCaptionButtonState(/*animate=*/false);
+  // The float button relies on minimum size to know if it can be floated, which
+  // can only be checked after the widget has been initialized.
+  if (frame->IsNativeWidgetInitialized()) {
+    UpdateCaptionButtonState(/*animate=*/false);
+  } else {
+    frame->widget_delegate()->RegisterWidgetInitializedCallback(base::BindOnce(
+        &FrameCaptionButtonContainerView::UpdateCaptionButtonState,
+        base::Unretained(this), /*animate=*/false));
+  }
 }
 
 FrameCaptionButtonContainerView::~FrameCaptionButtonContainerView() = default;
@@ -245,6 +285,8 @@ void FrameCaptionButtonContainerView::TestApi::EndAnimations() {
 void FrameCaptionButtonContainerView::SetPaintAsActive(bool paint_as_active) {
   if (custom_button_)
     custom_button_->SetPaintAsActive(paint_as_active);
+  if (float_button_)
+    float_button_->SetPaintAsActive(paint_as_active);
   menu_button_->SetPaintAsActive(paint_as_active);
   minimize_button_->SetPaintAsActive(paint_as_active);
   size_button_->SetPaintAsActive(paint_as_active);
@@ -256,13 +298,13 @@ void FrameCaptionButtonContainerView::SetButtonImage(
     views::CaptionButtonIcon icon,
     const gfx::VectorIcon& icon_definition) {
   button_icon_map_[icon] = &icon_definition;
-  views::FrameCaptionButton* buttons[] = {menu_button_, minimize_button_,
-                                          size_button_, close_button_};
-  for (views::FrameCaptionButton* button : buttons) {
-    if (button && button->GetIcon() == icon) {
-      button->SetImage(icon, views::FrameCaptionButton::Animate::kNo,
-                       icon_definition);
-    }
+  views::FrameCaptionButton* buttons[] = {float_button_, menu_button_,
+                                          minimize_button_, size_button_,
+                                          close_button_};
+  for (size_t i = 0; i < std::size(buttons); ++i) {
+    if (buttons[i] && buttons[i]->GetIcon() == icon)
+      buttons[i]->SetImage(icon, views::FrameCaptionButton::Animate::kNo,
+                           icon_definition);
   }
 }
 
@@ -270,6 +312,8 @@ void FrameCaptionButtonContainerView::SetBackgroundColor(
     SkColor background_color) {
   if (custom_button_)
     custom_button_->SetBackgroundColor(background_color);
+  if (float_button_)
+    float_button_->SetBackgroundColor(background_color);
   menu_button_->SetBackgroundColor(background_color);
   minimize_button_->SetBackgroundColor(background_color);
   size_button_->SetBackgroundColor(background_color);
@@ -337,6 +381,12 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
     custom_button_->SetVisible(
         model_->IsVisible(views::CAPTION_BUTTON_ICON_CUSTOM));
   }
+  if (float_button_) {
+    float_button_->SetEnabled(
+        model_->IsEnabled(views::CAPTION_BUTTON_ICON_FLOAT));
+    float_button_->SetVisible(
+        model_->IsVisible(views::CAPTION_BUTTON_ICON_FLOAT));
+  }
   size_button_->SetEnabled(
       (model_->IsEnabled(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE) ||
        model_->InZoomMode()));
@@ -353,11 +403,14 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
 void FrameCaptionButtonContainerView::UpdateButtonsImageAndTooltip() {
   UpdateSizeButton();
   UpdateSnapButtons();
+  UpdateFloatButton();
 }
 
 void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
   if (custom_button_)
     custom_button_->SetPreferredSize(size);
+  if (float_button_)
+    float_button_->SetPreferredSize(size);
   menu_button_->SetPreferredSize(size);
   minimize_button_->SetPreferredSize(size);
   size_button_->SetPreferredSize(size);
@@ -530,6 +583,26 @@ void FrameCaptionButtonContainerView::UpdateSnapButtons() {
                      : chromeos::kWindowControlBottomSnappedIcon);
 }
 
+void FrameCaptionButtonContainerView::UpdateFloatButton() {
+  if (!float_button_)
+    return;
+
+  const bool floated = frame_->GetNativeWindow()->GetProperty(
+                           kWindowStateTypeKey) == WindowStateType::kFloated;
+  SetButtonImage(
+      views::CAPTION_BUTTON_ICON_FLOAT,
+      floated ? chromeos::kUnfloatButtonIcon : chromeos::kFloatButtonIcon);
+  float_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      floated ? IDS_MULTITASK_MENU_EXIT_FLOAT_BUTTON_NAME
+              : IDS_MULTITASK_MENU_FLOAT_BUTTON_NAME));
+
+  // Float button also needs to update its visibility when float state changes.
+  float_button_->SetEnabled(
+      model_->IsEnabled(views::CAPTION_BUTTON_ICON_FLOAT));
+  float_button_->SetVisible(
+      model_->IsVisible(views::CAPTION_BUTTON_ICON_FLOAT));
+}
+
 void FrameCaptionButtonContainerView::MinimizeButtonPressed() {
   // Abort any animations of the button icons.
   SetButtonsToNormal(Animate::kNo);
@@ -590,6 +663,15 @@ void FrameCaptionButtonContainerView::MenuButtonPressed() {
   // TODO(oshima): Add metrics
 }
 
+void FrameCaptionButtonContainerView::FloatButtonPressed() {
+  // Abort any animations of the button icons.
+  SetButtonsToNormal(Animate::kNo);
+  DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+
+  // Toggle float current window.
+  FloatControllerBase::Get()->ToggleFloat(GetWidget()->GetNativeWindow());
+}
+
 bool FrameCaptionButtonContainerView::IsMinimizeButtonVisible() const {
   return minimize_button_->GetVisible();
 }
@@ -599,6 +681,8 @@ void FrameCaptionButtonContainerView::SetButtonsToNormal(Animate animate) {
                  views::CAPTION_BUTTON_ICON_CLOSE, animate);
   if (custom_button_)
     custom_button_->SetState(views::Button::STATE_NORMAL);
+  if (float_button_)
+    float_button_->SetState(views::Button::STATE_NORMAL);
   menu_button_->SetState(views::Button::STATE_NORMAL);
   minimize_button_->SetState(views::Button::STATE_NORMAL);
   size_button_->SetState(views::Button::STATE_NORMAL);
@@ -622,9 +706,9 @@ FrameCaptionButtonContainerView::GetButtonClosestTo(
   gfx::Point position(position_in_screen);
   views::View::ConvertPointFromScreen(this, &position);
 
-  views::FrameCaptionButton* buttons[] = {custom_button_, menu_button_,
-                                          minimize_button_, size_button_,
-                                          close_button_};
+  views::FrameCaptionButton* buttons[] = {custom_button_, float_button_,
+                                          menu_button_,   minimize_button_,
+                                          size_button_,   close_button_};
   int min_squared_distance = INT_MAX;
   views::FrameCaptionButton* closest_button = nullptr;
   for (size_t i = 0; i < std::size(buttons); ++i) {
@@ -648,10 +732,11 @@ FrameCaptionButtonContainerView::GetButtonClosestTo(
 void FrameCaptionButtonContainerView::SetHoveredAndPressedButtons(
     const views::FrameCaptionButton* to_hover,
     const views::FrameCaptionButton* to_press) {
-  views::FrameCaptionButton* buttons[] = {custom_button_, menu_button_,
-                                          minimize_button_, size_button_,
-                                          close_button_};
-  for (views::FrameCaptionButton* button : buttons) {
+  views::FrameCaptionButton* buttons[] = {custom_button_, float_button_,
+                                          menu_button_,   minimize_button_,
+                                          size_button_,   close_button_};
+  for (size_t i = 0; i < std::size(buttons); ++i) {
+    views::FrameCaptionButton* button = buttons[i];
     if (!button)
       continue;
     views::Button::ButtonState new_state = views::Button::STATE_NORMAL;
