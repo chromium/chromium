@@ -404,6 +404,7 @@ cronet_impl_native_java_srcjar_deps = [
 
 cronet_impl_native_java_deps_to_package = [
   ":cronet_urlconnection_impl_java",
+  ":request_context_config_java_proto",
   "//base:base_java",
   "//base:jni_java",
   "//build/android:build_java",
@@ -432,7 +433,6 @@ android_library("cronet_impl_native_base_java") {
   deps = [
     ":cronet_api_java",
     ":cronet_impl_common_base_java",
-    ":request_context_config_java_proto",
     "//base:jni_java",
     "//build/android:build_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -500,6 +500,7 @@ android_apk("cronet_sample_apk") {
     ":cronet_combine_proguard_flags",
     ":cronet_sample_apk_java",
     ":cronet_sample_apk_resources",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
   ]
 
   # Cronet jars will include this, so don't duplicate.
@@ -561,11 +562,16 @@ java_prebuilt("package_impl_native_java") {
   jar_path = "$_package_dir/cronet_impl_native_java.jar"
   supports_android = true
   requires_android = true
+  
+  # To avoid dual definition of classes some dependencies are added 
+  # downstream (Maven deps, BUILD dependencies), and the bytecode check
+  # doesn't like that. 
+  enable_bytecode_checks = false
+
   deps = [
     ":package_api_java",
     ":package_impl_common_java",
     ":repackage_native",
-    ":request_context_config_java_proto",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
