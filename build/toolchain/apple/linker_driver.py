@@ -208,6 +208,7 @@ class LinkerDriver(object):
             output = self._get_linker_output()
             assert output
             self._object_path_lto = output + '.lto_objects'
+            _remove_path(self._object_path_lto)
             os.mkdir(self._object_path_lto)
             return (OBJECT_PATH_LTO, lambda: [])
 
