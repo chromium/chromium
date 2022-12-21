@@ -10149,7 +10149,7 @@ interestGroupBuyers: [$1],
                                         "/interest_group/decision_logic.js"))));
 
   absl::optional<network::ResourceRequest> request =
-      url_loader_monitor.GetRequestInfo(
+      url_loader_monitor.WaitForUrl(
           https_server_->GetURL("d.test", "/echoall?report_win_beacon"));
   ASSERT_TRUE(request);
   EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request->method);
