@@ -61,7 +61,7 @@ class VulkanGLInterop {
     VkFence post_draw_fence = VK_NULL_HANDLE;
     VkSemaphore post_draw_semaphore = VK_NULL_HANDLE;
     base::ScopedFD sync_fd;
-    ui::ScopedEGLImage egl_image;
+    gl::ScopedEGLImage egl_image;
     gfx::Size image_size;
     base::android::ScopedHardwareBufferHandle scoped_buffer;
     sk_sp<SkImage> ahb_skimage;

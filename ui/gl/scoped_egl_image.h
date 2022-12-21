@@ -11,7 +11,7 @@
 #include "base/scoped_generic.h"
 #include "ui/gl/gl_export.h"
 
-namespace ui {
+namespace gl {
 
 struct GL_EXPORT DeleteEGLImageTraits {
   static EGLImageKHR InvalidValue();
@@ -31,6 +31,6 @@ GL_EXPORT ScopedEGLImage MakeScopedEGLImage(EGLContext context,
                                             EGLClientBuffer buffer,
                                             const EGLint* attrs);
 
-}  // namespace ui
+}  // namespace gl
 
 #endif  // UI_GL_SCOPED_EGL_IMAGE_H_

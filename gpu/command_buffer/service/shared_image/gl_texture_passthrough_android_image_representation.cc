@@ -14,7 +14,7 @@ GLTexturePassthroughAndroidImageRepresentation::
         SharedImageManager* manager,
         AndroidImageBacking* backing,
         MemoryTypeTracker* tracker,
-        ui::ScopedEGLImage egl_image,
+        gl::ScopedEGLImage egl_image,
         scoped_refptr<gles2::TexturePassthrough> texture)
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
       egl_image_(std::move(egl_image)),

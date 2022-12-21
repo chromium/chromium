@@ -54,7 +54,7 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
     uint32_t queue_family_index);
 
 // Creates an EGLImage from |buffer|, setting EGL_IMAGE_PRESERVED_KHR to false.
-GPU_GLES2_EXPORT ui::ScopedEGLImage CreateEGLImageFromAHardwareBuffer(
+GPU_GLES2_EXPORT gl::ScopedEGLImage CreateEGLImageFromAHardwareBuffer(
     AHardwareBuffer* buffer);
 
 }  // namespace gpu

@@ -19,7 +19,7 @@ class GLTexturePassthroughAndroidImageRepresentation
       SharedImageManager* manager,
       AndroidImageBacking* backing,
       MemoryTypeTracker* tracker,
-      ui::ScopedEGLImage egl_image,
+      gl::ScopedEGLImage egl_image,
       scoped_refptr<gles2::TexturePassthrough> texture);
   ~GLTexturePassthroughAndroidImageRepresentation() override;
 
@@ -39,7 +39,7 @@ class GLTexturePassthroughAndroidImageRepresentation
     return static_cast<AndroidImageBacking*>(backing());
   }
 
-  ui::ScopedEGLImage egl_image_;
+  gl::ScopedEGLImage egl_image_;
   scoped_refptr<gles2::TexturePassthrough> texture_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
 };

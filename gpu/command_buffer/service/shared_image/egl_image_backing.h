@@ -94,7 +94,7 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
   scoped_refptr<TextureHolder> source_texture_holder_;
   raw_ptr<gl::GLApi> created_on_context_;
 
-  ui::ScopedEGLImage egl_image_ GUARDED_BY(lock_);
+  gl::ScopedEGLImage egl_image_ GUARDED_BY(lock_);
 
   // All reads and writes must wait for exiting writes to complete.
   // TODO(vikassoni): Use SharedGLFenceEGL here instead of GLFenceEGL here in

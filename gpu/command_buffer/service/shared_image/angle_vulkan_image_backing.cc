@@ -38,7 +38,7 @@ namespace {
 
 using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
 
-ui::ScopedEGLImage CreateEGLImage(VkImage image,
+gl::ScopedEGLImage CreateEGLImage(VkImage image,
                                   const VkImageCreateInfo* create_info,
                                   unsigned int internal_format) {
   DCHECK(image != VK_NULL_HANDLE);
@@ -55,7 +55,7 @@ ui::ScopedEGLImage CreateEGLImage(VkImage image,
       EGL_NONE,
   };
 
-  return ui::MakeScopedEGLImage(EGL_NO_CONTEXT, EGL_VULKAN_IMAGE_ANGLE,
+  return gl::MakeScopedEGLImage(EGL_NO_CONTEXT, EGL_VULKAN_IMAGE_ANGLE,
                                 reinterpret_cast<EGLClientBuffer>(&image),
                                 attribs);
 }

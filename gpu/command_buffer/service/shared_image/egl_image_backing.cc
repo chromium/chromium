@@ -422,7 +422,7 @@ EGLImageBacking::GenEGLImageSibling(base::span<const uint8_t> pixel_data) {
       const EGLint egl_attrib_list[] = {EGL_GL_TEXTURE_LEVEL_KHR, 0,
                                         EGL_IMAGE_PRESERVED_KHR, EGL_TRUE,
                                         EGL_NONE};
-      egl_image_ = ui::MakeScopedEGLImage(
+      egl_image_ = gl::MakeScopedEGLImage(
           eglGetCurrentContext(), EGL_GL_TEXTURE_2D_KHR,
           reinterpret_cast<EGLClientBuffer>(service_id), egl_attrib_list);
       if (!egl_image_.get()) {

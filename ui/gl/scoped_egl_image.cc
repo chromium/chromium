@@ -9,18 +9,18 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 
-namespace ui {
+namespace gl {
 
 ScopedEGLImage MakeScopedEGLImage(EGLContext context,
                                   EGLenum target,
                                   EGLClientBuffer buffer,
                                   const EGLint* attrs) {
   EGLImageKHR egl_image =
-      eglCreateImageKHR(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
-                        context, target, buffer, attrs);
+      eglCreateImageKHR(GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), context,
+                        target, buffer, attrs);
 
   if (egl_image == EGL_NO_IMAGE_KHR) {
-    LOG(ERROR) << "Failed to create EGLImage: " << GetLastEGLErrorString();
+    LOG(ERROR) << "Failed to create EGLImage: " << ui::GetLastEGLErrorString();
   }
 
   return ScopedEGLImage(egl_image);
@@ -35,10 +35,10 @@ void DeleteEGLImageTraits::Free(EGLImageKHR image) {
   // object held is equal to InvalidValue().
   DCHECK_NE(image, EGL_NO_IMAGE_KHR);
 
-  const EGLBoolean result = eglDestroyImageKHR(
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), image);
+  const EGLBoolean result =
+      eglDestroyImageKHR(GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), image);
   if (result == EGL_FALSE)
-    LOG(ERROR) << "Error destroying EGLImage: " << GetLastEGLErrorString();
+    LOG(ERROR) << "Error destroying EGLImage: " << ui::GetLastEGLErrorString();
 }
 
-}  // namespace ui
+}  // namespace gl

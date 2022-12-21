@@ -68,7 +68,7 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
 
   const raw_ptr<SharedContextState> context_state_;
   std::unique_ptr<VulkanImage> vulkan_image_;
-  ui::ScopedEGLImage egl_image_;
+  gl::ScopedEGLImage egl_image_;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
   GrBackendTexture backend_texture_{};
   sk_sp<SkPromiseImageTexture> promise_texture_;

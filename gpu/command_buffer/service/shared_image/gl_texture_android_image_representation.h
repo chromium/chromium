@@ -21,7 +21,7 @@ class GLTextureAndroidImageRepresentation
   GLTextureAndroidImageRepresentation(SharedImageManager* manager,
                                       AndroidImageBacking* backing,
                                       MemoryTypeTracker* tracker,
-                                      ui::ScopedEGLImage egl_image,
+                                      gl::ScopedEGLImage egl_image,
                                       gles2::Texture* texture);
   ~GLTextureAndroidImageRepresentation() override;
 
@@ -40,7 +40,7 @@ class GLTextureAndroidImageRepresentation
     return static_cast<AndroidImageBacking*>(backing());
   }
 
-  ui::ScopedEGLImage egl_image_;
+  gl::ScopedEGLImage egl_image_;
   const raw_ptr<gles2::Texture, DanglingUntriaged> texture_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
 };
