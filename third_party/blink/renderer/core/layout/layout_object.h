@@ -604,6 +604,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return fragment_->UniqueId();
   }
 
+  // Returns true if the overflow property should be respected. Otherwise
+  // HasNonVisibleOverflow() will be false and we won't create scrollable area
+  // for this object even if overflow is non-visible.
+  virtual bool RespectsCSSOverflow() const {
+    NOT_DESTROYED();
+    return false;
+  }
+
   inline bool ShouldApplyOverflowClipMargin() const {
     NOT_DESTROYED();
     // If the object is clipped by something other than overflow:clip (i.e. it's
@@ -613,8 +621,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
     const auto& style = StyleRef();
     // Nothing to apply if there is no margin.
-    if (!style.OverflowClipMargin())
+    if (!style.OverflowClipMarginHasAnEffect()) {
       return false;
+    }
 
     // Replaced elements have a used value of 'clip' for all overflow values
     // except visible. See discussion at
@@ -631,7 +640,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
     // In all other cases, we apply overflow-clip-margin when we clip to
     // overflow clip edge, meaning we have overflow: clip or paint containment.
-    return is_overflow_clip || ShouldApplyPaintContainment();
+    // Also only apply this if the element respects overflow css, meaning it
+    // allows non-visible overflow.
+    return (is_overflow_clip || ShouldApplyPaintContainment()) &&
+           RespectsCSSOverflow();
   }
 
   inline bool IsEligibleForPaintOrLayoutContainment() const {

@@ -2143,14 +2143,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool IsFixedToView(
       const LayoutObject* container_for_fixed_position = nullptr) const;
 
-  // Returns true if the overflow property should be respected. Otherwise
-  // HasNonVisibleOverflow() will be false and we won't create scrollable area
-  // for this object even if overflow is non-visible.
-  virtual bool RespectsCSSOverflow() const {
-    NOT_DESTROYED();
-    return false;
-  }
-
   // See StickyPositionScrollingConstraints::constraining_rect.
   PhysicalRect ComputeStickyConstrainingRect() const;
 

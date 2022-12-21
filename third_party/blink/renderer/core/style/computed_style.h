@@ -2354,6 +2354,13 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool HasViewportUnits() const { return ViewportUnitFlags(); }
 
+  bool OverflowClipMarginHasAnEffect() const {
+    return OverflowClipMargin() &&
+           (OverflowClipMargin()->GetReferenceBox() !=
+                StyleOverflowClipMargin::ReferenceBox::kPaddingBox ||
+            OverflowClipMargin()->GetMargin() != LayoutUnit());
+  }
+
  private:
   bool IsInlineSizeContainer() const {
     return ContainerType() & kContainerTypeInlineSize;
