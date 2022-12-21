@@ -31,5 +31,8 @@ found in the LICENSE file.
       <activity android:name="org.chromium.chrome.browser.customtabs.CustomTabActivity"
           android:theme="@style/Theme.Chromium.Activity"
           android:exported="false" />
+      <activity android:name="org.chromium.chrome.browser.settings.SettingsActivity"
+          android:theme="@style/Theme.Chromium.Settings"
+          android:exported="false" />
   </application>
 </manifest>

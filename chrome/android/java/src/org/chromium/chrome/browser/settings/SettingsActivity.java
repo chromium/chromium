@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -70,6 +73,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
+import org.chromium.components.browser_ui.settings.PaddedDividerItemDecoration;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -186,19 +190,52 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      */
     private void configureWideDisplayStyle() {
         if (mUiConfig == null) {
+            View content = findViewById(R.id.content);
+            RecyclerView recyclerView = findViewById(R.id.recycler_view);
+            // For settings with a recycler view, add paddings to the side so the content is
+            // scrollable; otherwise, add the padding to the content.
+            View paddedView = recyclerView == null ? content : recyclerView;
+            mUiConfig = new UiConfig(paddedView);
+
             int minWidePaddingPixels =
                     getResources().getDimensionPixelSize(R.dimen.settings_wide_display_min_padding);
-            View view = findViewById(R.id.content);
-            mUiConfig = new UiConfig(view);
-            ViewResizer.createAndAttach(view, mUiConfig, 0, minWidePaddingPixels);
+            ViewResizer.createAndAttach(paddedView, mUiConfig, 0, minWidePaddingPixels);
 
-            // Configure divider style for the fragment.
-            if (getMainFragment() instanceof CustomDividerFragment
-                    && getMainFragment() instanceof PreferenceFragmentCompat) {
-                boolean hasDivider = ((CustomDividerFragment) getMainFragment()).hasDivider();
-                if (!hasDivider) {
-                    ((PreferenceFragmentCompat) getMainFragment()).setDivider(null);
+            // Configure divider style if the fragment has a recycler view.
+            if (recyclerView != null && getMainFragment() instanceof PreferenceFragmentCompat) {
+                // Remove the default divider that PreferenceFragmentCompat initialized. This is a
+                // workaround as outer class has no access to the private DividerDecoration in
+                // PreferenceFragmentCompat. See https://crbug.com/1293429.
+                ((PreferenceFragmentCompat) getMainFragment()).setDivider(null);
+
+                CustomDividerFragment customDividerFragment =
+                        getMainFragment() instanceof CustomDividerFragment
+                        ? (CustomDividerFragment) getMainFragment()
+                        : null;
+                // Early return for Fragment implements CustomDividerFragment and explicitly don't
+                // want a divider.
+                if (customDividerFragment != null && !customDividerFragment.hasDivider()) {
+                    return;
                 }
+
+                // Configure the customized divider for the rest of the Fragments.
+                Drawable dividerDrawable = getDividerDrawable();
+                if (dividerDrawable == null) return;
+                PaddedDividerItemDecoration mDividerDecoration =
+                        new PaddedDividerItemDecoration(dividerDrawable);
+                mDividerDecoration.setPaddingStart(() -> {
+                    int dividerStartPadding = customDividerFragment != null
+                            ? customDividerFragment.getDividerStartPadding()
+                            : 0;
+                    return recyclerView.getPaddingStart() + dividerStartPadding;
+                });
+                mDividerDecoration.setPaddingEnd(() -> {
+                    int dividerEndPadding = customDividerFragment != null
+                            ? customDividerFragment.getDividerEndPadding()
+                            : 0;
+                    return recyclerView.getPaddingEnd() + dividerEndPadding;
+                });
+                recyclerView.addItemDecoration(mDividerDecoration);
             }
         } else {
             mUiConfig.updateDisplayStyle();
@@ -505,5 +542,16 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     protected ModalDialogManager createModalDialogManager() {
         return new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
+    }
+
+    // Get the divider drawable from AndroidX Pref attribute to keep things consistent.
+    private Drawable getDividerDrawable() {
+        TypedArray ta = obtainStyledAttributes(null, R.styleable.PreferenceFragmentCompat,
+                R.attr.preferenceFragmentCompatStyle, 0);
+        final Drawable divider =
+                ta.getDrawable(R.styleable.PreferenceFragmentCompat_android_divider);
+        ta.recycle();
+
+        return divider;
     }
 }
