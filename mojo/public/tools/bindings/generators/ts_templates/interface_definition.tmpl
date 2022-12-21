@@ -92,7 +92,11 @@ export class {{interface.name}}Receiver {
 
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
+{% if interface.methods|length %}
   constructor(impl: {{interface.name}}Interface) {
+{% else %}
+  constructor(_impl: {{interface.name}}Interface) {
+{%- endif %}
     this.helper_internal_ = new mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal(
         {{interface.name}}Remote);
 
