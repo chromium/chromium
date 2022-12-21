@@ -228,70 +228,77 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 
 void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
                                                    int position) {
-  if (suggestion.frontend_id == POPUP_ITEM_ID_AUTOFILL_OPTIONS) {
-    // User selected 'Autofill Options'.
-    manager_->ShowAutofillSettings(popup_type_ == PopupType::kCreditCards);
-  } else if (suggestion.frontend_id == POPUP_ITEM_ID_CLEAR_FORM) {
-    // User selected 'Clear form'.
-    AutofillMetrics::LogAutofillFormCleared();
-    driver_->RendererShouldClearFilledSection();
-  } else if (suggestion.frontend_id == POPUP_ITEM_ID_PASSWORD_ENTRY ||
-             suggestion.frontend_id == POPUP_ITEM_ID_USERNAME_ENTRY ||
-             suggestion.frontend_id ==
-                 POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY ||
-             suggestion.frontend_id ==
-                 POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY) {
-    NOTREACHED();  // Should be handled elsewhere.
-  } else if (suggestion.frontend_id == POPUP_ITEM_ID_DATALIST_ENTRY) {
-    driver_->RendererShouldAcceptDataListSuggestion(query_field_.global_id(),
-                                                    suggestion.main_text.value);
-  } else if (suggestion.frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY ||
-             suggestion.frontend_id == POPUP_ITEM_ID_IBAN_ENTRY ||
-             suggestion.frontend_id ==
-                 POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
-    // User selected an Autocomplete, Merchant Promo Code field or IBAN, so we
-    // fill directly.
-    driver_->RendererShouldFillFieldWithValue(query_field_.global_id(),
-                                              suggestion.main_text.value);
-
-    if (suggestion.frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)
+  switch (suggestion.frontend_id) {
+    case POPUP_ITEM_ID_AUTOFILL_OPTIONS:
+      // User selected 'Autofill Options'.
+      manager_->ShowAutofillSettings(popup_type_ == PopupType::kCreditCards);
+      break;
+    case POPUP_ITEM_ID_CLEAR_FORM:
+      // User selected 'Clear form'.
+      AutofillMetrics::LogAutofillFormCleared();
+      driver_->RendererShouldClearFilledSection();
+      break;
+    case POPUP_ITEM_ID_PASSWORD_ENTRY:
+    case POPUP_ITEM_ID_USERNAME_ENTRY:
+    case POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY:
+    case POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
+      NOTREACHED();  // Should be handled elsewhere.
+      break;
+    case POPUP_ITEM_ID_DATALIST_ENTRY:
+      driver_->RendererShouldAcceptDataListSuggestion(
+          query_field_.global_id(), suggestion.main_text.value);
+      break;
+    case POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY:
       AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position);
-
-    manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                              suggestion.frontend_id);
-  } else if (suggestion.frontend_id == POPUP_ITEM_ID_SCAN_CREDIT_CARD) {
-    manager_->client()->ScanCreditCard(base::BindOnce(
-        &AutofillExternalDelegate::OnCreditCardScanned, GetWeakPtr()));
-  } else if (suggestion.frontend_id == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {
-    manager_->client()->ExecuteCommand(suggestion.frontend_id);
-  } else if (suggestion.frontend_id == POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
-    manager_->OnUserAcceptedCardsFromAccountOption();
-  } else if (suggestion.frontend_id == POPUP_ITEM_ID_USE_VIRTUAL_CARD) {
+      ABSL_FALLTHROUGH_INTENDED;
+    case POPUP_ITEM_ID_IBAN_ENTRY:
+    case POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY:
+      // User selected an Autocomplete, Merchant Promo Code field or IBAN, so we
+      // fill directly.
+      driver_->RendererShouldFillFieldWithValue(query_field_.global_id(),
+                                                suggestion.main_text.value);
+      manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
+                                                suggestion.frontend_id);
+      break;
+    case POPUP_ITEM_ID_SCAN_CREDIT_CARD:
+      manager_->client()->ScanCreditCard(base::BindOnce(
+          &AutofillExternalDelegate::OnCreditCardScanned, GetWeakPtr()));
+      break;
+    case POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
+      manager_->client()->ExecuteCommand(suggestion.frontend_id);
+      break;
+    case POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
+      manager_->OnUserAcceptedCardsFromAccountOption();
+      break;
+    case POPUP_ITEM_ID_USE_VIRTUAL_CARD:
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    manager_->FetchVirtualCardCandidates();
+      manager_->FetchVirtualCardCandidates();
 #else
-    NOTREACHED();
+      NOTREACHED();
 #endif
-  } else if (suggestion.frontend_id ==
-             POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
-    // There can be multiple virtual credit cards that all rely on
-    // POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY as a frontend_id. In this case,
-    // the payload contains the backend id, which is a GUID that identifies the
-    // actually chosen credit card.
-    manager_->FillOrPreviewVirtualCardInformation(
-        mojom::RendererFormDataAction::kFill,
-        suggestion.GetPayload<Suggestion::BackendId>().value(), query_form_,
-        query_field_);
-  } else if (suggestion.frontend_id == POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS) {
-    manager_->OnSeePromoCodeOfferDetailsSelected(suggestion.GetPayload<GURL>(),
-                                                 suggestion.main_text.value,
-                                                 suggestion.frontend_id);
-  } else {
-    if (suggestion.frontend_id > 0) {  // Denotes an Autofill suggestion.
-      AutofillMetrics::LogAutofillSuggestionAcceptedIndex(
-          position, popup_type_, driver_->IsIncognito());
-    }
-    FillAutofillFormData(suggestion.frontend_id, false);
+      break;
+    case POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY:
+      // There can be multiple virtual credit cards that all rely on
+      // POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY as a frontend_id. In this case,
+      // the payload contains the backend id, which is a GUID that identifies
+      // the actually chosen credit card.
+      manager_->FillOrPreviewVirtualCardInformation(
+          mojom::RendererFormDataAction::kFill,
+          suggestion.GetPayload<Suggestion::BackendId>().value(), query_form_,
+          query_field_);
+      break;
+    case POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
+      manager_->OnSeePromoCodeOfferDetailsSelected(
+          suggestion.GetPayload<GURL>(), suggestion.main_text.value,
+          suggestion.frontend_id);
+      break;
+    default:
+      if (suggestion.frontend_id > 0) {  // Denotes an Autofill suggestion.
+        AutofillMetrics::LogAutofillSuggestionAcceptedIndex(
+            position, popup_type_, driver_->IsIncognito());
+      }
+      FillAutofillFormData(suggestion.frontend_id, false);
+      break;
   }
 
   if (should_show_scan_credit_card_) {
