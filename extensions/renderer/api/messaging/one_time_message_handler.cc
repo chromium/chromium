@@ -313,7 +313,7 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
       script_context, response_function,
       base::BindOnce(&OneTimeMessageHandler::OnResponseCallbackCollected,
                      weak_factory_.GetWeakPtr(), script_context, target_port_id,
-                     base::UnsafeDanglingUntriaged(callback.get())),
+                     reinterpret_cast<CallbackID>(callback.get())),
       base::OnceClosure());
 
   v8::HandleScope handle_scope(isolate);
@@ -508,7 +508,7 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
 void OneTimeMessageHandler::OnResponseCallbackCollected(
     ScriptContext* script_context,
     const PortId& port_id,
-    void* raw_callback) {
+    CallbackID raw_callback) {
   // Note: we know |script_context| is still valid because the GC callback won't
   // be called after context invalidation.
   v8::HandleScope handle_scope(script_context->isolate());
@@ -535,7 +535,7 @@ void OneTimeMessageHandler::OnResponseCallbackCollected(
   base::EraseIf(
       data->pending_callbacks,
       [raw_callback](const std::unique_ptr<OneTimeMessageCallback>& callback) {
-        return callback.get() == raw_callback;
+        return reinterpret_cast<CallbackID>(callback.get()) == raw_callback;
       });
 
   // Close the message port. There's no way to send a reply anymore. Don't

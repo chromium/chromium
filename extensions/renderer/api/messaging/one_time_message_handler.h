@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_RENDERER_API_MESSAGING_ONE_TIME_MESSAGE_HANDLER_H_
 #define EXTENSIONS_RENDERER_API_MESSAGING_ONE_TIME_MESSAGE_HANDLER_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 
@@ -128,6 +130,11 @@ class OneTimeMessageHandler {
   void OnOneTimeMessageResponse(const PortId& port_id,
                                 gin::Arguments* arguments);
 
+  // Identifier for a `OneTimeMessageCallback` to scope the lifetime for
+  // references. `CallbackID` is derived from `OneTimeMessageCallback*`, used in
+  // comparison only, and are never deferenced.
+  using CallbackID = std::uintptr_t;
+
   // Triggered when the callback for replying is garbage collected. Used to
   // clean up data that was stored for the callback and for closing the
   // associated message port. |raw_callback| is a raw pointer to the associated
@@ -135,7 +142,7 @@ class OneTimeMessageHandler {
   // OneTimeMessageContextData.
   void OnResponseCallbackCollected(ScriptContext* script_context,
                                    const PortId& port_id,
-                                   void* raw_callback);
+                                   CallbackID callback_id);
 
   // Called when the messaging event has been dispatched with the result of the
   // listeners.
