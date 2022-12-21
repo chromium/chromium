@@ -9,10 +9,10 @@
 
 namespace gpu {
 
-// The images created by this factory have no inherent storage. When the image
-// is bound to a texture, storage is allocated for the texture via glTexImage2D.
+// Stub implementation of ImageFactory for tests.
 class TextureImageFactory : public gpu::ImageFactory {
  public:
+  // Returns false.
   bool SupportsCreateAnonymousImage() const override;
   scoped_refptr<gl::GLImage> CreateAnonymousImage(const gfx::Size& size,
                                                   gfx::BufferFormat format,

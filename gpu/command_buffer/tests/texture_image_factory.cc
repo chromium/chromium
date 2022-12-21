@@ -4,57 +4,10 @@
 
 #include "gpu/command_buffer/tests/texture_image_factory.h"
 
-#include "build/build_config.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image.h"
-
 namespace gpu {
 
-#if !BUILDFLAG(IS_ANDROID)
-// An image that allocates storage for the texture using glTexImage2D.
-class TextureImage : public gl::GLImage {
- public:
-  explicit TextureImage(const gfx::Size& size) : size_(size) {}
-
-  gfx::Size GetSize() override { return size_; }
-  unsigned GetInternalFormat() override { return GL_RGBA; }
-  unsigned GetDataType() override { return GL_UNSIGNED_BYTE; }
-  BindOrCopy ShouldBindOrCopy() override { return BIND; }
-  bool BindTexImage(unsigned target) override {
-    glTexImage2D(target,
-                 0,  // mip level
-                 GetInternalFormat(), size_.width(), size_.height(),
-                 0,  // border
-                 GetDataFormat(), GetDataType(), nullptr);
-    return true;
-  }
-  void ReleaseTexImage(unsigned target) override {}
-  bool CopyTexImage(unsigned target) override {
-    NOTREACHED();
-    return false;
-  }
-  bool CopyTexSubImage(unsigned target,
-                       const gfx::Point& offset,
-                       const gfx::Rect& rect) override {
-    return false;
-  }
-  void SetColorSpace(const gfx::ColorSpace& color_space) override {}
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t process_tracing_id,
-                    const std::string& dump_name) override {}
-
- private:
-  ~TextureImage() override = default;
-  gfx::Size size_;
-};
-#endif
-
 bool TextureImageFactory::SupportsCreateAnonymousImage() const {
-#if BUILDFLAG(IS_ANDROID)
   return false;
-#else
-  return true;
-#endif
 }
 
 scoped_refptr<gl::GLImage> TextureImageFactory::CreateAnonymousImage(
@@ -63,13 +16,8 @@ scoped_refptr<gl::GLImage> TextureImageFactory::CreateAnonymousImage(
     gfx::BufferUsage usage,
     SurfaceHandle surface_handle,
     bool* is_cleared) {
-#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
   return nullptr;
-#else
-  *is_cleared = true;
-  return new TextureImage(size);
-#endif
 }
 
 unsigned TextureImageFactory::RequiredTextureType() {
