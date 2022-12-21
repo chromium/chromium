@@ -92,13 +92,13 @@ class StorageHandlerTest : public testing::Test {
 
     // Initialize storage handler.
     content::WebUIDataSource* html_source =
-        content::WebUIDataSource::Create(chrome::kChromeUIOSSettingsHost);
+        content::WebUIDataSource::CreateAndAdd(profile_,
+                                               chrome::kChromeUIOSSettingsHost);
     auto handler = std::make_unique<TestStorageHandler>(profile_, html_source);
     handler_ = handler.get();
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->AddMessageHandler(std::move(handler));
     handler_->AllowJavascriptForTesting();
-    content::WebUIDataSource::Add(profile_, html_source);
 
     // Initialize tests APIs.
     total_disk_space_test_api_ =

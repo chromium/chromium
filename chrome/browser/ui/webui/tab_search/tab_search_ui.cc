@@ -31,8 +31,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       webui_load_timer_(web_ui->GetWebContents(),
                         "Tabs.TabSearch.WebUI.LoadDocumentTime",
                         "Tabs.TabSearch.WebUI.LoadCompletedTime") {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUITabSearchHost);
+  Profile* profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUITabSearchHost);
   static constexpr webui::LocalizedString kStrings[] = {
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
@@ -102,10 +103,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kTabSearchResources, kTabSearchResourcesSize),
       IDR_TAB_SEARCH_TAB_SEARCH_HTML);
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                source);
 
-  Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));

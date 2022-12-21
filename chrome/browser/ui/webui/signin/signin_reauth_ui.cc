@@ -92,8 +92,8 @@ int GetReauthCloseButtonLabelStringId(
 SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUISigninReauthHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUISigninReauthHost);
 
   static constexpr webui::ResourcePath kResources[] = {
       {"signin_reauth_app.js", IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_APP_JS},
@@ -127,8 +127,6 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
                     IDS_ACCOUNT_PASSWORDS_REAUTH_CONFIRM_BUTTON_LABEL);
   AddStringResource(source, "signinReauthCloseLabel",
                     GetReauthCloseButtonLabelStringId(access_point));
-
-  content::WebUIDataSource::Add(profile, source);
 }
 
 SigninReauthUI::~SigninReauthUI() = default;

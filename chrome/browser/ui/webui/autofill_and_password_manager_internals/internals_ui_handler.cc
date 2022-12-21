@@ -29,10 +29,10 @@ using autofill::LogRouter;
 
 namespace autofill {
 
-content::WebUIDataSource* CreateInternalsHTMLSource(
-    const std::string& source_name) {
+void CreateAndAddInternalsHTMLSource(Profile* profile,
+                                     const std::string& source_name) {
   content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(source_name);
+      content::WebUIDataSource::CreateAndAdd(profile, source_name);
   source->AddResourcePath("autofill_and_password_manager_internals.js",
                           IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_JS);
   source->SetDefaultResource(IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_HTML);
@@ -46,7 +46,6 @@ content::WebUIDataSource* CreateInternalsHTMLSource(
   source->AddString(version_ui::kCL, version_info::GetLastChange());
   source->AddString(version_ui::kUserAgent, embedder_support::GetUserAgent());
   source->AddString("app_locale", g_browser_process->GetApplicationLocale());
-  return source;
 }
 
 AutofillCacheResetter::AutofillCacheResetter(

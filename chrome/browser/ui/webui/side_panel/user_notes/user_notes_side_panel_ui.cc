@@ -18,15 +18,14 @@
 
 UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIUserNotesSidePanelHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUIUserNotesSidePanelHost);
 
   const int resource = IDR_SIDE_PANEL_USER_NOTES_USER_NOTES_HTML;
   webui::SetupWebUIDataSource(
       source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
       resource);
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                source);
 }
 
 UserNotesSidePanelUI::~UserNotesSidePanelUI() = default;

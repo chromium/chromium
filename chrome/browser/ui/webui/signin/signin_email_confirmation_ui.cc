@@ -25,8 +25,8 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
     : ConstrainedWebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      chrome::kChromeUISigninEmailConfirmationHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUISigninEmailConfirmationHost);
   webui::EnableTrustedTypesCSP(source);
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
@@ -64,8 +64,6 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  &strings);
   source->AddLocalizedStrings(strings);
-
-  content::WebUIDataSource::Add(profile, source);
 }
 
 SigninEmailConfirmationUI::~SigninEmailConfirmationUI() {}

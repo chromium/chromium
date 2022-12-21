@@ -77,7 +77,8 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
                         "ChromeOS.Settings.LoadCompletedTime") {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUIOSSettingsHost);
+      content::WebUIDataSource::CreateAndAdd(profile,
+                                             chrome::kChromeUIOSSettingsHost);
 
   OsSettingsManager* manager = OsSettingsManagerFactory::GetForProfile(profile);
   manager->AddHandlers(web_ui);
@@ -95,9 +96,6 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   html_source->DisableTrustedTypesCSP();
 
   ManagedUIHandler::Initialize(web_ui, html_source);
-
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                html_source);
 }
 
 OSSettingsUI::~OSSettingsUI() {

@@ -90,8 +90,8 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   const bool is_sync_allowed = SyncServiceFactory::IsSyncAllowed(profile_);
 
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUISyncConfirmationHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile_, chrome::kChromeUISyncConfirmationHost);
   webui::SetJSModuleDefaults(source);
   webui::EnableTrustedTypesCSP(source);
 
@@ -127,8 +127,6 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
     // so we force it here.
     InitializeMessageHandlerWithBrowser(nullptr);
   }
-
-  content::WebUIDataSource::Add(profile_, source);
 }
 
 SyncConfirmationUI::~SyncConfirmationUI() = default;

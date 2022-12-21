@@ -28,7 +28,8 @@
 
 EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui),
       chrome::kChromeUIEnterpriseProfileWelcomeHost);
 
   static constexpr webui::ResourcePath kResources[] = {
@@ -64,8 +65,6 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
                              IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX);
   source->AddBoolean("showLinkDataCheckbox", false);
   source->AddBoolean("isModalDialog", false);
-
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 EnterpriseProfileWelcomeUI::~EnterpriseProfileWelcomeUI() = default;

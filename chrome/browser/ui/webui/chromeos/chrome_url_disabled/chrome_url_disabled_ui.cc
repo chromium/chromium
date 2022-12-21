@@ -15,7 +15,8 @@ namespace chromeos {
 ChromeURLDisabledUI::ChromeURLDisabledUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui), weak_factory_(this) {
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUIAppDisabledHost);
+      content::WebUIDataSource::CreateAndAdd(Profile::FromWebUI(web_ui),
+                                             chrome::kChromeUIAppDisabledHost);
 
   html_source->DisableTrustedTypesCSP();
 
@@ -30,9 +31,6 @@ ChromeURLDisabledUI::ChromeURLDisabledUI(content::WebUI* web_ui)
   html_source->SetDefaultResource(IDR_CHROME_URLS_DISABLED_PAGE_HTML);
 
   html_source->SetDefaultResource(IDR_CHROME_URLS_DISABLED_PAGE_HTML);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, html_source);
 }
 
 ChromeURLDisabledUI::~ChromeURLDisabledUI() = default;

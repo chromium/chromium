@@ -39,8 +39,9 @@
 
 BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui, true) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIBookmarksSidePanelHost);
+  Profile* const profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIBookmarksSidePanelHost);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"bookmarksTabTitle", IDS_BOOKMARK_MANAGER_TITLE},
       {"bookmarkCopied", IDS_BOOKMARK_MANAGER_TOAST_ITEM_COPIED},
@@ -87,7 +88,6 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
 
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
-  Profile* const profile = Profile::FromWebUI(web_ui);
   PrefService* prefs = profile->GetPrefs();
   source->AddBoolean(
       "bookmarksDragAndDropEnabled",
@@ -122,8 +122,6 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
                                             IDS_BOOKMARK_FOLDER_CHILD_COUNT);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                source);
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
 }

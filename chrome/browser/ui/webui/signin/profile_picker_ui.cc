@@ -265,7 +265,8 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
       customize_themes_factory_receiver_(this) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUIProfilePickerHost);
+      content::WebUIDataSource::CreateAndAdd(
+          profile, chrome::kChromeUIProfilePickerHost);
 
   std::unique_ptr<ProfilePickerHandler> handler =
       std::make_unique<ProfilePickerHandler>();
@@ -284,7 +285,6 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
       html_source,
       base::make_span(kProfilePickerResources, kProfilePickerResourcesSize),
       IDR_PROFILE_PICKER_PROFILE_PICKER_HTML);
-  content::WebUIDataSource::Add(profile, html_source);
 }
 
 ProfilePickerUI::~ProfilePickerUI() = default;

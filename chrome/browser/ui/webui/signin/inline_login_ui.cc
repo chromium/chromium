@@ -107,9 +107,9 @@ void AddEduStrings(content::WebUIDataSource* source,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIChromeSigninHost);
+void CreateAndAddWebUIDataSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIChromeSigninHost);
 
   source->AddResourcePaths(
       base::make_span(kInlineLoginResources, kInlineLoginResourcesSize));
@@ -311,9 +311,11 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, "frame-src chrome://test/;");
-#endif
 
-  return source;
+  std::u16string username =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile)->GetGivenName();
+  AddEduStrings(source, username);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Returns whether |url| can be displayed in a chrome://chrome-signin web
@@ -352,17 +354,10 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   // Always instantiate the WebUIDataSource so that tests pulling deps from
   // from chrome://chrome-signin/gaia_auth_host/ can work.
   Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource* source = CreateWebUIDataSource(profile);
-  content::WebUIDataSource::Add(profile, source);
+  CreateAndAddWebUIDataSource(profile);
 
   if (!IsValidChromeSigninReason(web_ui->GetWebContents()->GetVisibleURL()))
     return;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::u16string username =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile)->GetGivenName();
-  AddEduStrings(source, username);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui->AddMessageHandler(

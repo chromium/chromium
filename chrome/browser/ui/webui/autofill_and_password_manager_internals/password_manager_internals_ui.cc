@@ -14,10 +14,9 @@
 
 PasswordManagerInternalsUI::PasswordManagerInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(
-      profile, autofill::CreateInternalsHTMLSource(
-                   chrome::kChromeUIPasswordManagerInternalsHost));
+  autofill::CreateAndAddInternalsHTMLSource(
+      Profile::FromWebUI(web_ui),
+      chrome::kChromeUIPasswordManagerInternalsHost);
   web_ui->AddMessageHandler(std::make_unique<autofill::InternalsUIHandler>(
       "setup-password-manager-internals",
       base::BindRepeating(&password_manager::PasswordManagerLogRouterFactory::

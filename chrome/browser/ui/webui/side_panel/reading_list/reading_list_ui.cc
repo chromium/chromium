@@ -46,8 +46,9 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       webui_load_timer_(web_ui->GetWebContents(),
                         "ReadingList.WebUI.LoadDocumentTime",
                         "ReadingList.WebUI.LoadCompletedTime") {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIReadLaterHost);
+  Profile* const profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIReadLaterHost);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
       {"bookmarksTabTitle", IDS_BOOKMARK_MANAGER_TITLE},
@@ -105,7 +106,6 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
 
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
-  Profile* const profile = Profile::FromWebUI(web_ui);
   PrefService* prefs = profile->GetPrefs();
   source->AddBoolean(
       "bookmarksDragAndDropEnabled",
@@ -151,8 +151,6 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
       resource);
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                source);
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
 }

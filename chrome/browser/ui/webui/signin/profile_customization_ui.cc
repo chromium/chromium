@@ -34,8 +34,9 @@
 ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       customize_themes_factory_receiver_(this) {
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      chrome::kChromeUIProfileCustomizationHost);
+  Profile* profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIProfileCustomizationHost);
 
   static constexpr webui::ResourcePath kResources[] = {
       {"profile_customization_app.js",
@@ -91,7 +92,6 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kLocalizedStrings);
 
   // loadTimeData.
-  Profile* profile = Profile::FromWebUI(web_ui);
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -111,8 +111,6 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
     // so we force it here.
     Initialize(base::DoNothing());
   }
-
-  content::WebUIDataSource::Add(profile, source);
 }
 
 ProfileCustomizationUI::~ProfileCustomizationUI() = default;

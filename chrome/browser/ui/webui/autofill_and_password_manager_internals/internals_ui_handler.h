@@ -19,8 +19,9 @@ class LogRouter;
 
 namespace content {
 class BrowserContext;
-class WebUIDataSource;
 }  // namespace content
+
+class Profile;
 
 namespace autofill {
 
@@ -29,8 +30,8 @@ constexpr char kCacheResetDone[] =
     "cache reset.";
 constexpr char kCacheResetAlreadyInProgress[] = "Reset already in progress";
 
-content::WebUIDataSource* CreateInternalsHTMLSource(
-    const std::string& source_name);
+void CreateAndAddInternalsHTMLSource(Profile* profile,
+                                     const std::string& source_name);
 
 // Class that wipes responses from the Autofill server from the HTTP cache.
 class AutofillCacheResetter : public content::BrowsingDataRemover::Observer {

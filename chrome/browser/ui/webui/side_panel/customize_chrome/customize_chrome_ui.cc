@@ -26,8 +26,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()),
       page_factory_receiver_(this) {
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      chrome::kChromeUICustomizeChromeSidePanelHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile_, chrome::kChromeUICustomizeChromeSidePanelHost);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"classicChrome", IDS_NTP_CUSTOMIZE_NO_BACKGROUND_LABEL},
@@ -69,8 +69,6 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       base::make_span(kSidePanelCustomizeChromeResources,
                       kSidePanelCustomizeChromeResourcesSize),
       IDR_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_HTML);
-
-  content::WebUIDataSource::Add(profile_, source);
 }
 
 CustomizeChromeUI::~CustomizeChromeUI() = default;

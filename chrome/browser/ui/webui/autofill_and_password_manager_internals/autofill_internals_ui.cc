@@ -14,10 +14,8 @@
 
 AutofillInternalsUI::AutofillInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile,
-                                autofill::CreateInternalsHTMLSource(
-                                    chrome::kChromeUIAutofillInternalsHost));
+  autofill::CreateAndAddInternalsHTMLSource(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIAutofillInternalsHost);
   web_ui->AddMessageHandler(std::make_unique<autofill::InternalsUIHandler>(
       "setup-autofill-internals",
       base::BindRepeating(

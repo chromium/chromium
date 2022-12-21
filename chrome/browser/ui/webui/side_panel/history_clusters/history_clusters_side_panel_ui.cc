@@ -24,10 +24,9 @@
 HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui),
       content::WebContentsObserver(web_ui->GetWebContents()) {
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      chrome::kChromeUIHistoryClustersSidePanelHost);
-
   Profile* const profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIHistoryClustersSidePanelHost);
 
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/true);
 
@@ -46,8 +45,6 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, kHistoryClustersResources,
       IDR_SIDE_PANEL_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HTML);
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                source);
 }
 
 HistoryClustersSidePanelUI::~HistoryClustersSidePanelUI() = default;

@@ -61,8 +61,8 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
   std::unique_ptr<SigninErrorHandler> handler =
       std::make_unique<SigninErrorHandler>(browser, from_profile_picker);
 
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUISigninErrorHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      webui_profile, chrome::kChromeUISigninErrorHost);
   webui::EnableTrustedTypesCSP(source);
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
@@ -165,7 +165,5 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  &strings);
   source->AddLocalizedStrings(strings);
-
-  content::WebUIDataSource::Add(webui_profile, source);
   web_ui()->AddMessageHandler(std::move(handler));
 }
