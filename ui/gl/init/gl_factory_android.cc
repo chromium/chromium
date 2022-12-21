@@ -73,8 +73,8 @@ bool GLNonOwnedContext::IsCurrent(GLSurface* surface) {
 
 std::vector<GLImplementationParts> GetAllowedGLImplementations() {
   std::vector<GLImplementationParts> impls;
-  impls.emplace_back(GLImplementationParts(kGLImplementationEGLGLES2));
-  impls.emplace_back(GLImplementationParts(kGLImplementationEGLANGLE));
+  impls.emplace_back(kGLImplementationEGLGLES2);
+  impls.emplace_back(kGLImplementationEGLANGLE);
   return impls;
 }
 

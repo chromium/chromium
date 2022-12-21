@@ -22,6 +22,7 @@
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/init/gl_display_initializer.h"
 #include "ui/gl/vsync_provider_win.h"
 
 namespace gl {
@@ -129,7 +130,7 @@ GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
   GLDisplayEGL* display = GetDisplayEGL(system_device_id);
   switch (GetGLImplementation()) {
     case kGLImplementationEGLANGLE:
-      if (!display->Initialize(EGLDisplayPlatform(GetDC(nullptr)))) {
+      if (!InitializeDisplay(display, EGLDisplayPlatform(GetDC(nullptr)))) {
         LOG(ERROR) << "GLDisplayEGL::Initialize failed.";
         return nullptr;
       }
