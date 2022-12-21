@@ -154,6 +154,16 @@ class COMPONENT_EXPORT(SQL) Statement {
   //                          then remove the migration details above.
   void BindTime(int param_index, base::Time time);
 
+  // Conforms with base::TimeDelta serialization recommendations.
+  //
+  // This is equivalent to the following snippets, which should be replaced.
+  // * BindInt64(col, delta.ToInternalValue())
+  // * BindInt64(col, delta.InMicroseconds())
+  //
+  // TODO(crbug.com/1402777): Migrate all TimeDelta serialization to this method
+  //                          and remove the migration details above.
+  void BindTimeDelta(int param_index, base::TimeDelta delta);
+
   // Retrieving ----------------------------------------------------------------
 
   // Returns the number of output columns in the result.
@@ -185,6 +195,15 @@ class COMPONENT_EXPORT(SQL) Statement {
   // TODO(crbug.com/1195962): Migrate all time serialization to this method, and
   //                          then remove the migration details above.
   base::Time ColumnTime(int column_index);
+
+  // Conforms with base::TimeDelta deserialization recommendations.
+  //
+  // This is equivalent to the following snippets, which should be replaced.
+  // * base::TimeDelta::FromInternalValue(ColumnInt64(column_index))
+  //
+  // TODO(crbug.com/1402777): Migrate all TimeDelta serialization to this method
+  //                          and remove the migration details above.
+  base::TimeDelta ColumnTimeDelta(int column_index);
 
   // Returns a span pointing to a buffer containing the blob data.
   //

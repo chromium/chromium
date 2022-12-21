@@ -216,14 +216,14 @@ void InMemoryURLIndexTest::SetUp() {
           sql::Statement s(db.GetUniqueStatement(
               "UPDATE urls SET last_visit_time = ? - ? * last_visit_time"));
           s.BindTime(0, time_right_now);
-          s.BindInt64(1, day_delta.ToInternalValue());
+          s.BindTimeDelta(1, day_delta);
           ASSERT_TRUE(s.Run());
         }
         {
           sql::Statement s(db.GetUniqueStatement(
               "UPDATE visits SET visit_time = ? - ? * visit_time"));
           s.BindTime(0, time_right_now);
-          s.BindInt64(1, day_delta.ToInternalValue());
+          s.BindTimeDelta(1, day_delta);
           ASSERT_TRUE(s.Run());
         }
       }));
