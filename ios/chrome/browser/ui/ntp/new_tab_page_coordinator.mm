@@ -18,6 +18,7 @@
 #import "components/search_engines/default_search_manager.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -974,19 +975,19 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
       initWithBaseViewController:self.ntpViewController
                          browser:self.browser];
   [self.feedSignInPromoCoordinator start];
-  // TODO (crbug.com/1382615): add metrics.
 }
 
 - (void)showSignInUI {
   // Show sign-in and sync page.
-  using AccessPoint = signin_metrics::AccessPoint;
+  const signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO;
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperationSigninAndSync
-            accessPoint:AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO];
+            accessPoint:access_point];
+  signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
   [handler showSignin:command baseViewController:self.ntpViewController];
-  // TODO (crbug.com/1382615): add metrics.
 }
 
 #pragma mark - FeedWrapperViewControllerDelegate
