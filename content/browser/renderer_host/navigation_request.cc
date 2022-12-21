@@ -2468,6 +2468,12 @@ void NavigationRequest::BeginNavigationImpl() {
             // remains explicitly unhandled. This branch may be removed in the
             // future.
             break;
+          case GetFrameHostForNavigationFailed::kBlockedByPendingCommit:
+            // TODO(https://crbug.com/1220337): Split (part of?) the
+            // NeedsUrlLoader() block off into its own function and make it
+            // possible to resume the navigation request for a cross-document
+            // request that needs to assign a new RFH.
+            break;
         }
       }
 
@@ -3928,6 +3934,11 @@ void NavigationRequest::OnResponseStarted(
           // remains explicitly unhandled. This branch may be removed in the
           // future.
           break;
+        case GetFrameHostForNavigationFailed::kBlockedByPendingCommit:
+          // TODO(https://crbug.com/1220337): Split OnResponseStarted() into
+          // two halves: the second half should start above this block of
+          // conditionals that picks a suitable RenderFrameHost.
+          break;
       }
     }
 
@@ -4289,6 +4300,10 @@ void NavigationRequest::OnRequestFailedInternal(
             // TODO(https://crbug.com/1400535): This was unhandled
             // before and remains explicitly unhandled. This branch may be
             // removed in the future.
+            break;
+          case GetFrameHostForNavigationFailed::kBlockedByPendingCommit:
+            // TODO(https://crbug.com/1220337): Split OnRequestFailedInternal()
+            // so the process selection logic is at the top of its own method.
             break;
         }
       }

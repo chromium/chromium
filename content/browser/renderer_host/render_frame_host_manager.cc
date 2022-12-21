@@ -1235,6 +1235,23 @@ RenderFrameHostManager::GetFrameHostForNavigation(NavigationRequest* request,
       ShouldSkipEarlyCommitPendingForCrashedFrame() &&
       render_frame_host_->must_be_replaced();
   if (use_current_rfh) {
+    // For navigation queueing, if the speculative RFH is already committing a
+    // cross-document navigation, avoid discarding it here: the commit needs to
+    // complete in order for the browser and the renderer state to remain in
+    // sync. See https://crbug.com/838348.
+    //
+    // In theory, it would be possible to simply avoid discarding it (see the
+    // later branch for the kAvoidUnnecessaryNavigationCancellations feature;
+    // however, this navigation race should be fairly rare, so for navigation
+    // queueing, do the simple thing and give up trying to assign a
+    // RenderFrameHost for the navigation.
+    if (speculative_render_frame_host_ &&
+        speculative_render_frame_host_
+            ->HasPendingCommitForCrossDocumentNavigation() &&
+        base::FeatureList::IsEnabled(kQueueNavigationsWhileWaitingForCommit)) {
+      return base::unexpected(
+          GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
+    }
     // If the navigation is to a WebUI and the current RenderFrameHost is going
     // to be used, there are only two possible ways to get here:
     // * The navigation is between two different documents belonging to the same
@@ -1310,8 +1327,19 @@ RenderFrameHostManager::GetFrameHostForNavigation(NavigationRequest* request,
       // If a previous speculative RenderFrameHost didn't exist or if its
       // SiteInstance differs from the one for the current URL, a new one needs
       // to be created.
-      // TODO(https://crbug.com/1220337): Don't delete the speculative
-      // RenderFrameHost when it is pending commit.
+      //
+      // However, if the speculative RFH is already committing a cross-document
+      // navigation, avoid discarding it now: the commit needs to complete in
+      // order for the browser and the renderer state to remain in sync. See
+      // https://crbug.com/838348.
+      if (base::FeatureList::IsEnabled(
+              kQueueNavigationsWhileWaitingForCommit) &&
+          speculative_render_frame_host_ &&
+          speculative_render_frame_host_
+              ->HasPendingCommitForCrossDocumentNavigation()) {
+        return base::unexpected(
+            GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
+      }
       DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
       bool success = CreateSpeculativeRenderFrameHost(
           current_site_instance, dest_site_instance.get(),

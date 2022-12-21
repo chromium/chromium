@@ -69,6 +69,13 @@ enum class GetFrameHostForNavigationFailed {
   // TODO(https://crbug.com/1400535): This adds a tremendous amount of failure
   // plumbing *everywhere* and might be unnecessary.
   kCouldNotReinitializeMainFrame,
+  // The speculative RenderFrameHost is pending commit and cannot be discarded.
+  // This blocks navigations that could reuse the current RenderFrameHost
+  // (because they cannot discard the theoretically-unnecessary speculative
+  // RenderFrameHost) and navigations that need a different speculative
+  // RenderFrameHost (because the pre-existing unsuitable speculative
+  // RenderFrameHost cannot be discarded).
+  kBlockedByPendingCommit,
 };
 
 // Manages RenderFrameHosts for a FrameTreeNode. It maintains a
