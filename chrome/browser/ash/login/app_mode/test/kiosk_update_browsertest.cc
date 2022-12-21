@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
@@ -876,6 +877,9 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UpdateMultiAppKioskAddOneApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, LaunchKioskAppWithSecondaryExtension) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-22a4b826-851a-4065-a32b-273a0e261bf3");
+
   LaunchTestKioskAppWithSeconadayExtension();
 }
 

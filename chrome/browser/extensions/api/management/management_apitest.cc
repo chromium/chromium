@@ -5,6 +5,7 @@
 #include <map>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -134,6 +135,9 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, Basics) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-7a245632-83b2-4dc8-a1db-283ef595e2df");
+
   LoadExtensions();
 
   base::FilePath basedir = test_data_dir_.AppendASCII("management");

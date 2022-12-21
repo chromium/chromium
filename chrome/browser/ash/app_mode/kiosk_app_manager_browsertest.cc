@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/threading/thread_restrictions.h"
@@ -780,6 +781,9 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, RemoveApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateApp) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-0848f806-ea30-48db-8025-da0fd707a5a2");
+
   base::HistogramTester histogram;
 
   // Add a version 1 app first.
@@ -1014,6 +1018,9 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, IsPlatformCompliant) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, IsPlatformCompliantWithApp) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-182c1317-2fc0-459b-b217-ec7d6de6e363");
+
   base::test::ScopedChromeOSVersionInfo version(
       "CHROMEOS_RELEASE_VERSION=1234.1.2", base::Time::Now());
 

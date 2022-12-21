@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -203,6 +204,9 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
 
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
                        DataIsDownloadedAndPersists) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-2447f309-0b17-4b53-8879-50ca6eeebc3f");
+
   // Intentionally do not handle requests so that data has to be read from
   // disk.
   EnableTestServer({});

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/path_service.h"
+#include "base/test/gtest_tags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
@@ -170,6 +171,9 @@ class EnterpriseDeviceAttributesTest
 };
 
 IN_PROC_BROWSER_TEST_P(EnterpriseDeviceAttributesTest, Success) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-be4e8241-2469-4b3f-969e-026494fb4ced");
+
   const bool is_affiliated = GetParam();
 
   const Extension* extension =

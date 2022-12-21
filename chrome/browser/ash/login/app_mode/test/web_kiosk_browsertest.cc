@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_tags.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -272,6 +273,9 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, PRE_AlreadyInstalledOffline) {
 
 // Runs the kiosk app offline when it has been already installed.
 IN_PROC_BROWSER_TEST_F(WebKioskTest, AlreadyInstalledOffline) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-35e430a3-04b3-46a7-aa0a-207a368b8cba");
+
   SetOnline(false);
   PrepareAppLaunch();
   LaunchApp();

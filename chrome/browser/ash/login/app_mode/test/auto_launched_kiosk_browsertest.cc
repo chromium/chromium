@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
+#include "base/test/gtest_tags.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -275,6 +276,9 @@ IN_PROC_BROWSER_TEST_P(AutoLaunchedKioskTest, PRE_CrashRestore) {
 }
 
 IN_PROC_BROWSER_TEST_P(AutoLaunchedKioskTest, CrashRestore) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-6ac07cf6-6fe6-49d7-9398-769574c032ba");
+
   // Verify that Chrome hasn't already exited, e.g. in order to apply user
   // session flags.
   ASSERT_TRUE(termination_subscription_);
