@@ -117,23 +117,9 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void SetUserLaunchOrdinal(const AppId& app_id,
                             syncer::StringOrdinal user_launch_ordinal);
 
-  // This method is used by web apps to remove allowed protocol schemes based
-  // on user withdrawal of that approval. Allowed protocol schemes will allow
-  // web apps to handle launches from urls that start with that scheme without
-  // asking the user.
-  void RemoveAllowedLaunchProtocol(const AppId& app_id,
-                                   const std::string& protocol_scheme);
-
   // Stores the user's preference for the app's use of the File Handling API.
   void SetAppFileHandlerApprovalState(const AppId& app_id,
                                       ApiApprovalState state);
-
-  // This method are used by web apps to remove disallowed protocol schemes
-  // based on user withdrawal of that preference. Disallowed protocol schemes
-  // will never allow web apps to handle launches from urls that start with that
-  // scheme.
-  void RemoveDisallowedLaunchProtocol(const AppId& app_id,
-                                      const std::string& protocol_scheme);
 
 #if BUILDFLAG(IS_MAC)
   void SetAlwaysShowToolbarInFullscreen(const AppId& app_id, bool show);

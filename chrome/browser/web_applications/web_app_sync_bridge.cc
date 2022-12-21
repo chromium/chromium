@@ -347,42 +347,6 @@ void WebAppSyncBridge::SetUserLaunchOrdinal(
     web_app->SetUserLaunchOrdinal(std::move(launch_ordinal));
 }
 
-void WebAppSyncBridge::RemoveAllowedLaunchProtocol(
-    const AppId& app_id,
-    const std::string& protocol_scheme) {
-  // Use a scope here, so that the web app registry is updated when
-  // `update` goes out of scope. If it doesn't then observers will
-  // examine stale data.
-  {
-    ScopedRegistryUpdate update(this);
-    WebApp* app_to_update = update->UpdateApp(app_id);
-    base::flat_set<std::string> protocol_handlers(
-        app_to_update->allowed_launch_protocols());
-    protocol_handlers.erase(protocol_scheme);
-    app_to_update->SetAllowedLaunchProtocols(std::move(protocol_handlers));
-  }
-  // Notify observers that the list of allowed protocols was updated.
-  registrar_->NotifyWebAppProtocolSettingsChanged();
-}
-
-void WebAppSyncBridge::RemoveDisallowedLaunchProtocol(
-    const AppId& app_id,
-    const std::string& protocol_scheme) {
-  // Use a scope here, so that the web app registry is updated when
-  // `update` goes out of scope. If it doesn't then observers will
-  // examine stale data.
-  {
-    ScopedRegistryUpdate update(this);
-    WebApp* app_to_update = update->UpdateApp(app_id);
-    base::flat_set<std::string> protocol_handlers(
-        app_to_update->disallowed_launch_protocols());
-    protocol_handlers.erase(protocol_scheme);
-    app_to_update->SetDisallowedLaunchProtocols(std::move(protocol_handlers));
-  }
-  // Notify observers that the list of disallowed protocols was updated.
-  registrar_->NotifyWebAppProtocolSettingsChanged();
-}
-
 #if BUILDFLAG(IS_MAC)
 void WebAppSyncBridge::SetAlwaysShowToolbarInFullscreen(const AppId& app_id,
                                                         bool show) {
