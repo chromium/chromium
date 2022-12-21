@@ -8,7 +8,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_impl.h"
 #include "ui/accessibility/platform/fuchsia/ax_platform_node_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/semantic_provider.h"
@@ -61,7 +61,7 @@ class MockSemanticProvider : public AXFuchsiaSemanticProvider {
   float pixel_scale_ = 1.f;
 };
 
-class MockAXPlatformNodeDelegate : public AXPlatformNodeDelegateBase {
+class MockAXPlatformNodeDelegate : public AXPlatformNodeDelegate {
  public:
   MockAXPlatformNodeDelegate() = default;
   ~MockAXPlatformNodeDelegate() override = default;

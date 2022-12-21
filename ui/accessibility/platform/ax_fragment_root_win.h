@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
 #include <wrl/client.h>
 
@@ -29,7 +29,7 @@ class AXFragmentRootPlatformNodeWin;
 // expose one fragment root per HWND. The class that owns the HWND is expected
 // to own the corresponding AXFragmentRootWin.
 class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
-    : public ui::AXPlatformNodeDelegateBase {
+    : public ui::AXPlatformNodeDelegate {
  public:
   AXFragmentRootWin(gfx::AcceleratedWidget widget,
                     AXFragmentRootDelegateWin* delegate);

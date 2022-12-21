@@ -690,10 +690,6 @@ BrowserAccessibility* BrowserAccessibility::ApproximateHitTest(
   return this;
 }
 
-bool BrowserAccessibility::IsRootWebAreaForPresentationalIframe() const {
-  return node()->IsRootWebAreaForPresentationalIframe();
-}
-
 bool BrowserAccessibility::IsClickable() const {
   return GetData().IsClickable();
 }
@@ -1177,14 +1173,6 @@ BrowserAccessibility::GetTargetForNativeAccessibilityEvent() {
   if (!root_delegate)
     return gfx::kNullAcceleratedWidget;
   return root_delegate->AccessibilityGetAcceleratedWidget();
-}
-
-absl::optional<int> BrowserAccessibility::GetTableAriaColCount() const {
-  return node()->GetTableAriaColCount();
-}
-
-absl::optional<int> BrowserAccessibility::GetTableAriaRowCount() const {
-  return node()->GetTableAriaRowCount();
 }
 
 ui::AXPlatformNode* BrowserAccessibility::GetTableCaption() const {

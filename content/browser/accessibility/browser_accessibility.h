@@ -343,9 +343,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   gfx::RectF GetLocation() const;
 
-  // See `AXNode::IsRootWebAreaForPresentationalIframe()`.
-  bool IsRootWebAreaForPresentationalIframe() const override;
-
   // See AXNodeData::IsClickable().
   virtual bool IsClickable() const;
 
@@ -422,8 +419,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       ui::AXPlatformNodeDelegate* start,
       ui::AXPlatformNodeDelegate* end) override;
 
-  absl::optional<int> GetTableAriaColCount() const override;
-  absl::optional<int> GetTableAriaRowCount() const override;
   ui::AXPlatformNode* GetTableCaption() const override;
 
   bool AccessibilityPerformAction(const ui::AXActionData& data) override;

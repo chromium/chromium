@@ -476,7 +476,7 @@ TEST_F(AXPlatformNodeTest, CompareTo) {
 
   // Test for two nodes that do not share the same root. They should not be
   // comparable.
-  AXPlatformNodeDelegateBase detached_delegate;
+  AXPlatformNodeDelegate detached_delegate;
   AXPlatformNodeBase* detached_node = static_cast<AXPlatformNodeBase*>(
       AXPlatformNode::Create(&detached_delegate));
   EXPECT_EQ(absl::nullopt, n1->CompareTo(*detached_node));

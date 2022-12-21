@@ -68,7 +68,7 @@ class AccessibilityTreeLinkageWinBrowserTest
   }
 
  protected:
-  ui::AXPlatformNodeDelegateBase dummy_ax_node_;
+  ui::AXPlatformNodeDelegate dummy_ax_node_;
   raw_ptr<ui::AXPlatformNode> dummy_ax_platform_node_;
 };
 

@@ -41,7 +41,7 @@
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
-#include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -207,7 +207,7 @@ class MockAxTreeManager : public ui::AXTreeManager {
   MOCK_CONST_METHOD0(GetParentNodeFromParentTree, ui::AXNode*());
 };
 
-class MockAxPlatformNodeDelegate : public ui::AXPlatformNodeDelegateBase {
+class MockAxPlatformNodeDelegate : public ui::AXPlatformNodeDelegate {
  public:
   MockAxPlatformNodeDelegate() = default;
   MockAxPlatformNodeDelegate(MockAxPlatformNodeDelegate&) = delete;

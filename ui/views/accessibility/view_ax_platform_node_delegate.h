@@ -17,7 +17,7 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_position.h"
-#include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -41,7 +41,7 @@ class View;
 // toolkit. This class owns the |AXPlatformNode|, which implements those native
 // APIs.
 class ViewAXPlatformNodeDelegate : public ViewAccessibility,
-                                   public ui::AXPlatformNodeDelegateBase {
+                                   public ui::AXPlatformNodeDelegate {
  public:
   ViewAXPlatformNodeDelegate(const ViewAXPlatformNodeDelegate&) = delete;
   ViewAXPlatformNodeDelegate& operator=(const ViewAXPlatformNodeDelegate&) =

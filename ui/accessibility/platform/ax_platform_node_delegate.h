@@ -76,6 +76,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   using SerializedPosition = ui::AXNodePosition::SerializedPosition;
   using AXRange = ui::AXRange<AXPosition::element_type>;
 
+  AXPlatformNodeDelegate();
+  
   AXPlatformNodeDelegate(const AXPlatformNodeDelegate&) = delete;
   AXPlatformNodeDelegate& operator=(const AXPlatformNodeDelegate&) = delete;
 
@@ -461,25 +463,25 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   virtual bool HasVisibleCaretOrSelection() const;
 
   // Get another node from this same tree.
-  virtual AXPlatformNode* GetFromNodeID(int32_t id) = 0;
+  virtual AXPlatformNode* GetFromNodeID(int32_t id);
 
   // Get a node from a different tree using a tree ID and node ID.
   // Note that this is only guaranteed to work if the other tree is of the
   // same type, i.e. it won't work between web and views or vice-versa.
   virtual AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
-                                                 int32_t id) = 0;
+                                                 int32_t id);
 
   // Given a node ID attribute (one where IsNodeIdIntAttribute is true), return
   // a target nodes for which this delegate's node has that relationship
   // attribute or NULL if there is no such relationship.
   virtual AXPlatformNode* GetTargetNodeForRelation(
-      ax::mojom::IntAttribute attr) = 0;
+      ax::mojom::IntAttribute attr);
 
   // Given a node ID attribute (one where IsNodeIdIntListAttribute is true),
   // return a vector of all target nodes for which this delegate's node has that
   // relationship attribute.
   virtual std::vector<AXPlatformNode*> GetTargetNodesForRelation(
-      ax::mojom::IntListAttribute attr) = 0;
+      ax::mojom::IntListAttribute attr);
 
   // Given an attribute which could be used to establish a reverse relationship
   // between this node and a set of other nodes (AKA the source nodes), return
@@ -509,7 +511,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // is only meaningful for Windows UIA.
   virtual const std::vector<gfx::NativeViewAccessible>
   GetUIADirectChildrenInRange(ui::AXPlatformNodeDelegate* start,
-                              ui::AXPlatformNodeDelegate* end) = 0;
+                              ui::AXPlatformNodeDelegate* end);
 
   // Return a string representing the language code.
   //
@@ -529,15 +531,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   bool IsTable() const;
   virtual absl::optional<int> GetTableColCount() const;
   virtual absl::optional<int> GetTableRowCount() const;
-  virtual absl::optional<int> GetTableAriaColCount() const = 0;
-  virtual absl::optional<int> GetTableAriaRowCount() const = 0;
+  virtual absl::optional<int> GetTableAriaColCount() const;
+  virtual absl::optional<int> GetTableAriaRowCount() const;
   virtual absl::optional<int> GetTableCellCount() const;
   virtual absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const;
   virtual std::vector<int32_t> GetColHeaderNodeIds() const;
   virtual std::vector<int32_t> GetColHeaderNodeIds(int col_index) const;
   virtual std::vector<int32_t> GetRowHeaderNodeIds() const;
   virtual std::vector<int32_t> GetRowHeaderNodeIds(int row_index) const;
-  virtual AXPlatformNode* GetTableCaption() const = 0;
+  virtual AXPlatformNode* GetTableCaption() const;
 
   //
   // Nodes with a table row-like role.
@@ -564,13 +566,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   virtual bool IsCellOrHeaderOfAriaGrid() const;
 
   // See `AXNode::IsRootWebAreaForPresentationalIframe()`.
-  virtual bool IsRootWebAreaForPresentationalIframe() const = 0;
+  virtual bool IsRootWebAreaForPresentationalIframe() const;
 
   // Ordered-set-like and item-like nodes.
   virtual bool IsOrderedSetItem() const;
   virtual bool IsOrderedSet() const;
-  virtual absl::optional<int> GetPosInSet() const = 0;
-  virtual absl::optional<int> GetSetSize() const = 0;
+  virtual absl::optional<int> GetPosInSet() const;
+  virtual absl::optional<int> GetSetSize() const;
 
   // Computed colors, taking blending into account.
   virtual SkColor GetColor() const;
@@ -582,7 +584,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
 
   // Return the platform-native GUI object that should be used as a target
   // for accessibility events.
-  virtual gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() = 0;
+  virtual gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent();
 
   //
   // Actions.
@@ -590,19 +592,18 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
 
   // Perform an accessibility action, switching on the ax::mojom::Action
   // provided in |data|.
-  virtual bool AccessibilityPerformAction(const AXActionData& data) = 0;
+  virtual bool AccessibilityPerformAction(const AXActionData& data);
 
   //
   // Localized strings.
   //
 
-  virtual std::u16string GetLocalizedRoleDescriptionForUnlabeledImage()
-      const = 0;
+  virtual std::u16string GetLocalizedRoleDescriptionForUnlabeledImage() const;
   virtual std::u16string GetLocalizedStringForImageAnnotationStatus(
-      ax::mojom::ImageAnnotationStatus status) const = 0;
-  virtual std::u16string GetLocalizedStringForLandmarkType() const = 0;
-  virtual std::u16string GetLocalizedStringForRoleDescription() const = 0;
-  virtual std::u16string GetStyleNameAttributeAsLocalizedString() const = 0;
+      ax::mojom::ImageAnnotationStatus status) const;
+  virtual std::u16string GetLocalizedStringForLandmarkType() const;
+  virtual std::u16string GetLocalizedStringForRoleDescription() const;
+  virtual std::u16string GetStyleNameAttributeAsLocalizedString() const;
 
   //
   // Testing.
@@ -612,7 +613,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // the mouse is hovering over them, but this makes tests flaky because
   // the test behaves differently when the mouse happens to be over an
   // element. The default value should be false if not in testing mode.
-  virtual bool ShouldIgnoreHoveredStateForTesting() = 0;
+  virtual bool ShouldIgnoreHoveredStateForTesting();
 
   // Creates a string representation of this delegate's data.
   std::string ToString() const { return GetData().ToString(); }
@@ -627,14 +628,18 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   }
 
  protected:
-  AXPlatformNodeDelegate();
   explicit AXPlatformNodeDelegate(AXNode* node);
 
-  virtual std::string SubtreeToStringHelper(size_t level) = 0;
+  virtual std::string SubtreeToStringHelper(size_t level);
 
   virtual void NotifyAccessibilityApiUsage() const {}
 
   AXPlatformNodeDelegate* GetParentDelegate() const;
+
+  // Given a list of node ids, return the nodes in this delegate's tree to
+  // which they correspond.
+  std::set<ui::AXPlatformNode*> GetNodesForNodeIds(
+      const std::set<int32_t>& ids);
 
  private:
   // The underlying node. This could change during the lifetime of this object

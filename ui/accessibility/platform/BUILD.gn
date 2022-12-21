@@ -64,8 +64,6 @@ component("platform") {
     # Used by //ui/views/views/ax_virtual_view.h.
     "ax_platform_node_base.cc",
     "ax_platform_node_base.h",
-    "ax_platform_node_delegate_base.cc",
-    "ax_platform_node_delegate_base.h",
 
     # Used by //chrome/test/browser_tests/browser_view_browsertest.cc
     "ax_platform_node_test_helper.cc",

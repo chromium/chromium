@@ -460,8 +460,61 @@ bool AXPlatformNodeDelegate::HasVisibleCaretOrSelection() const {
   return IsDescendantOfAtomicTextField();
 }
 
-std::set<AXPlatformNode*>
-AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
+AXPlatformNode* AXPlatformNodeDelegate::GetFromNodeID(int32_t id) {
+  return nullptr;
+}
+
+AXPlatformNode* AXPlatformNodeDelegate::GetFromTreeIDAndNodeID(
+    const ui::AXTreeID& ax_tree_id,
+    int32_t id) {
+  return nullptr;
+}
+
+AXPlatformNode* AXPlatformNodeDelegate::GetTargetNodeForRelation(
+    ax::mojom::IntAttribute attr) {
+  DCHECK(IsNodeIdIntAttribute(attr));
+
+  int target_id;
+  if (!GetIntAttribute(attr, &target_id))
+    return nullptr;
+
+  return GetFromNodeID(target_id);
+}
+
+std::set<AXPlatformNode*> AXPlatformNodeDelegate::GetNodesForNodeIds(
+    const std::set<int32_t>& ids) {
+  std::set<AXPlatformNode*> nodes;
+  for (int32_t node_id : ids) {
+    if (AXPlatformNode* node = GetFromNodeID(node_id)) {
+      nodes.insert(node);
+    }
+  }
+  return nodes;
+}
+
+std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
+    ax::mojom::IntListAttribute attr) {
+  DCHECK(IsNodeIdIntListAttribute(attr));
+  std::vector<int32_t> target_ids;
+  if (!GetIntListAttribute(attr, &target_ids))
+    return std::vector<AXPlatformNode*>();
+
+  // If we use std::set to eliminate duplicates, the resulting set will be
+  // sorted by the id and we will lose the original order which may be of
+  // interest to ATs. The number of ids should be small.
+
+  std::vector<ui::AXPlatformNode*> nodes;
+  for (int32_t target_id : target_ids) {
+    if (ui::AXPlatformNode* node = GetFromNodeID(target_id)) {
+      if (!base::Contains(nodes, node))
+        nodes.push_back(node);
+    }
+  }
+
+  return nodes;
+}
+
+std::set<AXPlatformNode*> AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
     ax::mojom::IntAttribute attr) {
   // TODO(accessibility) Implement these if views ever use relations more
   // widely. The use so far has been for the Omnibox to the suggestion
@@ -885,6 +938,28 @@ absl::optional<int> AXPlatformNodeDelegate::GetTableCellCount() const {
   return absl::nullopt;
 }
 
+absl::optional<int> AXPlatformNodeDelegate::GetTableAriaColCount() const {
+  int aria_column_count;
+  if (node_)
+    return node_->GetTableAriaColCount();
+  if (!GetIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount,
+                       &aria_column_count)) {
+    return absl::nullopt;
+  }
+  return aria_column_count;
+}
+
+absl::optional<int> AXPlatformNodeDelegate::GetTableAriaRowCount() const {
+  if (node_)
+    return node_->GetTableAriaRowCount();
+  int aria_row_count;
+  if (!GetIntAttribute(ax::mojom::IntAttribute::kAriaRowCount,
+                       &aria_row_count)) {
+    return absl::nullopt;
+  }
+  return aria_row_count;
+}
+
 absl::optional<bool> AXPlatformNodeDelegate::GetTableHasColumnOrRowHeaderNode()
     const {
   if (node_)
@@ -916,6 +991,10 @@ std::vector<int32_t> AXPlatformNodeDelegate::GetRowHeaderNodeIds(
   if (node_)
     return node_->GetTableRowHeaderNodeIds(row_index);
   return {};
+}
+
+AXPlatformNode* AXPlatformNodeDelegate::GetTableCaption() const {
+  return nullptr;
 }
 
 bool AXPlatformNodeDelegate::IsTableRow() const {
@@ -1010,6 +1089,17 @@ bool AXPlatformNodeDelegate::IsCellOrHeaderOfAriaGrid() const {
   return false;
 }
 
+bool AXPlatformNodeDelegate::IsRootWebAreaForPresentationalIframe() const {
+  if (node_)
+    return node_->IsRootWebAreaForPresentationalIframe();
+  if (!ui::IsPlatformDocument(GetRole()))
+    return false;
+  AXPlatformNodeDelegate* parent = GetParentDelegate();
+  if (!parent)
+    return false;
+  return parent->GetRole() == ax::mojom::Role::kIframePresentational;
+}
+
 bool AXPlatformNodeDelegate::IsOrderedSetItem() const {
   if (node_)
     return node_->IsOrderedSetItem();
@@ -1020,6 +1110,14 @@ bool AXPlatformNodeDelegate::IsOrderedSet() const {
   if (node_)
     return node_->IsOrderedSet();
   return false;
+}
+
+absl::optional<int> AXPlatformNodeDelegate::GetPosInSet() const {
+  return absl::nullopt;
+}
+
+absl::optional<int> AXPlatformNodeDelegate::GetSetSize() const {
+  return absl::nullopt;
 }
 
 SkColor AXPlatformNodeDelegate::GetColor() const {
@@ -1034,6 +1132,46 @@ SkColor AXPlatformNodeDelegate::GetBackgroundColor() const {
   return SK_ColorWHITE;
 }
 
+gfx::AcceleratedWidget
+AXPlatformNodeDelegate::GetTargetForNativeAccessibilityEvent() {
+  return gfx::kNullAcceleratedWidget;
+}
+
+bool AXPlatformNodeDelegate::AccessibilityPerformAction(
+    const ui::AXActionData& data) {
+  return false;
+}
+
+std::u16string
+AXPlatformNodeDelegate::GetLocalizedRoleDescriptionForUnlabeledImage() const {
+  return std::u16string();
+}
+
+std::u16string
+AXPlatformNodeDelegate::GetLocalizedStringForImageAnnotationStatus(
+    ax::mojom::ImageAnnotationStatus status) const {
+  return std::u16string();
+}
+
+std::u16string AXPlatformNodeDelegate::GetLocalizedStringForLandmarkType()
+    const {
+  return std::u16string();
+}
+
+std::u16string AXPlatformNodeDelegate::GetLocalizedStringForRoleDescription()
+    const {
+  return std::u16string();
+}
+
+std::u16string AXPlatformNodeDelegate::GetStyleNameAttributeAsLocalizedString()
+    const {
+  return std::u16string();
+}
+
+bool AXPlatformNodeDelegate::ShouldIgnoreHoveredStateForTesting() {
+  return true;
+}
+
 bool AXPlatformNodeDelegate::IsReadOnlySupported() const {
   if (node_)
     return node_->IsReadOnlySupported();
@@ -1046,10 +1184,37 @@ bool AXPlatformNodeDelegate::IsReadOnlyOrDisabled() const {
   return false;
 }
 
+const std::vector<gfx::NativeViewAccessible>
+AXPlatformNodeDelegate::GetUIADirectChildrenInRange(
+    ui::AXPlatformNodeDelegate* start,
+    ui::AXPlatformNodeDelegate* end) {
+  return {};
+}
+
 std::string AXPlatformNodeDelegate::GetLanguage() const {
   if (node_)
     return node_->GetLanguage();
   return std::string();
+}
+
+std::string AXPlatformNodeDelegate::SubtreeToStringHelper(size_t level) {
+  std::string result(level * 2, '+');
+  result += ToString();
+  result += '\n';
+
+  // We can't use ChildrenBegin() and ChildrenEnd() here, because they both
+  // return an std::unique_ptr<ChildIterator> which is an abstract class.
+  //
+  // TODO(accessibility): CHildrenBegin and ChildrenEnd can now be used, use
+  // here.
+  auto iter_start = ChildIteratorBase(this, 0);
+  auto iter_end = ChildIteratorBase(this, GetChildCount());
+  for (auto iter = iter_start; iter != iter_end; ++iter) {
+    AXPlatformNodeDelegate& child = static_cast<AXPlatformNodeDelegate&>(*iter);
+    result += child.SubtreeToStringHelper(level + 1);
+  }
+
+  return result;
 }
 
 }  // namespace ui

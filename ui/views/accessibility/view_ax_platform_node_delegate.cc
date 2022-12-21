@@ -436,7 +436,7 @@ bool ViewAXPlatformNodeDelegate::HasModalDialog() const {
 }
 
 bool ViewAXPlatformNodeDelegate::IsChildOfLeaf() const {
-  return AXPlatformNodeDelegateBase::IsChildOfLeaf();
+  return AXPlatformNodeDelegate::IsChildOfLeaf();
 }
 
 ui::AXNodePosition::AXPositionInstance
@@ -511,7 +511,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetParent() const {
 }
 
 bool ViewAXPlatformNodeDelegate::IsLeaf() const {
-  return ViewAccessibility::IsLeaf() || AXPlatformNodeDelegateBase::IsLeaf();
+  return ViewAccessibility::IsLeaf() || AXPlatformNodeDelegate::IsLeaf();
 }
 
 bool ViewAXPlatformNodeDelegate::IsInvisibleOrIgnored() const {
