@@ -32,13 +32,6 @@ BASE_FEATURE(kAdaptiveScreenBrightnessLogging,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Shows settings to adjust the touchpad haptic click settings.
-BASE_FEATURE(kAllowTouchpadHapticClickSettings,
-             "AllowTouchpadHapticClickSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // defined(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppManagementAppDetails,
              "AppManagementAppDetails",
              base::FEATURE_DISABLED_BY_DEFAULT);

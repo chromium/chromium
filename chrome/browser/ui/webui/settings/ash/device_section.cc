@@ -1136,10 +1136,7 @@ void DeviceSection::HapticTouchpadExists(bool exists) {
   }
 
   updater.AddSearchTags(GetTouchpadHapticFeedback());
-  if (base::FeatureList::IsEnabled(
-          ::features::kAllowTouchpadHapticClickSettings)) {
-    updater.AddSearchTags(GetTouchpadHapticClickSensitivity());
-  }
+  updater.AddSearchTags(GetTouchpadHapticClickSensitivity());
 }
 
 void DeviceSection::MouseExists(bool exists) {
@@ -1352,9 +1349,6 @@ void DeviceSection::AddDevicePointersStrings(
 
   html_source->AddBoolean("allowScrollSettings", AreScrollSettingsAllowed());
 
-  html_source->AddBoolean("allowTouchpadHapticClickSettings",
-                          base::FeatureList::IsEnabled(
-                              ::features::kAllowTouchpadHapticClickSettings));
   html_source->AddBoolean(
       "enableAudioSettingsPage",
       base::FeatureList::IsEnabled(ash::features::kAudioSettingsPage));

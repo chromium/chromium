@@ -2636,9 +2636,6 @@ extern const char kAllowRepeatedUpdatesDescription[];
 extern const char kAllowScrollSettingsName[];
 extern const char kAllowScrollSettingsDescription[];
 
-extern const char kAllowTouchpadHapticClickSettingsName[];
-extern const char kAllowTouchpadHapticClickSettingsDescription[];
-
 extern const char kAlwaysEnableHdcpName[];
 extern const char kAlwaysEnableHdcpDescription[];
 extern const char kAlwaysEnableHdcpDefault[];

@@ -6591,11 +6591,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowScrollSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAllowScrollSettings)},
 
-    {"allow-touchpad-haptic-click-settings",
-     flag_descriptions::kAllowTouchpadHapticClickSettingsName,
-     flag_descriptions::kAllowTouchpadHapticClickSettingsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAllowTouchpadHapticClickSettings)},
-
     {"enable-neural-palm-adaptive-hold",
      flag_descriptions::kEnableNeuralPalmAdaptiveHoldName,
      flag_descriptions::kEnableNeuralPalmAdaptiveHoldDescription, kOsCrOS,

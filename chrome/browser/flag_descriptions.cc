@@ -4581,11 +4581,6 @@ const char kAllowScrollSettingsDescription[] =
     "Shows settings to enable/disable scroll acceleration and to adjust the "
     "sensitivity for scrolling.";
 
-const char kAllowTouchpadHapticClickSettingsName[] =
-    "Allow changes to the click sensitivity for haptic touchpads.";
-const char kAllowTouchpadHapticClickSettingsDescription[] =
-    "Shows settings to adjust click sensitivity for haptic touchpads.";
-
 const char kAlwaysEnableHdcpName[] = "Always enable HDCP for external displays";
 const char kAlwaysEnableHdcpDescription[] =
     "Enables the specified type for HDCP whenever an external display is "
