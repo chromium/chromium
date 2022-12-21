@@ -149,10 +149,19 @@ ScriptPromise SubApps::add(
   }
 
   Navigator* const navigator = GetSupplementable();
-  const SecurityOrigin* frame_origin = navigator->DomWindow()
-                                           ->GetFrame()
-                                           ->GetSecurityContext()
-                                           ->GetSecurityOrigin();
+  LocalFrame* frame = navigator->DomWindow()->GetFrame();
+  // TODO(crbug.com/1326843): Maybe we don't need user activation if
+  // the right policy is set.
+  if (!LocalFrame::ConsumeTransientUserActivation(frame)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Unable to add sub-app. This API can only be called shortly after a "
+        "user activation.");
+    return ScriptPromise();
+  }
+
+  const SecurityOrigin* frame_origin =
+      frame->GetSecurityContext()->GetSecurityOrigin();
 
   // Check that each sub app's install url has the same origin as the parent
   // app, throw exception otherwise.
