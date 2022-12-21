@@ -8705,20 +8705,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NativeTheme.GetSystemColor" units="ms"
-    expires_after="2021-04-04">
-  <owner>pkasting@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>Time required to run ui::NativeTheme::GetSystemColor().</summary>
-</histogram>
-
-<histogram name="NativeTheme.GetSystemColor.UsesColorProvider" enum="Boolean"
-    expires_after="2022-07-03">
-  <owner>pkasting@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>Records if the color provider computed the color.</summary>
-</histogram>
-
 <histogram name="NCN.CellularConnectionSubtype" enum="ConnectionSubtype"
     expires_after="M77">
   <owner>bmcquade@chromium.org</owner>

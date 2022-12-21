@@ -650,25 +650,6 @@ chromium-metrics-reviews@google.com.
   <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
-<histogram name="Browser.ThemeService.BrowserThemeProvider.GetColor" units="ms"
-    expires_after="2022-12-11">
-  <owner>pkasting@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    Time required to run ThemeService::BrowserThemeProvider::GetColor.
-  </summary>
-</histogram>
-
-<histogram
-    name="Browser.ThemeService.BrowserThemeProvider.GetColor.UsesColorProvider"
-    enum="Boolean" expires_after="2022-12-11">
-  <owner>pkasting@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>Records if the color provider computed the color.</summary>
-</histogram>
-
 <histogram name="Browser.ThemeService.WritePackToDisk" enum="BooleanSuccess"
     expires_after="2022-12-25">
   <owner>etienneb@chromium.org</owner>
