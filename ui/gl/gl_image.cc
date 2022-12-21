@@ -23,19 +23,6 @@ GLImageD3D* GLImage::ToGLImageD3D(GLImage* image) {
 }
 
 // static
-GLImageMemory* GLImage::ToGLImageMemory(GLImage* image) {
-  if (!image || image->GetType() != Type::MEMORY)
-    return nullptr;
-  return reinterpret_cast<GLImageMemory*>(image);
-}
-
-// static
-GLImageIOSurface* GLImage::ToGLImageIOSurface(GLImage* image) {
-  if (!image || image->GetType() != Type::IOSURFACE)
-    return nullptr;
-  return reinterpret_cast<GLImageIOSurface*>(image);
-}
-
 // static
 media::GLImageEGLStream* GLImage::ToGLImageEGLStream(GLImage* image) {
   if (!image || image->GetType() != Type::EGL_STREAM) {

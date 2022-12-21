@@ -203,10 +203,9 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
     descriptor.ioSurface = io_surface_.get();
     descriptor.plane = 0;
 
-    // If the backing is compatible - essentially, a GLImageIOSurface -
-    // then synchronize with all of the MTLSharedEvents which have been
-    // stored in it as a consequence of earlier BeginAccess/EndAccess calls
-    // against other representations.
+    // Synchronize with all of the MTLSharedEvents that have been
+    // stored in the backing as a consequence of earlier BeginAccess/
+    // EndAccess calls against other representations.
     if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
       if (@available(macOS 10.14, *)) {
         SharedImageBacking* backing = this->backing();

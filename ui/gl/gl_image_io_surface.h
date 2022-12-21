@@ -78,8 +78,6 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   GLImageIOSurface(const gfx::Size& size);
   ~GLImageIOSurface() override;
 
-  Type GetType() const override;
-
   const gfx::Size size_;
   gfx::BufferFormat format_ = gfx::BufferFormat::RGBA_8888;
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface_;

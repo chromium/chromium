@@ -187,10 +187,6 @@ void GLImageIOSurface::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
   }
 }
 
-GLImage::Type GLImageIOSurface::GetType() const {
-  return Type::IOSURFACE;
-}
-
 void GLImageIOSurface::SetColorSpace(const gfx::ColorSpace& color_space) {
   if (color_space_ == color_space)
     return;

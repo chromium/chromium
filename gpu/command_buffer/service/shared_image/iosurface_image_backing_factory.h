@@ -17,7 +17,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/mac/io_surface.h"
-#include "ui/gl/gl_image.h"
 
 namespace gfx {
 class Size;
@@ -35,8 +34,8 @@ class GpuDriverBugWorkarounds;
 struct GpuPreferences;
 struct Mailbox;
 
-// Helper functions used used by SharedImageRepresentationGLImage to do
-// IOSurface-specific sharing.
+// IOSurfaceImageBackingFactory is used to create SharedImage backings
+// backed by IOSurface instances.
 class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
     : public SharedImageBackingFactory {
  public:
@@ -54,9 +53,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       gfx::ScopedIOSurface io_surface,
       uint32_t io_surface_plane);
 
-  // It is used for migrating GLImage backing, for part that works with
-  // SharedMemory GMB with SharedMemoryImageBacking and Composite backings, and
-  // all other parts with OzoneImageBacking and other backings.
   IOSurfaceImageBackingFactory(const GpuPreferences& gpu_preferences,
                                const GpuDriverBugWorkarounds& workarounds,
                                const gles2::FeatureInfo* feature_info,
@@ -103,13 +99,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
                    base::span<const uint8_t> pixel_data) override;
 
  private:
-  scoped_refptr<gl::GLImage> MakeGLImage(int client_id,
-                                         gfx::GpuMemoryBufferHandle handle,
-                                         gfx::BufferFormat format,
-                                         const gfx::ColorSpace& color_space,
-                                         gfx::BufferPlane plane,
-                                         const gfx::Size& size);
-
   std::unique_ptr<SharedImageBacking> CreateSharedImageInternal(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,

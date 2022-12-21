@@ -30,29 +30,14 @@ class ProcessMemoryDump;
 }  // namespace trace_event
 }  // namespace base
 
-namespace gl {
-class GLImage;
-}
-
 namespace gpu {
 class DawnEGLImageRepresentation;
 class D3DImageBacking;
 class D3DImageBackingFactoryTest;
 class GLTexturePassthroughD3DImageRepresentation;
-class GpuMemoryBufferFactoryAndroidHardwareBuffer;
-class GpuMemoryBufferFactoryDXGI;
-class GpuMemoryBufferFactoryIOSurface;
-class IOSurfaceImageBackingFactory;
-class OverlayD3DImageRepresentation;
-class TestOverlayImageRepresentation;
-unsigned GetDataFormatOfGLImage(gl::GLImage* gl_image);
-void SetColorSpaceOnGLImage(gl::GLImage* gl_image,
-                            const gfx::ColorSpace& color_space);
 FORWARD_DECLARE_TEST(CALayerTreeTest, HDRTrigger);
-FORWARD_DECLARE_TEST(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess);
 FORWARD_DECLARE_TEST(D3DImageBackingFactoryTestSwapChain,
                      CreateAndPresentSwapChain);
-FORWARD_DECLARE_TEST(D3DImageBackingFactoryTest, CreateFromSharedMemory);
 FORWARD_DECLARE_TEST(GpuOESEGLImageTest, EGLImageToTexture);
 }  // namespace gpu
 
@@ -74,7 +59,6 @@ class VaapiPictureNativePixmapEgl;
 class VaapiPictureNativePixmapOzone;
 class V4L2SliceVideoDecodeAccelerator;
 class VTVideoDecodeAccelerator;
-FORWARD_DECLARE_TEST(CodecImageTest, CopyTexImageIsInvalidForOverlayImages);
 }
 
 namespace ui {
@@ -86,17 +70,11 @@ class SurfacelessSkiaGlRenderer;
 
 namespace viz {
 class ImageContextImpl;
-class SkiaOutputDeviceDComp;
 }  // namespace viz
 
 namespace gl {
 
-class DCompPresenterTest;
-class DirectCompositionSurfaceTest;
 class GLImageD3D;
-class GLImageIOSurface;
-class GLImageMemory;
-class SwapChainPresenter;
 
 // Encapsulates an image that can be bound and/or copied to a texture, hiding
 // platform specific management.
@@ -174,15 +152,7 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
                             const std::string& dump_name);
 
   // An identifier for subclasses. Necessary for safe downcasting.
-  enum class Type {
-    NONE,
-    MEMORY,
-    IOSURFACE,
-    EGL_STREAM,
-    D3D,
-    DCOMP_SURFACE,
-    PBUFFER
-  };
+  enum class Type { NONE, EGL_STREAM, D3D, PBUFFER };
   virtual Type GetType() const;
 
   // Returns the NativePixmap backing the GLImage. If not backed by a
@@ -197,24 +167,13 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // Safe downcasts. All functions return nullptr if |image| does not exist or
   // does not have the specified type.
   static GLImageD3D* ToGLImageD3D(GLImage* image);
-  static GLImageMemory* ToGLImageMemory(GLImage* image);
-  static GLImageIOSurface* ToGLImageIOSurface(GLImage* image);
   static media::GLImageEGLStream* ToGLImageEGLStream(GLImage* image);
   static media::GLImagePbuffer* ToGLImagePbuffer(GLImage* image);
 
-  friend class DCompPresenterTest;
-  friend class DirectCompositionSurfaceTest;
-  friend class SwapChainPresenter;
   friend class gpu::DawnEGLImageRepresentation;
   friend class gpu::D3DImageBacking;
   friend class gpu::D3DImageBackingFactoryTest;
   friend class gpu::GLTexturePassthroughD3DImageRepresentation;
-  friend class gpu::GpuMemoryBufferFactoryAndroidHardwareBuffer;
-  friend class gpu::GpuMemoryBufferFactoryDXGI;
-  friend class gpu::GpuMemoryBufferFactoryIOSurface;
-  friend class gpu::IOSurfaceImageBackingFactory;
-  friend class gpu::OverlayD3DImageRepresentation;
-  friend class gpu::TestOverlayImageRepresentation;
   friend class gpu::gles2::BackTexture;
   friend class gpu::gles2::GLES2DecoderImpl;
   friend class gpu::gles2::GLES2DecoderPassthroughImpl;
@@ -232,20 +191,10 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   friend class ui::SurfacelessGlRenderer;
   friend class ui::SurfacelessSkiaGlRenderer;
   friend class viz::ImageContextImpl;
-  friend class viz::SkiaOutputDeviceDComp;
-  friend unsigned gpu::GetDataFormatOfGLImage(gl::GLImage* gl_image);
-  friend void gpu::SetColorSpaceOnGLImage(GLImage* gl_image,
-                                          const gfx::ColorSpace& color_space);
   FRIEND_TEST_ALL_PREFIXES(gpu::GpuOESEGLImageTest, EGLImageToTexture);
   FRIEND_TEST_ALL_PREFIXES(gpu::CALayerTreeTest, HDRTrigger);
-  FRIEND_TEST_ALL_PREFIXES(gpu::CompoundImageBackingTest,
-                           NoUploadOnOverlayMemoryAccess);
   FRIEND_TEST_ALL_PREFIXES(gpu::D3DImageBackingFactoryTestSwapChain,
                            CreateAndPresentSwapChain);
-  FRIEND_TEST_ALL_PREFIXES(gpu::D3DImageBackingFactoryTest,
-                           CreateFromSharedMemory);
-  FRIEND_TEST_ALL_PREFIXES(media::CodecImageTest,
-                           CopyTexImageIsInvalidForOverlayImages);
 
   friend class base::RefCounted<GLImage>;
 };
