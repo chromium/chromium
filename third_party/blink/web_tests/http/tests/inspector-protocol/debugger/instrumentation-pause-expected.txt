@@ -1,0 +1,8 @@
+Tests instrumentation pause delays evaluations.
+paused (1) reason: instrumentation
+resumed (1)
+First evaluation result: Expression 1
+paused (2) reason: instrumentation
+resumed (2)
+Second evaluation result: Expression 2
+

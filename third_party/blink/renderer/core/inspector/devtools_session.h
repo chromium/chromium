@@ -83,6 +83,7 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
     return agent;
   }
   void Detach();
+  void DetachFromV8();
   void Trace(Visitor*) const;
 
   // protocol::FrontendChannel implementation.

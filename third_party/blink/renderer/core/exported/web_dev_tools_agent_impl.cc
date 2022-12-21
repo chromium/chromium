@@ -102,7 +102,10 @@ bool IsMainFrame(WebLocalFrameImpl* frame) {
 
 class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
  public:
-  ~ClientMessageLoopAdapter() override { instance_ = nullptr; }
+  ~ClientMessageLoopAdapter() override {
+    DCHECK(running_for_debug_break_kind_ != kInstrumentationPause);
+    instance_ = nullptr;
+  }
 
   static void EnsureMainThreadDebuggerCreated() {
     if (instance_)
@@ -128,19 +131,26 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
  private:
   ClientMessageLoopAdapter(
       std::unique_ptr<Platform::NestedMessageLoopRunner> message_loop)
-      : running_for_debug_break_(false),
-        running_for_page_wait_(false),
-        message_loop_(std::move(message_loop)) {
+      : message_loop_(std::move(message_loop)) {
     DCHECK(message_loop_.get());
   }
 
-  void Run(LocalFrame* frame) override {
-    if (running_for_debug_break_)
+  void Run(LocalFrame* frame, MessageLoopKind message_loop_kind) override {
+    if (running_for_debug_break_kind_) {
       return;
+    }
 
-    running_for_debug_break_ = true;
-    if (!running_for_page_wait_)
-      RunLoop(WebLocalFrameImpl::FromFrame(frame));
+    running_for_debug_break_kind_ = message_loop_kind;
+    if (!running_for_page_wait_) {
+      switch (message_loop_kind) {
+        case kNormalPause:
+          RunLoop(WebLocalFrameImpl::FromFrame(frame));
+          break;
+        case kInstrumentationPause:
+          RunInstrumentationPauseLoop(WebLocalFrameImpl::FromFrame(frame));
+          break;
+      }
+    }
   }
 
   void RunForPageWait(WebLocalFrameImpl* frame) {
@@ -148,8 +158,52 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
       return;
 
     running_for_page_wait_ = true;
-    if (!running_for_debug_break_)
+    if (!running_for_debug_break_kind_) {
       RunLoop(frame);
+    } else {
+      // We should not start waiting for the debugger during instrumentation
+      // pauses, so the current pause must be a normal pause.
+      DCHECK_EQ(*running_for_debug_break_kind_, kNormalPause);
+    }
+  }
+
+  void QuitNow() override {
+    if (!running_for_debug_break_kind_) {
+      return;
+    }
+
+    if (!running_for_page_wait_) {
+      switch (*running_for_debug_break_kind_) {
+        case kNormalPause:
+          DoQuitNormalPause();
+          break;
+        case kInstrumentationPause:
+          DoQuitInstrumentationPause();
+          break;
+      }
+    }
+    running_for_debug_break_kind_.reset();
+  }
+
+  void RunInstrumentationPauseLoop(WebLocalFrameImpl* frame) {
+    // 0. Flush pending frontend messages.
+    WebDevToolsAgentImpl* agent = frame->DevToolsAgentImpl();
+    agent->FlushProtocolNotifications();
+
+    // 1. Run the instrumentation message loop. Also remember the task runner
+    // so that we can later quit the loop.
+    DCHECK(!inspector_task_runner_for_instrumentation_pause_);
+    inspector_task_runner_for_instrumentation_pause_ =
+        frame->GetFrame()->GetInspectorTaskRunner();
+    inspector_task_runner_for_instrumentation_pause_
+        ->ProcessInterruptingTasks();
+  }
+
+  void DoQuitInstrumentationPause() {
+    DCHECK(inspector_task_runner_for_instrumentation_pause_);
+    inspector_task_runner_for_instrumentation_pause_
+        ->RequestQuitProcessingInterruptingTasks();
+    inspector_task_runner_for_instrumentation_pause_.reset();
   }
 
   void RunLoop(WebLocalFrameImpl* frame) {
@@ -169,36 +223,32 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
     message_loop_->Run();
   }
 
-  void QuitNow() override {
-    if (running_for_debug_break_) {
-      running_for_debug_break_ = false;
-      if (!running_for_page_wait_)
-        DoQuit();
-    }
-  }
-
   void RunIfWaitingForDebugger(LocalFrame* frame) override {
     if (!running_for_page_wait_)
       return;
+    if (!running_for_debug_break_kind_) {
+      DoQuitNormalPause();
+    }
     running_for_page_wait_ = false;
-    if (!running_for_debug_break_)
-      DoQuit();
   }
 
-  void DoQuit() {
+  void DoQuitNormalPause() {
     // Undo steps (3), (2) and (1) from above.
     // NOTE: This code used to be above right after the |mesasge_loop_->Run()|
     // code, but it is moved here to support browser-side navigation.
+    DCHECK(running_for_page_wait_ ||
+           *running_for_debug_break_kind_ == kNormalPause);
     message_loop_->QuitNow();
     page_pauser_.reset();
     WebFrameWidgetImpl::SetIgnoreInputEvents(false);
   }
 
-  bool running_for_debug_break_;
-  bool running_for_page_wait_;
+  absl::optional<MessageLoopKind> running_for_debug_break_kind_;
+  bool running_for_page_wait_ = false;
   std::unique_ptr<Platform::NestedMessageLoopRunner> message_loop_;
   std::unique_ptr<WebScopedPagePauser> page_pauser_;
-
+  scoped_refptr<InspectorTaskRunner>
+      inspector_task_runner_for_instrumentation_pause_;
   static ClientMessageLoopAdapter* instance_;
 };
 

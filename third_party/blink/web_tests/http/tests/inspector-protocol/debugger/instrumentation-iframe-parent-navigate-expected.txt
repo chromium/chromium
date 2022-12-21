@@ -1,0 +1,5 @@
+Tests that closing the parent page will detach a sub-frame in instrumentation pause.
+Paused in the sub-frame; reason: instrumentation
+Page navigated to http://localhost:8000/inspector-protocol/debugger/resources/empty.html
+Frame detached
+

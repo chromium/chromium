@@ -52,8 +52,10 @@ class CORE_EXPORT MainThreadDebugger final : public ThreadDebuggerCommonImpl {
     USING_FAST_MALLOC(ClientMessageLoop);
 
    public:
+    enum MessageLoopKind { kNormalPause, kInstrumentationPause };
+
     virtual ~ClientMessageLoop() = default;
-    virtual void Run(LocalFrame*) = 0;
+    virtual void Run(LocalFrame*, MessageLoopKind) = 0;
     virtual void QuitNow() = 0;
     virtual void RunIfWaitingForDebugger(LocalFrame*) = 0;
   };
@@ -88,6 +90,7 @@ class CORE_EXPORT MainThreadDebugger final : public ThreadDebuggerCommonImpl {
 
   // V8InspectorClient implementation.
   void runMessageLoopOnPause(int context_group_id) override;
+  void runMessageLoopOnInstrumentationPause(int context_group_id) override;
   void quitMessageLoopOnPause() override;
   void muteMetrics(int context_group_id) override;
   void unmuteMetrics(int context_group_id) override;

@@ -1,0 +1,26 @@
+(async function(testRunner) {
+  const {page, session, dp} = await testRunner.startBlank(
+      `Tests same site navigation during instrumentation pause.`);
+
+  await dp.Target.setDiscoverTargets({discover: true});
+  await dp.Page.enable();
+  await dp.Debugger.enable();
+  await dp.Debugger.setInstrumentationBreakpoint(
+      {instrumentation: 'beforeScriptExecution'});
+
+  const result = session.evaluate('42');
+
+  const expressionPause = await dp.Debugger.oncePaused();
+  testRunner.log(`paused reason: ${expressionPause.params.reason}`);
+
+  const navigated = dp.Page.onceFrameNavigated();
+  session.navigate('./resources/empty.html');
+
+  dp.Debugger.resume({terminateOnresume: false});
+  await dp.Debugger.onceResumed();
+  testRunner.log(`resumed`);
+
+  testRunner.log(`navigated ${(await navigated).params.frame.url}`);
+
+  testRunner.completeTest();
+})

@@ -1,0 +1,5 @@
+Tests same site navigation during instrumentation pause.
+paused reason: instrumentation
+resumed
+navigated http://127.0.0.1:8000/inspector-protocol/debugger/resources/empty.html
+

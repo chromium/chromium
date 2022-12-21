@@ -226,6 +226,25 @@ MainThreadDebugger* MainThreadDebugger::Instance() {
   return static_cast<MainThreadDebugger*>(debugger);
 }
 
+void MainThreadDebugger::runMessageLoopOnInstrumentationPause(
+    int context_group_id) {
+  LocalFrame* paused_frame =
+      WeakIdentifierMap<LocalFrame>::Lookup(context_group_id);
+  // Do not pause in Context of detached frame.
+  if (!paused_frame) {
+    return;
+  }
+
+  DCHECK_EQ(paused_frame, &paused_frame->LocalFrameRoot());
+  paused_ = true;
+
+  // Wait until the execution gets resumed.
+  if (client_message_loop_) {
+    client_message_loop_->Run(paused_frame,
+                              ClientMessageLoop::kInstrumentationPause);
+  }
+}
+
 void MainThreadDebugger::runMessageLoopOnPause(int context_group_id) {
   LocalFrame* paused_frame =
       WeakIdentifierMap<LocalFrame>::Lookup(context_group_id);
@@ -242,12 +261,12 @@ void MainThreadDebugger::runMessageLoopOnPause(int context_group_id) {
         std::make_unique<DocumentLifecycle::PostponeTransitionScope>(
             paused_frame->GetDocument()->Lifecycle());
   }
-  DCHECK(paused_frame == paused_frame->LocalFrameRoot());
+  DCHECK_EQ(paused_frame, &paused_frame->LocalFrameRoot());
   paused_ = true;
 
   // Wait for continue or step command.
   if (client_message_loop_)
-    client_message_loop_->Run(paused_frame);
+    client_message_loop_->Run(paused_frame, ClientMessageLoop::kNormalPause);
 }
 
 void MainThreadDebugger::quitMessageLoopOnPause() {
