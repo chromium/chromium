@@ -889,6 +889,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, ChromeVoxPanel) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TtsDlcTypeToPath) {
   EXPECT_EQ(
+      base::FilePath("/run/imageloader/tts-de-de/package/root/voice.zvoice"),
+      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSDEDE));
+  EXPECT_EQ(
+      base::FilePath("/run/imageloader/tts-en-us/package/root/voice.zvoice"),
+      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSENUS));
+  EXPECT_EQ(
       base::FilePath("/run/imageloader/tts-es-es/package/root/voice.zvoice"),
       TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSESES));
   EXPECT_EQ(
@@ -900,6 +906,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TtsDlcTypeToPath) {
   EXPECT_EQ(
       base::FilePath("/run/imageloader/tts-hi-in/package/root/voice.zvoice"),
       TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSHIIN));
+  EXPECT_EQ(
+      base::FilePath("/run/imageloader/tts-it-it/package/root/voice.zvoice"),
+      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSITIT));
+  EXPECT_EQ(
+      base::FilePath("/run/imageloader/tts-ja-jp/package/root/voice.zvoice"),
+      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSJAJP));
   EXPECT_EQ(
       base::FilePath("/run/imageloader/tts-nl-nl/package/root/voice.zvoice"),
       TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSNLNL));

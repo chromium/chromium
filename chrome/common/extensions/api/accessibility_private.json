@@ -289,7 +289,7 @@
       {
         "id": "DlcType",
         "type": "string",
-        "enum": ["ttsEsEs", "ttsEsUs", "ttsFrFr", "ttsHiIn", "ttsNlNl", "ttsPtBr", "ttsSvSe"],
+        "enum": ["ttsEsEs", "ttsEsUs", "ttsFrFr", "ttsHiIn", "ttsNlNl", "ttsPtBr", "ttsSvSe", "ttsEnUs", "ttsJaJp", "ttsDeDe", "ttsItIt"],
         "description": "Types of accessibility-specific DLCs."
       },
       {

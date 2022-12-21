@@ -2498,10 +2498,14 @@ base::FilePath AccessibilityManager::TtsDlcTypeToPath(DlcType dlc) {
   // Paths to TTS DLCs.
   static constexpr auto kTtsDlcTypeToSubDir =
       base::MakeFixedFlatMap<DlcType, base::StringPiece>(
-          {{DlcType::DLC_TYPE_TTSESES, "tts-es-es/"},
+          {{DlcType::DLC_TYPE_TTSDEDE, "tts-de-de/"},
+           {DlcType::DLC_TYPE_TTSENUS, "tts-en-us/"},
+           {DlcType::DLC_TYPE_TTSESES, "tts-es-es/"},
            {DlcType::DLC_TYPE_TTSESUS, "tts-es-us/"},
            {DlcType::DLC_TYPE_TTSFRFR, "tts-fr-fr/"},
            {DlcType::DLC_TYPE_TTSHIIN, "tts-hi-in/"},
+           {DlcType::DLC_TYPE_TTSITIT, "tts-it-it/"},
+           {DlcType::DLC_TYPE_TTSJAJP, "tts-ja-jp/"},
            {DlcType::DLC_TYPE_TTSNLNL, "tts-nl-nl/"},
            {DlcType::DLC_TYPE_TTSPTBR, "tts-pt-br/"},
            {DlcType::DLC_TYPE_TTSSVSE, "tts-sv-se/"}});

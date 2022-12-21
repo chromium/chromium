@@ -340,6 +340,10 @@ chrome.accessibilityPrivate.DlcType = {
   TTS_NL_NL: 'ttsNlNl',
   TTS_PT_BR: 'ttsPtBr',
   TTS_SV_SE: 'ttsSvSe',
+  TTS_EN_US: 'ttsEnUs',
+  TTS_JA_JP: 'ttsJaJp',
+  TTS_DE_DE: 'ttsDeDe',
+  TTS_IT_IT: 'ttsItIt',
 };
 
 /**
