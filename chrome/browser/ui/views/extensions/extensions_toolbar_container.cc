@@ -324,7 +324,7 @@ void ExtensionsToolbarContainer::UpdateIconVisibility(
 }
 
 void ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately(
-    views::Widget* widget) {
+    MayBeDangling<views::Widget> widget) {
   auto iter =
       base::ranges::find(anchored_widgets_, widget, &AnchoredWidget::widget);
 

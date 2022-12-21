@@ -1316,7 +1316,7 @@ void NetworkQualityEstimator::NotifyObserversOfRTTOrThroughputComputed() const {
 }
 
 void NetworkQualityEstimator::NotifyEffectiveConnectionTypeObserverIfPresent(
-    EffectiveConnectionTypeObserver* observer) const {
+    MayBeDangling<EffectiveConnectionTypeObserver> observer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!effective_connection_type_observer_list_.HasObserver(observer))
@@ -1333,7 +1333,7 @@ void NetworkQualityEstimator::NotifyEffectiveConnectionTypeObserverIfPresent(
 }
 
 void NetworkQualityEstimator::NotifyPeerToPeerConnectionsCountObserverIfPresent(
-    PeerToPeerConnectionsCountObserver* observer) const {
+    MayBeDangling<PeerToPeerConnectionsCountObserver> observer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!peer_to_peer_type_observer_list_.HasObserver(observer))

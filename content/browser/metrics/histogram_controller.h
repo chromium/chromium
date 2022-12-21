@@ -86,7 +86,7 @@ class HistogramController {
       T* host);
 
   template <class T>
-  void RemoveChildHistogramFetcherInterface(T* host);
+  void RemoveChildHistogramFetcherInterface(MayBeDangling<T> host);
 
   // Specialize this template for each ChildHistogramFetcherMap defined below.
   template <class T>

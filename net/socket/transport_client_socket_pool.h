@@ -736,7 +736,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // it's possible that the request has been cancelled, so |handle| may not
   // exist in |pending_callback_map_|.  We look up the callback and result code
   // in |pending_callback_map_|.
-  void InvokeUserCallback(ClientSocketHandle* handle);
+  void InvokeUserCallback(MayBeDangling<ClientSocketHandle> handle);
 
   // Tries to close idle sockets in a higher level socket pool as long as this
   // this pool is stalled.

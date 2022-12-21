@@ -10,6 +10,7 @@
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "base/base_export.h"
@@ -72,7 +73,14 @@ class BASE_EXPORT RawPtrAsanBoundArgTracker {
   template <typename T, typename RawPtrType>
   void AddArg(const internal::UnretainedWrapper<T, RawPtrType>& arg) {
     if constexpr (raw_ptr_traits::IsSupportedType<T>::value) {
-      Add(reinterpret_cast<uintptr_t>(arg.get()));
+      auto inner = arg.get();
+      // The argument may unwrap into a raw_ptr or a T* depending if it is
+      // allowed to dangle.
+      if constexpr (IsRawPtrV<decltype(inner)>) {
+        Add(reinterpret_cast<uintptr_t>(inner.get()));
+      } else {
+        Add(reinterpret_cast<uintptr_t>(inner));
+      }
     }
   }
 

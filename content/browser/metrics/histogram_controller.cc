@@ -60,7 +60,7 @@ void HistogramController::Unregister(const HistogramSubscriber* subscriber) {
 
 template <class T>
 void HistogramController::NotifyChildDied(T* host) {
-  RemoveChildHistogramFetcherInterface(host);
+  RemoveChildHistogramFetcherInterface(MayBeDangling<T>(host));
 }
 
 template void HistogramController::NotifyChildDied(RenderProcessHost* host);
@@ -126,7 +126,8 @@ HistogramController::GetChildHistogramFetcherInterface(T* host) {
 }
 
 template <class T>
-void HistogramController::RemoveChildHistogramFetcherInterface(T* host) {
+void HistogramController::RemoveChildHistogramFetcherInterface(
+    MayBeDangling<T> host) {
   GetChildHistogramFetcherMap<T>().erase(host);
 }
 

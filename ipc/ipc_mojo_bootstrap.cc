@@ -888,7 +888,7 @@ class ChannelAssociatedGroupController
 
   // `endpoint` might be a dangling ptr and must be checked before dereference.
   void NotifyEndpointOfErrorOnEndpointThread(mojo::InterfaceId id,
-                                             Endpoint* endpoint) {
+                                             MayBeDangling<Endpoint> endpoint) {
     base::AutoLock locker(lock_);
     auto iter = endpoints_.find(id);
     if (iter == endpoints_.end() || iter->second.get() != endpoint)

@@ -219,7 +219,7 @@ class ExtensionsToolbarContainer
 
   // Set |widget|'s anchor (to the corresponding extension) and then show it.
   // Posted from |ShowWidgetForExtension|.
-  void AnchorAndShowWidgetImmediately(views::Widget* widget);
+  void AnchorAndShowWidgetImmediately(MayBeDangling<views::Widget> widget);
 
   // Creates toolbar actions and icons corresponding to the model. This is only
   // called in the constructor or when the model initializes and should not be

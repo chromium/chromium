@@ -1397,7 +1397,8 @@ void TransportClientSocketPool::InvokeUserCallbackLater(
                                 base::UnsafeDangling(handle)));
 }
 
-void TransportClientSocketPool::InvokeUserCallback(ClientSocketHandle* handle) {
+void TransportClientSocketPool::InvokeUserCallback(
+    MayBeDangling<ClientSocketHandle> handle) {
   auto it = pending_callback_map_.find(handle);
 
   // Exit if the request has already been cancelled.

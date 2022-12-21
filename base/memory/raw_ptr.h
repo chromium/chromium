@@ -91,12 +91,19 @@ namespace base {
 // change behavior depending on RawPtrType.
 struct RawPtrMayDangle {};
 struct RawPtrBanDanglingIfSupported {};
+struct RawPtrMayDangleUntriaged {};
 
 struct RawPtrNoOp {};
 
 namespace raw_ptr_traits {
 template <typename T>
 struct RawPtrTypeToImpl;
+
+template <typename RawPtrType>
+inline constexpr bool IsValidRawPtrTypeV =
+    std::is_same_v<RawPtrType, RawPtrMayDangle> ||
+    std::is_same_v<RawPtrType, RawPtrBanDanglingIfSupported> ||
+    std::is_same_v<RawPtrType, RawPtrMayDangleUntriaged>;
 }
 
 namespace internal {
@@ -1112,6 +1119,20 @@ struct RawPtrTypeToImpl<RawPtrMayDangle> {
 };
 
 template <>
+struct RawPtrTypeToImpl<RawPtrMayDangleUntriaged> {
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/true>;
+#elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  using Impl = internal::AsanBackupRefPtrImpl;
+#elif defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+  using Impl = internal::MTECheckedPtrImpl<
+      internal::MTECheckedPtrImplPartitionAllocSupport>;
+#else
+  using Impl = internal::RawPtrNoOpImpl;
+#endif
+};
+
+template <>
 struct RawPtrTypeToImpl<RawPtrBanDanglingIfSupported> {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/false>;
@@ -1633,6 +1654,23 @@ struct IsRawPtr<raw_ptr<T, I>> : std::true_type {};
 template <typename T>
 inline constexpr bool IsRawPtrV = IsRawPtr<T>::value;
 
+template <typename T>
+inline constexpr bool IsRawPtrMayDangleV = false;
+
+template <typename T>
+inline constexpr bool IsRawPtrMayDangleV<raw_ptr<T, RawPtrMayDangle>> = true;
+
+template <typename T>
+inline constexpr bool IsRawPtrDanglingUntriagedV = false;
+
+template <typename T>
+inline constexpr bool
+    IsRawPtrDanglingUntriagedV<raw_ptr<T, RawPtrMayDangleUntriaged>> = true;
+
+template <typename T>
+inline constexpr bool IsRawPtrAllowedToDangleV =
+    IsRawPtrMayDangleV<T> || IsRawPtrDanglingUntriagedV<T>;
+
 // Template helpers for working with T* or raw_ptr<T>.
 template <typename T>
 struct IsPointer : std::false_type {};
@@ -1682,7 +1720,14 @@ using DisableDanglingPtrDetection = base::RawPtrMayDangle;
 // See `docs/dangling_ptr.md`
 // Annotates known dangling raw_ptr. Those haven't been triaged yet. All the
 // occurrences are meant to be removed. See https://crbug.com/1291138.
-using DanglingUntriaged = DisableDanglingPtrDetection;
+using DanglingUntriaged = base::RawPtrMayDangleUntriaged;
+
+// This type is to be used in callbacks arguments when it is known that they
+// might receive dangling pointers. In any other cases, please use one of:
+// - raw_ptr<T, DanglingUntriaged>
+// - raw_ptr<T, DisableDanglingPtrDetection>
+template <typename T>
+using MayBeDangling = base::raw_ptr<T, base::RawPtrMayDangle>;
 
 // The following template parameters are only meaningful when `raw_ptr`
 // is `MTECheckedPtr` (never the case unless a particular GN arg is set

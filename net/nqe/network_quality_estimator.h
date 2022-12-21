@@ -478,11 +478,11 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // Notifies |observer| of the current effective connection type if |observer|
   // is still registered as an observer.
   void NotifyEffectiveConnectionTypeObserverIfPresent(
-      EffectiveConnectionTypeObserver* observer) const;
+      MayBeDangling<EffectiveConnectionTypeObserver> observer) const;
 
   // Notifies |observer| of the current count of peer to peer connections.
   void NotifyPeerToPeerConnectionsCountObserverIfPresent(
-      PeerToPeerConnectionsCountObserver* observer) const;
+      MayBeDangling<PeerToPeerConnectionsCountObserver> observer) const;
 
   // Records NQE accuracy metrics. |measuring_duration| should belong to the
   // vector returned by AccuracyRecordingIntervals().

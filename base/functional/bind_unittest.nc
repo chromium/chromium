@@ -563,6 +563,24 @@ void WontCompile() {
   BindOnce(&PassDangerousByMutableRef, std::ref(dangerous));
 }
 
+#elif defined(NCTEST_UNSAFE_DANLING_WITHOUT_RAW_PTR_RECEIVER) // [r"fatal error: static assertion failed.+?base::UnsafeDangling\(\) pointers must be received by functors with MayBeDangling<T> as parameter\."]
+
+void PassIntPtr(int *ptr) {}
+
+void WontCompile() {
+  int val;
+  BindOnce(&PassIntPtr, UnsafeDangling(&val));
+}
+
+#elif defined(NCTEST_UNSAFE_DANLING_UNTRIAGED_WITH_RAW_PTR_RECEIVER) // [r"base::Bind\(\) target functor has a parameter of type raw_ptr<T>."]
+
+void PassIntRawPtr(raw_ptr<int> ptr) {}
+
+void WontCompile() {
+  int val;
+  BindOnce(&PassIntRawPtr, UnsafeDanglingUntriaged(&val));
+}
+
 #endif
 
 }  // namespace base

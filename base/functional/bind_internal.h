@@ -92,11 +92,34 @@ struct FunctorTraits;
 
 template <typename T, typename RawPtrType = base::RawPtrBanDanglingIfSupported>
 class UnretainedWrapper {
+  // `Unretained()` arguments often dangle by design (common design pattern
+  // consists of managing objects' lifetimes inside the callbacks themselves
+  // using stateful information), so in case RawPtrType requests to ban dangling
+  // pointers, use DisableDanglingPtrDetection instead. We will still check for
+  // dangling pointers at invocation for those.
+  // Otherwise, if RawPtrType is either DisableDanglingPtrDetection or
+  // DanglingUntriaged, we keep the flag as is to store the raw pointer. That
+  // way, we can differentiate between the two at invocation time as well.
+  using StoredRawPtrType = std::conditional_t<
+      std::is_same_v<RawPtrType, RawPtrBanDanglingIfSupported>,
+      DisableDanglingPtrDetection,
+      RawPtrType>;
+
+  // We want the getter type to be the exact same as both the stored type and
+  // the argument type, to avoid having raw_ptr<T> -> T* -> raw_ptr<T> round
+  // trip, which would trigger the raw_ptr error detector if T* was dangling.
+  using GetPtrType =
+      std::conditional_t<std::is_same_v<RawPtrType, RawPtrMayDangle>,
+                         raw_ptr<T, StoredRawPtrType>,
+                         T*>;
+
  public:
   static_assert(TypeSupportsUnretainedV<T>,
                 "Callback cannot capture an unprotected C++ pointer since this "
                 "Type is annotated with DISALLOW_UNRETAINED(). Please see "
                 "base/functional/disallow_unretained.h for alternatives.");
+  static_assert(raw_ptr_traits::IsValidRawPtrTypeV<RawPtrType>,
+                "RawPtrType must be a valid raw_ptr type.");
 
   explicit UnretainedWrapper(T* o) : ptr_(o) {}
 
@@ -120,7 +143,7 @@ class UnretainedWrapper {
   template <typename U>
   static void ReportIfDangling(U* ptr) {}
 
-  T* get() const {
+  GetPtrType get() const {
     // `ptr_` is either a `raw_ptr` (if `T` is a supported type) or a regular
     // C++ pointer otherwise.
     ReportIfDangling(ptr_);
@@ -149,7 +172,7 @@ class UnretainedWrapper {
   // before invoking the bound functor (unless stated other wise, see
   // `UnsafeDangling()`), when retrieving the pointer value via `get()` above.
   using ImplType = std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
-                                      raw_ptr<T, DisableDanglingPtrDetection>,
+                                      raw_ptr<T, StoredRawPtrType>,
                                       T*>;
 #endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   ImplType ptr_;
@@ -1298,6 +1321,15 @@ struct IsOnceCallback : std::false_type {};
 template <typename Signature>
 struct IsOnceCallback<OnceCallback<Signature>> : std::true_type {};
 
+// IsUnretainedMayDangle is true if |T| is of type UnretainedWrapper<T,
+// base::RawPtrMayDangle>
+template <typename T>
+inline constexpr bool IsUnretainedMayDangle = false;
+
+template <typename T>
+inline constexpr bool
+    IsUnretainedMayDangle<UnretainedWrapper<T, base::RawPtrMayDangle>> = true;
+
 // Helpers to make error messages slightly more readable.
 template <int i>
 struct BindArgument {
@@ -1344,12 +1376,41 @@ struct BindArgument {
           !std::is_constructible_v<StorageType, std::decay_t<BoundAsType>&&>;
     };
   };
+
+  template <typename FunctionParamType>
+  struct ToParamWithType {
+    template <typename StorageType>
+    struct StoredAs {
+      template <bool is_method>
+      // true if we are handling `this` parameter.
+      static constexpr bool kParamIsThisPointer = is_method && i == 0;
+      // true if the current parameter is of type `raw_ptr<T, RawPtrMayDangle>`
+      // (or `MayBeDangling<T>`).
+      static constexpr bool kParamIsDanglingRawPtr =
+          IsRawPtrMayDangleV<FunctionParamType>;
+      // true if the bound parameter is of type `UnretainedWrapper<T,
+      // RawPtrMayDangle>`.
+      static constexpr bool kBoundPtrMayDangle =
+          IsUnretainedMayDangle<StorageType>;
+      // true if the receiver argument **must** be of type `MayBeDangling<T>`.
+      static constexpr bool kMayBeDanglingMustBeUsed =
+          kBoundPtrMayDangle && kParamIsDanglingRawPtr;
+      // true iff:
+      // - bound parameter is of type `UnretainedWrapper<T, RawPtrMayDangle>`
+      // - the receiving argument is of type `MayBeDangling<T>`
+      template <bool is_method>
+      static constexpr bool kMayBeDanglingPtrPassedCorrectly =
+          kParamIsThisPointer<is_method> ||
+          kBoundPtrMayDangle == kParamIsDanglingRawPtr;
+    };
+  };
 };
 
 // Helper to assert that parameter |i| of type |Arg| can be bound, which means:
 // - |Arg| can be retained internally as |Storage|.
 // - |Arg| can be forwarded as |Unwrapped| to |Param|.
 template <int i,
+          bool is_method,
           typename Arg,
           typename Storage,
           typename Unwrapped,
@@ -1397,12 +1458,6 @@ struct AssertConstructible {
       BindArgument<i>::template ForwardedAs<Unwrapped>::
           template ToParamWithType<Param>::kCanBeForwardedToBoundFunctor,
       "Type mismatch between bound argument and bound functor's parameter.");
-  static_assert(
-      BindArgument<i>::template ForwardedAs<
-          Unwrapped>::template ToParamWithType<Param>::kNotARawPtr,
-      "base::Bind() target functor has a parameter of type raw_ptr<T>."
-      "raw_ptr<T> should not be used for function parameters, please use T* or "
-      "T& instead.");
 
   static_assert(BindArgument<i>::template BoundAs<Arg>::template StoredAs<
                     Storage>::kMoveOnlyTypeMustUseStdMove,
@@ -1414,25 +1469,56 @@ struct AssertConstructible {
       BindArgument<i>::template BoundAs<Arg>::template StoredAs<
           Storage>::kBindArgumentCanBeCaptured,
       "Cannot capture argument: is the argument copyable or movable?");
+
+  // We forbid callbacks to use raw_ptr as a parameter. However, we allow
+  // MayBeDangling<T> iff the callback argument was created using
+  // `base::UnsafeDangling`.
+  static_assert(
+      BindArgument<i>::template ForwardedAs<
+          Unwrapped>::template ToParamWithType<Param>::kNotARawPtr ||
+          BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
+              Storage>::kMayBeDanglingMustBeUsed,
+      "base::Bind() target functor has a parameter of type raw_ptr<T>."
+      "raw_ptr<T> should not be used for function parameters, please use T* or "
+      "T& instead.");
+
+  // A bound functor must take a dangling pointer argument (e.g. bound using the
+  // UnsafeDangling helper) as a MayBeDangling<T>, to make it clear that the
+  // pointee's lifetime must be externally validated before using it. For
+  // methods, exempt a bound receiver (i.e. the this pointer) as it is not
+  // passed as a regular function argument.
+  static_assert(
+      BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
+          Storage>::template kMayBeDanglingPtrPassedCorrectly<is_method>,
+      "base::UnsafeDangling() pointers must be received by functors with "
+      "MayBeDangling<T> as parameter.");
 };
 
 // Takes three same-length TypeLists, and applies AssertConstructible for each
 // triples.
-template <typename Index,
+template <bool is_method,
+          typename Index,
           typename Args,
           typename UnwrappedTypeList,
           typename ParamsList>
 struct AssertBindArgsValidity;
 
-template <size_t... Ns,
+template <bool is_method,
+          size_t... Ns,
           typename... Args,
           typename... Unwrapped,
           typename... Params>
-struct AssertBindArgsValidity<std::index_sequence<Ns...>,
+struct AssertBindArgsValidity<is_method,
+                              std::index_sequence<Ns...>,
                               TypeList<Args...>,
                               TypeList<Unwrapped...>,
                               TypeList<Params...>>
-    : AssertConstructible<Ns, Args, std::decay_t<Args>, Unwrapped, Params>... {
+    : AssertConstructible<Ns,
+                          is_method,
+                          Args,
+                          std::decay_t<Args>,
+                          Unwrapped,
+                          Params>... {
   static constexpr bool ok = true;
 };
 
@@ -1462,7 +1548,8 @@ decltype(auto) BindImpl(Functor&& functor, Args&&... args) {
       "Capturing lambdas and stateful lambdas are intentionally not supported. "
       "Please use base::Bind{Once,Repeating} directly to bind arguments.");
   static_assert(
-      AssertBindArgsValidity<std::make_index_sequence<Helper::num_bounds>,
+      AssertBindArgsValidity<FunctorTraits::is_method,
+                             std::make_index_sequence<Helper::num_bounds>,
                              BoundArgsList, UnwrappedArgsList,
                              BoundParamsList>::ok,
       "The bound args need to be convertible to the target params.");
@@ -1586,7 +1673,7 @@ struct BindUnwrapTraits {
 
 template <typename T, typename ImplType>
 struct BindUnwrapTraits<internal::UnretainedWrapper<T, ImplType>> {
-  static T* Unwrap(const internal::UnretainedWrapper<T, ImplType>& o) {
+  static auto Unwrap(const internal::UnretainedWrapper<T, ImplType>& o) {
     return o.get();
   }
 };

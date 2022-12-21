@@ -698,7 +698,7 @@ void InProgressDownloadManager::AddInProgressDownloadForTest(
 void InProgressDownloadManager::CancelUrlDownload(
     UrlDownloadHandlerID downloader,
     bool user_cancel) {
-  OnUrlDownloadStopped(downloader);
+  OnUrlDownloadStopped(reinterpret_cast<UrlDownloadHandlerID>(downloader));
 }
 
 }  // namespace download

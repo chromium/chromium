@@ -211,7 +211,7 @@ FileDescriptorWatcher::Controller::~Controller() {
           // is deleted before it gets to run.
           delete watcher;
         },
-        Unretained(watcher_));
+        UnsafeDanglingUntriaged(watcher_));
     io_thread_task_runner_->PostTask(FROM_HERE, std::move(delete_task));
     ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
     on_watcher_destroyed_.Wait();

@@ -1881,6 +1881,10 @@ bool RefCheckFn(const int& p) {
   return true;
 }
 
+bool MayBeDanglingCheckFn(MayBeDangling<int> p) {
+  return p != nullptr;
+}
+
 class ClassWithWeakPtr {
  public:
   ClassWithWeakPtr() = default;
@@ -1901,9 +1905,19 @@ TEST_F(BindUnretainedDanglingTest, UnretainedNoDanglingPtr) {
 
 TEST_F(BindUnretainedDanglingTest, UnsafeDanglingPtr) {
   raw_ptr<int> p = Alloc<int>(3);
-  auto callback = base::BindOnce(PtrCheckFn, base::UnsafeDangling(p));
+  auto callback = base::BindOnce(MayBeDanglingCheckFn, base::UnsafeDangling(p));
   Free(p);
   EXPECT_EQ(std::move(callback).Run(), true);
+}
+
+TEST_F(BindUnretainedDanglingTest, UnsafeDanglingPtrNoRawPtrReceiver) {
+  std::unique_ptr<ClassWithWeakPtr> r = std::make_unique<ClassWithWeakPtr>();
+  int val = 0;
+  auto callback =
+      base::BindOnce(&ClassWithWeakPtr::RawPtrArg,
+                     base::UnsafeDangling(r.get()), base::Unretained(&val));
+  std::move(callback).Run();
+  EXPECT_EQ(val, 123);
 }
 
 TEST_F(BindUnretainedDanglingTest, UnsafeDanglingUntriagedPtr) {
