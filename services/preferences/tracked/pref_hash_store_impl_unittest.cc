@@ -109,14 +109,16 @@ TEST_F(PrefHashStoreImplTest, AtomicHashStoreAndCheck) {
     EXPECT_EQ(ValueState::UNCHANGED, transaction->CheckValue("path1", NULL));
     EXPECT_EQ(ValueState::CHANGED, transaction->CheckValue("path1", &string_2));
 
-    base::DictionaryValue dict;
-    dict.GetDict().Set("a", "foo");
-    dict.GetDict().Set("d", "bad");
-    dict.GetDict().Set("b", "bar");
-    dict.GetDict().Set("c", "baz");
+    base::Value dict_val(base::Value::Type::DICT);
+    base::Value::Dict& dict = dict_val.GetDict();
+    dict.Set("a", "foo");
+    dict.Set("d", "bad");
+    dict.Set("b", "bar");
+    dict.Set("c", "baz");
 
-    transaction->StoreHash("path1", &dict);
-    EXPECT_EQ(ValueState::UNCHANGED, transaction->CheckValue("path1", &dict));
+    transaction->StoreHash("path1", &dict_val);
+    EXPECT_EQ(ValueState::UNCHANGED,
+              transaction->CheckValue("path1", &dict_val));
   }
 
   ASSERT_FALSE(GetHashStoreContents()->GetSuperMac().empty());
