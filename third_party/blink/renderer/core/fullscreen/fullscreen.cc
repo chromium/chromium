@@ -372,6 +372,15 @@ bool FullscreenIsSupported(const Document& document) {
   if (!frame)
     return false;
 
+  // Fullscreen is not currently supported in document pip.
+  // TODO(crbug.com/1402928): Figure out the correct way of handling fullscreen
+  // element in picture-in-picture window.
+  if (RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled() &&
+      frame->LocalFrameRoot().DomWindow() &&
+      frame->LocalFrameRoot().DomWindow()->IsPictureInPictureWindow()) {
+    return false;
+  }
+
   // Fullscreen is supported if there is no previously-established user
   // preference, security risk, or platform limitation.
   return !document.GetSettings() ||
