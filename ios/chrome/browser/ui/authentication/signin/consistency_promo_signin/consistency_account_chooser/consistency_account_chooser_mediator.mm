@@ -61,8 +61,8 @@
   }
   id<SystemIdentity> previousSelectedIdentity = _selectedIdentity;
   _selectedIdentity = identity;
-  [self identityChanged:previousSelectedIdentity];
-  [self identityChanged:_selectedIdentity];
+  [self identityUpdated:previousSelectedIdentity];
+  [self identityUpdated:_selectedIdentity];
 }
 
 #pragma mark - Private
@@ -111,7 +111,7 @@
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityChanged:(id<SystemIdentity>)identity {
+- (void)identityUpdated:(id<SystemIdentity>)identity {
   IdentityItemConfigurator* configurator = nil;
   for (IdentityItemConfigurator* cursor in self
            .sortedIdentityItemConfigurators) {

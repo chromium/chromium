@@ -133,7 +133,7 @@
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityChanged:(id<SystemIdentity>)identity {
+- (void)identityUpdated:(id<SystemIdentity>)identity {
   id<SystemIdentity> primaryIdentity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if ([primaryIdentity isEqual:identity]) {

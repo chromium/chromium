@@ -279,7 +279,7 @@ void ChromeAccountManagerService::OnIdentityListChanged(
 
 void ChromeAccountManagerService::OnProfileUpdate(id<SystemIdentity> identity) {
   for (auto& observer : observer_list_)
-    observer.OnIdentityChanged(identity);
+    observer.OnIdentityUpdated(identity);
 }
 
 void ChromeAccountManagerService::OnChromeIdentityServiceWillBeDestroyed() {

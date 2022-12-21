@@ -5,8 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_CHROME_ACCOUNT_MANAGER_SERVICE_H_
 #define IOS_CHROME_BROWSER_SIGNIN_CHROME_ACCOUNT_MANAGER_SERVICE_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,20 +29,12 @@ class ChromeAccountManagerService : public KeyedService,
 {
  public:
   // Observer handling events related to the ChromeAccountManagerService.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     Observer() {}
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
-    virtual ~Observer() {}
-
-    // Handles access token refresh failed events.
-    // `identity` is the the identity for which the access token refresh failed.
-    // `user_info` is the user info dictionary in the original notification. It
-    // should not be accessed directly but via helper methods (like
-    // ChromeIdentityService::IsInvalidGrantError).
-    virtual void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
-                                            NSDictionary* user_info) {}
+    ~Observer() override {}
 
     // Handles identity list changed events.
     // If `need_user_approval` is true, the user need to approve the new account
@@ -50,7 +43,15 @@ class ChromeAccountManagerService : public KeyedService,
     virtual void OnIdentityListChanged(bool need_user_approval) {}
 
     // Called when the identity is updated.
-    virtual void OnIdentityChanged(id<SystemIdentity> identity) {}
+    virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
+
+    // Handles access token refresh failed events.
+    // `identity` is the the identity for which the access token refresh failed.
+    // `user_info` is the user info dictionary in the original notification. It
+    // should not be accessed directly but via helper methods (like
+    // ChromeIdentityService::IsInvalidGrantError).
+    virtual void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
+                                            NSDictionary* user_info) {}
 
     // Called when ChromeIdentityService is replaced. The value of
     // `IsServiceSupported()` might have been updated.
@@ -94,7 +95,7 @@ class ChromeAccountManagerService : public KeyedService,
 
   // Returns the identity avatar. If the avatar is not available, it is fetched
   // in background (a notification will be received when it will be available),
-  // and the default avatar is returned (see `Observer::OnIdentityChanged()`).
+  // and the default avatar is returned (see `Observer::OnIdentityUpdated()`).
   UIImage* GetIdentityAvatarWithIdentity(id<SystemIdentity> identity,
                                          IdentityAvatarSize size);
 
@@ -136,7 +137,7 @@ class ChromeAccountManagerService : public KeyedService,
   // Used to listen pref change.
   PrefChangeRegistrar registrar_;
 
-  base::ObserverList<Observer, true>::Unchecked observer_list_;
+  base::ObserverList<Observer, true> observer_list_;
   base::ScopedObservation<ios::ChromeIdentityService,
                           ios::ChromeIdentityService::Observer>
       identity_service_observation_{this};

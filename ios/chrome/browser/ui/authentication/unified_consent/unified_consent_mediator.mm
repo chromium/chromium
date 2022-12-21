@@ -138,7 +138,7 @@
   }
 }
 
-- (void)identityChanged:(id<SystemIdentity>)identity {
+- (void)identityUpdated:(id<SystemIdentity>)identity {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateViewController];
   }

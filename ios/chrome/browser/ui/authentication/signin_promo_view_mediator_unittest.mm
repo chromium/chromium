@@ -501,7 +501,7 @@ TEST_F(SigninPromoViewMediatorTest,
   id<ChromeAccountManagerServiceObserver> accountManagerServiceObserver =
       (id<ChromeAccountManagerServiceObserver>)mediator_;
   // Simulates an identity update.
-  [accountManagerServiceObserver identityChanged:identity_];
+  [accountManagerServiceObserver identityUpdated:identity_];
   // Spins the run loop to wait for the profile image update.
   EXPECT_TRUE(ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
                   ->WaitForServiceCallbacksToComplete());

@@ -100,7 +100,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark ChromeAccountManagerServiceObserver
 
-- (void)identityChanged:(id<SystemIdentity>)identity {
+- (void)identityUpdated:(id<SystemIdentity>)identity {
   TableViewIdentityItem* item =
       base::mac::ObjCCastStrict<TableViewIdentityItem>(
           [_identityMap objectForKey:identity.gaiaID]);

@@ -2149,7 +2149,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityChanged:(id<SystemIdentity>)identity {
+- (void)identityUpdated:(id<SystemIdentity>)identity {
   if ([_identity isEqual:identity]) {
     [self reloadAccountCell];
   }

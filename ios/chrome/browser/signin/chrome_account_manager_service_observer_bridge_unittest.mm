@@ -55,9 +55,9 @@ TEST_F(ChromeAccountManagerServiceObserverBridgeTest, onIdentityListChanged) {
 }
 
 // Tests that `onIdentityChanged` is forwarded.
-TEST_F(ChromeAccountManagerServiceObserverBridgeTest, onIdentityChanged) {
+TEST_F(ChromeAccountManagerServiceObserverBridgeTest, onIdentityUpdated) {
   id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
 
-  OCMExpect([test_observer_ identityChanged:identity]);
-  observer_bridge_->OnIdentityChanged(identity);
+  OCMExpect([test_observer_ identityUpdated:identity]);
+  observer_bridge_->OnIdentityUpdated(identity);
 }

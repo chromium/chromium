@@ -26,12 +26,14 @@ ChromeAccountManagerServiceObserverBridge::
 
 void ChromeAccountManagerServiceObserverBridge::OnIdentityListChanged(
     bool need_user_approval) {
-  if ([observer_ respondsToSelector:@selector(identityListChanged)])
+  if ([observer_ respondsToSelector:@selector(identityListChanged)]) {
     [observer_ identityListChanged];
+  }
 }
 
-void ChromeAccountManagerServiceObserverBridge::OnIdentityChanged(
+void ChromeAccountManagerServiceObserverBridge::OnIdentityUpdated(
     id<SystemIdentity> identity) {
-  if ([observer_ respondsToSelector:@selector(identityChanged:)])
-    [observer_ identityChanged:identity];
+  if ([observer_ respondsToSelector:@selector(identityUpdated:)]) {
+    [observer_ identityUpdated:identity];
+  }
 }

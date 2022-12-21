@@ -819,7 +819,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   }
 }
 
-- (void)identityChanged:(id<SystemIdentity>)identity {
+- (void)identityUpdated:(id<SystemIdentity>)identity {
   [self sendConsumerNotificationWithIdentityChanged:NO];
 }
 

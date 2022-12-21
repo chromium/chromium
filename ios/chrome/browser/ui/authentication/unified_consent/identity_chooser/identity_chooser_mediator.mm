@@ -131,7 +131,7 @@
   }
 }
 
-- (void)identityChanged:(id<SystemIdentity>)identity {
+- (void)identityUpdated:(id<SystemIdentity>)identity {
   TableViewIdentityItem* item =
       [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaID];
   [self updateTableViewIdentityItem:item withIdentity:identity];
