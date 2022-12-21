@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Paketas netinkamas: „<ph name="ERROR_CODE" />“.</translation>
 <translation id="1140871961407805696">Nukreiptas į aplinką</translation>
 <translation id="1196338895211115272">Nepavyko eksportuoti privačiojo rakto.</translation>
+<translation id="132960226125594336">Nepavyko įkelti turinio scenarijaus failo <ph name="RELATIVE_PATH" />, nes jis viršytų didžiausią scenarijaus dydį arba plėtinio didžiausią bendrą turinio scenarijaus dydį.</translation>
 <translation id="1420684932347524586">Oi! Nepavyko sukurti atsitiktinio RSA privačiojo rakto.</translation>
 <translation id="1445572445564823378">Dėl šio plėtinio lėčiau veikia „<ph name="PRODUCT_NAME" />“. Kad atkurtumėte „<ph name="PRODUCT_NAME" />“ našumą, turite jo neleisti.</translation>
 <translation id="1468038450257740950">„WebGL“ nepalaikomas.</translation>

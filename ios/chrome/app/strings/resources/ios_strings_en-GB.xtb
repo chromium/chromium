@@ -48,6 +48,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1265739287306757398">Learn How</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Selected</translation>
+<translation id="1279024913354609713">Don't allow</translation>
 <translation id="1281818060020671000">Manage data</translation>
 <translation id="1282311502488501110">Don't sign in</translation>
 <translation id="1283524564873030414">Last 24 hours</translation>
@@ -788,6 +789,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6710079714193676716">Managed by your organisation. Some features may be unavailable. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Can't Export Passwords</translation>
+<translation id="6732087373923685049">camera</translation>
 <translation id="6748108480210050150">From</translation>
 <translation id="6760509555861141183">Return to recent tab</translation>
 <translation id="6762812039470893796">Deselect all</translation>
@@ -1041,6 +1043,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8764015330924122850">Unfollow <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">Invalid URL</translation>
 <translation id="8787968206789828143">Search on web</translation>
+<translation id="8792626944327216835">microphone</translation>
 <translation id="8803639129939845298">Secure</translation>
 <translation id="8806823403540278281">Your organisation requires you to browse privately. Tabs aren't saved in Incognito mode.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>

@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Nieudane żądania UDP</translation>
 <translation id="1947737735496445907">Wydrukowano</translation>
 <translation id="1951012854035635156">Asystent</translation>
+<translation id="1962550982027027473">Domyślny punkt APN jest wymagany</translation>
 <translation id="1977994649430373166">Zdjęcie profilowe Google</translation>
 <translation id="1979103255016296513">Zaległa zmiana hasła</translation>
 <translation id="1999615961760456652">Portal przechwytujący</translation>
@@ -635,6 +636,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6791471867139427246">kolor podświetlenia klawiatury</translation>
 <translation id="680983167891198932">Klucz</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
+<translation id="6838167112108853532">Tego punktu APN nie można wyłączyć ani usunąć. Upewnij się, że dołączone punkty APN, które były włączone, zostały wyłączone lub usunięte.</translation>
 <translation id="6853312040151791195">Szybkość rozładowywania</translation>
 <translation id="6889786074662672253">Podczas ponownego uruchamiania nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Ponowne uruchamianie potrwa kilka minut – w tym czasie urządzenie zewnętrzne może nie działać.</translation>
 <translation id="6905724422583748843">Powrót do aplikacji <ph name="PAGE_NAME" /></translation>
@@ -724,6 +726,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7769672763586021400">Identyfikator modelu</translation>
 <translation id="7778717409420828014">Twoją opinię sprawdzi nasz zespół, bo opinie pomagają nami ulepszać Chromebooka. Ze względu na dużą liczbę zgłoszeń nie będziemy mogli wysłać odpowiedzi.</translation>
 <translation id="7784116172884276937">Nie skonfigurowano serwerów DNS</translation>
+<translation id="7791543448312431591">Dodaj</translation>
 <translation id="779591286616261875">Wyślij nowy raport</translation>
 <translation id="7799817062559422778">Tryb jasny</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>

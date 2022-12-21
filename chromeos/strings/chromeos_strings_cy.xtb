@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Methiannau ceisiadau UDP</translation>
 <translation id="1947737735496445907">Argraffwyd</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1962550982027027473">Mae angen APN diofyn</translation>
 <translation id="1977994649430373166">Llun proffil Google</translation>
 <translation id="1979103255016296513">Rydych yn hwyr yn newid eich cyfrinair</translation>
 <translation id="1999615961760456652">Porth Caeth</translation>
@@ -635,6 +636,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="6791471867139427246">lliw golau bysellfwrdd</translation>
 <translation id="680983167891198932">Allwedd</translation>
 <translation id="6816797338148849397">Mae gwybodaeth sy'n ymwneud â'ch dewis ar gael. Defnyddiwch y fysell Saeth i fyny i gael mynediad.</translation>
+<translation id="6838167112108853532">Methu ag analluogi na thynnu'r APN hwn. Sicrhewch fod APN atodedig sydd wedi'u galluogi wedi'u hanalluogi neu eu tynnu.</translation>
 <translation id="6853312040151791195">Cyfradd dadwefru</translation>
 <translation id="6889786074662672253">Tra ailgychwyn, peidiwch â dadblygio'r ddyfais allanol hon na diffodd eich cyfrifiadur. Gallwch leihau'r ffenestr hon. Gall hyn gymryd ychydig funudau ac mae'n bosib na fydd eich dyfais allanol yn gweithio yn ystod y cyfnod hwn.</translation>
 <translation id="6905724422583748843">Nôl i <ph name="PAGE_NAME" /></translation>
@@ -724,6 +726,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="7769672763586021400">Rhif adnabod y Model</translation>
 <translation id="7778717409420828014">Mae eich adborth yn ein helpu i wella profiad Chromebook a bydd yn cael ei adolygu gan ein tîm. Oherwydd y nifer fawr o adroddiadau, ni fyddwn yn gallu anfon ateb.</translation>
 <translation id="7784116172884276937">Nid oes unrhyw weinyddion DNS wedi'u gosod</translation>
+<translation id="7791543448312431591">Ychwanegu</translation>
 <translation id="779591286616261875">Anfon adroddiad newydd</translation>
 <translation id="7799817062559422778">Modd golau</translation>
 <translation id="780301667611848630">Dim diolch</translation>

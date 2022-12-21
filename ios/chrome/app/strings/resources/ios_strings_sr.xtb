@@ -48,6 +48,7 @@
 <translation id="1265739287306757398">Сазнајте како</translation>
 <translation id="1272079795634619415">Заустави</translation>
 <translation id="1275718070701477396">Изабрано је</translation>
+<translation id="1279024913354609713">Не дозволи</translation>
 <translation id="1281818060020671000">Управљајте подацима</translation>
 <translation id="1282311502488501110">Не пријављуј ме</translation>
 <translation id="1283524564873030414">Последња 24 сата</translation>
@@ -148,6 +149,7 @@
 <translation id="2074131957428911366">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Опозови</translation>
 <translation id="2080769225927880590">Пријавите се помоћу важећег налога</translation>
+<translation id="2090878303988764231">Пријавите се да бисте управљали садржајем који видите</translation>
 <translation id="2103075008456228677">Отвори history.google.com</translation>
 <translation id="21133533946938348">Закачи картицу</translation>
 <translation id="2116625576999540962">Број премештених ставки је <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -787,6 +789,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6710079714193676716">Овим управља организација. Неке функције можда нису доступне. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Извоз лозинки није успео</translation>
+<translation id="6732087373923685049">камера</translation>
 <translation id="6748108480210050150">Од</translation>
 <translation id="6760509555861141183">Назад на недавну картицу</translation>
 <translation id="6762812039470893796">Поништи избор свих ставки</translation>
@@ -973,6 +976,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8197543752516192074">Преведи страницу</translation>
 <translation id="8205564605687841303">Откажи</translation>
 <translation id="8206354486702514201">Ово подешавање примењује администратор.</translation>
+<translation id="821809831108207540">Да бисте персонализовали Discover фид и Chrome, пријавите се и укључите синхронизацију.</translation>
 <translation id="8225985093977202398">Кеширане слике и фајлови</translation>
 <translation id="8237382152611443140">Отворите подешавања за аутоматско попуњавање лозинке</translation>
 <translation id="8261506727792406068">Избриши</translation>
@@ -1039,6 +1043,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8764015330924122850">Опозовите праћење: <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">Неважећи URL</translation>
 <translation id="8787968206789828143">Претражите на вебу</translation>
+<translation id="8792626944327216835">микрофон</translation>
 <translation id="8803639129939845298">Безбедан</translation>
 <translation id="8806823403540278281">Организација захтева да прегледате приватно. Картице се не чувају у режиму без архивирања.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -1094,6 +1099,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9157836665414082580">Спречи дијалоге</translation>
 <translation id="9177438225260810839">Претражите отворене картице</translation>
 <translation id="9188680907066685419">Одјавите се са налога којим се управља</translation>
+<translation id="9193147658040604536">Превуците овде да бисте закачили картицу</translation>
 <translation id="9200875785104711666">пре <ph name="TIME" /> д</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Претражите картице…</translation>

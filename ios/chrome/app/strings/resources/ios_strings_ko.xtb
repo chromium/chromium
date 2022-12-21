@@ -48,6 +48,7 @@
 <translation id="1265739287306757398">자세히 알아보기</translation>
 <translation id="1272079795634619415">중지</translation>
 <translation id="1275718070701477396">선택됨</translation>
+<translation id="1279024913354609713">허용 안함</translation>
 <translation id="1281818060020671000">데이터 관리</translation>
 <translation id="1282311502488501110">로그인 안함</translation>
 <translation id="1283524564873030414">지난 24시간</translation>
@@ -148,6 +149,7 @@
 <translation id="2074131957428911366">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2080769225927880590">유효한 계정으로 로그인</translation>
+<translation id="2090878303988764231">표시되는 콘텐츠를 관리하려면 로그인하세요</translation>
 <translation id="2103075008456228677">history.google.com 열기</translation>
 <translation id="21133533946938348">탭 고정</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 이동함</translation>
@@ -787,6 +789,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6710079714193676716">조직에서 관리합니다. 일부 기능은 제공되지 않을 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">비밀번호를 내보낼 수 없음</translation>
+<translation id="6732087373923685049">카메라</translation>
 <translation id="6748108480210050150">올린이</translation>
 <translation id="6760509555861141183">최근 탭으로 돌아가기</translation>
 <translation id="6762812039470893796">모두 선택 해제</translation>
@@ -973,6 +976,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8197543752516192074">페이지 번역</translation>
 <translation id="8205564605687841303">취소</translation>
 <translation id="8206354486702514201">이 설정은 관리자가 강제로 설정해 놓았습니다.</translation>
+<translation id="821809831108207540">디스커버 피드와 Chrome을 맞춤설정하려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="8225985093977202398">캐시된 이미지 및 파일</translation>
 <translation id="8237382152611443140">AutoFill Passwords(비밀번호 자동 완성) 설정을 엽니다.</translation>
 <translation id="8261506727792406068">삭제</translation>
@@ -1039,6 +1043,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> 팔로우 해제</translation>
 <translation id="8775144690796719618">URL이 올바르지 않습니다.</translation>
 <translation id="8787968206789828143">웹에서 검색</translation>
+<translation id="8792626944327216835">마이크</translation>
 <translation id="8803639129939845298">안전함</translation>
 <translation id="8806823403540278281">조직에서 비공개로 탐색할 것을 요구합니다. 시크릿 모드에서는 탭이 저장되지 않습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

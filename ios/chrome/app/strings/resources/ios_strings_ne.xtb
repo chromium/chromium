@@ -48,6 +48,7 @@
 <translation id="1265739287306757398">कसरी गर्ने भनी सिक्नुहोस्</translation>
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
 <translation id="1275718070701477396">चयन गरिएको</translation>
+<translation id="1279024913354609713">अनुमति नदिनुहोस्</translation>
 <translation id="1281818060020671000">डेटा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1282311502488501110">साइन इन नगर्नुहोस्</translation>
 <translation id="1283524564873030414">पछिल्ला २४ घन्टा</translation>
@@ -148,6 +149,7 @@
 <translation id="2074131957428911366">तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" /> मा गई सिंक गर्ने कुरा छनौट गर्न सक्नुहुन्छ।</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2080769225927880590">कुनै वैध खातामार्फत साइन इन गर्नुहोस्</translation>
+<translation id="2090878303988764231">तपाईंले देख्ने सामग्री व्यवस्थापन गर्न साइन इन गर्नुहोस्</translation>
 <translation id="2103075008456228677">history.google.com लाई खोल्नुहोस्</translation>
 <translation id="21133533946938348">ट्याबलाई पिन गर्नुहोस्</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> वस्तुहरू सारियो</translation>
@@ -787,6 +789,7 @@
 <translation id="6710079714193676716">तपाईंको सङ्गठनले यो ब्राउजर व्यवस्थापन गर्छ। केही सुविधाहरू उपलब्ध नहुन सक्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google एपहरू</translation>
 <translation id="6730682669179532099">पासवर्डहरू निर्यात गर्न सकिएन</translation>
+<translation id="6732087373923685049">क्यामेरा</translation>
 <translation id="6748108480210050150">बाट</translation>
 <translation id="6760509555861141183">भर्खरै खोलिएको ट्याबमा जानुहोस्</translation>
 <translation id="6762812039470893796">सबै ट्याबको चयन रद्द गर्नुहोस्</translation>
@@ -973,6 +976,7 @@
 <translation id="8197543752516192074">पृष्ठ अनुवाद गर्नुहोस्</translation>
 <translation id="8205564605687841303">रद्द गर्नुहोस्</translation>
 <translation id="8206354486702514201">यो सेटिङ तपाईंको प्रशासकद्वारा जोड दिएको छ।</translation>
+<translation id="821809831108207540">तपाईं आफ्नो Discover फिड र Chrome पर्सनलाइज गर्न चाहनुहुन्छ भने साइन इन गर्नुहोस् र सिंक गर्ने सुविधा अन गर्नुहोस्।</translation>
 <translation id="8225985093977202398">क्यास गरिएका छवि र फाइलहरू</translation>
 <translation id="8237382152611443140">पासवर्ड स्वतः भर्ने सुविधासम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
@@ -1039,6 +1043,7 @@
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> लाई अनफलो गर्नुहोस्</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>
 <translation id="8787968206789828143">वेबमा खोज्नुहोस्</translation>
+<translation id="8792626944327216835">माइक्रोफोन</translation>
 <translation id="8803639129939845298">सुरक्षित छ</translation>
 <translation id="8806823403540278281">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले गोप्य रूपमा ब्राउज गर्नु पर्ने हुन्छ। इन्कोग्निटो मोडमा ब्राउज गर्दा ट्याबहरू सुरक्षित गरिँदैनन्।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>

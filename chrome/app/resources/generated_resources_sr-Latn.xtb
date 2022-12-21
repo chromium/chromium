@@ -1303,6 +1303,8 @@
 <translation id="2165102982098084499">Повезали сте ове уређаје скенирањем QR кода.</translation>
 <translation id="2165177462441582039">Изаберите колико дуго свака ставка треба да остане истакнута</translation>
 <translation id="2166369534954157698">На врх брда врба мрда</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Овај уређај (серијски број: <ph name="SERIAL_NUMBER" />) је закључан.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Управљање Chrome уређајима помоћу услуге <ph name="MS_AD_NAME" /> више није подржано. Да бисте се пријавили, користите други уређај или се обратите администратору уређаја.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Ипак ме пријави</translation>
 <translation id="2173302385160625112">Проверите интернет везу</translation>
 <translation id="2173801458090845390">Додајте ИД захтева на овај уређај</translation>
@@ -3492,6 +3494,7 @@
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> претрага</translation>
 <translation id="4187424053537113647">Подешава се <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Истицање фокуса тастатуре</translation>
+<translation id="4193575319002689239">Прикажи картице</translation>
 <translation id="4193836101014293726">Брисање овог профила није успело</translation>
 <translation id="419427585139779713">Уносите један по један слог</translation>
 <translation id="4194570336751258953">Омогући функцију „додирни-за-клик“</translation>
@@ -4625,6 +4628,7 @@
 <translation id="5268373933383932086">Ваша страница, ваш начин</translation>
 <translation id="5269977353971873915">Штампање није успело</translation>
 <translation id="5273806377963980154">Измените URL сајта</translation>
+<translation id="5273966423195882879">Боја је заснована на теми</translation>
 <translation id="5275084684151588738">Кориснички речници</translation>
 <translation id="5275100789567222478">Укључи само када је батерија на <ph name="PERCENT" />% или нижа</translation>
 <translation id="5275338516105640560">Дугме сачуване групе картица</translation>
@@ -6224,6 +6228,7 @@
 <translation id="6770042910635026163">Сајтови које посећујете, а који дефинишу ваша интересовања</translation>
 <translation id="6770602306803890733">Побољшава безбедност за вас и друге на вебу</translation>
 <translation id="6771503742377376720">Јесте ауторитет за издавање сертификата</translation>
+<translation id="6774710250118040929">Додајте нову лозинку</translation>
 <translation id="6775163072363532304">Доступни уређаји се приказују овде.</translation>
 <translation id="677646486571529447">Додај белешку</translation>
 <translation id="6776729248872343918">Омогући Брзо упаривање</translation>

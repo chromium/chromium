@@ -1390,7 +1390,7 @@
 <translation id="2251218783371366160">Открыть в программе просмотра по умолчанию</translation>
 <translation id="225163402930830576">Обновить сети</translation>
 <translation id="2251809247798634662">Новое окно в режиме инкогнито</translation>
-<translation id="2252017960592955005">Защита просмотра (бета-версия)</translation>
+<translation id="2252017960592955005">Защита от чужих взглядов (бета-версия)</translation>
 <translation id="225240747099314620">Использовать идентификаторы для защищенного контента (может потребоваться перезагрузка компьютера)</translation>
 <translation id="2255077166240162850">Устройство уже заблокировано в другом домене или режиме.</translation>
 <translation id="2255317897038918278">Штамп времени Microsoft</translation>
@@ -3495,6 +3495,7 @@
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Поиск</translation>
 <translation id="4187424053537113647">Настройка <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Выделение объектов, выбранных с помощью клавиатуры</translation>
+<translation id="4193575319002689239">Показать подсказки</translation>
 <translation id="4193836101014293726">Невозможно удалить профиль</translation>
 <translation id="419427585139779713">Вводить по слогам</translation>
 <translation id="4194570336751258953">Включить нажатие от прикосновения</translation>
@@ -7991,7 +7992,7 @@
 <translation id="8380266723152870797">Название окна</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8382677870544805359">Чтобы использовать корпоративные функции, нужно сбросить настройки этого устройства.</translation>
-<translation id="8382715499079447151">Безопасный просмотр</translation>
+<translation id="8382715499079447151">Защита от чужих взглядов</translation>
 <translation id="8382913212082956454">Копировать &amp;адрес электронной почты</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Следуйте приведенным ниже инструкциям.
     <ph name="BEGIN_LIST" />

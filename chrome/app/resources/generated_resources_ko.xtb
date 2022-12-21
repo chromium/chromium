@@ -1316,6 +1316,8 @@
 <translation id="2165102982098084499">QR 코드를 스캔하여 기기를 연결했습니다.</translation>
 <translation id="2165177462441582039">강조표시가 각 항목에 유지되는 시간 선택</translation>
 <translation id="2166369534954157698">재빠른 갈색 여우가 게으른 개를 뛰어넘습니다.</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />이 기기(일련번호: <ph name="SERIAL_NUMBER" />)는 잠긴 상태입니다.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" />에서 Chrome 기기 관리는 더 이상 지원되지 않습니다. 로그인하려면 다른 기기를 사용하거나 기기 관리자에게 문의하세요.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">로그인</translation>
 <translation id="2173302385160625112">인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2173801458090845390">이 기기에 요청 ID 추가</translation>
@@ -3507,6 +3509,7 @@
 <translation id="4186749321808907788"><ph name="QUERY_NAME" />: <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 검색</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> 설정 중…</translation>
 <translation id="4190828427319282529">키보드 포커스 강조표시</translation>
+<translation id="4193575319002689239">카드 보기</translation>
 <translation id="4193836101014293726">프로필을 삭제할 수 없습니다</translation>
 <translation id="419427585139779713">한 번에 한 음절 입력</translation>
 <translation id="4194570336751258953">탭하여 클릭 사용</translation>
@@ -6236,6 +6239,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6770042910635026163">방문한 사이트 중 관심분야를 정의하는 사이트</translation>
 <translation id="6770602306803890733">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6771503742377376720">인증 기관임</translation>
+<translation id="6774710250118040929">새 비밀번호 추가</translation>
 <translation id="6775163072363532304">사용 가능한 기기가 여기에 표시됩니다.</translation>
 <translation id="677646486571529447">메모 추가</translation>
 <translation id="6776729248872343918">빠른 페어링 사용</translation>

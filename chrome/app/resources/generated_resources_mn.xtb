@@ -1312,6 +1312,8 @@
 <translation id="2165102982098084499">Та эдгээр төхөөрөмжийг QR кодыг скан хийж холбосон.</translation>
 <translation id="2165177462441582039">Тодруулгыг зүйл бүрд хэр удаан байлгахыг сонгоно уу</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Энэ төхөөрөмж (SN: <ph name="SERIAL_NUMBER" />) түгжигдсэн байна.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" /> <ph name="MS_AD_NAME" />-тай Chrome төхөөрөмжийн менежерийг дэмжихээ больсон. Нэвтрэхийн тулд өөр төхөөрөмж ашиглах эсвэл төхөөрөмжийнхөө администратортай холбогдоно уу.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Ямар ч байсан нэвтэр</translation>
 <translation id="2173302385160625112">Интернэт холболтоо шалгана уу</translation>
 <translation id="2173801458090845390">Энэ төхөөрөмжид шаардлагын ID-г нэмэх</translation>
@@ -3503,6 +3505,7 @@
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Хайх</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" />-г тохируулж байна...</translation>
 <translation id="4190828427319282529">Гарын фокусыг тодруулах</translation>
+<translation id="4193575319002689239">Картыг харуулах</translation>
 <translation id="4193836101014293726">Энэ профайлыг устгах боломжгүй</translation>
 <translation id="419427585139779713">Нэг удаад нэг үе оруулах</translation>
 <translation id="4194570336751258953">Tap-to-click үйлдлийг идэвхжүүлэх</translation>

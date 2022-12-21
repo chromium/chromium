@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Erori de solicitare UDP</translation>
 <translation id="1947737735496445907">Printată</translation>
 <translation id="1951012854035635156">Asistent</translation>
+<translation id="1962550982027027473">Este necesar un APN prestabilit</translation>
 <translation id="1977994649430373166">Fotografie de profil Google</translation>
 <translation id="1979103255016296513">Ai depășit timpul limită pentru schimbarea parolei</translation>
 <translation id="1999615961760456652">Portal captiv</translation>
@@ -635,6 +636,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6791471867139427246">culoarea iluminării tastaturii</translation>
 <translation id="680983167891198932">Cheie</translation>
 <translation id="6816797338148849397">Sunt disponibile informații despre selecția ta. Folosește tasta săgeată în sus pentru a le accesa.</translation>
+<translation id="6838167112108853532">Nu se poate dezactiva sau elimina acest APN. Asigură-te că APN-urile atașate sunt dezactivate sau eliminate.</translation>
 <translation id="6853312040151791195">Rata de descărcare</translation>
 <translation id="6889786074662672253">Nu deconecta dispozitivul extern și nu închide computerul în timpul repornirii. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
 <translation id="6905724422583748843">Înapoi la <ph name="PAGE_NAME" /></translation>
@@ -724,6 +726,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
 <translation id="7778717409420828014">Feedbackul tău ne ajută să îmbunătățim experiența Chromebookurilor și va fi examinat de echipa noastră. Din cauza numărului mare de rapoarte, nu vom putea să trimitem un răspuns.</translation>
 <translation id="7784116172884276937">Nu există servere DNS configurate</translation>
+<translation id="7791543448312431591">Adaugă</translation>
 <translation id="779591286616261875">Trimite un raport nou</translation>
 <translation id="7799817062559422778">Modul Luminos</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>

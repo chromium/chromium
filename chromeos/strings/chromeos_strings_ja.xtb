@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">UDP リクエストに失敗しました</translation>
 <translation id="1947737735496445907">印刷完了</translation>
 <translation id="1951012854035635156">アシスタント</translation>
+<translation id="1962550982027027473">デフォルトの APN は必須です</translation>
 <translation id="1977994649430373166">Google のプロフィール写真</translation>
 <translation id="1979103255016296513">パスワードの変更期限を過ぎました</translation>
 <translation id="1999615961760456652">キャプティブ ポータル</translation>
@@ -635,6 +636,7 @@
 <translation id="6791471867139427246">キーボード ライトの色</translation>
 <translation id="680983167891198932">キー</translation>
 <translation id="6816797338148849397">選択した項目に関連する情報があります。上矢印キーでアクセスできます。</translation>
+<translation id="6838167112108853532">この APN を無効化または削除できません。有効になっている接続済みの APN を無効化または削除しようとしていることを確認します。</translation>
 <translation id="6853312040151791195">放電率</translation>
 <translation id="6889786074662672253">再起動中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。この処理には数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> に戻る</translation>
@@ -724,6 +726,7 @@
 <translation id="7769672763586021400">モデル ID</translation>
 <translation id="7778717409420828014">お送りいただいたフィードバックは、担当チームで確認し、Chromebook の操作性向上に役立てさせていただきます。寄せられる報告の数が多いため、個別に返信できないことをご了承ください。</translation>
 <translation id="7784116172884276937">DNS サーバーが設定されていません</translation>
+<translation id="7791543448312431591">追加</translation>
 <translation id="779591286616261875">新しい報告を送信</translation>
 <translation id="7799817062559422778">ライトモード</translation>
 <translation id="780301667611848630">いいえ</translation>

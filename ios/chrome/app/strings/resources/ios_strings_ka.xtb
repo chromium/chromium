@@ -48,6 +48,7 @@
 <translation id="1265739287306757398">შეიტყვეთ როგორ</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
 <translation id="1275718070701477396">შერჩეული</translation>
+<translation id="1279024913354609713">აკრძალვა</translation>
 <translation id="1281818060020671000">მონაცემთა მართვა</translation>
 <translation id="1282311502488501110">არ მსურს შესვლა</translation>
 <translation id="1283524564873030414">ბოლო 24 საათი</translation>
@@ -788,6 +789,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6710079714193676716">მართავს თქვენი ორგანიზაცია. შესაძლოა, ზოგიერთი ფუნქცია მიუწვდომელი იყოს. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">პაროლების ექსპორტი ვერ მოხერხდა</translation>
+<translation id="6732087373923685049">კამერა</translation>
 <translation id="6748108480210050150">გამომგზავნი</translation>
 <translation id="6760509555861141183">ბოლოდროინდელ ჩანართზე დაბრუნება</translation>
 <translation id="6762812039470893796">ყველა არჩევანის გაუქმება</translation>
@@ -1041,6 +1043,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" />-ისთვის თვალის მიდევნების გაუქმება</translation>
 <translation id="8775144690796719618">URL არასწორია</translation>
 <translation id="8787968206789828143">მოიძიეთ ვებში</translation>
+<translation id="8792626944327216835">მიკროფონი</translation>
 <translation id="8803639129939845298">დაცული</translation>
 <translation id="8806823403540278281">თქვენი ორგანიზაცია მოითხოვს, რომ ვები კონფიდენციალურ რეჟიმში დაათვალიეროთ. ჩანართები არ ინახება ინკოგნიტო რეჟიმში.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -1096,6 +1099,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="9157836665414082580">დიალოგების შეჩერება</translation>
 <translation id="9177438225260810839">ღია ჩანართებში ძიება</translation>
 <translation id="9188680907066685419">მართული ანგარიშიდან გასვლა</translation>
+<translation id="9193147658040604536">ჩანართის ჩასამაგრებლად ჩავლებით გადმოიტანეთ აქ</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> დღის წინ</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">ჩანართებში ძიება…</translation>

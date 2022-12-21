@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Balík je neplatný: „<ph name="ERROR_CODE" />“</translation>
 <translation id="1140871961407805696">Nasmerovaný na okolie</translation>
 <translation id="1196338895211115272">Exportovanie súkromného kľúča zlyhalo.</translation>
+<translation id="132960226125594336">Pre skript obsahu sa nepodarilo načítať súbor <ph name="RELATIVE_PATH" />, pretože by presiahol maximálnu veľkosť skriptu alebo maximálnu celkovú veľkosť skriptu obsahu.</translation>
 <translation id="1420684932347524586">Generovanie náhodného súkromného kľúča RSA žiaľ zlyhalo.</translation>
 <translation id="1445572445564823378">Toto rozšírenie spomaľuje prehliadač <ph name="PRODUCT_NAME" />. Ak chcete obnoviť výkonnosť prehliadača <ph name="PRODUCT_NAME" />, zakážte ho.</translation>
 <translation id="1468038450257740950">Rozhranie WebGL nie je podporované.</translation>

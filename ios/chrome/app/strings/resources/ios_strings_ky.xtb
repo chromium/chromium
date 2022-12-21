@@ -48,6 +48,7 @@
 <translation id="1265739287306757398">Үйрөнүп алыңыз</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
 <translation id="1275718070701477396">Тандалган</translation>
+<translation id="1279024913354609713">Тыюу салуу</translation>
 <translation id="1281818060020671000">Дайын-даректерди башкаруу</translation>
 <translation id="1282311502488501110">Кирбейм</translation>
 <translation id="1283524564873030414">Акыркы 24 саат</translation>
@@ -148,6 +149,7 @@
 <translation id="2074131957428911366">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK" />жөндөөлөрдөн<ph name="END_LINK" /> ар дайым тандай аласыз.</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="2080769225927880590">Жарактуу аккаунтуңуз менен кириңиз</translation>
+<translation id="2090878303988764231">Көрсөтүлгөн контентти тескөө үчүн аккаунтка кириңиз</translation>
 <translation id="2103075008456228677">history.google.com сайтын ачуу</translation>
 <translation id="21133533946938348">Өтмөк кадоо</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> нерсе жылдырылды</translation>
@@ -787,6 +789,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6710079714193676716">Уюмуңуз тарабынан башкарылат. Айрым функциялар иштебеши мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Колднмлр</translation>
 <translation id="6730682669179532099">Сырсөздөр экспорттолбой жатат</translation>
+<translation id="6732087373923685049">камера</translation>
 <translation id="6748108480210050150">Кимден</translation>
 <translation id="6760509555861141183">Акыркы өтмөккө өтүү</translation>
 <translation id="6762812039470893796">Баарын тандоодон чыгаруу</translation>
@@ -973,6 +976,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8197543752516192074">Баракты которуу</translation>
 <translation id="8205564605687841303">Жокко чыгаруу</translation>
 <translation id="8206354486702514201">Бул жөндөөнү администраторуңуз күчүнө киргизген.</translation>
+<translation id="821809831108207540">Сунуштар түрмөгүн жана Chrome'ду жекелештирүү үчүн аккаунтка кирип, шайкештирүүнү күйгүзүңүз.</translation>
 <translation id="8225985093977202398">Кештелген сүрөттөр жана файлдар</translation>
 <translation id="8237382152611443140">Сырсөздөрдү автотолтуруу жөндөөлөрүн ачыңыз</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
@@ -1039,6 +1043,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> сайтына жазылууну токтотуу</translation>
 <translation id="8775144690796719618">Жараксыз URL</translation>
 <translation id="8787968206789828143">Интернетте издөө</translation>
+<translation id="8792626944327216835">микрофон</translation>
 <translation id="8803639129939845298">Корголгон</translation>
 <translation id="8806823403540278281">Уюмуңуз жекече серептөөнү талап кылат. Жашыруун режимде өтмөктөр сакталбайт.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>

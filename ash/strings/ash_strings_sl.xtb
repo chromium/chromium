@@ -37,6 +37,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1175572348579024023">Drseče pomikanje</translation>
 <translation id="1178581264944972037">Prekini</translation>
 <translation id="1181037720776840403">Odstrani</translation>
+<translation id="1182225749592316782">To omogoča dostop za vse aplikacije in spletna mesta, ki imajo dovoljenje za kamero in mikrofon.</translation>
 <translation id="1183863904939664422">Ta predlog me ne zanima</translation>
 <translation id="118437560755358292">Vnesite geslo ali kodo PIN zaradi večje varnosti</translation>
 <translation id="118532027333893379">Dotaknite se kjer koli za posnetek celotnega zaslona.</translation>
@@ -462,6 +463,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3542066395059568317">Prikazana bodo priporočila, da boste lahko nadaljevali tam, kjer ste končali. Priporočila lahko odstranite s klikom desnega gumba.</translation>
 <translation id="3552189655002856821">Povezava Wi-Fi je izklopljena.</translation>
 <translation id="3554637740840164787">Element <ph name="ITEM_TITLE" /> je bil pripet</translation>
+<translation id="3558768885091059911">Želite vklopiti dostop do kamere in mikrofona?</translation>
 <translation id="3560174576767922131">Posnemi videoposnetek</translation>
 <translation id="3563775809269155755">Omogočanje dostopne točke</translation>
 <translation id="3566240529365775567">Pravkar odprto</translation>
@@ -871,6 +873,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5763928712329149804">Shelf Party je izklopljen.</translation>
 <translation id="576453121877257266">Nočna svetloba je vklopljena.</translation>
 <translation id="5769373120130404283">Zaslon za zasebnost</translation>
+<translation id="5773950591113557721">To omogoča dostop za aplikacijo <ph name="APP_NAME" /> ter vse aplikacije in spletna mesta z dovoljenji za kamero in mikrofon.</translation>
 <translation id="5777841717266010279">Želite ustaviti skupno rabo zaslona?</translation>
 <translation id="5779721926447984944">Pripete datoteke</translation>
 <translation id="5788127256798019331">Datoteke iz Googla Play</translation>
@@ -1058,6 +1061,7 @@ Nova namestitev</translation>
 <translation id="6787595647772650851">Obnovi zadnjo sejo</translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6801878137098616817">Nedavno urejeno</translation>
+<translation id="6802687695197837794">To omogoča dostop za aplikaciji <ph name="APP1_NAME" /> in <ph name="APP2_NAME" /> ter vse aplikacije in spletna mesta z dovoljenjem za kamero in mikrofon.</translation>
 <translation id="6803622936009808957">Zaslonov ni bilo mogoče zrcaliti, ker ni bilo najdene nobene podprte ločljivosti. Uporabljeno je razširjeno namizje.</translation>
 <translation id="6812232930908427253">Namizja ni bilo mogoče shraniti. Preveč je oken ali zavihkov.</translation>
 <translation id="6818242057446442178">Nazaj po besedo</translation>
@@ -1090,6 +1094,7 @@ Nova namestitev</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6972754398087986839">Začnite</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">Vklopi dostop</translation>
 <translation id="6981982820502123353">Dostopnost</translation>
 <translation id="698231206551913481">Vse datoteke in lokalni podatki, povezani s tem uporabnikom, bodo trajno izbrisani, ko odstranite uporabnika.</translation>
 <translation id="7005239792648594238">Če želite začeti, odprite aplikacijo</translation>

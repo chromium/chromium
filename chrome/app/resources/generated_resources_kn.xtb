@@ -1264,6 +1264,7 @@
 <translation id="212862741129535676">ಆವರ್ತನ ಸ್ಥಿತಿಯ ನೆಲೆಸುವಿಕೆಯ ಪ್ರತಿಶತ</translation>
 <translation id="212876957201860463">ನಿಮ್ಮ ಸೆಲ್ಯುಲಾರ್ ಸಾಧನವನ್ನು ಸೆಟಪ್ ಮಾಡಲು ಸಿದ್ಧಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ ಏಕೆಂದರೆ ಇದನ್ನು "<ph name="IMPORT_NAME" />" ರಿಂದ ಅನುಮತಿಸಲಾಗುತ್ತಿಲ್ಲ</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="21354425047973905">ಪಿನ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="2135456203358955318">ಡಾಕ್‌‌ ಮಾಡಿರುವ ವರ್ಧಕ</translation>
 <translation id="2135787500304447609">&amp;ಪುನರಾರಂಭಿಸು</translation>
@@ -2846,11 +2847,13 @@
 <translation id="3584169441612580296">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಫೋಟೋಗಳು, ಸಂಗೀತ, ಮತ್ತು ಇತರ ಮಾಧ್ಯಮವನ್ನು ಓದಿ ಮತ್ತು ಬದಲಿಸಿ</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> ಆ್ಯಪ್‌ಗೆ OneDrive ಲಭ್ಯವಿರಬೇಕು.</translation>
 <translation id="3586806079541226322">ಈ ಫೈಲ್ ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="3587438013689771191">ಇದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">ಎಲ್ಲ</translation>
 <translation id="3588790464166520201">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="3589766037099229847">ಅಸುರಕ್ಷಿತ ವಿಷಯವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3590194807845837023">ಪ್ರೊಫೈಲ್ ಅನ್‌ಲಾಕ್ ಮಾಡು ಹಾಗೂ ಮರುಪ್ರಾರಂಭಿಸು</translation>
 <translation id="3590295622232282437">ನಿರ್ವಹಿಸಲಾದ ಸೆಷನ್‌ಗೆ ಪ್ರವೇಶಿಸಲಾಗುತ್ತಿದೆ.</translation>
+<translation id="3591057288287063271"><ph name="FILE_NAME" /> ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="3592260987370335752">&amp;ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="3593152357631900254">ಅಸ್ಪಷ್ಟ -ಪಿನ್‌ಯಿನ್‌ ಮೋಡ್‌ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3593965109698325041">ಪ್ರಮಾಣಪತ್ರ ಹೆಸರು ನಿರ್ಬಂಧಗಳು</translation>
@@ -3502,6 +3505,7 @@
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> ಹುಡುಕಾಟ</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> ಅನ್ನು ಹೊಂದಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4190828427319282529">ಕೀಬೋರ್ಡ್ ಫೋಕಸ್ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
+<translation id="4193575319002689239">ಕಾರ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4193836101014293726">ಈ ಪ್ರೊಫೈಲ್ ಅಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="419427585139779713">ಉಚ್ಛಾರಣೆಯನ್ನು ಏಕಕಾಲದಲ್ಲಿ ಇನ್‌ಪುಟ್ ಮಾಡಿ</translation>
 <translation id="4194570336751258953">ಕ್ಲಿಕ್ ಮಾಡಲು ಟ್ಯಾಪ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -3753,6 +3757,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ನೀವು ಬದಲಾಯಿಸವುದು ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ಸ್ವಯಂಚಾಲಿತ ವರದಿಗಳನ್ನು ಕಳುಹಿಸಲು ChromeOS ಸಾಧನಗಳಿಗೆ ಅನುಮತಿಸುವುದರಿಂದ, ChromeOS ನಲ್ಲಿ ಏನನ್ನು ಸರಿಪಡಿಸಬೇಕು ಮತ್ತು ಸುಧಾರಿಸಬೇಕು ಎಂಬುದನ್ನು ಆದ್ಯತೆಯ ಪ್ರಕಾರ ನಿರ್ವಹಿಸಲು ನಮಗೆ ಸಹಾಯವಾಗುತ್ತದೆ. Chrome OS ಯಾವಾಗ ಕ್ರ್ಯಾಶ್ ಆಗುತ್ತದೆ, ಯಾವ ಫೀಚರ್‌ಗಳನ್ನು ಬಳಸಲಾಗಿದೆ ಮತ್ತು ಸಾಮಾನ್ಯವಾಗಿ ಎಷ್ಟು ಮೆಮೊರಿಯನ್ನು ಬಳಸಲಾಗಿದೆ ಎನ್ನುವಂತಹ ವಿಷಯಗಳು ಈ ವರದಿಗಳಲ್ಲಿ ಸೇರಿರಬಹುದು.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ನಿಮ್ಮ Chrome ಸಾಧನದ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ, ನೀವು ಈ ವರದಿಗಳನ್ನು ಅನುಮತಿಸಲು ಪ್ರಾರಂಭಿಸಬಹುದು ಅಥವಾ ನಿಲ್ಲಿಸಬಹುದು. ನೀವು ಡೊಮೇನ್ ನಿರ್ವಾಹಕರಾಗಿದ್ದರೆ, ನಿರ್ವಾಹಕರ ಕನ್ಸೋಲ್‌ನಲ್ಲಿ ನೀವು ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಬಹುದು.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040"><ph name="FILE_NAME" /> ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="4426464032773610160">ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ USB ಅಥವಾ ಬ್ಲೂಟೂತ್ ಸ್ವಿಚ್ ನಿಮ್ಮ Chromebook ಗೆ ಕನೆಕ್ಟ್ ಆಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. ನೀವು ಕೀಬೋರ್ಡ್ ಕೀಗಳನ್ನು ಸಹ ಬಳಸಬಹುದು.</translation>
 <translation id="4426508677408162512">ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="4427306783828095590">ಫಿಶಿಂಗ್ ಮತ್ತು ಮಾಲ್‌ವೇರ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲು ವರ್ಧಿತ ಸುರಕ್ಷತೆ ಹೆಚ್ಚಿನ ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
@@ -4023,6 +4028,7 @@
 <translation id="4666472247053585787">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ಅಧಿಸೂಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="4666911709726371538">ಇನ್ನಷ್ಟು ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="4667027203988048332">ಯಾವ ಡೇಟಾವನ್ನು ಬಳಸಲಾಗುತ್ತದೆ:</translation>
+<translation id="4672759829555593783">ಈಗ <ph name="FILE_NAME" /> ತೆರೆದಿದೆ</translation>
 <translation id="46733273239502219">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಆಫ್‌ಲೈನ್ ಡೇಟಾವನ್ನು ಸಹ ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="4673442866648850031">ಸ್ಟೈಲಸ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿದಾಗ ಸ್ಟೈಲಸ್ ಪರಿಕರಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4675065861091108046"><ph name="ORIGIN" /> ನಲ್ಲಿ ಎಲ್ಲಾ ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮತಿಸಲು ನೀವು ಈ ಹಿಂದೆ ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ</translation>
@@ -5916,6 +5922,7 @@
 <translation id="6465841119675156448">ಇಂಟರ್ನೆಟ್ ಇಲ್ಲದೆಯೇ</translation>
 <translation id="6466258437571594570">ಸೈಟ್‌ಗಳು ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸುವಂತೆ ಕೇಳುವಾಗ ನಿಮಗೆ ಅಡಚಣೆ ಉಂಟುಮಾಡದಂತೆ ಅವುಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6466988389784393586">ಎಲ್ಲ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು &amp;ತೆರೆಯಿರಿ</translation>
+<translation id="6467230443178397264"><ph name="FILE_NAME" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="6467304607960172345">ಫುಲ್‌ಸ್ಕ್ರೀನ್ ವೀಡಿಯೊಗಳನ್ನು ಆಪ್ಟಿಮೈಸ್‌ ಮಾಡಿ</translation>
 <translation id="6467377768028664108">ನಂತರ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಹೀಗೆ ಮಾಡಬಹುದು:</translation>
 <translation id="6468485451923838994">ಫಾಂಟ್‍ಗಳು</translation>
@@ -6666,6 +6673,7 @@
 <translation id="7149893636342594995">ಕಳೆದ 24 ಗಂಟೆಗಳು</translation>
 <translation id="7152478047064750137">ಈ ವಿಸ್ತರಣೆಗೆ ಯಾವುದೇ ವಿಶೇಷ ಅನುಮತಿಗಳ ಅಗತ್ಯವಿಲ್ಲ</translation>
 <translation id="7154130902455071009">ನಿಮ್ಮ ಪ್ರಾರಂಭ ಪುಟವನ್ನು ಇದಕ್ಕೆ ಬದಲಾಯಿಸಿ: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">ಚಿತ್ರವನ್ನು ಪಠ್ಯಕ್ಕೆ ಪರಿವರ್ತಿಸಿ</translation>
 <translation id="7159953856712257647">ಡಿಫಾಲ್ಟ್ ಆಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7160182524506337403">ನೀವು ಈಗ ನಿಮ್ಮ ಫೋನ್‌ನ ಅಧಿಸೂಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
 <translation id="7163202347044721291">ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಕೋಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -6927,6 +6935,7 @@
 <translation id="7412226954991670867">GPU ಸ್ಮರಣೆ</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">ಸೆಟಪ್ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
+<translation id="7416091793702109803"><ph name="FILE_NAME" /> ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="7416263748877373774">ಸೇವಾ ನಿಯಮಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಪರಿಶೀಲಿಸಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7416362041876611053">ಅಪರಿಚಿತ ನೆಟ್‌ವರ್ಕ್ ದೋಷ.</translation>
 <translation id="741906494724992817">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗೆ ಯಾವುದೇ ವಿಶೇಷ ಅನುಮತಿಗಳು ಬೇಕಿಲ್ಲ.</translation>

@@ -37,6 +37,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1175572348579024023">Scrollen</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
+<translation id="1182225749592316782">Hiermee geef je toegang aan alle apps en websites met camera- en microfoonrechten</translation>
 <translation id="1183863904939664422">Niet geïnteresseerd in deze suggestie</translation>
 <translation id="118437560755358292">Geef je wachtwoord of pincode op voor extra beveiliging</translation>
 <translation id="118532027333893379">Tik ergens om het hele scherm vast te leggen</translation>
@@ -462,6 +463,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3542066395059568317">Je ziet aanbevelingen zodat je verder kunt gaan waar je gebleven was. Klik met de rechtermuisknop om aanbevelingen te verwijderen.</translation>
 <translation id="3552189655002856821">Wifi staat uit</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> is vastgezet</translation>
+<translation id="3558768885091059911">Camera- en microfoontoegang aanzetten?</translation>
 <translation id="3560174576767922131">Video opnemen</translation>
 <translation id="3563775809269155755">Hotspot aanzetten</translation>
 <translation id="3566240529365775567">Zojuist geopend</translation>
@@ -871,6 +873,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5763928712329149804">Shelf Party staat uit.</translation>
 <translation id="576453121877257266">Nachtverlichting staat aan.</translation>
 <translation id="5769373120130404283">Privacyscherm</translation>
+<translation id="5773950591113557721">Hiermee geef je toegang aan <ph name="APP_NAME" /> en alle apps en websites met camera- en microfoonrechten</translation>
 <translation id="5777841717266010279">Stoppen met scherm delen?</translation>
 <translation id="5779721926447984944">Vastgezette bestanden</translation>
 <translation id="5788127256798019331">Play-bestanden</translation>
@@ -1058,6 +1061,7 @@ Nieuwe installatie</translation>
 <translation id="6787595647772650851">Laatste sessie herstellen</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6801878137098616817">Recent bewerkt</translation>
+<translation id="6802687695197837794">Hiermee geef je toegang aan <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met camera- en microfoonrechten</translation>
 <translation id="6803622936009808957">Kan schermen niet spiegelen, omdat er geen ondersteunde resoluties zijn gevonden. Het uitgebreide bureaublad is geactiveerd.</translation>
 <translation id="6812232930908427253">Kan bureau niet opslaan. Te veel vensters of tabbladen.</translation>
 <translation id="6818242057446442178">Terug per woord</translation>
@@ -1090,6 +1094,7 @@ Nieuwe installatie</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Aan de slag</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">Toegang aanzetten</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="698231206551913481">Alle bestanden en lokale gegevens die zijn gekoppeld aan deze gebruiker, worden definitief verwijderd zodra deze gebruiker is verwijderd.</translation>
 <translation id="7005239792648594238">Open een app om aan de slag te gaan</translation>

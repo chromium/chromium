@@ -37,6 +37,7 @@
 <translation id="1175572348579024023">스크롤</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
+<translation id="1182225749592316782">카메라 및 마이크 권한이 있는 모든 앱과 웹사이트에 액세스 권한이 부여됩니다.</translation>
 <translation id="1183863904939664422">제안 무시</translation>
 <translation id="118437560755358292">보안 강화를 위해 비밀번호 또는 PIN 입력</translation>
 <translation id="118532027333893379">전체 화면을 캡처하려면 아무 곳이나 탭하세요.</translation>
@@ -333,7 +334,7 @@
 <translation id="2819276065543622893">지금 로그아웃됩니다.</translation>
 <translation id="2822551631199737692">카메라 사용 중</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다.</translation>
-<translation id="2825619548187458965">임시보관함</translation>
+<translation id="2825619548187458965">실행기</translation>
 <translation id="2831035692318564937">일출까지 켜기</translation>
 <translation id="2834813915651407382">최근에 열림</translation>
 <translation id="2841907151129139818">태블릿 모드로 전환됨</translation>
@@ -462,6 +463,7 @@
 <translation id="3542066395059568317">이전에 중단한 부분부터 계속할 수 있도록 추천 항목이 표시됩니다. 추천 항목을 삭제하려면 마우스 오른쪽 버튼으로 클릭하세요.</translation>
 <translation id="3552189655002856821">Wi-Fi가 사용 중지됨</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> 고정됨</translation>
+<translation id="3558768885091059911">카메라 및 마이크 액세스 권한을 사용 설정하시겠습니까?</translation>
 <translation id="3560174576767922131">동영상 녹화</translation>
 <translation id="3563775809269155755">핫스팟 사용</translation>
 <translation id="3566240529365775567">방금 열림</translation>
@@ -871,6 +873,7 @@
 <translation id="5763928712329149804">Shelf Party가 꺼져 있습니다.</translation>
 <translation id="576453121877257266">야간 조명이 켜졌습니다.</translation>
 <translation id="5769373120130404283">개인정보 보호 화면</translation>
+<translation id="5773950591113557721"><ph name="APP_NAME" /> 등 카메라 및 마이크 권한이 있는 모든 앱과 웹사이트에 액세스 권한이 부여됩니다.</translation>
 <translation id="5777841717266010279">화면 공유를 중단하시겠습니까?</translation>
 <translation id="5779721926447984944">고정된 파일</translation>
 <translation id="5788127256798019331">Play 파일</translation>
@@ -1058,6 +1061,7 @@
 <translation id="6787595647772650851">마지막 세션 복원</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="6801878137098616817">최근에 수정됨</translation>
+<translation id="6802687695197837794"><ph name="APP1_NAME" />, <ph name="APP2_NAME" /> 등 카메라 및 마이크 권한이 있는 모든 앱과 웹사이트에 액세스 권한이 부여됩니다.</translation>
 <translation id="6803622936009808957">지원되는 해상도가 없으므로 디스플레이를 그대로 반영할 수 없습니다. 대신 확장 데스크톱을 시작했습니다.</translation>
 <translation id="6812232930908427253">데스크를 저장할 수 없습니다. 창 또는 탭이 너무 많습니다.</translation>
 <translation id="6818242057446442178">한 단어 뒤로 이동</translation>
@@ -1090,6 +1094,7 @@
 <translation id="6965382102122355670">확인</translation>
 <translation id="6972754398087986839">시작하기</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">액세스 권한 사용 설정</translation>
 <translation id="6981982820502123353">접근성</translation>
 <translation id="698231206551913481">이 사용자를 제거하면 해당 사용자와 연결되어 있는 모든 파일 및 로컬 데이터가 영구적으로 삭제됩니다.</translation>
 <translation id="7005239792648594238">시작하려면 앱을 여세요.</translation>

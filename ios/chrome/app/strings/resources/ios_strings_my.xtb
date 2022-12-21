@@ -48,6 +48,7 @@
 <translation id="1265739287306757398">လုပ်ပုံကို လေ့လာပါ</translation>
 <translation id="1272079795634619415">ရပ်ရန်</translation>
 <translation id="1275718070701477396">ရွေးထား</translation>
+<translation id="1279024913354609713">ခွင့်မပြုပါ</translation>
 <translation id="1281818060020671000">ဒေတာ စီမံခြင်း</translation>
 <translation id="1282311502488501110">လက်မှတ်ထိုး မဝင်ပါနှင့်</translation>
 <translation id="1283524564873030414">ပြီးခဲ့သည့် ၂၄ နာရီ</translation>
@@ -787,6 +788,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6710079714193676716">သင်၏ 'အဖွဲ့အစည်း' က စီမံခန့်ခွဲထားသည်။ ဝန်ဆောင်မှုအချို့ မရနိုင်ပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">စကားဝှက်များကို တင်ပို့၍မရပါ</translation>
+<translation id="6732087373923685049">ကင်မရာ</translation>
 <translation id="6748108480210050150">မှ</translation>
 <translation id="6760509555861141183">‘လတ်တလောတဘ်’ သို့ ပြန်သွားပါ</translation>
 <translation id="6762812039470893796">အားလုံးမရွေးရန်</translation>
@@ -1040,6 +1042,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> ကို လိုက်မကြည့်တော့ရန်</translation>
 <translation id="8775144690796719618">URL မမှန်ပါ</translation>
 <translation id="8787968206789828143">ဝဘ်တွင်ရှာခြင်း</translation>
+<translation id="8792626944327216835">မိုက်ခရိုဖုန်း</translation>
 <translation id="8803639129939845298">လုံခြုံမှုရှိသည်</translation>
 <translation id="8806823403540278281">ကိုယ်ဖျောက်မုဒ်ဖြင့် ဝင်ရောက်ကြည့်ရှုရန် သင့်အဖွဲ့အစည်းက သတ်မှတ်ထားပါသည်။ ‘ရုပ်ဖျက်မုဒ်’ တွင် တဘ်များကို မသိမ်းပါ။
 <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -1095,6 +1098,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="9157836665414082580">သတိပေးချက်များကို ပိတ်ရန်</translation>
 <translation id="9177438225260810839">ဖွင့်ထားသည့်တဘ်များတွင် ရှာဖွေခြင်း</translation>
 <translation id="9188680907066685419">စီမံခန့်ခွဲထားသည့် အကောင့်မှထွက်ပါ</translation>
+<translation id="9193147658040604536">တဘ်ကိုပင်ထိုးရန် ဤနေရာသို့ ဖိဆွဲပါ</translation>
 <translation id="9200875785104711666">ပြီးခဲ့သော <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">လက်မပါဘဲ</translation>
 <translation id="9219154867334666734">တဘ်များရှာရန်…</translation>

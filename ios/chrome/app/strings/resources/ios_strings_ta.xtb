@@ -48,6 +48,7 @@
 <translation id="1265739287306757398">எப்படி என அறிக</translation>
 <translation id="1272079795634619415">நிறுத்து</translation>
 <translation id="1275718070701477396">தேர்ந்தெடுக்கப்பட்டது</translation>
+<translation id="1279024913354609713">வேண்டாம்</translation>
 <translation id="1281818060020671000">தரவை நிர்வகித்தல்</translation>
 <translation id="1282311502488501110">உள்நுழைய வேண்டாம்</translation>
 <translation id="1283524564873030414">கடந்த 24 மணிநேரம்</translation>
@@ -788,6 +789,7 @@
 <translation id="6710079714193676716">உங்கள் நிறுவனம் நிர்வகிக்கிறது. சில அம்சங்கள் கிடைக்காமல் போகலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">கடவுச்சொற்களை ஏற்ற முடியவில்லை</translation>
+<translation id="6732087373923685049">கேமரா</translation>
 <translation id="6748108480210050150">அனுப்புநர்</translation>
 <translation id="6760509555861141183">சமீபத்திய தாவலுக்குச் செல்</translation>
 <translation id="6762812039470893796">அனைத்தையும் தேர்வுநீக்கு</translation>
@@ -1041,6 +1043,7 @@
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> தளத்தைப் பின்தொடர்வதை நிறுத்து</translation>
 <translation id="8775144690796719618">தவறான URL</translation>
 <translation id="8787968206789828143">இணையத்தில் தேடுக</translation>
+<translation id="8792626944327216835">மைக்ரோஃபோன்</translation>
 <translation id="8803639129939845298">பாதுகாப்பானது</translation>
 <translation id="8806823403540278281">மறைநிலையில் உலாவுமாறு உங்கள் நிறுவனம் கோருகிறது. மறைநிலைப் பயன்முறையில் தாவல்கள் சேமிக்கப்படாது.
 <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>

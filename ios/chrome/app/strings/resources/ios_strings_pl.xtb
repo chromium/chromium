@@ -48,6 +48,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="1265739287306757398">Instrukcje</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
 <translation id="1275718070701477396">Zaznaczony</translation>
+<translation id="1279024913354609713">Nie zezwalaj</translation>
 <translation id="1281818060020671000">Zarządzaj danymi</translation>
 <translation id="1282311502488501110">Nie loguj się</translation>
 <translation id="1283524564873030414">Ostatnie 24 godziny</translation>
@@ -148,6 +149,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="2074131957428911366">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować.</translation>
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2080769225927880590">Zaloguj się na prawidłowe konto</translation>
+<translation id="2090878303988764231">Zaloguj się, aby zarządzać wyświetlanymi treściami</translation>
 <translation id="2103075008456228677">Otwórz history.google.com</translation>
 <translation id="21133533946938348">Przypnij kartę</translation>
 <translation id="2116625576999540962">Przeniesione elementy: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -787,6 +789,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6710079714193676716">Zarządzana przez Twoją organizację. Niektóre funkcje mogą być niedostępne. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Nie można wyeksportować haseł</translation>
+<translation id="6732087373923685049">kamera</translation>
 <translation id="6748108480210050150">Od</translation>
 <translation id="6760509555861141183">Powrót na ostatnio wyświetlaną kartę</translation>
 <translation id="6762812039470893796">Odznacz wszystko</translation>
@@ -973,6 +976,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8197543752516192074">Przetłumacz stronę</translation>
 <translation id="8205564605687841303">Anuluj</translation>
 <translation id="8206354486702514201">O tym ustawieniu decyduje administrator.</translation>
+<translation id="821809831108207540">Aby spersonalizować karty Discover i Chrome, zaloguj się i włącz synchronizację.</translation>
 <translation id="8225985093977202398">Obrazy i pliki w pamięci podręcznej</translation>
 <translation id="8237382152611443140">Otwórz Automatyczne wypełnianie haseł w Ustawieniach.</translation>
 <translation id="8261506727792406068">Usuń</translation>
@@ -1039,6 +1043,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8764015330924122850">Przestań obserwować tag <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">Nieprawidłowy URL</translation>
 <translation id="8787968206789828143">Wyszukaj w internecie</translation>
+<translation id="8792626944327216835">mikrofon</translation>
 <translation id="8803639129939845298">Bezpieczne</translation>
 <translation id="8806823403540278281">Twoja organizacja wymaga przeglądania prywatnego. W trybie incognito karty nie są zapisywane.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -1094,6 +1099,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9157836665414082580">Ukryj okna dialogowe</translation>
 <translation id="9177438225260810839">Szukaj w otwartych kartach</translation>
 <translation id="9188680907066685419">Wyloguj się z konta zarządzanego</translation>
+<translation id="9193147658040604536">Przeciągnij tutaj, aby przypiąć kartę</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d temu</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Wyszukaj karty…</translation>

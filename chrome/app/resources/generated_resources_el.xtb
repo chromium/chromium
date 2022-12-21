@@ -1316,6 +1316,8 @@
 <translation id="2165102982098084499">Συνδέσατε αυτές τις συσκευές με σάρωση κωδικού QR.</translation>
 <translation id="2165177462441582039">Επιλέξτε τη διάρκεια επισήμανσης κάθε στοιχείου</translation>
 <translation id="2166369534954157698">Η γρήγορη καφέ αλεπού πηδάει πάνω από το τεμπέλικο σκυλί</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Αυτή η συσκευή (σειριακός αριθμός: <ph name="SERIAL_NUMBER" />) κλειδώθηκε.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Η Διαχείριση συσκευών Chrome με <ph name="MS_AD_NAME" /> δεν υποστηρίζεται πλέον. Για να συνδεθείτε, χρησιμοποιήστε μια διαφορετική συσκευή ή επικοινωνήστε με τον διαχειριστή της συσκευής σας.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Σύνδεση</translation>
 <translation id="2173302385160625112">Ελέγξτε τη σύνδεσή σας στο διαδίκτυο</translation>
 <translation id="2173801458090845390">Προσθήκη αναγνωριστικού επίταξης σε αυτήν τη συσκευή</translation>
@@ -3508,6 +3510,7 @@
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Αναζήτηση</translation>
 <translation id="4187424053537113647">Γίνεται ρύθμιση της εφαρμογής <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Επισήμανση εστίασης πληκτρολογίου</translation>
+<translation id="4193575319002689239">Εμφάνιση καρτών</translation>
 <translation id="4193836101014293726">Δεν είναι δυνατή η διαγραφή αυτού του προφίλ</translation>
 <translation id="419427585139779713">Εισαγάγετε μία συλλαβή κάθε φορά</translation>
 <translation id="4194570336751258953">Ενεργοποίηση λειτουργίας χειρισμού με αφή</translation>
@@ -4642,6 +4645,7 @@
 <translation id="5268373933383932086">Η σελίδα σας, όπως εσείς θέλετε</translation>
 <translation id="5269977353971873915">Η εκτύπωση απέτυχε</translation>
 <translation id="5273806377963980154">Επεξεργασία URL ιστοτόπου</translation>
+<translation id="5273966423195882879">Χρώμα με βάση το θέμα</translation>
 <translation id="5275084684151588738">Λεξικά χρήστη</translation>
 <translation id="5275100789567222478">Ενεργοποίηση μόνο όταν το επίπεδο της μπαταρίας είναι <ph name="PERCENT" />% ή χαμηλότερο</translation>
 <translation id="5275338516105640560">Κουμπί αποθηκευμένης ομάδας καρτελών</translation>
@@ -6238,6 +6242,7 @@
 <translation id="6770042910635026163">Ιστότοποι που επισκέπτεστε και καθορίζουν τα ενδιαφέροντά σας</translation>
 <translation id="6770602306803890733">Βελτιώνει την ασφάλεια τη δική σας και όλων των ατόμων στον ιστό.</translation>
 <translation id="6771503742377376720">Είναι Αρχή πιστοποίησης</translation>
+<translation id="6774710250118040929">Προσθήκη νέου κωδικού πρόσβασης</translation>
 <translation id="6775163072363532304">Οι διαθέσιμες συσκευές θα εμφανίζονται εδώ.</translation>
 <translation id="677646486571529447">Προσθήκη σημείωσης</translation>
 <translation id="6776729248872343918">Ενεργοποίηση Γρήγορης σύζευξης</translation>

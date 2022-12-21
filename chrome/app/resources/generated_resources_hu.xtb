@@ -1315,6 +1315,8 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2165102982098084499">Összekapcsolta ezeket az eszközöket QR-kód beolvasásával.</translation>
 <translation id="2165177462441582039">Válassza ki, hogy mennyi ideig maradjanak kiemelve az egyes elemek</translation>
 <translation id="2166369534954157698">Árvíztűrő tükörfúrógép</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Ez az eszköz (sorozatszám: <ph name="SERIAL_NUMBER" />) zárolva lett.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Már nem támogatott a Chrome-eszközkezelés a következővel: <ph name="MS_AD_NAME" />. A bejelentkezéshez használjon másik eszközt, vagy forduljon az eszközadminisztrátorhoz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Bejelentkezés mindenképp</translation>
 <translation id="2173302385160625112">Ellenőrizze az internetkapcsolatot</translation>
 <translation id="2173801458090845390">Igénylésazonosító hozzáadása ehhez az eszközhöz</translation>
@@ -3506,6 +3508,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Kereső</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> beállítása…</translation>
 <translation id="4190828427319282529">Billentyűzetfókusz kiemelése</translation>
+<translation id="4193575319002689239">Kártyák megjelenítése</translation>
 <translation id="4193836101014293726">Nem lehet törölni ezt a profilt</translation>
 <translation id="419427585139779713">Egyszerre egy szótag bevitele</translation>
 <translation id="4194570336751258953">A kattintás érintéssel engedélyezése</translation>
@@ -4640,6 +4643,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5268373933383932086">Egy oldal, ahogy Ön szeretné</translation>
 <translation id="5269977353971873915">A nyomtatás nem sikerült</translation>
 <translation id="5273806377963980154">Webhely URL-jének módosítása</translation>
+<translation id="5273966423195882879">Témán alapuló szín</translation>
 <translation id="5275084684151588738">Felhasználói szótárak</translation>
 <translation id="5275100789567222478">Bekapcsolás csak akkor, ha az akkumulátor töltöttsége <ph name="PERCENT" />% vagy ennél alacsonyabb</translation>
 <translation id="5275338516105640560">Mentett lapcsoport gomb</translation>

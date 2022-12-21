@@ -48,6 +48,7 @@
 <translation id="1265739287306757398">কীভাবে করবেন জানুন</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
 <translation id="1275718070701477396">নির্বাচিত</translation>
+<translation id="1279024913354609713">অনুমতি দেবেন না</translation>
 <translation id="1281818060020671000">ডেটা ম্যানেজ করুন</translation>
 <translation id="1282311502488501110">সাইন-ইন করতে চাই না</translation>
 <translation id="1283524564873030414">গত ২৪ ঘণ্টা</translation>
@@ -788,6 +789,7 @@
 <translation id="6710079714193676716">আপনার সংস্থা এটি ম্যানেজ করে। কিছু ফিচার হয়ত উপলভ্য নয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google অ্যাপ্লিকেশানগুলি</translation>
 <translation id="6730682669179532099">পাসওয়ার্ড এক্সপোর্ট করা যাচ্ছে না</translation>
+<translation id="6732087373923685049">ক্যামেরা</translation>
 <translation id="6748108480210050150">থেকে</translation>
 <translation id="6760509555861141183">সাম্প্রতিক ট্যাবে ফিরে যান</translation>
 <translation id="6762812039470893796">সবকটি বাদ দিন</translation>
@@ -1040,6 +1042,7 @@
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> ফলো করা বন্ধ করুন</translation>
 <translation id="8775144690796719618">ভুল ইউআরএল</translation>
 <translation id="8787968206789828143">ওয়েবে সার্চ করুন</translation>
+<translation id="8792626944327216835">মাইক্রোফোন</translation>
 <translation id="8803639129939845298">সুরক্ষিত</translation>
 <translation id="8806823403540278281">আপনার সংস্থা আপনাকে 'ব্যক্তিগত' মোডে ব্রাউজ করতে বলছে। 'ছদ্মবেশী মোডে' ট্যাব সেভ করা হয় না।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>

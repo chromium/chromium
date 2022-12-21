@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Gói không hợp lệ: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Máy ảnh mặt sau</translation>
 <translation id="1196338895211115272">Không thể xuất khóa cá nhân.</translation>
+<translation id="132960226125594336">Không thể tải tệp "<ph name="RELATIVE_PATH" />" cho tập lệnh nội dung vì tệp này vượt quá kích thước tập lệnh tối đa hoặc tổng kích thước tập lệnh nội dung tối đa của tiện ích.</translation>
 <translation id="1420684932347524586">Rất tiếc! Không thể tạo khóa cá nhân RSA ngẫu nhiên.</translation>
 <translation id="1445572445564823378">Tiện ích này đang làm chậm <ph name="PRODUCT_NAME" />. Bạn phải tắt tiện ích để khôi phục hiệu suất của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL không được hỗ trợ.</translation>

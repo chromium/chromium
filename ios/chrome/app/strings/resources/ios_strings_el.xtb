@@ -48,6 +48,7 @@
 <translation id="1265739287306757398">Μάθετε με ποιον τρόπο</translation>
 <translation id="1272079795634619415">Διακοπή</translation>
 <translation id="1275718070701477396">Επιλέχθηκε</translation>
+<translation id="1279024913354609713">Δεν επιτρέπεται</translation>
 <translation id="1281818060020671000">Διαχείριση δεδομένων</translation>
 <translation id="1282311502488501110">Να μην γίνει σύνδεση</translation>
 <translation id="1283524564873030414">Τελευταίες 24 ώρες</translation>
@@ -148,6 +149,7 @@
 <translation id="2074131957428911366">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="2080769225927880590">Συνδεθείτε με έναν έγκυρο λογαριασμό</translation>
+<translation id="2090878303988764231">Συνδεθείτε για να διαχειριστείτε το περιεχόμενο που εμφανίζεται</translation>
 <translation id="2103075008456228677">Ανοίξτε το history.google.com</translation>
 <translation id="21133533946938348">Καρφίτσωμα καρτέλας</translation>
 <translation id="2116625576999540962">Μετακινήθηκαν <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία</translation>
@@ -788,6 +790,7 @@
 <translation id="6710079714193676716">Διαχειριζόμενο από τον οργανισμό σας. Ορισμένες λειτουργίες ενδέχεται να μην είναι διαθέσιμες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Δεν είναι δυνατή η εξαγωγή κωδικών πρόσβασης</translation>
+<translation id="6732087373923685049">κάμερα</translation>
 <translation id="6748108480210050150">Από</translation>
 <translation id="6760509555861141183">Επιστροφή στην καρτέλα Πρόσφατα</translation>
 <translation id="6762812039470893796">Αποεπιλογή όλων</translation>
@@ -974,6 +977,7 @@
 <translation id="8197543752516192074">Μετάφραση σελίδας</translation>
 <translation id="8205564605687841303">Ακύρωση</translation>
 <translation id="8206354486702514201">Η ρύθμιση αυτή επιβάλλεται από τον διαχειριστή σας.</translation>
+<translation id="821809831108207540">Για να εξατομικεύσετε τη ροή του Discover και το Chrome, συνδεθείτε και ενεργοποιήστε τον συγχρονισμό.</translation>
 <translation id="8225985093977202398">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="8237382152611443140">Ανοίξτε τις Ρυθμίσεις της Αυτόματης συμπλήρωσης κωδικού πρόσβασης</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
@@ -1040,6 +1044,7 @@
 <translation id="8764015330924122850">Κατάργηση παρακολούθησης <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">Μη έγκυρη διεύθ. URL</translation>
 <translation id="8787968206789828143">Αναζήτηση στον ιστό</translation>
+<translation id="8792626944327216835">μικρόφωνο</translation>
 <translation id="8803639129939845298">Ασφαλές</translation>
 <translation id="8806823403540278281">Ο οργανισμός σας απαιτεί οι περιηγήσεις σας να είναι ιδιωτικές. Οι καρτέλες δεν αποθηκεύονται στην Κατάσταση ανώνυμης περιήγησης.
 <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
@@ -1095,6 +1100,7 @@
 <translation id="9157836665414082580">Απόκρυψη παραθύρων διαλόγου</translation>
 <translation id="9177438225260810839">Αναζήτηση σε ανοικτές καρτέλες</translation>
 <translation id="9188680907066685419">Αποσύνδεση από διαχειριζόμενο λογαριασμό</translation>
+<translation id="9193147658040604536">Σύρετε εδώ για Καρφίτσωμα καρτέλας</translation>
 <translation id="9200875785104711666">Πριν από <ph name="TIME" /> ημ.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Αναζήτηση στις καρτέλες…</translation>

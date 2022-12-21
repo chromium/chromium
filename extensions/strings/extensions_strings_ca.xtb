@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">El paquet no és vàlid: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Càmera posterior</translation>
 <translation id="1196338895211115272">No s'ha pogut exportar la clau privada.</translation>
+<translation id="132960226125594336">No s'ha pogut carregar el fitxer <ph name="RELATIVE_PATH" /> per a l'script de contingut perquè superaria la mida màxima de l'script o la mida màxima total de l'script de contingut de l'extensió.</translation>
 <translation id="1420684932347524586">Error. No s'ha pogut generar la clau privada RSA aleatòria.</translation>
 <translation id="1445572445564823378">Aquesta extensió està alentint <ph name="PRODUCT_NAME" />. L'heu de desactivar per restaurar el rendiment de: <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL no és compatible.</translation>

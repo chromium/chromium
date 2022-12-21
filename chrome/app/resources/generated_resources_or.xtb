@@ -1301,6 +1301,8 @@
 <translation id="2165102982098084499">ଆପଣ ଏକ QR କୋଡ ସ୍କାନ କରି ଏହି ଡିଭାଇସଗୁଡ଼ିକୁ ଲିଙ୍କ କରିଛନ୍ତି।</translation>
 <translation id="2165177462441582039">ପ୍ରତ୍ୟେକ ଆଇଟମରେ କେତେ ସମୟ ପର୍ଯ୍ୟନ୍ତ ହାଇଲାଇଟ୍ ରଖିବା ଉଚିତ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />ଏହି ଡିଭାଇସ (SN: <ph name="SERIAL_NUMBER" />)କୁ ଲକ କରାଯାଇଛି।<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> ସହ Chrome ଡିଭାଇସ ପରିଚାଳନା ଆଉ ସମର୍ଥିତ ନୁହେଁ। ସାଇନ ଇନ କରିବା ପାଇଁ ଏକ ଭିନ୍ନ ଡିଭାଇସ ବ୍ୟବହାର କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ଡିଭାଇସ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">ଯେକୌଣସି ମତେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="2173302385160625112">ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2173801458090845390">ଏହି ଡିଭାଇସ୍‌ରେ ଅଧିଗ୍ରହଣ ID ଯୋଗ କରନ୍ତୁ</translation>
@@ -3490,6 +3492,7 @@
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" />କୁ ସେଟଅପ୍ କରାଯାଉଛି...</translation>
 <translation id="4190828427319282529">କୀବୋର୍ଡ ଫୋକସ୍ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
+<translation id="4193575319002689239">କାର୍ଡଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="4193836101014293726">ଏହି ପ୍ରୋଫାଇଲକୁ ଡିଲିଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="419427585139779713">ଥରକେ ଗୋଟିଏ ଶବ୍ଦାଂଶ ଇନପୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="4194570336751258953">'କ୍ଲିକ୍ ପାଇଁ ଟାପ୍ କରନ୍ତୁ' ବଟନ୍‌କୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -6218,6 +6221,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6770042910635026163">ଆପଣଙ୍କର ରୁଚିକୁ ପରିଭାଷିତ କରୁଥିବା ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="6770602306803890733">ଆପଣ ଏବଂ ୱେବରେ ଥିବା ପ୍ରତ୍ୟେକ ବ୍ୟକ୍ତିଙ୍କ ପାଇଁ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରେ</translation>
 <translation id="6771503742377376720">ଏକ ସାର୍ଟିଫିକେଟ୍ କର୍ତ୍ତୃପକ୍ଷ</translation>
+<translation id="6774710250118040929">ନୂଆ ପାସୱାର୍ଡ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6775163072363532304">ଉପଲବ୍ଧ ଡିଭାଇସ୍‍ଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ।</translation>
 <translation id="677646486571529447">ଏକ ନୋଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6776729248872343918">ଫାଷ୍ଟ ପେୟାରକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>

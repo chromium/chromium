@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Greške UDP zahtjeva</translation>
 <translation id="1947737735496445907">Odštampano</translation>
 <translation id="1951012854035635156">Asistent</translation>
+<translation id="1962550982027027473">Potreban je zadani APN</translation>
 <translation id="1977994649430373166">Fotografija Google profila</translation>
 <translation id="1979103255016296513">Vrijeme za promjenu lozinke je isteklo</translation>
 <translation id="1999615961760456652">Zaštitni portal</translation>
@@ -635,6 +636,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6791471867139427246">boja osvjetljenja tastature</translation>
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Dostupne su informacije u vezi s vašim odabirom. Pristupite tipkom strelice nagore.</translation>
+<translation id="6838167112108853532">Taj se APN ne može onemogućiti niti ukloniti. Ako imate omogućene pridružene APN-ove, onemogućite ih ili uklonite.</translation>
 <translation id="6853312040151791195">Brzina pražnjenja</translation>
 <translation id="6889786074662672253">Dok traje ponovno pokretanje, nemojte iskopčati ovaj vanjski uređaj ili isključiti računar. Ovaj prozor možete minimizirati. Ovo može potrajati nekoliko minuta. Moguće je da za to vrijeme vanjski uređaj neće funkcionirati.</translation>
 <translation id="6905724422583748843">Nazad na stranicu <ph name="PAGE_NAME" /></translation>
@@ -724,6 +726,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7778717409420828014">Vaše povratne informacije nam pomažu da poboljšamo iskustvo s Chrombookom i naš tim će ih pregledati. Zbog velikog broja prijava, nećemo moći poslati odgovor.</translation>
 <translation id="7784116172884276937">Nije postavljen nijedan DNS server</translation>
+<translation id="7791543448312431591">Dodaj</translation>
 <translation id="779591286616261875">Pošalji novu prijavu</translation>
 <translation id="7799817062559422778">Svijetli način rada</translation>
 <translation id="780301667611848630">Ne, hvala</translation>

@@ -1316,6 +1316,8 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2165102982098084499">Бул түзмөктөрдү QR кодун скандоо аркылуу туташтырдыңыз.</translation>
 <translation id="2165177462441582039">Бир объекттен экинчисине өтүү ылдамдыгын тандаңыз</translation>
 <translation id="2166369534954157698">Билимдүүнүн түнү - күн, билимсиздин күнү - түн</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Бул түзмөк (Сериялык номери: <ph name="SERIAL_NUMBER" />) кулпуланды.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Chrome түзмөгүн мындан ары <ph name="MS_AD_NAME" /> аркылуу тескөөгө болбойт. Ага кирүү үчүн башка түзмөктү колдонуп же түзмөктүн администраторуна кайрылыңыз.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Баары бир кирүү</translation>
 <translation id="2173302385160625112">Интернет байланышыңызды текшериңиз</translation>
 <translation id="2173801458090845390">Бул түзмөккө суроо идентификаторун кошуу</translation>
@@ -3508,6 +3510,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Издөө</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> орнотулууда…</translation>
 <translation id="4190828427319282529">Баскычтоп менен бөлүп көрсөтүү</translation>
+<translation id="4193575319002689239">Карталарды көрсөтүү</translation>
 <translation id="4193836101014293726">Бул профилди өчүрүүгө болбойт</translation>
 <translation id="419427585139779713">Муун-муун боюнча киргизиңиз</translation>
 <translation id="4194570336751258953">Таптап-чыкылдатууну иштетүү</translation>
@@ -6237,6 +6240,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6770042910635026163">Кызыккан нерселериңизди аныктай турган сайттар</translation>
 <translation id="6770602306803890733">Сиз жана башкалар үчүн Интернеттеги коопсуздукту арттырат</translation>
 <translation id="6771503742377376720">Тастыктама борбору</translation>
+<translation id="6774710250118040929">Жаңы сырсөздү кошуу</translation>
 <translation id="6775163072363532304">Жеткиликтүү түзмөктөр бул жерде көрүнөт.</translation>
 <translation id="677646486571529447">Эскертме кошуу</translation>
 <translation id="6776729248872343918">Ыкчам туташууну иштетүү</translation>

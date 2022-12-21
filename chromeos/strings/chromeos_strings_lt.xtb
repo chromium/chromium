@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Nepavyko pateikti UDP užklausų</translation>
 <translation id="1947737735496445907">Atspausdinta</translation>
 <translation id="1951012854035635156">Padėjėjas</translation>
+<translation id="1962550982027027473">Būtinas numatytasis APN</translation>
 <translation id="1977994649430373166">„Google“ profilio nuotrauka</translation>
 <translation id="1979103255016296513">Vėluojama pakeisti slaptažodį</translation>
 <translation id="1999615961760456652">Fiksuotasis portalas</translation>
@@ -635,6 +636,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6791471867139427246">klaviatūros šviesos spalva</translation>
 <translation id="680983167891198932">Raktas</translation>
 <translation id="6816797338148849397">Pasiekiama su pasirinkimu susijusi informacija Norėdami pasiekti, spustelėkite rodyklės aukštyn klavišą.</translation>
+<translation id="6838167112108853532">Šio APN išjungti arba pašalinti negalima. Įsitikinkite, kad įgalinti pridėti APN yra išjungti ar pašalinti.</translation>
 <translation id="6853312040151791195">Išsikrovimo rodiklis</translation>
 <translation id="6889786074662672253">Kol paleidžiama iš naujo, neatjunkite šio išorinio įrenginio ir neišjunkite kompiuterio. Galite sumažinti šį langą. Tai gali užtrukti kelias minutes ir tuo metu išorinis įrenginys gali neveikti.</translation>
 <translation id="6905724422583748843">Atgal į puslapį „<ph name="PAGE_NAME" />“</translation>
@@ -724,6 +726,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7769672763586021400">Modelio ID</translation>
 <translation id="7778717409420828014">Jūsų atsiliepimai padeda mums tobulinti „Chromebook“ funkcijas, todėl juos peržiūrės mūsų komanda. Dėl didelio pranešimų skaičiaus atsakyti negalėsime.</translation>
 <translation id="7784116172884276937">Nėra nustatytų DNS serverių</translation>
+<translation id="7791543448312431591">Pridėti</translation>
 <translation id="779591286616261875">Siųsti naują pranešimą</translation>
 <translation id="7799817062559422778">Šviesus režimas</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>

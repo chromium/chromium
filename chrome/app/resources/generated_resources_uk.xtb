@@ -1274,6 +1274,7 @@
 <translation id="212862741129535676">Відсоток заряду акумулятора, який використовує стан частоти</translation>
 <translation id="212876957201860463">Підготовка до налаштування мобільного пристрою…</translation>
 <translation id="2131077480075264">Не вдається встановити додаток <ph name="APP_NAME" />, оскільки він заборонений в <ph name="IMPORT_NAME" /></translation>
+<translation id="2133857665503360653">Спробувати знову завантажити файл "<ph name="FILE_NAME" />"</translation>
 <translation id="21354425047973905">Сховати PIN-коди</translation>
 <translation id="2135456203358955318">Закріплена лупа</translation>
 <translation id="2135787500304447609">&amp;Відновити</translation>
@@ -2856,11 +2857,13 @@
 <translation id="3584169441612580296">Читати й змінювати фотографії, музику та інші медіафайли на комп’ютері</translation>
 <translation id="3586787825263265024">Щоб відкрити файл у додатку <ph name="APPLICATION_NAME" />, потрібен доступ до OneDrive.</translation>
 <translation id="3586806079541226322">Не вдається відкрити цей файл</translation>
+<translation id="3587438013689771191">Докладніше про підсторінку "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3588790464166520201">Дозволено встановлювати обробники платежів</translation>
 <translation id="3589766037099229847">Незахищений вміст заблоковано</translation>
 <translation id="3590194807845837023">Розблокувати профіль і перезапустити</translation>
 <translation id="3590295622232282437">Починається керований сеанс.</translation>
+<translation id="3591057288287063271">Продовжити завантаження файлу "<ph name="FILE_NAME" />"</translation>
 <translation id="3592260987370335752">&amp;Докладніше</translation>
 <translation id="3593152357631900254">Увімкнути режим приблизних збігів для стандарту піньїнь</translation>
 <translation id="3593965109698325041">Обмеження імені сертифіката</translation>
@@ -3511,6 +3514,7 @@
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – Пошук <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">Налаштування додатка <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Виділяти фокус клавіатури</translation>
+<translation id="4193575319002689239">Показати картки</translation>
 <translation id="4193836101014293726">Не вдається видалити цей профіль</translation>
 <translation id="419427585139779713">Введення по складах</translation>
 <translation id="4194570336751258953">Увімкнути функцію "торкнутися, щоб натиснути"</translation>
@@ -3762,6 +3766,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" />, ваш адміністратор просить змінити пароль.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Дозволивши пристроям із ChromeOS автоматично надсилати звіти, ви допомагаєте нам визначити найважливіші проблеми та напрямки покращення операційної системи. Ці звіти можуть містити дані про збої ChromeOS, застосовані функції й обсяг використаної пам’яті.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ви можете будь-коли ввімкнути чи вимкнути їх у налаштуваннях пристрою Chrome. Адміністратори доменів можуть змінювати це налаштування в Консолі адміністратора.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">Видалити файл "<ph name="FILE_NAME" />"</translation>
 <translation id="4426464032773610160">Перш ніж почати, переконайтеся, що ваш перемикач USB або Bluetooth підключено до Chromebook. Ви також можете використовувати клавіші на клавіатурі.</translation>
 <translation id="4426508677408162512">Усі закладки</translation>
 <translation id="4427306783828095590">Покращений захист ще ефективніше блокує фішинг і зловмисне програмне забезпечення</translation>
@@ -4033,6 +4038,7 @@
 <translation id="4666472247053585787">Переглядайте сповіщення з телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">Більше додатків</translation>
 <translation id="4667027203988048332">Які дані ми використовуємо</translation>
+<translation id="4672759829555593783">Відкрити файл "<ph name="FILE_NAME" />"</translation>
 <translation id="46733273239502219">Офлайн-дані в установлених додатках також буде видалено</translation>
 <translation id="4673442866648850031">Відкривати інструменти стилуса, коли стилус витягнуто</translation>
 <translation id="4675065861091108046">Раніше ви вирішили дозволити всі розширення на сторінці <ph name="ORIGIN" /></translation>
@@ -5921,6 +5927,7 @@
 <translation id="6465841119675156448">Без Інтернету</translation>
 <translation id="6466258437571594570">Сайти не можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="6466988389784393586">&amp;Відкрити всі закладки</translation>
+<translation id="6467230443178397264">Сканувати файл "<ph name="FILE_NAME" />"</translation>
 <translation id="6467304607960172345">Оптимізувати відео на весь екран</translation>
 <translation id="6467377768028664108">Пристрій <ph name="DEVICE_TYPE" /> надаватиме вам такі можливості:</translation>
 <translation id="6468485451923838994">Шрифти</translation>
@@ -6243,6 +6250,7 @@
 <translation id="6770042910635026163">Відвідувані вами сайти, що визначають ваші інтереси</translation>
 <translation id="6770602306803890733">Покращує захист усіх користувачів в Інтернеті</translation>
 <translation id="6771503742377376720">Є Центром сертифікації</translation>
+<translation id="6774710250118040929">Додати новий пароль</translation>
 <translation id="6775163072363532304">Тут відображатимуться доступні пристрої.</translation>
 <translation id="677646486571529447">Додати примітку</translation>
 <translation id="6776729248872343918">Увімкнути функцію "Швидка пара"</translation>
@@ -6673,6 +6681,7 @@
 <translation id="7149893636342594995">Останні 24 години</translation>
 <translation id="7152478047064750137">Для цього розширення не потрібні спеціальні дозволи</translation>
 <translation id="7154130902455071009">Зробити <ph name="START_PAGE" /> домашньою сторінкою</translation>
+<translation id="7156231244155528270">Конвертувати зображення в текст</translation>
 <translation id="7159953856712257647">Установлено за умовчанням</translation>
 <translation id="7160182524506337403">Тепер ви можете переглядати сповіщення з телефона</translation>
 <translation id="7163202347044721291">Перевірка коду активації…</translation>
@@ -6934,6 +6943,7 @@
 <translation id="7412226954991670867">Пам’ять GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Налаштовано</translation>
+<translation id="7416091793702109803">Переглянути файл "<ph name="FILE_NAME" />"</translation>
 <translation id="7416263748877373774">Не вдається завантажити Умови використання. Перевірте з’єднання з мережею й повторіть спробу.</translation>
 <translation id="7416362041876611053">Невідома помилка мережі.</translation>
 <translation id="741906494724992817">Цьому додатку не потрібні спеціальні дозволи.</translation>

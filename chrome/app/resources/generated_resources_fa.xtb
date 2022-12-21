@@ -1313,6 +1313,8 @@
 <translation id="2165102982098084499">این دستگاه‌ها را با اسکن کردن رمزینه پاسخ‌سریع پیوند داده‌اید.</translation>
 <translation id="2165177462441582039">انتخاب کنید هر مورد چه مدت برجسته بماند</translation>
 <translation id="2166369534954157698">روباه قهوه‌ای چالاک از روی سگ تنبل پرید</translation>
+<translation id="2168454383292731451">‏<ph name="BEGIN_PARAGRAPH1" />این دستگاه (شماره سریال: <ph name="SERIAL_NUMBER" />) قفل شده است.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />دیگر از «مدیریت دستگاه Chrome» با <ph name="MS_AD_NAME" /> پشتیبانی نمی‌شود. برای ورود به سیستم، از دستگاه دیگری استفاده کنید یا با سرپرست دستگاهتان تماس بگیرید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">در هر صورت وارد سیستم شود</translation>
 <translation id="2173302385160625112">اتصال اینترنت را بررسی کنید</translation>
 <translation id="2173801458090845390">افزودن شناسه درخواست به این دستگاه</translation>
@@ -3505,6 +3507,7 @@
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - جستجوی <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">درحال راه‌اندازی<ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">برجسته کردن کانون صفحه‌کلید</translation>
+<translation id="4193575319002689239">نمایش کارت‌ها</translation>
 <translation id="4193836101014293726">نمی‌توان این نمایه را حذف کرد</translation>
 <translation id="419427585139779713">هر بار یک هجا وارد می‌شود</translation>
 <translation id="4194570336751258953">فعال کردن ضربه بجای کلیک</translation>
@@ -6236,6 +6239,7 @@
 <translation id="6770042910635026163">سایت‌هایی که با بازدید از آن‌ها علایق شما تعریف می‌شود</translation>
 <translation id="6770602306803890733">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد</translation>
 <translation id="6771503742377376720">یک ارائه دهنده مجوز است</translation>
+<translation id="6774710250118040929">افزودن گذرواژه جدید</translation>
 <translation id="6775163072363532304">دستگاه‌های دردسترس اینجا نمایش داده می‌شوند.</translation>
 <translation id="677646486571529447">افزودن یادداشت</translation>
 <translation id="6776729248872343918">فعال کردن «مرتبط‌سازی سریع»</translation>

@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Pakiet jest nieprawidłowy: „<ph name="ERROR_CODE" />”.</translation>
 <translation id="1140871961407805696">Tylny</translation>
 <translation id="1196338895211115272">Nie można wyeksportować klucza prywatnego.</translation>
+<translation id="132960226125594336">Nie udało się wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu dotyczącego treści, ponieważ spowodowałoby to przekroczenie maksymalnego rozmiaru skryptu lub maksymalnego całkowitego rozmiaru skryptu treści dla rozszerzenia.</translation>
 <translation id="1420684932347524586">Ojej! Nie można wygenerować losowego klucza prywatnego RSA.</translation>
 <translation id="1445572445564823378">To rozszerzenie spowalnia pracę <ph name="PRODUCT_NAME" />. Wyłącz je, aby przywrócić wydajność przeglądarki <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Interfejs WebGL nie jest obsługiwany.</translation>

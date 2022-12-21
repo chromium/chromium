@@ -2494,6 +2494,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="325238099842880997">Задайте дигитални правила, с чиято помощ децата могат да играят, изследват и да изпълняват училищни задачи</translation>
 <translation id="3253448572569133955">Неизвестен профил</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{Няма открити проблеми със сигурността}=1{Открит е {COUNT} проблем със сигурността}other{Открити са {COUNT} проблема със сигурността}}</translation>
+<translation id="3254451942070605467"><ph name="FILE_NAME" /> се изтегля – Остава(т)<ph name="PERCENT_REMAINING" />%</translation>
 <translation id="3254516606912442756">Автоматичното установяване на часовата зона е деактивирано</translation>
 <translation id="3254715652085014625">Отворете Chrome на телефона си с Android и изберете „Настройки &gt; Пароли &gt; Използване на телефон като ключ за сигурност“, след което изпълнете инструкциите.</translation>
 <translation id="3255355328033513170">Всички данни, съхранявани от домейна <ph name="SITE_GROUP_NAME" />, и сайтовете в него ще бъдат изтрити. Това включва „бисквитките“. Ще излезете от профила си в тези сайтове, включително в отворените раздели.</translation>
@@ -3315,6 +3316,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3987993985790029246">Връзка: Коп.</translation>
 <translation id="3988996860813292272">Избиране на часова зона</translation>
 <translation id="399179161741278232">Импортирани</translation>
+<translation id="3992008114154328194"><ph name="FILE_NAME" /> се изтегля – <ph name="STATUS" /></translation>
 <translation id="3993887353483242788">Синхронизирайте устройството си <ph name="DEVICE_TYPE" />, така че предпочитанията ви да са зададени на всяко устройство, когато влезете в профила си в Google. Те включват приложенията, настройките, паролите за Wi-Fi, езиците, тапета, клавишните комбинации и др.</translation>
 <translation id="3994318741694670028">За съжаление, компютърът ви е конфигуриран с неправилно образуван идентификационен номер на хардуера. Това не позволява на ChromeOS Flex да се актуализира с най-новите корекции за сигурност и устройството ви <ph name="BEGIN_BOLD" />може да е уязвимо на злонамерени атаки<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">За да отключите своя <ph name="DEVICE_TYPE" />, отключете телефона си и го приближете до него.</translation>
@@ -3505,6 +3507,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Търсене</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> се настройва...</translation>
 <translation id="4190828427319282529">Открояване на елемента, върху който е фокусът за клавиатурата</translation>
+<translation id="4193575319002689239">Показване на картите</translation>
 <translation id="4193836101014293726">Този потребителски профил не може да бъде изтрит</translation>
 <translation id="419427585139779713">Въвеждане сричка по сричка</translation>
 <translation id="4194570336751258953">Активиране на кликване с докосване</translation>
@@ -4639,6 +4642,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5268373933383932086">Вашата страница по ваш вкус</translation>
 <translation id="5269977353971873915">Отпечатването не бе успешно</translation>
 <translation id="5273806377963980154">Редактиране на URL адреса на сайта</translation>
+<translation id="5273966423195882879">Цвят въз основа на темата</translation>
 <translation id="5275084684151588738">Потребителски речници</translation>
 <translation id="5275100789567222478">Включване само когато нивото на батерията е <ph name="PERCENT" />% или по-малко</translation>
 <translation id="5275338516105640560">Бутон за запазената група раздели</translation>

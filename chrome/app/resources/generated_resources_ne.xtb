@@ -1301,6 +1301,8 @@
 <translation id="2165102982098084499">तपाईंले QR कोड स्क्यान गरेर यी डिभाइसहरू लिंक गर्नुभएको छ।</translation>
 <translation id="2165177462441582039">कुनै वस्तु कति बेरसम्म हाइलाइट गर्ने हो छनौट गर्नुहोस्</translation>
 <translation id="2166369534954157698">अ आ इ ई उ ऊ ए ऐ ओ औ अं अ: क ख ग घ ङ</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />यो डिभाइस (SN: <ph name="SERIAL_NUMBER" />) लक गरिएको थियो।<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />अब <ph name="MS_AD_NAME" /> मार्फत Chrome डिभाइसको व्यवस्थापन गर्न मिल्दैन। तपाईं साइन इन गर्न चाहनुहुन्छ भने कुनै अर्को डिभाइस प्रयोग गर्नुहोस् वा आफ्नो डिभाइसका एड्मिनलाई सम्पर्क गर्नुहोस्।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">कुनैपनि अवस्थामा साइन इन गर्नुहोस्</translation>
 <translation id="2173302385160625112">आफ्नो इन्टरनेट जडानको जाँच गर्नुहोस्</translation>
 <translation id="2173801458090845390">यो डिभाइसमा माग ID थप्नुहोस्‌</translation>
@@ -3490,6 +3492,7 @@
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> सेटअप गर्दै...</translation>
 <translation id="4190828427319282529">किबोर्डको फोकस हाइलाइट गरियोस्</translation>
+<translation id="4193575319002689239">कार्डहरू देखाउनुहोस्</translation>
 <translation id="4193836101014293726">यो प्रोफाइल मेटाउन सकिएन</translation>
 <translation id="419427585139779713">एक पटकमा एउटा मात्र अक्षर हाल्नुहोस्</translation>
 <translation id="4194570336751258953">क्लिक-गर्न-ट्याप गर्नुहोस् सक्षम गर्नुहोस्</translation>

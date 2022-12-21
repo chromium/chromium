@@ -48,6 +48,7 @@
 <translation id="1265739287306757398">ស្វែងយល់​អំពី​របៀប</translation>
 <translation id="1272079795634619415">ឈប់</translation>
 <translation id="1275718070701477396">បានជ្រើសរើស</translation>
+<translation id="1279024913354609713">កុំ​អនុញ្ញាត</translation>
 <translation id="1281818060020671000">គ្រប់គ្រង​ទិន្នន័យ</translation>
 <translation id="1282311502488501110">កុំ​ចូលគណនី</translation>
 <translation id="1283524564873030414">24 ម៉ោងមុន</translation>
@@ -788,6 +789,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6710079714193676716">គ្រប់គ្រងដោយ​ស្ថាប័ន​របស់អ្នក​។ មុខងារមួយចំនួន​ប្រហែលជាមិន​អាចប្រើ​បានទេ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">កម្មវិធី Google</translation>
 <translation id="6730682669179532099">មិន​អាច​នាំ​ពាក្យសម្ងាត់​ចេញ​បាន​ទេ</translation>
+<translation id="6732087373923685049">កាមេរ៉ា</translation>
 <translation id="6748108480210050150">ពី</translation>
 <translation id="6760509555861141183">ត្រឡប់ទៅផ្ទាំងថ្មីៗវិញ</translation>
 <translation id="6762812039470893796">ដក​ការជ្រើសរើស​ទាំងអស់</translation>
@@ -1041,6 +1043,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8764015330924122850">ឈប់​តាមដាន <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">URL មិនត្រឹមត្រូវ</translation>
 <translation id="8787968206789828143">ស្វែងរកលើអ៊ីនធឺណិត</translation>
+<translation id="8792626944327216835">មីក្រូហ្វូន</translation>
 <translation id="8803639129939845298">សុវត្ថិភាព</translation>
 <translation id="8806823403540278281">ស្ថាប័នរបស់អ្នក​តម្រូវឱ្យអ្នក​ធ្វើការរុករកជាលក្ខណៈឯកជន។ ផ្ទាំងមិនត្រូវបានរក្សាទុកនៅក្នុងមុខងារ​ឯកជនទេ។
 <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>

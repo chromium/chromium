@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">პაკეტი არასწორია: „<ph name="ERROR_CODE" />“.</translation>
 <translation id="1140871961407805696">უკანა</translation>
 <translation id="1196338895211115272">პირადი გასაღები ვერ დაექსპორტდა.</translation>
+<translation id="132960226125594336">ფაილი „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა კონტენტის სცენარისთვის, რადგან ის გადააჭარბებდა სცენარის მაქსიმალურ ზომას ან კონტენტის სცენარის მაქსიმალურ ჯამურ ზომას გაფართოებისთვის.</translation>
 <translation id="1420684932347524586">შემთხვევითი RSA პირადი გასაღები ვერ დაგენერირდა.</translation>
 <translation id="1445572445564823378">ეს გაფართოება ანელებს <ph name="PRODUCT_NAME" />-ის მუშაობას. უნდა გამორთოთ, რათა აღადგინოთ <ph name="PRODUCT_NAME" />-ის ეფექტურობა.</translation>
 <translation id="1468038450257740950">WebGL არ არის მხარდაჭერილი.</translation>

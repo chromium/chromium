@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Pachetul nu este valid: „<ph name="ERROR_CODE" />”.</translation>
 <translation id="1140871961407805696">Camera foto din spate</translation>
 <translation id="1196338895211115272">Cheia privată nu a putut fi exportată.</translation>
+<translation id="132960226125594336">Nu se poate încărca fișierul <ph name="RELATIVE_PATH" /> pentru scriptul de conținut, deoarece ar depăși dimensiunea maximă a scriptului sau dimensiunea maximă a scriptului de conținut pentru extensie.</translation>
 <translation id="1420684932347524586">Hopa! Generarea cheii private RSA aleatorii nu a reușit.</translation>
 <translation id="1445572445564823378">Această extensie încetinește <ph name="PRODUCT_NAME" />. Vă recomandăm să o dezactivați pentru a restabili performanțele produsului <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL nu este acceptat.</translation>
