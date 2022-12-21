@@ -834,8 +834,7 @@ template("mojom") {
     action(generator_cpp_message_ids_target_name) {
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
-      sources = sources_list +
-                [ "$root_gen_dir/mojo/public/tools/bindings/cpp_templates.zip" ]
+      sources = sources_list
       deps = [
         ":$parser_target_name",
         "//mojo/public/tools/bindings:precompile_templates",
@@ -850,9 +849,6 @@ template("mojom") {
         filelist += [ rebase_path(source, root_build_dir) ]
       }
       foreach(base_path, output_file_base_paths) {
-        filename = get_path_info(base_path, "file")
-        dirname = get_path_info(base_path, "dir")
-        inputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
         outputs += [ "$root_gen_dir/$base_path-shared-message-ids.h" ]
       }
 
@@ -879,8 +875,7 @@ template("mojom") {
       visibility = [ ":*" ]
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
-      sources = sources_list +
-                [ "$root_gen_dir/mojo/public/tools/bindings/cpp_templates.zip" ]
+      sources = sources_list
       deps = [
         ":$parser_target_name",
         "//mojo/public/tools/bindings:precompile_templates",
@@ -896,11 +891,6 @@ template("mojom") {
         filelist += [ rebase_path(source, root_build_dir) ]
       }
       foreach(base_path, output_file_base_paths) {
-        # Need the mojom-module as an input to this action.
-        filename = get_path_info(base_path, "file")
-        dirname = get_path_info(base_path, "dir")
-        inputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
-
         outputs += [
           "$root_gen_dir/$base_path-params-data.h",
           "$root_gen_dir/$base_path-shared-internal.h",
@@ -1004,11 +994,7 @@ template("mojom") {
     action(generator_mojolpm_proto_target_name) {
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
-      sources =
-          invoker.sources + [
-            "$root_gen_dir/mojo/public/tools/bindings/cpp_templates.zip",
-            "$root_gen_dir/mojo/public/tools/bindings/mojolpm_templates.zip",
-          ]
+      sources = invoker.sources
       deps = [
         ":$parser_target_name",
         "//mojo/public/tools/bindings:precompile_templates",
@@ -1027,7 +1013,6 @@ template("mojom") {
 
       foreach(source, non_gen_sources) {
         filelist += [ rebase_path(source, root_build_dir) ]
-        inputs += [ "$target_gen_dir/$source-module" ]
         outputs += [ "$target_gen_dir/$source.mojolpm.proto" ]
       }
 
@@ -1037,7 +1022,6 @@ template("mojom") {
         # For generated files, we assume they're in the target_gen_dir or a
         # sub-folder of it. Rebase the path so we can get the relative location.
         source_file = rebase_path(source, target_gen_dir)
-        inputs += [ "$target_gen_dir/$source_file-module" ]
         outputs += [ "$target_gen_dir/$source_file.mojolpm.proto" ]
       }
 
@@ -1263,22 +1247,12 @@ template("mojom") {
         visibility = [ ":*" ]
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
-        sources =
-            sources_list + [
-              "$root_gen_dir/mojo/public/tools/bindings/cpp_templates.zip",
-              type_mappings_path,
-            ]
-        if (generate_fuzzing && !defined(bindings_configuration.variant)) {
-          sources += [
-            "$root_gen_dir/mojo/public/tools/bindings/mojolpm_templates.zip",
-          ]
-        }
+        sources = sources_list
         deps = [
           ":$parser_target_name",
           ":$type_mappings_target_name",
           "//mojo/public/tools/bindings:precompile_templates",
         ]
-
         if (defined(invoker.parser_deps)) {
           deps += invoker.parser_deps
         }
@@ -1289,10 +1263,6 @@ template("mojom") {
           filelist += [ rebase_path(source, root_build_dir) ]
         }
         foreach(base_path, output_file_base_paths) {
-          filename = get_path_info(base_path, "file")
-          dirname = get_path_info(base_path, "dir")
-          inputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
-
           outputs += [
             "$root_gen_dir/${base_path}${variant_dash_suffix}-forward.h",
             "$root_gen_dir/${base_path}${variant_dash_suffix}-import-headers.h",
@@ -1359,8 +1329,6 @@ template("mojom") {
               "--extra_cpp_template_paths",
               rebase_path(extra_cpp_template, root_build_dir),
             ]
-            inputs += [ extra_cpp_template ]
-
             assert(
                 get_path_info(extra_cpp_template, "extension") == "tmpl",
                 "--extra_cpp_template_paths only accepts template files ending in extension .tmpl")
@@ -1491,7 +1459,6 @@ template("mojom") {
         rebase_path(type_mappings_path, root_build_dir),
       ]
 
-      sources = []
       foreach(d, all_deps) {
         name = get_label_info(d, "label_no_toolchain")
         toolchain = get_label_info(d, "toolchain")
@@ -1501,11 +1468,12 @@ template("mojom") {
         dependency_output_dir =
             get_label_info(dependency_output, "target_gen_dir")
         dependency_name = get_label_info(dependency_output, "name")
-        dependency_path = "$dependency_output_dir/${dependency_name}"
-        sources += [ dependency_path ]
+        dependency_path =
+            rebase_path("$dependency_output_dir/${dependency_name}",
+                        root_build_dir)
         args += [
           "--dependency",
-          rebase_path(dependency_path, root_build_dir),
+          dependency_path,
         ]
       }
 
