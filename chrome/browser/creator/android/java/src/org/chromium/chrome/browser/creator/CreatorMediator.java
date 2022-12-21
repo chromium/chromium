@@ -22,10 +22,7 @@ public class CreatorMediator {
     private Context mContext;
     private Creator mCreator;
     private byte[] mWebFeedId;
-    private String mTitle;
-    private String mUrl;
     private PropertyModel mCreatorModel;
-    private boolean mFollowState;
 
     CreatorMediator(Context context, PropertyModel creatorModel) {
         mContext = context;
