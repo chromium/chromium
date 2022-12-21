@@ -64,7 +64,7 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
  private:
   virtual void SetUpFeatureList() {
     feature_list_.InitWithFeatures(
-        {features::kUnifiedSidePanel, page_info::kPageInfoAboutThisSiteMoreInfo,
+        {page_info::kPageInfoAboutThisSiteMoreInfo,
          page_info::kPageInfoAboutThisSiteDescriptionPlaceholder},
         {});
   }

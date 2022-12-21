@@ -258,9 +258,8 @@ class FeaturePromoDialogSideSearchTest : public FeaturePromoDialogTest {
   FeaturePromoDialogSideSearchTest() {
     // Currently the IPH is only supported for the Google ChromeOS
     // configuration.
-    feature_list_.InitWithFeatures(
-        {features::kSideSearch},
-        {features::kSideSearchDSESupport, features::kUnifiedSidePanel});
+    feature_list_.InitWithFeatures({features::kSideSearch},
+                                   {features::kSideSearchDSESupport});
   }
 
   void SetUpOnMainThread() override {

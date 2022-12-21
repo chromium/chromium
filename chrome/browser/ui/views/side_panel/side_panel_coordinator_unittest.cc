@@ -6,13 +6,11 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -33,8 +31,6 @@ using testing::_;
 class SidePanelCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures({features::kUnifiedSidePanel}, {});
     TestWithBrowserView::SetUp();
 
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));
@@ -1095,8 +1091,6 @@ TEST_F(SidePanelCoordinatorTest, ComboboxAdditionsDoNotChangeSelection) {
 class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
  public:
   void SetUp() override {
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures({features::kUnifiedSidePanel}, {});
     TestWithBrowserView::SetUp();
 
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));

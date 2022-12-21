@@ -53,13 +53,15 @@ const char kTrackableUrl[] = "about:blank";
 const char kNonBookmarkedUrl[] = "about:blank?bookmarked=false";
 }  // namespace
 
+// TODO(crbug.com/1401515): Do the tests below still make sense after the
+// features::kUnifiedSidePanel flag removal, or should these be removed as well?
 class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
  public:
   PriceTrackingIconViewInteractiveTest() {
     test_features_.InitAndEnableFeatures(
         {commerce::kShoppingList,
          feature_engagement::kIPHPriceTrackingInSidePanelFeature},
-        {features::kUnifiedSidePanel});
+        {});
   }
 
   PriceTrackingIconViewInteractiveTest(
@@ -550,39 +552,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
   EXPECT_TRUE(GetBookmarkStar()->GetActive());
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
-                       TriggerSidePanelIPH) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  prefs->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble, false);
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
-  auto* promo_controller = BrowserView::GetBrowserViewForBrowser(browser())
-                               ->GetFeaturePromoController();
-  EXPECT_TRUE(
-      user_education::test::WaitForFeatureEngagementReady(promo_controller));
-
-  // Show PriceTackingIconView.
-  auto* icon_view = GetChip();
-  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
-
-  // Click PriceTackingIconView and show the PriceTrackingBubble.
-  ClickPriceTrackingIconView();
-  auto* bubble =
-      static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
-  EXPECT_TRUE(bubble);
-  EXPECT_EQ(bubble->GetTypeForTesting(),
-            PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
-
-  // Click the Accept(Track price) bubble.
-  bubble->Accept();
-  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/true);
-
-  // Verify IPH is showing and pref is properly set up to force show bookmark
-  // tab in side panel.
-  EXPECT_TRUE(promo_controller->IsPromoActive(
-      feature_engagement::kIPHPriceTrackingInSidePanelFeature));
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
-}
-
+// TODO(crbug.com/1401515): Does the tests below still make sense after the
+// features::kUnifiedSidePanel flag removal, or should it be removed as well?
 IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
                        NotTriggerSidePanelIPH) {
   PrefService* prefs = browser()->profile()->GetPrefs();
@@ -785,8 +756,7 @@ class PriceTrackingIconViewUnifiedSidePanelInteractiveTest
   PriceTrackingIconViewUnifiedSidePanelInteractiveTest() {
     test_features_.InitAndEnableFeatures(
         {commerce::kShoppingList,
-         feature_engagement::kIPHPriceTrackingInSidePanelFeature,
-         features::kUnifiedSidePanel});
+         feature_engagement::kIPHPriceTrackingInSidePanelFeature});
   }
 
  private:

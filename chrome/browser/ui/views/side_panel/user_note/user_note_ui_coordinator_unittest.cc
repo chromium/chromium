@@ -91,8 +91,7 @@ class MockUserNoteService : public user_notes::UserNoteService {
 class UserNoteUICoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {user_notes::kUserNotes, features::kUnifiedSidePanel}, {});
+    scoped_feature_list_.InitWithFeatures({user_notes::kUserNotes}, {});
 
     TestWithBrowserView::SetUp();
 

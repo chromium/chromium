@@ -763,11 +763,12 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
 
   virtual void InitFeatureList() {
     feature_list_.InitWithFeatures(
-        {page_info::kPageInfoAboutThisSiteEn,
-         page_info::kPageInfoAboutThisSiteNonEn,
-         page_info::kPageInfoAboutThisSiteMoreInfo,
-         page_info::kPageInfoAboutThisSiteDescriptionPlaceholder,
-         features::kUnifiedSidePanel},
+        {
+            page_info::kPageInfoAboutThisSiteEn,
+            page_info::kPageInfoAboutThisSiteNonEn,
+            page_info::kPageInfoAboutThisSiteMoreInfo,
+            page_info::kPageInfoAboutThisSiteDescriptionPlaceholder,
+        },
         {});
   }
 
@@ -993,6 +994,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDisabledBrowserTest,
       static_cast<int>(AboutThisSiteStatus::kUnknown));
 }
 
+// TODO(crbug.com/1401515): Do the tests below still make sense after the
+// features::kUnifiedSidePanel flag removal, or should these be removed as well?
 class PageInfoBubbleViewAboutThisSiteWithoutSidePanelBrowserTest
     : public PageInfoBubbleViewAboutThisSiteBrowserTest {
  public:
@@ -1004,7 +1007,7 @@ class PageInfoBubbleViewAboutThisSiteWithoutSidePanelBrowserTest
             page_info::kPageInfoAboutThisSiteMoreInfo,
             page_info::kPageInfoAboutThisSiteDescriptionPlaceholder,
         },
-        {features::kUnifiedSidePanel});
+        {});
   }
 
   page_info::proto::SiteInfo CreateSiteInfoWithoutDescription() {

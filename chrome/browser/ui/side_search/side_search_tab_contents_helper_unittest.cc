@@ -116,12 +116,9 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(SideSearchTabContentsHelperTest, LastSearchURLUpdatesCorrectly) {
-  // TODO(crbug.com/1384174): Update this test to pass with the
-  // kUnifiedSidePanel flag enabled.
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
-    GTEST_SKIP();
-
+// TODO(crbug.com/1384174): Update this test to pass and re-enable.
+TEST_F(SideSearchTabContentsHelperTest,
+       DISABLED_LastSearchURLUpdatesCorrectly) {
   // When a tab is first opened there should be no last encountered search URL.
   EXPECT_FALSE(helper()->last_search_url().has_value());
   EXPECT_TRUE(GetLastCommittedSideContentsEntry()->IsInitialEntry());
@@ -167,12 +164,9 @@ TEST_F(SideSearchTabContentsHelperTest, LastSearchURLUpdatesCorrectly) {
   EXPECT_EQ(kSearchMatchUrl2, GetLastCommittedSideContentsEntry()->GetURL());
 }
 
-TEST_F(SideSearchTabContentsHelperTest, IndicatesWhenSidePanelShouldBeShown) {
-  // TODO(crbug.com/1384174): Update this test to pass with the
-  // kUnifiedSidePanel flag enabled.
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
-    GTEST_SKIP();
-
+// TODO(crbug.com/1384174): Update this test to pass and re-enable.
+TEST_F(SideSearchTabContentsHelperTest,
+       DISABLED_IndicatesWhenSidePanelShouldBeShown) {
   // With no initial navigation the side panel should not be showing.
   EXPECT_FALSE(helper()->CanShowSidePanelForCommittedNavigation());
 
@@ -227,12 +221,8 @@ TEST_F(SideSearchTabContentsHelperTest, ClearsInternalStateWhenConfigChanges) {
   EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
 }
 
-TEST_F(SideSearchTabContentsHelperTest, EmitsReturnedToSRPMetrics) {
-  // TODO(crbug.com/1384174): Update this test to pass with the
-  // kUnifiedSidePanel flag enabled.
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
-    GTEST_SKIP();
-
+// TODO(crbug.com/1384174): Update this test to pass and re-enable.
+TEST_F(SideSearchTabContentsHelperTest, DISABLED_EmitsReturnedToSRPMetrics) {
   // Navigating to a matching search. Then navigate to a non-matching URL and
   // navigate back, doing so twice.
   LoadURL(kSearchMatchUrl1);

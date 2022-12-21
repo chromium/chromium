@@ -31,8 +31,7 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        {features::kUnifiedSidePanel, features::kReadAnything}, {});
+    features.InitWithFeatures({features::kReadAnything}, {});
     TestWithBrowserView::SetUp();
 
     side_panel_coordinator_ = browser_view()->side_panel_coordinator();

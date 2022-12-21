@@ -20,8 +20,7 @@ class CustomizeChromeSidePanelControllerTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     scoped_feature_list_.InitWithFeatures(
-        {ntp_features::kCustomizeChromeSidePanel, features::kUnifiedSidePanel},
-        {});
+        {ntp_features::kCustomizeChromeSidePanel}, {});
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
   }

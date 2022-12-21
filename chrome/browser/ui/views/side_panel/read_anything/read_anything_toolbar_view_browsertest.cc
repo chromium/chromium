@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -54,11 +53,6 @@ class MockReadAnythingCoordinator : public ReadAnythingCoordinator {
 
 class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
  public:
-  ReadAnythingToolbarViewTest() {
-    scoped_feature_list_.InitWithFeatures({features::kUnifiedSidePanel}, {});
-  }
-  ~ReadAnythingToolbarViewTest() override = default;
-
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     coordinator_ = std::make_unique<MockReadAnythingCoordinator>(browser());
@@ -90,7 +84,6 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
   MockReadAnythingFontComboboxDelegate font_combobox_delegate_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ReadAnythingToolbarView> toolbar_view_;
   std::unique_ptr<MockReadAnythingCoordinator> coordinator_;
 };

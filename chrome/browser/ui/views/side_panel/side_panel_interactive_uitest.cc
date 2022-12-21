@@ -4,7 +4,6 @@
 
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -36,7 +35,6 @@ class SidePanelInteractiveTest : public InteractiveBrowserTest {
 
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
-    scoped_feature_list_.InitWithFeatures({features::kUnifiedSidePanel}, {});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -56,9 +54,6 @@ class SidePanelInteractiveTest : public InteractiveBrowserTest {
         },
         static_cast<int>(id));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, ToggleSidePanelVisibility) {

@@ -1890,11 +1890,12 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{lens::features::kLensStandalone,
-          {{lens::features::kEnableSidePanelForLens.name, "true"},
-           {lens::features::kHomepageURLForLens.name,
-            GetLensRegionSearchURL().spec()}}},
-         {features::kUnifiedSidePanel, {{}}}},
+        {
+            {lens::features::kLensStandalone,
+             {{lens::features::kEnableSidePanelForLens.name, "true"},
+              {lens::features::kHomepageURLForLens.name,
+               GetLensRegionSearchURL().spec()}}},
+        },
         {});
 
     // This does not use SearchByRegionBrowserBaseTest::SetUp because that

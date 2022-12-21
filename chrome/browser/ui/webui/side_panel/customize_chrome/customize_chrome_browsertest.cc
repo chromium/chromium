@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -20,8 +19,7 @@ class CustomizeChromeSidePanelBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {ntp_features::kCustomizeChromeSidePanel, features::kUnifiedSidePanel},
-        {});
+        {ntp_features::kCustomizeChromeSidePanel}, {});
     InProcessBrowserTest::SetUp();
   }
   // Activates the browser tab at `index`.

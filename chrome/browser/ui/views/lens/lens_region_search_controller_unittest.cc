@@ -20,8 +20,7 @@ class LensRegionSearchControllerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        {features::kLensStandalone, ::features::kUnifiedSidePanel}, {});
+    features.InitWithFeatures({features::kLensStandalone}, {});
     TestWithBrowserView::SetUp();
 
     // Create an active web contents.
