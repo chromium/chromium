@@ -10,6 +10,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 using absl::optional;
@@ -30,12 +31,15 @@ class LayoutInstabilityTest : public MetricIntegrationTest {
   void RunWPT(const std::string& test_file,
               ShiftFrame frame = ShiftFrame::LayoutShiftOnlyInMainFrame,
               bool check_UKM_UMA_metrics = false);
-
- private:
   double CheckTraceData(Value::List& expectations, TraceAnalyzer&);
   void CheckSources(const Value::List& expected_sources,
                     const Value::List& trace_sources);
   void CheckUKMAndUMAMetrics(double expect_score);
+  std::pair<double, double> GetCLSFromList(Value::List& entry_records_list);
+  void CheckUKMAndUMAMetricsWithValues(double totalCls, double normalizedCls);
+
+  // Perform hit test and frame waiter to ensure the frame is ready.
+  void WaitForFrameReady();
 };
 
 void LayoutInstabilityTest::RunWPT(const std::string& test_file,
@@ -153,10 +157,125 @@ void LayoutInstabilityTest::CheckUKMAndUMAMetrics(double expect_score) {
             Bucket(page_load_metrics::LayoutShiftUmaValue(expect_score), 1));
 }
 
+std::pair<double, double> LayoutInstabilityTest::GetCLSFromList(
+    Value::List& entry_records_list) {
+  // cls is the normalized cls value.
+  double cls = 0;
+
+  // sessionCls is the cls score for current session window.
+  double sessionCls = 0;
+
+  // sessionDeadline is the maximum duration for current session window.
+  double sessionDeadline = 0;
+
+  // sessionGaptime is the time after one second gap of current shift.
+  double sessionGaptime = 0;
+
+  // General CLS score without normalization.
+  double totalCls = 0;
+  size_t entry_records_list_size = entry_records_list.size();
+  for (size_t i = 0; i < entry_records_list_size; i++) {
+    optional<double> record_startTime =
+        entry_records_list[i].GetDict().FindDouble("startTime");
+    optional<double> record_score =
+        entry_records_list[i].GetDict().FindDouble("score");
+    optional<double> record_hadRecentInput =
+        entry_records_list[i].GetDict().FindBool("hadRecentInput");
+
+    // Verify that the optional<double> has value.
+    EXPECT_TRUE(record_startTime);
+    EXPECT_TRUE(record_score);
+    EXPECT_TRUE(record_hadRecentInput);
+
+    if (*record_hadRecentInput) {
+      continue;
+    }
+
+    // CLS without normalization sum all the Layout shift score
+    // except the ones with hadRecentInput equal to true;
+    totalCls += *record_score;
+    if (sessionCls != 0 && *record_startTime < sessionDeadline &&
+        *record_startTime < sessionGaptime) {
+      sessionCls += *record_score;
+    } else {
+      sessionCls = *record_score;
+      sessionDeadline = *record_startTime + 5000;
+    }
+    sessionGaptime = *record_startTime + 1000;
+
+    if (sessionCls > cls) {
+      cls = sessionCls;
+    }
+  }
+
+  return {totalCls, cls};
+}
+
+void LayoutInstabilityTest::CheckUKMAndUMAMetricsWithValues(
+    double totalCls,
+    double normalizedCls) {
+  // Check UKM with CLS Normalization value, and it should be the same as the
+  // layout shift score.
+  ExpectUKMPageLoadMetricNear(
+      PageLoad::
+          kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName,
+      page_load_metrics::LayoutShiftUkmValue(normalizedCls), 1);
+
+  // Check total CLS in UKM.
+  ExpectUKMPageLoadMetricNear(
+      PageLoad::kLayoutInstability_CumulativeShiftScoreName,
+      page_load_metrics::LayoutShiftUkmValue(totalCls), 1);
+
+  // Check UMA with the layout shift score.
+  auto samples = histogram_tester().GetAllSamples(
+      "PageLoad.LayoutInstability.CumulativeShiftScore");
+  EXPECT_EQ(1ul, samples.size());
+  EXPECT_EQ(samples[0],
+            Bucket(page_load_metrics::LayoutShiftUmaValue(normalizedCls), 1));
+}
+
+void LayoutInstabilityTest::WaitForFrameReady() {
+  // We should wait for the main frame's hit-test data to be ready before
+  // sending the click event below to avoid flakiness.
+  content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
+  // Ensure the compositor thread is aware of the mouse events.
+  content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
+  frame_observer.Wait();
+}
+
 // TODO(crbug.com/1400401): Deflake and re-enable this test.
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, DISABLED_SimpleBlockMovement) {
-  RunWPT("simple-block-movement.html", ShiftFrame::LayoutShiftOnlyInMainFrame,
-         true /* check_UKM_UMA_metrics */);
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+
+  // TODO(crbug.com/1403026): Modify the AddPageLayoutShiftExpectation so we can
+  // pass number of layout shift as an argument.
+  waiter->AddPageLayoutShiftExpectation();
+  Start();
+
+  // Start tracking with layout_shift related information.
+  StartTracing({"loading", TRACE_DISABLED_BY_DEFAULT("layout_shift.debug")});
+  Load("/simple_div_movement.html");
+
+  // Extract the startTime and score list from watcher_entry_record.
+  base::Value entry_records =
+      EvalJs(web_contents(), "waitForTestFinished()").ExtractList();
+  auto& entry_records_list = entry_records.GetList();
+
+  // Verify that the entry_records_list has exactly 1 records.
+  EXPECT_EQ(1ul, entry_records_list.size());
+
+  // The first part of the expect_score contains total CLS, and the second
+  // part of the expect_score contains normalized CLS.
+  auto [totalCls, cls] = GetCLSFromList(entry_records_list);
+
+  // Wait for browser to receive layout shift in browser.
+  waiter->Wait();
+
+  // Finish session.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  CheckUKMAndUMAMetricsWithValues(totalCls, cls);
 }
 
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_Enclosure) {
@@ -190,81 +309,37 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
                        DISABLED_CumulativeLayoutShift_OneSecondGap) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
-  waiter->AddPageLayoutShiftExpectation();
 
+  // TODO(crbug.com/1403026): Modify the AddPageLayoutShiftExpectation so we can
+  // pass number of layout shift as an argument.
+  waiter->AddPageLayoutShiftExpectation();
   Start();
+
+  // Start tracking with layout_shift related information.
   StartTracing({"loading", TRACE_DISABLED_BY_DEFAULT("layout_shift.debug")});
-  Load("/layout-instability/simple-block-movement.html");
+  Load("/one_second_gap.html");
 
-  // Wait for the first layout shift.
-  waiter->Wait();
-
-  // Have the program sleep for 1 second to ensure the one second gap
-  base::PlatformThread::Sleep(base::Milliseconds(1000));
-
-  waiter->AddPageLayoutShiftExpectation();
-  // Simulate the layout shift and this layout shift should be in the
-  // new window session because it has been 1 second since last
-  // layout shift. The first layout shift in simple-block-movement moves
-  // the shifter to 160px and this layout shift moves the shifter to
-  // 500px, so the second layout shift has 340px distance.
-  const auto& result = ExecJs(web_contents(),
-    "("
-      "async () => {"
-        "document.querySelector('#shifter').style = \"top: 500px\";"
-        "await watcher.promise;"
-      "}"
-    ")()"
-  );
-
-  // Extract the startTime and score list from ScoreWatcher.
+  // Extract the startTime and score list from watcher_entry_record.
   base::Value entry_records =
-      EvalJs(web_contents(), "watcher.get_entry_record()").ExtractList();
-  const auto& entry_records_list = entry_records.GetList();
+      EvalJs(web_contents(), "waitForTestFinished()").ExtractList();
+  auto& entry_records_list = entry_records.GetList();
 
   // Verify that the entry_records_list has exactly 2 records.
   EXPECT_EQ(2ul, entry_records_list.size());
 
-  // Extract the startTime and score from each records.
-  optional<double> record_startTime_one =
-      entry_records_list[0].GetDict().FindDouble("startTime");
-  optional<double> record_score_one =
-      entry_records_list[0].GetDict().FindDouble("score");
-  optional<double> record_startTime_two =
-      entry_records_list[1].GetDict().FindDouble("startTime");
-  optional<double> record_score_two =
-      entry_records_list[1].GetDict().FindDouble("score");
+  // The first part of the expect_score contains total CLS, and the second
+  // part of the expect_score contains normalized CLS.
+  auto [totalCls, cls] = GetCLSFromList(entry_records_list);
 
-  // Verify that the optional<double> has value.
-  ASSERT_TRUE(record_startTime_one);
-  ASSERT_TRUE(record_score_one);
-  ASSERT_TRUE(record_startTime_two);
-  ASSERT_TRUE(record_score_two);
-
-  // Verify that layout shift two happened at least 1 second after
-  // layout shift one, and it has bigger score than layout shift one.
-  EXPECT_GT(*record_startTime_two, *record_startTime_one + 1000);
-  EXPECT_GT(*record_score_two, *record_score_one);
+  // Verify that the two layout shifts are in different session windows.
+  EXPECT_LT(cls, totalCls);
 
   // Wait for the second layout shift after the one second gap.
   waiter->Wait();
+
   // Finish session.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-
-  // Check UKM with CLS Normalization value, and it should be the same as the
-  // second layout shift score.
-  ExpectUKMPageLoadMetric(
-      PageLoad::
-          kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName,
-      page_load_metrics::LayoutShiftUkmValue(*record_score_two));
-
-  // Check UMA with the second layout shift score.
-  auto samples = histogram_tester().GetAllSamples(
-      "PageLoad.LayoutInstability.CumulativeShiftScore");
-  EXPECT_EQ(1ul, samples.size());
-  EXPECT_EQ(
-      samples[0],
-      Bucket(page_load_metrics::LayoutShiftUmaValue(*record_score_two), 1));
+  CheckUKMAndUMAMetricsWithValues(totalCls, cls);
 }
 
 // TODO(crbug.com/1400401): Deflake and re-enable this test.
@@ -272,120 +347,46 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
                        DISABLED_CumulativeLayoutShift_hadRecentInput) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
+
+  // TODO(crbug.com/1403026): Modify the AddPageLayoutShiftExpectation so we can
+  // pass number of layout shift as an argument.
   waiter->AddPageLayoutShiftExpectation();
   Start();
+
+  // Start tracking with layout_shift related information.
   StartTracing({"loading", TRACE_DISABLED_BY_DEFAULT("layout_shift.debug")});
-  Load("/layout-instability/simple-block-movement.html");
+  Load("/had_recent_input.html");
 
-  // Wait for the first layout shift.
-  waiter->Wait();
+  // Wait for hit test and and frame to be ready.
+  WaitForFrameReady();
 
-  // Let the program to sleep for one second, so the first layout shift
-  // and the second layout shift will have at least one second gap.
-  base::PlatformThread::Sleep(base::Milliseconds(1000));
-
-  // Create a Performance Observer to observe first input in the program
-  // and the promise will resolve when it observes first input. We are
-  // leveraging the Performance Observer to ensure we received a input.
-  EXPECT_TRUE(ExecJs(web_contents(),
-   "waitForClick = async () => {"
-      "const observePromise = new Promise(resolve => {"
-        "new PerformanceObserver(e => {"
-          "e.getEntries().forEach(entry => {"
-            "resolve(true);"
-          "})"
-        "}).observe({type: 'first-input', buffered: true});"
-      "});"
-      "return await observePromise;"
-    "};"
-  ));
-
-  // Add a event listener to shifter, so after it got clicked it will
-  // simulate a layout shift and this layout shift should be in the
-  // new window session because it has been 1 second since last
-  // layout shift. The first layout shift in simple-block-movement moves
-  // the shifter to 160px and this layout shift moves the shifter to
-  // 500px, so the second layout shift has 340px distance.
- EXPECT_TRUE(ExecJs(web_contents(),
-    "const element = document.getElementById('shifter');"
-    "const clickHandler = async () => {"
-      "document.querySelector('#shifter').style = \"top: 500px\";"
-      "await watcher.promise;"
-    "};"
-    "element.addEventListener(\"pointerdown\", clickHandler);"
-  ));
-
-  // Simulate a click as our input and trigger the clickHandler with shifter.
+  // Click on shifter to trigger the handler, so we can have a layout shift
+  // with hadRecentInput equals to true.
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "shifter");
 
-  // Start the waitForClick Performance Observer.
-  ASSERT_TRUE(EvalJs(web_contents(), "waitForClick()").ExtractBool());
-
-  // TODO(crbug.com/1385897): We have issue with test_waiter while
-  // there are multiple layout shifts. Should replace Sleep() with
-  // waiter->Wait() after fixing the test_waiter for layout shifts.
-  base::PlatformThread::Sleep(base::Milliseconds(1000));
-
-  // Extract the startTime and score list from ScoreWatcher.
+  // Extract the startTime and score list from watcher_entry_record.
   base::Value entry_records =
-      EvalJs(web_contents(), "watcher.get_entry_record()").ExtractList();
-  const auto& entry_records_list = entry_records.GetList();
+      EvalJs(web_contents(), "waitForTestFinished()").ExtractList();
+  auto& entry_records_list = entry_records.GetList();
 
   // Verify that the entry_records_list has exactly 2 records.
   EXPECT_EQ(2ul, entry_records_list.size());
 
-  // Extract the startTime and score from each records.
-  optional<double> record_startTime_one =
-      entry_records_list[0].GetDict().FindDouble("startTime");
-  optional<double> record_score_one =
-      entry_records_list[0].GetDict().FindDouble("score");
-  optional<double> record_hadRecentInput_one =
-    entry_records_list[0].GetDict().FindBool("hadRecentInput");
-  optional<double> record_startTime_two =
-      entry_records_list[1].GetDict().FindDouble("startTime");
-  optional<double> record_score_two =
-      entry_records_list[1].GetDict().FindDouble("score");
-  optional<double> record_hadRecentInput_two =
-    entry_records_list[1].GetDict().FindBool("hadRecentInput");
+  optional<double> record_hadRecentInput =
+      entry_records_list[1].GetDict().FindBool("hadRecentInput");
 
   // Verify that the optional<double> has value.
-  ASSERT_TRUE(record_startTime_one);
-  ASSERT_TRUE(record_score_one);
-  ASSERT_TRUE(record_hadRecentInput_one);
-  ASSERT_TRUE(record_startTime_two);
-  ASSERT_TRUE(record_score_two);
-  ASSERT_TRUE(record_hadRecentInput_two);
+  EXPECT_TRUE(record_hadRecentInput);
+  ASSERT_TRUE(*record_hadRecentInput);
 
-  // Verify that layout shift two happened at least 1 second after
-  // layout shift one, and it has bigger score than layout shift one.
-  EXPECT_GT(*record_startTime_two, *record_startTime_one + 1000);
-  EXPECT_GT(*record_score_two, *record_score_one);
+  // The first part of the expect_score contains total CLS, and the second
+  // part of the expect_score contains normalized CLS.
+  auto [totalCls, cls] = GetCLSFromList(entry_records_list);
 
-  // Verify the first layout shift doesn't have recent input, while the second
-  // layout shift has.
-  ASSERT_FALSE(*record_hadRecentInput_one);
-  ASSERT_TRUE(*record_hadRecentInput_two);
+  // Wait for the second layout shift after the one second gap.
+  waiter->Wait();
 
   // Finish session.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-
-  // Check UKM with CLS Normalization value, and it should be the same as the
-  // second layout shift score.
-  ExpectUKMPageLoadMetric(
-      PageLoad::
-          kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName,
-      page_load_metrics::LayoutShiftUkmValue(*record_score_one));
-
-  // Check normal CLS UKM.
-  ExpectUKMPageLoadMetric(PageLoad::kLayoutInstability_CumulativeShiftScoreName,
-                          page_load_metrics::
-                          LayoutShiftUkmValue(*record_score_one));
-
-  // Check UMA with the second layout shift score.
-  auto samples = histogram_tester().GetAllSamples(
-      "PageLoad.LayoutInstability.CumulativeShiftScore");
-  EXPECT_EQ(1ul, samples.size());
-  EXPECT_EQ(
-      samples[0],
-      Bucket(page_load_metrics::LayoutShiftUmaValue(*record_score_one), 1));
+  CheckUKMAndUMAMetricsWithValues(totalCls, cls);
 }

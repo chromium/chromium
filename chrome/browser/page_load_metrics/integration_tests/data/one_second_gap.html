@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<title>Layout Instability: verify One Second Gap for CLS</title>
+<script src="resources/util.js"></script>
+<style>
+#shifter { position: relative; width: 300px; height: 200px; background: blue; }
+</style>
+<div id="shifter">shifter</div>
+<script>
+
+if (PerformanceObserver.supportedEntryTypes.indexOf("layout-shift") == -1)
+    throw new Error("Layout Instability API not supported");
+let element = document.querySelector("#shifter");
+
+let runTest = async () => {
+    // We first wait for 2 frames in order to ensure the initial layout is applied.
+    await waitUntilAfterNextLayout();
+    element.style = "top: 160px";
+
+    // We then wait for 2 frames before waiting for 1 second, in order to
+    // ensure there is at least 1 second after the first layout shift.
+    await waitUntilAfterNextLayout();
+    await setTimeout(() => {
+        element.style = "top: 200px";
+    }, 1000);
+};
+runTest()
+
+async function waitForTestFinished() {
+  return await waitForNumLayoutShiftEntries(2);
+}
+</script>

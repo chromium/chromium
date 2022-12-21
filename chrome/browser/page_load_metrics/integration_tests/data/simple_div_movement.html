@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>Layout Instability: verify simple-block-movement for CLS</title>
+<script src="resources/util.js"></script>
+<style>
+#shifter { position: relative; width: 300px; height: 200px; background: blue; }
+</style>
+<div id="shifter">shifter</div>
+<script>
+
+if (PerformanceObserver.supportedEntryTypes.indexOf("layout-shift") == -1)
+    throw new Error("Layout Instability API not supported");
+
+let runTest = async () => {
+    await waitUntilAfterNextLayout();
+    document.querySelector("#shifter").style = "top: 160px";
+};
+runTest();
+
+async function waitForTestFinished() {
+  return await waitForNumLayoutShiftEntries(1);
+}
+
+</script>
