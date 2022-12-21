@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_info.h"
@@ -266,9 +265,8 @@ void IncompatibleApplicationsUpdater::RegisterLocalStatePrefs(
 
 // static
 bool IncompatibleApplicationsUpdater::IsWarningEnabled() {
-  return base::win::GetVersion() >= base::win::Version::WIN10 &&
-         base::FeatureList::IsEnabled(
-             features::kIncompatibleApplicationsWarning);
+  return base::FeatureList::IsEnabled(
+      features::kIncompatibleApplicationsWarning);
 }
 
 // static

@@ -17,7 +17,6 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
 #include "chrome/browser/win/conflicts/module_database.h"
@@ -204,9 +203,6 @@ constexpr wchar_t IncompatibleApplicationsBrowserTest::kApplicationName[];
 // page is shown after a browser crash.
 IN_PROC_BROWSER_TEST_F(IncompatibleApplicationsBrowserTest,
                        InjectIncompatibleDLL) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   // Create the observer early so the change is guaranteed to be observed.
   auto incompatible_applications_observer =
       std::make_unique<IncompatibleApplicationsObserver>();

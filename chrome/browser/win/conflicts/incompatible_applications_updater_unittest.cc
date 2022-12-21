@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/win/conflicts/module_info.h"
 #include "chrome/browser/win/conflicts/module_list_filter.h"
 #include "chrome/common/chrome_features.h"
@@ -193,9 +192,6 @@ class IncompatibleApplicationsUpdaterTest : public testing::Test,
 // Tests that when the Local State cache is empty, no incompatible applications
 // are returned.
 TEST_F(IncompatibleApplicationsUpdaterTest, EmptyCache) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   EXPECT_FALSE(IncompatibleApplicationsUpdater::HasCachedApplications());
   EXPECT_TRUE(IncompatibleApplicationsUpdater::GetCachedApplications().empty());
 }
@@ -203,9 +199,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest, EmptyCache) {
 // IncompatibleApplicationsUpdater doesn't do anything when there is no
 // registered installed applications.
 TEST_F(IncompatibleApplicationsUpdaterTest, NoIncompatibleApplications) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   auto incompatible_applications_updater =
       CreateIncompatibleApplicationsUpdater();
 
@@ -220,9 +213,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest, NoIncompatibleApplications) {
 }
 
 TEST_F(IncompatibleApplicationsUpdaterTest, NoTiedApplications) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   auto incompatible_applications_updater =
       CreateIncompatibleApplicationsUpdater();
 
@@ -243,9 +233,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest, NoTiedApplications) {
 }
 
 TEST_F(IncompatibleApplicationsUpdaterTest, OneIncompatibility) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   AddIncompatibleApplication(dll1_, L"Foo", Option::ADD_REGISTRY_ENTRY);
 
   auto incompatible_applications_updater =
@@ -269,9 +256,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest, OneIncompatibility) {
 }
 
 TEST_F(IncompatibleApplicationsUpdaterTest, SameModuleMultipleApplications) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   AddIncompatibleApplication(dll1_, L"Foo", Option::ADD_REGISTRY_ENTRY);
   AddIncompatibleApplication(dll1_, L"Bar", Option::ADD_REGISTRY_ENTRY);
 
@@ -296,9 +280,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest, SameModuleMultipleApplications) {
 
 TEST_F(IncompatibleApplicationsUpdaterTest,
        MultipleCallsToOnModuleDatabaseIdle) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   AddIncompatibleApplication(dll1_, L"Foo", Option::ADD_REGISTRY_ENTRY);
   AddIncompatibleApplication(dll2_, L"Bar", Option::ADD_REGISTRY_ENTRY);
 
@@ -338,9 +319,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest,
 // the list isn't tied to the lifetime of the IncompatibleApplicationsUpdater
 // instance. It is assumed that the Local State file works as intended.
 TEST_F(IncompatibleApplicationsUpdaterTest, PersistsThroughRestarts) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   AddIncompatibleApplication(dll1_, L"Foo", Option::ADD_REGISTRY_ENTRY);
 
   auto incompatible_applications_updater =
@@ -362,9 +340,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest, PersistsThroughRestarts) {
 
 // Tests that applications that do not have a registry entry are removed.
 TEST_F(IncompatibleApplicationsUpdaterTest, StaleEntriesRemoved) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   AddIncompatibleApplication(dll1_, L"Foo", Option::ADD_REGISTRY_ENTRY);
   AddIncompatibleApplication(dll2_, L"Bar", Option::NO_REGISTRY_ENTRY);
 
@@ -387,9 +362,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest, StaleEntriesRemoved) {
 }
 
 TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreNotLoadedModules) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   AddIncompatibleApplication(dll1_, L"Foo", Option::ADD_REGISTRY_ENTRY);
 
   auto incompatible_applications_updater =
@@ -415,9 +387,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreNotLoadedModules) {
 // Tests that modules with a matching certificate subject are allowlisted.
 TEST_F(IncompatibleApplicationsUpdaterTest,
        allowlistMatchingCertificateSubject) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   AddIncompatibleApplication(dll1_, L"Foo", Option::ADD_REGISTRY_ENTRY);
 
   auto incompatible_applications_updater =
@@ -442,9 +411,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest,
 
 // Registered modules are defined as either a shell extension or an IME.
 TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreRegisteredModules) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   AddIncompatibleApplication(dll1_, L"Shell Extension",
                              Option::ADD_REGISTRY_ENTRY);
   AddIncompatibleApplication(dll2_, L"Input Method Editor",
@@ -484,9 +450,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreRegisteredModules) {
 }
 
 TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreModulesAddedToTheBlocklist) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   AddIncompatibleApplication(dll1_, L"Blocklisted Application",
                              Option::ADD_REGISTRY_ENTRY);
 
@@ -510,9 +473,6 @@ TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreModulesAddedToTheBlocklist) {
 }
 
 TEST_F(IncompatibleApplicationsUpdaterTest, DisableModuleAnalysis) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   AddIncompatibleApplication(dll1_, L"Foo", Option::ADD_REGISTRY_ENTRY);
 
   auto incompatible_applications_updater =

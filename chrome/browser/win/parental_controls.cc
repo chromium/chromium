@@ -23,7 +23,6 @@
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_types.h"
-#include "base/win/windows_version.h"
 
 namespace {
 
@@ -124,8 +123,7 @@ class WinParentalControlsValue {
 
     // Parental controls APIs are not fully supported in Win10 and beyond, so
     // check registry properties for restictions.
-    if (base::win::GetVersion() >= base::win::Version::WIN10)
-      UpdateParentalControlsFromRegistry(&controls);
+    UpdateParentalControlsFromRegistry(&controls);
 
     return controls;
   }

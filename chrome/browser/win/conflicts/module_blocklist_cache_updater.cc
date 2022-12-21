@@ -21,7 +21,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
@@ -206,8 +205,7 @@ ModuleBlocklistCacheUpdater::~ModuleBlocklistCacheUpdater() {
 
 // static
 bool ModuleBlocklistCacheUpdater::IsBlockingEnabled() {
-  return base::win::GetVersion() >= base::win::Version::WIN8 &&
-         base::FeatureList::IsEnabled(features::kThirdPartyModulesBlocking);
+  return base::FeatureList::IsEnabled(features::kThirdPartyModulesBlocking);
 }
 
 // static

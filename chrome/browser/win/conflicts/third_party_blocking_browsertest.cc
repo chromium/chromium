@@ -14,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/win/conflicts/module_blocklist_cache_updater.h"
 #include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
 #include "chrome/browser/win/conflicts/module_database.h"
@@ -161,9 +160,6 @@ class ThirdPartyBlockingBrowserTest : public InProcessBrowserTest {
 //       browser launch.
 IN_PROC_BROWSER_TEST_F(ThirdPartyBlockingBrowserTest,
                        CreateModuleBlocklistCache) {
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   // Create the observer early so the change is guaranteed to be observed.
   ThirdPartyRegistryKeyObserver third_party_registry_key_observer;
   ASSERT_TRUE(third_party_registry_key_observer.StartWatching());
