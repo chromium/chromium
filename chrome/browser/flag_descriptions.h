@@ -3347,9 +3347,6 @@ extern const char kShelfAutoHideSeparationDescription[];
 extern const char kShimlessRMAFlowName[];
 extern const char kShimlessRMAFlowDescription[];
 
-extern const char kShimlessRMAEnableStandaloneName[];
-extern const char kShimlessRMAEnableStandaloneDescription[];
-
 extern const char kShimlessRMAOsUpdateName[];
 extern const char kShimlessRMAOsUpdateDescription[];
 

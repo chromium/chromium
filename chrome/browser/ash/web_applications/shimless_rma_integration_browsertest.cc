@@ -18,10 +18,8 @@
 class ShimlessRMAIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   ShimlessRMAIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kShimlessRMAFlow,
-         ash::features::kShimlessRMAEnableStandalone},
-        {});
+    scoped_feature_list_.InitWithFeatures({ash::features::kShimlessRMAFlow},
+                                          {});
   }
 
  protected:

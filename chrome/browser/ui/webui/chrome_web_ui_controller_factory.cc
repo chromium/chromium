@@ -984,7 +984,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == ash::kChromeUIScanningAppHost)
     return &NewWebUI<ash::ScanningUI>;
   if ((ash::shimless_rma::HasLaunchRmaSwitchAndIsAllowed() ||
-       ash::features::IsShimlessRMAStandaloneAppEnabled()) &&
+       ash::features::IsShimlessRMAFlowEnabled()) &&
       url.host_piece() == ash::kChromeUIShimlessRMAHost) {
     return &NewWebUI<ash::ShimlessRMADialogUI>;
   }

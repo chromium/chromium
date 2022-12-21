@@ -22,7 +22,6 @@ this.ShimlessRmaBrowserTest = class extends PolymerTest {
     return {
       enabled: [
         'ash::features::kShimlessRMAFlow',
-        'ash::features::kShimlessRMAEnableStandalone',
         'ash::features::kShimlessRMAOsUpdate',
       ],
     };

@@ -1895,11 +1895,6 @@ BASE_FEATURE(kShimlessRMAFlow,
              "ShimlessRMAFlow",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables launching Shimless RMA as a standalone app.
-BASE_FEATURE(kShimlessRMAEnableStandalone,
-             "ShimlessRMAEnableStandalone",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the OS update page in the shimless RMA flow.
 BASE_FEATURE(kShimlessRMAOsUpdate,
              "ShimlessRMAOsUpdate",
@@ -3099,11 +3094,6 @@ bool IsShelfPalmRejectionSwipeOffsetEnabled() {
 
 bool IsShimlessRMAFlowEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAFlow);
-}
-
-bool IsShimlessRMAStandaloneAppEnabled() {
-  return base::FeatureList::IsEnabled(kShimlessRMAEnableStandalone) &&
-         IsShimlessRMAFlowEnabled();
 }
 
 bool IsShimlessRMAOsUpdateEnabled() {

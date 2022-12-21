@@ -5816,12 +5816,6 @@ const char kShelfAutoHideSeparationDescription[] =
 const char kShimlessRMAFlowName[] = "Enable shimless RMA flow";
 const char kShimlessRMAFlowDescription[] = "Enable shimless RMA flow";
 
-const char kShimlessRMAEnableStandaloneName[] =
-    "Enable the Shimless RMA standalone app";
-const char kShimlessRMAEnableStandaloneDescription[] =
-    "Allows Shimless RMA to be launched as a standalone app while logged in. "
-    "Will only be used to assist with development";
-
 const char kShimlessRMAOsUpdateName[] = "Enable OS updates in shimless RMA";
 const char kShimlessRMAOsUpdateDescription[] =
     "Turns on OS updating in Shimless RMA";
