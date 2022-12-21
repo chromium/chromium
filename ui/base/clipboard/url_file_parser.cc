@@ -18,6 +18,10 @@ std::string ExtractURLFromURLFileContents(
   // NB: This code is written with the single goal of obvious correctness. It is
   // deliberately not optimized by any other measure.
 
+  if (file_contents.size() > kMaximumParsableFileSize) {
+    return {};
+  }
+
   // Re the file format: The file is in .ini file format, with sections headed
   // by bracketed names, each containing key-value pairs separated by an equal
   // sign. In a .url file, the URL can be found in the [InternetShortcut]

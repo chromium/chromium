@@ -177,22 +177,40 @@ URLAndTitle ExtractURLFromURLFile(NSPasteboardItem* item) {
   NSURL* file_url = [NSURL URLWithString:file].filePathURL;
 
   if (@available(macOS 11, *)) {
-    UTType* type;
-    if (![file_url getResourceValue:&type
-                             forKey:NSURLContentTypeKey
-                              error:nil]) {
+    NSDictionary* resource_values;
+    resource_values = [file_url
+        resourceValuesForKeys:@[ NSURLFileSizeKey, NSURLContentTypeKey ]
+                        error:nil];
+    if (!resource_values) {
       return {};
     }
+
+    NSNumber* file_size = resource_values[NSURLFileSizeKey];
+    if (file_size.unsignedLongValue >
+        ClipboardUtil::internal::kMaximumParsableFileSize) {
+      return {};
+    }
+
+    UTType* type = resource_values[NSURLContentTypeKey];
     if (![type conformsToType:UTTypeInternetShortcut]) {
       return {};
     }
   } else {
-    NSString* type;
-    if (![file_url getResourceValue:&type
-                             forKey:NSURLTypeIdentifierKey
-                              error:nil]) {
+    NSDictionary* resource_values;
+    resource_values = [file_url
+        resourceValuesForKeys:@[ NSURLFileSizeKey, NSURLTypeIdentifierKey ]
+                        error:nil];
+    if (!resource_values) {
       return {};
     }
+
+    NSNumber* file_size = resource_values[NSURLFileSizeKey];
+    if (file_size.unsignedLongValue >
+        ClipboardUtil::internal::kMaximumParsableFileSize) {
+      return {};
+    }
+
+    NSString* type = resource_values[NSURLTypeIdentifierKey];
     NSString* const kUTTypeInternetShortcut =
         @"com.microsoft.internet-shortcut";
     if (![NSWorkspace.sharedWorkspace type:type

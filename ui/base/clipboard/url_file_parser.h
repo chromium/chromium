@@ -5,11 +5,18 @@
 #ifndef UI_BASE_CLIPBOARD_URL_FILE_PARSER_H_
 #define UI_BASE_CLIPBOARD_URL_FILE_PARSER_H_
 
+#include <cstddef>
 #include <string>
 
 #include "base/strings/string_piece_forward.h"
 
 namespace ui::ClipboardUtil::internal {
+
+// A completely arbitrary cut-off size (16kB), above which
+// `ExtractURLFromURLFileContents` will refuse to parse. Because parsing
+// is done in-memory by string splitting, dealing with large files invites
+// hangs. See an example at https://crbug.com/1401639.
+constexpr size_t kMaximumParsableFileSize = 16'384;
 
 // Given the string contents of a .url file, returns a string version of the URL
 // found. Returns an empty string if no URL can be found.
