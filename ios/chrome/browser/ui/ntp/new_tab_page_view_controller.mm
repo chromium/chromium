@@ -517,6 +517,12 @@
   [self handleStickyElementsForScrollPosition:[self scrollPosition] force:YES];
 }
 
+#pragma mark - ContentSuggestionsHeaderViewControllerDelegate
+
+- (BOOL)isScrolledToMinimumHeight {
+  return self.scrolledToMinimumHeight;
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {

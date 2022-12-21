@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
+#import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -79,16 +80,18 @@ class NTPHomeMediatorTest : public PlatformTest {
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
+    imageUpdater_ = OCMProtocolMock(@protocol(UserAccountImageUpdateDelegate));
     mediator_ = [[NTPHomeMediator alloc]
-             initWithWebState:fake_web_state_.get()
-           templateURLService:ios::TemplateURLServiceFactory::
-                                  GetForBrowserState(
-                                      chrome_browser_state_.get())
-                    URLLoader:url_loader_
-                  authService:auth_service_
-              identityManager:identity_manager_
-        accountManagerService:accountManagerService
-                   logoVendor:logo_vendor_];
+                initWithWebState:fake_web_state_.get()
+              templateURLService:ios::TemplateURLServiceFactory::
+                                     GetForBrowserState(
+                                         chrome_browser_state_.get())
+                       URLLoader:url_loader_
+                     authService:auth_service_
+                 identityManager:identity_manager_
+           accountManagerService:accountManagerService
+                      logoVendor:logo_vendor_
+        identityDiscImageUpdater:imageUpdater_];
     consumer_ = OCMProtocolMock(@protocol(NTPHomeConsumer));
     mediator_.consumer = consumer_;
     histogram_tester_.reset(new base::HistogramTester());
@@ -104,6 +107,7 @@ class NTPHomeMediatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   id consumer_;
+  id imageUpdater_;
   id logo_vendor_;
   NTPHomeMediator* mediator_;
   ToolbarTestNavigationManager* navigation_manager_;

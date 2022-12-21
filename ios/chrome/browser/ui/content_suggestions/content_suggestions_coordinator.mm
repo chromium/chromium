@@ -39,9 +39,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
@@ -83,7 +80,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 }  // namespace
 
 @interface ContentSuggestionsCoordinator () <
-    ContentSuggestionsHeaderCommands,
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience> {
   // Observer bridge for mediator to listen to
@@ -238,12 +234,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   return [SceneStateBrowserAgent::FromBrowser(self.browser)
               ->GetSceneState()
               .window.rootViewController.view safeAreaInsets];
-}
-
-#pragma mark - ContentSuggestionsHeaderCommands
-
-- (void)updateForHeaderSizeChange {
-  [self.ntpDelegate updateFeedLayout];
 }
 
 #pragma mark - Public methods

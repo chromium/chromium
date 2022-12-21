@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller_delegate.h"
-
 namespace signin {
 class IdentityManager;
 }
@@ -32,20 +30,21 @@ class GURL;
 @class NTPHomeMetrics;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
+@protocol UserAccountImageUpdateDelegate;
 
 // Mediator for the NTP Home panel, handling the interactions with the
 // suggestions.
-@interface NTPHomeMediator
-    : NSObject <ContentSuggestionsHeaderViewControllerDelegate>
+@interface NTPHomeMediator : NSObject
 
-- (instancetype)initWithWebState:(web::WebState*)webState
-              templateURLService:(TemplateURLService*)templateURLService
-                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                     authService:(AuthenticationService*)authService
-                 identityManager:(signin::IdentityManager*)identityManager
-           accountManagerService:
-               (ChromeAccountManagerService*)accountManagerService
-                      logoVendor:(id<LogoVendor>)logoVendor
+- (instancetype)
+            initWithWebState:(web::WebState*)webState
+          templateURLService:(TemplateURLService*)templateURLService
+                   URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                 authService:(AuthenticationService*)authService
+             identityManager:(signin::IdentityManager*)identityManager
+       accountManagerService:(ChromeAccountManagerService*)accountManagerService
+                  logoVendor:(id<LogoVendor>)logoVendor
+    identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

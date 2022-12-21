@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @class BubblePresenter;
@@ -25,6 +26,7 @@
 @interface NewTabPageViewController
     : UIViewController <ContentSuggestionsCollectionControlling,
                         ThumbStripSupporting,
+                        ContentSuggestionsHeaderViewControllerDelegate,
                         UIScrollViewDelegate>
 
 // View controller wrapping the feed.

@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
-#import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
@@ -27,7 +26,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
-#import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
@@ -62,8 +60,7 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
 @interface ContentSuggestionsHeaderViewController () <
     DoodleObserver,
     UIIndirectScribbleInteractionDelegate,
-    UIPointerInteractionDelegate,
-    UserAccountImageUpdateDelegate>
+    UIPointerInteractionDelegate>
 
 // If YES the animations of the fake omnibox triggered when the collection is
 // scrolled (expansion) are disabled. This is used for the fake omnibox focus
@@ -83,6 +80,7 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
 @property(nonatomic, strong) UIButton* fakeOmnibox;
 @property(nonatomic, strong) UIButton* accessibilityButton;
 @property(nonatomic, strong, readwrite) UIButton* identityDiscButton;
+@property(nonatomic, strong) UIImage* identityDiscImage;
 @property(nonatomic, strong) UIButton* fakeTapButton;
 @property(nonatomic, strong) NSLayoutConstraint* doodleHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* doodleTopMarginConstraint;
@@ -370,8 +368,8 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
   self.identityDiscButton = [UIButton buttonWithType:UIButtonTypeCustom];
   self.identityDiscButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_ACCNAME_PARTICLE_DISC);
-  [self.identityDiscButton addTarget:self
-                              action:@selector(identityDiscTapped)
+  [self.identityDiscButton addTarget:self.commandHandler
+                              action:@selector(identityDiscWasTapped)
                     forControlEvents:UIControlEventTouchUpInside];
 
   self.identityDiscButton.pointerInteractionEnabled = YES;
@@ -390,11 +388,23 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
     return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
   };
 
-    // TODO(crbug.com/965958): Set action on button to launch into Settings.
-    [self.headerView setIdentityDiscView:self.identityDiscButton];
+  [self updateIdentityDiscState];
+  // TODO(crbug.com/965958): Set action on button to launch into Settings.
+  [self.headerView setIdentityDiscView:self.identityDiscButton];
+}
 
-  // Register to receive the avatar of the currently signed in user.
-  [self.delegate registerImageUpdater:self];
+// Configures `identityDiscButton` with the current state of
+// `identityDiscImage`.
+- (void)updateIdentityDiscState {
+  // TODO(crbug.com/1385758): Update this logic after
+  // kIdentityStatusConsistency is rolled out as image can't be
+  // null when the user is signed-in.
+  self.identityDiscButton.hidden = !self.identityDiscImage;
+  [self.identityDiscButton setImage:self.identityDiscImage
+                           forState:UIControlStateNormal];
+  self.identityDiscButton.imageView.layer.cornerRadius =
+      self.identityDiscImage.size.width / 2;
+  self.identityDiscButton.imageView.layer.masksToBounds = YES;
 }
 
 - (void)openLens {
@@ -449,20 +459,6 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
 - (void)focusAccessibilityOnOmnibox {
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   self.fakeOmnibox);
-}
-
-- (void)identityDiscTapped {
-  base::RecordAction(base::UserMetricsAction("MobileNTPIdentityDiscTapped"));
-  if ([self.delegate isSignedIn]) {
-    [self.dispatcher showSettingsFromViewController:self.baseViewController];
-  } else {
-    ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
-        initWithOperation:AuthenticationOperationSigninAndSync
-              accessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_NTP_SIGNED_OUT_ICON];
-    [self.dispatcher showSignin:showSigninCommand
-             baseViewController:self.baseViewController];
-  }
 }
 
 // TODO(crbug.com/807330) The fakebox is currently a collection of views spread
@@ -752,9 +748,9 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
 #pragma mark - UserAccountImageUpdateDelegate
 
 - (void)updateAccountImage:(UIImage*)image {
-  if (![self.delegate isSignedIn] &&
+  // If `image` is null, then that means the user is not signed in.
+  if (!image &&
       base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
-    DCHECK(!image);
     if (UseSymbols()) {
       image = DefaultSymbolTemplateWithPointSize(
           kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconDimension);
@@ -762,18 +758,15 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
       image = [UIImage imageNamed:kSignOutIdentityIconName];
     }
   } else {
-    // TODO(crbug.com/1385758): Update this logic after
-    // kIdentityStatusConsistency is rolled out as image can't be
-    // null when the user is signed-in.
-    self.identityDiscButton.hidden = !image;
     DCHECK(image == nil ||
            (image.size.width == ntp_home::kIdentityAvatarDimension &&
             image.size.height == ntp_home::kIdentityAvatarDimension))
         << base::SysNSStringToUTF8([image description]);
   }
-  [self.identityDiscButton setImage:image forState:UIControlStateNormal];
-  self.identityDiscButton.imageView.layer.cornerRadius = image.size.width / 2;
-  self.identityDiscButton.imageView.layer.masksToBounds = YES;
+  self.identityDiscImage = image;
+  if (self.identityDiscButton) {
+    [self updateIdentityDiscState];
+  }
 }
 
 #pragma mark UIPointerInteractionDelegate

@@ -556,19 +556,20 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 // Creates all the NTP components.
 - (void)initializeNTPComponents {
   self.ntpViewController = [[NewTabPageViewController alloc] init];
-  self.ntpMediator = [[NTPHomeMediator alloc]
-           initWithWebState:self.webState
-         templateURLService:self.templateURLService
-                  URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)
-                authService:self.authService
-            identityManager:IdentityManagerFactory::GetForBrowserState(
-                                self.browser->GetBrowserState())
-      accountManagerService:ChromeAccountManagerServiceFactory::
-                                GetForBrowserState(
-                                    self.browser->GetBrowserState())
-                 logoVendor:ios::provider::CreateLogoVendor(self.browser,
-                                                            self.webState)];
   self.headerController = [[ContentSuggestionsHeaderViewController alloc] init];
+  self.ntpMediator = [[NTPHomeMediator alloc]
+              initWithWebState:self.webState
+            templateURLService:self.templateURLService
+                     URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)
+                   authService:self.authService
+               identityManager:IdentityManagerFactory::GetForBrowserState(
+                                   self.browser->GetBrowserState())
+         accountManagerService:ChromeAccountManagerServiceFactory::
+                                   GetForBrowserState(
+                                       self.browser->GetBrowserState())
+                    logoVendor:ios::provider::CreateLogoVendor(self.browser,
+                                                               self.webState)
+      identityDiscImageUpdater:self.headerController];
   self.headerSynchronizer = [[ContentSuggestionsHeaderSynchronizer alloc]
       initWithCollectionController:self.ntpViewController
                   headerController:self.headerController];
@@ -624,7 +625,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
                      FakeboxFocuser, LensCommands>>(
           self.browser->GetCommandDispatcher());
   self.headerController.commandHandler = self;
-  self.headerController.delegate = self.ntpMediator;
+  self.headerController.delegate = self.ntpViewController;
   self.headerController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
   self.headerController.readingListModel =
@@ -746,6 +747,22 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 
 - (void)updateForHeaderSizeChange {
   [self updateFeedLayout];
+}
+
+- (void)identityDiscWasTapped {
+  base::RecordAction(base::UserMetricsAction("MobileNTPIdentityDiscTapped"));
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    [handler showSettingsFromViewController:self.baseViewController];
+  } else {
+    ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
+        initWithOperation:AuthenticationOperationSigninAndSync
+              accessPoint:signin_metrics::AccessPoint::
+                              ACCESS_POINT_NTP_SIGNED_OUT_ICON];
+    [handler showSignin:showSigninCommand
+        baseViewController:self.baseViewController];
+  }
 }
 
 #pragma mark - FeedMenuCommands

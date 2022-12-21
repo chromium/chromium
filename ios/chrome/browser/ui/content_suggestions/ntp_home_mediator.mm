@@ -104,14 +104,15 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 @implementation NTPHomeMediator
 
-- (instancetype)initWithWebState:(web::WebState*)webState
-              templateURLService:(TemplateURLService*)templateURLService
-                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                     authService:(AuthenticationService*)authService
-                 identityManager:(signin::IdentityManager*)identityManager
-           accountManagerService:
-               (ChromeAccountManagerService*)accountManagerService
-                      logoVendor:(id<LogoVendor>)logoVendor {
+- (instancetype)
+            initWithWebState:(web::WebState*)webState
+          templateURLService:(TemplateURLService*)templateURLService
+                   URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                 authService:(AuthenticationService*)authService
+             identityManager:(signin::IdentityManager*)identityManager
+       accountManagerService:(ChromeAccountManagerService*)accountManagerService
+                  logoVendor:(id<LogoVendor>)logoVendor
+    identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater {
   self = [super init];
   if (self) {
     _webState = webState;
@@ -128,6 +129,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     _searchEngineObserver = std::make_unique<SearchEngineObserverBridge>(
         self, self.templateURLService);
     _logoVendor = logoVendor;
+    _imageUpdater = imageUpdater;
   }
   return self;
 }
@@ -153,6 +155,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
   self.templateURLService->Load();
   [self searchEngineChanged];
+
+  [self updateAccountImage];
 }
 
 - (void)shutdown {
@@ -279,21 +283,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
   [self updateAccountImage];
-}
-
-#pragma mark - ContentSuggestionsHeaderViewControllerDelegate
-
-- (BOOL)isScrolledToMinimumHeight {
-  return [self.ntpViewController isScrolledToMinimumHeight];
-}
-
-- (void)registerImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater {
-  self.imageUpdater = imageUpdater;
-  [self updateAccountImage];
-}
-
-- (BOOL)isSignedIn {
-  return self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
 #pragma mark - SearchEngineObserving
