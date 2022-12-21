@@ -4451,6 +4451,7 @@ static_library("browser") {
       "//components/image_fetcher/core",
       "//components/keep_alive_registry",
       "//components/live_caption",
+      "//components/live_caption:live_translate",
       "//components/memory_pressure",
       "//components/omnibox/browser:mojo_bindings",
       "//components/services/app_service:lib",

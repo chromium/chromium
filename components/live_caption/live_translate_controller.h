@@ -6,19 +6,36 @@
 #define COMPONENTS_LIVE_CAPTION_LIVE_TRANSLATE_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/soda/constants.h"
+#include "media/mojo/mojom/speech_recognition_result.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 class PrefChangeRegistrar;
 class PrefService;
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
+}  // namespace user_prefs
+
+namespace network {
+class SimpleURLLoader;
+}  // namespace network
 
 namespace captions {
+
+using OnTranslateEventCallback =
+    base::OnceCallback<void(media::SpeechRecognitionResult)>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Live Translate Controller
@@ -29,19 +46,45 @@ namespace captions {
 //
 class LiveTranslateController : public KeyedService {
  public:
-  explicit LiveTranslateController(PrefService* profile_prefs);
+  LiveTranslateController(PrefService* profile_prefs,
+                          content::BrowserContext* browser_context);
   LiveTranslateController(const LiveTranslateController&) = delete;
   LiveTranslateController& operator=(const LiveTranslateController&) = delete;
   ~LiveTranslateController() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  void GetTranslation(const media::SpeechRecognitionResult& result,
+                      std::string source_language,
+                      std::string target_language,
+                      OnTranslateEventCallback callback);
+
  private:
+  void ResetURLLoaderFactory();
+  void OnURLLoadComplete(bool is_final,
+                         OnTranslateEventCallback callback,
+                         std::unique_ptr<std::string> response_body);
+
+  // Called when the data decoder service provides parsed JSON data for a server
+  // response.
+  void OnResponseJsonParsed(bool is_final,
+                            OnTranslateEventCallback callback,
+                            data_decoder::DataDecoder::ValueOrError result);
+
   void OnLiveCaptionEnabledChanged();
   void OnLiveTranslateEnabledChanged();
 
+  raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<PrefService> profile_prefs_;
+
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
+  std::unique_ptr<network::SimpleURLLoader> url_loader_;
+
+  data_decoder::DataDecoder data_decoder_;
+
   const std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  base::WeakPtrFactory<LiveTranslateController> weak_factory_{this};
 };
 
 }  // namespace captions

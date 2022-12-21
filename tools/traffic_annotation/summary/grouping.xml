@@ -270,6 +270,7 @@ after discussions on the right group.
       <annotation id="password_sync_token_fetcher"/>
       <annotation id="nearby_webrtc_connection"/>
       <annotation id="projector_xhr_loader"/>
+      <annotation id="cloud_speech_recognition"/>
       <annotation id="bruschetta_installer_download"/>
       <annotation id="quick_start_session_auth_requester"/>
       <annotation id="network_diagnostics_routines"/>

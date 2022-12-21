@@ -50,9 +50,10 @@ bool LiveTranslateControllerFactory::ServiceIsCreatedWithBrowserContext()
 }
 
 KeyedService* LiveTranslateControllerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+    content::BrowserContext* browser_context) const {
   return new LiveTranslateController(
-      Profile::FromBrowserContext(context)->GetPrefs());
+      Profile::FromBrowserContext(browser_context)->GetPrefs(),
+      browser_context);
 }
 
 }  // namespace captions

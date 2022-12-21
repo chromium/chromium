@@ -34,7 +34,7 @@ class LiveTranslateControllerFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   bool ServiceIsCreatedWithBrowserContext() const override;
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
+      content::BrowserContext* browser_context) const override;
 };
 
 }  // namespace captions
