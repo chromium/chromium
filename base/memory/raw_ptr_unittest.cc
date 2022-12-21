@@ -888,8 +888,8 @@ TEST_F(RawPtrTest, StdSwap) {
 }
 
 TEST_F(RawPtrTest, PostIncrementOperator) {
-  int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptr = foo;
+  std::vector<int> foo({42, 43, 44, 45});
+  CountingRawPtr<int> ptr = &foo[0];
   for (int i = 0; i < 4; ++i) {
     ASSERT_EQ(*ptr++, 42 + i);
   }
@@ -902,7 +902,7 @@ TEST_F(RawPtrTest, PostIncrementOperator) {
 }
 
 TEST_F(RawPtrTest, PostDecrementOperator) {
-  int foo[] = {42, 43, 44, 45};
+  std::vector<int> foo({42, 43, 44, 45});
   CountingRawPtr<int> ptr = &foo[3];
   for (int i = 3; i >= 0; --i) {
     ASSERT_EQ(*ptr--, 42 + i);
@@ -916,8 +916,8 @@ TEST_F(RawPtrTest, PostDecrementOperator) {
 }
 
 TEST_F(RawPtrTest, PreIncrementOperator) {
-  int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptr = foo;
+  std::vector<int> foo({42, 43, 44, 45});
+  CountingRawPtr<int> ptr = &foo[0];
   for (int i = 0; i < 4; ++i, ++ptr) {
     ASSERT_EQ(*ptr, 42 + i);
   }
@@ -930,7 +930,7 @@ TEST_F(RawPtrTest, PreIncrementOperator) {
 }
 
 TEST_F(RawPtrTest, PreDecrementOperator) {
-  int foo[] = {42, 43, 44, 45};
+  std::vector<int> foo({42, 43, 44, 45});
   CountingRawPtr<int> ptr = &foo[3];
   for (int i = 3; i >= 0; --i, --ptr) {
     ASSERT_EQ(*ptr, 42 + i);
@@ -944,8 +944,8 @@ TEST_F(RawPtrTest, PreDecrementOperator) {
 }
 
 TEST_F(RawPtrTest, PlusEqualOperator) {
-  int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptr = foo;
+  std::vector<int> foo({42, 43, 44, 45});
+  CountingRawPtr<int> ptr = &foo[0];
   for (int i = 0; i < 4; i += 2, ptr += 2) {
     ASSERT_EQ(*ptr, 42 + i);
   }
@@ -958,8 +958,8 @@ TEST_F(RawPtrTest, PlusEqualOperator) {
 }
 
 TEST_F(RawPtrTest, PlusEqualOperatorTypes) {
-  int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptr = foo;
+  std::vector<int> foo({42, 43, 44, 45});
+  CountingRawPtr<int> ptr = &foo[0];
   ASSERT_EQ(*ptr, 42);
   ptr += 2;  // Positive literal.
   ASSERT_EQ(*ptr, 44);
@@ -972,7 +972,7 @@ TEST_F(RawPtrTest, PlusEqualOperatorTypes) {
 }
 
 TEST_F(RawPtrTest, MinusEqualOperator) {
-  int foo[] = {42, 43, 44, 45};
+  std::vector<int> foo({42, 43, 44, 45});
   CountingRawPtr<int> ptr = &foo[3];
   for (int i = 3; i >= 0; i -= 2, ptr -= 2) {
     ASSERT_EQ(*ptr, 42 + i);
