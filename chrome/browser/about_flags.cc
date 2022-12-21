@@ -6224,10 +6224,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kCCTResizableAllowResizeByUserGesture)},
-    {"cct-resizable-for-first-parties",
-     flag_descriptions::kCCTResizableForFirstPartiesName,
-     flag_descriptions::kCCTResizableForFirstPartiesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTResizableForFirstParties)},
     {"cct-resizable-for-third-parties",
      flag_descriptions::kCCTResizableForThirdPartiesName,
      flag_descriptions::kCCTResizableForThirdPartiesDescription, kOsAndroid,

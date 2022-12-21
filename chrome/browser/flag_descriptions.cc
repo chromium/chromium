@@ -3474,10 +3474,6 @@ const char kCCTResizableAllowResizeByUserGestureName[] =
     "Bottom sheet Custom Tabs allow resize by user gesture";
 const char kCCTResizableAllowResizeByUserGestureDescription[] =
     "Enable user gesture to resize bottom sheet Custom Tabs";
-const char kCCTResizableForFirstPartiesName[] =
-    "Bottom sheet Custom Tabs (first party)";
-const char kCCTResizableForFirstPartiesDescription[] =
-    "Enable bottom sheet Custom Tabs for first party apps.";
 const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =

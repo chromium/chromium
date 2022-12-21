@@ -231,7 +231,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_RESIZABLE_90_MAXIMUM_HEIGHT = "CCTResizable90MaximumHeight";
     public static final String CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE =
             "CCTResizableAllowResizeByUserGesture";
-    public static final String CCT_RESIZABLE_FOR_FIRST_PARTIES = "CCTResizableForFirstParties";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
     public static final String CCT_RESIZABLE_SIDE_SHEET = "CCTResizableSideSheet";
     public static final String CCT_RESOURCE_PREFETCH = "CCTResourcePrefetch";
@@ -576,8 +575,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CCT_RESIZABLE_90_MAXIMUM_HEIGHT, false);
     public static final CachedFlag sCctResizableAllowResizeByUserGesture =
             new CachedFlag(CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE, false);
-    public static final CachedFlag sCctResizableForFirstParties =
-            new CachedFlag(CCT_RESIZABLE_FOR_FIRST_PARTIES, true);
     public static final CachedFlag sCctResizableForThirdParties =
             new CachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, false);
     public static final CachedFlag sCctResizableSideSheet =
