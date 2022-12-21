@@ -24,7 +24,6 @@ enum CaptionButtonIcon {
   // specific to their use case (e.g. tab search caption button in the browser
   // window frame).
   CAPTION_BUTTON_ICON_CUSTOM,
-  CAPTION_BUTTON_ICON_FLOAT,
   CAPTION_BUTTON_ICON_COUNT,
 };
 

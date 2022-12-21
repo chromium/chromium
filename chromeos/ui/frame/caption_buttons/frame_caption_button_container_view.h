@@ -86,11 +86,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
       return container_view_->custom_button_;
     }
 
-    views::FrameCaptionButton* float_button() const {
-      DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
-      return container_view_->float_button_;
-    }
-
    private:
     raw_ptr<FrameCaptionButtonContainerView> container_view_;
   };
@@ -128,8 +123,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // state. A parent view should relayout to reflect the change in states.
   void UpdateCaptionButtonState(bool animate);
 
-  // Updates the image and tooltips of the size, float and snap buttons. These
-  // can change on state change or display orientation change.
+  // Updates the image and tooltips of the size and snap buttons. These can
+  // change on state change or display orientation change.
   void UpdateButtonsImageAndTooltip();
 
   // Sets the size of the buttons in this container.
@@ -169,9 +164,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // well.
   void UpdateSizeButton();
   void UpdateSnapButtons();
-  void UpdateFloatButton();
 
-  void FloatButtonPressed();
   void MinimizeButtonPressed();
   void SizeButtonPressed();
   void CloseButtonPressed();
@@ -198,7 +191,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // The buttons. In the normal button style, at most one of |minimize_button_|
   // and |size_button_| is visible.
   raw_ptr<views::FrameCaptionButton> custom_button_ = nullptr;
-  raw_ptr<views::FrameCaptionButton> float_button_ = nullptr;
   raw_ptr<views::FrameCaptionButton> menu_button_ = nullptr;
   raw_ptr<views::FrameCaptionButton> minimize_button_ = nullptr;
   raw_ptr<views::FrameCaptionButton> size_button_ = nullptr;
