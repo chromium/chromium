@@ -3682,7 +3682,7 @@
   {
     "name": "feed-back-to-top",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 112
   },
   {
     "name": "feed-background-refresh-ios",
@@ -3692,7 +3692,7 @@
   {
     "name": "feed-close-refresh",
     "owners": ["//chrome/android/feed/OWNERS", "iwells@chromium.org"],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "feed-discofeed-endpoint",
@@ -3712,7 +3712,7 @@
   {
     "name": "feed-loading-placeholder",
     "owners": [ "//chrome/android/feed/OWNERS", "dewittj@chromium.org" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 115
   },
   {
     "name": "feed-share",
@@ -3720,19 +3720,9 @@
     "expiry_milestone": 95
   },
   {
-    "name": "feed-stamp",
-    "owners": [ "//chrome/android/feed/OWNERS", "freedjm@chromium.org" ],
-    "expiry_milestone": 100
-  },
-  {
-    "name": "feed-v2-autoplay",
-    "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "feed-v2-hearts",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 115
   },
   {
     "name": "feed-video-inline-playback",
@@ -4256,11 +4246,6 @@
     "name": "intents-on-phone-number",
     "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 112
-  },
-  {
-    "name": "interest-feed-notice-card-auto-dismiss",
-    "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org", "edchin@chromium.org" ],
-    "expiry_milestone": 95
   },
   {
     "name": "interest-feed-v1-clicks-and-views-cond-upload",
@@ -7199,7 +7184,7 @@
   {
     "name": "xsurface-metrics-reporting",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 115
   },
   {
     "name": "zero-copy-tab-capture",

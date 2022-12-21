@@ -229,7 +229,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/explore_sites/explore_sites_feature.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
@@ -1894,22 +1893,6 @@ const FeatureEntry::FeatureVariation
         {"(Zero threshold)", kTranslateForceTriggerOnEnglishBackoff,
          std::size(kTranslateForceTriggerOnEnglishBackoff), nullptr}};
 
-const FeatureEntry::FeatureParam kExploreSitesDenseTitleBottom[] = {
-    {chrome::android::explore_sites::kExploreSitesDenseVariationParameterName,
-     chrome::android::explore_sites::
-         kExploreSitesDenseVariationDenseTitleBottom},
-};
-const FeatureEntry::FeatureParam kExploreSitesDenseTitleRight[] = {
-    {chrome::android::explore_sites::kExploreSitesDenseVariationParameterName,
-     chrome::android::explore_sites::
-         kExploreSitesDenseVariationDenseTitleRight},
-};
-const FeatureEntry::FeatureVariation kExploreSitesVariations[] = {
-    {"Dense Title Bottom", kExploreSitesDenseTitleBottom,
-     std::size(kExploreSitesDenseTitleBottom), nullptr},
-    {"Dense Title Right", kExploreSitesDenseTitleRight,
-     std::size(kExploreSitesDenseTitleRight), nullptr}};
-
 const FeatureEntry::FeatureParam kRelatedSearchesUrl = {"stamp", "1Ru"};
 const FeatureEntry::FeatureParam kRelatedSearchesContent = {"stamp", "1Rc"};
 const FeatureEntry::FeatureVariation kRelatedSearchesVariations[] = {
@@ -3409,11 +3392,6 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kContextualSearchSuppressShortView,
          kContextualSearchSuppressShortViewVariations,
          "ContextualSearchSuppressShortView")},
-    {"explore-sites", flag_descriptions::kExploreSitesName,
-     flag_descriptions::kExploreSitesDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kExploreSites,
-                                    kExploreSitesVariations,
-                                    "ExploreSites InitialCountries")},
     {"related-searches", flag_descriptions::kRelatedSearchesName,
      flag_descriptions::kRelatedSearchesDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRelatedSearches,
@@ -4641,18 +4619,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPostQuantumCECPQ2Description, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kPostQuantumCECPQ2)},
 #if BUILDFLAG(IS_ANDROID)
-    {"interest-feed-v2", flag_descriptions::kInterestFeedV2Name,
-     flag_descriptions::kInterestFeedV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kInterestFeedV2)},
     {"feed-back-to-top", flag_descriptions::kFeedBackToTopName,
      flag_descriptions::kFeedBackToTopDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kFeedBackToTop)},
     {"feed-loading-placeholder", flag_descriptions::kFeedLoadingPlaceholderName,
      flag_descriptions::kFeedLoadingPlaceholderDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kFeedLoadingPlaceholder)},
-    {"feed-stamp", flag_descriptions::kFeedStampName,
-     flag_descriptions::kFeedStampDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kFeedStamp)},
     {"feed-v2-hearts", flag_descriptions::kInterestFeedV2HeartsName,
      flag_descriptions::kInterestFeedV2HeartsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kInterestFeedV2Hearts)},
@@ -4660,13 +4632,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInfoCardAcknowledgementTrackingName,
      flag_descriptions::kInfoCardAcknowledgementTrackingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kInfoCardAcknowledgementTracking)},
-    {"feed-v2-autoplay", flag_descriptions::kInterestFeedV2AutoplayName,
-     flag_descriptions::kInterestFeedV2AutoplayDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kInterestFeedV2Autoplay)},
-    {"feed-video-inline-playback",
-     flag_descriptions::kFeedVideoInlinePlaybackName,
-     flag_descriptions::kFeedVideoInlinePlaybackDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kFeedVideoInlinePlayback)},
     {"web-feed", flag_descriptions::kWebFeedName,
      flag_descriptions::kWebFeedDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kWebFeed,
