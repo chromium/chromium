@@ -18,20 +18,14 @@ HTMLMeterElement* MeterShadowElement::MeterElement() const {
   return To<HTMLMeterElement>(OwnerShadowHost());
 }
 
-scoped_refptr<ComputedStyle> MeterShadowElement::CustomStyleForLayoutObject(
-    const StyleRecalcContext& style_recalc_context) {
-  scoped_refptr<ComputedStyle> style =
-      OriginalStyleForLayoutObject(style_recalc_context);
+void MeterShadowElement::AdjustStyle(ComputedStyleBuilder& builder) {
   const ComputedStyle* meter_style = MeterElement()->GetComputedStyle();
   DCHECK(meter_style);
   // For vertical writing-mode, we need to set the direction to rtl so that
   // the meter value bar is rendered bottom up.
-  if (!IsHorizontalWritingMode(style->GetWritingMode())) {
-    ComputedStyleBuilder builder(*style);
+  if (!IsHorizontalWritingMode(builder.GetWritingMode())) {
     builder.SetDirection(TextDirection::kRtl);
-    style = builder.TakeStyle();
   }
-  return style;
 }
 
 }  // namespace blink
