@@ -262,14 +262,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, DictationLocalesCalculation) {
     const base::Value::List* argument = nullptr;
     ASSERT_TRUE(
         GetWebUIListenerArgumentListValue("dictation-locales-set", argument));
-    for (auto& it : *argument) {
-      const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(it);
+    for (const base::Value& it : *argument) {
+      const base::Value::Dict& dict = it.GetDict();
       base::StringPiece language_code =
-          language::SplitIntoMainAndTail(*(dict->FindStringPath("value")))
-              .first;
+          language::SplitIntoMainAndTail(*(dict.FindString("value"))).first;
       // Only expect some locales to be recommended based on application and
       // IME languages.
-      if (*(dict->FindBoolPath("recommended"))) {
+      if (*(dict.FindBool("recommended"))) {
         EXPECT_THAT(testcase.expected_recommended_prefixes,
                     Contains(language_code));
       } else {
