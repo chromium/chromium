@@ -180,6 +180,9 @@ TEST_F(TabInteractionRecorderAndroidTest, HadFormInteraction) {
   EXPECT_FALSE(helper->has_form_interactions());
   OnTextFieldDidChangeForAutofillManager(autofill_manager());
   EXPECT_TRUE(helper->has_form_interactions());
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  EXPECT_TRUE(helper->HadFormInteraction(env));
 }
 
 TEST_F(TabInteractionRecorderAndroidTest, HasNavigatedFromFirstPage) {
@@ -192,6 +195,10 @@ TEST_F(TabInteractionRecorderAndroidTest, HasNavigatedFromFirstPage) {
       ->NavigateAndCommit(GURL("https://bar.com"));
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(helper->HasNavigatedFromFirstPage());
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  // no navigation interaction if did not get user interaction.
+  EXPECT_FALSE(helper->HadNavigationInteraction(env));
 }
 
 TEST_F(TabInteractionRecorderAndroidTest, DidGetUserInteraction) {
@@ -201,6 +208,50 @@ TEST_F(TabInteractionRecorderAndroidTest, DidGetUserInteraction) {
   EXPECT_FALSE(helper->did_get_user_interaction());
   helper->DidGetUserInteraction(blink::WebTouchEvent());
   EXPECT_TRUE(helper->did_get_user_interaction());
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  EXPECT_TRUE(helper->DidGetUserInteraction(env));
+  // no navigation interaction if no navigation from first page is performed.
+  EXPECT_FALSE(helper->HadNavigationInteraction(env));
 }
 
+TEST_F(TabInteractionRecorderAndroidTest,
+       GetUserInteractionAndNavigateFromFirstPage) {
+  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+  auto* helper = TabInteractionRecorderAndroid::FromWebContents(contents.get());
+
+  helper->DidGetUserInteraction(blink::WebTouchEvent());
+  content::WebContentsTester::For(contents.get())
+      ->NavigateAndCommit(GURL("https://bar.com"));
+  task_environment()->RunUntilIdle();
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  EXPECT_TRUE(helper->DidGetUserInteraction(env));
+  EXPECT_TRUE(helper->HadNavigationInteraction(env));
+}
+
+TEST_F(TabInteractionRecorderAndroidTest, ResetInteractions) {
+  test_feature_list_.InitAndEnableFeature(
+      chrome::android::kCCTRetainingStateInMemory);
+
+  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+  auto* helper = TabInteractionRecorderAndroid::FromWebContents(contents.get());
+
+  // Simulate touch, text input, and navigation events.
+  helper->DidGetUserInteraction(blink::WebTouchEvent());
+  OnTextFieldDidChangeForAutofillManager(autofill_manager());
+  content::WebContentsTester::For(contents.get())
+      ->NavigateAndCommit(GURL("https://bar.com"));
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(helper->has_form_interactions());
+  EXPECT_TRUE(helper->did_get_user_interaction());
+  EXPECT_TRUE(helper->HasNavigatedFromFirstPage());
+
+  // Assuming the record resets from Android.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  helper->Reset(env);
+  EXPECT_FALSE(helper->HadFormInteraction(env));
+  EXPECT_FALSE(helper->DidGetUserInteraction(env));
+  EXPECT_FALSE(helper->HadNavigationInteraction(env));
+}
 }  // namespace customtabs

@@ -93,6 +93,11 @@ bool TabInteractionRecorderAndroid::HasNavigatedFromFirstPage() const {
          web_contents()->GetController().CanGoForward();
 }
 
+void TabInteractionRecorderAndroid::ResetImpl() {
+  has_form_interactions_ = false;
+  did_get_user_interaction_ = false;
+}
+
 // content::WebContentsObserver:
 void TabInteractionRecorderAndroid::RenderFrameHostStateChanged(
     RenderFrameHost* render_frame_host,
@@ -160,13 +165,18 @@ jboolean TabInteractionRecorderAndroid::DidGetUserInteraction(
   return did_get_user_interaction_;
 }
 
-jboolean TabInteractionRecorderAndroid::HadInteraction(JNIEnv* env) const {
-  bool has_interaction = has_form_interactions() || HasNavigatedFromFirstPage();
-  return static_cast<jboolean>(has_interaction);
+jboolean TabInteractionRecorderAndroid::HadFormInteraction(JNIEnv* env) const {
+  return static_cast<jboolean>(has_form_interactions());
+}
+
+jboolean TabInteractionRecorderAndroid::HadNavigationInteraction(
+    JNIEnv* env) const {
+  return static_cast<jboolean>(did_get_user_interaction_ &&
+                               HasNavigatedFromFirstPage());
 }
 
 void TabInteractionRecorderAndroid::Reset(JNIEnv* env) {
-  has_form_interactions_ = false;
+  ResetImpl();
 }
 
 ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_GetFromTab(

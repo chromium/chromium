@@ -22,6 +22,29 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="CustomTab.HadInteractionOnClose.Form" enum="Boolean"
+    expires_after="2023-06-19">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    This histogram records true when the current CCT has seen any form
+    interactions (e.g. text entry, drop down entry) and false if there have been
+    no form interactions at the time of closing the CCT.
+  </summary>
+</histogram>
+
+<histogram name="CustomTab.HadInteractionOnClose.Navigation" enum="Boolean"
+    expires_after="2023-06-19">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    This histogram records true when the current CCT has interactions with the
+    web contents (e.g. touch, scroll, fling), and the active tab can go back /
+    forward and false if there have not been web contents interactions or the
+    tab cannot go back / forward at the time of closing the CCT.
+  </summary>
+</histogram>
+
 <histogram base="true" name="CustomTab.SessionDuration" units="ms"
     expires_after="2020-10-18">
   <owner>ranj@chromium.org</owner>
@@ -259,6 +282,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CustomTabs.HadInteractionOnClose" enum="Boolean"
     expires_after="2023-06-18">
+  <obsolete>
+    Deprecated 2022-12. Replaced by CustomTabs.HadInteractionOnClose.Form and
+    CustomTabs.HadInteractionOnClose.Navigation
+  </obsolete>
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -447,8 +474,9 @@ chromium-metrics-reviews@google.com.
     A CCT can be defined as retainable if 1) it is launching with the same URL
     as the most recently closed CCT; 2) it is launched from the same embedded
     app as the most recently closed CCT; 3) the most recently closed CCT had
-    user interactions. See &quot;CustomTabs.HadInteractionOnClose&quot; for
-    information on interactions.
+    user interactions. See &quot;CustomTabs.HadInteractionOnClose.Form&quot; and
+    &quot;CustomTabs.HadInteractionOnClose.Navigation&quot; for information on
+    interactions.
 
     The histogram suffix identifies whether the CCT is created with the same
     intent Uri data and for the same embedded app, launching CCT with the same

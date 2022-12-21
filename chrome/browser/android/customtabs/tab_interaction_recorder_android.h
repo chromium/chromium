@@ -83,7 +83,8 @@ class TabInteractionRecorderAndroid
 
   // JNI methods
   jboolean DidGetUserInteraction(JNIEnv* env) const;
-  jboolean HadInteraction(JNIEnv* env) const;
+  jboolean HadFormInteraction(JNIEnv* env) const;
+  jboolean HadNavigationInteraction(JNIEnv* env) const;
   void Reset(JNIEnv* env);
 
 #ifdef UNIT_TEST
@@ -99,6 +100,8 @@ class TabInteractionRecorderAndroid
   friend class AutofillObserverImpl;
   void StartObservingFrame(content::RenderFrameHost* render_frame_host);
   void SetHasFormInteractions();
+
+  void ResetImpl();
 
   bool did_get_user_interaction_ = false;
   bool has_form_interactions_ = false;
