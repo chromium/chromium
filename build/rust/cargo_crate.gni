@@ -24,6 +24,7 @@ import("//build/rust/rust_target.gni")
 #  crate_root
 #  epoch
 #  deps
+#  aliased_deps
 #  features
 #  build_native_rust_unit_tests
 #  edition

@@ -67,6 +67,7 @@ group("deps") {
     }
     if (rustc_can_link) {
       deps += [
+        "test_aliased_deps",
         "test_bin_crate",
         "test_rlib_crate:test_rlib_crate_associated_bin",
         "test_rust_exe",

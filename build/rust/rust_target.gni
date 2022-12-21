@@ -147,6 +147,12 @@ template("rust_target") {
   if (defined(invoker.public_deps)) {
     _public_deps += invoker.public_deps
   }
+  if (defined(invoker.aliased_deps)) {
+    _aliased_deps = invoker.aliased_deps
+  } else {
+    _aliased_deps = {
+    }
+  }
 
   _build_unit_tests = false
   if (defined(invoker.build_native_rust_unit_tests)) {
@@ -203,6 +209,7 @@ template("rust_target") {
                  "_crate_name",
                  "_cxx_bindings",
                  "_deps",
+                 "_aliased_deps",
                  "_metadata",
                  "_out_dir",
                  "_public_deps",
@@ -240,6 +247,7 @@ template("rust_target") {
     }
 
     _rust_deps = _deps
+    _rust_aliased_deps = _aliased_deps
     _rust_public_deps = _public_deps
     _cxx_deps = _deps
 
@@ -263,6 +271,7 @@ template("rust_target") {
                              TESTONLY_AND_VISIBILITY + [
                                    "features",
                                    "deps",
+                                   "aliased_deps",
                                    "public_deps",
                                    "rustflags",
                                    "rustenv",
@@ -279,6 +288,7 @@ template("rust_target") {
       configs = []
       configs = _configs
       deps = _rust_deps
+      aliased_deps = _rust_aliased_deps
       public_deps = _rust_public_deps
       rustflags = _rustflags
       rustflags += [ string_join("",
@@ -334,6 +344,7 @@ template("rust_target") {
         rustflags = _rustflags
         output_dir = _out_dir
         deps = _rust_deps + _public_deps
+        aliased_deps = _rust_aliased_deps
         public_deps = [ ":${_target_name}" ]
         if (defined(invoker.test_deps)) {
           deps += invoker.test_deps
