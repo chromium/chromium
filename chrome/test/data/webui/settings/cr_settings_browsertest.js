@@ -373,6 +373,15 @@ var CrSettingsSiteListTest = class extends CrSettingsBrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/site_list_tests.js';
   }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      enabled: [
+        'privacy_sandbox::kPrivacySandboxSettings4',
+      ],
+    };
+  }
 };
 
 // Copied from Polymer 2 test:
@@ -404,6 +413,13 @@ TEST_F('CrSettingsSiteListTest', 'EditExceptionDialog', function() {
 TEST_F('CrSettingsSiteListTest', 'AddExceptionDialog', function() {
   runMochaSuite('AddExceptionDialog');
 });
+
+// TODO(crbug.com/1378703): Remove after crbug/1378703 launched.
+TEST_F(
+    'CrSettingsSiteListTest', 'AddExceptionDialog_PrivacySandbox4Disabled',
+    function() {
+      runMochaSuite('AddExceptionDialog_PrivacySandbox4Disabled');
+    });
 
 var CrSettingsSiteDetailsTest = class extends CrSettingsBrowserTest {
   /** @override */

@@ -160,6 +160,9 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
   private shouldHideThirdPartyCookieCheckbox_(): boolean {
     // TODO(crbug.com/1378703): Remove checkbox support after feature is
     // launched.
+    if (loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
+      return true;
+    }
     return this.cookiesExceptionType !== CookiesExceptionType.COMBINED ||
         this.category !== ContentSettingsTypes.COOKIES;
   }
