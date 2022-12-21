@@ -7,8 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+#include <map>
+#include <string>
+
+#include "ios/chrome/browser/signin/capabilities_types.h"
+
 @class FakeRefreshAccessTokenError;
 @protocol SystemIdentity;
+
+using FakeSystemIdentityCapabilitiesMap =
+    std::map<std::string, SystemIdentityCapabilityResult>;
 
 // Helper object used by FakeSystemIdentityManager to attach state to
 // a SystemIdentity object via an association.
@@ -17,8 +25,9 @@
 // The identity.
 @property(nonatomic, readonly, strong) id<SystemIdentity> identity;
 
-// The capabilities for the associated SystemIdentity. May be nil.
-@property(nonatomic, copy) NSDictionary<NSString*, NSNumber*>* capabilities;
+// The capabilities for the associated SystemIdentity.
+@property(nonatomic, assign)
+    const FakeSystemIdentityCapabilitiesMap& capabilities;
 
 // The avatar cached for the associated SystemIdentity. May be nil.
 @property(nonatomic, strong) UIImage* cachedAvatar;

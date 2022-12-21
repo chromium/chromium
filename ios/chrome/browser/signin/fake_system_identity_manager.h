@@ -51,8 +51,9 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
 
   // Adds a `capabilities` for `identity`. Requires the identity to have been
   // added to the available identites first.
-  void SetCapabilities(id<SystemIdentity> identity,
-                       NSDictionary<NSString*, NSNumber*>* capabilities);
+  void SetCapabilities(
+      id<SystemIdentity> identity,
+      const std::map<std::string, CapabilityResult>& capabilities);
 
   // Simulates reloading the identities from the keychain.
   void FireSystemIdentityReloaded();

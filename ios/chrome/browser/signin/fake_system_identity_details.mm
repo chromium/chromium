@@ -10,7 +10,9 @@
 #error "This file requires ARC support."
 #endif
 
-@implementation FakeSystemIdentityDetails
+@implementation FakeSystemIdentityDetails {
+  FakeSystemIdentityCapabilitiesMap _capabilities;
+}
 
 - (instancetype)initWithIdentity:(id<SystemIdentity>)identity {
   if ((self = [super init])) {
@@ -18,6 +20,16 @@
     DCHECK(_identity);
   }
   return self;
+}
+
+#pragma mark - Properties
+
+- (const FakeSystemIdentityCapabilitiesMap&)capabilities {
+  return _capabilities;
+}
+
+- (void)setCapabilities:(const FakeSystemIdentityCapabilitiesMap&)capabilities {
+  _capabilities = capabilities;
 }
 
 @end
