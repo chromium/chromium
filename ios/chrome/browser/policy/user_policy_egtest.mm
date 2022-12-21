@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/bind.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/strcat.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -272,6 +273,12 @@ void VerifyTheNotificationUI() {
 // Tests that the user policies are fetched when the user decides to "Continue"
 // in the notification dialog.
 - (void)testUserPolicyNotificationWithAcceptChoice {
+  // TODO(crbug.com/1386163): Failing on iphone 15.7 devices.
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      !base::ios::IsRunningOnIOS16OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
+  }
+
   // Clear the prefs related to user policy to make sure that the notification
   // isn't skipped and that the fetch is started within the minimal schedule
   // interval.
