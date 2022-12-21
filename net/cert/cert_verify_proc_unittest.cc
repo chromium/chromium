@@ -4349,16 +4349,7 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsIsCaLeaf) {
     } else {
       chain_[0]->SetKeyUsages({KEY_USAGE_BIT_DIGITAL_SIGNATURE});
     }
-
-    if (VerifyProcTypeIsBuiltin()) {
-      if (has_key_usage_cert_sign) {
-        EXPECT_THAT(Verify(), IsOk());
-      } else {
-        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-      }
-    } else {
-      EXPECT_THAT(Verify(), IsOk());
-    }
+    EXPECT_THAT(Verify(), IsOk());
   }
 }
 
@@ -5228,16 +5219,7 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, BasicConstraintsIsCa) {
     } else {
       cert_->SetKeyUsages({KEY_USAGE_BIT_DIGITAL_SIGNATURE});
     }
-
-    if (VerifyProcTypeIsBuiltin()) {
-      if (has_key_usage_cert_sign) {
-        EXPECT_THAT(Verify(), IsOk());
-      } else {
-        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-      }
-    } else {
-      EXPECT_THAT(Verify(), IsOk());
-    }
+    EXPECT_THAT(Verify(), IsOk());
   }
 }
 
@@ -5245,22 +5227,14 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
        BasicConstraintsNotCaPathlen) {
   cert_->SetBasicConstraints(/*is_ca=*/false, /*path_len=*/0);
 
-  if (VerifyProcTypeIsBuiltin()) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-  } else {
-    EXPECT_THAT(Verify(), IsOk());
-  }
+  EXPECT_THAT(Verify(), IsOk());
 }
 
 TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
        BasicConstraintsIsCaPathlen) {
   cert_->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/0);
 
-  if (VerifyProcTypeIsBuiltin()) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-  } else {
-    EXPECT_THAT(Verify(), IsOk());
-  }
+  EXPECT_THAT(Verify(), IsOk());
 }
 
 TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,

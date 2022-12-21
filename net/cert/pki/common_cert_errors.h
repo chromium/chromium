@@ -43,10 +43,6 @@ NET_EXPORT extern const CertErrorId kChainIsLength1;
 // The certificate contains an unknown extension which is marked as critical.
 NET_EXPORT extern const CertErrorId kUnconsumedCriticalExtension;
 
-// The target certificate appears to be a CA (has Basic Constraints CA=true),
-// however does not have a keyUsage consistent with being a CA (keyCertSign).
-NET_EXPORT extern const CertErrorId kTargetCertInconsistentCaBits;
-
 // The target certificate appears to be a CA (has Basic Constraints CA=true)
 // but is being used for TLS client or server authentication.
 NET_EXPORT extern const CertErrorId kTargetCertShouldNotBeCa;

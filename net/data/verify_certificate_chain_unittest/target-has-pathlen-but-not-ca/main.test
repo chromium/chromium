@@ -3,6 +3,3 @@ last_cert_trust: TRUSTED_ANCHOR
 utc_time: DEFAULT
 key_purpose: SERVER_AUTH
 expected_errors:
------ Certificate i=0 (CN=Target) -----
-ERROR: Target certificate looks like a CA but does not set all CA properties
-

@@ -19,9 +19,6 @@ DEFINE_CERT_ERROR_ID(kChainIsEmpty, "Chain is empty");
 DEFINE_CERT_ERROR_ID(kChainIsLength1, "Cannot verify a chain of length 1");
 DEFINE_CERT_ERROR_ID(kUnconsumedCriticalExtension,
                      "Unconsumed critical extension");
-DEFINE_CERT_ERROR_ID(
-    kTargetCertInconsistentCaBits,
-    "Target certificate looks like a CA but does not set all CA properties");
 DEFINE_CERT_ERROR_ID(kKeyCertSignBitNotSet, "keyCertSign bit is not set");
 DEFINE_CERT_ERROR_ID(kMaxPathLengthViolated, "max_path_length reached");
 DEFINE_CERT_ERROR_ID(kBasicConstraintsIndicatesNotCa,

@@ -1119,68 +1119,27 @@ void PathVerifier::PrepareForNextCertificate(const ParsedCertificate& cert,
   VerifyNoUnconsumedCriticalExtensions(cert, errors);
 }
 
-// Checks that if the target certificate has properties that only a CA should
-// have (keyCertSign, CA=true, pathLenConstraint), then its other properties
-// are consistent with being a CA. If it does, adds errors to |errors|.
-//
-// This follows from some requirements in RFC 5280 section 4.2.1.9. In
-// particular:
-//
-//    CAs MUST NOT include the pathLenConstraint field unless the cA
-//    boolean is asserted and the key usage extension asserts the
-//    keyCertSign bit.
-//
-// And:
-//
-//    If the cA boolean is not asserted, then the keyCertSign bit in the key
-//    usage extension MUST NOT be asserted.
-//
-// TODO(eroman): Strictly speaking the first requirement is on CAs and not the
-// certificate client, so could be skipped.
-//
-// TODO(eroman): I don't believe Firefox enforces the keyCertSign restriction
-// for compatibility reasons. Investigate if we need to similarly relax this
-// constraint.
-void VerifyTargetCertHasConsistentCaBits(const ParsedCertificate& cert,
-                                         KeyPurpose required_key_purpose,
-                                         CertErrors* errors) {
-  // Check if the certificate contains any property specific to CAs.
-  bool has_ca_property =
-      (cert.has_basic_constraints() &&
-       (cert.basic_constraints().is_ca ||
-        cert.basic_constraints().has_path_len)) ||
-      (cert.has_key_usage() &&
-       cert.key_usage().AssertsBit(KEY_USAGE_BIT_KEY_CERT_SIGN));
-
-  // If it "looks" like a CA because it has a CA-only property, then check that
-  // it sets ALL the properties expected of a CA.
-  if (has_ca_property) {
-    bool success = cert.has_basic_constraints() &&
-                   cert.basic_constraints().is_ca &&
-                   (!cert.has_key_usage() ||
-                    cert.key_usage().AssertsBit(KEY_USAGE_BIT_KEY_CERT_SIGN));
-    if (!success) {
-      // TODO(eroman): Add DER for basic constraints and key usage.
-      errors->AddError(cert_errors::kTargetCertInconsistentCaBits);
-    } else {
-      // In spite of RFC 5280 4.2.1.9 which says the CA properties MAY exist in
-      // an end entity certificate, the CABF Baseline Requirements version
-      // 1.8.4, 7.1.2.3(d) prohibit the CA bit being set in an end entity
-      // certificate.
-      if (cert.has_basic_constraints() && cert.basic_constraints().is_ca) {
-        switch (required_key_purpose) {
-          case KeyPurpose::ANY_EKU:
-            break;
-          case KeyPurpose::SERVER_AUTH:
-          case KeyPurpose::CLIENT_AUTH:
-            errors->AddWarning(cert_errors::kTargetCertShouldNotBeCa);
-            break;
-          case KeyPurpose::SERVER_AUTH_STRICT:
-          case KeyPurpose::CLIENT_AUTH_STRICT:
-            errors->AddError(cert_errors::kTargetCertShouldNotBeCa);
-            break;
-        }
-      }
+// Checks if the target certificate has the CA bit set. If it does, add
+// the appropriate error or warning to |errors|.
+void VerifyTargetCertIsNotCA(const ParsedCertificate& cert,
+                             KeyPurpose required_key_purpose,
+                             CertErrors* errors) {
+  if (cert.has_basic_constraints() && cert.basic_constraints().is_ca) {
+    // In spite of RFC 5280 4.2.1.9 which says the CA properties MAY exist in
+    // an end entity certificate, the CABF Baseline Requirements version
+    // 1.8.4, 7.1.2.3(d) prohibit the CA bit being set in an end entity
+    // certificate.
+    switch (required_key_purpose) {
+      case KeyPurpose::ANY_EKU:
+        break;
+      case KeyPurpose::SERVER_AUTH:
+      case KeyPurpose::CLIENT_AUTH:
+        errors->AddWarning(cert_errors::kTargetCertShouldNotBeCa);
+        break;
+      case KeyPurpose::SERVER_AUTH_STRICT:
+      case KeyPurpose::CLIENT_AUTH_STRICT:
+        errors->AddError(cert_errors::kTargetCertShouldNotBeCa);
+        break;
     }
   }
 }
@@ -1227,8 +1186,9 @@ void PathVerifier::WrapUp(const ParsedCertificate& cert,
   }
 
   // The following check is NOT part of RFC 5280 6.1.5's "Wrap-Up Procedure",
-  // however is implied by RFC 5280 section 4.2.1.9.
-  VerifyTargetCertHasConsistentCaBits(cert, required_key_purpose, errors);
+  // however is implied by RFC 5280 section 4.2.1.9, as well as CABF Base
+  // Requirements.
+  VerifyTargetCertIsNotCA(cert, required_key_purpose, errors);
 
   // Check the public key for the target certificate. The public key for the
   // other certificates is already checked by PrepareForNextCertificate().
