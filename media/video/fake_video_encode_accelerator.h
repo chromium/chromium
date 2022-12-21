@@ -84,7 +84,10 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
 
   void SupportResize() { resize_supported_ = true; }
 
+  void NotifyEncoderInfoChange(const VideoEncoderInfo& info);
+
  private:
+  void DoNotifyEncoderInfoChange(const VideoEncoderInfo& info);
   void DoRequireBitstreamBuffers(unsigned int input_count,
                                  const gfx::Size& input_coded_size,
                                  size_t output_buffer_size) const;

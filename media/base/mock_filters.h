@@ -296,19 +296,19 @@ class MockAudioEncoder : public AudioEncoder {
   // AudioEncoder implementation.
   MOCK_METHOD(void,
               Initialize,
-              (const AudioEncoder::Options& options,
-               AudioEncoder::OutputCB output_cb,
-               AudioEncoder::EncoderStatusCB done_cb),
+              (const Options& options,
+               OutputCB output_cb,
+               EncoderStatusCB done_cb),
               (override));
 
   MOCK_METHOD(void,
               Encode,
               (std::unique_ptr<AudioBus> audio_bus,
                base::TimeTicks capture_time,
-               AudioEncoder::EncoderStatusCB done_cb),
+               EncoderStatusCB done_cb),
               (override));
 
-  MOCK_METHOD(void, Flush, (AudioEncoder::EncoderStatusCB done_cb), (override));
+  MOCK_METHOD(void, Flush, (EncoderStatusCB done_cb), (override));
   MOCK_METHOD(void, DisablePostedCallbacks, (), (override));
 
   // A function for mocking destructor calls
@@ -328,26 +328,27 @@ class MockVideoEncoder : public VideoEncoder {
   MOCK_METHOD(void,
               Initialize,
               (VideoCodecProfile profile,
-               const VideoEncoder::Options& options,
-               VideoEncoder::OutputCB output_cb,
-               VideoEncoder::EncoderStatusCB done_cb),
+               const Options& options,
+               EncoderInfoCB info_cb,
+               OutputCB output_cb,
+               EncoderStatusCB done_cb),
               (override));
 
   MOCK_METHOD(void,
               Encode,
               (scoped_refptr<VideoFrame> frame,
                bool key_frame,
-               VideoEncoder::EncoderStatusCB done_cb),
+               EncoderStatusCB done_cb),
               (override));
 
   MOCK_METHOD(void,
               ChangeOptions,
-              (const VideoEncoder::Options& options,
-               VideoEncoder::OutputCB output_cb,
-               VideoEncoder::EncoderStatusCB done_cb),
+              (const Options& options,
+               OutputCB output_cb,
+               EncoderStatusCB done_cb),
               (override));
 
-  MOCK_METHOD(void, Flush, (VideoEncoder::EncoderStatusCB done_cb), (override));
+  MOCK_METHOD(void, Flush, (EncoderStatusCB done_cb), (override));
   MOCK_METHOD(void, DisablePostedCallbacks, (), (override));
 
   // A function for mocking destructor calls

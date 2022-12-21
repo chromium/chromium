@@ -44,6 +44,22 @@ class StructTraits<media::mojom::VideoEncoderInfoDataView,
       const media::VideoEncoderInfo& video_encoder_info) {
     return video_encoder_info.implementation_name;
   }
+  static bool has_frame_delay(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.frame_delay.has_value();
+  }
+  static int32_t frame_delay(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.frame_delay.value_or(0);
+  }
+  static bool has_input_capacity(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.input_capacity.has_value();
+  }
+  static int32_t input_capacity(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.input_capacity.value_or(0);
+  }
   static bool supports_native_handle(
       const media::VideoEncoderInfo& video_encoder_info) {
     return video_encoder_info.supports_native_handle;

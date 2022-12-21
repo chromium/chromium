@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
@@ -18,6 +19,7 @@
 
 namespace media {
 
+struct VideoEncoderInfo;
 class VideoFrame;
 
 MEDIA_EXPORT uint32_t GetDefaultVideoEncodeBitrate(gfx::Size frame_size,
@@ -84,6 +86,11 @@ class MEDIA_EXPORT VideoEncoder {
   // decoder config.
   using CodecDescription = std::vector<uint8_t>;
 
+  // Provides the VideoEncoder client with information about the specific
+  // encoder implementation.
+  using EncoderInfoCB =
+      base::RepeatingCallback<void(const VideoEncoderInfo& encoder_info)>;
+
   // Callback for VideoEncoder to report an encoded video frame whenever it
   // becomes available.
   using OutputCB =
@@ -116,6 +123,7 @@ class MEDIA_EXPORT VideoEncoder {
   // 2) No VideoEncoder calls should be made before |done_cb| is executed.
   virtual void Initialize(VideoCodecProfile profile,
                           const Options& options,
+                          EncoderInfoCB info_cb,
                           OutputCB output_cb,
                           EncoderStatusCB done_cb) = 0;
 
@@ -150,17 +158,20 @@ class MEDIA_EXPORT VideoEncoder {
   // produced via |output_cb| and calls |dene_cb| after that.
   virtual void Flush(EncoderStatusCB done_cb) = 0;
 
-  // Normally VideoEncoder implementations aren't supposed to call OutputCB and
-  // EncoderStatusCB directly from inside any of VideoEncoder's methods.
-  // This method tells VideoEncoder that all callbacks can be called directly
-  // from within its methods. It saves extra thread hops if it's known that
-  // all callbacks already point to a task runner different from
-  // the current one.
+  // Normally VideoEncoder implementations aren't supposed to call
+  // EncoderInfoCB, OutputCB, and EncoderStatusCB directly from inside any of
+  // VideoEncoder's methods.  This method tells VideoEncoder that all callbacks
+  // can be called directly from within its methods. It saves extra thread hops
+  // if it's known that all callbacks already point to a task runner different
+  // from the current one.
   virtual void DisablePostedCallbacks();
 
  protected:
-  OutputCB BindCallbackToCurrentLoopIfNeeded(OutputCB&& callback);
-  EncoderStatusCB BindCallbackToCurrentLoopIfNeeded(EncoderStatusCB&& callback);
+  template <typename Callback>
+  Callback BindCallbackToCurrentLoopIfNeeded(Callback callback) {
+    return post_callbacks_ ? BindToCurrentLoop(std::move(callback))
+                           : std::move(callback);
+  }
 
  private:
   bool post_callbacks_ = true;

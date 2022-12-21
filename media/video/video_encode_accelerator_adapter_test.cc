@@ -27,6 +27,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "media/video/mock_video_encode_accelerator.h"
+#include "media/video/video_encoder_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/color_space.h"
@@ -224,22 +225,24 @@ class VideoEncodeAcceleratorAdapterTest
 TEST_F(VideoEncodeAcceleratorAdapterTest, PreInitialize) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);
-  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
-      });
 
-  adapter()->Initialize(profile_, options, std::move(output_cb),
-                        ValidatingStatusCB());
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        /*output_cb=*/base::DoNothing(), ValidatingStatusCB());
   RunUntilIdle();
 }
 
 TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);
-  int outputs_count = 0;
   auto pixel_format = PIXEL_FORMAT_I420;
   const gfx::ColorSpace expected_color_space =
       ExpectedColorSpace(pixel_format, pixel_format);
+
+  bool info_cb_called = false;
+  VideoEncoder::EncoderInfoCB info_cb = base::BindLambdaForTesting(
+      [&](const VideoEncoderInfo& info) { info_cb_called = true; });
+
+  int outputs_count = 0;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
           absl::optional<VideoEncoder::CodecDescription>) {
@@ -254,14 +257,17 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
         EXPECT_EQ(frame->coded_size(), options.frame_size);
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));
-  adapter()->Initialize(profile_, options, std::move(output_cb),
-                        ValidatingStatusCB());
+  adapter()->Initialize(profile_, options, std::move(info_cb),
+                        std::move(output_cb), ValidatingStatusCB());
 
   auto frame =
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
 
   adapter()->Encode(frame, true, ValidatingStatusCB());
   RunUntilIdle();
+  vea()->NotifyEncoderInfoChange(VideoEncoderInfo());
+  RunUntilIdle();
+  EXPECT_TRUE(info_cb_called);
   EXPECT_EQ(outputs_count, 1);
 }
 
@@ -312,8 +318,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
         }
         return result;
       }));
-  adapter()->Initialize(profile_, options, std::move(output_cb),
-                        ValidatingStatusCB());
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        std::move(output_cb), ValidatingStatusCB());
 
   auto frame1 =
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
@@ -359,8 +365,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
         EXPECT_EQ(frame->coded_size(), options.frame_size);
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));
-  adapter()->Initialize(profile_, options, std::move(output_cb),
-                        ValidatingStatusCB());
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        std::move(output_cb), ValidatingStatusCB());
 
   auto frame =
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
@@ -392,8 +398,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializationError) {
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));
   adapter()->Initialize(
-      VIDEO_CODEC_PROFILE_UNKNOWN, options, std::move(output_cb),
-      base::BindLambdaForTesting([](EncoderStatus s) {
+      VIDEO_CODEC_PROFILE_UNKNOWN, options, /*info_cb=*/base::DoNothing(),
+      std::move(output_cb), base::BindLambdaForTesting([](EncoderStatus s) {
         EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderInitializationError);
       }));
 
@@ -418,8 +424,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, EncodingError) {
       base::BindLambdaForTesting(
           [&](EncoderStatus s) { EXPECT_FALSE(s.is_ok()); });
 
-  adapter()->Initialize(profile_, options, std::move(output_cb),
-                        ValidatingStatusCB());
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        std::move(output_cb), ValidatingStatusCB());
 
   vea()->SetWillEncodingSucceed(false);
 
@@ -462,8 +468,8 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, TwoFramesResize) {
         EXPECT_EQ(frame->coded_size(), options.frame_size);
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));
-  adapter()->Initialize(profile_, options, std::move(output_cb),
-                        ValidatingStatusCB());
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        std::move(output_cb), ValidatingStatusCB());
 
   adapter()->Encode(small_frame, true, ValidatingStatusCB());
   adapter()->Encode(large_frame, false, ValidatingStatusCB());
@@ -492,8 +498,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, AutomaticResizeSupport) {
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));
   vea()->SupportResize();
-  adapter()->Initialize(profile_, options, std::move(output_cb),
-                        ValidatingStatusCB());
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        std::move(output_cb), ValidatingStatusCB());
 
   auto frame1 =
       CreateGreenFrame(small_size, pixel_format, base::Milliseconds(1));
@@ -552,8 +558,8 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, RunWithAllPossibleInputConversions) {
         EXPECT_EQ(frame->coded_size(), options.frame_size);
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));
-  adapter()->Initialize(profile_, options, std::move(output_cb),
-                        ValidatingStatusCB());
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        std::move(output_cb), ValidatingStatusCB());
 
   for (int frame_index = 0; frame_index < frames_to_encode; frame_index++) {
     gfx::Size size;
@@ -594,8 +600,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, DroppedFrame) {
         size_t size = keyframe ? 1 : 0;  // Drop non-key frame
         return BitstreamBufferMetadata(size, keyframe, frame->timestamp());
       }));
-  adapter()->Initialize(profile_, options, std::move(output_cb),
-                        ValidatingStatusCB());
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        std::move(output_cb), ValidatingStatusCB());
 
   auto frame1 =
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
@@ -642,8 +648,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest,
         EXPECT_EQ(frame->coded_size(), options.frame_size);
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));
-  adapter()->Initialize(profile_, options, std::move(first_output_cb),
-                        ValidatingStatusCB());
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        std::move(first_output_cb), ValidatingStatusCB());
   // We must encode one frame before we can change options.
   auto first_frame =
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));

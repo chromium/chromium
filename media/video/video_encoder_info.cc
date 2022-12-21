@@ -38,6 +38,8 @@ bool operator==(const VideoEncoderInfo& l, const VideoEncoderInfo& r) {
   }
 
   return l.implementation_name == r.implementation_name &&
+         l.frame_delay == r.frame_delay &&
+         l.input_capacity == r.input_capacity &&
          l.supports_native_handle == r.supports_native_handle &&
          l.has_trusted_rate_controller == r.has_trusted_rate_controller &&
          l.is_hardware_accelerated == r.is_hardware_accelerated &&

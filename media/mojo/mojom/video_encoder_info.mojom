@@ -15,8 +15,15 @@ struct ResolutionBitrateLimit {
   int32 max_bitrate_bps;
 };
 
+// TODO(crbug.com/657632): Remove |has_*| values and use nullable types.
 struct VideoEncoderInfo {
   string implementation_name;
+
+  bool has_frame_delay = false;
+  int32 frame_delay;
+
+  bool has_input_capacity = false;
+  int32 input_capacity;
 
   bool supports_native_handle;
   bool has_trusted_rate_controller;

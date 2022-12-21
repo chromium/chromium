@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_OFFLOADING_VIDEO_ENCODER_H_
-#define MEDIA_BASE_OFFLOADING_VIDEO_ENCODER_H_
+#ifndef MEDIA_VIDEO_OFFLOADING_VIDEO_ENCODER_H_
+#define MEDIA_VIDEO_OFFLOADING_VIDEO_ENCODER_H_
 
 #include <memory>
 #include <type_traits>
@@ -39,6 +39,7 @@ class MEDIA_EXPORT OffloadingVideoEncoder final : public VideoEncoder {
 
   void Initialize(VideoCodecProfile profile,
                   const Options& options,
+                  EncoderInfoCB info_cb,
                   OutputCB output_cb,
                   EncoderStatusCB done_cb) override;
 
@@ -64,4 +65,4 @@ class MEDIA_EXPORT OffloadingVideoEncoder final : public VideoEncoder {
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_OFFLOADING_VIDEO_ENCODER_H_
+#endif  // MEDIA_VIDEO_OFFLOADING_VIDEO_ENCODER_H_

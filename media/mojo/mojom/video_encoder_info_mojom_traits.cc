@@ -4,6 +4,8 @@
 
 #include "media/mojo/mojom/video_encoder_info_mojom_traits.h"
 
+#include "media/mojo/mojom/video_encoder_info.mojom.h"
+
 namespace mojo {
 
 // static
@@ -35,6 +37,16 @@ bool StructTraits<
 
   if (!data.ReadImplementationName(&out->implementation_name))
     return false;
+
+  if (data.has_frame_delay())
+    out->frame_delay = data.frame_delay();
+  else
+    out->frame_delay.reset();
+
+  if (data.has_input_capacity())
+    out->input_capacity = data.input_capacity();
+  else
+    out->input_capacity.reset();
 
   base::span<std::vector<uint8_t>> fps_allocation(out->fps_allocation);
   if (!data.ReadFpsAllocation(&fps_allocation))

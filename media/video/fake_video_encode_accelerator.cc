@@ -115,6 +115,19 @@ void FakeVideoEncodeAccelerator::SetWillEncodingSucceed(
   will_encoding_succeed_ = will_encoding_succeed;
 }
 
+void FakeVideoEncodeAccelerator::NotifyEncoderInfoChange(
+    const VideoEncoderInfo& info) {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FakeVideoEncodeAccelerator::DoNotifyEncoderInfoChange,
+                     weak_this_factory_.GetWeakPtr(), info));
+}
+
+void FakeVideoEncodeAccelerator::DoNotifyEncoderInfoChange(
+    const VideoEncoderInfo& info) {
+  client_->NotifyEncoderInfoChange(info);
+}
+
 void FakeVideoEncodeAccelerator::DoRequireBitstreamBuffers(
     unsigned int input_count,
     const gfx::Size& input_coded_size,

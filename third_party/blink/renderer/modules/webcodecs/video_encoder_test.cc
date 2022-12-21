@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "media/base/mock_filters.h"
+#include "media/video/video_encoder_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -52,8 +53,8 @@ class FakeVideoEncoder : public VideoEncoder {
 
  private:
   void SetupExpectations(base::RepeatingClosure quit_closure) {
-    EXPECT_CALL(*next_mock_encoder_, Initialize(_, _, _, _))
-        .WillOnce([quit_closure](Unused, Unused, Unused,
+    EXPECT_CALL(*next_mock_encoder_, Initialize(_, _, _, _, _))
+        .WillOnce([quit_closure](Unused, Unused, Unused, Unused,
                                  media::VideoEncoder::EncoderStatusCB done_cb) {
           scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
               FROM_HERE, WTF::BindOnce(std::move(done_cb),
@@ -67,7 +68,12 @@ class FakeVideoEncoder : public VideoEncoder {
       const ParsedConfig& config,
       media::GpuVideoAcceleratorFactories* gpu_factories) override {
     EXPECT_TRUE(next_mock_encoder_);
-    OnMediaEncoderCreated("MockEncoderName", mock_encoder_is_hw_);
+
+    media::VideoEncoderInfo info;
+    info.implementation_name = "MockEncoderName";
+    info.is_hardware_accelerated = mock_encoder_is_hw_;
+    OnMediaEncoderInfoChanged(info);
+
     return std::move(next_mock_encoder_);
   }
 

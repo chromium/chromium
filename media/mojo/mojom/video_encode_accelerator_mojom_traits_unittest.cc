@@ -35,6 +35,8 @@ TEST(VideoEncodeAcceleratorSupportedProfile, RoundTrip) {
 TEST(VideoEncoderInfoStructTraitTest, RoundTrip) {
   ::media::VideoEncoderInfo input;
   input.implementation_name = "FakeVideoEncodeAccelerator";
+  // Set `frame_delay` but leave `input_capacity` empty.
+  input.frame_delay = 3;
   // FPS allocation.
   for (size_t i = 0; i < ::media::VideoEncoderInfo::kMaxSpatialLayers; ++i)
     input.fps_allocation[i] = {5, 5, 10};

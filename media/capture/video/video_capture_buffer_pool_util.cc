@@ -23,7 +23,9 @@ int DeviceVideoCaptureMaxBufferPoolSize() {
 #if BUILDFLAG(IS_MAC)
   // On macOS, we allow a few more buffers as it's routinely observed that it
   // runs out of three when just displaying 60 FPS media in a video element.
-  max_buffer_count = 10;
+  // Also, this must be greater than the frame delay of VideoToolbox encoder
+  // for AVC High Profile.
+  max_buffer_count = 15;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS with MIPI cameras running on HAL v3, there can be four
   // concurrent streams of camera pipeline depth ~6. We allow at most 36 buffers

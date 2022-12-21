@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/offloading_video_encoder.h"
+#include "media/video/offloading_video_encoder.h"
 
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/video_frame.h"
+#include "media/video/video_encoder_info.h"
 
 namespace media {
 
@@ -40,6 +41,7 @@ OffloadingVideoEncoder::OffloadingVideoEncoder(
 
 void OffloadingVideoEncoder::Initialize(VideoCodecProfile profile,
                                         const Options& options,
+                                        EncoderInfoCB info_cb,
                                         OutputCB output_cb,
                                         EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -47,6 +49,7 @@ void OffloadingVideoEncoder::Initialize(VideoCodecProfile profile,
       FROM_HERE,
       base::BindOnce(&VideoEncoder::Initialize,
                      base::Unretained(wrapped_encoder_.get()), profile, options,
+                     WrapCallback(std::move(info_cb)),
                      WrapCallback(std::move(output_cb)),
                      WrapCallback(std::move(done_cb))));
 }

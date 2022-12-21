@@ -61,6 +61,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   // VideoEncoder implementation.
   void Initialize(VideoCodecProfile profile,
                   const Options& options,
+                  EncoderInfoCB info_cb,
                   OutputCB output_cb,
                   EncoderStatusCB done_cb) override;
   void Encode(scoped_refptr<VideoFrame> frame,
@@ -109,6 +110,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   void InitCompleted(EncoderStatus status);
   void InitializeOnAcceleratorThread(VideoCodecProfile profile,
                                      const Options& options,
+                                     EncoderInfoCB info_cb,
                                      OutputCB output_cb,
                                      EncoderStatusCB done_cb);
   void InitializeInternalOnAcceleratorThread();
@@ -183,6 +185,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes_ =
       VideoEncodeAccelerator::kNoMode;
   Options options_;
+  EncoderInfoCB info_cb_;
   OutputCB output_cb_;
 
   gfx::Size input_coded_size_;

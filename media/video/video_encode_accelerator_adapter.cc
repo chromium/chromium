@@ -34,6 +34,7 @@
         // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/video/video_encoder_info.h"
 
 namespace media {
 
@@ -334,6 +335,7 @@ void VideoEncodeAcceleratorAdapter::SetInputBufferPreferenceForTesting(
 
 void VideoEncodeAcceleratorAdapter::Initialize(VideoCodecProfile profile,
                                                const Options& options,
+                                               EncoderInfoCB info_cb,
                                                OutputCB output_cb,
                                                EncoderStatusCB done_cb) {
   DCHECK(!accelerator_task_runner_->RunsTasksInCurrentSequence());
@@ -342,13 +344,14 @@ void VideoEncodeAcceleratorAdapter::Initialize(VideoCodecProfile profile,
       base::BindOnce(
           &VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread,
           base::Unretained(this), profile, options,
-          WrapCallback(std::move(output_cb)),
+          WrapCallback(std::move(info_cb)), WrapCallback(std::move(output_cb)),
           WrapCallback(std::move(done_cb))));
 }
 
 void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
     VideoCodecProfile profile,
     const Options& options,
+    EncoderInfoCB info_cb,
     OutputCB output_cb,
     EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
@@ -410,6 +413,7 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   profile_ = profile;
   supported_rc_modes_ = supported_rc_modes;
   options_ = options;
+  info_cb_ = std::move(info_cb);
   output_cb_ = std::move(output_cb);
   state_ = State::kWaitingForFirstFrame;
 
@@ -879,11 +883,8 @@ void VideoEncodeAcceleratorAdapter::NotifyError(
 
 void VideoEncodeAcceleratorAdapter::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {
-  // TODO(crbug.com/1378157): More VideoEncoderInfo can be fetched from VEA
-  // beneath. Here the accurate encoder name is updated to MediaLog. So things
-  // like media tab in Developer tools can show the actual encoder name.
-  media_log_->SetProperty<media::MediaLogProperty::kVideoEncoderName>(
-      info.implementation_name);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
+  info_cb_.Run(info);
 }
 
 void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {

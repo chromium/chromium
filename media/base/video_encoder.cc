@@ -6,7 +6,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/numerics/clamped_math.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 
 namespace media {
@@ -45,18 +44,6 @@ VideoEncoder::PendingEncode::~PendingEncode() = default;
 
 void VideoEncoder::DisablePostedCallbacks() {
   post_callbacks_ = false;
-}
-
-VideoEncoder::OutputCB VideoEncoder::BindCallbackToCurrentLoopIfNeeded(
-    OutputCB&& callback) {
-  return post_callbacks_ ? BindToCurrentLoop(std::move(callback))
-                         : std::move(callback);
-}
-
-VideoEncoder::EncoderStatusCB VideoEncoder::BindCallbackToCurrentLoopIfNeeded(
-    EncoderStatusCB&& callback) {
-  return post_callbacks_ ? BindToCurrentLoop(std::move(callback))
-                         : std::move(callback);
 }
 
 }  // namespace media

@@ -16,8 +16,9 @@
 #include "base/test/task_environment.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
-#include "media/base/offloading_video_encoder.h"
 #include "media/base/video_types.h"
+#include "media/video/offloading_video_encoder.h"
+#include "media/video/video_encoder_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::base::test::RunCallback;
@@ -54,10 +55,16 @@ class OffloadingVideoEncoderTest : public testing::Test {
 };
 
 TEST_F(OffloadingVideoEncoderTest, Initialize) {
+  bool called_info = false;
   bool called_done = false;
   bool called_output = false;
   VideoEncoder::Options options;
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
+  VideoEncoder::EncoderInfoCB info_cb =
+      base::BindLambdaForTesting([&](const VideoEncoderInfo& info) {
+        EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
+        called_info = true;
+      });
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
         EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
@@ -69,18 +76,20 @@ TEST_F(OffloadingVideoEncoderTest, Initialize) {
         called_done = true;
       });
 
-  EXPECT_CALL(*mock_video_encoder_, Initialize(_, _, _, _))
+  EXPECT_CALL(*mock_video_encoder_, Initialize(_, _, _, _, _))
       .WillOnce(Invoke([this](VideoCodecProfile profile,
                               const VideoEncoder::Options& options,
+                              VideoEncoder::EncoderInfoCB info_cb,
                               VideoEncoder::OutputCB output_cb,
                               VideoEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
+        info_cb.Run(VideoEncoderInfo());
         std::move(done_cb).Run(EncoderStatus::Codes::kOk);
         std::move(output_cb).Run(VideoEncoderOutput(), {});
       }));
 
-  offloading_encoder_->Initialize(profile, options, std::move(output_cb),
-                                  std::move(done_cb));
+  offloading_encoder_->Initialize(profile, options, std::move(info_cb),
+                                  std::move(output_cb), std::move(done_cb));
   RunLoop();
   EXPECT_TRUE(called_done);
   EXPECT_TRUE(called_output);

@@ -25,6 +25,7 @@ class MEDIA_EXPORT OpenH264VideoEncoder : public VideoEncoder {
   // VideoDecoder implementation.
   void Initialize(VideoCodecProfile profile,
                   const Options& options,
+                  EncoderInfoCB info_cb,
                   OutputCB output_cb,
                   EncoderStatusCB done_cb) override;
   void Encode(scoped_refptr<VideoFrame> frame,

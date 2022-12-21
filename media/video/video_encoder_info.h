@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -40,6 +41,19 @@ struct MEDIA_EXPORT VideoEncoderInfo {
   ~VideoEncoderInfo();
 
   std::string implementation_name;
+
+  // The number of additional input frames that must be enqueued before the
+  // encoder starts producing output for the first frame, i.e., the size of the
+  // compression window. Equal to 0 if the encoder can produce a chunk of
+  // output just from the frame submitted last.
+  // If absent, the encoder client will assume some default value.
+  absl::optional<int> frame_delay;
+
+  // The number of input frames the encoder can queue internally. Once this
+  // number is reached, further encode requests can block until some output has
+  // been produced.
+  // If absent, the encoder client will assume some default value.
+  absl::optional<int> input_capacity;
 
   bool supports_native_handle = true;
   bool has_trusted_rate_controller = false;

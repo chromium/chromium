@@ -90,6 +90,7 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   using Base = EncoderBase<VideoEncoderTraits>;
   using ParsedConfig = VideoEncoderTraits::ParsedConfig;
 
+  void OnMediaEncoderInfoChanged(const media::VideoEncoderInfo& encoder_info);
   void CallOutputCallback(
       ParsedConfig* active_config,
       uint32_t reset_count,
@@ -108,7 +109,6 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
                       scoped_refptr<media::VideoFrame> txt_frame,
                       media::VideoEncoder::EncoderStatusCB done_callback,
                       scoped_refptr<media::VideoFrame> result_frame);
-  void OnMediaEncoderCreated(std::string encoder_name, bool is_hw_accelerated);
   static std::unique_ptr<media::VideoEncoder> CreateSoftwareVideoEncoder(
       VideoEncoder* self,
       media::VideoCodec codec);
@@ -145,8 +145,11 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   bool disable_accelerated_frame_pool_ = false;
 
   // The number of encoding requests currently handled by |media_encoder_|
-  // Should not exceed |kMaxActiveEncodes|.
+  // Should not exceed |max_active_encodes_|.
   int active_encodes_ = 0;
+
+  // The current upper limit on |active_encodes_|.
+  int max_active_encodes_;
 
   // Per-frame metadata to be applied to outputs, linked by timestamp.
   struct FrameMetadata {

@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "media/base/video_frame.h"
+#include "media/video/video_encoder_info.h"
 
 namespace media {
 
@@ -24,11 +25,13 @@ VideoEncoderFallback::~VideoEncoderFallback() = default;
 
 void VideoEncoderFallback::Initialize(VideoCodecProfile profile,
                                       const Options& options,
+                                      EncoderInfoCB info_cb,
                                       OutputCB output_cb,
                                       EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   init_done_cb_ = std::move(done_cb);
+  info_cb_ = std::move(info_cb);
   output_cb_ = std::move(output_cb);
   profile_ = profile;
   options_ = options;
@@ -45,6 +48,8 @@ void VideoEncoderFallback::Initialize(VideoCodecProfile profile,
 
   encoder_->Initialize(
       profile, options,
+      base::BindRepeating(&VideoEncoderFallback::CallInfo,
+                          weak_factory_.GetWeakPtr()),
       base::BindRepeating(&VideoEncoderFallback::CallOutput,
                           weak_factory_.GetWeakPtr()),
       base::BindOnce(done_callback, weak_factory_.GetWeakPtr()));
@@ -142,6 +147,8 @@ void VideoEncoderFallback::FallbackInitialize() {
 
   encoder_->Initialize(
       profile_, options_,
+      base::BindRepeating(&VideoEncoderFallback::CallInfo,
+                          weak_factory_.GetWeakPtr()),
       base::BindRepeating(&VideoEncoderFallback::CallOutput,
                           weak_factory_.GetWeakPtr()),
       base::BindOnce(&VideoEncoderFallback::FallbackInitCompleted,
@@ -161,6 +168,8 @@ void VideoEncoderFallback::FallbackEncode(PendingEncode args) {
 
     encoder_->Initialize(
         profile_, options_,
+        base::BindRepeating(&VideoEncoderFallback::CallInfo,
+                            weak_factory_.GetWeakPtr()),
         base::BindRepeating(&VideoEncoderFallback::CallOutput,
                             weak_factory_.GetWeakPtr()),
         base::BindOnce(&VideoEncoderFallback::FallbackInitCompleted,
@@ -174,6 +183,10 @@ void VideoEncoderFallback::FallbackEncode(PendingEncode args) {
     encodes_to_retry_.push_back(
         std::make_unique<PendingEncode>(std::move(args)));
   }
+}
+
+void VideoEncoderFallback::CallInfo(const VideoEncoderInfo& encoder_info) {
+  info_cb_.Run(encoder_info);
 }
 
 void VideoEncoderFallback::CallOutput(VideoEncoderOutput output,

@@ -319,8 +319,8 @@ TEST_P(SoftwareVideoEncoderTest, StopCallbackWrapping) {
 
   VideoEncoder::EncoderStatusCB flush_cb = base::BindLambdaForTesting(
       [&](EncoderStatus error) { flush_called = true; });
-  encoder_->Initialize(profile_, options, VideoEncoder::OutputCB(),
-                       std::move(init_cb));
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       /*output_cb=*/base::DoNothing(), std::move(init_cb));
   encoder_->Flush(std::move(flush_cb));
   EXPECT_TRUE(init_called);
   EXPECT_TRUE(flush_called);
@@ -335,8 +335,8 @@ TEST_P(SoftwareVideoEncoderTest, InitializeAndFlush) {
         output_called = true;
       });
 
-  encoder_->Initialize(profile_, options, std::move(output_cb),
-                       ValidatingStatusCB());
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(output_cb), ValidatingStatusCB());
   RunUntilIdle();
   encoder_->Flush(ValidatingStatusCB());
   RunUntilIdle();
@@ -357,8 +357,8 @@ TEST_P(SoftwareVideoEncoderTest, ForceAllKeyFrames) {
         outputs_count++;
       });
 
-  encoder_->Initialize(profile_, options, std::move(output_cb),
-                       ValidatingStatusCB());
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(output_cb), ValidatingStatusCB());
   RunUntilIdle();
 
   for (int i = 0; i < frames; i++) {
@@ -384,8 +384,8 @@ TEST_P(SoftwareVideoEncoderTest, ResizeFrames) {
         outputs_count++;
       });
 
-  encoder_->Initialize(profile_, options, std::move(output_cb),
-                       ValidatingStatusCB());
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(output_cb), ValidatingStatusCB());
   RunUntilIdle();
 
   auto frame1 = CreateFrame(gfx::Size(320, 200), pixel_format_, 0 * sec);
@@ -420,8 +420,8 @@ TEST_P(SoftwareVideoEncoderTest, OutputCountEqualsFrameCount) {
         outputs_count++;
       });
 
-  encoder_->Initialize(profile_, options, std::move(output_cb),
-                       ValidatingStatusCB());
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(output_cb), ValidatingStatusCB());
 
   RunUntilIdle();
   uint32_t color = 0x964050;
@@ -472,8 +472,8 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
 
   PrepareDecoder(options.frame_size, std::move(decoder_output_cb));
 
-  encoder_->Initialize(profile_, options, std::move(encoder_output_cb),
-                       ValidatingStatusCB());
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(encoder_output_cb), ValidatingStatusCB());
   RunUntilIdle();
 
   uint32_t color = 0x964050;
@@ -526,8 +526,8 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
         chunks.push_back(std::move(output));
       });
 
-  encoder_->Initialize(profile_, options, std::move(encoder_output_cb),
-                       ValidatingStatusCB());
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(encoder_output_cb), ValidatingStatusCB());
   RunUntilIdle();
 
   uint32_t color = 0x964050;
@@ -618,8 +618,8 @@ TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
         chunks.push_back({std::move(output), options.frame_size});
       });
 
-  encoder_->Initialize(profile_, options, std::move(encoder_output_cb),
-                       ValidatingStatusCB());
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(encoder_output_cb), ValidatingStatusCB());
   RunUntilIdle();
 
   uint32_t color = 0x0080FF;
@@ -725,8 +725,8 @@ TEST_P(H264VideoEncoderTest, AvcExtraData) {
         outputs_count++;
       });
 
-  encoder_->Initialize(profile_, options, std::move(output_cb),
-                       ValidatingStatusCB());
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(output_cb), ValidatingStatusCB());
   RunUntilIdle();
 
   auto frame1 = CreateFrame(options.frame_size, pixel_format_, 0 * sec);
@@ -764,8 +764,8 @@ TEST_P(H264VideoEncoderTest, AnnexB) {
         outputs_count++;
       });
 
-  encoder_->Initialize(profile_, options, std::move(output_cb),
-                       ValidatingStatusCB());
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(output_cb), ValidatingStatusCB());
   RunUntilIdle();
 
   auto frame1 = CreateFrame(options.frame_size, pixel_format_, 0 * sec);
@@ -806,8 +806,8 @@ TEST_P(H264VideoEncoderTest, EncodeAndDecodeWithConfig) {
         chunks.push_back({std::move(output), std::move(desc)});
       });
 
-  encoder_->Initialize(profile_, options, std::move(encoder_output_cb),
-                       ValidatingStatusCB());
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(encoder_output_cb), ValidatingStatusCB());
   RunUntilIdle();
 
   uint32_t color = 0x964050;

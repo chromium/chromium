@@ -38,11 +38,12 @@ class AsyncDestroyVideoEncoder final : public VideoEncoder {
 
   void Initialize(VideoCodecProfile profile,
                   const Options& options,
+                  EncoderInfoCB info_cb,
                   OutputCB output_cb,
                   EncoderStatusCB done_cb) override {
     DCHECK(wrapped_encoder_);
-    wrapped_encoder_->Initialize(profile, options, std::move(output_cb),
-                                 std::move(done_cb));
+    wrapped_encoder_->Initialize(profile, options, std::move(info_cb),
+                                 std::move(output_cb), std::move(done_cb));
   }
 
   void Encode(scoped_refptr<VideoFrame> frame,

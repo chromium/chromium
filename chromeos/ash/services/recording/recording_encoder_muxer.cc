@@ -255,6 +255,7 @@ void RecordingEncoderMuxer::InitializeVideoEncoder(
   video_encoder_ = std::make_unique<media::VpxVideoEncoder>();
   video_encoder_->Initialize(
       media::VP8PROFILE_ANY, video_encoder_options,
+      /*info_cb=*/base::DoNothing(),
       base::BindRepeating(&RecordingEncoderMuxer::OnVideoEncoderOutput,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&RecordingEncoderMuxer::OnVideoEncoderInitialized,

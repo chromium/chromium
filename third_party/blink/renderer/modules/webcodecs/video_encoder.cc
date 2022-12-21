@@ -24,7 +24,6 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/mime_util.h"
-#include "media/base/offloading_video_encoder.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_codecs.h"
@@ -34,6 +33,7 @@
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/h264_level_limits.h"
+#include "media/video/offloading_video_encoder.h"
 #include "media/video/video_encode_accelerator_adapter.h"
 #include "media/video/video_encoder_fallback.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
@@ -109,7 +109,23 @@ using EncoderType = media::VideoEncodeAccelerator::Config::EncoderType;
 namespace {
 
 constexpr const char kCategory[] = "media";
-constexpr int kMaxActiveEncodes = 5;
+
+int ComputeMaxActiveEncodes(
+    absl::optional<int> frame_delay = absl::nullopt,
+    absl::optional<int> input_capacity = absl::nullopt) {
+  constexpr int kDefaultEncoderFrameDelay = 0;
+
+  // The maximum number of input frames above the encoder frame delay that we
+  // want to be able to enqueue in |media_encoder_|.
+  constexpr int kDefaultEncoderExtraInputCapacity = 5;
+
+  const int preferred_capacity =
+      frame_delay.value_or(kDefaultEncoderFrameDelay) +
+      kDefaultEncoderExtraInputCapacity;
+  return input_capacity.has_value()
+             ? std::min(preferred_capacity, input_capacity.value())
+             : preferred_capacity;
+}
 
 bool IsAcceleratedConfigurationSupported(
     media::VideoCodecProfile profile,
@@ -540,6 +556,7 @@ VideoEncoder::VideoEncoder(ScriptState* script_state,
                            const VideoEncoderInit* init,
                            ExceptionState& exception_state)
     : Base(script_state, init, exception_state),
+      max_active_encodes_(ComputeMaxActiveEncodes()),
       frame_metadata_(128) {
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
@@ -556,21 +573,6 @@ VideoEncoder::ParsedConfig* VideoEncoder::ParseConfig(
 bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
                                       ExceptionState& exception_state) {
   return VerifyCodecSupportStatic(config, &exception_state);
-}
-
-void VideoEncoder::OnMediaEncoderCreated(std::string encoder_name,
-                                         bool is_hw_accelerated) {
-  if (is_hw_accelerated)
-    ApplyCodecPressure();
-  else
-    ReleaseCodecPressure();
-
-  // TODO(https://crbug.com/1139089) : Add encoder properties.
-  media::MediaLog* log = logger_->log();
-
-  log->SetProperty<media::MediaLogProperty::kVideoEncoderName>(encoder_name);
-  log->SetProperty<media::MediaLogProperty::kIsPlatformVideoEncoder>(
-      is_hw_accelerated);
 }
 
 std::unique_ptr<media::VideoEncoder>
@@ -627,16 +629,13 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateSoftwareVideoEncoder(
   switch (codec) {
     case media::VideoCodec::kAV1:
       result = CreateAv1VideoEncoder();
-      self->OnMediaEncoderCreated("Av1VideoEncoder", false);
       break;
     case media::VideoCodec::kVP8:
     case media::VideoCodec::kVP9:
       result = CreateVpxVideoEncoder();
-      self->OnMediaEncoderCreated("VpxVideoEncoder", false);
       break;
     case media::VideoCodec::kH264:
       result = CreateOpenH264VideoEncoder();
-      self->OnMediaEncoderCreated("OpenH264VideoEncoder", false);
       break;
     default:
       break;
@@ -654,8 +653,6 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
       MayHaveOSSoftwareEncoder(config.profile)) {
     auto result = CreateAcceleratedVideoEncoder(config.profile, config.options,
                                                 gpu_factories, config.hw_pref);
-    if (result)
-      OnMediaEncoderCreated("AcceleratedVideoEncoder", true);
 
     if (config.hw_pref == HardwarePreference::kPreferHardware) {
       return result;
@@ -691,6 +688,10 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
     return;
   }
 
+  auto info_cb = ConvertToBaseRepeatingCallback(
+      CrossThreadBindRepeating(&VideoEncoder::OnMediaEncoderInfoChanged,
+                               MakeUnwrappingCrossThreadWeakHandle(this)));
+
   auto output_cb = ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
       &VideoEncoder::CallOutputCallback,
       MakeUnwrappingCrossThreadWeakHandle(this),
@@ -722,7 +723,8 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
   };
 
   media_encoder_->Initialize(
-      active_config_->profile, active_config_->options, std::move(output_cb),
+      active_config_->profile, active_config_->options, std::move(info_cb),
+      std::move(output_cb),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
           MakeUnwrappingCrossThreadHandle(request), active_config_->codec)));
@@ -752,7 +754,7 @@ void VideoEncoder::Trace(Visitor* visitor) const {
 }
 
 bool VideoEncoder::ReadyToProcessNextRequest() {
-  if (active_encodes_ >= kMaxActiveEncodes)
+  if (active_encodes_ >= max_active_encodes_)
     return false;
 
   return Base::ReadyToProcessNextRequest();
@@ -1052,6 +1054,25 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
                                       std::move(reconf_done_callback)));
 }
 
+void VideoEncoder::OnMediaEncoderInfoChanged(
+    const media::VideoEncoderInfo& encoder_info) {
+  if (encoder_info.is_hardware_accelerated)
+    ApplyCodecPressure();
+  else
+    ReleaseCodecPressure();
+
+  media::MediaLog* log = logger_->log();
+  log->SetProperty<media::MediaLogProperty::kVideoEncoderName>(
+      encoder_info.implementation_name);
+  log->SetProperty<media::MediaLogProperty::kIsPlatformVideoEncoder>(
+      encoder_info.is_hardware_accelerated);
+
+  max_active_encodes_ = ComputeMaxActiveEncodes(encoder_info.frame_delay,
+                                                encoder_info.input_capacity);
+  // We may have increased our capacity for active encodes.
+  ProcessRequests();
+}
+
 void VideoEncoder::CallOutputCallback(
     ParsedConfig* active_config,
     uint32_t reset_count,
@@ -1193,7 +1214,8 @@ static void isConfigSupportedWithSoftwareOnly(
   auto runner = context->GetTaskRunner(TaskType::kInternalDefault);
   auto* software_encoder_raw = software_encoder.get();
   software_encoder_raw->Initialize(
-      config->profile, config->options, base::DoNothing(),
+      config->profile, config->options, /*info_cb=*/base::DoNothing(),
+      /*output_cb=*/base::DoNothing(),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           done_callback, std::move(software_encoder),
           MakeUnwrappingCrossThreadHandle(resolver), std::move(runner),
