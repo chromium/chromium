@@ -66838,12 +66838,6 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="Added by access code"/>
 </enum>
 
-<enum name="MediaRouterCreateRouteOutcome">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failure No Route"/>
-  <int value="2" label="Failure Invalid Sink"/>
-</enum>
-
 <enum name="MediaRouterDialCreateRouteResult">
   <int value="0" label="Success"/>
   <int value="1" label="Sink not found"/>

@@ -168,26 +168,6 @@ TEST(MediaRouterMetricsTest, RecordMediaRouterInitialUserAction) {
                           Bucket(static_cast<int>(action3), 2)));
 }
 
-TEST(MediaRouterMetricsTest, RecordRouteCreationOutcome) {
-  base::HistogramTester tester;
-  const MediaRouterRouteCreationOutcome outcome1 =
-      MediaRouterRouteCreationOutcome::SUCCESS;
-  const MediaRouterRouteCreationOutcome outcome2 =
-      MediaRouterRouteCreationOutcome::FAILURE_NO_ROUTE;
-
-  tester.ExpectTotalCount(MediaRouterMetrics::kHistogramRouteCreationOutcome,
-                          0);
-  MediaRouterMetrics::RecordRouteCreationOutcome(outcome2);
-  MediaRouterMetrics::RecordRouteCreationOutcome(outcome1);
-  MediaRouterMetrics::RecordRouteCreationOutcome(outcome2);
-  tester.ExpectTotalCount(MediaRouterMetrics::kHistogramRouteCreationOutcome,
-                          3);
-  EXPECT_THAT(
-      tester.GetAllSamples(MediaRouterMetrics::kHistogramRouteCreationOutcome),
-      ElementsAre(Bucket(static_cast<int>(outcome1), 1),
-                  Bucket(static_cast<int>(outcome2), 2)));
-}
-
 TEST(MediaRouterMetricsTest, RecordPresentationUrlType) {
   base::HistogramTester tester;
 

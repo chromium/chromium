@@ -106,8 +106,6 @@ const char MediaRouterMetrics::kHistogramMediaSinkType[] =
     "MediaRouter.Sink.SelectedType";
 const char MediaRouterMetrics::kHistogramPresentationUrlType[] =
     "MediaRouter.PresentationRequest.AvailabilityUrlType";
-const char MediaRouterMetrics::kHistogramRouteCreationOutcome[] =
-    "MediaRouter.Route.CreationOutcome";
 const char MediaRouterMetrics::kHistogramStartLocalLatency[] =
     "MediaRouter.Ui.Action.StartLocal.Latency";
 const char MediaRouterMetrics::kHistogramStartLocalPosition[] =
@@ -177,16 +175,6 @@ void MediaRouterMetrics::RecordMediaRouterInitialUserAction(
   UMA_HISTOGRAM_ENUMERATION(
       kHistogramUiFirstAction, static_cast<int>(action),
       static_cast<int>(MediaRouterUserAction::TOTAL_COUNT));
-}
-
-// static
-void MediaRouterMetrics::RecordRouteCreationOutcome(
-    MediaRouterRouteCreationOutcome outcome) {
-  DCHECK_LT(static_cast<int>(outcome),
-            static_cast<int>(MediaRouterRouteCreationOutcome::TOTAL_COUNT));
-  UMA_HISTOGRAM_ENUMERATION(
-      kHistogramRouteCreationOutcome, static_cast<int>(outcome),
-      static_cast<int>(MediaRouterRouteCreationOutcome::TOTAL_COUNT));
 }
 
 // static
