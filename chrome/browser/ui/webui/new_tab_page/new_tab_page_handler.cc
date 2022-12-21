@@ -461,6 +461,17 @@ NewTabPageHandler::NewTabPageHandler(
       ntp_custom_background_service_.get());
   promo_service_observation_.Observe(promo_service_.get());
   OnThemeChanged();
+
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kNtpModulesVisible,
+      base::BindRepeating(&NewTabPageHandler::UpdateDisabledModules,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kNtpDisabledModules,
+      base::BindRepeating(&NewTabPageHandler::UpdateDisabledModules,
+                          base::Unretained(this)));
+
   if (customize_chrome::IsSidePanelEnabled()) {
     auto* customize_chrome_tab_helper =
         CustomizeChromeTabHelper::FromWebContents(web_contents_);
@@ -651,7 +662,6 @@ void NewTabPageHandler::OnRestoreModule(const std::string& module_id) {
 
 void NewTabPageHandler::SetModulesVisible(bool visible) {
   profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, visible);
-  UpdateDisabledModules();
 }
 
 void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
@@ -665,7 +675,6 @@ void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
   } else {
     list.EraseValue(module_id_value);
   }
-  UpdateDisabledModules();
 }
 
 void NewTabPageHandler::UpdateDisabledModules() {

@@ -858,3 +858,15 @@ TEST_F(NewTabPageHandlerTest,
 
   mock_page_.FlushForTesting();
 }
+
+TEST_F(NewTabPageHandlerTest, SetModuleDisabledTriggersPageCall) {
+  handler_->SetModuleDisabled("drive", true);
+  EXPECT_CALL(mock_page_, SetDisabledModules).Times(1);
+  mock_page_.FlushForTesting();
+}
+
+TEST_F(NewTabPageHandlerTest, ModulesVisiblePrefChangeTriggersPageCall) {
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, true);
+  EXPECT_CALL(mock_page_, SetDisabledModules).Times(1);
+  mock_page_.FlushForTesting();
+}
