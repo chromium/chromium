@@ -948,8 +948,8 @@ export class EmojiPicker extends PolymerElement {
     });
   }
 
-  onCategoryButtonClick(newCategoryName: string) {
-    this.set('category', newCategoryName);
+  onCategoryButtonClick(newCategory: CategoryEnum) {
+    this.set('category', newCategory);
     this.set('pagination', 1);
     if (this.getSearchContainer()?.searchNotEmpty()) {
       this.getSearchContainer()?.setSearchQuery('');

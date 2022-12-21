@@ -4,7 +4,8 @@
 
 import {CategoryEnum} from './types';
 
-export type CategoryButtonClickEvent = CustomEvent<{categoryName: string}>;
+export type CategoryButtonClickEvent =
+    CustomEvent<{categoryName: CategoryEnum}>;
 
 export const CATEGORY_BUTTON_CLICK = 'category-button-click';
 
