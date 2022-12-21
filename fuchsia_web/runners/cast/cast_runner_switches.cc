@@ -8,7 +8,4 @@ const char kDisableVulkanForTestsSwitch[] = "disable-vulkan-for-tests";
 
 const char kEnableCfv2[] = "enable-cfv2";
 
-const char kEnableFrameHostComponentForTestsSwitch[] =
-    "enable-frame-host-component";
-
 const char kForceHeadlessForTestsSwitch[] = "force-headless-for-tests";

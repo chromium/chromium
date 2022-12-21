@@ -16,8 +16,6 @@ base::CommandLine CommandLineFromFeatures(CastRunnerFeatures features) {
     command_line.AppendSwitch(kForceHeadlessForTestsSwitch);
   if (!(features & kCastRunnerFeaturesVulkan))
     command_line.AppendSwitch(kDisableVulkanForTestsSwitch);
-  if (features & kCastRunnerFeaturesFrameHost)
-    command_line.AppendSwitch(kEnableFrameHostComponentForTestsSwitch);
 
   return command_line;
 }

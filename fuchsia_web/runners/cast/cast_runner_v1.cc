@@ -76,9 +76,6 @@ class CastComponentV1 : public fuchsia::sys::ComponentController {
     ExposeFromCfv2Component<fuchsia::ui::app::ViewProvider>();
     ExposeFromCfv2Component<fuchsia::modular::Lifecycle>();
 
-    // TODO(crbug.com/1120914): Remove this with the FrameHost component.
-    ExposeFromCfv2Component<fuchsia::web::FrameHost>();
-
     // Create the CFv2 dynamic child component to host the application.
     fidl::InterfaceHandle<fuchsia::io::Directory> services;
     zx_status_t status =
@@ -254,16 +251,6 @@ void CastRunnerV1::StartComponent(
 
   if (!startup_context->has_outgoing_directory_request()) {
     LOG(ERROR) << "Missing outgoing directory request";
-    return;
-  }
-
-  // TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
-  // used to route fuchsia.web.FrameHost capabilities cleanly.
-  static constexpr char kFrameHostComponentName[] =
-      "cast:fuchsia.web.FrameHost";
-  if (cast_url.spec() == kFrameHostComponentName) {
-    new CastComponentV1(std::move(cast_url), std::move(startup_context),
-                        std::move(controller_request), std::string());
     return;
   }
 

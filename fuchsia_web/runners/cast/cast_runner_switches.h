@@ -12,9 +12,6 @@ extern const char kDisableVulkanForTestsSwitch[];
 // shim.
 extern const char kEnableCfv2[];
 
-// Command line switch to enable the fuchsia.web.FrameHost provider component.
-extern const char kEnableFrameHostComponentForTestsSwitch[];
-
 // Force headless mode.
 extern const char kForceHeadlessForTestsSwitch[];
 

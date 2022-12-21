@@ -1134,53 +1134,6 @@ TEST_F(CastRunnerIntegrationTest, DataReset_Service) {
   component.ExpectControllerDisconnectWithStatus(ZX_ERR_PEER_CLOSED);
 }
 
-class CastRunnerFrameHostIntegrationTest : public CastRunnerIntegrationTest {
- public:
-  CastRunnerFrameHostIntegrationTest()
-      : CastRunnerIntegrationTest(test::kCastRunnerFeaturesFrameHost) {}
-};
-
-// Verifies that the CastRunner supports a component that offers
-// a fuchsia.web.FrameHost service, if configured to do so.
-// TODO(crbug.com/1144102): Clean up config-data vs command-line flags handling.
-TEST_F(CastRunnerFrameHostIntegrationTest, FrameHost_Component) {
-  TestCastComponent component(cast_runner());
-  constexpr char kFrameHostComponentName[] = "cast:fuchsia.web.FrameHost";
-  component.StartCastComponent(kFrameHostComponentName);
-
-  // Connect to the fuchsia.web.FrameHost service and create a Frame.
-  auto frame_host =
-      component.component_services_client()->Connect<fuchsia::web::FrameHost>();
-  fuchsia::web::FramePtr frame;
-  frame_host->CreateFrameWithParams(fuchsia::web::CreateFrameParams(),
-                                    frame.NewRequest());
-
-  // Verify that a response is received for a LoadUrl() request to the frame.
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-  const GURL url = test_server().GetURL(kBlankAppUrl);
-  EXPECT_TRUE(LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), url.spec()));
-}
-
-// Verifies that the FrameHost component is not offered if not configured.
-TEST_F(CastRunnerIntegrationTest, FrameHost_Component_NotAvailable) {
-  TestCastComponent component(cast_runner());
-  constexpr char kFrameHostComponentName[] = "cast:fuchsia.web.FrameHost";
-  component.StartCastComponent(kFrameHostComponentName);
-
-  // Attempt to connect to the fuchsia.web.FrameHost service, which should
-  // immediately disconnect.
-  auto frame_host =
-      component.component_services_client()->Connect<fuchsia::web::FrameHost>();
-  base::RunLoop loop;
-  frame_host.set_error_handler(
-      [quit_loop = loop.QuitClosure()](zx_status_t status) {
-        EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
-        quit_loop.Run();
-      });
-}
-
 // Verifies that the CastRunner exposes a fuchsia.web.FrameHost protocol
 // capability, without requiring any special configuration.
 TEST_F(CastRunnerIntegrationTest, FrameHost_Service) {
