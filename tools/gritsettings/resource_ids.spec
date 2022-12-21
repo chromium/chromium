@@ -160,6 +160,10 @@
     "includes": [1400],
     "structures": [1420],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/lock_screen_reauth/resources.grd": {
+    "META": {"sizes": {"includes": [30]}},
+    "includes": [1430],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/login/oobe_unconditional_resources.grd": {
     "META": {"sizes": {"includes": [350]}},
     "includes": [1440],

@@ -1,0 +1,25 @@
+# Metadata information for this directory.
+#
+# For more information on DIR_METADATA files, see:
+#   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/README.md
+#
+# For the schema of this file, see Metadata message:
+#   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/proto/dir_metadata.proto
+
+
+# Online reauthentication on the lock screen can happen both for GAIA
+# and SAML users, but historically it was developed by 3P IdP team, so
+# feel free to report bugs to 3P IdP component.
+
+# ChromeOS > Software > Commercial (Enterprise) > Identity > 3P IdP
+buganizer {
+  component_id: 1253671
+}
+
+# ChromeOS Public Tracker > Enterprise & Edu > Identity > 3P IdP
+buganizer_public {
+  component_id: 1253513
+}
+
+team_email: "cros-3pidp@google.com"
+os: CHROME_OS

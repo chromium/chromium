@@ -21,6 +21,7 @@ group("resources") {
     "emoji_picker:resources",
     "gaia_action_buttons:resources",
     "launcher_internals:resources",
+    "lock_screen_reauth:resources",
     "login:conditional_resources",
     "login:unconditional_resources",
     "manage_mirrorsync:resources",

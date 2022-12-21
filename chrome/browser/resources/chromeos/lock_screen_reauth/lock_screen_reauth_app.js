@@ -7,11 +7,12 @@
  * the lock screen.
  */
 
-import {$} from 'chrome://resources/ash/common/util.js';
-export {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-
 import './strings.m.js';
 import './lock_screen_reauth.js';
+
+import {$} from 'chrome://resources/ash/common/util.js';
+
+export {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 function initialize() {
   // '$(id)' is an alias for 'document.getElementById(id)'. It is defined

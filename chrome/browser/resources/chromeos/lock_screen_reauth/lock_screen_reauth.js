@@ -16,8 +16,8 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './components/buttons/oobe_text_button.js';
 import './components/oobe_icons.m.js';
 
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {$} from 'chrome://resources/ash/common/util.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -182,7 +182,7 @@ Polymer({
    */
   setWidth(width) {
     document.documentElement.style.setProperty(
-      '--lock-screen-reauth-dialog-width', width + 'px');
+        '--lock-screen-reauth-dialog-width', width + 'px');
   },
 
   /**
@@ -286,8 +286,10 @@ Polymer({
    */
   showSamlConfirmPassword(passwordCount) {
     this.resetState_();
-    /** This statement override resetState_ calls.
-     * Thus have to be AFTER resetState_. */
+    /**
+     * This statement override resetState_ calls.
+     * Thus have to be AFTER resetState_.
+     */
     this.isConfirmPassword_ = true;
     this.isManualInput_ = (passwordCount === 0);
     if (this.passwordConfirmAttempt_ > 0) {

@@ -1,0 +1,20 @@
+# Metadata information for this directory.
+#
+# For more information on DIR_METADATA files, see:
+#   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/README.md
+#
+# For the schema of this file, see Metadata message:
+#   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/proto/dir_metadata.proto
+
+# ChromeOS > Software > Commercial (Enterprise) > Identity > 3P IdP
+buganizer {
+  component_id: 1253671
+}
+
+# ChromeOS Public Tracker > Enterprise & Edu > Identity > 3P IdP
+buganizer_public {
+  component_id: 1253513
+}
+
+team_email: "cros-3pidp@google.com"
+os: CHROME_OS
