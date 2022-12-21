@@ -103,7 +103,6 @@ TEST_F(ComputedStyleTest, ClipPathEqual) {
 TEST_F(ComputedStyleTest, ForcesStackingContext) {
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
   builder.SetForcesStackingContext(true);
-  builder.MutableInternalStyle()->UpdateIsStackingContextWithoutContainment();
   scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   EXPECT_TRUE(style->IsStackingContextWithoutContainment());
 }
@@ -113,7 +112,6 @@ TEST_F(ComputedStyleTest, Preserve3dForceStackingContext) {
   builder.SetTransformStyle3D(ETransformStyle3D::kPreserve3d);
   builder.SetOverflowX(EOverflow::kHidden);
   builder.SetOverflowY(EOverflow::kHidden);
-  builder.MutableInternalStyle()->UpdateIsStackingContextWithoutContainment();
   scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   EXPECT_EQ(ETransformStyle3D::kFlat, style->UsedTransformStyle3D());
   EXPECT_TRUE(style->IsStackingContextWithoutContainment());
@@ -125,10 +123,27 @@ TEST_F(ComputedStyleTest, LayoutContainmentStackingContext) {
 
   ComputedStyleBuilder builder(*style);
   builder.SetContain(kContainsLayout);
-  builder.MutableInternalStyle()->UpdateIsStackingContextWithoutContainment();
   style = builder.TakeStyle();
   // Containment doesn't change IsStackingContextWithoutContainment
   EXPECT_FALSE(style->IsStackingContextWithoutContainment());
+}
+
+TEST_F(ComputedStyleTest, IsStackingContextWithoutContainmentAfterClone) {
+  ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
+  builder1.SetForcesStackingContext(true);
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  EXPECT_TRUE(style1->IsStackingContextWithoutContainment());
+
+  ComputedStyleBuilder builder2(*style1);
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+  EXPECT_TRUE(style2->IsStackingContextWithoutContainment());
+
+  // Verify that the cached value for IsStackingContextWithoutContainment
+  // isn't copied from `style1`.
+  ComputedStyleBuilder builder3(*style1);
+  builder3.SetForcesStackingContext(false);
+  scoped_refptr<const ComputedStyle> style3 = builder3.TakeStyle();
+  EXPECT_FALSE(style3->IsStackingContextWithoutContainment());
 }
 
 TEST_F(ComputedStyleTest, TrackedPseudoStyle) {
@@ -1602,6 +1617,39 @@ TEST_F(ComputedStyleTest, DebugDiffFields) {
   EXPECT_EQ(DebugField::width_, style1->DebugDiffFields(*style2)[0]);
   EXPECT_EQ("width_",
             ComputedStyleBase::DebugFieldToString(DebugField::width_));
+}
+
+TEST_F(ComputedStyleTest, DerivedDebugDiff) {
+  using DebugField = ComputedStyleBase::DebugField;
+
+  ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
+  ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
+
+  builder1.SetForcesStackingContext(true);
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+
+  ASSERT_EQ(2u, style1->DebugDiffFields(*style2).size());
+  EXPECT_EQ(DebugField::forces_stacking_context_,
+            style1->DebugDiffFields(*style2)[0]);
+  EXPECT_EQ(DebugField::is_stacking_context_without_containment_,
+            style1->DebugDiffFields(*style2)[1]);
+}
+
+TEST_F(ComputedStyleTest, DerivedDebugDiffLazy) {
+  ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
+  ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
+
+  scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
+  scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
+
+  // Trigger lazy-evaluation of the field on *one* of the styles.
+  EXPECT_FALSE(style1->IsStackingContextWithoutContainment());
+
+  // We should not detect a difference, because ComputedStyle(Base) should
+  // evaluate the field automatically when needed.
+  EXPECT_EQ(0u, style1->DebugDiffFields(*style2).size());
 }
 
 #endif  // #if DCHECK_IS_ON()

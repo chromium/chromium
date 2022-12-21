@@ -1,6 +1,7 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, fieldwise_debug_diff, fieldwise_copy, fieldwise_diff %}
+{% from 'templates/fields/field.tmpl' import encode, const_ref, getter_expression, getter_method_name, setter_expression, fieldwise_debug_diff, fieldwise_copy, fieldwise_diff %}
 {% from 'templates/fields/group.tmpl' import define_field_group_class %}
+{% import 'templates/fields/derived_flag.tmpl' as derived_flag %}
 {{license()}}
 
 {{source_files_for_generated_file(template_file, input_files)}}
@@ -45,6 +46,13 @@ bool ComputedStyleBase::{{name}}(const ComputedStyle& a, const ComputedStyle& b)
   return false;
 }
 
+{% endfor %}
+
+// Derived fields:
+
+{% for field in computed_style.all_fields|selectattr('derived_from')|sort(attribute='name') %}
+// {{ field.name }}
+{{ derived_flag.define_impl(field, 'ComputedStyleBase') }}
 {% endfor %}
 
 #if DCHECK_IS_ON()

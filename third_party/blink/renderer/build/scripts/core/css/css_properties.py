@@ -78,14 +78,18 @@ def validate_property(prop, props_by_name):
     if prop.alias_for:
         assert not prop.is_internal, \
             'Internal aliases not supported [%s]' % name
-    assert not prop.mutable or prop.field_template == 'monotonic_flag',\
-        'mutable requires field_template:monotonic_flag [%s]' % name
+    assert not prop.mutable or \
+        (prop.field_template in ['derived_flag', 'monotonic_flag'] ),\
+        'mutable requires field_template:derived_flag or monotonic_flag [%s]' % name
     assert not prop.in_origin_trial or prop.runtime_flag,\
         'Property participates in origin trial, but has no runtime flag'
     custom_functions = set(prop.computed_style_custom_functions)
     protected_functions = set(set(prop.computed_style_protected_functions))
     assert not custom_functions.intersection(protected_functions), \
         'Functions must be specified as either protected or custom, not both [%s]' % name
+    if prop.field_template == 'derived_flag':
+        assert prop.mutable, 'Derived flags must be mutable [%s]' % name
+        assert not prop.field_group, 'Derived flags may not have field groups [%s]' % name
 
 # Determines whether or not style builders (i.e. Apply functions)
 # should be generated for the given property.
@@ -506,6 +510,9 @@ class CSSProperties(object):
                   or property_.field_template == 'primitive'
                   or property_.field_template == 'pointer'):
                 default_value = property_.default_value
+            elif property_.field_template == 'derived_flag':
+                property_.type_name = 'unsigned'
+                default_value = '0'
             else:
                 assert property_.field_template == 'monotonic_flag', \
                     "Please put a valid value for field_template; got " + \

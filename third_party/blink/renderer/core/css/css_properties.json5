@@ -262,6 +262,15 @@
         // Field is stored as a bool, whose default value is false
         // and can only be set to true. Has a initial/getter/setter.
         "monotonic_flag",
+        // A derived flag is derived from other information on ComputedStyle.
+        // It has no setters, and is instead calculated on first access by
+        // the function specified by 'derived_from'.
+        //
+        // Derived flags must be marked as 'mutable', and can not have a
+        // 'field_group' (i.e. must exist on the top level of ComputedStyle).
+        //
+        // See computed_style_extra_fields.json5 for examples of derived flags.
+        "derived_flag",
         // Field has type specified at type_name and has a getter/setter.
         // Also has a setter taking an rvalue reference. Cannot be packed.
         "external",
@@ -272,6 +281,12 @@
         // entries in CSSFieldAlias.json5.
         "<[a-z]+>"
       ],
+    },
+
+    // Valid for field_template:derived_flag only. This specifies the function
+    // on ComputedStyle used to calculate the flag.
+    derived_from: {
+      valid_type: "str",
     },
 
     // - include_paths: ["path/to/file1.h", "path/to/file2.h"]

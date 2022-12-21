@@ -851,7 +851,7 @@ scoped_refptr<ComputedStyle> StyleResolver::StyleForViewport() {
   ComputedStyleBuilder builder = InitialStyleBuilderForElement();
 
   builder.SetZIndex(0);
-  builder.SetIsStackingContextWithoutContainment(true);
+  builder.SetForcesStackingContext(true);
   builder.SetDisplay(EDisplay::kBlock);
   builder.SetPosition(EPosition::kAbsolute);
 
@@ -1444,7 +1444,6 @@ void StyleResolver::ApplyBaseStyle(
     // AdjustComputedStyle() will set these flags if needed,
     // but will (generally) not unset them, so reset them before
     // computation.
-    state.StyleBuilder().SetIsStackingContextWithoutContainment(false);
     state.StyleBuilder()
         .SetInsideFragmentationContextWithNondeterministicEngine(
             state.ParentStyle()

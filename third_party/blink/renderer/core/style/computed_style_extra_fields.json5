@@ -764,11 +764,9 @@
     // containment, since it depends on the type of layout object created.
     {
       name: "IsStackingContextWithoutContainment",
-      field_template: "primitive",
-      type_name: "bool",
-      field_group: "*",
-      default_value: "false",
-      writable: true,
+      field_template: "derived_flag",
+      derived_from: "CalculateIsStackingContextWithoutContainment",
+      mutable: true,
     },
     // A stacking context is forced a few situations, e.g.:
     //

@@ -24,6 +24,7 @@
 {% import 'templates/fields/multi_keyword.tmpl' as multi_keyword %}
 {% import 'templates/fields/bitset_keyword.tmpl' as bitset_keyword %}
 {% import 'templates/fields/primitive.tmpl' as primitive %}
+{% import 'templates/fields/derived_flag.tmpl' as derived_flag %}
 {% import 'templates/fields/monotonic_flag.tmpl' as monotonic_flag %}
 {% import 'templates/fields/external.tmpl' as external %}
 {% import 'templates/fields/pointer.tmpl' as pointer %}
@@ -33,6 +34,7 @@
      'multi_keyword': multi_keyword,
      'bitset_keyword': bitset_keyword,
      'primitive': primitive,
+     'derived_flag': derived_flag,
      'monotonic_flag': monotonic_flag,
      'external': external,
      'pointer': pointer
@@ -218,6 +220,7 @@ class ComputedStyleBase {
   {% endfor %}
 };
 
+
 class ComputedStyleBuilderBase {
   STACK_ALLOCATED();
  public:
@@ -235,10 +238,17 @@ class ComputedStyleBuilderBase {
 
  protected:
   ComputedStyleBuilderBase() = default;
-  explicit ComputedStyleBuilderBase(ComputedStyleBase& style) : style_(&style) {}
+  explicit ComputedStyleBuilderBase(ComputedStyleBase& style) {
+    SetStyleBase(style);
+  }
 
   void SetStyleBase(ComputedStyleBase& style) {
     style_ = &style;
+
+    // Reset derived flags:
+    {% for field in computed_style_builder.all_fields|selectattr('derived_from')|sort(attribute='name') %}
+    {{derived_flag.reset_expression(field)|indent(2)}}
+    {% endfor %}
   }
 
   CORE_EXPORT void InheritFrom(const ComputedStyleBase& other, IsAtShadowBoundary isAtShadowBoundary);

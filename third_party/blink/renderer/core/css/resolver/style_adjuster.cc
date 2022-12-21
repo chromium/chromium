@@ -876,18 +876,22 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustStyleForFirstLetter(builder);
   }
 
+  builder.SetForcesStackingContext(false);
+
   // Make sure our z-index value is only applied if the object is positioned.
-  if (builder.GetPosition() == EPosition::kStatic &&
-      !LayoutParentStyleForcesZIndexToCreateStackingContext(
-          layout_parent_style)) {
-    builder.SetIsStackingContextWithoutContainment(false);
-    if (!builder.HasAutoZIndex())
+  if (!builder.HasAutoZIndex()) {
+    if (builder.GetPosition() == EPosition::kStatic &&
+        !LayoutParentStyleForcesZIndexToCreateStackingContext(
+            layout_parent_style)) {
       builder.SetEffectiveZIndexZero(true);
-  } else if (!builder.HasAutoZIndex()) {
-    builder.SetIsStackingContextWithoutContainment(true);
+    } else {
+      builder.SetForcesStackingContext(true);
+    }
   }
 
-  builder.SetForcesStackingContext(ElementForcesStackingContext(element));
+  if (ElementForcesStackingContext(element)) {
+    builder.SetForcesStackingContext(true);
+  }
 
   if (builder.OverflowX() != EOverflow::kVisible ||
       builder.OverflowY() != EOverflow::kVisible) {

@@ -54,7 +54,12 @@ style_->
 {% for group in field.group.path_without_root() -%}
 {{group.member_name}}->
 {%- endfor -%}
+{# Derived flags compute their value lazily, so we can not access the field directly. #}
+{% if field.derived_from -%}
+{{getter_method_name(field)}}()
+{%- else %}
 {{field.name}}
+{%- endif %}
 {%- endmacro %}
 
 {% macro setter_expression_without_prefix(field) %}

@@ -2086,19 +2086,6 @@ class ComputedStyle : public ComputedStyleBase,
            HasMaskBoxImageOutsets();
   }
 
-  // Stacking contexts and positioned elements[1] are stacked (sorted in
-  // negZOrderList
-  // and posZOrderList) in their enclosing stacking contexts.
-  //
-  // [1] According to CSS2.1, Appendix E.2.8
-  // (https://www.w3.org/TR/CSS21/zindex.html),
-  // positioned elements with 'z-index: auto' are "treated as if it created a
-  // new stacking context" and z-ordered together with other elements with
-  // 'z-index: 0'.  The difference of them from normal stacking contexts is that
-  // they don't determine the stacking of the elements underneath them.  (Note:
-  // There are also other elements treated as stacking context during painting,
-  // but not managed in stacks. See ObjectPainter::PaintAllPhasesAtomically().)
-  CORE_EXPORT void UpdateIsStackingContextWithoutContainment();
   bool IsStackedWithoutContainment() const {
     return IsStackingContextWithoutContainment() ||
            GetPosition() != EPosition::kStatic;
@@ -2522,6 +2509,9 @@ class ComputedStyle : public ComputedStyleBase,
     return ShouldForceColor(InForcedColorsMode(), ForcedColorAdjust(),
                             unforced_color);
   }
+
+  // Derived flags:
+  bool CalculateIsStackingContextWithoutContainment() const;
 
   // A one-element freelist that we can use to get fewer calls to new/delete
   // when recalculating style; the new and delete calls usually come in

@@ -1142,34 +1142,6 @@ static bool HasPropertyThatCreatesStackingContext(
   return false;
 }
 
-void ComputedStyle::UpdateIsStackingContextWithoutContainment() {
-  if (IsStackingContextWithoutContainment())
-    return;
-
-  // Force a stacking context for transform-style: preserve-3d. This happens
-  // even if preserves-3d is ignored due to a 'grouping property' being present
-  // which requires flattening. See:
-  // ComputedStyle::HasGroupingPropertyForUsedTransformStyle3D().
-  // This is legacy behavior that is left ambiguous in the official specs.
-  // See https://crbug.com/663650 for more details.
-  if (TransformStyle3D() == ETransformStyle3D::kPreserve3d) {
-    SetIsStackingContextWithoutContainment(true);
-    return;
-  }
-
-  if (ForcesStackingContext() || StyleType() == kPseudoIdBackdrop ||
-      HasTransformRelatedProperty() ||
-      HasStackingGroupingProperty(BoxReflect()) ||
-      GetPosition() == EPosition::kFixed ||
-      GetPosition() == EPosition::kSticky ||
-      HasPropertyThatCreatesStackingContext(WillChangeProperties()) ||
-      /* TODO(882625): This becomes unnecessary when will-change correctly takes
-      into account active animations. */
-      ShouldCompositeForCurrentAnimations()) {
-    SetIsStackingContextWithoutContainment(true);
-  }
-}
-
 static bool IsWillChangeTransformHintProperty(CSSPropertyID property) {
   switch (ResolveCSSPropertyID(property)) {
     case CSSPropertyID::kTransform:
@@ -2414,6 +2386,45 @@ bool ComputedStyle::CanMatchSizeContainerQueries(const Element& element) const {
 bool ComputedStyle::IsInterleavingRoot(const ComputedStyle* style) {
   const ComputedStyle* unensured = ComputedStyle::NullifyEnsured(style);
   return unensured && unensured->IsContainerForSizeContainerQueries();
+}
+
+bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {
+  // Force a stacking context for transform-style: preserve-3d. This happens
+  // even if preserves-3d is ignored due to a 'grouping property' being present
+  // which requires flattening. See:
+  // ComputedStyle::HasGroupingPropertyForUsedTransformStyle3D().
+  // This is legacy behavior that is left ambiguous in the official specs.
+  // See https://crbug.com/663650 for more details.
+  if (TransformStyle3D() == ETransformStyle3D::kPreserve3d) {
+    return true;
+  }
+  if (ForcesStackingContext()) {
+    return true;
+  }
+  if (StyleType() == kPseudoIdBackdrop) {
+    return true;
+  }
+  if (HasTransformRelatedProperty()) {
+    return true;
+  }
+  if (HasStackingGroupingProperty(BoxReflect())) {
+    return true;
+  }
+  if (GetPosition() == EPosition::kFixed) {
+    return true;
+  }
+  if (GetPosition() == EPosition::kSticky) {
+    return true;
+  }
+  if (HasPropertyThatCreatesStackingContext(WillChangeProperties())) {
+    return true;
+  }
+  if (ShouldCompositeForCurrentAnimations()) {
+    // TODO(882625): This becomes unnecessary when will-change correctly takes
+    // into account active animations.
+    return true;
+  }
+  return false;
 }
 
 void ComputedStyleBuilder::PropagateIndependentInheritedProperties(
