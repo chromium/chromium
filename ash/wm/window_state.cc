@@ -573,6 +573,22 @@ void WindowState::UpdatePipBounds() {
   }
 }
 
+void WindowState::UpdateSnappedBounds() {
+  DCHECK(IsSnapped());
+  const float current_snap_ratio = GetCurrentSnapRatio(window_);
+  const gfx::Rect maximized_bounds =
+      screen_util::GetMaximizedWindowBoundsInParent(window_);
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+  const gfx::Rect snapped_bounds =
+      GetSnappedWindowBounds(maximized_bounds, display, window_,
+                             GetStateType() == WindowStateType::kPrimarySnapped
+                                 ? ash::SnapViewType::kPrimary
+                                 : ash::SnapViewType::kSecondary,
+                             current_snap_ratio);
+  SetBoundsInScreen(snapped_bounds);
+}
+
 std::unique_ptr<WindowState::State> WindowState::SetStateObject(
     std::unique_ptr<WindowState::State> new_state) {
   current_state_->DetachState(this);

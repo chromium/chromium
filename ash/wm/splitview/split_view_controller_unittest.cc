@@ -3259,6 +3259,45 @@ TEST_F(SplitViewControllerTest, SplitViewDividerObserveSnappedWindow) {
   EXPECT_TRUE(split_view_divider()->IsWindowObserved(right_window.get()));
 }
 
+// Tests that snap between different ratios in the same position works as
+// intended.
+TEST_F(SplitViewControllerTest, SnapBetweenDifferentRatios) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+
+  // Send WM_EVENT_SNAP_PRIMARY to `window1` with the default requested snap
+  // ratio.
+  WMEvent snap_primary_default(WM_EVENT_SNAP_PRIMARY);
+  WindowState::Get(window1.get())->OnWMEvent(&snap_primary_default);
+
+  const gfx::Rect work_area_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect divider_bounds = split_view_divider()->GetDividerBoundsInScreen(
+      /*is_dragging=*/false);
+
+  // Test that the divider position and window size are both at half.
+  ASSERT_NEAR(divider_bounds.x(), work_area_bounds.width() * 0.5f,
+              divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window1->bounds().width(),
+              divider_bounds.width());
+
+  // Now send WM_EVENT_SNAP_PRIMARY to `window1` with a requested snap ratio of
+  // two thirds.
+  WMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
+                                 chromeos::kTwoThirdSnapRatio);
+  WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
+  divider_bounds = split_view_divider()->GetDividerBoundsInScreen(
+      /*is_dragging=*/false);
+
+  // Test that the divider position and window sizes have both updated to two
+  // thirds.
+  ASSERT_NEAR(divider_bounds.x(), work_area_bounds.width() * 0.67f,
+              divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window1->bounds().width(),
+              divider_bounds.width());
+}
+
 TEST_F(SplitViewControllerTest, WMSnapEventDeviceOrientationMetricsInTablet) {
   UpdateDisplay("800x600");
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();

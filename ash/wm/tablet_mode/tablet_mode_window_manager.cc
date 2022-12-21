@@ -76,10 +76,18 @@ void DoSplitViewTransition(
     split_view_controller->InitDividerPositionForTransition(divider_position);
 
   for (auto& iter : windows) {
+    // Preserve the current snap ratio before transition, since
+    // `SplitViewController::SnapWindow()` will send a new snap event with
+    // `snap_ratio`.
+    absl::optional<float> snap_ratio =
+        WindowState::Get(iter.first)->snap_ratio();
     split_view_controller->SnapWindow(
-        iter.first, iter.second == WindowStateType::kPrimarySnapped
-                        ? SplitViewController::SnapPosition::kPrimary
-                        : SplitViewController::SnapPosition::kSecondary);
+        /*window=*/iter.first,
+        /*snap_position=*/iter.second == WindowStateType::kPrimarySnapped
+            ? SplitViewController::SnapPosition::kPrimary
+            : SplitViewController::SnapPosition::kSecondary,
+        /*activate_window=*/false,
+        /*snap_ratio=*/snap_ratio ? *snap_ratio : chromeos::kDefaultSnapRatio);
   }
 
   // For clamshell split view mode, end splitview mode if we're in single

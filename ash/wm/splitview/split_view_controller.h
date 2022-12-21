@@ -168,19 +168,22 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // See also the |DCHECK|s in |SnapWindow|.
   bool CanSnapWindow(aura::Window* window) const;
 
-  // Snap |window| in the split view at |snap_position|. It will send snap
-  // WMEvent to |window| and rely on WindowState to do the actual work to
+  // Snap `window` in the split view at `snap_position`. It will send snap
+  // WMEvent to `window` and rely on WindowState to do the actual work to
   // change window state and bounds. Note this function does not guarantee
-  // |window| can be snapped in the split view (e.g., an ARC++ window may
+  // `window` can be snapped in the split view (e.g., an ARC++ window may
   // decide to ignore the state change request), and split view state will only
   // be updated after the window state is changed to the desired snap window
-  // state. If |activate_window| is true, |window| will be activated after being
-  // snapped in splitview. Please note if |activate_window| is false, it's still
-  // possible that |window| will be activated after being snapped, see
-  // |to_be_activated_window_| for details.
+  // state. If `activate_window` is true, `window` will be activated after being
+  // snapped in splitview. Please note if `activate_window` is false, it's still
+  // possible that `window` will be activated after being snapped, see
+  // `to_be_activated_window_` for details. `snap_ratio` may be provided if the
+  // window requests a specific snap ratio, i.e. during clamshell <-> tablet
+  // transition.
   void SnapWindow(aura::Window* window,
                   SnapPosition snap_position,
-                  bool activate_window = false);
+                  bool activate_window = false,
+                  float snap_ratio = chromeos::kDefaultSnapRatio);
 
   // This is called by WindowState::State when receiving a snap WMEvent (i.e.,
   // WM_EVENT_SNAP_PRIMARY or WM_EVENT_SNAP_SECONDARY). SplitViewController will

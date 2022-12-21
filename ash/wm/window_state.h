@@ -247,6 +247,11 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // keyboard position changes.
   void UpdatePipBounds();
 
+  // Updates the window bounds. This may get called when a window is resized in
+  // splitview (i.e. a snapped window and overview). Side-by-side snapped
+  // windows will get resized by WorkspaceWindowResizer normally.
+  void UpdateSnappedBounds();
+
   // Replace the State object of a window with a state handler which can
   // implement a new window manager type. The passed object will be owned
   // by this object and the returned object will be owned by the caller.
