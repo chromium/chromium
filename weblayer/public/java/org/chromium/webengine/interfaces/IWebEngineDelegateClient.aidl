@@ -10,7 +10,7 @@ import org.chromium.webengine.interfaces.IWebEngineDelegate;
 import org.chromium.webengine.interfaces.IWebFragmentEventsDelegate;
 
 oneway interface IWebEngineDelegateClient {
-    void onWebEngineReady(
+    void onDelegatesReady(
             IWebEngineDelegate delegate,
             IWebFragmentEventsDelegate fragmentEventsDelegate,
             ITabManagerDelegate tabManagerDelegate,

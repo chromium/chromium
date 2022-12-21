@@ -7,7 +7,9 @@ package org.chromium.webengine;
 import org.chromium.webengine.interfaces.ITabParams;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Tab registry for storing open {@link Tab}s per WebEngine on the webengine side.
@@ -37,5 +39,9 @@ class TabRegistry {
             tab.invalidate();
         }
         mGuidToTab.clear();
+    }
+
+    Set<Tab> getTabs() {
+        return new HashSet(mGuidToTab.values());
     }
 }

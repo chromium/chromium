@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import org.chromium.webengine.interfaces.ITabListObserverDelegate;
 import org.chromium.webengine.interfaces.ITabParams;
 
+import java.util.Set;
+
 /**
  * This class acts as a proxy between the TabList events happening in
  * weblayer and the TabListObserverDelegate in webengine.
@@ -34,6 +36,14 @@ class WebFragmentTabListDelegate extends TabListCallback {
 
     void setObserver(ITabListObserverDelegate observer) {
         mTabListObserver = observer;
+    }
+
+    void notifyInitialTabs(Set<Tab> allTabs, Tab activeTab) {
+        for (Tab tab : allTabs) {
+            onTabAdded(tab);
+        }
+        onActiveTabChanged(activeTab);
+        onFinishedTabInitialization();
     }
 
     @Override
@@ -69,6 +79,10 @@ class WebFragmentTabListDelegate extends TabListCallback {
     @Override
     public void onWillDestroyBrowserAndAllTabs() {
         maybeRunOnTabListObserver(observer -> observer.notifyWillDestroyBrowserAndAllTabs());
+    }
+
+    public void onFinishedTabInitialization() {
+        maybeRunOnTabListObserver(observer -> { observer.onFinishedTabInitialization(); });
     }
 
     private interface OnTabListObserverCallback {

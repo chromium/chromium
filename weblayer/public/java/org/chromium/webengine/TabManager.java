@@ -15,11 +15,14 @@ import androidx.concurrent.futures.CallbackToFutureAdapter;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.chromium.base.Callback;
 import org.chromium.webengine.interfaces.ExceptionType;
 import org.chromium.webengine.interfaces.IBooleanCallback;
 import org.chromium.webengine.interfaces.ITabCallback;
 import org.chromium.webengine.interfaces.ITabManagerDelegate;
 import org.chromium.webengine.interfaces.ITabParams;
+
+import java.util.Set;
 
 /**
  * Class for interaction with WebEngine Tabs.
@@ -32,6 +35,8 @@ public class TabManager {
 
     private TabRegistry mTabRegistry = new TabRegistry();
     private final TabListObserverDelegate mTabListObserverDelegate;
+
+    private Callback mInitializedTabsCallback;
 
     private final class RequestNavigationCallback extends IBooleanCallback.Stub {
         private CallbackToFutureAdapter.Completer<Boolean> mCompleter;
@@ -74,6 +79,14 @@ public class TabManager {
         mTabListObserverDelegate = new TabListObserverDelegate(mTabRegistry);
         try {
             mDelegate.setTabListObserverDelegate(mTabListObserverDelegate);
+        } catch (RemoteException e) {
+        }
+    }
+
+    void initialize(Callback<Void> initializedCallback) {
+        mTabListObserverDelegate.setInitializationFinishedCallback(initializedCallback);
+        try {
+            mDelegate.notifyInitialTabs();
         } catch (RemoteException e) {
         }
     }
@@ -143,6 +156,10 @@ public class TabManager {
             // Debug string.
             return "Create Tab Future";
         });
+    }
+
+    public Set<Tab> getAllTabs() {
+        return mTabRegistry.getTabs();
     }
 
     /**

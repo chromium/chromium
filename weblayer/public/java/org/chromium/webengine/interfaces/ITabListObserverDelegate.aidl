@@ -11,4 +11,6 @@ oneway interface ITabListObserverDelegate {
     void notifyTabAdded(in ITabParams tabParams) = 2;
     void notifyTabRemoved(in ITabParams tabParams) = 3;
     void notifyWillDestroyBrowserAndAllTabs() = 4;
+
+    void onFinishedTabInitialization() = 5;
 }

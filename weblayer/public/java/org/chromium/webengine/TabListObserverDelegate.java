@@ -10,6 +10,7 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.webengine.interfaces.ITabListObserverDelegate;
 import org.chromium.webengine.interfaces.ITabParams;
@@ -22,12 +23,17 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
 
     private TabRegistry mTabRegistry;
     private ObserverList<TabListObserver> mTabListObservers = new ObserverList<TabListObserver>();
+    private Callback<Void> mInitializationFinishedCallback;
 
     public TabListObserverDelegate(TabRegistry tabRegistry) {
         // Assert on UI thread as ObserverList can only be accessed from one thread.
         ThreadCheck.ensureOnUiThread();
 
         mTabRegistry = tabRegistry;
+    }
+
+    void setInitializationFinishedCallback(Callback<Void> initializationFinishedCallback) {
+        mInitializationFinishedCallback = initializationFinishedCallback;
     }
 
     /**
@@ -89,6 +95,16 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
         mHandler.post(() -> {
             for (TabListObserver observer : mTabListObservers) {
                 observer.onWillDestroyFragmentAndAllTabs();
+            }
+        });
+    }
+
+    @Override
+    public void onFinishedTabInitialization() {
+        mHandler.post(() -> {
+            if (mInitializationFinishedCallback != null) {
+                mInitializationFinishedCallback.onResult(null);
+                mInitializationFinishedCallback = null;
             }
         });
     }

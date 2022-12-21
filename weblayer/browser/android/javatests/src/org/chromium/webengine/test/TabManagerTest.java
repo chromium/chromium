@@ -35,6 +35,7 @@ import org.chromium.webengine.TabManager;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebSandbox;
 
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -78,8 +79,28 @@ public class TabManagerTest {
     @SmallTest
     public void tabGetsAddedAndActivatedOnStartup() throws Exception {
         WebEngine webEngine = runOnUiThreadBlocking(() -> mSandbox.createWebEngine()).get();
-        Tab tab = runOnUiThreadBlocking(() -> webEngine.getTabManager().getActiveTab()).get();
-        assert tab != null;
+
+        Tab activeTab = runOnUiThreadBlocking(() -> webEngine.getTabManager().getActiveTab()).get();
+        Assert.assertNotNull(activeTab);
+
+        Set<Tab> allTabs = webEngine.getTabManager().getAllTabs();
+        Assert.assertEquals(allTabs.size(), 1);
+
+        Assert.assertTrue(allTabs.contains(activeTab));
+    }
+
+    @Test
+    @SmallTest
+    public void tabsGetAddedToRegistry() throws Exception {
+        WebEngine webEngine = runOnUiThreadBlocking(() -> mSandbox.createWebEngine()).get();
+
+        Set<Tab> initialTabs = webEngine.getTabManager().getAllTabs();
+        Assert.assertEquals(initialTabs.size(), 1);
+
+        Tab addedTab = runOnUiThreadBlocking(() -> webEngine.getTabManager().createTab()).get();
+        Set<Tab> twoTabs = webEngine.getTabManager().getAllTabs();
+        Assert.assertEquals(twoTabs.size(), 2);
+        Assert.assertTrue(twoTabs.contains(addedTab));
     }
 
     @Test
@@ -135,7 +156,9 @@ public class TabManagerTest {
         runOnUiThreadBlocking(() -> mActivityTestRule.attachFragment(webEngine2.getFragment()));
         Tab newActiveTab =
                 runOnUiThreadBlocking(() -> webEngine2.getTabManager().getActiveTab()).get();
-
+        Set<Tab> allTabs = webEngine2.getTabManager().getAllTabs();
+        Assert.assertEquals(allTabs.size(), 1);
+        Assert.assertTrue(allTabs.contains(newActiveTab));
         // TODO(crbug.com/1398388): Set url for tab after restoring from persistence ID.
         // Assert.assertEquals(newActiveTab.getDisplayUri().toString(), url);
         Assert.assertEquals(newActiveTab.getGuid(), activeTab.getGuid());

@@ -6,6 +6,7 @@ package org.chromium.webengine;
 
 import android.os.RemoteException;
 
+import org.chromium.base.Callback;
 import org.chromium.webengine.interfaces.ICookieManagerDelegate;
 import org.chromium.webengine.interfaces.ITabManagerDelegate;
 import org.chromium.webengine.interfaces.IWebEngineDelegate;
@@ -46,6 +47,10 @@ public class WebEngine {
             ITabManagerDelegate tabManagerDelegate, ICookieManagerDelegate cookieManagerDelegate) {
         return new WebEngine(webSandbox, delegate, fragmentEventsDelegate, tabManagerDelegate,
                 cookieManagerDelegate);
+    }
+
+    void initializeTabManager(Callback<Void> initializationFinishedCallback) {
+        mTabManager.initialize(initializationFinishedCallback);
     }
 
     /**

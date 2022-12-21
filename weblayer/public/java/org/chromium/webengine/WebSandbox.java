@@ -144,22 +144,23 @@ public class WebSandbox {
 
     private class WebEngineDelegateClient extends IWebEngineDelegateClient.Stub {
         private CallbackToFutureAdapter.Completer<WebEngine> mWebEngineCompleter;
-        private WebEngine mWebEngine;
 
         WebEngineDelegateClient(CallbackToFutureAdapter.Completer<WebEngine> completer) {
             mWebEngineCompleter = completer;
         }
 
         @Override
-        public void onWebEngineReady(IWebEngineDelegate delegate,
+        public void onDelegatesReady(IWebEngineDelegate delegate,
                 IWebFragmentEventsDelegate fragmentEventsDelegate,
                 ITabManagerDelegate tabManagerDelegate,
                 ICookieManagerDelegate cookieManagerDelegate) {
             mHandler.post(() -> {
-                mWebEngine = WebEngine.create(WebSandbox.this, delegate, fragmentEventsDelegate,
-                        tabManagerDelegate, cookieManagerDelegate);
-                addWebEngine(mWebEngine);
-                mWebEngineCompleter.set(mWebEngine);
+                WebEngine engine = WebEngine.create(WebSandbox.this, delegate,
+                        fragmentEventsDelegate, tabManagerDelegate, cookieManagerDelegate);
+                engine.initializeTabManager((v) -> {
+                    addWebEngine(engine);
+                    mWebEngineCompleter.set(engine);
+                });
             });
         }
     }

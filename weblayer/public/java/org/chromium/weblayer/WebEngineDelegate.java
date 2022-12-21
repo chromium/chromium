@@ -41,7 +41,7 @@ class WebEngineDelegate extends IWebEngineDelegate.Stub {
 
             WebEngineDelegate webEngineDelegate = new WebEngineDelegate(browser);
             try {
-                client.onWebEngineReady(webEngineDelegate, fragmentEventsDelegate,
+                client.onDelegatesReady(webEngineDelegate, fragmentEventsDelegate,
                         tabManagerDelegate, cookieManagerDelegate);
             } catch (RemoteException e) {
                 throw new RuntimeException("Failed to initialize WebEngineDelegate", e);
