@@ -197,7 +197,7 @@ struct AttributionReportJsonConverter {
 
   base::Value::Dict ToJson(const AttributionDebugReport& report,
                            base::Time time) const {
-    base::Value::List report_body = report.ReportBody();
+    base::Value::List report_body = report.ReportBody().Clone();
     if (options.remove_report_ids) {
       for (auto& value : report_body) {
         base::Value::Dict* dict = value.GetIfDict();

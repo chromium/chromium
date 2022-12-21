@@ -57,7 +57,7 @@ void AttributionReportNetworkSender::SendReport(
     bool is_debug_report,
     ReportSentCallback sent_callback) {
   GURL url = report.ReportURL(is_debug_report);
-  base::Value::Dict body = report.ReportBody();
+  std::string body = SerializeAttributionJson(report.ReportBody());
 
   SendReport(std::move(url), body,
              base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
@@ -69,7 +69,7 @@ void AttributionReportNetworkSender::SendReport(
     AttributionDebugReport report,
     DebugReportSentCallback callback) {
   GURL url = report.ReportURL();
-  base::Value::List body = report.ReportBody();
+  std::string body = SerializeAttributionJson(report.ReportBody());
   SendReport(
       std::move(url), body,
       base::BindOnce(&AttributionReportNetworkSender::OnDebugReportSent,
@@ -78,7 +78,7 @@ void AttributionReportNetworkSender::SendReport(
 }
 
 void AttributionReportNetworkSender::SendReport(GURL url,
-                                                base::ValueView report_body,
+                                                const std::string& body,
                                                 UrlLoaderCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = std::move(url);
@@ -130,8 +130,7 @@ void AttributionReportNetworkSender::SendReport(GURL url,
                                         std::move(simple_url_loader));
   simple_url_loader_ptr->SetTimeoutDuration(base::Seconds(30));
 
-  simple_url_loader_ptr->AttachStringForUpload(
-      SerializeAttributionJson(report_body), "application/json");
+  simple_url_loader_ptr->AttachStringForUpload(body, "application/json");
 
   // Retry once on network change. A network change during DNS resolution
   // results in a DNS error rather than a network change error, so retry in

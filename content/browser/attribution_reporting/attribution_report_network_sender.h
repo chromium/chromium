@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,10 +15,6 @@
 #include "content/common/content_export.h"
 
 class GURL;
-
-namespace base {
-class ValueView;
-}  // namespace base
 
 namespace net {
 class HttpResponseHeaders;
@@ -65,7 +62,7 @@ class CONTENT_EXPORT AttributionReportNetworkSender
                               scoped_refptr<net::HttpResponseHeaders>)>;
 
   void SendReport(GURL url,
-                  base::ValueView report_body,
+                  const std::string& body,
                   UrlLoaderCallback callback);
 
   // Called when headers are available for a sent report.

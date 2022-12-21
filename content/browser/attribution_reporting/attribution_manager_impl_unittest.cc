@@ -2267,7 +2267,7 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
     EXPECT_THAT(StoredSources(), SizeIs(1));
     EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
 
-    base::Value::List report_body =
+    const base::Value::List& report_body =
         report_sender_->verbose_debug_calls().front().first.ReportBody();
     ASSERT_EQ(report_body.size(), 1u);
     ASSERT_TRUE(report_body.front().is_dict());
