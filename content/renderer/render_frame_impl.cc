@@ -581,10 +581,14 @@ blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       info->url_request.RequestorOrigin().CanAccess(current_origin),
       has_download_sandbox_flag, from_ad);
 
+  absl::optional<GURL> initiator_base_url;
+  if (info->requestor_base_url.IsValid())
+    initiator_base_url = info->requestor_base_url;
   return blink::mojom::CommonNavigationParams::New(
       info->url_request.Url(), info->url_request.RequestorOrigin(),
-      std::move(referrer), url_request_extra_data->transition_type(),
-      navigation_type, download_policy,
+      initiator_base_url, std::move(referrer),
+      url_request_extra_data->transition_type(), navigation_type,
+      download_policy,
       info->frame_load_type == WebFrameLoadType::kReplaceCurrentItem, GURL(),
       base::TimeTicks::Now(), info->url_request.HttpMethod().Latin1(),
       blink::GetRequestBodyForWebURLRequest(info->url_request),
@@ -4592,6 +4596,9 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // RenderFrameProxies in other processes.
   WebSecurityOrigin frame_origin = frame_document.GetSecurityOrigin();
   params->origin = frame_origin;
+  // Note: since we get the security origin from the `frame_document`, we also
+  // get the base url from it too.
+  params->initiator_base_url = frame_document.BaseURL();
 
   params->permissions_policy_header = permissions_policy_header;
   params->document_policy_header = document_policy_header;
@@ -5418,6 +5425,8 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
   auto params = blink::mojom::OpenURLParams::New();
   params->url = info->url_request.Url();
   params->initiator_origin = info->url_request.RequestorOrigin();
+  if (info->requestor_base_url.IsValid())
+    params->initiator_base_url = info->requestor_base_url;
   params->post_body = blink::GetRequestBodyForWebURLRequest(info->url_request);
   DCHECK_EQ(!!params->post_body, IsHttpPost(info->url_request));
   params->extra_headers =

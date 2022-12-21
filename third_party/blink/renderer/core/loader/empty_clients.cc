@@ -101,6 +101,7 @@ bool EmptyChromeClient::StartDeferringCommits(LocalFrame& main_frame,
 
 void EmptyLocalFrameClient::BeginNavigation(
     const ResourceRequest&,
+    const KURL& requestor_base_url,
     mojom::RequestContextFrameType,
     LocalDOMWindow*,
     DocumentLoader*,

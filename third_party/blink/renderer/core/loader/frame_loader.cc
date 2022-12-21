@@ -841,8 +841,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   }
 
   Client()->BeginNavigation(
-      resource_request, request.GetFrameType(), origin_window,
-      nullptr /* document_loader */, navigation_type,
+      resource_request, request.GetRequestorBaseURL(), request.GetFrameType(),
+      origin_window, nullptr /* document_loader */, navigation_type,
       request.GetNavigationPolicy(), frame_load_type,
       CalculateClientRedirectPolicy(
           request.ClientRedirectReason(), frame_load_type,

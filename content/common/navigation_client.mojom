@@ -112,6 +112,12 @@ struct DidCommitProvisionalLoadParams {
   // RenderFrameProxies.
   url.mojom.Origin origin;
 
+  // Base url of the document. This value is only used for
+  // CreateNavigationRequestForSynchronousRendererCommit.
+  // TODO(https://crbug.com/1215096): If synchronous about:blank commits are
+  // removed, then this will no longer be needed.
+  url.mojom.Url initiator_base_url;
+
   // Information about how `origin` was calculated, to help debug if it differs
   // from the origin calculated on the browser side.
   // TODO(https://crbug.com/1220238): Remove this.

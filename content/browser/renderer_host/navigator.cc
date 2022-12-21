@@ -782,6 +782,7 @@ void Navigator::RequestOpenURL(
     const blink::LocalFrameToken* initiator_frame_token,
     int initiator_process_id,
     const absl::optional<url::Origin>& initiator_origin,
+    const absl::optional<GURL>& initiator_base_url,
     const scoped_refptr<network::ResourceRequestBody>& post_body,
     const std::string& extra_headers,
     const Referrer& referrer,
@@ -838,6 +839,7 @@ void Navigator::RequestOpenURL(
   params.user_gesture = user_gesture;
   params.triggering_event_info = triggering_event_info;
   params.initiator_origin = initiator_origin;
+  params.initiator_base_url = initiator_base_url;
   params.initiator_frame_token = base::OptionalFromPtr(initiator_frame_token);
   params.initiator_process_id = initiator_process_id;
 
@@ -874,6 +876,7 @@ void Navigator::NavigateFromFrameProxy(
     const blink::LocalFrameToken* initiator_frame_token,
     int initiator_process_id,
     const url::Origin& initiator_origin,
+    const GURL& initiator_base_url,
     SiteInstance* source_site_instance,
     const Referrer& referrer,
     ui::PageTransition page_transition,
@@ -930,13 +933,14 @@ void Navigator::NavigateFromFrameProxy(
 
   controller_.NavigateFromFrameProxy(
       render_frame_host, url, initiator_frame_token, initiator_process_id,
-      initiator_origin, is_renderer_initiated, source_site_instance,
-      referrer_to_use, page_transition, should_replace_current_entry,
-      download_policy, method, post_body, extra_headers,
-      std::move(source_location), std::move(blob_url_loader_factory),
-      is_form_submission, impression, initiator_activation_and_ad_status,
-      navigation_start_time, is_embedder_initiated_fenced_frame_navigation,
-      is_unfenced_top_navigation, force_new_browsing_instance);
+      initiator_origin, initiator_base_url, is_renderer_initiated,
+      source_site_instance, referrer_to_use, page_transition,
+      should_replace_current_entry, download_policy, method, post_body,
+      extra_headers, std::move(source_location),
+      std::move(blob_url_loader_factory), is_form_submission, impression,
+      initiator_activation_and_ad_status, navigation_start_time,
+      is_embedder_initiated_fenced_frame_navigation, is_unfenced_top_navigation,
+      force_new_browsing_instance);
 }
 
 void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,
@@ -1360,8 +1364,9 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
       NavigationEntryImpl::FromNavigationEntry(
           NavigationControllerImpl::CreateNavigationEntry(
               common_params.url, content::Referrer(),
-              common_params.initiator_origin, source_site_instance,
-              ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */,
+              common_params.initiator_origin, common_params.initiator_base_url,
+              source_site_instance, ui::PAGE_TRANSITION_LINK,
+              true /* is_renderer_initiated */,
               std::string() /* extra_headers */,
               controller_.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */, rewrite_virtual_urls));

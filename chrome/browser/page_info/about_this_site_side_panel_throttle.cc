@@ -49,6 +49,7 @@ MaybeCreateAboutThisSiteThrottleFor(content::NavigationHandle* handle) {
             WindowOpenDisposition::NEW_FOREGROUND_TAB,
             handle->GetPageTransition(), handle->IsRendererInitiated());
         params.initiator_origin = handle->GetInitiatorOrigin();
+        params.initiator_base_url = handle->GetInitiatorBaseUrl();
         data->delegate()->OpenUrlInBrowser(params);
         return true;
       }),

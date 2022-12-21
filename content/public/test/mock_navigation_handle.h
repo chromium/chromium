@@ -180,6 +180,9 @@ class MockNavigationHandle : public NavigationHandle {
   const absl::optional<url::Origin>& GetInitiatorOrigin() override {
     return initiator_origin_;
   }
+  const absl::optional<GURL>& GetInitiatorBaseUrl() override {
+    return initiator_base_url_;
+  }
   const std::vector<std::string>& GetDnsAliases() override {
     static const base::NoDestructor<std::vector<std::string>>
         emptyvector_result;
@@ -337,6 +340,7 @@ class MockNavigationHandle : public NavigationHandle {
   bool was_response_cached_ = false;
   net::ProxyServer proxy_server_;
   absl::optional<url::Origin> initiator_origin_;
+  absl::optional<GURL> initiator_base_url_;
   ReloadType reload_type_ = content::ReloadType::NONE;
   std::string href_translate_;
   absl::optional<blink::Impression> impression_;

@@ -157,6 +157,11 @@ struct CommonNavigationParams {
   // browser-initiated navigations.
   url.mojom.Origin? initiator_origin;
 
+  // For navigations to about:blank and srcdoc frames, we require the base url
+  // of the frame initiating the navigation. As with `initiator_origin`, this
+  // parameter can be null.
+  url.mojom.Url? initiator_base_url;
+
   // The URL to send in the "Referer" header field. Can be empty if there is
   // no referrer.
   blink.mojom.Referrer referrer;

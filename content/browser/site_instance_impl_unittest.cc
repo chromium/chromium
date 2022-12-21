@@ -443,7 +443,8 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
   EXPECT_EQ(0, browser_client()->GetAndClearSiteInstanceDeleteCount());
 
   NavigationEntryImpl* e1 = new NavigationEntryImpl(
-      instance, url, Referrer(), absl::nullopt, std::u16string(),
+      instance, url, Referrer(), /* initiator_origin= */ absl::nullopt,
+      /* initiator_base_url= */ absl::nullopt, std::u16string(),
       ui::PAGE_TRANSITION_LINK, false, nullptr /* blob_url_loader_factory */,
       false /* is_initial_entry */);
 
@@ -454,7 +455,8 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
 
   // Add a second reference
   NavigationEntryImpl* e2 = new NavigationEntryImpl(
-      instance, url, Referrer(), absl::nullopt, std::u16string(),
+      instance, url, Referrer(), /* initiator_origin= */ absl::nullopt,
+      /* initiator_base_url= */ absl::nullopt, std::u16string(),
       ui::PAGE_TRANSITION_LINK, false, nullptr /* blob_url_loader_factory */,
       false /* is_initial_entry */);
 

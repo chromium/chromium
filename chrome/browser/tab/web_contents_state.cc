@@ -532,10 +532,13 @@ WebContentsState::CreateSingleNavigationStateAsByteBuffer(
   url::Origin initiator_origin;
   if (jinitiator_origin)
     initiator_origin = url::Origin::FromJavaObject(jinitiator_origin);
+  // TODO(https://crbug.com/1399608): Deal with getting initiator_base_url
+  // plumbed here too.
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationController::CreateNavigationEntry(
           GURL(base::android::ConvertJavaStringToUTF8(env, url)), referrer,
-          initiator_origin, ui::PAGE_TRANSITION_LINK,
+          initiator_origin, /* initiator_base_url= */ absl::nullopt,
+          ui::PAGE_TRANSITION_LINK,
           true,  // is_renderer_initiated
           "",    // extra_headers
           ProfileManager::GetActiveUserProfile(),

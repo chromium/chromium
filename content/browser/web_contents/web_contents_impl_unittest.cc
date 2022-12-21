@@ -894,7 +894,8 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredSitelessUrl) {
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   std::unique_ptr<NavigationEntry> new_entry =
       NavigationController::CreateNavigationEntry(
-          native_url, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_LINK,
+          native_url, Referrer(), /* initiator_origin= */ absl::nullopt,
+          /* initiator_base_url= */ absl::nullopt, ui::PAGE_TRANSITION_LINK,
           false, std::string(), browser_context(),
           nullptr /* blob_url_loader_factory */);
   entries.push_back(std::move(new_entry));
@@ -935,7 +936,8 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredRegularUrl) {
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   std::unique_ptr<NavigationEntry> new_entry =
       NavigationController::CreateNavigationEntry(
-          regular_url, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_LINK,
+          regular_url, Referrer(), /* initiator_origin= */ absl::nullopt,
+          /* initiator_base_url= */ absl::nullopt, ui::PAGE_TRANSITION_LINK,
           false, std::string(), browser_context(),
           nullptr /* blob_url_loader_factory */);
   entries.push_back(std::move(new_entry));

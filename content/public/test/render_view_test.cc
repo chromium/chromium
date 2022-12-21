@@ -725,7 +725,8 @@ void RenderViewTest::ChangeFocusToNull(const blink::WebDocument& document) {
 
 void RenderViewTest::Reload(const GURL& url) {
   auto common_params = blink::mojom::CommonNavigationParams::New(
-      url, absl::nullopt, blink::mojom::Referrer::New(),
+      url, /* initiator_origin= */ absl::nullopt,
+      /* initiator_base_url= */ absl::nullopt, blink::mojom::Referrer::New(),
       ui::PAGE_TRANSITION_LINK, blink::mojom::NavigationType::RELOAD,
       blink::NavigationDownloadPolicy(), false, GURL(), base::TimeTicks::Now(),
       "GET", nullptr, network::mojom::SourceLocation::New(),
@@ -855,7 +856,8 @@ void RenderViewTest::GoToOffset(int offset,
   int pending_offset = offset + webview->HistoryBackListCount();
 
   auto common_params = blink::mojom::CommonNavigationParams::New(
-      url, absl::nullopt, blink::mojom::Referrer::New(),
+      url, /* initiator_origin= */ absl::nullopt,
+      /* initiator_base_url= */ absl::nullopt, blink::mojom::Referrer::New(),
       ui::PAGE_TRANSITION_FORWARD_BACK,
       blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT,
       blink::NavigationDownloadPolicy(), false, GURL(), base::TimeTicks::Now(),

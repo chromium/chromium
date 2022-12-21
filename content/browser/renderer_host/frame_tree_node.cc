@@ -1027,6 +1027,7 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     bool is_same_document,
     const GURL& url,
     const url::Origin& origin,
+    const absl::optional<GURL>& initiator_base_url,
     const net::IsolationInfo& isolation_info_for_subresources,
     blink::mojom::ReferrerPtr referrer,
     const ui::PageTransition& transition,
@@ -1043,10 +1044,11 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     int http_response_code) {
   return NavigationRequest::CreateForSynchronousRendererCommit(
       this, render_frame_host, is_same_document, url, origin,
-      isolation_info_for_subresources, std::move(referrer), transition,
-      should_replace_current_entry, method, has_transient_activation,
-      is_overriding_user_agent, redirects, original_url,
-      std::move(coep_reporter), std::move(web_bundle_navigation_info),
+      initiator_base_url, isolation_info_for_subresources, std::move(referrer),
+      transition, should_replace_current_entry, method,
+      has_transient_activation, is_overriding_user_agent, redirects,
+      original_url, std::move(coep_reporter),
+      std::move(web_bundle_navigation_info),
       std::move(subresource_web_bundle_navigation_info), http_response_code);
 }
 

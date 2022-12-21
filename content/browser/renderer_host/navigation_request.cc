@@ -1346,6 +1346,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
     bool is_same_document,
     const GURL& url,
     const url::Origin& origin,
+    const absl::optional<GURL>& initiator_base_url,
     const net::IsolationInfo& isolation_info_for_subresources,
     blink::mojom::ReferrerPtr referrer,
     const ui::PageTransition& transition,
@@ -1368,7 +1369,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           url,
           // TODO(nasko): Investigate better value to pass for
           // |initiator_origin|.
-          origin, std::move(referrer), transition,
+          origin, initiator_base_url, std::move(referrer), transition,
           is_same_document ? blink::mojom::NavigationType::SAME_DOCUMENT
                            : blink::mojom::NavigationType::DIFFERENT_DOCUMENT,
           blink::NavigationDownloadPolicy(), should_replace_current_entry,
@@ -4064,9 +4065,10 @@ void NavigationRequest::OnResponseStarted(
           frame_entry->navigation_api_key(), new_site_instance.get(),
           frame_entry->source_site_instance(), frame_entry->url(),
           frame_entry->committed_origin(), frame_entry->referrer(),
-          frame_entry->initiator_origin(), frame_entry->redirect_chain(),
-          frame_entry->page_state(), frame_entry->method(),
-          frame_entry->post_id(), frame_entry->blob_url_loader_factory(),
+          frame_entry->initiator_origin(), frame_entry->initiator_base_url(),
+          frame_entry->redirect_chain(), frame_entry->page_state(),
+          frame_entry->method(), frame_entry->post_id(),
+          frame_entry->blob_url_loader_factory(),
           frame_entry->web_bundle_navigation_info()
               ? frame_entry->web_bundle_navigation_info()->Clone()
               : nullptr,
@@ -7472,6 +7474,10 @@ int NavigationRequest::GetInitiatorProcessID() {
 
 const absl::optional<url::Origin>& NavigationRequest::GetInitiatorOrigin() {
   return common_params().initiator_origin;
+}
+
+const absl::optional<GURL>& NavigationRequest::GetInitiatorBaseUrl() {
+  return common_params().initiator_base_url;
 }
 
 const std::vector<std::string>& NavigationRequest::GetDnsAliases() {

@@ -104,10 +104,12 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
   GURL temporary_url;
   content::Referrer temporary_referrer;
   absl::optional<url::Origin> temporary_initiator_origin;
+  absl::optional<GURL> temporary_initiator_base_url;
 
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationController::CreateNavigationEntry(
           temporary_url, temporary_referrer, temporary_initiator_origin,
+          temporary_initiator_base_url,
           // Use a transition type of reload so that we don't incorrectly
           // increase the typed count.
           ui::PAGE_TRANSITION_RELOAD, false,

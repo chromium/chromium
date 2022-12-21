@@ -255,6 +255,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   auto params = mojom::blink::OpenURLParams::New();
   params->url = url;
   params->initiator_origin = request.RequestorOrigin();
+  params->initiator_base_url = frame_request.GetRequestorBaseURL();
   params->post_body =
       blink::GetRequestBodyForWebURLRequest(WrappedResourceRequest(request));
   DCHECK_EQ(!!params->post_body, request.HttpMethod().Utf8() == "POST");

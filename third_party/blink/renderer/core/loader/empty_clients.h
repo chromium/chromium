@@ -289,6 +289,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
 
   void BeginNavigation(
       const ResourceRequest&,
+      const KURL& requestor_base_url,
       mojom::RequestContextFrameType,
       LocalDOMWindow*,
       DocumentLoader*,

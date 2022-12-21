@@ -6244,12 +6244,14 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   // hit the network, but should be served from the cache instead.
   Referrer referrer_for_view_source;
   absl::optional<url::Origin> initiator_for_view_source = absl::nullopt;
+  absl::optional<GURL> initiator_base_url_for_view_source = absl::nullopt;
   // Do not restore title, derive it from the url.
   std::u16string title_for_view_source;
   auto navigation_entry = std::make_unique<NavigationEntryImpl>(
       site_instance_for_view_source, frame_entry->url(),
       referrer_for_view_source, initiator_for_view_source,
-      title_for_view_source, ui::PAGE_TRANSITION_LINK,
+      initiator_base_url_for_view_source, title_for_view_source,
+      ui::PAGE_TRANSITION_LINK,
       /* is_renderer_initiated = */ false,
       /* blob_url_loader_factory = */ nullptr, /* is_initial_entry = */ false);
   const GURL url(content::kViewSourceScheme + std::string(":") +

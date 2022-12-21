@@ -73,6 +73,10 @@ struct BLINK_EXPORT WebNavigationInfo {
   // The main resource request.
   WebURLRequest url_request;
 
+  // The base url of the requestor. Only used for about:srcdoc and about:blank
+  // navigations, and if NewBaseUrlInheritanceBehavior is enabled.
+  WebURL requestor_base_url;
+
   // The frame type. This must not be kNone. See RequestContextFrameType.
   // TODO(dgozman): enforce this is not kNone.
   mojom::RequestContextFrameType frame_type =

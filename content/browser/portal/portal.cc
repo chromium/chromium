@@ -282,13 +282,15 @@ void Portal::Navigate(const GURL& url,
 
   // TODO(https://crbug.com/1074422): It is possible for a portal to be
   // navigated by a frame other than the owning frame. Find a way to route the
-  // correct initiator of the portal navigation to this call.
+  // correct initiator origin and initiator base url of the portal navigation to
+  // this call.
   const blink::LocalFrameToken frame_token =
       owner_render_frame_host_->GetFrameToken();
   portal_root->navigator().NavigateFromFrameProxy(
       portal_frame, out_validated_url, &frame_token,
       owner_render_frame_host_->GetProcess()->GetID(),
       owner_render_frame_host_->GetLastCommittedOrigin(),
+      /* initiator_base_url= */ GURL::EmptyGURL(),
       owner_render_frame_host_->GetSiteInstance(),
       mojo::ConvertTo<Referrer>(referrer), ui::PAGE_TRANSITION_LINK,
       should_replace_entry, download_policy, "GET", nullptr, "", nullptr,

@@ -287,6 +287,7 @@ class CONTENT_EXPORT NavigationRequest
       bool is_same_document,
       const GURL& url,
       const url::Origin& origin,
+      const absl::optional<GURL>& initiator_base_url,
       const net::IsolationInfo& isolation_info_for_subresources,
       blink::mojom::ReferrerPtr referrer,
       const ui::PageTransition& transition,
@@ -404,6 +405,7 @@ class CONTENT_EXPORT NavigationRequest
       override;
   int GetInitiatorProcessID() override;
   const absl::optional<url::Origin>& GetInitiatorOrigin() override;
+  const absl::optional<GURL>& GetInitiatorBaseUrl() override;
   const std::vector<std::string>& GetDnsAliases() override;
   bool IsSameProcess() override;
   NavigationEntry* GetNavigationEntry() override;

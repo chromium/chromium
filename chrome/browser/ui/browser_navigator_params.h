@@ -113,6 +113,10 @@ struct NavigateParams {
   // The origin of the initiator of the navigation.
   absl::optional<url::Origin> initiator_origin;
 
+  // The base url of the initiator of the navigation. This is only set if the
+  // url is about:blank or about:srcdoc.
+  absl::optional<GURL> initiator_base_url;
+
   // The frame name to be used for the main frame.
   std::string frame_name;
 

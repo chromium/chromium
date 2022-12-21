@@ -520,13 +520,14 @@ std::unique_ptr<NavigationEntry> NavigationController::CreateNavigationEntry(
     const GURL& url,
     Referrer referrer,
     absl::optional<url::Origin> initiator_origin,
+    absl::optional<GURL> initiator_base_url,
     ui::PageTransition transition,
     bool is_renderer_initiated,
     const std::string& extra_headers,
     BrowserContext* browser_context,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory) {
   return NavigationControllerImpl::CreateNavigationEntry(
-      url, referrer, std::move(initiator_origin),
+      url, referrer, std::move(initiator_origin), std::move(initiator_base_url),
       nullptr /* source_site_instance */, transition, is_renderer_initiated,
       extra_headers, browser_context, std::move(blob_url_loader_factory),
       true /* rewrite_virtual_urls */);
@@ -538,6 +539,7 @@ NavigationControllerImpl::CreateNavigationEntry(
     const GURL& url,
     Referrer referrer,
     absl::optional<url::Origin> initiator_origin,
+    absl::optional<GURL> initiator_base_url,
     SiteInstance* source_site_instance,
     ui::PageTransition transition,
     bool is_renderer_initiated,
@@ -561,8 +563,9 @@ NavigationControllerImpl::CreateNavigationEntry(
   auto entry = std::make_unique<NavigationEntryImpl>(
       nullptr,  // The site instance for tabs is sent on navigation
                 // (WebContents::GetSiteInstance).
-      url_to_load, referrer, initiator_origin, std::u16string(), transition,
-      is_renderer_initiated, blob_url_loader_factory,
+      url_to_load, referrer, initiator_origin, initiator_base_url,
+      std::u16string(), transition, is_renderer_initiated,
+      blob_url_loader_factory,
       /* is_initial_entry = */ false);
   entry->SetVirtualURL(virtual_url);
   entry->set_user_typed_url(virtual_url);
@@ -1775,6 +1778,7 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
       GetCommittedOriginForFrameEntry(params, request),
       Referrer(*params.referrer),
       request ? request->common_params().initiator_origin : params.origin,
+      request ? request->common_params().initiator_base_url : absl::nullopt,
       request ? request->GetRedirectChain() : redirects, params.page_state,
       params.method, params.post_id, nullptr /* blob_url_loader_factory */,
       (request && request->web_bundle_navigation_info())
@@ -1869,11 +1873,16 @@ void NavigationControllerImpl::CreateInitialEntry() {
   params->referrer = blink::mojom::Referrer::New();
 
   // Create and insert the initial NavigationEntry.
+  // TODO(https://crbug.com/1356658): in the follow-on CL enabling srcdoc base
+  // urls, change `temporary_initiator_base_url` to the inherited base_url
+  // stored on RFHI at the same time that GetLastCommittedOrigin() is set.
+  absl::optional<GURL> temporary_initiator_base_url;
   auto new_entry = std::make_unique<NavigationEntryImpl>(
       rfh->GetSiteInstance(), params->url, Referrer(*params->referrer),
-      rfh->GetLastCommittedOrigin(), std::u16string() /* title */,
-      ui::PAGE_TRANSITION_TYPED, false /* renderer_initiated */,
-      nullptr /* blob_url_loader_factory */, true /* is_initial_entry */);
+      rfh->GetLastCommittedOrigin(), temporary_initiator_base_url,
+      std::u16string() /* title */, ui::PAGE_TRANSITION_TYPED,
+      false /* renderer_initiated */, nullptr /* blob_url_loader_factory */,
+      true /* is_initial_entry */);
   UpdateNavigationEntryDetails(
       new_entry.get(), rfh, *params, nullptr /* request */,
       NavigationEntryImpl::UpdatePolicy::kUpdate, true /* is_new_entry */,
@@ -1895,6 +1904,8 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   std::unique_ptr<NavigationEntryImpl> new_entry;
   const absl::optional<url::Origin>& initiator_origin =
       request->common_params().initiator_origin;
+  const absl::optional<GURL>& initiator_base_url =
+      request->common_params().initiator_base_url;
 
   // First check if this is an in-page navigation.  If so, clone the current
   // entry instead of looking at the pending entry, because the pending entry
@@ -1907,7 +1918,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         params.document_sequence_number, params.navigation_api_key,
         rfh->GetSiteInstance(), nullptr, params.url,
         GetCommittedOriginForFrameEntry(params, request),
-        Referrer(*params.referrer), initiator_origin,
+        Referrer(*params.referrer), initiator_origin, initiator_base_url,
         request->GetRedirectChain(), params.page_state, params.method,
         params.post_id, nullptr /* blob_url_loader_factory */,
         nullptr /* web_bundle_navigation_info */,
@@ -1972,7 +1983,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   if (!new_entry) {
     new_entry = std::make_unique<NavigationEntryImpl>(
         rfh->GetSiteInstance(), params.url, Referrer(*params.referrer),
-        initiator_origin,
+        initiator_origin, initiator_base_url,
         std::u16string(),  // title
         params.transition, request->IsRendererInitiated(),
         nullptr,  // blob_url_loader_factory
@@ -2217,6 +2228,8 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   // CloneAndReplace() call below, if a spot can't be found for it in the tree.
   const absl::optional<url::Origin>& initiator_origin =
       request->common_params().initiator_origin;
+  const absl::optional<GURL>& initiator_base_url =
+      request->common_params().initiator_base_url;
   std::unique_ptr<PolicyContainerPolicies> policy_container_policies =
       ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
                                                   request->GetURL());
@@ -2241,9 +2254,9 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
       params.document_sequence_number, params.navigation_api_key,
       rfh->GetSiteInstance(), nullptr, params.url,
       GetCommittedOriginForFrameEntry(params, request),
-      Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
-      params.page_state, params.method, params.post_id,
-      nullptr /* blob_url_loader_factory */,
+      Referrer(*params.referrer), initiator_origin, initiator_base_url,
+      request->GetRedirectChain(), params.page_state, params.method,
+      params.post_id, nullptr /* blob_url_loader_factory */,
       request->web_bundle_navigation_info()
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr,
@@ -2648,6 +2661,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     const blink::LocalFrameToken* initiator_frame_token,
     int initiator_process_id,
     const absl::optional<url::Origin>& initiator_origin,
+    const absl::optional<GURL>& initiator_base_url,
     bool is_renderer_initiated,
     SiteInstance* source_site_instance,
     const Referrer& referrer,
@@ -2704,7 +2718,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         node, NavigationEntryImpl::UpdatePolicy::kReplace, -1, -1, "", nullptr,
         static_cast<SiteInstanceImpl*>(source_site_instance), url,
         absl::nullopt /* commit_origin */, referrer, initiator_origin,
-        std::vector<GURL>(), blink::PageState(), method, -1,
+        initiator_base_url, std::vector<GURL>(), blink::PageState(), method, -1,
         blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
         nullptr /* subresource_web_bundle_navigation_info */,
         nullptr /* policy_container_policies */);
@@ -2716,9 +2730,10 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     // input urls by users.
     bool rewrite_virtual_urls = node->IsOutermostMainFrame();
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
-        url, referrer, initiator_origin, source_site_instance, page_transition,
-        is_renderer_initiated, extra_headers, browser_context_,
-        blob_url_loader_factory, rewrite_virtual_urls));
+        url, referrer, initiator_origin, initiator_base_url,
+        source_site_instance, page_transition, is_renderer_initiated,
+        extra_headers, browser_context_, blob_url_loader_factory,
+        rewrite_virtual_urls));
     entry->root_node()->frame_entry->set_source_site_instance(
         static_cast<SiteInstanceImpl*>(source_site_instance));
     entry->root_node()->frame_entry->set_method(method);
@@ -2742,7 +2757,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         node->unique_name(), -1, -1, "", nullptr,
         static_cast<SiteInstanceImpl*>(source_site_instance), url,
         absl::nullopt /* origin */, referrer, initiator_origin,
-        std::vector<GURL>(), blink::PageState(), method, -1,
+        initiator_base_url, std::vector<GURL>(), blink::PageState(), method, -1,
         blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
         nullptr /* subresource_web_bundle_navigation_info */,
         nullptr /* policy_container_policies */,
@@ -2753,6 +2768,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   params.initiator_frame_token = base::OptionalFromPtr(initiator_frame_token);
   params.initiator_process_id = initiator_process_id;
   params.initiator_origin = initiator_origin;
+  params.initiator_base_url = initiator_base_url;
   params.source_site_instance = source_site_instance;
   params.load_type = method == "POST" ? LOAD_TYPE_HTTP_POST : LOAD_TYPE_DEFAULT;
   params.transition_type = page_transition;
@@ -3619,8 +3635,9 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
         node, NavigationEntryImpl::UpdatePolicy::kReplace, -1, -1, "", nullptr,
         static_cast<SiteInstanceImpl*>(params.source_site_instance.get()),
         params.url, absl::nullopt, params.referrer, params.initiator_origin,
-        params.redirect_chain, blink::PageState(), "GET", -1,
-        blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
+        params.initiator_base_url, params.redirect_chain, blink::PageState(),
+        "GET", -1, blob_url_loader_factory,
+        nullptr /* web_bundle_navigation_info */,
         nullptr /* subresource_web_bundle_navigation_info */,
         // If in NavigateWithoutEntry we later determine that this navigation is
         // a conversion of a new navigation into a reload, we will set the right
@@ -3635,9 +3652,10 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
     bool rewrite_virtual_urls = node->IsOutermostMainFrame();
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
         params.url, params.referrer, params.initiator_origin,
-        params.source_site_instance.get(), params.transition_type,
-        params.is_renderer_initiated, extra_headers_crlf, browser_context_,
-        blob_url_loader_factory, rewrite_virtual_urls));
+        params.initiator_base_url, params.source_site_instance.get(),
+        params.transition_type, params.is_renderer_initiated,
+        extra_headers_crlf, browser_context_, blob_url_loader_factory,
+        rewrite_virtual_urls));
     entry->set_source_site_instance(
         static_cast<SiteInstanceImpl*>(params.source_site_instance.get()));
     entry->SetRedirectChain(params.redirect_chain);
@@ -3771,7 +3789,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   blink::mojom::CommonNavigationParamsPtr common_params =
       blink::mojom::CommonNavigationParams::New(
-          url_to_load, params.initiator_origin,
+          url_to_load, params.initiator_origin, params.initiator_base_url,
           blink::mojom::Referrer::New(params.referrer.url,
                                       params.referrer.policy),
           params.transition_type, navigation_type, download_policy,

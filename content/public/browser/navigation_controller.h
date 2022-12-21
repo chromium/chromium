@@ -127,6 +127,7 @@ class NavigationController {
       const GURL& url,
       Referrer referrer,
       absl::optional<url::Origin> initiator_origin,
+      absl::optional<GURL> initiator_base_url,
       ui::PageTransition transition,
       bool is_renderer_initiated,
       const std::string& extra_headers,
@@ -174,6 +175,12 @@ class NavigationController {
     // (if these navigations can be somehow triggered or influenced by web
     // content).
     absl::optional<url::Origin> initiator_origin;
+
+    // The base url of the initiator, to be passed to about:blank and srcdoc
+    // frames. As with `initiator_origin`, some browser-initiated navigations
+    // may not have an initiator, and in those cases this will be null. It will
+    // also be null for non-about:blank/about:srcdoc navigations.
+    absl::optional<GURL> initiator_base_url;
 
     // SiteInstance of the frame that initiated the navigation or null if we
     // don't know it.

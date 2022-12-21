@@ -160,6 +160,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual void BeginNavigation(
       const ResourceRequest&,
+      const KURL& requestor_base_url,
       mojom::RequestContextFrameType,
       LocalDOMWindow* origin_window,
       DocumentLoader*,

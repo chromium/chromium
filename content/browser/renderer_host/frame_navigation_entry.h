@@ -56,6 +56,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       const absl::optional<url::Origin>& origin,
       const Referrer& referrer,
       const absl::optional<url::Origin>& initiator_origin,
+      const absl::optional<GURL>& initiator_base_url,
       const std::vector<GURL>& redirect_chain,
       const blink::PageState& page_state,
       const std::string& method,
@@ -86,6 +87,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       const absl::optional<url::Origin>& origin,
       const Referrer& referrer,
       const absl::optional<url::Origin>& initiator_origin,
+      const absl::optional<GURL>& initiator_base_url,
       const std::vector<GURL>& redirect_chain,
       const blink::PageState& page_state,
       const std::string& method,
@@ -164,6 +166,12 @@ class CONTENT_EXPORT FrameNavigationEntry
   // trusted surface like the omnibox or the bookmarks bar).
   const absl::optional<url::Origin>& initiator_origin() const {
     return initiator_origin_;
+  }
+
+  // The base url of the initiator of the navigation. This is only set if the
+  // url is about:blank or about:srcdoc.
+  const absl::optional<GURL>& initiator_base_url() const {
+    return initiator_base_url_;
   }
 
   // The origin of the document the frame has committed. It is optional, since
@@ -275,6 +283,8 @@ class CONTENT_EXPORT FrameNavigationEntry
   absl::optional<url::Origin> committed_origin_;
   Referrer referrer_;
   absl::optional<url::Origin> initiator_origin_;
+  // TODO(https://crbug.com/1399599): Persist `initiator_base_url_`.
+  absl::optional<GURL> initiator_base_url_;
   // This is used when transferring a pending entry from one process to another.
   // We also send the main frame's redirect chain through session sync for
   // offline analysis.

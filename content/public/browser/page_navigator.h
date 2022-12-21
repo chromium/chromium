@@ -91,6 +91,10 @@ struct CONTENT_EXPORT OpenURLParams {
   // The origin of the initiator of the navigation.
   absl::optional<url::Origin> initiator_origin;
 
+  // The base url of the initiator of the navigation. This will be non-null only
+  // if the navigation is about:blank or about:srcdoc.
+  absl::optional<GURL> initiator_base_url;
+
   // SiteInstance of the frame that initiated the navigation or null if we
   // don't know it.
   scoped_refptr<content::SiteInstance> source_site_instance;

@@ -108,6 +108,9 @@ void FencedFrame::Navigate(const GURL& url,
   // cross-site. Since we assign an opaque initiator_origin we do not
   // need to provide a `source_site_instance`.
   url::Origin initiator_origin;
+  // Similarly, we don't want to leak information from the outer frame tree via
+  // base url.
+  GURL initiator_base_url;
 
   // TODO(yaoxia): implement this. This information will be propagated to the
   // `NavigationHandle`. Skip propagating here is fine for now, because we are
@@ -121,6 +124,7 @@ void FencedFrame::Navigate(const GURL& url,
       inner_root->current_frame_host(), validated_url,
       /*initiator_frame_token=*/nullptr,
       content::ChildProcessHost::kInvalidUniqueID, initiator_origin,
+      initiator_base_url,
       /*source_site_instance=*/nullptr, content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_SUBFRAME,
       /*should_replace_current_entry=*/true, download_policy, "GET",

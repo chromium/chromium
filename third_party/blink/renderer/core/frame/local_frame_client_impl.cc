@@ -505,6 +505,7 @@ void LocalFrameClientImpl::DispatchDidFinishLoadForPrinting() {
 
 void LocalFrameClientImpl::BeginNavigation(
     const ResourceRequest& request,
+    const KURL& requestor_base_url,
     mojom::RequestContextFrameType frame_type,
     LocalDOMWindow* origin_window,
     DocumentLoader* document_loader,
@@ -535,6 +536,7 @@ void LocalFrameClientImpl::BeginNavigation(
 
   auto navigation_info = std::make_unique<WebNavigationInfo>();
   navigation_info->url_request.CopyFrom(WrappedResourceRequest(request));
+  navigation_info->requestor_base_url = requestor_base_url;
   navigation_info->frame_type = frame_type;
   navigation_info->navigation_type = type;
   navigation_info->navigation_policy = static_cast<WebNavigationPolicy>(policy);

@@ -2147,6 +2147,80 @@ IN_PROC_BROWSER_TEST_P(BaseUrlInheritanceBehaviorEnterprisePolicyTest,
   EXPECT_EQ("about:blank", EvalJs(popup, "document.baseURI").ExtractString());
 }
 
+// A test to verify the initial stages of the initiator base url plumbing work.
+// The test verifies the value propagates as far as NavigationRequest and
+// FrameNavigationEntry. The test is based on
+// SitePerProcessIsolatedSandboxedIframeTest since that will automatically
+// enable the NewBaseUrlInheritanceBehavior.
+IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
+                       VerifyBaseUrlPlumbing) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  // The child needs to have the same origin as the parent.
+  GURL child_url(main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameNavigationEntry* root_frame_entry =
+      root->current_frame_host()->last_committed_frame_entry();
+  ASSERT_TRUE(root_frame_entry);
+  EXPECT_FALSE(root_frame_entry->initiator_base_url().has_value());
+
+  // Create srcdoc iframe. Verify the baseurl is plumbed as far as the
+  // FrameNavigationEntry.
+  {
+    std::string js_str =
+        "const frm = document.createElement('iframe'); "
+        "frm.srcdoc = 'foo'; "
+        "document.body.appendChild(frm); ";
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+  }
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+
+  FrameNavigationEntry* child_frame_entry =
+      child->current_frame_host()->last_committed_frame_entry();
+  ASSERT_TRUE(child_frame_entry);
+  ASSERT_TRUE(child_frame_entry->initiator_base_url().has_value());
+  EXPECT_EQ(main_url, child_frame_entry->initiator_base_url().value());
+
+  // Create about:blank iframe. Verify the baseurl is plumbed as far as the
+  // FrameNavigationEntry.
+  {
+    std::string js_str =
+        "const frm = document.createElement('iframe'); "
+        "frm.src = 'about:blank'; "
+        "document.body.appendChild(frm); ";
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+  }
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  ASSERT_EQ(2U, root->child_count());
+  child = root->child_at(1);
+  child_frame_entry = child->current_frame_host()->last_committed_frame_entry();
+
+  ASSERT_TRUE(child_frame_entry);
+  ASSERT_TRUE(child_frame_entry->initiator_base_url().has_value());
+  EXPECT_EQ(main_url, child_frame_entry->initiator_base_url().value());
+
+  // Renderer-initiated navigation of the top-level frame to about:blank; there
+  // should be an initiator base url.
+  EXPECT_TRUE(ExecJs(shell(), "location = 'about:blank';"));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  root_frame_entry = root->current_frame_host()->last_committed_frame_entry();
+  ASSERT_TRUE(root_frame_entry);
+  ASSERT_TRUE(root_frame_entry->initiator_base_url().has_value());
+  EXPECT_EQ(main_url, root_frame_entry->initiator_base_url().value());
+
+  // Browser-initiated navigation of the top-level frame to about:blank; there
+  // should be no initiator base url.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  root_frame_entry = root->current_frame_host()->last_committed_frame_entry();
+  ASSERT_TRUE(root_frame_entry);
+  EXPECT_FALSE(root_frame_entry->initiator_base_url().has_value());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessIsolatedSandboxedIframeTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));

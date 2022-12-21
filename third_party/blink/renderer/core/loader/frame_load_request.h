@@ -195,6 +195,8 @@ struct CORE_EXPORT FrameLoadRequest {
     is_unfenced_top_navigation_ = is_unfenced_top_navigation;
   }
 
+  const KURL& GetRequestorBaseURL() const { return requestor_base_url_; }
+
  private:
   LocalDOMWindow* origin_window_;
   ResourceRequest resource_request_;
@@ -220,6 +222,7 @@ struct CORE_EXPORT FrameLoadRequest {
   mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
       initiator_policy_container_keep_alive_handle_;
   std::unique_ptr<SourceLocation> source_location_;
+  KURL requestor_base_url_;
 
   // This is only used for navigations originating in MPArch fenced frames
   // targeting the outermost frame, which is not visible to the renderer

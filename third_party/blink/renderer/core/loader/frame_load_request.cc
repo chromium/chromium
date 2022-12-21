@@ -6,6 +6,7 @@
 
 #include "base/types/optional_util.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
@@ -65,6 +66,14 @@ FrameLoadRequest::FrameLoadRequest(LocalDOMWindow* origin_window,
 
     DCHECK(!resource_request_.RequestorOrigin());
     resource_request_.SetRequestorOrigin(origin_window->GetSecurityOrigin());
+    // Note: `resource_request_` is owned by this FrameLoadRequest instance, and
+    // its url doesn't change after this point, so it's ok to check for
+    // about:blank and about:srcdoc here.
+    if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
+        (resource_request_.Url().IsAboutBlankURL() ||
+         resource_request_.Url().IsAboutSrcdocURL())) {
+      requestor_base_url_ = origin_window->BaseURL();
+    }
 
     if (resource_request.Url().ProtocolIs("blob")) {
       blob_url_token_ = base::MakeRefCounted<
