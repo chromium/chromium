@@ -642,12 +642,15 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
 
     DirectiveStatus status;
     raw_ptr<const CSPParser::Directive, DanglingUntriaged> directive = nullptr;
+    bool required = true;
   };
 
   DirectiveMapping script_src_mapping({DirectiveStatus({kScriptSrc})});
-  DirectiveMapping object_src_mapping({DirectiveStatus({kObjectSrc})});
   DirectiveMapping worker_src_mapping({DirectiveStatus({kWorkerSrc})});
   DirectiveMapping default_src_mapping({DirectiveStatus({kDefaultSrc})});
+
+  DirectiveMapping object_src_mapping({DirectiveStatus({kObjectSrc})});
+  object_src_mapping.required = false;
 
   DirectiveMapping* directive_mappings[] = {
       &script_src_mapping,
@@ -696,10 +699,15 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
   auto is_secure_directive = [manifest_key](const DirectiveMapping& mapping,
                                             std::u16string* error) {
     if (!mapping.directive) {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          manifest_errors::kInvalidCSPMissingSecureSrc, manifest_key,
-          mapping.status.name());
-      return false;
+      if (mapping.required) {
+        *error = ErrorUtils::FormatErrorMessageUTF16(
+            manifest_errors::kInvalidCSPMissingSecureSrc, manifest_key,
+            mapping.status.name());
+        return false;
+      }
+
+      // The directive wasn't present, but isn't required. Allow it.
+      return true;
     }
 
     auto directive_values = mapping.directive->directive_values;
@@ -735,7 +743,11 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
     if (!is_secure_directive(*mapping, error))
       return false;
 
-    DCHECK(mapping->directive);
+    if (!mapping->directive) {
+      DCHECK(!mapping->required);
+      continue;
+    }
+
     secure_directives.insert(mapping->directive);
   }
 

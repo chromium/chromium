@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest,
            "manifest_version": 3,
            "content_security_policy": {
              "extension_pages":
-                 "script-src 'self' http://localhost:* http://127.0.0.1:*; object-src 'self'"
+                 "script-src 'self' http://localhost:* http://127.0.0.1:*;"
            }
          })";
   static constexpr char kPageHtmlTemplate[] =

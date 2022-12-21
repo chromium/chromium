@@ -616,10 +616,12 @@ TEST(ExtensionCSPValidator, DoesCSPDisallowRemoteCode) {
       {"frame-src google.com; default-src yahoo.com; script-src 'self'; "
        "worker-src; object-src http://localhost:80 'none'",
        ""},
+      {"script-src; worker-src 'self';", ""},
+      {"frame-src 'self'", missing_secure_src_error("script-src")},
       {"worker-src http://localhost google.com; script-src; object-src 'self'",
        insecure_value_error("worker-src", "google.com")},
-      {"script-src; worker-src 'self';",
-       missing_secure_src_error("object-src")},
+      {"script-src 'self'; object-src https://google.com",
+       insecure_value_error("object-src", "https://google.com")},
       // Duplicate directives are ignored.
       {"script-src; worker-src 'self'; default-src 'self'; script-src "
        "google.com",

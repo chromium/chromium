@@ -93,8 +93,13 @@ int GetValidatorOptions(Extension* extension) {
   // Component extensions can specify an insecure object-src directive. This
   // should be safe because non-NPAPI plugins should load in a sandboxed process
   // and only allow communication via postMessage.
-  if (extensions::Manifest::IsComponentLocation(extension->location()))
+  // Manifest V3 extensions don't need to specify an object-src, which for the
+  // CSPValidator is considered "insecure". The provided values are later
+  // checked in DoesCSPDisallowRemoteCode() for MV3 extensions.
+  if (extensions::Manifest::IsComponentLocation(extension->location()) ||
+      extension->manifest_version() >= 3) {
     options |= csp_validator::OPTIONS_ALLOW_INSECURE_OBJECT_SRC;
+  }
 
   return options;
 }
