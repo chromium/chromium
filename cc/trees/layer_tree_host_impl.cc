@@ -2986,9 +2986,6 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
   devtools_instrumentation::DidBeginFrame(id_, args.frame_time,
                                           args.frame_id.sequence_number);
 
-  UMA_HISTOGRAM_CUSTOM_COUNTS("GPU.AcceleratedSurfaceRefreshRate",
-                              1 / args.interval.InSecondsF(), 0, 121, 122);
-
   // When there is a |target_local_surface_id_|, we do not wish to begin
   // producing Impl Frames for an older viz::LocalSurfaceId, as it will never
   // be displayed.

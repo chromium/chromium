@@ -271,16 +271,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.AcceleratedSurfaceRefreshRate" units="hz"
-    expires_after="M97">
-  <owner>vmiura@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Refresh rate of the display in Hz. This is recorded every time we present a
-    frame.
-  </summary>
-</histogram>
-
 <histogram name="GPU.ANGLE.Buffer11CPUMemoryMB" units="MB"
     expires_after="2020-05-10">
   <owner>cwallez@chromium.org</owner>
