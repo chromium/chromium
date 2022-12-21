@@ -2045,6 +2045,8 @@ void AppsGridView::HandleKeyboardReparent(
   DCHECK(!folder_delegate_);
   DCHECK(view_model_.GetIndexOfView(original_parent_item_view).has_value());
 
+  const std::string reparented_item_id = reparented_view->item()->id();
+
   // Set |original_parent_item_view| selected so |target_index| will be
   // computed relative to the open folder.
   SetSelectedView(original_parent_item_view);
@@ -2052,14 +2054,25 @@ void AppsGridView::HandleKeyboardReparent(
       GetIndexOfView(original_parent_item_view), key_code);
   ReparentItemForReorder(reparented_view->item(), target_index);
 
+  // `target_index` could point to an invalid/wrong position after reparenting.
+  // This happens after trying to move the last item from the folder
+  // to the right (`target_index` is "folder index + 1", but after reparenting
+  // it actually moves one position back).
+  const AppListItem* const item_after_reparent =
+      item_list_->FindItem(reparented_item_id);
+  DCHECK(item_after_reparent);
+  const int final_model_index = GetModelIndexOfItem(item_after_reparent);
+  const GridIndex final_grid_index =
+      GetGridIndexFromIndexInViewModel(final_model_index);
+
   // Update paging because the move could have resulted in a
   // page getting created.
   UpdatePaging();
 
   Layout();
-  EnsureViewVisible(target_index);
-  GetViewAtIndex(target_index)->RequestFocus();
-  AnnounceReorder(target_index);
+  EnsureViewVisible(final_grid_index);
+  GetViewAtIndex(final_grid_index)->RequestFocus();
+  AnnounceReorder(final_grid_index);
 
   RecordAppMovingTypeMetrics(kMoveByKeyboardOutOfFolder);
 }
