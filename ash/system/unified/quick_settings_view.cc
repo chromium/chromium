@@ -250,6 +250,7 @@ int QuickSettingsView::CalculateHeightForFeatureTilesContainer() {
   return max_height_ -
          temporary_buttons_container_->GetPreferredSize().height() -
          header_->GetPreferredSize().height() -
+         footer_->GetPreferredSize().height() -
          page_indicator_view_->GetPreferredSize().height() -
          sliders_container_->GetPreferredSize().height() -
          media_controls_container_height - footer_->GetPreferredSize().height();

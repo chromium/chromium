@@ -57,8 +57,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   int max_height = CalculateMaxTrayBubbleHeight();
 
   if (features::IsQsRevampEnabled()) {
-    auto quick_settings_view = controller_->CreateQuickSettingsView();
-    quick_settings_view->SetMaxHeight(max_height);
+    auto quick_settings_view = controller_->CreateQuickSettingsView(max_height);
     bubble_view_->SetMaxHeight(
         std::min(max_height, kRevampedTrayMenuMaxHeight));
     quick_settings_view_ =

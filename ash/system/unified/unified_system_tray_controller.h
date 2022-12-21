@@ -80,7 +80,7 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // Create the view in the bubble.
   std::unique_ptr<UnifiedSystemTrayView> CreateUnifiedQuickSettingsView();
-  std::unique_ptr<QuickSettingsView> CreateQuickSettingsView();
+  std::unique_ptr<QuickSettingsView> CreateQuickSettingsView(int max_height);
 
   // Sign out from the current user. Called from the view.
   void HandleSignOutAction();

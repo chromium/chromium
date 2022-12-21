@@ -42,6 +42,7 @@ class ASH_EXPORT PageIndicatorView : public views::View,
 
  private:
   friend class PageIndicatorViewTest;
+  friend class FeatureTilesContainerViewTest;
 
   class PageIndicatorButton;
 

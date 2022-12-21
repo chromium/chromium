@@ -186,12 +186,10 @@ UnifiedSystemTrayController::CreateUnifiedQuickSettingsView() {
 }
 
 std::unique_ptr<QuickSettingsView>
-UnifiedSystemTrayController::CreateQuickSettingsView() {
+UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
   DCHECK(!quick_settings_view_);
   auto qs_view = std::make_unique<QuickSettingsView>(this);
   quick_settings_view_ = qs_view.get();
-
-  InitFeatureTiles();
 
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS) &&
       !Shell::Get()->session_controller()->IsScreenLocked() &&
@@ -210,6 +208,12 @@ UnifiedSystemTrayController::CreateQuickSettingsView() {
       std::make_unique<UnifiedBrightnessSliderController>(model_);
   unified_brightness_view_ = brightness_slider_controller_->CreateView();
   qs_view->AddSliderView(unified_brightness_view_);
+
+  qs_view->SetMaxHeight(max_height);
+
+  // Feature Tiles are added last because the amount of rows depends on the
+  // available height.
+  InitFeatureTiles();
 
   return qs_view;
 }
@@ -672,8 +676,9 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   tiles.push_back(vpn_controller->CreateTile());
 
   // More placeholder tiles.
-  while (tiles.size() < 9)
+  while (tiles.size() < 10) {
     tiles.push_back(std::make_unique<FeatureTile>());
+  }
 
   quick_settings_view_->AddTiles(std::move(tiles));
 

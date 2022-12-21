@@ -9,14 +9,10 @@
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
-#include "ui/views/view_model.h"
 
 namespace ash {
 
-// TODO(crbug/1368717): use FeatureTile.
-class FeaturePodButton;
 class FeatureTile;
-class FeatureTileRow;
 class PaginationModel;
 class UnifiedSystemTrayController;
 
@@ -50,9 +46,6 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   // container can have.
   void SetRowsFromHeight(int max_height);
 
-  // Makes sure button is visible by switching page if needed.
-  void ShowPageWithButton(views::View* button);
-
   // PaginationModelObserver:
   void SelectedPageChanged(int old_selected, int new_selected) override;
   void TransitionChanged() override;
@@ -64,41 +57,43 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
 
   int displayable_rows() const { return displayable_rows_; }
 
-  int FeatureTileRowCount() { return feature_tile_rows_.size(); }
+  int row_count() { return rows_.size(); }
+
+  int page_count() { return pages_.size(); }
 
  private:
+  class PageContainer;
+  class RowContainer;
+
   friend class FeatureTilesContainerViewTest;
 
-  // Calculates the number of feature tile rows based on the available `height`.
+  // Calculates the number of rows based on the available `height`.
   int CalculateRowsFromHeight(int height);
-
-  // Returns the number of tiles per page.
-  int GetTilesPerPage() const;
 
   // Updates page splits for feature tiles.
   void UpdateTotalPages();
 
-  // Owned by UnifiedSystemTrayBubble.
+  // Owned by `UnifiedSystemTrayBubble`.
   UnifiedSystemTrayController* const controller_;
 
-  // Owned by UnifiedSystemTrayModel.
+  // Owned by `UnifiedSystemTrayModel`.
   PaginationModel* const pagination_model_;
 
-  // Number of rows that can be displayed based on the available
-  // max height for FeatureTilesContainer.
-  int displayable_rows_ = 0;
+  // List of pages that contain `RowContainer` elements.
+  // Owned by views hierarchy.
+  std::vector<PageContainer*> pages_;
 
-  // List of rows that contain feature tiles.
-  std::vector<FeatureTileRow*> feature_tile_rows_;
+  // List of rows that contain `FeatureTile` elements.
+  // Owned by views hierarchy.
+  std::vector<RowContainer*> rows_;
+
+  // Number of rows that can be displayed based on the available
+  // max height.
+  int displayable_rows_ = 0;
 
   // Used for preventing reentrancy issue in ChildVisibilityChanged. Should be
   // always false if FeatureTilesContainerView is not in the call stack.
   bool changing_visibility_ = false;
-
-  // A view model that contains all visible feature tiles.
-  // Used to calculate required number of pages.
-  // TODO(crbug/1368717): use FeatureTile.
-  views::ViewModelT<FeaturePodButton> visible_buttons_;
 };
 
 }  // namespace ash

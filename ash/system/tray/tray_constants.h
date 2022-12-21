@@ -217,7 +217,6 @@ constexpr int kUnifiedFeaturePodMaxItemsInCollapsed = 5;
 constexpr int kUnifiedFeaturePodsPageSpacing = 48;
 
 // Constants used in FeatureTiles of QuickSettingsView.
-constexpr int kFeatureTileItemsInRow = 2;
 constexpr int kFeatureTileMaxRows = 4;
 constexpr int kFeatureTileMinRows = 1;
 constexpr int kFeatureTileHeight = 64;
