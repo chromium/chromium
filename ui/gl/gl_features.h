@@ -21,9 +21,10 @@ GL_EXPORT bool UseGpuVsync();
 GL_EXPORT BASE_DECLARE_FEATURE(kAndroidFrameDeadline);
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) ||     \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) ||    \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS) && \
+     !BUILDFLAG(IS_CHROMEOS_LACROS)) ||              \
+    BUILDFLAG(IS_MAC)
 #define PASSTHROUGH_COMMAND_DECODER_LAUNCHED
 #else
 // All features in alphabetical order. The features should be documented
