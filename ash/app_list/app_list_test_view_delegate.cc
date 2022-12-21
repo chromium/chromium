@@ -148,17 +148,6 @@ bool AppListTestViewDelegate::ShouldHideContinueSection() const {
 
 void AppListTestViewDelegate::SetHideContinueSection(bool hide) {}
 
-void AppListTestViewDelegate::GetSearchResultContextMenuModel(
-    const std::string& result_id,
-    GetContextMenuModelCallback callback) {
-  auto menu = std::make_unique<ui::SimpleMenuModel>(this);
-  // Change items if needed.
-  int command_id = 0;
-  menu->AddItem(command_id++, u"Item0");
-  menu->AddItem(command_id++, u"Item1");
-  std::move(callback).Run(std::move(menu));
-}
-
 ash::AssistantViewDelegate*
 AppListTestViewDelegate::GetAssistantViewDelegate() {
   return nullptr;

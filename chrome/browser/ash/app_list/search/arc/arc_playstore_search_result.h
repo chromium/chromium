@@ -17,8 +17,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
-class ArcPlayStoreAppContextMenu;
-class Profile;
 
 namespace arc {
 class IconDecodeRequest;
@@ -30,7 +28,6 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
                                  public AppContextMenuDelegate {
  public:
   ArcPlayStoreSearchResult(arc::mojom::AppDiscoveryResultPtr data,
-                           Profile* profile,
                            AppListControllerDelegate* list_controller,
                            const std::u16string& query);
 
@@ -40,7 +37,6 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
   ~ArcPlayStoreSearchResult() override;
 
   // ChromeSearchResult overrides:
-  void GetContextMenuModel(GetMenuModelCallback callback) override;
   void Open(int event_flags) override;
 
   // app_list::AppContextMenuDelegate overrides:
@@ -60,9 +56,6 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
     return data_->icon->icon_png_data.value();
   }
 
-  // ChromeSearchResult overrides:
-  AppContextMenu* GetAppContextMenu() override;
-
   // Callback passed to |icon_decode_request_|.
   void OnIconDecoded(const gfx::ImageSkia&);
 
@@ -70,9 +63,7 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
   std::unique_ptr<arc::IconDecodeRequest> icon_decode_request_;
 
   // |profile_| is owned by ProfileInfo.
-  Profile* const profile_;                            // Owned by ProfileInfo.
   AppListControllerDelegate* const list_controller_;  // Owned by AppListClient.
-  std::unique_ptr<ArcPlayStoreAppContextMenu> context_menu_;
 
   base::WeakPtrFactory<ArcPlayStoreSearchResult> weak_ptr_factory_{this};
 };

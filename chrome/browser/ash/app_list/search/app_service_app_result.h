@@ -36,8 +36,6 @@ class AppServiceAppResult : public AppResult {
  private:
   // ChromeSearchResult overrides:
   void Open(int event_flags) override;
-  void GetContextMenuModel(GetMenuModelCallback callback) override;
-  AppContextMenu* GetAppContextMenu() override;
 
   // AppContextMenuDelegate overrides:
   void ExecuteLaunchCommand(int event_flags) override;
@@ -58,8 +56,6 @@ class AppServiceAppResult : public AppResult {
   apps::AppType app_type_;
   bool is_platform_app_;
   bool show_in_launcher_;
-
-  std::unique_ptr<AppContextMenu> context_menu_;
 
   base::CancelableTaskTracker task_tracker_;
 

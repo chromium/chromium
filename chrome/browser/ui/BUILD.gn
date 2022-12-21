@@ -2009,8 +2009,6 @@ static_library("ui") {
       "../ash/app_list/arc/arc_package_syncable_service_factory.h",
       "../ash/app_list/arc/arc_pai_starter.cc",
       "../ash/app_list/arc/arc_pai_starter.h",
-      "../ash/app_list/arc/arc_playstore_app_context_menu.cc",
-      "../ash/app_list/arc/arc_playstore_app_context_menu.h",
       "../ash/app_list/arc/arc_usb_host_permission_manager.cc",
       "../ash/app_list/arc/arc_usb_host_permission_manager.h",
       "../ash/app_list/arc/arc_usb_host_permission_manager_factory.cc",

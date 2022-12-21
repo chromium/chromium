@@ -61,12 +61,6 @@ void TestAppListClient::InvokeSearchResultAction(
   invoked_result_actions_.emplace_back(result_id, action);
 }
 
-void TestAppListClient::GetSearchResultContextMenuModel(
-    const std::string& result_id,
-    GetContextMenuModelCallback callback) {
-  std::move(callback).Run(nullptr);
-}
-
 void TestAppListClient::ActivateItem(int profile_id,
                                      const std::string& id,
                                      int event_flags,

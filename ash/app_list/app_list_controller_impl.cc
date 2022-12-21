@@ -1221,13 +1221,6 @@ void AppListControllerImpl::InvokeSearchResultAction(
     client_->InvokeSearchResultAction(result_id, action);
 }
 
-void AppListControllerImpl::GetSearchResultContextMenuModel(
-    const std::string& result_id,
-    GetContextMenuModelCallback callback) {
-  if (client_)
-    client_->GetSearchResultContextMenuModel(result_id, std::move(callback));
-}
-
 void AppListControllerImpl::ViewShown(int64_t display_id) {
   UpdateAssistantVisibility();
 

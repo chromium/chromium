@@ -73,13 +73,6 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // Invokes a custom action |action| on a result with |result_id|.
   virtual void InvokeSearchResultAction(const std::string& result_id,
                                         SearchResultActionType action) = 0;
-  // Returns the context menu model for the search result with |result_id|, or
-  // an empty array if there is currently no menu for the result.
-  using GetSearchResultContextMenuModelCallback =
-      base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
-  virtual void GetSearchResultContextMenuModel(
-      const std::string& result_id,
-      GetSearchResultContextMenuModelCallback callback) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   // Interfaces on the app list UI:

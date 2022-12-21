@@ -18,10 +18,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
-namespace app_list {
-class AppContextMenu;
-}  // namespace app_list
-
 namespace ui {
 class ImageModel;
 }
@@ -192,13 +188,6 @@ class ChromeSearchResult {
   // Called if set visible/hidden.
   virtual void OnVisibilityChanged(bool visibility);
 
-  // Returns the context menu model for this item, or NULL if there is currently
-  // no menu for the item (e.g. during install). |callback| takes the ownership
-  // of the returned menu model.
-  using GetMenuModelCallback =
-      base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
-  virtual void GetContextMenuModel(GetMenuModelCallback callback);
-
   base::WeakPtr<ChromeSearchResult> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -206,10 +195,6 @@ class ChromeSearchResult {
  protected:
   // These id setters should be called in derived class constructors only.
   void set_id(const std::string& id) { metadata_->id = id; }
-
-  // Get the context menu of a certain search result. This could be different
-  // for different kinds of items.
-  virtual app_list::AppContextMenu* GetAppContextMenu();
 
  private:
   // The relevance of this result, as decided by the search provider that

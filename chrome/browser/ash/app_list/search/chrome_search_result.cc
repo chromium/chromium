@@ -212,14 +212,6 @@ void ChromeSearchResult::OnVisibilityChanged(bool visibility) {
   VLOG(1) << " Visibility change to " << visibility << " and ID is " << id();
 }
 
-void ChromeSearchResult::GetContextMenuModel(GetMenuModelCallback callback) {
-  std::move(callback).Run(nullptr);
-}
-
-app_list::AppContextMenu* ChromeSearchResult::GetAppContextMenu() {
-  return nullptr;
-}
-
 ::std::ostream& operator<<(::std::ostream& os,
                            const ChromeSearchResult& result) {
   return os << result.id() << " " << result.scoring();

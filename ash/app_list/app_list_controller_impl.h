@@ -162,9 +162,6 @@ class ASH_EXPORT AppListControllerImpl
                                 SearchResultActionType action) override;
   using GetContextMenuModelCallback =
       AppListViewDelegate::GetContextMenuModelCallback;
-  void GetSearchResultContextMenuModel(
-      const std::string& result_id,
-      GetContextMenuModelCallback callback) override;
   void ViewShown(int64_t display_id) override;
   bool AppListTargetVisibility() const override;
   void ViewClosing() override;

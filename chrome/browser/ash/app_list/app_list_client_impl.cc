@@ -278,26 +278,6 @@ void AppListClientImpl::InvokeSearchResultAction(
     search_controller_->InvokeResultAction(result, action);
 }
 
-void AppListClientImpl::GetSearchResultContextMenuModel(
-    const std::string& result_id,
-    GetContextMenuModelCallback callback) {
-  if (!search_controller_) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
-  if (!result) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  result->GetContextMenuModel(base::BindOnce(
-      [](GetContextMenuModelCallback callback,
-         std::unique_ptr<ui::SimpleMenuModel> menu_model) {
-        std::move(callback).Run(std::move(menu_model));
-      },
-      std::move(callback)));
-}
-
 void AppListClientImpl::ViewClosing() {
   display_id_ = display::kInvalidDisplayId;
 }

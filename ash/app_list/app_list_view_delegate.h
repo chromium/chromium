@@ -79,9 +79,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Note the returned menu model is owned by that result.
   using GetContextMenuModelCallback =
       base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
-  virtual void GetSearchResultContextMenuModel(
-      const std::string& result_id,
-      GetContextMenuModelCallback callback) = 0;
 
   // Invoked when the app list is shown.
   virtual void ViewShown(int64_t display_id) = 0;

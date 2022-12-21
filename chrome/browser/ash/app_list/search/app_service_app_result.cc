@@ -13,7 +13,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
-#include "chrome/browser/ash/app_list/app_service/app_service_context_menu.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -89,12 +88,6 @@ void AppServiceAppResult::Open(int event_flags) {
                               : apps::LaunchSource::kFromAppListQuery));
 }
 
-void AppServiceAppResult::GetContextMenuModel(GetMenuModelCallback callback) {
-  // TODO(b/263179505): Remove this method as the context menu is not available
-  // for search result now.
-  NOTREACHED();
-}
-
 ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
   switch (app_type_) {
     case apps::AppType::kArc:
@@ -125,10 +118,6 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
       NOTREACHED();
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;
   }
-}
-
-AppContextMenu* AppServiceAppResult::GetAppContextMenu() {
-  return context_menu_.get();
 }
 
 void AppServiceAppResult::ExecuteLaunchCommand(int event_flags) {
