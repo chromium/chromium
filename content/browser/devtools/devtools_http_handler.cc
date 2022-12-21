@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
@@ -40,6 +41,7 @@
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/user_agent.h"
 #include "net/base/io_buffer.h"
@@ -750,6 +752,13 @@ void DevToolsHttpHandler::OnWebSocketRequest(
   if (!thread_)
     return;
 
+  if (request.headers.count("origin") &&
+      !remote_allow_origins_.count(request.headers.at("origin")) &&
+      !remote_allow_origins_.count("*")) {
+    Send403(connection_id);
+    return;
+  }
+
   if (base::StartsWith(request.path, browser_guid_,
                        base::CompareCase::SENSITIVE)) {
     scoped_refptr<DevToolsAgentHost> browser_agent =
@@ -821,6 +830,14 @@ DevToolsHttpHandler::DevToolsHttpHandler(
                        output_directory, debug_frontend_dir, browser_guid_,
                        delegate_->HasBundledFrontendResources()));
   }
+  std::string remote_allow_origins = base::ToLowerASCII(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kRemoteAllowOrigins));
+
+  auto origins =
+      base::SplitString(remote_allow_origins, ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  remote_allow_origins_.insert(origins.begin(), origins.end());
 }
 
 void DevToolsHttpHandler::ServerStarted(
@@ -878,6 +895,18 @@ void DevToolsHttpHandler::Send404(int connection_id) {
       FROM_HERE,
       base::BindOnce(&ServerWrapper::Send404,
                      base::Unretained(server_wrapper_.get()), connection_id));
+}
+
+void DevToolsHttpHandler::Send403(int connection_id) {
+  if (!thread_) {
+    return;
+  }
+  net::HttpServerResponseInfo response(net::HTTP_FORBIDDEN);
+  response.SetBody(std::string(), "text/html");
+  thread_->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&ServerWrapper::SendResponse,
+                                base::Unretained(server_wrapper_.get()),
+                                connection_id, response));
 }
 
 void DevToolsHttpHandler::Send500(int connection_id,

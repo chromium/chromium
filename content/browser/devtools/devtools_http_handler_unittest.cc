@@ -10,8 +10,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -30,6 +32,7 @@
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_devtools_agent_host.h"
 #include "content/public/test/test_utils.h"
@@ -344,6 +347,145 @@ TEST_F(DevToolsHttpHandlerTest, TestJsonNew) {
   DevToolsAgentHost::StopRemoteDebuggingServer();
   // Make sure the handler actually stops.
   run_loop_2.Run();
+}
+
+class DevToolsWebSocketHandlerTest : public DevToolsHttpHandlerTest {
+ public:
+  DevToolsWebSocketHandlerTest() = default;
+
+  int StartServer() {
+    std::unique_ptr<TCPServerSocketFactory> factory =
+        std::make_unique<TCPServerSocketFactory>(run_loop_.QuitClosure(),
+                                                 run_loop_2_.QuitClosure());
+    TCPServerSocketFactory* factory_raw = factory.get();
+
+    DevToolsAgentHost::StartRemoteDebuggingServer(
+        std::move(factory), base::FilePath(), base::FilePath());
+    // Our dummy socket factory will post a quit message once the server will
+    // become ready.
+    run_loop_.Run();
+    return factory_raw->port();
+  }
+
+  void StopServer() {
+    DevToolsAgentHost::StopRemoteDebuggingServer();
+    // Make sure the handler actually stops.
+    run_loop_2_.Run();
+  }
+
+  std::string GetWebSocketDebuggingURL(int port) {
+    GURL url(base::StringPrintf("http://127.0.0.1:%d/json/version", port));
+    net::TestDelegate delegate;
+    auto request = request_context_->CreateRequest(
+        url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+    request->Start();
+    delegate.RunUntilComplete();
+    EXPECT_GE(delegate.request_status(), 0);
+    absl::optional<base::Value> response =
+        base::JSONReader::Read(delegate.data_received());
+    base::Value::Dict* dict = response->GetIfDict();
+    // Compute HTTP upgrade request URL.
+    std::string debugging_url = *dict->FindString("webSocketDebuggerUrl");
+    std::string prefix = "ws://";
+    return "http://" + debugging_url.substr(prefix.length());
+  }
+
+  std::unique_ptr<net::URLRequest> RunRequestUntilCompletion(
+      std::string url,
+      std::map<std::string, std::string> headers) {
+    net::TestDelegate delegate;
+    auto request = request_context_->CreateRequest(
+        GURL(url), net::DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS);
+    for (auto const& [key, value] : headers) {
+      request->SetExtraRequestHeaderByName(key, value, true);
+    }
+
+    request->Start();
+    delegate.RunUntilComplete();
+    EXPECT_GE(delegate.request_status(), 0);
+    return request;
+  }
+
+ private:
+  std::unique_ptr<net::URLRequestContext> request_context_ =
+      net::CreateTestURLRequestContextBuilder()->Build();
+  base::RunLoop run_loop_;
+  base::RunLoop run_loop_2_;
+};
+
+TEST_F(DevToolsWebSocketHandlerTest,
+       TestRejectsWebSocketConnectionsWithOrigin) {
+  int port = StartServer();
+
+  std::string debugging_url = GetWebSocketDebuggingURL(port);
+
+  // Accepts an upgrade request without an Origin header.
+  auto request =
+      RunRequestUntilCompletion(debugging_url, {
+                                                   {"connection", "upgrade"},
+                                                   {"upgrade", "websocket"},
+                                               });
+  // This error is expected because it's not a well-formed WS request.
+  // It means that the request is accepted by the server though.
+  EXPECT_EQ(request->GetResponseCode(), 500);
+
+  // Denies an upgrade request with an Origin header.
+  request = RunRequestUntilCompletion(debugging_url,
+                                      {{"connection", "upgrade"},
+                                       {"upgrade", "websocket"},
+                                       {"origin", "http://localhost"}});
+  EXPECT_EQ(request->GetResponseCode(), 403);
+
+  StopServer();
+}
+
+TEST_F(DevToolsWebSocketHandlerTest, TestAllowsCLIOverrideAllowsOriginsStar) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRemoteAllowOrigins, "*");
+  int port = StartServer();
+
+  std::string debugging_url = GetWebSocketDebuggingURL(port);
+
+  auto request = RunRequestUntilCompletion(debugging_url,
+                                           {
+                                               {"connection", "upgrade"},
+                                               {"upgrade", "websocket"},
+                                               {"origin", "http://localhost"},
+                                           });
+  // This error is expected because it's not a well-formed WS request.
+  // It means that the request is accepted by the server though.
+  EXPECT_EQ(request->GetResponseCode(), 500);
+
+  StopServer();
+}
+
+TEST_F(DevToolsWebSocketHandlerTest, TestAllowsCLIOverrideAllowsOrigins) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRemoteAllowOrigins, "http://localhost");
+  int port = StartServer();
+
+  std::string debugging_url = GetWebSocketDebuggingURL(port);
+
+  auto request = RunRequestUntilCompletion(debugging_url,
+                                           {
+                                               {"connection", "upgrade"},
+                                               {"upgrade", "websocket"},
+                                               {"origin", "http://localhost"},
+                                           });
+  // This error is expected because it's not a well-formed WS request.
+  // It means that the request is accepted by the server though.
+  EXPECT_EQ(request->GetResponseCode(), 500);
+
+  request = RunRequestUntilCompletion(debugging_url,
+                                      {
+                                          {"connection", "upgrade"},
+                                          {"upgrade", "websocket"},
+                                          {"origin", "http://127.0.0.1"},
+                                      });
+  EXPECT_EQ(request->GetResponseCode(), 403);
+
+  StopServer();
 }
 
 }  // namespace content
