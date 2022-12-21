@@ -13,6 +13,50 @@
 
 namespace media {
 namespace v4l2_test {
+
+struct H264SliceMetadata;
+
+// H264DPB is a class representing a Decoded Picture Buffer (DPB).
+// The DPB is a vector of H264 picture slice metadata objects that
+// describe the pictures used in the H.264 decoding process.
+class H264DPB : std::vector<std::unique_ptr<H264SliceMetadata>> {
+ public:
+  H264DPB() = default;
+  ~H264DPB() = default;
+
+  H264DPB(const H264DPB&) = delete;
+  H264DPB& operator=(const H264DPB&) = delete;
+
+  // Deletes all H264SliceMetadata elements from DPB.
+  void ClearDPB();
+  // Returns number of Reference H264SliceMetadata elements
+  // in the DPB.
+  int CountRefPics();
+  // Deletes input H264SliceMetadata object from the DPB.
+  void Delete(H264SliceMetadata* pic);
+  // Deletes any H264SliceMetadata object from DPB that is considered
+  // to be unused by the decoder.
+  // An H264SliceMetadata is unused if it has been outputted and is not a
+  // reference picture.
+  void DeleteUnused();
+  // Removes the reference picture marking from the lowest frame
+  // number H264SliceMetadata object in the DPB. This is used for implementing
+  // a sliding window DPB replacement algorithm.
+  void UnmarkLowestFrameNumWrapShortRefPic();
+  // Returns a vector of H264SliceMetadata objects that have not been output
+  // by the H264 Decoder.
+  std::vector<H264SliceMetadata*> GetNotOutputtedPicsAppending();
+  // Updates every H264SliceMetadata object in the DPB to indicate that they are
+  // not reference elements.
+  void MarkAllUnusedRef();
+  void StorePic(H264SliceMetadata* pic);
+
+ private:
+  // A vector of H264SliceMetadata objects which will be created by the H264
+  // Decoder and sent to this class for slice processing.
+  std::vector<std::unique_ptr<H264SliceMetadata>> dpb_;
+};
+
 class H264Decoder : public VideoDecoder {
  public:
   H264Decoder(const H264Decoder&) = delete;
