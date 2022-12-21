@@ -2215,7 +2215,7 @@
   {
     "name": "enable-experimental-accessibility-google-tts-language-packs",
     "owners": [ "akihiroota", "josiahk", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 113
   },
   {
     "name": "enable-experimental-accessibility-language-detection",
