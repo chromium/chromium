@@ -1534,7 +1534,8 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::BuildPacketImpl(
     }
 
     const size_t min_plaintext_packet_size =
-        quic::QuicPacketCreator::MinPlaintextPacketSize(version_);
+        quic::QuicPacketCreator::MinPlaintextPacketSize(
+            version_, header_.packet_number_length);
     if (frames_size < min_plaintext_packet_size) {
       const size_t expansion_on_new_frame =
           frames.empty()
