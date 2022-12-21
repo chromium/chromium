@@ -346,10 +346,8 @@ public class NotificationPlatformBridge {
 
         // This flag ensures the broadcast is delivered with foreground priority. It also means the
         // receiver gets a shorter timeout interval before it may be killed, but this is ok because
-        // we schedule a job to handle the intent in NotificationService.Receiver on N+.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
-        }
+        // we schedule a job to handle the intent in NotificationService.Receiver.
+        intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
 
         return PendingIntentProvider.getBroadcast(context, PENDING_INTENT_REQUEST_CODE, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT, mutable);
@@ -607,7 +605,7 @@ public class NotificationPlatformBridge {
         boolean hasImage = image != null;
         boolean forWebApk = !webApkPackage.isEmpty();
         NotificationBuilderBase notificationBuilder =
-                createNotificationBuilder(context, hasImage)
+                new StandardNotificationBuilder(context)
                         .setTitle(title)
                         .setBody(body)
                         .setImage(image)
@@ -684,7 +682,7 @@ public class NotificationPlatformBridge {
         // unnecessarily abbreviating it on Android Wear also (crbug.com/576656). If custom
         // layouts are enabled, the label and icon provided here only affect Android Wear, so
         // don't abbreviate them.
-        boolean abbreviateSiteSettings = actions.length > 0 && !useCustomLayouts(image != null);
+        boolean abbreviateSiteSettings = actions.length > 0;
         int settingsIconId = abbreviateSiteSettings ? 0 : R.drawable.settings_cog;
         CharSequence settingsTitle = abbreviateSiteSettings
                 ? res.getString(R.string.notification_site_settings_button)
@@ -697,11 +695,6 @@ public class NotificationPlatformBridge {
         return notificationBuilder.build(
                 new NotificationMetadata(NotificationUmaTracker.SystemNotificationType.SITES,
                         notificationId /* notificationTag */, PLATFORM_ID /* notificationId */));
-    }
-
-    private NotificationBuilderBase createNotificationBuilder(Context context, boolean hasImage) {
-        return useCustomLayouts(hasImage) ? new CustomNotificationBuilder(context)
-                                          : new StandardNotificationBuilder(context);
     }
 
     /** Returns whether to set a channel id when building a notification. */
@@ -729,23 +722,6 @@ public class NotificationPlatformBridge {
                 0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
         return spannableStringBuilder;
-    }
-
-    /**
-     * Determines whether to use standard notification layouts, using NotificationCompat.Builder,
-     * or custom layouts using Chrome's own templates.
-     *
-     * Normally a standard layout is used on Android N+, and a custom layout is used on older
-     * versions of Android. But if the notification has a content image, there isn't enough room for
-     * the Site Settings button to go on its own line when showing an image, nor is there enough
-     * room for action button icons, so a standard layout will be used here even on old versions.
-     *
-     * @param hasImage Whether the notification has a content image.
-     * @return Whether custom layouts should be used.
-     */
-    @VisibleForTesting
-    static boolean useCustomLayouts(boolean hasImage) {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.N && !hasImage;
     }
 
     /**

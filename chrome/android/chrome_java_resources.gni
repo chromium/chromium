@@ -445,8 +445,6 @@ chrome_java_resources = [
   "java/res/drawable/text_cursor_lowend.xml",
   "java/res/drawable/tile_view_hairline_border_background.xml",
   "java/res/drawable/virtual_card_enrollment_illustration.xml",
-  "java/res/drawable/web_notification_button_background.xml",
-  "java/res/drawable/web_notification_small_icon_background.xml",
   "java/res/layout-sw600dp/find_toolbar.xml",
   "java/res/layout/accessibility_tab_switcher.xml",
   "java/res/layout/accessibility_tab_switcher_list_item.xml",

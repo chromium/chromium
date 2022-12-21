@@ -6,12 +6,9 @@ package org.chromium.chrome.browser.notifications;
 
 import android.app.job.JobParameters;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.os.SystemClock;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ThreadUtils;
 
@@ -19,7 +16,6 @@ import org.chromium.base.ThreadUtils;
  * Processes jobs scheduled when user actions are issued on web notifications.
  * We use this instead of starting the NotificationService on N+.
  */
-@RequiresApi(Build.VERSION_CODES.N)
 public class NotificationJobServiceImpl extends NotificationJobService.Impl {
     static PersistableBundle getJobExtrasFromIntent(Intent intent) {
         PersistableBundle bundle = new PersistableBundle();

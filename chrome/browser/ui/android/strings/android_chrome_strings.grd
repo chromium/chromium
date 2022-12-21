@@ -2853,9 +2853,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_NOTIFICATION_MANAGE_BUTTON" desc="Text of a button shown on notifications, that opens the Chrome notifications settings page. This allows users to edit notification settings when a site asks them to allow notifications. [CHAR_LIMIT=9]">
         Manage
       </message>
-      <message name="IDS_NOTIFICATION_WORK_PROFILE_BADGE_CONTENT_DESCRIPTION" desc="Content description of the work profile badge in the notification.">
-        Work profile
-      </message>
 
       <!-- Download UI -->
       <message name="IDS_DOWNLOAD_NOTIFICATION_PENDING" desc="Download notification to be displayed when a download has been scheduled but has not started being fetched from the network.">

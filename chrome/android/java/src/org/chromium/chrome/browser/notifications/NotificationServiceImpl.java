@@ -10,12 +10,9 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -46,34 +43,24 @@ public class NotificationServiceImpl extends NotificationService.Impl {
             }
 
             Log.i(TAG, "Received a notification intent in the NotificationService's receiver.");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                // Android encourages us not to start services directly on N+, so instead we
-                // schedule a job to handle the notification intent. We use the Android JobScheduler
-                // rather than GcmNetworkManager or FirebaseJobDispatcher since the JobScheduler
-                // allows us to execute immediately by setting an override deadline of zero
-                // milliseconds.
-                JobScheduler scheduler =
-                        (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                PersistableBundle extras =
-                        NotificationJobServiceImpl.getJobExtrasFromIntent(intent);
-                putJobScheduledTimeInExtras(extras);
-                JobInfo job =
-                        new JobInfo
-                                .Builder(TaskIds.NOTIFICATION_SERVICE_JOB_ID,
-                                        new ComponentName(context, NotificationJobService.class))
-                                .setExtras(extras)
-                                .setOverrideDeadline(0)
-                                .build();
-                scheduler.schedule(job);
-            } else {
-                // TODO(peter): Do we need to acquire a wake lock here?
-
-                intent.setClass(context, NotificationService.class);
-                context.startService(intent);
-            }
+            // Android encourages us not to start services directly on N+, so instead we
+            // schedule a job to handle the notification intent. We use the Android JobScheduler
+            // rather than GcmNetworkManager or FirebaseJobDispatcher since the JobScheduler
+            // allows us to execute immediately by setting an override deadline of zero
+            // milliseconds.
+            JobScheduler scheduler =
+                    (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            PersistableBundle extras = NotificationJobServiceImpl.getJobExtrasFromIntent(intent);
+            putJobScheduledTimeInExtras(extras);
+            JobInfo job = new JobInfo
+                                  .Builder(TaskIds.NOTIFICATION_SERVICE_JOB_ID,
+                                          new ComponentName(context, NotificationJobService.class))
+                                  .setExtras(extras)
+                                  .setOverrideDeadline(0)
+                                  .build();
+            scheduler.schedule(job);
         }
 
-        @RequiresApi(Build.VERSION_CODES.N)
         private static void putJobScheduledTimeInExtras(PersistableBundle extras) {
             extras.putLong(NotificationConstants.EXTRA_JOB_SCHEDULED_TIME_MS,
                     SystemClock.elapsedRealtime());

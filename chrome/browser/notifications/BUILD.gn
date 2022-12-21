@@ -45,7 +45,6 @@ if (is_android) {
   android_library("java") {
     sources = [
       "android/java/src/org/chromium/chrome/browser/notifications/ChromeNotificationWrapperCompatBuilder.java",
-      "android/java/src/org/chromium/chrome/browser/notifications/CustomNotificationBuilder.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationBuilderBase.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationConstants.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptor.java",
@@ -146,7 +145,6 @@ if (is_android) {
     testonly = true
 
     sources = [
-      "android/java/src/org/chromium/chrome/browser/notifications/CustomNotificationBuilderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationTestUtil.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactoryTest.java",
     ]
@@ -178,15 +176,8 @@ if (is_android) {
       "android/java/res/drawable-ldrtl/notification_permission_rationale_dialog_header.xml",
       "android/java/res/drawable/notification_permission_rationale_dialog_header.xml",
       "android/java/res/layout/notification_permission_rationale_dialog.xml",
-      "android/java/res/layout/web_notification.xml",
-      "android/java/res/layout/web_notification_big.xml",
-      "android/java/res/layout/web_notification_button.xml",
-      "android/java/res/layout/web_notification_icon_frame.xml",
-      "android/java/res/layout/web_notification_small_icon.xml",
       "android/java/res/values-night/colors.xml",
-      "android/java/res/values-v21/styles.xml",
       "android/java/res/values/colors.xml",
-      "android/java/res/values/styles.xml",
     ]
 
     deps = [

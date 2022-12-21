@@ -76,6 +76,5 @@ found in the LICENSE file.
     <color name="image_viewer_bg">#0E0E0E</color>
     <color name="thumbnail_placeholder_on_primary_bg" tools:ignore="UnusedResources">@color/default_bg_color_secondary</color>
     <macro name="tab_layout_selected_tab_color">@macro/default_text_color_accent1</macro>
-    <color name="web_notification_text">#CCCCCC</color>
 
 </resources>
