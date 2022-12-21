@@ -1,9 +1,8 @@
 This is a testharness.js-based test.
-Found 1162 tests; 1130 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1161 tests; 1129 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
-PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes ElementContentEditable: member names are unique
 PASS HTMLElement includes HTMLOrSVGElement: member names are unique
 PASS Element includes ParentNode: member names are unique

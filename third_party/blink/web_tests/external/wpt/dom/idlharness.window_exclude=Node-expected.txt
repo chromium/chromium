@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1326 tests; 1325 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1324 tests; 1323 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -30,9 +30,7 @@ PASS Text includes Slottable: member names are unique
 PASS Document includes XPathEvaluatorBase: member names are unique
 PASS XPathEvaluator includes XPathEvaluatorBase: member names are unique
 PASS Document includes GlobalEventHandlers: member names are unique
-PASS Document includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
-PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes ElementContentEditable: member names are unique
 PASS HTMLElement includes HTMLOrSVGElement: member names are unique
 PASS Window includes GlobalEventHandlers: member names are unique

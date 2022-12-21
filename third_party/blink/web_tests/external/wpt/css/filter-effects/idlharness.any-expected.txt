@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 486 tests; 476 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 485 tests; 475 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS SVGFilterElement includes SVGURIReference: member names are unique
@@ -22,7 +22,6 @@ PASS SVGFESpecularLightingElement includes SVGFilterPrimitiveStandardAttributes:
 PASS SVGFETileElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
 PASS SVGFETurbulenceElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
 PASS SVGElement includes GlobalEventHandlers: member names are unique
-PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
 PASS SVGElement includes SVGElementInstance: member names are unique
 PASS SVGElement includes HTMLOrSVGElement: member names are unique
 PASS Element includes ParentNode: member names are unique

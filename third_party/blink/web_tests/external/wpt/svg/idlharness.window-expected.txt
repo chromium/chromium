@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1809 tests; 1644 PASS, 165 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1807 tests; 1642 PASS, 165 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -12,7 +12,6 @@ PASS Partial interface Document[2]: member names are unique
 PASS Partial interface Document[3]: member names are unique
 PASS Partial interface Document[4]: member names are unique
 PASS SVGElement includes GlobalEventHandlers: member names are unique
-PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
 PASS SVGElement includes SVGElementInstance: member names are unique
 PASS SVGElement includes HTMLOrSVGElement: member names are unique
 PASS SVGGraphicsElement includes SVGTests: member names are unique
@@ -37,7 +36,6 @@ PASS SVGMPathElement includes SVGURIReference: member names are unique
 PASS SVGElement includes ElementCSSInlineStyle: member names are unique
 PASS Element includes Animatable: member names are unique
 PASS Document includes GlobalEventHandlers: member names are unique
-PASS Document includes DocumentAndElementEventHandlers: member names are unique
 PASS Document includes NonElementParentNode: member names are unique
 PASS DocumentFragment includes NonElementParentNode: member names are unique
 PASS Document includes ParentNode: member names are unique

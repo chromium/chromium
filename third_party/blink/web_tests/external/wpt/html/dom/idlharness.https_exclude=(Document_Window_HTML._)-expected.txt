@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1403 tests; 1373 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1400 tests; 1370 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -83,9 +83,7 @@ PASS Partial interface MouseEvent: member names are unique
 PASS Partial interface UIEvent[2]: member names are unique
 PASS Partial dictionary UIEventInit: member names are unique
 PASS Document includes GlobalEventHandlers: member names are unique
-PASS Document includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
-PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes ElementContentEditable: member names are unique
 PASS HTMLElement includes HTMLOrSVGElement: member names are unique
 PASS HTMLLinkElement includes LinkStyle: member names are unique
@@ -150,7 +148,6 @@ PASS Window includes WindowLocalStorage: member names are unique
 PASS HTMLFrameSetElement includes WindowEventHandlers: member names are unique
 PASS Element includes ARIAMixin: member names are unique
 PASS SVGElement includes GlobalEventHandlers: member names are unique
-PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
 PASS SVGElement includes SVGElementInstance: member names are unique
 PASS SVGElement includes HTMLOrSVGElement: member names are unique
 PASS SVGGraphicsElement includes SVGTests: member names are unique
@@ -1322,7 +1319,9 @@ PASS SVGElement interface: attribute onclose
 PASS SVGElement interface: attribute oncontextlost
 PASS SVGElement interface: attribute oncontextmenu
 PASS SVGElement interface: attribute oncontextrestored
+PASS SVGElement interface: attribute oncopy
 PASS SVGElement interface: attribute oncuechange
+PASS SVGElement interface: attribute oncut
 PASS SVGElement interface: attribute ondblclick
 PASS SVGElement interface: attribute ondrag
 PASS SVGElement interface: attribute ondragend
@@ -1353,6 +1352,7 @@ PASS SVGElement interface: attribute onmousemove
 PASS SVGElement interface: attribute onmouseout
 PASS SVGElement interface: attribute onmouseover
 PASS SVGElement interface: attribute onmouseup
+PASS SVGElement interface: attribute onpaste
 PASS SVGElement interface: attribute onpause
 PASS SVGElement interface: attribute onplay
 PASS SVGElement interface: attribute onplaying
@@ -1379,9 +1379,6 @@ PASS SVGElement interface: attribute onwebkitanimationiteration
 PASS SVGElement interface: attribute onwebkitanimationstart
 PASS SVGElement interface: attribute onwebkittransitionend
 PASS SVGElement interface: attribute onwheel
-PASS SVGElement interface: attribute oncopy
-PASS SVGElement interface: attribute oncut
-PASS SVGElement interface: attribute onpaste
 PASS SVGElement interface: attribute dataset
 PASS SVGElement interface: attribute nonce
 PASS SVGElement interface: attribute autofocus

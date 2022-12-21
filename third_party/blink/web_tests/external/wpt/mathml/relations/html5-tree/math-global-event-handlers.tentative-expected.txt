@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 350 tests; 348 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 365 tests; 363 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -70,11 +70,21 @@ PASS oncontextrestored: the default value must be null
 PASS oncontextrestored: the content attribute must be compiled into a function as the corresponding property
 PASS oncontextrestored: dynamic changes on the attribute
 PASS oncontextrestored: dispatching an Event at a <math> element must trigger element.oncontextrestored
+PASS oncopy: must be on the appropriate locations for GlobalEventHandlers
+PASS oncopy: the default value must be null
+PASS oncopy: the content attribute must be compiled into a function as the corresponding property
+PASS oncopy: dynamic changes on the attribute
+PASS oncopy: dispatching an Event at a <math> element must trigger element.oncopy
 PASS oncuechange: must be on the appropriate locations for GlobalEventHandlers
 PASS oncuechange: the default value must be null
 PASS oncuechange: the content attribute must be compiled into a function as the corresponding property
 PASS oncuechange: dynamic changes on the attribute
 PASS oncuechange: dispatching an Event at a <math> element must trigger element.oncuechange
+PASS oncut: must be on the appropriate locations for GlobalEventHandlers
+PASS oncut: the default value must be null
+PASS oncut: the content attribute must be compiled into a function as the corresponding property
+PASS oncut: dynamic changes on the attribute
+PASS oncut: dispatching an Event at a <math> element must trigger element.oncut
 PASS ondblclick: must be on the appropriate locations for GlobalEventHandlers
 PASS ondblclick: the default value must be null
 PASS ondblclick: the content attribute must be compiled into a function as the corresponding property
@@ -220,6 +230,11 @@ PASS onmouseup: the default value must be null
 PASS onmouseup: the content attribute must be compiled into a function as the corresponding property
 PASS onmouseup: dynamic changes on the attribute
 PASS onmouseup: dispatching an Event at a <math> element must trigger element.onmouseup
+PASS onpaste: must be on the appropriate locations for GlobalEventHandlers
+PASS onpaste: the default value must be null
+PASS onpaste: the content attribute must be compiled into a function as the corresponding property
+PASS onpaste: dynamic changes on the attribute
+PASS onpaste: dispatching an Event at a <math> element must trigger element.onpaste
 PASS onpause: must be on the appropriate locations for GlobalEventHandlers
 PASS onpause: the default value must be null
 PASS onpause: the content attribute must be compiled into a function as the corresponding property

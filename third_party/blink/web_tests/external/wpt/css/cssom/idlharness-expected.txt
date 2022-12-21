@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 452 tests; 398 PASS, 54 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 449 tests; 395 PASS, 54 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface CSSStyleSheet: original interface defined
@@ -17,12 +17,10 @@ PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
 PASS SVGElement includes ElementCSSInlineStyle: member names are unique
 PASS MathMLElement includes ElementCSSInlineStyle: member names are unique
 PASS SVGElement includes GlobalEventHandlers: member names are unique
-PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
 PASS SVGElement includes SVGElementInstance: member names are unique
 PASS SVGElement includes HTMLOrSVGElement: member names are unique
 PASS SVGStyleElement includes LinkStyle: member names are unique
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
-PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes ElementContentEditable: member names are unique
 PASS HTMLElement includes HTMLOrSVGElement: member names are unique
 PASS HTMLLinkElement includes LinkStyle: member names are unique
@@ -47,7 +45,6 @@ PASS CharacterData includes ChildNode: member names are unique
 PASS Element includes Slottable: member names are unique
 PASS Document includes XPathEvaluatorBase: member names are unique
 PASS MathMLElement includes GlobalEventHandlers: member names are unique
-PASS MathMLElement includes DocumentAndElementEventHandlers: member names are unique
 PASS MathMLElement includes HTMLOrSVGElement: member names are unique
 PASS MediaList interface: existence and properties of interface object
 PASS MediaList interface object length

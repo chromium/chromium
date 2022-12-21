@@ -2,7 +2,6 @@ This is a testharness.js-based test.
 PASS idl_test setup
 PASS idl_test validation
 PASS SVGElement includes GlobalEventHandlers: member names are unique
-PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
 PASS SVGElement includes SVGElementInstance: member names are unique
 PASS SVGElement includes HTMLOrSVGElement: member names are unique
 PASS Element includes ParentNode: member names are unique

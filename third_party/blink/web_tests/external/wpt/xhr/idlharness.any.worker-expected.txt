@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 160 tests; 158 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 159 tests; 157 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: member names are unique
@@ -8,7 +8,6 @@ PASS Document includes NonElementParentNode: member names are unique
 PASS Document includes ParentNode: member names are unique
 PASS Document includes XPathEvaluatorBase: member names are unique
 PASS Document includes GlobalEventHandlers: member names are unique
-PASS Document includes DocumentAndElementEventHandlers: member names are unique
 PASS XMLHttpRequestEventTarget interface: existence and properties of interface object
 PASS XMLHttpRequestEventTarget interface object length
 PASS XMLHttpRequestEventTarget interface object name
