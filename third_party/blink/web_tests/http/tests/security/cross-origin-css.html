@@ -33,6 +33,7 @@
     function getBackgroundColorForId(id) {
         return window.getComputedStyle(document.getElementById(id), null).getPropertyValue('background-color')
     }
+    var onloadTest = async_test("Testing cross-origin and MIME behavior for CSS.");
     window.onload = function () {
         test(function () {
             assert_equals(getBackgroundColorForId('id1'), 'rgba(0, 0, 0, 0)');
@@ -58,6 +59,7 @@
         test(function () {
             assert_equals(getBackgroundColorForId('id8'), 'rgba(0, 0, 0, 0)');
         }, 'xorigincss7.html should not be loaded.');
+        onloadTest.done();
     };
 </script>
 </head>
