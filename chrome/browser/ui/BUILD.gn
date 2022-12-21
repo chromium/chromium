@@ -2150,6 +2150,8 @@ static_library("ui") {
       "../ash/app_list/search/ranking/filtering_ranker.h",
       "../ash/app_list/search/ranking/ftrl_ranker.cc",
       "../ash/app_list/search/ranking/ftrl_ranker.h",
+      "../ash/app_list/search/ranking/keyword_ranker.cc",
+      "../ash/app_list/search/ranking/keyword_ranker.h",
       "../ash/app_list/search/ranking/launch_data.cc",
       "../ash/app_list/search/ranking/launch_data.h",
       "../ash/app_list/search/ranking/mrfu_ranker.cc",
