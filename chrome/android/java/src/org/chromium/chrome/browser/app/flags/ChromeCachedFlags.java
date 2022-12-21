@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.PartialCustomTabHeightStrategy;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -84,7 +83,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sCctRemoveRemoteViewIds);
                 add(ChromeFeatureList.sCctResizable90MaximumHeight);
                 add(ChromeFeatureList.sCctResizableAllowResizeByUserGesture);
-                add(ChromeFeatureList.sCctResizableAlwaysShowNavBarButtons);
                 add(ChromeFeatureList.sCctResizableForFirstParties);
                 add(ChromeFeatureList.sCctResizableForThirdParties);
                 add(ChromeFeatureList.sCctResizableSideSheet);
@@ -157,7 +155,6 @@ public class ChromeCachedFlags {
                         add(OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX);
                         add(OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN);
                         add(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL);
-                        add(PartialCustomTabHeightStrategy.LOG_IMMERSIVE_MODE_CONFIRMATIONS);
                         add(ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS);
                         add(CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES);
                         add(CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST);

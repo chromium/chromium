@@ -297,6 +297,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CustomTabs.ImmersiveModeConfirmationsSettingConfirmed"
     enum="Boolean" expires_after="2023-05-14">
+  <obsolete>
+    Deprecated 2022-12. No longer needed.
+  </obsolete>
   <owner>kgrosu@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
