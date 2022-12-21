@@ -1,10 +1,103 @@
-<button on-click="onBackClick_" id="backButton">
-  Go Back
-</button>
-<h1 id="header">[[header_]]</h1>
-<template is="dom-repeat" id="themesRepeat" items="[[themes_]]">
-  <div role="button" on-click="onSelectTheme_" class="theme">
-    [[item.attribution1]]
-  </div>
-</template>
+<style include="cr-hidden-style cr-icons">
+  #container {
+    max-width: 320px;
+    width: 100%;
+  }
 
+  #headerContainer {
+    align-items: center;
+    display: flex;
+    margin: 16px;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+    --cr-icon-button-margin-start: -8px;
+  }
+
+  h1 {
+    color: var(--cr-primary-text-color);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    margin: 0;
+    margin-inline-start: 6px;
+  }
+
+  cr-grid {
+    --cr-column-width: 1fr;
+    --cr-grid-gap: 16px 11px;
+    display: block;
+    margin: 16px 16px 32px;
+  }
+
+  .tile {
+    cursor: pointer;
+    outline-width: 0;
+    place-self: stretch;
+  }
+
+  :host-context(.focus-outline-visible) .tile:focus {
+    box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
+  .image-container {
+    overflow: hidden;
+    padding-top: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .image-container {
+      background-color: var(--google-grey-900);
+      border: 1px solid var(--google-grey-700);
+    }
+  }
+
+  .image-container img,
+  .image-container div {
+    position: absolute;
+  }
+
+  .theme img {
+    height: 100%;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+  }
+
+  .label {
+    color: var(--cr-primary-text-color);
+    font-size: 11px;
+    line-height: 16px;
+    padding-top: 7px;
+    text-align: center;
+  }
+
+  .image-container {
+    border-radius: 12px;
+  }
+</style>
+<div id="container">
+  <div id="headerContainer">
+    <cr-icon-button on-click="onBackClick_" id="backButton"
+        class="icon-arrow-back" title="$i18n{backButton}">
+    </cr-icon-button>
+    <h1 id="header">[[header_]]</h1>
+  </div>
+  <cr-grid columns="3">
+    <template is="dom-repeat" id="themesRepeat" items="[[themes_]]">
+      <div class="tile theme" tabindex="0" role="button"
+          on-click="onSelectTheme_">
+        <div class="image-container">
+          <img is="cr-auto-img"
+              auto-src="[[item.previewImageUrl.url]]"
+              draggable="false">
+          </img>
+        </div>
+        <div class="label">[[item.attribution1]]</div>
+      </div>
+    </template>
+  </cr-grid>
+</div>

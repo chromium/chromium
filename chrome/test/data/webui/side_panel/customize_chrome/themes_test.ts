@@ -27,11 +27,11 @@ function createTestImages(length: number): CollectionImage[] {
   const testImages: CollectionImage[] = [];
   for (let i = 1; i < length + 1; i++) {
     testImages.push({
-      attribution1: `attribution1-${i}`,
-      attribution2: `attribution2-${i}`,
-      attributionUrl: {url: `https://attribution-${i}.jpg`},
-      imageUrl: {url: `https://image-${i}.jpg`},
-      previewImageUrl: {url: `https://preview-${i}.jpg`},
+      attribution1: `attribution1_${i}`,
+      attribution2: `attribution2_${i}`,
+      attributionUrl: {url: `https://attribution_${i}.jpg`},
+      imageUrl: {url: `https://image_${i}.jpg`},
+      previewImageUrl: {url: `https://preview_${i}.jpg`},
     });
   }
   return testImages;
@@ -84,6 +84,21 @@ suite('ThemesTest', () => {
     assertEquals(header.textContent, 'test1');
     let themes = themesElement.shadowRoot!.querySelectorAll('.theme');
     assertEquals(themes.length, 3);
+    assertEquals(
+        'attribution1_1', themes[0]!.querySelector('.label')!.textContent);
+    assertEquals(
+        'https://preview_1.jpg',
+        themes[0]!.querySelector('img')!.getAttribute('auto-src'));
+    assertEquals(
+        'attribution1_2', themes[1]!.querySelector('.label')!.textContent);
+    assertEquals(
+        'https://preview_2.jpg',
+        themes[1]!.querySelector('img')!.getAttribute('auto-src'));
+    assertEquals(
+        'attribution1_3', themes[2]!.querySelector('.label')!.textContent);
+    assertEquals(
+        'https://preview_3.jpg',
+        themes[2]!.querySelector('img')!.getAttribute('auto-src'));
 
     await setCollection('test2', 5);
 
@@ -91,5 +106,30 @@ suite('ThemesTest', () => {
     assertEquals(header.textContent, 'test2');
     themes = themesElement.shadowRoot!.querySelectorAll('.theme');
     assertEquals(themes.length, 5);
+    assertEquals(
+        'attribution1_1', themes[0]!.querySelector('.label')!.textContent);
+    assertEquals(
+        'https://preview_1.jpg',
+        themes[0]!.querySelector('img')!.getAttribute('auto-src'));
+    assertEquals(
+        'attribution1_2', themes[1]!.querySelector('.label')!.textContent);
+    assertEquals(
+        'https://preview_2.jpg',
+        themes[1]!.querySelector('img')!.getAttribute('auto-src'));
+    assertEquals(
+        'attribution1_3', themes[2]!.querySelector('.label')!.textContent);
+    assertEquals(
+        'https://preview_3.jpg',
+        themes[2]!.querySelector('img')!.getAttribute('auto-src'));
+    assertEquals(
+        'attribution1_4', themes[3]!.querySelector('.label')!.textContent);
+    assertEquals(
+        'https://preview_4.jpg',
+        themes[3]!.querySelector('img')!.getAttribute('auto-src'));
+    assertEquals(
+        'attribution1_5', themes[4]!.querySelector('.label')!.textContent);
+    assertEquals(
+        'https://preview_5.jpg',
+        themes[4]!.querySelector('img')!.getAttribute('auto-src'));
   });
 });

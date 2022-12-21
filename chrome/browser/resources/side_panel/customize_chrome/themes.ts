@@ -1,6 +1,13 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+
+import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundCollection, CollectionImage, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
@@ -44,6 +51,11 @@ export class ThemesElement extends PolymerElement {
   constructor() {
     super();
     this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    FocusOutlineManager.forDocument(document);
   }
 
   private onCollectionChange_() {
