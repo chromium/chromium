@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "base/guid.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "content/public/browser/web_contents.h"
 
@@ -15,4 +17,16 @@ SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
                        saved_tab_group_id);
   tab.SetFavicon(favicon::TabFaviconFromWebContents(contents));
   return tab;
+}
+
+content::WebContents* SavedTabGroupUtils::OpenTabInBrowser(
+    const GURL& url,
+    Browser* browser,
+    Profile* profile,
+    WindowOpenDisposition disposition) {
+  NavigateParams params(profile, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  params.disposition = disposition;
+  params.browser = browser;
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  return handle ? handle->GetWebContents() : nullptr;
 }

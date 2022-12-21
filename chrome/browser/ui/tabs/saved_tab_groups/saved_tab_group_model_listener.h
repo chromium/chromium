@@ -24,6 +24,8 @@ class SavedTabGroupBrowserListener : public TabStripModelObserver {
 
   bool ContainsTabGroup(tab_groups::TabGroupId group_id) const;
 
+  base::Token TrackWebContents(content::WebContents* web_contents);
+
   // TabStripModelObserver:
   void OnTabGroupChanged(const TabGroupChange& change) override;
   void TabGroupedStateChanged(absl::optional<tab_groups::TabGroupId> group,
@@ -53,8 +55,13 @@ class SavedTabGroupModelListener : public BrowserListObserver {
       const SavedTabGroupModelListener& other) = delete;
   ~SavedTabGroupModelListener() override;
 
+  Browser* GetBrowserWithTabGroupId(tab_groups::TabGroupId group_id);
   TabStripModel* GetTabStripModelWithTabGroupId(
       tab_groups::TabGroupId group_id);
+
+  absl::optional<base::Token> TrackWebContents(
+      Browser* browser,
+      content::WebContents* web_contents);
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;

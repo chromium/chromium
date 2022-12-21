@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "content/public/browser/web_contents.h"
 
 // TODO(crbug/1376259): Update SavedTabGroupModel state with any groups that
 // should be in the SavedTabGroupModel.
@@ -34,6 +35,14 @@ SavedTabGroupBrowserListener::~SavedTabGroupBrowserListener() {
 bool SavedTabGroupBrowserListener::ContainsTabGroup(
     tab_groups::TabGroupId group_id) const {
   return browser_->tab_strip_model()->group_model()->ContainsTabGroup(group_id);
+}
+
+base::Token SavedTabGroupBrowserListener::TrackWebContents(
+    content::WebContents* web_contents) {
+  if (web_contents_to_tab_id_map_.count(web_contents) == 0) {
+    web_contents_to_tab_id_map_[web_contents] = base::Token::CreateRandom();
+  }
+  return web_contents_to_tab_id_map_[web_contents];
 }
 
 void SavedTabGroupBrowserListener::OnTabGroupChanged(
@@ -78,6 +87,16 @@ void SavedTabGroupBrowserListener::TabGroupedStateChanged(
     // Remove the tab from it's old group.
     base::Token local_tab_id = web_contents_to_tab_id_map_[contents];
     SavedTabGroup* old_group = model_->GetGroupContainingTab(local_tab_id);
+
+    // If the tab is tracked by has no old local group, then it is being created
+    // via AddTabToGroupForRestore, and does not need to update it's membership
+    // in any saved groups/tabs
+    if (new_local_group_id && !old_group->local_group_id()) {
+      return;
+    }
+
+    // if its already in the correct group then this tab was already restored.
+    // Remove the tab from it's old group.
     SavedTabGroupTab* tab = old_group->GetTab(local_tab_id);
     model_->RemoveTabFromGroup(old_group->saved_guid(), tab->saved_tab_guid());
 
@@ -140,15 +159,29 @@ SavedTabGroupModelListener::~SavedTabGroupModelListener() {
   observed_browser_listeners_.clear();
 }
 
-TabStripModel* SavedTabGroupModelListener::GetTabStripModelWithTabGroupId(
+Browser* SavedTabGroupModelListener::GetBrowserWithTabGroupId(
     tab_groups::TabGroupId group_id) {
   auto it = base::ranges::find_if(
       observed_browser_listeners_, [group_id](const auto& listener_pair) {
         return listener_pair.second.ContainsTabGroup(group_id);
       });
-  return it != observed_browser_listeners_.end()
-             ? it->second.browser()->tab_strip_model()
-             : nullptr;
+  return it != observed_browser_listeners_.end() ? it->second.browser()
+                                                 : nullptr;
+}
+
+TabStripModel* SavedTabGroupModelListener::GetTabStripModelWithTabGroupId(
+    tab_groups::TabGroupId group_id) {
+  Browser* browser = GetBrowserWithTabGroupId(group_id);
+  return browser ? browser->tab_strip_model() : nullptr;
+}
+
+absl::optional<base::Token> SavedTabGroupModelListener::TrackWebContents(
+    Browser* browser,
+    content::WebContents* web_contents) {
+  if (observed_browser_listeners_.count(browser) == 0) {
+    return absl::nullopt;
+  }
+  return observed_browser_listeners_.at(browser).TrackWebContents(web_contents);
 }
 
 void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {

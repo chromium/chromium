@@ -210,7 +210,9 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::GUID& id,
   if (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) {
     if (group->saved_tabs().empty())
       return;
-    chrome::OpenSavedTabGroup(browser_, group->saved_guid(),
-                              group->saved_tabs().size());
+    SavedTabGroupKeyedService* keyed_service =
+        SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
+
+    keyed_service->OpenSavedTabGroupInBrowser(browser_, group->saved_guid());
   }
 }

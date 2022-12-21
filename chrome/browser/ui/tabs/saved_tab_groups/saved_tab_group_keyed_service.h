@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
@@ -15,7 +16,8 @@ class Profile;
 
 // Serves to instantiate and own the SavedTabGroup infrastructure for the
 // browser.
-class SavedTabGroupKeyedService : public KeyedService {
+class SavedTabGroupKeyedService : public KeyedService,
+                                  public SavedTabGroupController {
  public:
   explicit SavedTabGroupKeyedService(Profile* profile);
   SavedTabGroupKeyedService(const SavedTabGroupKeyedService&) = delete;
@@ -27,6 +29,10 @@ class SavedTabGroupKeyedService : public KeyedService {
   SavedTabGroupModel* model() { return &model_; }
   SavedTabGroupSyncBridge* bridge() { return &bridge_; }
   Profile* profile() { return profile_; }
+
+  // SavedTabGroupController
+  void OpenSavedTabGroupInBrowser(Browser* browser,
+                                  const base::GUID& saved_group_guid) override;
 
  private:
   // Returns the ModelTypeStoreFactory tied to the current profile.
