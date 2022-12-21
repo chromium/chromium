@@ -139,7 +139,7 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
   const raw_ptr<SigninClient> signin_client_;
   const raw_ptr<AccountReconcilor> account_reconcilor_;
   signin_metrics::AccountReconcilorState account_reconcilor_state_ =
-      signin_metrics::ACCOUNT_RECONCILOR_INACTIVE;
+      signin_metrics::AccountReconcilorState::kInactive;
   int scoped_update_count_ = 0;
 
   // Cached value of the cookie, equal to the last value that was either set or

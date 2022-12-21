@@ -334,20 +334,20 @@ enum class Reason : int {
 // Enum values used for "Signin.AccountReconcilorState.OnGaiaResponse"
 // histogram, which records the state of the AccountReconcilor when GAIA returns
 // a specific response.
-enum AccountReconcilorState {
+enum class AccountReconcilorState {
   // The AccountReconcilor has finished running and is up to date.
-  ACCOUNT_RECONCILOR_OK,
+  kOk = 0,
   // The AccountReconcilor is running and gathering information.
-  ACCOUNT_RECONCILOR_RUNNING,
+  kRunning = 1,
   // The AccountReconcilor encountered an error and stopped.
-  ACCOUNT_RECONCILOR_ERROR,
+  kError = 2,
   // The account reconcilor will start running soon.
-  ACCOUNT_RECONCILOR_SCHEDULED,
+  kScheduled = 3,
   // The account reconcilor is inactive, e.g. initializing or disabled.
-  ACCOUNT_RECONCILOR_INACTIVE,
+  kInactive = 4,
 
   // Always the last enumerated type.
-  kMaxValue = ACCOUNT_RECONCILOR_SCHEDULED,
+  kMaxValue = kInactive,
 };
 
 // Values of Signin.AccountType histogram. This histogram records if the user

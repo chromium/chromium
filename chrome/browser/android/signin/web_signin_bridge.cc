@@ -65,8 +65,7 @@ void WebSigninBridge::OnAccountsInCookieUpdated(
 
 void WebSigninBridge::OnStateChanged(
     signin_metrics::AccountReconcilorState state) {
-  if (state !=
-      signin_metrics::AccountReconcilorState::ACCOUNT_RECONCILOR_ERROR) {
+  if (state != signin_metrics::AccountReconcilorState::kError) {
     return;
   }
 

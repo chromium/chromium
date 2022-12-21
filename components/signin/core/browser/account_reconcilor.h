@@ -94,12 +94,12 @@ class AccountReconcilor
     // The typical order of events is:
     // - When reconcile is blocked:
     //   1. current reconcile is aborted with AbortReconcile(),
-    //   2. OnStateChanged() is called with SCHEDULED.
+    //   2. OnStateChanged() is called with kScheduled.
     //   3. OnBlockReconcile() is called.
     // - When reconcile is unblocked:
     //   1. OnUnblockReconcile() is called,
     //   2. reconcile is restarted if needed with StartReconcile(), which
-    //     triggers a call to OnStateChanged() with RUNNING.
+    //     triggers a call to OnStateChanged() with kRunning.
 
     // Called whe reconcile starts.
     virtual void OnStateChanged(signin_metrics::AccountReconcilorState state) {}
@@ -524,10 +524,10 @@ class AccountReconcilor
   int synced_data_deletion_in_progress_count_ = 0;
 
   // Note: when the reconcilor is blocked with `BlockReconcile()` the state is
-  // set to ACCOUNT_RECONCILOR_SCHEDULED rather than ACCOUNT_RECONCILOR_INACTIVE
-  // as this is only used to temporarily suspend the reconcilor.
+  // set to kScheduled rather than kInactive as this is only used to temporarily
+  // suspend the reconcilor.
   signin_metrics::AccountReconcilorState state_ =
-      signin_metrics::ACCOUNT_RECONCILOR_INACTIVE;
+      signin_metrics::AccountReconcilorState::kInactive;
 
   // Set to true when Shutdown() is called.
   bool was_shut_down_ = false;

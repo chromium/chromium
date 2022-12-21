@@ -25,6 +25,7 @@
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/core/browser/consistency_cookie_manager.h"
 #include "components/signin/core/browser/mirror_landing_account_reconcilor_delegate.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -170,8 +171,10 @@ class SigninHelperLacrosTest : public testing::Test {
   const base::FilePath& profile_path() const { return profile_path_; }
 
   void WaitForConsistentReconcilorState() {
-    while (reconcilor_.GetState() != signin_metrics::ACCOUNT_RECONCILOR_OK)
+    while (reconcilor_.GetState() !=
+           signin_metrics::AccountReconcilorState::kOk) {
       base::RunLoop().RunUntilIdle();
+    }
   }
 
   void SimulateSetCookiesFinished(

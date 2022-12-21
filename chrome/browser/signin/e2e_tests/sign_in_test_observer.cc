@@ -4,6 +4,7 @@
 
 #include "sign_in_test_observer.h"
 
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
 namespace signin::test {
@@ -47,7 +48,7 @@ void SignInTestObserver::OnAccountsInCookieUpdated(
 // fixed.
 void SignInTestObserver::OnStateChanged(
     signin_metrics::AccountReconcilorState state) {
-  if (state == signin_metrics::ACCOUNT_RECONCILOR_OK) {
+  if (state == signin_metrics::AccountReconcilorState::kOk) {
     // This will trigger cookie update if accounts are stale.
     identity_manager_->GetAccountsInCookieJar();
   }

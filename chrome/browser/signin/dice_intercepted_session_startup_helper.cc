@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/multilogin_parameters.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
@@ -101,14 +102,14 @@ void DiceInterceptedSessionStartupHelper::OnAccountsInCookieUpdated(
 void DiceInterceptedSessionStartupHelper::OnStateChanged(
     signin_metrics::AccountReconcilorState state) {
   DCHECK(!use_multilogin_);
-  if (state == signin_metrics::ACCOUNT_RECONCILOR_ERROR) {
+  if (state == signin_metrics::AccountReconcilorState::kError) {
     reconcile_error_encountered_ = true;
     return;
   }
 
   // TODO(https://crbug.com/1051864): remove this when the cookie updates are
   // correctly sent after reconciliation.
-  if (state == signin_metrics::ACCOUNT_RECONCILOR_OK) {
+  if (state == signin_metrics::AccountReconcilorState::kOk) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_);
     // GetAccountsInCookieJar() automatically re-schedules a /ListAccounts call

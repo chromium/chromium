@@ -140,7 +140,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the state of the account reconcilor when GAIA returns a specific
-    response.
+    response. The data in the &quot;Inactive&quot; bucket might be incorrect
+    prior to M111.
   </summary>
 </histogram>
 

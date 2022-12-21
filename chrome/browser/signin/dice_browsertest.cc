@@ -474,8 +474,7 @@ class DiceBrowserTest : public InProcessBrowserTest,
     // credentials. Abort the reconcilor here to make sure tests start in a
     // stable state.
     reconcilor->AbortReconcile();
-    reconcilor->SetState(
-        signin_metrics::AccountReconcilorState::ACCOUNT_RECONCILOR_OK);
+    reconcilor->SetState(signin_metrics::AccountReconcilorState::kOk);
     account_reconcilor_observation_.Observe(reconcilor);
   }
 
@@ -539,8 +538,7 @@ class DiceBrowserTest : public InProcessBrowserTest,
     RunClosureIfValid(std::move(unblock_count_quit_closure_));
   }
   void OnStateChanged(signin_metrics::AccountReconcilorState state) override {
-    if (state ==
-        signin_metrics::AccountReconcilorState::ACCOUNT_RECONCILOR_RUNNING) {
+    if (state == signin_metrics::AccountReconcilorState::kRunning) {
       ++reconcilor_started_count_;
     }
   }

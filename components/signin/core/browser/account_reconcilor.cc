@@ -200,7 +200,7 @@ void AccountReconcilor::Initialize(bool start_reconcile_if_tokens_available) {
   timeout_ = delegate_->GetReconcileTimeout();
 
   if (delegate_->IsReconcileEnabled()) {
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED);
+    SetState(AccountReconcilorState::kScheduled);
     RegisterWithAllDependencies();
 
     // Start a reconcile if the tokens are already loaded.
@@ -214,13 +214,13 @@ void AccountReconcilor::EnableReconcile() {
   if (IsIdentityManagerReady())
     StartReconcile(Trigger::kEnableReconcile);
   else
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED);
+    SetState(AccountReconcilorState::kScheduled);
 }
 
 void AccountReconcilor::DisableReconcile(bool logout_all_accounts) {
   const bool log_out_in_progress = log_out_in_progress_;
   AbortReconcile();
-  SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_INACTIVE);
+  SetState(AccountReconcilorState::kInactive);
   UnregisterWithAllDependencies();
 
   if (logout_all_accounts && !log_out_in_progress)
@@ -391,7 +391,7 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
             << "Reconcile is blocked, scheduling for later.";
     // Reconcile is locked, it will be restarted when the lock count reaches 0.
     reconcile_on_unblock_ = true;
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED);
+    SetState(AccountReconcilorState::kScheduled);
     return;
   }
 
@@ -400,20 +400,20 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
   CHECK(client_);
   if (!delegate_->IsReconcileEnabled() || !client_->AreSigninCookiesAllowed()) {
     VLOG(1) << "AccountReconcilor::StartReconcile: !enabled or no cookies";
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_INACTIVE);
+    SetState(AccountReconcilorState::kInactive);
     return;
   }
 
   // Do not reconcile if tokens are not loaded yet.
   if (!IsIdentityManagerReady()) {
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED);
+    SetState(AccountReconcilorState::kScheduled);
     VLOG(1)
         << "AccountReconcilor::StartReconcile: token service *not* ready yet.";
     return;
   }
 
   // Begin reconciliation. Reset initial states.
-  SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_RUNNING);
+  SetState(AccountReconcilorState::kRunning);
   reconcile_start_time_ = base::Time::Now();
   is_reconcile_started_ = true;
   error_during_last_reconcile_ = GoogleServiceAuthError::AuthErrorNone();
@@ -432,7 +432,7 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
           account_id) &&
       delegate_->ShouldAbortReconcileIfPrimaryHasError()) {
     VLOG(1) << "AccountReconcilor::StartReconcile: primary has error, abort.";
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_ERROR);
+    SetState(AccountReconcilorState::kError);
     error_during_last_reconcile_ =
         identity_manager_->GetErrorStateOfRefreshTokenForAccount(account_id);
     AbortReconcile();
@@ -469,7 +469,7 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
     std::vector<gaia::ListedAccount>&& gaia_accounts) {
   DCHECK(!set_accounts_in_progress_);
   DCHECK(!log_out_in_progress_);
-  DCHECK_EQ(AccountReconcilorState::ACCOUNT_RECONCILOR_RUNNING, state_);
+  DCHECK_EQ(AccountReconcilorState::kRunning, state_);
 
   const signin::MultiloginParameters kLogoutParameters(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
@@ -535,7 +535,7 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
     // triggered after changes are made. For that one the state is supposed to
     // be already consistent.
     DCHECK(!is_reconcile_started_);
-    DCHECK_NE(AccountReconcilorState::ACCOUNT_RECONCILOR_OK, state_);
+    DCHECK_NE(AccountReconcilorState::kOk, state_);
 
     CoreAccountId first_gaia_account_after_reconcile =
         PickFirstGaiaAccount(parameters_for_multilogin, gaia_accounts);
@@ -577,7 +577,7 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
     // hence do not override a persistent error, if we have seen one.
     if (!error_during_last_reconcile_.IsPersistentError())
       error_during_last_reconcile_ = error;
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_ERROR);
+    SetState(AccountReconcilorState::kError);
     AbortReconcile();
     return;
   }
@@ -607,7 +607,7 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
     VLOG(1) << "Primary account has error, abort.";
     DCHECK(is_reconcile_started_);
     AbortReconcile();
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_ERROR);
+    SetState(AccountReconcilorState::kError);
     return;
   }
 
@@ -672,40 +672,38 @@ void AccountReconcilor::ScheduleStartReconcileIfChromeAccountsChanged() {
   if (is_reconcile_started_)
     return;
 
-  if (GetState() == AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED)
+  if (GetState() == AccountReconcilorState::kScheduled) {
     return;
+  }
 
   // Start a reconcile as the token accounts have changed.
   VLOG(1) << "AccountReconcilor::StartReconcileIfChromeAccountsChanged";
   if (chrome_accounts_changed_) {
     chrome_accounts_changed_ = false;
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED);
+    SetState(AccountReconcilorState::kScheduled);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AccountReconcilor::StartReconcile,
                                   weak_factory_.GetWeakPtr(),
                                   Trigger::kTokenChangeDuringReconcile));
   } else if (error_during_last_reconcile_.state() ==
              GoogleServiceAuthError::NONE) {
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_OK);
+    SetState(AccountReconcilorState::kOk);
   } else {
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_ERROR);
+    SetState(AccountReconcilorState::kError);
   }
 }
 
 #if BUILDFLAG(ENABLE_MIRROR)
 void AccountReconcilor::ForceReconcile() {
-  if (state_ ==
-      signin_metrics::AccountReconcilorState::ACCOUNT_RECONCILOR_INACTIVE) {
+  if (state_ == signin_metrics::AccountReconcilorState::kInactive) {
     VLOG(1) << "Ignoring ForceReconcile request because AccountReconcilor is "
                "inactive";
     return;
   }
 
   if (!is_reconcile_started_ &&
-      (state_ ==
-           signin_metrics::AccountReconcilorState::ACCOUNT_RECONCILOR_OK ||
-       state_ ==
-           signin_metrics::AccountReconcilorState::ACCOUNT_RECONCILOR_ERROR)) {
+      (state_ == signin_metrics::AccountReconcilorState::kOk ||
+       state_ == signin_metrics::AccountReconcilorState::kError)) {
     // Reconcilor is not running. Force start it.
     StartReconcile(Trigger::kForcedReconcile);
     return;
@@ -858,7 +856,7 @@ void AccountReconcilor::BlockReconcile() {
   VLOG(1) << "AccountReconcilor::BlockReconcile.";
   if (is_reconcile_started_) {
     AbortReconcile();
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED);
+    SetState(AccountReconcilorState::kScheduled);
     reconcile_on_unblock_ = true;
   }
   for (auto& observer : observer_list_)
