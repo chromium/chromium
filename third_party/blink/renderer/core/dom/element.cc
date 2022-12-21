@@ -3023,6 +3023,11 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
   return style;
 }
 
+void Element::AdjustStyle(base::PassKey<StyleAdjuster>,
+                          ComputedStyleBuilder& builder) {
+  AdjustStyle(builder);
+}
+
 scoped_refptr<ComputedStyle> Element::OriginalStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   return GetDocument().GetStyleResolver().ResolveStyle(this,
@@ -7207,6 +7212,10 @@ scoped_refptr<ComputedStyle> Element::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   DCHECK(HasCustomStyleCallbacks());
   return OriginalStyleForLayoutObject(style_recalc_context);
+}
+
+void Element::AdjustStyle(ComputedStyleBuilder&) {
+  DCHECK(HasCustomStyleCallbacks());
 }
 
 void Element::CloneAttributesFrom(const Element& other) {

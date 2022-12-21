@@ -1052,6 +1052,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
         (element && element->GetDocument().Printing()))
       builder.SetInsideFragmentationContextWithNondeterministicEngine(true);
   }
+
+  if (element && element->HasCustomStyleCallbacks()) {
+    element->AdjustStyle(base::PassKey<StyleAdjuster>(), builder);
+  }
 }
 
 }  // namespace blink
