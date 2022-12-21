@@ -276,6 +276,11 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // server is registered.
   void SetInitialCameraEffects(cros::mojom::EffectsConfigPtr config);
 
+  // Called by `camera_device_delegate` to get the current applied camera
+  // effects.
+  void GetCameraEffects(VideoCaptureDevice::GetPhotoStateCallback callback,
+                        media::mojom::PhotoStatePtr photo_state);
+
  private:
   friend struct base::DefaultSingletonTraits<CameraHalDispatcherImpl>;
   // Allow the test to construct the class directly.

@@ -16,6 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
@@ -1761,6 +1762,20 @@ void CameraDeviceDelegate::DoGetPhotoState(
         }
       }
     }
+  }
+
+  // For background blur part, we only set capabilities and current
+  // configuration setting if the feature flag is enabled.
+  //
+  // https://w3c.github.io/mediacapture-extensions/#exposing-mediastreamtrack-source-background-blur-support
+  if (ash::features::IsBackgroundBlurEnabled()) {
+    callback = base::BindOnce(
+        [](VideoCaptureDevice::GetPhotoStateCallback callback,
+           media::mojom::PhotoStatePtr photo_state) {
+          CameraHalDispatcherImpl::GetInstance()->GetCameraEffects(
+              std::move(callback), std::move(photo_state));
+        },
+        std::move(callback));
   }
 
   std::move(callback).Run(std::move(photo_state));
