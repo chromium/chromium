@@ -11,10 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace web_app {
 
@@ -38,8 +36,7 @@ class ShortcutHandlingSubManager : public OsIntegrationSubManager {
       base::OnceClosure callback) override;
 
  private:
-  void StoreIconDataFromDisk(proto::ShortcutState* shortcut_states,
-                             base::OnceClosure configure_done,
+  void StoreIconDataFromDisk(proto::ShortcutDescription* shortcut,
                              base::flat_map<SquareSizePx, base::Time> time_map);
 
   const raw_ref<WebAppIconManager> icon_manager_;

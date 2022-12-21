@@ -116,15 +116,15 @@ IN_PROC_BROWSER_TEST_P(ShortcutHandlingSubManagerBrowserTest, Configure) {
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   if (OsIntegrationSubManagersEnabled()) {
     EXPECT_TRUE(state.has_value());
-    EXPECT_THAT(state.value().shortcut_states().title(),
+    EXPECT_THAT(state.value().shortcut().title(),
                 testing::Eq("Manifest test app"));
 
     // All icons are read from the disk.
-    EXPECT_THAT(state.value().shortcut_states().icon_data_any_size(),
+    EXPECT_THAT(state.value().shortcut().icon_data_any_size(),
                 testing::Eq(kTotalIconSizes));
 
     for (const proto::ShortcutIconData& icon_time_map_data :
-         state.value().shortcut_states().icon_data_any()) {
+         state.value().shortcut().icon_data_any()) {
       EXPECT_THAT(
           syncer::ProtoTimeToTime(icon_time_map_data.timestamp()).is_null(),
           testing::IsFalse());
