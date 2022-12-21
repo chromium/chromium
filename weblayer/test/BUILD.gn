@@ -292,7 +292,6 @@ test("weblayer_browsertests") {
       # setup for. Persistence related tests for Java will be done as
       # integration tests.
       "../browser/persistence/browser_persister_browsertest.cc",
-      "../browser/persistence/minimal_browser_persister_browsertest.cc",
     ]
 
     deps += [ "//components/keep_alive_registry" ]

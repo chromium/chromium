@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.ContextThemeWrapper;
 import android.view.SurfaceControlViewHost;
@@ -98,9 +97,9 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate() {
         StrictModeWorkaround.apply();
-        super.onCreate(savedInstanceState);
+        super.onCreate();
     }
 
     @Override

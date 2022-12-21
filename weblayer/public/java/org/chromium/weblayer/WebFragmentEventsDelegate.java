@@ -5,7 +5,6 @@
 package org.chromium.weblayer;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -96,8 +95,8 @@ class WebFragmentEventsDelegate extends IWebFragmentEventsDelegate.Stub {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        mHandler.post(() -> { mEventHandler.onCreate(savedInstanceState); });
+    public void onCreate() {
+        mHandler.post(() -> { mEventHandler.onCreate(); });
     }
 
     @Override
@@ -118,18 +117,7 @@ class WebFragmentEventsDelegate extends IWebFragmentEventsDelegate.Stub {
 
     @Override
     public void onStart() {
-        mHandler.post(() -> {
-            mEventHandler.onStart();
-
-            // Retrieve the instance state.
-            Bundle instanceState = new Bundle();
-            mEventHandler.onSaveInstanceState(instanceState);
-
-            try {
-                mClient.onStarted(instanceState);
-            } catch (RemoteException e) {
-            }
-        });
+        mHandler.post(() -> { mEventHandler.onStart(); });
     }
 
     @Override

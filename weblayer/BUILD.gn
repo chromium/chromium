@@ -286,8 +286,6 @@ source_set("weblayer_lib_base") {
     "browser/persistence/browser_persister.h",
     "browser/persistence/browser_persister_file_utils.cc",
     "browser/persistence/browser_persister_file_utils.h",
-    "browser/persistence/minimal_browser_persister.cc",
-    "browser/persistence/minimal_browser_persister.h",
     "browser/persistent_download.cc",
     "browser/persistent_download.h",
     "browser/popup_navigation_delegate_impl.cc",

@@ -18,6 +18,4 @@ oneway interface IWebFragmentEventsDelegateClient {
     // to the connecting client as the SurfaceControlViewHost is also not available on
     // older versions.
     void onContentViewRenderViewReady(in IObjectWrapper contentViewRenderView) = 2;
-
-    void onStarted(in Bundle instanceState) = 3;
 }

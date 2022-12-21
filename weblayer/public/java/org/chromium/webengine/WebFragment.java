@@ -36,19 +36,12 @@ public class WebFragment extends Fragment {
     private WebEngine mWebEngine;
     private IWebFragmentEventsDelegate mDelegate;
 
-    private Bundle mInstanceState = new Bundle();
-
     private final IWebFragmentEventsDelegateClient mClient =
             new IWebFragmentEventsDelegateClient.Stub() {
                 @Override
                 public void onSurfacePackageReady(SurfacePackage surfacePackage) {
                     SurfaceView surfaceView = (SurfaceView) WebFragment.super.getView();
                     surfaceView.setChildSurfacePackage(surfacePackage);
-                }
-
-                @Override
-                public void onStarted(Bundle instanceState) {
-                    mInstanceState = instanceState;
                 }
 
                 @Override
@@ -152,7 +145,7 @@ public class WebFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            mDelegate.onCreate(savedInstanceState);
+            mDelegate.onCreate();
         } catch (RemoteException e) {
         }
     }
@@ -226,12 +219,6 @@ public class WebFragment extends Fragment {
             mDelegate.onPause();
         } catch (RemoteException e) {
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putAll(mInstanceState);
     }
 
     /**

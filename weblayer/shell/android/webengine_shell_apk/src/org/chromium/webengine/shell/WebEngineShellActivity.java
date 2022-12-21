@@ -61,7 +61,7 @@ public class WebEngineShellActivity extends AppCompatActivity {
         Futures.addCallback(webSandboxFuture, new FutureCallback<WebSandbox>() {
             @Override
             public void onSuccess(WebSandbox webSandbox) {
-                onWebSandboxReady(webSandbox, savedInstanceState);
+                onWebSandboxReady(webSandbox);
             }
 
             @Override
@@ -98,7 +98,7 @@ public class WebEngineShellActivity extends AppCompatActivity {
         });
     }
 
-    private void onWebSandboxReady(WebSandbox webSandbox, Bundle savedInstanceState) {
+    private void onWebSandboxReady(WebSandbox webSandbox) {
         mWebSandbox = webSandbox;
         webSandbox.setRemoteDebuggingEnabled(true);
 
@@ -182,7 +182,6 @@ public class WebEngineShellActivity extends AppCompatActivity {
                         Log.i(TAG, "received Tab Event: 'onRenderProcessGone()'");
                     }
                 });
-
                 tab.getNavigationController().registerNavigationObserver(new NavigationObserver() {
                     @Override
                     public void onNavigationFailed(@NonNull Navigation navigation) {
@@ -207,7 +206,6 @@ public class WebEngineShellActivity extends AppCompatActivity {
                             public void onSuccess(String result) {
                                 Log.w(TAG, "executeScript result: " + result);
                             }
-
                             @Override
                             public void onFailure(Throwable thrown) {
                                 Log.w(TAG, "executeScript failed: " + thrown);

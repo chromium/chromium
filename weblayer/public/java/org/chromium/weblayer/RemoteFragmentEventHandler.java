@@ -5,7 +5,6 @@
 package org.chromium.weblayer;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.SurfaceControlViewHost;
 import android.view.View;
@@ -47,10 +46,10 @@ abstract class RemoteFragmentEventHandler {
     }
 
     @CallSuper
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate() {
         ThreadCheck.ensureOnUiThread();
         try {
-            mRemoteFragment.handleOnCreate(ObjectWrapper.wrap(savedInstanceState));
+            mRemoteFragment.handleOnCreate();
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -71,16 +70,6 @@ abstract class RemoteFragmentEventHandler {
         ThreadCheck.ensureOnUiThread();
         try {
             mRemoteFragment.handleOnResume();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    @CallSuper
-    protected void onSaveInstanceState(Bundle outState) {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            mRemoteFragment.handleOnSaveInstanceState(ObjectWrapper.wrap(outState));
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

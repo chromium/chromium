@@ -6,7 +6,6 @@ package org.chromium.weblayer_private;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.os.Bundle;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.InflateException;
@@ -164,9 +163,9 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate() {
         StrictModeWorkaround.apply();
-        super.onCreate(savedInstanceState);
+        super.onCreate();
 
         mFragmentController =
                 FragmentController.createController(new RemoteFragmentHostCallback(this));

@@ -14,7 +14,7 @@ oneway interface IWebFragmentEventsDelegate {
     void setClient(in IWebFragmentEventsDelegateClient client) = 1;
 
     // Fragment events.
-    void onCreate(in Bundle savedInstanceState) = 2;
+    void onCreate() = 2;
     void onStart() = 3;
     void onAttach() = 4;
     void onDetach() = 5;

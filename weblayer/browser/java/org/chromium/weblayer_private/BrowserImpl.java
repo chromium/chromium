@@ -20,7 +20,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
 import org.chromium.weblayer_private.interfaces.DarkModeStrategy;
 import org.chromium.weblayer_private.interfaces.IBrowser;
@@ -42,15 +41,6 @@ public class BrowserImpl extends IBrowser.Stub {
     private final ObserverList<VisibleSecurityStateObserver> mVisibleSecurityStateObservers =
             new ObserverList<VisibleSecurityStateObserver>();
 
-    // Key used to save the crypto key in instance state.
-    public static final String SAVED_STATE_SESSION_SERVICE_CRYPTO_KEY =
-            "SAVED_STATE_SESSION_SERVICE_CRYPTO_KEY";
-
-    // Key used to save the minimal persistence state in instance state. Only used if a persistence
-    // id was not specified.
-    public static final String SAVED_STATE_MINIMAL_PERSISTENCE_STATE_KEY =
-            "SAVED_STATE_MINIMAL_PERSISTENCE_STATE_KEY";
-
     // Number of instances that have not been destroyed.
     private static int sInstanceCount;
 
@@ -70,7 +60,6 @@ public class BrowserImpl extends IBrowser.Stub {
 
     // Created in the constructor from saved state.
     private FullPersistenceInfo mFullPersistenceInfo;
-    private MinimalPersistenceInfo mMinimalPersistenceInfo;
 
     private BrowserFragmentImpl mBrowserFragmentImpl;
 
@@ -79,10 +68,6 @@ public class BrowserImpl extends IBrowser.Stub {
         String mPersistenceId;
         byte[] mCryptoKey;
     };
-
-    // This persistence state is saved to a bundle, and loaded synchronously.
-    private static final class MinimalPersistenceInfo { byte[] mState; };
-
     /**
      * Allows observing of visible security state of the active tab.
      */
@@ -328,11 +313,9 @@ public class BrowserImpl extends IBrowser.Stub {
             mFullPersistenceInfo = null;
             BrowserImplJni.get().restoreStateIfNecessary(
                     mNativeBrowser, persistenceInfo.mPersistenceId, persistenceInfo.mCryptoKey);
-        } else if (mMinimalPersistenceInfo == null) {
+        } else {
             boolean setActiveResult = setActiveTab(createTab());
             assert setActiveResult;
-        } else {
-            restoreMinimalStateIfNecessary();
         }
     }
 
@@ -366,13 +349,8 @@ public class BrowserImpl extends IBrowser.Stub {
 
     @Override
     public boolean isRestoringPreviousState() {
-        // In the case of minimal restore, the C++ side will return true if actively restoring
-        // minimal state. By returning true if mMinimalPersistenceInfo is non-null,
-        // isRestoringPreviousState() will return true from the the time the fragment is created
-        // until start.
         StrictModeWorkaround.apply();
-        return mMinimalPersistenceInfo != null
-                || BrowserImplJni.get().isRestoringPreviousState(mNativeBrowser);
+        return BrowserImplJni.get().isRestoringPreviousState(mNativeBrowser);
     }
 
     @CalledByNative
@@ -384,8 +362,6 @@ public class BrowserImpl extends IBrowser.Stub {
     public void shutdown() {
         StrictModeWorkaround.apply();
         mInDestroy = true;
-        BrowserImplJni.get().prepareForShutdown(mNativeBrowser);
-        setActiveTab(null);
         for (Object tab : getTabs()) {
             destroyTabImpl((TabImpl) tab);
         }
@@ -397,26 +373,6 @@ public class BrowserImpl extends IBrowser.Stub {
 
         if (--sInstanceCount == 0) {
             WebLayerAccessibilityUtil.get().onAllBrowsersDestroyed();
-        }
-    }
-
-    void restoreMinimalStateIfNecessary() {
-        if (mMinimalPersistenceInfo == null) return;
-
-        final MinimalPersistenceInfo minimalPersistenceInfo = mMinimalPersistenceInfo;
-        mMinimalPersistenceInfo = null;
-        BrowserImplJni.get().restoreMinimalState(mNativeBrowser, minimalPersistenceInfo.mState);
-        if (getTabs().size() > 0) {
-            updateAllTabs();
-            mBrowserFragmentImpl.setActiveTab(getActiveTab());
-        } else {
-            boolean setActiveResult = setActiveTab(createTab());
-            assert setActiveResult;
-        }
-        try {
-            onRestoreCompleted();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
         }
     }
 
@@ -449,13 +405,9 @@ public class BrowserImpl extends IBrowser.Stub {
         void setActiveTab(long nativeBrowserImpl, long nativeTab);
         TabImpl getActiveTab(long nativeBrowserImpl);
         void prepareForShutdown(long nativeBrowserImpl);
-        String getPersistenceId(long nativeBrowserImpl);
-        void saveBrowserPersisterIfNecessary(long nativeBrowserImpl);
         byte[] getBrowserPersisterCryptoKey(long nativeBrowserImpl);
-        byte[] getMinimalPersistenceState(long nativeBrowserImpl, int maxNavigationsPerTab);
         void restoreStateIfNecessary(
                 long nativeBrowserImpl, String persistenceId, byte[] persistenceCryptoKey);
-        void restoreMinimalState(long nativeBrowserImpl, byte[] minimalPersistenceState);
         void webPreferencesChanged(long nativeBrowserImpl);
         void onFragmentStart(long nativeBrowserImpl);
         void onFragmentResume(long nativeBrowserImpl);
