@@ -119,6 +119,9 @@ class TaskScheduler {
   // Return true if task exists and is enabled.
   virtual bool IsTaskEnabled(const wchar_t* task_name) = 0;
 
+  // Return true if task exists and is running.
+  virtual bool IsTaskRunning(const wchar_t* task_name) = 0;
+
   // List all currently registered scheduled tasks.
   virtual bool GetTaskNameList(std::vector<std::wstring>* task_names) = 0;
 

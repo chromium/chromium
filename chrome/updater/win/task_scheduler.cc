@@ -230,6 +230,36 @@ class TaskSchedulerV2 final : public TaskScheduler {
     return is_enabled == VARIANT_TRUE;
   }
 
+  bool IsTaskRunning(const wchar_t* task_name) override {
+    DCHECK(task_name);
+
+    if (!task_folder_) {
+      return false;
+    }
+
+    Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
+    if (!GetTask(task_name, &registered_task)) {
+      return false;
+    }
+
+    Microsoft::WRL::ComPtr<IRunningTaskCollection> running_task_collection;
+    HRESULT hr = registered_task->GetInstances(0, &running_task_collection);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "IRegisteredTask.GetInstances failed. " << std::hex << hr;
+      return false;
+    }
+
+    long count = 0;  // NOLINT
+    hr = running_task_collection->get_Count(&count);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "IRunningTaskCollection.get_Count failed. " << std::hex
+                 << hr;
+      return false;
+    }
+
+    return count > 0;
+  }
+
   bool GetTaskNameList(std::vector<std::wstring>* task_names) override {
     DCHECK(task_names);
     if (!task_folder_)
@@ -650,35 +680,14 @@ class TaskSchedulerV2 final : public TaskScheduler {
     if (!task_folder_)
       return false;
 
+    if (IsTaskRunning(task_name)) {
+      return true;
+    }
+
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
     if (!GetTask(task_name, &registered_task)) {
       LOG(ERROR) << "GetTask failed.";
       return false;
-    }
-
-    if ([&registered_task]() {
-          Microsoft::WRL::ComPtr<IRunningTaskCollection>
-              running_task_collection;
-          HRESULT hr =
-              registered_task->GetInstances(0, &running_task_collection);
-          if (FAILED(hr)) {
-            LOG(ERROR) << "IRegisteredTask.GetInstances failed. " << std::hex
-                       << hr;
-            return false;
-          }
-
-          long count = 0;  // NOLINT
-          hr = running_task_collection->get_Count(&count);
-          if (FAILED(hr)) {
-            LOG(ERROR) << "IRunningTaskCollection.get_Count failed. "
-                       << std::hex << hr;
-            return false;
-          }
-
-          return count > 0;
-        }()) {
-      // The task is already running.
-      return true;
     }
 
     HRESULT hr =

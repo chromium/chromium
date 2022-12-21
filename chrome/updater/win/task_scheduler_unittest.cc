@@ -26,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
@@ -158,8 +159,7 @@ TEST_F(TaskSchedulerTests, MAYBE_RunAProgramNow) {
   command_line.AppendSwitchNative(kTestEventToSignal, attr.name);
   EXPECT_TRUE(
       task_scheduler_->RegisterTask(kTaskName1, kTaskDescription1, command_line,
-                                    TaskScheduler::TRIGGER_TYPE_HOURLY, false));
-  EXPECT_TRUE(task_scheduler_->StartTask(kTaskName1));
+                                    TaskScheduler::TRIGGER_TYPE_NOW, false));
 
   VLOG(0) << [this]() {
     TaskScheduler::TaskInfo info;
@@ -168,6 +168,12 @@ TEST_F(TaskSchedulerTests, MAYBE_RunAProgramNow) {
   }();
 
   EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
+  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
+      [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); })));
+
+  base::Time next_run_time;
+  EXPECT_FALSE(task_scheduler_->GetNextTaskRunTime(kTaskName1, &next_run_time));
+
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
 
   test::PrintLog(GetTestScope());
@@ -232,6 +238,37 @@ TEST_F(TaskSchedulerTests, SetTaskEnabled) {
   EXPECT_FALSE(task_scheduler_->IsTaskEnabled(kTaskName1));
   EXPECT_TRUE(task_scheduler_->SetTaskEnabled(kTaskName1, true));
   EXPECT_TRUE(task_scheduler_->IsTaskEnabled(kTaskName1));
+
+  EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
+}
+
+TEST_F(TaskSchedulerTests, IsTaskRunning) {
+  base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
+
+  // Create a unique name for a shared event to be waited for in the task and
+  // signaled in this test.
+  const std::wstring event_name =
+      base::StrCat({kTestProcessExecutableName, L"-",
+                    base::NumberToWString(::GetCurrentProcessId())});
+  NamedObjectAttributes attr =
+      GetNamedObjectAttributes(event_name.c_str(), GetTestScope());
+
+  base::WaitableEvent event(base::win::ScopedHandle(
+      ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str())));
+  ASSERT_NE(event.handle(), nullptr);
+
+  command_line.AppendSwitchNative(kTestEventToWaitOn, attr.name);
+  EXPECT_TRUE(
+      task_scheduler_->RegisterTask(kTaskName1, kTaskDescription1, command_line,
+                                    TaskScheduler::TRIGGER_TYPE_NOW, false));
+
+  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
+      [&]() { return task_scheduler_->IsTaskRunning(kTaskName1); })));
+
+  event.Signal();
+
+  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
+      [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); })));
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
 }

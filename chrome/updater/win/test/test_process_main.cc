@@ -67,8 +67,9 @@ int main(int, char**) {
 
   if (command_line->HasSwitch(updater::kTestEventToSignal)) {
     EventForSwitch(*command_line, updater::kTestEventToSignal).Signal();
-  } else if (command_line->HasSwitch(
-                 updater::kTestEventToSignalIfMediumIntegrity)) {
+  }
+
+  if (command_line->HasSwitch(updater::kTestEventToSignalIfMediumIntegrity)) {
     if (!::IsUserAnAdmin()) {
       EventForSwitch(*command_line,
                      updater::kTestEventToSignalIfMediumIntegrity)
@@ -76,7 +77,9 @@ int main(int, char**) {
     } else {
       LOG(ERROR) << "Process running at High Integrity instead of Medium";
     }
-  } else if (command_line->HasSwitch(updater::kTestEventToWaitOn)) {
+  }
+
+  if (command_line->HasSwitch(updater::kTestEventToWaitOn)) {
     EventForSwitch(*command_line, updater::kTestEventToWaitOn).Wait();
   }
 
