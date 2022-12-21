@@ -45,6 +45,8 @@ class ModelExecutor {
       scoped_refptr<base::SequencedTaskRunner> execution_task_runner,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) = 0;
 
+  // Updates model file. If `SetShouldUnloadModelOnComplete` is false,
+  // immedidately loads model into memory.
   virtual void UpdateModelFile(const base::FilePath& file_path) = 0;
 
   virtual void UnloadModel() = 0;

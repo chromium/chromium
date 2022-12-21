@@ -114,8 +114,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
     }
   }
 
-  // Called when a model file is available to load. Depending on feature flags,
-  // the model may or may not be immediately loaded.
+  // Called when a model file is available to load. Immediately loads model into
+  // memory when `should_unload_model_on_complete_` is false.
   void UpdateModelFile(const base::FilePath& file_path) override {
     DCHECK(execution_task_runner_ &&
            execution_task_runner_->RunsTasksInCurrentSequence());
@@ -133,6 +133,11 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
                 optimization_target_),
         base::Histogram::kNoFlags);
     histogram->Add(true);
+
+    if (should_unload_model_on_complete_) {
+      ExecutionStatus out_status;
+      LoadModelFile(&out_status);
+    }
   }
 
   // Calling this method allows the default model loading/unloading behavior to
