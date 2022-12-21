@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
@@ -58,8 +58,8 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
     }
 
     // If prefs have already loaded, invoke the pref observer asynchronously.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 
   // PrefStore::Observer implementation.

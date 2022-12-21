@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/credential_utils.h"
@@ -187,7 +188,7 @@ void IOSChromePasswordCheckManager::OnStateChanged(State state) {
     if (is_check_running_) {
       const base::TimeDelta elapsed = base::Time::Now() - start_time_;
       if (elapsed < kDelay) {
-        base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&IOSChromePasswordCheckManager::
                                NotifyPasswordCheckStatusChanged,

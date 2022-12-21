@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_impl.h"
@@ -72,7 +73,7 @@ void TypedNavigationUpgradeTabHelper::FallbackToHttp(web::WebState* web_state,
   params.https_upgrade_type = web::HttpsUpgradeType::kNone;
   // Post a task to navigate to the fallback URL. We don't want to navigate
   // synchronously from a DidNavigationFinish() call.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](base::WeakPtr<web::WebState> web_state,

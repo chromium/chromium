@@ -9,8 +9,8 @@
 #import "base/compiler_specific.h"
 #import "base/files/file_path.h"
 #import "base/mac/foundation_util.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/test/task_environment.h"
-#import "base/threading/thread_task_runner_handle.h"
 #import "components/language/core/browser/language_prefs.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_member.h"
@@ -63,7 +63,8 @@ class TranslateTableViewControllerTest : public ChromeTableViewControllerTest {
     translate::TranslatePrefs::RegisterProfilePrefs(registry.get());
     base::FilePath path("TranslateTableViewControllerTest.pref");
     sync_preferences::PrefServiceMockFactory factory;
-    factory.SetUserPrefsFile(path, base::ThreadTaskRunnerHandle::Get().get());
+    factory.SetUserPrefsFile(
+        path, base::SingleThreadTaskRunner::GetCurrentDefault().get());
     return factory.Create(registry.get());
   }
 

@@ -6,7 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
-#import "base/threading/sequenced_task_runner_handle.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/ui/autofill/features.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/branding_view_controller_delegate.h"
@@ -148,7 +148,7 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
   }
   // The "pop" animation should start after a slight timeout.
   __weak BrandingViewController* weakSelf = self;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
         [weakSelf performPopAnimation];
       }),

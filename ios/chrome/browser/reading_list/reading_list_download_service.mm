@@ -13,6 +13,7 @@
 #import "base/files/file_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/string_util.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/reading_list/core/offline_url_utils.h"
 #import "components/reading_list/core/reading_list_entry.h"
@@ -192,7 +193,7 @@ void ReadingListDownloadService::ScheduleDownloadEntry(const GURL& url) {
       entry->DistilledState() == ReadingListEntry::PROCESSED || entry->IsRead())
     return;
   GURL local_url(url);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ReadingListDownloadService::DownloadEntry,
                      weak_ptr_factory_.GetWeakPtr(), local_url),

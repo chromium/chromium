@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -238,7 +239,7 @@ void FollowTabHelper::OnDailyVisitQueryResult(
   if (elapsed_time >= kShowFollowIPHAfterLoaded) {
     PresentFollowIPH(recommended_url);
   } else {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FollowTabHelper::PresentFollowIPH,
                        weak_ptr_factory_.GetWeakPtr(), recommended_url),

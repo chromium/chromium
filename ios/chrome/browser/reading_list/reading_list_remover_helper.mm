@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/reading_list/reading_list_remover_helper.h"
 
 #import "base/bind.h"
-#import "base/threading/sequenced_task_runner_handle.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/reading_list/reading_list_download_service.h"
 #import "ios/chrome/browser/reading_list/reading_list_download_service_factory.h"
@@ -73,7 +73,7 @@ void ReadingListRemoverHelper::ReadlingListItemsRemoved(bool success) {
   reading_list_model_ = nullptr;
   reading_list_download_service_ = nullptr;
   if (completion_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(completion_), success));
   }
 }

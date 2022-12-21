@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_mediator.h"
 
 #import "base/cancelable_callback.h"
-#import "base/threading/thread_task_runner_handle.h"
+#import "base/task/single_thread_task_runner.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -154,7 +154,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
   _signinTimeoutClosure.Reset(base::BindOnce(^{
     [weakSelf cancelSigninWithError:ConsistencyPromoSigninMediatorErrorTimeout];
   }));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, _signinTimeoutClosure.callback(),
       base::Seconds(self.signinTimeoutDurationSeconds));
 }

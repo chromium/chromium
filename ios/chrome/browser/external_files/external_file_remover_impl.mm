@@ -10,6 +10,7 @@
 #import "base/callback_helpers.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -168,7 +169,7 @@ void ExternalFileRemoverImpl::RemoveAfterDelay(base::TimeDelta delay,
   base::ScopedClosureRunner closure_runner =
       base::ScopedClosureRunner(std::move(callback));
   bool remove_all_files = delay == base::Seconds(0);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ExternalFileRemoverImpl::RemoveFiles,
                      weak_ptr_factory_.GetWeakPtr(), remove_all_files,

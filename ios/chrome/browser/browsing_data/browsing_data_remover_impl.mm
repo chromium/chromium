@@ -19,7 +19,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "base/threading/sequenced_task_runner_handle.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -188,7 +187,7 @@ void BrowsingDataRemoverImpl::Shutdown() {
                              removal_queue_.size(), 10);
 
   scoped_refptr<base::SequencedTaskRunner> current_task_runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
 
   // If we are still removing data, notify callbacks that their task has been
   // (albeit unsucessfuly) processed. If it becomes a problem that browsing
@@ -272,7 +271,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       CreatePendingTaskCompletionClosure());
 
   scoped_refptr<base::SequencedTaskRunner> current_task_runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
 
   // Note: Before adding any method below, make sure that it can finish clearing
   // browsing data even if `browser_state` is destroyed after this method call.
@@ -625,7 +624,7 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
   DCHECK(!removal_queue_.empty());
 
   scoped_refptr<base::SequencedTaskRunner> current_task_runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
 
   if (AccountConsistencyService* account_consistency_service =
           ios::AccountConsistencyServiceFactory::GetForBrowserState(

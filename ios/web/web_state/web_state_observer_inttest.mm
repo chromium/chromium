@@ -16,6 +16,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/net/protocol_handler_util.h"
@@ -97,7 +98,7 @@ ACTION_P(ReturnAllowRequestAndStopNavigation, web_state) {
   dispatch_async(dispatch_get_main_queue(), ^{
     web_state->Stop();
   });
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(arg0),
                      WebStatePolicyDecider::PolicyDecision::Allow()));

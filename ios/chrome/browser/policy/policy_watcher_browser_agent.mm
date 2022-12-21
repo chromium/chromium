@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -82,7 +83,7 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
           base::Unretained(this)));
 
   // Try to show the alert in case the policy changed since last time.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded,
                      weak_factory_.GetWeakPtr()));
@@ -93,7 +94,7 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
           &PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion,
           base::Unretained(this)));
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion,

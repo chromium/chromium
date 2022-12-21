@@ -13,9 +13,9 @@
 #import "base/logging.h"
 #import "base/memory/ptr_util.h"
 #import "base/path_service.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/test/test_file_util.h"
-#import "base/threading/thread_task_runner_handle.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -173,7 +173,7 @@ base::FilePath TestChromeBrowserState::GetStatePath() const {
 
 scoped_refptr<base::SequencedTaskRunner>
 TestChromeBrowserState::GetIOTaskRunner() {
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 ChromeBrowserState* TestChromeBrowserState::GetOriginalChromeBrowserState() {

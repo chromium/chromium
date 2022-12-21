@@ -9,7 +9,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
-#import "base/threading/thread_task_runner_handle.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/autofill/cells/cvc_item.h"
@@ -135,7 +134,7 @@ void LegacyCardUnmaskPromptViewBridge::GotVerificationResult(
     bool allow_retry) {
   if (error_message.empty()) {
     [card_view_controller_ showSuccess];
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&LegacyCardUnmaskPromptViewBridge::PerformClose,
                        weak_ptr_factory_.GetWeakPtr()),

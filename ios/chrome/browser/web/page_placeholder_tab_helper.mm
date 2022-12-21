@@ -6,7 +6,7 @@
 
 #import "base/bind.h"
 #import "base/check_op.h"
-#import "base/threading/thread_task_runner_handle.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
@@ -123,7 +123,7 @@ void PagePlaceholderTabHelper::AddPlaceholder() {
   }
 
   // Remove placeholder if it takes too long to load the page.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PagePlaceholderTabHelper::RemovePlaceholder,
                      weak_factory_.GetWeakPtr()),

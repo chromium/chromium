@@ -11,7 +11,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
-#import "base/threading/thread_task_runner_handle.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
@@ -448,8 +447,8 @@ void AuthenticationService::SignOut(
   if (force_clear_browsing_data || (is_managed && is_first_setup_complete)) {
     delegate_->ClearBrowsingData(completion);
   } else if (completion) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  base::BindOnce(completion));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(completion));
   }
 }
 
@@ -526,7 +525,7 @@ void AuthenticationService::OnIdentityListChanged(bool need_user_approval) {
   // the authenticated user at this time may lead to crashes (e.g.
   // http://crbug.com/398431 ).
   // Handle the change of the identity list on the next message loop cycle.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&AuthenticationService::ReloadCredentialsFromIdentities,
                      GetWeakPtr(), need_user_approval));
@@ -590,7 +589,7 @@ void AuthenticationService::OnAccessTokenRefreshFailed(
   // Note that no reload of the credentials is necessary here, as `identity`
   // might still be accessible in SSO, and `OnIdentityListChanged` will handle
   // this when `identity` will actually disappear from SSO.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&AuthenticationService::HandleForgottenIdentity,
                                 GetWeakPtr(), identity, /*should_prompt=*/true,
                                 /*device_restore=*/false));

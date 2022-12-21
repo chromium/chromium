@@ -3,20 +3,16 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/policy/reporting/report_scheduler_ios.h"
-#import "base/time/time.h"
-#import "components/enterprise/browser/reporting/real_time_report_generator.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 #import "base/callback_helpers.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/threading/thread_task_runner_handle.h"
+#import "base/time/time.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/browser/reporting/real_time_report_generator.h"
 #import "components/enterprise/browser/reporting/report_request.h"
 #import "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #import "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
@@ -25,6 +21,10 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
@@ -48,7 +48,7 @@ ACTION_P(ScheduleGeneratorCallback, request_number) {
   ReportRequestQueue requests;
   for (int i = 0; i < request_number; i++)
     requests.push(std::make_unique<ReportRequest>(ReportType::kFull));
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
 }
 

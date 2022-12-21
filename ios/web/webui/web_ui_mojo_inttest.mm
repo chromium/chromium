@@ -7,8 +7,8 @@
 
 #import "base/bind.h"
 #import "base/run_loop.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/test/ios/wait_util.h"
-#import "base/threading/thread_task_runner_handle.h"
 #import "base/time/time.h"
 #import "ios/web/grit/ios_web_resources.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -215,8 +215,8 @@ TEST_F(WebUIMojoTest, MessageExchange) {
           // TODO(crbug.com/701875): Introduce the full watcher API to JS and
           // get rid of this hack.
           base::RunLoop loop;
-          base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                        loop.QuitClosure());
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, loop.QuitClosure());
           loop.Run();
           return test_ui_handler()->IsFinReceived();
         });

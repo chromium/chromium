@@ -11,8 +11,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#import "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #import "ios/net/cookies/cookie_store_ios.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
@@ -102,7 +102,7 @@ TestCookieStoreIOSClient::TestCookieStoreIOSClient() {}
 
 scoped_refptr<base::SequencedTaskRunner>
 TestCookieStoreIOSClient::GetTaskRunner() const {
-  return base::ThreadTaskRunnerHandle::Get();
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 #pragma mark -

@@ -7,7 +7,7 @@
 #import "base/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
-#import "base/threading/sequenced_task_runner_handle.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -133,7 +133,7 @@ void SnapshotTabHelper::PageLoaded(
         break;
 
       bool was_loading = was_loading_during_last_snapshot_;
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               &SnapshotTabHelper::UpdateSnapshotWithCallback,

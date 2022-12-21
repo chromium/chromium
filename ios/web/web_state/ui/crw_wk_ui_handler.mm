@@ -7,6 +7,7 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/wk_navigation_action_util.h"
 #import "ios/web/navigation/wk_navigation_util.h"
@@ -173,7 +174,7 @@ enum class PermissionRequest {
     // -webViewDidClose will typically trigger another webState to activate,
     // which may in turn also close. To prevent reentrant modificationre in
     // WebStateList, trigger a PostTask here.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(^{
           web::WebStateImpl* webStateImpl = weakSelf.webStateImpl;
           if (webStateImpl) {

@@ -10,8 +10,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/disk_cache/disk_cache.h"
@@ -102,9 +102,10 @@ void ClearHttpCache(const scoped_refptr<net::URLRequestContextGetter>& getter,
                     net::CompletionOnceCallback callback) {
   DCHECK(delete_end != base::Time());
   network_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&ClearHttpCacheOnIOThread, getter,
-                                base::ThreadTaskRunnerHandle::Get(),
-                                delete_begin, delete_end, std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&ClearHttpCacheOnIOThread, getter,
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     delete_begin, delete_end, std::move(callback)));
 }
 
 }  // namespace net

@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "ui/base/device_form_factor.h"
 
@@ -198,8 +198,8 @@ bool FirstUserActionRecorder::ShouldProcessAction(
     rethrow_callback_.Reset(
         base::BindOnce(&FirstUserActionRecorder::OnUserAction,
                        base::Unretained(this), action_name, action_time));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  rethrow_callback_.callback());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, rethrow_callback_.callback());
     action_pending_ = true;
     return false;
   }

@@ -9,7 +9,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/threading/thread_task_runner_handle.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/favicon/ios/web_favicon_driver.h"
@@ -178,7 +178,7 @@ void ReadingListDistillerPage::OnLoadURLDone(
   // Page is loaded but rendering may not be done yet. Give a delay to the page.
   base::WeakPtr<ReadingListDistillerPage> weak_this =
       weak_ptr_factory_.GetWeakPtr();
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ReadingListDistillerPage::DelayedOnLoadURLDone, weak_this,
                      delayed_task_id_),

@@ -9,7 +9,7 @@
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/threading/sequenced_task_runner_handle.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/feed/core/shared_prefs/pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -187,7 +187,7 @@ void FollowBrowserAgent::ShowOverlayMessage(FollowSource source,
   // is updated before showing the snackbar message.
   if (UIAccessibilityIsVoiceOverRunning() &&
       source == FollowSource::Management) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(closure), kSnackbarMessageVoiceOverDelay);
     return;
   }

@@ -9,7 +9,7 @@
 #import "base/bind.h"
 #import "base/check.h"
 #import "base/task/cancelable_task_tracker.h"
-#import "base/threading/thread_task_runner_handle.h"
+#import "base/task/single_thread_task_runner.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon_base/favicon_types.h"
 #import "components/favicon_base/select_favicon_frames.h"
@@ -108,6 +108,6 @@ FaviconClientImpl::GetFaviconForNativeApplicationURL(
                                &favicon_bitmap_results);
 
   return tracker->PostTask(
-      base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
+      base::SingleThreadTaskRunner::GetCurrentDefault().get(), FROM_HERE,
       base::BindOnce(std::move(callback), std::move(favicon_bitmap_results)));
 }

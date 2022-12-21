@@ -11,8 +11,8 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
+#import "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/password_manager/core/browser/login_database.h"
@@ -66,7 +66,7 @@ WebViewPasswordStoreFactory::BuildServiceInstanceFor(
           context->GetStatePath()));
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner(
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   // USER_VISIBLE priority is chosen for the background task runner, because
   // the passwords obtained through tasks on the background runner influence
   // what the user sees.

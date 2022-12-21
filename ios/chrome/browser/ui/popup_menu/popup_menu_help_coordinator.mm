@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_help_coordinator.h"
 
-#import "base/threading/sequenced_task_runner_handle.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -206,7 +206,7 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
   // Present the bubble after the delay.
   self.popupMenuBubblePresenter = bubblePresenter;
   __weak __typeof(self) weakSelf = self;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
         [weakSelf presentPopupMenuBubbleAtAnchorPoint:anchorPoint];
         [weakSelf.UIUpdater updateUIForIPHDisplayed:PopupMenuTypeToolsMenu];

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
 
+#import "base/task/sequenced_task_runner.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
@@ -97,7 +98,7 @@ void OptimizationGuideTabHelper::DidFinishNavigation(
   // non-committed, etc.) might not have navigation data associated with them,
   // but we reduce likelihood of future leaks by always trying to remove the
   // data.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&OptimizationGuideTabHelper::NotifyNavigationFinish,
                      weak_factory_.GetWeakPtr(),

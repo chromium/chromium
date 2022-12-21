@@ -9,9 +9,9 @@
 #import "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/threading/thread_task_runner_handle.h"
 #import "base/time/time.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
@@ -77,7 +77,7 @@ std::unique_ptr<UserCloudPolicyManager> BuildCloudPolicyManager() {
   return std::make_unique<UserCloudPolicyManager>(
       std::move(store), base::FilePath(),
       /*cloud_external_data_manager=*/nullptr,
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());
 }
 

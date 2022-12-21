@@ -10,7 +10,6 @@
 
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -80,7 +79,8 @@ class LoadedObserver : public TemplateURLServiceObserver {
     service_->RemoveObserver(this);
     UpdateSearchEngine(service_);
     // Only delete this class when this callback is finished.
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                  this);
   }
 
  private:

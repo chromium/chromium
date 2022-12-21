@@ -14,6 +14,7 @@
 #import "base/memory/ref_counted_memory.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/string_util.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/trace_event/trace_event.h"
 #import "ios/web/public/browser_state.h"
@@ -259,7 +260,7 @@ void URLRequestChromeJob::Start() {
   DCHECK(backend_);
 
   if (!backend_->StartRequest(request_, this)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&URLRequestChromeJob::NotifyStartErrorAsync,
                                   weak_factory_.GetWeakPtr()));
   }

@@ -170,7 +170,7 @@ void IOSChromeMainParts::PreCreateThreads() {
       channel == version_info::Channel::DEV) {
     sampling_profiler_ = IOSThreadProfiler::CreateAndStartOnMainThread();
     IOSThreadProfiler::SetMainThreadTaskRunner(
-        base::ThreadTaskRunnerHandle::Get());
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   // IMPORTANT

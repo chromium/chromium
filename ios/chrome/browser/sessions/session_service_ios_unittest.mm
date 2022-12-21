@@ -13,10 +13,10 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "base/threading/thread_task_runner_handle.h"
 #import "ios/chrome/browser/paths/paths.h"
 #import "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
@@ -56,7 +56,7 @@ class SessionServiceTest : public PlatformTest {
     directory_ = scoped_temp_directory_.GetPath();
 
     scoped_refptr<base::SequencedTaskRunner> task_runner =
-        base::ThreadTaskRunnerHandle::Get();
+        base::SingleThreadTaskRunner::GetCurrentDefault();
     session_service_ =
         [[SessionServiceIOS alloc] initWithTaskRunner:task_runner];
   }

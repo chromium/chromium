@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
@@ -71,7 +71,7 @@ class DownloadResponse : public net::test_server::BasicHttpResponse {
     auto next_send =
         base::BindOnce(&DownloadResponse::Send, delegate, count - block_size);
 
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&net::test_server::HttpResponseDelegate::SendContents,
                        delegate, content_block, std::move(next_send)),

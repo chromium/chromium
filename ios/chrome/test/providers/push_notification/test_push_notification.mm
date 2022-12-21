@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/task/sequenced_task_runner.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
-
-#import "base/threading/sequenced_task_runner_handle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,7 +40,7 @@ void TestPushNotificationService::RegisterDevice(
   // Test implementation does nothing. As a result, the `completion_handler` is
   // called with a NSFeatureUnsupportedError.
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(^() {
         NSError* error =
             [NSError errorWithDomain:kTestPushNotificationErrorDomain
@@ -55,7 +54,7 @@ void TestPushNotificationService::UnregisterDevice(
     void (^completion_handler)(NSError* error)) {
   // Test implementation does nothing. As a result, the `completion_handler` is
   // called with a NSFeatureUnsupportedError.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(^() {
         NSError* error =
             [NSError errorWithDomain:kTestPushNotificationErrorDomain
@@ -75,7 +74,7 @@ void TestPushNotificationService::SetAccountsToDevice(
   // Test implementation does nothing. As a result, the `completion_handler` is
   // called with a NSFeatureUnsupportedError.
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(^() {
         NSError* error =
             [NSError errorWithDomain:kTestPushNotificationErrorDomain

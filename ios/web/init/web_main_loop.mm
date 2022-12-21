@@ -18,9 +18,9 @@
 #import "base/power_monitor/power_monitor_device_source.h"
 #import "base/process/process_metrics.h"
 #import "base/task/single_thread_task_executor.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/threading/thread_restrictions.h"
-#import "base/threading/thread_task_runner_handle.h"
 #import "ios/web/net/cookie_notification_bridge.h"
 #import "ios/web/public/init/ios_global_state.h"
 #import "ios/web/public/init/web_main_parts.h"
@@ -202,7 +202,7 @@ void WebMainLoop::InitializeMainThread() {
   base::PlatformThread::SetName("CrWebMain");
 
   // Register the main thread by instantiating it, but don't call any methods.
-  DCHECK(base::ThreadTaskRunnerHandle::IsSet());
+  DCHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
   main_thread_.reset(new WebThreadImpl(
       WebThread::UI,
       ios_global_state::GetMainThreadTaskExecutor()->task_runner()));

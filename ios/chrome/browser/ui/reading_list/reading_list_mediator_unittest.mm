@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/simple_test_clock.h"
 #import "components/favicon/core/large_icon_service_impl.h"
 #import "components/favicon/core/test/mock_favicon_service.h"
@@ -61,7 +62,8 @@ class ReadingListMediatorTest
                            favicon_base::FaviconRawBitmapCallback callback,
                            base::CancelableTaskTracker* tracker) {
           return tracker->PostTask(
-              base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
+              base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+              FROM_HERE,
               base::BindOnce(std::move(callback),
                              favicon_base::FaviconRawBitmapResult()));
         });

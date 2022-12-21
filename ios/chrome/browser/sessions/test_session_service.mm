@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/sessions/test_session_service.h"
 
 #import "base/memory/ref_counted.h"
-#import "base/threading/thread_task_runner_handle.h"
+#import "base/task/single_thread_task_runner.h"
 #import "ios/chrome/browser/sessions/session_ios_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -15,7 +15,8 @@
 @implementation TestSessionService
 
 - (instancetype)init {
-  return [super initWithTaskRunner:base::ThreadTaskRunnerHandle::Get()];
+  return [super
+      initWithTaskRunner:base::SingleThreadTaskRunner::GetCurrentDefault()];
 }
 
 - (void)saveSession:(__weak SessionIOSFactory*)factory

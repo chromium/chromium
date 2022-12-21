@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/test/test_password_manager_client.h"
 
 #import "base/callback_helpers.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -90,7 +91,7 @@ bool TestPasswordManagerClient::PromptUserToChooseCredentials(
     CredentialsCallback callback) {
   EXPECT_FALSE(local_forms.empty());
   const password_manager::PasswordForm* form = local_forms[0].get();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      base::Owned(new password_manager::PasswordForm(*form))));

@@ -7,7 +7,7 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
-#import "base/threading/sequenced_task_runner_handle.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/prefs/pref_service.h"
 #import "components/security_interstitials/core/https_only_mode_metrics.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -179,7 +179,7 @@ void HttpsOnlyModeUpgradeTabHelper::FallbackToHttp() {
   params.https_upgrade_type = web::HttpsUpgradeType::kHttpsOnlyMode;
   // Post a task to navigate to the fallback URL. We don't want to navigate
   // synchronously from a DidNavigationFinish() call.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](base::WeakPtr<web::WebState> web_state,

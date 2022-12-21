@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -31,11 +32,11 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
   scoped_refptr<PrefRegistrySimple> local_state_registry(
       new PrefRegistrySimple);
   RegisterLocalStatePrefs(local_state_registry.get());
-  local_state_ = CreateLocalState(state_directory_path.Append("TestLocalState"),
-                                  base::ThreadTaskRunnerHandle::Get().get(),
-                                  local_state_registry,
-                                  browser_policy_connector_->GetPolicyService(),
-                                  browser_policy_connector_.get());
+  local_state_ = CreateLocalState(
+      state_directory_path.Append("TestLocalState"),
+      base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+      local_state_registry, browser_policy_connector_->GetPolicyService(),
+      browser_policy_connector_.get());
   browser_policy_connector_->Init(local_state_.get(), nullptr);
 
   // Create a BrowserStatePolicyConnector and hook it up to prefs.
@@ -49,7 +50,8 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
   RegisterBrowserStatePrefs(pref_registry.get());
   std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service =
       CreateBrowserStatePrefs(
-          state_directory_path, base::ThreadTaskRunnerHandle::Get().get(),
+          state_directory_path,
+          base::SingleThreadTaskRunner::GetCurrentDefault().get(),
           pref_registry, browser_state_policy_connector_->GetPolicyService(),
           browser_policy_connector_.get());
 

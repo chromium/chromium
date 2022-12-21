@@ -8,6 +8,7 @@
 
 #import "base/bind.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
@@ -37,7 +38,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
  public:
   explicit StoreMetricReporterHelper(ChromeBrowserState* browser_state)
       : browser_state_(browser_state) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&StoreMetricReporterHelper::StartMetricsReporting,
                        weak_ptr_factory_.GetWeakPtr()),

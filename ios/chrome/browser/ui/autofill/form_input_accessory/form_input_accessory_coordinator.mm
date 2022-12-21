@@ -11,7 +11,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/threading/sequenced_task_runner_handle.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -344,7 +344,7 @@ BubbleViewType BubbleTypeFromFeature() {
   }
 
   __weak __typeof(self) weakSelf = self;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
         [weakSelf tryPresentingBubble];
         [weakSelf notifyPasswordSuggestionsShown];
@@ -657,7 +657,7 @@ BubbleViewType BubbleTypeFromFeature() {
   // Present the bubble after the delay.
   self.bubblePresenter = bubblePresenter;
   __weak __typeof(self) weakSelf = self;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
         [weakSelf presentBubbleAtAnchorPoint:anchorPoint];
       }),

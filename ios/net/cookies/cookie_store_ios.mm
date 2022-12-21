@@ -21,8 +21,8 @@
 #include "base/observer_list.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#import "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "ios/net/cookies/cookie_store_ios_client.h"
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
@@ -558,7 +558,7 @@ void CookieStoreIOS::OnSystemCookiesChanged() {
   flush_closure_.Reset(base::BindOnce(&CookieStoreIOS::FlushStore,
                                       weak_factory_.GetWeakPtr(),
                                       base::OnceClosure()));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, flush_closure_.callback(), base::Seconds(10));
 }
 
