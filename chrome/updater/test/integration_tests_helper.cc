@@ -29,6 +29,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/unittest_util.h"
@@ -236,7 +237,6 @@ void AppTestHelper::FirstTaskRun() {
     {"set_group_policies", WithSwitch("values", Wrap(&SetGroupPolicies))},
     {"fill_log", WithSystemScope(Wrap(&FillLog))},
     {"expect_log_rotated", WithSystemScope(Wrap(&ExpectLogRotated))},
-    {"expect_active_updater", WithSystemScope(Wrap(&ExpectActiveUpdater))},
     {"expect_registered",
      WithSwitch("app_id", WithSystemScope(Wrap(&ExpectRegistered)))},
     {"expect_not_registered",
@@ -415,6 +415,7 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
 // command, which is typical a step of an integration test.
 TEST(TestHelperCommandRunner, Run) {
   base::test::TaskEnvironment environment;
+  ScopedIPCSupportWrapper ipc_support_;
   ASSERT_EQ(MakeAppTestHelper()->Run(), 0);
 }
 

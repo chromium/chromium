@@ -120,10 +120,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_version_not_active", {Param("version", version)});
   }
 
-  void ExpectActiveUpdater() const override {
-    RunCommand("expect_active_updater");
-  }
-
   void ExpectActive(const std::string& app_id) const override {
     updater::test::ExpectActive(updater_scope_, app_id);
   }

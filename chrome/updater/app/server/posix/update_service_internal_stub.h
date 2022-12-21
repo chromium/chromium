@@ -14,15 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace named_mojo_ipc_server {
-struct ConnectionInfo;
-}
-
 namespace updater {
-
-// Returns true iff the client identified by `connector` is the current user.
-bool ConnectionHasSamePrivilege(
-    const named_mojo_ipc_server::ConnectionInfo& connector);
 
 // Receives RPC calls from the client and delegates them to an
 // UpdateServiceInternal. The stub creates and manages a `NamedMojoIpcServer`

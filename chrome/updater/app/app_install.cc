@@ -168,7 +168,7 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
   }
 
   if (valid_version) {
-    WakeCandidateDone();
+    FetchPolicies();
     return;
   }
 
@@ -201,20 +201,13 @@ void AppInstall::WakeCandidate() {
   update_service_internal->Hello(base::BindOnce(
       [](scoped_refptr<UpdateServiceInternal> /*update_service_internal*/,
          scoped_refptr<AppInstall> app_install) {
-        app_install->WakeCandidateDone();
+        app_install->FetchPolicies();
       },
       update_service_internal, base::WrapRefCounted(this)));
 }
 
 void AppInstall::FetchPolicies() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1297163) - encapsulate the reinitialization of the
-  // proxy server instance to avoid this special case.
-  update_service_ = CreateUpdateServiceProxy(
-      updater_scope(), external_constants_->OverinstallTimeout());
-#endif
 
   update_service_->FetchPolicies(base::BindOnce(
       [](scoped_refptr<AppInstall> app_install, int result) {

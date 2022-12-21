@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 
 // Struct containing the information required to register an application with
 // the updater. Passed from client to server during RegisterApp and Install.
-struct RegistrationRequest {
+[Stable] struct RegistrationRequest {
   // Application ID of the app.
   string app_id;
 
@@ -40,13 +40,15 @@ struct RegistrationRequest {
 
 // Struct containing details on the state of an update. It is passed
 // periodically from the server to the client via the StateChangeObserver.
-struct UpdateState {
+[Stable] struct UpdateState {
   // Possible states for updating an app. Add new values at the end of
   // the definition, and do not mutate the existing values.
+  [Stable, Extensible]
   enum State {
     // This value represents the absence of a state. No update request has
-    // yet been issued.
-    kUnknown = 0,
+    // yet been issued. Also used if the remote transmits a state this version
+    // of the app does not know about.
+    [Default] kUnknown = 0,
 
     // This update has not been started, but has been requested.
     kNotStarted,
@@ -102,7 +104,7 @@ struct UpdateState {
   string installer_cmd_line;
 };
 
-struct AppState {
+[Stable] struct AppState {
   string app_id;
   string version;
   string ap;
@@ -113,23 +115,25 @@ struct AppState {
 
 // The UpdateService is the cross-platform core of the updater.
 // All functions and callbacks must be called on the same sequence.
-interface UpdateService {
+[Stable] interface UpdateService {
   // Defines the behavior of the update stack for over-installs.
   // Typically, same versions updates are not allowed, in which case, the update
   // server replies with `update not available'. But there are cases, such as
   // re-installing an application again, when the server may respond with an
   // update.
+  [Stable, Extensible]
   enum PolicySameVersionUpdate {
     // The embedder does not allow over-installs with the same version. In this
     // case, the server is expected to return `update not available` when it
     // is queried for updates.
-    kNotAllowed = 0,
+    [Default] kNotAllowed = 0,
 
     // The embedder is capable of handling updates with the same version, and
     // the server may respond with such an update.
     kAllowed,
   };
 
+  [Stable, Extensible]
   enum Result {
     // Indicates that the service successfully handled the non-blocking function
     // invocation. Returning this value provides no indication regarding the
@@ -169,11 +173,19 @@ interface UpdateService {
 
     // Failed to run app installer.
     kInstallFailed,
+
+    // The server received the request and rejected the requestor as
+    // unauthorized to make it.
+    kPermissionDenied,
+
+    // The remote transmitted a value unknown to this version of the app.
+    [Default] kUnknown,
   };
 
   // Run time errors are organized in specific categories to indicate the
   // component where such errors occurred. The category appears as a numeric
-  // value in the telemetry pings. The values of this enum must be kept stable.
+  // value in the telemetry pings. The values of this enum must be kept Stable.
+  [Stable, Extensible]
   enum ErrorCategory {
     kNone = 0,
     kDownload,
@@ -181,12 +193,14 @@ interface UpdateService {
     kInstall,
     kService,
     kUpdateCheck,
+    [Default] kUnknown,
   };
 
   // Urgency of the update service invocation.
+  [Stable, Extensible]
   enum Priority {
     // The caller has not set a valid priority value.
-    kUnknown = 0,
+    [Default] kUnknown = 0,
 
     // The user is not waiting for this update.
     kBackground,
@@ -197,32 +211,32 @@ interface UpdateService {
 
   // Returns the version of the active updater. The version object is invalid
   // if an error (including timeout) occurs.
-  GetVersion() => (string version);
+  GetVersion@0() => (string version);
 
   // Fetches policies from device management.
-  FetchPolicies() => (int32 result);
+  FetchPolicies@1() => (int32 result);
 
   // Registers given request to the updater.
-  RegisterApp(RegistrationRequest request) => (int32 result);
+  RegisterApp@2(RegistrationRequest request) => (int32 result);
 
   // Gets state of all registered apps.
-  GetAppStates() => (array<AppState> app_states);
+  GetAppStates@3() => (array<AppState> app_states);
 
   // Runs periodic tasks such as checking for uninstallation of registered
   // applications or doing background updates for registered applications.
-  RunPeriodicTasks() => ();
+  RunPeriodicTasks@4() => ();
 
   // Initiates an update check for all registered applications. Receives state
   // change notifications through the `state_change_observer`. Responds once
   // the operation is complete.
-  UpdateAll() =>
+  UpdateAll@5() =>
     (pending_receiver<StateChangeObserver> observer);
 
   // Updates specified product. This update may be on-demand.
   //
   // Response:
   //    The final result from the update engine.
-  Update(
+  Update@6(
     // ID of app to update.
     string app_id,
 
@@ -240,7 +254,7 @@ interface UpdateService {
   //
   // Response:
   //    The final result from the update engine.
-  Install(
+  Install@7(
     // Registration data about the app.
     RegistrationRequest registration,
 
@@ -261,13 +275,13 @@ interface UpdateService {
   //
   // Args:
   //   `app_id`: ID of the product to cancel installs of.
-  CancelInstalls(string app_id);
+  CancelInstalls@8(string app_id);
 
   // Install an app by running its installer.
   //
   // Result:
   //    The final result from the update engine.
-  RunInstaller(
+  RunInstaller@9(
     // `app_id`: ID of app to install.
     string app_id,
 
@@ -288,11 +302,11 @@ interface UpdateService {
 
 // Callback interface for repeated state change notifications produced by
 // methods of the UpdateService interface.
-interface StateChangeObserver {
+[Stable] interface StateChangeObserver {
   // Repeated state change callback.
   // state: the new state of this update request.
-  OnStateChange(UpdateState state);
+  OnStateChange@0(UpdateState state);
 
   // A callback to be run with the final result of the operation.
-  OnComplete(UpdateService.Result result);
+  OnComplete@1(UpdateService.Result result);
 };

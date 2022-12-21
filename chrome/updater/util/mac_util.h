@@ -30,11 +30,16 @@ absl::optional<base::FilePath> GetApplicationSupportDirectory(
 // the shim installed by this updater or a Keystone ksadmin.
 absl::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope);
 
+base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName(UpdaterScope scope);
+
 // Removes the Launchd job with the given 'name'.
 bool RemoveJobFromLaunchd(UpdaterScope scope,
                           Launchd::Domain domain,
                           Launchd::Type type,
                           base::ScopedCFTypeRef<CFStringRef> name);
+
+// Recursively remove quarantine attributes on the path.
+bool RemoveQuarantineAttributes(const base::FilePath& path);
 
 }  // namespace updater
 

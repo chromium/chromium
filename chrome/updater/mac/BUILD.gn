@@ -15,6 +15,7 @@ group("mac") {
   deps = [
     ":browser_install_script",
     ":launcher",
+    ":launcher_test",
     ":privileged_helper",
     ":updater_bundle",
     ":updater_bundle_test",
@@ -61,7 +62,7 @@ mac_app_bundle("updater_bundle_test") {
   deps = [
     ":keystone_agent_bundle_resource_executable",
     ":keystone_agent_bundle_resource_plist",
-    ":updater_bundle_helpers",
+    ":updater_bundle_helpers_test",
     ":updater_bundle_keystone_executable",
     ":updater_bundle_keystone_helpers",
     ":updater_bundle_keystone_plist",
@@ -235,7 +236,39 @@ executable("launcher") {
 
   if (is_asan) {
     # ASAN injects a dylib that we package in ../MacOS.
-    ldflags += [ "-Wl,-rpath,@executable_path/../MacOS" ]
+    ldflags += [
+      "-Wl,-rpath,@executable_path/../MacOS",
+      "-Wl,-rpath,@executable_path/${chrome_version_full}/${updater_product_full_name}.app/Contents/MacOS",
+    ]
+  }
+}
+
+executable("launcher_test") {
+  output_name = "launcher_test"
+  sources = [ "launcher_main.cc" ]
+
+  deps = [
+    ":updater_plist",
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_test",
+  ]
+
+  inputs = [ "$target_gen_dir/updater_plist_tweaked.plist" ]
+
+  ldflags = [
+    "-sectcreate",
+    "__TEXT",
+    "__info_plist",
+    rebase_path(inputs[0], root_out_dir),
+  ]
+
+  if (is_asan) {
+    # ASAN injects a dylib that we package in ../MacOS.
+    ldflags += [
+      "-Wl,-rpath,@executable_path/../MacOS",
+      "-Wl,-rpath,@executable_path/${chrome_version_full}/${updater_product_full_name}_test.app/Contents/MacOS",
+    ]
   }
 }
 
@@ -249,6 +282,7 @@ source_set("ksadmin_lib") {
     "//base",
     "//chrome/updater:base_app",
     "//chrome/updater:ks_ticket",
+    "//chrome/updater:public_sources",
     "//chrome/updater:version_header",
   ]
 
@@ -389,6 +423,13 @@ bundle_data("updater_bundle_helpers") {
   outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
 
   public_deps = [ ":launcher" ]
+}
+
+bundle_data("updater_bundle_helpers_test") {
+  sources = [ "$root_out_dir/launcher_test" ]
+  outputs = [ "{{bundle_contents_dir}}/Helpers/launcher" ]
+
+  public_deps = [ ":launcher_test" ]
 }
 
 if (!is_component_build && enable_dsyms) {

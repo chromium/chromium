@@ -10,6 +10,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/updater/app/server/posix/update_service_internal_stub.h"
+#include "chrome/updater/app/server/posix/update_service_stub.h"
+#include "chrome/updater/posix/setup.h"
 
 namespace updater {
 
@@ -41,6 +43,41 @@ void AppServerPosix::AcknowledgeTaskCompletion() {
         FROM_HERE, base::BindOnce(&AppServerPosix::Shutdown, this, 0));
   }
   VLOG(2) << "Completing task, " << tasks_running_ << " tasks running";
+}
+
+void AppServerPosix::UninstallSelf() {
+  UninstallCandidate(updater_scope());
+}
+
+void AppServerPosix::Uninitialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // These delegates need to have a reference to the AppServer. To break the
+  // circular reference, we need to reset them.
+  active_duty_stub_.reset();
+  active_duty_internal_stub_.reset();
+
+  AppServer::Uninitialize();
+}
+
+void AppServerPosix::ActiveDutyInternal(
+    scoped_refptr<UpdateServiceInternal> update_service_internal) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  active_duty_internal_stub_ = std::make_unique<UpdateServiceInternalStub>(
+      std::move(update_service_internal), updater_scope(),
+      base::BindRepeating(&AppServerPosix::TaskStarted, this),
+      base::BindRepeating(&AppServerPosix::TaskCompleted, this));
+}
+
+void AppServerPosix::ActiveDuty(scoped_refptr<UpdateService> update_service) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  active_duty_stub_ = std::make_unique<UpdateServiceStub>(
+      std::move(update_service), updater_scope(),
+      base::BindRepeating(&AppServerPosix::TaskStarted, this),
+      base::BindRepeating(&AppServerPosix::TaskCompleted, this));
+}
+
+scoped_refptr<App> MakeAppServer() {
+  return base::MakeRefCounted<AppServerPosix>();
 }
 
 }  // namespace updater

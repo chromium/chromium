@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/app/server/posix/update_service_internal_stub.h"
+#include "chrome/updater/ipc/ipc_security.h"
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -11,7 +11,7 @@
 
 namespace updater {
 
-bool ConnectionHasSamePrivilege(
+bool IsConnectionTrusted(
     const named_mojo_ipc_server::ConnectionInfo& connector) {
   return connector.credentials.uid == geteuid();
 }

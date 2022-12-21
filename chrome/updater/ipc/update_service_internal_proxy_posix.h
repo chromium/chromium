@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/updater/app/server/posix/mojom/updater_service_internal.mojom.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
@@ -47,6 +48,7 @@ class UpdateServiceInternalProxy : public UpdateServiceInternal {
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<mojom::UpdateServiceInternal> remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WeakPtrFactory<UpdateServiceInternalProxy> weak_factory_{this};
 };
 
 }  // namespace updater

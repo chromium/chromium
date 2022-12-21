@@ -661,11 +661,6 @@ void ExpectCandidateUninstalled(UpdaterScope scope) {
                     CheckInstallationVersions::kCheckSxSOnly);
 }
 
-void ExpectActiveUpdater(UpdaterScope scope) {
-  CheckInstallation(scope, CheckInstallationStatus::kCheckIsInstalled,
-                    CheckInstallationVersions::kCheckActiveAndSxS);
-}
-
 void Uninstall(UpdaterScope scope) {
   // Note: "updater.exe --uninstall" is run from the build dir, not the install
   // dir, because it is useful for tests to be able to run it to clean the

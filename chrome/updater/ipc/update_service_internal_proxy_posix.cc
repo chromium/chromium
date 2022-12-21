@@ -98,16 +98,16 @@ UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
     : scope_(scope) {}
 
 void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
   remote_->Run(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       OnCurrentSequence(std::move(callback))));
 }
 
 void UpdateServiceInternalProxy::Hello(base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
   remote_->Hello(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       OnCurrentSequence(std::move(callback))));
@@ -159,8 +159,11 @@ void UpdateServiceInternalProxy::OnConnected(
   }
 
   connection_ = std::move(connection);
-  remote_.set_disconnect_handler(
-      base::BindOnce(&UpdateServiceInternalProxy::OnDisconnected, this));
+
+  // A weak pointer is used here to prevent remote_ from forming a reference
+  // cycle with this object.
+  remote_.set_disconnect_handler(base::BindOnce(
+      &UpdateServiceInternalProxy::OnDisconnected, weak_factory_.GetWeakPtr()));
 }
 
 scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(

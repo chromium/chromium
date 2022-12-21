@@ -67,8 +67,6 @@ class AppInstall : public App {
 
   void WakeCandidate();
 
-  void WakeCandidateDone();
-
   void FetchPolicies();
 
   void RegisterUpdater();

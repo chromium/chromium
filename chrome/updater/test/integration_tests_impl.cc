@@ -359,14 +359,9 @@ void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
   // Find the active version.
   base::Version active_version;
   {
-    scoped_refptr<UpdateService> service = CreateUpdateServiceProxy(scope);
-    base::RunLoop loop;
-    service->GetVersion(base::BindLambdaForTesting(
-        [&loop, &active_version](const base::Version& version) {
-          active_version = version;
-          loop.Quit();
-        }));
-    loop.Run();
+    scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(scope);
+    ASSERT_NE(prefs, nullptr) << "Failed to acquire GlobalPrefs.";
+    active_version = base::Version(prefs->GetActiveVersion());
   }
   ASSERT_TRUE(active_version.IsValid());
 

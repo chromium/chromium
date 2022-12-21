@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_LINUX_H_
-#define CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_LINUX_H_
+#ifndef CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_POSIX_H_
+#define CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_POSIX_H_
 
 #include <memory>
 
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "chrome/updater/app/server/posix/mojom/updater_service.mojom-forward.h"
+#include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
@@ -21,20 +23,21 @@ class Version;
 
 namespace mojo {
 class IsolatedConnection;
-}
+class PlatformChannelEndpoint;
+}  // namespace mojo
 
 namespace updater {
 
-class UpdateServiceProxyImpl;
-enum class UpdaterScope;
 struct RegistrationRequest;
 
-// All functions and callbacks must be called on the same sequence.
+// UpdateServiceProxy is an UpdateService that connects to the active updater
+// instance server and runs its implementation of UpdateService methods. All
+// functions and callbacks must be called on the same sequence.
 class UpdateServiceProxy : public UpdateService {
  public:
   // Create an UpdateServiceProxy which is not bound to a remote. It will search
   // for and establish a connection in a background sequence.
-  explicit UpdateServiceProxy(UpdaterScope scope);
+  UpdateServiceProxy(UpdaterScope scope, const base::TimeDelta& timeout);
 
   // Create an UpdateServiceProxy bound to the provided Mojo remote. The
   // lifetime of the connection to the remote process is handled by
@@ -79,17 +82,22 @@ class UpdateServiceProxy : public UpdateService {
 
  private:
   ~UpdateServiceProxy() override;
+  void OnConnected(mojo::PendingReceiver<mojom::UpdateService> pending_receiver,
+                   absl::optional<mojo::PlatformChannelEndpoint> endpoint);
+  void OnDisconnected();
   void EnsureConnecting();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  scoped_refptr<UpdateServiceProxyImpl> impl_;
+  const UpdaterScope scope_;
+  base::TimeDelta get_version_timeout_;
+  std::unique_ptr<mojo::IsolatedConnection> connection_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::Remote<mojom::UpdateService> remote_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool connecting_ = false;
+  base::WeakPtrFactory<UpdateServiceProxy> weak_factory_{this};
 };
-
-scoped_refptr<UpdateService> CreateUpdateServiceProxy(
-    UpdaterScope scope,
-    std::unique_ptr<mojo::IsolatedConnection> connection,
-    mojo::Remote<mojom::UpdateService> remote);
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_LINUX_H_
+#endif  // CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_POSIX_H_

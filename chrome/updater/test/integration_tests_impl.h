@@ -90,10 +90,8 @@ void ExpectInstalled(UpdaterScope scope);
 // Installs the updater.
 void Install(UpdaterScope scope);
 
-// Expects that the updater is installed on the system and the launchd tasks
-// are updated correctly.
-void ExpectActiveUpdater(UpdaterScope scope);
-
+// Expects that the updater is installed on the system and the specified
+// version is active.
 void ExpectVersionActive(UpdaterScope scope, const std::string& version);
 void ExpectVersionNotActive(UpdaterScope scope, const std::string& version);
 

@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_APP_SERVER_LINUX_UPDATE_SERVICE_STUB_H_
-#define CHROME_UPDATER_APP_SERVER_LINUX_UPDATE_SERVICE_STUB_H_
+#ifndef CHROME_UPDATER_APP_SERVER_POSIX_UPDATE_SERVICE_STUB_H_
+#define CHROME_UPDATER_APP_SERVER_POSIX_UPDATE_SERVICE_STUB_H_
 
-#include "base/functional/callback_forward.h"
 #include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
@@ -60,14 +62,15 @@ class UpdateServiceStub : public mojom::UpdateService {
                     RunInstallerCallback callback) override;
 
  private:
-  void OnClientDisconnected();
-
+  std::unique_ptr<mojom::UpdateService> filter_;
   named_mojo_ipc_server::NamedMojoIpcServer<mojom::UpdateService> server_;
   scoped_refptr<updater::UpdateService> impl_;
   base::RepeatingClosure task_start_listener_;
   base::RepeatingClosure task_end_listener_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_APP_SERVER_LINUX_UPDATE_SERVICE_STUB_H_
+#endif  // CHROME_UPDATER_APP_SERVER_POSIX_UPDATE_SERVICE_STUB_H_

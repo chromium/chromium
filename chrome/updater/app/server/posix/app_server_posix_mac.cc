@@ -1,0 +1,28 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "chrome/updater/app/server/posix/app_server_posix.h"
+
+#include "base/callback.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/mac/setup/keystone.h"
+#include "chrome/updater/posix/setup.h"
+#include "chrome/updater/registration_data.h"
+
+namespace updater {
+
+bool AppServerPosix::SwapInNewVersion() {
+  return PromoteCandidate(updater_scope()) == kErrorOk;
+}
+
+bool AppServerPosix::MigrateLegacyUpdaters(
+    base::RepeatingCallback<void(const RegistrationRequest&)>
+        register_callback) {
+  // TODO(crbug.com/1250524): This must not run concurrently with Keystone.
+  MigrateKeystoneTickets(updater_scope(), register_callback);
+
+  return true;
+}
+
+}  // namespace updater

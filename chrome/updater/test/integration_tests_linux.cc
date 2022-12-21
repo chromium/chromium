@@ -85,14 +85,6 @@ void Uninstall(UpdaterScope scope) {
   EXPECT_EQ(exit_code, 0);
 }
 
-void ExpectActiveUpdater(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetInstalledExecutablePath(scope);
-  EXPECT_TRUE(path);
-  if (path) {
-    EXPECT_TRUE(base::PathExists(*path));
-  }
-}
-
 void ExpectCandidateUninstalled(UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
   EXPECT_TRUE(path);

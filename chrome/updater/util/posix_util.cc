@@ -40,18 +40,4 @@ base::FilePath GetUpdaterFolderName() {
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
-absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
-  absl::optional<base::FilePath> path;
-#if BUILDFLAG(IS_LINUX)
-  path = GetApplicationDataDirectory(scope);
-#elif BUILDFLAG(IS_MAC)
-  path = GetLibraryFolderPath(scope);
-#endif
-  if (!path)
-    return absl::nullopt;
-  path = path->Append(GetUpdaterFolderName());
-
-  return path;
-}
-
 }  // namespace updater

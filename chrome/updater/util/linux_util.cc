@@ -11,6 +11,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -49,6 +50,21 @@ absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
   }
 
   return path->AppendASCII(kExecutableName);
+}
+
+absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
+  absl::optional<base::FilePath> path = GetApplicationDataDirectory(scope);
+  return path ? absl::optional<base::FilePath>(
+                    path->Append(GetUpdaterFolderName()))
+              : absl::nullopt;
+}
+
+absl::optional<base::FilePath> GetUpdateServiceLauncherPath(
+    UpdaterScope scope) {
+  // TODO(crbug.com/1400679): This is not correct, since this is always the
+  // executable associated with kUpdaterVersion, but a different version may be
+  // active.
+  return GetUpdaterExecutablePath(scope);
 }
 
 }  // namespace updater

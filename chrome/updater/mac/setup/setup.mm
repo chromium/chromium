@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -33,7 +32,6 @@
 #include "chrome/updater/crash_client.h"
 #include "chrome/updater/crash_reporter.h"
 #include "chrome/updater/mac/setup/keystone.h"
-#import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/setup.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -84,6 +82,11 @@ NSString* NSStringSessionType(UpdaterScope scope) {
   }
 }
 
+base::scoped_nsobject<NSString> GetWakeLaunchdLabel(UpdaterScope scope) {
+  return base::scoped_nsobject<NSString>(
+      base::mac::CFToNSCast(CopyWakeLaunchdName(scope).release()));
+}
+
 #pragma mark Setup
 bool CopyBundle(const base::FilePath& dest_path, UpdaterScope scope) {
   if (!base::PathExists(dest_path)) {
@@ -132,39 +135,6 @@ NSString* MakeProgramArgumentWithValue(const char* argument,
   return base::SysUTF8ToNSString(base::StrCat({"--", argument, "=", value}));
 }
 
-base::ScopedCFTypeRef<CFDictionaryRef> CreateServiceLaunchdPlist(
-    UpdaterScope scope,
-    const base::FilePath& updater_path) {
-  // See the man page for launchd.plist.
-  NSMutableArray<NSString*>* program_arguments =
-      [NSMutableArray<NSString*> array];
-  [program_arguments addObjectsFromArray:@[
-    base::SysUTF8ToNSString(updater_path.value()),
-    MakeProgramArgument(kServerSwitch),
-    MakeProgramArgumentWithValue(kServerServiceSwitch,
-                                 kServerUpdateServiceSwitchValue),
-    MakeProgramArgument(kEnableLoggingSwitch),
-    MakeProgramArgumentWithValue(kLoggingModuleSwitch,
-                                 kLoggingModuleSwitchValue)
-
-  ]];
-  if (IsSystemInstall(scope))
-    [program_arguments addObject:MakeProgramArgument(kSystemSwitch)];
-
-  NSDictionary<NSString*, id>* launchd_plist = @{
-    @LAUNCH_JOBKEY_LABEL : GetUpdateServiceLaunchdLabel(scope),
-    @LAUNCH_JOBKEY_PROGRAMARGUMENTS : program_arguments,
-    @LAUNCH_JOBKEY_MACHSERVICES : @{GetUpdateServiceMachName(scope) : @YES},
-    @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope),
-    @"AssociatedBundleIdentifiers" : @MAC_BUNDLE_IDENTIFIER_STRING
-  };
-
-  return base::ScopedCFTypeRef<CFDictionaryRef>(
-      base::mac::CFCast<CFDictionaryRef>(launchd_plist),
-      base::scoped_policy::RETAIN);
-}
-
 base::ScopedCFTypeRef<CFDictionaryRef> CreateWakeLaunchdPlist(
     UpdaterScope scope,
     const base::FilePath& updater_path) {
@@ -195,19 +165,6 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateWakeLaunchdPlist(
       base::scoped_policy::RETAIN);
 }
 
-bool CreateUpdateServiceLaunchdJobPlist(UpdaterScope scope,
-                                        const base::FilePath& updater_path) {
-  // We're creating directories and writing a file.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  base::ScopedCFTypeRef<CFDictionaryRef> plist(
-      CreateServiceLaunchdPlist(scope, updater_path));
-  return Launchd::GetInstance()->WritePlistToFile(
-      LaunchdDomain(scope), ServiceLaunchdType(scope),
-      CopyUpdateServiceLaunchdName(scope), plist);
-}
-
 bool CreateWakeLaunchdJobPlist(UpdaterScope scope,
                                const base::FilePath& updater_path) {
   // We're creating directories and writing a file.
@@ -220,40 +177,16 @@ bool CreateWakeLaunchdJobPlist(UpdaterScope scope,
       CopyWakeLaunchdName(scope), plist);
 }
 
-bool StartUpdateServiceVersionedLaunchdJob(
-    UpdaterScope scope,
-    const base::ScopedCFTypeRef<CFStringRef> name) {
-  return Launchd::GetInstance()->RestartJob(LaunchdDomain(scope),
-                                            ServiceLaunchdType(scope), name,
-                                            CFSessionType(scope));
-}
-
 bool StartUpdateWakeVersionedLaunchdJob(UpdaterScope scope) {
   return Launchd::GetInstance()->RestartJob(
       LaunchdDomain(scope), ServiceLaunchdType(scope),
       CopyWakeLaunchdName(scope), CFSessionType(scope));
 }
 
-bool StartLaunchdServiceJob(UpdaterScope scope) {
-  return StartUpdateServiceVersionedLaunchdJob(
-      scope, CopyUpdateServiceLaunchdName(scope));
-}
-
 bool RemoveServiceJobFromLaunchd(UpdaterScope scope,
                                  base::ScopedCFTypeRef<CFStringRef> name) {
   return RemoveJobFromLaunchd(scope, LaunchdDomain(scope),
                               ServiceLaunchdType(scope), name);
-}
-
-bool RemoveUpdateServiceJobFromLaunchd(
-    UpdaterScope scope,
-    base::ScopedCFTypeRef<CFStringRef> name) {
-  return RemoveServiceJobFromLaunchd(scope, name);
-}
-
-bool RemoveUpdateServiceJobFromLaunchd(UpdaterScope scope) {
-  return RemoveUpdateServiceJobFromLaunchd(scope,
-                                           CopyUpdateServiceLaunchdName(scope));
 }
 
 bool RemoveUpdateWakeJobFromLaunchd(UpdaterScope scope) {
@@ -271,28 +204,6 @@ bool DeleteDataFolder(UpdaterScope scope) {
 void CleanAfterInstallFailure(UpdaterScope scope) {
   // If install fails at any point, attempt to clean the install.
   DeleteCandidateInstallFolder(scope);
-}
-
-bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path,
-                                const base::FilePath& updater_executable_path) {
-  if (!base::PathExists(updater_bundle_path)) {
-    VPLOG(1) << "Updater bundle path not found: "
-             << updater_bundle_path.value();
-    return false;
-  }
-
-  if (!base::mac::RemoveQuarantineAttribute(updater_bundle_path)) {
-    VPLOG(1) << "Could not remove com.apple.quarantine for the bundle.";
-    return false;
-  }
-
-  if (!base::mac::RemoveQuarantineAttribute(updater_executable_path)) {
-    VPLOG(1) << "Could not remove com.apple.quarantine for the "
-                "executable.";
-    return false;
-  }
-
-  return true;
 }
 
 int DoSetup(UpdaterScope scope) {
@@ -314,7 +225,7 @@ int DoSetup(UpdaterScope scope) {
       GetUpdaterAppBundlePath(scope);
   if (!bundle_path)
     return kErrorFailedToGetAppBundlePath;
-  if (!RemoveQuarantineAttributes(*bundle_path, updater_executable_path)) {
+  if (!RemoveQuarantineAttributes(*bundle_path)) {
     VLOG(1) << "Couldn't remove quarantine bits for updater. This will likely "
                "cause Gatekeeper to show a prompt to the user.";
   }
@@ -362,21 +273,11 @@ int PromoteCandidate(UpdaterScope scope) {
     return kErrorFailedToCreateWakeLaunchdJobPlist;
   }
 
-  if (!CreateUpdateServiceLaunchdJobPlist(scope, *updater_executable_path)) {
-    return kErrorFailedToCreateUpdateServiceLaunchdJobPlist;
-  }
-
   if (!StartUpdateWakeVersionedLaunchdJob(scope))
     return kErrorFailedToStartLaunchdWakeJob;
 
-  if (!StartLaunchdServiceJob(scope))
-    return kErrorFailedToStartLaunchdActiveServiceJob;
-
   if (!InstallKeystone(scope))
     return kErrorFailedToInstallLegacyUpdater;
-
-  // Wait for launchd to finish the load operation for the update service.
-  base::PlatformThread::Sleep(base::Seconds(2));
 
   return kErrorOk;
 }
@@ -393,9 +294,6 @@ int Uninstall(UpdaterScope scope) {
   VLOG(1) << base::CommandLine::ForCurrentProcess()->GetCommandLineString()
           << " : " << __func__;
   int exit = UninstallCandidate(scope);
-
-  if (!RemoveUpdateServiceJobFromLaunchd(scope))
-    exit = kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd;
 
   if (!RemoveUpdateWakeJobFromLaunchd(scope))
     exit = kErrorFailedToRemoveWakeJobFromLaunchd;

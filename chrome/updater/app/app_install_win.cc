@@ -897,8 +897,4 @@ scoped_refptr<App> MakeAppInstall(bool is_silent_install) {
           is_silent_install));
 }
 
-void AppInstall::WakeCandidateDone() {
-  FetchPolicies();
-}
-
 }  // namespace updater

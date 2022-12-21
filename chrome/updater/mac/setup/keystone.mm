@@ -104,6 +104,11 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
                << "' to '" << dest_keystone_bundle_path.value() << "' failed.";
     return false;
   }
+
+  if (!RemoveQuarantineAttributes(dest_keystone_bundle_path)) {
+    VLOG(1) << "Couldn't remove quarantine bits for Keystone.";
+  }
+
   return true;
 }
 

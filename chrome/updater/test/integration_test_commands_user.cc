@@ -101,10 +101,6 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectVersionNotActive(updater_scope_, version);
   }
 
-  void ExpectActiveUpdater() const override {
-    updater::test::ExpectActiveUpdater(updater_scope_);
-  }
-
   void SetupFakeUpdaterHigherVersion() const override {
     updater::test::SetupFakeUpdaterHigherVersion(updater_scope_);
   }

@@ -22,7 +22,7 @@ bool DeleteCandidateInstallFolder(UpdaterScope scope);
 
 base::FilePath GetUpdaterFolderName();
 
-absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope);
+absl::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope);
 
 }  // namespace updater
 

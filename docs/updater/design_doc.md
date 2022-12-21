@@ -18,11 +18,12 @@ The updater is responsible for:
 *   Detecting the uninstallation of those applications, and automatically
     removing itself when all other applications have been uninstalled.
 
-The updater is written for Windows, macOS, Linux. The behavior of the updater
-is mostly platform-independent. However, platform-specific modules exist to
-translate cross-platform concepts (such as IPC interfaces) to platform-specific
-technologies (such as COM or XPC). Additionally, some updater behavior related
-to installs and uninstalls are tailored to platform conventions.
+The updater is written for Windows, macOS, and Linux. The behavior of the
+updater is mostly platform-independent. However, platform-specific modules
+exist to translate cross-platform concepts (such as IPC interfaces) to
+platform-specific technologies (such as COM). Additionally, some updater
+behavior related to installs and uninstalls are tailored to platform
+conventions.
 
 The updater is layered atop //components/update\_client, which implements a
 cross-platform mechanism to interact with an Omaha server for the purpose of
@@ -910,43 +911,30 @@ the updater that is present in the base install directory.
 TODO(crbug.com/1035895): Document usage of Keystone tickets on macOS.
 
 ### IPC
-On macOS, the updater uses both XPC (for non-side-by-side communications) and
-mojo (for communications within a single version of the program). XPC is the
-macOS native IPC system controlled by launchd. The main portion to utilize XPC
-is to create launch agent plists under `${HOME}/Library/LaunchAgents` for user
-level installs and launch daemon plists under `/Library/LaunchDaemons` for
-system level installs. XPC should be replaced with mojo in the future.
-
-The updater uses multiple layers of RPC to start-up separate processes that are
-responsible for different actions. Mojo is used for UpdateServiceInternal,
-while the `.service` plist covers UpdateService, which actually performs the
-update check and the update itself.
+On macOS, the updater uses mojo for IPC.
 
 Mojo does not orchestrate process launches and connections. When using mojo,
 the updater first attempts to connect to an existing process, and if this
 fails, launches the server process and then repeatedly retries to connect.
+During activation of a new instance of the updater, the updater creates a hard
+link to a simple launcher program outside the versioned directories. This
+program is used to launch UpdateService servers.
 
 Since Mojo's NamedPlatformChannel is not reusable for multiple connections, the
 updater relies on NamedMojoIpcServer's utilities to bootstrap mojo connections
 using multiple connections on a mach port, and for messages to that port to
 contain a reply port.
 
-The XPC interface is also utilized to communicate between the browser and the
-updater for on-demand updates. The protocol utilized by the browser has to be in
-sync with the updater's protocol, or else the XPC call will fail. The same
-`.service` launchd plist is utilized to communicate between the browser and the
-updater for the on-demand updates.
-
-Lastly, the XPC interface connects the browser and updater to promote the
-updater to a system-level updater. Promotion in this context means that the
-browser will install a system-level updater. This process entails the browser
-showing UI to the user on the About Page to prompt the user to promote. When the
-user accepts, the browser will then ask the user to elevate to allow root
-privileges so that a system-level updater can be installed. Inside of the
-browser, there exists a Privileged Helper tool executable. This is installed
-from the browser if promotion is selected via SMJobBless. When the Privileged
-Helper tool is installed, the browser can make an XPC connection to it and
-invoke a call to start the system-level updater installation process.
+The updater project provides a helper tool to the browser to promote an
+installation of the browser from user-scope to system-scope. This process
+entails the browser showing UI to the user on the About Page to prompt the user
+to promote. When the user accepts, the browser will then ask the user to
+elevate to allow root privileges so that a system-level updater can be
+installed. Inside of the browser, there exists a Privileged Helper tool
+executable. This is installed from the browser if promotion is selected via
+SMJobBless. When the Privileged Helper tool is installed, the browser can make
+an XPC connection to it and invoke a call to start the system-level updater
+installation process.
 
 ### Network
 On macOS, the updater uses NSURLSession to implement the network.

@@ -47,10 +47,8 @@
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/app/server/win/service_main.h"
 #include "chrome/updater/util/win_util.h"
-#elif BUILDFLAG(IS_MAC)
-#include "chrome/updater/app/server/mac/server.h"
-#elif BUILDFLAG(IS_LINUX)
-#include "chrome/updater/app/server/linux/server.h"
+#elif BUILDFLAG(IS_POSIX)
+#include "chrome/updater/app/server/posix/app_server_posix.h"
 #endif
 
 // Instructions For Windows.

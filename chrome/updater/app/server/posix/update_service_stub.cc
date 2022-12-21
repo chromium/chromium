@@ -2,21 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/app/server/linux/update_service_stub.h"
+#include "chrome/updater/app/server/posix/update_service_stub.h"
 
 #include <iterator>
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process_handle.h"
+#include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/version.h"
 #include "chrome/updater/app/server/posix/mojom/updater_service.mojom-forward.h"
-#include "chrome/updater/linux/ipc_constants.h"
+#include "chrome/updater/ipc/ipc_names.h"
+#include "chrome/updater/ipc/ipc_security.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_version.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
@@ -91,12 +96,110 @@ class StateChangeObserverWrapper
                         UpdateService::Callback>
 MakeStateChangeObserverCallbacks(
     std::unique_ptr<mojo::Remote<mojom::StateChangeObserver>> observer) {
-  scoped_refptr<StateChangeObserverWrapper> wrapper =
+  auto wrapper =
       base::MakeRefCounted<StateChangeObserverWrapper>(std::move(observer));
   return {
       base::BindRepeating(&StateChangeObserverWrapper::OnStateChange, wrapper),
       base::BindOnce(&StateChangeObserverWrapper::OnComplete, wrapper)};
 }
+
+// UpdateServiceStubUntrusted only forwards certain safe calls to its underlying
+// UpdateService.
+class UpdateServiceStubUntrusted : public mojom::UpdateService {
+ public:
+  // `impl` must outlive `this`, since it `impl` is saved as a raw pointer.
+  explicit UpdateServiceStubUntrusted(mojom::UpdateService* impl)
+      : impl_(impl) {}
+  UpdateServiceStubUntrusted(const UpdateServiceStubUntrusted&) = delete;
+  UpdateServiceStubUntrusted& operator=(const UpdateServiceStubUntrusted&) =
+      delete;
+  ~UpdateServiceStubUntrusted() override = default;
+
+  // updater::mojom::UpdateService
+  void GetVersion(GetVersionCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    impl_->GetVersion(std::move(callback));
+  }
+
+  void GetAppStates(GetAppStatesCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    impl_->GetAppStates(std::move(callback));
+  }
+
+  void Update(const std::string& app_id,
+              const std::string& install_data_index,
+              UpdateService::Priority priority,
+              UpdateService::PolicySameVersionUpdate policy_same_version_update,
+              UpdateCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    impl_->Update(app_id, install_data_index, priority,
+                  policy_same_version_update, std::move(callback));
+  }
+
+  // The rest of updater::mojom::UpdateService is rejected.
+  void FetchPolicies(FetchPoliciesCallback callback) override {
+    VLOG(1) << __func__ << " rejected (untrusted caller)";
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    std::move(callback).Run(kErrorPermissionDenied);
+  }
+
+  void RegisterApp(mojom::RegistrationRequestPtr request,
+                   RegisterAppCallback callback) override {
+    VLOG(1) << __func__ << " rejected (untrusted caller)";
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    std::move(callback).Run(kErrorPermissionDenied);
+  }
+
+  void RunPeriodicTasks(RunPeriodicTasksCallback callback) override {
+    VLOG(1) << __func__ << " rejected (untrusted caller)";
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    std::move(callback).Run();
+  }
+
+  void UpdateAll(UpdateAllCallback callback) override {
+    VLOG(1) << __func__ << " rejected (untrusted caller)";
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    mojo::Remote<mojom::StateChangeObserver> observer;
+    std::move(callback).Run(observer.BindNewPipeAndPassReceiver());
+    observer->OnComplete(mojom::UpdateService_Result::kPermissionDenied);
+  }
+
+  void Install(mojom::RegistrationRequestPtr registration,
+               const std::string& client_install_data,
+               const std::string& install_data_index,
+               UpdateService::Priority priority,
+               InstallCallback callback) override {
+    VLOG(1) << __func__ << " rejected (untrusted caller)";
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    mojo::Remote<mojom::StateChangeObserver> observer;
+    std::move(callback).Run(observer.BindNewPipeAndPassReceiver());
+    observer->OnComplete(mojom::UpdateService_Result::kPermissionDenied);
+  }
+
+  void CancelInstalls(const std::string& app_id) override {
+    VLOG(1) << __func__ << " rejected (untrusted caller)";
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  void RunInstaller(const std::string& app_id,
+                    const ::base::FilePath& installer_path,
+                    const std::string& install_args,
+                    const std::string& install_data,
+                    const std::string& install_settings,
+                    RunInstallerCallback callback) override {
+    VLOG(1) << __func__ << " rejected (untrusted caller)";
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    mojo::Remote<mojom::StateChangeObserver> observer;
+    std::move(callback).Run(observer.BindNewPipeAndPassReceiver());
+    observer->OnComplete(mojom::UpdateService_Result::kPermissionDenied);
+  }
+
+ private:
+  void OnClientDisconnected();
+
+  base::raw_ptr<mojom::UpdateService> impl_;
+  SEQUENCE_CHECKER(sequence_checker_);
+};
 
 }  // namespace
 
@@ -104,35 +207,31 @@ UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
                                      UpdaterScope scope,
                                      base::RepeatingClosure task_start_listener,
                                      base::RepeatingClosure task_end_listener)
-    : server_(
-          {.server_name = GetActiveDutySocketPath(scope).MaybeAsASCII(),
+    : filter_(std::make_unique<UpdateServiceStubUntrusted>(this)),
+      server_(
+          {.server_name = GetUpdateServiceServerName(scope),
            .message_pipe_id =
                named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
           base::BindRepeating(base::BindRepeating(
               [](mojom::UpdateService* interface,
-                 std::unique_ptr<
-                     named_mojo_ipc_server::ConnectionInfo> /* info */) {
-                // TODO(crbug.com/1378742): Implement some form of
-                // validation.
-                return interface;
+                 mojom::UpdateService* filter,
+                 std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> info) {
+                return IsConnectionTrusted(*info) ? interface : filter;
               },
-              this))),
+              this,
+              filter_.get()))),
       impl_(impl),
       task_start_listener_(task_start_listener),
       task_end_listener_(task_end_listener) {
   server_.set_disconnect_handler(base::BindRepeating(
-      &UpdateServiceStub::OnClientDisconnected, base::Unretained(this)));
+      []() { VLOG(1) << "UpdateService client disconnected."; }));
   server_.StartServer();
 }
 
 UpdateServiceStub::~UpdateServiceStub() = default;
 
-void UpdateServiceStub::OnClientDisconnected() {
-  VLOG(1) << "UpdateService receiver disconnected: "
-          << server_.current_receiver();
-}
-
 void UpdateServiceStub::GetVersion(GetVersionCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   impl_->GetVersion(
       base::BindOnce(
@@ -144,26 +243,29 @@ void UpdateServiceStub::GetVersion(GetVersionCallback callback) {
 }
 
 void UpdateServiceStub::FetchPolicies(FetchPoliciesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   impl_->FetchPolicies(std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::RegisterApp(mojom::RegistrationRequestPtr request,
                                     RegisterAppCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   impl_->RegisterApp(MakeRegistrationRequest(request),
                      std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::GetAppStates(GetAppStatesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   impl_->GetAppStates(
       base::BindOnce(
           [](const std::vector<updater::UpdateService::AppState>& app_states) {
             std::vector<mojom::AppStatePtr> app_states_mojom;
-            std::transform(app_states.begin(), app_states.end(),
-                           std::back_inserter(app_states_mojom),
-                           &MakeMojoAppState);
+            base::ranges::transform(app_states,
+                                    std::back_inserter(app_states_mojom),
+                                    &MakeMojoAppState);
             return app_states_mojom;
           })
           .Then(std::move(callback))
@@ -171,11 +273,13 @@ void UpdateServiceStub::GetAppStates(GetAppStatesCallback callback) {
 }
 
 void UpdateServiceStub::RunPeriodicTasks(RunPeriodicTasksCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   impl_->RunPeriodicTasks(std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::UpdateAll(UpdateAllCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   std::unique_ptr<mojo::Remote<mojom::StateChangeObserver>> observer =
       std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
@@ -193,9 +297,9 @@ void UpdateServiceStub::Update(
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
     UpdateCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
-  std::unique_ptr<mojo::Remote<mojom::StateChangeObserver>> observer =
-      std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
+  auto observer = std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
   std::move(callback).Run(observer->BindNewPipeAndPassReceiver());
 
   auto [state_change_callback, on_complete_callback] =
@@ -204,7 +308,7 @@ void UpdateServiceStub::Update(
                 static_cast<updater::UpdateService::Priority>(priority),
                 static_cast<updater::UpdateService::PolicySameVersionUpdate>(
                     policy_same_version_update),
-                std::move(state_change_callback),
+                state_change_callback,
                 std::move(on_complete_callback).Then(task_end_listener_));
 }
 
@@ -213,6 +317,7 @@ void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
                                 const std::string& install_data_index,
                                 UpdateService::Priority priority,
                                 InstallCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   std::unique_ptr<mojo::Remote<mojom::StateChangeObserver>> observer =
       std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
@@ -228,6 +333,7 @@ void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
 }
 
 void UpdateServiceStub::CancelInstalls(const std::string& app_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   impl_->CancelInstalls(app_id);
   task_end_listener_.Run();
@@ -239,6 +345,7 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
                                      const std::string& install_data,
                                      const std::string& install_settings,
                                      RunInstallerCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   std::unique_ptr<mojo::Remote<mojom::StateChangeObserver>> observer =
       std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();

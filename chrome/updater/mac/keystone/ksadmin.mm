@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/mac/setup/ks_tickets.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
@@ -260,6 +261,7 @@ class KSAdminApp : public App {
   const std::map<std::string, std::string> switches_;
   scoped_refptr<UpdateService> system_service_proxy_;
   scoped_refptr<UpdateService> user_service_proxy_;
+  ScopedIPCSupportWrapper ipc_support_;
 };
 
 KSTicket* KSAdminApp::TicketFromAppState(

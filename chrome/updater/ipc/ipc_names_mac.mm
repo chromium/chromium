@@ -14,9 +14,15 @@ namespace updater {
 
 mojo::NamedPlatformChannel::ServerName GetUpdateServiceInternalServerName(
     UpdaterScope scope) {
-  return base::StrCat(
-      {MAC_BUNDLE_IDENTIFIER_STRING ".update-internal.", kUpdaterVersion,
-       scope == UpdaterScope::kUser ? ".mach" : ".mach.system"});
+  return base::StrCat({MAC_BUNDLE_IDENTIFIER_STRING ".update-internal.",
+                       kUpdaterVersion,
+                       scope == UpdaterScope::kUser ? "" : ".system"});
+}
+
+mojo::NamedPlatformChannel::ServerName GetUpdateServiceServerName(
+    UpdaterScope scope) {
+  return base::StrCat({MAC_BUNDLE_IDENTIFIER_STRING ".update",
+                       scope == UpdaterScope::kUser ? "" : ".system"});
 }
 
 }  // namespace updater

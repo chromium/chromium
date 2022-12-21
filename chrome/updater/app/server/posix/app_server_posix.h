@@ -16,30 +16,44 @@
 namespace updater {
 
 class UpdateServiceInternalStub;
+class UpdateServiceStub;
 
 class AppServerPosix : public AppServer {
  public:
   AppServerPosix();
 
-  void TaskStarted();
-  void TaskCompleted();
-
  protected:
+  // Overrides of App.
   ~AppServerPosix() override;
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  std::unique_ptr<UpdateServiceInternalStub> active_duty_internal_stub_;
-
  private:
+  base::TimeDelta ServerKeepAlive();
+  void TaskStarted();
+  void TaskCompleted();
   void MarkTaskStarted();
   void AcknowledgeTaskCompletion();
 
+  // Overrides of AppServer.
+  void ActiveDuty(scoped_refptr<UpdateService> update_service) override;
+  void ActiveDutyInternal(
+      scoped_refptr<UpdateServiceInternal> update_service_internal) override;
+  bool SwapInNewVersion() override;
+  bool MigrateLegacyUpdaters(
+      base::RepeatingCallback<void(const RegistrationRequest&)>
+          register_callback) override;
+  void UninstallSelf() override;
+  void Uninitialize() override;
+
+  std::unique_ptr<UpdateServiceInternalStub> active_duty_internal_stub_;
+  std::unique_ptr<UpdateServiceStub> active_duty_stub_;
   int tasks_running_ = 0;
   // Task runner bound to the main sequence and the update service instance.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_ =
       base::SequencedTaskRunner::GetCurrentDefault();
+  SEQUENCE_CHECKER(sequence_checker_);
 };
+
+scoped_refptr<App> MakeAppServer();
 
 }  // namespace updater
 

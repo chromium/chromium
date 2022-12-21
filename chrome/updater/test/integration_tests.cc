@@ -159,8 +159,6 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectVersionNotActive(version);
   }
 
-  void ExpectActiveUpdater() { test_commands_->ExpectActiveUpdater(); }
-
 #if BUILDFLAG(IS_WIN)
   void ExpectInterfacesRegistered() {
     test_commands_->ExpectInterfacesRegistered();
@@ -357,10 +355,7 @@ class IntegrationTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment environment_;
-
-#if BUILDFLAG(IS_POSIX)
   ScopedIPCSupportWrapper ipc_support_;
-#endif
 };
 
 // The project's position is that component builds are not portable outside of
@@ -377,7 +372,6 @@ TEST_F(IntegrationTest, Install) {
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
-  ExpectActiveUpdater();
 #if BUILDFLAG(IS_WIN)
   // Tests the COM registration after the install. For now, tests that the
   // COM interfaces are registered, which is indirectly testing the type
@@ -389,7 +383,9 @@ TEST_F(IntegrationTest, Install) {
 
 // TODO(crbug.com/1398845) Enable test once SetupRealUpdaterLowerVersion
 // is implemented.
-#if !BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1339108): Re-enable once the CIPD build is rolled to a version
+// that uses mojo for IPC.
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC)
 TEST_F(IntegrationTest, OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   EXPECT_TRUE(WaitForUpdaterExit());
@@ -705,7 +701,6 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
-  ExpectActiveUpdater();
 
   // Running the uninstall command does not uninstall this instance of the
   // updater right after installing it (not enough server starts).
@@ -729,7 +724,6 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
 
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectVersionActive(kUpdaterVersion);
-  ExpectActiveUpdater();
   UninstallApp("test1");
 
   RunWake(0);
@@ -762,7 +756,6 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
-  ExpectActiveUpdater();
   UninstallApp("test1");
   RunWake(0);
   EXPECT_TRUE(WaitForUpdaterExit());
@@ -785,7 +778,6 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
-  ExpectActiveUpdater();
 
   InstallApp("test1");
   InstallApp("test2");
@@ -956,7 +948,6 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
   RunRecoveryComponent(appid, version);
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
-  ExpectActiveUpdater();
   ExpectAppVersion(appid, version);
   Uninstall();
 }
