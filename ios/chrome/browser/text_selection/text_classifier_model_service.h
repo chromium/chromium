@@ -40,6 +40,7 @@ class TextClassifierModelService
 
  private:
   friend class TextClassifierTest;
+  friend class InternalContextMenuProviderTest;
 
   FRIEND_TEST_ALL_PREFIXES(InternalContextMenuProviderTest,
                            TCUsedWhenTCModelAvailable);
