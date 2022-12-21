@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PIN_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PIN_MANAGER_H_
 
+#include <ostream>
 #include <utility>
 #include <vector>
 
@@ -36,6 +37,7 @@ extern const base::TimeDelta kPeriodicRemovalInterval;
 // Errors that are returned via the completion callback that indicate either
 // which stage the failure was at or whether the initial setup was a success.
 enum class SetupError {
+  kGeneric = -1,
   kSuccess = 0,
   kManagerDisabled = 1,
   kErrorCalculatingFreeDiskSpace = 2,
@@ -49,6 +51,9 @@ enum class SetupError {
   kErrorManagerStopped = 10,
 };
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
+std::ostream& operator<<(std::ostream& out, SetupError error);
+
 // The `DriveFsPinManager` first undergoes a setup phase, where it audits the
 // current disk space, pins all available files (disk space willing) then moves
 // to monitoring. This enum represents the various stages the setup goes
@@ -61,6 +66,9 @@ enum class SetupStage {
   kFinishedSetupWithError = 4,
   kFinishedSetup = 5,
 };
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
+std::ostream& operator<<(std::ostream& out, SetupStage stage);
 
 // A delegate to aid in mocking the free disk scenarios for testing, in non-test
 // scenarios this simply calls `base::SysInfo::AmountOfFreeDiskSpace`.
@@ -88,7 +96,7 @@ struct SetupProgress {
   int64_t pinned_disk_space = 0;
   int32_t batch_size = 50;
   SetupStage stage = SetupStage::kNotStarted;
-  SetupError error;
+  SetupError error = SetupError::kGeneric;
 
   // Sets the `SetupProgress` back to the initial values above.
   void Reset();

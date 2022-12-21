@@ -449,17 +449,22 @@ class DriveIntegrationService::PreferenceWatcher
       return;
     }
 
-    VLOG(1) << "Updating the bulk pinning state";
-    auto* pin_manager = integration_service_->GetDriveFsPinManager();
+    drivefs::pinning::DriveFsPinManager* const pin_manager =
+        integration_service_->GetDriveFsPinManager();
     if (!pin_manager) {
       return;
     }
-    bool enabled = pref_service_->GetBoolean(prefs::kDriveFsBulkPinningEnabled);
+
+    const bool enabled =
+        pref_service_->GetBoolean(prefs::kDriveFsBulkPinningEnabled);
     integration_service_->GetDriveFsPinManager()->SetBulkPinningEnabled(
         enabled);
+
     if (enabled) {
+      VLOG(1) << "Starting bulk pinning";
       pin_manager->Start(base::DoNothing());
     } else {
+      VLOG(1) << "Stopping bulk pinning";
       pin_manager->Stop();
     }
   }

@@ -56,6 +56,54 @@ class FreeDiskSpaceImpl : public FreeDiskSpaceDelegate {
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& out, const SetupError error) {
+  switch (error) {
+#define PRINT(s)         \
+  case SetupError::k##s: \
+    return out << #s;
+    PRINT(Generic)
+    PRINT(Success)
+    PRINT(ManagerDisabled)
+    PRINT(ErrorCalculatingFreeDiskSpace)
+    PRINT(ErrorRetrievingSearchResults)
+    PRINT(ErrorResultsReturnedInvalid)
+    PRINT(ErrorNotEnoughFreeSpace)
+    PRINT(ErrorRetrievingSearchResultsForPinning)
+    PRINT(ErrorResultsReturnedInvalidForPinning)
+    PRINT(ErrorFailedToPinItem)
+    PRINT(ErrorSearchQueryNotBound)
+    PRINT(ErrorManagerStopped)
+#undef PRINT
+  }
+
+  return out
+         << "SetupError("
+         << static_cast<std::underlying_type_t<drivefs::pinning::SetupError>>(
+                error)
+         << ")";
+}
+
+std::ostream& operator<<(std::ostream& out, const SetupStage stage) {
+  switch (stage) {
+#define PRINT(s)         \
+  case SetupStage::k##s: \
+    return out << #s;
+    PRINT(FinishedSetup)
+    PRINT(FinishedSetupWithError)
+    PRINT(CalculatedFreeLocalDiskSpace)
+    PRINT(CalculatedRequiredDiskSpace)
+    PRINT(NotStarted)
+    PRINT(Started)
+#undef PRINT
+  }
+
+  return out
+         << "SetupStage("
+         << static_cast<std::underlying_type_t<drivefs::pinning::SetupStage>>(
+                stage)
+         << ")";
+}
+
 // TODO(b/261530666): This was chosen arbitrarily, this should be experimented
 // with and potentially made dynamic depending on feedback of the in progress
 // queue.
@@ -179,8 +227,8 @@ void DriveFsPinManager::Start(
     return;
   }
 
-  VLOG(1) << "Caculating free disk space";
-  timer_.Begin();
+  VLOG(1) << "Calculating free space";
+  timer_ = base::ElapsedTimer();
   complete_callback_ = std::move(complete_callback);
   state_.progress.Reset();
   state_.progress.stage = SetupStage::kStarted;
@@ -199,7 +247,7 @@ void DriveFsPinManager::Stop() {
 
 void DriveFsPinManager::OnFreeDiskSpaceRetrieved(int64_t free_space) {
   if (free_space == -1) {
-    LOG(ERROR) << "Error calculating free disk space";
+    LOG(ERROR) << "Cannot calculate free space";
     std::move(complete_callback_)
         .Run(SetupError::kErrorCalculatingFreeDiskSpace);
     return;
@@ -210,8 +258,7 @@ void DriveFsPinManager::OnFreeDiskSpaceRetrieved(int64_t free_space) {
   NotifyProgress();
 
   VLOG(1) << "Starting to search for items to calculate required space";
-  VLOG(2) << "Free disk space in bytes: "
-          << state_.progress.available_disk_space;
+  VLOG(2) << "Free space: " << state_.progress.available_disk_space << " bytes";
   mojom::QueryParametersPtr query = CreateMyDriveQuery();
   drivefs_interface_->StartSearchQuery(
       search_query_.BindNewPipeAndPassReceiver(), std::move(query));
@@ -221,37 +268,42 @@ void DriveFsPinManager::OnFreeDiskSpaceRetrieved(int64_t free_space) {
 }
 
 void DriveFsPinManager::OnSearchResultForSizeCalculation(
-    drive::FileError error,
-    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+    const drive::FileError error,
+    const absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   if (error != drive::FILE_ERROR_OK) {
-    LOG(ERROR) << "Error retrieving search results for size calculation: "
-               << error;
+    LOG(ERROR) << "Cannot list files for size calculation: " << error;
     Complete(SetupError::kErrorRetrievingSearchResults);
     return;
   }
 
   if (!items.has_value()) {
-    LOG(ERROR) << "Items returned are invalid";
+    LOG(ERROR) << "Invalid item list";
     Complete(SetupError::kErrorResultsReturnedInvalid);
     return;
   }
 
   if (items.value().size() == 0) {
-    VLOG(1) << "Iterated all files and calculated "
-            << state_.progress.required_disk_space << " bytes required with "
-            << state_.progress.available_disk_space << " bytes available in "
-            << timer_.Elapsed().InMilliseconds() << "ms";
+    VLOG(1) << "Computed required space in "
+            << timer_.Elapsed().InMilliseconds() << " ms";
+    VLOG(1) << "Required space: " << state_.progress.required_disk_space
+            << " bytes";
+    VLOG(1) << "Free space: " << state_.progress.available_disk_space
+            << " bytes";
     StartBatchPinning();
     return;
   }
 
   VLOG(2) << "Iterating over " << items.value().size()
-          << " for space calculation";
-  for (const auto& item : items.value()) {
+          << " items for space calculation";
+  for (const drivefs::mojom::QueryItemPtr& item : items.value()) {
+    DCHECK(item);
+    DCHECK(item->metadata);
+
     if (item->metadata->pinned) {
-      VLOG(2) << "Item is already pinned, ignoring in space calculation";
+      VLOG(2) << "Skipped '" << item->path << "': Already pinned";
       continue;
     }
+
     state_.progress.required_disk_space += item->metadata->size;
   }
 
@@ -260,9 +312,10 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
   // identified.
   if (state_.progress.required_disk_space >=
       state_.progress.available_disk_space) {
-    LOG(ERROR) << "The required size (" << state_.progress.required_disk_space
-               << " bytes) exceeds the available free space ("
-               << state_.progress.available_disk_space << "bytes)";
+    LOG(ERROR) << "Not enough space: Required = "
+               << state_.progress.required_disk_space
+               << " bytes, Free = " << state_.progress.available_disk_space
+               << " bytes";
     Complete(SetupError::kErrorNotEnoughFreeSpace);
     return;
   }
@@ -317,20 +370,20 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     drive::FileError error,
     absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   if (error != drive::FILE_ERROR_OK) {
-    LOG(ERROR) << "Error retrieving search results to pin: " << error;
+    LOG(ERROR) << "Cannot list files to pin: " << error;
     Complete(SetupError::kErrorRetrievingSearchResultsForPinning);
     return;
   }
 
   if (!items.has_value()) {
-    LOG(ERROR) << "Items returned are invalid";
+    LOG(ERROR) << "Invalid item list";
     Complete(SetupError::kErrorResultsReturnedInvalidForPinning);
     return;
   }
 
   if (items.value().size() == 0) {
-    VLOG(1) << "Finished pinning all files in "
-            << timer_.Elapsed().InMilliseconds() << "ms";
+    VLOG(1) << "Pinned all files in " << timer_.Elapsed().InMilliseconds()
+            << " ms";
     Complete(SetupError::kSuccess);
     return;
   }
@@ -357,12 +410,16 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     return;
   }
 
-  for (const auto& item : items.value()) {
+  for (const drivefs::mojom::QueryItemPtr& item : items.value()) {
+    DCHECK(item);
+    const base::FilePath& path = item->path;
+
+    DCHECK(item->metadata);
     if (item->metadata->pinned) {
-      VLOG(2) << "Item is already pinned, ignoring when batch pinning";
+      VLOG(2) << "Skipped '" << path << "': Already pinned";
       continue;
     }
-    base::FilePath path(item->path);
+
     drivefs_interface_->SetPinned(
         path, /*pinned=*/true,
         base::BindOnce(&DriveFsPinManager::OnFilePinned,
@@ -373,9 +430,7 @@ void DriveFsPinManager::OnSearchResultsForPinning(
 void DriveFsPinManager::OnFilePinned(const std::string& path,
                                      drive::FileError status) {
   if (status != drive::FILE_ERROR_OK) {
-    LOG(ERROR) << "Failed pinning an item: " << status;
-    VLOG(1) << "Path that failed to pin: " << path << " with error "
-            << drive::FileErrorToString(status);
+    LOG(ERROR) << "Cannot pin '" << path << "': " << status;
     Complete(SetupError::kErrorFailedToPinItem);
     return;
   }
@@ -396,7 +451,7 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
     // `in_progress_items_` map to ensure any values that are small enough or
     // optimistically pinned get removed.
     if (cloned_item->state == mojom::ItemEvent::State::kCompleted) {
-      VLOG(2) << "Finished syncing " << cloned_item->path;
+      VLOG(2) << "Synced '" << cloned_item->path << "'";
       GetMetadataForPath(base::FilePath(cloned_item->path));
       continue;
     }
@@ -490,14 +545,14 @@ void DriveFsPinManager::OnMetadataRetrieved(const std::string path,
                                             drive::FileError error,
                                             mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK) {
-    LOG(ERROR) << "Failed to retrieve metadata: " << error;
+    LOG(ERROR) << "Cannot get metadata of '" << path << "': " << error;
     return;
   }
 
   if (metadata->available_offline || metadata->size == 0) {
-    VLOG(2) << "File " << path
-            << " has already been pinned or is a 0 byte file, removing from in "
-               "progress items";
+    VLOG_IF(2, metadata->available_offline)
+        << "Skipped '" << path << "': Already pinned";
+    VLOG_IF(2, metadata->size == 0) << "Skipped '" << path << "': Empty file";
     syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
         .WithArgs(std::move(path), metadata->size)
         .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,

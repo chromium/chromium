@@ -96,53 +96,11 @@ size_t LogMarkToLogLevelNameIndex(char mark) {
   }
 }
 
-std::string ToString(drivefs::pinning::SetupStage stage) {
-  switch (stage) {
-#define PRINT(s)                           \
-  case drivefs::pinning::SetupStage::k##s: \
-    return #s;
-    PRINT(FinishedSetup)
-    PRINT(FinishedSetupWithError)
-    PRINT(CalculatedFreeLocalDiskSpace)
-    PRINT(CalculatedRequiredDiskSpace)
-    PRINT(NotStarted)
-    PRINT(Started)
-#undef PRINT
-  }
-
+template <typename T>
+std::string ToString(const T x) {
   std::ostringstream oss;
-  oss << "SetupStage("
-      << static_cast<std::underlying_type_t<drivefs::pinning::SetupStage>>(
-             stage)
-      << ")";
-  return oss.str();
-}
-
-std::string ToString(drivefs::pinning::SetupError error) {
-  switch (error) {
-#define PRINT(s)                           \
-  case drivefs::pinning::SetupError::k##s: \
-    return #s;
-    PRINT(Success)
-    PRINT(ManagerDisabled)
-    PRINT(ErrorCalculatingFreeDiskSpace)
-    PRINT(ErrorRetrievingSearchResults)
-    PRINT(ErrorResultsReturnedInvalid)
-    PRINT(ErrorNotEnoughFreeSpace)
-    PRINT(ErrorRetrievingSearchResultsForPinning)
-    PRINT(ErrorResultsReturnedInvalidForPinning)
-    PRINT(ErrorFailedToPinItem)
-    PRINT(ErrorSearchQueryNotBound)
-    PRINT(ErrorManagerStopped)
-#undef PRINT
-  }
-
-  std::ostringstream oss;
-  oss << "SetupError("
-      << static_cast<std::underlying_type_t<drivefs::pinning::SetupError>>(
-             error)
-      << ")";
-  return oss.str();
+  oss << x;
+  return std::move(oss).str();
 }
 
 // Gets metadata of all files and directories in |root_path|
@@ -671,11 +629,10 @@ class DriveInternalsWebUIHandler
       setup_progress.Set("setupError", ToString(progress.error));
     }
     setup_progress.Set("availableDiskSpace",
-                       base::NumberToString(progress.available_disk_space));
+                       ToString(progress.available_disk_space));
     setup_progress.Set("requiredDiskSpace",
-                       base::NumberToString(progress.required_disk_space));
-    setup_progress.Set("pinnedDiskSpace",
-                       base::NumberToString(progress.pinned_disk_space));
+                       ToString(progress.required_disk_space));
+    setup_progress.Set("pinnedDiskSpace", ToString(progress.pinned_disk_space));
     MaybeCallJavascript("onBulkPinningProgress",
                         base::Value(std::move(setup_progress)));
   }
