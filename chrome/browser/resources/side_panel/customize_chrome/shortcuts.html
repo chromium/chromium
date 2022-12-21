@@ -1,14 +1,13 @@
 <style>
   #showShortcutsToggleContainer {
-    align-items: center;
     display: flex;
-    height: 40px;
-    margin-inline-start: 16px;
+    justify-content: space-between;
+    margin: 16px;
   }
 
   #showShortcutsToggleTitle {
     font-size: 13px;
-    margin-inline-end: 163px;
+    line-height: 20px;
   }
 
   #options {
@@ -20,39 +19,34 @@
     --iron-collapse-transition-duration: 300ms;
   }
 
-  hr {
-    background-color: var(--horizontal-rule-color);
-    border: none;
-    height: 1px;
-    margin-bottom: 16px;
-    margin-top: 16px;
-    width: 288px;
-  }
-
   #options {
-    margin-inline-start: 16px;
+    line-height: 20px;
+    margin: 0 16px;
   }
 
   cr-radio-group {
     --cr-radio-group-item-padding: 0px;
-    width: 288px;
+    margin-top: 16px;
+    width: 100%;
   }
 
   cr-radio-button {
     align-items: flex-end;
     flex-direction: column;
     float: right;
-    margin-inline-start: 16px;
   }
 
   .option-container {
-    height: 40px;
     margin-bottom: 16px;
     margin-inline-start: 24px;
   }
 
+  .option-label {
+    color: var(--cr-primary-text-color);
+  }
+
   .option-description {
-    color: var(--cr-secondary-text-color)
+    color: var(--cr-secondary-text-color);
   }
 </style>
 <div id="showShortcutsToggleContainer">
@@ -62,7 +56,6 @@
 </div>
 <div id="options">
   <iron-collapse opened="[[show_]]">
-    <hr>
     <cr-radio-group id="shortcutsRadioSelection" disabled="[[!show_]]"
       selected="[[shortcutsRadioSelection_(customLinksEnabled_)]]"
       on-selected-changed="onShortcutsRadioSelectionChanged_">
