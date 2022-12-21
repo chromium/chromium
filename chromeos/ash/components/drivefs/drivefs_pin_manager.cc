@@ -61,7 +61,6 @@ std::ostream& operator<<(std::ostream& out, const SetupError error) {
 #define PRINT(s)         \
   case SetupError::k##s: \
     return out << #s;
-    PRINT(Generic)
     PRINT(Success)
     PRINT(ManagerDisabled)
     PRINT(ErrorCalculatingFreeDiskSpace)
@@ -88,12 +87,12 @@ std::ostream& operator<<(std::ostream& out, const SetupStage stage) {
 #define PRINT(s)         \
   case SetupStage::k##s: \
     return out << #s;
-    PRINT(FinishedSetup)
-    PRINT(FinishedSetupWithError)
-    PRINT(CalculatedFreeLocalDiskSpace)
-    PRINT(CalculatedRequiredDiskSpace)
+    PRINT(Error)
     PRINT(NotStarted)
     PRINT(Started)
+    PRINT(CalculatedFreeLocalDiskSpace)
+    PRINT(CalculatedRequiredDiskSpace)
+    PRINT(FinishedSetup)
 #undef PRINT
   }
 
@@ -181,16 +180,9 @@ DriveFsPinManager::InProgressSyncingItems::GetUnstartedItems() {
   return unstarted_items;
 }
 
-void SetupProgress::Reset() {
-  required_disk_space = 0;
-  available_disk_space = 0;
-  pinned_disk_space = 0;
-  stage = SetupStage::kNotStarted;
-}
-
 bool ManagerState::SetupInProgress() {
   return progress.stage != SetupStage::kFinishedSetup &&
-         progress.stage != SetupStage::kFinishedSetupWithError &&
+         progress.stage != SetupStage::kError &&
          progress.stage != SetupStage::kNotStarted;
 }
 
@@ -334,7 +326,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
 void DriveFsPinManager::Complete(SetupError status) {
   state_.progress.stage = (status == SetupError::kSuccess)
                               ? SetupStage::kFinishedSetup
-                              : SetupStage::kFinishedSetupWithError;
+                              : SetupStage::kError;
   NotifyProgress();
   weak_ptr_factory_.InvalidateWeakPtrs();
   search_query_.reset();

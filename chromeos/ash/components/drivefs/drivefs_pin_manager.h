@@ -37,7 +37,6 @@ extern const base::TimeDelta kPeriodicRemovalInterval;
 // Errors that are returned via the completion callback that indicate either
 // which stage the failure was at or whether the initial setup was a success.
 enum class SetupError {
-  kGeneric = -1,
   kSuccess = 0,
   kManagerDisabled = 1,
   kErrorCalculatingFreeDiskSpace = 2,
@@ -59,12 +58,12 @@ std::ostream& operator<<(std::ostream& out, SetupError error);
 // to monitoring. This enum represents the various stages the setup goes
 // through.
 enum class SetupStage {
+  kError = -1,
   kNotStarted = 0,
   kStarted = 1,
   kCalculatedFreeLocalDiskSpace = 2,
   kCalculatedRequiredDiskSpace = 3,
-  kFinishedSetupWithError = 4,
-  kFinishedSetup = 5,
+  kFinishedSetup = 4,
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
@@ -96,10 +95,10 @@ struct SetupProgress {
   int64_t pinned_disk_space = 0;
   int32_t batch_size = 50;
   SetupStage stage = SetupStage::kNotStarted;
-  SetupError error = SetupError::kGeneric;
+  SetupError error = SetupError::kSuccess;
 
   // Sets the `SetupProgress` back to the initial values above.
-  void Reset();
+  void Reset() { *this = SetupProgress(); }
 };
 
 // The managers current state.

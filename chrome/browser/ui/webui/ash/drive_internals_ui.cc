@@ -624,10 +624,7 @@ class DriveInternalsWebUIHandler
       const drivefs::pinning::SetupProgress& progress) override {
     base::Value::Dict setup_progress;
     setup_progress.Set("stage", ToString(progress.stage));
-    if (progress.stage ==
-        drivefs::pinning::SetupStage::kFinishedSetupWithError) {
-      setup_progress.Set("setupError", ToString(progress.error));
-    }
+    setup_progress.Set("setupError", ToString(progress.error));
     setup_progress.Set("availableDiskSpace",
                        ToString(progress.available_disk_space));
     setup_progress.Set("requiredDiskSpace",
