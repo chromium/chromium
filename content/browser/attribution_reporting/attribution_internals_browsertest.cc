@@ -340,8 +340,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[4].children[1]?.innerText === "Rejected: insufficient source capacity" &&
           table.children[5].children[1]?.innerText === "Rejected: insufficient unique destination capacity" &&
           table.children[6].children[1]?.innerText === "Rejected: excessive reporting origins" &&
-          table.children[5].children[17]?.innerText === "disabled" &&
-          table.children[6].children[17]?.innerText === "enabled") {
+          table.children[0].children[17]?.innerText === "N/A" &&
+          table.children[5].children[17]?.innerText === "Disabled" &&
+          table.children[6].children[17]?.innerText === "Enabled") {
         obs.disconnect();
         document.title = $3;
       }

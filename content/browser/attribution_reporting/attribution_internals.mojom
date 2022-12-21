@@ -114,7 +114,13 @@ struct WebUISource {
   map<string, string> aggregation_keys;
   uint64 aggregatable_budget_consumed;
   array<uint64> aggregatable_dedup_keys;
-  bool debug_reporting_enabled;
+
+  enum DebugReporting {
+    kDisabled,
+    kEnabled,
+    kNotApplicable,
+  };
+  DebugReporting debug_reporting_enabled;
 
   // Union of `StorableSource::Result` and `StoredSource::AttributionLogic`.
   enum Attributability {
