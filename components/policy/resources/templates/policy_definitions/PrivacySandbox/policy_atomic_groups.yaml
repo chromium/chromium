@@ -1,0 +1,7 @@
+PrivacySandbox:
+  caption: Privacy sandbox settings controls
+  policies:
+  - PrivacySandboxPromptEnabled
+  - PrivacySandboxAdTopicsEnabled
+  - PrivacySandboxSiteEnabledAdsEnabled
+  - PrivacySandboxAdMeasurementEnabled
