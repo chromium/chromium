@@ -106,6 +106,9 @@ UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
       }
       base::UnguessableToken token =
           base::UnguessableToken::Deserialize(high, low);
+      if (token.is_empty()) {
+        continue;
+      }
 
       base::Time creation_date = statement.ColumnTime(1);
       base::Time modification_date = statement.ColumnTime(2);
