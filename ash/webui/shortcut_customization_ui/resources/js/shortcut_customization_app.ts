@@ -13,6 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorEditDialogElement} from './accelerator_edit_dialog.js';
@@ -48,11 +49,11 @@ const ShortcutCustomizationAppElementBase = I18nMixin(PolymerElement);
 
 export class ShortcutCustomizationAppElement extends
     ShortcutCustomizationAppElementBase {
-  static get is() {
+  static get is(): string {
     return 'shortcut-customization-app';
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       dialogShortcutTitle_: {
         type: String,
@@ -61,7 +62,7 @@ export class ShortcutCustomizationAppElement extends
 
       dialogAccelerators_: {
         type: Array,
-        value: () => {},
+        value: () => [],
       },
 
       dialogAction_: {
@@ -96,7 +97,7 @@ export class ShortcutCustomizationAppElement extends
   private acceleratorLookupManager_: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.fetchAccelerators_();
@@ -106,7 +107,7 @@ export class ShortcutCustomizationAppElement extends
         'request-update-accelerator', this.onRequestUpdateAccelerators_);
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener('show-edit-dialog', this.showDialog_);
     this.removeEventListener('edit-dialog-closed', this.onDialogClosed_);
@@ -114,13 +115,13 @@ export class ShortcutCustomizationAppElement extends
         'request-update-accelerator', this.onRequestUpdateAccelerators_);
   }
 
-  private fetchAccelerators_() {
+  private fetchAccelerators_(): void {
     // Kickoff fetching accelerators by first fetching the accelerator configs.
     this.shortcutProvider_.getAccelerators().then(
         ({config}) => this.onAcceleratorConfigFetched_(config));
   }
 
-  private onAcceleratorConfigFetched_(config: MojoAcceleratorConfig) {
+  private onAcceleratorConfigFetched_(config: MojoAcceleratorConfig): void {
     this.acceleratorLookupManager_.setAcceleratorLookup(config);
     // After fetching the config infos, fetch the layout infos next.
     this.shortcutProvider_.getAcceleratorLayoutInfos().then(
@@ -148,7 +149,7 @@ export class ShortcutCustomizationAppElement extends
     this.$.navigationPanel.addSelectors(pages);
   }
 
-  private showDialog_(e: ShowEditDialogEvent) {
+  private showDialog_(e: ShowEditDialogEvent): void {
     this.dialogShortcutTitle_ = e.detail.description;
     this.dialogAccelerators_ = e.detail.accelerators;
     this.dialogAction_ = e.detail.action;
@@ -156,13 +157,13 @@ export class ShortcutCustomizationAppElement extends
     this.showEditDialog_ = true;
   }
 
-  private onDialogClosed_() {
+  private onDialogClosed_(): void {
     this.showEditDialog_ = false;
     this.dialogShortcutTitle_ = '';
     this.dialogAccelerators_ = [];
   }
 
-  private onRequestUpdateAccelerators_(e: RequestUpdateAcceleratorEvent) {
+  private onRequestUpdateAccelerators_(e: RequestUpdateAcceleratorEvent): void {
     this.$.navigationPanel.notifyEvent('updateSubsections');
     const updatedAccels =
         this.acceleratorLookupManager_
@@ -178,27 +179,27 @@ export class ShortcutCustomizationAppElement extends
         .updateDialogAccelerators(updatedAccels as AcceleratorInfo[]);
   }
 
-  protected onRestoreAllDefaultClicked_() {
+  protected onRestoreAllDefaultClicked_(): void {
     this.showRestoreAllDialog_ = true;
   }
 
-  protected onCancelRestoreButtonClicked_() {
+  protected onCancelRestoreButtonClicked_(): void {
     this.closeRestoreAllDialog_();
   }
 
-  protected onConfirmRestoreButtonClicked_() {
+  protected onConfirmRestoreButtonClicked_(): void {
     // TODO(jimmyxgong): Implement this function.
   }
 
-  protected closeRestoreAllDialog_() {
+  protected closeRestoreAllDialog_(): void {
     this.showRestoreAllDialog_ = false;
   }
 
-  protected shouldHideRestoreAllButton_() {
+  protected shouldHideRestoreAllButton_(): boolean {
     return isCustomizationDisabled();
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 }

@@ -5,6 +5,7 @@
 import './input_key.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
@@ -58,20 +59,18 @@ function getModifierString(modifier: Modifier): string {
  * TODO(jimmyxgong): Implement the edit mode.
  */
 export class AcceleratorViewElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'accelerator-view';
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       acceleratorInfo: {
         type: Object,
-        value: () => {},
       },
 
       pendingAcceleratorInfo_: {
         type: Object,
-        value: () => {},
       },
 
       acceleratorOnHold_: {
@@ -150,7 +149,7 @@ export class AcceleratorViewElement extends PolymerElement {
     return modifierStrings;
   }
 
-  protected onViewStateChanged_() {
+  protected onViewStateChanged_(): void {
     if (this.viewState !== ViewState.VIEW) {
       this.registerKeyEventListeners_();
       return;
@@ -158,7 +157,7 @@ export class AcceleratorViewElement extends PolymerElement {
     this.unregisterKeyEventListeners_();
   }
 
-  private registerKeyEventListeners_() {
+  private registerKeyEventListeners_(): void {
     this.addEventListener('keydown', (e) => this.onKeyDown_(e));
     this.addEventListener('keyup', (e) => this.onKeyUp_(e));
     this.addEventListener('focus', () => this.startCapture_());
@@ -167,7 +166,7 @@ export class AcceleratorViewElement extends PolymerElement {
     this.$.container.focus();
   }
 
-  private unregisterKeyEventListeners_() {
+  private unregisterKeyEventListeners_(): void {
     this.removeEventListener('keydown', (e) => this.onKeyDown_(e));
     this.removeEventListener('keyup', (e) => this.onKeyUp_(e));
     this.removeEventListener('focus', () => this.startCapture_());
@@ -176,7 +175,7 @@ export class AcceleratorViewElement extends PolymerElement {
   }
 
 
-  private startCapture_() {
+  private startCapture_(): void {
     if (this.isCapturing_) {
       return;
     }
@@ -190,7 +189,7 @@ export class AcceleratorViewElement extends PolymerElement {
     }));
   }
 
-  private endCapture_() {
+  private endCapture_(): void {
     if (!this.isCapturing_) {
       return;
     }
@@ -207,17 +206,17 @@ export class AcceleratorViewElement extends PolymerElement {
     }));
   }
 
-  private onKeyDown_(e: KeyboardEvent) {
+  private onKeyDown_(e: KeyboardEvent): void {
     this.handleKey_(e);
   }
 
-  private onKeyUp_(e: KeyboardEvent) {
+  private onKeyUp_(e: KeyboardEvent): void {
     e.preventDefault();
     e.stopPropagation();
     // TODO(jimmyxgong): Check for errors e.g. accelerator conflicts.
   }
 
-  private handleKey_(e: KeyboardEvent) {
+  private handleKey_(e: KeyboardEvent): void {
     // While capturing, we prevent all events from bubbling, to prevent
     // shortcuts from executing and interrupting the input capture.
     e.preventDefault();
@@ -263,8 +262,8 @@ export class AcceleratorViewElement extends PolymerElement {
    * Checks that |pendingAccelerator_| is not a pre-existing shortcut. Sets the
    * error message if there is a conflict.
    */
-  private processPendingAccelerator_(pendingAccelInfo:
-                                         StandardAcceleratorInfo) {
+  private processPendingAccelerator_(pendingAccelInfo: StandardAcceleratorInfo):
+      void {
     // Reset status state when processing the new accelerator.
     this.statusMessage = '';
     this.hasError = false;
@@ -440,7 +439,7 @@ export class AcceleratorViewElement extends PolymerElement {
   }
 
   private requestUpdateAccelerator_(newAcceleratorInfo:
-                                        StandardAcceleratorInfo) {
+                                        StandardAcceleratorInfo): void {
     if (this.viewState === ViewState.EDIT) {
       this.shortcutProvider_
           .replaceAccelerator(
@@ -474,7 +473,7 @@ export class AcceleratorViewElement extends PolymerElement {
     }
   }
 
-  private fireUpdateEvent_() {
+  private fireUpdateEvent_(): void {
     this.dispatchEvent(new CustomEvent('request-update-accelerator', {
       bubbles: true,
       composed: true,
@@ -485,7 +484,7 @@ export class AcceleratorViewElement extends PolymerElement {
     this.endCapture_();
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 }

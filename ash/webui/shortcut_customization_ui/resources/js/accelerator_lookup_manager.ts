@@ -112,7 +112,7 @@ export class AcceleratorLookupManager {
         this.getKeyForLookup(accelerator));
   }
 
-  setAcceleratorLookup(acceleratorConfig: MojoAcceleratorConfig) {
+  setAcceleratorLookup(acceleratorConfig: MojoAcceleratorConfig): void {
     for (const [source, accelInfoMap] of Object.entries(acceleratorConfig)) {
       // When calling Object.entries on an object with optional enum keys,
       // TypeScript considers the values to be possibly undefined.
@@ -172,7 +172,7 @@ export class AcceleratorLookupManager {
     }
   }
 
-  setAcceleratorLayoutLookup(layoutInfoList: MojoLayoutInfo[]) {
+  setAcceleratorLayoutLookup(layoutInfoList: MojoLayoutInfo[]): void {
     for (const entry of layoutInfoList) {
       // This check is necessary because the layout info list may contain
       // references to accelerators that are not always present
@@ -212,7 +212,7 @@ export class AcceleratorLookupManager {
 
   replaceAccelerator(
       source: AcceleratorSource, action: number, oldAccelerator: Accelerator,
-      newAccelInfo: StandardAcceleratorInfo) {
+      newAccelInfo: StandardAcceleratorInfo): void {
     const foundIdx =
         this.getAcceleratorInfoIndex_(source, action, oldAccelerator);
 
@@ -264,7 +264,7 @@ export class AcceleratorLookupManager {
 
   addAccelerator(
       source: AcceleratorSource, action: number,
-      newAccelInfo: StandardAcceleratorInfo) {
+      newAccelInfo: StandardAcceleratorInfo): void {
     // Check to see if there is a pre-existing accelerator to remove first.
     this.maybeRemoveOrDisableAccelerator_(getAccelerator(newAccelInfo));
 
@@ -289,7 +289,8 @@ export class AcceleratorLookupManager {
   }
 
   removeAccelerator(
-      source: AcceleratorSource, action: number, accelerator: Accelerator) {
+      source: AcceleratorSource, action: number,
+      accelerator: Accelerator): void {
     const foundAccel =
         this.getAcceleratorInfoFromAccelerator_(source, action, accelerator);
 
@@ -352,7 +353,7 @@ export class AcceleratorLookupManager {
   /**
    * Called to either remove or disable (if locked) an accelerator.
    */
-  private maybeRemoveOrDisableAccelerator_(accelerator: Accelerator) {
+  private maybeRemoveOrDisableAccelerator_(accelerator: Accelerator): void {
     const uuid = this.getAcceleratorIdFromReverseLookup(accelerator);
     if (uuid === undefined) {
       // Not replacing a pre-existing accelerator.
@@ -414,7 +415,7 @@ export class AcceleratorLookupManager {
     return accelInfos[foundIdx];
   }
 
-  reset() {
+  reset(): void {
     this.acceleratorLookup_.clear();
     this.acceleratorNameLookup_.clear();
     this.acceleratorLayoutLookup_.clear();
@@ -427,7 +428,7 @@ export class AcceleratorLookupManager {
         (managerInstance = new AcceleratorLookupManager());
   }
 
-  static setInstance(obj: AcceleratorLookupManager) {
+  static setInstance(obj: AcceleratorLookupManager): void {
     managerInstance = obj;
   }
 }

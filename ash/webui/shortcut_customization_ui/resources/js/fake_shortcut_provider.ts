@@ -85,7 +85,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
    * Sets the value that will be returned when calling
    * getAccelerators().
    */
-  setFakeAcceleratorConfig(config: MojoAcceleratorConfig) {
+  setFakeAcceleratorConfig(config: MojoAcceleratorConfig): void {
     this.methods_.setResult('getAccelerators', {config});
   }
 
@@ -93,7 +93,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
    * Sets the value that will be returned when calling
    * getAcceleratorLayoutInfos().
    */
-  setFakeAcceleratorLayoutInfos(layoutInfos: MojoLayoutInfo[]) {
+  setFakeAcceleratorLayoutInfos(layoutInfos: MojoLayoutInfo[]): void {
     this.methods_.setResult('getAcceleratorLayoutInfos', {layoutInfos});
   }
 }

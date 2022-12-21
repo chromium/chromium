@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './accelerator_edit_view.html.js';
@@ -54,15 +55,15 @@ const standardAcceleratorInfoState: StandardAcceleratorInfo = {
 const AcceleratorEditViewElementBase = I18nMixin(PolymerElement);
 
 export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
-  static get is() {
+  static get is(): string {
     return 'accelerator-edit-view';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       acceleratorInfo: {
         type: Object,
@@ -123,17 +124,17 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
     this.lookupManager_ = AcceleratorLookupManager.getInstance();
   }
 
-  protected onStatusMessageChanged_() {
+  protected onStatusMessageChanged_(): void {
     if (this.statusMessage === '') {
       this.statusMessage = this.i18n('editViewStatusMessage');
     }
   }
 
-  protected onEditButtonClicked_() {
+  protected onEditButtonClicked_(): void {
     this.viewState = ViewState.EDIT;
   }
 
-  protected onDeleteButtonClicked_() {
+  protected onDeleteButtonClicked_(): void {
     this.shortcutProvider_
         .removeAccelerator(
             this.source, this.action, getAccelerator(this.acceleratorInfo))
@@ -151,7 +152,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         });
   }
 
-  protected onCancelButtonClicked_() {
+  protected onCancelButtonClicked_(): void {
     this.statusMessage = '';
     this.viewState = ViewState.VIEW;
   }

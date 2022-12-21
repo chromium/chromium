@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {DomRepeat, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './accelerator_edit_dialog.html.js';
@@ -40,15 +41,15 @@ const AcceleratorEditDialogElementBase = I18nMixin(PolymerElement);
 
 export class AcceleratorEditDialogElement extends
     AcceleratorEditDialogElementBase {
-  static get is() {
+  static get is(): string {
     return 'accelerator-edit-dialog';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       description: {
         type: String,
@@ -57,7 +58,7 @@ export class AcceleratorEditDialogElement extends
 
       acceleratorInfos: {
         type: Array,
-        value: () => {},
+        value: () => [],
       },
 
       pendingNewAcceleratorState_: {
@@ -88,12 +89,12 @@ export class AcceleratorEditDialogElement extends
   source: AcceleratorSource;
   protected isAcceleratorCapturing_: boolean;
   private pendingNewAcceleratorState_: number;
-  private acceleratorCapturingStartedListener_ = () =>
+  private acceleratorCapturingStartedListener_ = (): void =>
       this.onAcceleratorCapturingStarted_();
-  private acceleratorCapturingEndedListener_ = () =>
+  private acceleratorCapturingEndedListener_ = (): void =>
       this.onAcceleratorCapturingEnded_();
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.$.editDialog.showModal();
 
@@ -104,7 +105,7 @@ export class AcceleratorEditDialogElement extends
         'accelerator-capturing-ended', this.acceleratorCapturingEndedListener_);
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener(
         'accelerator-capturing-started',
@@ -119,30 +120,30 @@ export class AcceleratorEditDialogElement extends
     return viewList;
   }
 
-  updateDialogAccelerators(updatedAccels: AcceleratorInfo[]) {
+  updateDialogAccelerators(updatedAccels: AcceleratorInfo[]): void {
     this.set('acceleratorInfos', []);
     this.getViewList_().render();
     this.acceleratorInfos = updatedAccels;
   }
 
-  protected onDoneButtonClicked_() {
+  protected onDoneButtonClicked_(): void {
     this.$.editDialog.close();
   }
 
-  protected onDialogClose_() {
+  protected onDialogClose_(): void {
     this.dispatchEvent(
         new CustomEvent('edit-dialog-closed', {bubbles: true, composed: true}));
   }
 
-  private onAcceleratorCapturingStarted_() {
+  private onAcceleratorCapturingStarted_(): void {
     this.isAcceleratorCapturing_ = true;
   }
 
-  private onAcceleratorCapturingEnded_() {
+  private onAcceleratorCapturingEnded_(): void {
     this.isAcceleratorCapturing_ = false;
   }
 
-  private focusAcceleratorItemContainer_() {
+  private focusAcceleratorItemContainer_(): void {
     const editView = this.$.editDialog.querySelector('#pendingAccelerator');
     assert(editView);
     const accelItem = editView.shadowRoot!.querySelector('#acceleratorItem');
@@ -153,7 +154,7 @@ export class AcceleratorEditDialogElement extends
     container!.focus();
   }
 
-  protected onAddAcceleratorClicked_() {
+  protected onAddAcceleratorClicked_(): void {
     this.pendingNewAcceleratorState_ = ViewState.ADD;
 
     // Flush the dom so that the AcceleratorEditView is ready to be focused.
@@ -166,7 +167,7 @@ export class AcceleratorEditDialogElement extends
     return this.pendingNewAcceleratorState_ === ViewState.VIEW;
   }
 
-  protected onRestoreDefaultButtonClicked_() {
+  protected onRestoreDefaultButtonClicked_(): void {
     // TODO(jimmyxgong): Implement this function.
   }
 }

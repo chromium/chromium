@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './shortcut_input.html.js';
@@ -37,15 +38,15 @@ export const ModifierKeyCodes: AllowedModifierKeyCodes[] = [
  * and displays the shortcut.
  */
 export class ShortcutInputElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'shortcut-input';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       shortcut_: {
         type: String,
@@ -68,7 +69,7 @@ export class ShortcutInputElement extends PolymerElement {
   private pendingShortcut_: string;
   private capturing_: boolean;
 
-  override ready() {
+  override ready(): void {
     super.ready();
     this.addEventListener('keydown', (e) => this.onKeyDown_(e));
     this.addEventListener('keyup', (e) => this.onKeyUp_(e));
@@ -77,7 +78,7 @@ export class ShortcutInputElement extends PolymerElement {
     this.addEventListener('blur', () => this.endCapture_());
   }
 
-  private startCapture_() {
+  private startCapture_(): void {
     if (this.capturing_) {
       return;
     }
@@ -86,7 +87,7 @@ export class ShortcutInputElement extends PolymerElement {
     this.capturing_ = true;
   }
 
-  private endCapture_() {
+  private endCapture_(): void {
     if (!this.capturing_) {
       return;
     }
@@ -96,11 +97,11 @@ export class ShortcutInputElement extends PolymerElement {
     this.$.input.blur();
   }
 
-  private onKeyDown_(e: KeyboardEvent) {
+  private onKeyDown_(e: KeyboardEvent): void {
     this.handleKey_(e);
   }
 
-  private onKeyUp_(e: KeyboardEvent) {
+  private onKeyUp_(e: KeyboardEvent): void {
     e.preventDefault();
     e.stopPropagation();
 
@@ -113,7 +114,7 @@ export class ShortcutInputElement extends PolymerElement {
     return shortcutString.split('+').join(' + ');
   }
 
-  private handleKey_(e: KeyboardEvent) {
+  private handleKey_(e: KeyboardEvent): void {
     // While capturing, we prevent all events from bubbling, to prevent
     // shortcuts from executing and interrupting the input capture.
     e.preventDefault();

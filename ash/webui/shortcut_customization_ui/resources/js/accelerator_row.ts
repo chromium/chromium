@@ -9,6 +9,7 @@ import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './accelerator_row.html.js';
@@ -36,11 +37,11 @@ declare global {
  * TODO(jimmyxgong): Implement opening a dialog when clicked.
  */
 export class AcceleratorRowElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'accelerator-row';
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       description: {
         type: String,
@@ -49,7 +50,7 @@ export class AcceleratorRowElement extends PolymerElement {
 
       acceleratorInfos: {
         type: Array,
-        value: () => {},
+        value: () => [],
       },
 
       acceleratorText: {
@@ -59,7 +60,6 @@ export class AcceleratorRowElement extends PolymerElement {
 
       layoutStyle: {
         type: Object,
-        value: () => {},
       },
 
       isLocked_: {
@@ -91,14 +91,14 @@ export class AcceleratorRowElement extends PolymerElement {
   private shortcutInterfaceProvider_: ShortcutProviderInterface =
       getShortcutProvider();
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     if (!this.isLocked_) {
       this.removeEventListener('click', () => this.showDialog_());
     }
   }
 
-  protected onSourceChanged_() {
+  protected onSourceChanged_(): void {
     this.shortcutInterfaceProvider_.isMutable(this.source)
         .then(({isMutable}) => {
           this.isLocked_ = !isMutable;
@@ -124,7 +124,7 @@ export class AcceleratorRowElement extends PolymerElement {
     return this.isLocked_;
   }
 
-  private showDialog_() {
+  private showDialog_(): void {
     if (isCustomizationDisabled()) {
       return;
     }
@@ -144,7 +144,7 @@ export class AcceleratorRowElement extends PolymerElement {
         ));
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 }

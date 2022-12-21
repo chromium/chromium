@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './text_accelerator.html.js';
@@ -13,11 +14,11 @@ import {getTemplate} from './text_accelerator.html.js';
  * that is passed into it, as well as styling key elements in the text.
  */
 export class TextAcceleratorElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'text-accelerator';
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       text: {
         type: String,
@@ -28,7 +29,7 @@ export class TextAcceleratorElement extends PolymerElement {
 
   text: string;
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 }

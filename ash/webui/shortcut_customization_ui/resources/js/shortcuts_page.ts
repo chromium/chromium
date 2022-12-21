@@ -7,6 +7,7 @@ import '../css/shortcut_customization_shared.css.js';
 import './shortcut_input.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
@@ -22,11 +23,11 @@ import {getTemplate} from './shortcuts_page.html.js';
  * TODO(jimmyxgong): Implement this skeleton element.
  */
 export class ShortcutsPageElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'shortcuts-page';
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Implicit property from NavigationSelector. Contains one Number field,
@@ -34,7 +35,6 @@ export class ShortcutsPageElement extends PolymerElement {
        */
       initialData: {
         type: Object,
-        value: () => {},
       },
 
       subcategories_: {
@@ -49,12 +49,12 @@ export class ShortcutsPageElement extends PolymerElement {
   private lookupManager_: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.updateAccelerators();
   }
 
-  updateAccelerators() {
+  updateAccelerators(): void {
     const subcatMap =
         this.lookupManager_.getSubcategories(this.initialData.category);
     if (subcatMap === undefined) {
@@ -75,13 +75,13 @@ export class ShortcutsPageElement extends PolymerElement {
     return subsections;
   }
 
-  updateSubsections() {
+  updateSubsections(): void {
     for (const subsection of this.getAllSubsections_()) {
       subsection.updateSubsection();
     }
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 }

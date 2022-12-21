@@ -5,6 +5,7 @@
 import './accelerator_row.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
@@ -35,11 +36,11 @@ export interface AcceleratorSubsectionElement {
 const AcceleratorSubsectionElementBase = I18nMixin(PolymerElement);
 export class AcceleratorSubsectionElement extends
     AcceleratorSubsectionElementBase {
-  static get is() {
+  static get is(): string {
     return 'accelerator-subsection';
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       title: {
         type: String,
@@ -76,7 +77,7 @@ export class AcceleratorSubsectionElement extends
   private lookupManager_: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 
-  updateSubsection() {
+  updateSubsection(): void {
     // Force the rendered list to reset, Polymer's dom-repeat does not perform
     // a deep check on objects so it won't detect changes to same size length
     // array of objects.
@@ -85,7 +86,7 @@ export class AcceleratorSubsectionElement extends
     this.onCategoryUpdated_();
   }
 
-  protected onCategoryUpdated_() {
+  protected onCategoryUpdated_(): void {
     if (this.subcategory === null) {
       return;
     }
@@ -121,7 +122,7 @@ export class AcceleratorSubsectionElement extends
     this.accelRowDataArray = tempAccelRowData;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 }

@@ -28,7 +28,7 @@ let shortcutProvider: ShortcutProviderInterface|null = null;
 const useFakeProvider: boolean = false;
 
 export function setShortcutProviderForTesting(
-    testProvider: ShortcutProviderInterface) {
+    testProvider: ShortcutProviderInterface): void {
   shortcutProvider = testProvider;
 }
 

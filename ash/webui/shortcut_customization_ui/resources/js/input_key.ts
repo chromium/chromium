@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './input_key.html.js';
@@ -59,11 +60,11 @@ export const keyToIconNameMap: {[key: string]: string} = {
  * handling dynamic styling of a single key.
  */
 export class InputKeyElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'input-key';
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       key: {
         type: String,
@@ -81,7 +82,7 @@ export class InputKeyElement extends PolymerElement {
   key: string;
   keyState: KeyInputState;
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
