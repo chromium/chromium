@@ -20,6 +20,7 @@
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
 #include "headless/test/headless_devtooled_browsertest.h"
+#include "headless/test/pdf_utils.h"
 #include "pdf/pdf.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/pdf_render_settings.h"
@@ -33,59 +34,6 @@
 #include "ui/gfx/geometry/size_f.h"
 
 namespace headless {
-
-namespace {
-
-// Utility class to render the specified PDF page into a bitmap and
-// inspect the resulting pixels.
-class PDFPageBitmap {
- public:
-  static constexpr int kColorChannels = 4;
-  static constexpr int kDpi = 300;
-
-  PDFPageBitmap() = default;
-  ~PDFPageBitmap() = default;
-
-  void Render(base::span<const uint8_t> pdf_span, int page_index) {
-    absl::optional<gfx::SizeF> page_size_in_points =
-        chrome_pdf::GetPDFPageSizeByIndex(pdf_span, page_index);
-    ASSERT_TRUE(page_size_in_points.has_value());
-
-    gfx::SizeF page_size_in_pixels =
-        gfx::ScaleSize(page_size_in_points.value(),
-                       static_cast<float>(kDpi) / printing::kPointsPerInch);
-
-    gfx::Rect page_rect(gfx::ToCeiledSize(page_size_in_pixels));
-
-    constexpr chrome_pdf::RenderOptions options = {
-        .stretch_to_bounds = false,
-        .keep_aspect_ratio = true,
-        .autorotate = true,
-        .use_color = true,
-        .render_device_type = chrome_pdf::RenderDeviceType::kPrinter,
-    };
-
-    bitmap_size_ = page_rect.size();
-    bitmap_data_.resize(kColorChannels * bitmap_size_.GetArea());
-    ASSERT_TRUE(chrome_pdf::RenderPDFPageToBitmap(
-        pdf_span, page_index, bitmap_data_.data(), bitmap_size_,
-        gfx::Size(kDpi, kDpi), options));
-  }
-
-  uint32_t GetPixelRGB(int x, int y) {
-    int pixel_index =
-        bitmap_size_.width() * y * kColorChannels + x * kColorChannels;
-    return bitmap_data_[pixel_index + 0]             // B
-           | (bitmap_data_[pixel_index + 1] << 8)    // G
-           | (bitmap_data_[pixel_index + 2] << 16);  // R
-  }
-
- protected:
-  std::vector<uint8_t> bitmap_data_;
-  gfx::Size bitmap_size_;
-};
-
-}  // namespace
 
 class HeadlessPDFPagesBrowserTest : public HeadlessDevTooledBrowserTest {
  public:
@@ -417,7 +365,7 @@ class HeadlessPDFOOPIFBrowserTest : public HeadlessPDFBrowserTestBase {
     EXPECT_THAT(num_pages, testing::Eq(1));
 
     PDFPageBitmap page_image;
-    page_image.Render(pdf_span, 0);
+    ASSERT_TRUE(page_image.Render(pdf_span, 0));
 
     // Expect red iframe pixel at 1 inch into the page.
     EXPECT_EQ(page_image.GetPixelRGB(1 * PDFPageBitmap::kDpi,

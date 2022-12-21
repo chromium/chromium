@@ -959,6 +959,10 @@
     "messages": [4380],
   },
 
+  "headless/app/headless_command.grd": {
+    "includes": [4410],
+  },
+
   "mojo/public/js/mojo_bindings_resources.grd": {
     "includes": [4420],
   },
