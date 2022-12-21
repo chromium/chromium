@@ -246,6 +246,10 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void InitRunningDuration();
   void ClearRunningDuration();
 
+  // Reads the installed apps from AppRegistryCache before AppPlatformMetrics is
+  // created to record the install AppKM.
+  void ReadInstalledApps();
+
   // Records the number of apps of the given `app_type` that the family user has
   // recently used.
   void RecordAppsCount(AppType app_type);

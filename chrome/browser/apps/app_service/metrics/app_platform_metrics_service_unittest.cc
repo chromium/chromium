@@ -202,11 +202,6 @@ class AppPlatformMetricsServiceTest
            Readiness::kReady, InstallReason::kUser, InstallSource::kPlayStore,
            true /* should_notify_initialized */);
 
-    // BuiltIn apps are initialized by the BuiltIn app publisher.
-    AddApp(cache, /*app_id=*/"bu", AppType::kBuiltIn, "", Readiness::kReady,
-           InstallReason::kSystem, InstallSource::kSystem,
-           false /* should_notify_initialized */);
-
     AddApp(cache, /*app_id=*/borealis::kClientAppId, AppType::kBorealis, "",
            Readiness::kReady, InstallReason::kUser, InstallSource::kUnknown,
            true /* should_notify_initialized */);
@@ -1790,7 +1785,7 @@ TEST_P(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
                          apps::InstallSource::kPlayStore, InstallTime::kInit);
   VerifyInstalledAppsUkm("app://bu", AppTypeName::kBuiltIn,
                          apps::InstallReason::kSystem,
-                         apps::InstallSource::kSystem, InstallTime::kRunning);
+                         apps::InstallSource::kSystem, InstallTime::kInit);
   VerifyInstalledAppsUkm("app://s", AppTypeName::kSystemWeb,
                          apps::InstallReason::kSystem,
                          apps::InstallSource::kSystem, InstallTime::kInit);

@@ -419,6 +419,7 @@ AppPlatformMetrics::AppPlatformMetrics(
   user_type_by_device_type_ = GetUserTypeByDeviceTypeMetrics();
   InitRunningDuration();
   LoadAppsUsageTimeUkmFromPref();
+  ReadInstalledApps();
 }
 
 AppPlatformMetrics::~AppPlatformMetrics() {
@@ -1000,6 +1001,12 @@ void AppPlatformMetrics::ClearRunningDuration() {
 
   profile_->GetPrefs()->SetDict(kAppRunningDuration, base::Value::Dict());
   profile_->GetPrefs()->SetDict(kAppActivatedCount, base::Value::Dict());
+}
+
+void AppPlatformMetrics::ReadInstalledApps() {
+  app_registry_cache_.ForEachApp([this](const apps::AppUpdate& update) {
+    RecordAppsInstallUkm(update, InstallTime::kInit);
+  });
 }
 
 void AppPlatformMetrics::RecordAppsCount(AppType app_type) {
