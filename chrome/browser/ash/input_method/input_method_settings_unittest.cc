@@ -84,14 +84,15 @@ constexpr char kJapaneseShiftKeyModeStyleAlphanumeric[] = "Alphanumeric";
 constexpr char kJapaneseShiftKeyModeStyleKatakana[] = "Katakana";
 
 void RegisterTestingPrefs(TestingPrefServiceSimple& prefs,
-                          const base::DictionaryValue& dict) {
+                          const base::Value::Dict& dict) {
   prefs.registry()->RegisterDictionaryPref(
       ::prefs::kLanguageInputMethodSpecificSettings);
-  prefs.Set(::prefs::kLanguageInputMethodSpecificSettings, dict);
+  prefs.Set(::prefs::kLanguageInputMethodSpecificSettings,
+            base::Value(dict.Clone()));
 }
 
 TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsDefault) {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
@@ -113,7 +114,7 @@ class SetJapanesePrefsFromSettingsTest : public ::testing::Test {
         .FindDict(kJapaneseEngineId);
   }
 
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   TestingPrefServiceSimple prefs;
 };
 
@@ -572,10 +573,10 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettings) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures({features::kAssistMultiWord}, {});
   TestingPrefServiceSimple prefs;
-  base::DictionaryValue dict;
-  dict.SetIntPath(base::StrCat({kUsEnglishEngineId,
-                                ".physicalKeyboardAutoCorrectionLevel"}),
-                  1);
+  base::Value::Dict dict;
+  dict.SetByDottedPath(base::StrCat({kUsEnglishEngineId,
+                                     ".physicalKeyboardAutoCorrectionLevel"}),
+                       1);
   RegisterTestingPrefs(prefs, dict);
   prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
                                         true);
@@ -593,7 +594,7 @@ TEST(CreateSettingsFromPrefsTest,
   base::test::ScopedFeatureList features;
   features.InitWithFeatures({features::kAssistMultiWord}, {});
   TestingPrefServiceSimple prefs;
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   RegisterTestingPrefs(prefs, dict);
   prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
                                         true);
@@ -610,7 +611,7 @@ TEST(CreateSettingsFromPrefsTest,
   base::test::ScopedFeatureList features;
   features.InitWithFeatures({}, {features::kAssistMultiWord});
   TestingPrefServiceSimple prefs;
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   RegisterTestingPrefs(prefs, dict);
   prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
                                         true);
@@ -623,7 +624,7 @@ TEST(CreateSettingsFromPrefsTest,
 }
 
 TEST(CreateSettingsFromPrefsTest, CreateKoreanSettingsDefault) {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
@@ -636,10 +637,10 @@ TEST(CreateSettingsFromPrefsTest, CreateKoreanSettingsDefault) {
 }
 
 TEST(CreateSettingsFromPrefsTest, CreateKoreanSettings) {
-  base::DictionaryValue dict;
-  dict.SetStringPath(base::StrCat({kKoreanEngineId, ".koreanKeyboardLayout"}),
-                     "3 Set (390) / 세벌식 (390)");
-  dict.SetBoolPath(
+  base::Value::Dict dict;
+  dict.SetByDottedPath(base::StrCat({kKoreanEngineId, ".koreanKeyboardLayout"}),
+                       "3 Set (390) / 세벌식 (390)");
+  dict.SetByDottedPath(
       base::StrCat({kKoreanEngineId, ".koreanEnableSyllableInput"}), false);
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
@@ -653,7 +654,7 @@ TEST(CreateSettingsFromPrefsTest, CreateKoreanSettings) {
 }
 
 TEST(CreateSettingsFromPrefsTest, CreatePinyinSettingsDefault) {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
@@ -684,21 +685,22 @@ TEST(CreateSettingsFromPrefsTest, CreatePinyinSettingsDefault) {
 }
 
 TEST(CreateSettingsFromPrefsTest, CreatePinyinSettings) {
-  base::DictionaryValue dict;
-  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".en:eng"}), true);
-  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".k:g"}), true);
-  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".in:ing"}), true);
-  dict.SetStringPath(base::StrCat({kPinyinEngineId, ".xkbLayout"}), "Colemak");
-  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinEnableLowerPaging"}),
-                   false);
-  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinEnableUpperPaging"}),
-                   false);
-  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinDefaultChinese"}),
-                   false);
-  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinFullWidthCharacter"}),
-                   true);
-  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinChinesePunctuation"}),
-                   false);
+  base::Value::Dict dict;
+  dict.SetByDottedPath(base::StrCat({kPinyinEngineId, ".en:eng"}), true);
+  dict.SetByDottedPath(base::StrCat({kPinyinEngineId, ".k:g"}), true);
+  dict.SetByDottedPath(base::StrCat({kPinyinEngineId, ".in:ing"}), true);
+  dict.SetByDottedPath(base::StrCat({kPinyinEngineId, ".xkbLayout"}),
+                       "Colemak");
+  dict.SetByDottedPath(
+      base::StrCat({kPinyinEngineId, ".pinyinEnableLowerPaging"}), false);
+  dict.SetByDottedPath(
+      base::StrCat({kPinyinEngineId, ".pinyinEnableUpperPaging"}), false);
+  dict.SetByDottedPath(base::StrCat({kPinyinEngineId, ".pinyinDefaultChinese"}),
+                       false);
+  dict.SetByDottedPath(
+      base::StrCat({kPinyinEngineId, ".pinyinFullWidthCharacter"}), true);
+  dict.SetByDottedPath(
+      base::StrCat({kPinyinEngineId, ".pinyinChinesePunctuation"}), false);
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
@@ -729,7 +731,7 @@ TEST(CreateSettingsFromPrefsTest, CreatePinyinSettings) {
 }
 
 TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettingsDefault) {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
@@ -744,12 +746,12 @@ TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettingsDefault) {
 }
 
 TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettings) {
-  base::DictionaryValue dict;
-  dict.SetStringPath(base::StrCat({kZhuyinEngineId, ".zhuyinKeyboardLayout"}),
-                     "IBM");
-  dict.SetStringPath(base::StrCat({kZhuyinEngineId, ".zhuyinSelectKeys"}),
-                     "asdfghjkl;");
-  dict.SetStringPath(base::StrCat({kZhuyinEngineId, ".zhuyinPageSize"}), "8");
+  base::Value::Dict dict;
+  dict.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".zhuyinKeyboardLayout"}),
+                       "IBM");
+  dict.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".zhuyinSelectKeys"}),
+                       "asdfghjkl;");
+  dict.SetByDottedPath(base::StrCat({kZhuyinEngineId, ".zhuyinPageSize"}), "8");
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 

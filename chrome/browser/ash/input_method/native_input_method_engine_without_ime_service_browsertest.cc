@@ -153,7 +153,7 @@ class NativeInputMethodEngineWithoutImeServiceTest
     profile_ = browser()->profile();
     prefs_ = profile_->GetPrefs();
     prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,
-                base::DictionaryValue());
+                base::Value(base::Value::Type::DICT));
     engine_->Initialize(std::move(observer), /*extension_id=*/"", profile_);
     engine_->get_assistive_suggester_for_testing()
         ->get_emoji_suggester_for_testing()
@@ -596,22 +596,27 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        FiresOnInputMethodOptionsChangedEvent) {
-  base::DictionaryValue settings;
-
-  // Add key will trigger event.
-  base::Value pinyin1(base::Value::Type::DICTIONARY);
-  pinyin1.SetBoolKey("foo", true);
-  settings.SetPath("pinyin", std::move(pinyin1));
-  prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings, settings);
-  EXPECT_EQ(observer_->changed_engine_id(), "pinyin");
-  observer_->ClearChangedEngineId();
-
-  // Change key will trigger event.
-  base::Value pinyin2(base::Value::Type::DICTIONARY);
-  pinyin2.SetBoolKey("foo", false);
-  settings.SetPath("pinyin", std::move(pinyin2));
-  prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings, settings);
-  EXPECT_EQ(observer_->changed_engine_id(), "pinyin");
+  {
+    base::Value::Dict settings;
+    // Add key will trigger event.
+    base::Value::Dict pinyin1;
+    pinyin1.Set("foo", true);
+    settings.SetByDottedPath("pinyin", std::move(pinyin1));
+    prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,
+                base::Value(std::move(settings)));
+    EXPECT_EQ(observer_->changed_engine_id(), "pinyin");
+    observer_->ClearChangedEngineId();
+  }
+  {
+    base::Value::Dict settings;
+    // Change key will trigger event.
+    base::Value::Dict pinyin2;
+    pinyin2.Set("foo", false);
+    settings.SetByDottedPath("pinyin", std::move(pinyin2));
+    prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,
+                base::Value(std::move(settings)));
+    EXPECT_EQ(observer_->changed_engine_id(), "pinyin");
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,

@@ -157,9 +157,9 @@ bool MoveMigrator::IsResumeStep(ResumeStep resume_step) {
 // static
 void MoveMigrator::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kMoveMigrationResumeStepPref,
-                                   base::DictionaryValue());
+                                   base::Value(base::Value::Type::DICT));
   registry->RegisterDictionaryPref(kMoveMigrationResumeCountPref,
-                                   base::DictionaryValue());
+                                   base::Value(base::Value::Type::DICT));
 }
 
 // static

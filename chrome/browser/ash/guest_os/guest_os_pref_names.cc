@@ -64,7 +64,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kGuestOsRegistry);
   registry->RegisterListPref(kGuestOsContainers);
   registry->RegisterDictionaryPref(
-      kGuestOsTerminalSettings, base::DictionaryValue(),
+      kGuestOsTerminalSettings, base::Value::Dict(),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 

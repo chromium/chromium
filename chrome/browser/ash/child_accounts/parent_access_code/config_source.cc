@@ -81,8 +81,7 @@ void ConfigSource::AddAuthenticator(const base::Value& dict,
     return;
 
   absl::optional<AccessCodeConfig> code_config =
-      AccessCodeConfig::FromDictionary(
-          static_cast<const base::DictionaryValue&>(dict));
+      AccessCodeConfig::FromDictionary(dict);
   if (code_config) {
     config_map_[user->GetAccountId()].push_back(
         std::make_unique<Authenticator>(std::move(code_config.value())));

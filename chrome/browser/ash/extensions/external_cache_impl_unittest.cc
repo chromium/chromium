@@ -113,22 +113,20 @@ class ExternalCacheImplTest : public testing::Test,
     return dir.Append(id + "-" + version + ".crx");
   }
 
-  base::DictionaryValue CreateEntryWithUpdateUrl(bool from_webstore) {
-    base::DictionaryValue entry;
-    entry.SetStringKey(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                       from_webstore
-                           ? extension_urls::GetWebstoreUpdateUrl().spec()
-                           : kNonWebstoreUpdateUrl);
-    return entry;
+  base::Value CreateEntryWithUpdateUrl(bool from_webstore) {
+    base::Value::Dict entry;
+    entry.Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+              from_webstore ? extension_urls::GetWebstoreUpdateUrl().spec()
+                            : kNonWebstoreUpdateUrl);
+    return base::Value(std::move(entry));
   }
 
-  base::DictionaryValue CreateEntryWithExternalCrx() {
-    base::DictionaryValue entry;
-    entry.SetStringKey(extensions::ExternalProviderImpl::kExternalCrx,
-                       kExternalCrxPath);
-    entry.SetStringKey(extensions::ExternalProviderImpl::kExternalVersion,
-                       kExternalCrxVersion);
-    return entry;
+  base::Value CreateEntryWithExternalCrx() {
+    base::Value::Dict entry;
+    entry.Set(extensions::ExternalProviderImpl::kExternalCrx, kExternalCrxPath);
+    entry.Set(extensions::ExternalProviderImpl::kExternalVersion,
+              kExternalCrxVersion);
+    return base::Value(std::move(entry));
   }
 
  private:

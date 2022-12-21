@@ -84,8 +84,7 @@ class NativeInputMethodEngineWithImeServiceTest
     auto observer = std::make_unique<TestObserver>();
     Profile* profile = browser()->profile();
     PrefService* prefs = profile->GetPrefs();
-    prefs->Set(::prefs::kLanguageInputMethodSpecificSettings,
-               base::DictionaryValue());
+    prefs->Set(::prefs::kLanguageInputMethodSpecificSettings, base::Value());
     engine_->Initialize(std::move(observer), /*extension_id=*/"", profile);
 
     InProcessBrowserTest::SetUpOnMainThread();

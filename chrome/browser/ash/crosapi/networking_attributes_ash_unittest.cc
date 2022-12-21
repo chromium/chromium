@@ -115,22 +115,22 @@ class NetworkingAttributesAshTest : public testing::Test {
     network_handler_test_helper_.device_test()->ClearDevices();
     network_handler_test_helper_.service_test()->ClearServices();
 
-    base::DictionaryValue ipconfig_v4_dictionary;
-    ipconfig_v4_dictionary.SetKey(shill::kAddressProperty,
-                                  base::Value(kIpv4Address));
-    ipconfig_v4_dictionary.SetKey(shill::kMethodProperty,
-                                  base::Value(shill::kTypeIPv4));
+    base::Value::Dict ipconfig_v4_dictionary;
+    ipconfig_v4_dictionary.Set(shill::kAddressProperty,
+                               base::Value(kIpv4Address));
+    ipconfig_v4_dictionary.Set(shill::kMethodProperty,
+                               base::Value(shill::kTypeIPv4));
 
-    base::DictionaryValue ipconfig_v6_dictionary;
-    ipconfig_v6_dictionary.SetKey(shill::kAddressProperty,
-                                  base::Value(kIpv6Address));
-    ipconfig_v6_dictionary.SetKey(shill::kMethodProperty,
-                                  base::Value(shill::kTypeIPv6));
+    base::Value::Dict ipconfig_v6_dictionary;
+    ipconfig_v6_dictionary.Set(shill::kAddressProperty,
+                               base::Value(kIpv6Address));
+    ipconfig_v6_dictionary.Set(shill::kMethodProperty,
+                               base::Value(shill::kTypeIPv6));
 
     network_handler_test_helper_.ip_config_test()->AddIPConfig(
-        kWifiIPConfigV4Path, ipconfig_v4_dictionary);
+        kWifiIPConfigV4Path, base::Value(std::move(ipconfig_v4_dictionary)));
     network_handler_test_helper_.ip_config_test()->AddIPConfig(
-        kWifiIPConfigV6Path, ipconfig_v6_dictionary);
+        kWifiIPConfigV6Path, base::Value(std::move(ipconfig_v6_dictionary)));
 
     base::ListValue ip_configs;
     ip_configs.Append(kWifiIPConfigV4Path);

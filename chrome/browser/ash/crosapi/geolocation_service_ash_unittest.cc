@@ -27,18 +27,18 @@ class GeolocationServiceAshTest : public testing::Test {
   void AddAccessPoints(int ssids, int aps_per_ssid) {
     for (int i = 0; i < ssids; ++i) {
       for (int j = 0; j < aps_per_ssid; ++j) {
-        base::DictionaryValue properties;
+        base::Value::Dict properties;
         std::string mac_address = base::StringPrintf(
             "%02X:%02X:%02X:%02X:%02X:%02X", i, j, 3, 4, 5, 6);
         std::string channel = base::NumberToString(i * 10 + j);
         std::string strength = base::NumberToString(i * 100 + j);
-        properties.SetKey(shill::kGeoMacAddressProperty,
-                          base::Value(mac_address));
-        properties.SetKey(shill::kGeoChannelProperty, base::Value(channel));
-        properties.SetKey(shill::kGeoSignalStrengthProperty,
-                          base::Value(strength));
+        properties.Set(shill::kGeoMacAddressProperty, base::Value(mac_address));
+        properties.Set(shill::kGeoChannelProperty, base::Value(channel));
+        properties.Set(shill::kGeoSignalStrengthProperty,
+                       base::Value(strength));
         network_handler_test_helper_->manager_test()->AddGeoNetwork(
-            shill::kGeoWifiAccessPointsProperty, properties);
+            shill::kGeoWifiAccessPointsProperty,
+            base::Value(std::move(properties)));
       }
     }
     base::RunLoop().RunUntilIdle();

@@ -52,7 +52,7 @@ const ProviderId kCustomProviderId =
 
 // The dot in the file system ID is there in order to check that saving to
 // preferences works correctly. File System ID is used as a key in
-// a base::DictionaryValue, so it has to be stored without path expansion.
+// a base::Value::Dict, so it has to be stored without path expansion.
 const char kFileSystemId[] = "camera/pictures/id .!@#$%^&*()_+";
 
 // Creates a fake extension with the specified |extension_id|.
