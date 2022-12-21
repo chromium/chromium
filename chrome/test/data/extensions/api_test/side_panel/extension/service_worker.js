@@ -19,6 +19,27 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Setting incomplete default options should merge with already-set fields
+  // from the manifset panel.
+  // Regression for crbug.com/1403071.
+  async function defaultSetAndGetPanelUpsertManifest() {
+    // Disable the default panel.
+    await chrome.sidePanel.setOptions({enabled: false});
+    let result = await chrome.sidePanel.getOptions({});
+
+    // The manifest path should still be seen when fetching the default panel.
+    chrome.test.assertEq({enabled: false, path: 'default_path.html'}, result);
+
+    // Re-enable the default panel without setting a path.
+    await chrome.sidePanel.setOptions({enabled: true});
+    result = await chrome.sidePanel.getOptions({});
+
+    // The manifest path should still be seen when fetching the default panel.
+    chrome.test.assertEq({enabled: true, path: 'default_path.html'}, result);
+
+    chrome.test.succeed();
+  },
+
   // Set panel options by tabId.
   async function setAndGetPanel() {
     const expected = {tabId: tabId, path: 'tab_specific.html', enabled: false};

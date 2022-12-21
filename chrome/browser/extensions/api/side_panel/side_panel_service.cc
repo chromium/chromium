@@ -84,19 +84,32 @@ api::side_panel::PanelOptions SidePanelService::GetOptions(
 // Upsert to merge `panels_[extension_id][tab_id]` with `set_options`.
 void SidePanelService::SetOptions(const Extension& extension,
                                   api::side_panel::PanelOptions options) {
+  auto update_existing_options =
+      [&options](api::side_panel::PanelOptions& existing_options) {
+        if (options.path) {
+          existing_options.path = std::move(options.path);
+        }
+        if (options.enabled) {
+          existing_options.enabled = std::move(options.enabled);
+        }
+      };
+
   TabId tab_id = SessionID::InvalidValue().id();
   if (options.tab_id)
     tab_id = *options.tab_id;
   TabPanelOptions& extension_panel_options = panels_[extension.id()];
   auto it = extension_panel_options.find(tab_id);
   if (it == extension_panel_options.end()) {
-    extension_panel_options[tab_id] = std::move(options);
+    // If there is no entry for the default tab, merge `options` into the
+    // manifest-specified options.
+    if (tab_id == SessionID::InvalidValue().id()) {
+      extension_panel_options[tab_id] = GetPanelOptionsFromManifest(extension);
+      update_existing_options(extension_panel_options[tab_id]);
+    } else {
+      extension_panel_options[tab_id] = std::move(options);
+    }
   } else {
-    auto& existing_options = it->second;
-    if (options.path)
-      existing_options.path = std::move(options.path);
-    if (options.enabled)
-      existing_options.enabled = std::move(options.enabled);
+    update_existing_options(it->second);
   }
 }
 
