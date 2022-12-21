@@ -35,33 +35,6 @@ class TestConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
   }
 };
 
-class NonDefaultTestConfirmInfoBarDelegate : public TestConfirmInfoBarDelegate {
- public:
-  NonDefaultTestConfirmInfoBarDelegate() = default;
-
-  NonDefaultTestConfirmInfoBarDelegate(
-      const NonDefaultTestConfirmInfoBarDelegate&) = delete;
-  NonDefaultTestConfirmInfoBarDelegate& operator=(
-      const NonDefaultTestConfirmInfoBarDelegate&) = delete;
-
-  ~NonDefaultTestConfirmInfoBarDelegate() override = default;
-
-  bool IsCloseable() const override { return false; }
-  bool ShouldAnimate() const override { return false; }
-};
-
-class DefaultTestConfirmInfoBarDelegate : public TestConfirmInfoBarDelegate {
- public:
-  DefaultTestConfirmInfoBarDelegate() = default;
-
-  DefaultTestConfirmInfoBarDelegate(const DefaultTestConfirmInfoBarDelegate&) =
-      delete;
-  DefaultTestConfirmInfoBarDelegate& operator=(
-      const DefaultTestConfirmInfoBarDelegate&) = delete;
-
-  ~DefaultTestConfirmInfoBarDelegate() override = default;
-};
-
 class GlobalConfirmInfoBarTest : public InProcessBrowserTest {
  public:
   GlobalConfirmInfoBarTest() = default;
@@ -136,8 +109,8 @@ IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, CreateAndCloseInfobar) {
   // Make sure the tab has no info bar.
   EXPECT_EQ(0u, infobar_manager->infobar_count());
 
-  auto delegate = std::make_unique<DefaultTestConfirmInfoBarDelegate>();
-  DefaultTestConfirmInfoBarDelegate* delegate_ptr = delegate.get();
+  auto delegate = std::make_unique<TestConfirmInfoBarDelegate>();
+  TestConfirmInfoBarDelegate* delegate_ptr = delegate.get();
 
   GlobalConfirmInfoBar* infobar =
       GlobalConfirmInfoBar::Show(std::move(delegate));
@@ -153,6 +126,21 @@ IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, CreateAndCloseInfobar) {
   infobar->Close();
   EXPECT_EQ(0u, infobar_manager->infobar_count());
 }
+
+class NonDefaultTestConfirmInfoBarDelegate : public TestConfirmInfoBarDelegate {
+ public:
+  NonDefaultTestConfirmInfoBarDelegate() = default;
+
+  NonDefaultTestConfirmInfoBarDelegate(
+      const NonDefaultTestConfirmInfoBarDelegate&) = delete;
+  NonDefaultTestConfirmInfoBarDelegate& operator=(
+      const NonDefaultTestConfirmInfoBarDelegate&) = delete;
+
+  ~NonDefaultTestConfirmInfoBarDelegate() override = default;
+
+  bool IsCloseable() const override { return false; }
+  bool ShouldAnimate() const override { return false; }
+};
 
 IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest,
                        VerifyInfobarNonDefaultProperties) {
@@ -177,4 +165,38 @@ IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest,
 
   EXPECT_FALSE(test_infobar->IsCloseable());
   EXPECT_FALSE(test_infobar->ShouldAnimate());
+}
+
+class TestConfirmInfoBarDelegateWithLink : public TestConfirmInfoBarDelegate {
+ public:
+  TestConfirmInfoBarDelegateWithLink() = default;
+
+  TestConfirmInfoBarDelegateWithLink(
+      const TestConfirmInfoBarDelegateWithLink&) = delete;
+  TestConfirmInfoBarDelegateWithLink& operator=(
+      const TestConfirmInfoBarDelegateWithLink&) = delete;
+
+  ~TestConfirmInfoBarDelegateWithLink() override = default;
+
+  std::u16string GetLinkText() const override { return u"Test"; }
+  GURL GetLinkURL() const override { return GURL("about:blank"); }
+};
+
+// Verifies that clicking a link in a global infobar does not crash. Regression
+// test for http://crbug.com/1393765.
+IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, ClickLink) {
+  // Show an infobar with a link.
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->count());
+  GlobalConfirmInfoBar::Show(
+      std::make_unique<TestConfirmInfoBarDelegateWithLink>());
+
+  // Simulate clicking the link on the infobar.
+  infobars::InfoBar* first_tab_infobar =
+      GetInfoBarManagerFromTabIndex(0)->infobar_at(0);
+  EXPECT_FALSE(first_tab_infobar->delegate()->LinkClicked(
+      WindowOpenDisposition::NEW_BACKGROUND_TAB));
+
+  // This should have opened a new tab.
+  ASSERT_EQ(2, tab_strip_model->count());
 }
