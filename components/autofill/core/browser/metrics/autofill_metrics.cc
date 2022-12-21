@@ -360,6 +360,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case NOT_PASSWORD:
         case SINGLE_USERNAME:
         case NOT_USERNAME:
+        case ONE_TIME_CODE:
         case UPI_VPA:
         case NAME_LAST_FIRST:
         case NAME_LAST_CONJUNCTION:

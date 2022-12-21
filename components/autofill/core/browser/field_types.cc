@@ -132,6 +132,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case NEW_PASSWORD:
     case PROBABLY_NEW_PASSWORD:
     case NOT_NEW_PASSWORD:
+    case ONE_TIME_CODE:
       return false;
 
     case NO_SERVER_DATA:
@@ -323,6 +324,8 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "IBAN_VALUE";
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return "CREDIT_CARD_STANDALONE_VERIFICATION_CODE";
+    case ONE_TIME_CODE:
+      return "ONE_TIME_CODE";
     case MAX_VALID_FIELD_TYPE:
       return "";
   }

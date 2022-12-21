@@ -117,6 +117,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case PRICE:
     case SEARCH_TERM:
     case NUMERIC_QUANTITY:
+    case ONE_TIME_CODE:
       return FieldTypeGroup::kUnfillable;
 
     case UNKNOWN_TYPE:
@@ -376,10 +377,12 @@ ServerFieldType AutofillType::GetStorableType() const {
     case HtmlFieldType::kUpiVpa:
       return UPI_VPA;
 
+    case HtmlFieldType::kOneTimeCode:
+      return ONE_TIME_CODE;
+
     // These types aren't stored; they're transient.
     case HtmlFieldType::kTransactionAmount:
     case HtmlFieldType::kTransactionCurrency:
-    case HtmlFieldType::kOneTimeCode:
     case HtmlFieldType::kMerchantPromoCode:
     case HtmlFieldType::kIban:
       return UNKNOWN_TYPE;
