@@ -1603,7 +1603,7 @@ void RemoteSuggestionsProviderImpl::StoreCategoriesToPrefs() {
                    const std::pair<Category, const CategoryContent*>& right) {
               return category_ranker_->Compare(left.first, right.first);
             });
-  // Convert the relevant info into a base::ListValue for storage.
+  // Convert the relevant info into a base::Value::List for storage.
   base::Value::List list;
   for (const auto& entry : to_store) {
     const Category& category = entry.first;

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <ostream>
+#include <utility>
 
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
@@ -29,11 +30,11 @@ std::set<std::string> ReadDismissedIDsFromPrefs(const PrefService& pref_service,
 void StoreDismissedIDsToPrefs(PrefService* pref_service,
                               const std::string& pref_name,
                               const std::set<std::string>& dismissed_ids) {
-  base::ListValue list;
+  base::Value::List list;
   for (const std::string& dismissed_id : dismissed_ids) {
     list.Append(dismissed_id);
   }
-  pref_service->Set(pref_name, list);
+  pref_service->SetList(pref_name, std::move(list));
 }
 
 }  // namespace prefs

@@ -681,12 +681,12 @@ void ContentSuggestionsService::RestoreDismissedCategoriesFromPrefs() {
 }
 
 void ContentSuggestionsService::StoreDismissedCategoriesToPrefs() {
-  base::ListValue list;
+  base::Value::List list;
   for (const auto& category_provider_pair : dismissed_providers_by_category_) {
     list.Append(category_provider_pair.first.id());
   }
 
-  pref_service_->Set(prefs::kDismissedCategories, list);
+  pref_service_->SetList(prefs::kDismissedCategories, std::move(list));
 }
 
 void ContentSuggestionsService::DestroyCategoryAndItsProvider(
