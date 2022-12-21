@@ -36,8 +36,8 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
@@ -45,27 +45,27 @@ import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/poly
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {FocusConfig} from '../focus_config.js';
-import {GlobalScrollTargetMixin, GlobalScrollTargetMixinInterface} from '../global_scroll_target_mixin.js';
+import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {SyncBrowserProxyImpl, TrustedVaultBannerState} from '../people_page/sync_browser_proxy.js';
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
-import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
+import {MergePasswordsStoreCopiesMixin} from './merge_passwords_store_copies_mixin.js';
 // <if expr="is_win or is_macosx">
 import {PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 // </if>
-import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
+import {PasswordCheckMixin} from './password_check_mixin.js';
 import {AddCredentialFromSettingsUserInteractions, PasswordEditDialogElement} from './password_edit_dialog.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PASSWORD_MANAGER_AUTH_TIMEOUT_PARAM} from './password_view.js';
 import {PasswordsImportDesktopInteractions, recordPasswordsImportInteraction} from './passwords_import_dialog.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
 import {getTemplate} from './passwords_section.html.js';
-import {UserUtilMixin, UserUtilMixinInterface} from './user_util_mixin.js';
+import {UserUtilMixin} from './user_util_mixin.js';
 
 /**
  * Checks if an HTML element is an editable. An editable is either a text
@@ -114,13 +114,7 @@ export interface PasswordsSectionElement {
 const PasswordsSectionElementBase =
     UserUtilMixin(MergePasswordsStoreCopiesMixin(PrefsMixin(
         GlobalScrollTargetMixin(RouteObserverMixin(WebUiListenerMixin(
-            I18nMixin(PasswordCheckMixin(PolymerElement)))))))) as {
-      new (): PolymerElement & PasswordCheckMixinInterface &
-          I18nMixinInterface & WebUiListenerMixinInterface &
-          RouteObserverMixinInterface & GlobalScrollTargetMixinInterface &
-          PrefsMixinInterface & MergePasswordsStoreCopiesMixinInterface &
-          UserUtilMixinInterface,
-    };
+            I18nMixin(PasswordCheckMixin(PolymerElement))))))));
 
 export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {

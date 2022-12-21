@@ -24,22 +24,22 @@ import '../controls/password_prompt_dialog.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
-import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
+import {MergePasswordsStoreCopiesMixin} from './merge_passwords_store_copies_mixin.js';
 import {getTemplate} from './password_check.html.js';
 import {PasswordCheckListItemElement} from './password_check_list_item.js';
-import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
+import {PasswordCheckMixin} from './password_check_mixin.js';
 import {PasswordCheckInteraction, SavedPasswordListChangedListener} from './password_manager_proxy.js';
-import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
-import {UserUtilMixin, UserUtilMixinInterface} from './user_util_mixin.js';
+import {PasswordRequestorMixin} from './password_requestor_mixin.js';
+import {UserUtilMixin} from './user_util_mixin.js';
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 
@@ -65,15 +65,9 @@ export interface SettingsPasswordCheckElement {
 }
 
 const SettingsPasswordCheckElementBase =
-    UserUtilMixin(MergePasswordsStoreCopiesMixin(RouteObserverMixin(
-        WebUiListenerMixin(I18nMixin(PrefsMixin(PasswordRequestorMixin(
-            PasswordCheckMixin((PolymerElement))))))))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & PrefsMixinInterface &
-          PasswordCheckMixinInterface & PasswordRequestorMixinInterface &
-          RouteObserverMixinInterface &
-          MergePasswordsStoreCopiesMixinInterface & UserUtilMixinInterface,
-    };
+    UserUtilMixin(MergePasswordsStoreCopiesMixin(
+        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PrefsMixin(
+            PasswordRequestorMixin(PasswordCheckMixin((PolymerElement)))))))));
 
 export class SettingsPasswordCheckElement extends
     SettingsPasswordCheckElementBase {
