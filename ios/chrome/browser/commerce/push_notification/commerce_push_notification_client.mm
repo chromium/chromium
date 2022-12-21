@@ -11,7 +11,8 @@
 #endif
 
 CommercePushNotificationClient::CommercePushNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kCommerce) {}
+    : OptimizationGuidePushNotificationClient(
+          PushNotificationClientId::kCommerce) {}
 CommercePushNotificationClient::~CommercePushNotificationClient() = default;
 
 void CommercePushNotificationClient::HandleNotificationInteraction(

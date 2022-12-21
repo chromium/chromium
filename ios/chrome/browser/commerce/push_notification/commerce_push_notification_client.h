@@ -5,12 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_COMMERCE_PUSH_NOTIFICATION_COMMERCE_PUSH_NOTIFICATION_CLIENT_H_
 #define IOS_CHROME_BROWSER_COMMERCE_PUSH_NOTIFICATION_COMMERCE_PUSH_NOTIFICATION_CLIENT_H_
 
+#import "ios/chrome/browser/optimization_guide/optimization_guide_push_notification_client.h"
 #import "ios/chrome/browser/push_notification/push_notification_client.h"
 
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
-class CommercePushNotificationClient : public PushNotificationClient {
+class CommercePushNotificationClient
+    : public OptimizationGuidePushNotificationClient {
  public:
   CommercePushNotificationClient();
   ~CommercePushNotificationClient() override;

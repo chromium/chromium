@@ -6,6 +6,8 @@ source_set("optimization_guide") {
   sources = [
     "ios_chrome_hints_manager.h",
     "ios_chrome_hints_manager.mm",
+    "optimization_guide_push_notification_client.h",
+    "optimization_guide_push_notification_client.mm",
     "optimization_guide_service.h",
     "optimization_guide_service.mm",
     "optimization_guide_service_factory.h",
@@ -36,12 +38,16 @@ source_set("optimization_guide") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/push_notification:push_notification_client",
     "//ios/chrome/browser/web_state_list",
     "//ios/web",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
-  frameworks = [ "Foundation.framework" ]
-  public_deps = [ ":download_client_header" ]
+  frameworks = [ "UIKit.framework" ]
+  public_deps = [
+    ":download_client_header",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
 }
 
 source_set("download_client_header") {
@@ -57,6 +63,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "optimization_guide_push_notification_client_unittest.mm",
     "optimization_guide_service_factory_unittest.mm",
     "optimization_guide_service_unittest.mm",
     "optimization_guide_tab_helper_unittest.mm",
@@ -86,6 +93,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/push_notification:push_notification_client",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

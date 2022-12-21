@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <vector>
 
+#import "components/optimization_guide/core/optimization_guide_features.h"
 #import "ios/chrome/browser/commerce/push_notification/commerce_push_notification_client.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
@@ -16,7 +17,8 @@
 #endif
 
 PushNotificationClientManager::PushNotificationClientManager() {
-  if (IsPriceNotificationsEnabled()) {
+  if (IsPriceNotificationsEnabled() &&
+      optimization_guide::features::IsPushNotificationsEnabled()) {
     AddPushNotificationClient(
         std::make_unique<CommercePushNotificationClient>());
   }

@@ -13,6 +13,7 @@ static_library("push_notification") {
   deps = [
     "//base",
     "//components/commerce/core:feature_list",
+    "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/push_notification:push_notification_client",
   ]
 
