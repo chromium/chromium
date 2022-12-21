@@ -1364,7 +1364,7 @@
 <translation id="2251218783371366160">使用系统查看器打开</translation>
 <translation id="225163402930830576">刷新网络</translation>
 <translation id="2251809247798634662">打开新的无痕式窗口</translation>
-<translation id="2252017960592955005">防查看（Beta 版）</translation>
+<translation id="2252017960592955005">防窥探（Beta 版）</translation>
 <translation id="225240747099314620">允许将标识符用于受保护内容（可能需要重新启动计算机）</translation>
 <translation id="2252617660166797081">详细了解自动更改密码</translation>
 <translation id="2255077166240162850">此设备已锁定到其他网域或模式。</translation>
@@ -7860,7 +7860,7 @@
 <translation id="8380266723152870797">窗口名称</translation>
 <translation id="8380941800586852976">危险</translation>
 <translation id="8382677870544805359">您必须将此设备恢复出厂设置才能使用企业功能。</translation>
-<translation id="8382715499079447151">防窥视功能</translation>
+<translation id="8382715499079447151">防窥探功能</translation>
 <translation id="8382913212082956454">复制电子邮件地址(&amp;E)</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />请尝试执行以下问题排查步骤：
     <ph name="BEGIN_LIST" />

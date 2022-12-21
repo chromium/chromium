@@ -3468,7 +3468,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4190828427319282529">I-highlight ang focus ng keyboard</translation>
 <translation id="4193836101014293726">Hindi ma-delete ang profile na ito</translation>
 <translation id="419427585139779713">Maglagay ng paisa-isang pantig</translation>
-<translation id="4194570336751258953">Paganahin ang tap-to-click</translation>
+<translation id="4194570336751258953">I-enable ang tap-to-click</translation>
 <translation id="4195378859392041564">Mag-click sa anumang key gamit ang iyong mouse, at pagkatapos ay pumindot ng key sa keyboard para mag-customize</translation>
 <translation id="4195421689821407315">Hindi secure na pag-download</translation>
 <translation id="4195643157523330669">Buksan sa bagong tab</translation>
@@ -3828,7 +3828,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4535767533210902251">Ang sensor para sa fingerprint ay ang key sa kanang bahagi sa itaas ng iyong keyboard. Pindutin ito nang magaan gamit ang alinmang daliri.</translation>
 <translation id="4536140153723794651">Mga site na palaging puwedeng gumamit ng cookies</translation>
 <translation id="4536769240747010177">Mga Kakayahan sa Pag-tether:</translation>
-<translation id="4538417792467843292">Magtanggal ng salita</translation>
+<translation id="4538417792467843292">I-delete ang salita</translation>
 <translation id="4538792345715658285">Na-install ng patakaran ng enterprise.</translation>
 <translation id="4541123282641193691">Hindi ma-verify ang iyong account. Pakisubukan ulit o i-restart ang Chromebook mo.</translation>
 <translation id="4541662893742891060">Hindi makakonekta sa profile na ito. Para sa technical support, makipag-ugnayan sa iyong carrier.</translation>
@@ -6136,7 +6136,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6743841972744298686">Mga setting ng pag-sync</translation>
 <translation id="6745592621698551453">Mag-update ngayon</translation>
 <translation id="6746124502594467657">Ibaba</translation>
-<translation id="674632704103926902">Paganahin ang pag-tap upang mag-drag</translation>
+<translation id="674632704103926902">I-enable ang i-tap para i-drag</translation>
 <translation id="6748465660675848252">Maaari kang magpatuloy ngunit ang iyong naka-sync na data at mga setting lang ang maibabalik. Mawawala ang lahat ng iyong lokal na data.</translation>
 <translation id="6748980958975836188">Nabasa at sinasang-ayunan ko ang <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Chrome at ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6750757184909117990">I-disable ang Cellular</translation>

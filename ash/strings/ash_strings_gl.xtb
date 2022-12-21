@@ -988,7 +988,7 @@ Nova instalación</translation>
 <translation id="6565007273808762236">Non se puido establecer conexión coa eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{Actualiza o dispositivo en 1 hora}other{Actualiza o dispositivo en # horas}}</translation>
 <translation id="6570902864550063460">Cargando por USB</translation>
-<translation id="6574587113394758819">Ocultouse unha notificación da aplicación <ph name="APP_TITLE" /> porque está activada a protección fronte a usuarios non desexados</translation>
+<translation id="6574587113394758819">Ocultouse unha notificación da aplicación <ph name="APP_TITLE" /> porque está activada a protección fronte a miróns</translation>
 <translation id="6574622320167699133">O teléfono desbloqueou o dispositivo. Para acceder, toca ou fai clic.</translation>
 <translation id="6578407462441924264">Sen nome</translation>
 <translation id="6585808820553845416">A sesión finaliza dentro de <ph name="SESSION_TIME_REMAINING" /> .</translation>
@@ -997,7 +997,7 @@ Nova instalación</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="6612802754306526077">Seleccionouse o modo de gravación da pantalla</translation>
 <translation id="6614169507485700968">A pantalla de privacidade está activada</translation>
-<translation id="6625718907317144388">Ocultáronse notificacións das aplicacións <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" />, ademais doutras, porque está activada a protección fronte a usuarios non desexados</translation>
+<translation id="6625718907317144388">Ocultáronse notificacións das aplicacións <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" />, ademais doutras, porque está activada a protección fronte a miróns</translation>
 <translation id="6627638273713273709">Buscar+Maiús+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> quere usar o micrófono</translation>
 <translation id="6637729079642709226">Cambiar hora</translation>
@@ -1308,7 +1308,7 @@ Nova instalación</translation>
 <translation id="8374601332003098278">Premer Introducir para gravar parte da pantalla</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o teu teléfono conectaranse automaticamente</translation>
 <translation id="8380784334203145311">Boas noites!</translation>
-<translation id="8382715499079447151">Protección fronte a usuarios non desexados</translation>
+<translation id="8382715499079447151">Protección fronte a miróns</translation>
 <translation id="8388750414311082622">O último escritorio non se pode quitar.</translation>
 <translation id="8394567579869570560">O teu pai ou nai bloqueou este dispositivo</translation>
 <translation id="8401850874595457088">Abrir menú de idioma</translation>
@@ -1346,7 +1346,7 @@ Nova instalación</translation>
 <translation id="857201607579416096">O menú moveuse á esquina inferior dereita da pantalla.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordena as túas aplicacións por nome ou cor</translation>
-<translation id="8614517853887502247">Ocultáronse notificacións das aplicacións <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> porque está activada a protección fronte a usuarios non desexados</translation>
+<translation id="8614517853887502247">Ocultáronse notificacións das aplicacións <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> porque está activada a protección fronte a miróns</translation>
 <translation id="8627191004499078455">Dispositivo conectado a: <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Configuración de accesibilidade</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
