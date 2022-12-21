@@ -1437,6 +1437,10 @@ void StyleResolver::ApplyBaseStyle(
       }
     }
 
+    // Sets flags related to length unit conversions which may have taken
+    // place during StyleBuilder::ApplyProperty.
+    ApplyLengthConversionFlags(state);
+
     // AdjustComputedStyle() will set these flags if needed,
     // but will (generally) not unset them, so reset them before
     // computation.
