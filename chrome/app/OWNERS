@@ -35,10 +35,8 @@ per-file printing_strings.grdp=file://printing/OWNERS
 per-file profiles_strings.grdp=file://chrome/app/profiles_strings_grdp/OWNERS
 
 per-file *settings*strings*.grdp=file://chrome/browser/resources/settings/OWNERS
-
-per-file settings_chromium_strings.grdp=sauski@google.com
-per-file settings_google_chrome_strings.grdp=sauski@google.com
-per-file settings_strings.grdp=sauski@google.com
+per-file *settings*strings*.grdp=file://ui/webui/PLATFORM_OWNERS
+per-file *settings*strings*.grdp=sauski@google.com
 
 per-file vr_strings.grdp=file://chrome/browser/vr/OWNERS
 
