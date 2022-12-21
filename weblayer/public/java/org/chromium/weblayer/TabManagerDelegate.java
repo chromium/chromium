@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 
-import org.chromium.webengine.interfaces.IBooleanCallback;
 import org.chromium.webengine.interfaces.ITabCallback;
 import org.chromium.webengine.interfaces.ITabListObserverDelegate;
 import org.chromium.webengine.interfaces.ITabManagerDelegate;
@@ -61,18 +60,6 @@ class TabManagerDelegate extends ITabManagerDelegate.Stub {
                 callback.onResult(TabParams.buildParcelable(newTab));
             } catch (RemoteException e) {
             }
-        });
-    }
-
-    @Override
-    public void tryNavigateBack(IBooleanCallback callback) {
-        mHandler.post(() -> {
-            mBrowser.tryNavigateBack(didNavigate -> {
-                try {
-                    callback.onResult(didNavigate);
-                } catch (RemoteException e) {
-                }
-            });
         });
     }
 }

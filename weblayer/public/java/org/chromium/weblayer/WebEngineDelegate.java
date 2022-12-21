@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 
+import org.chromium.webengine.interfaces.IBooleanCallback;
 import org.chromium.webengine.interfaces.IWebEngineDelegate;
 import org.chromium.webengine.interfaces.IWebEngineDelegateClient;
 import org.chromium.webengine.interfaces.IWebEngineParams;
@@ -63,6 +64,18 @@ class WebEngineDelegate extends IWebEngineDelegate.Stub {
         args.putBoolean(BrowserFragmentArgs.USE_VIEW_MODEL, false);
 
         return args;
+    }
+
+    @Override
+    public void tryNavigateBack(IBooleanCallback callback) {
+        mHandler.post(() -> {
+            mBrowser.tryNavigateBack(didNavigate -> {
+                try {
+                    callback.onResult(didNavigate);
+                } catch (RemoteException e) {
+                }
+            });
+        });
     }
 
     @Override

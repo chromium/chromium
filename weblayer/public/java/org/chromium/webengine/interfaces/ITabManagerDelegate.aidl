@@ -4,7 +4,6 @@
 
 package org.chromium.webengine.interfaces;
 
-import org.chromium.webengine.interfaces.IBooleanCallback;
 import org.chromium.webengine.interfaces.ITabProxy;
 import org.chromium.webengine.interfaces.ITabCallback;
 import org.chromium.webengine.interfaces.ITabListObserverDelegate;
@@ -15,6 +14,5 @@ oneway interface ITabManagerDelegate {
     void notifyInitialTabs() = 2;
 
     void getActiveTab(ITabCallback callback) = 3;
-    void tryNavigateBack(IBooleanCallback callback) = 4;
-    void createTab(ITabCallback callback) = 5;
+    void createTab(ITabCallback callback) = 4;
 }

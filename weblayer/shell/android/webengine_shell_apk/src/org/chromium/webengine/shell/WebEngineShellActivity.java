@@ -193,7 +193,7 @@ public class WebEngineShellActivity extends AppCompatActivity {
             super.onBackPressed();
             return;
         }
-        ListenableFuture<Boolean> tryNavigateBackFuture = mTabManager.tryNavigateBack();
+        ListenableFuture<Boolean> tryNavigateBackFuture = fragment.getWebEngine().tryNavigateBack();
         Futures.addCallback(tryNavigateBackFuture, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean didNavigate) {

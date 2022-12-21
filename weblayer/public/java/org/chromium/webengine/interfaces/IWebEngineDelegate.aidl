@@ -4,8 +4,10 @@
 
 package org.chromium.webengine.interfaces;
 
+import org.chromium.webengine.interfaces.IBooleanCallback;
 import org.chromium.webengine.interfaces.ITabListObserverDelegate;
 
 oneway interface IWebEngineDelegate {
     void shutdown() = 1;
+    void tryNavigateBack(IBooleanCallback callback) = 2;
 }
