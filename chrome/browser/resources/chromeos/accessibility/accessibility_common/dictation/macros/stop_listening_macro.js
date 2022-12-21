@@ -18,7 +18,7 @@ export class StopListeningMacro extends Macro {
   }
 
   /** @override */
-  runMacro() {
+  run() {
     chrome.accessibilityPrivate.toggleDictation();
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }

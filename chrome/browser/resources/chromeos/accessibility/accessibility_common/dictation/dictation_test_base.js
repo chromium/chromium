@@ -471,7 +471,7 @@ DictationE2ETestBase = class extends E2ETestBase {
     }
 
     if (expectedName) {
-      assertEquals(expectedName, macro.getMacroNameString());
+      assertEquals(expectedName, macro.getNameAsString());
     }
     if (expectedRepeat) {
       assertEquals(expectedRepeat, macro.repeat_);

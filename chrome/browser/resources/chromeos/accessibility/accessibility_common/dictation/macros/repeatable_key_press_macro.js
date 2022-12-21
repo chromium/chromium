@@ -43,7 +43,7 @@ export class RepeatableKeyPressMacro extends Macro {
   }
 
   /** @override */
-  runMacro() {
+  run() {
     for (let i = 0; i < this.repeat_; i++) {
       this.doKeyPress();
     }

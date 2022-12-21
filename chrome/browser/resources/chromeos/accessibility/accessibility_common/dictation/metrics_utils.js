@@ -25,19 +25,19 @@ export class MetricsUtils {
   /** @param {!Macro} macro */
   static recordMacroRecognized(macro) {
     chrome.metricsPrivate.recordSparseValue(
-        MetricsUtils.MACRO_RECOGNIZED_METRIC, macro.getMacroName());
+        MetricsUtils.MACRO_RECOGNIZED_METRIC, macro.getName());
   }
 
   /** @param {!Macro} macro */
   static recordMacroSucceeded(macro) {
     chrome.metricsPrivate.recordSparseValue(
-        MetricsUtils.MACRO_SUCCEEDED_METRIC, macro.getMacroName());
+        MetricsUtils.MACRO_SUCCEEDED_METRIC, macro.getName());
   }
 
   /** @param {!Macro} macro */
   static recordMacroFailed(macro) {
     chrome.metricsPrivate.recordSparseValue(
-        MetricsUtils.MACRO_FAILED_METRIC, macro.getMacroName());
+        MetricsUtils.MACRO_FAILED_METRIC, macro.getName());
   }
 
   /** @param {boolean} used */

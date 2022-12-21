@@ -72,7 +72,7 @@ export class Macro {
    * Gets the description of the macro the user intends to execute.
    * @return {MacroName}
    */
-  getMacroName() {
+  getName() {
     return this.macroName_;
   }
 
@@ -80,7 +80,7 @@ export class Macro {
    * Gets the human-readable description of the macro. Useful for debugging.
    * @return {string}
    */
-  getMacroNameString() {
+  getNameAsString() {
     const name =
         Object.keys(MacroName).find(key => MacroName[key] === this.macroName_);
     return name ? name : 'UNKNOWN';
@@ -99,7 +99,7 @@ export class Macro {
    * @returns {RunMacroResult}
    * @abstract
    */
-  runMacro() {}
+  run() {}
 
   /**
    * Protected helper method to create a CheckContextResult with an error.

@@ -21,7 +21,7 @@ export class ListCommandsMacro extends Macro {
   }
 
   /** @override */
-  runMacro() {
+  run() {
     // Note that this will open a new tab, ending the current Dictation session
     // by changing the input focus.
     globalThis.open(

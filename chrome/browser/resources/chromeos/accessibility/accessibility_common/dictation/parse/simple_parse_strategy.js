@@ -330,9 +330,8 @@ export class SimpleParseStrategy extends ParseStrategy {
       // "Delete the previous word" should be parsed as a DELETE_PREV_WORD
       // instead of SMART_DELETE_PHRASE with phrase "the previous word".
       // Prioritize other deletion macros over SMART_DELETE_PHRASE.
-      return macros[0].getMacroName() === MacroName.SMART_DELETE_PHRASE ?
-          macros[1] :
-          macros[0];
+      return macros[0].getName() === MacroName.SMART_DELETE_PHRASE ? macros[1] :
+                                                                     macros[0];
     } else if (macros.length > 2) {
       console.warn(`Unexpected ambiguous macros found for text: ${text}.`);
       return macros[0];

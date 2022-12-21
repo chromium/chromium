@@ -36,7 +36,7 @@ export class InputTextViewMacro extends Macro {
   }
 
   /** @override */
-  runMacro() {
+  run() {
     if (!this.inputController_.isActive()) {
       return this.createRunMacroResult_(
           /*isSuccess=*/ false, MacroError.FAILED_ACTUATION);
