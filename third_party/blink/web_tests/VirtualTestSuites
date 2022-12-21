@@ -662,9 +662,9 @@
   {
     "prefix": "fsa-incognito",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/file-system-access"],
+    "bases": ["external/wpt/file-system-access", "external/wpt/fs"],
     "args": ["--enable-features=IncognitoFileSystemContextForTesting"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
   {
     "prefix": "controls-refresh-hc",
