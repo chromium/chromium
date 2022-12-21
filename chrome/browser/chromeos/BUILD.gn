@@ -3731,6 +3731,8 @@ source_set("chromeos") {
       "../ash/chromebox_for_meetings/network_settings/network_settings_service.h",
       "../ash/chromebox_for_meetings/service_adaptor.cc",
       "../ash/chromebox_for_meetings/service_adaptor.h",
+      "../ash/chromebox_for_meetings/xu_camera/xu_camera_service.cc",
+      "../ash/chromebox_for_meetings/xu_camera/xu_camera_service.h",
     ]
     deps += [
       "//ash/services/chromebox_for_meetings/public/cpp",
@@ -5067,6 +5069,7 @@ source_set("unit_tests") {
       "../ash/chromebox_for_meetings/diagnostics/diagnostics_service_unittest.cc",
       "../ash/chromebox_for_meetings/logger/cfm_logger_service_unittest.cc",
       "../ash/chromebox_for_meetings/service_adaptor_unittest.cc",
+      "../ash/chromebox_for_meetings/xu_camera/xu_camera_service_unittest.cc",
     ]
     deps += [ "//ash/services/chromebox_for_meetings/public/cpp:test_support" ]
   }
