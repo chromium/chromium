@@ -18,7 +18,7 @@ function isCategoryButtonActive(element) {
   return element.classList.contains(ACTIVE_CATEGORY_BUTTON);
 }
 
-export function GIFTestSuite(category) {
+export function GifTestSuite(category) {
   suite(`emoji-picker-extension-${category}`, () => {
     /** @type {!EmojiPicker} */
     let emojiPicker;
@@ -27,7 +27,7 @@ export function GIFTestSuite(category) {
     /** @type {function(...!string): ?HTMLElement} */
     let findEmojiFirstButton;
     /** @type {Array<string>} */
-    const categoryList = ['emoji', 'symbol', 'emoticon', 'GIF'];
+    const categoryList = ['emoji', 'symbol', 'emoticon', 'gif'];
     /** @type {number} */
     let categoryIndex;
 
@@ -47,7 +47,7 @@ export function GIFTestSuite(category) {
           ],
           'emoticon': ['/emoticon_test_ordering.json'],
           'symbol': ['/symbol_test_ordering.json'],
-          'GIF': [''],
+          'gif': [''],
         },
       });
 

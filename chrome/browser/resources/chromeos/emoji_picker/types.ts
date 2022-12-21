@@ -60,5 +60,5 @@ export enum CategoryEnum {
   EMOJI = 'emoji',
   EMOTICON = 'emoticon',
   SYMBOL = 'symbol',
-  GIF = 'GIF',
+  GIF = 'gif',
 }

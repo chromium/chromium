@@ -146,7 +146,7 @@ TEST_F('EmojiPickerPrefixSearchTest', 'All', function() {
   mocha.run();
 });
 
-var EmojiPickerGIFTest = class extends PolymerTest {
+var EmojiPickerGifTest = class extends PolymerTest {
   /** @override */
   get featureList() {
     return {enabled: ['ash::features::kImeSystemEmojiPickerGIFSupport']};
@@ -159,6 +159,6 @@ var EmojiPickerGIFTest = class extends PolymerTest {
   }
 };
 
-TEST_F('EmojiPickerGIFTest', 'All', function() {
+TEST_F('EmojiPickerGifTest', 'All', function() {
   mocha.run();
 });

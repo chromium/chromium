@@ -96,7 +96,7 @@ export const GIF_CATEGORY_METADATA:
       },
     ];
 
-const CATEGORY_TABS = {
+export const CATEGORY_TABS = {
   'emoji': [
     {
       name: 'Smileys & Emotions',
@@ -172,6 +172,16 @@ export const SUBCATEGORY_TABS = makeGroupTabs(
     CATEGORY_METADATA.map(item => item.name),
     CATEGORY_TABS,
 );
+
+export const gifCategoryTabs = (categories: Record<string, Array<{
+                                                     name: string,
+                                                     pagination?: number,
+                                                     icon?: string,
+                                                   }>>) =>
+    makeGroupTabs(
+        GIF_CATEGORY_METADATA.map(item => item.name),
+        categories,
+    );
 
 // A mapping from each category to the index of their first tab.
 export const TABS_CATEGORY_START_INDEX: Map<CategoryEnum, number> = new Map(
