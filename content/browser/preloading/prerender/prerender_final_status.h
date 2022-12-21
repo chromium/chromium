@@ -76,7 +76,11 @@ enum class PrerenderFinalStatus {
   kActivationNavigationParameterMismatch = 50,
   kActivatedInBackground = 51,
   kEmbedderHostDisallowed = 52,
-  kMaxValue = kEmbedderHostDisallowed,
+  // Called when encounter failures during synchronous activation.
+  // TODO(https://crbug.com/1363550): Remove this reason if no sample is
+  // recorded in stable, or look into the reason if there are.
+  kActivationNavigationDestroyedBeforeSuccess = 53,
+  kMaxValue = kActivationNavigationDestroyedBeforeSuccess,
 };
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FINAL_STATUS_H_

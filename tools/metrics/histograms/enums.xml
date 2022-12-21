@@ -82849,6 +82849,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="50" label="kActivationNavigationParameterMismatch"/>
   <int value="51" label="kActivatedInBackground"/>
   <int value="52" label="kEmbedderHostDisallowed"/>
+  <int value="53" label="kActivationNavigationDestroyedBeforeSuccess"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

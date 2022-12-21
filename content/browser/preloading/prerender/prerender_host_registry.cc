@@ -604,11 +604,22 @@ void PrerenderHostRegistry::OnActivationFinished(int frame_tree_node_id) {
   DCHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
                          frame_tree_node_id));
 
-  if (!reserved_prerender_host_)
+  if (!reserved_prerender_host_) {
+    // The activation finished successfully and has already activated the
+    // reserved host.
     return;
+  }
 
+  // The activation navigation is cancelled before activating the prerendered
+  // page, which means the activation failed.
   DCHECK_EQ(frame_tree_node_id, reserved_prerender_host_->frame_tree_node_id());
-  reserved_prerender_host_.reset();
+
+  // TODO(https://crbug.com/1378151): Monitor the final status metric and see
+  // whether it could be possible.
+  ScheduleToDeleteAbandonedHost(
+      std::move(reserved_prerender_host_),
+      PrerenderCancellationReason(
+          PrerenderFinalStatus::kActivationNavigationDestroyedBeforeSuccess));
 }
 
 PrerenderHost* PrerenderHostRegistry::FindNonReservedHostById(

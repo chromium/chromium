@@ -8553,6 +8553,7 @@ domain Page
       ActivationNavigationParameterMismatch
       ActivatedInBackground
       EmbedderHostDisallowed
+      ActivationNavigationDestroyedBeforeSuccess
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted
