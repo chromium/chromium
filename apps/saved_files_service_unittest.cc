@@ -50,7 +50,7 @@ class SavedFilesServiceUnitTest : public testing::Test {
         "  ]"
         "}";
     testing::Test::SetUp();
-    extension_ = env_.MakeExtension(base::test::ParseJson(kManifest));
+    extension_ = env_.MakeExtension(base::test::ParseJsonDict(kManifest));
     service_ = SavedFilesService::Get(env_.profile());
     path_ = base::FilePath(FILE_PATH_LITERAL("filename.ext"));
   }
@@ -152,7 +152,7 @@ TEST_F(SavedFilesServiceUnitTest, NoRetainEntriesPermissionTest) {
   static const char kManifest[] =
       "{\"app\": {\"background\": {\"scripts\": [\"background.js\"]}},"
       "\"permissions\": [\"fileSystem\"]}";
-  extension_ = env_.MakeExtension(base::test::ParseJson(kManifest));
+  extension_ = env_.MakeExtension(base::test::ParseJsonDict(kManifest));
   service_->RegisterFileEntry(extension_->id(), GenerateId(1), path_, true);
   TRACE_CALL(CheckEntrySequenceNumber(1, 0));
   SavedFileEntry entry;

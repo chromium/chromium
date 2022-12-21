@@ -45,14 +45,14 @@ class DevicePermissionsManagerTest : public testing::Test {
     testing::Test::SetUp();
     env_ = std::make_unique<extensions::TestExtensionEnvironment>();
     extension_ = env_->MakeExtension(
-        base::test::ParseJson("{"
-                              "  \"app\": {"
-                              "    \"background\": {"
-                              "      \"scripts\": [\"background.js\"]"
-                              "    }"
-                              "  },"
-                              "  \"permissions\": [ \"hid\", \"usb\" ]"
-                              "}"));
+        base::test::ParseJsonDict("{"
+                                  "  \"app\": {"
+                                  "    \"background\": {"
+                                  "      \"scripts\": [\"background.js\"]"
+                                  "    }"
+                                  "  },"
+                                  "  \"permissions\": [ \"hid\", \"usb\" ]"
+                                  "}"));
 
     // Set fake device manager for extensions::UsbDeviceManager.
     mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager;

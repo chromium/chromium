@@ -35,19 +35,14 @@ using content::BrowserThread;
 
 namespace {
 
-base::Value::Dict MakeExtensionManifest(const base::Value& manifest_extra) {
+base::Value::Dict MakeExtensionManifest(
+    const base::Value::Dict& manifest_extra) {
   base::Value::Dict manifest = DictionaryBuilder()
                                    .Set("name", "Extension")
                                    .Set("version", "1.0")
                                    .Set("manifest_version", 2)
                                    .BuildDict();
-  if (manifest_extra.is_dict()) {
-    manifest.Merge(manifest_extra.GetDict().Clone());
-  } else {
-    std::string manifest_json;
-    base::JSONWriter::Write(manifest_extra, &manifest_json);
-    ADD_FAILURE() << "Expected dictionary; got \"" << manifest_json << "\"";
-  }
+  manifest.Merge(manifest_extra.Clone());
   return manifest;
 }
 
@@ -128,7 +123,7 @@ ExtensionPrefs* TestExtensionEnvironment::GetExtensionPrefs() {
 }
 
 const Extension* TestExtensionEnvironment::MakeExtension(
-    const base::Value& manifest_extra) {
+    const base::Value::Dict& manifest_extra) {
   base::Value::Dict manifest = MakeExtensionManifest(manifest_extra);
   scoped_refptr<const Extension> result =
       ExtensionBuilder().SetManifest(std::move(manifest)).Build();
@@ -137,7 +132,7 @@ const Extension* TestExtensionEnvironment::MakeExtension(
 }
 
 const Extension* TestExtensionEnvironment::MakeExtension(
-    const base::Value& manifest_extra,
+    const base::Value::Dict& manifest_extra,
     const std::string& id) {
   base::Value::Dict manifest = MakeExtensionManifest(manifest_extra);
   scoped_refptr<const Extension> result =

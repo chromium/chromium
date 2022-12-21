@@ -78,11 +78,11 @@ class TestExtensionEnvironment {
   // The Extension has a default manifest of {name: "Extension",
   // version: "1.0", manifest_version: 2}, and values in
   // manifest_extra override these defaults.
-  const Extension* MakeExtension(const base::Value& manifest_extra);
+  const Extension* MakeExtension(const base::Value::Dict& manifest_extra);
 
   // Use a specific extension ID instead of the default generated in
   // Extension::Create.
-  const Extension* MakeExtension(const base::Value& manifest_extra,
+  const Extension* MakeExtension(const base::Value::Dict& manifest_extra,
                                  const std::string& id);
 
   // Generates a valid packaged app manifest with the given ID. If |install|

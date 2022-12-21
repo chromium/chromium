@@ -187,7 +187,7 @@ TEST_F(DeclarativeChromeContentRulesRegistryTest, ActiveRulesDoesntGrow) {
   std::vector<const api::events::Rule*> rules({&rule});
 
   const Extension* extension =
-      env()->MakeExtension(base::test::ParseJson("{\"page_action\": {}}"));
+      env()->MakeExtension(base::test::ParseJsonDict("{\"page_action\": {}}"));
   registry->AddRulesImpl(extension->id(), rules);
 
   registry->DidFinishNavigation(tab.get(), &navigation_handle);

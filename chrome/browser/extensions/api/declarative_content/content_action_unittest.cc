@@ -37,6 +37,7 @@ namespace extensions {
 namespace {
 
 using base::test::ParseJson;
+using base::test::ParseJsonDict;
 using testing::HasSubstr;
 using ContentActionType = declarative_content_constants::ContentActionType;
 using extensions::mojom::ManifestLocation;
@@ -264,7 +265,7 @@ TEST(DeclarativeContentActionTest, SetIcon) {
     base::Value::Dict dict = builder.BuildDict();
 
     const Extension* extension = env.MakeExtension(
-        ParseJson(R"({"page_action": {"default_title": "Extension"}})"));
+        ParseJsonDict(R"({"page_action": {"default_title": "Extension"}})"));
     base::HistogramTester histogram_tester;
     TestingProfile profile;
     std::string error;
@@ -322,7 +323,7 @@ TEST(DeclarativeContentActionTest, SetInvisibleIcon) {
 
   // Expect an error and no instance to be created.
   const Extension* extension = env.MakeExtension(
-      ParseJson(R"({"page_action": {"default_title": "Extension"}})"));
+      ParseJsonDict(R"({"page_action": {"default_title": "Extension"}})"));
   base::HistogramTester histogram_tester;
   TestingProfile profile;
   std::string error;

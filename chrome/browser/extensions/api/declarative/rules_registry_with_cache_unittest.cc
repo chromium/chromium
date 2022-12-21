@@ -55,16 +55,16 @@ class RulesRegistryWithCacheTest : public testing::Test {
   void SetUp() override {
     // Note that env_.MakeExtension below also forces the creation of
     // ExtensionService.
-    base::DictionaryValue manifest_extra;
+    base::Value::Dict manifest_extra;
     std::string key;
     CHECK(Extension::ProducePEM("test extension 1", &key));
-    manifest_extra.SetStringKey(manifest_keys::kPublicKey, key);
+    manifest_extra.Set(manifest_keys::kPublicKey, key);
     extension1_ = env_.MakeExtension(manifest_extra);
     CHECK(extension1_.get());
 
     // Different "key" values for the two extensions ensure a different ID.
     CHECK(Extension::ProducePEM("test extension 2", &key));
-    manifest_extra.SetStringKey(manifest_keys::kPublicKey, key);
+    manifest_extra.Set(manifest_keys::kPublicKey, key);
     extension2_ = env_.MakeExtension(manifest_extra);
     CHECK(extension2_.get());
     CHECK_NE(extension2_->id(), extension1_->id());
