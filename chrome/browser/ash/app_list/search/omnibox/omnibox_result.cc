@@ -6,15 +6,18 @@
 
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/search_engines/util.h"
@@ -30,6 +33,20 @@ using CrosApiSearchResult = crosapi::mojom::SearchResult;
 
 namespace app_list {
 namespace {
+
+using ::ash::string_matching::FuzzyTokenizedStringMatch;
+using ::ash::string_matching::TokenizedString;
+
+// Parameters for FuzzyTokenizedStringMatch.
+constexpr bool kUseWeightedRatio = false;
+
+constexpr double kRelevanceThreshold = 0.32;
+
+// Flag to enable/disable diacritics stripping.
+constexpr bool kStripDiacritics = true;
+
+// Flag to enable/disable acronym matcher.
+constexpr bool kUseAcronymMatcher = true;
 
 // Priority numbers for deduplication. Higher numbers indicate higher priority.
 constexpr int kRichEntityPriority = 2;
@@ -77,9 +94,6 @@ OmniboxResult::OmniboxResult(Profile* profile,
                   ? Category::kSearchAndAssistant
                   : Category::kWeb);
 
-  // Derive relevance from omnibox relevance and normalize it to [0, 1].
-  set_relevance(search_result_->relevance / kMaxOmniboxScore);
-
   if (IsRichEntity()) {
     dedup_priority_ = kRichEntityPriority;
   } else if (search_result_->omnibox_type ==
@@ -97,6 +111,10 @@ OmniboxResult::OmniboxResult(Profile* profile,
   UpdateIcon();
   UpdateTitleAndDetails();
 
+  // Requires the title for fuzzy match and thus must be calculated after the
+  // title is set.
+  UpdateRelevance();
+
   if (crosapi::OptionalBoolIsTrue(search_result_->is_omnibox_search))
     InitializeButtonActions({ash::SearchResultActionType::kRemove});
 
@@ -107,6 +125,47 @@ OmniboxResult::OmniboxResult(Profile* profile,
 OmniboxResult::~OmniboxResult() {
   if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
     dark_light_mode_controller->RemoveObserver(this);
+}
+
+void OmniboxResult::UpdateRelevance() {
+  double normalized_autocomplete_relevance =
+      search_result_->relevance / kMaxOmniboxScore;
+  bool fuzzy_match_cutoff_enabled = base::GetFieldTrialParamByFeatureAsBool(
+      search_features::kLauncherFuzzyMatchForOmnibox, "enable_cutoff", false);
+  bool fuzzy_match_relevance_enabled = base::GetFieldTrialParamByFeatureAsBool(
+      search_features::kLauncherFuzzyMatchForOmnibox, "enable_relevance",
+      false);
+
+  if (!fuzzy_match_cutoff_enabled && !fuzzy_match_relevance_enabled) {
+    // Derive relevance from autocomplete relevance and normalize it to [0, 1].
+    set_relevance(normalized_autocomplete_relevance);
+    return;
+  }
+
+  double title_relevance = CalculateTitleRelevance();
+  if (fuzzy_match_cutoff_enabled) {
+    if (title_relevance < kRelevanceThreshold) {
+      scoring().filter = true;
+    }
+    set_relevance(normalized_autocomplete_relevance);
+  } else {
+    set_relevance((normalized_autocomplete_relevance + title_relevance) / 2);
+  }
+}
+
+double OmniboxResult::CalculateTitleRelevance() const {
+  const TokenizedString tokenized_title(title(), TokenizedString::Mode::kWords);
+  const TokenizedString tokenized_query(query_,
+                                        TokenizedString::Mode::kCamelCase);
+
+  if (tokenized_query.text().empty() || tokenized_title.text().empty()) {
+    static constexpr double kDefaultRelevance = 0.0;
+    return kDefaultRelevance;
+  }
+
+  FuzzyTokenizedStringMatch match;
+  return match.Relevance(tokenized_query, tokenized_title, kUseWeightedRatio,
+                         kStripDiacritics, kUseAcronymMatcher);
 }
 
 void OmniboxResult::Open(int event_flags) {

@@ -16,11 +16,14 @@ namespace {
 
 using testing::ElementsAreArray;
 
-std::unique_ptr<TestResult> MakeResult(const std::string& id,
-                                       double normalized_relevance) {
+std::unique_ptr<TestResult> MakeResult(
+    const std::string& id,
+    double normalized_relevance,
+    ChromeSearchResult::MetricsType metrics_type =
+        ChromeSearchResult::MetricsType::OMNIBOX_URL_WHAT_YOU_TYPED) {
   // |relevance| must be set but is unused.
   return std::make_unique<TestResult>(id, /*relevance=*/0.0,
-                                      normalized_relevance);
+                                      normalized_relevance, metrics_type);
 }
 
 Results MakeAnswers(
@@ -253,6 +256,22 @@ TEST_F(BestMatchRankerTest, RankerResetBetweenQueries) {
       MakeAnswers({{"files_1", 0.7}, {"files_2", 0.97}});
   ranker_.UpdateResultRanks(results_2, ProviderType::kFileSearch);
   ExpectBestMatchOrderAndRanks({{"files_2", 0}});
+}
+
+TEST_F(BestMatchRankerTest, IgnoreSearchSuggest) {
+  ResultsMap results_map;
+
+  Results results;
+  results.push_back(MakeResult(
+      "omni_1", 0.99, ChromeSearchResult::MetricsType::OMNIBOX_SEARCH_SUGGEST));
+  results.push_back(MakeResult(
+      "omni_2", 0.92,
+      ChromeSearchResult::MetricsType::OMNIBOX_RECENTLY_VISITED_WEBSITE));
+
+  // Simulate one provider returning.
+  results_map[ResultType::kOmnibox] = std::move(results);
+  ranker_.UpdateResultRanks(results_map, ProviderType::kOmnibox);
+  ExpectBestMatchOrderAndRanks({{"omni_2", 0.99}});
 }
 
 }  // namespace app_list::test

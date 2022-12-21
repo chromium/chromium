@@ -62,6 +62,12 @@ class OmniboxResult : public ChromeSearchResult,
   // description.
   bool IsUrlResultWithDescription() const;
 
+  // Returns the relevance from a fuzzy string match between the query and
+  // title.
+  double CalculateTitleRelevance() const;
+
+  void UpdateRelevance();
+
   // Returns true if match has an image url.
   bool IsRichEntity() const;
   void FetchRichEntityImage(const GURL& url);

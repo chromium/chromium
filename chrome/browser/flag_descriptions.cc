@@ -6046,6 +6046,12 @@ const char kLauncherKeywordExtractionScoringDescription[] =
     "Enables extraction of keywords from query then calculate score from "
     "extracted keyword in the launcher.";
 
+const char kLauncherFuzzyMatchForOmniboxName[] =
+    "Omnibox Results Fuzzy match experiment";
+const char kLauncherFuzzyMatchForOmniboxDescription[] =
+    "To evaluate the viability of a Fuzzy match on Omnibox results to "
+    "downweight search sugestions";
+
 const char kMacAddressRandomizationName[] = "MAC address randomization";
 const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "

@@ -63,6 +63,7 @@ bool ShouldIgnoreResult(const ChromeSearchResult* result) {
          result->metrics_type() == ash::OMNIBOX_CALCULATOR ||
          result->metrics_type() == ash::OMNIBOX_WEB_QUERY ||
          result->metrics_type() == ash::OMNIBOX_SEARCH_SUGGEST ||
+         result->metrics_type() == ash::OMNIBOX_SEARCH_SUGGEST_ENTITY ||
          result->metrics_type() == ash::OMNIBOX_SUGGEST_PERSONALIZED;
 }
 

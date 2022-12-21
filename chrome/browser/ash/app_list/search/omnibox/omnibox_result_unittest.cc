@@ -16,8 +16,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
@@ -184,11 +186,12 @@ class OmniboxResultTest : public testing::Test {
   std::unique_ptr<OmniboxResult> CreateOmniboxResult(
       const std::string& destination_url,
       AutocompleteMatchType::Type type,
-      const GURL& image_url = GURL()) {
+      const GURL& image_url = GURL(),
+      const std::u16string query = kFullQuery) {
     AutocompleteMatch match;
     match.search_terms_args =
-        std::make_unique<TemplateURLRef::SearchTermsArgs>(kFullQuery);
-    match.search_terms_args->original_query = kFullQuery;
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
+    match.search_terms_args->original_query = query;
     match.relevance = kRelevance;
     match.destination_url = GURL(destination_url);
     match.stripped_destination_url = match.destination_url;
@@ -210,7 +213,7 @@ class OmniboxResultTest : public testing::Test {
         profile_.get(), app_list_controller_delegate_.get(),
         crosapi::CreateResult(match, /*controller=*/nullptr,
                               favicon_cache_.get(), bookmark_model_, input_),
-        /*query=*/kFullQuery);
+        /*query=*/query);
   }
 
   const GURL& GetLastOpenedUrl() const {
@@ -232,7 +235,7 @@ class OmniboxResultTest : public testing::Test {
 
  protected:
   network::TestURLLoaderFactory test_url_loader_factory_;
-
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
 
   testing::NiceMock<favicon::MockFaviconService> favicon_service_;
@@ -247,6 +250,7 @@ TEST_F(OmniboxResultTest, Basic) {
   EXPECT_EQ(kExampleContents, result->details());
   EXPECT_EQ(kExampleDescription, result->title());
   EXPECT_EQ(kAppListRelevance, result->relevance());
+  EXPECT_FALSE(result->scoring().filter);
 
   result->Open(0);
   EXPECT_EQ(kExampleUrl, GetLastOpenedUrl().spec());
@@ -468,6 +472,47 @@ TEST_F(OmniboxResultTest, SearchResultText) {
 
   // Accessible name should not be set.
   EXPECT_TRUE(result->accessible_name().empty());
+}
+
+TEST_F(OmniboxResultTest, RelevanceWithFuzzyMatchCutoff) {
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{search_features::kLauncherFuzzyMatchForOmnibox,
+                             {{"enable_cutoff", "true"}}}},
+      /*disabled_features=*/{});
+  std::unique_ptr<OmniboxResult> result_high_fuzzy_relevance =
+      CreateOmniboxResult(kExampleUrl, AutocompleteMatchType::HISTORY_URL,
+                          GURL(), kExampleDescription);
+  std::unique_ptr<OmniboxResult> result_low_fuzzy_relevance =
+      CreateOmniboxResult(kExampleUrl, AutocompleteMatchType::HISTORY_URL,
+                          GURL(), u"different");
+
+  EXPECT_EQ(kAppListRelevance, result_high_fuzzy_relevance->relevance());
+  EXPECT_EQ(kAppListRelevance, result_low_fuzzy_relevance->relevance());
+  EXPECT_TRUE(result_low_fuzzy_relevance->scoring().filter);
+  EXPECT_FALSE(result_high_fuzzy_relevance->scoring().filter);
+}
+
+TEST_F(OmniboxResultTest, RelevanceWithFuzzyMatchRelevance) {
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{search_features::kLauncherFuzzyMatchForOmnibox,
+                             {{"enable_relevance", "true"}}}},
+      /*disabled_features=*/{});
+  std::unique_ptr<OmniboxResult> result_high_fuzzy_relevance =
+      CreateOmniboxResult(kExampleUrl, AutocompleteMatchType::HISTORY_URL,
+                          GURL(), kExampleDescription);
+  std::unique_ptr<OmniboxResult> result_low_fuzzy_relevance =
+      CreateOmniboxResult(kExampleUrl, AutocompleteMatchType::HISTORY_URL,
+                          GURL(), u"bu");
+  std::unique_ptr<OmniboxResult> result_empty_query = CreateOmniboxResult(
+      kExampleUrl, AutocompleteMatchType::HISTORY_URL, GURL(), u"");
+
+  EXPECT_EQ((1 + kAppListRelevance) / 2,
+            result_high_fuzzy_relevance->relevance());
+  EXPECT_EQ(kAppListRelevance / 2, result_low_fuzzy_relevance->relevance());
+  EXPECT_EQ(kAppListRelevance / 2, result_empty_query->relevance());
+  EXPECT_FALSE(result_low_fuzzy_relevance->scoring().filter);
+  EXPECT_FALSE(result_high_fuzzy_relevance->scoring().filter);
+  EXPECT_FALSE(result_empty_query->scoring().filter);
 }
 
 }  // namespace app_list::test

@@ -43,6 +43,11 @@ class TestResult : public ChromeSearchResult {
              crosapi::mojom::SearchResult::AnswerType answer_type,
              DisplayType display_type);
 
+  TestResult(const std::string& id,
+             double relevance,
+             double normalized_relevance,
+             MetricsType metrics_type = MetricsType::NO_RESULT);
+
   ~TestResult() override;
 
   // ChromeSearchResult overrides:

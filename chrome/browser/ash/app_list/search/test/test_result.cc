@@ -58,6 +58,17 @@ TestResult::TestResult(const std::string& id,
   SetDisplayType(display_type);
 }
 
+TestResult::TestResult(const std::string& id,
+                       double relevance,
+                       double normalized_relevance,
+                       MetricsType metrics_type) {
+  set_id(id);
+  SetTitle(base::UTF8ToUTF16(id));
+  set_relevance(relevance);
+  scoring().normalized_relevance = normalized_relevance;
+  SetMetricsType(metrics_type);
+}
+
 TestResult::~TestResult() = default;
 
 }  // namespace app_list

@@ -3486,6 +3486,9 @@ extern const char kLauncherGameSearchDescription[];
 extern const char kLauncherKeywordExtractionScoring[];
 extern const char kLauncherKeywordExtractionScoringDescription[];
 
+extern const char kLauncherFuzzyMatchForOmniboxName[];
+extern const char kLauncherFuzzyMatchForOmniboxDescription[];
+
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 

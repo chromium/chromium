@@ -58862,6 +58862,7 @@ from previous Chrome versions.
   <int value="-1112782121" label="AndroidSigninPromos:disabled"/>
   <int value="-1111094917" label="Cormorant:enabled"/>
   <int value="-1109826787" label="AccessibilityExposeDisplayNone:enabled"/>
+  <int value="-1109489088" label="LauncherFuzzyMatchForOmnibox:disabled"/>
   <int value="-1109309340" label="ContextualPageActionReaderMode:enabled"/>
   <int value="-1108636917" label="DetectedSourceLanguageOption:enabled"/>
   <int value="-1107762575" label="enable-data-reduction-proxy-config-client"/>
@@ -63656,6 +63657,7 @@ from previous Chrome versions.
   <int value="1714751652" label="CaptivePortalErrorPage:disabled"/>
   <int value="1714922056" label="GlobalMediaControls:disabled"/>
   <int value="1715338237" label="ContextualSearchSecondTap:disabled"/>
+  <int value="1715482477" label="LauncherFuzzyMatchForOmnibox:enabled"/>
   <int value="1716104463" label="enable-fullscreen-app-list"/>
   <int value="1716533817" label="FastPairLowPower:enabled"/>
   <int value="1717788959" label="SlowDCTimerInterruptsWin:disabled"/>

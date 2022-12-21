@@ -2711,6 +2711,18 @@ const FeatureEntry::FeatureVariation kProductivityLauncherVariations[] = {
     {"without Continue", kProductivityLauncher_WithoutContinue,
      std::size(kProductivityLauncher_WithoutContinue), nullptr}};
 
+const FeatureEntry::FeatureParam kLauncherFuzzyMatchForOmnibox_WithCutoff[] = {
+    {"enable_cutoff", "true"}};
+
+const FeatureEntry::FeatureParam kLauncherFuzzyMatchForOmnibox_WithRelevance[] =
+    {{"enable_relevance", "true"}};
+
+const FeatureEntry::FeatureVariation kLauncherFuzzyMatchForOmniboxVariations[] =
+    {{"With cutoff", kLauncherFuzzyMatchForOmnibox_WithCutoff,
+      std::size(kLauncherFuzzyMatchForOmnibox_WithCutoff), nullptr},
+     {"With relevance", kLauncherFuzzyMatchForOmnibox_WithRelevance,
+      std::size(kLauncherFuzzyMatchForOmnibox_WithRelevance), nullptr}};
+
 const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay10Mins[] = {
     {"long_delay_minutes", "10"}};
 const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay12Hours[] = {
@@ -7499,6 +7511,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLauncherKeywordExtractionScoring,
      flag_descriptions::kLauncherKeywordExtractionScoringDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(search_features::kLauncherKeywordExtractionScoring)},
+    {"launcher-fuzzy-match-for-omnibox",
+     flag_descriptions::kLauncherFuzzyMatchForOmniboxName,
+     flag_descriptions::kLauncherFuzzyMatchForOmniboxDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         search_features::kLauncherFuzzyMatchForOmnibox,
+         kLauncherFuzzyMatchForOmniboxVariations,
+         "LauncherFuzzyMatchForOmnibox")},
     {"quick-gesture-show-launcher",
      flag_descriptions::kQuickActionShowBubbleLauncherName,
      flag_descriptions::kQuickActionShowBubbleLauncherDescription, kOsCrOS,

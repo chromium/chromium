@@ -4487,6 +4487,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "launcher-fuzzy-match-for-omnibox",
+    "owners": ["wrong", "laurencom"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "launcher-game-search",
     "owners": ["wrong", "napper", "tby"],
     "expiry_milestone": 115
