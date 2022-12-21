@@ -69,16 +69,40 @@ CSSToLengthConversionData::FontSizes::FontSizes(float em,
                                                 float rem,
                                                 const Font* font,
                                                 float font_zoom)
-    : em_(em), rem_(rem), font_(font), font_zoom_(font_zoom) {
+    : em_(em),
+      rem_(rem),
+      font_(font),
+      root_font_(font),
+      font_zoom_(font_zoom),
+      root_font_zoom_(font_zoom) {
   DCHECK(font_);
+}
+
+CSSToLengthConversionData::FontSizes::FontSizes(float em,
+                                                float rem,
+                                                const Font* font,
+                                                const Font* root_font,
+                                                float font_zoom,
+                                                float root_font_zoom)
+    : em_(em),
+      rem_(rem),
+      font_(font),
+      root_font_(root_font),
+      font_zoom_(font_zoom),
+      root_font_zoom_(root_font_zoom) {
+  DCHECK(font_);
+  DCHECK(root_font_);
 }
 
 CSSToLengthConversionData::FontSizes::FontSizes(const ComputedStyle* style,
                                                 const ComputedStyle* root_style)
-    : FontSizes(style->SpecifiedFontSize(),
-                root_style ? root_style->SpecifiedFontSize() : 1.0f,
-                &style->GetFont(),
-                style->EffectiveZoom()) {}
+    : FontSizes(
+          style->SpecifiedFontSize(),
+          root_style ? root_style->SpecifiedFontSize() : 1.0f,
+          &style->GetFont(),
+          root_style ? &root_style->GetFont() : &style->GetFont(),
+          style->EffectiveZoom(),
+          root_style ? root_style->EffectiveZoom() : style->EffectiveZoom()) {}
 
 float CSSToLengthConversionData::FontSizes::Ex(float zoom) const {
   DCHECK(font_);
@@ -90,6 +114,18 @@ float CSSToLengthConversionData::FontSizes::Ex(float zoom) const {
   // Font-metrics-based units are pre-zoomed with a factor of `font_zoom_`,
   // we need to unzoom using that factor before applying the target zoom.
   return font_data->GetFontMetrics().XHeight() / font_zoom_ * zoom;
+}
+
+float CSSToLengthConversionData::FontSizes::Rex(float zoom) const {
+  DCHECK(root_font_);
+  const SimpleFontData* font_data = root_font_->PrimaryFont();
+  DCHECK(font_data);
+  if (!font_data || !font_data->GetFontMetrics().HasXHeight()) {
+    return rem_ / 2.0f;
+  }
+  // Font-metrics-based units are pre-zoomed with a factor of `root_font_zoom_`,
+  // we need to unzoom using that factor before applying the target zoom.
+  return font_data->GetFontMetrics().XHeight() / root_font_zoom_ * zoom;
 }
 
 float CSSToLengthConversionData::FontSizes::Ch(float zoom) const {
@@ -240,6 +276,11 @@ float CSSToLengthConversionData::RemFontSize(float zoom) const {
 float CSSToLengthConversionData::ExFontSize(float zoom) const {
   SetFlag(Flag::kGlyphRelative);
   return font_sizes_.Ex(zoom);
+}
+
+float CSSToLengthConversionData::RexFontSize(float zoom) const {
+  SetFlag(Flag::kGlyphRelative);
+  return font_sizes_.Rex(zoom);
 }
 
 float CSSToLengthConversionData::ChFontSize(float zoom) const {

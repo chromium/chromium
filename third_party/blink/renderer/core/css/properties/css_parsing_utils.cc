@@ -978,6 +978,11 @@ CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange& range,
       case CSSPrimitiveValue::UnitType::kViewportMin:
       case CSSPrimitiveValue::UnitType::kViewportMax:
         break;
+      case CSSPrimitiveValue::UnitType::kRexs:
+        if (!RuntimeEnabledFeatures::CSSNewRootFontUnitsEnabled()) {
+          return nullptr;
+        }
+        break;
       case CSSPrimitiveValue::UnitType::kViewportInlineSize:
       case CSSPrimitiveValue::UnitType::kViewportBlockSize:
       case CSSPrimitiveValue::UnitType::kSmallViewportWidth:

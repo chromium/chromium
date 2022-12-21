@@ -62,6 +62,12 @@ float MediaValuesDynamic::ExFontSize(float zoom) const {
   return CalculateExSize(frame_);
 }
 
+float MediaValuesDynamic::RexFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
+  // For media queries rex and ex units are both based on the initial font.
+  return CalculateExSize(frame_);
+}
+
 float MediaValuesDynamic::ChFontSize(float zoom) const {
   DCHECK_EQ(1.0f, zoom);
   return CalculateChSize(frame_);

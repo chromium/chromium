@@ -97,9 +97,6 @@ class CORE_EXPORT SVGLengthContext {
   float ValueForLength(const Length&, float zoom, SVGLengthMode) const;
   static float ValueForLength(const Length&, float zoom, float dimension);
 
-  float ConvertValueFromUserUnitsToEXS(float value) const;
-  float ConvertValueFromEXSToUserUnits(float value) const;
-
   float ConvertValueFromUserUnitsToCHS(float value) const;
   float ConvertValueFromCHSToUserUnits(float value) const;
 

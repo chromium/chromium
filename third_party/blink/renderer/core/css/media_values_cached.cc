@@ -110,6 +110,12 @@ float MediaValuesCached::ExFontSize(float zoom) const {
   return data_.ex_size;
 }
 
+float MediaValuesCached::RexFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
+  // For media queries rex and ex units are both based on the initial font.
+  return data_.ex_size;
+}
+
 float MediaValuesCached::ChFontSize(float zoom) const {
   DCHECK_EQ(1.0f, zoom);
   return data_.ch_size;

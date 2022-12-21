@@ -30,7 +30,7 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
     return GetType() == UnitType::kQuirkyEms || GetType() == UnitType::kEms ||
            GetType() == UnitType::kExs || GetType() == UnitType::kRems ||
            GetType() == UnitType::kChs || GetType() == UnitType::kIcs ||
-           GetType() == UnitType::kLhs;
+           GetType() == UnitType::kLhs || GetType() == UnitType::kRexs;
   }
   bool IsQuirkyEms() const { return GetType() == UnitType::kQuirkyEms; }
   bool IsViewportPercentageLength() const {

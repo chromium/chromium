@@ -44,6 +44,10 @@ float CSSContainerValues::ExFontSize(float zoom) const {
   return font_sizes_.Ex(zoom);
 }
 
+float CSSContainerValues::RexFontSize(float zoom) const {
+  return font_sizes_.Rex(zoom);
+}
+
 float CSSContainerValues::ChFontSize(float zoom) const {
   return font_sizes_.Ch(zoom);
 }

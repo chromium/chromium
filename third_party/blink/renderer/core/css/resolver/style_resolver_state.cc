@@ -128,10 +128,17 @@ void StyleResolverState::UpdateLengthConversionData() {
 
 CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
     const ComputedStyle* font_style) {
+  DCHECK(font_style);
+  const ComputedStyle* root_font_style = RootElementStyle();
   float em = font_style->SpecifiedFontSize();
-  float rem = RootElementStyle() ? RootElementStyle()->SpecifiedFontSize() : 1;
+  float rem = root_font_style ? root_font_style->SpecifiedFontSize() : 1.0f;
+  const Font* root_font =
+      root_font_style ? &root_font_style->GetFont() : &font_style->GetFont();
+  float root_zoom = root_font_style ? root_font_style->EffectiveZoom()
+                                    : font_style->EffectiveZoom();
   CSSToLengthConversionData::FontSizes font_sizes(
-      em, rem, &font_style->GetFont(), font_style->EffectiveZoom());
+      em, rem, &font_style->GetFont(), root_font, font_style->EffectiveZoom(),
+      root_zoom);
   CSSToLengthConversionData::LineHeightSize line_height_size(
       ParentStyle() ? *ParentStyle() : *Style());
   CSSToLengthConversionData::ViewportSize viewport_size(

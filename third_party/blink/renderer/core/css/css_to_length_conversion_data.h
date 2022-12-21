@@ -57,11 +57,18 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
    public:
     FontSizes() = default;
     FontSizes(float em, float rem, const Font*, float font_zoom);
+    FontSizes(float em,
+              float rem,
+              const Font* font,
+              const Font* root_font,
+              float font_zoom,
+              float root_font_zoom);
     FontSizes(const ComputedStyle*, const ComputedStyle* root_style);
 
     float Em(float zoom) const { return em_ * zoom; }
     float Rem(float zoom) const { return rem_ * zoom; }
     float Ex(float zoom) const;
+    float Rex(float zoom) const;
     float Ch(float zoom) const;
     float Ic(float zoom) const;
 
@@ -69,9 +76,11 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     float em_ = 0;
     float rem_ = 0;
     const Font* font_ = nullptr;
+    const Font* root_font_ = nullptr;
     // Font-metrics-based units (ex, ch, ic) are pre-zoomed by a factor of
     // `font_zoom_`.
     float font_zoom_ = 1;
+    float root_font_zoom_ = 1;
   };
 
   class CORE_EXPORT LineHeightSize {
@@ -186,7 +195,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     kEm = 1u << 0,
     // rem
     kRem = 1u << 1,
-    // ex, ch, ic, lh
+    // ex, ch, ic, lh, rex
     kGlyphRelative = 1u << 2,
     // lh
     kLineHeightRelative = 1u << 3,
@@ -217,6 +226,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   float EmFontSize(float zoom) const override;
   float RemFontSize(float zoom) const override;
   float ExFontSize(float zoom) const override;
+  float RexFontSize(float zoom) const override;
   float ChFontSize(float zoom) const override;
   float IcFontSize(float zoom) const override;
   float LineHeight(float zoom) const override;

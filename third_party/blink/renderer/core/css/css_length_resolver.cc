@@ -267,6 +267,9 @@ double CSSLengthResolver::ZoomedComputedPixels(
     case CSSPrimitiveValue::UnitType::kExs:
       return value * ExFontSize(Zoom());
 
+    case CSSPrimitiveValue::UnitType::kRexs:
+      return value * RexFontSize(Zoom());
+
     case CSSPrimitiveValue::UnitType::kRems:
       return value * RemFontSize(Zoom());
 

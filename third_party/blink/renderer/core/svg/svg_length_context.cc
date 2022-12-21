@@ -122,6 +122,42 @@ static float ConvertValueFromEMSToUserUnits(const ComputedStyle* style,
   return value * style->SpecifiedFontSize();
 }
 
+static float ConvertValueFromUserUnitsToEXS(const ComputedStyle* style,
+                                            float value) {
+  if (!style) {
+    return 0;
+  }
+  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
+  if (!font_data) {
+    return 0;
+  }
+  // Use of ceil allows a pixel match to the W3Cs expected output of
+  // coords-units-03-b.svg, if this causes problems in real world cases maybe it
+  // would be best to remove this.
+  float x_height =
+      ceilf(font_data->GetFontMetrics().XHeight() / style->EffectiveZoom());
+  if (!x_height) {
+    return 0;
+  }
+  return value / x_height;
+}
+
+static float ConvertValueFromEXSToUserUnits(const ComputedStyle* style,
+                                            float value) {
+  if (!style) {
+    return 0;
+  }
+  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
+  if (!font_data) {
+    return 0;
+  }
+  // Use of ceil allows a pixel match to the W3Cs expected output of
+  // coords-units-03-b.svg, if this causes problems in real world cases maybe it
+  // would be best to remove this.
+  return value *
+         ceilf(font_data->GetFontMetrics().XHeight() / style->EffectiveZoom());
+}
+
 static inline float ViewportLengthPercent(const float width_or_height) {
   return width_or_height / 100;
 }
@@ -317,7 +353,8 @@ float SVGLengthContext::ConvertValueToUserUnits(
           ComputedStyleForLengthResolving(context_), value);
       break;
     case CSSPrimitiveValue::UnitType::kExs:
-      user_units = ConvertValueFromEXSToUserUnits(value);
+      user_units = ConvertValueFromEXSToUserUnits(
+          ComputedStyleForLengthResolving(context_), value);
       break;
     case CSSPrimitiveValue::UnitType::kCentimeters:
       user_units = value * kCssPixelsPerCentimeter;
@@ -340,6 +377,10 @@ float SVGLengthContext::ConvertValueToUserUnits(
     case CSSPrimitiveValue::UnitType::kRems:
       user_units =
           ConvertValueFromEMSToUserUnits(RootElementStyle(context_), value);
+      break;
+    case CSSPrimitiveValue::UnitType::kRexs:
+      user_units =
+          ConvertValueFromEXSToUserUnits(RootElementStyle(context_), value);
       break;
     case CSSPrimitiveValue::UnitType::kChs:
       user_units = ConvertValueFromCHSToUserUnits(value);
@@ -402,9 +443,12 @@ float SVGLengthContext::ConvertValueFromUserUnits(
       return ConvertValueFromUserUnitsToEMS(
           ComputedStyleForLengthResolving(context_), value);
     case CSSPrimitiveValue::UnitType::kExs:
-      return ConvertValueFromUserUnitsToEXS(value);
+      return ConvertValueFromUserUnitsToEXS(
+          ComputedStyleForLengthResolving(context_), value);
     case CSSPrimitiveValue::UnitType::kRems:
       return ConvertValueFromUserUnitsToEMS(RootElementStyle(context_), value);
+    case CSSPrimitiveValue::UnitType::kRexs:
+      return ConvertValueFromUserUnitsToEXS(RootElementStyle(context_), value);
     case CSSPrimitiveValue::UnitType::kChs:
       return ConvertValueFromUserUnitsToCHS(value);
     case CSSPrimitiveValue::UnitType::kIcs:
@@ -518,42 +562,6 @@ float SVGLengthContext::ConvertValueFromLHSToUserUnits(float value) const {
   const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
   return value * AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
                                                     *style);
-}
-
-float SVGLengthContext::ConvertValueFromUserUnitsToEXS(float value) const {
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
-  if (!style) {
-    return 0;
-  }
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-  if (!font_data) {
-    return 0;
-  }
-  // Use of ceil allows a pixel match to the W3Cs expected output of
-  // coords-units-03-b.svg, if this causes problems in real world cases maybe it
-  // would be best to remove this.
-  float x_height =
-      ceilf(font_data->GetFontMetrics().XHeight() / style->EffectiveZoom());
-  if (!x_height) {
-    return 0;
-  }
-  return value / x_height;
-}
-
-float SVGLengthContext::ConvertValueFromEXSToUserUnits(float value) const {
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
-  if (!style) {
-    return 0;
-  }
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-  if (!font_data) {
-    return 0;
-  }
-  // Use of ceil allows a pixel match to the W3Cs expected output of
-  // coords-units-03-b.svg, if this causes problems in real world cases maybe it
-  // would be best to remove this.
-  return value *
-         ceilf(font_data->GetFontMetrics().XHeight() / style->EffectiveZoom());
 }
 
 bool SVGLengthContext::DetermineViewport(gfx::SizeF& viewport_size) const {

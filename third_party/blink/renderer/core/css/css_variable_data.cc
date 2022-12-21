@@ -50,8 +50,16 @@ static bool IsFontUnitToken(CSSParserToken token) {
 }
 
 static bool IsRootFontUnitToken(CSSParserToken token) {
-  return token.GetType() == kDimensionToken &&
-         token.GetUnitType() == CSSPrimitiveValue::UnitType::kRems;
+  if (token.GetType() != kDimensionToken) {
+    return false;
+  }
+  switch (token.GetUnitType()) {
+    case CSSPrimitiveValue::UnitType::kRems:
+    case CSSPrimitiveValue::UnitType::kRexs:
+      return true;
+    default:
+      return false;
+  }
 }
 
 static bool IsLineHeightUnitToken(CSSParserToken token) {

@@ -199,6 +199,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
     case UnitType::kEms:
     case UnitType::kQuirkyEms:
     case UnitType::kExs:
+    case UnitType::kRexs:
     case UnitType::kRems:
     case UnitType::kChs:
     case UnitType::kIcs:
@@ -296,6 +297,7 @@ bool CSSNumericLiteralValue::Equals(const CSSNumericLiteralValue& other) const {
     case UnitType::kEms:
     case UnitType::kExs:
     case UnitType::kRems:
+    case UnitType::kRexs:
     case UnitType::kPixels:
     case UnitType::kCentimeters:
     case UnitType::kDotsPerPixel:

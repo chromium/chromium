@@ -27,6 +27,7 @@ class CORE_EXPORT CSSLengthResolver {
   virtual float EmFontSize(float zoom) const = 0;
   virtual float RemFontSize(float zoom) const = 0;
   virtual float ExFontSize(float zoom) const = 0;
+  virtual float RexFontSize(float zoom) const = 0;
   virtual float ChFontSize(float zoom) const = 0;
   virtual float IcFontSize(float zoom) const = 0;
   virtual float LineHeight(float zoom) const = 0;
