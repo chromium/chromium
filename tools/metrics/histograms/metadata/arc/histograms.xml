@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppCount" units="units" expires_after="2023-06-04">
-  <owner>elijahtaylor@google.com</owner>
+  <owner>khmel@google.com</owner>
   <owner>fahdi@google.com</owner>
   <summary>
     The number of ARC apps open at any given time. Collected every 5 minutes.
@@ -520,15 +520,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppsInstalledAtStartup" units="App Count"
-    expires_after="M99">
-  <owner>elijahtaylor@google.com</owner>
+    expires_after="M114">
+  <owner>jhorwich@google.com</owner>
   <summary>
     Total number of ARC apps installed on a device measured at startup. Note:
     This includes launchable apps that are installed by default, such as Play
     Store and Settings, as well as any vendor specific apps.
 
     Warning: this histogram was expired after M92 and brought back 2021-09-17;
-    data may be missing.
+    expired after M99 and brought back 2022-12-07; data may be missing.
   </summary>
 </histogram>
 
@@ -737,7 +737,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.boot_progress{AndroidBootProgressEvents}" units="ms"
     expires_after="M81">
-  <owner>elijahtaylor@google.com</owner>
+  <obsolete>
+    Deprecated Dec 2022. Code that emits this histogram is in ArcMetricsService
+    in Android and needs removal (b/261750670)
+  </obsolete>
+  <owner>jhorwich@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     The relative time of a boot progress event since the ARC starts.
@@ -771,8 +775,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.BootContinueCodeInstallationResult"
     enum="ArcBootContinueCodeInstallationResult" expires_after="M81">
-  <owner>elijahtaylor@google.com</owner>
-  <owner>xzhou@google.com</owner>
+  <obsolete>
+    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
+    Chrome OS and needs removal (b/261750670)
+  </obsolete>
+  <owner>jhorwich@google.com</owner>
   <summary>Code installation result for ARC boot continue.</summary>
 </histogram>
 
@@ -813,8 +820,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.CodeIntegrityCheckingTotalTime" units="ms"
     expires_after="M81">
-  <owner>elijahtaylor@google.com</owner>
-  <owner>xzhou@google.com</owner>
+  <obsolete>
+    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
+    Chrome OS and needs removal (b/261750670)
+  </obsolete>
+  <owner>jhorwich@google.com</owner>
   <summary>
     Total time needed to check the integrity of host generated code. If
     signature checking fails, it also includes the time to regenerate and sign
@@ -824,35 +834,50 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.CodeRelocationResult" enum="ArcCodeRelocationResult"
     expires_after="M81">
-  <owner>elijahtaylor@google.com</owner>
-  <owner>xzhou@google.com</owner>
+  <obsolete>
+    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
+    Chrome OS and needs removal (b/261750670)
+  </obsolete>
+  <owner>jhorwich@google.com</owner>
   <summary>Host code relocation result.</summary>
 </histogram>
 
 <histogram name="Arc.CodeRelocationTime" units="ms" expires_after="M81">
-  <owner>elijahtaylor@google.com</owner>
-  <owner>xzhou@google.com</owner>
+  <obsolete>
+    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
+    Chrome OS and needs removal (b/261750670)
+  </obsolete>
+  <owner>jhorwich@google.com</owner>
   <summary>Time needed to relocate boot*.art files.</summary>
 </histogram>
 
 <histogram name="Arc.CodeSigningTime" units="ms" expires_after="M85">
-  <owner>elijahtaylor@google.com</owner>
-  <owner>xzhou@google.com</owner>
+  <obsolete>
+    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
+    Chrome OS and needs removal (b/261750670)
+  </obsolete>
+  <owner>jhorwich@google.com</owner>
   <summary>Time needed to sign boot*.art files.</summary>
 </histogram>
 
 <histogram name="Arc.CodeVerificationResult" enum="ArcCodeVerificationResult"
     expires_after="M85">
-  <owner>elijahtaylor@google.com</owner>
-  <owner>xzhou@google.com</owner>
+  <obsolete>
+    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
+    Chrome OS and needs removal (b/261750670)
+  </obsolete>
+  <owner>jhorwich@google.com</owner>
   <summary>
     Code verification result for host generated code for boot for login screen.
   </summary>
 </histogram>
 
 <histogram name="Arc.CodeVerificationTime" units="ms" expires_after="M85">
-  <owner>elijahtaylor@google.com</owner>
-  <owner>xzhou@google.com</owner>
+  <obsolete>
+    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
+    Chrome OS and needs removal (b/261750670)
+  </obsolete>
+  <owner>jhorwich@google.com</owner>
   <summary>Time needed to verify host generated code.</summary>
 </histogram>
 
@@ -888,23 +913,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ContainerLifetimeEvent" enum="ArcContainerLifetimeEvent"
-    expires_after="2022-04-03">
-  <owner>elijahtaylor@google.com</owner>
+    expires_after="2023-06-07">
   <owner>khmel@google.com</owner>
   <summary>
     The number of ARC container lifetime events. One START event and up to one
     non-START event are recorded per ARC session, which ends when the user opts
     out from ARC or signs out.
+
+    Warning: this histogram was expired after 2022-04-03 and brought back
+    2022-12-07; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.ContainerRestartAfterCrashCount" units="units"
-    expires_after="2022-04-24">
-  <owner>elijahtaylor@google.com</owner>
+    expires_after="2023-06-07">
   <owner>khmel@google.com</owner>
   <summary>
     The number of times ARC container crashes and automatically restarts in one
     ARC session, which ends when the user opts out from ARC or signs out.
+
+    Warning: this histogram was expired after 2022-04-24 and brought back
+    2022-12-07; data may be missing.
   </summary>
 </histogram>
 
@@ -946,8 +975,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.CumulativeUseTime" units="seconds"
-    expires_after="2022-05-01">
-  <owner>elijahtaylor@google.com</owner>
+    expires_after="2023-06-07">
+  <owner>jhorwich@google.com</owner>
   <owner>fahdi@google.com</owner>
   <summary>
     ARC use time. The use time is incremented in regular intervals while android
@@ -956,7 +985,8 @@ chromium-metrics-reviews@google.com.
     give an estimate of ARC usage time per OS version).
 
     Warning: this histogram was expired after 2021-03-12 and brought back
-    2021-09-17; data may be missing.
+    2021-09-17; expired 2022-05-01 and brought back 2022-12-07; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -1435,7 +1465,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: used internally for filtering -->
 
-  <owner>elijahtaylor@google.com</owner>
   <owner>levarum@google.com</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -2075,20 +2104,10 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Arc.ShutdownTime" units="ms" expires_after="M85">
-  <owner>elijahtaylor@google.com</owner>
-  <summary>
-    The time it takes for ARC to shut down. This value is recorded on ARC
-    shutdown as the time is takes for the init process to exit after setting
-    'sys.powerctl shutdown'. It is reported on the next ARC startup to avoid
-    sending data during shutdown.
-  </summary>
-</histogram>
-
 <histogram name="Arc.State" enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: used internally for filtering -->
 
-  <owner>elijahtaylor@google.com</owner>
+  <owner>jhorwich@google.com</owner>
   <owner>ttylenda@google.com</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -2105,12 +2124,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.StateByUserType{ArcUserTypes}" enum="ArcEnableState"
-    expires_after="2022-03-25">
-  <owner>elijahtaylor@google.com</owner>
+    expires_after="2023-06-07">
+  <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
     Similar to &quot;Arc.State&quot; metric but has separation by user type.
     {ArcUserTypes}
+
+    Warning: this histogram was expired after 2022-03-05 and brought back
+    2022-12-07; data may be missing.
   </summary>
   <token key="ArcUserTypes" variants="ArcUserTypes">
     <variant name=""/>
@@ -2166,7 +2188,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.Tracing.Tool" enum="ArcTracingToolAction"
     expires_after="M82">
-  <owner>elijahtaylor@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>Action of ARC++ Graphics Tracing tool.</summary>
 </histogram>
