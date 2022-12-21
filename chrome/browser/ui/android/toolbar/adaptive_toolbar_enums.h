@@ -12,24 +12,24 @@
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.toolbar.adaptive
 enum class AdaptiveToolbarButtonVariant {
   // Button type is unknown. Used as default in backend logic.
-  UNKNOWN,
+  kUnknown = 0,
   // Used only in UI layer when we don't want a button to show.
-  NONE,
+  kNone = 1,
   // Button type is new tab button.
-  NEW_TAB,
+  kNewTab = 2,
   // Share button.
-  SHARE,
+  kShare = 3,
   // Voice button.
-  VOICE,
+  kVoice = 4,
   // Automatic. Used in settings page to indicate that user hasn't manually
   // overridden the button.
-  AUTO,
+  kAuto = 5,
   // Track price action.
-  PRICE_TRACKING,
+  kPriceTracking = 6,
   // Reader mode action.
-  READER_MODE,
+  kReaderMode = 7,
   // Max number of entries.
-  NUM_ENTRIES
+  kNumEntries
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_ADAPTIVE_TOOLBAR_ENUMS_H_
