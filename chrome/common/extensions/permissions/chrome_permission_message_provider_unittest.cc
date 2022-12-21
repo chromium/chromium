@@ -131,7 +131,8 @@ TEST_F(ChromePermissionMessageProviderUnittest,
   std::unique_ptr<UsbDevicePermission> usb(
       new UsbDevicePermission(PermissionsInfo::GetInstance()->GetByID(
           mojom::APIPermissionID::kUsbDevice)));
-  std::unique_ptr<base::ListValue> devices_list(new base::ListValue());
+  std::unique_ptr<base::Value> devices_list(
+      new base::Value(base::Value::Type::LIST));
   devices_list->Append(base::Value::FromUniquePtrValue(
       UsbDevicePermissionData(0x02ad, 0x138c, -1, -1).ToValue()));
   devices_list->Append(base::Value::FromUniquePtrValue(

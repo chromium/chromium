@@ -86,7 +86,7 @@ TEST_F(StorageSchemaManifestHandlerTest, Parse) {
 }
 
 TEST_F(StorageSchemaManifestHandlerTest, Validate) {
-  base::ListValue permissions;
+  base::Value::List permissions;
   permissions.Append("storage");
   manifest_.Set("permissions", permissions.Clone());
 
