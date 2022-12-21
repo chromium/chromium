@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_backend.h"
+#include "components/history_clusters/core/history_clusters_service_task.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 
 namespace history {
@@ -33,7 +34,8 @@ class HistoryClustersService;
 // this creates. In contrast to this,
 // `HistoryClustersServiceTaskGetMostRecentClusters` iterates recent visits 1st
 // and does not persist them.
-class HistoryClustersServiceTaskUpdateClusters {
+class HistoryClustersServiceTaskUpdateClusters
+    : public HistoryClustersServiceTask {
  public:
   HistoryClustersServiceTaskUpdateClusters(
       base::WeakPtr<HistoryClustersService> weak_history_clusters_service,
@@ -41,9 +43,7 @@ class HistoryClustersServiceTaskUpdateClusters {
       ClusteringBackend* const backend,
       history::HistoryService* const history_service,
       base::OnceClosure callback);
-  ~HistoryClustersServiceTaskUpdateClusters();
-
-  bool Done() { return done_; }
+  ~HistoryClustersServiceTaskUpdateClusters() override;
 
  private:
   // When there remain unclustered visits, cluster them (possibly in combination
@@ -101,10 +101,6 @@ class HistoryClustersServiceTaskUpdateClusters {
   base::TimeTicks get_model_clusters_start_time_;
   // When `OnGotModelClusters()` kicked off the request to persist the clusters.
   base::TimeTicks persist_clusters_start_time_;
-
-  // Set to true when `callback_` is invoked, either with clusters or no
-  // clusters.
-  bool done_ = false;
 
   // Used for async callbacks.
   base::WeakPtrFactory<HistoryClustersServiceTaskUpdateClusters>

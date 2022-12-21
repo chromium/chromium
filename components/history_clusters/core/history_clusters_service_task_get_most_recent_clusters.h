@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_backend.h"
+#include "components/history_clusters/core/history_clusters_service_task.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 
 namespace history {
@@ -29,7 +30,8 @@ class HistoryClustersService;
 // It is an extension of `HistoryClustersService`; rather than pollute the
 // latter's namespace with a bunch of callbacks, this class groups those
 // callbacks.
-class HistoryClustersServiceTaskGetMostRecentClusters {
+class HistoryClustersServiceTaskGetMostRecentClusters
+    : public HistoryClustersServiceTask {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -51,9 +53,7 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
       bool recluster,
       QueryClustersCallback callback,
       Source source);
-  ~HistoryClustersServiceTaskGetMostRecentClusters();
-
-  bool Done() { return done_; }
+  ~HistoryClustersServiceTaskGetMostRecentClusters() override;
 
  private:
   // When there remain unclustered visits, cluster them (possibly in combination
@@ -127,10 +127,6 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
   // When `ReturnMostRecentPersistedClusters()` kicked off the request to get
   // persisted clusters.
   base::TimeTicks get_most_recent_persisted_clusters_start_time_;
-
-  // Set to true when `callback_` is invoked, either with clusters or no
-  // clusters.
-  bool done_ = false;
 
   // Used for async callbacks.
   base::WeakPtrFactory<HistoryClustersServiceTaskGetMostRecentClusters>

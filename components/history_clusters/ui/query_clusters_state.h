@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,6 +26,7 @@ class ImageService;
 namespace history_clusters {
 
 class HistoryClustersService;
+class HistoryClustersServiceTask;
 
 using LabelCount = std::pair<std::u16string, size_t>;
 
@@ -131,8 +131,7 @@ class QueryClustersState {
   size_t number_clusters_sent_to_page_ = 0;
 
   // Used only to fast-cancel tasks in case we are destroyed.
-  std::unique_ptr<HistoryClustersServiceTaskGetMostRecentClusters>
-      query_clusters_task_;
+  std::unique_ptr<HistoryClustersServiceTask> query_clusters_task_;
 
   // A task runner to run all the post-processing tasks on.
   scoped_refptr<base::SequencedTaskRunner> post_processing_task_runner_;

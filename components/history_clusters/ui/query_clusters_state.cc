@@ -14,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_service.h"
+#include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/image_service/image_service.h"
 #include "url/gurl.h"
