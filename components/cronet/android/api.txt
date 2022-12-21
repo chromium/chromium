@@ -46,6 +46,35 @@ public abstract class org.chromium.net.BidirectionalStream {
 public abstract class org.chromium.net.CallbackException extends org.chromium.net.CronetException {
   protected org.chromium.net.CallbackException(java.lang.String, java.lang.Throwable);
 }
+public class org.chromium.net.ConnectionMigrationOptions$Builder {
+  public org.chromium.net.ConnectionMigrationOptions$Builder enableDefaultNetworkMigration(boolean);
+  public org.chromium.net.ConnectionMigrationOptions$Builder enablePathDegradationMigration(boolean);
+  public org.chromium.net.ConnectionMigrationOptions$Builder allowServerMigration(boolean);
+  public org.chromium.net.ConnectionMigrationOptions$Builder migrateIdleConnections(boolean);
+  public org.chromium.net.ConnectionMigrationOptions$Builder setIdleConnectionMigrationPeriodSeconds(long);
+  public org.chromium.net.ConnectionMigrationOptions$Builder allowNonDefaultNetworkUsage(boolean);
+  public org.chromium.net.ConnectionMigrationOptions$Builder setMaxTimeOnNonDefaultNetworkSeconds(long);
+  public org.chromium.net.ConnectionMigrationOptions$Builder setMaxWriteErrorNonDefaultNetworkMigrationsCount(int);
+  public org.chromium.net.ConnectionMigrationOptions$Builder setMaxPathDegradingNonDefaultNetworkMigrationsCount(int);
+  public org.chromium.net.ConnectionMigrationOptions$Builder retryPreHandshakeErrorsOnNonDefaultNetwork(boolean);
+  public org.chromium.net.ConnectionMigrationOptions build();
+}
+public interface org.chromium.net.ConnectionMigrationOptions$Experimental extends java.lang.annotation.Annotation {
+}
+public class org.chromium.net.ConnectionMigrationOptions {
+  public java.lang.Boolean getEnableDefaultNetworkMigration();
+  public java.lang.Boolean getEnablePathDegradationMigration();
+  public java.lang.Boolean getAllowServerMigration();
+  public java.lang.Boolean getMigrateIdleConnections();
+  public java.lang.Long getIdleMigrationPeriodSeconds();
+  public java.lang.Boolean getRetryPreHandshakeErrorsOnAlternateNetwork();
+  public java.lang.Boolean getAllowNonDefaultNetworkUsage();
+  public java.lang.Long getMaxTimeOnNonDefaultNetworkSeconds();
+  public java.lang.Integer getMaxWriteErrorEagerMigrationsCount();
+  public java.lang.Integer getMaxPathDegradingEagerMigrationsCount();
+  public org.chromium.net.ConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions$Builder);
+  public static org.chromium.net.ConnectionMigrationOptions$Builder builder();
+}
 public abstract class org.chromium.net.CronetEngine$Builder$LibraryLoader {
   public org.chromium.net.CronetEngine$Builder$LibraryLoader();
   public abstract void loadLibrary(java.lang.String);
@@ -72,6 +101,12 @@ public class org.chromium.net.CronetEngine$Builder {
   public org.chromium.net.CronetEngine$Builder enablePublicKeyPinningBypassForLocalTrustAnchors(boolean);
   public org.chromium.net.CronetEngine$Builder setThreadPriority(int);
   public org.chromium.net.CronetEngine$Builder enableNetworkQualityEstimator(boolean);
+  public org.chromium.net.CronetEngine$Builder setQuicOptions(org.chromium.net.QuicOptions);
+  public org.chromium.net.CronetEngine$Builder setQuicOptions(org.chromium.net.QuicOptions$Builder);
+  public org.chromium.net.CronetEngine$Builder setDnsOptions(org.chromium.net.DnsOptions);
+  public org.chromium.net.CronetEngine$Builder setDnsOptions(org.chromium.net.DnsOptions$Builder);
+  public org.chromium.net.CronetEngine$Builder setConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions);
+  public org.chromium.net.CronetEngine$Builder setConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions$Builder);
   public org.chromium.net.CronetEngine build();
 }
 public abstract class org.chromium.net.CronetEngine {
@@ -121,6 +156,44 @@ public abstract class org.chromium.net.CronetProvider {
   public java.lang.String toString();
   public static java.util.List<org.chromium.net.CronetProvider> getAllProviders(android.content.Context);
 }
+public final class org.chromium.net.DnsOptions$Builder {
+  public org.chromium.net.DnsOptions$Builder useBuiltInDnsResolver(boolean);
+  public org.chromium.net.DnsOptions$Builder enableStaleDns(boolean);
+  public org.chromium.net.DnsOptions$Builder setStaleDnsOptions(org.chromium.net.DnsOptions$StaleDnsOptions);
+  public org.chromium.net.DnsOptions$Builder setStaleDnsOptions(org.chromium.net.DnsOptions$StaleDnsOptions$Builder);
+  public org.chromium.net.DnsOptions$Builder preestablishConnectionsToStaleDnsResults(boolean);
+  public org.chromium.net.DnsOptions$Builder persistHostCache(boolean);
+  public org.chromium.net.DnsOptions$Builder setPersistHostCachePeriodMillis(long);
+  public org.chromium.net.DnsOptions$Builder setPersistDelay(java.time.Duration);
+  public org.chromium.net.DnsOptions build();
+}
+public interface org.chromium.net.DnsOptions$Experimental extends java.lang.annotation.Annotation {
+}
+public final class org.chromium.net.DnsOptions$StaleDnsOptions$Builder {
+  public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setFreshLookupTimeoutMillis(long);
+  public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setFreshLookupTimeout(java.time.Duration);
+  public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setMaxExpiredDelayMillis(long);
+  public org.chromium.net.DnsOptions$StaleDnsOptions$Builder setMaxExpiredDelayMillis(java.time.Duration);
+  public org.chromium.net.DnsOptions$StaleDnsOptions$Builder allowCrossNetworkUsage(boolean);
+  public org.chromium.net.DnsOptions$StaleDnsOptions$Builder useStaleOnNameNotResolved(boolean);
+  public org.chromium.net.DnsOptions$StaleDnsOptions build();
+}
+public class org.chromium.net.DnsOptions$StaleDnsOptions {
+  public java.lang.Long getFreshLookupTimeoutMillis();
+  public java.lang.Long getMaxExpiredDelayMillis();
+  public java.lang.Boolean getAllowCrossNetworkUsage();
+  public java.lang.Boolean getUseStaleOnNameNotResolved();
+  public static org.chromium.net.DnsOptions$StaleDnsOptions$Builder builder();
+}
+public final class org.chromium.net.DnsOptions {
+  public java.lang.Boolean getUseBuiltInDnsResolver();
+  public java.lang.Boolean getPersistHostCache();
+  public java.lang.Boolean getEnableStaleDns();
+  public java.lang.Long getPersistHostCachePeriodMillis();
+  public java.lang.Boolean getPreestablishConnectionsToStaleDnsResults();
+  public org.chromium.net.DnsOptions$StaleDnsOptions getStaleDnsOptions();
+  public static org.chromium.net.DnsOptions$Builder builder();
+}
 public abstract class org.chromium.net.ExperimentalBidirectionalStream$Builder extends org.chromium.net.BidirectionalStream$Builder {
   public org.chromium.net.ExperimentalBidirectionalStream$Builder();
   public org.chromium.net.ExperimentalBidirectionalStream$Builder bindToNetwork(long);
@@ -154,6 +227,9 @@ public class org.chromium.net.ExperimentalCronetEngine$Builder extends org.chrom
   public org.chromium.net.ExperimentalCronetEngine$Builder setLibraryLoader(org.chromium.net.CronetEngine$Builder$LibraryLoader);
   public org.chromium.net.ExperimentalCronetEngine$Builder enableQuic(boolean);
   public org.chromium.net.ExperimentalCronetEngine$Builder enableHttp2(boolean);
+  public org.chromium.net.ExperimentalCronetEngine$Builder setQuicOptions(org.chromium.net.QuicOptions);
+  public org.chromium.net.ExperimentalCronetEngine$Builder setDnsOptions(org.chromium.net.DnsOptions);
+  public org.chromium.net.ExperimentalCronetEngine$Builder setConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions);
   public org.chromium.net.ExperimentalCronetEngine$Builder enableSdch(boolean);
   public org.chromium.net.ExperimentalCronetEngine$Builder enableHttpCache(int, long);
   public org.chromium.net.ExperimentalCronetEngine$Builder addQuicHint(java.lang.String, int, int);
@@ -163,6 +239,9 @@ public class org.chromium.net.ExperimentalCronetEngine$Builder extends org.chrom
   public org.chromium.net.ExperimentalCronetEngine$Builder setThreadPriority(int);
   public org.chromium.net.ExperimentalCronetEngine build();
   public org.chromium.net.CronetEngine build();
+  public org.chromium.net.CronetEngine$Builder setConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions);
+  public org.chromium.net.CronetEngine$Builder setDnsOptions(org.chromium.net.DnsOptions);
+  public org.chromium.net.CronetEngine$Builder setQuicOptions(org.chromium.net.QuicOptions);
   public org.chromium.net.CronetEngine$Builder enableNetworkQualityEstimator(boolean);
   public org.chromium.net.CronetEngine$Builder setThreadPriority(int);
   public org.chromium.net.CronetEngine$Builder enablePublicKeyPinningBypassForLocalTrustAnchors(boolean);
@@ -227,6 +306,9 @@ public abstract class org.chromium.net.ExperimentalUrlRequest extends org.chromi
   public org.chromium.net.ExperimentalUrlRequest();
 }
 public abstract class org.chromium.net.ICronetEngineBuilder {
+  public static final int CONNECTION_MIGRATION_OPTIONS;
+  public static final int DNS_OPTIONS;
+  public static final int QUIC_OPTIONS;
   public org.chromium.net.ICronetEngineBuilder();
   public abstract org.chromium.net.ICronetEngineBuilder addPublicKeyPins(java.lang.String, java.util.Set<byte[]>, boolean, java.util.Date);
   public abstract org.chromium.net.ICronetEngineBuilder addQuicHint(java.lang.String, int, int);
@@ -236,12 +318,16 @@ public abstract class org.chromium.net.ICronetEngineBuilder {
   public abstract org.chromium.net.ICronetEngineBuilder enableQuic(boolean);
   public abstract org.chromium.net.ICronetEngineBuilder enableSdch(boolean);
   public org.chromium.net.ICronetEngineBuilder enableBrotli(boolean);
+  public org.chromium.net.ICronetEngineBuilder setQuicOptions(org.chromium.net.QuicOptions);
+  public org.chromium.net.ICronetEngineBuilder setDnsOptions(org.chromium.net.DnsOptions);
+  public org.chromium.net.ICronetEngineBuilder setConnectionMigrationOptions(org.chromium.net.ConnectionMigrationOptions);
   public abstract org.chromium.net.ICronetEngineBuilder setExperimentalOptions(java.lang.String);
   public abstract org.chromium.net.ICronetEngineBuilder setLibraryLoader(org.chromium.net.CronetEngine$Builder$LibraryLoader);
   public abstract org.chromium.net.ICronetEngineBuilder setStoragePath(java.lang.String);
   public abstract org.chromium.net.ICronetEngineBuilder setUserAgent(java.lang.String);
   public abstract java.lang.String getDefaultUserAgent();
   public abstract org.chromium.net.ExperimentalCronetEngine build();
+  protected java.util.Set<java.lang.Integer> getSupportedConfigOptions();
   public org.chromium.net.ICronetEngineBuilder enableNetworkQualityEstimator(boolean);
   public org.chromium.net.ICronetEngineBuilder setThreadPriority(int);
 }
@@ -278,6 +364,52 @@ public abstract class org.chromium.net.NetworkQualityThroughputListener {
 public abstract class org.chromium.net.QuicException extends org.chromium.net.NetworkException {
   protected org.chromium.net.QuicException(java.lang.String, java.lang.Throwable);
   public abstract int getQuicDetailedErrorCode();
+}
+public class org.chromium.net.QuicOptions$Builder {
+  public org.chromium.net.QuicOptions$Builder addAllowedQuicHost(java.lang.String);
+  public org.chromium.net.QuicOptions$Builder addEnabledQuicVersion(java.lang.String);
+  public org.chromium.net.QuicOptions$Builder addConnectionOption(java.lang.String);
+  public org.chromium.net.QuicOptions$Builder addClientConnectionOption(java.lang.String);
+  public org.chromium.net.QuicOptions$Builder setInMemoryServerConfigsCacheSize(int);
+  public org.chromium.net.QuicOptions$Builder setHandshakeUserAgent(java.lang.String);
+  public org.chromium.net.QuicOptions$Builder retryWithoutAltSvcOnQuicErrors(boolean);
+  public org.chromium.net.QuicOptions$Builder enableTlsZeroRtt(boolean);
+  public org.chromium.net.QuicOptions$Builder setPreCryptoHandshakeIdleTimeoutSeconds(long);
+  public org.chromium.net.QuicOptions$Builder setCryptoHandshakeTimeoutSeconds(long);
+  public org.chromium.net.QuicOptions$Builder setIdleConnectionTimeoutSeconds(long);
+  public org.chromium.net.QuicOptions$Builder setRetransmittableOnWireTimeoutMillis(long);
+  public org.chromium.net.QuicOptions$Builder closeSessionsOnIpChange(boolean);
+  public org.chromium.net.QuicOptions$Builder goawaySessionsOnIpChange(boolean);
+  public org.chromium.net.QuicOptions$Builder setInitialBrokenServicePeriodSeconds(long);
+  public org.chromium.net.QuicOptions$Builder increaseBrokenServicePeriodExponentially(boolean);
+  public org.chromium.net.QuicOptions$Builder delayJobsWithAvailableSpdySession(boolean);
+  public org.chromium.net.QuicOptions$Builder addExtraQuicheFlag(java.lang.String);
+  public org.chromium.net.QuicOptions build();
+}
+public interface org.chromium.net.QuicOptions$Experimental extends java.lang.annotation.Annotation {
+}
+public interface org.chromium.net.QuicOptions$QuichePassthroughOption extends java.lang.annotation.Annotation {
+}
+public class org.chromium.net.QuicOptions {
+  public java.util.Set<java.lang.String> getQuicHostAllowlist();
+  public java.util.Set<java.lang.String> getEnabledQuicVersions();
+  public java.util.Set<java.lang.String> getConnectionOptions();
+  public java.util.Set<java.lang.String> getClientConnectionOptions();
+  public java.lang.Integer getInMemoryServerConfigsCacheSize();
+  public java.lang.String getHandshakeUserAgent();
+  public java.lang.Boolean getRetryWithoutAltSvcOnQuicErrors();
+  public java.lang.Boolean getEnableTlsZeroRtt();
+  public java.lang.Long getPreCryptoHandshakeIdleTimeoutSeconds();
+  public java.lang.Long getCryptoHandshakeTimeoutSeconds();
+  public java.lang.Long getIdleConnectionTimeoutSeconds();
+  public java.lang.Long getRetransmittableOnWireTimeoutMillis();
+  public java.lang.Boolean getCloseSessionsOnIpChange();
+  public java.lang.Boolean getGoawaySessionsOnIpChange();
+  public java.lang.Long getInitialBrokenServicePeriodSeconds();
+  public java.lang.Boolean getIncreaseBrokenServicePeriodExponentially();
+  public java.lang.Boolean getDelayJobsWithAvailableSpdySession();
+  public java.util.Set<java.lang.String> getExtraQuicheFlags();
+  public static org.chromium.net.QuicOptions$Builder builder();
 }
 public abstract class org.chromium.net.RequestFinishedInfo$Listener {
   public org.chromium.net.RequestFinishedInfo$Listener(java.util.concurrent.Executor);
@@ -497,4 +629,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: d165ac852578ae0246bfc6f360d65b13
+Stamp: 6e33940b3c477daafb6804ef0a1bf987

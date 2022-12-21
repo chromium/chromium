@@ -384,6 +384,75 @@ public abstract class CronetEngine {
         }
 
         /**
+         * Configures the behavior of Cronet when using QUIC. For more details, see documentation
+         * of {@link QuicOptions} and the individual methods of {@link QuicOptions.Builder}.
+         *
+         * <p>Only relevant if {@link #enableQuic(boolean)} is enabled.
+         *
+         * @return the builder to facilitate chaining.
+         */
+        @QuicOptions.Experimental
+        public Builder setQuicOptions(QuicOptions quicOptions) {
+            mBuilderDelegate.setQuicOptions(quicOptions);
+            return this;
+        }
+
+        /**
+         * @see #setQuicOptions(QuicOptions)
+         */
+        @QuicOptions.Experimental
+        public Builder setQuicOptions(QuicOptions.Builder quicOptionsBuilder) {
+            return setQuicOptions(quicOptionsBuilder.build());
+        }
+
+        /**
+         * Configures the behavior of hostname lookup. For more details, see documentation
+         * of {@link DnsOptions} and the individual methods of {@link DnsOptions.Builder}.
+         *
+         * <p>Only relevant if {@link #enableQuic(boolean)} is enabled.
+         *
+         * @return the builder to facilitate chaining.
+         */
+        @DnsOptions.Experimental
+        public Builder setDnsOptions(DnsOptions dnsOptions) {
+            mBuilderDelegate.setDnsOptions(dnsOptions);
+            return this;
+        }
+
+        /**
+         * @see #setDnsOptions(DnsOptions)
+         */
+        @DnsOptions.Experimental
+        public Builder setDnsOptions(DnsOptions.Builder dnsOptions) {
+            return setDnsOptions(dnsOptions.build());
+        }
+
+        /**
+         * Configures the behavior of connection migration. For more details, see documentation
+         * of {@link ConnectionMigrationOptions} and the individual methods of {@link
+         * ConnectionMigrationOptions.Builder}.
+         *
+         * <p>Only relevant if {@link #enableQuic(boolean)} is enabled.
+         *
+         * @return the builder to facilitate chaining.
+         */
+        @ConnectionMigrationOptions.Experimental
+        public Builder setConnectionMigrationOptions(
+                ConnectionMigrationOptions connectionMigrationOptions) {
+            mBuilderDelegate.setConnectionMigrationOptions(connectionMigrationOptions);
+            return this;
+        }
+
+        /**
+         * @see #setConnectionMigrationOptions(ConnectionMigrationOptions)
+         */
+        @ConnectionMigrationOptions.Experimental
+        public Builder setConnectionMigrationOptions(
+                ConnectionMigrationOptions.Builder connectionMigrationOptionsBuilder) {
+            return setConnectionMigrationOptions(connectionMigrationOptionsBuilder.build());
+        }
+
+        /**
          * Build a {@link CronetEngine} using this builder's configuration.
          *
          * @return constructed {@link CronetEngine}.

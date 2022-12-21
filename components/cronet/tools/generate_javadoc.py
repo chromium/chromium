@@ -5,6 +5,7 @@
 # found in the LICENSE file.
 
 import argparse
+import itertools
 import os
 import shutil
 import sys
@@ -57,7 +58,7 @@ def GenerateJavadoc(args, src_dir, output_dir):
 
   build_utils.DeleteDirectory(output_dir)
   build_utils.MakeDirectory(output_dir)
-  classpath = ([android_sdk_jar, args.support_annotations_jar] +
+  classpath = ([android_sdk_jar] + args.support_annotations_jars +
                args.classpath_jars)
   javadoc_cmd = [
       os.path.abspath(JAVADOC_PATH),
@@ -118,13 +119,24 @@ def main(argv):
   parser.add_argument('--readme-file', help='Path of the README.md')
   parser.add_argument('--zip-file', help='Path to ZIP archive of javadocs.')
   parser.add_argument('--android-sdk-jar', help='Path to android.jar')
-  parser.add_argument('--support-annotations-jar',
-                      help='Path to support-annotations-$VERSION.jar')
+  parser.add_argument('--support-annotations-jars',
+                      help='Path to support-annotations-$VERSION.jar',
+                      action='append',
+                      nargs='*')
   parser.add_argument('--classpath-jars',
-                      help='Paths to jars needed by support-annotations-jar.')
+                      help='Paths to jars needed by support-annotations-jar.',
+                      action='append',
+                      nargs='*')
   expanded_argv = build_utils.ExpandFileArgs(argv)
   args, _ = parser.parse_known_args(expanded_argv)
-  args.classpath_jars = build_utils.ParseGnList(args.classpath_jars)
+
+  classpath_jars = []
+  for single_list in args.classpath_jars:
+    classpath_jars.extend(build_utils.ParseGnList(single_list))
+
+  args.classpath_jars = classpath_jars
+  args.support_annotations_jars = list(
+      itertools.chain(*args.support_annotations_jars))
   # A temporary directory to put the output of cronet api source jar files.
   unzipped_jar_path = tempfile.mkdtemp(dir=args.output_dir)
   if os.path.exists(args.input_src_jar):
@@ -154,8 +166,8 @@ def main(argv):
       # Ignore .pyc files here, it might be re-generated during build.
       deps.extend(
           os.path.join(root, f) for f in filenames if not f.endswith('.pyc'))
-    if args.support_annotations_jar:
-      deps.append(args.support_annotations_jar)
+    if args.support_annotations_jars:
+      deps.extend(args.support_annotations_jars)
     if args.classpath_jars:
       deps.extend(args.classpath_jars)
     build_utils.WriteDepfile(args.depfile, args.zip_file, deps)

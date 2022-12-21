@@ -238,9 +238,11 @@ android_library("cronet_api_java") {
   sources = [
     "api/src/org/chromium/net/BidirectionalStream.java",
     "api/src/org/chromium/net/CallbackException.java",
+    "api/src/org/chromium/net/ConnectionMigrationOptions.java",
     "api/src/org/chromium/net/CronetEngine.java",
     "api/src/org/chromium/net/CronetException.java",
     "api/src/org/chromium/net/CronetProvider.java",
+    "api/src/org/chromium/net/DnsOptions.java",
     "api/src/org/chromium/net/ExperimentalBidirectionalStream.java",
     "api/src/org/chromium/net/ExperimentalCronetEngine.java",
     "api/src/org/chromium/net/ExperimentalUrlRequest.java",
@@ -250,6 +252,7 @@ android_library("cronet_api_java") {
     "api/src/org/chromium/net/NetworkQualityRttListener.java",
     "api/src/org/chromium/net/NetworkQualityThroughputListener.java",
     "api/src/org/chromium/net/QuicException.java",
+    "api/src/org/chromium/net/QuicOptions.java",
     "api/src/org/chromium/net/RequestFinishedInfo.java",
     "api/src/org/chromium/net/UploadDataProvider.java",
     "api/src/org/chromium/net/UploadDataProviders.java",
@@ -273,6 +276,7 @@ android_library("cronet_api_java") {
 
   deps = [
     ":interface_api_version",
+    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
@@ -1030,6 +1034,7 @@ if (!is_component_build) {
     "//net/android:net_java",
     "//net/android:net_java_test_support",
     "//url:url_java",
+    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
   ]
 
   android_library("cronet_javatests") {
@@ -1409,25 +1414,36 @@ if (!is_component_build) {
     outputs = [ _zip_file ]
     _src_jar = "$_package_dir/cronet_api-src.jar"
 
-    _annotations_dep =
-        "//third_party/androidx:androidx_annotation_annotation_jvm_java"
-    _build_config_dep = "$_annotations_dep$build_config_target_suffix"
-    _build_config =
-        get_label_info(_annotations_dep, "target_gen_dir") + "/" +
-        get_label_info(_annotations_dep, "name") + ".build_config.json"
-
-    deps = [
-      ":jar_cronet_api_source",
-      _annotations_dep,
-      _build_config_dep,
+    _annotations_deps = [
+      "//third_party/androidx:androidx_annotation_annotation_experimental_java__classes",
+      "//third_party/androidx:androidx_annotation_annotation_jvm_java",
     ]
+
+    _build_config_deps = []
+    _build_configs = []
+
+    foreach(dep, _annotations_deps) {
+      _build_config_dep = "$dep$build_config_target_suffix"
+      _build_config_deps += [ _build_config_dep ]
+
+      _build_config = get_label_info(dep, "target_gen_dir") + "/" +
+                      get_label_info(dep, "name") + ".build_config.json"
+
+      _build_configs += [ _build_config ]
+    }
+
+    deps = [ ":jar_cronet_api_source" ] + _annotations_deps + _build_config_deps
+
     inputs = [
-      _src_jar,
-      android_sdk_jar,
-      _build_config,
-    ]
+               _src_jar,
+               android_sdk_jar,
+             ] + _build_configs
 
-    _rebased_build_config = rebase_path(_build_config, root_build_dir)
+    _rebased_build_configs = []
+    foreach(config, _build_configs) {
+      _rebased_build_configs += [ rebase_path(config, root_build_dir) ]
+    }
+
     args = [
       "--output-dir",
       rebase_path(_package_dir, root_build_dir),
@@ -1443,13 +1459,18 @@ if (!is_component_build) {
       rebase_path(_zip_file, root_build_dir),
       "--android-sdk-jar",
       rebase_path(android_sdk_jar, root_build_dir),
-      "--support-annotations-jar=@FileArg($_rebased_build_config:deps_info:unprocessed_jar_path)",
-      "--classpath-jars=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
 
       # JavaDoc is generated from Cronet's API source jar.
       "--input-src-jar",
       rebase_path(_src_jar, root_build_dir),
     ]
+
+    foreach(rebased_config, _rebased_build_configs) {
+      args += [
+        "--support-annotations-jars=@FileArg($rebased_config:deps_info:unprocessed_jar_path)",
+        "--classpath-jars=@FileArg($rebased_config:deps_info:javac_full_classpath)",
+      ]
+    }
   }
 
   copy("cronet_package_copy") {
