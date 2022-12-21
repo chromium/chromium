@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
@@ -17,7 +18,7 @@ namespace enterprise_connectors {
 
 ConnectorsManager::ConnectorsManager(
     std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
-    ExtensionInstallEventRouter extension_install_event_router,
+    std::unique_ptr<ExtensionInstallEventRouter> extension_install_event_router,
     PrefService* pref_service,
     const ServiceProviderConfig* config,
     bool observe_prefs)
@@ -25,9 +26,11 @@ ConnectorsManager::ConnectorsManager(
       browser_crash_event_router_(std::move(browser_crash_event_router)),
       extension_install_event_router_(
           std::move(extension_install_event_router)) {
+  DCHECK(browser_crash_event_router_) << "Crash event router is null";
+  DCHECK(extension_install_event_router_) << "Extension event router is null";
   if (observe_prefs)
     StartObservingPrefs(pref_service);
-  extension_install_event_router_.StartObserving();
+  extension_install_event_router_->StartObserving();
 }
 
 ConnectorsManager::~ConnectorsManager() = default;

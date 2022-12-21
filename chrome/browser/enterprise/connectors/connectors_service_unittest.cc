@@ -505,11 +505,10 @@ class ConnectorsServiceProfileTypeBrowserTest : public testing::Test {
   }
 
   std::unique_ptr<ConnectorsService> CreateService(Profile* profile) {
-    ExtensionInstallEventRouter router(profile);
-
     auto manager = std::make_unique<ConnectorsManager>(
-        nullptr, router, profile->GetPrefs(), GetServiceProviderConfig(),
-        false);
+        std::make_unique<BrowserCrashEventRouter>(profile),
+        std::make_unique<ExtensionInstallEventRouter>(profile),
+        profile->GetPrefs(), GetServiceProviderConfig(), false);
 
     return std::make_unique<ConnectorsService>(profile, std::move(manager));
   }

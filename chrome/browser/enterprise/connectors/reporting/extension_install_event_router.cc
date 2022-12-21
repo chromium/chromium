@@ -39,6 +39,10 @@ void ExtensionInstallEventRouter::StartObserving() {
   if (!base::FeatureList::IsEnabled(kExtensionEventsEnabled)) {
     return;
   }
+  if (!extension_registry_) {
+    DLOG(ERROR) << "extension_registry_ is null. Observer not added.";
+    return;
+  }
   extension_registry_->AddObserver(this);
 }
 

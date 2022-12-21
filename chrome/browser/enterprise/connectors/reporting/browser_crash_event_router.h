@@ -24,7 +24,11 @@ class BrowserCrashEventRouter
   // that once the browser launches, OnCloudReportingLaunched() will be called,
   // where we can call ReportCrashes() to report crashes.
   explicit BrowserCrashEventRouter(content::BrowserContext* context);
+
+  BrowserCrashEventRouter(const BrowserCrashEventRouter&) = delete;
   BrowserCrashEventRouter& operator=(const BrowserCrashEventRouter&) = delete;
+  BrowserCrashEventRouter(BrowserCrashEventRouter&&) = delete;
+  BrowserCrashEventRouter& operator=(BrowserCrashEventRouter&&) = delete;
   ~BrowserCrashEventRouter() override;
 
 #if !BUILDFLAG(IS_FUCHSIA)
