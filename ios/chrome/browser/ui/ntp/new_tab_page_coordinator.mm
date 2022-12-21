@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+private.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
@@ -444,12 +445,8 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 
 - (void)ntpDidChangeVisibility:(BOOL)visible {
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+    [self updateStartForVisibilityChange:visible];
     if (visible && self.started) {
-      if (NewTabPageTabHelper::FromWebState(self.webState)
-              ->ShouldShowStartSurface()) {
-        self.headerController.isStartShowing = YES;
-        [self.contentSuggestionsCoordinator configureStartSurfaceIfNeeded];
-      }
       if ([self isFollowingFeedAvailable]) {
         self.ntpViewController.shouldScrollIntoFeed = self.shouldScrollIntoFeed;
         self.shouldScrollIntoFeed = NO;
@@ -634,6 +631,10 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   self.headerController.toolbarDelegate = self.toolbarDelegate;
   self.headerController.baseViewController = self.baseViewController;
   self.headerController.collectionSynchronizer = self.headerSynchronizer;
+  if (NewTabPageTabHelper::FromWebState(self.webState)
+          ->ShouldShowStartSurface()) {
+    self.headerController.isStartShowing = YES;
+  }
 }
 
 // Configures `self.ntpMediator`.
@@ -1243,6 +1244,25 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 
   prefService->SetBoolean(prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
                           !value);
+}
+
+- (void)updateStartForVisibilityChange:(BOOL)visible {
+  if (visible && self.started &&
+      NewTabPageTabHelper::FromWebState(self.webState)
+          ->ShouldShowStartSurface()) {
+    // Start is being shown on an existing NTP, so configure it
+    // appropriately.
+    self.headerController.isStartShowing = YES;
+    [self.contentSuggestionsCoordinator configureStartSurfaceIfNeeded];
+  }
+  if (!visible && NewTabPageTabHelper::FromWebState(self.webState)
+                      ->ShouldShowStartSurface()) {
+    // This means the NTP going away was showing Start. Reset configuration
+    // since it should not show Start after disappearing.
+    NewTabPageTabHelper::FromWebState(self.webState)
+        ->SetShowStartSurface(false);
+    self.headerController.isStartShowing = NO;
+  }
 }
 
 // Updates the visible property based on viewPresented and sceneInForeground

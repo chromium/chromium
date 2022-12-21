@@ -51,6 +51,7 @@ source_set("constants") {
 
 source_set("coordinator") {
   sources = [
+    "new_tab_page_coordinator+private.h",
     "new_tab_page_coordinator.h",
     "new_tab_page_coordinator.mm",
   ]
@@ -298,9 +299,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
+    "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/browser/ui/start_surface",
+    "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/browser/web_state_list:web_state_list",
     "//ios/chrome/common/app_group",

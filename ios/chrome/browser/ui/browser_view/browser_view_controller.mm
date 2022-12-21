@@ -3698,6 +3698,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         NTPHelper->GetNextNTPScrolledToFeed();
   } else {
     [self.ntpCoordinator ntpDidChangeVisibility:NO];
+    // This set needs to come after ntpDidChangeVisibility: so that the previous
+    // state can be cleaned up (e.g. if moving away from the Start surface).
     self.ntpCoordinator.webState = nullptr;
     [self stopNTPIfNeeded];
   }
