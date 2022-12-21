@@ -19,27 +19,19 @@ export interface BookmarksApiProxy {
 
 export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   getTree() {
-    return new Promise<chrome.bookmarks.BookmarkTreeNode[]>(resolve => {
-      chrome.bookmarks.getTree(resolve);
-    });
+    return chrome.bookmarks.getTree();
   }
 
   search(query: Query) {
-    return new Promise<chrome.bookmarks.BookmarkTreeNode[]>(resolve => {
-      chrome.bookmarks.search(query, resolve);
-    });
+    return chrome.bookmarks.search(query);
   }
 
   update(id: string, changes: {title?: string, url?: string}) {
-    return new Promise<chrome.bookmarks.BookmarkTreeNode>(resolve => {
-      chrome.bookmarks.update(id, changes, resolve);
-    });
+    return chrome.bookmarks.update(id, changes);
   }
 
   create(bookmark: chrome.bookmarks.CreateDetails) {
-    return new Promise<chrome.bookmarks.BookmarkTreeNode>(resolve => {
-      chrome.bookmarks.create(bookmark, resolve);
-    });
+    return chrome.bookmarks.create(bookmark);
   }
 
   static getInstance(): BookmarksApiProxy {

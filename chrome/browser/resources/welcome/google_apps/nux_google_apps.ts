@@ -259,13 +259,13 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
   private updateBookmark_(item: AppItem) {
     if (item.selected && !item.bookmarkId) {
       this.bookmarkBarManager_.setShown(true);
-      this.bookmarkProxy_.addBookmark(
-          {
+      this.bookmarkProxy_
+          .addBookmark({
             title: item.name,
             url: item.url,
             parentId: '1',
-          },
-          result => {
+          })
+          .then(result => {
             item.bookmarkId = result.id;
           });
       // Cache bookmark icon.

@@ -36,47 +36,41 @@ declare global {
       export const MAX_WRITE_OPERATIONS_PER_HOUR: number;
       export const MAX_SUSTAINED_WRITE_OPERATIONS_PER_MINUTE: number;
 
-      export function get(
-          idOrIdList: string|string[],
-          callback: (p1: BookmarkTreeNode[]) => void): void;
+      export function get(idOrIdList: string|
+                          string[]): Promise<BookmarkTreeNode[]>;
 
-      export function getChildren(
-          id: string, callback: (p1: BookmarkTreeNode[]) => void): void;
+      export function getChildren(id: string): Promise<BookmarkTreeNode[]>;
 
-      export function getRecent(
-          numberOfItems: number,
-          callback: (p1: BookmarkTreeNode[]) => void): void;
+      export function getRecent(numberOfItems: number):
+          Promise<BookmarkTreeNode[]>;
 
-      export function getTree(callback: (p1: BookmarkTreeNode[]) => void): void;
+      export function getTree(): Promise<BookmarkTreeNode[]>;
 
-      export function getSubTree(
-          id: string, callback: (p1: BookmarkTreeNode[]) => void): void;
+      export function getSubTree(id: string): Promise<BookmarkTreeNode[]>;
 
-      export function search(
-          query: string|{
-            query?: string,
-            url?: string,
-            title?: string,
-          },
-          callback: (p1: BookmarkTreeNode[]) => void): void;
+      export function search(query: string|{
+        query?: string,
+        url?: string,
+        title?: string,
+      }): Promise<BookmarkTreeNode[]>;
 
-      export function create(
-          bookmark: CreateDetails,
-          callback?: (p1: BookmarkTreeNode) => void): void;
+      export function create(bookmark: CreateDetails):
+          Promise<BookmarkTreeNode>;
 
-      export function move(
-          id: string,
-          destination: {parentId: string|undefined, index: number|undefined},
-          callback?: (p1: BookmarkTreeNode) => void): void;
+      export function move(id: string, destination: {
+        parentId?: string,
+        index?: number,
+      }): Promise<BookmarkTreeNode>;
 
-      export function update(
-          id: string, changes: {title?: string, url?: string},
-          callback?: (p1: BookmarkTreeNode) => void): void;
+      export function update(id: string, changes: {
+        title?: string,
+        url?: string,
+      }): Promise<BookmarkTreeNode>;
 
-      export function remove(id: string, callback?: () => void): void;
-      export function removeTree(id: string, callback?: () => void): void;
-      function importAlias(callback?: () => void): void;
-      function exportAlias(callback?: () => void): void;
+      export function remove(id: string): Promise<void>;
+      export function removeTree(id: string): Promise<void>;
+      function importAlias(): Promise<void>;
+      function exportAlias(): Promise<void>;
       export {importAlias as import};
       export {exportAlias as export};
 

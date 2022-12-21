@@ -122,7 +122,7 @@ function onImportBegan() {
 }
 
 function onImportEnded() {
-  chrome.bookmarks.getTree(function(results) {
+  chrome.bookmarks.getTree().then((results) => {
     dispatch(refreshNodes(normalizeNodes(results[0]!)));
   });
   chrome.bookmarks.onCreated.addListener(onBookmarkCreated);
