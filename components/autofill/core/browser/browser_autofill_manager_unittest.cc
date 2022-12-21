@@ -4039,7 +4039,8 @@ TEST_F(BrowserAutofillManagerTest, PreviewCreditCardForm_VirtualCard) {
   // Virtual card number using obfuscated dots only: Virtual card Mastercard
   // ••••4444
   std::u16string expected_card_number =
-      u"Virtual card Mastercard  " + virtual_card.ObfuscatedLastFourDigits();
+      u"Virtual card Mastercard  " +
+      virtual_card.ObfuscatedNumberWithVisibleLastFourDigits();
   // Virtual card expiration month using obfuscated dots: ••
   std::u16string expected_exp_month = CreditCard::GetMidlineEllipsisDots(2);
   // Virtual card expiration year using obfuscated dots: ••••

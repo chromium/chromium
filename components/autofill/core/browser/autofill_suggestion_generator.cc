@@ -519,7 +519,8 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
     std::u16string nickname = GetDisplayNicknameForCreditCard(credit_card);
     if (ShouldSplitCardNameAndLastFourDigits()) {
       main_text = credit_card.CardNameForAutofillDisplay(nickname);
-      minor_text = credit_card.ObfuscatedLastFourDigits(GetObfuscationLength());
+      minor_text = credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+          GetObfuscationLength());
     } else {
       main_text = credit_card.CardIdentifierStringForAutofillDisplay(
           nickname, GetObfuscationLength());
@@ -582,18 +583,20 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
   // TODO(crbug.com/1313616): Remove keyboard accessory check after the logic
   // for truncation is implemented.
   if (base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)) {
-    return {Suggestion::Text(
-        credit_card.ObfuscatedLastFourDigits(GetObfuscationLength()))};
+    return {
+        Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+            GetObfuscationLength()))};
   }
 
   // E.g. "Product Description/Nickname/Network  ••••1234". If card name is too
   // long, it will be truncated from the tail.
   if (ShouldSplitCardNameAndLastFourDigits()) {
-    return {Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
-                             Suggestion::Text::IsPrimary(false),
-                             Suggestion::Text::ShouldTruncate(true)),
-            Suggestion::Text(
-                credit_card.ObfuscatedLastFourDigits(GetObfuscationLength()))};
+    return {
+        Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
+                         Suggestion::Text::IsPrimary(false),
+                         Suggestion::Text::ShouldTruncate(true)),
+        Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+            GetObfuscationLength()))};
   }
   // E.g. "Nickname/Network  ••••1234".
   return {Suggestion::Text(
@@ -601,18 +604,20 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
 
 #elif BUILDFLAG(IS_IOS)
   // E.g. "••••1234"".
-  return {Suggestion::Text(
-      credit_card.ObfuscatedLastFourDigits(GetObfuscationLength()))};
+  return {
+      Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+          GetObfuscationLength()))};
 
 #else
   // E.g. "Product Description/Nickname/Network  ••••1234". If card name is too
   // long, it will be truncated from the tail.
   if (ShouldSplitCardNameAndLastFourDigits()) {
-    return {Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
-                             Suggestion::Text::IsPrimary(false),
-                             Suggestion::Text::ShouldTruncate(true)),
-            Suggestion::Text(
-                credit_card.ObfuscatedLastFourDigits(GetObfuscationLength()))};
+    return {
+        Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
+                         Suggestion::Text::IsPrimary(false),
+                         Suggestion::Text::ShouldTruncate(true)),
+        Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+            GetObfuscationLength()))};
   }
   // E.g. "Product Description/Nickname/Network  ••••1234, expires on 01/25".
   return {Suggestion::Text(

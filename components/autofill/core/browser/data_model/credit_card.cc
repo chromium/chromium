@@ -910,13 +910,14 @@ std::u16string CreditCard::NetworkForDisplay() const {
   return CreditCard::NetworkForDisplay(network_);
 }
 
-std::u16string CreditCard::ObfuscatedLastFourDigits(
+std::u16string CreditCard::ObfuscatedNumberWithVisibleLastFourDigits(
     int obfuscation_length) const {
   return internal::GetObfuscatedStringForCardDigits(LastFourDigits(),
                                                     obfuscation_length);
 }
 
-std::u16string CreditCard::ObfuscatedLastFourDigitsForSplitFields() const {
+std::u16string
+CreditCard::ObfuscatedNumberWithVisibleLastFourDigitsForSplitFields() const {
   // For split credit card number fields, use plain dots without spacing and no
   // LTR formatting. Only obfuscate 12 dots and append the last four digits of
   // the credit card number.
@@ -974,7 +975,8 @@ std::u16string CreditCard::CardNameForAutofillDisplay(
 
 #if BUILDFLAG(IS_ANDROID)
 std::u16string CreditCard::CardIdentifierStringForManualFilling() const {
-  std::u16string obfuscated_number = ObfuscatedLastFourDigits();
+  std::u16string obfuscated_number =
+      ObfuscatedNumberWithVisibleLastFourDigits();
   if (record_type_ == VIRTUAL_CARD) {
     return l10n_util::GetStringUTF16(
                IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +

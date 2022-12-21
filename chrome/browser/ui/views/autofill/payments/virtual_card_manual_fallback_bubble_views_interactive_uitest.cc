@@ -113,7 +113,7 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
     options.masked_card_name =
         CreditCard::NetworkForDisplay(virtual_card->network());
     options.masked_card_number_last_four =
-        virtual_card->ObfuscatedLastFourDigits();
+        virtual_card->ObfuscatedNumberWithVisibleLastFourDigits();
     options.virtual_card = *virtual_card;
     options.virtual_card_cvc = virtual_card_cvc;
     options.card_image = gfx::test::CreateImage(32, 20);

@@ -1791,7 +1791,7 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
     VirtualCardManualFallbackBubbleOptions options;
     options.masked_card_name = credit_card_.CardNameForAutofillDisplay();
     options.masked_card_number_last_four =
-        credit_card_.ObfuscatedLastFourDigits();
+        credit_card_.ObfuscatedNumberWithVisibleLastFourDigits();
     options.virtual_card = *credit_card;
     options.virtual_card_cvc = cvc;
     options.card_image = GetCardImage(*credit_card);

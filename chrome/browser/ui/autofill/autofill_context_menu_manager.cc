@@ -381,7 +381,7 @@ void AutofillContextMenuManager::AddProfileDataToMenu(
         base::Overloaded{
             [&field_type = field_type](const CreditCard* card) {
               if (field_type == CREDIT_CARD_NUMBER)
-                return card->ObfuscatedLastFourDigits();
+                return card->ObfuscatedNumberWithVisibleLastFourDigits();
               return card->GetRawInfo(field_type);
             },
             [&field_type = field_type](const AutofillProfile* profile) {

@@ -1791,26 +1791,26 @@ TEST(CreditCardTest, LastFourDigits) {
   ASSERT_EQ(std::u16string(), card.LastFourDigits());
   ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
                 std::u16string(), /*obfuscation_length=*/4),
-            card.ObfuscatedLastFourDigits());
+            card.ObfuscatedNumberWithVisibleLastFourDigits());
 
   test::SetCreditCardInfo(&card, "Baby Face Nelson", "5212341234123489", "01",
                           "2010", "1");
   ASSERT_EQ(u"3489", card.LastFourDigits());
   ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
                 u"3489", /*obfuscation_length=*/4),
-            card.ObfuscatedLastFourDigits());
+            card.ObfuscatedNumberWithVisibleLastFourDigits());
 
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"3489");
   ASSERT_EQ(u"3489", card.LastFourDigits());
   ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
                 u"3489", /*obfuscation_length=*/4),
-            card.ObfuscatedLastFourDigits());
+            card.ObfuscatedNumberWithVisibleLastFourDigits());
 
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"489");
   ASSERT_EQ(u"489", card.LastFourDigits());
   ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
                 u"489", /*obfuscation_length=*/4),
-            card.ObfuscatedLastFourDigits());
+            card.ObfuscatedNumberWithVisibleLastFourDigits());
 }
 
 TEST(CreditCardTest, FullDigitsForDisplay) {

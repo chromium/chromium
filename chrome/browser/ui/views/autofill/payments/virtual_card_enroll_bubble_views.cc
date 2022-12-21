@@ -180,8 +180,8 @@ void VirtualCardEnrollBubbleViews::Init() {
           views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
   card_name_4digits_view->SetFlexForView(card_name_label, /*flex=*/1);
   card_name_4digits_view->AddChildView(std::make_unique<views::Label>(
-      card.ObfuscatedLastFourDigits(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_PRIMARY));
+      card.ObfuscatedNumberWithVisibleLastFourDigits(),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
   card_identifier_view->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX),
       ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,

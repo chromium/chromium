@@ -522,15 +522,19 @@ std::u16string GetCreditCardNumberForInput(
     bool is_single_field =
         (field.credit_card_number_offset() == 0 &&
          (field.max_length == 0 ||
-          field.max_length >= credit_card.ObfuscatedLastFourDigits().length()));
+          field.max_length >=
+              credit_card.ObfuscatedNumberWithVisibleLastFourDigits()
+                  .length()));
 
     // If previewing a credit card number that needs to be split, pad the number
     // to 16 digits rather than displaying a fancy string with RTL support. This
     // also returns 16 digits if there is only one field and it cannot fit the
     // longer version CC number.
-    value = is_single_field
-                ? credit_card.ObfuscatedLastFourDigits()
-                : credit_card.ObfuscatedLastFourDigitsForSplitFields();
+    value =
+        is_single_field
+            ? credit_card.ObfuscatedNumberWithVisibleLastFourDigits()
+            : credit_card
+                  .ObfuscatedNumberWithVisibleLastFourDigitsForSplitFields();
   } else {
     value = credit_card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
   }
@@ -568,7 +572,8 @@ std::u16string GetVirtualCardNumberForPreviewInput(
          (field.max_length == 0 || field.max_length >= value.length()));
 
     if (!is_single_field)
-      value = virtual_card.ObfuscatedLastFourDigitsForSplitFields();
+      value = virtual_card
+                  .ObfuscatedNumberWithVisibleLastFourDigitsForSplitFields();
 
     // Take the substring of the credit card number starting from the offset and
     // ending at the field's max_length (or the entire string if max_length is
