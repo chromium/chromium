@@ -8,14 +8,8 @@ GEN_INCLUDE(['../dictation_test_base.js']);
  * Dictation tests for speech parsing with Pumpkin. These tests do not use the
  * live Pumpkin DLC, but instead use a local tar archive that mirrors the DLC.
  * It's important that we keep the live DLC and the local tar archive in sync.
- * SandboxedPumpkinTagger emits several logs during the initialization
- * phase e.g. "Pumpkin module loaded". Setup this test so that it doesn't
- * fail when something is logged to the console.
- * TODO(https://crbug.com/1258190): Remove DictationE2ETestAllowConsole and
- * override the message filter so that wasm console messages don't cause the
- * test to fail.
  */
-DictationPumpkinParseTest = class extends DictationE2ETestAllowConsole {
+DictationPumpkinParseTest = class extends DictationE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await this.mockAccessibilityPrivate.initializePumpkinData();

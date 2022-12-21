@@ -134,6 +134,7 @@ DictationE2ETestBase = class extends E2ETestBase {
   /** @override */
   testGenPreamble() {
     super.testGenPreamble();
+
     GEN(`
   browser()->profile()->GetPrefs()->SetBoolean(
         ash::prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
@@ -143,6 +144,19 @@ DictationE2ETestBase = class extends E2ETestBase {
         base::Unretained(ash::AccessibilityManager::Get()),
         true);
     `);
+
+    // Allow informational Pumpkin messages.
+    super.testGenPreambleCommon(
+        /*extensionIdName=*/ 'kAccessibilityCommonExtensionId',
+        /*failOnConsoleError=*/ true,
+        /*allowedMessages=*/[
+          'Pumpkin installed, but data is empty',
+          `wasm streaming compile failed: TypeError: Failed to execute ` +
+              `'compile' on 'WebAssembly': Incorrect response MIME type. ` +
+              `Expected 'application/wasm'.`,
+          'falling back to ArrayBuffer instantiation',
+          'Pumpkin module loaded.',
+        ]);
   }
 
   /** Turns on Dictation and checks IME and Speech Recognition state. */
@@ -479,27 +493,5 @@ DictationE2ETestBase = class extends E2ETestBase {
     if (expectedSmart) {
       assertEquals(expectedSmart, macro.isSmart());
     }
-  }
-};
-
-/** A Dictation test class that fails on console warnings and errors. */
-DictationE2ETestDisallowConsole = class extends DictationE2ETestBase {
-  /** @override */
-  testGenPreamble() {
-    super.testGenPreamble();
-    super.testGenPreambleCommon(
-        /*extensionIdName=*/ 'kAccessibilityCommonExtensionId',
-        /*failOnConsoleError=*/ true);
-  }
-};
-
-/** A Dictation test class that ignores console warnings and errors. */
-DictationE2ETestAllowConsole = class extends DictationE2ETestBase {
-  /** @override */
-  testGenPreamble() {
-    super.testGenPreamble();
-    super.testGenPreambleCommon(
-        /*extensionIdName=*/ 'kAccessibilityCommonExtensionId',
-        /*failOnConsoleError=*/ false);
   }
 };

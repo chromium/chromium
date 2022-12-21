@@ -37,6 +37,7 @@ E2ETestBase = class extends AccessibilityTestBase {
   #include "ash/shell.h"
   #include "base/bind.h"
   #include "base/callback.h"
+  #include "base/containers/flat_set.h"
   #include "chrome/browser/ash/accessibility/accessibility_manager.h"
   #include "chrome/browser/ash/crosapi/browser_manager.h"
   #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
@@ -71,7 +72,10 @@ E2ETestBase = class extends AccessibilityTestBase {
     `);
   }
 
-  testGenPreambleCommon(extensionIdName, failOnConsoleError = true) {
+  testGenPreambleCommon(
+      extensionIdName, failOnConsoleError = true, allowedMessages = []) {
+    const messages = allowedMessages.reduce(
+        (accumulator, message) => accumulator + `u"${message}",`, '');
     GEN(`
     WaitForExtension(extension_misc::${extensionIdName}, std::move(load_cb));
 
@@ -81,17 +85,25 @@ E2ETestBase = class extends AccessibilityTestBase {
                 extension_misc::${extensionIdName});
 
     bool fail_on_console_error = ${failOnConsoleError};
+    // Convert |allowedMessages| into a C++ set.
+    base::flat_set<std::u16string> allowed_messages({${messages}});
     content::WebContentsConsoleObserver console_observer(host->host_contents());
-    // A11y extensions should not log warnings or errors: these should cause
-    // test failures.
+    // In most cases, A11y extensions should not log warnings or errors.
+    // However, informational messages may be logged in some cases and should
+    // be specified in |allowed_messages|. All other messages should cause test
+    // failures.
     auto filter =
-        [](const content::WebContentsConsoleObserver::Message& message) {
+        [](const base::flat_set<std::u16string>& allowed,
+           const content::WebContentsConsoleObserver::Message& message) {
+          if (allowed.contains(message.message))
+            return false;
+
           return message.log_level ==
               blink::mojom::ConsoleMessageLevel::kWarning ||
               message.log_level == blink::mojom::ConsoleMessageLevel::kError;
         };
     if (fail_on_console_error) {
-      console_observer.SetFilter(base::BindRepeating(filter));
+      console_observer.SetFilter(base::BindRepeating(filter, allowed_messages));
     }
     `);
   }

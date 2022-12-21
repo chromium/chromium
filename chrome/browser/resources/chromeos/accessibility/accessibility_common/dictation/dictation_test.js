@@ -5,7 +5,7 @@
 GEN_INCLUDE(['dictation_test_base.js']);
 
 /** Dictation feature using accessibility common extension browser tests. */
-DictationE2ETest = class extends DictationE2ETestAllowConsole {};
+DictationE2ETest = class extends DictationE2ETestBase {};
 
 AX_TEST_F('DictationE2ETest', 'ResetsImeAfterToggleOff', async function() {
   // Set something as the active IME.
