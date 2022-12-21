@@ -6058,15 +6058,16 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
       element_style = nullptr;
     }
     if (!element_style) {
+      StyleRecalcContext local_style_recalc_context = style_recalc_context;
+      local_style_recalc_context.is_ensuring_style = true;
       scoped_refptr<ComputedStyle> new_style = nullptr;
       // TODO(crbug.com/953707): Avoid setting inline style during
       // HTMLImageElement::CustomStyleForLayoutObject.
       if (HasCustomStyleCallbacks() && !IsA<HTMLImageElement>(*this))
-        new_style = CustomStyleForLayoutObject(style_recalc_context);
+        new_style = CustomStyleForLayoutObject(local_style_recalc_context);
       else
-        new_style = OriginalStyleForLayoutObject(style_recalc_context);
+        new_style = OriginalStyleForLayoutObject(local_style_recalc_context);
       element_style = new_style.get();
-      new_style->SetIsEnsuredInDisplayNone();
       SetComputedStyle(std::move(new_style));
     }
   }
@@ -6111,6 +6112,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
   style_request.pseudo_argument = pseudo_argument;
 
   StyleRecalcContext child_recalc_context = style_recalc_context;
+  child_recalc_context.is_ensuring_style = true;
   if (element_style->IsContainerForSizeContainerQueries()) {
     child_recalc_context.container = this;
   }
@@ -6119,7 +6121,6 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
       GetDocument().GetStyleResolver().ResolveStyle(this, child_recalc_context,
                                                     style_request);
   DCHECK(result);
-  result->SetIsEnsuredInDisplayNone();
   return element_style->AddCachedPseudoElementStyle(
       std::move(result), pseudo_element_specifier, pseudo_argument);
 }

@@ -152,8 +152,10 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredInDisplayNone) {
 
   auto style = CreateStyle();
   auto parent = CreateStyle();
-  auto ensured_parent = CreateStyle();
-  ensured_parent->SetIsEnsuredInDisplayNone();
+  ComputedStyleBuilder ensured_parent_builder = CreateStyleBuilder();
+  ensured_parent_builder.SetIsEnsuredInDisplayNone();
+  scoped_refptr<const ComputedStyle> ensured_parent =
+      ensured_parent_builder.TakeStyle();
 
   TestKey key1("display:block", 1, GetDocument());
 

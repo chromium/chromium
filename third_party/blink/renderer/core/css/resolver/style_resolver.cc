@@ -936,6 +936,10 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   // computed style optimization happens.
   ApplyBaseStyle(element, style_recalc_context, style_request, state, cascade);
 
+  if (style_recalc_context.is_ensuring_style) {
+    state.StyleBuilder().SetIsEnsuredInDisplayNone();
+  }
+
   if (style_request.IsPseudoStyleRequest() && state.HadNoMatchedProperties()) {
     DCHECK(!cascade.InlineStyleLost());
     return state.TakeStyle();

@@ -66,6 +66,11 @@ class CORE_EXPORT StyleRecalcContext {
   // SetAnimationStyleChange(false) directly. This is somewhat out of
   // legacy reasons.
   bool parent_forces_recalc = false;
+
+  // True when we're ensuring the style of an element. This can only happen
+  // when regular style can't reach the element (i.e. inside display:none, or
+  // outside the flat tree).
+  bool is_ensuring_style = false;
 };
 
 }  // namespace blink
