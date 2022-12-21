@@ -39,6 +39,7 @@ chromium-metrics-reviews@google.com.
   <variant name="NotificationPermissions" summary="Notification permissions"/>
   <variant name="OmniboxOnDeviceTailSuggest"
       summary="Omnibox on device tail suggest"/>
+  <variant name="OmniboxUrlScoring" summary="Omnibox Url scoring"/>
   <variant name="PageEntities" summary="Page entities"/>
   <variant name="PageTopics" summary="Page topics"/>
   <variant name="PageTopicsV2" summary="Page topics v2"/>
