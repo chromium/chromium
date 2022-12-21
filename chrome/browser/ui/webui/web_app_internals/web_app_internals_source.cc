@@ -58,9 +58,9 @@ std::string ConvertToString(const T& value) {
   return ss.str();
 }
 
-base::Value BuildIndexJson() {
+base::Value::Dict BuildIndexJson() {
   base::Value::Dict root;
-  base::Value& index = *root.Set("Index", base::Value(base::Value::Type::LIST));
+  base::Value::List& index = *root.EnsureList("Index");
 
   index.Append(kInstalledWebApps);
   index.Append(kPreinstalledWebAppConfigs);
@@ -74,14 +74,13 @@ base::Value BuildIndexJson() {
 #endif
   index.Append(kWebAppDirectoryDiskState);
 
-  return base::Value(std::move(root));
+  return root;
 }
 
-base::Value BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
+base::Value::Dict BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
   base::Value::Dict root;
 
-  base::Value& installed_web_apps =
-      *root.Set(kInstalledWebApps, base::Value(base::Value::Type::DICT));
+  base::Value::Dict& installed_web_apps = *root.EnsureDict(kInstalledWebApps);
 
   std::vector<const web_app::WebApp*> web_apps;
   for (const web_app::WebApp& web_app :
@@ -91,34 +90,33 @@ base::Value BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
   base::ranges::sort(web_apps, {}, &web_app::WebApp::untranslated_name);
 
   // Prefix with a ! so this appears at the top when serialized.
-  base::Value& index = *installed_web_apps.SetKey(
-      "!Index", base::Value(base::Value::Type::DICT));
+  base::Value::Dict& index = *installed_web_apps.EnsureDict("!Index");
   for (const web_app::WebApp* web_app : web_apps) {
     const std::string& key = web_app->untranslated_name();
-    base::Value* existing_entry = index.FindKey(key);
+    base::Value* existing_entry = index.Find(key);
     if (!existing_entry) {
-      index.SetStringKey(key, web_app->app_id());
+      index.Set(key, web_app->app_id());
       continue;
     }
     // If any web apps share identical names then collect a list of app IDs.
     const std::string* existing_id = existing_entry->GetIfString();
     if (existing_id) {
-      base::Value id_copy(*existing_id);
-      index.SetKey(key, base::Value(base::Value::Type::LIST))
-          ->Append(std::move(id_copy));
+      base::Value::List id_list;
+      id_list.Append(*existing_id);
+      index.Set(key, std::move(id_list));
     }
-    index.FindListKey(key)->Append(web_app->app_id());
+    index.FindList(key)->Append(web_app->app_id());
   }
 
-  base::Value& web_app_details = *installed_web_apps.SetKey(
-      "Details", base::Value(base::Value::Type::LIST));
+  base::Value::List& web_app_details =
+      *installed_web_apps.EnsureList("Details");
   for (const web_app::WebApp* web_app : web_apps)
     web_app_details.Append(web_app->AsDebugValue());
 
-  return base::Value(std::move(root));
+  return root;
 }
 
-base::Value BuildPreinstalledWebAppConfigsJson(
+base::Value::Dict BuildPreinstalledWebAppConfigsJson(
     web_app::WebAppProvider& provider) {
   base::Value::Dict root;
 
@@ -126,36 +124,36 @@ base::Value BuildPreinstalledWebAppConfigsJson(
       provider.preinstalled_web_app_manager().debug_info();
   if (!debug_info) {
     root.Set(kPreinstalledWebAppConfigs, kNeedsRecordWebAppDebugInfo);
-    return base::Value(std::move(root));
+    return root;
   }
 
-  base::Value& preinstalled_web_app_configs = *root.Set(
-      kPreinstalledWebAppConfigs, base::Value(base::Value::Type::DICT));
+  base::Value::Dict& preinstalled_web_app_configs =
+      *root.EnsureDict(kPreinstalledWebAppConfigs);
 
-  base::Value& config_parse_errors = *preinstalled_web_app_configs.SetKey(
-      "ConfigParseErrors", base::Value(base::Value::Type::LIST));
+  base::Value::List& config_parse_errors =
+      *preinstalled_web_app_configs.EnsureList("ConfigParseErrors");
   for (const std::string& parse_error : debug_info->parse_errors)
     config_parse_errors.Append(parse_error);
 
-  base::Value& configs_enabled = *preinstalled_web_app_configs.SetKey(
-      "ConfigsEnabled", base::Value(base::Value::Type::LIST));
+  base::Value::List& configs_enabled =
+      *preinstalled_web_app_configs.EnsureList("ConfigsEnabled");
   for (const web_app::ExternalInstallOptions& enabled_config :
        debug_info->enabled_configs) {
     configs_enabled.Append(enabled_config.AsDebugValue());
   }
 
-  base::Value& configs_disabled = *preinstalled_web_app_configs.SetKey(
-      "ConfigsDisabled", base::Value(base::Value::Type::LIST));
+  base::Value::List& configs_disabled =
+      *preinstalled_web_app_configs.EnsureList("ConfigsDisabled");
   for (const std::pair<web_app::ExternalInstallOptions, std::string>&
            disabled_config : debug_info->disabled_configs) {
     base::Value::Dict entry;
     entry.Set("!Reason", disabled_config.second);
     entry.Set("Config", disabled_config.first.AsDebugValue());
-    configs_disabled.Append(base::Value(std::move(entry)));
+    configs_disabled.Append(std::move(entry));
   }
 
-  base::Value& install_results = *preinstalled_web_app_configs.SetKey(
-      "InstallResults", base::Value(base::Value::Type::LIST));
+  base::Value::List& install_results =
+      *preinstalled_web_app_configs.EnsureList("InstallResults");
   for (std::pair<const GURL&,
                  const web_app::ExternallyManagedAppManager::InstallResult&>
            install_result : debug_info->install_results) {
@@ -164,50 +162,49 @@ base::Value BuildPreinstalledWebAppConfigsJson(
     entry.Set("ResultCode", ConvertToString(install_result.second.code));
     entry.Set("DidUninstallAndReplace",
               install_result.second.did_uninstall_and_replace);
-    install_results.Append(base::Value(std::move(entry)));
+    install_results.Append(std::move(entry));
   }
 
-  preinstalled_web_app_configs.SetBoolKey(
-      "IsStartUpTaskComplete", debug_info->is_start_up_task_complete);
+  preinstalled_web_app_configs.Set("IsStartUpTaskComplete",
+                                   debug_info->is_start_up_task_complete);
 
-  base::Value& uninstall_results = *preinstalled_web_app_configs.SetKey(
-      "UninstallResults", base::Value(base::Value::Type::LIST));
+  base::Value::List& uninstall_results =
+      *preinstalled_web_app_configs.EnsureList("UninstallResults");
   for (std::pair<const GURL&, const bool&> uninstall_result :
        debug_info->uninstall_results) {
     base::Value::Dict entry;
     entry.Set("InstallUrl", uninstall_result.first.spec());
     entry.Set("Success", uninstall_result.second);
-    uninstall_results.Append(base::Value(std::move(entry)));
+    uninstall_results.Append(std::move(entry));
   }
 
-  return base::Value(std::move(root));
+  return root;
 }
 
-base::Value BuildExternallyManagedWebAppPrefsJson(Profile* profile) {
+base::Value::Dict BuildExternallyManagedWebAppPrefsJson(Profile* profile) {
   base::Value::Dict root;
-  root.Set(
-      kExternallyManagedWebAppPrefs,
-      base::Value(
-          profile->GetPrefs()->GetDict(prefs::kWebAppsExtensionIDs).Clone()));
-  return base::Value(std::move(root));
+  root.Set(kExternallyManagedWebAppPrefs,
+           profile->GetPrefs()->GetDict(prefs::kWebAppsExtensionIDs).Clone());
+  return root;
 }
 
-base::Value BuildUserUninstalledPreinstalledWebAppPrefsJson(Profile* profile) {
+base::Value::Dict BuildUserUninstalledPreinstalledWebAppPrefsJson(
+    Profile* profile) {
   base::Value::Dict root;
   root.Set(kUserUninstalledPreinstalledWebAppPrefs,
            profile->GetPrefs()
                ->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref)
                .Clone());
-  return base::Value(std::move(root));
+  return root;
 }
 
-base::Value BuildCommandManagerJson(web_app::WebAppProvider& provider) {
+base::Value::Dict BuildCommandManagerJson(web_app::WebAppProvider& provider) {
   base::Value::Dict root;
   root.Set(kCommandManager, provider.command_manager().ToDebugValue());
-  return base::Value(std::move(root));
+  return root;
 }
 
-base::Value BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
+base::Value::Dict BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
   base::Value::Dict root;
 
   const std::vector<std::string>* error_log =
@@ -215,18 +212,18 @@ base::Value BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
 
   if (!error_log) {
     root.Set(kIconErrorLog, kNeedsRecordWebAppDebugInfo);
-    return base::Value(std::move(root));
+    return root;
   }
 
-  base::Value& icon_error_log =
-      *root.Set(kIconErrorLog, base::Value(base::Value::Type::LIST));
+  base::Value::List& icon_error_log = *root.EnsureList(kIconErrorLog);
   for (const std::string& error : *error_log)
     icon_error_log.Append(error);
 
-  return base::Value(std::move(root));
+  return root;
 }
 
-base::Value BuildInstallProcessErrorLogJson(web_app::WebAppProvider& provider) {
+base::Value::Dict BuildInstallProcessErrorLogJson(
+    web_app::WebAppProvider& provider) {
   base::Value::Dict root;
 
   const web_app::WebAppInstallManager::ErrorLog* error_log =
@@ -234,15 +231,15 @@ base::Value BuildInstallProcessErrorLogJson(web_app::WebAppProvider& provider) {
 
   if (!error_log) {
     root.Set(kInstallationProcessErrorLog, kNeedsRecordWebAppDebugInfo);
-    return base::Value(std::move(root));
+    return root;
   }
 
-  base::Value& installation_process_error_log = *root.Set(
-      kInstallationProcessErrorLog, base::Value(base::Value::Type::LIST));
+  base::Value::List& installation_process_error_log =
+      *root.EnsureList(kInstallationProcessErrorLog);
   for (const base::Value& error : *error_log)
     installation_process_error_log.Append(error.Clone());
 
-  return base::Value(std::move(root));
+  return root;
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -282,14 +279,14 @@ void BuildDirectoryState(base::FilePath file_or_folder,
 }
 
 base::Value BuildWebAppDiskStateJson(base::FilePath root_directory,
-                                     base::Value root) {
+                                     base::Value::List root) {
   base::Value::Dict contents;
   BuildDirectoryState(root_directory, &contents);
 
   base::Value::Dict section;
   section.Set(kWebAppDirectoryDiskState, std::move(contents));
-  root.Append(base::Value(std::move(section)));
-  return root;
+  root.Append(std::move(section));
+  return base::Value(std::move(root));
 }
 
 void BuildResponse(Profile* profile,
@@ -336,7 +333,7 @@ void WebAppInternalsSource::BuildWebAppInternalsJson(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,
                      web_app::GetWebAppsRootDirectory(profile),
-                     base::Value(std::move(root))),
+                     std::move(root)),
       std::move(callback));
 }
 
