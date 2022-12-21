@@ -12,6 +12,7 @@ r'''Get chromium OWNERS information for android directories.
 import argparse
 import datetime
 import functools
+import logging
 import multiprocessing
 import os
 import re
@@ -45,47 +46,63 @@ def main():
       '--dirmd-path',
       default='dirmd',
       help="Path to dirmd. If not specified, assume it's in PATH.")
+  arg_parser.add_argument('--follow',
+                          action='store_true',
+                          help='Run git log with --follow to account for file '
+                          'renames. Slightly more accurate but 9x slower.')
+  arg_parser.add_argument('-v',
+                          '--verbose',
+                          action='store_true',
+                          help='Used to display detailed logging.')
   arguments = arg_parser.parse_args()
 
-  start_time = time.time()
+  if arguments.verbose:
+    level = logging.DEBUG
+  else:
+    level = logging.INFO
+  logging.basicConfig(level=level,
+                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
   chromium_root = os.path.expanduser(arguments.git_dir)
   # Guarantee path does not end with '/'
   chromium_root = os.path.normpath(chromium_root)
 
+  logging.info(f'Finding android folders under {chromium_root}')
   paths_to_search = owners_input.get_android_folders(chromium_root,
                                                      arguments.limit_to_dir)
 
+  logging.info(f'Reading dir metadata with {arguments.dirmd_path}.')
   all_dir_metadata = owners_dir_metadata.read_raw_dir_metadata(
       chromium_root, arguments.dirmd_path)
 
+  logging.info(f'Processing {len(paths_to_search)} android folders.')
   with multiprocessing.Pool() as p:
     data = p.map(
         functools.partial(_process_requested_path, chromium_root,
-                          all_dir_metadata), paths_to_search)
+                          all_dir_metadata, arguments.follow), paths_to_search)
 
+  logging.info(f'Writing data out to {arguments.output}')
   owners_exporter.to_json_file(data, arguments.output)
-  print(f'Exported to {arguments.output}')
-  elapsed_time = time.time() - start_time
-  print(f'--- Took {elapsed_time} seconds ---')
+  logging.info(f'Completed.')
 
 
 def _process_requested_path(
-    chromium_root: str, all_dir_metadata: Dict,
+    chromium_root: str, all_dir_metadata: Dict, follow: bool,
     requested_path: owners_data.RequestedPath
 ) -> Tuple[owners_data.RequestedPath, owners_data.PathData]:
   '''Gets the necessary information from the git repository.'''
-
+  logging.debug(f'Starting {requested_path}')
   owners_file = _find_owners_file(chromium_root, requested_path.path)
   owners = _build_owners_info(chromium_root, owners_file)
-  git_data = _fetch_git_data(chromium_root, requested_path)
+  git_data = _fetch_git_data(chromium_root, follow, requested_path)
   dir_metadata = owners_dir_metadata.build_dir_metadata(all_dir_metadata,
                                                         requested_path)
   path_data = owners_data.PathData(owners, git_data, dir_metadata)
+  logging.debug(f'Finished {requested_path}')
   return (requested_path, path_data)
 
 
-def _fetch_git_data(chromium_root: str,
+def _fetch_git_data(chromium_root: str, follow: bool,
                     requested_path: owners_data.RequestedPath
                     ) -> owners_data.GitData:
   '''Fetches git data for a given directory for the last 182 days.
@@ -102,7 +119,7 @@ def _fetch_git_data(chromium_root: str,
 
   ignored_authors = ('autoroll', 'roller')
 
-  git_log = owners_git.get_log(chromium_root, requested_path.path, 182)
+  git_log = owners_git.get_log(chromium_root, requested_path.path, 182, follow)
   git_data = owners_data.GitData()
 
   for commit_msg in git_log.split(line_delimiter):

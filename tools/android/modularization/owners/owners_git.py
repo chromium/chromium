@@ -58,17 +58,21 @@ def _build_ls_files_command(subdirectory: Optional[str]) -> List[str]:
     return ['git', 'ls-files']
 
 
-def get_log(git_src: str, subdirectory: str, trailing_days: int) -> str:
+def get_log(git_src: str, subdirectory: str, trailing_days: int,
+            follow: bool) -> str:
   '''Gets the git log for a given directory.'''
-  return run_command([
+  cmd = [
       'git',
       'log',
-      '--follow',
+  ]
+  if follow:
+    cmd.append('--follow')
+  cmd.extend([
       f'--since=\"{trailing_days} days ago\"',
       '--',
       subdirectory,
-  ],
-                     cwd=git_src)
+  ])
+  return run_command(cmd, cwd=git_src)
 
 
 def run_command(command: List[str], cwd: str) -> str:
