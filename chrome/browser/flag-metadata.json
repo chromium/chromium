@@ -87,11 +87,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "allow-disable-touchpad-haptic-feedback",
-    "owners": [ "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 112
-  },
-   {
     "name": "allow-dsp-based-aec",
     "owners": [ "peah" ],
     "expiry_milestone": 118

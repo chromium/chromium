@@ -6583,11 +6583,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"allow-disable-touchpad-haptic-feedback",
-     flag_descriptions::kAllowDisableTouchpadHapticFeedbackName,
-     flag_descriptions::kAllowDisableTouchpadHapticFeedbackDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAllowDisableTouchpadHapticFeedback)},
-
     {"allow-repeated-updates", flag_descriptions::kAllowRepeatedUpdatesName,
      flag_descriptions::kAllowRepeatedUpdatesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAllowRepeatedUpdates)},

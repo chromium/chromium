@@ -48,7 +48,6 @@ var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
       enabled: [
         'ash::features::kAudioSettingsPage',
         'ash::features::kInputDeviceSettingsSplit',
-        'features::kAllowDisableTouchpadHapticFeedback',
         'features::kAllowTouchpadHapticClickSettings',
       ],
     };

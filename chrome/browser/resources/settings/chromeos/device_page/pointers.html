@@ -200,27 +200,25 @@
           </settings-slider>
         </div>
       </template>
-      <template is="dom-if" if="[[allowTouchpadHapticFeedback_]]">
-        <div class="settings-box two-line" id="touchpadHapticFeedbackRow"
-            on-click="onTouchpadHapticFeedbackRowClicked_">
-          <div class="start settings-box-text">
-            <div>$i18n{touchpadHapticFeedbackTitle}</div>
-            <div class="secondary">
-              <localized-link
-                on-click="onLearnMoreLinkClicked_"
-                id="touchpadHapticFeedbackSecondary"
-                localized-string="$i18n{touchpadHapticFeedbackSecondaryText}"
-                link-url="$i18n{hapticFeedbackLearnMoreLink}">
-              </localized-link>
-            </div>
+      <div class="settings-box two-line" id="touchpadHapticFeedbackRow"
+          on-click="onTouchpadHapticFeedbackRowClicked_">
+        <div class="start settings-box-text">
+          <div>$i18n{touchpadHapticFeedbackTitle}</div>
+          <div class="secondary">
+            <localized-link
+              on-click="onLearnMoreLinkClicked_"
+              id="touchpadHapticFeedbackSecondary"
+              localized-string="$i18n{touchpadHapticFeedbackSecondaryText}"
+              link-url="$i18n{hapticFeedbackLearnMoreLink}">
+            </localized-link>
           </div>
-          <cr-toggle id="touchpadHapticFeedbackToggle"
-              checked="{{prefs.settings.touchpad.haptic_feedback.value}}"
-              aria-labelledby="touchpadHapticFeedbackRow"
-              deep-link-focus-id$="[[Setting.kTouchpadHapticFeedback]]">
-          </cr-toggle>
         </div>
-      </template>
+        <cr-toggle id="touchpadHapticFeedbackToggle"
+            checked="{{prefs.settings.touchpad.haptic_feedback.value}}"
+            aria-labelledby="touchpadHapticFeedbackRow"
+            deep-link-focus-id$="[[Setting.kTouchpadHapticFeedback]]">
+        </cr-toggle>
+      </div>
     </template>
     <div class="settings-box" id="reverseScrollRow"
          on-click="onTouchpadReverseScrollRowClicked_">

@@ -2630,9 +2630,6 @@ extern const char kAdaptiveChargingDescription[];
 extern const char kAdaptiveChargingForTestingName[];
 extern const char kAdaptiveChargingForTestingDescription[];
 
-extern const char kAllowDisableTouchpadHapticFeedbackName[];
-extern const char kAllowDisableTouchpadHapticFeedbackDescription[];
-
 extern const char kAllowRepeatedUpdatesName[];
 extern const char kAllowRepeatedUpdatesDescription[];
 

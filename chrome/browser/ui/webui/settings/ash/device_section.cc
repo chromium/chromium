@@ -1135,10 +1135,7 @@ void DeviceSection::HapticTouchpadExists(bool exists) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          ::features::kAllowDisableTouchpadHapticFeedback)) {
-    updater.AddSearchTags(GetTouchpadHapticFeedback());
-  }
+  updater.AddSearchTags(GetTouchpadHapticFeedback());
   if (base::FeatureList::IsEnabled(
           ::features::kAllowTouchpadHapticClickSettings)) {
     updater.AddSearchTags(GetTouchpadHapticClickSensitivity());
@@ -1354,9 +1351,7 @@ void DeviceSection::AddDevicePointersStrings(
                          GetHelpUrlWithBoard(chrome::kHapticFeedbackHelpURL));
 
   html_source->AddBoolean("allowScrollSettings", AreScrollSettingsAllowed());
-  html_source->AddBoolean("allowTouchpadHapticFeedback",
-                          base::FeatureList::IsEnabled(
-                              ::features::kAllowDisableTouchpadHapticFeedback));
+
   html_source->AddBoolean("allowTouchpadHapticClickSettings",
                           base::FeatureList::IsEnabled(
                               ::features::kAllowTouchpadHapticClickSettings));
