@@ -119,12 +119,12 @@ class WebAppProvider : public KeyedService {
   // chrome/browser/web_applications/locks/ for more info).
   WebAppRegistrar& registrar_unsafe();
   const WebAppRegistrar& registrar_unsafe() const;
-  // Unsafe access to the app registry controller. For safe access use locks
-  // (see chrome/browser/web_applications/locks/ for more info).
+  // Unsafe access to the WebAppSyncBridge. Reading or data from here should be
+  // considered an 'uncommitted read', and writing data is unsafe and could
+  // interfere with other operations. For safe access use locks to ensure no
+  // operations (like install/update/uninstall/etc) are currently running. See
+  // chrome/browser/web_applications/locks/ for more info.
   WebAppSyncBridge& sync_bridge_unsafe();
-  // Deprecated use sync_bridge_unsafe instead.
-  // TODO(b/260864090): Remove sync_bridge accessor.
-  WebAppSyncBridge& sync_bridge();
   // UIs can use WebAppInstallManager for user-initiated Web Apps install.
   WebAppInstallManager& install_manager();
   // Implements persistence for Web Apps install.

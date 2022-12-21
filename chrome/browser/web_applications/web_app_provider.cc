@@ -156,10 +156,6 @@ WebAppSyncBridge& WebAppProvider::sync_bridge_unsafe() {
   return *sync_bridge_;
 }
 
-WebAppSyncBridge& WebAppProvider::sync_bridge() {
-  return sync_bridge_unsafe();
-}
-
 WebAppInstallManager& WebAppProvider::install_manager() {
   CheckIsConnected();
   return *install_manager_;
