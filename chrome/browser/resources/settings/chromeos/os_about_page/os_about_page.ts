@@ -186,11 +186,6 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
             'currentUpdateStatusEvent_, hasCheckedForUpdates_, hasEndOfLife_)',
       },
 
-      showFirmwareUpdatesApp_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isFirmwareUpdaterAppEnabled'),
-      },
-
       focusConfig_: {
         type: Object,
         value() {
@@ -274,7 +269,6 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
   private showButtonContainer_: boolean;
   private showRelaunch_: boolean;
   private showCheckUpdates_: boolean;
-  protected showFirmwareUpdatesApp_: boolean;
   private focusConfig_: Map<string, string>;
   private showUpdateWarningDialog_: boolean;
   private showTPMFirmwareUpdateLineItem_: boolean;
@@ -321,11 +315,9 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
       this.hasInternetConnection_ = result;
     });
 
-    if (this.showFirmwareUpdatesApp_) {
-      this.aboutBrowserProxy_.getFirmwareUpdateCount().then(result => {
-        this.firmwareUpdateCount_ = result;
-      });
-    }
+    this.aboutBrowserProxy_.getFirmwareUpdateCount().then(result => {
+      this.firmwareUpdateCount_ = result;
+    });
 
     if (Router.getInstance().getQueryParameters().get('checkForUpdate') ===
         'true') {
@@ -398,7 +390,6 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
   }
 
   private onFirmwareUpdatesClick_() {
-    assert(this.showFirmwareUpdatesApp_);
     this.aboutBrowserProxy_.openFirmwareUpdatesPage();
     recordSettingChange(Setting.kFirmwareUpdates);
   }
@@ -461,7 +452,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
   }
 
   private shouldShowFirmwareUpdatesBadge_(): boolean {
-    return this.showFirmwareUpdatesApp_ && this.firmwareUpdateCount_ > 0;
+    return this.firmwareUpdateCount_ > 0;
   }
 
   private getUpdateStatusMessage_(): TrustedHTML {

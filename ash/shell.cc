@@ -1705,8 +1705,8 @@ void Shell::OnSessionStateChanged(session_manager::SessionState state) {
   // active user session, this prevents a bug in which the service would start
   // up earlier than expected and causes a delay during boot.
   // See b/250002264 for more details.
-  if (is_session_active && features::IsFirmwareUpdaterAppEnabled() &&
-      !FwupdClient::Get() && !firmware_update_notification_controller_) {
+  if (is_session_active && !FwupdClient::Get() &&
+      !firmware_update_notification_controller_) {
     chromeos::InitializeDBusClient<FwupdClient>(dbus_bus_.get());
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
     // The notification controller is registered as an observer before

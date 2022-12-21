@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
 #include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
@@ -113,7 +113,6 @@ class FwupdClientImpl : public FwupdClient {
   }
 
   void RequestUpdates(const std::string& device_id) override {
-    CHECK(features::IsFirmwareUpdaterAppEnabled());
     VLOG(1) << "fwupd: RequestUpdates called for: " << device_id;
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdGetUpgradesMethodName);
@@ -128,7 +127,6 @@ class FwupdClientImpl : public FwupdClient {
   }
 
   void RequestDevices() override {
-    CHECK(features::IsFirmwareUpdaterAppEnabled());
     VLOG(1) << "fwupd: RequestDevices called";
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdGetDevicesMethodName);
@@ -391,19 +389,12 @@ class FwupdClientImpl : public FwupdClient {
 
   // TODO(swifton): This is a stub implementation.
   void OnDeviceAddedReceived(dbus::Signal* signal) {
-    // Do nothing if the feature is not enabled.
-    if (!features::IsFirmwareUpdaterAppEnabled())
-      return;
-
     if (client_is_in_testing_mode_) {
       ++device_signal_call_count_for_testing_;
     }
   }
 
   void OnPropertyChanged(const std::string& name) {
-    if (!features::IsFirmwareUpdaterAppEnabled())
-      return;
-
     for (auto& observer : observers_)
       observer.OnPropertiesChangedResponse(properties_.get());
   }

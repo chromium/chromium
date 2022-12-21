@@ -4,10 +4,8 @@
 
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
 #include "dbus/message.h"
@@ -72,9 +70,6 @@ namespace ash {
 class FwupdClientTest : public testing::Test {
  public:
   FwupdClientTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::ash::features::kFirmwareUpdaterApp);
-
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
     bus_ = base::MakeRefCounted<dbus::MockBus>(options);
@@ -302,8 +297,6 @@ class FwupdClientTest : public testing::Test {
       signal_callbacks_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Mock bus for simulating calls.
   scoped_refptr<dbus::MockBus> bus_;

@@ -2317,11 +2317,6 @@
     "expiry_milestone": 85
   },
   {
-    "name": "enable-firmware-updater-app",
-    "owners": [ "zentaro", "jimmyxgong", "swifton", "cros-peripherals@google.com" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "enable-first-party-sets",
     "owners": [ "chrome-first-party-sets@chromium.org" ],
     "expiry_milestone": 120

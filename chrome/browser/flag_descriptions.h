@@ -666,9 +666,6 @@ extern const char kEnableEnhancedSafeBrowsingSettingsImprovementsDescription[];
 extern const char kEnableFencedFramesName[];
 extern const char kEnableFencedFramesDescription[];
 
-extern const char kEnableFirmwareUpdaterAppName[];
-extern const char kEnableFirmwareUpdaterAppDescription[];
-
 extern const char kEnableGamepadButtonAxisEventsName[];
 extern const char kEnableGamepadButtonAxisEventsDescription[];
 

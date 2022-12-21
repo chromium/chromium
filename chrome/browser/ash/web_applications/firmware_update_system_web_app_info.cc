@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
 #include "ash/webui/grit/ash_firmware_update_app_resources.h"
@@ -73,10 +72,6 @@ FirmwareUpdateSystemAppDelegate::FirmwareUpdateSystemAppDelegate(
 std::unique_ptr<WebAppInstallInfo>
 FirmwareUpdateSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForFirmwareUpdateSystemWebApp();
-}
-
-bool FirmwareUpdateSystemAppDelegate::IsAppEnabled() const {
-  return ash::features::IsFirmwareUpdaterAppEnabled();
 }
 
 bool FirmwareUpdateSystemAppDelegate::ShouldAllowMaximize() const {

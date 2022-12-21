@@ -761,8 +761,6 @@ suite('AboutPageTest', function() {
   });
 
   test('FirmwareUpdatesBadge No Updates', async function() {
-    loadTimeData.overrideValues({isFirmwareUpdaterAppEnabled: true});
-
     aboutBrowserProxy.setFirmwareUpdatesCount(0);
     await initNewPage();
     flush();
@@ -776,8 +774,6 @@ suite('AboutPageTest', function() {
   });
 
   test('FirmwareUpdatesBadge N Updates', async function() {
-    loadTimeData.overrideValues({isFirmwareUpdaterAppEnabled: true});
-
     for (let i = 1; i < 10; i++) {
       aboutBrowserProxy.setFirmwareUpdatesCount(i);
       await initNewPage();
@@ -795,8 +791,6 @@ suite('AboutPageTest', function() {
   });
 
   test('FirmwareUpdatesBadge 10 Updates', async function() {
-    loadTimeData.overrideValues({isFirmwareUpdaterAppEnabled: true});
-
     aboutBrowserProxy.setFirmwareUpdatesCount(10);
     await initNewPage();
     flush();
@@ -814,7 +808,6 @@ suite('AboutPageTest', function() {
   test('LaunchFirmwareUpdates', async function() {
     loadTimeData.overrideValues({
       isDeepLinkingEnabled: true,
-      isFirmwareUpdaterAppEnabled: true,
     });
 
     await initNewPage();
@@ -828,7 +821,6 @@ suite('AboutPageTest', function() {
   test('Deep link to firmware updates', async () => {
     loadTimeData.overrideValues({
       isDeepLinkingEnabled: true,
-      isFirmwareUpdaterAppEnabled: true,
     });
 
     await initNewPage();

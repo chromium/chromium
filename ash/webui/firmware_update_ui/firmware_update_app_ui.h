@@ -27,8 +27,6 @@ class FirmwareUpdateAppUIConfig
   FirmwareUpdateAppUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            ash::kChromeUIFirmwareUpdateAppHost) {}
-
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 class FirmwareUpdateAppUI : public ui::MojoWebDialogUI {

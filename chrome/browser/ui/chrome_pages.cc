@@ -51,7 +51,6 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
@@ -577,7 +576,6 @@ void ShowDiagnosticsApp(Profile* profile) {
 
 void ShowFirmwareUpdatesApp(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(base::FeatureList::IsEnabled(ash::features::kFirmwareUpdaterApp));
   ShowSystemAppInternal(profile, ash::SystemWebAppType::FIRMWARE_UPDATE);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   ShowSystemAppInternal(profile, GURL(kOsUIFirmwareUpdaterAppURL));

@@ -18,7 +18,6 @@
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
-GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /**
@@ -33,8 +32,6 @@ FirmwareUpdateAppBrowserTest.prototype = {
   browsePreload: 'chrome://accessory-update/test_loader.html' +
       '?module=chromeos/firmware_update/' +
       'firmware_update_unified_test.js&host=test',
-
-  featureList: {enabled: ['ash::features::kFirmwareUpdaterApp']},
 };
 
 // List of names of suites in unified test to register for individual debugging.

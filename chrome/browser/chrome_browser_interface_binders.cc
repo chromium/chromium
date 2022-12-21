@@ -1276,11 +1276,9 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<audio::mojom::PageHandlerFactory,
                                          ash::AudioUI>(map);
 
-  if (ash::features::IsFirmwareUpdaterAppEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::firmware_update::mojom::UpdateProvider, ash::FirmwareUpdateAppUI>(
-        map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      ash::firmware_update::mojom::UpdateProvider, ash::FirmwareUpdateAppUI>(
+      map);
 
   if (ash::features::IsDriveFsMirroringEnabled()) {
     RegisterWebUIControllerInterfaceBinder<

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
 #include "ash/webui/grit/ash_firmware_update_app_resources.h"
@@ -69,11 +68,6 @@ void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
 }
 
 }  // namespace
-
-bool FirmwareUpdateAppUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return ash::features::IsFirmwareUpdaterAppEnabled();
-}
 
 FirmwareUpdateAppUI::FirmwareUpdateAppUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {

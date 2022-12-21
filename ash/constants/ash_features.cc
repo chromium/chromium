@@ -980,11 +980,6 @@ BASE_FEATURE(kFiltersInRecentsV2,
              "FiltersInRecentsV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the firmware updater app.
-BASE_FEATURE(kFirmwareUpdaterApp,
-             "FirmwareUpdaterApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables first party Vietnamese input method.
 BASE_FEATURE(kFirstPartyVietnameseInput,
              "FirstPartyVietnameseInput",
@@ -2591,10 +2586,6 @@ bool IsFileManagerFuseBoxDebugEnabled() {
 
 bool IsFileManagerSearchV2Enabled() {
   return base::FeatureList::IsEnabled(kFilesSearchV2);
-}
-
-bool IsFirmwareUpdaterAppEnabled() {
-  return base::FeatureList::IsEnabled(kFirmwareUpdaterApp);
 }
 
 bool IsFloatingWorkspaceEnabled() {

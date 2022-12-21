@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom-test-utils.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
@@ -19,7 +18,6 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
@@ -137,9 +135,6 @@ namespace ash {
 class FirmwareUpdateManagerTest : public testing::Test {
  public:
   FirmwareUpdateManagerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::ash::features::kFirmwareUpdaterApp);
-
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
     bus_ = base::MakeRefCounted<dbus::MockBus>(options);
@@ -572,8 +567,6 @@ class FirmwareUpdateManagerTest : public testing::Test {
 
   // Fake responses.
   std::deque<std::unique_ptr<dbus::Response>> dbus_responses_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FirmwareUpdateManagerTest, CorrectMockInstance) {

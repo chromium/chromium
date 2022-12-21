@@ -1344,9 +1344,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
                  base::BindOnce(&AshUsbDetector::ConnectToDeviceManager,
                                 base::Unretained(ash_usb_detector_.get())));
 
-  if (features::IsFirmwareUpdaterAppEnabled()) {
-    fwupd_download_client_ = std::make_unique<FwupdDownloadClientImpl>();
-  }
+  fwupd_download_client_ = std::make_unique<FwupdDownloadClientImpl>();
 
   // The local_state pref may not be available at this stage of Chrome's
   // lifecycle, default to false for now. The actual state will be set in a

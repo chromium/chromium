@@ -235,9 +235,7 @@ AboutSection::AboutSection(Profile* profile,
 
   updater.AddSearchTags(GetDiagnosticsAppSearchConcepts());
 
-  if (base::FeatureList::IsEnabled(features::kFirmwareUpdaterApp)) {
-    updater.AddSearchTags(GetFirmwareUpdatesAppSearchConcepts());
-  }
+  updater.AddSearchTags(GetFirmwareUpdatesAppSearchConcepts());
 
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
     updater.AddSearchTags(GetDeviceNameSearchConcepts());
@@ -444,10 +442,6 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   std::string safetyInfoLink = GetSafetyInfoLink();
   html_source->AddBoolean("shouldShowSafetyInfo", !safetyInfoLink.empty());
-
-  html_source->AddBoolean(
-      "isFirmwareUpdaterAppEnabled",
-      base::FeatureList::IsEnabled(features::kFirmwareUpdaterApp));
 
   html_source->AddBoolean("isOsFeedbackEnabled",
                           base::FeatureList::IsEnabled(features::kOsFeedback));
