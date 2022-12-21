@@ -56,6 +56,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/websockets/websocket_quic_spdy_stream.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
@@ -630,6 +631,14 @@ void QuicChromiumClientSession::Handle::OnRendezvousResult(
     std::move(push_callback_).Run(rv);
   }
 }
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+std::unique_ptr<WebSocketQuicStreamAdapter>
+QuicChromiumClientSession::Handle::CreateWebSocketQuicStreamAdapter(
+    WebSocketQuicStreamAdapter::Delegate* delegate) {
+  return session_->CreateWebSocketQuicStreamAdapter(delegate);
+}
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 QuicChromiumClientSession::StreamRequest::StreamRequest(
     QuicChromiumClientSession::Handle* session,
@@ -3875,4 +3884,27 @@ QuicChromiumClientSession::GetDnsAliasesForSessionKey(
   return stream_factory_ ? stream_factory_->GetDnsAliasesForSessionKey(key)
                          : *emptyset_result;
 }
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+std::unique_ptr<WebSocketQuicStreamAdapter>
+QuicChromiumClientSession::CreateWebSocketQuicStreamAdapter(
+    WebSocketQuicStreamAdapter::Delegate* delegate) {
+  DCHECK(connection()->connected());
+  if (!CanOpenNextOutgoingBidirectionalStream()) {
+    return nullptr;
+  }
+
+  auto websocket_quic_spdy_stream = std::make_unique<WebSocketQuicSpdyStream>(
+      GetNextOutgoingBidirectionalStreamId(), this, quic::BIDIRECTIONAL);
+
+  auto adapter = std::make_unique<WebSocketQuicStreamAdapter>(
+      websocket_quic_spdy_stream.get());
+
+  ActivateStream(std::move(websocket_quic_spdy_stream));
+
+  ++num_total_streams_;
+  return adapter;
+}
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+
 }  // namespace net

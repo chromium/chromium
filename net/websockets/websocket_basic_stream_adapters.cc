@@ -15,6 +15,7 @@
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/socket.h"
 #include "net/spdy/spdy_buffer.h"
+#include "net/websockets/websocket_quic_spdy_stream.h"
 
 namespace net {
 
@@ -226,6 +227,56 @@ int WebSocketSpdyStreamAdapter::CopySavedReadDataIntoBuffer() {
 void WebSocketSpdyStreamAdapter::CallDelegateOnClose() {
   if (delegate_)
     delegate_->OnClose(stream_error_);
+}
+
+WebSocketQuicStreamAdapter::WebSocketQuicStreamAdapter(
+    WebSocketQuicSpdyStream* websocket_quic_spdy_stream)
+    : websocket_quic_spdy_stream_(websocket_quic_spdy_stream) {
+  websocket_quic_spdy_stream_->set_delegate(this);
+}
+
+WebSocketQuicStreamAdapter::~WebSocketQuicStreamAdapter() {
+  if (websocket_quic_spdy_stream_) {
+    websocket_quic_spdy_stream_->set_delegate(nullptr);
+  }
+}
+
+// WebSocketBasicStream::Adapter methods.
+int WebSocketQuicStreamAdapter::Read(IOBuffer* buf,
+                                     int buf_len,
+                                     CompletionOnceCallback callback) {
+  // TODO(momoka): Write implementation.
+  return OK;
+}
+
+int WebSocketQuicStreamAdapter::Write(
+    IOBuffer* buf,
+    int buf_len,
+    CompletionOnceCallback callback,
+    const NetworkTrafficAnnotationTag& traffic_annotation) {
+  // TODO(momoka): Write implementation.
+  return OK;
+}
+
+void WebSocketQuicStreamAdapter::Disconnect() {
+  if (websocket_quic_spdy_stream_) {
+    websocket_quic_spdy_stream_->Reset(quic::QUIC_STREAM_CANCELLED);
+  }
+}
+
+bool WebSocketQuicStreamAdapter::is_initialized() const {
+  return true;
+}
+
+// WebSocketQuicSpdyStream::Delegate methods.
+void WebSocketQuicStreamAdapter::ClearStream() {
+  if (websocket_quic_spdy_stream_) {
+    websocket_quic_spdy_stream_ = nullptr;
+  }
+}
+
+void WebSocketQuicStreamAdapter::OnBodyAvailable() {
+  // TODO(momoka): implement this.
 }
 
 }  // namespace net

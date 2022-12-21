@@ -33,6 +33,7 @@
 #include "net/base/network_handle.h"
 #include "net/base/proxy_server.h"
 #include "net/log/net_log_with_source.h"
+#include "net/net_buildflags.h"
 #include "net/quic/quic_chromium_client_stream.h"
 #include "net/quic/quic_chromium_packet_reader.h"
 #include "net/quic/quic_chromium_packet_writer.h"
@@ -55,6 +56,10 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+#include "net/websockets/websocket_basic_stream_adapters.h"
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 namespace net {
 
@@ -291,6 +296,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // particular order.
     const std::set<std::string>& GetDnsAliasesForSessionKey(
         const QuicSessionKey& key) const;
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+    // This method returns nullptr on failure, such as when a new bidirectional
+    // stream could not be made.
+    std::unique_ptr<WebSocketQuicStreamAdapter>
+    CreateWebSocketQuicStreamAdapter(
+        WebSocketQuicStreamAdapter::Delegate* delegate);
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
    private:
     friend class QuicChromiumClientSession;
@@ -874,6 +887,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // order.
   const std::set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+  std::unique_ptr<WebSocketQuicStreamAdapter> CreateWebSocketQuicStreamAdapter(
+      WebSocketQuicStreamAdapter::Delegate* delegate);
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
  protected:
   // quic::QuicSession methods:

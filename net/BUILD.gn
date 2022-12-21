@@ -1574,6 +1574,8 @@ component("net") {
       "websockets/websocket_http2_handshake_stream.h",
       "websockets/websocket_inflater.cc",
       "websockets/websocket_inflater.h",
+      "websockets/websocket_quic_spdy_stream.cc",
+      "websockets/websocket_quic_spdy_stream.h",
       "websockets/websocket_stream.cc",
       "websockets/websocket_stream.h",
     ]
