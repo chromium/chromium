@@ -23,30 +23,6 @@ class StorableSource;
 // debug report.
 class CONTENT_EXPORT AttributionDebugReport {
  public:
-  enum class DataType {
-    kSourceDestinationLimit,
-    kSourceNoised,
-    kSourceStorageLimit,
-    kSourceUnknownError,
-    kTriggerNoMatchingSource,
-    kTriggerAttributionsPerSourceDestinationLimit,
-    kTriggerNoMatchingFilterData,
-    kTriggerReportingOriginLimit,
-    kTriggerEventDeduplicated,
-    kTriggerEventNoMatchingConfigurations,
-    kTriggerEventNoise,
-    kTriggerEventLowPriority,
-    kTriggerEventExcessiveReports,
-    kTriggerEventStorageLimit,
-    kTriggerEventReportWindowPassed,
-    kTriggerAggregateDeduplicated,
-    kTriggerAggregateNoContributions,
-    kTriggerAggregateInsufficientBudget,
-    kTriggerAggregateStorageLimit,
-    kTriggerAggregateReportWindowPassed,
-    kTriggerUnknownError,
-  };
-
   static absl::optional<AttributionDebugReport> Create(
       const StorableSource& source,
       bool is_debug_cookie_set,

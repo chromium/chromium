@@ -24,11 +24,34 @@ namespace content {
 
 namespace {
 
-using DebugDataType = ::content::AttributionDebugReport::DataType;
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 
 constexpr char kAttributionDestination[] = "attribution_destination";
+
+enum class DebugDataType {
+  kSourceDestinationLimit,
+  kSourceNoised,
+  kSourceStorageLimit,
+  kSourceUnknownError,
+  kTriggerNoMatchingSource,
+  kTriggerAttributionsPerSourceDestinationLimit,
+  kTriggerNoMatchingFilterData,
+  kTriggerReportingOriginLimit,
+  kTriggerEventDeduplicated,
+  kTriggerEventNoMatchingConfigurations,
+  kTriggerEventNoise,
+  kTriggerEventLowPriority,
+  kTriggerEventExcessiveReports,
+  kTriggerEventStorageLimit,
+  kTriggerEventReportWindowPassed,
+  kTriggerAggregateDeduplicated,
+  kTriggerAggregateNoContributions,
+  kTriggerAggregateInsufficientBudget,
+  kTriggerAggregateStorageLimit,
+  kTriggerAggregateReportWindowPassed,
+  kTriggerUnknownError,
+};
 
 absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
                                                   bool is_debug_cookie_set) {
@@ -333,7 +356,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
   if (!source.debug_reporting() || source.is_within_fenced_frame())
     return absl::nullopt;
 
-  absl::optional<DataType> data_type =
+  absl::optional<DebugDataType> data_type =
       GetReportDataType(result.status, is_debug_cookie_set);
   if (!data_type)
     return absl::nullopt;
@@ -357,7 +380,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
   base::Value::List report_body;
 
-  absl::optional<DataType> event_level_data_type =
+  absl::optional<DebugDataType> event_level_data_type =
       GetReportDataType(result.event_level_status(), is_debug_cookie_set);
   if (event_level_data_type) {
     report_body.Append(GetReportData(
@@ -365,7 +388,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
         GetReportDataBody(*event_level_data_type, trigger, result)));
   }
 
-  if (absl::optional<DataType> aggregatable_data_type =
+  if (absl::optional<DebugDataType> aggregatable_data_type =
           GetReportDataType(result.aggregatable_status(), is_debug_cookie_set);
       aggregatable_data_type &&
       aggregatable_data_type != event_level_data_type) {
