@@ -79,11 +79,6 @@ void WebMainLoop::CreateMainMessageLoop() {
 
   InitializeMainThread();
 
-  // TODO(crbug.com/807279): Do we need PowerMonitor on iOS, or can we get rid
-  // of it?
-  base::PowerMonitor::Initialize(
-      std::make_unique<base::PowerMonitorDeviceSource>());
-
   ios_global_state::CreateNetworkChangeNotifier();
 
   if (parts_) {
@@ -114,6 +109,13 @@ int WebMainLoop::PreCreateThreads() {
   if (parts_) {
     parts_->PreCreateThreads();
   }
+
+  // TODO(crbug.com/807279): Do we need PowerMonitor on iOS, or can we get rid
+  // of it?
+  // TODO(crbug.com/1370276): Remove this once we have confidence PowerMonitor
+  // is not needed for iOS
+  base::PowerMonitor::Initialize(
+      std::make_unique<base::PowerMonitorDeviceSource>());
 
   return result_code_;
 }
