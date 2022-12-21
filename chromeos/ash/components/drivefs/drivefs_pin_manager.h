@@ -181,15 +181,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
     ~InProgressSyncingItems();
 
     // Adds an item to the map.
-    void AddItem(const std::string path);
+    void AddItem(const std::string& path);
 
     // Removes an item from the map, if the item doesn't exist ignores the
     // removal. Returns the total bytes transferred on every removal.
-    int64_t RemoveItem(const std::string path, int64_t total_bytes);
+    int64_t RemoveItem(const std::string& path, int64_t total_bytes);
 
     // Update the item keyed at `path` with the new progress bytes. Returns the
     // total bytes transferred on every update.
-    int64_t UpdateItem(const std::string path,
+    int64_t UpdateItem(const std::string& path,
                        int64_t bytes_transferred,
                        int64_t bytes_to_transfer);
 
@@ -251,13 +251,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // For any paths that are in the unstarted phase (i.e. no `bytes_to_transfer`
   // registered), the metadata must be retrieved to verify their
   // `available_offline` boolean is true OR the size is 0.
-  void GetMetadata(const std::vector<std::string> unstarted_paths);
+  void GetMetadata(const std::vector<std::string>& unstarted_paths);
 
   // When an item goes to completed, it doesn't emit the final chunk of progress
   // nor it's final size, to ensure progress is adequately retrieved, this
   // method is used to get the total size to keep track of.
   void GetMetadataForPath(const base::FilePath& path);
-  void OnMetadataRetrieved(const std::string path,
+  void OnMetadataRetrieved(const std::string& path,
                            drive::FileError error,
                            mojom::FileMetadataPtr metadata);
 

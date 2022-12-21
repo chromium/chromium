@@ -115,7 +115,7 @@ DriveFsPinManager::InProgressSyncingItems::InProgressSyncingItems() = default;
 DriveFsPinManager::InProgressSyncingItems::~InProgressSyncingItems() = default;
 
 void DriveFsPinManager::InProgressSyncingItems::AddItem(
-    const std::string path) {
+    const std::string& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Emplace an item with no progress, these values (i.e. 0,0) will get updated
   // in the `OnSyncingStatusUpdate`.
@@ -124,7 +124,7 @@ void DriveFsPinManager::InProgressSyncingItems::AddItem(
 }
 
 int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
-    const std::string path,
+    const std::string& path,
     int64_t total_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = in_progress_items_.find(path);
@@ -142,7 +142,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
 }
 
 int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
-    const std::string path,
+    const std::string& path,
     int64_t bytes_transferred,
     int64_t bytes_to_transfer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -513,13 +513,12 @@ void DriveFsPinManager::PeriodicallyRemovePinnedItems() {
 }
 
 void DriveFsPinManager::GetMetadata(
-    const std::vector<std::string> unstarted_paths) {
-  for (const auto& path : unstarted_paths) {
-    base::FilePath file_path(path);
+    const std::vector<std::string>& unstarted_paths) {
+  for (const std::string& path : unstarted_paths) {
     drivefs_interface_->GetMetadata(
-        file_path,
+        base::FilePath(path),
         base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved,
-                       weak_ptr_factory_.GetWeakPtr(), file_path.value()));
+                       weak_ptr_factory_.GetWeakPtr(), path));
   }
 
   syncing_items_.AsyncCall(&InProgressSyncingItems::GetItemCount)
@@ -533,14 +532,16 @@ void DriveFsPinManager::GetMetadataForPath(const base::FilePath& path) {
                            weak_ptr_factory_.GetWeakPtr(), path.value()));
 }
 
-void DriveFsPinManager::OnMetadataRetrieved(const std::string path,
-                                            drive::FileError error,
-                                            mojom::FileMetadataPtr metadata) {
+void DriveFsPinManager::OnMetadataRetrieved(
+    const std::string& path,
+    const drive::FileError error,
+    const mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Cannot get metadata of '" << path << "': " << error;
     return;
   }
 
+  DCHECK(metadata);
   if (metadata->available_offline || metadata->size == 0) {
     VLOG_IF(2, metadata->available_offline)
         << "Skipped '" << path << "': Already pinned";
