@@ -324,8 +324,7 @@ void AXEventGenerator::OnRoleChanged(AXTree* tree,
                                      ax::mojom::Role old_role,
                                      ax::mojom::Role new_role) {
   DCHECK_EQ(tree_, tree);
-  AddEvent(node, new_role == ax::mojom::Role::kAlert ? Event::ALERT
-                                                     : Event::ROLE_CHANGED);
+  AddEvent(node, Event::ROLE_CHANGED);
 }
 
 void AXEventGenerator::OnIgnoredChanged(AXTree* tree,

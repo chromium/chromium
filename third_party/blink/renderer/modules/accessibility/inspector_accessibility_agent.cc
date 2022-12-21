@@ -919,7 +919,7 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
 
   auto& cache = AttachToAXObjectCache(document);
 
-  AXID ax_id = in_id.ToInt();
+  AXID ax_id = in_id.ToUInt();
   AXObject* ax_object = cache.ObjectFromAXID(ax_id);
 
   if (!ax_object || ax_object->IsDetached())
