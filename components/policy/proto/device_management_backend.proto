@@ -3940,7 +3940,7 @@ enum SigningAlgorithm {
   RSA_PKCS1_V1_5 = 1;
 }
 
-// Client Certificate Provisioning Flow, Stage 1: Start a CSR request.
+// Client Certificate Provisioning "Static" Flow, Stage 1: Start a CSR request.
 // No additional fields because cert_profile_id and public_key are passed in the
 // outer message.
 message StartCsrRequest {}
@@ -3963,7 +3963,8 @@ message StartCsrResponse {
   optional bytes data_to_sign = 4;
 }
 
-// Client Certificate Provisioning Flow, Stage 2: Finish the CSR request.
+// Client Certificate Provisioning "Static" Flow, Stage 2: Finish the CSR
+// request.
 message FinishCsrRequest {
   // Verified access challenge response.
   optional bytes va_challenge_response = 1;
@@ -3974,13 +3975,71 @@ message FinishCsrRequest {
 
 message FinishCsrResponse {}
 
-// Client Certificate Provisioning Flow, Stage 3: Download the issued
+// Client Certificate Provisioning "Static" Flow, Stage 3: Download the issued
 // certificate.
 message DownloadCertRequest {}
 
 message DownloadCertResponse {
   // PEM-encoded issued certificate.
   optional string pem_encoded_certificate = 1;
+}
+
+// "Dynamic" flow: Used to start or continue a cerificate provisioning
+// process.
+message CertProvStartOrContinueRequest {}
+
+// "Dynamic" flow: Used to authorize the client, currently using a Verified
+// Access challenge response.
+message CertProvAuthorizeRequest {
+  // Verified access challenge response.
+  optional bytes va_challenge_response = 1;
+}
+
+// "Dynamic" flow: Upload the result of a `ProofOfPossessionChallenge`.
+message CertProvUploadProofOfPossessionRequest {
+  // The signature generated using the private key.
+  optional bytes signature = 2;
+}
+
+// The client should perform an authorization step.
+message CertProvAuthorizeInstruction {
+  // The verified access challenge.
+  optional bytes va_challenge = 1;
+}
+
+// The client should provide a proof-of-possession signature generated using
+// the private key.
+message CertProvProofOfPossessionInstruction {
+  // Algorithm to hash data with before signing.
+  optional HashingAlgorithm hashing_algorithm = 1;
+
+  // Algorithm to sign data with for CSR creation.
+  optional SigningAlgorithm signing_algorithm = 2;
+
+  // Data to sign for CSR creation.
+  optional bytes data_to_sign = 3;
+}
+
+// The client should import an issued certificate.
+message CertProvImportCertificateInstruction {
+  // PEM-encoded issued certificate.
+  optional string pem_encoded_certificate = 1;
+}
+
+// Response for all requests in the "Dynamic" flow.
+// Encodes the next action that the client should perform.
+message CertProvNextActionResponse {
+  // The client should register for FCM messages using this topic in order to
+  // receive notifications for the certificate provisioning process.
+  // The client starts listening to the first such `invalidation_topic` per
+  // certificate provisioning process and ignores subsequent values.
+  optional string invalidation_topic = 1;
+
+  oneof instruction {
+    CertProvAuthorizeInstruction authorize_instruction = 2;
+    CertProvProofOfPossessionInstruction proof_of_possession_instructoin = 3;
+    CertProvImportCertificateInstruction import_certificate_instruction = 4;
+  }
 }
 
 // Start / continue client certificate provisioning process for the profile
@@ -4002,9 +4061,17 @@ message ClientCertificateProvisioningRequest {
   optional string device_dm_token = 4;
 
   oneof request {
+    // "Static" flow
+    // (go/chromeos-mgmt-cert-provisioning#heading=h.mh0xyf2o1ums).
     StartCsrRequest start_csr_request = 5;
     FinishCsrRequest finish_csr_request = 6;
     DownloadCertRequest download_cert_request = 7;
+
+    // "Dynamic" flow (go/cert-prov-api-dm-changes)
+    CertProvStartOrContinueRequest start_or_continue_request = 9;
+    CertProvAuthorizeRequest authorize_request = 10;
+    CertProvUploadProofOfPossessionRequest upload_proof_of_possession_request =
+        11;
   }
 
   // Received as part of policy for client certificate profiles. The client
@@ -4053,10 +4120,16 @@ message ClientCertificateProvisioningResponse {
   optional int64 try_again_later = 1;
 
   oneof response {
+    // Used in "Static" and "Dynamic" flows.
     Error error = 2;
+
+    // Used in "Static" flow.
     StartCsrResponse start_csr_response = 3;
     FinishCsrResponse finish_csr_response = 4;
     DownloadCertResponse download_cert_response = 5;
+
+    // Used in "Dynamic" flow.
+    CertProvNextActionResponse next_action_response = 6;
   }
 }
 
