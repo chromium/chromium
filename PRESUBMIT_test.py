@@ -4412,6 +4412,55 @@ class CheckDeprecationOfPreferencesTest(unittest.TestCase):
         'Broken .*MIGRATE_OBSOLETE_.*_PREFS markers in browser_prefs.cc.',
         errors[0].message)
 
+class CheckCrosApiNeedBrowserTestTest(unittest.TestCase):
+    def testWarning(self):
+        mock_input_api = MockInputApi()
+        mock_output_api = MockOutputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chromeos/crosapi/mojom/example.mojom', [], action='A'),
+        ]
+        result = PRESUBMIT.CheckCrosApiNeedBrowserTest(mock_input_api, mock_output_api)
+        self.assertEqual(1, len(result))
+        self.assertEqual(result[0].type, 'warning')
+
+    def testNoWarningWithBrowserTest(self):
+        mock_input_api = MockInputApi()
+        mock_output_api = MockOutputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chromeos/crosapi/mojom/example.mojom', [], action='A'),
+            MockAffectedFile('chrome/example_browsertest.cc', [], action='A'),
+        ]
+        result = PRESUBMIT.CheckCrosApiNeedBrowserTest(mock_input_api, mock_output_api)
+        self.assertEqual(0, len(result))
+
+    def testNoWarningModifyCrosapi(self):
+        mock_input_api = MockInputApi()
+        mock_output_api = MockOutputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chromeos/crosapi/mojom/example.mojom', [], action='M'),
+        ]
+        result = PRESUBMIT.CheckCrosApiNeedBrowserTest(mock_input_api, mock_output_api)
+        self.assertEqual(0, len(result))
+
+    def testNoWarningAddNonMojomFile(self):
+        mock_input_api = MockInputApi()
+        mock_output_api = MockOutputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chromeos/crosapi/mojom/example.cc', [], action='A'),
+        ]
+        result = PRESUBMIT.CheckCrosApiNeedBrowserTest(mock_input_api, mock_output_api)
+        self.assertEqual(0, len(result))
+
+    def testNoWarningNoneRelatedMojom(self):
+        mock_input_api = MockInputApi()
+        mock_output_api = MockOutputApi()
+        mock_input_api.files = [
+            MockAffectedFile('random/folder/example.mojom', [], action='A'),
+        ]
+        result = PRESUBMIT.CheckCrosApiNeedBrowserTest(mock_input_api, mock_output_api)
+        self.assertEqual(0, len(result))
+
+
 class MPArchApiUsage(unittest.TestCase):
   def _assert_notify(
       self, expected_uses, expect_fyi, msg, local_path, new_contents):

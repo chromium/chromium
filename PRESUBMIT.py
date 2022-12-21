@@ -1657,6 +1657,10 @@ def _IsXmlOrGrdFile(input_api, file_path):
     return ext in ('.grd', '.xml')
 
 
+def _IsMojomFile(input_api, file_path):
+    return input_api.os_path.splitext(file_path)[1] == ".mojom"
+
+
 def CheckNoUpstreamDepsOnClank(input_api, output_api):
     """Prevent additions of dependencies from the upstream repo on //clank."""
     # clank can depend on clank
@@ -2029,6 +2033,30 @@ def CheckNoDEPSGIT(input_api, output_api):
                 'See https://sites.google.com/a/chromium.org/dev/developers/how-tos/'
                 'get-the-code#Rolling_DEPS\n'
                 'for more information')
+        ]
+    return []
+
+
+def CheckCrosApiNeedBrowserTest(input_api, output_api):
+    """Check new crosapi should add browser test."""
+    has_new_crosapi = False
+    has_browser_test = False
+    for f in input_api.AffectedFiles():
+        path = f.LocalPath()
+        if (path.startswith('chromeos/crosapi/mojom') and
+            _IsMojomFile(input_api, path) and f.Action() == 'A'):
+            has_new_crosapi = True
+        if path.endswith('browsertest.cc') or path.endswith('browser_test.cc'):
+            has_browser_test = True
+    if has_new_crosapi and not has_browser_test:
+        return [
+            output_api.PresubmitPromptWarning(
+                'You are adding a new crosapi, but there is no file ends with '
+                'browsertest.cc file being added or modified. It is important '
+                'to add crosapi browser test coverage to avoid version '
+                ' skew issues.\n'
+                'Check //docs/lacros/test_instructions.md for more information.'
+                )
         ]
     return []
 
