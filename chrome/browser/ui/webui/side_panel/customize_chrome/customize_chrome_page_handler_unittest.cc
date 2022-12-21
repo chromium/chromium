@@ -165,7 +165,9 @@ class MockNtpBackgroundService : public NtpBackgroundService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : NtpBackgroundService(url_loader_factory) {}
   MOCK_CONST_METHOD0(collection_info, std::vector<CollectionInfo>&());
+  MOCK_CONST_METHOD0(collection_images, std::vector<CollectionImage>&());
   MOCK_METHOD0(FetchCollectionInfo, void());
+  MOCK_METHOD1(FetchCollectionImageInfo, void(const std::string&));
   MOCK_METHOD1(AddObserver, void(NtpBackgroundServiceObserver*));
 };
 
@@ -488,6 +490,42 @@ TEST_F(CustomizeChromePageHandlerTest, GetBackgroundCollections) {
   EXPECT_EQ(test_collection_info[0].collection_name, collections[0]->label);
   EXPECT_EQ(test_collection_info[0].preview_image_url,
             collections[0]->preview_image_url);
+}
+
+TEST_F(CustomizeChromePageHandlerTest, GetBackgroundImages) {
+  std::vector<CollectionImage> test_collection_images;
+  CollectionImage test_image;
+  std::vector<std::string> attribution{"test1", "test2"};
+  test_image.attribution = attribution;
+  test_image.attribution_action_url = GURL("https://action.com");
+  test_image.image_url = GURL("https://test_image.jpg");
+  test_image.thumbnail_image_url = GURL("https://test_thumbnail.jpg");
+  test_collection_images.push_back(test_image);
+  ON_CALL(mock_ntp_background_service(), collection_images())
+      .WillByDefault(testing::ReturnRef(test_collection_images));
+
+  std::vector<side_panel::mojom::CollectionImagePtr> images;
+  base::MockCallback<CustomizeChromePageHandler::GetBackgroundImagesCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&images](
+              std::vector<side_panel::mojom::CollectionImagePtr> images_arg) {
+            images = std::move(images_arg);
+          }));
+  EXPECT_CALL(mock_ntp_background_service(), FetchCollectionImageInfo).Times(1);
+  handler().GetBackgroundImages("test_id", callback.Get());
+  ntp_background_service_observer().OnCollectionImagesAvailable();
+
+  EXPECT_EQ(images.size(), test_collection_images.size());
+  EXPECT_EQ(test_collection_images[0].attribution[0], images[0]->attribution_1);
+  EXPECT_EQ(test_collection_images[0].attribution[1], images[0]->attribution_2);
+  EXPECT_EQ(test_collection_images[0].attribution_action_url,
+            images[0]->attribution_url);
+  EXPECT_EQ(test_collection_images[0].image_url, images[0]->image_url);
+  EXPECT_EQ(test_collection_images[0].thumbnail_image_url,
+            images[0]->preview_image_url);
 }
 
 TEST_F(CustomizeChromePageHandlerTest, SetDefaultColor) {

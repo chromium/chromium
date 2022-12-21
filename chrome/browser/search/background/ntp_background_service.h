@@ -47,7 +47,7 @@ class NtpBackgroundService : public KeyedService {
   // collection. After the update completes, OnCollectionImagesAvailable will be
   // called on the observers. Requests that are made while an asynchronous fetch
   // is in progress will be dropped until the currently active loader completes.
-  void FetchCollectionImageInfo(const std::string& collection_id);
+  virtual void FetchCollectionImageInfo(const std::string& collection_id);
 
   // Requests an asynchronous fetch of metadata about the 'next' image in the
   // specified collection. The resume_token, where available, is an opaque value
@@ -86,9 +86,7 @@ class NtpBackgroundService : public KeyedService {
   virtual const std::vector<CollectionInfo>& collection_info() const;
 
   // Returns the currently cached CollectionImages, if any.
-  const std::vector<CollectionImage>& collection_images() const {
-    return collection_images_;
-  }
+  virtual const std::vector<CollectionImage>& collection_images() const;
 
   // Returns the cached 'next' CollectionImage.
   const CollectionImage& next_image() const { return next_image_; }

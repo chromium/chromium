@@ -1,7 +1,10 @@
 <button on-click="onBackClick_" id="backButton">
   Go Back
 </button>
-<p>Category Theme List</p>
-<button on-click="onSelectTheme_" class="theme">
-  Select Theme
-</button>
+<h1 id="header">[[header_]]</h1>
+<template is="dom-repeat" id="themesRepeat" items="[[themes_]]">
+  <div role="button" on-click="onSelectTheme_" class="theme">
+    [[item.attribution1]]
+  </div>
+</template>
+

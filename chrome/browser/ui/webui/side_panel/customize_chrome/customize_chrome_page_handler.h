@@ -55,6 +55,8 @@ class CustomizeChromePageHandler
   void GetChromeColors(GetChromeColorsCallback callback) override;
   void GetBackgroundCollections(
       GetBackgroundCollectionsCallback callback) override;
+  void GetBackgroundImages(const std::string& collection_id,
+                           GetBackgroundImagesCallback callback) override;
   void UpdateModulesSettings() override;
   void UpdateTheme() override;
   void SetDefaultColor() override;
@@ -100,6 +102,9 @@ class CustomizeChromePageHandler
   raw_ptr<NtpBackgroundService> ntp_background_service_;
   GetBackgroundCollectionsCallback background_collections_callback_;
   base::TimeTicks background_collections_request_start_time_;
+  std::string images_request_collection_id_;
+  GetBackgroundImagesCallback background_images_callback_;
+  base::TimeTicks background_images_request_start_time_;
   raw_ptr<ThemeService> theme_service_;
   const std::vector<std::pair<const std::string, int>> module_id_names_;
 

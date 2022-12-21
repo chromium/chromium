@@ -371,6 +371,11 @@ const std::vector<CollectionInfo>& NtpBackgroundService::collection_info()
   return collection_info_;
 }
 
+const std::vector<CollectionImage>& NtpBackgroundService::collection_images()
+    const {
+  return collection_images_;
+}
+
 void NtpBackgroundService::AddObserver(NtpBackgroundServiceObserver* observer) {
   observers_.AddObserver(observer);
 }

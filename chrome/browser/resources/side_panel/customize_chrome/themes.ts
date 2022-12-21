@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BackgroundCollection, CollectionImage, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './themes.html.js';
 
 export interface ThemesElement {
   $: {
     backButton: HTMLButtonElement,
+    header: HTMLElement,
   };
 }
 
@@ -21,7 +24,36 @@ export class ThemesElement extends PolymerElement {
   }
 
   static get properties() {
-    return {};
+    return {
+      selectedCollection: {
+        type: Object,
+        value: null,
+        observer: 'onCollectionChange_',
+      },
+      themes_: Array,
+      header_: String,
+    };
+  }
+
+  private themes_: CollectionImage[];
+  private header_: string;
+  public selectedCollection: BackgroundCollection|null;
+
+  private pageHandler_: CustomizeChromePageHandlerInterface;
+
+  constructor() {
+    super();
+    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
+  }
+
+  private onCollectionChange_() {
+    if (this.selectedCollection) {
+      this.pageHandler_.getBackgroundImages(this.selectedCollection!.id)
+          .then(({images}) => {
+            this.themes_ = images;
+          });
+      this.header_ = this.selectedCollection.label;
+    }
   }
 
   private onBackClick_() {

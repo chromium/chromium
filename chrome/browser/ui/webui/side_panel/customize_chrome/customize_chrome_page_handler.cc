@@ -120,6 +120,24 @@ void CustomizeChromePageHandler::GetBackgroundCollections(
   ntp_background_service_->FetchCollectionInfo();
 }
 
+void CustomizeChromePageHandler::GetBackgroundImages(
+    const std::string& collection_id,
+    GetBackgroundImagesCallback callback) {
+  if (background_images_callback_) {
+    std::move(background_images_callback_)
+        .Run(std::vector<side_panel::mojom::CollectionImagePtr>());
+  }
+  if (!ntp_background_service_) {
+    std::move(callback).Run(
+        std::vector<side_panel::mojom::CollectionImagePtr>());
+    return;
+  }
+  images_request_collection_id_ = collection_id;
+  background_images_request_start_time_ = base::TimeTicks::Now();
+  background_images_callback_ = std::move(callback);
+  ntp_background_service_->FetchCollectionImageInfo(collection_id);
+}
+
 void CustomizeChromePageHandler::UpdateModulesSettings() {
   std::vector<std::string> disabled_module_ids;
   for (const auto& id :
@@ -313,7 +331,44 @@ void CustomizeChromePageHandler::OnCollectionInfoAvailable() {
   std::move(background_collections_callback_).Run(std::move(collections));
 }
 
-void CustomizeChromePageHandler::OnCollectionImagesAvailable() {}
+void CustomizeChromePageHandler::OnCollectionImagesAvailable() {
+  if (!background_images_callback_) {
+    return;
+  }
+
+  base::TimeDelta duration =
+      base::TimeTicks::Now() - background_images_request_start_time_;
+  UMA_HISTOGRAM_MEDIUM_TIMES(
+      "NewTabPage.BackgroundService.Images.RequestLatency", duration);
+  // Any response where no images are returned is considered a failure.
+  if (ntp_background_service_->collection_images().empty()) {
+    UMA_HISTOGRAM_MEDIUM_TIMES(
+        "NewTabPage.BackgroundService.Images.RequestLatency.Failure", duration);
+  } else {
+    UMA_HISTOGRAM_MEDIUM_TIMES(
+        "NewTabPage.BackgroundService.Images.RequestLatency.Success", duration);
+  }
+
+  std::vector<side_panel::mojom::CollectionImagePtr> images;
+  if (ntp_background_service_->collection_images().empty()) {
+    std::move(background_images_callback_).Run(std::move(images));
+    return;
+  }
+  auto collection_id =
+      ntp_background_service_->collection_images()[0].collection_id;
+  for (const auto& info : ntp_background_service_->collection_images()) {
+    DCHECK(info.collection_id == collection_id);
+    auto image = side_panel::mojom::CollectionImage::New();
+    image->attribution_1 = !info.attribution.empty() ? info.attribution[0] : "";
+    image->attribution_2 =
+        info.attribution.size() > 1 ? info.attribution[1] : "";
+    image->attribution_url = info.attribution_action_url;
+    image->image_url = info.image_url;
+    image->preview_image_url = info.thumbnail_image_url;
+    images.push_back(std::move(image));
+  }
+  std::move(background_images_callback_).Run(std::move(images));
+}
 
 void CustomizeChromePageHandler::OnNextCollectionImageAvailable() {}
 

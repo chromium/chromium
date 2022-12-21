@@ -60,6 +60,19 @@ struct BackgroundCollection {
   url.mojom.Url preview_image_url;
 };
 
+// A background image in a collection.
+struct CollectionImage {
+  // Human readable attributions of the background image.
+  string attribution_1;
+  string attribution_2;
+  // URL associated with the background image. Used for href.
+  url.mojom.Url attribution_url;
+  // URL of image. Can point to untrusted content.
+  url.mojom.Url image_url;
+  // URL to a preview of the image. Can point to untrusted content.
+  url.mojom.Url preview_image_url;
+};
+
 // Settings associated with a given module.
 struct ModuleSettings {
   // A unique identifier associated with a module.
@@ -91,6 +104,9 @@ interface CustomizeChromePageHandler {
 
   // Returns the collections of background images.
   GetBackgroundCollections() => (array<BackgroundCollection> collections);
+
+  // Returns the images of a collection identified by |collection_id|.
+  GetBackgroundImages(string collection_id) => (array<CollectionImage> images);
 
   // Triggers a call to |CustomizeChromePage.SetModulesSettings|.
   UpdateModulesSettings();
