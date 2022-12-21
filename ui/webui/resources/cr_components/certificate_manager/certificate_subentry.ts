@@ -6,19 +6,18 @@
  * @fileoverview certificate-subentry represents an SSL certificate sub-entry.
  */
 
-import '../../cr_elements/cr_action_menu/cr_action_menu.js';
-import '../../cr_elements/cr_icon_button/cr_icon_button.js';
-import '../../cr_elements/cr_lazy_render/cr_lazy_render.js';
-import '../../cr_elements/policy/cr_policy_indicator.js';
-import '../../cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import './certificate_shared.css.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {CrPolicyIndicatorType} from '../../cr_elements/policy/cr_policy_indicator_mixin.js';
-import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
 
 import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';
 import {getTemplate} from './certificate_subentry.html.js';

@@ -6,14 +6,13 @@
  * @fileoverview 'certificate-provisioning-details-dialog' allows the user to
  * view the details of an in-progress certiifcate provisioning process.
  */
-import '../../cr_elements/cr_expand_button/cr_expand_button.js';
-import '../../cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
 
 import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 import {getTemplate} from './certificate_provisioning_details_dialog.html.js';
