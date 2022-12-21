@@ -7,14 +7,20 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_constants.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/key_combo_view.h"
 #include "ash/capture_mode/pointer_highlight_layer.h"
 #include "ash/capture_mode/video_recording_watcher.h"
+#include "ash/display/window_tree_host_manager.h"
+#include "ash/shell.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/event.h"
@@ -98,13 +104,29 @@ views::Widget::InitParams CreateWidgetParams(
 
 CaptureModeDemoToolsController::CaptureModeDemoToolsController(
     VideoRecordingWatcher* video_recording_watcher)
-    : video_recording_watcher_(video_recording_watcher) {}
+    : video_recording_watcher_(video_recording_watcher) {
+  ui::InputMethod* input_method =
+      Shell::Get()->window_tree_host_manager()->input_method();
+  input_method->AddObserver(this);
+  UpdateTextInputType(input_method->GetTextInputClient());
+}
 
-CaptureModeDemoToolsController::~CaptureModeDemoToolsController() = default;
+CaptureModeDemoToolsController::~CaptureModeDemoToolsController() {
+  Shell::Get()->window_tree_host_manager()->input_method()->RemoveObserver(
+      this);
+}
 
 void CaptureModeDemoToolsController::OnKeyEvent(ui::KeyEvent* event) {
   if (event->type() == ui::ET_KEY_RELEASED) {
     OnKeyUpEvent(event);
+    return;
+  }
+
+  // We will not show key combo widget if the cursor is in the input text field
+  // to respect the user privacy. This check needs to be placed after checking
+  // the key up event as the key combo widget on display will still need to be
+  // refreshed.
+  if (in_password_text_input_) {
     return;
   }
 
@@ -146,6 +168,11 @@ void CaptureModeDemoToolsController::PerformMousePressAnimation(
 
 void CaptureModeDemoToolsController::RefreshBounds() {
   demo_tools_widget_->SetBounds(CalculateBounds());
+}
+
+void CaptureModeDemoToolsController::OnTextInputStateChanged(
+    const ui::TextInputClient* client) {
+  UpdateTextInputType(client);
 }
 
 void CaptureModeDemoToolsController::OnKeyUpEvent(ui::KeyEvent* event) {
@@ -232,6 +259,12 @@ void CaptureModeDemoToolsController::AnimateToResetTheWidget() {
   // specs are ready.
   demo_tools_widget_.reset();
   key_combo_view_ = nullptr;
+}
+
+void CaptureModeDemoToolsController::UpdateTextInputType(
+    const ui::TextInputClient* client) {
+  in_password_text_input_ =
+      client && client->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD;
 }
 
 void CaptureModeDemoToolsController::OnMouseHighlightAnimationEnded(

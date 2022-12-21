@@ -8,6 +8,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/base/ime/input_method_observer.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -29,7 +31,7 @@ using MouseHighlightLayers =
 // construct or modify the `KeyComboViewer`. The
 // `CaptureModeDemoToolsController` will only be available during video
 // recording and has to be explicitly enabled by the user.
-class CaptureModeDemoToolsController {
+class CaptureModeDemoToolsController : public ui::InputMethodObserver {
  public:
   explicit CaptureModeDemoToolsController(
       VideoRecordingWatcher* video_recording_watcher);
@@ -37,7 +39,7 @@ class CaptureModeDemoToolsController {
       delete;
   CaptureModeDemoToolsController& operator=(
       const CaptureModeDemoToolsController&) = delete;
-  ~CaptureModeDemoToolsController();
+  ~CaptureModeDemoToolsController() override;
 
   // Decides whether to show a helper widget for the `event` or not.
   void OnKeyEvent(ui::KeyEvent* event);
@@ -48,6 +50,13 @@ class CaptureModeDemoToolsController {
 
   // Refreshes the bounds of the key combo viewer.
   void RefreshBounds();
+
+  // ui::InputMethodObserver:
+  void OnFocus() override {}
+  void OnBlur() override {}
+  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {}
+  void OnTextInputStateChanged(const ui::TextInputClient* client) override;
+  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
 
   const MouseHighlightLayers& mouse_highlight_layers_for_testing() const {
     return mouse_highlight_layers_;
@@ -68,6 +77,8 @@ class CaptureModeDemoToolsController {
   // Resets the `demo_tools_widget_` when the `hide_timer_` expires.
   void AnimateToResetTheWidget();
 
+  void UpdateTextInputType(const ui::TextInputClient* client);
+
   // Called when the mouse highlight animation ends to remove the corresponding
   // pointer highlight from the `mouse_highlight_layers_`.
   void OnMouseHighlightAnimationEnded(
@@ -82,6 +93,10 @@ class CaptureModeDemoToolsController {
 
   // The most recently pressed non-modifier key.
   ui::KeyboardCode last_non_modifier_key_ = ui::VKEY_UNKNOWN;
+
+  // True if the cursor and focus is currently in a password text input
+  // field, false otherwise.
+  bool in_password_text_input_ = false;
 
   // Starts on key up of the last non-modifier key and the `key_combo_view_`
   // will disappear when it expires.
