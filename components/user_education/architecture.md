@@ -76,6 +76,10 @@ You will notice that this is an extremely bare-bones system. ***You are not
 expected to call `HelpBubbleFactoryRegistry` directly!*** Rather, the IPH and
 Tutorial systems use this API to show help bubbles.
 
+<!-- Added because of inconsistencies in how different markdown engines handle
+     hyphens in header names when generating anchors; some use '-' and some
+     replace the hyphen with '_'. -->
+<a name="iph-how-to"></a>
 ## In-Product Help (IPH)
 
 In-Product Help is the simpler of the two ways to display help bubbles, and can
@@ -101,11 +105,13 @@ add a new IPH, you will need to:
     [FeaturePromoSpecification](./common/feature_promo_specification.h)
     describing your IPH journey ([Registering your
     IPH](#Registering-your-IPH)).
- 3. Configure the Feature Engagement backend for your IPH journey
-    ([Configuring when your IPH runs](#Configuring-when-your-IPH-runs)).
- 4. Add hooks into your code to show/hide your IPH and dispatch events
-    ([Talking to the FE backend](#Talking-to-the-FE-backend)).
- 5. Enable the feature via a trade study or Finch.
+ 3. If your IPH appears in a WebUI page,
+    [instrument that page for help bubbles](./webui/README.md).
+ 4. [Configure the Feature Engagement backend](#configuring-the-feature-engagement-backend)
+    for your IPH journey.
+ 5. [Add hooks into your code](#adding-hooks-for-your-iph) to show/hide your
+    IPH and dispatch events.
+ 6. Enable the feature via a trade study or Finch.
 
 ![How to implement IPH diagram](images/iph-diagram.png)
 
@@ -117,7 +123,6 @@ In reality, you will likely never interact directly with the
 - `BrowserWindow::MaybeShowStartupFeaturePromo()`
 - `BrowserWindow::CloseFeaturePromo()`
 - `BrowserWindow::CloseFeaturePromoAndContinue()`
-
 
 ### Registering your IPH
 
@@ -162,21 +167,7 @@ These are advanced features
     from a collection of candidates, if there is more than one element matching
     the anchor's `ElementIdentifier`.
 
-### Configuring when your IPH runs
-
-The Feature Engagement (FE) backend does all the heavy-lifting when it
-comes to showing your IPH at the right time. All you need to do is
-configure how often your IPH should show and how it interacts with other
-IPH.
-
-<!-- TODO(mickeyburks) Add examples for FeatureConfig usage -->
-
-You will need to become familiar with the terminology in the [FE
-docs](/components/feature_engagement/README.md), but you will instead
-create the configuration through the [FeatureConfig
-API](/components/feature_engagement/public/feature_configurations.cc).
-
-### Talking to the FE backend
+### Adding hooks for your IPH
 
 Now that the IPH feature is created and configured, you will need to add
 hooks into your code to interact with the FE backend.
@@ -201,6 +192,18 @@ user engages with your feature. In Chrome, you can use
 `BrowserWindow::CloseFeaturePromo()` or
 `BrowserWindow::CloseFeaturePromoAndContinue()`.
 
+### Testing your IPH
+
+It's important to test your IPH to make sure it works the way you expect. IPH
+bubbles are instrumented with `ElementIdentifiers` for
+[Kombucha Interaction Tests](/chrome/test/interaction/README.md) but you can
+test them any way you like.
+
+When testing an IPH it is important to ensure that the IPH is actually allowed
+to run in the test environment (many test environments disable IPH by default).
+See [Testing Feature Engagement Features](#testing-feature-engagement-features)
+for a detailed explanation.
+
 ## Tutorials
 
 Tutorials are the more complicated, in-depth way to display a series of help
@@ -224,7 +227,9 @@ Tutorial, you will need to:
   2. Register the `TutorialIdentifier` and
      [TutorialDescription](./common/tutorial_description.h)
      ([Defining and registering your tutorial](#Defining-and-registering-your-Tutorial)).
-  3. Create an entry point for the Tutorial, either by:
+  3. If any Tutorial bubbles will appear in or attach to a WebUI page,
+     [instrument that page for help bubbles](./webui/README.md).
+  4. Create an entry point for the Tutorial, either by:
      * Directly calling `TutorialService::StartTutorial()`
      * Or registering an IPH using the `CreateForTutorialPromo()` factory
      method. This IPH will prompt the user to start your tutorial.
@@ -328,3 +333,102 @@ and pass both your `TutorialIdentifier` and your `TutorialDescription`.
 For implementation on adding a "New" Badge to Chrome, Googlers can refer to the
 following document:
 [New Badge How-To and Best Practices](https://goto.google.com/new-badge-how-to).
+
+Note that, like IPH, "New" Badge may use a Feature Engagement configuration to
+limit how often or how many times the user sees the badge. See
+[this section](#configuring-the-feature-engagement-backend) for information on
+how to configure the Feature Engagement backend for a New Badge.
+
+### Testing your "New" Badge
+
+You should test that your "New" Badge triggers when it is supposed to. If you
+choose to limit when your badge displays, you will need to enable the
+corresponding Feature Engagement feature so it can trigger in your test. See
+[this section](#testing-feature-engagement-features) for more information.
+
+## Open Page and Highlight
+
+This functions like a mini-tutorial. It should always be triggered by a user
+action. It opens a new internal page (typically a Settings page), either in a
+new tab or in the current tab, scrolls to a particular element, and displays a
+help bubble attached to that element.
+
+This feature is implemented with a single function call at the desired entry
+point;
+[documentation can be found here](/chrome/browser/ui/user_education/open_page_and_show_help_bubble.h).
+
+## Configuring the Feature Engagement backend
+
+The Feature Engagement (FE) backend does all the heavy-lifting when it
+comes to showing your IPH or New Badge after you've chosen your trigger point in
+your feature's code. All you need to do is configure how often your promo should
+show and how it interacts with other IPH.
+
+<!-- TODO(mickeyburks) Add examples for FeatureConfig usage -->
+
+You will need to become familiar with the terminology in the
+[FE docs](/components/feature_engagement/README.md).
+
+There are two ways to specify the configuration your IPH or "New" Badge:
+1. Using the
+  [FeatureConfig API](/components/feature_engagement/public/feature_configurations.cc).
+  This is the easiest option, as this configuration will be picked up by any
+  Finch trial or test that enables the IPH feature.
+   - If a field trial or test specifies different parameters, those will override
+     the ones specified in FeatureConfig.
+2. Field-trial-only. This means you will need to specify a configuration in:
+    - Every Finch configuration that enables the IPH or New Badge.
+    - [testing/variations/fieldtrial_testing_config.json](/testing/variations/fieldtrial_testing_config.json).
+    - Any test that overrides any feature referenced by the fieldtrial in (b).
+
+Obviously, (1) is preferred.
+
+The biggest difference between New Badge and IPH is that "New" Badge should
+typically have "blocking" and "blocked by" set to NONE (as New Badge is not
+exclusive with other promotions). Whereas IPH should typically have ALL, as we
+never want to show two IPH at the same time, and rarely even in the same browser
+session.
+
+### Testing Feature Engagement features
+
+The `browser_tests` and `interactive_ui_tests` builds (and all test jobs that
+are based on these builds) block the Feature Engagement features by default.
+This is to prevent a random IPH from popping up during an unrelated test, either
+stealing focus or changing the UI in a way that would cause the test to fail.
+
+The test fixtures do not actually disable every IPH feature (they used to, but
+that broke field trials). Instead, they set a global state that blocks all
+Feature Engagement from triggering.
+
+You can then selectively re-enable specific features:
+ - Add a
+   [`ScopedIphFeatureList`](/components/feature_engagement/test/scoped_iph_feature_list.h)
+   to your test fixture class.
+ - Either in the constructor or in `SetUp()` (before calling the base `SetUp()`
+   method), call one of the `Init...()` methods.
+
+There are several different ways to enable a feature:
+ - `InitForDemo()` turns on the specified feature and makes it so that the IPH
+   or New Badge _always_ triggers, even if the FE preconditions aren't met.
+   Useful for testing the UI itself, or making sure the trigger point in code is
+   correct.
+ - `InitWithExistingFeatures()` does not enable or disable any features, but
+   allows the specific IPH(s) to run if they are already enabled by default or
+   via field trial. (experimental - let us know if this does not work)
+ - `InitAndEnableFeatures()` turns on the listed feature flags (discarding any
+   field trials that overlap with the enabled features) and allows any Feature
+   Engagement features in the list to trigger.
+ - `InitAndEnableFeaturesWithParameters()` turns on the listed feature flags
+   (discarding any field trials that overlap with the enabled features) and
+   allows any Feature Engagement features in the list to trigger. The specific
+   configurations given in the list will be used.
+
+Notes:
+
+`ScopedIphFeatureList` works like `ScopedFeatureList`, and as such, allows you
+to enable/disable any feature, not just Feature Engagement features.
+
+Any time you do not specify a configuration when enabling a Feature Engagement
+feature (or specify an empty configuration), the system will fall back to using
+the configuration from `feature_configurations.cc`. This is useful for avoiding
+duplicating code - but feel free to override a configuration if you need to.

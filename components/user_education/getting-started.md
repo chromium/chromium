@@ -1,13 +1,30 @@
 # Getting started with User Education
 
-How-to for Chrome and other platforms.
-
-* [Desktop Chrome](/chrome/browser/ui/user_education/README.md)
-
 Currently the only supported platform is Desktop Chrome. See the
 [section](#Adding-User-Education-to-your-application) below to learn how
 to extend User Education to another platform.
 
+The following User Education primitives are available in Chrome:
+* [In-product help (IPH)](architecture.md#iph-how-to):
+  help dialogs offered by Chrome suggesting useful
+  features. These are triggered automatically based on user behavior and give a 
+  short value statement and directions to use the feature
+* [New badge](architecture.md#new-badge): pop-out label applied to new features'
+  entry points to make them more obvious
+* [Tutorials](architecture.md#tutorials): step-by-step guided walkthroughs of
+  features. User-initiated and more thorough than single-step IPH promotions
+* [Open page and highlight](architecture.md#open-page-and-highlight): useful for
+  pointing users at a particular settings or other internal page. Opens an
+  internal page and shows a help bubble on a particular item.
+
+If you want to display help bubbles on or in a WebUI surface (such
+as an internal page), you will need to _instrument_ that page.
+[Start here](./webui/README.md) for instructions.
+
+There is common setup for determining when a New Badge or IPH will show. See
+[Configuring the Feature Engagement backend](architecture.md#configuring-the-feature-engagement-backend).
+You can also learn
+[how to test this configuration](architecture.md#testing-feature-engagement-features).
 
 # Adding User Education to your application
 

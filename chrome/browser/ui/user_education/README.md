@@ -1,13 +1,7 @@
-# Desktop User Education
+# Chrome User Education Implementation
 
-This directory contains code related to user education efforts on desktop. Also
-see [//chrome/browser/ui/views/user_education](../views/user_education)
+This directory contains code related to user education efforts on desktop. Additional
+implementations in [//chrome/browser/ui/views/user_education](../views/user_education/README.md)
 
-Active projects:
-* In-product help (IPH): help dialogs offered by Chrome suggesting useful
-  features. These are triggered automatically based on user behavior and give a 
-  short value statement and directions to use the feature
-* New badge: pop-out label applied to new features' entry points to make them
-  more obvious
-* Tutorials: step-by-step guided walkthroughs of features. User-initiated and
-  more thorough than single-step IPH promotions
+For instructions on how to add User Education for your own features,
+[go here](/components/user_education/getting-started.md).
