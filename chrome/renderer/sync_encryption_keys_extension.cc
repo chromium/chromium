@@ -132,11 +132,6 @@ void SyncEncryptionKeysExtension::Install() {
       .Check();
 #endif
 
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncTrustedVaultPassphraseRecovery)) {
-    return;
-  }
-
   chrome
       ->Set(context,
             gin::StringToSymbol(isolate,

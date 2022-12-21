@@ -370,12 +370,6 @@ bool ShouldShowSyncKeysMissingError(const syncer::SyncService* sync_service,
     return true;
   }
 
-  // Guard under the main feature toggle for trusted vault changes.
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncTrustedVaultPassphraseRecovery)) {
-    return false;
-  }
-
   // If sync is running in transport-only mode, every type is "preferred", so
   // IsTrustedVaultKeyRequiredForPreferredDataTypes() could return true even if
   // the user isn't trying to sync any of the encrypted types. The check below
@@ -404,9 +398,6 @@ bool ShouldShowTrustedVaultDegradedRecoverabilityError(
   if (settings->IsFirstSetupComplete()) {
     return true;
   }
-
-  DCHECK(base::FeatureList::IsEnabled(
-      syncer::kSyncTrustedVaultPassphraseRecovery));
 
   // In transport-only mode, IsTrustedVaultRecoverabilityDegraded() returns true
   // even if the user isn't trying to sync any of the encrypted types. The check

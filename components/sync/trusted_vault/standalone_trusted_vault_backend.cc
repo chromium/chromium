@@ -1142,9 +1142,7 @@ bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottled() {
     last_failed_request_time = base::Time();
   }
 
-  return last_failed_request_time +
-             kTrustedVaultServiceThrottlingDuration.Get() >
-         current_time;
+  return last_failed_request_time + kThrottlingDuration > current_time;
 }
 
 void StandaloneTrustedVaultBackend::

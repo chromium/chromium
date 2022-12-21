@@ -123,9 +123,7 @@ bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
         // This should be extremely rare.
         return false;
       }
-      return base::FeatureList::IsEnabled(
-                 kSyncTrustedVaultPassphraseRecovery) &&
-             base::FeatureList::IsEnabled(kSyncTrustedVaultPassphrasePromo);
+      return base::FeatureList::IsEnabled(kSyncTrustedVaultPassphrasePromo);
   }
 }
 

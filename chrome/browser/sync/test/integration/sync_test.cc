@@ -357,7 +357,8 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
   if (cl->HasSwitch(syncer::kSyncServiceURL)) {
     // TODO(crbug.com/1243653): setup real SecurityDomainService if
     // server_type_ == EXTERNAL_LIVE_SERVER.
-    // Effectively disables kSyncTrustedVaultPassphraseRecovery for E2E tests.
+    // Effectively disables interaction with SecurityDomainService for E2E
+    // tests.
     cl->AppendSwitchASCII(syncer::kTrustedVaultServiceURL, "broken_url");
   }
 

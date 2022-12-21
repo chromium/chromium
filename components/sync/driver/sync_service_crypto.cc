@@ -9,12 +9,11 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/os_crypt.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
@@ -815,10 +814,6 @@ void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
     case RequiredUserAction::kNone:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
       break;
-  }
-
-  if (!base::FeatureList::IsEnabled(kSyncTrustedVaultPassphraseRecovery)) {
-    return;
   }
 
   trusted_vault_client_->GetIsRecoverabilityDegraded(

@@ -1591,9 +1591,6 @@ extern const char kSyncSandboxDescription[];
 extern const char kSyncTrustedVaultPassphrasePromoName[];
 extern const char kSyncTrustedVaultPassphrasePromoDescription[];
 
-extern const char kSyncTrustedVaultPassphraseRecoveryName[];
-extern const char kSyncTrustedVaultPassphraseRecoveryDescription[];
-
 extern const char kSyncInvalidationsName[];
 extern const char kSyncInvalidationsDescription[];
 

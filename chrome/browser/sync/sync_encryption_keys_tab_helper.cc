@@ -86,11 +86,6 @@ class EncryptionKeyApi : public chrome::mojom::SyncEncryptionKeysExtension,
       const std::vector<uint8_t>& public_key,
       int method_type_hint,
       AddTrustedRecoveryMethodCallback callback) override {
-    if (!base::FeatureList::IsEnabled(
-            syncer::kSyncTrustedVaultPassphraseRecovery)) {
-      return;
-    }
-
     // Extra safeguard.
     if (receivers_.GetCurrentTargetFrame()->GetLastCommittedOrigin() !=
         GetAllowedOrigin()) {

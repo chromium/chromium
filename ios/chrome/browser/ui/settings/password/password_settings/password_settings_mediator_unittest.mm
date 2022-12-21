@@ -106,10 +106,8 @@ class PasswordSettingsMediatorTest : public PlatformTest {
 TEST_F(PasswordSettingsMediatorTest,
        SyncChangeTriggersChangeOnDeviceEncryption) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {syncer::kSyncTrustedVaultPassphraseRecovery,
-       syncer::kSyncTrustedVaultPassphrasePromo},
-      {});
+  scoped_feature_list.InitAndEnableFeature(
+      syncer::kSyncTrustedVaultPassphrasePromo);
 
   // This was populated when the consumer was initially set.
   [[consumer_ verify] setOnDeviceEncryptionState:

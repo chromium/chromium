@@ -56,11 +56,6 @@ bool HasLeadingOrTrailingWhitespaces(const std::string& str) {
 absl::optional<SyncTrustedVaultKeys> GetSyncTrustedVaultKeysForUserContext(
     const base::Value::Dict& js_object,
     const std::string& gaia_id) {
-  if (!base::FeatureList::IsEnabled(
-          ::syncer::kSyncTrustedVaultPassphraseRecovery)) {
-    return absl::nullopt;
-  }
-
   SyncTrustedVaultKeys parsed_keys = SyncTrustedVaultKeys::FromJs(js_object);
   if (parsed_keys.gaia_id() != gaia_id)
     return absl::nullopt;

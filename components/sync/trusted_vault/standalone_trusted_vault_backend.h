@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
@@ -139,6 +140,12 @@ class StandaloneTrustedVaultBackend
 
   bool AreConnectionRequestsThrottledForTesting();
 
+  // Specifies how long requests shouldn't be retried after encountering
+  // transient error. Note, that this doesn't affect requests related to
+  // degraded recoverability.
+  // Exposed for testing.
+  static constexpr base::TimeDelta kThrottlingDuration = base::Days(1);
+
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
 
@@ -210,8 +217,9 @@ class StandaloneTrustedVaultBackend
   // Used for communication with trusted vault server. Can be null, in this case
   // functionality that involves interaction with vault service (such as device
   // registration, keys downloading, etc.) will be disabled.
-  // TODO(crbug.com/1113598): clean up logic around nullable |connection_|, once
-  // kFollowTrustedVaultKeyRotation feature flag is removed.
+  // TODO(crbug.com/1113598): |connection_| can be null if URL passed as
+  // kTrustedVaultServiceURL is not valid, consider making it non-nullable even
+  // in this case and clean up related logic.
   const std::unique_ptr<TrustedVaultConnection> connection_;
 
   sync_pb::LocalTrustedVault data_;
