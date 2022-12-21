@@ -32,6 +32,10 @@ class IdentityManagerLacros {
   virtual void GetAccountEmail(
       const std::string& gaia_id,
       crosapi::mojom::IdentityManager::GetAccountEmailCallback callback);
+  virtual void HasAccountWithPersistentError(
+      const std::string& gaia_id,
+      crosapi::mojom::IdentityManager::HasAccountWithPersistentErrorCallback
+          callback);
 
  private:
   void RunFullNameCallback(
@@ -43,6 +47,10 @@ class IdentityManagerLacros {
   void RunEmailCallback(
       crosapi::mojom::IdentityManager::GetAccountEmailCallback callback,
       const std::string& email);
+  void RunPersistentErrorCallback(
+      crosapi::mojom::IdentityManager::HasAccountWithPersistentErrorCallback
+          callback,
+      bool persistent_error);
 
   base::WeakPtrFactory<class IdentityManagerLacros> weak_ptr_factory_{this};
 };

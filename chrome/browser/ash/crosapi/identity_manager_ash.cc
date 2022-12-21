@@ -11,23 +11,28 @@
 #include "chromeos/crosapi/mojom/identity_manager.mojom.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/gfx/image/image.h"
 
 namespace crosapi {
 
 namespace {
-AccountInfo GetAccountInfo(const std::string& gaia_id) {
+
+signin::IdentityManager* GetIdentityManager(const std::string& gaia_id) {
   user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
   if (!user)
-    return AccountInfo();
+    return nullptr;
 
   Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile)
-    return AccountInfo();
+    return nullptr;
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetInstance()->GetForProfileIfExists(profile);
+  return IdentityManagerFactory::GetInstance()->GetForProfileIfExists(profile);
+}
+
+AccountInfo GetAccountInfo(const std::string& gaia_id) {
+  signin::IdentityManager* identity_manager = GetIdentityManager(gaia_id);
   if (!identity_manager)
     return AccountInfo();
   return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
@@ -72,6 +77,21 @@ void IdentityManagerAsh::GetAccountEmail(const std::string& gaia_id,
     return;
   }
   std::move(callback).Run(account_info.email);
+}
+
+void IdentityManagerAsh::HasAccountWithPersistentError(
+    const std::string& gaia_id,
+    HasAccountWithPersistentErrorCallback callback) {
+  signin::IdentityManager* identity_manager = GetIdentityManager(gaia_id);
+  AccountInfo account_info = GetAccountInfo(gaia_id);
+  if (!identity_manager || account_info.IsEmpty()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  GoogleServiceAuthError error =
+      identity_manager->GetErrorStateOfRefreshTokenForAccount(
+          account_info.account_id);
+  std::move(callback).Run(error.IsPersistentError());
 }
 
 }  // namespace crosapi

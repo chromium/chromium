@@ -20,4 +20,8 @@ interface IdentityManager {
   // Returns the email of the account with gaia id `gaia`.
   [MinVersion=1]
   GetAccountEmail@2(string gaia) => (string email);
+
+  // Returns if the account with gaia id `gaia` is in persistent error state.
+  [MinVersion=2]
+  HasAccountWithPersistentError@3(string gaia) => (bool persistent_error);
 };
