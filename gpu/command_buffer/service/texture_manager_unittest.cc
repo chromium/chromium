@@ -1727,27 +1727,26 @@ TEST_F(TextureTest, SetStreamTextureImageServiceID) {
   // TODO(blundell): Remove |image| parameter from this method - |null| is
   // always passed in production.
   GLuint stream_texture_service_id = service_id + 1;
-  manager_->SetLevelStreamTextureImage(
-      texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES, 0, /*image=*/nullptr,
-      Texture::BOUND, stream_texture_service_id);
+  texture->SetLevelStreamTextureImage(GL_TEXTURE_EXTERNAL_OES,
+                                      /*image=*/nullptr, Texture::BOUND,
+                                      stream_texture_service_id);
 
   // Make sure that service_id() changed but owned_service_id() didn't.
   EXPECT_EQ(stream_texture_service_id, texture->service_id());
   EXPECT_EQ(owned_service_id, TextureTestHelper::owned_service_id(texture));
 
   // Undo the override.
-  manager_->SetLevelStreamTextureImage(texture_ref_.get(),
-                                       GL_TEXTURE_EXTERNAL_OES, 0,
-                                       /*image=*/nullptr, Texture::BOUND, 0);
+  texture->SetLevelStreamTextureImage(GL_TEXTURE_EXTERNAL_OES,
+                                      /*image=*/nullptr, Texture::BOUND, 0);
 
   // The service IDs should be back as they were.
   EXPECT_EQ(service_id, texture->service_id());
   EXPECT_EQ(owned_service_id, TextureTestHelper::owned_service_id(texture));
 
   // Override again, so that we can check delete behavior.
-  manager_->SetLevelStreamTextureImage(
-      texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES, 0, /*image=*/nullptr,
-      Texture::BOUND, stream_texture_service_id);
+  texture->SetLevelStreamTextureImage(GL_TEXTURE_EXTERNAL_OES,
+                                      /*image=*/nullptr, Texture::BOUND,
+                                      stream_texture_service_id);
 
   // Remove the Texture.  It should delete the texture id that it owns, even
   // though it is overridden.

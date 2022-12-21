@@ -581,11 +581,10 @@ gl::GLImage* TexturePassthrough::GetLevelImage(GLenum target,
 }
 
 void TexturePassthrough::SetStreamLevelImage(GLenum target,
-                                             GLint level,
                                              gl::GLImage* stream_texture_image,
                                              GLuint service_id) {
-  SetLevelImageInternal(target, level, stream_texture_image, service_id);
-  UpdateStreamTextureServiceId(target, level);
+  SetLevelImageInternal(target, /*level=*/0, stream_texture_image, service_id);
+  UpdateStreamTextureServiceId(target, /*level=*/0);
 }
 
 void TexturePassthrough::SetEstimatedSize(size_t size) {
@@ -1905,12 +1904,11 @@ void Texture::SetLevelImage(GLenum target,
 
 #if BUILDFLAG(IS_ANDROID)
 void Texture::SetLevelStreamTextureImage(GLenum target,
-                                         GLint level,
                                          gl::GLImage* image,
                                          ImageState state,
                                          GLuint service_id) {
   SetStreamTextureServiceId(service_id);
-  SetLevelImageInternal(target, level, image, state);
+  SetLevelImageInternal(target, /*level=*/0, image, state);
 }
 #endif
 
@@ -2605,19 +2603,6 @@ void TextureManager::SetLevelImage(TextureRef* ref,
   DCHECK(ref);
   ref->texture()->SetLevelImage(target, level, image, state);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void TextureManager::SetLevelStreamTextureImage(TextureRef* ref,
-                                                GLenum target,
-                                                GLint level,
-                                                gl::GLImage* image,
-                                                Texture::ImageState state,
-                                                GLuint service_id) {
-  DCHECK(ref);
-  ref->texture()->SetLevelStreamTextureImage(target, level, image, state,
-                                             service_id);
-}
-#endif
 
 void TextureManager::SetLevelImageState(TextureRef* ref,
                                         GLenum target,

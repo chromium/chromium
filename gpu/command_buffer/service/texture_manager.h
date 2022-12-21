@@ -83,7 +83,6 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   gl::GLImage* GetLevelImage(GLenum target, GLint level) const;
 
   void SetStreamLevelImage(GLenum target,
-                           GLint level,
                            gl::GLImage* stream_texture_image,
                            GLuint service_id);
 
@@ -315,12 +314,11 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
                      ImageState state);
 
 #if BUILDFLAG(IS_ANDROID)
-  // Set the GLImage for a particular level.  This is like SetLevelImage, but it
+  // Set the GLImage for level 0.  This is like SetLevelImage, but it
   // also makes it optional to override |service_id_| with a texture bound to
   // the stream texture. See SetStreamTextureServiceId() for the details of how
   // |service_id| is used.
   void SetLevelStreamTextureImage(GLenum target,
-                                  GLint level,
                                   gl::GLImage* image,
                                   ImageState state,
                                   GLuint service_id);
@@ -1110,15 +1108,6 @@ class GPU_GLES2_EXPORT TextureManager
                      GLint level,
                      gl::GLImage* image,
                      Texture::ImageState state);
-
-#if BUILDFLAG(IS_ANDROID)
-  void SetLevelStreamTextureImage(TextureRef* ref,
-                                  GLenum target,
-                                  GLint level,
-                                  gl::GLImage* image,
-                                  Texture::ImageState state,
-                                  GLuint service_id);
-#endif
 
   void SetLevelImageState(TextureRef* ref,
                           GLenum target,
