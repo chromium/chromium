@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 
+#include "base/i18n/case_conversion.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 
@@ -48,11 +49,14 @@ void AppStreamLauncherDataModel::SetAppList(
   apps_list_sorted_by_name_ = streamable_apps;
 
   // Alphabetically sort the app list.
-  std::sort(apps_list_sorted_by_name_.begin(), apps_list_sorted_by_name_.end(),
-            [](const Notification::AppMetadata& a,
-               const Notification::AppMetadata& b) {
-              return a.visible_app_name < b.visible_app_name;
-            });
+  std::sort(
+      apps_list_sorted_by_name_.begin(), apps_list_sorted_by_name_.end(),
+      [](const Notification::AppMetadata& a,
+         const Notification::AppMetadata& b) {
+        std::u16string a_app_name = base::i18n::ToLower(a.visible_app_name);
+        std::u16string b_app_name = base::i18n::ToLower(b.visible_app_name);
+        return a_app_name < b_app_name;
+      });
   for (auto& observer : observer_list_)
     observer.OnAppListChanged();
 }
