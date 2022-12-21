@@ -467,7 +467,8 @@ static bool NeedsAnchorScrollTranslation(const LayoutObject& object) {
 static bool NeedsPaintOffsetTranslation(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons,
-    const LayoutObject* container_for_fixed_position) {
+    const LayoutObject* container_for_fixed_position,
+    const PaintLayer* painting_layer) {
   if (!object.IsBoxModelObject())
     return false;
 
@@ -535,8 +536,13 @@ static bool NeedsPaintOffsetTranslation(
     // we have fully correct paint property tree states for floating objects
     // and column spans.
     if (box_model.IsLayoutBlock() || object.IsLayoutReplaced()) {
-      if (!object.PaintingLayer()->EnclosingPaginationLayer())
+      const PaintLayer* layer =
+          base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates)
+              ? painting_layer
+              : object.PaintingLayer();
+      if (!layer->EnclosingPaginationLayer()) {
         return true;
+      }
     }
   }
 
@@ -571,8 +577,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
     absl::optional<gfx::Vector2d>& paint_offset_translation) {
   if (!NeedsPaintOffsetTranslation(object_,
                                    full_context_.direct_compositing_reasons,
-                                   full_context_.container_for_fixed_position))
+                                   full_context_.container_for_fixed_position,
+                                   full_context_.painting_layer)) {
     return;
+  }
 
   // We should use the same subpixel paint offset values for snapping regardless
   // of paint offset translation. If we create a paint offset translation we
@@ -3957,7 +3965,8 @@ void PaintPropertyTreeBuilder::UpdateFragments() {
       !object_.IsText() &&
 #endif
       (NeedsPaintOffsetTranslation(object_, context_.direct_compositing_reasons,
-                                   context_.container_for_fixed_position) ||
+                                   context_.container_for_fixed_position,
+                                   context_.painting_layer) ||
        NeedsStickyTranslation(object_) ||
        NeedsAnchorScrollTranslation(object_) ||
        NeedsTranslate(object_, context_.direct_compositing_reasons) ||
