@@ -14,11 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -60,7 +58,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private ImageView mTitleIcon;
     private TextView mMessageParagraph1;
     private TextView mMessageParagraph2;
-    private ScrollView mCustomViewContainer;
+    private ViewGroup mCustomViewContainer;
     private ViewGroup mCustomButtonBarViewContainer;
     private View mButtonBar;
     private Button mPositiveButton;
@@ -406,10 +404,5 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mPositiveButton.setVisibility(positiveButtonVisible ? View.VISIBLE : View.GONE);
         mNegativeButton.setVisibility(negativeButtonVisible ? View.VISIBLE : View.GONE);
         mButtonBar.setVisibility(defaultButtonBarVisible ? View.VISIBLE : View.GONE);
-    }
-
-    @VisibleForTesting
-    public ScrollView getCustomViewContainerForTesting() {
-        return mCustomViewContainer;
     }
 }
