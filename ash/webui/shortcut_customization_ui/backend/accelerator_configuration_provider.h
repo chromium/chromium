@@ -21,6 +21,22 @@
 #include "ui/events/devices/input_device_event_observer.h"
 
 namespace ash {
+// Gets the parts of the string that don't contain replacements.
+// Ex: "Press and " -> ["Press ", " and "]
+std::vector<std::u16string> SplitStringOnOffsets(
+    const std::u16string& input,
+    const std::vector<size_t>& offsets);
+
+// Creates text accelerator parts needed to properly display kText accelerators
+// in the UI. Uses the list of offsets which must be sorted and contains the
+// start points of our replacements to place the |plain_text_parts| and
+// |replacement_parts| in the correct order.
+std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
+    const std::vector<std::u16string>& plain_text_parts,
+    const std::vector<TextAcceleratorPart>& replacement_parts,
+    const std::vector<size_t>& offsets,
+    size_t str_size);
+
 namespace shortcut_ui {
 
 class AcceleratorConfigurationProvider
@@ -72,7 +88,9 @@ class AcceleratorConfigurationProvider
 
   mojom::AcceleratorInfoPtr CreateTextAcceleratorInfo(
       const AcceleratorTextDetails& details);
-  mojom::TextAcceleratorPropertiesPtr CreateTextAcceleratorParts();
+
+  mojom::TextAcceleratorPropertiesPtr CreateTextAcceleratorProperties(
+      const AcceleratorTextDetails& details);
 
  private:
   friend class AcceleratorConfigurationProviderTest;

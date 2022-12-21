@@ -4,6 +4,8 @@
 
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
 
+#include <algorithm>
+#include <numeric>
 #include <string>
 #include <vector>
 
@@ -11,6 +13,7 @@
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
@@ -33,6 +36,83 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
+
+std::vector<std::u16string> SplitStringOnOffsets(
+    const std::u16string& input,
+    const std::vector<size_t>& offsets) {
+  DCHECK(std::is_sorted(offsets.begin(), offsets.end()));
+
+  std::vector<std::u16string> parts;
+  // At most there will be len(offsets) + 1 text parts.
+  parts.reserve(offsets.size() + 1);
+  size_t upto = 0;
+
+  for (auto offset : offsets) {
+    DCHECK_LE(offset, input.size());
+
+    if (offset == upto) {
+      continue;
+    }
+
+    DCHECK(offset >= upto);
+    parts.push_back(input.substr(upto, offset - upto));
+    upto = offset;
+  }
+
+  // Handles the case where there's plain text after the last replacement.
+  if (upto < input.size()) {
+    parts.push_back(input.substr(upto));
+  }
+
+  return parts;
+}
+
+std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
+    const std::vector<std::u16string>& plain_text_parts,
+    const std::vector<TextAcceleratorPart>& replacement_parts,
+    const std::vector<size_t>& offsets,
+    size_t str_size) {
+  // |str_size| should be the sum of the lengths of |plain_text_parts|.
+  DCHECK_EQ(str_size, std::accumulate(
+                          plain_text_parts.begin(), plain_text_parts.end(), 0u,
+                          [](size_t accumulator, const std::u16string& part) {
+                            return accumulator + part.size();
+                          }));
+
+  DCHECK(std::is_sorted(offsets.begin(), offsets.end()));
+  DCHECK_EQ(offsets.size(), replacement_parts.size());
+
+  std::vector<mojom::TextAcceleratorPartPtr> result;
+  size_t upto = 0;
+  size_t offset_index = 0;
+  size_t parts_index = 0;
+
+  // Interleave the plain-text segments and the replacements based on the
+  // offsets.
+  while (upto < str_size || offset_index < offsets.size()) {
+    // When there are still offsets remaining and the next available offset
+    // |upto|, then add the next replacement to the result matches.
+    if (offset_index < offsets.size() && upto == offsets[offset_index]) {
+      const auto& replacement_part = replacement_parts[offset_index];
+      result.push_back(mojom::TextAcceleratorPart::New(replacement_part.text,
+                                                       replacement_part.type));
+      offset_index++;
+    } else {
+      // Otherwise add the next plain text segment to the result.
+      DCHECK(parts_index < plain_text_parts.size());
+      const auto& plain_text_part = plain_text_parts[parts_index];
+      result.push_back(mojom::TextAcceleratorPart::New(
+          plain_text_part, mojom::TextAcceleratorPartType::kPlainText));
+
+      upto += plain_text_part.size();
+      parts_index++;
+    }
+  }
+
+  DCHECK_EQ(upto, str_size);
+  DCHECK_EQ(offset_index, offsets.size());
+  return result;
+}
 
 namespace {
 
@@ -97,8 +177,9 @@ mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
 bool TopRowKeysAreFunctionKeys() {
   const PrefService* pref_service =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!pref_service)
+  if (!pref_service) {
     return false;
+  }
   return pref_service->GetBoolean(prefs::kSendFunctionKeys);
 }
 
@@ -238,22 +319,25 @@ void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
 }
 
 mojom::TextAcceleratorPropertiesPtr
-AcceleratorConfigurationProvider::CreateTextAcceleratorParts() {
-  // TODO(michaelcheco): Use AcceleratorTextDetails to create
-  // text_parts dynamically.
-  std::vector<mojom::TextAcceleratorPartPtr> text_parts;
-  text_parts.push_back(mojom::TextAcceleratorPart::New(
-      u"ctrl", mojom::TextAcceleratorPartType::kModifier));
-  text_parts.push_back(mojom::TextAcceleratorPart::New(
-      u" + ", mojom::TextAcceleratorPartType::kPlainText));
-  text_parts.push_back(mojom::TextAcceleratorPart::New(
-      u"1 ", mojom::TextAcceleratorPartType::kKey));
-  text_parts.push_back(mojom::TextAcceleratorPart::New(
-      u"through", mojom::TextAcceleratorPartType::kPlainText));
-  text_parts.push_back(mojom::TextAcceleratorPart::New(
-      u"8", mojom::TextAcceleratorPartType::kKey));
+AcceleratorConfigurationProvider::CreateTextAcceleratorProperties(
+    const AcceleratorTextDetails& details) {
+  // Contains the start points of the replaced strings.
+  std::vector<size_t> offsets;
+  const std::vector<std::u16string> empty_string_replacements(
+      details.replacements.size());
+  // Pass an array of empty strings to get the offsets of the replacements. The
+  // return string has the placeholders removed.
+  const auto replaced_string = l10n_util::GetStringFUTF16(
+      details.message_id, empty_string_replacements, &offsets);
 
-  return mojom::TextAcceleratorProperties::New(std::move(text_parts));
+  // Sort the offsets and split the string on the offsets.
+  sort(offsets.begin(), offsets.end());
+  const auto plain_text_parts = SplitStringOnOffsets(replaced_string, offsets);
+
+  auto text_accelerator_parts = GenerateTextAcceleratorParts(
+      plain_text_parts, details.replacements, offsets, replaced_string.size());
+  return mojom::TextAcceleratorProperties::New(
+      std::move(text_accelerator_parts));
 }
 
 mojom::AcceleratorInfoPtr
@@ -265,7 +349,7 @@ AcceleratorConfigurationProvider::CreateTextAcceleratorInfo(
   info_mojom->state = mojom::AcceleratorState::kEnabled;
   info_mojom->layout_properties =
       mojom::LayoutStyleProperties::NewTextAccelerator(
-          CreateTextAcceleratorParts());
+          CreateTextAcceleratorProperties(details));
   return info_mojom;
 }
 

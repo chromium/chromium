@@ -42,6 +42,11 @@ TextAcceleratorPart::TextAcceleratorPart(ui::KeyboardCode key_code) {
   type = mojom::TextAcceleratorPartType::kKey;
 }
 
+TextAcceleratorPart::TextAcceleratorPart(const std::u16string& plain_text) {
+  text = plain_text;
+  type = mojom::TextAcceleratorPartType::kPlainText;
+}
+
 TextAcceleratorPart::TextAcceleratorPart(const TextAcceleratorPart&) = default;
 TextAcceleratorPart::~TextAcceleratorPart() = default;
 TextAcceleratorPart& TextAcceleratorPart::operator=(
@@ -49,13 +54,15 @@ TextAcceleratorPart& TextAcceleratorPart::operator=(
 
 AcceleratorTextDetails::AcceleratorTextDetails(
     int message_id,
-    std::vector<TextAcceleratorPart> parts) {
+    std::vector<TextAcceleratorPart> replacements) {
   this->message_id = message_id;
-  this->text_accelerator_parts = std::move(parts);
+  this->replacements = std::move(replacements);
 }
 
 AcceleratorTextDetails::AcceleratorTextDetails(const AcceleratorTextDetails&) =
     default;
+AcceleratorTextDetails& AcceleratorTextDetails::operator=(
+    const AcceleratorTextDetails&) = default;
 
 AcceleratorTextDetails::~AcceleratorTextDetails() = default;
 const NonConfigurableActionsTextDetailsMap& GetTextDetailsMap() {

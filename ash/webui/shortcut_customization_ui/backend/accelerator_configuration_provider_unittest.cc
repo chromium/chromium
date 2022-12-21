@@ -6,6 +6,8 @@
 
 #include <map>
 #include <memory>
+#include <string>
+#include <variant>
 #include <vector>
 
 #include "ash/accelerators/accelerator_layout_table.h"
@@ -15,6 +17,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
+#include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -90,8 +93,9 @@ void SetTopRowKeysAsFunctionKeysEnabled(bool enabled) {
 bool TopRowKeysAreFunctionKeys() {
   const PrefService* pref_service =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!pref_service)
+  if (!pref_service) {
     return false;
+  }
   return pref_service->GetBoolean(prefs::kSendFunctionKeys);
 }
 
@@ -162,6 +166,12 @@ void ValidateAcceleratorLayouts(
     }
     EXPECT_TRUE(found_match);
   }
+}
+
+void ValidateTextAccelerator(const TextAcceleratorPart& lhs,
+                             const mojom::TextAcceleratorPartPtr& rhs) {
+  EXPECT_EQ(lhs.text, rhs->text);
+  EXPECT_EQ(lhs.type, rhs->type);
 }
 
 }  // namespace
@@ -568,25 +578,178 @@ TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
   EXPECT_EQ(u"space", GetKeyDisplay(ui::VKEY_SPACE));
 }
 
-TEST_F(AcceleratorConfigurationProviderTest, TextAcceleratorParsing) {
-  // TODO(michaelcheco): Update test and add more test cases once the
-  // string parsing algorithm is implemented.
-  auto parts = provider_->CreateTextAcceleratorParts();
-  std::vector<mojom::TextAcceleratorPartPtr> expected;
-  expected.push_back(mojom::TextAcceleratorPart::New(
-      u"ctrl", mojom::TextAcceleratorPartType::kModifier));
-  expected.push_back(mojom::TextAcceleratorPart::New(
-      u" + ", mojom::TextAcceleratorPartType::kPlainText));
-  expected.push_back(mojom::TextAcceleratorPart::New(
-      u"1 ", mojom::TextAcceleratorPartType::kKey));
-  expected.push_back(mojom::TextAcceleratorPart::New(
-      u"through", mojom::TextAcceleratorPartType::kPlainText));
-  expected.push_back(mojom::TextAcceleratorPart::New(
-      u"8", mojom::TextAcceleratorPartType::kKey));
-  EXPECT_EQ(parts->text_accelerator, expected);
-  base::RunLoop().RunUntilIdle();
+using FlagsKeyboardCodesVariant =
+    std::variant<ui::EventFlags, ui::KeyboardCode>;
+using FlagsKeyboardCodeStringVariant =
+    std::variant<ui::EventFlags, ui::KeyboardCode, std::u16string>;
+
+class TextAcceleratorParsingTest
+    : public AcceleratorConfigurationProviderTest,
+      public testing::WithParamInterface<
+          std::tuple<std::u16string,
+                     std::vector<FlagsKeyboardCodesVariant>,
+                     std::vector<FlagsKeyboardCodeStringVariant>>> {
+ public:
+  void SetUp() override {
+    AcceleratorConfigurationProviderTest::SetUp();
+    std::vector<FlagsKeyboardCodesVariant> replacements_parts;
+    std::vector<FlagsKeyboardCodeStringVariant> variants;
+    std::tie(replacement_string_, replacements_parts, variants) = GetParam();
+
+    for (const auto& r : replacements_parts) {
+      if (std::holds_alternative<ui::KeyboardCode>(r)) {
+        replacements_.emplace_back(std::get<ui::KeyboardCode>(r));
+      } else {
+        replacements_.emplace_back(std::get<ui::EventFlags>(r));
+      }
+    }
+
+    for (const auto& v : variants) {
+      if (std::holds_alternative<std::u16string>(v)) {
+        expected_parts_.emplace_back(std::get<std::u16string>(v));
+      } else if (std::holds_alternative<ui::KeyboardCode>(v)) {
+        expected_parts_.emplace_back(std::get<ui::KeyboardCode>(v));
+      } else {
+        expected_parts_.emplace_back(std::get<ui::EventFlags>(v));
+      }
+    }
+  }
+
+ protected:
+  std::u16string replacement_string_;
+  std::vector<TextAcceleratorPart> replacements_;
+  std::vector<TextAcceleratorPart> expected_parts_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    TextAcceleratorParsingTest,
+    // The tuple contains an example replacement string, the replacements to
+    // use in the string (keys, modifiers, plain text), and the result we
+    // expect to receive given these inputs.
+    testing::ValuesIn(
+        std::vector<std::tuple<std::u16string,
+                               std::vector<FlagsKeyboardCodesVariant>,
+                               std::vector<FlagsKeyboardCodeStringVariant>>>{
+            {
+                u"$1 + $2 through $3",
+                {ui::EF_CONTROL_DOWN, ui::VKEY_1, ui::VKEY_8},
+                {ui::EF_CONTROL_DOWN, u" + ", ui::VKEY_1, u" through ",
+                 ui::VKEY_8},
+            },
+            {
+                u"Press $1 and $2",
+                {ui::EF_CONTROL_DOWN, ui::VKEY_C},
+                {u"Press ", ui::EF_CONTROL_DOWN, u" and ", ui::VKEY_C},
+            },
+            {
+                u"Press $1 $2 $3",
+                {ui::VKEY_A, ui::VKEY_B, ui::VKEY_C},
+                {u"Press ", ui::VKEY_A, u" ", ui::VKEY_B, u" ", ui::VKEY_C},
+            },
+            {
+                u"$1 $2 $3 Press",
+                {ui::VKEY_A, ui::VKEY_B, ui::VKEY_C},
+                {ui::VKEY_A, u" ", ui::VKEY_B, u" ", ui::VKEY_C, u" Press"},
+            },
+            {
+                u"$1$2$3",
+                {ui::VKEY_A, ui::VKEY_B, ui::VKEY_C},
+                {ui::VKEY_A, ui::VKEY_B, ui::VKEY_C},
+            },
+            {
+                u"$1 and $2",
+                {ui::VKEY_A, ui::VKEY_B},
+                {ui::VKEY_A, u" and ", ui::VKEY_B},
+            },
+            {
+                u"A $1 $2 D",
+                {ui::VKEY_B, ui::VKEY_C},
+                {u"A ", ui::VKEY_B, u" ", ui::VKEY_C, u" D"},
+            },
+            {
+                u"$1",
+                {ui::VKEY_B},
+                {ui::VKEY_B},
+            },
+            {
+                u"$1 ",
+                {ui::VKEY_B},
+                {ui::VKEY_B, u" "},
+            },
+            {
+                u" $1",
+                {ui::VKEY_B},
+                {u" ", ui::VKEY_B},
+            },
+            {
+                u"Drag the link to a blank area on the tab strip",
+                {},
+                {u"Drag the link to a blank area on the tab strip"},
+            },
+            {
+                u"$1a$2$3bc",
+                {ui::EF_SHIFT_DOWN, ui::VKEY_B, ui::VKEY_C},
+                {ui::EF_SHIFT_DOWN, u"a", ui::VKEY_B, ui::VKEY_C, u"bc"},
+            }}));
+
+TEST_P(TextAcceleratorParsingTest, TextAcceleratorParsing) {
+  auto& bundle = ui::ResourceBundle::GetSharedInstance();
+  int FAKE_RESOURCE_ID = 1;
+  bundle.OverrideLocaleStringResource(FAKE_RESOURCE_ID, replacement_string_);
+  const auto parts = provider_->CreateTextAcceleratorProperties(
+      {FAKE_RESOURCE_ID, replacements_});
+  EXPECT_EQ(expected_parts_.size(), parts->text_accelerator.size());
+  for (size_t i = 0; i < expected_parts_.size(); i++) {
+    ValidateTextAccelerator(expected_parts_[i], parts->text_accelerator[i]);
+  }
 }
 
+class GetPlainTextPartsTest : public AcceleratorConfigurationProviderTest,
+                              public testing::WithParamInterface<
+                                  std::tuple<std::u16string,
+                                             std::vector<size_t>,
+                                             std::vector<std::u16string>>> {
+ public:
+  void SetUp() override {
+    AcceleratorConfigurationProviderTest::SetUp();
+    std::tie(input_, offsets_, expected_output_) = GetParam();
+  }
+
+ protected:
+  std::u16string input_;
+  std::vector<size_t> offsets_;
+  std::vector<std::u16string> expected_output_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    GetPlainTextPartsTest,
+    // The tuple contains an example replacement string with the placeholders
+    // removed, the expected list of offsets which must be sorted and contains
+    // the start points of our replacements, and the plain text parts we expect
+    // receive given these inputs.
+    testing::ValuesIn(std::vector<std::tuple<std::u16string,
+                                             std::vector<size_t>,
+                                             std::vector<std::u16string>>>{
+
+        {u"abc", {0, 1, 1}, {u"a", u"bc"}},
+        {u"abc", {0, 1, 2}, {u"a", u"b", u"c"}},
+        {u"a b", {0, 1}, {u"a", u" b"}},
+        {u"a b", {0, 2}, {u"a ", u"b"}},
+        {u"Press  and ", {6, 11}, {u"Press ", u" and "}},
+        {u"", {0}, {}},
+        {u"No replacements", {}, {u"No replacements"}},
+        {u"a and bc", {0, 6}, {u"a and ", u"bc"}},
+
+    }));
+
+TEST_P(GetPlainTextPartsTest, GetPlainTextParts) {
+  const auto parts = SplitStringOnOffsets(input_, offsets_);
+  EXPECT_EQ(expected_output_, parts);
+}
 }  // namespace shortcut_ui
 
 }  // namespace ash

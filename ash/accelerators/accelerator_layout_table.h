@@ -195,21 +195,24 @@ class ASH_EXPORT TextAcceleratorPart : public mojom::TextAcceleratorPart {
  public:
   explicit TextAcceleratorPart(ui::EventFlags modifier);
   explicit TextAcceleratorPart(ui::KeyboardCode key_code);
+  explicit TextAcceleratorPart(const std::u16string& plain_text);
   TextAcceleratorPart(const TextAcceleratorPart&);
   TextAcceleratorPart& operator=(const TextAcceleratorPart&);
   ~TextAcceleratorPart();
 };
 
-// Contains info related to an ambient accelerator. The |message_id| and list
-// of |text_accelerator_parts| are used by AcceleratorConfigurationProvider to
+// Contains info related to a non-configurable accelerator. The |message_id| and
+// list of |replacements| are used by AcceleratorConfigurationProvider to
 // construct arbitrary text with styled keys and modifiers interspersed.
 struct ASH_EXPORT AcceleratorTextDetails {
   AcceleratorTextDetails(int message_id,
-                         std::vector<TextAcceleratorPart> parts);
+                         std::vector<TextAcceleratorPart> replacements);
   AcceleratorTextDetails(const AcceleratorTextDetails&);
+  AcceleratorTextDetails& operator=(const AcceleratorTextDetails&);
   ~AcceleratorTextDetails();
+
   int message_id;
-  std::vector<TextAcceleratorPart> text_accelerator_parts;
+  std::vector<TextAcceleratorPart> replacements;
 };
 
 using NonConfigurableActionsTextDetailsMap =
