@@ -482,16 +482,16 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
     PositionInFlatTree range_end_position =
         GetPreviousTextEndPosition(range_->EndPosition());
 
-    if (range_start_position.IsNotNull()) {
-      range_start_iterator_ =
-          MakeGarbageCollected<ForwardSameBlockWordIterator>(
-              range_start_position);
+    if (range_start_position.IsNull() || range_end_position.IsNull()) {
+      state_ = kFailure;
+      error_ = LinkGenerationError::kNoRange;
+      return;
     }
 
-    if (range_end_position.IsNotNull()) {
-      range_end_iterator_ = MakeGarbageCollected<BackwardSameBlockWordIterator>(
-          range_end_position);
-    }
+    range_start_iterator_ = MakeGarbageCollected<ForwardSameBlockWordIterator>(
+        range_start_position);
+    range_end_iterator_ =
+        MakeGarbageCollected<BackwardSameBlockWordIterator>(range_end_position);
 
     // Use at least 3 words from both sides for more robust link to text unless
     // the selected text is shorter than 6 words.
@@ -531,7 +531,7 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
     }
   }
 
-  if (!range_start_iterator_ && !range_end_iterator_) {
+  if (!range_start_iterator_ || !range_end_iterator_) {
     state_ = kFailure;
     error_ = LinkGenerationError::kNoRange;
     return;
