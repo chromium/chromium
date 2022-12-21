@@ -62,12 +62,12 @@ FederatedIdentityIdentityProviderSigninStatusContext::GetKeyForObject(
 
 bool FederatedIdentityIdentityProviderSigninStatusContext::IsValidObject(
     const base::Value& object) {
-  return object.is_dict() && object.FindStringKey(kIdpKey);
+  return object.is_dict() && object.GetDict().FindString(kIdpKey);
 }
 
 std::u16string
 FederatedIdentityIdentityProviderSigninStatusContext::GetObjectDisplayName(
     const base::Value& object) {
   DCHECK(IsValidObject(object));
-  return base::UTF8ToUTF16(*object.FindStringKey(kIdpKey));
+  return base::UTF8ToUTF16(*object.GetDict().FindString(kIdpKey));
 }

@@ -170,12 +170,12 @@ std::string FederatedIdentityAccountKeyedPermissionContext::GetKeyForObject(
 
 bool FederatedIdentityAccountKeyedPermissionContext::IsValidObject(
     const base::Value& object) {
-  return object.is_dict() && object.FindStringKey(idp_origin_key_);
+  return object.is_dict() && object.GetDict().FindString(idp_origin_key_);
 }
 
 std::u16string
 FederatedIdentityAccountKeyedPermissionContext::GetObjectDisplayName(
     const base::Value& object) {
   DCHECK(IsValidObject(object));
-  return base::UTF8ToUTF16(*object.FindStringKey(idp_origin_key_));
+  return base::UTF8ToUTF16(*object.GetDict().FindString(idp_origin_key_));
 }
