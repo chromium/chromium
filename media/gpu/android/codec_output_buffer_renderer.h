@@ -69,16 +69,6 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
     return phase_ == Phase::kInFrontBuffer;
   }
 
-  // Whether a call to RenderTextureOwnerFrontBuffer() will be a no-op. Present
-  // for debugging whether there are cases in which CodecImage::CopyTexImage()
-  // results in actual rendering happening.
-  // TODO(crbug.com/1310020): Remove this method once that issue is resolved.
-  bool render_to_front_buffer_will_be_noop_for_debugging() const {
-    AssertAcquiredDrDcLock();
-    return was_rendered_to_front_buffer() || !codec_buffer_wait_coordinator_ ||
-           phase_ == Phase::kInvalidated;
-  }
-
   gfx::Size size() const { return output_buffer_->size(); }
 
   // Color space of the image.
