@@ -4,6 +4,8 @@
 
 package org.chromium.webengine;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.webengine.interfaces.ITabParams;
 
 import java.util.HashMap;
@@ -18,6 +20,9 @@ import java.util.Set;
  */
 class TabRegistry {
     private Map<String, Tab> mGuidToTab = new HashMap<String, Tab>();
+
+    @Nullable
+    private Tab mActiveTab;
 
     TabRegistry() {}
 
@@ -43,5 +48,13 @@ class TabRegistry {
 
     Set<Tab> getTabs() {
         return new HashSet(mGuidToTab.values());
+    }
+
+    void setActiveTab(Tab tab) {
+        mActiveTab = tab;
+    }
+
+    Tab getActiveTab() {
+        return mActiveTab;
     }
 }

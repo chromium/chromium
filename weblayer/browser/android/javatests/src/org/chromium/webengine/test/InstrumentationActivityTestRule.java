@@ -88,9 +88,7 @@ public class InstrumentationActivityTestRule
     }
 
     public Tab getActiveTab() throws Exception {
-        return runOnUiThreadBlocking(
-                () -> getFragment().getWebEngine().getTabManager().getActiveTab())
-                .get();
+        return getFragment().getWebEngine().getTabManager().getActiveTab();
     }
 
     /**
@@ -102,7 +100,7 @@ public class InstrumentationActivityTestRule
 
         runOnUiThreadBlocking(() -> attachFragment(webEngine.getFragment()));
 
-        Tab activeTab = runOnUiThreadBlocking(() -> webEngine.getTabManager().getActiveTab()).get();
+        Tab activeTab = webEngine.getTabManager().getActiveTab();
 
         navigateAndWait(activeTab, path);
         return webEngine;

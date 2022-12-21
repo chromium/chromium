@@ -59,9 +59,7 @@ public class ExecuteScriptTest {
 
     private Tab navigate() throws Exception {
         mActivityTestRule.createWebEngineAttachThenNavigateAndWait(mDefaultUrl);
-        return runOnUiThreadBlocking(
-                () -> mActivityTestRule.getFragment().getWebEngine().getTabManager().getActiveTab())
-                .get();
+        return mActivityTestRule.getFragment().getWebEngine().getTabManager().getActiveTab();
     }
 
     @Test

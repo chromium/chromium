@@ -80,11 +80,11 @@ public class TabManagerTest {
     public void tabGetsAddedAndActivatedOnStartup() throws Exception {
         WebEngine webEngine = runOnUiThreadBlocking(() -> mSandbox.createWebEngine()).get();
 
-        Tab activeTab = runOnUiThreadBlocking(() -> webEngine.getTabManager().getActiveTab()).get();
+        Tab activeTab = webEngine.getTabManager().getActiveTab();
         Assert.assertNotNull(activeTab);
 
         Set<Tab> allTabs = webEngine.getTabManager().getAllTabs();
-        Assert.assertEquals(allTabs.size(), 1);
+        Assert.assertEquals(1, allTabs.size());
 
         Assert.assertTrue(allTabs.contains(activeTab));
     }
@@ -95,11 +95,11 @@ public class TabManagerTest {
         WebEngine webEngine = runOnUiThreadBlocking(() -> mSandbox.createWebEngine()).get();
 
         Set<Tab> initialTabs = webEngine.getTabManager().getAllTabs();
-        Assert.assertEquals(initialTabs.size(), 1);
+        Assert.assertEquals(1, initialTabs.size());
 
         Tab addedTab = runOnUiThreadBlocking(() -> webEngine.getTabManager().createTab()).get();
         Set<Tab> twoTabs = webEngine.getTabManager().getAllTabs();
-        Assert.assertEquals(twoTabs.size(), 2);
+        Assert.assertEquals(2, twoTabs.size());
         Assert.assertTrue(twoTabs.contains(addedTab));
     }
 
@@ -117,8 +117,8 @@ public class TabManagerTest {
                     mActivityTestRule.getActivity().getResources().getConfiguration().orientation,
                     is(ORIENTATION_LANDSCAPE));
         });
-        Tab activeTab = runOnUiThreadBlocking(() -> webEngine.getTabManager().getActiveTab()).get();
-        Assert.assertEquals(activeTab.getDisplayUri().toString(), url);
+        Tab activeTab = webEngine.getTabManager().getActiveTab();
+        Assert.assertEquals(url, activeTab.getDisplayUri().toString());
     }
 
     @Test
@@ -132,7 +132,7 @@ public class TabManagerTest {
                 () -> mActivityTestRule.getWebSandbox().createWebEngine(params))
                                       .get();
         runOnUiThreadBlocking(() -> mActivityTestRule.attachFragment(webEngine.getFragment()));
-        Tab activeTab = runOnUiThreadBlocking(() -> webEngine.getTabManager().getActiveTab()).get();
+        Tab activeTab = webEngine.getTabManager().getActiveTab();
         String url = getTestDataURL("simple_page.html");
         mActivityTestRule.navigateAndWait(activeTab, url);
         // Shutdown the sandbox.
@@ -154,14 +154,13 @@ public class TabManagerTest {
         // Recreate a fragment with the same params.
         WebEngine webEngine2 = runOnUiThreadBlocking(() -> sandbox.createWebEngine(params)).get();
         runOnUiThreadBlocking(() -> mActivityTestRule.attachFragment(webEngine2.getFragment()));
-        Tab newActiveTab =
-                runOnUiThreadBlocking(() -> webEngine2.getTabManager().getActiveTab()).get();
+        Tab newActiveTab = webEngine2.getTabManager().getActiveTab();
         Set<Tab> allTabs = webEngine2.getTabManager().getAllTabs();
-        Assert.assertEquals(allTabs.size(), 1);
+        Assert.assertEquals(1, allTabs.size());
         Assert.assertTrue(allTabs.contains(newActiveTab));
         // TODO(crbug.com/1398388): Set url for tab after restoring from persistence ID.
         // Assert.assertEquals(newActiveTab.getDisplayUri().toString(), url);
-        Assert.assertEquals(newActiveTab.getGuid(), activeTab.getGuid());
+        Assert.assertEquals(activeTab.getGuid(), newActiveTab.getGuid());
     }
 
     private static final class TabHolder {
@@ -211,6 +210,6 @@ public class TabManagerTest {
         removeLatch.await();
         Assert.assertEquals(newTab, holder.mRemovedTab);
 
-        Assert.assertNull(tabManager.getActiveTab().get());
+        Assert.assertNull(tabManager.getActiveTab());
     }
 }

@@ -63,6 +63,7 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
             if (tabParams != null) {
                 tab = mTabRegistry.getOrCreateTab(tabParams);
             }
+            mTabRegistry.setActiveTab(tab);
             for (TabListObserver observer : mTabListObservers) {
                 observer.onActiveTabChanged(tab);
             }

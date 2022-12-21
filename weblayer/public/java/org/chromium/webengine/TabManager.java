@@ -114,26 +114,13 @@ public class TabManager {
     }
 
     /**
-     * Returns a ListenableFuture for the currently active Tab; The tab can be null if no Tab is
-     * active.
+     * Returns the currently active Tab or null if no Tab is active.
      *
-     * @return ListenableFuture for the active Tab.
+     * @return the active Tab.
      */
-    @NonNull
-    public ListenableFuture<Tab> getActiveTab() {
-        if (mDelegate == null) {
-            return Futures.immediateFailedFuture(
-                    new IllegalStateException("WebSandbox has been destroyed"));
-        }
-        return CallbackToFutureAdapter.getFuture(completer -> {
-            try {
-                mDelegate.getActiveTab(new TabCallback(completer));
-            } catch (RemoteException e) {
-                completer.setException(e);
-            }
-            // Debug string.
-            return "Active Tab Future";
-        });
+    @Nullable
+    public Tab getActiveTab() {
+        return mTabRegistry.getActiveTab();
     }
 
     /**

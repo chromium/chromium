@@ -118,7 +118,7 @@ public class CookieManagerTest {
         String cookie =
                 runOnUiThreadBlocking(() -> mCookieManager.getCookie(mServer.getBaseUrl())).get();
         Assert.assertEquals(cookie, "");
-        Tab tab = runOnUiThreadBlocking(() -> mTabManager.getActiveTab()).get();
+        Tab tab = mTabManager.getActiveTab();
 
         mActivityTestRule.navigateAndWait(tab, url);
         String updatedCookie = runOnUiThreadBlocking(() -> mCookieManager.getCookie(url)).get();

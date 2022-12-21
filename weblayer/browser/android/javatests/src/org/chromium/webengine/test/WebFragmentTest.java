@@ -63,7 +63,7 @@ public class WebFragmentTest {
         WebEngine webEngine = runOnUiThreadBlocking(() -> mWebSandbox.createWebEngine()).get();
         runOnUiThreadBlocking(() -> mActivityTestRule.attachFragment(webEngine.getFragment()));
 
-        Tab activeTab = runOnUiThreadBlocking(() -> webEngine.getTabManager().getActiveTab()).get();
+        Tab activeTab = webEngine.getTabManager().getActiveTab();
 
         Assert.assertEquals(activeTab.getDisplayUri(), Uri.EMPTY);
 

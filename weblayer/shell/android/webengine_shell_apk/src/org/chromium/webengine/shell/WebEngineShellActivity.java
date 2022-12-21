@@ -5,7 +5,6 @@
 package org.chromium.webengine.shell;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -127,35 +126,27 @@ public class WebEngineShellActivity extends AppCompatActivity {
         mTabManager = webEngine.getTabManager();
         CookieManager cookieManager = webEngine.getCookieManager();
 
-        ListenableFuture<Tab> activeTabFuture = mTabManager.getActiveTab();
+        Tab activeTab = mTabManager.getActiveTab();
 
-        Futures.addCallback(activeTabFuture, new FutureCallback<Tab>() {
+        // A new tab is created and set to active when WebEngine is started with no Persistence ID,
+        // so this should never be null.
+        assert activeTab != null;
+
+        activeTab.getNavigationController().navigate("https://google.com");
+
+        activeTab.registerWebMessageCallback(new WebMessageCallback() {
             @Override
-            public void onSuccess(Tab activeTab) {
-                if (activeTab.getDisplayUri().equals(
-                            Uri.EMPTY)) { // TODO(swestphal): remove as not needed anymore
-                    activeTab.getNavigationController().navigate("https://google.com");
-
-                    activeTab.registerWebMessageCallback(new WebMessageCallback() {
-                        @Override
-                        public void onWebMessageReceived(
-                                WebMessageReplyProxy replyProxy, String message) {
-                            Log.i(TAG, "received WebMessage: " + message);
-                            replyProxy.postMessage("Bouncing answer from tab: " + message);
-                        }
-
-                        @Override
-                        public void onWebMessageReplyProxyClosed(WebMessageReplyProxy replyProxy) {}
-
-                        @Override
-                        public void onWebMessageReplyProxyActiveStateChanged(
-                                WebMessageReplyProxy proxy) {}
-                    }, "x", Arrays.asList("*"));
-                }
+            public void onWebMessageReceived(WebMessageReplyProxy replyProxy, String message) {
+                Log.i(TAG, "received WebMessage: " + message);
+                replyProxy.postMessage("Bouncing answer from tab: " + message);
             }
+
             @Override
-            public void onFailure(Throwable thrown) {}
-        }, mContext.getMainExecutor());
+            public void onWebMessageReplyProxyClosed(WebMessageReplyProxy replyProxy) {}
+
+            @Override
+            public void onWebMessageReplyProxyActiveStateChanged(WebMessageReplyProxy proxy) {}
+        }, "x", Arrays.asList("*"));
 
         mTabManager.registerTabListObserver(new TabListObserver() {
             @Override
