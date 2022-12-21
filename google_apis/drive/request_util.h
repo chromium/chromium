@@ -7,10 +7,7 @@
 
 #include <memory>
 #include <string>
-
-namespace base {
-class DictionaryValue;
-}
+#include "base/values.h"
 
 namespace google_apis {
 namespace util {
@@ -24,8 +21,7 @@ extern const char kContentTypeApplicationJson[];
 std::string GenerateIfMatchHeader(const std::string& etag);
 
 // Creates a Parent value which can be used as a part of request body.
-std::unique_ptr<base::DictionaryValue> CreateParentValue(
-    const std::string& file_id);
+base::Value::Dict CreateParentValue(const std::string& file_id);
 
 }  // namespace util
 }  // namespace google_apis

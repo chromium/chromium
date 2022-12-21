@@ -126,8 +126,7 @@ std::string CreateMultipartUploadMetadataJson(
   // Fill parent link.
   if (!parent_resource_id.empty()) {
     base::Value::List parents;
-    parents.Append(base::Value::FromUniquePtrValue(
-        google_apis::util::CreateParentValue(parent_resource_id)));
+    parents.Append(google_apis::util::CreateParentValue(parent_resource_id));
     root.Set("parents", base::Value(std::move(parents)));
   }
 
@@ -731,8 +730,7 @@ bool InitiateUploadNewFileRequest::GetContentData(
 
   // Fill parent link.
   base::Value::List parents;
-  parents.Append(base::Value::FromUniquePtrValue(
-      util::CreateParentValue(parent_resource_id_)));
+  parents.Append(util::CreateParentValue(parent_resource_id_));
   root.Set("parents", base::Value(std::move(parents)));
 
   if (!modified_date_.is_null())
@@ -795,8 +793,7 @@ bool InitiateUploadExistingFileRequest::GetContentData(
   base::Value::Dict root;
   if (!parent_resource_id_.empty()) {
     base::Value::List parents;
-    parents.Append(base::Value::FromUniquePtrValue(
-        util::CreateParentValue(parent_resource_id_)));
+    parents.Append(util::CreateParentValue(parent_resource_id_));
     root.Set("parents", base::Value(std::move(parents)));
   }
 

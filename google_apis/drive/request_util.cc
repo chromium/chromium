@@ -25,11 +25,10 @@ std::string GenerateIfMatchHeader(const std::string& etag) {
   return etag.empty() ? kIfMatchAllHeader : (kIfMatchHeaderPrefix + etag);
 }
 
-std::unique_ptr<base::DictionaryValue> CreateParentValue(
-    const std::string& file_id) {
-  std::unique_ptr<base::DictionaryValue> parent(new base::DictionaryValue);
-  parent->SetString("kind", kParentLinkKind);
-  parent->SetString("id", file_id);
+base::Value::Dict CreateParentValue(const std::string& file_id) {
+  base::Value::Dict parent;
+  parent.Set("kind", kParentLinkKind);
+  parent.Set("id", file_id);
   return parent;
 }
 
