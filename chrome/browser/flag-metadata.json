@@ -118,8 +118,8 @@
   },
   {
     "name": "allow-scroll-settings",
-    "owners": [ "khorimoto", "zentaro" ],
-    "expiry_milestone": 110
+    "owners": [ "zentaro" ],
+    "expiry_milestone": 120
   },
   {
     "name": "allow-touchpad-haptic-click-settings",
@@ -382,7 +382,7 @@
   {
     "name": "audio-settings-page",
     "owners": [ "gordonseto", "michaelcheco", "cros-peripherals@google.com" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "audio-url",
@@ -1278,13 +1278,13 @@
     "name": "deprecate-alt-based-six-pack",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "deprecate-alt-click",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "desktop-detailed-language-settings",
@@ -1455,7 +1455,7 @@
   {
     "name": "display-alignment-assistance",
     "owners": [ "cros-peripherals@google.com" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "display-sync-errors-refactor",
@@ -2248,7 +2248,7 @@
   {
     "name": "enable-experimental-rgb-keyboard-patterns",
     "owners": [ "jimmyxgong", "zentaro", "michaelcheco", "cros-peripherals@google.com"],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "enable-experimental-web-platform-features",
@@ -2503,7 +2503,7 @@
   {
     "name": "enable-input-in-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "enable-instant-start",
@@ -3001,12 +3001,12 @@
   {
     "name": "enable-shortcut-customization",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "enable-shortcut-customization-app",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "enable-show-autofill-signatures",
@@ -4166,7 +4166,7 @@
     "name": "improved-keyboard-shortcuts",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "in-product-help-demo-mode-choice",
@@ -4810,7 +4810,7 @@
   {
     "name": "new-shortcut-mapping",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com", "cros-peripherals@google.com"],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "new-window-app-menu",
@@ -6235,7 +6235,7 @@
   {
     "name": "shimless-rma-disable-dark-mode",
     "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 120
   },
   {
     "name": "shimless-rma-enable-standalone",
@@ -6245,12 +6245,12 @@
   {
     "name": "shimless-rma-flow",
     "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "shimless-rma-os-update",
     "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 120
   },
   {
     "name": "shopping-list",
@@ -6875,7 +6875,7 @@
   {
     "name": "use-search-click-for-right-click",
     "owners": [ "zentaro", "jimmyxgong", "cros-peripherals@google.com" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "use-sf-symbols",
