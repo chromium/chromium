@@ -45,28 +45,31 @@ js_binary("generate_ccaas_deps") {
                   ]
 }
 
-# JS library that includes all extension sources
-js_library("extension_sources") {
-  extra_deps = [ ":generate_ccaas_deps" ]
+# Compile extension sources. Typechecking only on ChromeOS Ash as it is not
+# supported on Desktop platforms.
+if (is_chromeos_ash) {
+  # JS library that includes all extension sources
+  js_library("extension_sources") {
+    extra_deps = [ ":generate_ccaas_deps" ]
 
-  deps = [ ":reporting_protos" ]
+    deps = [ ":reporting_protos" ]
 
-  sources = [
-    # Include all external dependencies so we can refrain ourselves from using
-    # the optimized bundle for type checks against the closure compiler
-    "$externs_path/chrome_extensions.js",
-    "background.js",
-    "background_wrapper.js",
-  ]
-}
+    sources = [
+      # Include all external dependencies so we can refrain ourselves from using
+      # the optimized bundle for type checks against the closure compiler
+      "$externs_path/chrome_extensions.js",
+      "background.js",
+      "background_wrapper.js",
+    ]
+  }
 
-# Compile extension sources
-js_type_check("closure_compile") {
-  deps = [ ":extension_sources" ]
+  js_type_check("closure_compile") {
+    deps = [ ":extension_sources" ]
 
-  closure_flags = default_closure_args + [
-                    "jscomp_warning=checkTypes",
-                    "jscomp_warning=deprecatedAnnotations",
-                    "jscomp_warning=deprecated",
-                  ]
+    closure_flags = default_closure_args + [
+                      "jscomp_warning=checkTypes",
+                      "jscomp_warning=deprecatedAnnotations",
+                      "jscomp_warning=deprecated",
+                    ]
+  }
 }

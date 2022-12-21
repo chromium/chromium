@@ -132,6 +132,7 @@ if (enable_js_type_check) {
     if (is_chromeos_ash) {
       deps += [
         "chromeos:closure_compile",
+        "chromeos/contact_center_insights:closure_compile",
         "gaia_auth_host:closure_compile",
         "nearby_internals:closure_compile",
         "nearby_share:closure_compile",
@@ -145,10 +146,6 @@ if (enable_js_type_check) {
         "internals/notifications:closure_compile",
         "video_tutorials:closure_compile",
       ]
-    }
-
-    if (is_chromeos) {
-      deps += [ "chromeos/contact_center_insights:closure_compile" ]
     }
   }
 }

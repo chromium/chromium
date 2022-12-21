@@ -1766,7 +1766,7 @@ if (enable_js_type_check) {
         "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile",
         "ui/file_manager:closure_compile",
       ]
-    } else if (is_chromeos || is_android) {
+    } else if (is_android) {
       data_deps = [ "chrome/browser/resources:closure_compile" ]
     }
   }
