@@ -433,11 +433,6 @@ void PlatformThread::SetThreadTypeDelegate(ThreadTypeDelegate* delegate) {
 void PlatformThread::SetThreadType(ProcessId process_id,
                                    PlatformThreadId thread_id,
                                    ThreadType thread_type) {
-  // Changing current main threads' priority is not permitted in favor of
-  // security, this interface is restricted to change only non-main thread
-  // priority.
-  CHECK_NE(thread_id, process_id);
-
   // For legacy schedtune interface
   SetThreadCgroupsForThreadType(thread_id, thread_type);
 

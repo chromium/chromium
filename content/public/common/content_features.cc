@@ -629,6 +629,16 @@ BASE_FEATURE(kLowerV8MemoryLimitForNonMainRenderers,
              "LowerV8MemoryLimitForNonMainRenderers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Uses ThreadType::kCompositing for the main thread
+BASE_FEATURE(kMainThreadCompositingPriority,
+             "MainThreadCompositingPriority",
+#if BUILDFLAG(IS_MAC)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // The MBI mode controls whether or not communication over the
 // AgentSchedulingGroup is ordered with respect to the render-process-global
 // legacy IPC channel, as well as the granularity of AgentSchedulingGroup

@@ -301,7 +301,10 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
   const bool use_thread_qos = g_use_thread_qos.load(std::memory_order_relaxed);
   // Changing the priority of the main thread causes performance
   // regressions. https://crbug.com/601270
-  if ([[NSThread currentThread] isMainThread]) {
+  // TODO(1280764): Remove this check. kCompositing is the default on Mac, so
+  // this check is counter intuitive.
+  if ([[NSThread currentThread] isMainThread] &&
+      thread_type >= ThreadType::kCompositing) {
     DCHECK(thread_type == ThreadType::kDefault ||
            thread_type == ThreadType::kCompositing);
     return;

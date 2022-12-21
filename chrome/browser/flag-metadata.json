@@ -4567,6 +4567,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "main-thread-compositing-priority",
+    "owners": [ "youssefesmat", "baseos-perf@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "mbi-mode",
     "owners": [ "dom", "blink-isolation-dev@chromium.org" ],
     "expiry_milestone": 111

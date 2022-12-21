@@ -145,8 +145,9 @@ void RenderMessageFilter::SetThreadTypeOnLauncherThread(
     return;
   }
 
-  if (peer_tid == peer_pid()) {
-    DLOG(WARNING) << "Changing priority of main thread is not allowed";
+  if (peer_tid == peer_pid() && thread_type != base::ThreadType::kCompositing) {
+    DLOG(WARNING) << "Changing main thread type to another value than "
+                  << "kCompositing isn't allowed";
     return;
   }
 

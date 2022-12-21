@@ -61897,6 +61897,7 @@ from previous Chrome versions.
   <int value="663294302" label="ForceUseAPDownloadProtection:disabled"/>
   <int value="664363259" label="SiteCharacteristicsDatabase:enabled"/>
   <int value="664591021" label="EnableContinueReading:enabled"/>
+  <int value="664925558" label="MainThreadCompositingPriority:enabled"/>
   <int value="665320858" label="WebViewHitTestInBlinkOnTouchStart:disabled"/>
   <int value="665409384"
       label="AutofillToolkitViewsCreditCardDialogsMac:enabled"/>
@@ -63239,6 +63240,7 @@ from previous Chrome versions.
   <int value="1448684258" label="TabHoverCardImages:enabled"/>
   <int value="1449177114"
       label="EnablePasswordsAccountStorageSavingUi:enabled"/>
+  <int value="1449336160" label="MainThreadCompositingPriority:disabled"/>
   <int value="1451146739"
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
   <int value="1452546183" label="PwaPersistentNotification:enabled"/>

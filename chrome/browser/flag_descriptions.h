@@ -125,6 +125,9 @@ extern const char kTangibleSyncDescription[];
 extern const char kLauncherAppSortName[];
 extern const char kLauncherAppSortDescription[];
 
+extern const char kMainThreadCompositingPriorityName[];
+extern const char kMainThreadCompositingPriorityDescription[];
+
 extern const char kPasswordNotesWithBackupName[];
 extern const char kPasswordNotesWithBackupDescription[];
 

@@ -5609,6 +5609,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          network::features::kPrivateNetworkAccessPreflightShortTimeout)},
 
+    {"main-thread-compositing-priority",
+     flag_descriptions::kMainThreadCompositingPriorityName,
+     flag_descriptions::kMainThreadCompositingPriorityDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kMainThreadCompositingPriority)},
+
     {"mbi-mode", flag_descriptions::kMBIModeName,
      flag_descriptions::kMBIModeDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kMBIMode,

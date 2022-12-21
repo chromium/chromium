@@ -263,6 +263,23 @@ int RendererMain(MainFunctionParams parameters) {
     if (base::FeatureList::IsEnabled(
             features::kHandleRendererThreadTypeChangesInBrowser)) {
       RendererThreadTypeHandler::Create();
+
+      // Change the main thread type. On Linux and ChromeOS this needs to be
+      // done only if kHandleRendererThreadTypeChangesInBrowser is enabled to
+      // avoid child threads inheriting the main thread settings.
+      if (base::FeatureList::IsEnabled(
+              features::kMainThreadCompositingPriority)) {
+        base::PlatformThread::SetCurrentThreadType(
+            base::ThreadType::kCompositing);
+      }
+    }
+#else
+    if (base::FeatureList::IsEnabled(
+            features::kMainThreadCompositingPriority)) {
+      base::PlatformThread::SetCurrentThreadType(
+          base::ThreadType::kCompositing);
+    } else {
+      base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
     }
 #endif
 
