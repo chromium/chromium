@@ -945,6 +945,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         field->SetTypeTo(cached_field->Type());
       }
     }
+    field->set_field_log_events(cached_field->field_log_events());
   }
 
   UpdateAutofillCount();

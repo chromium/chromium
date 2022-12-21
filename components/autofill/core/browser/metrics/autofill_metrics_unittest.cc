@@ -129,6 +129,7 @@ using UkmFormEventType = ukm::builders::Autofill_FormEvent;
 using UkmEditedAutofilledFieldAtSubmission =
     ukm::builders::Autofill_EditedAutofilledFieldAtSubmission;
 using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
+using UkmFieldInfoType = ukm::builders::Autofill_FieldInfo;
 
 struct ExpectedUkmMetricsPair : public std::pair<const char*, int64_t> {
   using std::pair<const char*, int64_t>::pair;
@@ -10486,6 +10487,91 @@ TEST_F(AutofillMetricsSeamlessnessTest,
            {UkmBuilder::kFormSignatureName,
             *Collapse(CalculateFormSignature(form_))},
        }});
+}
+
+// Test if we record FieldInfo UKM metrics correctly after we fill and submit an
+// address form.
+TEST_F(AutofillMetricsTest, AddressSubmittedFormLogEvents) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kAutofillLogUKMEventsWithSampleRate);
+
+  // Create a profile.
+  RecreateProfile(/*is_server=*/false);
+  FormData form = CreateForm({CreateField("State", "state", "", "text"),
+                              CreateField("Street", "street", "", "text")});
+
+  std::vector<ServerFieldType> field_types = {ADDRESS_HOME_STATE,
+                                              ADDRESS_HOME_STREET_ADDRESS};
+
+  autofill_manager().AddSeenForm(form, field_types);
+
+  {
+    autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+    SubmitForm(form);
+  }
+
+  // Reset the autofill manager state.
+  autofill_manager().Reset();
+  auto entries =
+      test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
+  ASSERT_EQ(0u, entries.size());
+
+  PurgeUKM();
+  autofill_manager().AddSeenForm(form, field_types);
+
+  {
+    // Simulating submission with filled local data.
+    autofill_manager().OnAskForValuesToFillTest(
+        form, form.fields[0], gfx::RectF(), AutoselectFirstSuggestion(false),
+        FormElementWasClicked(true));
+    FillTestProfile(form);
+
+    // Simulate text input in the first fields.
+    SimulateUserChangedTextField(form, form.fields[0]);
+    SubmitForm(form);
+
+    // Record Autofill.FieldInfo UKM event at autofill manager reset.
+    autofill_manager().Reset();
+
+    entries =
+        test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
+    ASSERT_EQ(2u, entries.size());
+
+    for (size_t i = 0; i < entries.size(); ++i) {
+      SCOPED_TRACE(testing::Message() << i);
+      using UFIT = UkmFieldInfoType;
+      const auto* const entry = entries[i];
+
+      std::map<std::string, int64_t> expected = {
+          {UFIT::kFormSessionIdentifierName,
+           AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+          {UFIT::kFieldSessionIdentifierName,
+           AutofillMetrics::FieldGlobalIdToHash64Bit(
+               form.fields[i].global_id())},
+          {UFIT::kFieldSignatureName,
+           Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
+          {UFIT::kWasFocusedName, i == 0},
+          {UFIT::kWasAutofilledName, true},
+          {UFIT::kAutofillSkippedStatusName,
+           DenseSet<SkipStatus>{SkipStatus::kNotSkipped}.to_uint64()},
+          {UFIT::kWasRefillName, false},
+          {UFIT::kHadValueBeforeFillingName, false},
+          {UFIT::kHadTypedOrFilledValueAtSubmissionName, true},
+      };
+      if (i == 0) {
+        expected[UFIT::kSuggestionWasAvailableName] = true;
+        expected[UFIT::kSuggestionWasShownName] = true;
+        expected[UFIT::kSuggestionWasAcceptedName] = true;
+        expected[UFIT::kUserTypedIntoFieldName] = true;
+        expected[UFIT::kFilledValueWasModifiedName] = true;
+      }
+
+      EXPECT_EQ(expected.size(), entry->metrics.size());
+      for (const auto& [metric, value] : expected) {
+        test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
+      }
+    }
+  }
 }
 
 // TODO(crbug.com/1352826) Delete this after collecting the metrics.

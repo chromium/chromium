@@ -36,6 +36,55 @@ bool IsDefaultPrediction(const FieldPrediction& prediction) {
   return default_sources.contains(prediction.source());
 }
 
+// Compare two field log events of any type to check their log types and
+// their attributes related to autofill or editing. If they are the same type
+// and their key attributes of the type are the same, we consider |event2| is
+// identical to |event1|, we will not add |event2| after |event1| to
+// |field_log_events_|.
+bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
+                             const AutofillField::FieldLogEventType& event2) {
+  if (event1.index() != event2.index()) {
+    return false;
+  }
+
+  static_assert(
+      absl::variant_size<AutofillField::FieldLogEventType>() == 5,
+      "If you add a new field event type, you need to update this function");
+
+  // absl::monostate
+  if (absl::holds_alternative<absl::monostate>(event1)) {
+    using E = absl::monostate;
+    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
+  }
+
+  // AskForValuesToFillFieldLogEvent
+  if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(event1)) {
+    using E = AskForValuesToFillFieldLogEvent;
+    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
+  }
+
+  // TriggerFillFieldLogEvent
+  if (absl::holds_alternative<TriggerFillFieldLogEvent>(event1)) {
+    using E = TriggerFillFieldLogEvent;
+    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
+  }
+
+  // FillFieldLogEvent
+  if (absl::holds_alternative<FillFieldLogEvent>(event1)) {
+    using E = FillFieldLogEvent;
+    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
+  }
+
+  // TypingFieldLogEvent
+  if (absl::holds_alternative<TypingFieldLogEvent>(event1)) {
+    using E = TypingFieldLogEvent;
+    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
+  }
+
+  NOTREACHED();
+  return false;
+}
+
 }  // namespace
 
 AutofillField::AutofillField() {
@@ -330,6 +379,26 @@ void AutofillField::NormalizePossibleTypesValidities() {
 bool AutofillField::IsCreditCardPrediction() const {
   return AutofillType(server_type()).group() == FieldTypeGroup::kCreditCard ||
          AutofillType(heuristic_type()).group() == FieldTypeGroup::kCreditCard;
+}
+
+void AutofillField::AppendLogEventIfNotRepeated(
+    const FieldLogEventType& log_event) {
+  // TODO(crbug.com/1325851): Consider to use an Overflow event to stop
+  // recording log events into |field_log_events_| to save memory when
+  // |field_log_events_| reaches certain threshold, e.g. 1000.
+
+  // Disable it for now until we find a selection criterion to select forms to
+  // be recorded into UKM.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillLogUKMEventsWithSampleRate)) {
+    return;
+  }
+
+  if (field_log_events_.empty() ||
+      field_log_events_.back().index() != log_event.index() ||
+      !AreCollapsibleLogEvents(field_log_events_.back(), log_event)) {
+    field_log_events_.push_back(log_event);
+  }
 }
 
 }  // namespace autofill

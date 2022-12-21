@@ -16,11 +16,11 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -32,6 +32,12 @@ typedef std::map<ServerFieldType, AutofillDataModel::ValidityState>
 
 class AutofillField : public FormFieldData {
  public:
+  using FieldLogEventType = absl::variant<absl::monostate,
+                                          AskForValuesToFillFieldLogEvent,
+                                          TriggerFillFieldLogEvent,
+                                          FillFieldLogEvent,
+                                          TypingFieldLogEvent>;
+
   AutofillField();
   explicit AutofillField(const FormFieldData& field);
 
@@ -232,6 +238,21 @@ class AutofillField : public FormFieldData {
     was_context_menu_shown_ = was_context_menu_shown;
   }
 
+  void set_field_log_events(const std::vector<FieldLogEventType>& events) {
+    field_log_events_ = events;
+  }
+
+  const std::vector<FieldLogEventType>& field_log_events() const {
+    return field_log_events_;
+  }
+
+  // Add the field log events into the vector |field_log_events_| when it is
+  // not the same as the last log event in the vector.
+  void AppendLogEventIfNotRepeated(const FieldLogEventType& log_event);
+
+  // Clear all the log events for this field.
+  void ClearLogEvents() { field_log_events_.clear(); }
+
  private:
   explicit AutofillField(FieldSignature field_signature);
 
@@ -332,6 +353,12 @@ class AutofillField : public FormFieldData {
 
   // Set to true if the context menu was triggered and shown on the field.
   bool was_context_menu_shown_ = false;
+
+  // A list of field log events, which record when user interacts the field
+  // during autofill or editing, such as user clicks on the field, the
+  // suggestion list is shown for the field, user accepts one suggestion to
+  // fill the form and user edits the field.
+  std::vector<FieldLogEventType> field_log_events_;
 };
 
 }  // namespace autofill

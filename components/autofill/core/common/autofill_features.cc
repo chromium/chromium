@@ -578,6 +578,13 @@ BASE_FEATURE(kAutofillMoreProminentPopup,
 const base::FeatureParam<int> kAutofillMoreProminentPopupMaxOffsetToCenterParam{
     &kAutofillMoreProminentPopup, "max_offset_to_center_px", 92};
 
+// If enabled, we will log information of field types and autofill and forms
+// with sample rates according to Autofill FormSummary/FieldInfo UKM schema:
+// https://docs.google.com/document/d/1ZH0JbL6bES3cD4KqZWsGR6n8I-rhnkx6no6nQOgYq5w/.
+BASE_FEATURE(kAutofillLogUKMEventsWithSampleRate,
+             "AutofillLogUKMEventsWithSampleRate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls whether the Autofill manual fallback for Addresses and Payments is
 // present on Android.

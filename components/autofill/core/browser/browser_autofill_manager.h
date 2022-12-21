@@ -709,6 +709,10 @@ class BrowserAutofillManager : public AutofillManager,
   void SetDataList(const std::vector<std::u16string>& values,
                    const std::vector<std::u16string>& labels);
 
+  // Iterate through all the fields in the form to process the log events for
+  // each field and record into FieldInfo UKM event.
+  void ProcessFieldLogEventsInForm(const FormStructure& form_structure);
+
   // Delegates to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;

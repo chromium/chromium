@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -808,6 +809,8 @@ class AutofillMetrics {
                       QualityMetricType metric_type,
                       ServerFieldType predicted_type,
                       ServerFieldType actual_type);
+    void LogAutofillFieldInfoAtFormRemove(const FormStructure& form,
+                                          const AutofillField& field);
     void LogFormSubmitted(bool is_for_credit_card,
                           bool has_upi_vpa_field,
                           const DenseSet<FormType>& form_types,
@@ -1530,6 +1533,14 @@ class AutofillMetrics {
   // based on the autocomplete type.
   static void LogContextMenuImpressions(ServerFieldType field_type,
                                         AutocompleteState autocomplete_state);
+
+  // Returns 64-bit hash of the string of form global id, which consists of
+  // |frame_token| and |renderer_id|.
+  static uint64_t FormGlobalIdToHash64Bit(const FormGlobalId& form_global_id);
+  // Returns 64-bit hash of the string of field global id, which consists of
+  // |frame_token| and |renderer_id|.
+  static uint64_t FieldGlobalIdToHash64Bit(
+      const FieldGlobalId& field_global_id);
 
  private:
   static void Log(AutocompleteEvent event);
