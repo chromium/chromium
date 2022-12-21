@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -101,11 +102,11 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
       kNetworkId, &ui_proxy_config));
 
   // Set the profile pref to PAC script mode.
-  std::unique_ptr<base::DictionaryValue> proxy_config(
-      std::make_unique<base::DictionaryValue>());
-  proxy_config->SetStringKey("mode", ProxyPrefs::kPacScriptProxyModeName);
-  proxy_config->SetStringKey("pac_url", "http://proxy");
-  profile->GetPrefs()->Set(proxy_config::prefs::kProxy, *proxy_config.get());
+  base::Value::Dict proxy_config;
+  proxy_config.Set("mode", ProxyPrefs::kPacScriptProxyModeName);
+  proxy_config.Set("pac_url", "http://proxy");
+  profile->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
+                               std::move(proxy_config));
   base::RunLoop().RunUntilIdle();
 
   // Mode should now be MODE_PAC_SCRIPT.

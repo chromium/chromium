@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_test_helper.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
@@ -97,21 +98,22 @@ class NetworkDiagnosticsTest : public NetworkDiagnosticsTestHelper {
   void SetUpNameServers(const std::vector<std::string>& name_servers) {
     DCHECK(!wifi_path().empty());
     // Set up the name servers
-    base::ListValue dns_servers;
+    base::Value::List dns_servers;
     for (const std::string& name_server : name_servers) {
       dns_servers.Append(name_server);
     }
 
     // Set up the IP v4 config
-    base::DictionaryValue ip_config_v4_properties;
-    ip_config_v4_properties.SetKey(shill::kNameServersProperty,
-                                   base::Value(dns_servers.Clone()));
-    helper()->ip_config_test()->AddIPConfig(kIPv4ConfigPath,
-                                            ip_config_v4_properties);
+    base::Value::Dict ip_config_v4_properties;
+    ip_config_v4_properties.Set(shill::kNameServersProperty,
+                                dns_servers.Clone());
+    helper()->ip_config_test()->AddIPConfig(
+        kIPv4ConfigPath, base::Value(std::move(ip_config_v4_properties)));
     std::string wifi_device_path =
         helper()->device_test()->GetDevicePathForType(shill::kTypeWifi);
     helper()->device_test()->SetDeviceProperty(
-        wifi_device_path, shill::kIPConfigsProperty, ip_config_v4_properties,
+        wifi_device_path, shill::kIPConfigsProperty,
+        base::Value(std::move(ip_config_v4_properties)),
         /*notify_changed=*/true);
     SetServiceProperty(wifi_path(), shill::kIPConfigProperty,
                        base::Value(kIPv4ConfigPath));

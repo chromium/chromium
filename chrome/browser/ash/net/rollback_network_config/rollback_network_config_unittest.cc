@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <utility>
 
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_onc_util.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -316,18 +318,19 @@ class RollbackNetworkConfigTest : public testing::Test {
   void SetEmptyDevicePolicy() {
     managed_network_configuration_handler()->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, kDeviceUserHash,
-        /*network_configs_onc=*/base::ListValue(),
-        /*global_network_config=*/base::DictionaryValue());
+        /*network_configs_onc=*/base::Value(base::Value::Type::LIST),
+        /*global_network_config=*/base::Value(base::Value::Type::DICT));
     task_environment_.RunUntilIdle();
   }
 
   void SetUpDevicePolicyNetworkConfig(const base::Value& network_config) {
-    base::ListValue network_configs_onc;
-    base::DictionaryValue global_network_config;
+    base::Value::List network_configs_onc;
+    base::Value::Dict global_network_config;
     network_configs_onc.Append(network_config.Clone());
     managed_network_configuration_handler()->SetPolicy(
-        onc::ONC_SOURCE_DEVICE_POLICY, kDeviceUserHash, network_configs_onc,
-        global_network_config);
+        onc::ONC_SOURCE_DEVICE_POLICY, kDeviceUserHash,
+        base::Value(std::move(network_configs_onc)),
+        base::Value(std::move(global_network_config)));
     task_environment_.RunUntilIdle();
   }
 

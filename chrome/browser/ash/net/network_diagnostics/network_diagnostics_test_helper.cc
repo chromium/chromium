@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_test_helper.h"
+#include "base/values.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
@@ -30,8 +31,8 @@ NetworkDiagnosticsTestHelper::NetworkDiagnosticsTestHelper()
   NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY,
       /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::ListValue(),
-      /*global_network_config=*/base::DictionaryValue());
+      /*network_configs_onc=*/base::Value(base::Value::Type::LIST),
+      /*global_network_config=*/base::Value(base::Value::Type::DICT));
 
   cros_network_config_ = std::make_unique<network_config::CrosNetworkConfig>();
   network_config::OverrideInProcessInstanceForTesting(

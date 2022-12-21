@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/net/network_diagnostics/dns_resolver_present_routine.h"
+#include "base/memory/values_equivalent.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_test_helper.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
@@ -64,22 +66,22 @@ class DnsResolverPresentRoutineTest : public NetworkDiagnosticsTestHelper {
                         const std::string& type = shill::kTypeIPv4) {
     DCHECK(!wifi_path().empty());
     // Set up the name servers
-    base::ListValue dns_servers;
+    base::Value::List dns_servers;
     for (const std::string& name_server : name_servers) {
       dns_servers.Append(name_server);
     }
 
     // Set up the IP config
-    base::DictionaryValue ip_config_properties;
-    ip_config_properties.SetKey(shill::kMethodProperty, base::Value(type));
-    ip_config_properties.SetKey(shill::kNameServersProperty,
-                                base::Value(dns_servers.Clone()));
-    helper()->ip_config_test()->AddIPConfig(kIPConfigPath,
-                                            ip_config_properties);
+    base::Value::Dict ip_config_properties;
+    ip_config_properties.Set(shill::kMethodProperty, base::Value(type));
+    ip_config_properties.Set(shill::kNameServersProperty, dns_servers.Clone());
+    helper()->ip_config_test()->AddIPConfig(
+        kIPConfigPath, base::Value(std::move(ip_config_properties)));
     std::string wifi_device_path =
         helper()->device_test()->GetDevicePathForType(shill::kTypeWifi);
     helper()->device_test()->SetDeviceProperty(
-        wifi_device_path, shill::kIPConfigsProperty, ip_config_properties,
+        wifi_device_path, shill::kIPConfigsProperty,
+        base::Value(std::move(ip_config_properties)),
         /*notify_changed=*/true);
     SetServiceProperty(wifi_path(), shill::kIPConfigProperty,
                        base::Value(kIPConfigPath));

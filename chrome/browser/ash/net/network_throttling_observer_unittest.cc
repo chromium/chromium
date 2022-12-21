@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -53,20 +54,22 @@ class NetworkThrottlingObserverTest : public ::testing::Test {
 TEST_F(NetworkThrottlingObserverTest, ThrottlingChangeCallsShill) {
   // Test that a change in the throttling policy value leads to
   // shill_manager_client being called.
-  base::DictionaryValue updated_throttling_policy;
+  base::Value::Dict updated_throttling_policy;
   constexpr bool enabled = true;
   constexpr uint32_t upload_rate = 1200;
   constexpr uint32_t download_rate = 2000;
-  updated_throttling_policy.SetBoolKey("enabled", enabled);
-  updated_throttling_policy.SetIntKey("upload_rate_kbits", upload_rate);
-  updated_throttling_policy.SetIntKey("download_rate_kbits", download_rate);
+  updated_throttling_policy.Set("enabled", enabled);
+  updated_throttling_policy.Set("upload_rate_kbits",
+                                static_cast<int>(upload_rate));
+  updated_throttling_policy.Set("download_rate_kbits",
+                                static_cast<int>(download_rate));
 
   // Make sure throttling is disabled just before setting preferece.
   EXPECT_FALSE(GetNetworkThrottlingStatus().enabled);
 
   // Setting the preference should update the network throttling.
-  local_state()->Set(prefs::kNetworkThrottlingEnabled,
-                     updated_throttling_policy);
+  local_state()->SetDict(prefs::kNetworkThrottlingEnabled,
+                         std::move(updated_throttling_policy));
   base::RunLoop().RunUntilIdle();
   {
     const auto& status = GetNetworkThrottlingStatus();

@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/net/traffic_counters_handler.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
@@ -48,8 +49,8 @@ class TrafficCountersHandlerTest : public ::testing::Test {
     NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY,
         /*userhash=*/std::string(),
-        /*network_configs_onc=*/base::ListValue(),
-        /*global_network_config=*/base::DictionaryValue());
+        /*network_configs_onc=*/base::Value(base::Value::Type::LIST),
+        /*global_network_config=*/base::Value(base::Value::Type::DICT));
 
     cros_network_config_ =
         std::make_unique<network_config::CrosNetworkConfig>();
