@@ -55,6 +55,9 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
   HidChooserContext& operator=(const HidChooserContext&) = delete;
   ~HidChooserContext() override;
 
+  static base::Value DeviceInfoToValue(
+      const device::mojom::HidDeviceInfo& device);
+
   // Returns a human-readable string identifier for |device|.
   static std::u16string DisplayNameFromDeviceInfo(
       const device::mojom::HidDeviceInfo& device);
