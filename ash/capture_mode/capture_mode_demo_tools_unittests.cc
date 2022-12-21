@@ -24,6 +24,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -433,6 +434,26 @@ class CaptureModeDemoToolsTestWithAllSources
                             &confined_bounds_in_screen);
     return confined_bounds_in_screen;
   }
+
+  // Verifies that the `demo_tools_widget` is positioned in the middle
+  // horizontally within the confined bounds and that the distance between the
+  // bottom of the widget and the bottom of the confined bounds is always equal
+  // to `capture_mode::kKeyWidgetDistanceFromBottom`.
+  void VerifyKeyComboWidgetPosition() {
+    CaptureModeDemoToolsTestApi demo_tools_test_api(
+        GetCaptureModeDemoToolsController());
+    auto* demo_tools_widget = demo_tools_test_api.GetDemoToolsWidget();
+    ASSERT_TRUE(demo_tools_widget);
+    auto confined_bounds_in_screen =
+        GetDemoToolsConfinedBoundsInScreenCoordinates();
+    const gfx::Rect demo_tools_widget_bounds =
+        demo_tools_widget->GetWindowBoundsInScreen();
+    EXPECT_NEAR(confined_bounds_in_screen.CenterPoint().x(),
+                demo_tools_widget_bounds.CenterPoint().x(), /*abs_error=*/1);
+    EXPECT_EQ(
+        confined_bounds_in_screen.bottom() - demo_tools_widget_bounds.bottom(),
+        capture_mode::kKeyWidgetDistanceFromBottom);
+  }
 };
 
 // Tests that the key combo viewer widget should be centered within its confined
@@ -443,32 +464,12 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources,
   auto* demo_tools_controller = GetCaptureModeDemoToolsController();
   EXPECT_TRUE(demo_tools_controller);
 
-  gfx::Rect confined_bounds_in_screen =
-      GetDemoToolsConfinedBoundsInScreenCoordinates();
-
-  // Verifies that the `demo_tools_widget` is positioned in the middle
-  // horizontally within the confined bounds.
-  auto verify_demo_tools_been_centered = [&]() {
-    CaptureModeDemoToolsTestApi capture_mode_demo_tools_test_api(
-        demo_tools_controller);
-    auto* demo_tools_widget =
-        capture_mode_demo_tools_test_api.GetDemoToolsWidget();
-    ASSERT_TRUE(demo_tools_widget);
-    const gfx::Rect demo_tools_widget_bounds =
-        demo_tools_widget->GetWindowBoundsInScreen();
-    EXPECT_TRUE(abs(confined_bounds_in_screen.CenterPoint().x() -
-                    demo_tools_widget_bounds.CenterPoint().x()) <= 1);
-  };
-
   auto* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
-  verify_demo_tools_been_centered();
-
-  event_generator->PressKey(ui::VKEY_SHIFT, ui::EF_NONE);
-  verify_demo_tools_been_centered();
-
-  event_generator->PressKey(ui::VKEY_A, ui::EF_NONE);
-  verify_demo_tools_been_centered();
+  const auto kKeyCodes = {ui::VKEY_CONTROL, ui::VKEY_SHIFT, ui::VKEY_A};
+  for (const auto key_code : kKeyCodes) {
+    event_generator->PressKey(key_code, ui::EF_NONE);
+    VerifyKeyComboWidgetPosition();
+  }
 
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   WaitForCaptureFileToBeSaved();
@@ -537,6 +538,26 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources,
   }
 
   EXPECT_EQ(layers_vector.size(), 3u);
+}
+
+// Tests that the key combo viewer is positioned correctly on device
+// scale factor change.
+TEST_P(CaptureModeDemoToolsTestWithAllSources, DeviceScaleFactorTest) {
+  StartDemoToolsEnabledVideoRecordingWithParam();
+  auto* demo_tools_controller = GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  event_generator->PressKey(ui::VKEY_SHIFT, ui::EF_NONE);
+  event_generator->PressKey(ui::VKEY_A, ui::EF_NONE);
+
+  const float kDeviceScaleFactors[] = {0.5f, 1.2f, 2.5f};
+  for (const float dsf : kDeviceScaleFactors) {
+    SetDeviceScaleFactor(dsf);
+    EXPECT_EQ(dsf, window()->GetHost()->device_scale_factor());
+    VerifyKeyComboWidgetPosition();
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

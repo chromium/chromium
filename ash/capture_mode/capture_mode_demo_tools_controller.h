@@ -46,6 +46,9 @@ class CaptureModeDemoToolsController {
   // grow-and-fade-out animation on it.
   void PerformMousePressAnimation(const gfx::PointF& event_location_in_window);
 
+  // Refreshes the bounds of the key combo viewer.
+  void RefreshBounds();
+
   const MouseHighlightLayers& mouse_highlight_layers_for_testing() const {
     return mouse_highlight_layers_;
   }

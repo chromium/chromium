@@ -487,6 +487,10 @@ void VideoRecordingWatcher::OnDisplayMetricsChanged(
   if (recording_source_ != CaptureModeSource::kWindow)
     controller_->camera_controller()->MaybeUpdatePreviewWidget();
 
+  if (demo_tools_controller_) {
+    demo_tools_controller_->RefreshBounds();
+  }
+
   // We don't show a dimming overlay when recording a fullscreen.
   if (recording_source_ == CaptureModeSource::kFullscreen)
     return;

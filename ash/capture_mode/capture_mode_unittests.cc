@@ -2843,21 +2843,6 @@ class CaptureModeRecordingSizeTest : public CaptureModeTest {
     return controller;
   }
 
-  void SetDeviceScaleFactor(float dsf) {
-    const auto display_id = display_manager()->GetDisplayAt(0).id();
-    display_manager()->UpdateZoomFactor(display_id, dsf);
-    EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
-    auto* controller = CaptureModeController::Get();
-    if (controller->is_recording_in_progress()) {
-      CaptureModeTestApi().FlushRecordingServiceForTesting();
-      auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
-          controller->delegate_for_testing());
-      // Consume any pending video frame from before changing the DSF prior to
-      // proceeding.
-      test_delegate->RequestAndWaitForVideoFrame();
-    }
-  }
-
  protected:
   const gfx::Rect user_region_{20, 50};
   std::unique_ptr<aura::Window> window_;
@@ -2872,6 +2857,7 @@ class CaptureModeRecordingSizeTest : public CaptureModeTest {
 TEST_F(CaptureModeRecordingSizeTest, MAYBE_CaptureAtPixelsFullscreen) {
   float dsf = 1.6f;
   SetDeviceScaleFactor(dsf);
+  EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
   auto* controller = StartVideoRecording(CaptureModeSource::kFullscreen);
   auto* root = window_->GetRootWindow();
   gfx::Size initial_root_window_size_pixels =
@@ -2899,6 +2885,7 @@ TEST_F(CaptureModeRecordingSizeTest, MAYBE_CaptureAtPixelsFullscreen) {
   // size of the fullscreen.
   dsf = 2.f;
   SetDeviceScaleFactor(dsf);
+  EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
   {
     SCOPED_TRACE("Testing @ 2.0 device scale factor");
     EXPECT_EQ(initial_root_window_size_pixels,
@@ -2929,6 +2916,7 @@ TEST_F(CaptureModeRecordingSizeTest, MAYBE_CaptureAtPixelsFullscreen) {
 TEST_F(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsRegion) {
   float dsf = 1.6f;
   SetDeviceScaleFactor(dsf);
+  EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
   auto* controller = StartVideoRecording(CaptureModeSource::kRegion);
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
@@ -2951,6 +2939,7 @@ TEST_F(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsRegion) {
   // size of the recorded target.
   dsf = 2.f;
   SetDeviceScaleFactor(dsf);
+  EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
   {
     SCOPED_TRACE("Testing @ 2.0 device scale factor");
     const gfx::Size expected_video_size = ToPixels(user_region_.size(), dsf);
@@ -2975,6 +2964,7 @@ TEST_F(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsRegion) {
 TEST_F(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsWindow) {
   float dsf = 1.6f;
   SetDeviceScaleFactor(dsf);
+  EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
   auto* controller = StartVideoRecording(CaptureModeSource::kWindow);
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
@@ -2998,6 +2988,7 @@ TEST_F(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsWindow) {
   // size of the recorded target.
   dsf = 2.f;
   SetDeviceScaleFactor(dsf);
+  EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
   {
     SCOPED_TRACE("Testing @ 2.0 device scale factor");
     const gfx::Size expected_video_size =

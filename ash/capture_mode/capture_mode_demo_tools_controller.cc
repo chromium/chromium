@@ -29,8 +29,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kDistanceFromBottom = 24;
-
 constexpr float kHighlightLayerFinalOpacity = 0.f;
 constexpr float kHighlightLayerInitialScale = 0.1f;
 constexpr float kHighlightLayerFinalScale = 1.0f;
@@ -146,6 +144,10 @@ void CaptureModeDemoToolsController::PerformMousePressAnimation(
                   gfx::Tween::ACCEL_0_80_DECEL_80);
 }
 
+void CaptureModeDemoToolsController::RefreshBounds() {
+  demo_tools_widget_->SetBounds(CalculateBounds());
+}
+
 void CaptureModeDemoToolsController::OnKeyUpEvent(ui::KeyEvent* event) {
   const ui::KeyboardCode key_code = event->key_code();
   const int modifier_flag = GetModifierFlagForKeyCode(key_code);
@@ -211,14 +213,15 @@ void CaptureModeDemoToolsController::RefreshKeyComboViewer() {
   }
 
   key_combo_view_->RefreshView(modifiers_, last_non_modifier_key_);
-  demo_tools_widget_->SetBounds(CalculateBounds());
+  RefreshBounds();
 }
 
 gfx::Rect CaptureModeDemoToolsController::CalculateBounds() const {
   const gfx::Size preferred_size = key_combo_view_->GetPreferredSize();
   auto bounds = video_recording_watcher_->GetCaptureSurfaceConfineBounds();
-  int demo_tools_y =
-      bounds.bottom() - kDistanceFromBottom - preferred_size.height();
+  int demo_tools_y = bounds.bottom() -
+                     capture_mode::kKeyWidgetDistanceFromBottom -
+                     preferred_size.height();
   bounds.ClampToCenteredSize(preferred_size);
   bounds.set_y(demo_tools_y);
   return bounds;
