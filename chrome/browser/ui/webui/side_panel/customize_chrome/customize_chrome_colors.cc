@@ -31,5 +31,6 @@ constexpr auto MakeCustomizeChromeColors(std::index_sequence<I...>) {
 
 }  // namespace
 
-const auto kCustomizeChromeColors = MakeCustomizeChromeColors(
-    std::make_index_sequence<std::size(kCustomizeChromeColorIds)>{});
+const decltype(kCustomizeChromeColors) kCustomizeChromeColors =
+    MakeCustomizeChromeColors(
+        std::make_index_sequence<std::size(kCustomizeChromeColorIds)>{});
