@@ -432,10 +432,9 @@ void CastMediaSinkServiceImpl::OnNetworksChanged(
 
   auto cache_entry = sink_cache_.find(network_id);
   // Check if we have any cached sinks for this network ID.
-  if (cache_entry == sink_cache_.end())
+  if (cache_entry == sink_cache_.end()) {
     return;
-
-  metrics_.RecordCachedSinksAvailableCount(cache_entry->second.size());
+  }
   OpenChannelsWithRandomizedDelay(cache_entry->second,
                                   SinkSource::kNetworkCache);
 }

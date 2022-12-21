@@ -5773,16 +5773,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MediaRouter.Cast.Discovery.CachedSinksAvailableCount"
-    units="devices" expires_after="2022-09-11">
-  <owner>btolsch@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    The number of Cast devices available from the device cache at the time of a
-    new network connection.
-  </summary>
-</histogram>
-
 <histogram name="MediaRouter.Cast.Discovery.ConnectedDevicesCount"
     units="devices" expires_after="2023-04-23">
   <owner>mfoltz@chromium.org</owner>
