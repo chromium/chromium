@@ -31,7 +31,7 @@ We prefer searching like this to having sheriffs compose status email at the
 end of their week.
 
 In addition to the waterfall, make sure
-[dry run attempts at updating clang](https://chromium-review.googlesource.com/q/owner:thakis%2540chromium.org+%2522roll+clang%2522)
+[dry run attempts at updating clang](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py+is:wip)
 are green. As part of the Clang release process we run upstream LLVM tests.
 Ideally these tests are covered by upstream LLVM bots and breakages are
 quickly noticed and fixed by the original author of a breaking commit,
