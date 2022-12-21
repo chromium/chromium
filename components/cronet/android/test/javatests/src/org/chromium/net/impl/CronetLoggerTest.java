@@ -36,7 +36,6 @@ import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetLoggerTestRule;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
-import org.chromium.net.CronetTestRule.OnlyRunJavaCronet;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.ExperimentalCronetEngine;
@@ -234,16 +233,11 @@ public final class CronetLoggerTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet
-    public void testLoggingKillSwitch() throws JSONException {
+    public void testTelemetryDefaultDisabled() throws JSONException {
         final String url = NativeTestServer.getEchoBodyURL();
-        JSONObject jsonExperimentalOptions = new JSONObject().put("skip_logging", true);
-        final String experimentalOptions = jsonExperimentalOptions.toString();
-        ExperimentalCronetEngine.Builder builder =
-                (ExperimentalCronetEngine.Builder) mTestFramework.mBuilder;
-        builder.setExperimentalOptions(experimentalOptions);
-        CronetEngine engine = builder.build();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        CronetEngine engine = mTestFramework.startEngine();
         UrlRequest.Builder requestBuilder =
                 engine.newUrlRequestBuilder(url, callback, callback.getExecutor());
         UrlRequest request = requestBuilder.build();
@@ -258,6 +252,7 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     @Feature({"Cronet"})
+    @OnlyRunNativeCronet
     public void testEngineCreation() throws JSONException {
         JSONObject staleDns = new JSONObject()
                                       .put("enable", true)
@@ -265,7 +260,8 @@ public final class CronetLoggerTest {
                                       .put("allow_other_network", true)
                                       .put("persist_to_disk", true)
                                       .put("persist_delay_ms", 0);
-        final JSONObject jsonExperimentalOptions = new JSONObject().put("StaleDNS", staleDns);
+        final JSONObject jsonExperimentalOptions =
+                new JSONObject().put("StaleDNS", staleDns).put("enable_telemetry", true);
         final String experimentalOptions = jsonExperimentalOptions.toString();
         final boolean isPublicKeyPinningBypassForLocalTrustAnchorsEnabled = false;
         final String userAgent = "myUserAgent";
@@ -323,8 +319,14 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     @Feature({"Cronet"})
-    public void testEngineCreationAndTrafficInfoEngineId() {
+    @OnlyRunNativeCronet
+    public void testEngineCreationAndTrafficInfoEngineId() throws Exception {
+        JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", true);
+        final String experimentalOptions = jsonExperimentalOptions.toString();
         final String url = "www.example.com";
+        ExperimentalCronetEngine.Builder builder =
+                (ExperimentalCronetEngine.Builder) mTestFramework.mBuilder;
+        builder.setExperimentalOptions(experimentalOptions);
         CronetEngine engine = mTestFramework.startEngine();
         final int engineId = mTestLogger.getLastCronetEngineId();
 
@@ -357,9 +359,14 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     @Feature({"Cronet"})
-    public void testMultipleEngineCreationAndTrafficInfoEngineId() {
+    @OnlyRunNativeCronet
+    public void testMultipleEngineCreationAndTrafficInfoEngineId() throws Exception {
+        JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", true);
+        final String experimentalOptions = jsonExperimentalOptions.toString();
         final String url = "www.example.com";
-        final CronetEngine.Builder engineBuilder = mTestFramework.mBuilder;
+        ExperimentalCronetEngine.Builder engineBuilder =
+                (ExperimentalCronetEngine.Builder) mTestFramework.mBuilder;
+        engineBuilder.setExperimentalOptions(experimentalOptions);
 
         CronetEngine engine1 = engineBuilder.build();
         final int engine1Id = mTestLogger.getLastCronetEngineId();
@@ -396,8 +403,13 @@ public final class CronetLoggerTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet
-    public void testSuccessfulRequestNative() {
+    public void testSuccessfulRequestNative() throws Exception {
+        JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", true);
+        final String experimentalOptions = jsonExperimentalOptions.toString();
         final String url = NativeTestServer.getEchoBodyURL();
+        ExperimentalCronetEngine.Builder engineBuilder =
+                (ExperimentalCronetEngine.Builder) mTestFramework.mBuilder;
+        engineBuilder.setExperimentalOptions(experimentalOptions);
         CronetEngine engine = mTestFramework.startEngine();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -430,8 +442,13 @@ public final class CronetLoggerTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet
-    public void testFailedRequestNative() {
+    public void testFailedRequestNative() throws Exception {
+        JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", true);
         final String url = "www.unreachable-url.com";
+        final String experimentalOptions = jsonExperimentalOptions.toString();
+        ExperimentalCronetEngine.Builder engineBuilder =
+                (ExperimentalCronetEngine.Builder) mTestFramework.mBuilder;
+        engineBuilder.setExperimentalOptions(experimentalOptions);
         CronetEngine engine = mTestFramework.startEngine();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -465,8 +482,13 @@ public final class CronetLoggerTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet
-    public void testCanceledRequestNative() {
+    public void testCanceledRequestNative() throws Exception {
+        JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", true);
+        final String experimentalOptions = jsonExperimentalOptions.toString();
         final String url = NativeTestServer.getEchoBodyURL();
+        ExperimentalCronetEngine.Builder engineBuilder =
+                (ExperimentalCronetEngine.Builder) mTestFramework.mBuilder;
+        engineBuilder.setExperimentalOptions(experimentalOptions);
         CronetEngine engine = mTestFramework.startEngine();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -543,153 +565,5 @@ public final class CronetLoggerTest {
                 new AbstractMap.SimpleImmutableEntry<String, String>(null, "") // 33 + 0 + 0 = 33
         );
         assertEquals(33, CronetUrlRequest.estimateHeadersSizeInBytes(headersList));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Cronet"})
-    @OnlyRunJavaCronet
-    public void testSuccessfulRequestJava() {
-        final String url = NativeTestServer.getEchoBodyURL();
-        CronetEngine engine = mTestFramework.startEngine();
-
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder requestBuilder =
-                engine.newUrlRequestBuilder(url, callback, callback.getExecutor());
-        UrlRequest request = requestBuilder.build();
-        request.start();
-        callback.blockForDone();
-        assertFalse(callback.mOnCanceledCalled);
-        assertFalse(callback.mOnErrorCalled);
-        mTestLogger.waitForLogCronetTrafficInfo();
-
-        final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
-        assertNotEquals(0, trafficInfo.getRequestHeaderSizeInBytes());
-        assertNotEquals(0, trafficInfo.getRequestBodySizeInBytes());
-        assertNotEquals(0, trafficInfo.getResponseHeaderSizeInBytes());
-        assertNotEquals(0, trafficInfo.getResponseBodySizeInBytes());
-        assertEquals(200, trafficInfo.getResponseStatusCode());
-        assertEquals(Duration.ofSeconds(0), trafficInfo.getHeadersLatency());
-        assertEquals(Duration.ofSeconds(0), trafficInfo.getTotalLatency());
-        assertNotNull(trafficInfo.getNegotiatedProtocol());
-        assertFalse(trafficInfo.wasConnectionMigrationAttempted());
-        assertFalse(trafficInfo.didConnectionMigrationSucceed());
-
-        assertEquals(1, mTestLogger.callsToLogCronetEngineCreation());
-        assertEquals(1, mTestLogger.callsToLogCronetTrafficInfo());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Cronet"})
-    @OnlyRunJavaCronet
-    public void testFailedRequestJava() {
-        final String url = "www.unreachable-url.com";
-        CronetEngine engine = mTestFramework.startEngine();
-
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder requestBuilder =
-                engine.newUrlRequestBuilder(url, callback, callback.getExecutor());
-        UrlRequest request = requestBuilder.build();
-        request.start();
-        callback.blockForDone();
-        assertFalse(callback.mOnCanceledCalled);
-        assertTrue(callback.mOnErrorCalled);
-        mTestLogger.waitForLogCronetTrafficInfo();
-
-        final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
-        assertEquals(0, trafficInfo.getRequestHeaderSizeInBytes());
-        assertEquals(0, trafficInfo.getResponseHeaderSizeInBytes());
-        assertEquals(0, trafficInfo.getResponseStatusCode());
-        // When a request fails before hitting the server all these values won't be populated in
-        // the actual code. Check that the logger sets them to some known defaults before
-        // logging.
-        assertEquals(-1, trafficInfo.getRequestBodySizeInBytes());
-        assertEquals(-1, trafficInfo.getResponseBodySizeInBytes());
-        assertEquals("", trafficInfo.getNegotiatedProtocol());
-        assertFalse(trafficInfo.wasConnectionMigrationAttempted());
-        assertFalse(trafficInfo.didConnectionMigrationSucceed());
-
-        assertEquals(1, mTestLogger.callsToLogCronetEngineCreation());
-        assertEquals(1, mTestLogger.callsToLogCronetTrafficInfo());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Cronet"})
-    @OnlyRunJavaCronet
-    public void testCanceledRequestJava() {
-        final String url = NativeTestServer.getEchoBodyURL();
-        CronetEngine engine = mTestFramework.startEngine();
-
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        callback.setAutoAdvance(false);
-        UrlRequest.Builder requestBuilder =
-                engine.newUrlRequestBuilder(url, callback, callback.getExecutor());
-        UrlRequest request = requestBuilder.build();
-        request.start();
-        request.cancel();
-        callback.blockForDone();
-        assertTrue(callback.mOnCanceledCalled);
-        assertFalse(callback.mOnErrorCalled);
-        mTestLogger.waitForLogCronetTrafficInfo();
-
-        final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
-        assertEquals(0, trafficInfo.getRequestHeaderSizeInBytes());
-        assertEquals(0, trafficInfo.getResponseHeaderSizeInBytes());
-        assertEquals(0, trafficInfo.getResponseStatusCode());
-        // When a request fails before hitting the server all these values won't be populated in
-        // the actual code. Check that the logger sets them to some known defaults before
-        // logging.
-        assertEquals(-1, trafficInfo.getRequestBodySizeInBytes());
-        assertEquals(-1, trafficInfo.getResponseBodySizeInBytes());
-        assertEquals("", trafficInfo.getNegotiatedProtocol());
-        assertFalse(trafficInfo.wasConnectionMigrationAttempted());
-        assertFalse(trafficInfo.didConnectionMigrationSucceed());
-
-        assertEquals(1, mTestLogger.callsToLogCronetEngineCreation());
-        assertEquals(1, mTestLogger.callsToLogCronetTrafficInfo());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Cronet"})
-    @OnlyRunJavaCronet
-    public void testEmptyHeadersSizeJava() {
-        Map<String, String> headers = Collections.emptyMap();
-        assertEquals(0, JavaUrlRequest.estimateHeadersSizeInBytes(headers));
-        headers = null;
-        assertEquals(0, JavaUrlRequest.estimateHeadersSizeInBytes(headers));
-
-        Map<String, List<String>> headersList = Collections.emptyMap();
-        assertEquals(0, JavaUrlRequest.estimateHeadersSizeInBytesList(headersList));
-        headersList = null;
-        assertEquals(0, JavaUrlRequest.estimateHeadersSizeInBytesList(headersList));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Cronet"})
-    @OnlyRunJavaCronet
-    public void testNonEmptyHeadersSizeJava() {
-        Map<String, String> headers = new HashMap() {
-            {
-                put("header1", "value1"); // 7 + 6 = 13
-                put("header2", null); // 13 + 7 + 0 = 20
-                put(null, ""); // 20 + 0 + 0 = 20
-            }
-        };
-        assertEquals(20, JavaUrlRequest.estimateHeadersSizeInBytes(headers));
-
-        Map<String, List<String>> headersList = new HashMap<String, List<String>>() {
-            {
-                put("header1", Arrays.asList("value1", "value2")); // 7 + 6 + 6 = 19
-                put("header2", null); // 19 + 7 = 26
-                put("header3", Collections.emptyList()); // 26 + 7 + 0 = 33
-                put("header4", Arrays.asList("value1", null)); // 33 + 7 + 6 + 0 = 46
-                put(null, Arrays.asList("")); // 46 + 0 + 0 = 46
-            }
-        };
-        assertEquals(46, JavaUrlRequest.estimateHeadersSizeInBytesList(headersList));
     }
 }

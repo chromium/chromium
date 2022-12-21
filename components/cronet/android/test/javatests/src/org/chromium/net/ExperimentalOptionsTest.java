@@ -107,6 +107,31 @@ public class ExperimentalOptionsTest {
         cronetEngine.shutdown();
     }
 
+    @Test
+    @MediumTest
+    @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    public void testEnableTelemetryTrue() throws Exception {
+        JSONObject experimentalOptions = new JSONObject().put("enable_telemetry", true);
+        mBuilder.setExperimentalOptions(experimentalOptions.toString());
+
+        CronetEngine cronetEngine = mBuilder.build();
+        CronetUrlRequestContext context = (CronetUrlRequestContext) mBuilder.build();
+        assertTrue(context.getEnableTelemetryForTesting());
+        cronetEngine.shutdown();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    public void testEnableTelemetryDefault() throws Exception {
+        CronetEngine cronetEngine = mBuilder.build();
+        CronetUrlRequestContext context = (CronetUrlRequestContext) mBuilder.build();
+        assertFalse(context.getEnableTelemetryForTesting());
+        cronetEngine.shutdown();
+    }
+
     @DisabledTest(message = "crbug.com/1021941")
     @Test
     @MediumTest

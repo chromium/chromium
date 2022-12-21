@@ -18,10 +18,9 @@ import org.chromium.net.impl.CronetLogger.CronetSource;
 @VisibleForTesting
 public final class CronetManifest {
     private CronetManifest() {}
-    // Individual apps can use this meta-data tag in their manifest to opt in for metrics
-    // reporting.
+    // Individual apps can use this meta-data tag in their manifest to opt in for telemetry.
     // Todo (colibie): Add this to the android documentation
-    static final String METRICS_OPT_IN_META_DATA_STR = "org.chromium.net.CronetMetricsOptIn";
+    static final String TELEMETRY_OPT_IN_META_DATA_STR = "org.chromium.net.EnableCronetTelemetry";
 
     @VisibleForTesting
     public static boolean isAppOptedInForTelemetry(Context ctx, CronetSource source) {
@@ -35,7 +34,7 @@ public final class CronetManifest {
 
             // getBoolean returns false if the key is not found, which is what we want.
             return info.metaData == null ? false
-                                         : info.metaData.getBoolean(METRICS_OPT_IN_META_DATA_STR);
+                                         : info.metaData.getBoolean(TELEMETRY_OPT_IN_META_DATA_STR);
         } catch (PackageManager.NameNotFoundException e) {
             // This should never happen.
             // The conservative thing is to assume the app HAS opted out.

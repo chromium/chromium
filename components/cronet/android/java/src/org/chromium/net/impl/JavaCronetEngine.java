@@ -75,8 +75,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
                         });
                     }
                 });
-        mLogger = CronetLoggerFactory.createLogger(
-                builder.getContext(), CronetSource.CRONET_SOURCE_FALLBACK);
+        mLogger = CronetLoggerFactory.createNoOpLogger();
         try {
             mLogger.logCronetEngineCreation(mCronetEngineId, new CronetEngineBuilderInfo(builder),
                     buildCronetVersion(), CronetSource.CRONET_SOURCE_FALLBACK);

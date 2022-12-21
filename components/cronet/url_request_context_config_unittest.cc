@@ -334,7 +334,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   EXPECT_EQ(base::FeatureList::IsEnabled(net::features::kUseDnsHttpsSvcbAlpn),
             params->use_dns_https_svcb_alpn);
 
-  EXPECT_FALSE(config->skip_logging);
+  EXPECT_FALSE(config->enable_telemetry);
 }
 
 TEST(URLRequestContextConfigTest, SetSupportedQuicVersion) {
@@ -1842,7 +1842,7 @@ TEST(URLRequestContextConfigTest, SkipLogging) {
           // User-Agent request header field.
           "fake agent",
           // JSON encoded experimental options.
-          "{\"skip_logging\":true}",
+          "{\"enable_telemetry\":true}",
           // MockCertVerifier to use for testing purposes.
           std::unique_ptr<net::CertVerifier>(),
           // Enable network quality estimator.
@@ -1853,8 +1853,9 @@ TEST(URLRequestContextConfigTest, SkipLogging) {
           absl::optional<double>());
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
-  EXPECT_TRUE(config->effective_experimental_options.contains("skip_logging"));
-  EXPECT_TRUE(config->skip_logging);
+  EXPECT_TRUE(
+      config->effective_experimental_options.contains("enable_telemetry"));
+  EXPECT_TRUE(config->enable_telemetry);
 }
 
 TEST(URLRequestContextConfigTest, WrongSkipLoggingValue) {
@@ -1885,7 +1886,7 @@ TEST(URLRequestContextConfigTest, WrongSkipLoggingValue) {
           // User-Agent request header field.
           "fake agent",
           // JSON encoded experimental options.
-          "{\"skip_logging\":10}",
+          "{\"enable_telemetry\":10}",
           // MockCertVerifier to use for testing purposes.
           std::unique_ptr<net::CertVerifier>(),
           // Enable network quality estimator.
@@ -1897,7 +1898,9 @@ TEST(URLRequestContextConfigTest, WrongSkipLoggingValue) {
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
-  EXPECT_FALSE(config->effective_experimental_options.contains("skip_logging"));
+  EXPECT_FALSE(
+      config->effective_experimental_options.contains("enable_telemetry"));
+  EXPECT_FALSE(config->enable_telemetry);
 }
 
 // See stale_host_resolver_unittest.cc for test of StaleDNS options.

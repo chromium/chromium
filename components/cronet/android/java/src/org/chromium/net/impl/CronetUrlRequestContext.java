@@ -165,8 +165,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
     private final int mCronetEngineId;
 
-    /** Whether Cronet's logging should be skipped or not. */
-    private final boolean mSkipLogging;
+    /** Whether Cronet Telemetry should be enabled or not. */
+    private final boolean mEnableTelemetry;
 
     /** The logger to be used for logging. */
     private final CronetLogger mLogger;
@@ -177,6 +177,11 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
     CronetLogger getCronetLogger() {
         return mLogger;
+    }
+
+    @VisibleForTesting
+    public boolean getEnableTelemetryForTesting() {
+        return mEnableTelemetry;
     }
 
     @UsedByReflection("CronetEngine.java")
@@ -206,14 +211,14 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             if (mUrlRequestContextAdapter == 0) {
                 throw new NullPointerException("Context Adapter creation failed.");
             }
-            mSkipLogging = CronetUrlRequestContextJni.get().skipLogging(
+            mEnableTelemetry = CronetUrlRequestContextJni.get().getEnableTelemetry(
                     mUrlRequestContextAdapter, CronetUrlRequestContext.this);
         }
 
-        if (mSkipLogging) {
-            mLogger = CronetLoggerFactory.createNoOpLogger();
-        } else {
+        if (mEnableTelemetry) {
             mLogger = CronetLoggerFactory.createLogger(builder.getContext(), getCronetSource());
+        } else {
+            mLogger = CronetLoggerFactory.createNoOpLogger();
         }
         try {
             mLogger.logCronetEngineCreation(getCronetEngineId(),
@@ -853,6 +858,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 long nativePtr, CronetUrlRequestContext caller, boolean should);
 
         @NativeClassQualifiedName("CronetContextAdapter")
-        boolean skipLogging(long nativePtr, CronetUrlRequestContext caller);
+        boolean getEnableTelemetry(long nativePtr, CronetUrlRequestContext caller);
     }
 }

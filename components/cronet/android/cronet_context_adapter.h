@@ -88,9 +88,9 @@ class CronetContextAdapter : public CronetContext::Callback {
   void StopNetLog(JNIEnv* env,
                   const base::android::JavaParamRef<jobject>& jcaller);
 
-  // Whether Cronet's logging should be skipped or not.
-  bool SkipLogging(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& jcaller);
+  // Whether Cronet Telemetry should be enabled or not.
+  bool GetEnableTelemetry(JNIEnv* env,
+                          const base::android::JavaParamRef<jobject>& jcaller);
 
   // Default net::LOAD flags used to create requests.
   int default_load_flags() const;
