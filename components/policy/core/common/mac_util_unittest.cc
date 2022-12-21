@@ -19,52 +19,53 @@ namespace policy {
 // ValueToProperty() is successfully restored from the property with
 // PropertyToValue().
 TEST(PolicyMacUtilTest, ValueToPropertyRoundTrip) {
-  base::DictionaryValue root;
+  base::Value::Dict root;
 
   // base::Value::Type::NONE
-  root.Set("null", std::make_unique<base::Value>());
+  root.Set("null", base::Value());
 
   // base::Value::Type::BOOLEAN
-  root.SetBoolKey("false", false);
-  root.SetBoolKey("true", true);
+  root.Set("false", false);
+  root.Set("true", true);
 
   // base::Value::Type::INTEGER
-  root.SetIntKey("int", 123);
-  root.SetIntKey("zero", 0);
+  root.Set("int", 123);
+  root.Set("zero", 0);
 
   // base::Value::Type::DOUBLE
-  root.SetDoubleKey("double", 123.456);
-  root.SetDoubleKey("zerod", 0.0);
+  root.Set("double", 123.456);
+  root.Set("zerod", 0.0);
 
   // base::Value::Type::STRING
-  root.SetStringKey("string", "the fox jumps over something");
-  root.SetStringKey("empty", "");
+  root.Set("string", "the fox jumps over something");
+  root.Set("empty", "");
 
   // base::Value::Type::LIST
-  root.Set("emptyl", std::make_unique<base::Value>(base::Value::Type::LIST));
-  base::ListValue list;
-  for (const auto item : root.GetDict())
-    list.GetList().Append(item.second.Clone());
-  EXPECT_EQ(root.DictSize(), list.GetList().size());
-  list.GetList().Append(root.Clone());
-  root.SetKey("list", list.Clone());
+  root.Set("emptyl", base::Value::List());
+  base::Value::List list;
+  for (const auto [key, value] : root) {
+    list.Append(value.Clone());
+  }
+  EXPECT_EQ(root.size(), list.size());
+  list.Append(root.Clone());
+  root.Set("list", list.Clone());
 
   // base::Value::Type::DICTIONARY
-  root.Set("emptyd",
-           std::make_unique<base::Value>(base::Value::Type::DICTIONARY));
+  root.Set("emptyd", base::Value::Dict());
 
   // Key with dots.
-  root.SetIntKey("key.with.dots", 789);
+  root.Set("key.with.dots", 789);
 
   // Very meta.
-  root.SetKey("dict", root.Clone());
+  root.Set("dict", root.Clone());
 
+  const base::Value root_val(std::move(root));
   // base::Value -> property list -> base::Value.
-  base::ScopedCFTypeRef<CFPropertyListRef> property(ValueToProperty(root));
+  base::ScopedCFTypeRef<CFPropertyListRef> property(ValueToProperty(root_val));
   ASSERT_TRUE(property);
   std::unique_ptr<base::Value> value = PropertyToValue(property);
   ASSERT_TRUE(value);
-  EXPECT_EQ(root, *value);
+  EXPECT_EQ(root_val, *value);
 }
 
 }  // namespace policy
