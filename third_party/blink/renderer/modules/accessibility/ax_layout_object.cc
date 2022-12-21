@@ -128,8 +128,9 @@ LayoutObject* AXLayoutObject::GetLayoutObject() const {
 }
 
 ScrollableArea* AXLayoutObject::GetScrollableAreaIfScrollable() const {
-  if (IsWebArea())
+  if (IsA<Document>(GetNode())) {
     return DocumentFrameView()->LayoutViewport();
+  }
 
   if (auto* box = DynamicTo<LayoutBox>(GetLayoutObject())) {
     PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea();
@@ -224,8 +225,10 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
   if (IsA<HTMLCanvasElement>(node))
     return ax::mojom::blink::Role::kCanvas;
 
-  if (IsA<LayoutView>(*layout_object_))
-    return ax::mojom::blink::Role::kRootWebArea;
+  if (IsA<LayoutView>(*layout_object_)) {
+    return ParentObject() ? ax::mojom::blink::Role::kGroup
+                          : ax::mojom::blink::Role::kRootWebArea;
+  }
 
   if (node && node->IsSVGElement()) {
     if (layout_object_->IsSVGImage())
@@ -429,8 +432,9 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   // node of the main web area, so force that node to always be unignored.
   // The web area for a <select>'s' popup document is ignored, because the
   // popup object hierarchy is constructed without the document root.
-  if (IsWebArea())
+  if (IsA<Document>(GetNode())) {
     return CachedParentObject() && CachedParentObject()->IsMenuList();
+  }
 
   const Node* node = GetNode();
   if (IsA<HTMLHtmlElement>(node))
@@ -1151,8 +1155,9 @@ String AXLayoutObject::TextAlternative(
 
 AXObject* AXLayoutObject::AccessibilityHitTest(const gfx::Point& point) const {
   // Must be called for the document's root or a popup's root.
-  if (RoleValue() != ax::mojom::blink::Role::kRootWebArea || !layout_object_)
+  if (!IsA<Document>(GetNode()) || !layout_object_) {
     return nullptr;
+  }
 
   // Must be called with lifecycle >= pre-paint clean
   DCHECK_GE(GetDocument()->Lifecycle().GetState(),

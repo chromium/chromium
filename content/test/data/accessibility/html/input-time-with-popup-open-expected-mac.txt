@@ -13,7 +13,7 @@ AXWebArea AXRoleDescription='HTML content'
 ++++++++++AXStaticText AXRoleDescription='text' AXValue=' '
 ++++++++++AXIncrementor AXDescription='AM/PM' AXRoleDescription='stepper' AXValue=2
 ++++++AXPopUpButton AXDescription='Show time picker' AXRoleDescription='pop up button'
-++++++AXWebArea AXRoleDescription='HTML content'
+++++++AXGroup AXSubrole=AXApplicationGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
 ++++++++++AXGroup AXRoleDescription='group'
 ++++++++++++AXList AXDescription='Hours' AXRoleDescription='list box'

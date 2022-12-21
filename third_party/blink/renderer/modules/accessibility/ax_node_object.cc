@@ -756,8 +756,9 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
 
   // All nodes must have an unignored parent within their tree under
   // the root node of the web area, so force that node to always be unignored.
-  if (IsWebArea())
+  if (IsA<Document>(GetNode())) {
     return false;
+  }
 
   DCHECK_NE(role_, ax::mojom::blink::Role::kUnknown);
   // Use AXLayoutObject::ComputeAccessibilityIsIgnored().
@@ -2550,7 +2551,7 @@ RGBA32 AXNodeObject::BackgroundColor() const {
   if (!layout_object)
     return Color::kTransparent.Rgb();
 
-  if (IsWebArea()) {
+  if (IsA<Document>(GetNode())) {
     LocalFrameView* view = DocumentFrameView();
     if (view)
       return view->BaseBackgroundColor().Rgb();
@@ -2899,8 +2900,10 @@ KURL AXNodeObject::Url() const {
   if (IsLink())  // <area>, <link>, <html:a> or <svg:a>
     return GetElement()->HrefURL();
 
-  if (IsWebArea() && GetDocument())
+  if (IsWebArea()) {
+    DCHECK(GetDocument());
     return GetDocument()->Url();
+  }
 
   auto* html_image_element = DynamicTo<HTMLImageElement>(GetNode());
   if (IsImage() && html_image_element) {
@@ -2920,18 +2923,28 @@ KURL AXNodeObject::Url() const {
 
 AXObject* AXNodeObject::ChooserPopup() const {
   // When color & date chooser popups are visible, they can be found in the tree
-  // as a WebArea child of the <input> control itself.
+  // as a group child of the <input> control itself.
   switch (native_role_) {
     case ax::mojom::blink::Role::kColorWell:
+    case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kDate:
-    case ax::mojom::blink::Role::kDateTime: {
+    case ax::mojom::blink::Role::kDateTime:
+    case ax::mojom::blink::Role::kInputTime:
+    case ax::mojom::blink::Role::kTextFieldWithComboBox: {
       for (const auto& child : ChildrenIncludingIgnored()) {
-        if (child->IsWebArea())
+        if (IsA<Document>(child->GetNode())) {
           return child;
+        }
       }
       return nullptr;
     }
     default:
+#if DCHECK_IS_ON()
+      for (const auto& child : ChildrenIncludingIgnored()) {
+        DCHECK(!IsA<Document>(child->GetNode()))
+            << "Chooser popup exists for " << native_role_;
+      }
+#endif
       return nullptr;
   }
 }
@@ -4022,7 +4035,6 @@ void AXNodeObject::AddPopupChildren() {
   auto* html_input_element = DynamicTo<HTMLInputElement>(GetNode());
   if (html_input_element) {
     AddChildAndCheckIncluded(html_input_element->PopupRootAXObject());
-    return;
   }
 }
 
@@ -4498,7 +4510,7 @@ AtomicString AXNodeObject::Language() const {
 
   // If it's the root, get the computed language for the document element,
   // because the root LayoutObject doesn't have the right value.
-  if (RoleValue() == ax::mojom::blink::Role::kRootWebArea) {
+  if (IsWebArea()) {
     Element* document_element = GetDocument()->documentElement();
     if (!document_element)
       return g_empty_atom;
@@ -5315,8 +5327,7 @@ String AXNodeObject::NativeTextAlternative(
   }
 
   // Document.
-  if (IsWebArea()) {
-    Document* document = GetDocument();
+  if (Document* document = DynamicTo<Document>(GetNode())) {
     if (document) {
       name_from = ax::mojom::blink::NameFrom::kAttribute;
       if (name_sources) {
