@@ -8,6 +8,7 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [
     "model_prediction.proto",
+    "prediction_result_pref_storage.proto",
     "signal.proto",
     "signal_storage_config.proto",
   ]
