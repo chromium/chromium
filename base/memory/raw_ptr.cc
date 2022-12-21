@@ -254,6 +254,11 @@ bool AsanUnownedPtrImpl::EndOfAliveAllocation(const volatile void* ptr) {
          !__asan_region_is_poisoned(reinterpret_cast<void*>(address - 1), 1);
 }
 
+bool AsanUnownedPtrImpl::LikelySmuggledScalar(const volatile void* ptr) {
+  intptr_t address = reinterpret_cast<intptr_t>(ptr);
+  return address < 0x100;  // Negative or small positive.
+}
+
 }  // namespace base::internal
 
 #endif  // BUILDFLAG(USE_ASAN_UNOWNED_PTR)

@@ -914,12 +914,14 @@ struct AsanUnownedPtrImpl {
 
   template <typename T>
   static void ProbeForLowSeverityLifetimeIssue(T* wrapped_ptr) {
-    if (wrapped_ptr && !EndOfAliveAllocation(wrapped_ptr)) {
+    if (wrapped_ptr && !LikelySmuggledScalar(wrapped_ptr) &&
+        !EndOfAliveAllocation(wrapped_ptr)) {
       reinterpret_cast<const volatile uint8_t*>(wrapped_ptr)[0];
     }
   }
 
   static bool EndOfAliveAllocation(const volatile void* ptr);
+  static bool LikelySmuggledScalar(const volatile void* ptr);
 
   // This is for accounting only, used by unit tests.
   static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
