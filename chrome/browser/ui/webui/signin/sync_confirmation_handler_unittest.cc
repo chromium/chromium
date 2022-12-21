@@ -309,13 +309,10 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleUndo) {
 
 TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
   // The consent description consists of strings 1, 2, and 4.
-  base::ListValue consent_description;
-  consent_description.Append(
-      base::Value(SyncConfirmationHandlerTest::kConsentText1));
-  consent_description.Append(
-      base::Value(SyncConfirmationHandlerTest::kConsentText2));
-  consent_description.Append(
-      base::Value(SyncConfirmationHandlerTest::kConsentText4));
+  base::Value::List consent_description;
+  consent_description.Append(SyncConfirmationHandlerTest::kConsentText1);
+  consent_description.Append(SyncConfirmationHandlerTest::kConsentText2);
+  consent_description.Append(SyncConfirmationHandlerTest::kConsentText4);
 
   // The consent confirmation contains string 5.
   base::Value consent_confirmation(SyncConfirmationHandlerTest::kConsentText5);
@@ -350,13 +347,10 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
 
 TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   // The consent description consists of strings 2, 3, and 5.
-  base::ListValue consent_description;
-  consent_description.Append(
-      base::Value(SyncConfirmationHandlerTest::kConsentText2));
-  consent_description.Append(
-      base::Value(SyncConfirmationHandlerTest::kConsentText3));
-  consent_description.Append(
-      base::Value(SyncConfirmationHandlerTest::kConsentText5));
+  base::Value::List consent_description;
+  consent_description.Append(SyncConfirmationHandlerTest::kConsentText2);
+  consent_description.Append(SyncConfirmationHandlerTest::kConsentText3);
+  consent_description.Append(SyncConfirmationHandlerTest::kConsentText5);
 
   // The consent confirmation contains string 2.
   base::Value consent_confirmation(SyncConfirmationHandlerTest::kConsentText2);
