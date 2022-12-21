@@ -494,6 +494,15 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
 // Tracks the reason of sign in.
 void LogSigninReason(Reason reason);
 
+// Logs sync opt-in start events and their associated access points. The
+// completion events are automatically logged when the primary account state
+// changes, see `signin::PrimaryAccountMutator`.
+void LogSyncOptInStarted(AccessPoint access_point);
+
+// Logs that the sync settings were opened at the end of the sync opt-in flow,
+// and the associated access points.
+void LogSyncSettingsOpened(AccessPoint access_point);
+
 // Logs to UMA histograms how many accounts are in the browser for this
 // profile.
 void RecordAccountsPerProfile(int total_number_accounts);

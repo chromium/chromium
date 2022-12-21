@@ -1248,6 +1248,32 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SyncOptIn.OpenedSyncSettings" enum="SigninAccessPoint"
+    expires_after="2023-12-19">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that the user chose to navigate to the sync settings page from the
+    sync confirmation screen. Logs this in the context of the access point
+    associated with this event.
+  </summary>
+</histogram>
+
+<histogram name="Signin.SyncOptIn.Started" enum="SigninAccessPoint"
+    expires_after="2023-12-19">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records that the sync confirmation screen was shown to the user, and logs
+    the access point associated with this event. Note that due to some product
+    quirks, this is recorded also when the &quot;sync disabled&quot; screen is
+    shown, matching what happens with the completion event. See
+    crbug.com/1398463 for more info.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SyncPromo.{Action}.Count.{AccessPoint}" units="counts"
     expires_after="2023-09-22">
   <owner>triploblastic@chromium.org</owner>

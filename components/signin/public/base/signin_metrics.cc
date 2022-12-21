@@ -127,6 +127,16 @@ void LogSigninReason(Reason reason) {
   UMA_HISTOGRAM_ENUMERATION("Signin.SigninReason", reason);
 }
 
+void LogSyncOptInStarted(AccessPoint access_point) {
+  base::UmaHistogramEnumeration("Signin.SyncOptIn.Started", access_point,
+                                AccessPoint::ACCESS_POINT_MAX);
+}
+
+void LogSyncSettingsOpened(AccessPoint access_point) {
+  base::UmaHistogramEnumeration("Signin.SyncOptIn.OpenedSyncSettings",
+                                access_point, AccessPoint::ACCESS_POINT_MAX);
+}
+
 void RecordAccountsPerProfile(int total_number_accounts) {
   UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfAccountsPerProfile",
                            total_number_accounts);

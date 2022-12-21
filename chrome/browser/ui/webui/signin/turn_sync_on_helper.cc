@@ -501,6 +501,9 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
   primary_account_mutator->SetPrimaryAccount(account_info_.account_id,
                                              signin::ConsentLevel::kSignin,
                                              signin_access_point_);
+  // If the account is already signed in, `SetPrimaryAccount()` above is a no-op
+  // and the logs below are inaccurate.
+  // TODO(crbug.com/1402935): Review and rebuild the SigninReason logging.
   signin_metrics::LogSigninAccessPointCompleted(signin_access_point_,
                                                 signin_promo_action_);
   signin_metrics::LogSigninReason(signin_reason_);
@@ -613,6 +616,7 @@ void TurnSyncOnHelper::ShowSyncConfirmationUI() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     LOG(WARNING) << "crbug.com/1340791 | Showing Sync opt-in screen.";
 #endif
+    signin_metrics::LogSyncOptInStarted(signin_access_point_);
     delegate_->ShowSyncConfirmation(
         base::BindOnce(&TurnSyncOnHelper::FinishSyncSetupAndDelete,
                        weak_pointer_factory_.GetWeakPtr()));
@@ -630,6 +634,10 @@ void TurnSyncOnHelper::ShowSyncConfirmationUI() {
         LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC);
     return;
   }
+
+  // TODO(crbug.com/1398463): Once we stop completing the Sync opt-in when it's
+  // disabled, we also should stop recording opt-in start events.
+  signin_metrics::LogSyncOptInStarted(signin_access_point_);
 
   // The sync disabled dialog has an explicit "sign-out" label for the
   // LoginUIService::ABORT_SYNC action, force the mode to remove the account.
@@ -666,6 +674,7 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
       if (consent_service) {
         consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
       }
+      signin_metrics::LogSyncSettingsOpened(signin_access_point_);
       delegate_->ShowSyncSettings();
       break;
     case LoginUIService::SYNC_WITH_DEFAULT_SETTINGS:
