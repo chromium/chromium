@@ -21,7 +21,7 @@
 
 namespace base {
 
-MemoryMappedFile::MemoryMappedFile() : data_(nullptr), length_(0) {}
+MemoryMappedFile::MemoryMappedFile() = default;
 
 bool MemoryMappedFile::MapImageToMemory(Access access) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);

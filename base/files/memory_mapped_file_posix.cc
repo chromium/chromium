@@ -19,7 +19,7 @@
 
 namespace base {
 
-MemoryMappedFile::MemoryMappedFile() : data_(nullptr), length_(0) {}
+MemoryMappedFile::MemoryMappedFile() = default;
 
 #if !BUILDFLAG(IS_NACL)
 bool MemoryMappedFile::MapFileRegionToMemory(
@@ -100,11 +100,10 @@ bool MemoryMappedFile::MapFileRegionToMemory(
 void MemoryMappedFile::CloseHandles() {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
-  if (data_ != nullptr)
-    munmap(data_, length_);
+  if (data_ != nullptr) {
+    munmap(data_.ExtractAsDangling(), length_);
+  }
   file_.Close();
-
-  data_ = nullptr;
   length_ = 0;
 }
 
