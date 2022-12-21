@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/cpp/mock_producer.h"
+#include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
 #include "services/video_capture/public/mojom/device.mojom.h"
 #include "services/video_capture/public/mojom/device_factory.mojom.h"
@@ -24,14 +25,14 @@ using testing::InvokeWithoutArgs;
 namespace video_capture {
 
 // Tests that an answer arrives from the service when calling
-// GetDeviceInfos().
-TEST_F(VideoCaptureServiceTest, GetDeviceInfosCallbackArrives) {
+// GetSourceInfos().
+TEST_F(VideoCaptureServiceTest, GetSourceInfosCallbackArrives) {
   base::RunLoop wait_loop;
   EXPECT_CALL(device_info_receiver_, Run(_))
       .Times(Exactly(1))
       .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
 
-  factory_->GetDeviceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
   wait_loop.Run();
 }
 
@@ -47,13 +48,13 @@ TEST_F(VideoCaptureServiceTest, FakeDeviceFactoryEnumeratesThreeDevices) {
             wait_loop.Quit();
           }));
 
-  factory_->GetDeviceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
   wait_loop.Run();
   ASSERT_EQ(3u, num_devices_enumerated);
 }
 
 // Tests that an added virtual device will be returned in the callback
-// when calling GetDeviceInfos.
+// when calling GetSourceInfos.
 TEST_F(VideoCaptureServiceTest, VirtualDeviceEnumeratedAfterAdd) {
   const std::string virtual_device_id = "/virtual/device";
   auto device_context = AddSharedMemoryVirtualDevice(virtual_device_id);
@@ -74,7 +75,7 @@ TEST_F(VideoCaptureServiceTest, VirtualDeviceEnumeratedAfterAdd) {
             EXPECT_TRUE(virtual_device_enumerated);
             wait_loop.Quit();
           }));
-  factory_->GetDeviceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
   wait_loop.Run();
 }
 
@@ -84,7 +85,7 @@ TEST_F(VideoCaptureServiceTest,
   MockDevicesChangedObserver mock_observer;
   mojo::Receiver<mojom::DevicesChangedObserver> observer_receiver(
       &mock_observer, observer.InitWithNewPipeAndPassReceiver());
-  factory_->RegisterVirtualDevicesChangedObserver(
+  video_source_provider_->RegisterVirtualDevicesChangedObserver(
       std::move(observer),
       false /*raise_event_if_virtual_devices_already_present*/);
 
@@ -131,7 +132,7 @@ TEST_F(VideoCaptureServiceTest,
   MockDevicesChangedObserver mock_observer;
   mojo::Receiver<mojom::DevicesChangedObserver> observer_receiver(
       &mock_observer, observer.InitWithNewPipeAndPassReceiver());
-  factory_->RegisterVirtualDevicesChangedObserver(
+  video_source_provider_->RegisterVirtualDevicesChangedObserver(
       std::move(observer),
       false /*raise_event_if_virtual_devices_already_present*/);
 
@@ -142,43 +143,85 @@ TEST_F(VideoCaptureServiceTest,
   device_context.reset();
 }
 
-// Tests that VideoCaptureDeviceFactory::CreateDevice() returns an error
-// code when trying to create a device for an invalid descriptor.
-TEST_F(VideoCaptureServiceTest, ErrorCodeOnCreateDeviceForInvalidDescriptor) {
+// Tests that VideoSource::CreatePushSubscription() returns an error
+// code when trying to create it for an invalid descriptor.
+TEST_F(VideoCaptureServiceTest,
+       ErrorCodeOnCreatePushSubscriptionForInvalidDescriptor) {
   const std::string invalid_device_id = "invalid";
   base::RunLoop wait_loop;
-  mojo::Remote<mojom::Device> fake_device_remote;
-  base::MockCallback<mojom::DeviceFactory::CreateDeviceCallback>
-      create_device_remote_callback;
-  EXPECT_CALL(
-      create_device_remote_callback,
-      Run(media::VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound))
+
+  mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber;
+  std::unique_ptr<video_capture::MockVideoFrameHandler>
+      mock_video_frame_handler =
+          std::make_unique<video_capture::MockVideoFrameHandler>(
+              subscriber.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription;
+  mojo::Remote<mojom::VideoSource> video_source_remote;
+
+  base::MockCallback<mojom::VideoSource::CreatePushSubscriptionCallback>
+      create_push_subscription_remote_callback;
+
+  EXPECT_CALL(create_push_subscription_remote_callback, Run(_, _))
       .Times(1)
-      .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
-  factory_->GetDeviceInfos(device_info_receiver_.Get());
-  factory_->CreateDevice(invalid_device_id,
-                         fake_device_remote.BindNewPipeAndPassReceiver(),
-                         create_device_remote_callback.Get());
+      .WillOnce(Invoke(
+          [&wait_loop](mojom::CreatePushSubscriptionResultCodePtr result_code,
+                       const media::VideoCaptureParams& param) {
+            ASSERT_TRUE(result_code->is_error_code());
+            EXPECT_EQ(
+                result_code->get_error_code(),
+                media::VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound);
+            wait_loop.Quit();
+          }));
+  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+
+  video_source_provider_->GetVideoSource(
+      invalid_device_id, video_source_remote.BindNewPipeAndPassReceiver());
+
+  video_source_remote->CreatePushSubscription(
+      std::move(subscriber), requestable_settings_,
+      false /*force_reopen_with_new_settings*/,
+      subscription.BindNewPipeAndPassReceiver(),
+      create_push_subscription_remote_callback.Get());
+
   wait_loop.Run();
 }
 
-// Test that CreateDevice() will succeed when trying to create a device
-// for an added virtual device.
+// Test that CreatePushSubscription() will succeed when trying to create a
+// subscription for an added virtual device.
 TEST_F(VideoCaptureServiceTest, CreateDeviceSuccessForVirtualDevice) {
   base::RunLoop wait_loop;
   const std::string virtual_device_id = "/virtual/device";
   auto device_context = AddSharedMemoryVirtualDevice(virtual_device_id);
 
-  base::MockCallback<mojom::DeviceFactory::CreateDeviceCallback>
-      create_device_remote_callback;
-  EXPECT_CALL(create_device_remote_callback,
-              Run(media::VideoCaptureError::kNone))
+  mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber;
+  std::unique_ptr<video_capture::MockVideoFrameHandler>
+      mock_video_frame_handler =
+          std::make_unique<video_capture::MockVideoFrameHandler>(
+              subscriber.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription;
+  mojo::Remote<mojom::VideoSource> video_source_remote;
+
+  base::MockCallback<mojom::VideoSource::CreatePushSubscriptionCallback>
+      create_push_subscription_remote_callback;
+
+  EXPECT_CALL(create_push_subscription_remote_callback, Run(_, _))
       .Times(1)
-      .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
-  mojo::Remote<mojom::Device> device_remote;
-  factory_->CreateDevice(virtual_device_id,
-                         device_remote.BindNewPipeAndPassReceiver(),
-                         create_device_remote_callback.Get());
+      .WillOnce(Invoke(
+          [&wait_loop](mojom::CreatePushSubscriptionResultCodePtr result_code,
+                       const media::VideoCaptureParams& param) {
+            EXPECT_TRUE(result_code->is_success_code());
+            wait_loop.Quit();
+          }));
+
+  video_source_provider_->GetVideoSource(
+      virtual_device_id, video_source_remote.BindNewPipeAndPassReceiver());
+
+  video_source_remote->CreatePushSubscription(
+      std::move(subscriber), requestable_settings_,
+      false /*force_reopen_with_new_settings*/,
+      subscription.BindNewPipeAndPassReceiver(),
+      create_push_subscription_remote_callback.Get());
+
   wait_loop.Run();
 }
 

@@ -5,6 +5,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
 #include "media/mojo/common/media_type_converters.h"
@@ -46,8 +47,21 @@ TEST_F(FakeVideoCaptureDeviceTest, FrameCallbacksArriveFromI420Device) {
         }
       }));
 
-  i420_fake_device_remote_->Start(requestable_settings_,
-                                  std::move(handler_remote));
+  mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription;
+
+  i420_fake_source_remote_->CreatePushSubscription(
+      std::move(handler_remote), requestable_settings_,
+      false /*force_reopen_with_new_settings*/,
+      subscription.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting(
+          [&subscription](
+              video_capture::mojom::CreatePushSubscriptionResultCodePtr
+                  result_code,
+              const media::VideoCaptureParams& params) {
+            EXPECT_TRUE(result_code->is_success_code());
+            subscription->Activate();
+          }));
+
   wait_loop.Run();
 }
 
@@ -73,8 +87,21 @@ TEST_F(FakeVideoCaptureDeviceTest, FrameCallbacksArriveFromMjpegDevice) {
       }));
   EXPECT_CALL(video_frame_handler, OnStartedUsingGpuDecode()).Times(0);
 
-  mjpeg_fake_device_remote_->Start(requestable_settings_,
-                                   std::move(handler_remote));
+  mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription;
+
+  mjpeg_fake_source_remote_->CreatePushSubscription(
+      std::move(handler_remote), requestable_settings_,
+      false /*force_reopen_with_new_settings*/,
+      subscription.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting(
+          [&subscription](
+              video_capture::mojom::CreatePushSubscriptionResultCodePtr
+                  result_code,
+              const media::VideoCaptureParams& params) {
+            EXPECT_TRUE(result_code->is_success_code());
+            subscription->Activate();
+          }));
+
   wait_loop.Run();
 }
 
@@ -103,8 +130,21 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetReused) {
         }
       }));
 
-  i420_fake_device_remote_->Start(requestable_settings_,
-                                  std::move(handler_remote));
+  mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription;
+
+  i420_fake_source_remote_->CreatePushSubscription(
+      std::move(handler_remote), requestable_settings_,
+      false /*force_reopen_with_new_settings*/,
+      subscription.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting(
+          [&subscription](
+              video_capture::mojom::CreatePushSubscriptionResultCodePtr
+                  result_code,
+              const media::VideoCaptureParams& params) {
+            EXPECT_TRUE(result_code->is_success_code());
+            subscription->Activate();
+          }));
+
   wait_loop.Run();
 
   ASSERT_LT(num_buffers_created, num_frames_arrived);
@@ -135,8 +175,21 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetRetiredWhenDeviceIsStopped) {
             }
           }));
 
-  i420_fake_device_remote_->Start(requestable_settings_,
-                                  std::move(handler_remote));
+  mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription;
+
+  i420_fake_source_remote_->CreatePushSubscription(
+      std::move(handler_remote), requestable_settings_,
+      false /*force_reopen_with_new_settings*/,
+      subscription.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting(
+          [&subscription](
+              video_capture::mojom::CreatePushSubscriptionResultCodePtr
+                  result_code,
+              const media::VideoCaptureParams& params) {
+            EXPECT_TRUE(result_code->is_success_code());
+            subscription->Activate();
+          }));
+
   wait_for_frames_loop.Run();
 
   base::RunLoop wait_for_on_stopped_loop;
@@ -146,12 +199,13 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetRetiredWhenDeviceIsStopped) {
         ASSERT_TRUE(iter != known_buffer_ids.end());
         known_buffer_ids.erase(iter);
       }));
+
   EXPECT_CALL(video_frame_handler, OnStopped())
       .WillOnce(Invoke(
           [&wait_for_on_stopped_loop]() { wait_for_on_stopped_loop.Quit(); }));
 
   // Stop the device
-  i420_fake_device_remote_.reset();
+  subscription.reset();
   wait_for_on_stopped_loop.Run();
   ASSERT_TRUE(known_buffer_ids.empty());
 }

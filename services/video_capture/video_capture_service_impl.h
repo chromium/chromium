@@ -45,9 +45,9 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   void ConnectToCameraAppDeviceBridge(
       mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge> receiver)
       override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void ConnectToDeviceFactory(
       mojo::PendingReceiver<mojom::DeviceFactory> receiver) override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void ConnectToVideoSourceProvider(
       mojo::PendingReceiver<mojom::VideoSourceProvider> receiver) override;
   void SetRetryCount(int32_t count) override;
@@ -64,8 +64,11 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   void LazyInitializeVideoSourceProvider();
   void OnLastSourceProviderClientDisconnected();
 
-  mojo::Receiver<mojom::VideoCaptureService> receiver_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   mojo::ReceiverSet<mojom::DeviceFactory> factory_receivers_;
+#endif
+
+  mojo::Receiver<mojom::VideoCaptureService> receiver_;
   std::unique_ptr<VirtualDeviceEnabledDeviceFactory> device_factory_;
   std::unique_ptr<VideoSourceProviderImpl> video_source_provider_;
   std::unique_ptr<GpuDependenciesContext> gpu_dependencies_context_;

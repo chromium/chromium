@@ -109,7 +109,9 @@ VideoCaptureServiceImpl::VideoCaptureServiceImpl(
       ui_task_runner_(std::move(ui_task_runner)) {}
 
 VideoCaptureServiceImpl::~VideoCaptureServiceImpl() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   factory_receivers_.Clear();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   device_factory_.reset();
 
   if (gpu_dependencies_context_) {
@@ -134,13 +136,13 @@ void VideoCaptureServiceImpl::ConnectToCameraAppDeviceBridge(
   media::CameraAppDeviceBridgeImpl::GetInstance()->BindReceiver(
       std::move(receiver));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void VideoCaptureServiceImpl::ConnectToDeviceFactory(
     mojo::PendingReceiver<mojom::DeviceFactory> receiver) {
   LazyInitializeDeviceFactory();
   factory_receivers_.Add(device_factory_.get(), std::move(receiver));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void VideoCaptureServiceImpl::ConnectToVideoSourceProvider(
     mojo::PendingReceiver<mojom::VideoSourceProvider> receiver) {

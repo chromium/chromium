@@ -19,10 +19,6 @@ class MockVideoCaptureService
   MockVideoCaptureService();
   ~MockVideoCaptureService() override;
 
-  void ConnectToDeviceFactory(
-      mojo::PendingReceiver<video_capture::mojom::DeviceFactory> receiver)
-      override;
-
   void ConnectToVideoSourceProvider(
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
       override;
@@ -32,10 +28,18 @@ class MockVideoCaptureService
       mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
           accelerator_factory) override;
 
+  void ConnectToDeviceFactory(
+      mojo::PendingReceiver<video_capture::mojom::DeviceFactory> receiver)
+      override;
+
   MOCK_METHOD1(
       DoInjectGpuDependencies,
       void(mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
                accelerator_factory));
+
+  MOCK_METHOD1(DoConnectToDeviceFactory,
+               void(mojo::PendingReceiver<video_capture::mojom::DeviceFactory>
+                        receiver));
 
   void ConnectToCameraAppDeviceBridge(
       mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge>) override {}
@@ -45,9 +49,6 @@ class MockVideoCaptureService
       mojo::PendingReceiver<mojom::TestingControls>) override {}
 
   MOCK_METHOD1(SetShutdownDelayInSeconds, void(float seconds));
-  MOCK_METHOD1(DoConnectToDeviceFactory,
-               void(mojo::PendingReceiver<video_capture::mojom::DeviceFactory>
-                        receiver));
   MOCK_METHOD1(DoConnectToVideoSourceProvider,
                void(mojo::PendingReceiver<
                     video_capture::mojom::VideoSourceProvider> receiver));

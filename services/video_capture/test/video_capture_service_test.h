@@ -10,8 +10,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_capture/public/mojom/device_factory.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#include "services/video_capture/public/mojom/video_source.mojom.h"
+#include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 #include "services/video_capture/public/mojom/virtual_device.mojom.h"
 #include "services/video_capture/video_capture_service_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,9 +53,11 @@ class VideoCaptureServiceTest : public testing::Test {
 
   std::unique_ptr<VideoCaptureServiceImpl> service_impl_;
   mojo::Remote<mojom::VideoCaptureService> service_remote_;
-  mojo::Remote<mojom::DeviceFactory> factory_;
-  base::MockCallback<mojom::DeviceFactory::GetDeviceInfosCallback>
+  mojo::Remote<mojom::VideoSourceProvider> video_source_provider_;
+  base::MockCallback<mojom::VideoSourceProvider::GetSourceInfosCallback>
       device_info_receiver_;
+
+  media::VideoCaptureParams requestable_settings_;
 };
 
 }  // namespace video_capture

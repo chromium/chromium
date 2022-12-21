@@ -10,6 +10,11 @@
 #include "services/video_capture/public/cpp/mock_producer.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
 
+namespace {
+const media::VideoCaptureFormat kDefaultSupportedFormat{
+    gfx::Size(640, 480), 30, media::PIXEL_FORMAT_I420};
+}  // anonymous namespace
+
 namespace video_capture {
 
 VideoCaptureServiceTest::SharedMemoryVirtualDeviceContext::
@@ -39,8 +44,14 @@ void VideoCaptureServiceTest::SetUp() {
   // |service_remote_->InjectGpuDependencies()| here. Test case
   // |FakeMjpegVideoCaptureDeviceTest.
   //  CanDecodeMjpegWithoutInjectedGpuDependencies| depends on this assumption.
-  service_remote_->ConnectToDeviceFactory(
-      factory_.BindNewPipeAndPassReceiver());
+  service_remote_->ConnectToVideoSourceProvider(
+      video_source_provider_.BindNewPipeAndPassReceiver());
+
+  requestable_settings_.requested_format = kDefaultSupportedFormat;
+  requestable_settings_.resolution_change_policy =
+      media::ResolutionChangePolicy::FIXED_RESOLUTION;
+  requestable_settings_.power_line_frequency =
+      media::PowerLineFrequency::FREQUENCY_DEFAULT;
 }
 
 std::unique_ptr<VideoCaptureServiceTest::SharedMemoryVirtualDeviceContext>
@@ -48,10 +59,11 @@ VideoCaptureServiceTest::AddSharedMemoryVirtualDevice(
     const std::string& device_id) {
   media::VideoCaptureDeviceInfo device_info;
   device_info.descriptor.device_id = device_id;
+  device_info.supported_formats = {kDefaultSupportedFormat};
   mojo::PendingRemote<mojom::Producer> producer;
   auto result = std::make_unique<SharedMemoryVirtualDeviceContext>(
       producer.InitWithNewPipeAndPassReceiver());
-  factory_->AddSharedMemoryVirtualDevice(
+  video_source_provider_->AddSharedMemoryVirtualDevice(
       device_info, std::move(producer),
       result->device.BindNewPipeAndPassReceiver());
   return result;
@@ -62,8 +74,8 @@ VideoCaptureServiceTest::AddTextureVirtualDevice(const std::string& device_id) {
   media::VideoCaptureDeviceInfo device_info;
   device_info.descriptor.device_id = device_id;
   mojo::PendingRemote<mojom::TextureVirtualDevice> device;
-  factory_->AddTextureVirtualDevice(device_info,
-                                    device.InitWithNewPipeAndPassReceiver());
+  video_source_provider_->AddTextureVirtualDevice(
+      device_info, device.InitWithNewPipeAndPassReceiver());
   return device;
 }
 

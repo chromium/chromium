@@ -29,19 +29,12 @@ void FakeDeviceTest::SetUp() {
   requestable_settings_.power_line_frequency =
       media::PowerLineFrequency::FREQUENCY_DEFAULT;
 
-  factory_->CreateDevice(
-      std::move(i420_fake_device_info_.descriptor.device_id),
-      i420_fake_device_remote_.BindNewPipeAndPassReceiver(),
-      base::BindOnce([](media::VideoCaptureError result_code) {
-        ASSERT_EQ(media::VideoCaptureError::kNone, result_code);
-      }));
+  video_source_provider_->GetVideoSource(
+      i420_fake_device_info_.descriptor.device_id,
+      i420_fake_source_remote_.BindNewPipeAndPassReceiver());
 
-  factory_->CreateDevice(
-      std::move(mjpeg_fake_device_info_.descriptor.device_id),
-      mjpeg_fake_device_remote_.BindNewPipeAndPassReceiver(),
-      base::BindOnce([](media::VideoCaptureError result_code) {
-        ASSERT_EQ(media::VideoCaptureError::kNone, result_code);
-      }));
+  video_source_provider_->GetVideoSource(
+      mjpeg_fake_device_info_.descriptor.device_id,
+      mjpeg_fake_source_remote_.BindNewPipeAndPassReceiver());
 }
-
 }  // namespace video_capture

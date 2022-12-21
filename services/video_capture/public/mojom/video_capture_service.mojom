@@ -53,6 +53,7 @@ interface VideoCaptureService  {
       pending_receiver<cros.mojom.CameraAppDeviceBridge> receiver);
 
   // Legacy API. Supports one client per device.
+  [EnableIf=is_chromeos_ash]
   ConnectToDeviceFactory(pending_receiver<DeviceFactory> receiver);
 
   // Current API. Supports multiple clients per source.

@@ -66,16 +66,6 @@ class VideoCaptureServiceLifecycleTest : public ::testing::Test {
 };
 
 // Tests that the service quits when the only client disconnects after not
-// having done anything other than obtaining a connection to the device factory.
-TEST_F(VideoCaptureServiceLifecycleTest,
-       ServiceQuitsWhenSingleDeviceFactoryClientDisconnected) {
-  mojo::Remote<mojom::DeviceFactory> factory;
-  service_remote_->ConnectToDeviceFactory(factory.BindNewPipeAndPassReceiver());
-  factory.reset();
-  service_idle_wait_loop_.Run();
-}
-
-// Tests that the service quits when the only client disconnects after not
 // having done anything other than obtaining a connection to the video source
 // provider.
 TEST_F(VideoCaptureServiceLifecycleTest,
@@ -146,54 +136,4 @@ TEST_F(VideoCaptureServiceLifecycleTest, EnumerateDevicesAfterReconnect) {
 
   service_idle_wait_loop_.Run();
 }
-
-// Tests that the service quits when the last client disconnects while using a
-// device.
-TEST_F(VideoCaptureServiceLifecycleTest,
-       ServiceQuitsWhenClientDisconnectsWhileUsingDevice) {
-  mojo::Remote<mojom::DeviceFactory> factory;
-  service_remote_->ConnectToDeviceFactory(factory.BindNewPipeAndPassReceiver());
-
-  // Connect to and start first device (in this case a fake camera).
-  media::VideoCaptureDeviceInfo fake_device_info;
-  {
-    base::RunLoop wait_loop;
-    EXPECT_CALL(device_info_receiver_, Run(_))
-        .WillOnce(Invoke(
-            [&fake_device_info, &wait_loop](
-                const std::vector<media::VideoCaptureDeviceInfo>& infos) {
-              fake_device_info = infos[0];
-              wait_loop.Quit();
-            }));
-    factory->GetDeviceInfos(device_info_receiver_.Get());
-    wait_loop.Run();
-  }
-  mojo::Remote<mojom::Device> fake_device;
-  factory->CreateDevice(
-      std::move(fake_device_info.descriptor.device_id),
-      fake_device.BindNewPipeAndPassReceiver(),
-      base::BindOnce([](media::VideoCaptureError result_code) {
-        ASSERT_EQ(media::VideoCaptureError::kNone, result_code);
-      }));
-  media::VideoCaptureParams requestable_settings;
-  requestable_settings.requested_format = fake_device_info.supported_formats[0];
-  mojo::PendingRemote<mojom::VideoFrameHandler> handler_remote;
-  MockVideoFrameHandler mock_video_frame_handler(
-      handler_remote.InitWithNewPipeAndPassReceiver());
-  fake_device->Start(requestable_settings, std::move(handler_remote));
-  {
-    base::RunLoop wait_loop;
-    EXPECT_CALL(mock_video_frame_handler, OnStarted()).WillOnce([&wait_loop]() {
-      wait_loop.Quit();
-    });
-    wait_loop.Run();
-  }
-
-  // Disconnect
-  fake_device.reset();
-  factory.reset();
-
-  service_idle_wait_loop_.Run();
-}
-
 }  // namespace video_capture
