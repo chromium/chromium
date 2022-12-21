@@ -129,7 +129,7 @@ void MaybeLogStreamDevice(const int32_t& request_id,
     return;
 
   SendLogMessage(base::StringPrintf(
-      "OnStreamGenerated({request_id=%d}, {label=%s}, {device=[id: %s, "
+      "OnStreamsGenerated({request_id=%d}, {label=%s}, {device=[id: %s, "
       "name: "
       "%s]})",
       request_id, label.Utf8().c_str(), device->id.c_str(),
@@ -962,14 +962,14 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
     GotOpenDevice(current_request_info_->request_id(), result,
                   std::move(response));
   } else {
-    // The browser replies to this request by invoking OnStreamGenerated().
+    // The browser replies to this request by invoking OnStreamsGenerated().
     GetMediaStreamDispatcherHost()->GenerateStreams(
         current_request_info_->request_id(),
         *current_request_info_->stream_controls(),
         current_request_info_->is_processing_user_gesture(),
         mojom::blink::StreamSelectionInfo::New(
             strategy, requested_audio_capture_session_id),
-        WTF::BindOnce(&UserMediaProcessor::OnStreamGenerated,
+        WTF::BindOnce(&UserMediaProcessor::OnStreamsGenerated,
                       WrapWeakPersistent(this),
                       current_request_info_->request_id()));
   }
@@ -1016,14 +1016,14 @@ void UserMediaProcessor::GotOpenDevice(
   mojom::blink::StreamDevicesSetPtr stream_devices_set =
       mojom::blink::StreamDevicesSet::New();
   stream_devices_set->stream_devices.emplace_back(std::move(devices));
-  OnStreamGenerated(request_id, result, response->label,
-                    std::move(stream_devices_set),
-                    response->pan_tilt_zoom_allowed);
+  OnStreamsGenerated(request_id, result, response->label,
+                     std::move(stream_devices_set),
+                     response->pan_tilt_zoom_allowed);
   current_request_info_->request()->FinalizeTransferredTrackInitialization(
       *current_request_info_->descriptors());
 }
 
-void UserMediaProcessor::OnStreamGenerated(
+void UserMediaProcessor::OnStreamsGenerated(
     int32_t request_id,
     MediaStreamRequestResult result,
     const String& label,
@@ -1041,7 +1041,7 @@ void UserMediaProcessor::OnStreamGenerated(
     // This can happen if the request is canceled or the frame reloads while
     // MediaStreamDispatcherHost is processing the request.
     SendLogMessage(base::StringPrintf(
-        "OnStreamGenerated([request_id=%d]) => (ERROR: invalid request ID)",
+        "OnStreamsGenerated([request_id=%d]) => (ERROR: invalid request ID)",
         request_id));
     for (const mojom::blink::StreamDevicesPtr& stream_devices :
          stream_devices_set->stream_devices) {
@@ -1103,7 +1103,7 @@ void UserMediaProcessor::OnStreamGenerated(
       }
 
       SendLogMessage(base::StringPrintf(
-          "OnStreamGenerated({request_id=%d}, {label=%s}, {device=[id: %s, "
+          "OnStreamsGenerated({request_id=%d}, {label=%s}, {device=[id: %s, "
           "name: %s]}) => (Requesting video device formats)",
           request_id, label.Utf8().c_str(), video_device.id.c_str(),
           video_device.name.c_str()));

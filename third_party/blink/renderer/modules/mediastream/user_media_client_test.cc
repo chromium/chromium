@@ -1646,7 +1646,7 @@ TEST_P(UserMediaClientTest, ZoomConstraintRequestPanTiltZoomPermission) {
       advanced_factory.CreateMediaConstraints()));
 }
 
-TEST_P(UserMediaClientTest, MultiDeviceOnStreamGenerated) {
+TEST_P(UserMediaClientTest, MultiDeviceOnStreamsGenerated) {
   const size_t devices_count = 5u;
   const int32_t request_id = 0;
   std::unique_ptr<blink::MediaDevicesDispatcherHostMock>
@@ -1671,7 +1671,7 @@ TEST_P(UserMediaClientTest, MultiDeviceOnStreamGenerated) {
         blink::mojom::blink::StreamDevices::New(absl::nullopt,
                                                 blink::MediaStreamDevice()));
   }
-  user_media_processor_->OnStreamGenerated(
+  user_media_processor_->OnStreamsGenerated(
       request_id, blink::mojom::MediaStreamRequestResult::OK, "",
       std::move(stream_devices_set), /*pan_tilt_zoom_allowed=*/false);
   base::RunLoop run_loop;
