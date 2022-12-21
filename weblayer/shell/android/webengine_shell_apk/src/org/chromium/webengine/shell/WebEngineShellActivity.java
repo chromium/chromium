@@ -229,6 +229,9 @@ public class WebEngineShellActivity extends AppCompatActivity {
                     case 1:
                         intent = new Intent(activity, WebEngineStateTestActivity.class);
                         break;
+                    case 2:
+                        intent = new Intent(activity, WebEngineNavigationTestActivity.class);
+                        break;
                     default:
                         assert false : "Unhandled item: " + String.valueOf(pos);
                         intent = null;

@@ -25,5 +25,6 @@ found in the LICENSE file.
     <string-array name="activities_drop_down">
         <item>Shell</item>
         <item>UI/WebEngine State Test</item>
+        <item>Navigation Test</item>
     </string-array>
 </resources>

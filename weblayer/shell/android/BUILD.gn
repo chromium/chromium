@@ -121,6 +121,7 @@ android_apk("weblayer_support_apk") {
 android_resources("webengine_shell_resources") {
   sources = [
     "webengine_shell_apk/res/layout/main.xml",
+    "webengine_shell_apk/res/layout/navigation_test.xml",
     "webengine_shell_apk/res/layout/state_test.xml",
     "webengine_shell_apk/res/values/strings.xml",
     "webengine_shell_apk/res/values/styles.xml",
@@ -134,6 +135,7 @@ android_library("webengine_shell_java") {
   sources = [
     "webengine_shell_apk/src/org/chromium/webengine/shell/DefaultObservers.java",
     "webengine_shell_apk/src/org/chromium/webengine/shell/InstrumentationActivity.java",
+    "webengine_shell_apk/src/org/chromium/webengine/shell/WebEngineNavigationTestActivity.java",
     "webengine_shell_apk/src/org/chromium/webengine/shell/WebEngineShellActivity.java",
     "webengine_shell_apk/src/org/chromium/webengine/shell/WebEngineStateTestActivity.java",
   ]
