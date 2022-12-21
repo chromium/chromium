@@ -31,9 +31,6 @@ class DeviceAccountsProviderImpl : public DeviceAccountsProvider {
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) override;
   std::vector<AccountInfo> GetAllAccounts() const override;
-  AuthenticationErrorCategory GetAuthenticationErrorCategory(
-      const std::string& gaia_id,
-      NSError* error) const override;
 
  private:
   ChromeAccountManagerService* account_manager_service_ = nullptr;

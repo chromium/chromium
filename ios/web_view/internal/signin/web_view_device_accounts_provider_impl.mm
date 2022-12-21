@@ -16,6 +16,62 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+using AccessTokenInfo = DeviceAccountsProvider::AccessTokenInfo;
+using AccessTokenResult = DeviceAccountsProvider::AccessTokenResult;
+
+// Helper function converting `error` for `identity` to an
+// AuthenticationErrorCategory.
+AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
+    CWVIdentity* identity,
+    NSError* error) {
+  DCHECK(error);
+
+  CWVSyncError sync_error =
+      [CWVSyncController.dataSource syncErrorForNSError:error
+                                               identity:identity];
+  switch (sync_error) {
+    case CWVSyncErrorNone:
+      NOTREACHED();
+      return kAuthenticationErrorCategoryUnknownErrors;
+    case CWVSyncErrorInvalidGAIACredentials:
+      return kAuthenticationErrorCategoryAuthorizationErrors;
+    case CWVSyncErrorUserNotSignedUp:
+      return kAuthenticationErrorCategoryUnknownIdentityErrors;
+    case CWVSyncErrorConnectionFailed:
+      return kAuthenticationErrorCategoryNetworkServerErrors;
+    case CWVSyncErrorServiceUnavailable:
+      return kAuthenticationErrorCategoryAuthorizationForbiddenErrors;
+    case CWVSyncErrorRequestCanceled:
+      return kAuthenticationErrorCategoryUserCancellationErrors;
+    case CWVSyncErrorUnexpectedServiceResponse:
+      return kAuthenticationErrorCategoryUnknownErrors;
+  }
+
+  NOTREACHED() << "unexpected error: " << static_cast<int>(sync_error);
+}
+
+// Helper function converting the result of fetching the access token from
+// what CWVSyncControllerDataSource pass to the callback to what is expected
+// for AccessTokenCallback.
+AccessTokenResult AccessTokenResultFrom(NSString* token,
+                                        NSDate* expiration,
+                                        CWVIdentity* identity,
+                                        NSError* error) {
+  if (error) {
+    return base::unexpected(
+        AuthenticationErrorCategoryFromError(identity, error));
+  }
+
+  AccessTokenInfo info{base::SysNSStringToUTF8(token),
+                       base::Time::FromNSDate(expiration)};
+
+  return base::ok(std::move(info));
+}
+
+}  // namespace
+
 WebViewDeviceAccountsProviderImpl::WebViewDeviceAccountsProviderImpl() {}
 
 WebViewDeviceAccountsProviderImpl::~WebViewDeviceAccountsProviderImpl() =
@@ -48,7 +104,8 @@ void WebViewDeviceAccountsProviderImpl::GetAccessToken(
                 completionHandler:^(NSString* access_token,
                                     NSDate* expiration_date, NSError* error) {
                   std::move(scoped_callback)
-                      .Run(access_token, expiration_date, error);
+                      .Run(AccessTokenResultFrom(access_token, expiration_date,
+                                                 identity, error));
                 }];
 }
 
@@ -66,36 +123,4 @@ WebViewDeviceAccountsProviderImpl::GetAllAccounts() const {
     account_infos.push_back(account_info);
   }
   return account_infos;
-}
-
-AuthenticationErrorCategory
-WebViewDeviceAccountsProviderImpl::GetAuthenticationErrorCategory(
-    const std::string& gaia_id,
-    NSError* error) const {
-  DCHECK(CWVSyncController.dataSource);
-
-  CWVIdentity* identity =
-      [[CWVIdentity alloc] initWithEmail:nil
-                                fullName:nil
-                                  gaiaID:base::SysUTF8ToNSString(gaia_id)];
-  CWVSyncError sync_error =
-      [CWVSyncController.dataSource syncErrorForNSError:error
-                                               identity:identity];
-  switch (sync_error) {
-    case CWVSyncErrorNone:
-      NOTREACHED();
-      return kAuthenticationErrorCategoryUnknownErrors;
-    case CWVSyncErrorInvalidGAIACredentials:
-      return kAuthenticationErrorCategoryAuthorizationErrors;
-    case CWVSyncErrorUserNotSignedUp:
-      return kAuthenticationErrorCategoryUnknownIdentityErrors;
-    case CWVSyncErrorConnectionFailed:
-      return kAuthenticationErrorCategoryNetworkServerErrors;
-    case CWVSyncErrorServiceUnavailable:
-      return kAuthenticationErrorCategoryAuthorizationForbiddenErrors;
-    case CWVSyncErrorRequestCanceled:
-      return kAuthenticationErrorCategoryUserCancellationErrors;
-    case CWVSyncErrorUnexpectedServiceResponse:
-      return kAuthenticationErrorCategoryUnknownErrors;
-  }
 }

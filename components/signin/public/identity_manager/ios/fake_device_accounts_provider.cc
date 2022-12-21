@@ -4,14 +4,9 @@
 
 #include "components/signin/public/identity_manager/ios/fake_device_accounts_provider.h"
 
-#import <Foundation/Foundation.h>
-
 #include "base/check.h"
-#include "base/strings/sys_string_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 
 FakeDeviceAccountsProvider::FakeDeviceAccountsProvider() {}
 
@@ -46,28 +41,18 @@ void FakeDeviceAccountsProvider::ClearAccounts() {
 
 void FakeDeviceAccountsProvider::IssueAccessTokenForAllRequests() {
   for (auto& pair : requests_) {
-    NSString* access_token = [NSString
-        stringWithFormat:@"fake_access_token [account=%s]", pair.first.c_str()];
-    NSDate* one_hour_from_now = [NSDate dateWithTimeIntervalSinceNow:3600];
-    std::move(pair.second).Run(access_token, one_hour_from_now, nil);
+    AccessTokenInfo info{base::StringPrintf("fake_access_token [account=%s]",
+                                            pair.first.c_str()),
+                         base::Time::Now() + base::Hours(1)};
+    std::move(pair.second).Run(base::ok(std::move(info)));
   }
   requests_.clear();
 }
 
 void FakeDeviceAccountsProvider::IssueAccessTokenErrorForAllRequests() {
   for (auto& pair : requests_) {
-    NSError* error = [[NSError alloc] initWithDomain:@"fake_access_token_error"
-                                                code:-1
-                                            userInfo:nil];
-    std::move(pair.second).Run(nil, nil, error);
+    std::move(pair.second)
+        .Run(base::unexpected(kAuthenticationErrorCategoryAuthorizationErrors));
   }
   requests_.clear();
-}
-
-AuthenticationErrorCategory
-FakeDeviceAccountsProvider::GetAuthenticationErrorCategory(
-    const std::string& gaia_id,
-    NSError* error) const {
-  DCHECK(error);
-  return kAuthenticationErrorCategoryAuthorizationErrors;
 }

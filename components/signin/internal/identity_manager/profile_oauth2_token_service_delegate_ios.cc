@@ -4,12 +4,11 @@
 
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h"
 
-#import <Foundation/Foundation.h>
-
 #include <set>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
@@ -21,26 +20,17 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
+using AccessTokenInfo = DeviceAccountsProvider::AccessTokenInfo;
+using AccessTokenResult = DeviceAccountsProvider::AccessTokenResult;
 using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 
 // Match the way Chromium handles authentication errors in
 // google_apis/gaia/oauth2_access_token_fetcher.cc:
-GoogleServiceAuthError GetGoogleServiceAuthErrorFromNSError(
-    DeviceAccountsProvider* provider,
-    const std::string& gaia_id,
-    NSError* error) {
-  if (!error)
-    return GoogleServiceAuthError::AuthErrorNone();
-
-  AuthenticationErrorCategory errorCategory =
-      provider->GetAuthenticationErrorCategory(gaia_id, error);
-  switch (errorCategory) {
+GoogleServiceAuthError GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
+    AuthenticationErrorCategory error) {
+  switch (error) {
     case kAuthenticationErrorCategoryUnknownErrors:
       // Treat all unknown error as unexpected service response errors.
       // This may be too general and may require a finer grain filtering.
@@ -64,6 +54,7 @@ GoogleServiceAuthError GetGoogleServiceAuthErrorFromNSError(
     case kAuthenticationErrorCategoryUnknownIdentityErrors:
       return GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP);
   }
+  NOTREACHED() << "unsupported error: " << static_cast<int>(error);
 }
 
 // Converts a DeviceAccountsProvider::AccountInfo to an AccountInfo.
@@ -94,9 +85,7 @@ class SSOAccessTokenFetcher : public OAuth2AccessTokenFetcher {
   void CancelRequest() override;
 
   // Handles an access token response.
-  void OnAccessTokenResponse(NSString* token,
-                             NSDate* expiration,
-                             NSError* error);
+  void OnAccessTokenResponse(AccessTokenResult result);
 
  private:
   DeviceAccountsProvider* provider_;  // weak
@@ -133,24 +122,22 @@ void SSOAccessTokenFetcher::CancelRequest() {
   request_was_cancelled_ = true;
 }
 
-void SSOAccessTokenFetcher::OnAccessTokenResponse(NSString* token,
-                                                  NSDate* expiration,
-                                                  NSError* error) {
+void SSOAccessTokenFetcher::OnAccessTokenResponse(AccessTokenResult result) {
   if (request_was_cancelled_) {
     // Ignore the callback if the request was cancelled.
     return;
   }
-  GoogleServiceAuthError auth_error =
-      GetGoogleServiceAuthErrorFromNSError(provider_, account_.gaia, error);
-  if (auth_error.state() == GoogleServiceAuthError::NONE) {
-    base::Time expiration_date =
-        base::Time::FromDoubleT([expiration timeIntervalSince1970]);
+
+  if (result.has_value()) {
+    const AccessTokenInfo& info = result.value();
     FireOnGetTokenSuccess(TokenResponseBuilder()
-                              .WithAccessToken(base::SysNSStringToUTF8(token))
-                              .WithExpirationTime(expiration_date)
+                              .WithAccessToken(info.token)
+                              .WithExpirationTime(info.expiration_time)
                               .build());
   } else {
-    FireOnGetTokenFailure(auth_error);
+    FireOnGetTokenFailure(
+        GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
+            result.error()));
   }
 }
 
@@ -253,8 +240,9 @@ void ProfileOAuth2TokenServiceIOSDelegate::ReloadCredentials(
   std::set<CoreAccountId> accounts_to_remove =
       base::STLSetDifference<std::set<CoreAccountId>>(old_account_ids,
                                                       new_account_ids);
-  if (accounts_to_add.empty() && accounts_to_remove.empty())
+  if (accounts_to_add.empty() && accounts_to_remove.empty()) {
     return;
+  }
 
   // Remove all old accounts that do not appear in |new_accounts| and then
   // load |new_accounts|.
@@ -289,8 +277,9 @@ void ProfileOAuth2TokenServiceIOSDelegate::RevokeAllCredentials() {
 
   ScopedBatchChange batch(this);
   std::set<CoreAccountId> toRemove = accounts_;
-  for (auto& account_id : toRemove)
+  for (auto& account_id : toRemove) {
     RemoveAccount(account_id);
+  }
 
   DCHECK_EQ(0u, accounts_.size());
 }

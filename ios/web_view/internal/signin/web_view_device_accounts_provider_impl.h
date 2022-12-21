@@ -29,9 +29,6 @@ class WebViewDeviceAccountsProviderImpl : public DeviceAccountsProvider {
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) override;
   std::vector<AccountInfo> GetAllAccounts() const override;
-  AuthenticationErrorCategory GetAuthenticationErrorCategory(
-      const std::string& gaia_id,
-      NSError* error) const override;
 };
 
 #endif  // IOS_WEB_VIEW_INTERNAL_SIGNIN_WEB_VIEW_DEVICE_ACCOUNTS_PROVIDER_IMPL_H_

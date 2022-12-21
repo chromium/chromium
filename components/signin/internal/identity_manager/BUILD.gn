@@ -119,10 +119,9 @@ source_set("identity_manager") {
 
   if (is_ios) {
     sources += [
+      "profile_oauth2_token_service_delegate_ios.cc",
       "profile_oauth2_token_service_delegate_ios.h",
-      "profile_oauth2_token_service_delegate_ios.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
 
     deps += [ "//components/signin/public/identity_manager/ios" ]
   }
@@ -199,8 +198,7 @@ source_set("unit_tests") {
   }
 
   if (is_ios) {
-    sources += [ "profile_oauth2_token_service_delegate_ios_unittest.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
+    sources += [ "profile_oauth2_token_service_delegate_ios_unittest.cc" ]
 
     deps += [ "//components/signin/public/identity_manager/ios:test_support" ]
   }

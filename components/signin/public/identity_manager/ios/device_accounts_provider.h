@@ -5,21 +5,13 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IOS_DEVICE_ACCOUNTS_PROVIDER_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IOS_DEVICE_ACCOUNTS_PROVIDER_H_
 
-#if defined(__OBJC__)
-@class NSDate;
-@class NSError;
-@class NSString;
-#else
-class NSDate;
-class NSError;
-class NSString;
-#endif  // defined(__OBJC__)
-
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/time/time.h"
+#include "base/types/expected.h"
 
 enum AuthenticationErrorCategory {
   // Unknown errors.
@@ -48,8 +40,20 @@ class DeviceAccountsProvider {
     std::string hosted_domain;
   };
 
-  using AccessTokenCallback = base::OnceCallback<
-      void(NSString* token, NSDate* expiration, NSError* error)>;
+  // Access token info.
+  struct AccessTokenInfo {
+    std::string token;
+    base::Time expiration_time;
+  };
+
+  // Result of GetAccessToken() passed to the callback. Contains either
+  // a valid AccessTokenInfo or the error.
+  using AccessTokenResult =
+      base::expected<AccessTokenInfo, AuthenticationErrorCategory>;
+
+  // Callback invoked when access token have been fetched.
+  using AccessTokenCallback =
+      base::OnceCallback<void(AccessTokenResult result)>;
 
   DeviceAccountsProvider() {}
   virtual ~DeviceAccountsProvider() {}
@@ -63,12 +67,6 @@ class DeviceAccountsProvider {
                               const std::string& client_id,
                               const std::set<std::string>& scopes,
                               AccessTokenCallback callback);
-
-  // Returns the authentication error category of |error| associated with the
-  // account with id |gaia_id|.
-  virtual AuthenticationErrorCategory GetAuthenticationErrorCategory(
-      const std::string& gaia_id,
-      NSError* error) const;
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IOS_DEVICE_ACCOUNTS_PROVIDER_H_
