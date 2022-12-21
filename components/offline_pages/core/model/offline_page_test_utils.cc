@@ -34,59 +34,58 @@ size_t GetFileCountInDirectory(const base::FilePath& directory) {
 
 std::ostream& operator<<(std::ostream& out, const OfflinePageItem& item) {
   using base::Value;
-  base::DictionaryValue value;
-  value.SetKey("url", Value(item.url.spec()));
-  value.SetKey("offline_id", Value(std::to_string(item.offline_id)));
-  value.SetKey("client_id", Value(item.client_id.ToString()));
+  base::Value::Dict value;
+  value.Set("url", item.url.spec());
+  value.Set("offline_id", base::NumberToString(item.offline_id));
+  value.Set("client_id", item.client_id.ToString());
   if (!item.file_path.empty()) {
-    value.SetKey("file_path", Value(item.file_path.AsUTF8Unsafe()));
+    value.Set("file_path", item.file_path.AsUTF8Unsafe());
   }
   if (item.file_size != 0) {
-    value.SetKey("file_size", Value(std::to_string(item.file_size)));
+    value.Set("file_size", base::NumberToString(item.file_size));
   }
   if (!item.creation_time.is_null()) {
-    value.SetKey(
+    value.Set(
         "creation_time",
-        Value(std::to_string(store_utils::ToDatabaseTime(item.creation_time))));
+        base::NumberToString(store_utils::ToDatabaseTime(item.creation_time)));
   }
   if (!item.last_access_time.is_null()) {
-    value.SetKey("creation_time",
-                 Value(std::to_string(
-                     store_utils::ToDatabaseTime(item.last_access_time))));
+    value.Set("creation_time", base::NumberToString(store_utils::ToDatabaseTime(
+                                   item.last_access_time)));
   }
   if (item.access_count != 0) {
-    value.SetKey("access_count", Value(item.access_count));
+    value.Set("access_count", item.access_count);
   }
   if (!item.title.empty()) {
-    value.SetKey("title", Value(base::UTF16ToUTF8(item.title)));
+    value.Set("title", base::UTF16ToUTF8(item.title));
   }
   if (item.flags & OfflinePageItem::MARKED_FOR_DELETION) {
-    value.SetKey("marked_for_deletion", Value(true));
+    value.Set("marked_for_deletion", true);
   }
   if (!item.original_url_if_different.is_empty()) {
-    value.SetKey("original_url_if_different",
-                 Value(item.original_url_if_different.spec()));
+    value.Set("original_url_if_different",
+              item.original_url_if_different.spec());
   }
   if (!item.request_origin.empty()) {
-    value.SetKey("request_origin", Value(item.request_origin));
+    value.Set("request_origin", item.request_origin);
   }
   if (item.system_download_id != kArchiveNotPublished) {
-    value.SetKey("system_download_id",
-                 Value(std::to_string(item.system_download_id)));
+    value.Set("system_download_id",
+              base::NumberToString(item.system_download_id));
   }
   if (!item.file_missing_time.is_null()) {
-    value.SetKey("file_missing_time",
-                 Value(std::to_string(
-                     store_utils::ToDatabaseTime(item.file_missing_time))));
+    value.Set("file_missing_time",
+              base::NumberToString(
+                  store_utils::ToDatabaseTime(item.file_missing_time)));
   }
   if (!item.digest.empty()) {
-    value.SetKey("digest", Value(item.digest));
+    value.Set("digest", item.digest);
   }
   if (!item.snippet.empty()) {
-    value.SetKey("snippet", Value(item.snippet));
+    value.Set("snippet", item.snippet);
   }
   if (!item.attribution.empty()) {
-    value.SetKey("attribution", Value(item.attribution));
+    value.Set("attribution", item.attribution);
   }
 
   std::string value_string;

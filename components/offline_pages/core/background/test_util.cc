@@ -23,24 +23,26 @@ const char* EnumString(SavePageRequest::AutoFetchNotificationState value) {
 }  // namespace
 
 std::string SavePageRequest::ToString() const {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetIntKey("request_id", request_id_);
-  result.SetStringKey("url", url_.spec());
-  result.SetStringKey("client_id", client_id_.ToString());
-  result.SetIntKey("creation_time",
-                   creation_time_.ToDeltaSinceWindowsEpoch().InSeconds());
-  result.SetIntKey("started_attempt_count", started_attempt_count_);
-  result.SetIntKey("completed_attempt_count", completed_attempt_count_);
-  result.SetIntKey("last_attempt_time",
-                   last_attempt_time_.ToDeltaSinceWindowsEpoch().InSeconds());
-  result.SetBoolKey("user_requested", user_requested_);
-  result.SetIntKey("state", static_cast<int>(state_));
-  result.SetIntKey("fail_state", static_cast<int>(fail_state_));
-  result.SetIntKey("pending_state", static_cast<int>(pending_state_));
-  result.SetStringKey("original_url", original_url_.spec());
-  result.SetStringKey("request_origin", request_origin_);
-  result.SetStringKey("auto_fetch_notification_state",
-                      EnumString(auto_fetch_notification_state_));
+  base::Value::Dict result;
+  result.Set("request_id", static_cast<int>(request_id_));
+  result.Set("url", url_.spec());
+  result.Set("client_id", client_id_.ToString());
+  result.Set(
+      "creation_time",
+      static_cast<int>(creation_time_.ToDeltaSinceWindowsEpoch().InSeconds()));
+  result.Set("started_attempt_count", started_attempt_count_);
+  result.Set("completed_attempt_count", completed_attempt_count_);
+  result.Set("last_attempt_time",
+             static_cast<int>(
+                 last_attempt_time_.ToDeltaSinceWindowsEpoch().InSeconds()));
+  result.Set("user_requested", user_requested_);
+  result.Set("state", static_cast<int>(state_));
+  result.Set("fail_state", static_cast<int>(fail_state_));
+  result.Set("pending_state", static_cast<int>(pending_state_));
+  result.Set("original_url", original_url_.spec());
+  result.Set("request_origin", request_origin_);
+  result.Set("auto_fetch_notification_state",
+             EnumString(auto_fetch_notification_state_));
 
   std::string result_string;
   base::JSONWriter::Write(result, &result_string);
