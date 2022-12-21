@@ -1248,6 +1248,14 @@ void EventRouter::DispatchPendingEvent(
         params->extension_id, params->url, params->render_process_host,
         params->service_worker_version_id, params->worker_thread_id, *event,
         nullptr, true /* did_enqueue */);
+  } else if (event->cannot_dispatch_callback) {
+    // Even after spinning up the lazy background context, there's no registered
+    // event. This can happen if the extension asynchronously registers event
+    // listeners. In this case, notify the caller (if they subscribed via a
+    // callback) and drop the event.
+    // TODO(https://crbug.com/161155): We should provide feedback to
+    // developers (e.g. emit a warning) when an event has no listeners.
+    event->cannot_dispatch_callback.Run();
   }
 }
 
@@ -1398,6 +1406,7 @@ std::unique_ptr<Event> Event::DeepCopy() const {
                               user_gesture, filter_info.Clone());
   copy->will_dispatch_callback = will_dispatch_callback;
   copy->did_dispatch_callback = did_dispatch_callback;
+  copy->cannot_dispatch_callback = cannot_dispatch_callback;
   return copy;
 }
 

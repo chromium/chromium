@@ -1606,7 +1606,7 @@ bool ExtensionWebRequestEventRouter::DispatchEvent(
   }
 
   DispatchEventToListeners(browser_context, std::move(listeners_to_dispatch),
-                           std::move(event_details));
+                           request->id, std::move(event_details));
 
   if (num_handlers_blocking > 0) {
     BlockedRequest& blocked_request = blocked_requests_[request->id];
@@ -1623,6 +1623,7 @@ bool ExtensionWebRequestEventRouter::DispatchEvent(
 void ExtensionWebRequestEventRouter::DispatchEventToListeners(
     content::BrowserContext* browser_context,
     std::unique_ptr<ListenerIDs> listener_ids,
+    uint64_t request_id,
     std::unique_ptr<WebRequestEventDetails> event_details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!listener_ids->empty());
@@ -1707,6 +1708,17 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
       std::unique_ptr<Event> event =
           std::make_unique<Event>(listener->histogram_value, id.sub_event_name,
                                   std::move(args_filtered));
+      // Add a callback to the event in case we find we cannot dispatch to the
+      // extension listener (as can happen if the extension fails to re-register
+      // the event listener synchronously). If this happens, we treat the event
+      // as handled so as to not block indefinitely.
+      // The below base::Unretained is safe because this object is leaked.
+      event->cannot_dispatch_callback = base::BindRepeating(
+          &ExtensionWebRequestEventRouter::OnEventHandled,
+          base::Unretained(this), id.browser_context, id.extension_id,
+          event_name, id.sub_event_name, request_id, id.render_process_id,
+          id.web_view_instance_id, id.worker_thread_id,
+          id.service_worker_version_id, nullptr);
       EventRouter::Get(id.browser_context)
           ->DispatchEventToExtension(id.extension_id, std::move(event));
     }
@@ -1724,16 +1736,32 @@ void ExtensionWebRequestEventRouter::OnEventHandled(
     int worker_thread_id,
     int64_t service_worker_version_id,
     EventResponse* response) {
-  Listeners& listeners =
-      data_[GetBrowserContextID(browser_context)].active_listeners[event_name];
+  BrowserContextData& context_data =
+      data_[GetBrowserContextID(browser_context)];
   EventListener::ID id(browser_context, extension_id, sub_event_name,
                        render_process_id, web_view_instance_id,
                        worker_thread_id, service_worker_version_id);
-  EventListener* listener = FindEventListenerInContainer(id, listeners);
+  EventListener* listener = nullptr;
+
+  // Check if the "handled" event was for an inactive listener (indicated by
+  // having neither a render process nor service worker version). This happens
+  // when we fail to dispatch an event to a lazy service worker listener.
+  // In this case, we still treat the event as handled, because otherwise the
+  // request will hang indefinitely.
+  if (render_process_id == -1 &&
+      service_worker_version_id ==
+          blink::mojom::kInvalidServiceWorkerVersionId) {
+    listener = FindEventListenerInContainer(
+        id, context_data.inactive_listeners[event_name]);
+  } else {
+    listener = FindEventListenerInContainer(
+        id, context_data.active_listeners[event_name]);
+  }
 
   // This might happen, for example, if the extension has been unloaded.
-  if (!listener)
+  if (!listener) {
     return;
+  }
 
   listener->blocked_requests.erase(request_id);
   DecrementBlockCount(browser_context, extension_id, event_name, request_id,

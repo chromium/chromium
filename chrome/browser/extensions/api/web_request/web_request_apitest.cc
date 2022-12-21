@@ -6016,6 +6016,110 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, TestOnAuthRequired) {
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
 }
 
+// Tests the behavior of an extension that registers an event listener
+// asynchronously.
+// Regression test for https://crbug.com/1397879.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "webRequestBlocking"],
+           "host_permissions": [
+             "http://example.com/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // A background context that *conditionally* registers a blocking listener.
+  // We send a "will_register" message and register the listener once we receive
+  // the response from that message. If we never receive a response, we never
+  // register the event listener.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.sendMessage('will_register').then(() => {
+           chrome.webRequest.onBeforeRequest.addListener(
+               (details) => {
+                 if (details.url.includes('example.com')) {
+                   return {cancel: true}
+                 }
+                 return {};
+               },
+               {urls: ['<all_urls>'], types: ['main_frame']},
+               ['blocking']);
+           chrome.test.sendMessage('registered');
+         });
+         chrome.test.sendMessage('ready');)";
+
+  // Load the extension and tell it to register the listener.
+  ExtensionTestMessageListener will_register_listener(
+      "will_register", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener registered_listener("registered");
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadPolicyExtension(test_dir);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(will_register_listener.WaitUntilSatisfied());
+  EXPECT_FALSE(registered_listener.was_satisfied());
+  will_register_listener.Reply("Go for it!");
+  ASSERT_TRUE(registered_listener.WaitUntilSatisfied());
+
+  // A single webRequest listener should be registered.
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+
+  // Navigate to example.com to check our setup; the request should be blocked.
+  {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+  }
+
+  // Stop the service worker.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  // Note: the task to remove listeners from ExtensionWebRequestEventRouter
+  // is async; run to flush the posted task.
+  base::RunLoop().RunUntilIdle();
+
+  // The listener should still be registered, but should be counted as an
+  // inactive listener.
+  EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // Reset the "will register" listener. However, we'll never reply this time,
+  // which means the extension will never register the listener again.
+  will_register_listener.Reset();
+
+  // Now, navigate to example.com again. This will wake up the extension service
+  // worker, but we'll fail to dispatch the event to the extension because the
+  // listener isn't registered. The request should be allowed to continue.
+  {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
+  }
+
+  // Clean up: ExtensionTestMessageListener requires a reply (or else will
+  // DCHECK). Wait for it to receive the message (it probably already did, but
+  // theoretically can race), and send a response.
+  EXPECT_TRUE(will_register_listener.WaitUntilSatisfied());
+  will_register_listener.Reply("unused");
+}
+
 namespace {
 
 // A helper to wait for an error to be added for an extension.

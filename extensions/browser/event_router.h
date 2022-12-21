@@ -556,6 +556,8 @@ struct Event {
 
   using DidDispatchCallback = base::RepeatingCallback<void(const EventTarget&)>;
 
+  using CannotDispatchCallback = base::RepeatingCallback<void()>;
+
   // The identifier for the event, for histograms. In most cases this
   // correlates 1:1 with |event_name|, in some cases events will generate
   // their own names, but they cannot generate their own identifier.
@@ -595,6 +597,12 @@ struct Event {
 
   // If specified, this is called after dispatching an event to each target.
   DidDispatchCallback did_dispatch_callback;
+
+  // Called if the event cannot be dispatched to a lazy listener. This happens
+  // if e.g. the extension registers an event listener from a lazy context
+  // asynchronously, which results in the active listener not being registered
+  // at the time the lazy context is spun back up.
+  CannotDispatchCallback cannot_dispatch_callback;
 
   // TODO(lazyboy): This sets |restrict_to_browser_context| to nullptr, this
   // will dispatch the event to unrelated profiles, not just incognito. Audit

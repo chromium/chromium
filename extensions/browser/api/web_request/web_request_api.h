@@ -712,6 +712,7 @@ class ExtensionWebRequestEventRouter {
   void DispatchEventToListeners(
       content::BrowserContext* browser_context,
       std::unique_ptr<ListenerIDs> listener_ids,
+      uint64_t request_id,
       std::unique_ptr<WebRequestEventDetails> event_details);
 
   // Returns a list of event listeners that care about the given event, based
