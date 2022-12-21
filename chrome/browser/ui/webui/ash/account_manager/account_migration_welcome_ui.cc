@@ -84,8 +84,10 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
 
 AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
-  content::WebUIDataSource* html_source = content::WebUIDataSource::Create(
-      chrome::kChromeUIAccountMigrationWelcomeHost);
+  content::WebUIDataSource* html_source =
+      content::WebUIDataSource::CreateAndAdd(
+          Profile::FromWebUI(web_ui),
+          chrome::kChromeUIAccountMigrationWelcomeHost);
   webui::SetJSModuleDefaults(html_source);
   html_source->DisableTrustedTypesCSP();
 
@@ -124,9 +126,6 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<MigrationMessageHandler>(
       base::BindRepeating(&WebDialogUI::CloseDialog, weak_factory_.GetWeakPtr(),
                           base::Value::List() /* args */)));
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, html_source);
 }
 
 AccountMigrationWelcomeUI::~AccountMigrationWelcomeUI() = default;

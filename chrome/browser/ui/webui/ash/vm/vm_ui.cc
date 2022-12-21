@@ -61,19 +61,17 @@ void AddStringResources(content::WebUIDataSource* source) {
 
 VmUI::VmUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   auto* profile = Profile::FromWebUI(web_ui);
-  auto source = base::WrapUnique(
-      content::WebUIDataSource::Create(chrome::kChromeUIVmHost));
-  webui::SetJSModuleDefaults(source.get());
+  content::WebUIDataSource* source =
+      content::WebUIDataSource::CreateAndAdd(profile, chrome::kChromeUIVmHost);
+  webui::SetJSModuleDefaults(source);
 
-  AddStringResources(source.get());
+  AddStringResources(source);
 
   source->SetDefaultResource(IDR_VM_INDEX_HTML);
   source->AddResourcePath("app.js", IDR_VM_APP_JS);
   source->AddResourcePath("vm.mojom-webui.js", IDR_VM_MOJOM_WEBUI_JS);
   source->AddResourcePath("guest_os_diagnostics.mojom-webui.js",
                           IDR_GUEST_OS_DIAGNOSTICS_MOJOM_WEBUI_JS);
-
-  content::WebUIDataSource::Add(profile, source.release());
 }
 
 VmUI::~VmUI() = default;

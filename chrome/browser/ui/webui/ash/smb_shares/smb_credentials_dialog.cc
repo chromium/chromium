@@ -106,8 +106,8 @@ std::string SmbCredentialsDialog::GetDialogArgs() const {
 
 SmbCredentialsDialogUI::SmbCredentialsDialogUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUISmbCredentialsHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUISmbCredentialsHost);
 
   source->DisableTrustedTypesCSP();
 
@@ -122,8 +122,6 @@ SmbCredentialsDialogUI::SmbCredentialsDialogUI(content::WebUI* web_ui)
       Profile::FromWebUI(web_ui),
       base::BindOnce(&SmbCredentialsDialogUI::OnUpdateCredentials,
                      base::Unretained(this))));
-
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 SmbCredentialsDialogUI::~SmbCredentialsDialogUI() = default;

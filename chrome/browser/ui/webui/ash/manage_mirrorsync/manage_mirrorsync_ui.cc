@@ -22,16 +22,13 @@ bool ManageMirrorSyncUIConfig::IsWebUIEnabled(
 
 ManageMirrorSyncUI::ManageMirrorSyncUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIManageMirrorSyncHost);
-  auto* profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIManageMirrorSyncHost);
   webui::SetupWebUIDataSource(source,
                               base::make_span(kManageMirrorsyncResources,
                                               kManageMirrorsyncResourcesSize),
                               IDR_MANAGE_MIRRORSYNC_INDEX_HTML);
   source->DisableTrustedTypesCSP();
-
-  content::WebUIDataSource::Add(profile, source);
 }
 
 ManageMirrorSyncUI::~ManageMirrorSyncUI() = default;

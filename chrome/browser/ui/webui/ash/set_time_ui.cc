@@ -163,8 +163,8 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<SetTimeMessageHandler>());
 
   // Set up the chrome://set-time source.
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUISetTimeHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUISetTimeHost);
   webui::SetJSModuleDefaults(source);
   source->DisableTrustedTypesCSP();
   static constexpr webui::LocalizedString kStrings[] = {
@@ -196,8 +196,6 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
                           IDR_SET_TIME_DIALOG_HTML_JS);
   source->AddResourcePath("set_time_dialog.js", IDR_SET_TIME_DIALOG_JS);
   source->SetDefaultResource(IDR_SET_TIME_HTML);
-
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 SetTimeUI::~SetTimeUI() = default;

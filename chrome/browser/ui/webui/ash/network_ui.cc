@@ -973,8 +973,9 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
 
   base::Value::Dict localized_strings = GetLocalizedStrings();
 
-  content::WebUIDataSource* html =
-      content::WebUIDataSource::Create(chrome::kChromeUINetworkHost);
+  content::WebUIDataSource* html = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUINetworkHost);
 
   html->DisableTrustedTypesCSP();
 
@@ -990,14 +991,10 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   ui::network_element::AddLocalizedStrings(html);
   ui::network_element::AddOncLocalizedStrings(html);
   traffic_counters::AddResources(html);
-  html->UseStringsJs();
 
   webui::SetupWebUIDataSource(
       html, base::make_span(kNetworkUiResources, kNetworkUiResourcesSize),
       IDR_NETWORK_UI_NETWORK_HTML);
-
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                html);
 }
 
 NetworkUI::~NetworkUI() = default;

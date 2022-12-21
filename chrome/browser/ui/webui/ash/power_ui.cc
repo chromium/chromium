@@ -225,8 +225,8 @@ base::Value::List PowerMessageHandler::GetJsStateOccupancyData(
 PowerUI::PowerUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<PowerMessageHandler>());
 
-  content::WebUIDataSource* html =
-      content::WebUIDataSource::Create(chrome::kChromeUIPowerHost);
+  content::WebUIDataSource* html = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIPowerHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"titleText", IDS_ABOUT_POWER_TITLE},
@@ -262,9 +262,6 @@ PowerUI::PowerUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   html->AddResourcePath("power.css", IDR_ABOUT_POWER_CSS);
   html->AddResourcePath("power.js", IDR_ABOUT_POWER_JS);
   html->SetDefaultResource(IDR_ABOUT_POWER_HTML);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, html);
 }
 
 PowerUI::~PowerUI() {

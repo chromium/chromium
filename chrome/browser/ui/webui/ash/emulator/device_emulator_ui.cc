@@ -21,9 +21,10 @@ namespace ash {
 namespace {
 
 // Create data source for chrome://device-emulator/.
-content::WebUIDataSource* CreateDeviceEmulatorUIDataSource() {
-  content::WebUIDataSource* html =
-      content::WebUIDataSource::Create(chrome::kChromeUIDeviceEmulatorHost);
+void CreateAndAddDeviceEmulatorUIDataSource(content::WebUI* web_ui) {
+  content::WebUIDataSource* html = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUIDeviceEmulatorHost);
 
   html->DisableTrustedTypesCSP();
 
@@ -43,8 +44,6 @@ content::WebUIDataSource* CreateDeviceEmulatorUIDataSource() {
                         IDR_DEVICE_EMULATOR_SHARED_STYLES_JS);
   html->AddResourcePath("device_emulator.css", IDR_DEVICE_EMULATOR_CSS);
   html->SetDefaultResource(IDR_DEVICE_EMULATOR_HTML);
-
-  return html;
 }
 
 }  // namespace
@@ -57,9 +56,7 @@ bool DeviceEmulatorUIConfig::IsWebUIEnabled(
 DeviceEmulatorUI::DeviceEmulatorUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<DeviceEmulatorMessageHandler>());
-
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                CreateDeviceEmulatorUIDataSource());
+  CreateAndAddDeviceEmulatorUIDataSource(web_ui);
 }
 
 DeviceEmulatorUI::~DeviceEmulatorUI() {}

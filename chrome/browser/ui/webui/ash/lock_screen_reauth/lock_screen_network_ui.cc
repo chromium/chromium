@@ -69,8 +69,9 @@ LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
 
   base::Value::Dict localized_strings = GetLocalizedStrings();
 
-  content::WebUIDataSource* html =
-      content::WebUIDataSource::Create(chrome::kChromeUILockScreenNetworkHost);
+  content::WebUIDataSource* html = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUILockScreenNetworkHost);
 
   // TODO(crbug.com/1400799): Enable TrustedTypes
   html->DisableTrustedTypesCSP();
@@ -84,9 +85,6 @@ LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
   html->AddResourcePaths(base::make_span(kLockScreenReauthResources,
                                          kLockScreenReauthResourcesSize));
   html->SetDefaultResource(IDR_LOCK_SCREEN_REAUTH_LOCK_SCREEN_NETWORK_HTML);
-
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                html);
 }
 
 LockScreenNetworkUI::~LockScreenNetworkUI() = default;

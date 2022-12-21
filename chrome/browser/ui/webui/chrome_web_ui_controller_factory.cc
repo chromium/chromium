@@ -422,10 +422,9 @@ void SetUpWebUIDataSource(WebUI* web_ui,
                           const char* web_ui_host,
                           base::span<const webui::ResourcePath> resources,
                           int default_resource) {
-  auto source = base::WrapUnique(content::WebUIDataSource::Create(web_ui_host));
-  webui::SetupWebUIDataSource(source.get(), resources, default_resource);
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                source.release());
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(), web_ui_host);
+  webui::SetupWebUIDataSource(source, resources, default_resource);
 }
 
 // A function for creating a new WebUI. The caller owns the return value, which

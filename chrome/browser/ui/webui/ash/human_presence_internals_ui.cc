@@ -380,8 +380,10 @@ namespace ash {
 HumanPresenceInternalsUI::HumanPresenceInternalsUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   // Set up the chrome://gcm-internals source.
-  content::WebUIDataSource* html_source = content::WebUIDataSource::Create(
-      chrome::kChromeUIHumanPresenceInternalsHost);
+  content::WebUIDataSource* html_source =
+      content::WebUIDataSource::CreateAndAdd(
+          Profile::FromWebUI(web_ui),
+          chrome::kChromeUIHumanPresenceInternalsHost);
 
   html_source->UseStringsJs();
 
@@ -393,9 +395,6 @@ HumanPresenceInternalsUI::HumanPresenceInternalsUI(content::WebUI* web_ui)
   html_source->AddResourcePath(hps::kHumanPresenceInternalsIcon,
                                IDR_HUMAN_PRESENCE_INTERNALS_ICON);
   html_source->SetDefaultResource(IDR_HUMAN_PRESENCE_INTERNALS_HTML);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, html_source);
 
   web_ui->AddMessageHandler(
       std::make_unique<HumanPresenceInternalsUIMessageHandler>());

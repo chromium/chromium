@@ -18,12 +18,11 @@ namespace ash {
 namespace {
 
 // Returns HTML data source for chrome://cryptohome.
-content::WebUIDataSource* CreateCryptohomeUIHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUICryptohomeHost);
+void CreateAndAddCryptohomeUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUICryptohomeHost);
   source->AddResourcePath("cryptohome.js", IDR_CRYPTOHOME_JS);
   source->SetDefaultResource(IDR_CRYPTOHOME_HTML);
-  return source;
 }
 
 }  // namespace
@@ -31,8 +30,7 @@ content::WebUIDataSource* CreateCryptohomeUIHTMLSource() {
 CryptohomeUI::CryptohomeUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<CryptohomeWebUIHandler>());
 
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, CreateCryptohomeUIHTMLSource());
+  CreateAndAddCryptohomeUIHTMLSource(Profile::FromWebUI(web_ui));
 }
 
 }  // namespace ash

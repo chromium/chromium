@@ -24,16 +24,14 @@ NotificationTesterUI::NotificationTesterUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   // Set up the chrome://notification-tester source.
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUINotificationTesterHost);
+      content::WebUIDataSource::CreateAndAdd(
+          Profile::FromWebUI(web_ui), chrome::kChromeUINotificationTesterHost);
 
   // Add required resources.
   webui::SetupWebUIDataSource(html_source,
                               base::make_span(kNotificationTesterResources,
                                               kNotificationTesterResourcesSize),
                               IDR_NOTIFICATION_TESTER_INDEX_HTML);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, html_source);
 
   // Add message handler.
   web_ui->AddMessageHandler(std::make_unique<NotificationTesterHandler>());

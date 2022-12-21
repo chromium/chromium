@@ -188,9 +188,8 @@ void AddSupervisionUI::BindInterface(
 }
 
 void AddSupervisionUI::SetUpResources() {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  std::unique_ptr<content::WebUIDataSource> source(
-      content::WebUIDataSource::Create(chrome::kChromeUIAddSupervisionHost));
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui()), chrome::kChromeUIAddSupervisionHost);
 
   // Initialize supervision URL from the command-line arguments (if provided).
   supervision_url_ = GetAddSupervisionURL();
@@ -234,8 +233,6 @@ void AddSupervisionUI::SetUpResources() {
   source->AddString(
       "languageCode",
       google_util::GetGoogleLocale(g_browser_process->GetApplicationLocale()));
-
-  content::WebUIDataSource::Add(profile, source.release());
 }
 
 // Returns the URL of the Add Supervision flow from the command-line switch,

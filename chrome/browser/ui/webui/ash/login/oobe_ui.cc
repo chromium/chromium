@@ -268,13 +268,13 @@ void AddTestAPIResources(content::WebUIDataSource* source) {
 }
 
 // Creates a WebUIDataSource for chrome://oobe
-content::WebUIDataSource* CreateOobeUIDataSource(
-    const base::Value::Dict& localized_strings,
-    const std::string& display_type) {
+void CreateAndAddOobeUIDataSource(Profile* profile,
+                                  const base::Value::Dict& localized_strings,
+                                  const std::string& display_type) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIOobeHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIOobeHost);
   source->AddLocalizedStrings(localized_strings);
   source->UseStringsJs();
 
@@ -315,8 +315,6 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   if (is_running_test)
     source->SetRequestFilter(::test::GetTestShouldHandleRequest(),
                              ::test::GetTestFilesRequestFilter());
-
-  return source;
 }
 
 std::string GetDisplayType(const GURL& url) {
@@ -597,9 +595,8 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
   base::Value::Dict localized_strings = GetLocalizedStrings();
 
   // Set up the chrome://oobe/ source.
-  content::WebUIDataSource* html_source =
-      CreateOobeUIDataSource(localized_strings, display_type_);
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), html_source);
+  CreateAndAddOobeUIDataSource(Profile::FromWebUI(web_ui), localized_strings,
+                               display_type_);
 }
 
 OobeUI::~OobeUI() {

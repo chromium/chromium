@@ -110,8 +110,8 @@ void NetworkSettingsDialog::OnDialogClosed(const std::string& json_retval) {
 
 NetworkSettingsDialogUi::NetworkSettingsDialogUi(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kCfmNetworkSettingsHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kCfmNetworkSettingsHost);
 
   source->AddLocalizedString("headTitle", IDS_CFM_NETWORK_SETTINGS_TITLE);
   source->AddLocalizedString("availableNetworks",
@@ -133,8 +133,6 @@ NetworkSettingsDialogUi::NetworkSettingsDialogUi(content::WebUI* web_ui)
       IDR_CFM_NETWORK_SETTINGS_CFM_NETWORK_SETTINGS_CONTAINER_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<NetworkSettingsMessageHandler>());
-
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 void NetworkSettingsDialogUi::BindInterface(

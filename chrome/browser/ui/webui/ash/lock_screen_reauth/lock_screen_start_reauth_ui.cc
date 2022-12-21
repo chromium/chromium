@@ -41,8 +41,8 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
     email = user->GetDisplayEmail();
   }
 
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      chrome::kChromeUILockScreenStartReauthHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUILockScreenStartReauthHost);
 
   auto main_handler = std::make_unique<LockScreenReauthHandler>(email);
   main_handler_ = main_handler.get();
@@ -127,8 +127,6 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
 
   // Add OOBE and Gaia Authenticator resources
   OobeUI::AddOobeComponents(source);
-
-  content::WebUIDataSource::Add(profile, source);
 }
 
 LockScreenStartReauthUI::~LockScreenStartReauthUI() = default;

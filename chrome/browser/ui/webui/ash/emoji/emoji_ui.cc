@@ -49,18 +49,15 @@ namespace ash {
 EmojiUI::EmojiUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui,
                                     true /* Needed for webui browser tests */) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIEmojiPickerHost);
-  source->UseStringsJs();
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUIEmojiPickerHost);
 
   // Add required resources.
   webui::SetupWebUIDataSource(
       source, base::make_span(kEmojiPickerResources, kEmojiPickerResourcesSize),
       IDR_EMOJI_PICKER_INDEX_HTML);
   source->DisableTrustedTypesCSP();
-
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                source);
 }
 
 EmojiUI::~EmojiUI() = default;

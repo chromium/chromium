@@ -37,9 +37,9 @@ const char kJsApiLoadComplete[] = "loadComplete";
 
 namespace ash {
 
-content::WebUIDataSource* CreateSlowUIHTMLSource() {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUISlowHost);
+void CreateAndAddSlowUIHTMLSource(Profile* profile) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUISlowHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"slowDisable", IDS_SLOW_DISABLE},
@@ -52,7 +52,6 @@ content::WebUIDataSource* CreateSlowUIHTMLSource() {
   source->AddResourcePath("slow.js", IDR_SLOW_JS);
   source->AddResourcePath("slow.css", IDR_SLOW_CSS);
   source->SetDefaultResource(IDR_SLOW_HTML);
-  return source;
 }
 
 // The handler for Javascript messages related to the "slow" view.
@@ -143,7 +142,7 @@ SlowUI::SlowUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<SlowHandler>(profile));
 
   // Set up the chrome://slow/ source.
-  content::WebUIDataSource::Add(profile, CreateSlowUIHTMLSource());
+  CreateAndAddSlowUIHTMLSource(profile);
 }
 
 }  // namespace ash

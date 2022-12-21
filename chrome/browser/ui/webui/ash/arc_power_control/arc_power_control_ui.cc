@@ -27,9 +27,10 @@ constexpr char kArcOverviewTracingUiJsPath[] = "arc_overview_tracing_ui.js";
 constexpr char kArcTracingUiJsPath[] = "arc_tracing_ui.js";
 constexpr char kArcTracingCssPath[] = "arc_tracing.css";
 
-content::WebUIDataSource* CreatePowerControlDataSource() {
+void CreateAndAddPowerControlDataSource(Profile* profile) {
   content::WebUIDataSource* const source =
-      content::WebUIDataSource::Create(chrome::kChromeUIArcPowerControlHost);
+      content::WebUIDataSource::CreateAndAdd(
+          profile, chrome::kChromeUIArcPowerControlHost);
   source->UseStringsJs();
   source->SetDefaultResource(IDR_ARC_POWER_CONTROL_HTML);
   source->AddResourcePath(kArcPowerControlJsPath, IDR_ARC_POWER_CONTROL_JS);
@@ -46,8 +47,6 @@ content::WebUIDataSource* CreatePowerControlDataSource() {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
   source->AddLocalizedStrings(localized_strings);
-
-  return source;
 }
 
 }  // anonymous namespace
@@ -63,8 +62,7 @@ bool ArcPowerControlUIConfig::IsWebUIEnabled(
 ArcPowerControlUI::ArcPowerControlUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<ArcPowerControlHandler>());
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui),
-                                CreatePowerControlDataSource());
+  CreateAndAddPowerControlDataSource(Profile::FromWebUI(web_ui));
 }
 
 }  // namespace ash

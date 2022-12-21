@@ -42,9 +42,9 @@ void AddCertificateManagerStrings(content::WebUIDataSource* html_source) {
 
 CertificateManagerDialogUI::CertificateManagerDialogUI(content::WebUI* web_ui)
     : WebDialogUI(web_ui) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUICertificateManagerHost);
   Profile* profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUICertificateManagerHost);
 
   source->DisableTrustedTypesCSP();
 
@@ -65,8 +65,6 @@ CertificateManagerDialogUI::CertificateManagerDialogUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(
       chromeos::cert_provisioning::CertificateProvisioningUiHandler::
           CreateForProfile(profile));
-
-  content::WebUIDataSource::Add(profile, source);
 }
 
 CertificateManagerDialogUI::~CertificateManagerDialogUI() {}

@@ -168,9 +168,8 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<PortalNetworkMessageHandler>());
 
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      chrome::kChromeUIInternetDetailDialogHost);
-  source->DisableTrustedTypesCSP();
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIInternetDetailDialogHost);
   source->AddBoolean("showTechnologyBadge",
                      !features::IsSeparateNetworkIconsEnabled());
   source->AddBoolean("captivePortalUI2022",
@@ -179,7 +178,6 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
   cellular_setup::AddNonStringLoadTimeData(source);
   AddInternetStrings(source);
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_DETAIL);
-  source->UseStringsJs();
 
   webui::SetupWebUIDataSource(
       source,
@@ -187,7 +185,6 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
                       kInternetDetailDialogResourcesSize),
       IDR_INTERNET_DETAIL_DIALOG_INTERNET_DETAIL_DIALOG_CONTAINER_HTML);
   source->DisableTrustedTypesCSP();
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 InternetDetailDialogUI::~InternetDetailDialogUI() {}

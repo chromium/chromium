@@ -23,7 +23,8 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<SysInternalsMessageHandler>());
 
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUISysInternalsHost);
+      content::WebUIDataSource::CreateAndAdd(Profile::FromWebUI(web_ui),
+                                             chrome::kChromeUISysInternalsHost);
   html_source->DisableTrustedTypesCSP();
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
@@ -67,9 +68,6 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
 
   html_source->AddResourcePath("test_loader_util.js",
                                IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, html_source);
 }
 
 SysInternalsUI::~SysInternalsUI() {}

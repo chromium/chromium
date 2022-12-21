@@ -88,8 +88,8 @@ void AddStringResources(content::WebUIDataSource* source) {
 
 CrostiniUpgraderUI::CrostiniUpgraderUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUICrostiniUpgraderHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUICrostiniUpgraderHost);
   webui::SetJSModuleDefaults(source);
   source->DisableTrustedTypesCSP();
   AddStringResources(source);
@@ -108,7 +108,6 @@ CrostiniUpgraderUI::CrostiniUpgraderUI(content::WebUI* web_ui)
                           IDR_CROSTINI_UPGRADER_MOJO_LITE_JS);
   source->AddResourcePath("images/crostini_icon.svg", IDR_CROSTINI_ICON);
   source->SetDefaultResource(IDR_CROSTINI_UPGRADER_INDEX_HTML);
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 CrostiniUpgraderUI::~CrostiniUpgraderUI() = default;

@@ -92,8 +92,8 @@ PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   CHECK(profile->GetPrefs()->GetBoolean(
       prefs::kSamlInSessionPasswordChangeEnabled));
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIPasswordChangeHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIPasswordChangeHost);
 
   const std::string password_change_url = GetPasswordChangeUrl(profile);
   web_ui->AddMessageHandler(
@@ -111,8 +111,6 @@ PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
   // Add Gaia Authenticator resources
   source->AddResourcePaths(
       base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize));
-
-  content::WebUIDataSource::Add(profile, source);
 }
 
 PasswordChangeUI::~PasswordChangeUI() = default;
@@ -129,8 +127,8 @@ ConfirmPasswordChangeUI::ConfirmPasswordChangeUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   CHECK(profile->GetPrefs()->GetBoolean(
       prefs::kSamlInSessionPasswordChangeEnabled));
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      chrome::kChromeUIConfirmPasswordChangeHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIConfirmPasswordChangeHost);
 
   source->DisableTrustedTypesCSP();
 
@@ -164,8 +162,6 @@ ConfirmPasswordChangeUI::ConfirmPasswordChangeUI(content::WebUI* web_ui)
 
   // The ConfirmPasswordChangeHandler is added by the dialog, so no need to add
   // it here.
-
-  content::WebUIDataSource::Add(profile, source);
 }
 
 ConfirmPasswordChangeUI::~ConfirmPasswordChangeUI() = default;
@@ -184,8 +180,8 @@ UrgentPasswordExpiryNotificationUI::UrgentPasswordExpiryNotificationUI(
   PrefService* prefs = profile->GetPrefs();
   CHECK(prefs->GetBoolean(prefs::kSamlInSessionPasswordChangeEnabled));
 
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      chrome::kChromeUIUrgentPasswordExpiryNotificationHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUIUrgentPasswordExpiryNotificationHost);
 
   source->DisableTrustedTypesCSP();
 
@@ -212,8 +208,6 @@ UrgentPasswordExpiryNotificationUI::UrgentPasswordExpiryNotificationUI(
 
   web_ui->AddMessageHandler(
       std::make_unique<UrgentPasswordExpiryNotificationHandler>());
-
-  content::WebUIDataSource::Add(profile, source);
 }
 
 UrgentPasswordExpiryNotificationUI::~UrgentPasswordExpiryNotificationUI() =

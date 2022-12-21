@@ -71,8 +71,8 @@ GURL CreateAssistantOptInURL(FlowType type) {
 AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
   // Set up the chrome://assistant-optin source.
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIAssistantOptInHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIAssistantOptInHost);
 
   auto assistant_handler = std::make_unique<AssistantOptInFlowScreenHandler>();
   assistant_handler_ptr_ = assistant_handler.get();
@@ -93,7 +93,6 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");
   source->DisableTrustedTypesCSP();
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 
   // Do not zoom for Assistant opt-in web contents.
   content::HostZoomMap* zoom_map =

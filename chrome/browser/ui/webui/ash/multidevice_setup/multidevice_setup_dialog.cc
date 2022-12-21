@@ -112,8 +112,8 @@ void MultiDeviceSetupDialog::AdjustWidgetInitParams(
 
 MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIMultiDeviceSetupHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIMultiDeviceSetupHost);
 
   source->DisableTrustedTypesCSP();
 
@@ -129,7 +129,6 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
 
   web_ui->AddMessageHandler(std::make_unique<MultideviceSetupHandler>());
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 MultiDeviceSetupDialogUI::~MultiDeviceSetupDialogUI() = default;

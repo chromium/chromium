@@ -29,9 +29,10 @@ constexpr char kArcOverviewTracingUiJsPath[] = "arc_overview_tracing_ui.js";
 constexpr char kArcTracingUiJsPath[] = "arc_tracing_ui.js";
 constexpr char kArcTracingCssPath[] = "arc_tracing.css";
 
-content::WebUIDataSource* CreateGraphicsDataSource() {
+void CreateAndAddGraphicsDataSource(Profile* profile) {
   content::WebUIDataSource* const source =
-      content::WebUIDataSource::Create(chrome::kChromeUIArcGraphicsTracingHost);
+      content::WebUIDataSource::CreateAndAdd(
+          profile, chrome::kChromeUIArcGraphicsTracingHost);
   source->UseStringsJs();
   source->SetDefaultResource(IDR_ARC_GRAPHICS_TRACING_HTML);
   source->AddResourcePath(kArcGraphicsTracingJsPath,
@@ -48,13 +49,12 @@ content::WebUIDataSource* CreateGraphicsDataSource() {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
   source->AddLocalizedStrings(localized_strings);
-
-  return source;
 }
 
-content::WebUIDataSource* CreateOverviewDataSource() {
+void CreateAndAddOverviewDataSource(Profile* profile) {
   content::WebUIDataSource* const source =
-      content::WebUIDataSource::Create(chrome::kChromeUIArcOverviewTracingHost);
+      content::WebUIDataSource::CreateAndAdd(
+          profile, chrome::kChromeUIArcOverviewTracingHost);
   source->UseStringsJs();
   source->SetDefaultResource(IDR_ARC_OVERVIEW_TRACING_HTML);
   source->AddResourcePath(kArcOverviewTracingJsPath,
@@ -71,8 +71,6 @@ content::WebUIDataSource* CreateOverviewDataSource() {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
   source->AddLocalizedStrings(localized_strings);
-
-  return source;
 }
 
 }  // anonymous namespace
@@ -104,8 +102,7 @@ ArcGraphicsTracingUI<ArcGraphicsTracingMode::kFull>::ArcGraphicsTracingUI(
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<ArcGraphicsTracingHandler>(
       ArcGraphicsTracingMode::kFull));
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui),
-                                CreateGraphicsDataSource());
+  CreateAndAddGraphicsDataSource(Profile::FromWebUI(web_ui));
 }
 
 template <>
@@ -114,8 +111,7 @@ ArcGraphicsTracingUI<ArcGraphicsTracingMode::kOverview>::ArcGraphicsTracingUI(
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<ArcGraphicsTracingHandler>(
       ArcGraphicsTracingMode::kOverview));
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui),
-                                CreateOverviewDataSource());
+  CreateAndAddOverviewDataSource(Profile::FromWebUI(web_ui));
 }
 
 }  // namespace ash

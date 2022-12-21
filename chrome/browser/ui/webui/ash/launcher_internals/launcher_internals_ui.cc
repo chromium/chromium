@@ -17,16 +17,13 @@ namespace ash {
 
 LauncherInternalsUI::LauncherInternalsUI(content::WebUI* web_ui)
     : MojoWebUIController(web_ui) {
-  auto source = base::WrapUnique(
-      content::WebUIDataSource::Create(chrome::kChromeUILauncherInternalsHost));
-  webui::SetupWebUIDataSource(source.get(),
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUILauncherInternalsHost);
+  webui::SetupWebUIDataSource(source,
                               base::make_span(kLauncherInternalsResources,
                                               kLauncherInternalsResourcesSize),
                               IDR_LAUNCHER_INTERNALS_INDEX_HTML);
-
-  content::BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, source.release());
 }
 
 LauncherInternalsUI::~LauncherInternalsUI() = default;

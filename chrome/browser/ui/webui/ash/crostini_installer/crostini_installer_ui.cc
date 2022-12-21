@@ -133,9 +133,9 @@ namespace ash {
 
 CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUICrostiniInstallerHost);
   auto* profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      profile, chrome::kChromeUICrostiniInstallerHost);
   webui::SetJSModuleDefaults(source);
   source->DisableTrustedTypesCSP();
   AddStringResources(source);
@@ -154,8 +154,6 @@ CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
                           IDR_LINUX_ILLUSTRATION);
   source->AddResourcePath("images/crostini_icon.svg", IDR_CROSTINI_ICON);
   source->SetDefaultResource(IDR_CROSTINI_INSTALLER_INDEX_HTML);
-
-  content::WebUIDataSource::Add(profile, source);
 }
 
 CrostiniInstallerUI::~CrostiniInstallerUI() = default;

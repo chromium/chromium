@@ -61,9 +61,8 @@ ParentAccessUI::GetHandlerForTest() {
 }
 
 void ParentAccessUI::SetUpResources() {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  std::unique_ptr<content::WebUIDataSource> source(
-      content::WebUIDataSource::Create(chrome::kChromeUIParentAccessHost));
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui()), chrome::kChromeUIParentAccessHost);
 
   // The Polymer JS bundle requires this at the moment because it sets innerHTML
   // on an element, which violates the Trusted Types CSP.
@@ -110,13 +109,11 @@ void ParentAccessUI::SetUpResources() {
   source->AddLocalizedStrings(kLocalizedStrings);
 
   // Enables use of test_loader.html
-  webui::SetJSModuleDefaults(source.get());
+  webui::SetJSModuleDefaults(source);
 
   // Allows loading of local content into an iframe for testing.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, "frame-src chrome://test/;");
-
-  content::WebUIDataSource::Add(profile, source.release());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ParentAccessUI)

@@ -127,8 +127,8 @@ std::string BluetoothPairingDialog::GetDialogArgs() const {
 
 BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIBluetoothPairingHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIBluetoothPairingHost);
 
   AddBluetoothStrings(source);
   source->AddLocalizedString("title", IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES);
@@ -139,7 +139,6 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
                       kBluetoothPairingDialogResourcesSize),
       IDR_BLUETOOTH_PAIRING_DIALOG_BLUETOOTH_PAIRING_DIALOG_CONTAINER_HTML);
   source->DisableTrustedTypesCSP();
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kStandalonePairingDialog);

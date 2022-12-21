@@ -1120,14 +1120,11 @@ DriveInternalsUI::DriveInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<DriveInternalsWebUIHandler>());
 
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIDriveInternalsHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUIDriveInternalsHost);
   source->AddResourcePath("drive_internals.css", IDR_DRIVE_INTERNALS_CSS);
   source->AddResourcePath("drive_internals.js", IDR_DRIVE_INTERNALS_JS);
   source->SetDefaultResource(IDR_DRIVE_INTERNALS_HTML);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, source);
 }
 
 }  // namespace ash

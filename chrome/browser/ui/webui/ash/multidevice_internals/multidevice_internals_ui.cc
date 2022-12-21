@@ -21,8 +21,10 @@ namespace ash {
 
 MultideviceInternalsUI::MultideviceInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
-  content::WebUIDataSource* html_source = content::WebUIDataSource::Create(
-      chrome::kChromeUIMultiDeviceInternalsHost);
+  content::WebUIDataSource* html_source =
+      content::WebUIDataSource::CreateAndAdd(
+          Profile::FromWebUI(web_ui),
+          chrome::kChromeUIMultiDeviceInternalsHost);
   html_source->AddBoolean("isPhoneHubEnabled", features::IsPhoneHubEnabled());
 
   webui::SetupWebUIDataSource(
@@ -31,7 +33,6 @@ MultideviceInternalsUI::MultideviceInternalsUI(content::WebUI* web_ui)
                       kMultideviceInternalsResourcesSize),
       IDR_MULTIDEVICE_INTERNALS_INDEX_HTML);
 
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), html_source);
   web_ui->AddMessageHandler(
       std::make_unique<multidevice::MultideviceLogsHandler>());
   web_ui->AddMessageHandler(
