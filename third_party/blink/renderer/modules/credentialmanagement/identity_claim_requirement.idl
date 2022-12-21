@@ -1,0 +1,22 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[RuntimeEnabled=FedCmSelectiveDisclosure]
+dictionary IdentityClaimRequirement {
+  // Controls the optionality of the attribute.
+  // NOTE: "required" is a reserved WebIDL keyword, so we prefix it with
+  // the _ character to use it.
+  // https://webidl.spec.whatwg.org/#:~:text=escape%20an%20identifier
+  boolean _required;
+
+  // TODO(crbug.com/1400878): introduce the other requirement types as needed.
+  // Requires the attribute to be verified.
+  // boolean verified;
+  // Requires the attribute to be over a certain number.
+  // long over;
+  // Requires the attribute to be under a certain number.
+  // long under;
+  // Requires the attribute to be equal to certain value.
+  // any value;
+};

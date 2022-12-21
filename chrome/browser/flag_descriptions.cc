@@ -1454,6 +1454,11 @@ const char kFedCmMultiIdpDescription[] =
     "Allows the FedCM API to request multiple identity providers "
     "simultaneously. Requires FedCM to be enabled as well.";
 
+const char kFedCmSelectiveDisclosureName[] = "FedCmSelectiveDisclosure";
+const char kFedCmSelectiveDisclosureDescription[] =
+    "Allows a relying party to selectively request a set of identity "
+    "attributes to be disclosed.";
+
 const char kFedCmUserInfoName[] = "FedCmUserInfo";
 const char kFedCmUserInfoDescription[] =
     "Allows an identity provider to request user info instead of token from "

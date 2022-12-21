@@ -405,6 +405,12 @@ BASE_FEATURE(kFedCmUserInfo,
              "FedCmUserInfo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables usage of the FedCM API with the Selective Disclosure API at the same
+// time.
+BASE_FEATURE(kFedCmSelectiveDisclosure,
+             "FedCmSelectiveDisclosure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM API with the login hint parameter.
 BASE_FEATURE(kFedCmLoginHint,
              "FedCmLoginHint",

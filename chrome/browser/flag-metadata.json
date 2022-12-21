@@ -3665,6 +3665,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "fedcm-selective-disclosure",
+    "owners": ["goto", "web-identity-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "fedcm-user-info",
     "owners": ["yigu", "web-identity-eng@google.com"],
     "expiry_milestone": 120

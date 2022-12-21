@@ -49,6 +49,10 @@ bool IsFedCmUserInfoEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmUserInfo);
 }
 
+bool IsFedCmSelectiveDisclosureEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmSelectiveDisclosure);
+}
+
 bool IsFedCmLoginHintEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmLoginHint);
 }

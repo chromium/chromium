@@ -812,6 +812,9 @@ extern const char kFedCmMetricsEndpointDescription[];
 extern const char kFedCmMultiIdpName[];
 extern const char kFedCmMultiIdpDescription[];
 
+extern const char kFedCmSelectiveDisclosureName[];
+extern const char kFedCmSelectiveDisclosureDescription[];
+
 extern const char kFedCmUserInfoName[];
 extern const char kFedCmUserInfoDescription[];
 
