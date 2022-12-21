@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.password_edit_dialog;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+
 import android.app.Activity;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
@@ -59,13 +64,14 @@ public class PasswordEditDialogWithDetailsViewTest {
 
     private static Activity sActivity;
 
-    PasswordEditDialogWithDetailsView mDialogView;
-    AutoCompleteTextView mUsernamesView;
-    TextInputEditText mPasswordView;
-    TextInputLayout mPasswordInputLayout;
-    TextView mFooterView;
-    String mUsername;
-    String mCurrentPassword;
+    private PasswordEditDialogWithDetailsView mDialogView;
+    private AutoCompleteTextView mUsernamesView;
+    private TextInputLayout mUsernameInputLayout;
+    private TextInputEditText mPasswordView;
+    private TextInputLayout mPasswordInputLayout;
+    private TextView mFooterView;
+    private String mUsername;
+    private String mCurrentPassword;
 
     @BeforeClass
     public static void setupSuite() {
@@ -79,12 +85,12 @@ public class PasswordEditDialogWithDetailsViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mDialogView = (PasswordEditDialogWithDetailsView) sActivity.getLayoutInflater().inflate(
                     R.layout.password_edit_dialog_with_details, null);
-            mUsernamesView = (AutoCompleteTextView) mDialogView.findViewById(R.id.username_view);
-            mFooterView = (TextView) mDialogView.findViewById(R.id.footer);
+            mUsernamesView = mDialogView.findViewById(R.id.username_view);
+            mUsernameInputLayout = mDialogView.findViewById(R.id.username_input_layout);
+            mFooterView = mDialogView.findViewById(R.id.footer);
             sActivity.setContentView(mDialogView);
-            mPasswordView = (TextInputEditText) mDialogView.findViewById(R.id.password);
-            mPasswordInputLayout =
-                    (TextInputLayout) mDialogView.findViewById(R.id.password_text_input_layout);
+            mPasswordView = mDialogView.findViewById(R.id.password);
+            mPasswordInputLayout = mDialogView.findViewById(R.id.password_text_input_layout);
         });
     }
 
@@ -204,5 +210,61 @@ public class PasswordEditDialogWithDetailsViewTest {
         });
         Assert.assertTrue(
                 "Password error should be reset now", mPasswordInputLayout.getError() == null);
+    }
+
+    /**
+     * Tests that:
+     * - the dropdown popup and the button are not displayed when there is only one
+     * username in the list and it is the same as the initial username in the text input;
+     * - the dropdown and the popup are shown after the text has changed in the input;
+     */
+    @Test
+    @MediumTest
+    public void testShouldShowDropdownWhenUsernamesDifferent() {
+        runOnUiThreadBlocking(() -> {
+            PropertyModel model =
+                    populateDialogPropertiesBuilder()
+                            .with(PasswordEditDialogProperties.USERNAMES,
+                                    Arrays.asList(new String[] {INITIAL_USERNAME}))
+                            .with(PasswordEditDialogProperties.USERNAME, INITIAL_USERNAME)
+                            .with(PasswordEditDialogProperties.PASSWORD, INITIAL_PASSWORD)
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    model, mDialogView, PasswordEditDialogViewBinder::bind);
+        });
+        assertFalse("Should not display dropdown button", mUsernameInputLayout.isEndIconVisible());
+
+        runOnUiThreadBlocking(() -> mUsernamesView.setText(CHANGED_USERNAME));
+        assertTrue("Should display dropdown button when username has changed",
+                mUsernameInputLayout.isEndIconVisible());
+    }
+
+    /**
+     * Tests that:
+     * - the dropdown popup and the button are displayed when the username in the text input
+     * is different from the one in the usernames list;
+     * - the dropdown and the popup are hidden when the username is set to the same value as the one
+     * in the list;
+     */
+    @Test
+    @MediumTest
+    public void testShouldHideDropdownWhenUsernamesSame() {
+        runOnUiThreadBlocking(() -> {
+            PropertyModel model =
+                    populateDialogPropertiesBuilder()
+                            .with(PasswordEditDialogProperties.USERNAMES,
+                                    Arrays.asList(new String[] {INITIAL_USERNAME}))
+                            .with(PasswordEditDialogProperties.USERNAME, INITIAL_USERNAME)
+                            .with(PasswordEditDialogProperties.PASSWORD, INITIAL_PASSWORD)
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    model, mDialogView, PasswordEditDialogViewBinder::bind);
+            mUsernamesView.setText(CHANGED_USERNAME);
+        });
+        assertTrue("Should display dropdown button", mUsernameInputLayout.isEndIconVisible());
+
+        runOnUiThreadBlocking(() -> mUsernamesView.setText(INITIAL_USERNAME));
+        assertFalse("Should not display dropdown when username is set to initial value",
+                mUsernameInputLayout.isEndIconVisible());
     }
 }

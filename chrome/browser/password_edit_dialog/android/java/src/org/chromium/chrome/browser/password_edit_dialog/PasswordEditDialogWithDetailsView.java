@@ -26,10 +26,12 @@ import java.util.List;
  */
 class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     private AutoCompleteTextView mUsernameView;
+    private TextInputLayout mUsernameInputLayout;
     private TextInputEditText mPasswordField;
     private TextInputLayout mPasswordInputLayout;
     private Callback<String> mUsernameChangedCallback;
     private Callback<String> mPasswordChangedCallback;
+    private List<String> mUsernames;
 
     public PasswordEditDialogWithDetailsView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -42,6 +44,8 @@ class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mUsernameView = findViewById(R.id.username_view);
+        mUsernameInputLayout = findViewById(R.id.username_input_layout);
+        mUsernameInputLayout.setEndIconOnClickListener(view -> mUsernameView.showDropDown());
         mUsernameView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -53,10 +57,10 @@ class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {}
+            public void afterTextChanged(Editable editable) {
+                setDropDownVisibility(editable.toString());
+            }
         });
-        TextInputLayout usernameInput = findViewById(R.id.username_input_layout);
-        usernameInput.setEndIconOnClickListener(view -> mUsernameView.showDropDown());
 
         mPasswordField = findViewById(R.id.password);
         mPasswordField.setInputType(InputType.TYPE_CLASS_TEXT
@@ -95,9 +99,11 @@ class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
 
     /** Sets usernames list in the AutoCompleteTextView */
     public void setUsernames(List<String> usernames) {
+        mUsernames = usernames;
         ArrayAdapter<String> usernamesAdapter = new NoFilterArrayAdapter<>(
                 getContext(), R.layout.password_edit_dialog_dropdown_item, usernames);
         mUsernameView.setAdapter(usernamesAdapter);
+        setDropDownVisibility(mUsernameView.getText().toString());
     }
 
     /**
@@ -114,5 +120,25 @@ class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     public void setUsername(String username) {
         if (mUsernameView.getText().toString().equals(username)) return;
         mUsernameView.setText(username);
+        setDropDownVisibility(username);
+    }
+
+    private void setDropDownVisibility(String currentUsername) {
+        if (shouldShowDropDown(currentUsername)) {
+            mUsernameInputLayout.setEndIconVisible(true);
+        } else {
+            // Hide the dropdown button and dismiss the dropdown (in case if it's open).
+            mUsernameInputLayout.setEndIconVisible(false);
+            mUsernameView.dismissDropDown();
+        }
+    }
+
+    private boolean shouldShowDropDown(String currentUsername) {
+        // Do not show the dropdown, when there are no usernames to list.
+        if (mUsernames == null) return false;
+        // Show the dropdown when there is more than one choice.
+        if (mUsernames.size() > 1) return true;
+        // Show the dropdown when there is one choice which is different from current username.
+        return (mUsernames.size() == 1 && !mUsernames.get(0).equals(currentUsername));
     }
 }
