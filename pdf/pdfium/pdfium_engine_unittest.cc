@@ -44,6 +44,7 @@ namespace chrome_pdf {
 
 namespace {
 
+using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
@@ -75,6 +76,15 @@ blink::WebMouseEvent CreateLeftClickWebMouseEventAtPosition(
   return CreateLeftClickWebMouseEventAtPositionWithClickCount(position, 1);
 }
 
+blink::WebMouseEvent CreateLeftClickWebMouseUpEventAtPosition(
+    const gfx::PointF& position) {
+  return blink::WebMouseEvent(
+      blink::WebInputEvent::Type::kMouseUp, /*position=*/position,
+      /*global_position=*/position, blink::WebPointerProperties::Button::kLeft,
+      /*click_count_param=*/1, blink::WebInputEvent::Modifiers::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+}
+
 blink::WebMouseEvent CreateRightClickWebMouseEventAtPosition(
     const gfx::PointF& position) {
   return blink::WebMouseEvent(
@@ -104,11 +114,13 @@ class MockTestClient : public TestClient {
         });
   }
 
+  MOCK_METHOD(void, ProposeDocumentLayout, (const DocumentLayout&), (override));
+  MOCK_METHOD(void, ScrollToPage, (int), (override));
   MOCK_METHOD(void,
-              ProposeDocumentLayout,
-              (const DocumentLayout& layout),
+              NavigateTo,
+              (const std::string&, WindowOpenDisposition),
               (override));
-  MOCK_METHOD(void, ScrollToPage, (int page), (override));
+  MOCK_METHOD(bool, IsPrintPreview, (), (const override));
   MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
 };
@@ -862,6 +874,42 @@ TEST_P(PDFiumEngineTest, SelectLinkAreaWithNoText) {
   // This is still `kExpectedText` because of the unit test's uncanny ability to
   // move the mouse to `kEndPosition` in one move.
   EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineTest, LinkNavigates) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_CALL(client, NavigateTo("", WindowOpenDisposition::CURRENT_TAB));
+  constexpr gfx::PointF kMiddlePosition(100, 230);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kMiddlePosition)));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseUpEventAtPosition(kMiddlePosition)));
+}
+
+// Test case for crbug.com/699000
+TEST_P(PDFiumEngineTest, LinkDisabledInPrintPreview) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
+  ASSERT_TRUE(engine);
+  EXPECT_CALL(client, IsPrintPreview()).WillRepeatedly(Return(true));
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_CALL(client, NavigateTo(_, _)).Times(0);
+  constexpr gfx::PointF kMiddlePosition(100, 230);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kMiddlePosition)));
+  EXPECT_FALSE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseUpEventAtPosition(kMiddlePosition)));
 }
 
 TEST_P(PDFiumEngineTest, SelectTextWithNonPrintableCharacter) {
