@@ -50,6 +50,9 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms);
 // cold start.
 + (void)logStartupDuration:(id<StartupInformation>)startupInformation
      connectionInformation:(id<ConnectionInformation>)connectionInformation;
+// Creates a MetricKit extended launch task to track startup duration. This must
+// be called before the first scene becomes active.
++ (void)createStartupTrackingTask;
 // Logs the number of tabs open and the start type.
 + (void)logLaunchMetricsWithStartupInformation:
             (id<StartupInformation>)startupInformation

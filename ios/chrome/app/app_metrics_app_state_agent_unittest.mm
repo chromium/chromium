@@ -218,12 +218,14 @@ TEST_F(AppMetricsAppStateAgentTest, CountSessionDurationSafeMode) {
   EXPECT_EQ(1, getProfileSessionDurationsService()->session_ended_count());
 }
 
-// Tests that -logStartupDuration: is called and only once for a regular
-// startup (no safe mode).
+// Tests that -logStartupDuration: and -createStartupTrackingTask are called
+// once and in the right order for a regular startup (no safe mode).
 TEST_F(AppMetricsAppStateAgentTest, logStartupDuration) {
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
 
+  [[metricsMediator expect] createStartupTrackingTask];
   [[metricsMediator expect] logStartupDuration:nil connectionInformation:nil];
+  [metricsMediator setExpectationOrderMatters:YES];
 
   SceneState* sceneA = [[SceneState alloc] initWithAppState:app_state_];
   SceneState* sceneB = [[SceneState alloc] initWithAppState:app_state_];
@@ -254,11 +256,12 @@ TEST_F(AppMetricsAppStateAgentTest, logStartupDuration) {
   EXPECT_OCMOCK_VERIFY(metricsMediator);
 }
 
-// Tests that -logStartupDuration: is not called when there is safe mode
-// during startup.
+// Tests that -logStartupDuration: and  and -createStartupTrackingTask are not
+// called when there is safe mode during startup.
 TEST_F(AppMetricsAppStateAgentTest, logStartupDurationWhenSafeMode) {
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
 
+  [[metricsMediator reject] createStartupTrackingTask];
   [[metricsMediator reject] logStartupDuration:nil connectionInformation:nil];
 
   app_state_.initStageForTesting = GetMaximalInitStageThatDontAllowLogging();

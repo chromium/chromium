@@ -47,6 +47,9 @@ enum MetricKitExitReason {
 
 namespace {
 
+// Task identifier for tracking startup until the app becomes interactive.
+NSString* const kMainLaunchTaskId = @"MainLaunchTask";
+
 void ReportExitReason(base::HistogramBase* histogram,
                       MetricKitExitReason bucket,
                       NSUInteger count) {
@@ -156,6 +159,24 @@ std::string HistogramPrefix(bool include_mismatch) {
 + (instancetype)sharedInstance {
   static MetricKitSubscriber* instance = [[MetricKitSubscriber alloc] init];
   return instance;
+}
+
++ (void)createExtendedLaunchTask {
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+  if (@available(iOS 16.0, *)) {
+    [MXMetricManager extendLaunchMeasurementForTaskID:kMainLaunchTaskId
+                                                error:nil];
+  }
+#endif
+}
+
++ (void)endExtendedLaunchTask {
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+  if (@available(iOS 16.0, *)) {
+    [MXMetricManager finishExtendedLaunchMeasurementForTaskID:kMainLaunchTaskId
+                                                        error:nil];
+  }
+#endif
 }
 
 - (void)setEnabled:(BOOL)enable {
@@ -289,6 +310,15 @@ std::string HistogramPrefix(bool include_mismatch) {
       payload.applicationLaunchMetrics.histogrammedTimeToFirstDraw;
   [self logStartupDurationMXHistogram:histogrammedTimeToFirstDraw
                        toUMAHistogram:prefix + "TimeToFirstDraw"];
+
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+  if (@available(iOS 16.0, *)) {
+    MXHistogram* histogrammedExtendedLaunch =
+        payload.applicationLaunchMetrics.histogrammedExtendedLaunch;
+    [self logStartupDurationMXHistogram:histogrammedExtendedLaunch
+                         toUMAHistogram:prefix + "ExtendedLaunch"];
+  }
+#endif
 
   MXHistogram* histogrammedApplicationHangTime =
       payload.applicationResponsivenessMetrics.histogrammedApplicationHangTime;

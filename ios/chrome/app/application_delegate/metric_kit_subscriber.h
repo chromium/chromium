@@ -13,6 +13,14 @@
 @interface MetricKitSubscriber : NSObject <MXMetricManagerSubscriber>
 + (instancetype)sharedInstance;
 
+// Creates an extended launch task used by MetricKit to track startup time up
+// until a client-defined stopping point. This must be called before the first
+// scene becomes active.
++ (void)createExtendedLaunchTask;
+
+// Ends the extended launch task created in `createExtendedLaunchTask`.
++ (void)endExtendedLaunchTask;
+
 // Whether the MetricKit collection is enabled.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
 @end

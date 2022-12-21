@@ -11,11 +11,14 @@
 #import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/previous_session_info/previous_session_info_private.h"
+#import "ios/chrome/app/app_startup_parameters.h"
+#import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -265,3 +268,56 @@ TEST_F(MetricsMediatorNoFixtureTest, logDateInUserDefaultsTest) {
   EXPECT_NE(nil, lastAppClose);
 }
 
+// Tests that +logStartupDuration:connectionInformation: calls
+// +endExtendedLaunchTask on cold start.
+TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnColdStart) {
+  id startupInformation =
+      [OCMockObject mockForProtocol:@protocol(StartupInformation)];
+  [[[startupInformation stub] andReturnValue:@YES] isColdStart];
+
+  base::TimeTicks time = base::TimeTicks();
+  [[[startupInformation stub] andDo:^(NSInvocation* invocation) {
+    [invocation setReturnValue:(void*)&time];
+  }] appLaunchTime];
+
+  [[[startupInformation stub] andDo:^(NSInvocation* invocation) {
+    [invocation setReturnValue:(void*)&time];
+  }] didFinishLaunchingTime];
+
+  [[[startupInformation stub] andDo:^(NSInvocation* invocation) {
+    [invocation setReturnValue:(void*)&time];
+  }] firstSceneConnectionTime];
+
+  id connectionInformation =
+      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
+  id startupParameters =
+      [OCMockObject mockForClass:[AppStartupParameters class]];
+  [[[connectionInformation stub] andReturn:startupParameters]
+      startupParameters];
+
+  id metricKitSubscriber =
+      [OCMockObject mockForClass:[MetricKitSubscriber class]];
+  [[metricKitSubscriber expect] endExtendedLaunchTask];
+
+  [MetricsMediator logStartupDuration:startupInformation
+                connectionInformation:connectionInformation];
+  EXPECT_OCMOCK_VERIFY(metricKitSubscriber);
+}
+
+// Tests that +logStartupDuration:connectionInformation: does not call
+// +endExtendedLaunchTask on warm start.
+TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnWarmStart) {
+  id startupInformation =
+      [OCMockObject mockForProtocol:@protocol(StartupInformation)];
+  [[[startupInformation stub] andReturnValue:@NO] isColdStart];
+  id connectionInformation =
+      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
+
+  id metricKitSubscriber =
+      [OCMockObject mockForClass:[MetricKitSubscriber class]];
+  [[metricKitSubscriber reject] endExtendedLaunchTask];
+
+  [MetricsMediator logStartupDuration:startupInformation
+                connectionInformation:connectionInformation];
+  EXPECT_OCMOCK_VERIFY(metricKitSubscriber);
+}

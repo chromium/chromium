@@ -1142,6 +1142,26 @@ chromium-metrics-reviews@google.com.
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
+<histogram name="IOS.MetricKit.{MXVersion}ExtendedLaunch" units="ms"
+    expires_after="2023-03-19">
+  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    The amount of time taken to launch the app until the app UI is ready to
+    receive input. This measures startup until the same point as
+    Startup.ColdStartFromProcessCreationTimeV2 but is computed by iOS in a way
+    that accounts for app pre-warming. The exact adjustments made to account for
+    pre-warming are not documented by Apple. Logged when a MXMetricPayload is
+    received (one per day).
+
+    This is only recorded on iOS 16+, and recorded only if user opted in for
+    sharing diagnostic data on iOS device.
+
+    Note: The date the data is reported is later than the day it accounts for.
+  </summary>
+  <token key="MXVersion" variants="MXVersion"/>
+</histogram>
+
 <histogram name="IOS.MetricKit.{MXVersion}ForegroundExitData"
     enum="MetricKitExitData" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->

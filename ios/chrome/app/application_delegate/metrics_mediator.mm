@@ -305,11 +305,16 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 
 #pragma mark - Public methods.
 
++ (void)createStartupTrackingTask {
+  [MetricKitSubscriber createExtendedLaunchTask];
+}
+
 + (void)logStartupDuration:(id<StartupInformation>)startupInformation
      connectionInformation:(id<ConnectionInformation>)connectionInformation {
   if (![startupInformation isColdStart])
     return;
 
+  [MetricKitSubscriber endExtendedLaunchTask];
   base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta processStartToNowTime =
       TimeDeltaSinceAppLaunchFromProcess();

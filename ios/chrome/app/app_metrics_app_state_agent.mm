@@ -69,18 +69,12 @@
     self.appState.startupInformation.firstSceneConnectionTime =
         base::TimeTicks::Now();
     self.firstSceneHasConnected = YES;
+    if (self.appState.initStage > InitStageSafeMode)
+      [MetricsMediator createStartupTrackingTask];
   }
 
   if (self.appState.initStage <= InitStageSafeMode) {
     return;
-  }
-
-  if (level >= SceneActivationLevelForegroundActive) {
-    if (!self.firstSceneHasActivated) {
-      self.firstSceneHasActivated = YES;
-      [MetricsMediator logStartupDuration:self.appState.startupInformation
-                    connectionInformation:sceneState.controller];
-    }
   }
 
   if (level >= SceneActivationLevelForegroundInactive &&
@@ -103,6 +97,14 @@
 
     [self handleSessionEnd];
     DCHECK(self.appState.lastTimeInForeground.is_null());
+  }
+
+  if (level >= SceneActivationLevelForegroundActive) {
+    if (!self.firstSceneHasActivated) {
+      self.firstSceneHasActivated = YES;
+      [MetricsMediator logStartupDuration:self.appState.startupInformation
+                    connectionInformation:sceneState.controller];
+    }
   }
 }
 
