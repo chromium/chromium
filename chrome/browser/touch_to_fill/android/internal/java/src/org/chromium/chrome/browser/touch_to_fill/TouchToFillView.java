@@ -7,19 +7,17 @@ package org.chromium.chrome.browser.touch_to_fill;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerBranding;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
+import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -35,68 +33,22 @@ class TouchToFillView extends TouchToFillViewBase {
     private final RecyclerView mSheetItemListView;
     private Callback<Integer> mDismissHandler;
 
-    private static class HorizontalDividerItemDecoration extends RecyclerView.ItemDecoration {
-        private final int mHorizontalMargin;
-        private final Context mContext;
-
+    private static class HorizontalDividerItemDecoration extends ItemDividerBase {
         HorizontalDividerItemDecoration(int horizontalMargin, Context context) {
-            this.mHorizontalMargin = horizontalMargin;
-            this.mContext = context;
+            super(horizontalMargin, context);
         }
 
         @Override
-        public void getItemOffsets(
-                Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            outRect.top = getItemOffsetInternal(view, parent, state);
-        }
-
-        private int getItemOffsetInternal(
-                final View view, final RecyclerView parent, RecyclerView.State state) {
-            return mHorizontalMargin;
-        }
-
-        /**
-         * Returns the proper background for each of the credential items depending on their
-         * position.
-         *
-         * @param position Position of the credential inside the list, including the header and the
-         *         button.
-         * @param containsFillButton Indicates if the fill button is in the list.
-         * @param itemCount Shows how many items are in the list, including the header and the
-         *         button.
-         * @return The ID of the selected background resource.
-         */
-        private int selectBackgroundDrawable(
+        protected int selectBackgroundDrawable(
                 int position, boolean containsFillButton, int itemCount) {
             if (!usesUnifiedPasswordManagerBranding()) {
                 return R.drawable.touch_to_fill_credential_background;
             }
-            if (containsFillButton) { // Round all the corners of the only item.
-                return R.drawable.touch_to_fill_credential_background_modern_rounded_all;
-            }
-            if (position == 1) { // Round the top of the first item.
-                return R.drawable.touch_to_fill_credential_background_modern_rounded_up;
-            }
-            if (position == itemCount - 1) { // Round the bottom of the last item.
-                return R.drawable.touch_to_fill_credential_background_modern_rounded_down;
-            }
-            // The rest of the items have a background with no rounded edges.
-            return R.drawable.touch_to_fill_credential_background_modern;
+            return super.selectBackgroundDrawable(position, containsFillButton, itemCount);
         }
 
         @Override
-        public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-            for (int posInView = 0; posInView < parent.getChildCount(); posInView++) {
-                View child = parent.getChildAt(posInView);
-                int posInAdapter = parent.getChildAdapterPosition(child);
-                if (shouldSkipItemType(parent.getAdapter().getItemViewType(posInAdapter))) continue;
-                child.setBackground(AppCompatResources.getDrawable(mContext,
-                        selectBackgroundDrawable(posInAdapter, containsFillButton(parent),
-                                parent.getAdapter().getItemCount())));
-            }
-        }
-
-        private static boolean shouldSkipItemType(@ItemType int type) {
+        protected boolean shouldSkipItemType(@ItemType int type) {
             switch (type) {
                 case ItemType.HEADER: // Fallthrough.
                 case ItemType.FILL_BUTTON:
@@ -109,7 +61,8 @@ class TouchToFillView extends TouchToFillViewBase {
             return true; // Should never be reached. But if, skip to not change anything.
         }
 
-        private static boolean containsFillButton(RecyclerView parent) {
+        @Override
+        protected boolean containsFillButton(RecyclerView parent) {
             return parent.getAdapter().getItemViewType(parent.getAdapter().getItemCount() - 1)
                     == ItemType.FILL_BUTTON;
         }

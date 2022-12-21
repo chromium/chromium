@@ -13,7 +13,9 @@ import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -28,6 +30,37 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
     private final RecyclerView mSheetItemListView;
     private Callback<Integer> mDismissHandler;
     private Runnable mScanCreditCardHandler;
+
+    private static class HorizontalDividerItemDecoration extends ItemDividerBase {
+        HorizontalDividerItemDecoration(int horizontalMargin, Context context) {
+            super(horizontalMargin, context);
+        }
+
+        @Override
+        protected int selectBackgroundDrawable(
+                int position, boolean containsFillButton, int itemCount) {
+            return super.selectBackgroundDrawable(position, containsFillButton, itemCount);
+        }
+
+        @Override
+        protected boolean shouldSkipItemType(@ItemType int type) {
+            switch (type) {
+                case ItemType.HEADER: // Fallthrough.
+                case ItemType.FILL_BUTTON:
+                    return true;
+                case ItemType.CREDIT_CARD:
+                    return false;
+            }
+            assert false : "Undefined whether to skip setting background for item of type: " + type;
+            return true; // Should never be reached. But if, skip to not change anything.
+        }
+
+        @Override
+        protected boolean containsFillButton(RecyclerView parent) {
+            return parent.getAdapter().getItemViewType(parent.getAdapter().getItemCount() - 1)
+                    == ItemType.FILL_BUTTON;
+        }
+    }
 
     // TODO(crbug.com/1247698): Reuse this logic between different sheets.
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
@@ -61,6 +94,11 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
                         R.layout.touch_to_fill_credit_card_sheet, null));
         mBottomSheetController = bottomSheetController;
         mSheetItemListView = getItemList();
+
+        mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(
+                getContentView().getResources().getDimensionPixelSize(
+                        R.dimen.ttf_for_payments_items_spacing),
+                context));
     }
 
     void setScanCreditCardButton(boolean shouldShowScanCreditCard) {
