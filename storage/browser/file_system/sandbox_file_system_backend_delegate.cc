@@ -43,13 +43,6 @@ namespace storage {
 
 namespace {
 
-const char kTemporaryOriginsCountLabel[] = "FileSystem.TemporaryOriginsCount";
-const char kPersistentOriginsCountLabel[] = "FileSystem.PersistentOriginsCount";
-
-const char kOpenFileSystemLabel[] = "FileSystem.OpenFileSystem";
-const char kOpenFileSystemDetailLabel[] = "FileSystem.OpenFileSystemDetail";
-const char kOpenFileSystemDetailNonThrottledLabel[] =
-    "FileSystem.OpenFileSystemDetailNonthrottled";
 int64_t kMinimumStatsCollectionIntervalHours = 1;
 
 // For type directory names in ObfuscatedFileUtil.
@@ -58,16 +51,6 @@ int64_t kMinimumStatsCollectionIntervalHours = 1;
 const char kTemporaryDirectoryName[] = "t";
 const char kPersistentDirectoryName[] = "p";
 const char kSyncableDirectoryName[] = "s";
-
-enum FileSystemError {
-  kOK = 0,
-  kIncognito,
-  kInvalidSchemeError,
-  kCreateDirectoryError,
-  kNotFound,
-  kUnknownError,
-  kFileSystemErrorMax,
-};
 
 // Restricted names.
 // http://dev.w3.org/2009/dap/file-system/file-dir-sys.html#naming-restrictions
@@ -120,13 +103,6 @@ base::File::Error OpenSandboxFileSystemOnFileTaskRunner(
   base::FileErrorOr<base::FilePath> path =
       file_util->GetDirectoryForBucketAndType(bucket_locator, type, create);
   error = path.has_value() ? base::File::FILE_OK : path.error();
-
-  if (error != base::File::FILE_OK) {
-    UMA_HISTOGRAM_ENUMERATION(kOpenFileSystemLabel, kCreateDirectoryError,
-                              kFileSystemErrorMax);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(kOpenFileSystemLabel, kOK, kFileSystemErrorMax);
-  }
   // The reference of file_util will be derefed on the FILE thread
   // when the storage of this callback gets deleted regardless of whether
   // this method is called or not.
@@ -412,17 +388,6 @@ SandboxFileSystemBackendDelegate::GetStorageKeysForTypeOnFileTaskRunner(
   while ((storage_key = enumerator->Next()).has_value()) {
     if (enumerator->HasFileSystemType(type))
       storage_keys.push_back(std::move(storage_key).value());
-  }
-  switch (type) {
-    case kFileSystemTypeTemporary:
-      UMA_HISTOGRAM_COUNTS_1M(kTemporaryOriginsCountLabel, storage_keys.size());
-      break;
-    case kFileSystemTypePersistent:
-      UMA_HISTOGRAM_COUNTS_1M(kPersistentOriginsCountLabel,
-                              storage_keys.size());
-      break;
-    default:
-      break;
   }
   return storage_keys;
 }
@@ -724,31 +689,6 @@ void SandboxFileSystemBackendDelegate::CollectOpenFileSystemMetrics(
     next_release_time_for_open_filesystem_stat_ =
         now + base::Hours(kMinimumStatsCollectionIntervalHours);
   }
-
-#define REPORT(report_value)                                            \
-  UMA_HISTOGRAM_ENUMERATION(kOpenFileSystemDetailLabel, (report_value), \
-                            kFileSystemErrorMax);                       \
-  if (!throttled) {                                                     \
-    UMA_HISTOGRAM_ENUMERATION(kOpenFileSystemDetailNonThrottledLabel,   \
-                              (report_value), kFileSystemErrorMax);     \
-  }
-
-  switch (error_code) {
-    case base::File::FILE_OK:
-      REPORT(kOK);
-      break;
-    case base::File::FILE_ERROR_INVALID_URL:
-      REPORT(kInvalidSchemeError);
-      break;
-    case base::File::FILE_ERROR_NOT_FOUND:
-      REPORT(kNotFound);
-      break;
-    case base::File::FILE_ERROR_FAILED:
-    default:
-      REPORT(kUnknownError);
-      break;
-  }
-#undef REPORT
 }
 
 ObfuscatedFileUtil* SandboxFileSystemBackendDelegate::obfuscated_file_util() {
