@@ -823,7 +823,11 @@ void FileSelectHelper::RunFileChooserEnd() {
     listener_->FileSelectionCanceled();
   render_frame_host_ = nullptr;
   web_contents_ = nullptr;
-  select_file_dialog_.reset();
+  // If the dialog was actually opened, dispose of our reference.
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+    select_file_dialog_.reset();
+  }
   Release();
 }
 
