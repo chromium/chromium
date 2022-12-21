@@ -66,7 +66,8 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         cba.FORCE_COLOR_PROFILE_SRGB,
         cba.ENSURE_FORCED_COLOR_PROFILE,
         # --test-type=gpu is used to suppress the "Google API Keys are
-        # missing" infobar, which causes flakiness in tests.
+        # missing" and "Chrome for Testing" infobars, which cause flakiness
+        # in tests.
         cba.TEST_TYPE_GPU,
     ])
     return default_args

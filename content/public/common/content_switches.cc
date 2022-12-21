@@ -779,7 +779,7 @@ const char kSkiaFontCacheLimitMb[] = "skia-font-cache-limit-mb";
 // exceeds this limit.
 const char kSkiaResourceCacheLimitMb[] = "skia-resource-cache-limit-mb";
 
-// Type of the current test harness ("browser" or "ui").
+// Type of the current test harness ("browser" or "ui" or "gpu").
 const char kTestType[]                      = "test-type";
 
 // The time zone to use for testing. Passed to renderers and plugins on startup.
