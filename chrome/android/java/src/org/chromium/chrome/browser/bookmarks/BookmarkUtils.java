@@ -599,8 +599,7 @@ public class BookmarkUtils {
      * @return The tint used on the bookmark folder icon.
      */
     public static @ColorRes int getFolderIconTint(@BookmarkType int type) {
-        return (type == BookmarkType.READING_LIST) ? R.color.default_icon_color_accent1_tint_list
-                                                   : R.color.default_icon_color_tint_list;
+        return R.color.default_icon_color_tint_list;
     }
 
     /**
