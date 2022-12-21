@@ -175,8 +175,12 @@ enum class FeedUserActionType {
   // User requested to refresh the Following feed using the post-follow snackbar
   // 'refresh' action.
   kTappedRefreshFollowingFeedOnSnackbar = 63,
+  // User tapped on the "Continue" of the sign-in promote UI. iOS only.
+  kTappedFeedSignInPromoUIContinue = 64,
+  // User tapped on the "Cancel" of the sign-in promote UI. iOS only.
+  kTappedFeedSignInPromoUICancel = 65,
 
-  kMaxValue = kTappedRefreshFollowingFeedOnSnackbar,
+  kMaxValue = kTappedFeedSignInPromoUICancel,
 };
 
 // For testing and debugging only.

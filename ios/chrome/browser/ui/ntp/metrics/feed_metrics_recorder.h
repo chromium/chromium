@@ -260,6 +260,13 @@ class Time;
 // are able to follow a website.
 - (void)recordFollowRecommendationIPHShown;
 
+// Record metrics for when a user tapped on "Continue" of the Sign-in promo
+// UI.
+- (void)recordSignInPromoUIContinueTapped;
+
+// Record metrics for when a user tapped on "Cancel" of the Sign-in promo UI.
+- (void)recordSignInPromoUICancelTapped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_METRICS_RECORDER_H_

@@ -4,11 +4,15 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_coordinator.h"
 
+#import "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,6 +25,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 }  // namespace
 
 @interface FeedSignInPromoCoordinator () <ConfirmationAlertActionHandler>
+
+// Metrics recorder for actions relating to the feed.
+@property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 
 @end
 
@@ -35,6 +42,12 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 }
 
 - (void)start {
+  DCHECK(IsFeedCardMenuSignInPromoEnabled());
+
+  self.feedMetricsRecorder = DiscoverFeedServiceFactory::GetForBrowserState(
+                                 self.browser->GetBrowserState())
+                                 ->GetFeedMetricsRecorder();
+
   FeedSignInPromoViewController* signInPromoViewController =
       [[FeedSignInPromoViewController alloc] init];
 
@@ -75,6 +88,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  [self.feedMetricsRecorder recordSignInPromoUIContinueTapped];
   if (self.baseViewController.presentedViewController) {
     __weak __typeof(self) weakSelf = self;
     [self.baseViewController dismissViewControllerAnimated:YES
@@ -82,12 +96,11 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                                                   [weakSelf showSignInFlow];
                                                 }];
   }
-  // TODO(crbug.com/1382615): add metrics.
 }
 
 - (void)confirmationAlertSecondaryAction {
+  [self.feedMetricsRecorder recordSignInPromoUICancelTapped];
   [self stop];
-  // TODO(crbug.com/1382615): add metrics.
 }
 
 #pragma mark - Helpers
