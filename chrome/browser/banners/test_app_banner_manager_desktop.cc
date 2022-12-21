@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -144,7 +145,7 @@ void TestAppBannerManagerDesktop::DidFinishCreatingWebApp(
 void TestAppBannerManagerDesktop::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  debug_log_.Append("DidFinishLoad");
+  debug_log_.Append(base::StrCat({"DidFinishLoad ", validated_url.spec()}));
   if (ShouldIgnore(render_frame_host, validated_url)) {
     SetInstallable(false);
     return;
