@@ -5521,6 +5521,8 @@ crbug.com/1249176 [ Mac12 ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Fa
 # Sheriff 2022-07-04
 crbug.com/1341689 [ Linux ] media/controls/overflow-menu-focus.html [ Failure Pass ]
 
+crbug.com/1345752 [ Win ] media/controls/overflow-menu-focus.html [ Failure Pass ]
+
 # Following tests timeout on mac11-arm64
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure Timeout ]
 
