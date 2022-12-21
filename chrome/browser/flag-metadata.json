@@ -4316,8 +4316,8 @@
   },
   {
     "name": "ios-password-manager-cross-origin-iframe-support",
-    "owners": ["theocristea@google.com", "kazinova@google.com", "vsemeniuk@google.com", "chrome-password-manager-team@google.com"],
-    "expiry_milestone": 111
+    "owners": ["kazinova@google.com", "vsemeniuk@google.com", "chrome-password-manager-team@google.com"],
+    "expiry_milestone": 117
   },
   {
     "name": "ios-password-ui-split",
@@ -5499,7 +5499,7 @@
   {
     "name": "password-manager-redesign",
     "owners": ["vsemeniuk@google.com", "vasilii", "chrome-password-manager-team@google.com"],
-    "expiry_milestone": 111
+    "expiry_milestone": 117
   },
   {
     "name": "password-notes",
@@ -5519,7 +5519,7 @@
   {
     "name": "passwords-grouping",
     "owners": ["vsemeniuk@google.com", "vasilii"],
-    "expiry_milestone": 111
+    "expiry_milestone": 117
   },
   {
     "name": "pcie-billboard-notification",
