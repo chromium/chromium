@@ -110,10 +110,10 @@ TEST_F(PrefHashStoreImplTest, AtomicHashStoreAndCheck) {
     EXPECT_EQ(ValueState::CHANGED, transaction->CheckValue("path1", &string_2));
 
     base::DictionaryValue dict;
-    dict.SetString("a", "foo");
-    dict.SetString("d", "bad");
-    dict.SetString("b", "bar");
-    dict.SetString("c", "baz");
+    dict.GetDict().Set("a", "foo");
+    dict.GetDict().Set("d", "bad");
+    dict.GetDict().Set("b", "bar");
+    dict.GetDict().Set("c", "baz");
 
     transaction->StoreHash("path1", &dict);
     EXPECT_EQ(ValueState::UNCHANGED, transaction->CheckValue("path1", &dict));
