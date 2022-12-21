@@ -471,11 +471,10 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::STORAGE_ACCESS, "storage-access",
-           CONTENT_SETTING_ASK, WebsiteSettingsInfo::SYNCABLE,
+           CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
            /*allowlisted_schemes=*/{},
            /*valid_settings=*/
-           {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK,
-            CONTENT_SETTING_SESSION_ONLY},
+           {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK},
            WebsiteSettingsInfo::REQUESTING_AND_TOP_ORIGIN_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
