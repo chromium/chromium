@@ -652,11 +652,8 @@ static_library("test_support") {
     "test/sk_color_eq.cc",
     "test/sk_color_eq.h",
   ]
-  if (is_ios) {
-    sources += [ "image/image_unittest_util_ios.mm" ]
-  }
-  if (is_mac) {
-    sources += [ "image/image_unittest_util_mac.mm" ]
+  if (is_apple) {
+    sources += [ "image/image_unittest_util_apple.mm" ]
   }
   if (use_fuzzing_engine) {
     sources += [

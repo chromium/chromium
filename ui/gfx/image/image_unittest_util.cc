@@ -260,7 +260,7 @@ gfx::Image CopyViaPlatformType(const gfx::Image& image) {
 }
 
 #if BUILDFLAG(IS_APPLE)
-// Defined in image_unittest_util_mac.mm.
+// Defined in image_unittest_util_apple.mm.
 #else
 SkColor GetPlatformImageColor(PlatformImage image, int x, int y) {
   return image.bitmap()->getColor(x, y);
