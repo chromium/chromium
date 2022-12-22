@@ -16,6 +16,25 @@
 namespace mojo {
 
 // static
+bool StructTraits<js_injection::mojom::JsWebMessageArrayBufferValueDataView,
+                  std::unique_ptr<blink::WebMessageArrayBufferPayload>>::
+    Read(js_injection::mojom::JsWebMessageArrayBufferValueDataView r,
+         std::unique_ptr<blink::WebMessageArrayBufferPayload>* out) {
+  mojo_base::BigBufferView big_buffer_view;
+  if (!r.ReadArrayBufferValue(&big_buffer_view)) {
+    return false;
+  }
+  absl::optional<size_t> max_byte_length;
+  if (r.is_resizable_by_user_javascript()) {
+    max_byte_length = base::checked_cast<size_t>(r.max_byte_length());
+  }
+  *out = blink::WebMessageArrayBufferPayload::CreateFromBigBuffer(
+      mojo_base::BigBufferView::ToBigBuffer(std::move(big_buffer_view)),
+      max_byte_length);
+  return true;
+}
+
+// static
 js_injection::mojom::JsWebMessageDataView::Tag UnionTraits<
     js_injection::mojom::JsWebMessageDataView,
     blink::WebMessagePayload>::GetTag(const blink::WebMessagePayload& payload) {
@@ -42,12 +61,12 @@ bool UnionTraits<
       return false;
     out->emplace<std::u16string>(std::move(string_value));
   } else if (r.is_array_buffer_value()) {
-    mojo_base::BigBufferView big_buffer_view;
-    if (!r.ReadArrayBufferValue(&big_buffer_view))
+    std::unique_ptr<blink::WebMessageArrayBufferPayload> array_buffer_value;
+    if (!r.ReadArrayBufferValue(&array_buffer_value)) {
       return false;
+    }
     out->emplace<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
-        blink::WebMessageArrayBufferPayload::CreateFromBigBuffer(
-            mojo_base::BigBufferView::ToBigBuffer(std::move(big_buffer_view))));
+        std::move(array_buffer_value));
   } else {
     return false;
   }

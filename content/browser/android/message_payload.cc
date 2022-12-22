@@ -33,6 +33,11 @@ class JavaArrayBuffer : public blink::WebMessageArrayBufferPayload {
 
   size_t GetLength() const override { return length_; }
 
+  // Java ArrayBuffers are always fixed-length.
+  bool GetIsResizableByUserJavaScript() const override { return false; }
+
+  size_t GetMaxByteLength() const override { return length_; }
+
   // Due to JNI limitation, Java ByteArray cannot be converted into base::span
   // trivially.
   absl::optional<base::span<const uint8_t>> GetAsSpanIfPossible()

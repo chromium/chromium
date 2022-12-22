@@ -33,6 +33,10 @@ class CORE_EXPORT DOMArrayBufferBase : public ScriptWrappable {
 
   bool IsShared() const { return contents_.IsShared(); }
 
+  bool IsResizableByUserJavaScript() const {
+    return contents_.IsResizableByUserJavaScript();
+  }
+
   // ScriptWrappable overrides:
   v8::MaybeLocal<v8::Value> Wrap(ScriptState*) override {
     NOTREACHED();

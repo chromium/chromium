@@ -29,11 +29,23 @@ struct DocumentStartJavaScript {
   js_injection.mojom.OriginMatcher origin_matcher;
 };
 
+// The ArrayBuffer arm of the JsWebMessage union below, which contains the
+// ArrayBuffer payload sent between JavaScript and browser.
+struct JsWebMessageArrayBufferValue {
+  mojo_base.mojom.BigBuffer array_buffer_value;
+  // If is_resizable_by_user_javascript is false, then max_byte_length is
+  // unused.
+  //
+  // TODO(crbug.com/657632): Use a wrapped uint64 or uint64? once supported.
+  bool is_resizable_by_user_javascript = false;
+  uint64 max_byte_length = 0;
+};
+
 // JsWebMessage struct contains the message payload sent between
 // JavaScript and Browser.
 union JsWebMessage {
   mojo_base.mojom.String16 string_value;
-  mojo_base.mojom.BigBuffer array_buffer_value;
+  JsWebMessageArrayBufferValue array_buffer_value;
 };
 
 // For JavaScript postMessage() API, implemented by browser.

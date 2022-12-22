@@ -121,8 +121,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
   }
   if (object->IsArrayBuffer()) {
     DOMArrayBuffer* array_buffer =
-        NativeValueTraits<DOMArrayBuffer>::NativeValue(isolate, object,
-                                                       exception_state);
+        NativeValueTraits<IDLAllowResizable<DOMArrayBuffer>>::NativeValue(
+            isolate, object, exception_state);
     if (exception_state.HadException())
       return false;
     if (transferables.array_buffers.Contains(array_buffer)) {
@@ -137,8 +137,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
   }
   if (object->IsSharedArrayBuffer()) {
     DOMSharedArrayBuffer* shared_array_buffer =
-        NativeValueTraits<DOMSharedArrayBuffer>::NativeValue(isolate, object,
-                                                             exception_state);
+        NativeValueTraits<IDLAllowResizable<DOMSharedArrayBuffer>>::NativeValue(
+            isolate, object, exception_state);
     if (exception_state.HadException())
       return false;
     if (transferables.array_buffers.Contains(shared_array_buffer)) {

@@ -577,6 +577,19 @@ struct CORE_EXPORT NativeValueTraits<IDLNullable<DOMArrayBuffer>>
 };
 
 template <>
+struct CORE_EXPORT NativeValueTraits<IDLAllowResizable<DOMArrayBuffer>>
+    : public NativeValueTraitsBase<DOMArrayBuffer*> {
+  static DOMArrayBuffer* NativeValue(v8::Isolate* isolate,
+                                     v8::Local<v8::Value> value,
+                                     ExceptionState& exception_state);
+
+  static DOMArrayBuffer* ArgumentValue(v8::Isolate* isolate,
+                                       int argument_index,
+                                       v8::Local<v8::Value> value,
+                                       ExceptionState& exception_state);
+};
+
+template <>
 struct CORE_EXPORT NativeValueTraits<DOMSharedArrayBuffer>
     : public NativeValueTraitsBase<DOMSharedArrayBuffer*> {
   static DOMSharedArrayBuffer* NativeValue(v8::Isolate* isolate,
@@ -591,6 +604,19 @@ struct CORE_EXPORT NativeValueTraits<DOMSharedArrayBuffer>
 
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>
+    : public NativeValueTraitsBase<DOMSharedArrayBuffer*> {
+  static DOMSharedArrayBuffer* NativeValue(v8::Isolate* isolate,
+                                           v8::Local<v8::Value> value,
+                                           ExceptionState& exception_state);
+
+  static DOMSharedArrayBuffer* ArgumentValue(v8::Isolate* isolate,
+                                             int argument_index,
+                                             v8::Local<v8::Value> value,
+                                             ExceptionState& exception_state);
+};
+
+template <>
+struct CORE_EXPORT NativeValueTraits<IDLAllowResizable<DOMSharedArrayBuffer>>
     : public NativeValueTraitsBase<DOMSharedArrayBuffer*> {
   static DOMSharedArrayBuffer* NativeValue(v8::Isolate* isolate,
                                            v8::Local<v8::Value> value,

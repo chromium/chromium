@@ -32,6 +32,15 @@ class VectorArrayBuffer : public WebMessageArrayBufferPayload {
 
   size_t GetLength() const override { return length_; }
 
+  bool GetIsResizableByUserJavaScript() const override {
+    // VectorArrayBuffers are not used for ArrayBuffer transfers and are
+    // currently always fixed-length. Structured cloning resizables ArrayBuffers
+    // is not yet supported in SMC.
+    return false;
+  }
+
+  size_t GetMaxByteLength() const override { return length_; }
+
   absl::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
     return base::make_span(data_).subspan(position_, length_);
@@ -51,10 +60,21 @@ class VectorArrayBuffer : public WebMessageArrayBufferPayload {
 // An ArrayBufferPayload impl based on mojo::BigBuffer.
 class BigBufferArrayBuffer : public WebMessageArrayBufferPayload {
  public:
-  explicit BigBufferArrayBuffer(mojo_base::BigBuffer data)
-      : data_(std::move(data)) {}
+  explicit BigBufferArrayBuffer(mojo_base::BigBuffer data,
+                                absl::optional<size_t> max_byte_length)
+      : data_(std::move(data)), max_byte_length_(max_byte_length) {
+    DCHECK(!max_byte_length || *max_byte_length >= GetLength());
+  }
 
   size_t GetLength() const override { return data_.size(); }
+
+  bool GetIsResizableByUserJavaScript() const override {
+    return max_byte_length_.has_value();
+  }
+
+  size_t GetMaxByteLength() const override {
+    return max_byte_length_.value_or(GetLength());
+  }
 
   absl::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
@@ -68,6 +88,7 @@ class BigBufferArrayBuffer : public WebMessageArrayBufferPayload {
 
  private:
   mojo_base::BigBuffer data_;
+  absl::optional<size_t> max_byte_length_;
 };
 
 const uint32_t kVarIntShift = 7;
@@ -147,8 +168,11 @@ bool ContainsOnlyLatin1(const std::u16string& data) {
 
 // static
 std::unique_ptr<WebMessageArrayBufferPayload>
-WebMessageArrayBufferPayload::CreateFromBigBuffer(mojo_base::BigBuffer buffer) {
-  return std::make_unique<BigBufferArrayBuffer>(std::move(buffer));
+WebMessageArrayBufferPayload::CreateFromBigBuffer(
+    mojo_base::BigBuffer buffer,
+    absl::optional<size_t> max_byte_length) {
+  return std::make_unique<BigBufferArrayBuffer>(std::move(buffer),
+                                                max_byte_length);
 }
 
 // static
@@ -191,7 +215,9 @@ TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
             array_buffer->CopyInto(base::make_span(big_buffer));
             message.array_buffer_contents_array.push_back(
                 mojom::SerializedArrayBufferContents::New(
-                    std::move(big_buffer)));
+                    std::move(big_buffer),
+                    array_buffer->GetIsResizableByUserJavaScript(),
+                    array_buffer->GetMaxByteLength()));
           }},
       payload);
 
@@ -279,9 +305,14 @@ absl::optional<WebMessagePayload> DecodeToWebMessagePayload(
         return absl::nullopt;
       if (message.array_buffer_contents_array.size() != 1)
         return absl::nullopt;
+      auto& array_buffer_contents = message.array_buffer_contents_array[0];
+      absl::optional<size_t> max_byte_length;
+      if (array_buffer_contents->is_resizable_by_user_javascript) {
+        max_byte_length.emplace(array_buffer_contents->max_byte_length);
+      }
       return absl::make_optional(
           WebMessagePayload(std::make_unique<BigBufferArrayBuffer>(
-              std::move(message.array_buffer_contents_array[0]->contents))));
+              std::move(array_buffer_contents->contents), max_byte_length)));
     }
   }
 

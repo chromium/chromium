@@ -62,7 +62,11 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
 
     for (auto& item : message.array_buffer_contents_array) {
       mojo_base::BigBuffer& big_buffer = item->contents;
-      ArrayBufferContents contents(big_buffer.size(), 1,
+      absl::optional<size_t> max_byte_length;
+      if (item->is_resizable_by_user_javascript) {
+        max_byte_length = base::checked_cast<size_t>(item->max_byte_length);
+      }
+      ArrayBufferContents contents(big_buffer.size(), max_byte_length, 1,
                                    ArrayBufferContents::kNotShared,
                                    ArrayBufferContents::kDontInitialize);
       // Check if we allocated the backing store of the ArrayBufferContents

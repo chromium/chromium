@@ -90,6 +90,15 @@ class CORE_EXPORT
     return mojo_base::BigBuffer(
         base::make_span(allocation_start, array_buffer_contents.DataLength()));
   }
+  static bool is_resizable_by_user_javascript(
+      const blink::ArrayBufferContents& array_buffer_contents) {
+    return array_buffer_contents.IsResizableByUserJavaScript();
+  }
+  static size_t max_byte_length(
+      const blink::ArrayBufferContents& array_buffer_contents) {
+    return array_buffer_contents.MaxDataLength();
+  }
+
   static bool Read(blink::mojom::SerializedArrayBufferContentsDataView,
                    blink::ArrayBufferContents* out);
 };

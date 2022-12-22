@@ -51,34 +51,20 @@ enum class BufferSizeCheck {
   kDoNotCheck,
 };
 
+enum class ResizableAllowance { kDisallowResizable, kAllowResizable };
+
 // The basic recipe of NativeValueTraits<T>::NativeValue function
 // implementation for buffer source types.
 template <typename RecipeTrait,
-          auto(*ToBlinkValue)(v8::Isolate*, v8::Local<v8::Value>),
+          auto (*ToBlinkValue)(v8::Isolate*, v8::Local<v8::Value>),
           Nullablity nullablity,
           BufferSizeCheck buffer_size_check,
+          ResizableAllowance allow_resizable,
           typename ScriptWrappableOrBufferSourceTypeName,
           bool (*IsSharedBuffer)(v8::Local<v8::Value>) = nullptr>
 auto NativeValueImpl(v8::Isolate* isolate,
                      v8::Local<v8::Value> value,
                      ExceptionState& exception_state) {
-  auto blink_value = ToBlinkValue(isolate, value);
-  if (LIKELY(RecipeTrait::IsNonNull(blink_value))) {
-    if constexpr (buffer_size_check == BufferSizeCheck::kCheck) {
-      if (DoesExceedSizeLimit(isolate, RecipeTrait::ByteLength(blink_value),
-                              exception_state)) {
-        return RecipeTrait::NullValue();
-      }
-    }
-    return RecipeTrait::ToReturnType(blink_value);
-  }
-
-  if constexpr (nullablity == Nullablity::kIsNullable) {
-    if (LIKELY(value->IsNullOrUndefined())) {
-      return RecipeTrait::NullValue();
-    }
-  }
-
   const char* buffer_source_type_name = nullptr;
   if constexpr (std::is_base_of_v<ScriptWrappable,
                                   ScriptWrappableOrBufferSourceTypeName>) {
@@ -87,6 +73,33 @@ auto NativeValueImpl(v8::Isolate* isolate,
             ->interface_name;
   } else {
     buffer_source_type_name = ScriptWrappableOrBufferSourceTypeName::GetName();
+  }
+
+  auto blink_value = ToBlinkValue(isolate, value);
+  if (LIKELY(RecipeTrait::IsNonNull(blink_value))) {
+    if constexpr (allow_resizable == ResizableAllowance::kDisallowResizable) {
+      if (RecipeTrait::IsResizable(blink_value)) {
+        exception_state.ThrowTypeError(
+            ExceptionMessages::ResizableArrayBufferNotAllowed(
+                buffer_source_type_name));
+        return RecipeTrait::NullValue();
+      }
+    }
+
+    if constexpr (buffer_size_check == BufferSizeCheck::kCheck) {
+      if (DoesExceedSizeLimit(isolate, RecipeTrait::ByteLength(blink_value),
+                              exception_state)) {
+        return RecipeTrait::NullValue();
+      }
+    }
+
+    return RecipeTrait::ToReturnType(blink_value);
+  }
+
+  if constexpr (nullablity == Nullablity::kIsNullable) {
+    if (LIKELY(value->IsNullOrUndefined())) {
+      return RecipeTrait::NullValue();
+    }
   }
 
   if constexpr (IsSharedBuffer != nullptr) {
@@ -106,32 +119,16 @@ auto NativeValueImpl(v8::Isolate* isolate,
 // The basic recipe of NativeValueTraits<T>::ArgumentValue function
 // implementation for buffer source types.
 template <typename RecipeTrait,
-          auto(*ToBlinkValue)(v8::Isolate*, v8::Local<v8::Value>),
+          auto (*ToBlinkValue)(v8::Isolate*, v8::Local<v8::Value>),
           Nullablity nullablity,
           BufferSizeCheck buffer_size_check,
+          ResizableAllowance allow_resizable,
           typename ScriptWrappableOrBufferSourceTypeName,
           bool (*IsSharedBuffer)(v8::Local<v8::Value>) = nullptr>
 auto ArgumentValueImpl(v8::Isolate* isolate,
                        int argument_index,
                        v8::Local<v8::Value> value,
                        ExceptionState& exception_state) {
-  auto blink_value = ToBlinkValue(isolate, value);
-  if (LIKELY(RecipeTrait::IsNonNull(blink_value))) {
-    if constexpr (buffer_size_check == BufferSizeCheck::kCheck) {
-      if (DoesExceedSizeLimit(isolate, RecipeTrait::ByteLength(blink_value),
-                              exception_state)) {
-        return RecipeTrait::NullValue();
-      }
-    }
-    return RecipeTrait::ToReturnType(blink_value);
-  }
-
-  if constexpr (nullablity == Nullablity::kIsNullable) {
-    if (LIKELY(value->IsNullOrUndefined())) {
-      return RecipeTrait::NullValue();
-    }
-  }
-
   const char* buffer_source_type_name = nullptr;
   if constexpr (std::is_base_of_v<ScriptWrappable,
                                   ScriptWrappableOrBufferSourceTypeName>) {
@@ -140,6 +137,33 @@ auto ArgumentValueImpl(v8::Isolate* isolate,
             ->interface_name;
   } else {
     buffer_source_type_name = ScriptWrappableOrBufferSourceTypeName::GetName();
+  }
+
+  auto blink_value = ToBlinkValue(isolate, value);
+  if (LIKELY(RecipeTrait::IsNonNull(blink_value))) {
+    if constexpr (allow_resizable == ResizableAllowance::kDisallowResizable) {
+      if (RecipeTrait::IsResizable(blink_value)) {
+        exception_state.ThrowTypeError(
+            ExceptionMessages::ResizableArrayBufferNotAllowed(
+                buffer_source_type_name));
+        return RecipeTrait::NullValue();
+      }
+    }
+
+    if constexpr (buffer_size_check == BufferSizeCheck::kCheck) {
+      if (DoesExceedSizeLimit(isolate, RecipeTrait::ByteLength(blink_value),
+                              exception_state)) {
+        return RecipeTrait::NullValue();
+      }
+    }
+
+    return RecipeTrait::ToReturnType(blink_value);
+  }
+
+  if constexpr (nullablity == Nullablity::kIsNullable) {
+    if (LIKELY(value->IsNullOrUndefined())) {
+      return RecipeTrait::NullValue();
+    }
   }
 
   if constexpr (IsSharedBuffer != nullptr) {
@@ -217,10 +241,15 @@ struct ABVTrait<DOMDataView>
 
 template <typename T, typename unused = void>
 struct RecipeTrait {
-  static bool IsNonNull(const T* buffer) { return buffer; }
+  static bool IsNonNull(const T* buffer_view) { return buffer_view; }
   static T* NullValue() { return nullptr; }
-  static T* ToReturnType(T* buffer) { return buffer; }
-  static size_t ByteLength(const T* buffer) { return buffer->byteLength(); }
+  static T* ToReturnType(T* buffer_view) { return buffer_view; }
+  static size_t ByteLength(const T* buffer_view) {
+    return buffer_view->byteLength();
+  }
+  static bool IsResizable(const T* buffer_view) {
+    return buffer_view->BufferBase()->IsResizableByUserJavaScript();
+  }
 };
 
 template <typename T>
@@ -230,6 +259,9 @@ struct RecipeTrait<T,
   static T* NullValue() { return nullptr; }
   static T* ToReturnType(T* buffer) { return buffer; }
   static size_t ByteLength(const T* buffer) { return buffer->ByteLength(); }
+  static bool IsResizable(const T* buffer) {
+    return buffer->IsResizableByUserJavaScript();
+  }
 };
 
 template <typename T>
@@ -259,6 +291,12 @@ struct RecipeTrait<
   }
   static size_t ByteLength(v8::Local<v8::Value> buffer) {
     return buffer.As<typename ABVTrait<T>::V8ViewType>()->ByteLength();
+  }
+  static bool IsResizable(v8::Local<v8::Value> buffer) {
+    return buffer.As<typename ABVTrait<T>::V8ViewType>()
+        ->Buffer()
+        ->GetBackingStore()
+        ->IsResizableByUserJavaScript();
   }
 };
 
@@ -432,6 +470,7 @@ DOMArrayBuffer* NativeValueTraits<DOMArrayBuffer>::NativeValue(
     ExceptionState& exception_state) {
   return NativeValueImpl<RecipeTrait<DOMArrayBuffer>, ToDOMArrayBuffer,
                          Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                         ResizableAllowance::kDisallowResizable,
                          DOMArrayBuffer>(isolate, value, exception_state);
 }
 
@@ -442,6 +481,7 @@ DOMArrayBuffer* NativeValueTraits<DOMArrayBuffer>::ArgumentValue(
     ExceptionState& exception_state) {
   return ArgumentValueImpl<RecipeTrait<DOMArrayBuffer>, ToDOMArrayBuffer,
                            Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                           ResizableAllowance::kDisallowResizable,
                            DOMArrayBuffer>(isolate, argument_index, value,
                                            exception_state);
 }
@@ -454,6 +494,7 @@ DOMArrayBuffer* NativeValueTraits<IDLNullable<DOMArrayBuffer>>::NativeValue(
     ExceptionState& exception_state) {
   return NativeValueImpl<RecipeTrait<DOMArrayBuffer>, ToDOMArrayBuffer,
                          Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+                         ResizableAllowance::kDisallowResizable,
                          DOMArrayBuffer>(isolate, value, exception_state);
 }
 
@@ -464,8 +505,34 @@ DOMArrayBuffer* NativeValueTraits<IDLNullable<DOMArrayBuffer>>::ArgumentValue(
     ExceptionState& exception_state) {
   return ArgumentValueImpl<RecipeTrait<DOMArrayBuffer>, ToDOMArrayBuffer,
                            Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+                           ResizableAllowance::kDisallowResizable,
                            DOMArrayBuffer>(isolate, argument_index, value,
                                            exception_state);
+}
+
+// [AllowResizable] ArrayBuffer
+
+DOMArrayBuffer*
+NativeValueTraits<IDLAllowResizable<DOMArrayBuffer>>::NativeValue(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  return NativeValueImpl<RecipeTrait<DOMArrayBuffer>, ToDOMArrayBuffer,
+                         Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                         ResizableAllowance::kAllowResizable, DOMArrayBuffer>(
+      isolate, value, exception_state);
+}
+
+DOMArrayBuffer*
+NativeValueTraits<IDLAllowResizable<DOMArrayBuffer>>::ArgumentValue(
+    v8::Isolate* isolate,
+    int argument_index,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  return ArgumentValueImpl<RecipeTrait<DOMArrayBuffer>, ToDOMArrayBuffer,
+                           Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                           ResizableAllowance::kAllowResizable, DOMArrayBuffer>(
+      isolate, argument_index, value, exception_state);
 }
 
 // SharedArrayBuffer
@@ -474,9 +541,10 @@ DOMSharedArrayBuffer* NativeValueTraits<DOMSharedArrayBuffer>::NativeValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  return NativeValueImpl<RecipeTrait<DOMSharedArrayBuffer>,
-                         ToDOMSharedArrayBuffer, Nullablity::kIsNotNullable,
-                         BufferSizeCheck::kCheck, DOMSharedArrayBuffer>(
+  return NativeValueImpl<
+      RecipeTrait<DOMSharedArrayBuffer>, ToDOMSharedArrayBuffer,
+      Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+      ResizableAllowance::kDisallowResizable, DOMSharedArrayBuffer>(
       isolate, value, exception_state);
 }
 
@@ -485,9 +553,10 @@ DOMSharedArrayBuffer* NativeValueTraits<DOMSharedArrayBuffer>::ArgumentValue(
     int argument_index,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  return ArgumentValueImpl<RecipeTrait<DOMSharedArrayBuffer>,
-                           ToDOMSharedArrayBuffer, Nullablity::kIsNotNullable,
-                           BufferSizeCheck::kCheck, DOMSharedArrayBuffer>(
+  return ArgumentValueImpl<
+      RecipeTrait<DOMSharedArrayBuffer>, ToDOMSharedArrayBuffer,
+      Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+      ResizableAllowance::kDisallowResizable, DOMSharedArrayBuffer>(
       isolate, argument_index, value, exception_state);
 }
 
@@ -498,9 +567,10 @@ NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>::NativeValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  return NativeValueImpl<RecipeTrait<DOMSharedArrayBuffer>,
-                         ToDOMSharedArrayBuffer, Nullablity::kIsNullable,
-                         BufferSizeCheck::kCheck, DOMSharedArrayBuffer>(
+  return NativeValueImpl<
+      RecipeTrait<DOMSharedArrayBuffer>, ToDOMSharedArrayBuffer,
+      Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+      ResizableAllowance::kDisallowResizable, DOMSharedArrayBuffer>(
       isolate, value, exception_state);
 }
 
@@ -510,9 +580,37 @@ NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>::ArgumentValue(
     int argument_index,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  return ArgumentValueImpl<RecipeTrait<DOMSharedArrayBuffer>,
-                           ToDOMSharedArrayBuffer, Nullablity::kIsNullable,
-                           BufferSizeCheck::kCheck, DOMSharedArrayBuffer>(
+  return ArgumentValueImpl<
+      RecipeTrait<DOMSharedArrayBuffer>, ToDOMSharedArrayBuffer,
+      Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+      ResizableAllowance::kDisallowResizable, DOMSharedArrayBuffer>(
+      isolate, argument_index, value, exception_state);
+}
+
+// [AllowResizable] SharedArrayBuffer
+
+DOMSharedArrayBuffer*
+NativeValueTraits<IDLAllowResizable<DOMSharedArrayBuffer>>::NativeValue(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  return NativeValueImpl<
+      RecipeTrait<DOMSharedArrayBuffer>, ToDOMSharedArrayBuffer,
+      Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+      ResizableAllowance::kAllowResizable, DOMSharedArrayBuffer>(
+      isolate, value, exception_state);
+}
+
+DOMSharedArrayBuffer*
+NativeValueTraits<IDLAllowResizable<DOMSharedArrayBuffer>>::ArgumentValue(
+    v8::Isolate* isolate,
+    int argument_index,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  return ArgumentValueImpl<
+      RecipeTrait<DOMSharedArrayBuffer>, ToDOMSharedArrayBuffer,
+      Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+      ResizableAllowance::kAllowResizable, DOMSharedArrayBuffer>(
       isolate, argument_index, value, exception_state);
 }
 
@@ -524,6 +622,7 @@ DOMArrayBufferBase* NativeValueTraits<DOMArrayBufferBase>::NativeValue(
     ExceptionState& exception_state) {
   return NativeValueImpl<RecipeTrait<DOMArrayBufferBase>, ToDOMArrayBufferBase,
                          Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                         ResizableAllowance::kDisallowResizable,
                          BufferSourceTypeNameAllowSharedArrayBuffer>(
       isolate, value, exception_state);
 }
@@ -536,6 +635,7 @@ DOMArrayBufferBase* NativeValueTraits<DOMArrayBufferBase>::ArgumentValue(
   return ArgumentValueImpl<RecipeTrait<DOMArrayBufferBase>,
                            ToDOMArrayBufferBase, Nullablity::kIsNotNullable,
                            BufferSizeCheck::kCheck,
+                           ResizableAllowance::kDisallowResizable,
                            BufferSourceTypeNameAllowSharedArrayBuffer>(
       isolate, argument_index, value, exception_state);
 }
@@ -550,6 +650,7 @@ DOMArrayBufferBase* NativeValueTraits<IDLBufferSourceTypeNoSizeLimit<
   return ArgumentValueImpl<RecipeTrait<DOMArrayBufferBase>,
                            ToDOMArrayBufferBase, Nullablity::kIsNotNullable,
                            BufferSizeCheck::kDoNotCheck,
+                           ResizableAllowance::kDisallowResizable,
                            BufferSourceTypeNameAllowSharedArrayBuffer>(
       isolate, argument_index, value, exception_state);
 }
@@ -563,6 +664,7 @@ NativeValueTraits<IDLNullable<DOMArrayBufferBase>>::NativeValue(
     ExceptionState& exception_state) {
   return NativeValueImpl<RecipeTrait<DOMArrayBufferBase>, ToDOMArrayBufferBase,
                          Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+                         ResizableAllowance::kDisallowResizable,
                          BufferSourceTypeNameAllowSharedArrayBuffer>(
       isolate, value, exception_state);
 }
@@ -576,6 +678,7 @@ NativeValueTraits<IDLNullable<DOMArrayBufferBase>>::ArgumentValue(
   return ArgumentValueImpl<RecipeTrait<DOMArrayBufferBase>,
                            ToDOMArrayBufferBase, Nullablity::kIsNullable,
                            BufferSizeCheck::kCheck,
+                           ResizableAllowance::kDisallowResizable,
                            BufferSourceTypeNameAllowSharedArrayBuffer>(
       isolate, argument_index, value, exception_state);
 }
@@ -591,6 +694,7 @@ DOMArrayBufferBase* NativeValueTraits<
   return ArgumentValueImpl<RecipeTrait<DOMArrayBufferBase>,
                            ToDOMArrayBufferBase, Nullablity::kIsNullable,
                            BufferSizeCheck::kDoNotCheck,
+                           ResizableAllowance::kDisallowResizable,
                            BufferSourceTypeNameAllowSharedArrayBuffer>(
       isolate, argument_index, value, exception_state);
 }
@@ -604,11 +708,11 @@ NotShared<T> NativeValueTraits<
     NativeValue(v8::Isolate* isolate,
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
-  return NativeValueImpl<RecipeTrait<NotShared<T>>,
-                         ToDOMViewType<T, kNotShared>,
-                         Nullablity::kIsNotNullable, BufferSizeCheck::kCheck, T,
-                         ABVTrait<T>::IsShared>(isolate, value,
-                                                exception_state);
+  return NativeValueImpl<
+      RecipeTrait<NotShared<T>>, ToDOMViewType<T, kNotShared>,
+      Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+      ResizableAllowance::kDisallowResizable, T, ABVTrait<T>::IsShared>(
+      isolate, value, exception_state);
 }
 
 template <typename T>
@@ -619,11 +723,11 @@ NotShared<T> NativeValueTraits<
                   int argument_index,
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
-  return ArgumentValueImpl<RecipeTrait<NotShared<T>>,
-                           ToDOMViewType<T, kNotShared>,
-                           Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
-                           T, ABVTrait<T>::IsShared>(isolate, argument_index,
-                                                     value, exception_state);
+  return ArgumentValueImpl<
+      RecipeTrait<NotShared<T>>, ToDOMViewType<T, kNotShared>,
+      Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+      ResizableAllowance::kDisallowResizable, T, ABVTrait<T>::IsShared>(
+      isolate, argument_index, value, exception_state);
 }
 
 // [AllowShared] ArrayBufferView
@@ -635,10 +739,11 @@ MaybeShared<T> NativeValueTraits<
     NativeValue(v8::Isolate* isolate,
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
-  return NativeValueImpl<
-      RecipeTrait<MaybeShared<T>>, ToDOMViewType<T, kMaybeShared>,
-      Nullablity::kIsNotNullable, BufferSizeCheck::kCheck, T>(isolate, value,
-                                                              exception_state);
+  return NativeValueImpl<RecipeTrait<MaybeShared<T>>,
+                         ToDOMViewType<T, kMaybeShared>,
+                         Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                         ResizableAllowance::kDisallowResizable, T>(
+      isolate, value, exception_state);
 }
 
 template <typename T>
@@ -649,9 +754,10 @@ MaybeShared<T> NativeValueTraits<
                   int argument_index,
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
-  return ArgumentValueImpl<
-      RecipeTrait<MaybeShared<T>>, ToDOMViewType<T, kMaybeShared>,
-      Nullablity::kIsNotNullable, BufferSizeCheck::kCheck, T>(
+  return ArgumentValueImpl<RecipeTrait<MaybeShared<T>>,
+                           ToDOMViewType<T, kMaybeShared>,
+                           Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                           ResizableAllowance::kDisallowResizable, T>(
       isolate, argument_index, value, exception_state);
 }
 
@@ -666,8 +772,9 @@ MaybeShared<T> NativeValueTraits<
                 ExceptionState& exception_state) {
   return NativeValueImpl<
       RecipeTrait<MaybeShared<T>>, ToDOMViewType<T, kMaybeShared>,
-      Nullablity::kIsNotNullable, BufferSizeCheck::kDoNotCheck, T>(
-      isolate, value, exception_state);
+      Nullablity::kIsNotNullable, BufferSizeCheck::kDoNotCheck,
+      ResizableAllowance::kDisallowResizable, T>(isolate, value,
+                                                 exception_state);
 }
 
 template <typename T>
@@ -680,8 +787,9 @@ MaybeShared<T> NativeValueTraits<
                   ExceptionState& exception_state) {
   return ArgumentValueImpl<
       RecipeTrait<MaybeShared<T>>, ToDOMViewType<T, kMaybeShared>,
-      Nullablity::kIsNotNullable, BufferSizeCheck::kDoNotCheck, T>(
-      isolate, argument_index, value, exception_state);
+      Nullablity::kIsNotNullable, BufferSizeCheck::kDoNotCheck,
+      ResizableAllowance::kDisallowResizable, T>(isolate, argument_index, value,
+                                                 exception_state);
 }
 
 // Nullable ArrayBufferView
@@ -693,9 +801,10 @@ NotShared<T> NativeValueTraits<
     NativeValue(v8::Isolate* isolate,
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
-  return NativeValueImpl<RecipeTrait<NotShared<T>>,
-                         ToDOMViewType<T, kNotShared>, Nullablity::kIsNullable,
-                         BufferSizeCheck::kCheck, T, ABVTrait<T>::IsShared>(
+  return NativeValueImpl<
+      RecipeTrait<NotShared<T>>, ToDOMViewType<T, kNotShared>,
+      Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+      ResizableAllowance::kDisallowResizable, T, ABVTrait<T>::IsShared>(
       isolate, value, exception_state);
 }
 
@@ -707,11 +816,11 @@ NotShared<T> NativeValueTraits<
                   int argument_index,
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
-  return ArgumentValueImpl<RecipeTrait<NotShared<T>>,
-                           ToDOMViewType<T, kNotShared>,
-                           Nullablity::kIsNullable, BufferSizeCheck::kCheck, T,
-                           ABVTrait<T>::IsShared>(isolate, argument_index,
-                                                  value, exception_state);
+  return ArgumentValueImpl<
+      RecipeTrait<NotShared<T>>, ToDOMViewType<T, kNotShared>,
+      Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+      ResizableAllowance::kDisallowResizable, T, ABVTrait<T>::IsShared>(
+      isolate, argument_index, value, exception_state);
 }
 
 // Nullable [AllowShared] ArrayBufferView
@@ -725,7 +834,8 @@ MaybeShared<T> NativeValueTraits<
                 ExceptionState& exception_state) {
   return NativeValueImpl<RecipeTrait<MaybeShared<T>>,
                          ToDOMViewType<T, kMaybeShared>,
-                         Nullablity::kIsNullable, BufferSizeCheck::kCheck, T>(
+                         Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+                         ResizableAllowance::kDisallowResizable, T>(
       isolate, value, exception_state);
 }
 
@@ -739,7 +849,8 @@ MaybeShared<T> NativeValueTraits<
                   ExceptionState& exception_state) {
   return ArgumentValueImpl<RecipeTrait<MaybeShared<T>>,
                            ToDOMViewType<T, kMaybeShared>,
-                           Nullablity::kIsNullable, BufferSizeCheck::kCheck, T>(
+                           Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+                           ResizableAllowance::kDisallowResizable, T>(
       isolate, argument_index, value, exception_state);
 }
 
@@ -755,8 +866,9 @@ MaybeShared<T> NativeValueTraits<
                   ExceptionState& exception_state) {
   return ArgumentValueImpl<
       RecipeTrait<MaybeShared<T>>, ToDOMViewType<T, kMaybeShared>,
-      Nullablity::kIsNullable, BufferSizeCheck::kDoNotCheck, T>(
-      isolate, argument_index, value, exception_state);
+      Nullablity::kIsNullable, BufferSizeCheck::kDoNotCheck,
+      ResizableAllowance::kDisallowResizable, T>(isolate, argument_index, value,
+                                                 exception_state);
 }
 
 // [AllowShared, FlexibleArrayBufferView] ArrayBufferView
@@ -771,6 +883,7 @@ T NativeValueTraits<T,
                   ExceptionState& exception_state) {
   return ArgumentValueImpl<RecipeTrait<T>, ToFlexibleArrayBufferView,
                            Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                           ResizableAllowance::kDisallowResizable,
                            typename ABVTrait<T>::DOMViewType>(
       isolate, argument_index, value, exception_state);
 }
@@ -788,8 +901,9 @@ T NativeValueTraits<IDLBufferSourceTypeNoSizeLimit<T>,
                   ExceptionState& exception_state) {
   return ArgumentValueImpl<
       RecipeTrait<T>, ToFlexibleArrayBufferView, Nullablity::kIsNotNullable,
-      BufferSizeCheck::kDoNotCheck, typename ABVTrait<T>::DOMViewType>(
-      isolate, argument_index, value, exception_state);
+      BufferSizeCheck::kDoNotCheck, ResizableAllowance::kDisallowResizable,
+      typename ABVTrait<T>::DOMViewType>(isolate, argument_index, value,
+                                         exception_state);
 }
 
 // Nullable [AllowShared, FlexibleArrayBufferView] ArrayBufferView
@@ -804,6 +918,7 @@ T NativeValueTraits<IDLNullable<T>,
                   ExceptionState& exception_state) {
   return ArgumentValueImpl<RecipeTrait<T>, ToFlexibleArrayBufferView,
                            Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+                           ResizableAllowance::kDisallowResizable,
                            typename ABVTrait<T>::DOMViewType>(
       isolate, argument_index, value, exception_state);
 }

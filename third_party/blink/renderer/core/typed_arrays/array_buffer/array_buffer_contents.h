@@ -61,6 +61,19 @@ class CORE_EXPORT ArrayBufferContents {
   ArrayBufferContents(size_t num_elements,
                       size_t element_byte_size,
                       SharingType is_shared,
+                      InitializationPolicy policy)
+      : ArrayBufferContents(num_elements,
+                            absl::nullopt,
+                            element_byte_size,
+                            is_shared,
+                            policy) {}
+  // If max_num_elements has a value, a backing store for a resizable
+  // ArrayBuffer is created. Otherwise a backing store for a fixed-length
+  // ArrayBuffer is created.
+  ArrayBufferContents(size_t num_elements,
+                      absl::optional<size_t> max_num_elements,
+                      size_t element_byte_size,
+                      SharingType is_shared,
                       InitializationPolicy);
 
   ArrayBufferContents(
@@ -99,8 +112,15 @@ class CORE_EXPORT ArrayBufferContents {
   size_t DataLength() const {
     return backing_store_ ? backing_store_->ByteLength() : 0;
   }
+  size_t MaxDataLength() const {
+    return backing_store_ ? backing_store_->MaxByteLength() : 0;
+  }
   bool IsShared() const {
     return backing_store_ ? backing_store_->IsShared() : false;
+  }
+  bool IsResizableByUserJavaScript() const {
+    return backing_store_ ? backing_store_->IsResizableByUserJavaScript()
+                          : false;
   }
   bool IsValid() const { return backing_store_ && backing_store_->Data(); }
 

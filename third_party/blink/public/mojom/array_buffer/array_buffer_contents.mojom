@@ -10,4 +10,10 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 // ArrayBufferContents.
 struct SerializedArrayBufferContents {
   mojo_base.mojom.BigBuffer contents;
+  // If is_resizable_by_user_javascript is false, then max_byte_length is
+  // unused.
+  //
+  // TODO(crbug.com/657632): Use a wrapped uint64 or uint64? once supported.
+  bool is_resizable_by_user_javascript = false;
+  uint64 max_byte_length = 0;
 };

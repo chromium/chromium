@@ -129,6 +129,8 @@ class PLATFORM_EXPORT ExceptionMessages {
 
   static String SharedArrayBufferNotAllowed(const char* expected_type);
 
+  static String ResizableArrayBufferNotAllowed(const char* expected_type);
+
   static String ValueNotOfType(const char* expected_type);
 
   static String InputArrayTooLong(unsigned expected_size, unsigned actual_size);

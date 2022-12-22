@@ -16,6 +16,33 @@
 namespace mojo {
 
 template <>
+struct StructTraits<js_injection::mojom::JsWebMessageArrayBufferValueDataView,
+                    std::unique_ptr<blink::WebMessageArrayBufferPayload>> {
+  static mojo_base::BigBuffer array_buffer_value(
+      const std::unique_ptr<blink::WebMessageArrayBufferPayload>&
+          array_buffer) {
+    auto big_buffer = mojo_base::BigBuffer(array_buffer->GetLength());
+    array_buffer->CopyInto(big_buffer);
+    return big_buffer;
+  }
+
+  static bool is_resizable_by_user_javascript(
+      const std::unique_ptr<blink::WebMessageArrayBufferPayload>&
+          array_buffer) {
+    return array_buffer->GetIsResizableByUserJavaScript();
+  }
+
+  static size_t max_byte_length(
+      const std::unique_ptr<blink::WebMessageArrayBufferPayload>&
+          array_buffer) {
+    return array_buffer->GetMaxByteLength();
+  }
+
+  static bool Read(js_injection::mojom::JsWebMessageArrayBufferValueDataView r,
+                   std::unique_ptr<blink::WebMessageArrayBufferPayload>* out);
+};
+
+template <>
 struct UnionTraits<js_injection::mojom::JsWebMessageDataView,
                    blink::WebMessagePayload> {
   static const std::u16string& string_value(
@@ -23,14 +50,10 @@ struct UnionTraits<js_injection::mojom::JsWebMessageDataView,
     return absl::get<std::u16string>(payload);
   }
 
-  static mojo_base::BigBuffer array_buffer_value(
-      const blink::WebMessagePayload& payload) {
-    auto& array_buffer =
-        absl::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
-            payload);
-    auto big_buffer = mojo_base::BigBuffer(array_buffer->GetLength());
-    array_buffer->CopyInto(big_buffer);
-    return big_buffer;
+  static const std::unique_ptr<blink::WebMessageArrayBufferPayload>&
+  array_buffer_value(const blink::WebMessagePayload& payload) {
+    return absl::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
+        payload);
   }
 
   static js_injection::mojom::JsWebMessageDataView::Tag GetTag(

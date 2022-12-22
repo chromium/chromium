@@ -118,9 +118,12 @@ TransferableMessage EncodeWithV8(const WebMessagePayload& message,
                 // Copy data into a new array_buffer_contents_array slot.
                 mojo_base::BigBuffer big_buffer(array_buffer->GetLength());
                 array_buffer->CopyInto(big_buffer);
+                constexpr bool is_resizable_by_user_js = false;
+                constexpr size_t max_byte_length = 0;
                 transferable_message.array_buffer_contents_array.push_back(
                     mojom::SerializedArrayBufferContents::New(
-                        std::move(big_buffer)));
+                        std::move(big_buffer), is_resizable_by_user_js,
+                        max_byte_length));
               }
               EXPECT_TRUE(
                   serializer.WriteValue(context, message_as_array_buffer)

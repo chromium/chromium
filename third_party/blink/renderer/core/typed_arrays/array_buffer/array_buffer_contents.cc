@@ -68,6 +68,7 @@ ArrayBufferContents::ArrayBufferContents(
 
 ArrayBufferContents::ArrayBufferContents(
     size_t num_elements,
+    absl::optional<size_t> max_num_elements,
     size_t element_byte_size,
     SharingType is_shared,
     ArrayBufferContents::InitializationPolicy policy) {
@@ -79,17 +80,36 @@ ArrayBufferContents::ArrayBufferContents(
     return;
   }
   size_t length = checked_length.ValueOrDie();
-  void* data = AllocateMemoryOrNull(length, policy);
-  if (!data) {
-    return;
-  }
-  auto deleter = [](void* data, size_t, void*) { FreeMemory(data); };
-  if (is_shared == kNotShared) {
-    backing_store_ =
-        v8::ArrayBuffer::NewBackingStore(data, length, deleter, nullptr);
+
+  if (!max_num_elements) {
+    // Create a fixed-length ArrayBuffer.
+    void* data = AllocateMemoryOrNull(length, policy);
+    if (!data) {
+      return;
+    }
+    auto deleter = [](void* data, size_t, void*) { FreeMemory(data); };
+    if (is_shared == kNotShared) {
+      backing_store_ =
+          v8::ArrayBuffer::NewBackingStore(data, length, deleter, nullptr);
+    } else {
+      backing_store_ = v8::SharedArrayBuffer::NewBackingStore(data, length,
+                                                              deleter, nullptr);
+    }
   } else {
+    // The resizable form of the constructor is currently only used for IPC
+    // transfers of ArrayBuffers, and SharedArrayBuffers cannot be transferred
+    // across agent clusters.
+    DCHECK_EQ(kNotShared, is_shared);
+    // Currently V8 does not support embedder-allocated resizable backing
+    // stores. It does not zero resizable allocations, which use a
+    // reserve-and-partially-commit pattern. Check that the caller is not
+    // expecting zeroed memory.
+    CHECK_EQ(kDontInitialize, policy);
+    auto max_checked_length =
+        base::CheckedNumeric<size_t>(*max_num_elements) * element_byte_size;
+    size_t max_length = max_checked_length.ValueOrDie();
     backing_store_ =
-        v8::SharedArrayBuffer::NewBackingStore(data, length, deleter, nullptr);
+        v8::ArrayBuffer::NewResizableBackingStore(length, max_length);
   }
 }
 

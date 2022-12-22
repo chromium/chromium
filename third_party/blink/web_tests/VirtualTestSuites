@@ -1680,5 +1680,17 @@
     ],
     "args": ["--enable-features=SplitUserMediaQueues"],
     "expires": "Jul 1, 2023"
+  },
+  {
+    "prefix": "js-resizable-arraybuffer",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/html/infrastructure/safe-passing-of-structured-data/cross-origin-transfer-resizable-arraybuffer.html"
+    ],
+    "exclusive_tests": [
+      "external/wpt/html/infrastructure/safe-passing-of-structured-data/cross-origin-transfer-resizable-arraybuffer.html"
+    ],
+    "args": ["--js-flags=--harmony-rab-gsab"],
+    "expires": "Jul 1, 2023"
   }
 ]

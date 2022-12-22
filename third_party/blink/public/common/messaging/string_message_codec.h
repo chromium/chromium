@@ -28,6 +28,14 @@ class BLINK_COMMON_EXPORT WebMessageArrayBufferPayload {
   // Returns the length of the payload.
   virtual size_t GetLength() const = 0;
 
+  // Represents an ArrayBuffer resizable by user JavaScript.
+  virtual bool GetIsResizableByUserJavaScript() const = 0;
+
+  // Returns the maximum length of the payload. If representing a resizable
+  // ArrayBuffer, this is >= GetLength(). Otherwise, if representing a
+  // fixed-length ArrayBuffer, this is == GetLength().
+  virtual size_t GetMaxByteLength() const = 0;
+
   // Convert the underlying buffer to a span if possible. Or return empty if
   // can't (like Java ByteArray). JNI API does not provide a way to get a
   // pointer to the underlying array memory, so another API |CopyInto| should be
@@ -41,8 +49,12 @@ class BLINK_COMMON_EXPORT WebMessageArrayBufferPayload {
   virtual void CopyInto(base::span<uint8_t> dest) const = 0;
 
   // Create a new WebMessageArrayBufferPayload from BigBuffer.
+  //
+  // If max_byte_length is not nullopt, then it must be >= buffer's length. The
+  // created BigBuffer represents a resizable ArrayBuffer.
   static std::unique_ptr<WebMessageArrayBufferPayload> CreateFromBigBuffer(
-      mojo_base::BigBuffer buffer);
+      mojo_base::BigBuffer buffer,
+      absl::optional<size_t> max_byte_length);
 
   // Create a new WebMessageArrayBufferPayload from vector for testing.
   static std::unique_ptr<WebMessageArrayBufferPayload> CreateForTesting(

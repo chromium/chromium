@@ -113,8 +113,13 @@ bool StructTraits<blink::mojom::blink::SerializedArrayBufferContents::DataView,
     return false;
   auto contents_data = contents_view.data();
 
+  absl::optional<size_t> max_data_size;
+  if (data.is_resizable_by_user_javascript()) {
+    max_data_size = base::checked_cast<size_t>(data.max_byte_length());
+  }
   blink::ArrayBufferContents array_buffer_contents(
-      contents_data.size(), 1, blink::ArrayBufferContents::kNotShared,
+      contents_data.size(), max_data_size, 1,
+      blink::ArrayBufferContents::kNotShared,
       blink::ArrayBufferContents::kDontInitialize);
   if (contents_data.size() != array_buffer_contents.DataLength()) {
     return false;

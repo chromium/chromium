@@ -240,6 +240,10 @@ struct IDLOnErrorEventHandler final : public IDLBaseHelper<EventListener*> {};
 template <typename T>
 struct IDLBufferSourceTypeNoSizeLimit {};
 
+// [AllowResizable]
+template <typename T>
+struct IDLAllowResizable {};
+
 // IDL optional types
 //
 // IDLOptional represents an optional argument and supports a conversion from
