@@ -573,8 +573,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CCT_REMOVE_REMOTE_VIEW_IDS, true);
     public static final CachedFlag sCctResizable90MaximumHeight =
             new CachedFlag(CCT_RESIZABLE_90_MAXIMUM_HEIGHT, false);
-    public static final CachedFlag sCctResizableAllowResizeByUserGesture =
-            new CachedFlag(CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE, false);
     public static final CachedFlag sCctResizableForThirdParties =
             new CachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, false);
     public static final CachedFlag sCctResizableSideSheet =

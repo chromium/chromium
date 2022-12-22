@@ -82,7 +82,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sCctIncognitoAvailableToThirdParty);
                 add(ChromeFeatureList.sCctRemoveRemoteViewIds);
                 add(ChromeFeatureList.sCctResizable90MaximumHeight);
-                add(ChromeFeatureList.sCctResizableAllowResizeByUserGesture);
                 add(ChromeFeatureList.sCctResizableForThirdParties);
                 add(ChromeFeatureList.sCctResizableSideSheet);
                 add(ChromeFeatureList.sCctRetainableStateInMemory);

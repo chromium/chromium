@@ -192,7 +192,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTRemoveRemoteViewIds,
     &kCCTReportParallelRequestStatus,
     &kCCTResizable90MaximumHeight,
-    &kCCTResizableAllowResizeByUserGesture,
     &kCCTResizableForThirdParties,
     &kCCTResizableSideSheet,
     &kCCTRetainingStateInMemory,
@@ -557,10 +556,6 @@ BASE_FEATURE(kCCTReportParallelRequestStatus,
 BASE_FEATURE(kCCTResizable90MaximumHeight,
              "CCTResizable90MaximumHeight",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTResizableAllowResizeByUserGesture,
-             "CCTResizableAllowResizeByUserGesture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTResizableForThirdParties,
              "CCTResizableForThirdParties",

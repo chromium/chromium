@@ -1982,8 +1982,6 @@ extern const char kCCTIncognitoAvailableToThirdPartyDescription[];
 
 extern const char kCCTResizable90MaximumHeightName[];
 extern const char kCCTResizable90MaximumHeightDescription[];
-extern const char kCCTResizableAllowResizeByUserGestureName[];
-extern const char kCCTResizableAllowResizeByUserGestureDescription[];
 extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
 extern const char kCCTResizableSideSheetName[];

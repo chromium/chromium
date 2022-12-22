@@ -15,7 +15,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.customtabs.PartialCustomTabHeightStrategy.HeightStatus;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.function.BooleanSupplier;
 
@@ -83,10 +82,6 @@ class PartialCustomTabHandleStrategy
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!ChromeFeatureList.sCctResizableAllowResizeByUserGesture.isEnabled()) {
-            return false;
-        }
-
         if (mStatus.get() == HeightStatus.TRANSITION) {
             return true;
         }

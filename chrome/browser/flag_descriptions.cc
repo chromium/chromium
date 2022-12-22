@@ -3474,10 +3474,6 @@ const char kCCTResizable90MaximumHeightDescription[] =
     "of the screen height, otherwise the maximum height is 100% of the screen "
     "height. In both cases, Custom Tabs will yield to the top status bar when "
     "at full stop";
-const char kCCTResizableAllowResizeByUserGestureName[] =
-    "Bottom sheet Custom Tabs allow resize by user gesture";
-const char kCCTResizableAllowResizeByUserGestureDescription[] =
-    "Enable user gesture to resize bottom sheet Custom Tabs";
 const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =
