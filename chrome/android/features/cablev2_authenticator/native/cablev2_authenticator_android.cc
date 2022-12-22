@@ -701,25 +701,25 @@ static jlong JNI_CableAuthenticator_StartQR(
   return ++global_data.instance_num;
 }
 
-std::tuple<base::span<const uint8_t, device::kP256X962Length>,
-           base::span<const uint8_t, device::cablev2::kQRSecretSize>,
+std::tuple<std::array<uint8_t, device::kP256X962Length>,
+           std::array<uint8_t, device::cablev2::kQRSecretSize>,
            std::array<uint8_t, device::cablev2::kTunnelIdSize>>
 ParseServerLinkData(JNIEnv* env,
                     const JavaParamRef<jbyteArray>& server_link_data_java) {
-  constexpr size_t kDataSize =
-      device::kP256X962Length + device::cablev2::kQRSecretSize;
-  const std::vector<uint8_t> server_link_data_vec =
+  const std::vector<uint8_t> server_link_data =
       JavaByteArrayToByteVector(env, server_link_data_java);
   // validateServerLinkData should have been called to check this already.
-  CHECK_EQ(server_link_data_vec.size(), kDataSize);
-  base::span<const uint8_t> server_link_data =
-      base::make_span(server_link_data_vec);
+  CHECK_EQ(server_link_data.size(),
+           device::kP256X962Length + device::cablev2::kQRSecretSize);
 
-  const base::span<const uint8_t, device::kP256X962Length> peer_identity =
-      server_link_data.subspan<0, device::kP256X962Length>();
-  const base::span<const uint8_t, device::cablev2::kQRSecretSize> qr_secret =
-      server_link_data
-          .subspan<device::kP256X962Length, device::cablev2::kQRSecretSize>();
+  std::array<uint8_t, device::kP256X962Length> peer_identity;
+  memcpy(peer_identity.data(), server_link_data.data(),
+         device::kP256X962Length);
+
+  std::array<uint8_t, device::cablev2::kQRSecretSize> qr_secret;
+  memcpy(qr_secret.data(), server_link_data.data() + device::kP256X962Length,
+         device::cablev2::kQRSecretSize);
+
   const std::array<uint8_t, device::cablev2::kTunnelIdSize> tunnel_id =
       device::cablev2::Derive<device::cablev2::kTunnelIdSize>(
           qr_secret, base::span<uint8_t>(),
