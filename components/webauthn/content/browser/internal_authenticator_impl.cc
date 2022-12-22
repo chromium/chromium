@@ -58,7 +58,7 @@ void InternalAuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
     blink::mojom::Authenticator::
         IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
   authenticator_common_->IsUserVerifyingPlatformAuthenticatorAvailable(
-      effective_origin_, std::move(callback));
+      std::move(callback));
 }
 
 bool InternalAuthenticatorImpl::IsGetMatchingCredentialIdsSupported() {

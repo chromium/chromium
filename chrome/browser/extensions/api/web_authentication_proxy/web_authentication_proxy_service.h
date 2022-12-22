@@ -174,7 +174,7 @@ class WebAuthenticationProxyService
   void ClearRequestProxy(base::PassKey<WebAuthenticationProxyRegistrar>);
 
   // content::WebAuthenticationRequestProxy:
-  bool IsActive(const url::Origin& caller_origin) override;
+  bool IsActive() override;
   RequestId SignalCreateRequest(
       const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options,
       CreateCallback callback) override;

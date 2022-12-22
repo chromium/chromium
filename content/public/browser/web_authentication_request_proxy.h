@@ -8,10 +8,6 @@
 #include "base/callback_forward.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
-namespace url {
-class Origin;
-}
-
 namespace content {
 
 // WebAuthentcationRequestProxy allows the embedder to intercept and handle Web
@@ -45,8 +41,8 @@ class WebAuthenticationRequestProxy {
   virtual ~WebAuthenticationRequestProxy() = default;
 
   // IsActive indicates whether the proxy expects to handle Web Authentication
-  // API requests for the given `caller_origin`.
-  virtual bool IsActive(const url::Origin& caller_origin) = 0;
+  // API requests.
+  virtual bool IsActive() = 0;
 
   // SignalCreateRequest is invoked when a Web Authentication API
   // `navigator.credentials.create()` request occurs.

@@ -128,14 +128,10 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       RenderFrameHost* render_frame_host);
 
-  // Returns the active WebAuthenticationRequestProxy for WebAuthn requests
-  // originating from `caller_origin` in `browser_context`.
-  //
-  // If this method returns a proxy, the caller is expected to hand off WebAuthn
-  // request handling to this proxy instance.
+  // Returns the WebAuthenticationRequestProxy for the |browser_context|, if
+  // any.
   virtual WebAuthenticationRequestProxy* MaybeGetRequestProxy(
-      BrowserContext* browser_context,
-      const url::Origin& caller_origin);
+      BrowserContext* browser_context);
 #endif  // !IS_ANDROID
 
 #if BUILDFLAG(IS_WIN)

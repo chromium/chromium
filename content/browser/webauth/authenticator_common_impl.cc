@@ -591,8 +591,7 @@ void AuthenticatorCommonImpl::MakeCredential(
 
   // If there is an active webAuthenticationProxy extension, let it handle the
   // request.
-  WebAuthenticationRequestProxy* proxy =
-      GetWebAuthnRequestProxyIfActive(caller_origin);
+  WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
   if (proxy) {
     if (options->remote_desktop_client_override) {
       // Don't allow proxying of an already proxied request.
@@ -919,8 +918,7 @@ void AuthenticatorCommonImpl::GetAssertion(
     app_id_ = app_id;
   }
 
-  WebAuthenticationRequestProxy* proxy =
-      GetWebAuthnRequestProxyIfActive(caller_origin);
+  WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
   if (proxy) {
     if (options->is_conditional || options->remote_desktop_client_override) {
       // Don't allow proxying of an already proxied or conditional request.
@@ -1141,11 +1139,9 @@ void AuthenticatorCommonImpl::GetAssertion(
 }
 
 void AuthenticatorCommonImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
-    url::Origin caller_origin,
     blink::mojom::Authenticator::
         IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
-  WebAuthenticationRequestProxy* proxy =
-      GetWebAuthnRequestProxyIfActive(caller_origin);
+  WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
   if (proxy) {
     // Note that IsUvpaa requests can interleave with MakeCredential or
     // GetAssertion, and cannot be cancelled. Thus, we do not set
@@ -1188,7 +1184,6 @@ void AuthenticatorCommonImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
 }
 
 void AuthenticatorCommonImpl::IsConditionalMediationAvailable(
-    url::Origin caller_origin,
     blink::mojom::Authenticator::IsConditionalMediationAvailableCallback
         callback) {
   // Conditional mediation is always supported if the virtual environment is
@@ -1202,7 +1197,7 @@ void AuthenticatorCommonImpl::IsConditionalMediationAvailable(
     return;
   }
 
-  if (GetWebAuthnRequestProxyIfActive(caller_origin)) {
+  if (GetWebAuthnRequestProxyIfActive()) {
     // Conditional requests cannot be proxied, signal the feature as
     // unavailable.
     std::move(callback).Run(false);
@@ -1680,7 +1675,7 @@ void AuthenticatorCommonImpl::CancelWithStatus(
   if (pending_proxied_request_id_) {
     WebAuthenticationRequestProxy* proxy =
         GetWebAuthenticationDelegate()->MaybeGetRequestProxy(
-            GetBrowserContext(), caller_origin_);
+            GetBrowserContext());
     // As long as `pending_proxied_request_id_` is set, there should be an
     // active request proxy. Deactivation of the proxy would have invoked
     // `OnMakeCredentialProxyResponse()` or `OnGetAssertionProxyResponse()`, and
@@ -2081,14 +2076,13 @@ void AuthenticatorCommonImpl::EnableRequestProxyExtensionsAPISupport() {
 }
 
 WebAuthenticationRequestProxy*
-AuthenticatorCommonImpl::GetWebAuthnRequestProxyIfActive(
-    const url::Origin& caller_origin) {
-  DCHECK(!caller_origin.opaque());
+AuthenticatorCommonImpl::GetWebAuthnRequestProxyIfActive() {
   if (!enable_request_proxy_api_) {
     return nullptr;
   }
-  return GetWebAuthenticationDelegate()->MaybeGetRequestProxy(
-      GetBrowserContext(), caller_origin);
+  WebAuthenticationRequestProxy* proxy =
+      GetWebAuthenticationDelegate()->MaybeGetRequestProxy(GetBrowserContext());
+  return proxy && proxy->IsActive() ? proxy : nullptr;
 }
 
 void AuthenticatorCommonImpl::OnMakeCredentialProxyResponse(
