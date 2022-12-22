@@ -3291,6 +3291,18 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON" desc="Title of the button in the tab grid UI that closes all the tabs in the grid. [iOS only]">
         Close All
       </message>
+      <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_TABS" desc="Title of the button in the action sheet that close all tabs. [iOS only]">
+        Close All
+      </message>
+      <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_ACTION_SHEET_TITLE" desc="Title of the action sheet that confirms closing all tabs or non-pinned tabs only. [iOS only]">
+        Close All Tabs?
+      </message>
+      <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_ACTION_SHEET_MESSAGE" desc="Message of the action sheet that confirms closing all tabs or non-pinned tabs only. [iOS only]">
+        Closing all tabs will close pinned tabs as well.
+      </message>
+      <message name="IDS_IOS_TAB_GRID_CLOSE_NON_PINNED_TABS_ONLY" desc="Title of the button in the action sheet that close all non-pinned tabs only. [iOS only]">
+        Close Regular Tabs Only
+      </message>
       <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION" desc="Title of the button in the action sheet that close all tabs. COUNT refers to the number of tabs open. According to its value, the string goes from singular to plural. [iOS only]">
         {COUNT, plural,
              =1 {Close {COUNT} Tab}

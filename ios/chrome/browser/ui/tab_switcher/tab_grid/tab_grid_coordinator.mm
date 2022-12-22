@@ -882,6 +882,7 @@
 
   self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleActionSheet;
 
+  __weak TabGridMediator* weakTabGridMediator = tabGridMediator;
   [self.actionSheetCoordinator
       addItemWithTitle:base::SysUTF16ToNSString(
                            l10n_util::GetPluralStringFUTF16(
@@ -890,7 +891,7 @@
                 action:^{
                   base::RecordAction(base::UserMetricsAction(
                       "MobileTabGridSelectionCloseTabsConfirmed"));
-                  [tabGridMediator closeItemsWithIDs:items];
+                  [weakTabGridMediator closeItemsWithIDs:items];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.actionSheetCoordinator
@@ -898,6 +899,51 @@
                 action:^{
                   base::RecordAction(base::UserMetricsAction(
                       "MobileTabGridSelectionCloseTabsCanceled"));
+                }
+                 style:UIAlertActionStyleCancel];
+  [self.actionSheetCoordinator start];
+}
+
+- (void)
+    showCloseAllItemsConfirmationActionSheetWithTabGridMediator:
+        (TabGridMediator*)tabGridMediator
+                                                         anchor:
+                                                             (UIBarButtonItem*)
+                                                                 buttonAnchor {
+  DCHECK(tabGridMediator == self.regularTabsMediator);
+
+  NSString* title = l10n_util::GetNSString(
+      IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_ACTION_SHEET_TITLE);
+  NSString* message = l10n_util::GetNSString(
+      IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_ACTION_SHEET_MESSAGE);
+
+  self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:title
+                         message:message
+                   barButtonItem:buttonAnchor];
+
+  self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleActionSheet;
+
+  __weak TabGridMediator* weakTabGridMediator = tabGridMediator;
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_TAB_GRID_CLOSE_NON_PINNED_TABS_ONLY)
+                action:^{
+                  [weakTabGridMediator closeNonPinnedItems];
+                }
+                 style:UIAlertActionStyleDefault];
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_TABS)
+                action:^{
+                  [weakTabGridMediator closeAllItems];
+                }
+                 style:UIAlertActionStyleDestructive];
+
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                action:^{
                 }
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];

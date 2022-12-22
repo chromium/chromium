@@ -306,8 +306,9 @@ void RecordTabGridCloseTabsCount(int count) {
       web::WebState* webState = self.webStateList->GetWebStateAt(i);
       _scopedWebStateObservation->AddObservation(webState);
     }
-    if (self.webStateList->count() > 0)
+    if (self.webStateList->count() > 0) {
       [self populateConsumerItems];
+    }
   }
 }
 
@@ -318,8 +319,9 @@ void RecordTabGridCloseTabsCount(int count) {
               atIndex:(int)index
            activating:(BOOL)activating {
   DCHECK_EQ(_webStateList, webStateList);
-  if (webStateList->IsBatchInProgress())
+  if (webStateList->IsBatchInProgress()) {
     return;
+  }
 
   if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
     [self.consumer selectItemWithID:GetActiveRegularWebStateId(webStateList)];
@@ -339,8 +341,9 @@ void RecordTabGridCloseTabsCount(int count) {
            fromIndex:(int)fromIndex
              toIndex:(int)toIndex {
   DCHECK_EQ(_webStateList, webStateList);
-  if (webStateList->IsBatchInProgress())
+  if (webStateList->IsBatchInProgress()) {
     return;
+  }
 
   if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(toIndex)) {
     return;
@@ -357,8 +360,9 @@ void RecordTabGridCloseTabsCount(int count) {
           withWebState:(web::WebState*)newWebState
                atIndex:(int)index {
   DCHECK_EQ(_webStateList, webStateList);
-  if (webStateList->IsBatchInProgress())
+  if (webStateList->IsBatchInProgress()) {
     return;
+  }
 
   if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
     return;
@@ -375,8 +379,9 @@ void RecordTabGridCloseTabsCount(int count) {
     willDetachWebState:(web::WebState*)webState
                atIndex:(int)index {
   DCHECK_EQ(_webStateList, webStateList);
-  if (webStateList->IsBatchInProgress())
+  if (webStateList->IsBatchInProgress()) {
     return;
+  }
 
   if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
     [self.consumer selectItemWithID:GetActiveRegularWebStateId(webStateList)];
@@ -395,8 +400,9 @@ void RecordTabGridCloseTabsCount(int count) {
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
   DCHECK_EQ(_webStateList, webStateList);
-  if (webStateList->IsBatchInProgress())
+  if (webStateList->IsBatchInProgress()) {
     return;
+  }
 
   // If the selected index changes as a result of the last webstate being
   // detached, atIndex will be kInvalidIndex.
@@ -512,8 +518,9 @@ void RecordTabGridCloseTabsCount(int count) {
     Browser* browser = GetBrowserForTabWithId(
         browserList, itemID, self.browserState->IsOffTheRecord());
 
-    if (!browser)
+    if (!browser) {
       return;
+    }
 
     itemWebStateList = browser->GetWebStateList();
     index = GetIndexOfTabWithId(itemWebStateList, itemID);
@@ -563,8 +570,9 @@ void RecordTabGridCloseTabsCount(int count) {
 
   // Avoid a reentrant activation. This is a fix for crbug.com/1134663, although
   // ignoring the slection at this point may do weird things.
-  if (itemWebStateList->IsMutating())
+  if (itemWebStateList->IsMutating()) {
     return;
+  }
 
   // It should be safe to activate here.
   itemWebStateList->ActivateWebStateAt(index);
@@ -572,8 +580,9 @@ void RecordTabGridCloseTabsCount(int count) {
 
 - (BOOL)isItemWithIDSelected:(NSString*)itemID {
   int index = GetIndexOfTabWithId(self.webStateList, itemID);
-  if (index == WebStateList::kInvalidIndex)
+  if (index == WebStateList::kInvalidIndex) {
     return NO;
+  }
   return index == self.webStateList->active_index();
 }
 
@@ -625,8 +634,9 @@ void RecordTabGridCloseTabsCount(int count) {
       base::BindOnce(^(WebStateList* list) {
         for (NSString* itemID in itemIDs) {
           int index = GetIndexOfTabWithId(list, itemID);
-          if (index != WebStateList::kInvalidIndex)
+          if (index != WebStateList::kInvalidIndex) {
             list->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+          }
         }
 
         allTabsClosed = list->empty();
@@ -641,6 +651,10 @@ void RecordTabGridCloseTabsCount(int count) {
           "MobileTabGridSelectionCloseAllIncognitoTabsConfirmed"));
     }
   }
+}
+
+- (void)closeNonPinnedItems {
+  // TODO: Implement this
 }
 
 - (void)closeAllItems {
@@ -704,6 +718,15 @@ void RecordTabGridCloseTabsCount(int count) {
       showCloseItemsConfirmationActionSheetWithTabGridMediator:self
                                                          items:items
                                                         anchor:buttonAnchor];
+}
+
+- (void)showCloseAllItemsConfirmationActionSheetWithAnchor:
+    (UIBarButtonItem*)buttonAnchor {
+  [self.delegate dismissPopovers];
+
+  [self.delegate
+      showCloseAllItemsConfirmationActionSheetWithTabGridMediator:self
+                                                           anchor:buttonAnchor];
 }
 
 - (void)shareItems:(NSArray<NSString*>*)items

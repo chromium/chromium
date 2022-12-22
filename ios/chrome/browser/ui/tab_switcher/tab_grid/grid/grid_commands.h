@@ -37,6 +37,8 @@
 // Tells the receiver to close the items with the identifiers in `itemIDs`.
 // ItemIDs which are not associated with any item are ignored.
 - (void)closeItemsWithIDs:(NSArray<NSString*>*)itemIDs;
+// Tells the receiver to close all non-pinned items.
+- (void)closeNonPinnedItems;
 // Tells the receiver to close all items.
 - (void)closeAllItems;
 // Tells the receiver to save all items for an undo operation, then close all
@@ -54,6 +56,11 @@
     showCloseItemsConfirmationActionSheetWithItems:(NSArray<NSString*>*)items
                                             anchor:
                                                 (UIBarButtonItem*)buttonAnchor;
+// Shows an action sheet, anchored to the UIBarButtonItem, that asks for
+// confirmation to close all or just non-pinned tabs when 'Close All Tabs'
+// button is tapped.
+- (void)showCloseAllItemsConfirmationActionSheetWithAnchor:
+    (UIBarButtonItem*)buttonAnchor;
 // Shows a share sheet to share `items`, anchored to the `buttonAnchor`.
 - (void)shareItems:(NSArray<NSString*>*)items
             anchor:(UIBarButtonItem*)buttonAnchor;

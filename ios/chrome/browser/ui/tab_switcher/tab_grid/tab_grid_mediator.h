@@ -26,6 +26,8 @@ class TabRestoreService;
 // for confirmation from the tab grid.
 @protocol TabGridMediatorDelegate <NSObject>
 
+// Displays an action sheet at `anchor` confirming that selected `items` are
+// going to be closed.
 - (void)
     showCloseItemsConfirmationActionSheetWithTabGridMediator:
         (TabGridMediator*)tabGridMediator
@@ -35,6 +37,16 @@ class TabRestoreService;
                                                       anchor:(UIBarButtonItem*)
                                                                  buttonAnchor;
 
+// Displays an action sheet at `anchor` confirming that all items are going to
+// be closed or just the non-pinned ones.
+- (void)
+    showCloseAllItemsConfirmationActionSheetWithTabGridMediator:
+        (TabGridMediator*)tabGridMediator
+                                                         anchor:
+                                                             (UIBarButtonItem*)
+                                                                 buttonAnchor;
+
+// Displays a share menu for `items` at `anchor`.
 - (void)tabGridMediator:(TabGridMediator*)tabGridMediator
               shareURLs:(NSArray<URLWithTitle*>*)items
                  anchor:(UIBarButtonItem*)buttonAnchor;
