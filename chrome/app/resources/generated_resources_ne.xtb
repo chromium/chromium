@@ -1256,6 +1256,7 @@
 <translation id="212862741129535676">फ्रिक्वेन्सी राज्य अधिकार प्रतिशत</translation>
 <translation id="212876957201860463">तपाईंको सेलुलर यन्त्र सेटअप गर्ने तयारी गर्दै...</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" स्थापना गर्न असक्षम किनभने त्यो "<ph name="IMPORT_NAME" />" द्वारा अनुमति गरिएको छैन</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> फेरि खोली हेर्नुहोस्</translation>
 <translation id="21354425047973905">PIN हरू लुकाउनुहोस्</translation>
 <translation id="2135456203358955318">डक गरिएको म्याग्निफायर</translation>
 <translation id="2135787500304447609">पुनः &amp;निरन्तरता दिनुहोस्</translation>
@@ -2838,11 +2839,13 @@
 <translation id="3584169441612580296">तपाईंको कम्प्युटरबाट तस्बिरहरू, सङ्गीत र अन्य मिडिया पढ्नुहोस् र परिवर्तन गर्नुहोस्</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> एप प्रयोग गर्न OneDrive उपलब्ध हुनु पर्छ।</translation>
 <translation id="3586806079541226322">यो फाइल खोल्न सकिँदैन</translation>
+<translation id="3587438013689771191">यसका बारेमा थप जान्नुहोस्: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">सबै</translation>
 <translation id="3588790464166520201">भुक्तानी ह्यान्ड्लरहरू इन्स्टल गर्न अनुमति दिइएका साइटहरू</translation>
 <translation id="3589766037099229847">असुरक्षित सामग्रीमाथि रोक लगाइएको छ</translation>
 <translation id="3590194807845837023">प्रोफाइल खोल्नुहोस् र सुचारू गर्नुहोस्</translation>
 <translation id="3590295622232282437">व्यवस्थित सत्रमा प्रवेश गर्दै।</translation>
+<translation id="3591057288287063271"><ph name="FILE_NAME" /> राख्नुहोस्</translation>
 <translation id="3592260987370335752">&amp;थप जान्नुहोस्</translation>
 <translation id="3593152357631900254">फज्जि-</translation>
 <translation id="3593965109698325041">प्रमाणपत्र नाम अवरोध</translation>
@@ -3744,6 +3747,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" />, तपाईंको प्रशासकले तपाईंले आफ्नो पासवर्ड परिवतन गर्नुहोस् भन्ने चाहनुहुन्छ।</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />तपाईंले ChromeOS डिभाइसहरूलाई रिपोर्ट स्वतः पठाउने अनुमति दिनुभयो भने हामी ChromeOS मा सबैभन्दा पहिले समाधान गर्नु पर्ने समस्याका बारेमा थाहा पाउनुका साथै ChromeOS को गुणस्तर सुधार्न सक्छौँ। यी रिपोर्टमा ChromeOS क्र्यास भएको समय, चलाइएका सुविधा, सामान्यतया प्रयोग गरिएको मेमोरीलगायतका कुराहरू समावेश हुन सक्छ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तपाईं जुनसुकै बेला आफ्नो Chrome डिभाइसका सेटिङमा गई यी रिपोर्ट पठाउने अनुमति दिन वा नदिन सक्नुहुन्छ। तपाईं कुनै डोमेनका एड्मिन हुनुहुन्छ भने तपाईं एड्मिन कन्सोलमा गई यो सेटिङ बदल्न सक्नुहुन्छ।<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040"><ph name="FILE_NAME" /> मेटाउनुहोस्</translation>
 <translation id="4426464032773610160">सुरु गर्नका लागि, तपाईंको USB वा ब्लुटुथको स्विच Chromebook मा कनेक्ट भएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्। यसका लागि तपाईं किबोर्डका कीहरू पनि प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="4426508677408162512">सबै पुस्तक चिन्हहरू</translation>
 <translation id="4427306783828095590">परिष्कृत सुरक्षा प्रयोग गरी फिसिङ तथा मालवेयरमाथि अझ राम्रोसँग रोक लगाउन सकिन्छ</translation>
@@ -4014,6 +4018,7 @@
 <translation id="4666472247053585787">फोनका सूचनाहरू <ph name="DEVICE_TYPE" /> मा हेर्नुहोस्</translation>
 <translation id="4666911709726371538">थप एपहरू</translation>
 <translation id="4667027203988048332">के कस्ता जानकारी प्रयोग गरिन्छ:</translation>
+<translation id="4672759829555593783">अहिले नै <ph name="FILE_NAME" /> खोल्नुहोस्</translation>
 <translation id="46733273239502219">स्थापना गरिएका एपहरूमा रहेको अफलाइन डेटा पनि हटाइने छ</translation>
 <translation id="4673442866648850031">स्टाइलस निकाल्दा स्टाइलस सम्बन्धी उपकरणहरू खोल्नुहोस्</translation>
 <translation id="4675065861091108046">तपाईंले यसअघि <ph name="ORIGIN" /> मा सबै एक्स्टेन्सनलाई अनुमति दिनुभएको थियो</translation>
@@ -4626,6 +4631,7 @@
 <translation id="5268373933383932086">तपाईंको पेज, तपाईंको तरिका</translation>
 <translation id="5269977353971873915">प्रिन्टिङ असफल भयो</translation>
 <translation id="5273806377963980154">साइटको URL बदल्नुहोस्</translation>
+<translation id="5273966423195882879">थिममा आधारित रङ</translation>
 <translation id="5275084684151588738">प्रयोगकर्ताले तयार पारेका शब्दकोशहरू</translation>
 <translation id="5275100789567222478">मेरो डिभाइसको ब्याट्री <ph name="PERCENT" />% वा सोभन्दा कम हुँदा मात्र अन गरियोस्</translation>
 <translation id="5275338516105640560">ट्याबको समूहको सेभ गरिएको बटन</translation>
@@ -5904,6 +5910,7 @@
 <translation id="6465841119675156448">इन्टरनेट प्रयोग नगरिकन</translation>
 <translation id="6466258437571594570">साइटहरूले सूचना पठाउने अनुरोध गर्दा तपाईंलाई बाधा पुर्‍याउन सक्दैनन्</translation>
 <translation id="6466988389784393586">सबै बुकमार्कहरू &amp;खोल्नुहोस्</translation>
+<translation id="6467230443178397264"><ph name="FILE_NAME" /> स्क्यान गर्नुहोस्</translation>
 <translation id="6467304607960172345">पूर्ण स्क्रिनका भिडियोहरूलाई अप्टिमाइज गर्नुहोस्</translation>
 <translation id="6467377768028664108">त्यसपछि तपाईंको <ph name="DEVICE_TYPE" /> ले निम्न कार्य गर्न सक्छ:</translation>
 <translation id="6468485451923838994">फन्टहरू</translation>
@@ -6651,6 +6658,7 @@
 <translation id="7149893636342594995">पछिल्ला २४ घन्टा</translation>
 <translation id="7152478047064750137">यस विस्तारलाई कुनै विशेष अनुमति चाहिँदैन</translation>
 <translation id="7154130902455071009">आफ्नो सुरुवात पृष्ठलाई यसमा परिवर्तन गर्नुहोस्: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">फोटो रूपान्तरण गरेर टेक्स्ट बनाउनुहोस्</translation>
 <translation id="7159953856712257647">स्वतः इन्स्टल गरिएको</translation>
 <translation id="7160182524506337403">तपाईं अब आफ्नो फोनका सूचनाहरू हेर्न सक्नुहुन्छ</translation>
 <translation id="7163202347044721291">सक्रिय गर्ने कोड पुष्टि गरिँदै छ...</translation>
@@ -6912,6 +6920,7 @@
 <translation id="7412226954991670867">GPU समृति</translation>
 <translation id="7414464185801331860">१८ गुणा</translation>
 <translation id="7415454883318062233">सेटअप सम्पन्न भयो</translation>
+<translation id="7416091793702109803"><ph name="FILE_NAME" /> को समीक्षा गर्नुहोस्</translation>
 <translation id="7416263748877373774">सेवाका सर्तहरू लोड गर्न सकिएन। कृपया इन्टरनेट कनेक्सन जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7416362041876611053">अज्ञात सञ्जाल त्रुटि ।</translation>
 <translation id="741906494724992817">यो एपको लागि कुनैपनि विशेष अनुमतिहरू आवश्यक छैन।</translation>

@@ -149,6 +149,7 @@
 <translation id="2074131957428911366">ທ່ານສາມາດເລືອກສິ່ງທີ່ຈະຊິ້ງຂໍ້ມູນໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
 <translation id="2080769225927880590">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ຖືກຕ້ອງ</translation>
+<translation id="2090878303988764231">ເຂົ້າສູ່ລະບົບເພື່ອຈັດການເນື້ອຫາທີ່ທ່ານເຫັນ</translation>
 <translation id="2103075008456228677">ເປີດ history.google.com</translation>
 <translation id="21133533946938348">ປັກໝຸດແຖບ</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ລາຍ​ການ​ຖືກ​ຍ້າຍ​ໄປ​ແລ້ວ</translation>
@@ -975,6 +976,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8197543752516192074">ແປໜ້າ</translation>
 <translation id="8205564605687841303">ຍົກເລີກ</translation>
 <translation id="8206354486702514201">ການຕັ້ງຄ່ານີ້ຖືກບັງຄັບໂດຍຜູ້ຄວບຄຸມຂອງທ່ານ.</translation>
+<translation id="821809831108207540">ເພື່ອປັບແຕ່ງຟີດ Discover ແລະ Chrome ຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ, ໃຫ້ເຂົ້າສູ່ລະບົບແລ້ວເປີດໃຊ້ການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="8225985093977202398">ຮູບ ແລະ ໄຟລ໌ທີ່ຖືກແຄດຊ໌</translation>
 <translation id="8237382152611443140">ເປີດການຕັ້ງຄ່າການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດ</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
@@ -1097,6 +1099,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="9157836665414082580">ປິດກ່ອງໂຕ້ຕອບ</translation>
 <translation id="9177438225260810839">ເປີດແຖບທີ່ເປີດໄວ້</translation>
 <translation id="9188680907066685419">ອອກຈາກລະບົບບັນຊີທີ່ຖືກຈັດການ</translation>
+<translation id="9193147658040604536">ລາກມາບ່ອນນີ້ເພື່ອປັກໝຸດແຖບ</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> ມ ກ່ອນ</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">ຊອກຫາແຖບ…</translation>

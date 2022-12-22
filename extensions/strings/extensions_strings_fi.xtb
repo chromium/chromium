@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Paketti on virheellinen: <ph name="ERROR_CODE" />.</translation>
 <translation id="1140871961407805696">Ympäristöä kuvaava</translation>
 <translation id="1196338895211115272">Yksityisen avaimen vienti epäonnistui.</translation>
+<translation id="132960226125594336">Sisältöskriptin tiedostoa <ph name="RELATIVE_PATH" /> ei voitu ladata, koska se ylittäisi skriptin enimmäiskoon tai laajennuksen sisältöskriptin enimmäiskoon.</translation>
 <translation id="1420684932347524586">Hups! Satunnaisen yksityisen RSA-avaimen luominen epäonnistui.</translation>
 <translation id="1445572445564823378">Tämä laajennus hidastaa tuotetta <ph name="PRODUCT_NAME" />. Poista laajennus käytöstä tehostaaksesi tuotteen <ph name="PRODUCT_NAME" /> toimintaa.</translation>
 <translation id="1468038450257740950">WebGL:ää ei tueta.</translation>

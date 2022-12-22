@@ -2715,6 +2715,7 @@
 <translation id="7815407501681723534">"<ph name="SEARCH_STRING" />" боюнча <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> табылды.</translation>
 <translation id="7822320754433038727">Аңчылык жана атуу</translation>
 <translation id="782886543891417279">Сиз колдонуп жаткан Wi-Fi (<ph name="WIFI_NAME" />), башкы кирүү барагына өтүшүңүздү талап кылышы мүмкүн.</translation>
+<translation id="7840103971441592723">Экран сүрөткө тартылып баштады</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Эч бири}=1{1 колдонмо (<ph name="EXAMPLE_APP_1" />)}=2{2 колдонмо (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# колдонмо (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">Сайттан чыгасызбы?</translation>
@@ -2893,6 +2894,7 @@
 <translation id="8282947398454257691">Түзмөктүн уникалдуу далдаштырма кодун билүү</translation>
 <translation id="8284769179630993263">Chrome жөндөөлөрүнөн Коопсуз серептөөнү жана башка нерселерди башкаруу</translation>
 <translation id="8286036467436129157">Кириңиз</translation>
+<translation id="8286799286781881307">Администраторуңуз уруксат берген колдонмолор түзмөгүңүзгө тиркелген бардык экрандарды сүрөткө тарта алат. Бул маалымат түзмөктө иштетилип же уюмдун серверлерине жүктөлүшү мүмкүн.</translation>
 <translation id="8288807391153049143">Тастыктаманы көрсөтүү</translation>
 <translation id="8289355894181816810">Бул эмне экендигин так билбесеңиз, тармак администраторуңузга кайрылыңыз.</translation>
 <translation id="8293206222192510085">Кыстарма кошуу</translation>

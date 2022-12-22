@@ -1304,6 +1304,8 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2165102982098084499">Quyidagi quruilmalarni QR kodni skanerlash orqali ulagansiz.</translation>
 <translation id="2165177462441582039">Har bir element qancha vaqt ajratib turilishini tanlang</translation>
 <translation id="2166369534954157698">Chaqqon malla tulki yalqov itning ustidan sakrab o‘tdi</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Bu qurilma (seriya raqami: <ph name="SERIAL_NUMBER" />) qulflangan.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Endi <ph name="MS_AD_NAME" /> yordamida Chrome qurilmalarini boshqarib boʻlmaydi. Kirish uchun boshqa qurilmadan foydalaning yoki qurilma administratoriga murojaat qiling.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Tizimga baribir kirish</translation>
 <translation id="2173302385160625112">Internet aloqasini tekshiring</translation>
 <translation id="2173801458090845390">Qurilmaga identifikator so‘rovini qo‘shish</translation>
@@ -2486,6 +2488,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="325238099842880997">Farzandning oʻynashi, saytlarni ochishi va uy vazifasini bajarishi uchun raqamli qoidalarni belgilash</translation>
 <translation id="3253448572569133955">Notanish hisob</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{Xavfsizlikka oid muammo topilmadi}=1{Xavfsizlikka oid {COUNT} ta muammo aniqlandi}other{Xavfsizlikka oid {COUNT} ta muammo aniqlandi}}</translation>
+<translation id="3254451942070605467"><ph name="FILE_NAME" /> yuklab olinmoqda, <ph name="PERCENT_REMAINING" />% qoldi</translation>
 <translation id="3254516606912442756">Avtomatik vaqt mintaqasi funksiyasi o‘chiq</translation>
 <translation id="3254715652085014625">Telefonda Chromeni oching va “Sozlamalar &gt; Parollar &gt; Telefonni elektron kalit sifatida ishlatish” sahifasidagi koʻrsatmalarni bajaring.</translation>
 <translation id="3255355328033513170"><ph name="SITE_GROUP_NAME" /> va ichidagi saytlar tomonidan saqlangan barcha maʼlumotlar tozalanadi. Cookie fayllari ham. Bu saytlardagi seanslaringiz yakunlanadi, hatto ochiq varaqlarda ham.</translation>
@@ -3308,6 +3311,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3987993985790029246">Nusxalash</translation>
 <translation id="3988996860813292272">Vaqt mintaqasini tanlang</translation>
 <translation id="399179161741278232">Import qilindi</translation>
+<translation id="3992008114154328194">Yuklab olinmoqda: <ph name="STATUS" /> (<ph name="FILE_NAME" />)</translation>
 <translation id="3993887353483242788"><ph name="DEVICE_TYPE" /> qurilmangiz sinxronlansa, parametrlaringiz Google hisobingizdan kiritilgan barcha qurilmalaringizga ishlaydi. Bu parametrlarga ilovalar, sozlamalar, Wi-Fi parollar, tillar, fon rasmi, klaviatura sozlamalari va boshqa axborotlar kiradi.</translation>
 <translation id="3994318741694670028">Kompyuteringiz apparat identifikatori xato sozlangan. Buning natijasida ChromeOS Flex xavfsizlikka oid eng oxirgi tuzatishlar bilan yangilanmaydi va kompyuteringiz <ph name="BEGIN_BOLD" />zararli hujumlardan himoyalanmasligi mumkin<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Telefoningizni qulfdan chiqaring va uni <ph name="DEVICE_TYPE" /> qurilmasiga yaqinlashtiring.</translation>
@@ -4635,6 +4639,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5268373933383932086">Sahifani oʻz didingizda moslang</translation>
 <translation id="5269977353971873915">Chop etib bo‘lmadi</translation>
 <translation id="5273806377963980154">Sayt URL manzilini tahrirlash</translation>
+<translation id="5273966423195882879">Mavzu asosidagi rang</translation>
 <translation id="5275084684151588738">Foydalanuvchi lugʻatlari</translation>
 <translation id="5275100789567222478">Faqatgina batareya quvvati <ph name="PERCENT" />% yoki undan kam qolganda yoqilsin</translation>
 <translation id="5275338516105640560">Saqlangan varaqlar guruhi uchun tugma</translation>
@@ -6231,6 +6236,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6770042910635026163">Qiziqishlarni ifodalovchi siz kiradigan saytlar</translation>
 <translation id="6770602306803890733">Siz va yaqinlaringizni internetdan yaxshiroq himoyalaydi</translation>
 <translation id="6771503742377376720">Bu sertifikatlashtirish markazi</translation>
+<translation id="6774710250118040929">Yangi parol kiritish</translation>
 <translation id="6775163072363532304">Ulangan qurilmalar shu yerda chiqadi.</translation>
 <translation id="677646486571529447">Qayd kiritish</translation>
 <translation id="6776729248872343918">Tezkor ulanish funksiyasini yoqish</translation>

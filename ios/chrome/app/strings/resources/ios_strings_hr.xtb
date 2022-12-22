@@ -510,6 +510,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="481968316161811770">Kolačići, podaci web-lokacije</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i još 1}one{{domain} i još {count}}few{{domain} i još {count}}other{{domain} i još {count}}}</translation>
 <translation id="4826218269716039351">Blokiraj treće strane</translation>
+<translation id="4826588772550366629">kameru i mikrofon</translation>
 <translation id="4826726074642088322">Podijeli isticanje</translation>
 <translation id="48274138579728272">Označi kao pročitano</translation>
 <translation id="4833686396768033263">Nedavne kartice nisu dostupne</translation>
@@ -562,6 +563,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5190835502935405962">Traka oznaka</translation>
 <translation id="519530786644929958">Preuzimanje nije uspjelo i nije moguće pokušati ponovno.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Želite li dopustiti web-lokaciji <ph name="SITE_NAME" /> da upotrebljava vašu <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Pomozite poboljšati sigurnost na webu za sve korisnike</translation>
 <translation id="5228579091201413441">Omogući sinkronizaciju</translation>
 <translation id="5232485538978018676">Prijavite se upravljanim računom</translation>

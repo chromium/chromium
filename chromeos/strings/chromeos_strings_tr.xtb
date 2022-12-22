@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">UDP istek hataları</translation>
 <translation id="1947737735496445907">Yazdırıldı</translation>
 <translation id="1951012854035635156">Asistan</translation>
+<translation id="1962550982027027473">Varsayılan bir APN gerekli</translation>
 <translation id="1977994649430373166">Google profil fotoğrafı</translation>
 <translation id="1979103255016296513">Şifre değişikliği zamanı geçti</translation>
 <translation id="1999615961760456652">Giriş Portalı</translation>
@@ -635,6 +636,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6791471867139427246">klavye ışığı rengi</translation>
 <translation id="680983167891198932">Anahtar</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
+<translation id="6838167112108853532">Bu APN devre dışı bırakılamaz veya kaldırılamaz. Etkin durumdaki eklenmiş APN'lerin devre dışı bırakıldığından veya kaldırıldığından emin olun.</translation>
 <translation id="6853312040151791195">Şarjın boşalma hızı</translation>
 <translation id="6889786074662672253">Yeniden başlatılırken bu harici cihazı çıkarmayın ya da bilgisayarınızı kapatmayın. Bu pencereyi simge durumuna küçültebilirsiniz. Güncelleme birkaç dakika sürebilir ve bu süre boyunca harici cihazınız çalışmayabilir.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> uygulamasına geri dön</translation>

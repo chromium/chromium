@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">Neúspešné žiadosti UDP</translation>
 <translation id="1947737735496445907">Vytlačené</translation>
 <translation id="1951012854035635156">Asistent</translation>
+<translation id="1962550982027027473">Vyžaduje sa predvolený názov prístupového bodu (APN)</translation>
 <translation id="1977994649430373166">Profilová fotka na Googli</translation>
 <translation id="1979103255016296513">Uplynul termín zmeny hesla</translation>
 <translation id="1999615961760456652">Prihlasovací portál</translation>
@@ -635,6 +636,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6791471867139427246">farba osvetlenia klávesnice</translation>
 <translation id="680983167891198932">Kľúč</translation>
 <translation id="6816797338148849397">K dispozícii sú informácie súvisiace s vaším výberom. Prístup získate pomocou šípky nahor.</translation>
+<translation id="6838167112108853532">Tento názov prístupového bodu (APN) sa nedá deaktivovať ani odstrániť. Uistite sa, že povolené pripojené názvy prístupových bodov (APN) sú deaktivované alebo odstránené.</translation>
 <translation id="6853312040151791195">Rýchlosť vybíjania</translation>
 <translation id="6889786074662672253">Počas reštartu neodpájajte toto externé zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Reštart môže trvať niekoľko minút a vaše externé zariadenie nemusí počas neho fungovať.</translation>
 <translation id="6905724422583748843">Späť na <ph name="PAGE_NAME" /></translation>

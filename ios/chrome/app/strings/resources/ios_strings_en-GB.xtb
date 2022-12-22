@@ -510,6 +510,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="481968316161811770">Cookies, Site Data</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} and 1 other}other{{domain} and {count} others}}</translation>
 <translation id="4826218269716039351">Block third party</translation>
+<translation id="4826588772550366629">camera and microphone</translation>
 <translation id="4826726074642088322">Share highlight</translation>
 <translation id="48274138579728272">Mark as read</translation>
 <translation id="4833686396768033263">Recent tabs are unavailable</translation>
@@ -562,6 +563,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5190835502935405962">Bookmarks Bar</translation>
 <translation id="519530786644929958">Download failed and cannot be retried.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Allow ‘<ph name="SITE_NAME" />’ to use your <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Help improve security on the web for everyone</translation>
 <translation id="5228579091201413441">Enable sync</translation>
 <translation id="5232485538978018676">Sign in with managed account</translation>

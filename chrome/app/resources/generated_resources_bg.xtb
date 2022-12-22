@@ -1267,6 +1267,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="212862741129535676">Процент на използване в състояние на активност</translation>
 <translation id="212876957201860463">Мобилното ви устройство се подготвя за настройване...</translation>
 <translation id="2131077480075264"><ph name="APP_NAME" /> не може да се инсталира, защото няма разрешение за импортиране на ресурси от <ph name="IMPORT_NAME" /></translation>
+<translation id="2133857665503360653">Нов опит за <ph name="FILE_NAME" /></translation>
 <translation id="21354425047973905">Скриване на ПИН кодовете</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
 <translation id="2135787500304447609">&amp;Възобновяване</translation>
@@ -1312,6 +1313,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2165102982098084499">Свързахте тези устройства, като сканирахте QR код.</translation>
 <translation id="2165177462441582039">Изберете продължителността на открояване на отделните елементи</translation>
 <translation id="2166369534954157698">Ах, чудна българска земьо, полюшвай цъфтящи жита!</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Това устройство (сериен номер <ph name="SERIAL_NUMBER" />) е заключено.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Управлението на устройства с Chrome с <ph name="MS_AD_NAME" /> вече не се поддържа. За да влезете в профила си, използвайте друго устройство или се обърнете към администратора на устройството си.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Влизане въпреки това</translation>
 <translation id="2173302385160625112">Проверете връзката си с интернет</translation>
 <translation id="2173801458090845390">Добавяне на идентификационен номер на заявка към това устройство</translation>
@@ -2850,11 +2853,13 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3584169441612580296">Четене и промяна на снимки, музика и друга мултимедия от компютъра ви</translation>
 <translation id="3586787825263265024">Приложението <ph name="APPLICATION_NAME" /> изисква OneDrive, за да работи.</translation>
 <translation id="3586806079541226322">Този файл не може да се отвори</translation>
+<translation id="3587438013689771191">Научете повече за: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Всички</translation>
 <translation id="3588790464166520201">Сайтове с разрешение за инсталиране на инструменти за обработване на плащания</translation>
 <translation id="3589766037099229847">Незащитеното съдържание е блокирано</translation>
 <translation id="3590194807845837023">Отключване на потребителския профил и повторно стартиране</translation>
 <translation id="3590295622232282437">Влиза се в управлявана сесия.</translation>
+<translation id="3591057288287063271">Запазване на <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Научете повече</translation>
 <translation id="3593152357631900254">Активиране на режим „неточен пинин“</translation>
 <translation id="3593965109698325041">Ограничения за името на сертификата</translation>
@@ -3759,6 +3764,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="442397852638519243"><ph name="USER_NAME" />, администраторът ви изисква да промените паролата си.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Разрешаването на устройства с ChromeOS да изпращат автоматични сигнали ни помага да разбираме какво е най-важно да поправим и подобрим в операционната система. Тези сигнали могат да включват различни неща, като например информация за възникнали сривове в Chrome OS, използваните функции и количеството памет, което обикновено ползвате.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Имате възможност да разрешите или забраните сигналите по всяко време от настройките на устройството си с Chrome. Ако сте администратор на домейн, можете да извършите тази промяна от администраторската конзола.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">Изтриване на <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">За да започнете, превключвателят ви с USB или Bluetooth трябва да е свързан с вашия Chromebook. Можете да използвате и клавишите на клавиатурата.</translation>
 <translation id="4426508677408162512">Всички отметки</translation>
 <translation id="4427306783828095590">Режимът за подобрена защита предприема повече действия за блокиране на фишинг атаки и злонамерен софтуер</translation>
@@ -4030,6 +4036,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4666472247053585787">Преглеждайте на устройството си <ph name="DEVICE_TYPE" /> известия от телефона си</translation>
 <translation id="4666911709726371538">Още приложения</translation>
 <translation id="4667027203988048332">Кои данни се използват:</translation>
+<translation id="4672759829555593783">Отваряне на <ph name="FILE_NAME" /> сега</translation>
 <translation id="46733273239502219">Офлайн данните в инсталираните приложения също ще бъдат изчистени</translation>
 <translation id="4673442866648850031">Отваряне на инструментите за писане при изваждане на писалката</translation>
 <translation id="4675065861091108046">По-рано избрахте да разрешите всички разширения на <ph name="ORIGIN" /></translation>
@@ -5923,6 +5930,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6465841119675156448">Без интернет</translation>
 <translation id="6466258437571594570">Сайтовете няма да ви прекъсват със запитванията си за изпращане на известия</translation>
 <translation id="6466988389784393586">&amp;Отваряне на всички отметки</translation>
+<translation id="6467230443178397264">Сканиране на <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Оптимизиране на видеоклиповете на цял екран</translation>
 <translation id="6467377768028664108">Вашият <ph name="DEVICE_TYPE" /> ще може следното:</translation>
 <translation id="6468485451923838994">Шрифтове</translation>
@@ -6670,6 +6678,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7149893636342594995">Последните 24 часа</translation>
 <translation id="7152478047064750137">Това разширение не изисква специални разрешения</translation>
 <translation id="7154130902455071009">Промяна на началната ви страница на <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">Преобразуване на изображението в текст</translation>
 <translation id="7159953856712257647">Инсталирано по подразбиране</translation>
 <translation id="7160182524506337403">Вече можете да преглеждате известията, които имате на телефона си</translation>
 <translation id="7163202347044721291">Кодът за активиране се проверява...</translation>
@@ -6931,6 +6940,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7412226954991670867">Памет на графичния процесор</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Настройването завърши</translation>
+<translation id="7416091793702109803">Преглед на <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Общите условия не могат да се заредят. Моля, проверете връзката си с мрежата и опитайте отново.</translation>
 <translation id="7416362041876611053">Неизвестна грешка в мрежата.</translation>
 <translation id="741906494724992817">Това приложение не изисква специални разрешения.</translation>

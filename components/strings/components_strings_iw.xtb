@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">‏כדאי לעדכן את Chrome</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="1559447966090556585">לאפשר קבלת התראות?</translation>
+<translation id="1559486004335285648">מילוי אוטומטי של פרטי התשלום</translation>
 <translation id="1559528461873125649">אין קובץ או ספרייה בשם זה</translation>
 <translation id="1559572115229829303">‏&lt;p&gt;לא ניתן ליצור חיבור פרטי אל <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> משום שהתאריך והשעה במכשיר שלך (<ph name="DATE_AND_TIME" />) שגויים.&lt;/p&gt;
 
@@ -366,6 +367,7 @@
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1807528111851433570">גיליון ראשון</translation>
 <translation id="181000283860817563">מעקב אחר מחירים בכמה אתרים</translation>
+<translation id="1810391395243432441">הגנה על סיסמאות באמצעות נעילת המסך</translation>
 <translation id="1812527064848182527">לרוחב</translation>
 <translation id="1813414402673211292">ניקוי נתוני גלישה</translation>
 <translation id="182139138257690338">הורדות אוטומטיות</translation>
@@ -385,6 +387,7 @@
 <translation id="1871208020102129563">‏שרת ה-Proxy מוגדר להשתמש בשרתי Proxy קבועים, לא בכתובת אתר של סקריפט ‎.Pac</translation>
 <translation id="1871284979644508959">שדה חובה</translation>
 <translation id="1873899211667975540">מוזיקת רוק</translation>
+<translation id="1874224422119691492">ב<ph name="SETTINGS" /> יש אפשרות לקבוע אם להשתמש בנעילת המסך למילוי סיסמאות</translation>
 <translation id="1875025161375567525">מגש התמונות</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="187918866476621466">פתיחת דפי פתיחה</translation>
@@ -753,6 +756,7 @@
 <translation id="2876949457278336305">‏<ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
 <translation id="2878197950673342043">קיפול כרזה</translation>
 <translation id="2878424575911748999">A1</translation>
+<translation id="2879694782644540289">להשתמש בנעילת המסך למילוי סיסמאות</translation>
 <translation id="2881276955470682203">לשמור את הכרטיס?</translation>
 <translation id="2882949212241984732">שתי כנפיים בקיפול</translation>
 <translation id="2893773853358652045">הגליל הרביעי</translation>
@@ -1409,6 +1413,7 @@
 <translation id="4541810033354695636">מציאות רבודה</translation>
 <translation id="4542971377163063093">מגש 6</translation>
 <translation id="455113658016510503">A9</translation>
+<translation id="4556069465387849460">בחרת להשתמש בנעילת המסך למילוי סיסמאות</translation>
 <translation id="4558551763791394412">יש לנסות להשבית את התוספים.</translation>
 <translation id="4566017918361049074">פעילות בחוץ</translation>
 <translation id="4567686777917670400">‏מנהל המערכת יכול לשנות את הגדרת הדפדפן שלך מרחוק. ניהול הפעילות במכשיר הזה אפשרי גם מחוץ ל-Chromium. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
@@ -2745,6 +2750,7 @@ Del</translation>
 <translation id="7942349550061667556">אדום</translation>
 <translation id="7943397946612013052">ההורדה נחסמה</translation>
 <translation id="7943893128817522649">האתר יכול לבקש הרשאה להוריד מספר קבצים באופן אוטומטי</translation>
+<translation id="7946724693008564269">זוהתה השפה</translation>
 <translation id="7947285636476623132">יש לבדוק את שנת התפוגה ולנסות שוב</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לקבל מידע על התכונות של Chrome</translation>
 <translation id="7950027195171824198">‏ניתן לנהל את ההעדפות לגבי קובצי Cookie בהגדרות Chrome</translation>
@@ -2932,6 +2938,7 @@ Del</translation>
 <translation id="8396522675989118466">זהו הקוד בן <ph name="NUMBER_OF_DIGITS" /> הספרות שמופיע ב<ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">אתר את הטלפון שלך</translation>
 <translation id="8405579342203358118">‏ניתן לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
+<translation id="8406071103346257942">להפסיק להשתמש בנעילת המסך למילוי סיסמאות</translation>
 <translation id="8409413588194360210">‏רכיבי handler של תשלומים</translation>
 <translation id="8412145213513410671">קריסות (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">עליך להזין את אותו משפט-סיסמה פעמיים.</translation>
@@ -3201,6 +3208,7 @@ Del</translation>
 <translation id="9128016270925453879">המדיניות נטענה</translation>
 <translation id="9128870381267983090">התחברות לרשת</translation>
 <translation id="9131119348384879525">לצלם תוכן סודי?</translation>
+<translation id="9133985615769429248">אם המכשיר הזה משותף עם אחרים, יש לך אפשרות להשתמש בנעילת המסך כדי לאמת את זהותך בכל שימוש בסיסמה שמורה</translation>
 <translation id="9136861683332321024">מכוניות יוקרה</translation>
 <translation id="9137013805542155359">הצגת מקור</translation>
 <translation id="9137248913990643158">‏יש להיכנס לחשבון ב-Chrome לפני שהשימוש באפליקציה הזו.</translation>

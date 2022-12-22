@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Paket tidak valid: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Kamera belakang</translation>
 <translation id="1196338895211115272">Gagal mengekspor kunci pribadi.</translation>
+<translation id="132960226125594336">Tidak dapat memuat file '<ph name="RELATIVE_PATH" />' untuk skrip konten karena akan melebihi ukuran maksimum skrip atau ukuran total maksimum skrip konten ekstensi.</translation>
 <translation id="1420684932347524586">Wah! Gagal membuat kunci pribadi RSA acak.</translation>
 <translation id="1445572445564823378">Ekstensi ini memperlambat <ph name="PRODUCT_NAME" />. Anda harus menonaktifkannya agar dapat memulihkan kinerja <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL tidak didukung.</translation>

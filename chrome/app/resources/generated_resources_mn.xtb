@@ -1267,6 +1267,7 @@
 <translation id="212862741129535676">Давтамжийн нөхцөл байдлын эзлэх хувь</translation>
 <translation id="212876957201860463">Үүрэн холбооны төхөөрөмжийг тохируулахаар бэлтгэж байна...</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" апликейшнийг <ph name="IMPORT_NAME" />-н зөвшөөрөлгүйгээр суулгах боломжгүй байна.</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" />-г дахин оролдох</translation>
 <translation id="21354425047973905">ПИН нуух</translation>
 <translation id="2135456203358955318">Суурилуулсан томруулагч</translation>
 <translation id="2135787500304447609">&amp; Сэргээн үргэлжүүлэх</translation>
@@ -2851,11 +2852,13 @@
 <translation id="3584169441612580296">Компьютероосоо зураг, хөгжим болон бусад медиагаа уншуулах эсвэл өөрчлөх</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> аппликэйшн OneDrive-г боломжтой байхыг шаардаж байна.</translation>
 <translation id="3586806079541226322">Энэ файлыг нээх боломжгүй байна</translation>
+<translation id="3587438013689771191">Дараахын тухай нэмэлт мэдээлэл авах: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Бүгд</translation>
 <translation id="3588790464166520201">Төлбөр хариуцагч суулгахыг зөвшөөрсөн</translation>
 <translation id="3589766037099229847">Аюултай агуулгыг блоклосон</translation>
 <translation id="3590194807845837023">Танилцуулгыг нээж дахин ажиллуулж эхэл</translation>
 <translation id="3590295622232282437">Хяналттай харилцан үйлдлийг оруулж байна.</translation>
+<translation id="3591057288287063271"><ph name="FILE_NAME" />-г хадгалах</translation>
 <translation id="3592260987370335752">Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin горимыг идэвхжүүл</translation>
 <translation id="3593965109698325041">Сертификатын нэрийн хязгаарлалт</translation>
@@ -3757,6 +3760,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" />, таны админ нууц үгээ солихыг шаардаж байна.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ChromeOS төхөөрөмжүүдэд автомат тайлан илгээхийг зөвшөөрснөөр бидэнд ChromeOS-т юуг засаж, сайжруулахыг чухалчилж үзэхэд тусална. Эдгээр тайланд ChromeOS хэзээ гэмтсэн, ямар онцлогуудыг ашигласан болон ямар хэмжээний санах ойг ихэвчлэн ашиглаж байсан зэргийг багтааж болно.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Та Chrome төхөөрөмжийнхөө тохиргоонд эдгээр тайланг хүссэн үедээ зөвшөөрч эхлэх эсвэл зогсоох боломжтой. Хэрэв та домэйний администратор бол энэ тохиргоог хүссэн үедээ админы консолд өөрчлөх боломжтой.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040"><ph name="FILE_NAME" />-г устгах</translation>
 <translation id="4426464032773610160">Эхлүүлэхийн тулд USB эсвэл Bluetooth сэлгэгчээ Chromebook-тэйгээ холбогдсон эсэхийг шалгана уу. Та мөн гарын товчнуудыг ашиглах боломжтой.</translation>
 <translation id="4426508677408162512">Бүх хавчуурга</translation>
 <translation id="4427306783828095590">Сайжруулсан хамгаалалт нь фишинг болон хортой кодыг блоклохын тулд илүү ихийг хийдэг</translation>
@@ -4028,6 +4032,7 @@
 <translation id="4666472247053585787">Утасныхаа мэдэгдлийг <ph name="DEVICE_TYPE" /> дээрээ хараарай</translation>
 <translation id="4666911709726371538">Бусад апп</translation>
 <translation id="4667027203988048332">Ямар өгөгдлийг ашигладаг вэ?:</translation>
+<translation id="4672759829555593783"><ph name="FILE_NAME" />-г одоо нээх</translation>
 <translation id="46733273239502219">Суулгасан аппуудын офлайн өгөгдлийг мөн устгах болно</translation>
 <translation id="4673442866648850031">Мэдрэгч үзгийг устгасны дараа мэдрэгч үзэгний хэрэгслийг нээнэ үү</translation>
 <translation id="4675065861091108046">Та өмнө нь <ph name="ORIGIN" /> дээрх бүх өргөтгөлийг зөвшөөрөхийг сонгосон</translation>
@@ -4640,6 +4645,7 @@
 <translation id="5268373933383932086">Таны хуудас, таны арга</translation>
 <translation id="5269977353971873915">Хэвлэх үйлдэл амжилтгүй болсон байна</translation>
 <translation id="5273806377963980154">Сайтын URL-г засах</translation>
+<translation id="5273966423195882879">Загварт тулгуурласан өнгө</translation>
 <translation id="5275084684151588738">Хэрэглэгчийн толь бичиг</translation>
 <translation id="5275100789567222478">Миний батарей <ph name="PERCENT" />% буюу түүнээс бага байхад л асаах</translation>
 <translation id="5275338516105640560">Хадгалсан табын бүлгийн товчлуур</translation>
@@ -5919,6 +5925,7 @@
 <translation id="6465841119675156448">Интернэтгүйгээр</translation>
 <translation id="6466258437571594570">Таныг мэдэгдэл илгээхийг хүсэх үед сайтуудыг танд саад болохыг блоклоно</translation>
 <translation id="6466988389784393586">&amp; Бүх хадгалагдсан хуудсуудыг нээх</translation>
+<translation id="6467230443178397264"><ph name="FILE_NAME" />-г скан хийх</translation>
 <translation id="6467304607960172345">Бүтэн дэлгэцийн видеонуудыг оновчлох</translation>
 <translation id="6467377768028664108">Таны <ph name="DEVICE_TYPE" /> дараа нь дараахыг хийх боломжтой:</translation>
 <translation id="6468485451923838994">Фонт</translation>
@@ -6666,6 +6673,7 @@
 <translation id="7149893636342594995">Сүүлийн 24 цаг</translation>
 <translation id="7152478047064750137">Энэ өргөтгөл ямар нэгэн тусгай зөвшөөрөл шаарддаггүй</translation>
 <translation id="7154130902455071009">Өөрийн эхлэх хуудсыг :<ph name="START_PAGE" /> болгож өөрчлөх</translation>
+<translation id="7156231244155528270">Зургийг текст рүү хөрвүүлэх</translation>
 <translation id="7159953856712257647">Өгөгдмөлөөр суулгасан</translation>
 <translation id="7160182524506337403">Та одоо утасныхаа мэдэгдлүүдийг харах боломжтой</translation>
 <translation id="7163202347044721291">Идэвхжүүлэх кодыг бататгаж байна...</translation>
@@ -6927,6 +6935,7 @@
 <translation id="7412226954991670867">GPU санах ой</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Тохируулж дууслаа</translation>
+<translation id="7416091793702109803"><ph name="FILE_NAME" />-г шалгах</translation>
 <translation id="7416263748877373774">Үйлчилгээний нөхцөлийг ачаалах боломжгүй. Сүлжээний холболтоо шалгаад, дахин оролдоно уу.</translation>
 <translation id="7416362041876611053">Үл мэдэгдэх сүлжээний алдаа.</translation>
 <translation id="741906494724992817">Энэхүү апп нь ямар ч тусгай зөвшөөрөл шаарддаггүй.</translation>

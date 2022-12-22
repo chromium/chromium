@@ -2487,6 +2487,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="325238099842880997">Stabilește reguli digitale de bază pentru a-i ajuta pe copii să se joace, să exploreze și să-și facă temele acasă</translation>
 <translation id="3253448572569133955">Cont necunoscut</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{Nu s-au găsit probleme de securitate}=1{S-a găsit {COUNT} problemă de securitate}few{S-au găsit {COUNT} probleme de securitate}other{S-au găsit {COUNT} de probleme de securitate}}</translation>
+<translation id="3254451942070605467">Se descarcă <ph name="FILE_NAME" />, au mai rămas <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="3254516606912442756">Detectarea automată a fusului orar este dezactivată</translation>
 <translation id="3254715652085014625">Deschide Chrome pe telefonul Android și accesează „Setări &gt; Parole &gt; Folosește telefonul ca pe o cheie de securitate”, apoi urmează instrucțiunile.</translation>
 <translation id="3255355328033513170">Toate datele stocate de <ph name="SITE_GROUP_NAME" /> și de orice alte site-uri subordonate vor fi șterse. Sunt incluse și cookie-urile. Vei fi deconectat(ă) de pe site-uri, inclusiv din filele deschise.</translation>
@@ -3309,6 +3310,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3987993985790029246">Copiază linkul</translation>
 <translation id="3988996860813292272">Selectează fusul orar</translation>
 <translation id="399179161741278232">Importate</translation>
+<translation id="3992008114154328194">Se descarcă <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993887353483242788">Sincronizează dispozitivul <ph name="DEVICE_TYPE" />, iar preferințele tale vor fi disponibile pe orice dispozitiv când te conectezi folosind Contul Google. Preferințele includ aplicații, setări, parole Wi-Fi, limbi, imagini de fundal, comenzi rapide de la tastatură și altele.</translation>
 <translation id="3994318741694670028">Din păcate, computerul este configurat cu un ID de hardware incorect. Acest lucru împiedică actualizarea sistemului de operare Chrome Flex cu cele mai recente remedieri de securitate, iar computerul <ph name="BEGIN_BOLD" />ar putea fi vulnerabil la atacuri<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Deblochează telefonul și apropie-l mai mult pentru a debloca dispozitivul <ph name="DEVICE_TYPE" />.</translation>
@@ -4635,6 +4637,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5268373933383932086">Personalizează pagina</translation>
 <translation id="5269977353971873915">Printarea a eșuat</translation>
 <translation id="5273806377963980154">Editează adresa URL a site-ului</translation>
+<translation id="5273966423195882879">Culoare în funcție de temă</translation>
 <translation id="5275084684151588738">Dicționarele utilizatorului</translation>
 <translation id="5275100789567222478">Activează opțiunea numai când nivelul bateriei este la <ph name="PERCENT" /> % sau mai scăzut</translation>
 <translation id="5275338516105640560">Butonul grupului de file salvat</translation>

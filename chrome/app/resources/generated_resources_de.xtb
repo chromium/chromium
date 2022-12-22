@@ -1256,6 +1256,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="212862741129535676">Aktiver Zustand – Auslastung in Prozent</translation>
 <translation id="212876957201860463">Die Einrichtung des Mobilgeräts wird vorbereitet…</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" konnte nicht installiert werden, da dies vom "<ph name="IMPORT_NAME" />" nicht zugelassen wurde.</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> noch einmal herunterladen</translation>
 <translation id="21354425047973905">PINs ausblenden</translation>
 <translation id="2135456203358955318">Angedockte Lupe</translation>
 <translation id="2135787500304447609">&amp;Fortsetzen</translation>
@@ -1301,6 +1302,8 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2165102982098084499">Du hast einen QR-Code gescannt, um diese Geräte zu verknüpfen.</translation>
 <translation id="2165177462441582039">Du kannst festlegen, wie lange ein Element markiert bleiben soll</translation>
 <translation id="2166369534954157698">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Dieses Gerät (Seriennummer: <ph name="SERIAL_NUMBER" />) wurde gesperrt.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Die Chrome-Geräteverwaltung mit <ph name="MS_AD_NAME" /> wird nicht mehr unterstützt. Verwende ein anderes Gerät, um dich anzumelden, oder wende dich an deinen Geräteadministrator.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Trotzdem anmelden</translation>
 <translation id="2173302385160625112">Bitte überprüfe deine Internetverbindung</translation>
 <translation id="2173801458090845390">Diesem Gerät eine Anforderungs-ID hinzufügen</translation>
@@ -2835,11 +2838,13 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3584169441612580296">Fotos, Musik und andere Medien auf deinem Computer lesen und ändern</translation>
 <translation id="3586787825263265024">Für die Anwendung <ph name="APPLICATION_NAME" /> ist OneDrive erforderlich.</translation>
 <translation id="3586806079541226322">Diese Datei kann nicht geöffnet werden</translation>
+<translation id="3587438013689771191">Weitere Informationen: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3588790464166520201">Dürfen Zahlungs-Handler installieren</translation>
 <translation id="3589766037099229847">Unsichere Inhalte blockiert</translation>
 <translation id="3590194807845837023">Profil entsperren und Chrome neu starten</translation>
 <translation id="3590295622232282437">Anmeldung in verwalteter Sitzung läuft.</translation>
+<translation id="3591057288287063271"><ph name="FILE_NAME" /> behalten</translation>
 <translation id="3592260987370335752">&amp;Weitere Informationen</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin-Modus aktivieren</translation>
 <translation id="3593965109698325041">Beschränkungen für Zertifikatsnamen</translation>
@@ -3742,6 +3747,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, dein Administrator fordert dich zum Ändern deines Passworts auf.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass ChromeOS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in ChromeOS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Informationen über ChromeOS-Abstürze und Angaben dazu enthalten, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte kannst du jederzeit in den Einstellungen deines Chrome-Geräts aktivieren oder deaktivieren. Als Domainadministrator kannst du diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040"><ph name="FILE_NAME" /> löschen</translation>
 <translation id="4426464032773610160">Prüfe zuerst, ob dein USB- oder Bluetooth-Schalter mit deinem Chromebook verbunden ist. Du kannst auch die Tastatur verwenden.</translation>
 <translation id="4426508677408162512">Alle Lesezeichen</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
@@ -4012,6 +4018,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4666472247053585787">Benachrichtigungen von deinem Smartphone auf deinem <ph name="DEVICE_TYPE" /> erhalten</translation>
 <translation id="4666911709726371538">Weitere Apps</translation>
 <translation id="4667027203988048332">Welche Daten verwendet werden:</translation>
+<translation id="4672759829555593783"><ph name="FILE_NAME" /> jetzt öffnen</translation>
 <translation id="46733273239502219">Offlinedaten in installierten Apps werden auch gelöscht</translation>
 <translation id="4673442866648850031">Eingabestift-Tools werden automatisch geöffnet, sobald der Eingabestift entfernt wird</translation>
 <translation id="4675065861091108046">Du hast dich zuvor dafür entschieden, alle Erweiterungen auf <ph name="ORIGIN" /> zuzulassen</translation>
@@ -4624,6 +4631,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5268373933383932086">Deine Seite, deine Auswahl</translation>
 <translation id="5269977353971873915">Fehler beim Drucken</translation>
 <translation id="5273806377963980154">Website-URL bearbeiten</translation>
+<translation id="5273966423195882879">Farbe basierend auf Design</translation>
 <translation id="5275084684151588738">Meine Wörterbücher</translation>
 <translation id="5275100789567222478">Nur bei einem Akkustand von <ph name="PERCENT" /> % oder niedriger aktivieren</translation>
 <translation id="5275338516105640560">Schaltfläche „Gespeicherte Tabgruppe“</translation>
@@ -5900,6 +5908,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6465841119675156448">Ohne Internet</translation>
 <translation id="6466258437571594570">Websites können dich nicht unterbrechen, um dich zu fragen, ob du Benachrichtigungen erhalten möchtest</translation>
 <translation id="6466988389784393586">&amp;Alle Lesezeichen öffnen</translation>
+<translation id="6467230443178397264"><ph name="FILE_NAME" /> scannen</translation>
 <translation id="6467304607960172345">Vollbildvideos optimieren</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> kann dann folgende Aktionen ausführen:</translation>
 <translation id="6468485451923838994">Schriftarten</translation>
@@ -6647,6 +6656,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7149893636342594995">Letzte 24 Stunden</translation>
 <translation id="7152478047064750137">Diese Erweiterung erfordert keine speziellen Berechtigungen</translation>
 <translation id="7154130902455071009">Startseite in <ph name="START_PAGE" /> ändern</translation>
+<translation id="7156231244155528270">Bild in Text umwandeln</translation>
 <translation id="7159953856712257647">Standardmäßig installiert</translation>
 <translation id="7160182524506337403">Du kannst jetzt die Benachrichtigungen von deinem Smartphone aufrufen</translation>
 <translation id="7163202347044721291">Aktivierungscode wird geprüft…</translation>
@@ -6908,6 +6918,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7412226954991670867">GPU-Speicher</translation>
 <translation id="7414464185801331860">18-fach</translation>
 <translation id="7415454883318062233">Einrichtung abgeschlossen</translation>
+<translation id="7416091793702109803"><ph name="FILE_NAME" /> prüfen</translation>
 <translation id="7416263748877373774">Fehler beim Laden der Nutzungsbedingungen. Prüfe die Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="7416362041876611053">Unbekannter Netzwerkfehler</translation>
 <translation id="741906494724992817">Diese App erfordert keine speziellen Berechtigungen.</translation>

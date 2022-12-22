@@ -1270,6 +1270,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="212862741129535676">Órajel lefoglaltsága százalékban</translation>
 <translation id="212876957201860463">A mobileszköz beállításának előkészítése…</translation>
 <translation id="2131077480075264">A(z) „<ph name="APP_NAME" />” telepítése sikertelen, mivel azt a(z) „<ph name="IMPORT_NAME" />” nem engedélyezi.</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> újrapróbálása</translation>
 <translation id="21354425047973905">PIN-kódok elrejtése</translation>
 <translation id="2135456203358955318">Dokkolt nagyító</translation>
 <translation id="2135787500304447609">&amp;Folytatás</translation>
@@ -2499,6 +2500,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="325238099842880997">Digitális alapszabályok beállításával segíthet a gyermekeknek a játékban, a felfedezésben és az iskolai feladatok otthoni elvégzésében.</translation>
 <translation id="3253448572569133955">Ismeretlen fiók</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{Nem található biztonsági probléma}=1{{COUNT} biztonsági probléma található}other{{COUNT} biztonsági probléma található}}</translation>
+<translation id="3254451942070605467"><ph name="FILE_NAME" /> letöltése folyamatban; <ph name="PERCENT_REMAINING" />% maradt hátra</translation>
 <translation id="3254516606912442756">Az időzóna automatikus észlelése ki van kapcsolva</translation>
 <translation id="3254715652085014625">Nyissa meg a Chrome-ot androidos telefonján, majd lépjen a „Beállítások &gt; Jelszavak &gt; Telefon használata biztonsági hardverkulcsként” menüpontra. Ezután kövesse a megjelenő utasításokat.</translation>
 <translation id="3255355328033513170">A(z) <ph name="SITE_GROUP_NAME" /> és a hozzá tartozó összes webhely által tárolt minden adat törlődik. Ez a cookie-kra is vonatkozik. A rendszer kijelentkezteti ezekről a webhelyekről (a megnyitott lapok esetében is).</translation>
@@ -2854,11 +2856,13 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3584169441612580296">Fotók, zeneszámok és egyéb médiatartalmak olvasása és módosítása a számítógépről</translation>
 <translation id="3586787825263265024">A(z) <ph name="APPLICATION_NAME" /> alkalmazás használatához rendelkezésre kell állnia a OneDrive-nak.</translation>
 <translation id="3586806079541226322">Nem lehet megnyitni ezt a fájlt</translation>
+<translation id="3587438013689771191">További információ: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Mind</translation>
 <translation id="3588790464166520201">Telepíthetnek fizetéskezelőket</translation>
 <translation id="3589766037099229847">Nem biztonságos tartalom letiltva</translation>
 <translation id="3590194807845837023">Profil feloldása és újraindítás</translation>
 <translation id="3590295622232282437">Felügyelt munkamenet indítása.</translation>
+<translation id="3591057288287063271"><ph name="FILE_NAME" /> megtartása</translation>
 <translation id="3592260987370335752">&amp;További információ</translation>
 <translation id="3593152357631900254">Részleges pinjin mód engedélyezése</translation>
 <translation id="3593965109698325041">Tanúsítvány nevének megkötései</translation>
@@ -3318,6 +3322,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="3987993985790029246">Link másolása</translation>
 <translation id="3988996860813292272">Időzóna kiválasztása</translation>
 <translation id="399179161741278232">Importált</translation>
+<translation id="3992008114154328194"><ph name="FILE_NAME" /> letöltése folyamatban; állapot: <ph name="STATUS" /></translation>
 <translation id="3993887353483242788">Szinkronizálja <ph name="DEVICE_TYPE" /> eszközét, hogy beállításai minden eszközön rendelkezésre álljanak, amikor be van jelentkezve Google-fiókjával. A beállítások közé tartoznak többek között az alkalmazások, a Wi-Fi-jelszavak, a nyelvek, a háttérkép és a billentyűparancsok.</translation>
 <translation id="3994318741694670028">Sajnos számítógépe nem megfelelő formátumú hardverazonosítóval van konfigurálva. Emiatt a ChromeOS Flex nem tud frissülni a legújabb biztonsági javításokkal, és számítógépe <ph name="BEGIN_BOLD" />sebezhető lehet a rosszindulatú támadásokkal szemben<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">A belépéshez oldja fel telefonja lezárását, és helyezze közelebb a(z) <ph name="DEVICE_TYPE" /> zárolásának feloldásához.</translation>
@@ -3760,6 +3765,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="442397852638519243"><ph name="USER_NAME" />, az Ön rendszergazdája jelszómódosításra kéri.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a ChromeOS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a ChromeOS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. A jelentések tartalmazhatják például, hogy mikor omlik össze a ChromeOS, és hogy Ön milyen funkciókat, illetve jellemzően mennyi memóriát használ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bármikor engedélyezheti és letilthatja ezeket a jelentéseket a Chrome-eszköz beállításaiban. Ha Ön domainrendszergazda, akkor ezt a beállítást módosíthatja a Felügyeleti konzolban.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040"><ph name="FILE_NAME" /> törlése</translation>
 <translation id="4426464032773610160">A kezdéshez győződjön meg arról, hogy az USB- vagy Bluetooth-kapcsolattal rendelkező kapcsoló csatlakoztatva van a Chromebookhoz. Használhat billentyűzetet is.</translation>
 <translation id="4426508677408162512">Minden könyvjelző</translation>
 <translation id="4427306783828095590">A Speciális védelem még többet tesz annak érdekében, hogy letiltsa az adathalászatot és a rosszindulatú programokat</translation>
@@ -4031,6 +4037,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4666472247053585787">Telefonja értesítéseinek megtekintése <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="4666911709726371538">További alkalmazások</translation>
 <translation id="4667027203988048332">A következő adatokat használjuk fel:</translation>
+<translation id="4672759829555593783"><ph name="FILE_NAME" /> jelenleg meg van nyitva</translation>
 <translation id="46733273239502219">A telepített alkalmazásokban található offline adatok is törlődnek</translation>
 <translation id="4673442866648850031">Érintőceruza-eszközök megnyitása az érintőceruza eltávolításakor</translation>
 <translation id="4675065861091108046">Ön korábban az összes bővítményt engedélyezte itt: <ph name="ORIGIN" /></translation>
@@ -5925,6 +5932,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6465841119675156448">Internet nélkül</translation>
 <translation id="6466258437571594570">A webhelyek nem zavarhatják meg, amikor értesítések küldésére kérdeznek rá</translation>
 <translation id="6466988389784393586">&amp;Az összes könyvjelző megnyitása</translation>
+<translation id="6467230443178397264"><ph name="FILE_NAME" /> vizsgálata</translation>
 <translation id="6467304607960172345">A teljes képernyős videók optimalizálása</translation>
 <translation id="6467377768028664108">Ezzel a következőket engedélyezi a(z) <ph name="DEVICE_TYPE" /> eszköznek:</translation>
 <translation id="6468485451923838994">Betűtípusok</translation>
@@ -6672,6 +6680,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7149893636342594995">Az elmúlt 24 órából</translation>
 <translation id="7152478047064750137">A bővítmény nem igényel különleges engedélyeket</translation>
 <translation id="7154130902455071009">Kezdőoldal módosítása a következőre: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">Kép átalakítása szöveggé</translation>
 <translation id="7159953856712257647">Alapértelmezés szerint telepítve</translation>
 <translation id="7160182524506337403">Mostantól megtekintheti a telefon értesítéseit</translation>
 <translation id="7163202347044721291">Aktiváló kód ellenőrzése…</translation>
@@ -6933,6 +6942,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7412226954991670867">GPU memória</translation>
 <translation id="7414464185801331860">18×</translation>
 <translation id="7415454883318062233">A beállítás kész</translation>
+<translation id="7416091793702109803">Áttekintés: <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Nem sikerült betölteni az Általános Szerződési Feltételeket. Ellenőrizze a hálózati kapcsolatot, és próbálkozzon újra.</translation>
 <translation id="7416362041876611053">Ismeretlen hálózati hiba.</translation>
 <translation id="741906494724992817">Az alkalmazás nem igényel speciális engedélyeket.</translation>

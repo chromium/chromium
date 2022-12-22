@@ -510,6 +510,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="481968316161811770">Kolačići, podaci o web lokacijama</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i još 1}one{{domain} i još {count}}few{{domain} i još {count}}other{{domain} i još {count}}}</translation>
 <translation id="4826218269716039351">Blokiraj kolačiće treće strane</translation>
+<translation id="4826588772550366629">kameru i mikrofon</translation>
 <translation id="4826726074642088322">Dijeli istaknutu stavku</translation>
 <translation id="48274138579728272">Označi kao pročitano</translation>
 <translation id="4833686396768033263">Nedavne kartice nisu dostupne</translation>
@@ -562,6 +563,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5190835502935405962">Traka oznaka</translation>
 <translation id="519530786644929958">Preuzimanje nije uspjelo i ne može se ponoviti.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Želite li dopustiti web-lokaciji <ph name="SITE_NAME" /> da upotrebljava vašu <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Pomozite nam da poboljšamo sigurnost na webu za sve</translation>
 <translation id="5228579091201413441">Omogući sinhronizaciju</translation>
 <translation id="5232485538978018676">Prijavite se pomoću upravljanog računa</translation>
@@ -1099,7 +1101,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="9157836665414082580">Spriječi dijaloge</translation>
 <translation id="9177438225260810839">Pretraži otvorene kartice</translation>
 <translation id="9188680907066685419">Odjava s upravljanog računa</translation>
-<translation id="9193147658040604536">Povucite ovdje da biste prikvačili karticu</translation>
+<translation id="9193147658040604536">Prevucite ovdje da zakačite karticu</translation>
 <translation id="9200875785104711666">Prije <ph name="TIME" /> dan/a</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Pretražite kartice…</translation>

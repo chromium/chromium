@@ -109,7 +109,7 @@
 <translation id="1871569928317311284">Қараңғы режимді өшіру</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Қараңғы режимді өшіру</translation>
-<translation id="1881188606372070653">Мазмұнға заңға сәйкес өзгерістер енгізуді сұрау үшін <ph name="BEGIN_LINK1" />Құқықтық анықтама бетіне<ph name="END_LINK1" /> өтіңіз. Аккаунт және жүйе туралы кейбір ақпарат Google-ға жіберілуі мүмкін. Сіз берген ақпарат <ph name="BEGIN_LINK2" />Құпиялылық саясаты<ph name="END_LINK2" /> мен <ph name="BEGIN_LINK3" />Қызмет көрсету шарттарына<ph name="END_LINK3" /> сәйкес техникалық мәселелерді шешу және қызметтерімізді жақсарту үшін пайдаланылады.</translation>
+<translation id="1881188606372070653">Контентке заңға сәйкес өзгерістер енгізуді сұрау үшін <ph name="BEGIN_LINK1" />Құқықтық анықтама бетіне<ph name="END_LINK1" /> өтіңіз. Аккаунт және жүйе туралы кейбір ақпарат Google-ға жіберілуі мүмкін. Сіз берген ақпарат <ph name="BEGIN_LINK2" />Құпиялылық саясаты<ph name="END_LINK2" /> мен <ph name="BEGIN_LINK3" />Қызмет көрсету шарттарына<ph name="END_LINK3" /> сәйкес техникалық мәселелерді шешу және қызметтерімізді жақсарту үшін пайдаланылады.</translation>
 <translation id="1887850431809612466">Жабдық нұсқасы</translation>
 <translation id="1904932688895783618">Басқа да пайдалы ресурстар:</translation>
 <translation id="1905710495812624430">Максималды рұқсат етілетін әрекеттер шегінен асып кетті.</translation>
@@ -152,7 +152,7 @@
 <translation id="2240366984605217732">Пернетақта форматын ауыстырғыш</translation>
 <translation id="225692081236532131">Белсендіру күйі</translation>
 <translation id="2271469253353559191">Қараңғы режим кестесі</translation>
-<translation id="2276999893457278469">Үздік анықтамалық мазмұн</translation>
+<translation id="2276999893457278469">Үздік анықтамалық контент</translation>
 <translation id="2287186687001756809">Қолжетімді суреттер жоқ. Суреттер қосу үшін <ph name="LINK" /> сайтына өтіңіз.</translation>
 <translation id="2307344026739914387">Ағымдағы кілттер жұбын пайдалану</translation>
 <translation id="2320295602967756579">Жарық режимді қосу</translation>
@@ -172,7 +172,7 @@
 <translation id="2446553403094072641">Жылжымалы үтір дәлдігі</translation>
 <translation id="2448312741937722512">Түрі</translation>
 <translation id="2461822463642141190">Қазіргі</translation>
-<translation id="248546197012830854">Құрылғы офлайн режимде. Анықтамалық мазмұнды көру үшін Wi-Fi желісіне қосылыңыз.</translation>
+<translation id="248546197012830854">Құрылғы офлайн режимде. Анықтамалық контентті көру үшін Wi-Fi желісіне қосылыңыз.</translation>
 <translation id="2491955442992294626">Басқа терезе ашық тұрған кезде, пернетақта тексерілмейді.</translation>
 <translation id="2493126929778606526">Сіздің ең әдемі фотосуреттеріңіз автоматты түрде таңдалады</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -182,7 +182,7 @@
 <translation id="2517472476991765520">Іздеу</translation>
 <translation id="2526590354069164005">Жұмыс үстелі</translation>
 <translation id="253029298928638905">Қайта қосылуда…</translation>
-<translation id="2533048460510040082">Ұсынылған анықтамалық мазмұн</translation>
+<translation id="2533048460510040082">Ұсынылған анықтамалық контент</translation>
 <translation id="2536159006530886390">Интернетке қосыла алмай жатыр.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> сынағы жүруде…</translation>
 <translation id="2584559707064218956">Реттеу үшін "Параметрлер" бөліміне өтіңіз.</translation>
@@ -210,7 +210,7 @@
 <translation id="2926057806159140518">Пайдаланушы аты мен құпия сөзді енгізіңіз немесе QR кодын сканерлеңіз.</translation>
 <translation id="2940811910881150316">Құрылғыны сынау мүмкін емес. Сынау үшін қақпақты қайта ашыңыз.</translation>
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
-<translation id="3009958530611748826">Сканерленген мазмұн сақталатын қалтаны таңдаңыз</translation>
+<translation id="3009958530611748826">Сканерленген контент сақталатын қалтаны таңдаңыз</translation>
 <translation id="3017079585324758401">Фон</translation>
 <translation id="3027578600144895987">Камераны жабу</translation>
 <translation id="3031560714565892478">Бұл — бейнекамера.</translation>
@@ -831,7 +831,7 @@
 <translation id="885701979325669005">Сақтау</translation>
 <translation id="8863170912498892583">Қараңғы режимді қосу</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" сөзіне қандай <ph name="INTENT" /> берілетінін тағы басқа мүмкіндіктерді көріңіз</translation>
-<translation id="8864415976656252616">Ұсынылған мазмұн жоқ. Үздік анықтамалық мазмұнды көріңіз.</translation>
+<translation id="8864415976656252616">Ұсынылған контент жоқ. Үздік анықтамалық контентды көріңіз.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Бұл — планшет.</translation>
 <translation id="8881098542468797602">Тексеріс сәтті аяқталды.</translation>

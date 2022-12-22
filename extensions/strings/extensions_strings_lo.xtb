@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">ແພັກເກດໃຊ້ບໍ່ໄດ້: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">ປິ່ນໜ້າໃສ່ສິ່ງແວດລ້ອມ</translation>
 <translation id="1196338895211115272">ສົ່ງປຸ່ມສ່ວນຕົວອອກບໍ່ສໍາເລັດ.</translation>
+<translation id="132960226125594336">ບໍ່ສາມາດໂຫຼດ '<ph name="RELATIVE_PATH" />' ສຳລັບສະຄຣິບເນື້ອຫາໄດ້ ເນື່ອງຈາກມັນມີຂະໜາດເກີນຂະໜາດສະຄຣິບສູງສຸດ ຫຼື ຂະໜາດສະຄຣິບເນື້ອຫາຮວມສູງສຸດຂອງສ່ວນຂະຫຍາຍ.</translation>
 <translation id="1420684932347524586">ຢະ! ສ້າງລະຫັດສ່ວນຕົວ RSA ​ແບບສຸ່ມບໍ່ສໍາເລັດ.</translation>
 <translation id="1445572445564823378">ສ່ວນຂະຫຍາຍນີ້ກໍາລັງຊ້າລົງ <ph name="PRODUCT_NAME" />. ທ່ານຄວນຈະປິດໃຊ້ງານມັນ​ເພື່ອ​ກູ້​ຄືນ​ການ​ໃຊ້​ງານ​ຂອງ <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL ບໍ່ຮອງຮັບ.</translation>

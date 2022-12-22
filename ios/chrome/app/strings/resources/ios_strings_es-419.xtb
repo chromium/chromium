@@ -149,6 +149,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2080769225927880590">Accede con una cuenta válida</translation>
+<translation id="2090878303988764231">Accede para administrar el contenido que ves</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
@@ -975,6 +976,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8197543752516192074">Traducir página</translation>
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">El administrador controla esta configuración.</translation>
+<translation id="821809831108207540">Para personalizar tu feed de Descubre y Chrome, accede a tu cuenta y activa la sincronización.</translation>
 <translation id="8225985093977202398">Imágenes y archivos almacenados en caché</translation>
 <translation id="8237382152611443140">Ve a Autorrelleno de contraseñas en Configuración.</translation>
 <translation id="8261506727792406068">Borrar</translation>
@@ -1097,6 +1099,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9157836665414082580">Suprimir diálogos</translation>
 <translation id="9177438225260810839">Buscar pestañas abiertas</translation>
 <translation id="9188680907066685419">Salir de la cuenta administrada</translation>
+<translation id="9193147658040604536">Arrastra la pestaña aquí para fijarla</translation>
 <translation id="9200875785104711666">Hace <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Buscar pestañas…</translation>

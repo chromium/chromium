@@ -1137,7 +1137,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="2023167225947895179">Det kan være lett å gjette seg til PIN-koden</translation>
 <translation id="202352106777823113">Nedlastingen tok for lang tid og ble stoppet av nettverket.</translation>
 <translation id="2024195579772565064">Slett søkemotoren</translation>
-<translation id="2025632980034333559"><ph name="APP_NAME" /> har fått programstopp. Klikk på denne ballongen for å laste inn denne utvidelsen på nytt.</translation>
+<translation id="2025632980034333559"><ph name="APP_NAME" /> har krasjet. Klikk på denne ballongen for å laste inn denne utvidelsen på nytt.</translation>
 <translation id="2028449514182362831">Funksjoner som krever bevegelsessensorer, kommer ikke til å virke</translation>
 <translation id="202918510990975568">Skriv inn passordet ditt for å konfigurere sikkerhet og pålogging</translation>
 <translation id="2030455719695904263">Styreflate</translation>
@@ -1265,6 +1265,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="212862741129535676">Utnyttelsesgrad for frekvenstilstand</translation>
 <translation id="212876957201860463">Forbereder konfigureringen av mobilenheten din …</translation>
 <translation id="2131077480075264">Kunne ikke installere «<ph name="APP_NAME" />» fordi det ikke er tillatt av «<ph name="IMPORT_NAME" />»</translation>
+<translation id="2133857665503360653">Prøv å laste ned <ph name="FILE_NAME" /> på nytt</translation>
 <translation id="21354425047973905">Skjul PIN-koder</translation>
 <translation id="2135456203358955318">Dokket lupe</translation>
 <translation id="2135787500304447609">&amp;Fortsett</translation>
@@ -2850,11 +2851,13 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3584169441612580296">lese og endre bilder, musikk og andre medier fra datamaskinen din</translation>
 <translation id="3586787825263265024">Appen <ph name="APPLICATION_NAME" /> krever at OneDrive er tilgjengelig.</translation>
 <translation id="3586806079541226322">Kan ikke åpne denne filen</translation>
+<translation id="3587438013689771191">Finn ut mer om <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3588790464166520201">Nettsteder som har lov til å installere betalingsbehandlere</translation>
 <translation id="3589766037099229847">Usikkert innhold er blokkert</translation>
 <translation id="3590194807845837023">Lås opp profilen og start på nytt</translation>
 <translation id="3590295622232282437">Starter en administrert økt.</translation>
+<translation id="3591057288287063271">Behold <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Les mer</translation>
 <translation id="3593152357631900254">Aktiver modusen Fuzzy pinyin</translation>
 <translation id="3593965109698325041">Begrensninger for sertifikatnavn</translation>
@@ -3756,6 +3759,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="442397852638519243"><ph name="USER_NAME" />, administratoren din krever at du endrer passord.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enheter lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Disse rapportene kan blant annet inneholde informasjon om når ChromeOS krasjer, hvilke funksjoner som var i bruk, og hvor mye minne som vanligvis var i bruk.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i innstillingene for Chrome-enheten. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">Slett <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">For å komme i gang, sørg for at USB- eller Bluetooth-bryteren er koblet til Chromebooken. Du kan også bruke tastaturtaster.</translation>
 <translation id="4426508677408162512">Alle bokmerker</translation>
 <translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
@@ -4026,6 +4030,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4666472247053585787">Se varsler fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">Flere apper</translation>
 <translation id="4667027203988048332">Disse dataene brukes:</translation>
+<translation id="4672759829555593783">Åpne <ph name="FILE_NAME" /> nå</translation>
 <translation id="46733273239502219">Frakoblede data i installerte apper blir også slettet</translation>
 <translation id="4673442866648850031">Åpne pekepennverktøyene når pekepennen fjernes</translation>
 <translation id="4675065861091108046">Du har tidligere valgt å tillate alle utvidelser på <ph name="ORIGIN" /></translation>
@@ -4610,7 +4615,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5243522832766285132">Prøv på nytt om en liten stund</translation>
 <translation id="5244474230056479698">Synkroniserer til <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">Kom i gang med en skolekonto</translation>
-<translation id="5246282308050205996"><ph name="APP_NAME" /> har fått programstopp. Klikk på denne ballongen for å starten programmet på nytt.</translation>
+<translation id="5246282308050205996"><ph name="APP_NAME" /> har krasjet. Klikk på denne ballongen for å starten programmet på nytt.</translation>
 <translation id="5247051749037287028">Visningsnavn (valgfritt)</translation>
 <translation id="5249624017678798539">Nettleseren krasjet før nedlastingen var ferdig.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> bruker posisjonen din for å gi deg lokalt innhold. Du kan endre dette i <ph name="SETTINGS_LINK" />.</translation>
@@ -4638,6 +4643,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5268373933383932086">Din side – på din måte</translation>
 <translation id="5269977353971873915">Utskrift mislyktes</translation>
 <translation id="5273806377963980154">Rediger nettstedets nettadresse</translation>
+<translation id="5273966423195882879">Farge basert på tema</translation>
 <translation id="5275084684151588738">Brukerordlister</translation>
 <translation id="5275100789567222478">Slå på kun når batteriet er på <ph name="PERCENT" /> % eller lavere</translation>
 <translation id="5275338516105640560">Knapp for lagret fanegruppe</translation>
@@ -5916,6 +5922,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6465841119675156448">Uten internett</translation>
 <translation id="6466258437571594570">Nettsteder blokkeres fra å forstyrre deg når de ber om å få sende deg varsler</translation>
 <translation id="6466988389784393586">&amp;Åpne alle bokmerker</translation>
+<translation id="6467230443178397264">Skann <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimaliser fullskjermvideoer</translation>
 <translation id="6467377768028664108">Da kan <ph name="DEVICE_TYPE" /> gjøre følgende:</translation>
 <translation id="6468485451923838994">Skrifter</translation>
@@ -6663,6 +6670,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7149893636342594995">Siste døgn</translation>
 <translation id="7152478047064750137">Denne utvidelsen krever ingen spesielle tillatelser</translation>
 <translation id="7154130902455071009">endre startsiden din til: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">Konverter bildet til tekst</translation>
 <translation id="7159953856712257647">Installert som standard</translation>
 <translation id="7160182524506337403">Nå kan du se varsler på telefonen</translation>
 <translation id="7163202347044721291">Bekrefter aktiveringskoden …</translation>
@@ -6924,6 +6932,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7412226954991670867">GPU-minne</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Konfigureringen er fullført</translation>
+<translation id="7416091793702109803">Gjennomgå <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Vilkårene for bruk kan ikke lastes inn. Kontroller nettverkstilkoblingen, og prøv på nytt.</translation>
 <translation id="7416362041876611053">Ukjent nettverksfeil.</translation>
 <translation id="741906494724992817">Denne appen krever ingen spesielle tillatelser.</translation>

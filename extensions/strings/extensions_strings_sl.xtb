@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Paket je neveljaven: »<ph name="ERROR_CODE" />«.</translation>
 <translation id="1140871961407805696">Hrbtni</translation>
 <translation id="1196338895211115272">Zasebnega ključa ni bilo mogoče izvoziti.</translation>
+<translation id="132960226125594336">Datoteke »<ph name="RELATIVE_PATH" />« ni bilo mogoče naložiti za skript vsebine, saj bi s tem bila presežena največja dovoljena velikost skripta ali največjo dovoljeno skupno velikost skrišta vsebine za razširitev.</translation>
 <translation id="1420684932347524586">Ups! Ni bilo mogoče generirati naključnega zasebnega ključa RSA.</translation>
 <translation id="1445572445564823378">Ta razširitev upočasnjuje <ph name="PRODUCT_NAME" />. Onemogočite jo, če želite obnoviti delovanje storitve <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL ni podprt.</translation>

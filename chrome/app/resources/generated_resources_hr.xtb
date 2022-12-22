@@ -105,6 +105,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1087965115100412394">Ne dopuštaj web-lokacijama povezivanje s MIDI uređajima</translation>
 <translation id="1088654056000736875">Chrome uklanja štetni softver s vašeg računala...</translation>
 <translation id="1088659085457112967">Pokreni način čitača</translation>
+<translation id="1089407731410758060">Promijeni temu</translation>
 <translation id="1090126737595388931">Nema pokrenutih pozadinskih aplikacija</translation>
 <translation id="1090541560108055381">Prije uparivanja provjerite je li ovaj kôd isti na oba uređaja</translation>
 <translation id="1091767800771861448">Pritisnite tipku ESCAPE za preskakanje (samo neslužbene međuverzije).</translation>
@@ -924,6 +925,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="18260074040409954">Spremljene zaporke možete koristiti na bilo kojem uređaju. Spremaju se u <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Sinkronizirajte svoje oznake, zaporke, povijest i ostalo u pregledniku Chrome</translation>
 <translation id="1826516787628120939">Provjera</translation>
+<translation id="1827504459960247692">Naziv žarišne točke</translation>
 <translation id="1828378091493947763">Ovaj dodatak nije podržan na ovom uređaju</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Otvori sve}=1{&amp;Otvori oznaku}one{&amp;Otvori sve ({COUNT})}few{&amp;Otvori sve ({COUNT})}other{&amp;Otvori sve ({COUNT})}}</translation>
 <translation id="1828901632669367785">Ispis pomoću dijaloškog okvira sustava...</translation>
@@ -1233,6 +1235,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2101225219012730419">Verzija:</translation>
 <translation id="2102396546234652240">Ne dopuštaj web-lokacijama korištenje vašeg mikrofona</translation>
 <translation id="2102495993840063010">Android aplikacije</translation>
+<translation id="2104166991923847969">Automatski isključi žarišnu točku</translation>
 <translation id="2105809836724866556">Skriveno: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonski broj}one{# telefonski broj}few{# telefonska broja}other{# telefonskih brojeva}}</translation>
 <translation id="211144231511833662">Izbriši vrste</translation>
@@ -1814,6 +1817,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2616366145935564096">pročitati i promijeniti vaše podatke na <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Postavljanje dijeljenja u blizini</translation>
 <translation id="2620215283731032047">Datoteka <ph name="FILE_NAME" /> ne može se sigurno preuzeti.</translation>
+<translation id="2620245777360407679">Uređaji koji su trenutačno povezani sa žarišnom točkom</translation>
 <translation id="2620436844016719705">Sustav</translation>
 <translation id="262154978979441594">Uvježbavanje glasovnog modela Google asistenta</translation>
 <translation id="26224892172169984">Ne dopusti nijednoj web-lokaciji rukovanje protokolima</translation>
@@ -7136,6 +7140,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7614260613810441905">Prikaži upit kada web-lokacija želi urediti datoteke ili mape na uređaju (preporučeno)</translation>
 <translation id="761530003705945209">Sigurnosno kopiranje na Google disku. Jednostavno vratite svoje podatke ili promijenite uređaj u bilo kojem trenutku. Sigurnosna kopija uključuje podatke aplikacija. Sigurnosna kopija prenosi se na Google i kriptira pomoću zaporke vašeg Google računa.</translation>
 <translation id="7615365294369022248">Došlo je do pogreške prilikom dodavanja računa</translation>
+<translation id="7615807797520072741">Vrati na klasični Chrome</translation>
 <translation id="7616214729753637086">Registriranje uređaja...</translation>
 <translation id="7617263010641145920">Uključivanje Trgovine Play</translation>
 <translation id="7617648809369507487">Koristi tiše slanje poruka</translation>
@@ -8445,6 +8450,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Premjesti karticu u neki drugi prozor}one{Premjesti kartice u neki drugi prozor}few{Premjesti kartice u neki drugi prozor}other{Premjesti kartice u neki drugi prozor}}</translation>
 <translation id="8805140816472474147">Potvrdite postavke sinkronizacije da biste pokrenuli sinkronizaciju.</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> može ponovo otvoriti slučajno zatvorene kartice</translation>
+<translation id="8807588541160250261">Kada nema povezanih uređaja</translation>
 <translation id="8807632654848257479">Stabilno</translation>
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Mačka</translation>

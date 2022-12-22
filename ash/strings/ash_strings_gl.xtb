@@ -37,6 +37,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1175572348579024023">Desprazarse</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Eliminar</translation>
+<translation id="1182225749592316782">Desta forma, terán acceso todas as aplicacións e sitios web con permiso de acceso á cámara e ao micrófono</translation>
 <translation id="1183863904939664422">Non me interesa esta suxestión</translation>
 <translation id="118437560755358292">Escribe o contrasinal ou o PIN como medida de seguranza adicional</translation>
 <translation id="118532027333893379">Toca calquera parte para facer unha captura da pantalla completa</translation>
@@ -101,7 +102,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1447641497144572814">Inicio do protector de pantalla</translation>
 <translation id="1455242230282523554">Mostrar a configuración do idioma</translation>
 <translation id="1460620680449458626">O volume está silenciado.</translation>
-<translation id="14648076227129703">Desta forma, poden acceder á cámara <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
+<translation id="14648076227129703">Desta forma, poderán acceder á cámara <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="146902737843070955">O teu administrador solicitou este cambio</translation>
 <translation id="147310119694673958">Batería do teléfono: <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -163,7 +164,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1797271123677381264">Esquecín o contrasinal</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="1812997170047690955">Que se mostra na miña pantalla?</translation>
-<translation id="1816896987747843206">Desta forma, poden acceder á cámara todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
+<translation id="1816896987747843206">Desta forma, poderán acceder á cámara todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
 <translation id="1823280932251546115">Bandexa de estado, hora: <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -462,6 +463,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3542066395059568317">Recibirás recomendacións para poder continuar coas túas actividades desde onde as deixaches. Podes facer clic co botón dereito para quitar as recomendacións.</translation>
 <translation id="3552189655002856821">A wifi está desactivada</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />(fixouse)</translation>
+<translation id="3558768885091059911">Queres activar o acceso á cámara e ao micrófono?</translation>
 <translation id="3560174576767922131">Gravar vídeo</translation>
 <translation id="3563775809269155755">Activar zona wifi</translation>
 <translation id="3566240529365775567">Abriuse hai uns intres</translation>
@@ -605,14 +607,14 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4316910396681052118">TODAS AS APLICACIÓNS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">O atallo Control + Alt + Frecha arriba cambiou. Para usar a tecla Inicio, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha esquerda.</translation>
-<translation id="4324840740119394760">Desta forma, poden acceder á cámara <ph name="APP_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
+<translation id="4324840740119394760">Desta forma, poderán acceder á cámara <ph name="APP_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
 <translation id="4333628967105022692">Non pode utilizarse Lacros se hai varios usuarios coa sesión iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4371348193907997655">Configuración da emisión</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; intensidade do sinal: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4379531060876907730">Estas son as túas ferramentas de lapis óptico</translation>
-<translation id="4381031910344220229">Desta forma, poden acceder ao micrófono <ph name="APP_NAME" /> e todas as aplicacións e sitios web con permiso de acceso ao micrófono</translation>
+<translation id="4381031910344220229">Desta forma, poderán acceder ao micrófono <ph name="APP_NAME" /> e todas as aplicacións e sitios web con permiso de acceso ao micrófono</translation>
 <translation id="4389184120735010762">Premiches o atallo de teclado para a lupa ancorada. Queres activala?</translation>
 <translation id="439598569299422042">En pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Non se puido gardar a gravación da pantalla</translation>
@@ -872,6 +874,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5763928712329149804">O modo Grupo de andeis está desactivado.</translation>
 <translation id="576453121877257266">A función Luz nocturna está activada.</translation>
 <translation id="5769373120130404283">Pantalla de privacidade</translation>
+<translation id="5773950591113557721">Desta forma, terán acceso <ph name="APP_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara e ao micrófono</translation>
 <translation id="5777841717266010279">Queres deter o uso compartido da pantalla?</translation>
 <translation id="5779721926447984944">Ficheiros fixados</translation>
 <translation id="5788127256798019331">Ficheiros de Play</translation>
@@ -1059,6 +1062,7 @@ Nova instalación</translation>
 <translation id="6787595647772650851">Restaurar última sesión</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6801878137098616817">Editouse recentemente</translation>
+<translation id="6802687695197837794">Desta forma, terán acceso <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara e ao micrófono</translation>
 <translation id="6803622936009808957">Non se puideron replicar as pantallas porque non se atopou ningunha resolución compatible. No seu lugar accedeuse ao escritorio ampliado.</translation>
 <translation id="6812232930908427253">Non se puido gardar o escritorio. Hai demasiadas ventás ou pestanas.</translation>
 <translation id="6818242057446442178">Retroceder unha palabra</translation>
@@ -1091,6 +1095,7 @@ Nova instalación</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6972754398087986839">Introdución</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">Activar acceso</translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
 <translation id="698231206551913481">En canto se borre este usuario, eliminaranse permanentemente os ficheiros e os datos locais asociados con el.</translation>
 <translation id="7005239792648594238">Abre unha aplicación para comezar</translation>
@@ -1151,7 +1156,7 @@ Nova instalación</translation>
 <translation id="7360036564632145207">Para optimizar o rendemento, podes cambiar a opción de configuración da protección para periféricos contra o acceso aos datos</translation>
 <translation id="736045644501761622">Definir estilo e fondo de pantalla</translation>
 <translation id="7371404428569700291">Ventá de gravación</translation>
-<translation id="737315737514430195">Desta forma, poden acceder ao micrófono todas as aplicacións e sitios web con permiso de acceso ao micrófono</translation>
+<translation id="737315737514430195">Desta forma, poderán acceder ao micrófono todas as aplicacións e sitios web con permiso de acceso ao micrófono</translation>
 <translation id="7377169924702866686">O bloqueo de maiúsculas está activado.</translation>
 <translation id="7377481913241237033">Conectar cun código</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar a zona que queiras gravar</translation>
@@ -1218,7 +1223,7 @@ Nova instalación</translation>
 <translation id="7671610481353807627">As aplicacións están ordenadas por cor</translation>
 <translation id="7672095158465655885">Conexión establecida con <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Definiuse a entrada por cámara como <ph name="CAMERA_NAME" />.</translation>
-<translation id="7689817529363080918">Desta forma, poden acceder ao micrófono <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e sitios web con permiso de acceso ao micrófono</translation>
+<translation id="7689817529363080918">Desta forma, poderán acceder ao micrófono <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e sitios web con permiso de acceso ao micrófono</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Engadir nova rede de telefonía móbil</translation>
 <translation id="7720400844887872976">Función activada ata esta hora: <ph name="TIME" /></translation>

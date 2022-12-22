@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">A következő csomag érvénytelen: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Hátlapi</translation>
 <translation id="1196338895211115272">A privát kulcs exportálása sikertelen.</translation>
+<translation id="132960226125594336">A(z) <ph name="RELATIVE_PATH" /> fájlt nem sikerült betölteni a tartalomszkripthez, mert túllépné a szkript maximális méretét vagy a bővítmény maximális tartalomszkript-méretét.</translation>
 <translation id="1420684932347524586">Ajjaj! Nem sikerült a véletlenszerű RSA privát kulcs generálása.</translation>
 <translation id="1445572445564823378">Ez a bővítmény lassítja a <ph name="PRODUCT_NAME" /> működését. Kapcsolja ki a <ph name="PRODUCT_NAME" /> teljesítményének visszaállításához.</translation>
 <translation id="1468038450257740950">A WebGL nem támogatott.</translation>

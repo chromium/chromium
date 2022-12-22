@@ -37,6 +37,7 @@
 <translation id="1175572348579024023">අනුචලන කරන්න</translation>
 <translation id="1178581264944972037">විරාමය</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
+<translation id="1182225749592316782">මෙය කැමරා සහ මයික්‍රෆෝන අවසර සහිත සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා ප්‍රවේශ වීමට ඉඩ දෙයි</translation>
 <translation id="1183863904939664422">මෙම යෝජනාව පිළිබඳ ලැදිකමක් නැත</translation>
 <translation id="118437560755358292">වැඩි ආරක්ෂාව සඳහා මුරපදය හෝ PIN ඇතුළු කරන්න</translation>
 <translation id="118532027333893379">පූර්ණ තිරය ග්‍රහණය කිරීමට ඕනෑම තැනක තට්ටු කරන්න</translation>
@@ -462,6 +463,7 @@
 <translation id="3542066395059568317">ඔබ නතර කළ තැනින් ඉදිරියට යාමට ඔබට නිර්දේශ පෙනෙනු ඇත. නිර්දේශ ඉවත් කිරීමට ඔබට දකුණු-ක්ලික් කළ හැකිය.</translation>
 <translation id="3552189655002856821">Wi-Fi ක්‍රියාවිරහිත කර ඇත</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> අමුණා ඇත</translation>
+<translation id="3558768885091059911">කැමරාව සහ මයික්‍රෆෝන ප්‍රවේශය ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="3560174576767922131">වීඩියෝව පටිගත කරන්න</translation>
 <translation id="3563775809269155755">හොට්ස්පොට් සබල කරන්න</translation>
 <translation id="3566240529365775567">මේ දැන් විවෘත කරන ලදි</translation>
@@ -871,6 +873,7 @@
 <translation id="5763928712329149804">Shelf Party ක්‍රියාවිරහිතයි.</translation>
 <translation id="576453121877257266">රාත්‍රී ආලෝකය සක්‍රීයයි.</translation>
 <translation id="5769373120130404283">පෞද්ගලිකත්ව තිරය</translation>
+<translation id="5773950591113557721">මෙය <ph name="APP_NAME" /> සහ කැමරා සහ මයික්‍රෆෝන අවසර සහිත සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා ප්‍රවේශ වීමට ඉඩ දෙයි</translation>
 <translation id="5777841717266010279">තිර හවුල්කිරීම නවතන්නද?</translation>
 <translation id="5779721926447984944">ඇමුණූ ගොනු</translation>
 <translation id="5788127256798019331">Play ගොනු</translation>
@@ -1058,6 +1061,7 @@
 <translation id="6787595647772650851">පසුගිය සැසිය ප්‍රතිසාධනය කරන්න</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6801878137098616817">මෑතදී සංස්කරණය කරන ලදී</translation>
+<translation id="6802687695197837794">මෙය <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, සහ කැමරා සහ මයික්‍රෆෝන අවසර සහිත සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා ප්‍රවේශ වීමට ඉඩ දෙයි</translation>
 <translation id="6803622936009808957">සහාය වන විසඳුම් හමු නොවුන නිසා ප්‍රදර්ශන කැඩපත්කරනය කළ නොහැකි විය. ඒ වෙනුවට දිගු කළ ඩෙස්ක්ටොප් එකට ඇතුළු විය.</translation>
 <translation id="6812232930908427253">මේසය සුරැකීමට නොහැකි විය. කවුළු හෝ ටැබ ඉතා වැඩි ගණනකි.</translation>
 <translation id="6818242057446442178">වචනයෙන් ආපසු</translation>
@@ -1090,6 +1094,7 @@
 <translation id="6965382102122355670">හරි</translation>
 <translation id="6972754398087986839">අරඹන්න</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">ප්‍රවේශය ක්‍රියාත්මක කරන්න</translation>
 <translation id="6981982820502123353">ප්‍රවේශ්‍යතාව</translation>
 <translation id="698231206551913481">මෙම පරිශීලකයා ඉවත් කළ විට මෙම පරිශීලක හා සම්බන්ධිත සියලු ගොනු සහ ස්ථානීය දත්ත ස්ථිරවම මකනු ඇත.</translation>
 <translation id="7005239792648594238">ආරම්භ කිරීමට යෙදුමක් විවෘත කරන්න</translation>

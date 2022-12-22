@@ -37,6 +37,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1178581264944972037">Suspendre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
+<translation id="1182225749592316782">L'accès est accordé à l'ensemble des sites Web et applis ayant l'autorisation d'accéder à l'appareil photo et au micro</translation>
 <translation id="1183863904939664422">Cette suggestion ne m'intéresse pas</translation>
 <translation id="118437560755358292">Veuillez saisir votre mot de passe ou votre code d'accès pour renforcer la sécurité</translation>
 <translation id="118532027333893379">Appuyez n'importe où pour capturer tout l'écran</translation>
@@ -462,6 +463,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3542066395059568317">Des recommandations s'affichent pour vous proposer de reprendre où vous avez arrêté. Vous pouvez les supprimer en effectuant un clic droit.</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> a été épinglé</translation>
+<translation id="3558768885091059911">Activer l'accès à la caméra et au micro ?</translation>
 <translation id="3560174576767922131">Enregistrer une vidéo</translation>
 <translation id="3563775809269155755">Activer le point d'accès</translation>
 <translation id="3566240529365775567">Ouvert à l'instant</translation>
@@ -870,6 +872,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5763928712329149804">Shelf Party est désactivé.</translation>
 <translation id="576453121877257266">Éclairage nocturne activé.</translation>
 <translation id="5769373120130404283">Écran de confidentialité</translation>
+<translation id="5773950591113557721">L'accès est accordé <ph name="APP_NAME" />, ainsi qu'à l'ensemble des sites Web et applis ayant l'autorisation d'accéder à l'appareil photo et au micro</translation>
 <translation id="5777841717266010279">Arrêter le partage d'écran ?</translation>
 <translation id="5779721926447984944">Fichiers épinglés</translation>
 <translation id="5788127256798019331">Fichiers Play</translation>
@@ -1057,6 +1060,7 @@ Nouvelle installation</translation>
 <translation id="6787595647772650851">Restaurer la dernière session</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6801878137098616817">Modifié récemment</translation>
+<translation id="6802687695197837794">L'accès est accordé à <ph name="APP1_NAME" /> et <ph name="APP2_NAME" />, ainsi qu'à l'ensemble des sites Web et applis ayant l'autorisation d'accéder à l'appareil photo et au micro</translation>
 <translation id="6803622936009808957">Impossible de dupliquer les écrans, car aucune résolution compatible n'a été détectée. Le bureau étendu a été activé à la place.</translation>
 <translation id="6812232930908427253">Impossible d'enregistrer le bureau. Il y a trop de fenêtres ou d'onglets.</translation>
 <translation id="6818242057446442178">Reculer par mot</translation>
@@ -1089,6 +1093,7 @@ Nouvelle installation</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Démarrer</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">Activer l'accès</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">L'ensemble des données locales et des fichiers associés à cet utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
 <translation id="7005239792648594238">Ouvrez une appli pour commencer</translation>

@@ -149,6 +149,7 @@
 <translation id="2074131957428911366">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2080769225927880590">עליך להיכנס באמצעות חשבון תקין</translation>
+<translation id="2090878303988764231">כדי לנהל את התוכן המוצג, צריך להיכנס לחשבון</translation>
 <translation id="2103075008456228677">‏פתיחת history.google.com</translation>
 <translation id="21133533946938348">הצמדת כרטיסייה</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> פריטים הועברו</translation>
@@ -975,6 +976,7 @@
 <translation id="8197543752516192074">תרגום הדף</translation>
 <translation id="8205564605687841303">ביטול</translation>
 <translation id="8206354486702514201">הגדרה זו נאכפת על ידי מנהל המערכת שלך.</translation>
+<translation id="821809831108207540">‏כדי להתאים אישית את הפיד ב-Discover ואת Chrome, צריך להיכנס לחשבון ולהפעיל את הסנכרון.</translation>
 <translation id="8225985093977202398">תמונות וקבצים במטמון</translation>
 <translation id="8237382152611443140">פותחים את הגדרות המילוי האוטומטי של סיסמאות</translation>
 <translation id="8261506727792406068">מחיקה</translation>
@@ -1102,6 +1104,7 @@
 <translation id="9219154867334666734">חיפוש כרטיסיות…</translation>
 <translation id="9223358826628549784">דוח הקריסה נשלח.</translation>
 <translation id="941747855997058526">בחירת סיסמה…</translation>
+<translation id="948048872540558976">יצירת כרטיסייה חדשה</translation>
 <translation id="952704832371081537">ביטול</translation>
 <translation id="953008885340860025">‏יצאת מהחשבון ב-Chrome</translation>
 <translation id="959066944189734975">בחרת לעקוב אחר <ph name="CHANNEL_NAME" /></translation>

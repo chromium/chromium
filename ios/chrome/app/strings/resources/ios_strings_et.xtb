@@ -149,6 +149,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2074131957428911366">Jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> saate igal ajal valida, mida sünkroonida.</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="2080769225927880590">Logige sisse kehtiva kontoga</translation>
+<translation id="2090878303988764231">Kuvatud sisu haldamiseks logige sisse</translation>
 <translation id="2103075008456228677">Ava history.google.com</translation>
 <translation id="21133533946938348">Kinnita vaheleht</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> üksust on teisaldatud</translation>
@@ -975,6 +976,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8197543752516192074">Tõlgi leht</translation>
 <translation id="8205564605687841303">Tühista</translation>
 <translation id="8206354486702514201">Selle seade jõustas teie administraator.</translation>
+<translation id="821809831108207540">Oma Discoveri voo ja Chrome'i isikupärastamiseks logige sisse ning lülitage sisse sünkroonimine.</translation>
 <translation id="8225985093977202398">Vahem. salv. kujut. ja failid</translation>
 <translation id="8237382152611443140">Avage funktsiooni AutoFill Password menüü Settings</translation>
 <translation id="8261506727792406068">Kustuta</translation>
@@ -1097,6 +1099,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9157836665414082580">Blokeeri dialoogid</translation>
 <translation id="9177438225260810839">Otsige avatud vahelehtede hulgast</translation>
 <translation id="9188680907066685419">Hallatud kontolt väljalogimine</translation>
+<translation id="9193147658040604536">Vahelehe kinnitamiseks lohistage siia</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> p tagasi</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Otsimine vahelehtedelt …</translation>

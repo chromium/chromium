@@ -105,6 +105,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1087965115100412394">Nemoj dozvoliti web lokacijama povezivanje s MIDI uređajima</translation>
 <translation id="1088654056000736875">Chrome uklanja štetni softver s vašeg računara…</translation>
 <translation id="1088659085457112967">Pokreni način rada za čitanje</translation>
+<translation id="1089407731410758060">Promijeni temu</translation>
 <translation id="1090126737595388931">Nema aplikacija koje rade u pozadini</translation>
 <translation id="1090541560108055381">Prije uparivanja, provjerite je li ovaj kôd prikazan na oba uređaja</translation>
 <translation id="1091767800771861448">Pritisnite tipku ESCAPE za preskakanje (samo neslužbene međuverzije).</translation>
@@ -932,6 +933,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="18260074040409954">Sačuvane lozinke možete koristiti na bilo kojem uređaju. Pohranjuju se u <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Sinhronizirajte oznake, lozinke, historiju i druge podatke preglednika Chrome</translation>
 <translation id="1826516787628120939">Provjera</translation>
+<translation id="1827504459960247692">Naziv žarišne točke</translation>
 <translation id="1828378091493947763">Dodatak nije podržan na ovom uređaju.</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Otvori sve}=1{&amp;Otvori oznaku}one{&amp;Otvori sve ({COUNT})}few{&amp;Otvori sve ({COUNT})}other{&amp;Otvori sve ({COUNT})}}</translation>
 <translation id="1828901632669367785">Štampaj pomoću sistemskog dijaloškog okvira...</translation>
@@ -1242,6 +1244,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2101225219012730419">Verzija:</translation>
 <translation id="2102396546234652240">Nemoj dozvoliti web lokacijama korištenje mikrofona</translation>
 <translation id="2102495993840063010">Android aplikacije</translation>
+<translation id="2104166991923847969">Automatski isključi žarišnu točku</translation>
 <translation id="2105809836724866556">Skriveno: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Broj telefona}one{# broj telefona}few{# broja telefona}other{# brojeva telefona}}</translation>
 <translation id="211144231511833662">Obrši vrste</translation>
@@ -1825,6 +1828,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2616366145935564096">Čitati i mijenjati vaše podatke na web lokaciji <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Postavite Dijeljenje u blizini</translation>
 <translation id="2620215283731032047">Nije moguće sigurno preuzeti fajl <ph name="FILE_NAME" />.</translation>
+<translation id="2620245777360407679">Uređaji koji su trenutačno povezani sa žarišnom točkom</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="262154978979441594">Naučite Google Asistenta model glasa</translation>
 <translation id="26224892172169984">Nemojte dozvoliti nijednoj stranici da upravlja protokolima</translation>
@@ -4651,7 +4655,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5268373933383932086">Vaša stranica, na vaš način</translation>
 <translation id="5269977353971873915">Štampanje nije uspjelo</translation>
 <translation id="5273806377963980154">Uredite URL web lokacije</translation>
-<translation id="5273966423195882879">Boja na temelju teme</translation>
+<translation id="5273966423195882879">Boja zasnovana na temi</translation>
 <translation id="5275084684151588738">Korisnikovi rječnici</translation>
 <translation id="5275100789567222478">Uključi samo kada je baterija na <ph name="PERCENT" />% ili niže</translation>
 <translation id="5275338516105640560">Dugme sačuvane grupe kartica</translation>
@@ -6252,7 +6256,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6770042910635026163">Web lokacije koje posjećujete, koje definiraju vaša interesovanja</translation>
 <translation id="6770602306803890733">Poboljšava vašu i svačiju sigurnost na webu</translation>
 <translation id="6771503742377376720">Izdavač je potvrde</translation>
-<translation id="6774710250118040929">Dodavanje nove zaporke</translation>
+<translation id="6774710250118040929">Dodajte novu lozinku</translation>
 <translation id="6775163072363532304">Ovdje će se prikazati dostupni uređaji.</translation>
 <translation id="677646486571529447">Dodaj napomenu</translation>
 <translation id="6776729248872343918">Omogući Brzo uparivanje</translation>
@@ -7151,6 +7155,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7614260613810441905">Pitaj kada web lokacija želi urediti fajlove ili foldere na mom uređaju (preporučeno)</translation>
 <translation id="761530003705945209">Izradite sigurnosne kopije na Google disku. Jednostavno u svakom trenutku vratite svoje podatke ili promijenite uređaj. Vaša sigurnosna kopija obuhvata podatke o aplikacijama. Vaše sigurnosne kopije se otpremaju na Google i šifriraju pomoću lozinke Google računa.</translation>
 <translation id="7615365294369022248">Došlo je do greške prilikom dodavanja računa</translation>
+<translation id="7615807797520072741">Vrati na klasični Chrome</translation>
 <translation id="7616214729753637086">Prijava uređaja...</translation>
 <translation id="7617263010641145920">Uključite Play trgovinu</translation>
 <translation id="7617648809369507487">Koristite tiše poruke</translation>
@@ -8460,6 +8465,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Premjesti karticu u drugi prozor}one{Premjesti kartice u drugi prozor}few{Premjesti kartice u drugi prozor}other{Premjesti kartice u drugi prozor}}</translation>
 <translation id="8805140816472474147">Potvrdite postavke za sinhronizaciju da biste je pokrenuli.</translation>
 <translation id="8806680466228877631">Prečicom <ph name="SHORTCUT" /> možete ponovo otvoriti kartice koje ste slučajno zatvorili</translation>
+<translation id="8807588541160250261">Kada nema povezanih uređaja</translation>
 <translation id="8807632654848257479">Stabilno</translation>
 <translation id="8808478386290700967">Web trgovina</translation>
 <translation id="8808686172382650546">Mačka</translation>

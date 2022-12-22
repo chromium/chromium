@@ -1272,6 +1272,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="212862741129535676">Nýtingarhlutfall tíðnistöðu</translation>
 <translation id="212876957201860463">Undirbýr uppsetningu farsíma...</translation>
 <translation id="2131077480075264">Ekki er hægt að setja „<ph name="APP_NAME" />“ upp vegna þess að „<ph name="IMPORT_NAME" />“ leyfir það ekki</translation>
+<translation id="2133857665503360653">Reyna aftur að sækja <ph name="FILE_NAME" /></translation>
 <translation id="21354425047973905">Fela PIN-númer</translation>
 <translation id="2135456203358955318">Stækkunargler í föstum glugga</translation>
 <translation id="2135787500304447609">Halda áf&amp;ram</translation>
@@ -1317,6 +1318,8 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2165102982098084499">Þú tengdir þessi tæki með því að skanna QR-kóða.</translation>
 <translation id="2165177462441582039">Veldu hversu lengi merking á að vera á hverju atriði</translation>
 <translation id="2166369534954157698">Kæmi ný öxi hér ykist þjófum nú bæði víl og ádrepa</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Tækinu (raðnúmer: <ph name="SERIAL_NUMBER" />) var læst.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Chrome-tækjastjórnun með <ph name="MS_AD_NAME" /> er ekki studd lengur. Notaðu annað tæki til að skrá þig inn eða hafðu samband við stjórnanda tækisins.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Skrá samt inn</translation>
 <translation id="2173302385160625112">Athugaðu nettenginguna</translation>
 <translation id="2173801458090845390">Bæta úthlutunarauðkenni við þetta tæki</translation>
@@ -2854,11 +2857,13 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3584169441612580296">Lesa og breyta myndum, tónlist og öðru margmiðlunarefni í tölvunni þinni</translation>
 <translation id="3586787825263265024">Forritið <ph name="APPLICATION_NAME" /> krefst þess að OneDrive sé tiltækt.</translation>
 <translation id="3586806079541226322">Ekki er hægt að opna þessa skrá</translation>
+<translation id="3587438013689771191">Nánar um: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Allar</translation>
 <translation id="3588790464166520201">Mega setja upp greiðslumiðlara</translation>
 <translation id="3589766037099229847">Lokað á óöruggt efni</translation>
 <translation id="3590194807845837023">Opna prófíl og endurræsa</translation>
 <translation id="3590295622232282437">Hefur stýrða lotu.</translation>
+<translation id="3591057288287063271">Halda <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">Frekari upp&amp;lýsingar</translation>
 <translation id="3593152357631900254">Kveikja á stillingu fyrir óljóst pinyin</translation>
 <translation id="3593965109698325041">Takmarkanir vottorðsheitis</translation>
@@ -3761,6 +3766,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="442397852638519243"><ph name="USER_NAME" />, kerfisstjóri krefst þess að þú breytir aðgangsorðinu þínu.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS-tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar voru notaðir og hversu mikið minni var yfirleitt notað.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum Chrome-tækisins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">Eyða <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Til að hefjast handa skaltu vera viss um að USB- eða Bluetooth-rofinn sé tengdur við Chromebook. Þú getur einnig notað lykla á lyklaborðinu.</translation>
 <translation id="4426508677408162512">Öll bókamerki</translation>
 <translation id="4427306783828095590">Aukin vernd gengur lengra í að loka á vefveiðar og spilliforrit</translation>
@@ -4032,6 +4038,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4666472247053585787">Skoðaðu tilkynningar úr símanum í <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">Fleiri forrit</translation>
 <translation id="4667027203988048332">Gögnin sem eru notuð:</translation>
+<translation id="4672759829555593783">Opna <ph name="FILE_NAME" /> núna</translation>
 <translation id="46733273239502219">Ónettengdum gögnum í uppsettum forritum verður einnig eytt</translation>
 <translation id="4673442866648850031">Opna pennaverkfæri þegar penni er fjarlægður</translation>
 <translation id="4675065861091108046">Þú valdir áður að leyfa allar viðbætur á <ph name="ORIGIN" /></translation>
@@ -4644,6 +4651,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5268373933383932086">Þín síða, eins og þú vilt hafa hana</translation>
 <translation id="5269977353971873915">Prentun mistókst</translation>
 <translation id="5273806377963980154">Breyta vefslóð vefsvæðis</translation>
+<translation id="5273966423195882879">Litur í samræmi við þema</translation>
 <translation id="5275084684151588738">Orðabækur notanda</translation>
 <translation id="5275100789567222478">Aðeins kveikja þegar rafhleðslan er <ph name="PERCENT" />% eða minni</translation>
 <translation id="5275338516105640560">Hnappur fyrir vistaðan flipahóp</translation>
@@ -5923,6 +5931,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6465841119675156448">Án nettengingar</translation>
 <translation id="6466258437571594570">Útilokað er að vefsvæði geti truflað þig þegar þau biðja um að senda tilkynningar</translation>
 <translation id="6466988389784393586">&amp;Opna öll bókamerki</translation>
+<translation id="6467230443178397264">Leita í <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Fínstilla myndskeið á öllum skjánum</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> getur þá:</translation>
 <translation id="6468485451923838994">Leturgerðir</translation>
@@ -6241,6 +6250,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6770042910635026163">Vefsvæði sem þú heimsækir sem skilgreina áhugasvið þitt</translation>
 <translation id="6770602306803890733">Eykur öryggi þitt og allra á vefnum</translation>
 <translation id="6771503742377376720">Er vottunarstöð</translation>
+<translation id="6774710250118040929">Bæta við nýju aðgangsorði</translation>
 <translation id="6775163072363532304">Tiltæk tæki birtast hér.</translation>
 <translation id="677646486571529447">Bæta við athugasemd</translation>
 <translation id="6776729248872343918">Kveikja á hraðpörun</translation>
@@ -6671,6 +6681,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7149893636342594995">Síðastliðinn sólarhring</translation>
 <translation id="7152478047064750137">Þessi viðbót þarf engar sérstakar heimildir</translation>
 <translation id="7154130902455071009">Breyta upphafssíðunni í: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">Umbreyta mynd í texta</translation>
 <translation id="7159953856712257647">Sett sjálfgefið upp</translation>
 <translation id="7160182524506337403">Nú geturðu séð tilkynningar símans</translation>
 <translation id="7163202347044721291">Staðfestir virkjunarkóða...</translation>
@@ -6932,6 +6943,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7412226954991670867">Minni skjástýringar</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Uppsetningu lokið</translation>
+<translation id="7416091793702109803">Yfirfara <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Ekki er hægt að hlaða þjónustuskilmálum. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="7416362041876611053">Óþekkt netvilla.</translation>
 <translation id="741906494724992817">Þetta forrit þarf engar sérstakar heimildir.</translation>

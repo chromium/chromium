@@ -1315,6 +1315,8 @@
 <translation id="2165102982098084499">तुम्ही QR कोड स्कॅन करून ही डिव्हाइस लिंक केली आहेत.</translation>
 <translation id="2165177462441582039">प्रत्येक आयटमवर किती वेळ हायलाइट रहावे ते निवडा</translation>
 <translation id="2166369534954157698">चपळ तपकिरी कोल्ह्याने आळशी कुत्र्यावर उडी मारली</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />हे डिव्हाइस (SN: <ph name="SERIAL_NUMBER" />) लॉक केले होते.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> सह यापुढे Chrome डिव्हाइस व्यवस्थापकाला सपोर्ट नाही. साइन इन करण्यासाठी, वेगळे डिव्हाइस वापरा किंवा तुमच्या डिव्हाइस अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">तरीही साइन इन करा</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2173801458090845390">या डीव्हाइसवर मागणी आयडी जोडा</translation>

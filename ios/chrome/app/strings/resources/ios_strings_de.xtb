@@ -149,6 +149,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2074131957428911366">Du kannst in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> auswählen, was du synchronisieren möchtest.</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="2080769225927880590">Mit gültigem Konto anmelden</translation>
+<translation id="2090878303988764231">Melde dich an, um die angezeigten Inhalte zu verwalten</translation>
 <translation id="2103075008456228677">history.google.com öffnen</translation>
 <translation id="21133533946938348">Tab anpinnen</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> Lesezeichen verschoben</translation>
@@ -975,6 +976,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8197543752516192074">Seite übersetzen</translation>
 <translation id="8205564605687841303">Abbrechen</translation>
 <translation id="8206354486702514201">Diese Einstellung wird von deinem Administrator erzwungen.</translation>
+<translation id="821809831108207540">Wenn du deinen Discover-Feed und Chrome personalisieren möchtest, melde dich an und aktiviere die Synchronisierung.</translation>
 <translation id="8225985093977202398">Bilder &amp; Dateien im Cache</translation>
 <translation id="8237382152611443140">Öffne die Einstellungen für das automatische Ausfüllen von Passwörtern</translation>
 <translation id="8261506727792406068">Löschen</translation>
@@ -1097,6 +1099,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9157836665414082580">Dialogfelder unterdrücken</translation>
 <translation id="9177438225260810839">Auf offenen Tabs suchen</translation>
 <translation id="9188680907066685419">Von verwaltetem Konto abmelden</translation>
+<translation id="9193147658040604536">Tab zum Anpinnen hierher ziehen</translation>
 <translation id="9200875785104711666">vor <ph name="TIME" /> Tg.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Auf Tabs suchen…</translation>

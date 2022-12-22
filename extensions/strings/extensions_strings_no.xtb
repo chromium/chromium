@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Pakken er ugyldig: <ph name="ERROR_CODE" />.</translation>
 <translation id="1140871961407805696">Bakkamera</translation>
 <translation id="1196338895211115272">Kan ikke eksportere privatnøkkelen.</translation>
+<translation id="132960226125594336">Kunne ikke laste inn filen «<ph name="RELATIVE_PATH" />» for innholdsskript, fordi den ville ha overskredet den maksimale skriptstørrelsen eller utvidelsens maksimale totalstørrelse for innholdsskript.</translation>
 <translation id="1420684932347524586">Beklager. Forsøket på å opprette tilfeldig RSA-privatnøkkel mislyktes.</translation>
 <translation id="1445572445564823378">Denne utvidelsen gjør <ph name="PRODUCT_NAME" /> tregere. Du bør deaktivere den for å gjenopprette ytelsen til <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL støttes ikke.</translation>

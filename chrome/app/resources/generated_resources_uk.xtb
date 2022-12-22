@@ -1320,6 +1320,8 @@
 <translation id="2165102982098084499">Ви підключили ці пристрої, зісканувавши QR-код.</translation>
 <translation id="2165177462441582039">Виберіть тривалість виділення кожного елемента</translation>
 <translation id="2166369534954157698">абвгґдеєжзиіїйклмнопрстуфхцчшщьюя</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Цей пристрій (серійний номер: <ph name="SERIAL_NUMBER" />) було заблоковано.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Керування пристроями Chrome через сервіс "<ph name="MS_AD_NAME" />" більше не підтримується. Щоб увійти в обліковий запис, скористайтесь іншим пристроєм або зв’яжіться з адміністратором пристрою.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Усе одно ввійти</translation>
 <translation id="2173302385160625112">Перевірте інтернет-з’єднання</translation>
 <translation id="2173801458090845390">Додати ідентифікатор заявки на цей пристрій</translation>

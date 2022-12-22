@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">パッケージが無効です: <ph name="ERROR_CODE" /></translation>
 <translation id="1140871961407805696">外向き</translation>
 <translation id="1196338895211115272">秘密鍵をエクスポートできませんでした。</translation>
+<translation id="132960226125594336">コンテンツ スクリプトのファイル「<ph name="RELATIVE_PATH" />」を読み込めませんでした。スクリプトの最大サイズまたは拡張機能全体のコンテンツ スクリプトの最大サイズを超えています。</translation>
 <translation id="1420684932347524586">ランダムな RSA 秘密鍵を生成できませんでした。</translation>
 <translation id="1445572445564823378">この拡張機能によって <ph name="PRODUCT_NAME" /> の速度が低下しています。<ph name="PRODUCT_NAME" /> のパフォーマンスを回復するには、この拡張機能を無効にしてください。</translation>
 <translation id="1468038450257740950">WebGL はサポートされていません。</translation>

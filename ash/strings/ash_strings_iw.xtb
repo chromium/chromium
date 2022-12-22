@@ -37,6 +37,7 @@
 <translation id="1175572348579024023">גלילה</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
+<translation id="1182225749592316782">כך ניתן לגשת לכל האפליקציות והאתרים שיש להם הרשאות גישה למצלמה ולמיקרופון</translation>
 <translation id="1183863904939664422">ההצעה הזו לא מעניינת אותי</translation>
 <translation id="118437560755358292">כדי לשפר את רמת ההגנה, צריך להזין סיסמה או קוד אימות</translation>
 <translation id="118532027333893379">כדי לצלם את המסך המלא, יש להקיש במקום כלשהו</translation>
@@ -128,6 +129,7 @@
 <translation id="1611993646327628135">פועל</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1632985212731562677">ניתן להשבית את התכונה 'גישה באמצעות מתג' דרך 'הגדרות' &gt; 'נגישות'.</translation>
+<translation id="163517899691012366">ההתראות מושתקות כשהמצב 'נא לא להפריע' מופעל</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> מכשירים</translation>
 <translation id="1639239467298939599">בטעינה</translation>
 <translation id="1654477262762802994">הפעלה של שאילתה קולית</translation>
@@ -374,6 +376,7 @@
 <translation id="3047761520276763270">אפשר לנסות לומר:</translation>
 <translation id="3051189971848907985">שינוי שם הפרופיל מתבצע. יש להמתין מספר דקות.</translation>
 <translation id="3055162170959710888">השתמשת היום במכשיר הזה במשך <ph name="USED_TIME" /></translation>
+<translation id="3062298103034426069">אין תמיכה</translation>
 <translation id="3068711042108640621">המדף בצד שמאל</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">הרחבת התפריט</translation>
@@ -408,6 +411,7 @@
 <translation id="3249513730522716925">החלון <ph name="WINDOW_TITLE" /> הועבר משולחן העבודה <ph name="ACTIVE_DESK" /> אל שולחן העבודה <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">הגדרות</translation>
 <translation id="3255483164551725916">מה אפשר לעשות?</translation>
+<translation id="3260969790895726815">הדיבור מעובד באופן מקומי וההכתבה פועלת במצב אופליין, אבל חלק מהפקודות הקוליות לא פועלות.</translation>
 <translation id="3269597722229482060">לחיצה ימנית</translation>
 <translation id="3289544412142055976">‏בשלב הזה, אין תמיכה באפליקציות Linux</translation>
 <translation id="3289674678944039601">מתבצעת טעינה באמצעות מתאם</translation>
@@ -459,6 +463,7 @@
 <translation id="3542066395059568317">יוצגו לך המלצות כדי שתהיה לך אפשרות להמשיך מאיפה שהפסקת. ניתן להסיר את ההמלצות בלחיצה ימנית.</translation>
 <translation id="3552189655002856821">‏Wi-Fi כבוי</translation>
 <translation id="3554637740840164787">הפריט <ph name="ITEM_TITLE" /> הוצמד</translation>
+<translation id="3558768885091059911">להפעיל את הגישה למצלמה ולמיקרופון?</translation>
 <translation id="3560174576767922131">צילום סרטון</translation>
 <translation id="3563775809269155755">הפעלת נקודה לשיתוף אינטרנט</translation>
 <translation id="3566240529365775567">נפתח ממש עכשיו</translation>
@@ -791,9 +796,11 @@
 <translation id="5331975486040154427">‏מכשיר עם יציאת USB-C (יציאה שמאלית-אחורית)</translation>
 <translation id="533282197239610265">‏הצגת מכשירי CAST</translation>
 <translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (ימין)</translation>
+<translation id="5351427059191534258">להשבית את הגישה למצלמה?</translation>
 <translation id="5352250171825660495">עיצוב כהה פועל</translation>
 <translation id="5356963482258194581">אפשר להחליף בין עיצוב כהה לעיצוב בהיר. לוחצים לחיצה ימנית על שולחן העבודה ובוחרים באפשרות 'טפט וסגנון'.</translation>
 <translation id="536019650977002321">אין הרשאה מהאדמין להקליט אודיו. צריך לפנות לאדמין לקבלת מידע נוסף.</translation>
+<translation id="5361524080961918551">קובצי הדיבור ב<ph name="LANGUAGE" /> הורדו חלקית</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> מעבר לכרטיסייה הזו</translation>
 <translation id="5377367976106153749">להפעיל את הגישה למצלמה?</translation>
 <translation id="5379115545237091094">יותר מדי ניסיונות</translation>
@@ -866,6 +873,7 @@
 <translation id="5763928712329149804">מצב קבוצת המדפים כבוי.</translation>
 <translation id="576453121877257266">תאורת הלילה פועלת.</translation>
 <translation id="5769373120130404283">מסך פרטיות</translation>
+<translation id="5773950591113557721">כך ניתן לגשת אל <ph name="APP_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאות גישה למצלמה ולמיקרופון</translation>
 <translation id="5777841717266010279">להפסיק את שיתוף המסך?</translation>
 <translation id="5779721926447984944">קבצים מוצמדים</translation>
 <translation id="5788127256798019331">‏קובצי Play</translation>
@@ -903,6 +911,7 @@
 <translation id="5980301590375426705">יציאה מהפעלת אורח</translation>
 <translation id="598407983968395253">שימוש בתבנית</translation>
 <translation id="598882571027504733">‏כדי להתקין את העדכון, יש להפעיל מחדש את ה-Chromebook כשהמקלדת מחוברת.</translation>
+<translation id="6002179289567220515">כיבית מצלמה אחת באמצעות המתג הפיזי. אפשר גם להשבית את הגישה לכל המצלמות.</translation>
 <translation id="6012623610530968780">דף <ph name="SELECTED_PAGE" /> מתוך <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">יציאה ממצב שיקוף</translation>
 <translation id="602001110135236999">גלילה שמאלה</translation>
@@ -943,9 +952,11 @@
 <translation id="619279033188484792">הצגת התראות, מדיה ותמונות מהזמן האחרון במכשיר <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">לטעינה מלאה</translation>
 <translation id="6193431488227440296">פיתוח</translation>
+<translation id="6200515304866777730">האפליקציה לא תומכת בפעולה</translation>
 <translation id="6210042900243040400">יש לקשר את המכשיר <ph name="NAME" /> שנשמר בעבר בחשבון <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">יש לך אפשרות להקליט את עצמך ואת המסך באותו הזמן</translation>
 <translation id="622484624075952240">למטה</translation>
+<translation id="623116199192908855">‏העברת המסך מ-Chromebook</translation>
 <translation id="6231419273573514727">ייתכן שהביצועים של הציוד ההיקפי יוגבלו</translation>
 <translation id="6232891689835436217">המצלמה והמיקרופון בשימוש כרגע על ידי <ph name="APP_NAME" /></translation>
 <translation id="6237231532760393653">‎1X‎</translation>
@@ -987,8 +998,10 @@
 <translation id="6491071886865974820">בהתאם לדרישה של <ph name="MANAGER" />, עליך לעדכן את ה-<ph name="DEVICE_TYPE" /> לפני המועד האחרון</translation>
 <translation id="649452524636452238">קוד האימות של הכרטיס החכם</translation>
 <translation id="6495400115277918834">‏הופעלה התכונה 'תמונה בתוך תמונה'. מקישים על Alt+Shift+V כדי להתמקד</translation>
+<translation id="6497418457565568043">המצב 'נא לא להפריע' מופעל</translation>
 <translation id="6500896621837555595">עדכון</translation>
 <translation id="6501401484702599040">העברת המסך אל <ph name="RECEIVER_NAME" /> מתבצעת</translation>
+<translation id="6508923215158854599">‏צריך לוודא ש-Chromebook מחובר לאותה רשת Wi-Fi שאליה מחובר מכשיר Chromecast.</translation>
 <translation id="6515727200518652613">הקשר למצלמה אבד, מתבצע ניסיון להתחברות מחדש</translation>
 <translation id="6520517963145875092">יש לבחור חלון לצילום</translation>
 <translation id="652139407789908527">במהלך העדכון, ייתכן שהתצוגה במסך תופסק לפרק זמן ארוך מהרגיל (עד דקה). אין ללחוץ על לחצן ההפעלה עד להשלמת העדכון.</translation>
@@ -1048,6 +1061,7 @@
 <translation id="6787595647772650851">שחזור הסשן האחרון</translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6801878137098616817">נערך לאחרונה</translation>
+<translation id="6802687695197837794">הפעולה הזו מאפשרת גישה לאפליקציות <ph name="APP1_NAME" /> וגם <ph name="APP2_NAME" />, ולכל האפליקציות והאתרים שיש להם הרשאות גישה למצלמה ולמיקרופון</translation>
 <translation id="6803622936009808957">לא ניתן היה לשקף מסכים מכיוון שלא נמצאה רזולוציה נתמכת. במקום זאת התצוגה עברה למצב שולחן עבודה מורחב.</translation>
 <translation id="6812232930908427253">לא ניתן היה לשמור את שולחן העבודה הווירטואלי. יש יותר מדי חלונות או כרטיסיות.</translation>
 <translation id="6818242057446442178">מילה אחת אחורה</translation>
@@ -1080,6 +1094,7 @@
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6972754398087986839">תחילת העבודה</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">להפעלת הגישה</translation>
 <translation id="6981982820502123353">נגישות</translation>
 <translation id="698231206551913481">כל הקבצים והנתונים המשויכים למשתמש זה יימחקו לצמיתות ברגע שהמשתמש יוסר.</translation>
 <translation id="7005239792648594238">כדי להתחיל, צריך לפתוח אפליקציה</translation>

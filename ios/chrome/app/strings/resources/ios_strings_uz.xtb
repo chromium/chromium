@@ -149,6 +149,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2074131957428911366">Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali tanlash mumkin.</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2080769225927880590">Yaroqli hisobdan kiring</translation>
+<translation id="2090878303988764231">Chiqadigan kontentni boshqarish uchun hisobingizga kiring</translation>
 <translation id="2103075008456228677">history.google.com sahifasini ochish</translation>
 <translation id="21133533946938348">Ichki oynani qadab qo‘yish</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p ko‘chirildi</translation>
@@ -975,6 +976,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8197543752516192074">Sahifani tarjima qilish</translation>
 <translation id="8205564605687841303">Bekor qilish</translation>
 <translation id="8206354486702514201">Bu parametr administrator tomonidan yoqilgan.</translation>
+<translation id="821809831108207540">Discover tasmasi va Chrome brauzerini moslashtirish uchun hisobingizga kiring va sinxronizatsiyani yoqing.</translation>
 <translation id="8225985093977202398">Keshdagi tasvir va fayllar</translation>
 <translation id="8237382152611443140">Parollarni avtomatik kiritish sozlamalarini oching</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
@@ -1097,6 +1099,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9157836665414082580">Muloqot oynalarini bloklash</translation>
 <translation id="9177438225260810839">Ochiq varaqlar ichidan qidirish</translation>
 <translation id="9188680907066685419">Boshqariladigan hisobdan chiqish</translation>
+<translation id="9193147658040604536">Varaqni mahkamlash uchun tashlang</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> kun oldin</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Varaqlardan qidirish…</translation>

@@ -37,6 +37,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1175572348579024023">Desplazamiento</translation>
 <translation id="1178581264944972037">Detener</translation>
 <translation id="1181037720776840403">Quitar</translation>
+<translation id="1182225749592316782">Esto permite el acceso a todas las apps y sitios web con los permisos de cámara y micrófono</translation>
 <translation id="1183863904939664422">No me interesa esta sugerencia</translation>
 <translation id="118437560755358292">Ingresa la contraseña o el PIN para más seguridad</translation>
 <translation id="118532027333893379">Presiona en cualquier lugar para capturar la pantalla completa</translation>
@@ -462,6 +463,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3542066395059568317">Verás recomendaciones para continuar desde donde dejaste. Para quitarlas, haz clic con el botón derecho.</translation>
 <translation id="3552189655002856821">La conexión Wi-Fi está desactivada</translation>
 <translation id="3554637740840164787">Se fijó <ph name="ITEM_TITLE" /></translation>
+<translation id="3558768885091059911">¿Quieres activar el acceso a la cámara y al micrófono?</translation>
 <translation id="3560174576767922131">Grabar video</translation>
 <translation id="3563775809269155755">Habilitar el hotspot</translation>
 <translation id="3566240529365775567">Se abrió justo ahora</translation>
@@ -872,6 +874,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5763928712329149804">El modo Grupo de barras está desactivado.</translation>
 <translation id="576453121877257266">La luz nocturna está activada.</translation>
 <translation id="5769373120130404283">Pantalla de privacidad</translation>
+<translation id="5773950591113557721">Esto permite el acceso para <ph name="APP_NAME" /> y todas las apps y sitios web con los permisos de cámara y micrófono</translation>
 <translation id="5777841717266010279">¿Dejar de compartir la pantalla?</translation>
 <translation id="5779721926447984944">Archivos fijados</translation>
 <translation id="5788127256798019331">Archivos de Play</translation>
@@ -1059,6 +1062,7 @@ Nueva instalación</translation>
 <translation id="6787595647772650851">Restablecer la última sesión</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6801878137098616817">Se editó recientemente</translation>
+<translation id="6802687695197837794">Esto permite el acceso para <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> y todas las apps y sitios web con los permisos de cámara y micrófono</translation>
 <translation id="6803622936009808957">No se pudieron reflejar las pantallas porque no se encontraron resoluciones compatibles. En su lugar, se activó el escritorio extendido.</translation>
 <translation id="6812232930908427253">No se pudo guardar el escritorio. Hay demasiadas ventanas o pestañas.</translation>
 <translation id="6818242057446442178">Volver palabra por palabra</translation>
@@ -1091,6 +1095,7 @@ Nueva instalación</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6972754398087986839">Comenzar</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">Activar el acceso</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
 <translation id="698231206551913481">Todos los archivos y datos locales asociados a este usuario se borrarán de forma permanente una vez que se quite este usuario.</translation>
 <translation id="7005239792648594238">Abre una app para comenzar</translation>

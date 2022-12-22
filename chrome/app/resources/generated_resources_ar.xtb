@@ -1263,6 +1263,7 @@
 <translation id="212862741129535676">نسبة إشغال حالة التردد</translation>
 <translation id="212876957201860463">جارٍ التحضير لإعداد جهازك الخلوي...</translation>
 <translation id="2131077480075264">تعذّر تثبيت "<ph name="APP_NAME" />" لأنه لم يُسمح به من قبل "<ph name="IMPORT_NAME" />"</translation>
+<translation id="2133857665503360653">محاولة تنزيل الملف "<ph name="FILE_NAME" />" مجددًا</translation>
 <translation id="21354425047973905">إخفاء أرقام التعريف الشخصية</translation>
 <translation id="2135456203358955318">المكبّر الذي تم إرساؤه</translation>
 <translation id="2135787500304447609">&amp;استئناف</translation>
@@ -2846,11 +2847,13 @@
 <translation id="3584169441612580296">التعرّف على الصور، والموسيقى، والوسائط الأخرى من الكمبيوتر وتغييرها</translation>
 <translation id="3586787825263265024">‏يتطلّب تطبيق "<ph name="APPLICATION_NAME" />" توفُّر تطبيق OneDrive.</translation>
 <translation id="3586806079541226322">يتعذّر فتح هذا الملف</translation>
+<translation id="3587438013689771191">مزيد من المعلومات حول "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="3587482841069643663">الكل</translation>
 <translation id="3588790464166520201">المواقع الإلكترونية التي يُسمح لها بتثبيت معالجات الدفع</translation>
 <translation id="3589766037099229847">تم حظر محتوى غير آمن</translation>
 <translation id="3590194807845837023">فتح قفل الملف الشخصي، وإعادة التشغيل من جديد</translation>
 <translation id="3590295622232282437">جارٍ الدخول إلى الجلسة المُدارة.</translation>
+<translation id="3591057288287063271">الاحتفاظ بالملف "<ph name="FILE_NAME" />"</translation>
 <translation id="3592260987370335752">&amp;مزيد من المعلومات</translation>
 <translation id="3593152357631900254">تفعيل وضع شبيه بـ "بين ين"</translation>
 <translation id="3593965109698325041">قيود اسم الشهادة</translation>
@@ -3751,6 +3754,7 @@
 <translation id="442397852638519243">يا <ph name="USER_NAME" />، يطلب منك مشرفك تغيير كلمة المرور.</translation>
 <translation id="4424867131226116718">‏<ph name="BEGIN_PARAGRAPH1" />إنّ السماح لأجهزة ChromeOS بإرسال تقارير تلقائية إلينا يساعدنا في التركيز على ما يجب إصلاحه وتحسينه في ChromeOS. يمكن أن تتضمّن هذه التقارير بيانات، مثل أوقات تعطُّل ChromeOS والميزات التي تتوقّف نتيجة للأعطال وحجم الذاكرة المستخدَم عادةً عند حدوث تلك الأعطال.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />من خلال إعدادات جهاز Chrome، يمكنك في أي وقت السماح بإرسال هذه التقارير أو إيقاف إرسالها. وإذا كنت مشرفًا لنطاق، يمكنك تغيير هذا الإعداد من وحدة تحكُّم المشرف.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">حذف الملف "<ph name="FILE_NAME" />"</translation>
 <translation id="4426464032773610160">‏للبدء، يُرجى التأكُّد من توصيل مفتاح تبديل يعمل باستخدام USB أو بلوتوث بجهاز Chromebook. ويمكنك أيضًا استخدام مفاتيح لوحة المفاتيح.</translation>
 <translation id="4426508677408162512">كل الإشارات المرجعية</translation>
 <translation id="4427306783828095590">يؤدي تفعيل إعداد "الحماية المُحسَّنة" إلى حظر التصيّد الاحتيالي والبرامج الضارّة.</translation>
@@ -4021,6 +4025,7 @@
 <translation id="4666472247053585787">استخدام <ph name="DEVICE_TYPE" /> في الاطّلاع على الإشعارات من هاتفك</translation>
 <translation id="4666911709726371538">المزيد من التطبيقات</translation>
 <translation id="4667027203988048332">البيانات التي يتم استخدامها:</translation>
+<translation id="4672759829555593783">فتح الملف "<ph name="FILE_NAME" />" الآن</translation>
 <translation id="46733273239502219">سيتم أيضًا محو البيانات المتوفرة بلا اتصال بالإنترنت في التطبيقات المثبّتة.</translation>
 <translation id="4673442866648850031">فتح أدوات قلم الشاشة عندما تتم إزالة قلم الشاشة</translation>
 <translation id="4675065861091108046">سَبَقَ منحُ إذن وصول جميع الإضافات إلى محتوى <ph name="ORIGIN" /></translation>
@@ -4633,6 +4638,7 @@
 <translation id="5268373933383932086">اختيار المواضيع التي تهمّك لعرضها على صفحتك</translation>
 <translation id="5269977353971873915">تعذّرت الطباعة</translation>
 <translation id="5273806377963980154">‏تعديل عنوان URL للموقع الإلكتروني</translation>
+<translation id="5273966423195882879">اللون حسب المظهر</translation>
 <translation id="5275084684151588738">قواميس المستخدم</translation>
 <translation id="5275100789567222478">تفعيل الوضع فقط عند انخفاض مستوى شحن البطارية إلى %<ph name="PERCENT" /> أو أقل</translation>
 <translation id="5275338516105640560">زر مجموعة علامات التبويب المحفوظة</translation>
@@ -5912,6 +5918,7 @@
 <translation id="6465841119675156448">بدون إنترنت</translation>
 <translation id="6466258437571594570">منع المواقع الإلكترونية من إزعاجك عند طلب إذن بإرسال الإشعارات</translation>
 <translation id="6466988389784393586">ف&amp;تح كل الإشارات المرجعية</translation>
+<translation id="6467230443178397264">مسح الملف "<ph name="FILE_NAME" />" ضوئيًا</translation>
 <translation id="6467304607960172345">تحسين الفيديوهات بملء الشاشة</translation>
 <translation id="6467377768028664108">بعد ذلك، سيتمكّن جهاز <ph name="DEVICE_TYPE" /> من:</translation>
 <translation id="6468485451923838994">الخطوط</translation>
@@ -6668,6 +6675,7 @@
 <translation id="7149893636342594995">آخر 24 ساعة</translation>
 <translation id="7152478047064750137">لا تتطلب هذه الإضافة أذونات خاصة</translation>
 <translation id="7154130902455071009">تغيير الصفحة الرئيسية إلى: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">تحويل الصورة إلى نص</translation>
 <translation id="7159953856712257647">مُثبَّتة تلقائيًا</translation>
 <translation id="7160182524506337403">يمكنك الآن الاطّلاع على إشعارات هاتفك</translation>
 <translation id="7163202347044721291">جارٍ التحقّق من رمز التفعيل...</translation>
@@ -6929,6 +6937,7 @@
 <translation id="7412226954991670867">‏ذاكرة GPU</translation>
 <translation id="7414464185801331860">18 ضعفًا</translation>
 <translation id="7415454883318062233">اكتمل الإعداد</translation>
+<translation id="7416091793702109803">مراجعة الملف "<ph name="FILE_NAME" />"</translation>
 <translation id="7416263748877373774">يتعذّر تحميل بنود الخدمة. يُرجى التحقُّق من الاتصال بالشبكة وإعادة المحاولة.</translation>
 <translation id="7416362041876611053">خطأ غير معروف في الشبكة.</translation>
 <translation id="741906494724992817">لا يتطلب هذا التطبيق أذونات خاصة.</translation>

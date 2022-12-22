@@ -105,6 +105,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1087965115100412394">Don't allow sites to connect to MIDI devices</translation>
 <translation id="1088654056000736875">Chrome is removing harmful software from your computer…</translation>
 <translation id="1088659085457112967">Enter Reader Mode</translation>
+<translation id="1089407731410758060">Change theme</translation>
 <translation id="1090126737595388931">No Background Apps Running</translation>
 <translation id="1090541560108055381">Before pairing, make sure that this code is the same on both devices</translation>
 <translation id="1091767800771861448">Press ESCAPE to skip (Non-official builds only).</translation>
@@ -933,6 +934,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="18260074040409954">You can use saved passwords on any device. They're saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Sync your Chrome browser bookmarks, passwords, history and more</translation>
 <translation id="1826516787628120939">Checking</translation>
+<translation id="1827504459960247692">Hotspot name</translation>
 <translation id="1828378091493947763">This plug-in is not supported on this device</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Open All}=1{&amp;Open Bookmark}other{&amp;Open All ({COUNT})}}</translation>
 <translation id="1828901632669367785">Print Using System Dialogue...</translation>
@@ -1243,6 +1245,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2101225219012730419">Version:</translation>
 <translation id="2102396546234652240">Don't allow sites to use your microphone</translation>
 <translation id="2102495993840063010">Android apps</translation>
+<translation id="2104166991923847969">Turn off hotspot automatically</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> hidden</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Phone number}other{# phone numbers}}</translation>
 <translation id="211144231511833662">Clear types</translation>
@@ -1826,6 +1829,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2616366145935564096">Read and change your data on <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Set up Nearby Share</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> can't be downloaded securely.</translation>
+<translation id="2620245777360407679">Devices currently connected to hotspot</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Train Google Assistant voice model</translation>
 <translation id="26224892172169984">Do not allow any site to handle protocols</translation>
@@ -7148,6 +7152,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7614260613810441905">Ask when a site wants to edit files or folders on your device (recommended)</translation>
 <translation id="761530003705945209">Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data. Your backups are uploaded to Google and encrypted using your Google Account password.</translation>
 <translation id="7615365294369022248">There was an error adding an account</translation>
+<translation id="7615807797520072741">Reset to classic Chrome</translation>
 <translation id="7616214729753637086">Enrolling device…</translation>
 <translation id="7617263010641145920">Turn on Play Store</translation>
 <translation id="7617648809369507487">Use quieter messaging</translation>
@@ -8455,6 +8460,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Move Tab to Another Window}other{Move Tabs to Another Window}}</translation>
 <translation id="8805140816472474147">Confirm sync settings to start sync.</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> can reopen accidentally closed tabs</translation>
+<translation id="8807588541160250261">When no devices are connected</translation>
 <translation id="8807632654848257479">Stable</translation>
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Cat</translation>

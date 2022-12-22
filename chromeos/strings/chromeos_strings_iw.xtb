@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">‏בקשות UDP נכשלו</translation>
 <translation id="1947737735496445907">הודפסה</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1962550982027027473">‏נדרש APN כברירת מחדל</translation>
 <translation id="1977994649430373166">‏תמונת הפרופיל ב-Google</translation>
 <translation id="1979103255016296513">המועד האחרון לשינוי הסיסמה כבר חלף</translation>
 <translation id="1999615961760456652">פורטל שבוי</translation>
@@ -186,6 +187,7 @@
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
 <translation id="2584559707064218956">כדי להגדיר את הרשת, צריך לעבור להגדרות</translation>
 <translation id="2597774443162333062">‏הקבצים יישלחו אל Google לניפוי באגים</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{הסריקה הושלמה. נסרק עמוד אחד}one{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}two{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}other{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}}</translation>
 <translation id="2619761439309613843">רענון יומי</translation>
 <translation id="2620436844016719705">מערכת</translation>
 <translation id="2638662041295312666">תמונת המשתמש</translation>
@@ -634,6 +636,7 @@
 <translation id="6791471867139427246">צבע התאורה של המקלדת</translation>
 <translation id="680983167891198932">מקש</translation>
 <translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש להקיש על מקש החץ למעלה.</translation>
+<translation id="6838167112108853532">‏לא ניתן להשבית או להסיר את ה-APN הזה. יש לוודא שפריטי ה-APN המצורפים שהופעלו הושבתו או הוסרו.</translation>
 <translation id="6853312040151791195">שיעור הפריקה</translation>
 <translation id="6889786074662672253">במהלך ההפעלה מחדש אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. הפעולה עשויה להימשך כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל בזמן הזה.</translation>
 <translation id="6905724422583748843">חזרה אל <ph name="PAGE_NAME" /></translation>

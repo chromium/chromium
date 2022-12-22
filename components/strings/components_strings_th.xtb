@@ -2715,6 +2715,7 @@
 <translation id="7815407501681723534">พบ<ph name="SEARCH_RESULTS" /> <ph name="NUMBER_OF_RESULTS" /> รายการสำหรับ "<ph name="SEARCH_STRING" />"</translation>
 <translation id="7822320754433038727">ล่าสัตว์และยิงปืน</translation>
 <translation id="782886543891417279">Wi-Fi ที่คุณใช้ (<ph name="WIFI_NAME" />) อาจต้องการให้คุณไปที่หน้าการเข้าสู่ระบบ</translation>
+<translation id="7840103971441592723">เริ่มจับภาพหน้าจอแล้ว</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ไม่มี}=1{1 แอป (<ph name="EXAMPLE_APP_1" />)}=2{2 แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">ออกจากเว็บไซต์ไหม</translation>
@@ -2893,6 +2894,7 @@
 <translation id="8282947398454257691">ทราบตัวระบุอุปกรณ์ที่ไม่ซ้ำกัน</translation>
 <translation id="8284769179630993263">จัดการ Google Safe Browsing และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="8286036467436129157">ลงชื่อเข้าใช้</translation>
+<translation id="8286799286781881307">แอปพลิเคชันที่ผู้ดูแลระบบอนุญาตจะจับภาพหน้าจอทั้งหมดที่เชื่อมต่อกับอุปกรณ์ของคุณได้ ระบบจะประมวลผลข้อมูลนี้ในเครื่องหรืออัปโหลดไปยังเซิร์ฟเวอร์ขององค์กร</translation>
 <translation id="8288807391153049143">แสดงใบรับรอง</translation>
 <translation id="8289355894181816810">ติดต่อผู้ดูแลระบบเครือข่ายของคุณหากไม่แน่ใจว่าข้อความนี้หมายถึงอะไร</translation>
 <translation id="8293206222192510085">เพิ่มบุ๊กมาร์ก</translation>

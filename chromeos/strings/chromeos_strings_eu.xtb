@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">UDP bidezko eskaeren hutsegiteak</translation>
 <translation id="1947737735496445907">Inprimatuta</translation>
 <translation id="1951012854035635156">Laguntzailea</translation>
+<translation id="1962550982027027473">APN lehenetsi bat behar da</translation>
 <translation id="1977994649430373166">Google-ko profileko argazkia</translation>
 <translation id="1979103255016296513">Pasahitza iraungita dago eta aldatu egin behar da</translation>
 <translation id="1999615961760456652">Sare-zerbitzuaren ataria</translation>
@@ -635,6 +636,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6791471867139427246">teklatuaren argiaren kolorea</translation>
 <translation id="680983167891198932">Gakoa</translation>
 <translation id="6816797338148849397">Eskuragarri dago zure hautapenari buruzko informazioa. Erabili gora egiteko gezi-tekla informazioa atzitzeko.</translation>
+<translation id="6838167112108853532">APN hau ezin da desgaitu edo kendu. Ziurtatu gaituta dauden APN erantsiak desgaitu edo kendu direla.</translation>
 <translation id="6853312040151791195">Bateriaren deskargatze-abiadura</translation>
 <translation id="6889786074662672253">Gailua eguneratu bitartean, ez deskonektatu kanpoko gailua edo ez itzali ordenagailua. Leihoa minimiza dezakezu. Agian minutu batzuk beharko dira eguneratzea instalatzeko, eta baliteke kanpoko gailuak denbora tarte horretan ez funtzionatzea.</translation>
 <translation id="6905724422583748843">Itzuli <ph name="PAGE_NAME" /> orrira</translation>

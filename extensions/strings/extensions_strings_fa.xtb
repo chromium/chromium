@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">بسته نامعتبر است: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">رو به عقب</translation>
 <translation id="1196338895211115272">صادر کردن کلید خصوصی ناموفق بود.</translation>
+<translation id="132960226125594336">فایل «<ph name="RELATIVE_PATH" />» برای متن محتوا بار نشد چون از حداکثر اندازه مجاز برای متن یا حداکثر اندازه مجاز برای کل متن محتوای افزونه فراتر می‌رفت.</translation>
 <translation id="1420684932347524586">‏اوه! ایجاد کلید خصوصی RSA تصادفی ناموفق بود.</translation>
 <translation id="1445572445564823378">این برنامهٔ افزودنی سرعت <ph name="PRODUCT_NAME" /> را پایین می‌آورد. شما باید برای بازیابی عملکرد <ph name="PRODUCT_NAME" /> این برنامه را غیرفعال کنید.</translation>
 <translation id="1468038450257740950">‏WebGL پشتیبانی نمی‌شود.</translation>

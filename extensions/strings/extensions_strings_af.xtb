@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Pakket is ongeldig: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Wys na omgewing (agterste kamera)</translation>
 <translation id="1196338895211115272">Kon nie private sleutel uitvoer nie.</translation>
+<translation id="132960226125594336">Kon nie lêer “<ph name="RELATIVE_PATH" />” vir inhoudskrip laai nie omdat dit die maksimum skripgrootte of die uitbreiding se maksimum totale inhoudskripgrootte sou oorskry.</translation>
 <translation id="1420684932347524586">Oeps! Kon nie lukraak RSA private sleutel genereer nie.</translation>
 <translation id="1445572445564823378">Hierdie uitbreiding maak <ph name="PRODUCT_NAME" /> stadig. Jy moet dit deaktiveer om <ph name="PRODUCT_NAME" /> se prestasie te herstel.</translation>
 <translation id="1468038450257740950">WebGL word nie gesteun nie.</translation>

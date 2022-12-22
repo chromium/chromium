@@ -105,6 +105,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1087965115100412394">Không cho phép trang web kết nối với các thiết bị MIDI</translation>
 <translation id="1088654056000736875">Chrome đang xóa phần mềm gây hại khỏi máy tính của bạn...</translation>
 <translation id="1088659085457112967">Bật chế độ đọc</translation>
+<translation id="1089407731410758060">Thay đổi giao diện</translation>
 <translation id="1090126737595388931">Không có ứng dụng nền nào đang chạy</translation>
 <translation id="1090541560108055381">Trước khi ghép nối, hãy đảm bảo mã này giống nhau trên cả hai thiết bị</translation>
 <translation id="1091767800771861448">Nhấn ESCAPE để bỏ qua (Chỉ phiên bản không chính thức).</translation>
@@ -933,6 +934,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="18260074040409954">Bạn có thể dùng các mật khẩu đã lưu trên mọi thiết bị. Các mật khẩu đó được lưu vào <ph name="GOOGLE_PASSWORD_MANAGER" /> cho <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Đồng bộ hóa dấu trang, mật khẩu, nhật ký duyệt web trên Chrome, v.v.</translation>
 <translation id="1826516787628120939">Đang kiểm tra</translation>
+<translation id="1827504459960247692">Tên điểm phát sóng</translation>
 <translation id="1828378091493947763">Thiết bị này không hỗ trợ plugin này</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Mở tất cả}=1{&amp;Mở dấu trang}other{&amp;Mở tất cả ({COUNT})}}</translation>
 <translation id="1828901632669367785">In bằng hộp thoại hệ thống...</translation>
@@ -1243,6 +1245,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2101225219012730419">Phiên bản:</translation>
 <translation id="2102396546234652240">Không cho phép trang web sử dụng micrô</translation>
 <translation id="2102495993840063010">Ứng dụng Android</translation>
+<translation id="2104166991923847969">Tự động tắt điểm phát sóng</translation>
 <translation id="2105809836724866556">Đã ẩn <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Số điện thoại}other{# số điện thoại}}</translation>
 <translation id="211144231511833662">Xóa các loại thiết bị</translation>
@@ -1292,7 +1295,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2147218225094845757">Ẩn bảng điều khiển bên</translation>
 <translation id="2148219725039824548">Lỗi khi kết nối với thư mục chia sẻ. Không tìm thấy thư mục chia sẻ đã chỉ định trên mạng.</translation>
 <translation id="2148756636027685713">Định dạng hoàn tất</translation>
-<translation id="2148892889047469596">Truyền thẻ</translation>
+<translation id="2148892889047469596">Thẻ Truyền</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2150139952286079145">Tìm kiếm máy in đích</translation>
 <translation id="2150661552845026580">Và "<ph name="EXTENSION_NAME" />"?</translation>
@@ -1826,6 +1829,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2616366145935564096">Đọc và thay đổi dữ liệu của bạn trên <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Thiết lập tính năng Chia sẻ lân cận</translation>
 <translation id="2620215283731032047">Không thể tải <ph name="FILE_NAME" /> xuống một cách an toàn.</translation>
+<translation id="2620245777360407679">Thiết bị hiện kết nối với điểm phát sóng</translation>
 <translation id="2620436844016719705">Hệ thống</translation>
 <translation id="262154978979441594">Đào tạo mẫu giọng nói cho Trợ lý Google</translation>
 <translation id="26224892172169984">Không cho phép bất kỳ trang web nào xử lý giao thức</translation>
@@ -3732,7 +3736,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4400367121200150367">Trang web không bao giờ lưu mật khẩu sẽ xuất hiện tại đây</translation>
 <translation id="4400632832271803360">Giữ phím Trình khởi chạy để chuyển đổi chức năng của các phím hàng trên cùng</translation>
 <translation id="4400963414856942668">Bạn có thể nhấp vào dấu sao để đánh dấu một thẻ</translation>
-<translation id="4401912261345737180">Kết nối với một mã để truyền</translation>
+<translation id="4401912261345737180">Kết nối bằng một mã để truyền</translation>
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
 <translation id="4403012369005671154">Chuyển lời nói thành văn bản</translation>
 <translation id="4403266582403435904">Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất cứ lúc nào. Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của con bạn.</translation>
@@ -7148,6 +7152,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7614260613810441905">Hỏi khi một trang web muốn chỉnh sửa các tệp hoặc thư mục trên thiết bị (khuyên dùng)</translation>
 <translation id="761530003705945209">Sao lưu vào Google Drive. Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất cứ lúc nào. Nội dung sao lưu của bạn bao gồm các dữ liệu ứng dụng. Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của bạn.</translation>
 <translation id="7615365294369022248">Đã xảy ra lỗi khi thêm một tài khoản</translation>
+<translation id="7615807797520072741">Đặt lại về Chrome phiên bản cũ</translation>
 <translation id="7616214729753637086">Đang đăng ký thiết bị...</translation>
 <translation id="7617263010641145920">Bật Cửa hàng Play</translation>
 <translation id="7617648809369507487">Dùng thông báo ở dạng tin nhắn</translation>
@@ -8455,6 +8460,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Di chuyển thẻ sang một cửa sổ khác}other{Di chuyển các thẻ sang một cửa sổ khác}}</translation>
 <translation id="8805140816472474147">Hãy xác nhận cài đặt đồng bộ hóa để bắt đầu đồng bộ hóa.</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> có thể mở lại các thẻ bạn đã vô tình đóng.</translation>
+<translation id="8807588541160250261">Khi không có thiết bị nào kết nối</translation>
 <translation id="8807632654848257479">Ổn định</translation>
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Mèo</translation>

@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">패키지가 잘못되었습니다. '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">후면</translation>
 <translation id="1196338895211115272">비공개 키를 내보내지 못했습니다.</translation>
+<translation id="132960226125594336">콘텐츠 스크립트용 파일('<ph name="RELATIVE_PATH" />')이 스크립트 최대 크기 또는 확장 프로그램의 전체 콘텐츠 스크립트 최대 크기를 초과하므로 로드할 수 없습니다.</translation>
 <translation id="1420684932347524586">임의의 RSA 비공개 키를 생성하지 못했습니다.</translation>
 <translation id="1445572445564823378">이 확장 프로그램은 <ph name="PRODUCT_NAME" />의 성능을 저하시킵니다. <ph name="PRODUCT_NAME" />의 성능을 복원하려면 확장 프로그램을 사용중지해야 합니다.</translation>
 <translation id="1468038450257740950">WebGL이 지원되지 않습니다.</translation>

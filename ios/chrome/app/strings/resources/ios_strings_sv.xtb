@@ -149,6 +149,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2074131957428911366">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2080769225927880590">Logga in med ett giltigt konto</translation>
+<translation id="2090878303988764231">Logga in för att hantera innehållet som visas</translation>
 <translation id="2103075008456228677">Öppna history.google.com</translation>
 <translation id="21133533946938348">Fäst flik</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> objekt flyttades</translation>
@@ -975,6 +976,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8197543752516192074">Översätt sidan</translation>
 <translation id="8205564605687841303">Avbryt</translation>
 <translation id="8206354486702514201">Administratören har gjort den här inställningen obligatorisk.</translation>
+<translation id="821809831108207540">Logga in och aktivera synkronisering om du vill anpassa Chrome och flödet i Förslag.</translation>
 <translation id="8225985093977202398">Cachelagrade bilder och filer</translation>
 <translation id="8237382152611443140">Öppna inställningarna för autofyllning av lösenord</translation>
 <translation id="8261506727792406068">Radera</translation>

@@ -1260,6 +1260,7 @@
 <translation id="212862741129535676">فریکوئنسی صورتحال کے تصرف کی فیصد</translation>
 <translation id="212876957201860463">آپ کے سیلولر آلہ کو سیٹ اپ کرنے کی تیاری ہو رہی ہے...</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" کو انسٹال کرنے سے قاصر کیونکہ "<ph name="IMPORT_NAME" />" کے ذریعہ اس کی اجازت نہیں ہے</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> کو دوبارہ آزمائیں</translation>
 <translation id="21354425047973905">‏PINs چھپائیں</translation>
 <translation id="2135456203358955318">ڈاک کردہ مکبّر</translation>
 <translation id="2135787500304447609">&amp;دوبارہ شروع کریں</translation>
@@ -1305,6 +1306,8 @@
 <translation id="2165102982098084499">‏آپ نے QR کوڈ اسکین کر کے ان آلات کو لنک کیا ہے۔</translation>
 <translation id="2165177462441582039">منتخب کریں کہ ہائی لائٹ کو ہر آئٹم پر کتنی دیر رہنا چاہیے</translation>
 <translation id="2166369534954157698">ایک ٹیلے پر واقع مزار خواجہ فرید الدین گنج شکر کے احاطۂ صحن میں ذرا سی ژالہ باری چاندی کے ڈھیروں کی مثل بڑے غضب کا نظارہ دیتی ہے۔</translation>
+<translation id="2168454383292731451">‏<ph name="BEGIN_PARAGRAPH1" />یہ آلہ (SN: <ph name="SERIAL_NUMBER" />‎) مقفل تھا۔<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> کے ساتھ Chrome آلے کا مینیجمنٹ مزید تعاون یافتہ نہیں ہے۔ سائن ان کرنے کے لیے، کوئی مختلف آلہ استعمال کریں یا اپنے آلے کے منتظم سے رابطہ کریں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">بہر صورت سائن ان کریں</translation>
 <translation id="2173302385160625112">اپنا انٹرنیٹ کنکشن چیک کریں</translation>
 <translation id="2173801458090845390">‏اس آلہ میں درخواست ID شامل کریں</translation>
@@ -2840,11 +2843,13 @@
 <translation id="3584169441612580296">اپنے کمپیوٹر سے تصاویر، موسیقی اور دیگر میڈیا پڑھیں اور تبدیل کریں</translation>
 <translation id="3586787825263265024">‏<ph name="APPLICATION_NAME" /> ایپلیکیشن کو کھولنے کے لیے OneDrive کا دستیاب ہونا ضروری ہے۔</translation>
 <translation id="3586806079541226322">یہ فائل نہیں کھول سکتے</translation>
+<translation id="3587438013689771191">درج ذیل کے بارے میں مزید جانیں: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">سبھی</translation>
 <translation id="3588790464166520201">ادائیگی کے ہینڈلرز کو انسٹال کرنے کی اجازت ہے</translation>
 <translation id="3589766037099229847">غیر محفوظ مواد مسدود ہو گیا</translation>
 <translation id="3590194807845837023">پروفائل غیر مقفل کریں اور دوبارہ شروع کریں</translation>
 <translation id="3590295622232282437">نظم کردہ سیشن میں داخل ہو رہے ہیں۔</translation>
+<translation id="3591057288287063271"><ph name="FILE_NAME" /> کو رکھیں</translation>
 <translation id="3592260987370335752">مزید &amp;جانیں</translation>
 <translation id="3593152357631900254">‏Fuzzy-Pinyin وضع فعال کریں</translation>
 <translation id="3593965109698325041">سرٹیفکیٹ نام کی پابندیاں</translation>
@@ -3747,6 +3752,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" />، آپ کا منتظم آپ سے اپنا پاس ورڈ تبدیل کرنے کا مطالبہ کرتا ہے۔</translation>
 <translation id="4424867131226116718">‏<ph name="BEGIN_PARAGRAPH1" />ChromeOS آلات کو خودکار رپورٹس بھیجنے کی اجازت دینے سے ہمیں یہ ترجیح دینے میں مدد ملتی ہے کہ ChromeOS میں کیا درست اور بہتر کرنا ہے۔ ان رپورٹس میں ChromeOS کب کریش ہوتا ہے، کون سی خصوصیات استعمال کی گئیں اور عام طور کتنی میموری استعمال کی گئی جیسی چیزیں شامل ہو سکتی ہیں۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />آپ اپنے Chrome آلے کی ترتیبات میں کسی بھی وقت ان رپورٹس کی اجازت کو شروع یا بند کر سکتے ہیں۔ اگر آپ ڈومین کے منتظم ہیں تو آپ منتظم کونسول میں اس ترتیب کو تبدیل کر سکتے ہیں۔<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040"><ph name="FILE_NAME" /> حذف کریں</translation>
 <translation id="4426464032773610160">‏شروع کرنے کے لیے، براہ کرم یقینی بنائیں کہ آپ کا USB یا بلوٹوتھ سوئچ آپ کی Chromebook سے منسلک ہے۔ آپ کی بورڈ کلیدوں کا بھی استعمال کر سکتے ہیں۔</translation>
 <translation id="4426508677408162512">سبھی بُک مارکس</translation>
 <translation id="4427306783828095590">فریب دہی اور میلوئیر کو مسدود کرنے کیلئے بہتر کردہ حفاظت مزید کام کرتی ہے</translation>
@@ -4017,6 +4023,7 @@
 <translation id="4666472247053585787">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات دیکھیں</translation>
 <translation id="4666911709726371538">مزید ایپس</translation>
 <translation id="4667027203988048332">کون سا ڈیٹا استعمال کیا جاتا ہے:</translation>
+<translation id="4672759829555593783"><ph name="FILE_NAME" /> ابھی کھولیں</translation>
 <translation id="46733273239502219">انسٹال کردہ ایپس میں آف لائن ڈیٹا بھی صاف ہو جائے گا</translation>
 <translation id="4673442866648850031">اسٹائلس کو ہٹانے کے وقت اسٹائلس ٹولز کھولیں</translation>
 <translation id="4675065861091108046">آپ نے پہلے <ph name="ORIGIN" /> پر تمام ایکسٹینشنز کو اجازت دینے کا انتخاب کیا</translation>
@@ -5907,6 +5914,7 @@
 <translation id="6465841119675156448">انٹرنیٹ کے بغیر</translation>
 <translation id="6466258437571594570">سائٹس کو مسدود کر دیا گیا ہے تاکہ وہ اطلاعات بھیجنے کی اجازت مانگ کر آپ کو پریشان نہ کریں۔</translation>
 <translation id="6466988389784393586">سبھی بُک مارکس &amp;کھولیں</translation>
+<translation id="6467230443178397264"><ph name="FILE_NAME" /> کو اسکین کریں</translation>
 <translation id="6467304607960172345">پوری اسکرین کی ویڈیوز کو بہتر بنائیں</translation>
 <translation id="6467377768028664108">پھر آپ کا <ph name="DEVICE_TYPE" /> یہ کر سکتا ہے:</translation>
 <translation id="6468485451923838994">فونٹس</translation>
@@ -6654,6 +6662,7 @@
 <translation id="7149893636342594995">آخری 72 گھنٹے</translation>
 <translation id="7152478047064750137">اس ایکسٹینشن کو کوئی خاص اجازتیں درکار نہیں ہیں</translation>
 <translation id="7154130902455071009">اپنے شروعاتی صفحہ کو اس پر تبدیل کریں: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">تصویر کو ٹیکسٹ میں تبدیل کریں</translation>
 <translation id="7159953856712257647">بطور ڈیفالٹ انسٹال ہے</translation>
 <translation id="7160182524506337403">اب آپ اپنے فون کی اطلاعات دیکھ سکتے ہیں</translation>
 <translation id="7163202347044721291">فعالیت کے کوڈ کی توثیق کی جا رہی ہے...</translation>
@@ -6915,6 +6924,7 @@
 <translation id="7412226954991670867">‏GPU میموری</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">سیٹ اپ مکمل ہو گيا</translation>
+<translation id="7416091793702109803"><ph name="FILE_NAME" /> کا جائزہ لیں</translation>
 <translation id="7416263748877373774">سروس کی شرائط کو لوڈ نہیں کیا جا سکتا۔ براہ کرم اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="7416362041876611053">نامعلوم نیٹ ورک کی خرابی۔</translation>
 <translation id="741906494724992817">اس ایپ کیلئے کوئی خصوصی اجازتیں درکار نہیں ہیں۔</translation>

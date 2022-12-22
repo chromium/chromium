@@ -1306,6 +1306,8 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2165102982098084499">Jūs saistījāt šīs ierīces, skenējot kvadrātkodu.</translation>
 <translation id="2165177462441582039">Izvēlieties, cik ilgi katram vienumam jābūt izceltam</translation>
 <translation id="2166369534954157698">Muļķa hipiji turpat brīvi mēģina nogaršot celofāna žņaudzējčūsku</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Šī ierīce (sērijas numurs: <ph name="SERIAL_NUMBER" />) tika bloķēta.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Chrome ierīču pārvaldība, izmantojot pakalpojumu <ph name="MS_AD_NAME" />, vairs netiek atbalstīta. Lai pierakstītos, izmantojiet citu ierīci vai sazinieties ar savas ierīces administratoru.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Tik un tā pierakstīties</translation>
 <translation id="2173302385160625112">Pārbaudiet interneta savienojumu</translation>
 <translation id="2173801458090845390">Pievienot pieprasījuma ID šai ierīcei</translation>
@@ -6225,6 +6227,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6770042910635026163">Jūsu apmeklētās vietnes, kas raksturo jūsu intereses</translation>
 <translation id="6770602306803890733">Tiek nodrošināta gan jūsu, gan visu pārējo tīmekļa lietotāju aizsardzība.</translation>
 <translation id="6771503742377376720">Ir sertifikāta izdevējiestāde</translation>
+<translation id="6774710250118040929">Jaunas paroles pievienošana</translation>
 <translation id="6775163072363532304">Šeit tiks parādītas pieejamās ierīces.</translation>
 <translation id="677646486571529447">Pievienot piezīmi</translation>
 <translation id="6776729248872343918">Iespējot ātro savienošanu pārī</translation>

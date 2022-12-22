@@ -149,6 +149,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2074131957428911366">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2080769225927880590">Connectez-vous avec un compte valide</translation>
+<translation id="2090878303988764231">Connectez-vous pour gérer les contenus que vous voyez</translation>
 <translation id="2103075008456228677">Ouvrir history.google.com</translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments déplacés.</translation>
@@ -976,6 +977,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8197543752516192074">Traduire la page</translation>
 <translation id="8205564605687841303">Annuler</translation>
 <translation id="8206354486702514201">Ce paramètre est appliqué par votre administrateur.</translation>
+<translation id="821809831108207540">Pour personnaliser votre flux Discover et Chrome, connectez-vous et activez la synchronisation.</translation>
 <translation id="8225985093977202398">Img/fich. en cache</translation>
 <translation id="8237382152611443140">Accédez à "Préremplir les mots de passe"</translation>
 <translation id="8261506727792406068">Supprimer</translation>

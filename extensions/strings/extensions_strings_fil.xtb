@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Di-wasto ang package: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Nakaharap sa paligid</translation>
 <translation id="1196338895211115272">Nabigong i-export ang pribadong key.</translation>
+<translation id="132960226125594336">Hindi ma-load ang file na '<ph name="RELATIVE_PATH" />' para sa script ng content dahil lalampas ito sa maximum na laki ng script o maximum na laki ng script ng kabuuang content ng extension.</translation>
 <translation id="1420684932347524586">Hala! Nabigong mabuo ang random RSA pribadong key.</translation>
 <translation id="1445572445564823378">Pinapabagal ng extension na ito ang <ph name="PRODUCT_NAME" />. Dapat mo itong huwag paganahin upang ipanumbalik ang pagganap ng <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Hindi sinusuportahan ang WebGL.</translation>

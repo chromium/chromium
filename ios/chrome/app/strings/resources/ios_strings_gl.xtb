@@ -149,6 +149,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2080769225927880590">Inicia sesión cunha conta válida</translation>
+<translation id="2090878303988764231">Inicia sesión para xestionar o contido que ves</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="21133533946938348">Ancorar pestana</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
@@ -975,6 +976,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8197543752516192074">Traducir páxina</translation>
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">O administrador aplica esta configuración.</translation>
+<translation id="821809831108207540">Inicia sesión e activa a sincronización para personalizar Chrome e o teu feed de Discover.</translation>
 <translation id="8225985093977202398">Imaxes e ficheiros en caché</translation>
 <translation id="8237382152611443140">Abre os axustes de AutoFill Passwords (Autocompletar contrasinais)</translation>
 <translation id="8261506727792406068">Eliminar</translation>

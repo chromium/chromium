@@ -1268,6 +1268,7 @@
 <translation id="212862741129535676">درصد اشغال حالت فرکانس</translation>
 <translation id="212876957201860463">درحال آماده‌سازی برای راه‌اندازی دستگاه تلفن همراه...</translation>
 <translation id="2131077480075264">نصب «<ph name="APP_NAME" />» انجام نشد، زیرا «<ph name="IMPORT_NAME" />» آن را مجاز نکرده است</translation>
+<translation id="2133857665503360653">امتحان مجدد <ph name="FILE_NAME" /></translation>
 <translation id="21354425047973905">پنهان کردن پین‌ها</translation>
 <translation id="2135456203358955318">ذره‌بین متصل</translation>
 <translation id="2135787500304447609">&amp;ازسرگیری</translation>
@@ -2852,11 +2853,13 @@
 <translation id="3584169441612580296">خواندن و تغییر عکس‌ها، موسیقی، و رسانه‌های دیگر از رایانه‌تان</translation>
 <translation id="3586787825263265024">‏برنامه <ph name="APPLICATION_NAME" /> برای دردسترس بودن به OneDrive نیاز دارد.</translation>
 <translation id="3586806079541226322">این فایل باز نمی‌شود</translation>
+<translation id="3587438013689771191">اطلاعات بیشتر درباره: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">همه</translation>
 <translation id="3588790464166520201">اجازه دارد کنترل‌كننده‌های پرداخت را نصب کند</translation>
 <translation id="3589766037099229847">محتوای ناامن مسدود شد</translation>
 <translation id="3590194807845837023">باز کردن قفل نمایه و راه‌اندازی مجدد</translation>
 <translation id="3590295622232282437">درحال ورود به جلسه مدیریت‌شده.</translation>
+<translation id="3591057288287063271">نگه داشتن <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;بیشتر بیاموزید</translation>
 <translation id="3593152357631900254">‏فعال کردن حالت Fuzzy-Pinyin</translation>
 <translation id="3593965109698325041">محدودیتهای نام گواهی</translation>
@@ -3759,6 +3762,7 @@
 <translation id="442397852638519243">سرپرستتان (<ph name="USER_NAME" />)، از شما می‌خواهد که گذرواژه‌تان را عوض کنید.</translation>
 <translation id="4424867131226116718">‏<ph name="BEGIN_PARAGRAPH1" />اجازه دادن به دستگاه‌های ChromeOS برای ارسال گزارش‌های خودکار، به ما کمک می‌کند آنچه را باید در ChromeOS درست کنیم و بهبود ببخشیم اولویت‌بندی کنیم. این گزارش‌ها می‌تواند شامل مواردی ازاین‌قبیل باشد: چه زمانی ChromeOS ازکار می‌افتد، از کدام ویژگی‌ها استفاده می‌شود، معمولاً چه مقدار حافظه استفاده می‌شود.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />هرزمان بخواهید می‌توانید اجازه دادن به این گزارش‌ها را در تنظیمات دستگاه Chrome شروع یا متوقف کنید. اگر سرپرست دامنه هستید، می‌توانید این تنظیم را در «کنسول سرپرست» تغییر دهید.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">حذف <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">‏برای شروع کار، لطفاً مطمئن شوید که کلید بلوتوث یا USB به Chromebook متصل باشد. می‌توانید از کلیدهای صفحه‌کلید هم استفاده کنید.</translation>
 <translation id="4426508677408162512">تمام نشانک‌ها</translation>
 <translation id="4427306783828095590">«محافظت بهبودیافته» کارهای بیشتری برای مسدود کردن رمزگیری و بدافزار انجام می‌دهد</translation>
@@ -4030,6 +4034,7 @@
 <translation id="4666472247053585787">مشاهده اعلان‌های تلفن در <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">برنامه‌های بیشتر</translation>
 <translation id="4667027203988048332">انواع داده‌هایی که استفاده می‌شود:</translation>
+<translation id="4672759829555593783"><ph name="FILE_NAME" /> اکنون باز شود</translation>
 <translation id="46733273239502219">داده‌های آفلاین برنامه‌های نصب‌شده هم حذف خواهد شد</translation>
 <translation id="4673442866648850031">وقتی قلم برداشته می‌شود، ابزار قلم باز می‌شود</translation>
 <translation id="4675065861091108046">قبلاً انتخاب کرده‌اید همه افزونه‌ها در <ph name="ORIGIN" /> مجاز باشند</translation>
@@ -4642,6 +4647,7 @@
 <translation id="5268373933383932086">صفحه شما، روش شما</translation>
 <translation id="5269977353971873915">چاپ نشد</translation>
 <translation id="5273806377963980154">ویرایش نشانی وب سایت</translation>
+<translation id="5273966423195882879">رنگ براساس زمینه</translation>
 <translation id="5275084684151588738">فرهنگ‌های لغت کاربر</translation>
 <translation id="5275100789567222478">فقط زمانی که شارژ باتری <ph name="PERCENT" />٪ یا کمتر است روشن شود</translation>
 <translation id="5275338516105640560">دکمه گروه برگه ذخیره‌شده</translation>
@@ -5921,6 +5927,7 @@
 <translation id="6465841119675156448">بدون اینترنت</translation>
 <translation id="6466258437571594570">سایت‌ها مسدود شده‌اند تا هنگام درخواست برای ارسال اعلان مزاحم شما نشوند</translation>
 <translation id="6466988389784393586">&amp;باز کردن همه نشانک‌ها</translation>
+<translation id="6467230443178397264">اسکن <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">بهینه‌سازی ویدیوهای تمام‌صفحه</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> شما سپس می‌تواند این کارها را بکند:</translation>
 <translation id="6468485451923838994">قلم‌ها</translation>
@@ -6670,6 +6677,7 @@
 <translation id="7149893636342594995">۲۴ ساعت گذشته</translation>
 <translation id="7152478047064750137">این افزونه به مجوز خاصی نیاز ندارد</translation>
 <translation id="7154130902455071009">تغییر صفحه شروعتان به: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">تبدیل تصویر به نوشتار</translation>
 <translation id="7159953856712257647">نصب‌شده به‌طور پیش‌فرض</translation>
 <translation id="7160182524506337403">اکنون می‌توانید اعلان‌های تلفنتان را مشاهده کنید</translation>
 <translation id="7163202347044721291">درحال راستی‌آزمایی کد فعال‌سازی…</translation>
@@ -6931,6 +6939,7 @@
 <translation id="7412226954991670867">‏حافظه GPU</translation>
 <translation id="7414464185801331860">۱۸ برابر</translation>
 <translation id="7415454883318062233">راه‌اندازی کامل شد</translation>
+<translation id="7416091793702109803">مرور <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">«شرایط خدمات» را نمی‌توان بار کرد. لطفاً اتصال شبکه‌تان را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="7416362041876611053">خطای شبکه ناشناس.</translation>
 <translation id="741906494724992817">این برنامه به مجوز خاصی نیاز ندارد.</translation>

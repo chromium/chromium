@@ -1256,6 +1256,7 @@
 <translation id="212862741129535676">周波数状態の占有率（%）</translation>
 <translation id="212876957201860463">モバイル デバイスのセットアップ準備中...</translation>
 <translation id="2131077480075264">「<ph name="APP_NAME" />」は「<ph name="IMPORT_NAME" />」で許可されていないためインストールできません</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> を再試行</translation>
 <translation id="21354425047973905">PIN を非表示</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
 <translation id="2135787500304447609">再開(&amp;R)</translation>
@@ -2833,11 +2834,13 @@
 <translation id="3584169441612580296">パソコンからの写真、音楽、その他のメディアの読み取りと変更</translation>
 <translation id="3586787825263265024">アプリケーション <ph name="APPLICATION_NAME" /> で開くには、OneDrive へのアクセスが必要です。</translation>
 <translation id="3586806079541226322">このファイルを開けません</translation>
+<translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> の詳細</translation>
 <translation id="3587482841069643663">すべて</translation>
 <translation id="3588790464166520201">支払いハンドラのインストールを許可するサイト</translation>
 <translation id="3589766037099229847">安全でないコンテンツがブロックされました</translation>
 <translation id="3590194807845837023">プロフィールのロックを解除して再起動</translation>
 <translation id="3590295622232282437">管理対象セッションを開始しています。</translation>
+<translation id="3591057288287063271"><ph name="FILE_NAME" /> を保持</translation>
 <translation id="3592260987370335752">詳細(&amp;L)</translation>
 <translation id="3593152357631900254">ファジーピンイン モードを有効にする</translation>
 <translation id="3593965109698325041">証明書名の制約</translation>
@@ -3739,6 +3742,7 @@
 <translation id="4423376891418188461">設定を元に戻す</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" /> さん、管理者がパスワードの変更をリクエストしています。</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に Chrome OS を修正および改善する取り組みにご協力ください。障害レポートでは、Chrome OS がクラッシュした時間や使用された機能、通常のメモリ使用量などが送信されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、Chrome OS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040"><ph name="FILE_NAME" /> を削除</translation>
 <translation id="4426464032773610160">始める前に、USB または Bluetooth スイッチが Chromebook に接続されていることをご確認ください。キーボードのキーを使うこともできます。</translation>
 <translation id="4426508677408162512">すべてのブックマーク</translation>
 <translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
@@ -4009,6 +4013,7 @@
 <translation id="4666472247053585787">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で確認できます</translation>
 <translation id="4666911709726371538">表示するアプリを増やす</translation>
 <translation id="4667027203988048332">使用されるデータ:</translation>
+<translation id="4672759829555593783"><ph name="FILE_NAME" /> を今すぐ開く</translation>
 <translation id="46733273239502219">インストール済みアプリのオフライン データも削除されます</translation>
 <translation id="4673442866648850031">タッチペンを取り外したらタッチペン ツールを開く</translation>
 <translation id="4675065861091108046"><ph name="ORIGIN" /> の拡張機能をすべて許可するよう選択しています</translation>
@@ -4620,6 +4625,7 @@
 <translation id="5268373933383932086">ページを自由にカスタマイズ</translation>
 <translation id="5269977353971873915">印刷の失敗</translation>
 <translation id="5273806377963980154">サイトの URL を編集する</translation>
+<translation id="5273966423195882879">テーマに基づく色</translation>
 <translation id="5275084684151588738">ユーザー辞書</translation>
 <translation id="5275100789567222478">バッテリー残量が <ph name="PERCENT" />% 以下の場合にのみオンにする</translation>
 <translation id="5275338516105640560">保存されたタブグループのボタン</translation>
@@ -5898,6 +5904,7 @@
 <translation id="6465841119675156448">インターネットを使用しない</translation>
 <translation id="6466258437571594570">通知を送信するかどうかをサイトが確認できないようにします</translation>
 <translation id="6466988389784393586">すべてのブックマークを開く(&amp;O)</translation>
+<translation id="6467230443178397264"><ph name="FILE_NAME" /> をスキャン</translation>
 <translation id="6467304607960172345">動画の全画面表示を最適化</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> で次の操作を実行できます。</translation>
 <translation id="6468485451923838994">フォント</translation>
@@ -6643,6 +6650,7 @@
 <translation id="7149893636342594995">過去 24 時間</translation>
 <translation id="7152478047064750137">この拡張機能に特別な権限は必要ありません</translation>
 <translation id="7154130902455071009">スタート ページを次に変更します: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">画像をテキストに変換</translation>
 <translation id="7159953856712257647">デフォルトでインストール</translation>
 <translation id="7160182524506337403">スマートフォンの通知を表示できるようになりました</translation>
 <translation id="7163202347044721291">アクティベーション コードを確認しています...</translation>
@@ -6903,6 +6911,7 @@
 <translation id="7412226954991670867">GPU メモリ</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7415454883318062233">設定完了</translation>
+<translation id="7416091793702109803"><ph name="FILE_NAME" /> を確認</translation>
 <translation id="7416263748877373774">利用規約を読み込めません。ネットワーク接続を確認してからもう一度お試しください。</translation>
 <translation id="7416362041876611053">不明なネットワーク エラーが発生しました。</translation>
 <translation id="741906494724992817">このアプリの使用に特別な権限は必要ありません。</translation>

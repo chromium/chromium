@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Vale pakett: „<ph name="ERROR_CODE" />”.</translation>
 <translation id="1140871961407805696">Keskkonna poole suunatud</translation>
 <translation id="1196338895211115272">Privaatvõtme eksportimine nurjus.</translation>
+<translation id="132960226125594336">Ei saanud faili „<ph name="RELATIVE_PATH" />“ sisu skripti jaoks laadida, kuna see ületaks skripti maksimaalset suurust või laienduse sisu skripti maksimaalset kogusuurust.</translation>
 <translation id="1420684932347524586">Oih! RSA juhusliku privaatvõtme genereerimine ebaõnnestus.</translation>
 <translation id="1445572445564823378">Laiendus aeglustab rakendust <ph name="PRODUCT_NAME" />. Peaksite selle keelama, et taastada rakenduse <ph name="PRODUCT_NAME" /> toimivus.</translation>
 <translation id="1468038450257740950">WebGL-i ei toetata.</translation>

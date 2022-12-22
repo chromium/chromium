@@ -510,6 +510,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="481968316161811770">Cookie, dữ liệu trang web</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} và 1 thẻ khác}other{{domain} và {count} thẻ khác}}</translation>
 <translation id="4826218269716039351">Chặn cookie của bên thứ ba</translation>
+<translation id="4826588772550366629">máy ảnh và micrô</translation>
 <translation id="4826726074642088322">Chia sẻ nội dung được đánh dấu</translation>
 <translation id="48274138579728272">Đánh dấu là đã đọc</translation>
 <translation id="4833686396768033263">Không có các thẻ gần đây</translation>
@@ -562,6 +563,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5190835502935405962">Thanh Dấu trang</translation>
 <translation id="519530786644929958">Tải xuống không thành công và không thử lại được.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Cho phép "<ph name="SITE_NAME" />" sử dụng <ph name="PERMISSION" /> của bạn?</translation>
 <translation id="5219295696240154694">Giúp tăng cường bảo mật cho mọi người trên mạng</translation>
 <translation id="5228579091201413441">Bật đồng bộ hóa</translation>
 <translation id="5232485538978018676">Đăng nhập bằng Tài khoản được quản lý</translation>

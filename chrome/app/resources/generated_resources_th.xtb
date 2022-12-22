@@ -105,6 +105,7 @@
 <translation id="1087965115100412394">ไม่อนุญาตให้เว็บไซต์เชื่อมต่ออุปกรณ์ MIDI</translation>
 <translation id="1088654056000736875">Chrome กำลังนำซอฟต์แวร์ที่เป็นอันตรายออกจากคอมพิวเตอร์...</translation>
 <translation id="1088659085457112967">เข้าสู่โหมดผู้อ่าน</translation>
+<translation id="1089407731410758060">เปลี่ยนธีม</translation>
 <translation id="1090126737595388931">ไม่มีแอปพลิเคชันทำงานในพื้นหลัง</translation>
 <translation id="1090541560108055381">ตรวจสอบว่ารหัสนี้เหมือนกันในอุปกรณ์ทั้ง 2 เครื่องก่อนที่จะจับคู่</translation>
 <translation id="1091767800771861448">กด ESCAPE เพื่อยกเลิก (รุ่นที่ไม่เป็นทางการเท่านั้น)</translation>
@@ -922,6 +923,7 @@
 <translation id="18260074040409954">คุณใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์ใดก็ได้ โดยรหัสผ่านจะบันทึกอยู่ใน <ph name="GOOGLE_PASSWORD_MANAGER" />ของ <ph name="EMAIL" /></translation>
 <translation id="1826192255355608658">ซิงค์บุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ของเบราว์เซอร์ Chrome</translation>
 <translation id="1826516787628120939">กำลังตรวจสอบ</translation>
+<translation id="1827504459960247692">ชื่อฮอตสปอต</translation>
 <translation id="1828378091493947763">อุปกรณ์นี้ไม่รองรับปลั๊กอินนี้</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;เปิดทั้งหมด}=1{&amp;เปิดบุ๊กมาร์ก}other{&amp;เปิดทั้งหมด ({COUNT})}}</translation>
 <translation id="1828901632669367785">พิมพ์โดยใช้ช่องโต้ตอบของระบบ…</translation>
@@ -1231,6 +1233,7 @@
 <translation id="2101225219012730419">รุ่น:</translation>
 <translation id="2102396546234652240">ไม่อนุญาตให้เว็บไซต์ใช้ไมโครโฟนของคุณ</translation>
 <translation id="2102495993840063010">แอป Android</translation>
+<translation id="2104166991923847969">ปิดฮอตสปอตโดยอัตโนมัติ</translation>
 <translation id="2105809836724866556">ซ่อน<ph name="MODULE_TITLE" />แล้ว</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{หมายเลขโทรศัพท์}other{# หมายเลขโทรศัพท์}}</translation>
 <translation id="211144231511833662">ล้างประเภท</translation>
@@ -1811,6 +1814,7 @@
 <translation id="2616366145935564096">อ่านและเปลี่ยนแปลงข้อมูลของคุณใน <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">ตั้งค่าการแชร์ใกล้เคียง</translation>
 <translation id="2620215283731032047">ดาวน์โหลด <ph name="FILE_NAME" /> อย่างปลอดภัยไม่ได้</translation>
+<translation id="2620245777360407679">อุปกรณ์ที่เชื่อมต่อกับฮอตสปอตอยู่ในขณะนี้</translation>
 <translation id="2620436844016719705">ระบบ</translation>
 <translation id="262154978979441594">ฝึกรูปแบบเสียงของ Google Assistant</translation>
 <translation id="26224892172169984">ไม่อนุญาตให้ไซต์ใดๆ จัดการโปรโตคอล</translation>
@@ -7129,6 +7133,7 @@
 <translation id="7614260613810441905">ถามเมื่อเว็บไซต์ต้องการแก้ไขไฟล์หรือโฟลเดอร์ในอุปกรณ์ (แนะนำ)</translation>
 <translation id="761530003705945209">สำรองข้อมูลไปที่ Google ไดรฟ์ กู้คืนข้อมูลหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองจะมีข้อมูลแอปอยู่ด้วย ข้อมูลสำรองดังกล่าวจะอัปโหลดขึ้น Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google</translation>
 <translation id="7615365294369022248">เกิดข้อผิดพลาดในการเพิ่มบัญชี</translation>
+<translation id="7615807797520072741">รีเซ็ตเป็น Chrome แบบคลาสสิก</translation>
 <translation id="7616214729753637086">กำลังลงทะเบียนอุปกรณ์...</translation>
 <translation id="7617263010641145920">เปิด Play Store</translation>
 <translation id="7617648809369507487">ใช้การส่งข้อความแบบไม่มีการแจ้งเตือน</translation>
@@ -8436,6 +8441,7 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{ย้ายแท็บไปที่หน้าต่างใหม่}other{ย้ายหลายแท็บไปที่หน้าต่างใหม่}}</translation>
 <translation id="8805140816472474147">ยืนยันการตั้งค่าการซิงค์เพื่อเริ่มซิงค์</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> จะเปิดแท็บที่ปิดไปโดยไม่ได้ตั้งใจขึ้นมาอีกครั้งได้</translation>
+<translation id="8807588541160250261">เมื่อไม่มีอุปกรณ์ใดเชื่อมต่ออยู่</translation>
 <translation id="8807632654848257479">เสถียร</translation>
 <translation id="8808478386290700967">ร้านค้าบนเว็บ</translation>
 <translation id="8808686172382650546">แมว</translation>

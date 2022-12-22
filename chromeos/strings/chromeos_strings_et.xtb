@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">UDP-taotluste vead</translation>
 <translation id="1947737735496445907">Prinditud</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1962550982027027473">Nõutav on vaike-APN.</translation>
 <translation id="1977994649430373166">Google'i profiilifoto</translation>
 <translation id="1979103255016296513">Parooli muutmise tähtaeg on möödunud</translation>
 <translation id="1999615961760456652">Hõiveportaal</translation>
@@ -635,6 +636,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6791471867139427246">klaviatuurivalguse värv</translation>
 <translation id="680983167891198932">Võti</translation>
 <translation id="6816797338148849397">Teie valikuga seotud teave on saadaval. Kasutage juurdepääsemiseks ülesnooleklahvi.</translation>
+<translation id="6838167112108853532">Seda APN-i ei saa keelata ega eemaldada. Veenduge, et lubatud seotud APN-id oleksid keelatud või eemaldatud.</translation>
 <translation id="6853312040151791195">Tühjenemise kiirus</translation>
 <translation id="6889786074662672253">Kui toimub taaskäivitamine, ärge eemaldage seda välist seadet ega lülitage arvutit välja. Võite selle akna minimeerida. Toimingule võib kuluda mõni minut ja teie välisseade ei pruugi sel ajal töötada.</translation>
 <translation id="6905724422583748843">Tagasi lehele <ph name="PAGE_NAME" /></translation>

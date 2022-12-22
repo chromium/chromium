@@ -1270,6 +1270,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="212862741129535676">Kellotaajuuden tilan käyttöprosentti</translation>
 <translation id="212876957201860463">Valmistellaan mobiililaitteen määritystä…</translation>
 <translation id="2131077480075264">Kohteen <ph name="APP_NAME" /> asentaminen ei onnistu, koska <ph name="IMPORT_NAME" /> ei salli sitä.</translation>
+<translation id="2133857665503360653">Yritä uudelleen: <ph name="FILE_NAME" /></translation>
 <translation id="21354425047973905">Piilota PIN-koodit</translation>
 <translation id="2135456203358955318">Kiinnitetty suurennus</translation>
 <translation id="2135787500304447609">&amp;Jatka</translation>
@@ -2854,11 +2855,13 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3584169441612580296">Käyttää ja muokata kuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
 <translation id="3586787825263265024">Sovellus <ph name="APPLICATION_NAME" /> edellyttää, että OneDrive on käytettävissä.</translation>
 <translation id="3586806079541226322">Tiedoston avaaminen epäonnistui</translation>
+<translation id="3587438013689771191">Lue lisää: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Kaikki</translation>
 <translation id="3588790464166520201">Maksujen käsittelijöiden asentaminen sallittu</translation>
 <translation id="3589766037099229847">Epäluotettava sisältö estetty</translation>
 <translation id="3590194807845837023">Poista profiilin lukitus ja käynnistä uudelleen</translation>
 <translation id="3590295622232282437">Hallinnoitu istunto aloitetaan</translation>
+<translation id="3591057288287063271">Säilytä <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Lisätietoja</translation>
 <translation id="3593152357631900254">Ota Fuzzy-Pinyin-tila käyttöön</translation>
 <translation id="3593965109698325041">Varmenteen nimirajoitukset</translation>
@@ -3758,6 +3761,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="442397852638519243"><ph name="USER_NAME" />, järjestelmänvalvojasi vaatii sinua vaihtamaan salasanasi.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Antamalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja ChromeOS:n kaatumisista ja käytetyistä ominaisuuksista sekä siitä, miten paljon muistia on yleensä käytetty.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa Chrome-laitteen asetuksissa. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">Poista <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Varmista aluksi, että USB- tai Bluetooth-kytkin on yhdistetty Chromebookiisi. Voit käyttää myös näppäimistöä.</translation>
 <translation id="4426508677408162512">Kaikki kirjanmerkit</translation>
 <translation id="4427306783828095590">Parannettu suojaus torjuu tietojenkalastelua ja haittaohjelmia entistä tehokkaammin</translation>
@@ -4029,6 +4033,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4666472247053585787">Katso puhelimesi ilmoitukset (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="4666911709726371538">Lisää sovelluksia</translation>
 <translation id="4667027203988048332">Mitä dataa käytetään:</translation>
+<translation id="4672759829555593783">Avaa <ph name="FILE_NAME" /> nyt</translation>
 <translation id="46733273239502219">Myös asennetuissa sovelluksissa oleva offline-data poistetaan</translation>
 <translation id="4673442866648850031">Avaa näyttökynätyökalut, kun näyttökynä otetaan esille</translation>
 <translation id="4675065861091108046">Sallit aiemmin kaikki laajennukset täällä: <ph name="ORIGIN" /></translation>
@@ -5920,6 +5925,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6465841119675156448">Ilman internetyhteyttä</translation>
 <translation id="6466258437571594570">Sivustot eivät voi keskeyttää sinua pyytämällä lupaa ilmoitusten lähettämiseen</translation>
 <translation id="6466988389784393586">Avaa kaikki kirjanmerkit</translation>
+<translation id="6467230443178397264">Skannaa <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimoi koko näytön videot</translation>
 <translation id="6467377768028664108">Sen jälkeen <ph name="DEVICE_TYPE" /> voi</translation>
 <translation id="6468485451923838994">Fontit</translation>
@@ -6667,6 +6673,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7149893636342594995">Viimeiset 24 tuntia</translation>
 <translation id="7152478047064750137">Tämä laajennus ei vaadi erityisiä käyttöoikeuksia.</translation>
 <translation id="7154130902455071009">Vaihda aloitussivuksi <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">Muunna kuva tekstiksi</translation>
 <translation id="7159953856712257647">Asennettu oletuksena</translation>
 <translation id="7160182524506337403">Voit nyt nähdä puhelimen ilmoitukset</translation>
 <translation id="7163202347044721291">Aktivointikoodia vahvistetaan…</translation>
@@ -6928,6 +6935,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7412226954991670867">Keskusyksikön muisti</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Määritys valmis</translation>
+<translation id="7416091793702109803">Tarkista <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Käyttöehtojen lataaminen ei onnistu. Tarkista verkkoyhteys ja yritä uudelleen.</translation>
 <translation id="7416362041876611053">Tuntematon verkkovirhe.</translation>
 <translation id="741906494724992817">Tämä sovellus ei tarvitse erityisiä käyttöoikeuksia.</translation>

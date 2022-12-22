@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">الحزمة غير صالحة: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">الكاميرا الخلفية المواجهة للبيئة</translation>
 <translation id="1196338895211115272">تعذّر تصدير المفتاح الخاص.</translation>
+<translation id="132960226125594336">تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى لأنّه سيتجاوز الحد الأقصى لحجم النص البرمجي أو الحد الأقصى لحجم النص البرمجي لإجمالي المحتوى الخاص بالإضافة.</translation>
 <translation id="1420684932347524586">‏عذرًا! تعذّر إنشاء ملف خاص RSA عشوائي.</translation>
 <translation id="1445572445564823378">تتسبب هذه الإضافة في بطء <ph name="PRODUCT_NAME" />. يجب إيقافها لاستعادة أداء <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL غير متوافق.</translation>

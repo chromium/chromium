@@ -116,6 +116,7 @@
 <translation id="1908234395526491708">UDP-beiðnir mistókust</translation>
 <translation id="1947737735496445907">Prentað</translation>
 <translation id="1951012854035635156">Aðstoðarmaður</translation>
+<translation id="1962550982027027473">Sjálfgefinn aðgangsstaður er nauðsynlegur</translation>
 <translation id="1977994649430373166">Google prófílmynd</translation>
 <translation id="1979103255016296513">Breyting á aðgangsorði komin fram yfir tíma</translation>
 <translation id="1999615961760456652">Innskráningarsíða</translation>
@@ -635,6 +636,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6791471867139427246">litur lyklaborðsljóss</translation>
 <translation id="680983167891198932">Lykill</translation>
 <translation id="6816797338148849397">Tiltækar upplýsingar sem tengjast vali þínu. Notaðu ör upp-lykilinn til að opna.</translation>
+<translation id="6838167112108853532">Hvorki er hægt að slökkva á né fjarlægja þennan aðgangsstað. Gakktu úr skugga um að slökkt sé á tengdum aðgangsstöðum sem er kveikt á eða þeir fjarlægðir.</translation>
 <translation id="6853312040151791195">Afhleðsluhraði</translation>
 <translation id="6889786074662672253">Ekki skal taka þetta ytra tæki úr sambandi eða slökkva á tölvunni meðan á endurræsingu stendur. Þú getur minnkað þennan glugga. Þetta gæti tekið nokkrar mínútur og óvíst er að ytra tækið virki á meðan.</translation>
 <translation id="6905724422583748843">Til baka í <ph name="PAGE_NAME" /></translation>
