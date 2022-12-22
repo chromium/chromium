@@ -123,10 +123,16 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/base_switches.h"
+#include "base/files/file_path_watcher.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/startup_switches.h"  // nogncheck
+#include "content/public/test/browser_test_switches.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 #endif
 
@@ -430,17 +436,35 @@ void BrowserTestBase::SetUp() {
       disable_crosapi_ =
           std::make_unique<chromeos::ScopedDisableCrosapiForTesting>();
     } else {
-      auto channel = mojo::NamedPlatformChannel::ConnectToServer(socket_path);
-      base::ScopedFD socket_fd = channel.TakePlatformHandle().TakeFD();
+      bool connected_to_ash = false;
+      int retry_left = 2;
+      base::ScopedFD socket_fd;
+      int flags = 0;
+      while (retry_left-- > 0 && !connected_to_ash) {
+        auto channel = mojo::NamedPlatformChannel::ConnectToServer(socket_path);
+        socket_fd = channel.TakePlatformHandle().TakeFD();
 
-      // Mark the channel as blocking.
-      int flags = fcntl(socket_fd.get(), F_GETFL);
+        // Mark the channel as blocking.
+        flags = fcntl(socket_fd.get(), F_GETFL);
+
+        connected_to_ash = flags != -1;
+
+        if (!connected_to_ash) {
+          LOG(WARNING) << "Ash is probably not running. Perhaps it crashed?"
+                       << " Try to start ash again.";
+          StartAshChrome();
+        }
+      }
       std::string helper_msg =
           "On bot, open CAS outputs on test result page(Milo),"
           "there is a ash_chrome.log file which contains ash log."
           "For local debugging, pass in --ash-logging-path to test runner.";
-      PCHECK(flags != -1) << "Ash is probably not running. Perhaps it crashed?"
-                          << helper_msg;
+      if (connected_to_ash) {
+        LOG(INFO) << "Connected to ash.";
+      } else {
+        LOG(FATAL) << "Ash is probably not running. Perhaps it crashed?"
+                   << helper_msg;
+      }
       fcntl(socket_fd.get(), F_SETFL, flags & ~O_NONBLOCK);
 
       uint8_t buf[32];
@@ -1133,5 +1157,83 @@ void BrowserTestBase::CreatedBrowserMainPartsImpl(
 ContentMainDelegate* BrowserTestBase::GetOptionalContentMainDelegateOverride() {
   return nullptr;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void BrowserTestBase::StartAshChrome() {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+
+  base::FilePath mojo_socket_file =
+      cmdline->GetSwitchValuePath("lacros-mojo-socket-for-testing");
+  if (mojo_socket_file.empty()) {
+    LOG(WARNING) << "Start ash failed because of missing "
+                 << "--lacros-mojo-socket-for-testing";
+    return;
+  }
+  // Delete the existing file because we will reuse the same file for the new
+  // ash chrome instance.
+  CHECK(base::DeleteFile(mojo_socket_file));
+  base::FilePath ash_chrome_path =
+      cmdline->GetSwitchValuePath("ash-chrome-path");
+  CHECK(!ash_chrome_path.empty());
+
+  base::CommandLine ash_cmdline(ash_chrome_path);
+  base::FilePath ash_user_data_dir =
+      cmdline->GetSwitchValuePath(content::test::switches::kAshUserDataDir);
+  CHECK(base::DeletePathRecursively(ash_user_data_dir));
+  ash_cmdline.AppendSwitchPath("user-data-dir", ash_user_data_dir);
+  ash_cmdline.AppendSwitch("enable-wayland-server");
+  ash_cmdline.AppendSwitch("no-startup-window");
+  ash_cmdline.AppendSwitch("disable-lacros-keep-alive");
+  ash_cmdline.AppendSwitch("disable-login-lacros-opening");
+
+  std::string ash_features = "LacrosSupport,LacrosPrimary,LacrosOnly";
+  ash_cmdline.AppendSwitchASCII(switches::kEnableFeatures, ash_features);
+
+  ash_cmdline.AppendSwitchPath("lacros-mojo-socket-for-testing",
+                               mojo_socket_file);
+
+  std::string wayland_socket;
+  CHECK(
+      base::Environment::Create()->GetVar("WAYLAND_DISPLAY", &wayland_socket));
+  DCHECK(wayland_socket.length() > 0);
+  ash_cmdline.AppendSwitchASCII("wayland-server-socket", wayland_socket);
+
+  const std::string ash_ready_file =
+      ash_user_data_dir.AppendASCII("ash_ready.txt").MaybeAsASCII();
+  ash_cmdline.AppendSwitchASCII(content::test::switches::kAshReadyFilePath,
+                                ash_ready_file);
+
+  base::FilePathWatcher watcher;
+  base::RunLoop run_loop;
+  CHECK(watcher.Watch(base::FilePath(ash_ready_file),
+                      base::FilePathWatcher::Type::kNonRecursive,
+                      base::BindLambdaForTesting(
+                          [&](const base::FilePath& filepath, bool error) {
+                            CHECK(!error);
+                            run_loop.Quit();
+                          })));
+  base::LaunchOptions option;
+  option.new_process_group = true;
+  base::Process process = base::LaunchProcess(ash_cmdline, option);
+  CHECK(process.IsValid());
+  run_loop.Run();
+  // When ash is ready and crosapi was enabled, we expect mojo socket is
+  // also ready.
+  CHECK(base::PathExists(mojo_socket_file));
+  base::FilePath ash_processes_dir = cmdline->GetSwitchValuePath(
+      content::test::switches::kAshProcessesDirPath);
+  CHECK(!ash_processes_dir.empty());
+  base::FilePath temp_filepath;
+  std::string str_pid = base::StringPrintf("%d", process.Pid());
+  base::File f =
+      CreateAndOpenTemporaryFileInDir(ash_processes_dir, &temp_filepath);
+  int ret_code = f.Write(0, str_pid.c_str(), str_pid.length());
+  CHECK(ret_code >= 0 && (unsigned int)ret_code == str_pid.length())
+      << "Cannot write to file " << temp_filepath.AsUTF8Unsafe()
+      << "Return code is " << ret_code;
+  f.Close();
+}
+#endif
 
 }  // namespace content

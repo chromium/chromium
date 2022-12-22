@@ -76,6 +76,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "content/public/test/browser_test_switches.h"
+#endif
+
 // static
 int ChromeTestSuiteRunner::RunTestSuiteInternal(ChromeTestSuite* test_suite) {
   // Browser tests are expected not to tear-down various globals.
@@ -232,11 +239,34 @@ void ChromeTestLauncherDelegate::PreSharding() {
   if (IsUserAnAdmin())
     firewall_rules_ = std::make_unique<ScopedFirewallRules>();
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  CHECK(ash_processes_dir_.CreateUniqueTempDir());
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      content::test::switches::kAshProcessesDirPath,
+      ash_processes_dir_.GetPath());
+#endif
 }
 
 void ChromeTestLauncherDelegate::OnDoneRunningTests() {
 #if BUILDFLAG(IS_WIN)
   firewall_rules_.reset();
+#endif
+
+// In test runners, they may create ash processes outlive the runner process.
+// So we need to terminate those ash processes in the test launcher.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::FileEnumerator files(ash_processes_dir_.GetPath(), false,
+                             base::FileEnumerator::FILES);
+  for (base::FilePath name = files.Next(); !name.empty(); name = files.Next()) {
+    std::string str_pid;
+    CHECK(base::ReadFileToString(name, &str_pid));
+    int pid;
+    CHECK(base::StringToInt(str_pid, &pid)) << "Cannot read pid. The content "
+                                            << "of the file is: " << str_pid;
+    base::Process process = base::Process::Open(pid);
+    process.Terminate(0, false);
+  }
 #endif
 }
 
