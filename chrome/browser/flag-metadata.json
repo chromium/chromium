@@ -6941,7 +6941,7 @@
   {
     "name": "vm-per-boot-shader-cache",
     "owners": [ "endlesspring", "hollingum", "cpelling", "renatopereyra", "davidriley"],
-    "expiry_milestone": 111
+    "expiry_milestone": 120
   },
   {
     "name": "voice-button-in-top-toolbar",
