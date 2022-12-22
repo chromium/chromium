@@ -47,7 +47,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
         type: FeedbackContext,
         readOnly: false,
         notify: true,
-        observer: 'onFeedbackContextChanged_',
+        observer: ShareDataPageElement.prototype.onFeedbackContextChanged_,
       },
 
       screenshotUrl: {type: String, readOnly: false, notify: true},
