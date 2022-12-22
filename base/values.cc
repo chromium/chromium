@@ -218,20 +218,6 @@ Value::Value(Dict&& value) noexcept : data_(std::move(value)) {}
 
 Value::Value(List&& value) noexcept : data_(std::move(value)) {}
 
-Value::Value(const LegacyDictStorage& storage)
-    : data_(absl::in_place_type_t<Dict>()) {
-  dict().reserve(storage.size());
-  for (const auto& it : storage) {
-    dict().try_emplace(dict().end(), it.first,
-                       std::make_unique<Value>(it.second->Clone()));
-  }
-}
-
-Value::Value(LegacyDictStorage&& storage) noexcept
-    : data_(absl::in_place_type_t<Dict>()) {
-  dict() = std::move(storage);
-}
-
 Value::Value(absl::monostate) {}
 
 Value::Value(DoubleStorage storage) : data_(std::move(storage)) {}
@@ -1594,12 +1580,6 @@ std::unique_ptr<DictionaryValue> DictionaryValue::From(
 }
 
 DictionaryValue::DictionaryValue() : Value(Type::DICTIONARY) {}
-
-DictionaryValue::DictionaryValue(const LegacyDictStorage& storage)
-    : Value(storage) {}
-
-DictionaryValue::DictionaryValue(LegacyDictStorage&& storage) noexcept
-    : Value(std::move(storage)) {}
 
 Value* DictionaryValue::Set(StringPiece path, std::unique_ptr<Value> in_value) {
   DCHECK(IsStringUTF8AllowingNoncharacters(path));

@@ -1093,10 +1093,6 @@ class BASE_EXPORT GSL_OWNER Value {
   const ListStorage& list() const { return GetList().storage_; }
   ListStorage& list() { return GetList().storage_; }
 
-  // Internal constructors, allowing the simplify the implementation of Clone().
-  explicit Value(const LegacyDictStorage& storage);
-  explicit Value(LegacyDictStorage&& storage) noexcept;
-
  private:
   // For access to DoubleStorage.
   friend class ValueView;
@@ -1255,8 +1251,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   static std::unique_ptr<DictionaryValue> From(std::unique_ptr<Value> value);
 
   DictionaryValue();
-  explicit DictionaryValue(const LegacyDictStorage& in_dict);
-  explicit DictionaryValue(LegacyDictStorage&& in_dict) noexcept;
 
   // Sets the Value associated with the given path starting from this object.
   // A path has the form "<key>" or "<key>.<key>.[...]", where "." indexes
