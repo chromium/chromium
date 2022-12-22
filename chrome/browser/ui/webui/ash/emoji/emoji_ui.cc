@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/emoji_picker_resources.h"
@@ -58,6 +59,10 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
       source, base::make_span(kEmojiPickerResources, kEmojiPickerResourcesSize),
       IDR_EMOJI_PICKER_INDEX_HTML);
   source->DisableTrustedTypesCSP();
+
+  Profile* profile = Profile::FromWebUI(web_ui);
+  content::URLDataSource::Add(profile,
+                              std::make_unique<SanitizedImageSource>(profile));
 }
 
 EmojiUI::~EmojiUI() = default;
