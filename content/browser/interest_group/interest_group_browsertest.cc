@@ -83,6 +83,7 @@ namespace content {
 namespace {
 
 using ::testing::Eq;
+using ::testing::HasSubstr;
 using ::testing::Optional;
 
 // Returned by test Javascript code when join or leave promises complete without
@@ -1194,21 +1195,21 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   bool ReplaceInURNInJS(
       const GURL& urn_url,
       const base::flat_map<std::string, std::string> replacements,
-      const absl::optional<ToRenderFrameHost> execution_target =
-          absl::nullopt) {
+      std::string* error_out = nullptr) {
     base::Value::Dict replacement_value;
     for (const auto& replacement : replacements)
       replacement_value.Set(replacement.first, replacement.second);
-    EvalJsResult result =
-        EvalJs(execution_target ? *execution_target : shell(),
-               JsReplace(R"(
+    EvalJsResult result = EvalJs(
+        shell(), JsReplace(R"(
     (async function() {
       await navigator.deprecatedReplaceInURN($1, $2);
       return 'done';
     })())",
-                         urn_url, base::Value(std::move(replacement_value))));
-    EXPECT_EQ("", result.error);
-    return "done" == result;
+                           urn_url, base::Value(std::move(replacement_value))));
+    if (error_out != nullptr) {
+      *error_out = result.error;
+    }
+    return result.error == "" && result == "done";
   }
 
   void AttachInterestGroupObserver() {
@@ -4107,6 +4108,33 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   NavigateIframeAndCheckURL(web_contents(), urn_url, expected_ad_url);
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       ReplaceURLFailsOnBadReplacementInput) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  GURL urn_url = GURL("urn:uuid:84a8bf15-8539-432d-bb9f-4eb20eaf400b");
+  std::string error;
+  EXPECT_FALSE(ReplaceInURNInJS(
+      urn_url, {{"${INTEREST_GROUP_NAME}", "render_cars"}, {"%echo%%", "echo"}},
+      &error));
+  EXPECT_THAT(error, HasSubstr("Replacements must be of the form "));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       ReplaceURLFailsOnMalformedURN) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  GURL urn_url = GURL("http://test.com");
+  std::string error;
+  EXPECT_FALSE(ReplaceInURNInJS(
+      urn_url,
+      {{"${INTEREST_GROUP_NAME}", "render_cars"}, {"%%echo%%", "echo"}},
+      &error));
+  EXPECT_THAT(error, HasSubstr("Passed URL must be a valid URN URL."));
+}
+
 IN_PROC_BROWSER_TEST_F(
     InterestGroupBrowserTest,
     RunAdAuctionPerBuyerSignalsAndPerBuyerTimeoutsOriginNotInBuyers) {
@@ -4838,7 +4866,8 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
       << "URL is not valid: " << urn_url_string.ExtractString();
   EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
 
-  ReplaceInURNInJS(urn_url, {{"%%LOADING_MODE%%", "fenced-frame"}});
+  EXPECT_TRUE(
+      ReplaceInURNInJS(urn_url, {{"%%LOADING_MODE%%", "fenced-frame"}}));
 
   NavigateFencedFrameAndWait(urn_url, expected_ad_url, shell());
 }
