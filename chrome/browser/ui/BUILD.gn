@@ -1993,6 +1993,8 @@ static_library("ui") {
       "../ash/app_list/arc/arc_app_list_prefs_factory.h",
       "../ash/app_list/arc/arc_app_scoped_pref_update.cc",
       "../ash/app_list/arc/arc_app_scoped_pref_update.h",
+      "../ash/app_list/arc/arc_app_sync_metrics_helper.cc",
+      "../ash/app_list/arc/arc_app_sync_metrics_helper.h",
       "../ash/app_list/arc/arc_app_utils.cc",
       "../ash/app_list/arc/arc_app_utils.h",
       "../ash/app_list/arc/arc_data_removal_dialog.h",

@@ -517,6 +517,8 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kSyncOobeCompleted, false);
 
+  registry->RegisterBooleanPref(prefs::kRecordArcAppSyncMetrics, false);
+
   registry->RegisterBooleanPref(::prefs::kTPMFirmwareUpdateCleanupDismissed,
                                 false);
 

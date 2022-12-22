@@ -114,6 +114,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".Roblox" summary="Online game: Roblox"/>
 </variants>
 
+<variants name="ArcSyncAppTypes">
+  <variant name="Expected" summary="Apps expected to be synced"/>
+  <variant name="Installed" summary="Apps installed"/>
+  <variant name="NotInstalled"
+      summary="Apps that were expected but not installed"/>
+</variants>
+
 <variants name="ArcUserTypes">
   <variant name=".ActiveDirectory"
       summary="User with active directory account"/>
@@ -530,6 +537,31 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired after M92 and brought back 2021-09-17;
     expired after M99 and brought back 2022-12-07; data may be missing.
   </summary>
+</histogram>
+
+<histogram name="Arc.AppSync.InitialSession.Latency" units="seconds"
+    expires_after="2023-06-20">
+  <owner>batoon@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records the time from the start of app sync until the last finished
+    installation before the session ended. This is not the latency for total app
+    sync, since total app sync may occur over multiple sessions. Metrics are
+    emitted when a user logs off IFF it is the first session after opting in
+    during the sync consent screen.
+  </summary>
+</histogram>
+
+<histogram name="Arc.AppSync.InitialSession.NumApps{ArcSyncAppTypes}"
+    units="apps" expires_after="2023-06-20">
+  <owner>batoon@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records the count of {ArcSyncAppTypes} apps during the initial session for
+    app sync. Metrics are emitted when a user logs off IFF it is the first
+    session after opting in during the sync consent screen.
+  </summary>
+  <token key="ArcSyncAppTypes" variants="ArcSyncAppTypes"/>
 </histogram>
 
 <histogram name="Arc.AppUninstallReason" enum="UninstallCounterReasonEnum"

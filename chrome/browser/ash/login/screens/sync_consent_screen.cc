@@ -166,6 +166,7 @@ void SyncConsentScreen::Init(const WizardContext& context) {
 
 void SyncConsentScreen::Finish(Result result) {
   DCHECK(profile_);
+  profile_->GetPrefs()->SetBoolean(prefs::kRecordArcAppSyncMetrics, true);
   // Always set completed, even if the dialog was skipped (e.g. by policy).
   profile_->GetPrefs()->SetBoolean(prefs::kSyncOobeCompleted, true);
   // Record whether the dialog was shown, skipped, etc.

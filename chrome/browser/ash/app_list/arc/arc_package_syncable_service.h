@@ -12,6 +12,8 @@
 #include <unordered_map>
 
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_sync_metrics_helper.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/sync_change.h"
@@ -28,10 +30,11 @@ class BrowserContext;
 
 namespace arc {
 
-// Class that syncs ARC pakcages install/uninstall.
+// Class that syncs ARC packages install/uninstall.
 class ArcPackageSyncableService : public syncer::SyncableService,
                                   public KeyedService,
-                                  public ArcAppListPrefs::Observer {
+                                  public ArcAppListPrefs::Observer,
+                                  public ArcSessionManagerObserver {
  public:
   struct SyncItem {
     SyncItem(const std::string& package_name,
@@ -84,6 +87,9 @@ class ArcPackageSyncableService : public syncer::SyncableService,
                         bool uninstalled) override;
   void OnPackageListInitialRefreshed() override;
 
+  // ArcSessionManagerObserver:
+  void OnArcSessionStopped(ArcStopReason stop_reason) override;
+
   // Sends adds/updates sync change to sync server.
   void SendSyncChange(
       const mojom::ArcPackageInfo& package_info,
@@ -135,6 +141,8 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   syncer::SyncableService::StartSyncFlare flare_;
 
   ArcAppListPrefs* const prefs_;
+
+  ArcAppSyncMetricsHelper metrics_helper_;
 };
 
 }  // namespace arc

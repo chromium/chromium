@@ -538,6 +538,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kBackgroundReplace[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPortraitRelighting[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRecordArcAppSyncMetrics[];
+
 }  // namespace prefs
 }  // namespace ash
 
