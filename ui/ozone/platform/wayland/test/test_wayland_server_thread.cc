@@ -144,6 +144,9 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
     return false;
   if (!wp_pointer_gestures_.Initialize(display_.get()))
     return false;
+  if (!zcr_color_manager_v1_.Initialize(display_.get())) {
+    return false;
+  }
 
   client_ = wl_client_create(display_.get(), server_fd.release());
   if (!client_)

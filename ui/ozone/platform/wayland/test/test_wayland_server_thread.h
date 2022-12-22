@@ -17,6 +17,7 @@
 #include "base/threading/thread_checker.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
+#include "ui/ozone/platform/wayland/test/mock_wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/test/mock_wp_presentation.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_shell.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
@@ -154,6 +155,10 @@ class TestWaylandServerThread : public base::Thread,
 
   TestWpPointerGestures& wp_pointer_gestures() { return wp_pointer_gestures_; }
 
+  MockZcrColorManagerV1* zcr_color_manager_v1() {
+    return &zcr_color_manager_v1_;
+  }
+
   void set_output_delegate(OutputDelegate* delegate) {
     output_delegate_ = delegate;
   }
@@ -217,6 +222,7 @@ class TestWaylandServerThread : public base::Thread,
   TestZXdgOutputManager zxdg_output_manager_;
   MockXdgShell xdg_shell_;
   TestZAuraShell zaura_shell_;
+  MockZcrColorManagerV1 zcr_color_manager_v1_;
   TestZcrStylus zcr_stylus_;
   TestZcrTextInputExtensionV1 zcr_text_input_extension_v1_;
   TestZwpTextInputManagerV1 zwp_text_input_manager_v1_;

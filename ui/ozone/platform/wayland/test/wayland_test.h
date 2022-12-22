@@ -14,6 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
@@ -116,7 +117,7 @@ class WaylandTestBase {
   std::unique_ptr<WaylandWindow> window_;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
   std::vector<base::test::FeatureRef> enabled_features_{
-      ui::kWaylandOverlayDelegation};
+      features::kLacrosColorManagement, ui::kWaylandOverlayDelegation};
   std::vector<base::test::FeatureRef> disabled_features_;
 
  private:
