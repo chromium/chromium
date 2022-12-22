@@ -571,8 +571,9 @@ id<GREYMatcher> SearchIconButton() {
   id<GREYMatcher> dismissMatcher = BookmarksSaveEditDoneButton();
   // If a folder is being edited use the EditFolder button dismiss matcher
   // instead.
-  if ([editorId isEqualToString:kBookmarkFolderEditViewContainerIdentifier])
+  if ([editorId isEqualToString:kBookmarkFolderEditViewContainerIdentifier]) {
     dismissMatcher = BookmarksSaveEditFolderButton();
+  }
   [[EarlGrey selectElementWithMatcher:dismissMatcher] performAction:grey_tap()];
 
   // Verify the Editor was dismissed.

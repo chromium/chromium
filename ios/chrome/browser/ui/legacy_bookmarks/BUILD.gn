@@ -1,0 +1,232 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("legacy_bookmarks") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "legacy_bookmark_home_consumer.h",
+    "legacy_bookmark_home_mediator.h",
+    "legacy_bookmark_home_mediator.mm",
+    "legacy_bookmark_home_shared_state.h",
+    "legacy_bookmark_home_shared_state.mm",
+    "legacy_bookmark_home_view_controller.h",
+    "legacy_bookmark_home_view_controller.mm",
+    "legacy_bookmark_interaction_controller.h",
+    "legacy_bookmark_interaction_controller.mm",
+    "legacy_bookmark_interaction_controller_delegate.h",
+    "legacy_bookmark_navigation_controller.h",
+    "legacy_bookmark_navigation_controller.mm",
+    "legacy_bookmark_navigation_controller_delegate.h",
+    "legacy_bookmark_navigation_controller_delegate.mm",
+    "legacy_bookmark_promo_controller.h",
+    "legacy_bookmark_promo_controller.mm",
+    "legacy_bookmark_transitioning_delegate.h",
+    "legacy_bookmark_transitioning_delegate.mm",
+    "legacy_synced_bookmarks_bridge.h",
+    "legacy_synced_bookmarks_bridge.mm",
+  ]
+  deps = [
+    ":bookmarks_ui",
+    ":core",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/bookmarks/managed",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//components/strings",
+    "//components/sync/driver",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/drag_and_drop",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/activity_services",
+    "//ios/chrome/browser/ui/alert_coordinator",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication:signin_presenter",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/bookmarks:constants",
+    "//ios/chrome/browser/ui/bookmarks/cells",
+    "//ios/chrome/browser/ui/bookmarks/resources:bookmark_blue_check",
+    "//ios/chrome/browser/ui/bookmarks/resources:bookmark_blue_folder",
+    "//ios/chrome/browser/ui/bookmarks/resources:bookmark_blue_new_folder",
+    "//ios/chrome/browser/ui/bookmarks/resources:bookmark_empty",
+    "//ios/chrome/browser/ui/bookmarks/resources:bookmark_empty_star",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/ui/keyboard",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/ui/sharing",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:presentation",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view:views",
+    "//ios/chrome/browser/ui/util:url_with_title",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/window_activities",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon:favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/util",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("core") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "legacy_bookmark_mediator.h",
+    "legacy_bookmark_mediator.mm",
+    "legacy_bookmark_model_bridge_observer.h",
+    "legacy_bookmark_model_bridge_observer.mm",
+    "legacy_bookmark_path_cache.h",
+    "legacy_bookmark_path_cache.mm",
+    "legacy_bookmark_utils_ios.h",
+    "legacy_bookmark_utils_ios.mm",
+    "legacy_undo_manager_bridge_observer.h",
+    "legacy_undo_manager_bridge_observer.mm",
+    "legacy_undo_manager_wrapper.h",
+    "legacy_undo_manager_wrapper.mm",
+  ]
+  deps = [
+    "//components/bookmarks/browser",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/query_parser",
+    "//components/strings",
+    "//components/undo",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/util:url_with_title",
+    "//ios/chrome/browser/undo",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("bookmarks_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "legacy_bookmark_edit_view_controller.h",
+    "legacy_bookmark_edit_view_controller.mm",
+    "legacy_bookmark_folder_editor_view_controller.h",
+    "legacy_bookmark_folder_editor_view_controller.mm",
+    "legacy_bookmark_folder_view_controller.h",
+    "legacy_bookmark_folder_view_controller.mm",
+  ]
+  deps = [
+    ":core",
+    "//base",
+    "//base:i18n",
+    "//components/bookmarks/browser",
+    "//components/strings",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/alert_coordinator",
+    "//ios/chrome/browser/ui/bookmarks:constants",
+    "//ios/chrome/browser/ui/bookmarks/cells",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/ui/keyboard",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:presentation",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view:views",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  allow_circular_includes_from = [ "//ios/chrome/browser/ui/bookmarks/cells" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "legacy_bookmark_ios_unittest.h",
+    "legacy_bookmark_ios_unittest.mm",
+  ]
+  deps = [
+    ":legacy_bookmarks",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/signin:test_support",
+    "//ios/web/public/test",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "legacy_bookmark_edit_view_controller_unittest.mm",
+    "legacy_bookmark_home_view_controller_unittest.mm",
+    "legacy_bookmark_model_bridge_observer_unittest.mm",
+    "legacy_bookmark_path_cache_unittest.mm",
+    "legacy_bookmark_utils_ios_unittest.mm",
+  ]
+  deps = [
+    ":bookmarks_ui",
+    ":core",
+    ":legacy_bookmarks",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/ui/bookmarks:constants",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock:ocmock",
+  ]
+}

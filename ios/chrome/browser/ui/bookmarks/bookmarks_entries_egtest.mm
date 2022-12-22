@@ -1072,8 +1072,9 @@ id<GREYMatcher> AddBookmarkButton() {
 // Tests display and selection of 'Open in New Window' in a context menu on a
 // bookmarks entry.
 - (void)testContextMenuOpenInNewWindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   [BookmarkEarlGrey clearBookmarksPositionCache];
   [BookmarkEarlGrey setupStandardBookmarks];
@@ -1090,13 +1091,15 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 - (void)testBookmarksSyncInMultiwindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   // TODO(crbug.com/1285974).
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled])
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_DISABLED(
         @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
+  }
 
   GURL URL1 = web::test::HttpServer::MakeUrl(kURL1);
 

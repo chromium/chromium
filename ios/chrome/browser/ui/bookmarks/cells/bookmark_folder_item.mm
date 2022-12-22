@@ -7,8 +7,8 @@
 #import "base/i18n/rtl.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_edit_delegate.h"
+#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -65,9 +65,10 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
       folderCell.folderTitleTextField.text = self.title;
       folderCell.accessibilityIdentifier = self.title;
       folderCell.accessibilityTraits |= UIAccessibilityTraitButton;
-      if (self.isCurrentFolder)
+      if (self.isCurrentFolder) {
         folderCell.bookmarkAccessoryType =
             TableViewBookmarkFolderAccessoryTypeCheckmark;
+      }
       // In order to indent the cell's content we need to modify its
       // indentation constraint.
       folderCell.indentationConstraint.constant =
@@ -84,7 +85,7 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
 
 #pragma mark - TableViewBookmarkFolderCell
 
-@interface TableViewBookmarkFolderCell ()<UITextFieldDelegate>
+@interface TableViewBookmarkFolderCell () <UITextFieldDelegate>
 // Re-declare as readwrite.
 @property(nonatomic, strong, readwrite)
     NSLayoutConstraint* indentationConstraint;
@@ -170,8 +171,9 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
       self.accessoryView = [[UIImageView alloc]
           initWithImage:[UIImage imageNamed:@"table_view_cell_chevron"]];
       // TODO(crbug.com/870841): Use default accessory type.
-      if (base::i18n::IsRTL())
+      if (base::i18n::IsRTL()) {
         self.accessoryView.transform = CGAffineTransformMakeRotation(M_PI);
+      }
       break;
     }
     case TableViewBookmarkFolderAccessoryTypeNone:

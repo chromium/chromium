@@ -22,12 +22,12 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::ContextBarCenterButtonWithLabel;
-using chrome_test_util::SearchIconButton;
 using chrome_test_util::BookmarksDeleteSwipeButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::ContextBarTrailingButtonWithLabel;
+using chrome_test_util::SearchIconButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 namespace {

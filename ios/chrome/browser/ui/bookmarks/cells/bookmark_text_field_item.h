@@ -12,7 +12,7 @@
 @class BookmarkTextFieldItem;
 
 // Delegates the cell's text field's events.
-@protocol BookmarkTextFieldItemDelegate<UITextFieldDelegate>
+@protocol BookmarkTextFieldItemDelegate <UITextFieldDelegate>
 
 // Called when the `text` of the item was changed via the textfield. The item's
 // `text` is up-to-date when this is called.

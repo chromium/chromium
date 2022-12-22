@@ -26,13 +26,13 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::BookmarksDeleteSwipeButton;
 using chrome_test_util::BookmarkHomeDoneButton;
+using chrome_test_util::BookmarksDeleteSwipeButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::BookmarksSaveEditDoneButton;
 using chrome_test_util::BookmarksSaveEditFolderButton;
-using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::OmniboxText;
 using chrome_test_util::ScrollToTop;
@@ -184,8 +184,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // being edited.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"New Folder"),
-                                          grey_minimumVisiblePercent(0.7),
-                                          nil)]
+                                          grey_minimumVisiblePercent(0.7), nil)]
       performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
 
   // Verify the delete confirmation button doesn't show up.

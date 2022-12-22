@@ -24,8 +24,8 @@
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
-using chrome_test_util::TappableBookmarkNodeWithLabel;
 using chrome_test_util::MoveButton;
+using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Bookmark accessibility tests for Chrome.
 @interface BookmarksAccessibilityTestCase : WebHttpServerChromeTestCase
