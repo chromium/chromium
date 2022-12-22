@@ -24,6 +24,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -70,6 +71,7 @@ class RetroactivePairingDetectorImpl final
   struct RetroactivePairingInformation {
     std::string model_id;
     std::string ble_address;
+    base::Time expiry_timestamp;
   };
 
   // SessionObserver:
@@ -103,14 +105,28 @@ class RetroactivePairingDetectorImpl final
   // object.
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
-  // Parses MessageStream messages for model id and ble address, and
-  // notifies observers if they exist.
+  // Parses MessageStream messages for model id and BLE address, and
+  // notifies observers if they exist within the |expiry_timeout| time period.
   void GetModelIdAndAddressFromMessageStream(const std::string& device_address,
                                              MessageStream* message_stream);
 
-  // Checks |device_pairing_information_| for a ble address and model id
-  // needed for retroactive pairing, and notifies observers.
+  // Checks |device_pairing_information_| for a BLE address and model id
+  // needed for retroactive pairing, and notifies observers if within the
+  // |expiry_timeout| time period.
   void CheckPairingInformation(const std::string& device_address);
+
+  // Adds |device_pairing_information_| entry for a device at |device_address|
+  // with the |expiry_timeout| field. BLE address and model id are added once
+  // the `MessageStream` is connected.
+  void AddDevicePairingInformation(const std::string& device_address);
+
+  // Checks if the |device_pairing_information_| at |device_address| has
+  // exceeded its expiry timeout. If so, removes all references to device in
+  // |device_pairing_information_|, |potential_retroactive_addresses_|, and
+  // removes an observer for a corresponding MessageStream and from
+  // |message_streams_| if a MessageStream exists for the device, and returns
+  // `true`. Otherwise if the device has not expired, returns `false`.
+  bool CheckAndRemoveIfDeviceExpired(const std::string& device_address);
 
   // FastPairRepository::IsDeviceSavedToAccount callback
   void AttemptRetroactivePairing(const std::string& classic_address,
