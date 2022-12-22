@@ -6120,6 +6120,78 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
   will_register_listener.Reply("unused");
 }
 
+// Tests behavior when a service worker is stopped while processing an event.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       ServiceWorkerGoesAwayWhileHandlingRequest) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "webRequestBlocking"],
+           "host_permissions": [
+             "http://example.com/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // An extension with a listener that will spin forever on example.com
+  // requests.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               if (details.url.includes('example.com')) {
+                 chrome.test.sendMessage('received');
+                 // Spin FOREVER.
+                 while (true) { }
+               }
+               return {};
+             },
+             {urls: ['<all_urls>'], types: ['main_frame']},
+             ['blocking']);
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadPolicyExtension(test_dir);
+  ASSERT_TRUE(extension);
+
+  // A single webRequest listener should be registered.
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // Navigate to example.com; the extension will receive the event and spin
+  // indefinitely.
+  // We navigate in a new tab to have a better signal of "request started".
+  // We can't wait for the request to finish, since the extension's listener
+  // never returns, which blocks the request.
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  content::TestNavigationObserver nav_observer(url);
+  nav_observer.StartWatchingNewWebContents();
+  ExtensionTestMessageListener test_listener("received");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(test_listener.WaitUntilSatisfied());
+  // The web contents should still be loading, and should have no last
+  // committed URL since the extension is blocking the request.
+  EXPECT_TRUE(web_contents->IsLoading());
+  EXPECT_EQ(GURL(), web_contents->GetLastCommittedURL());
+
+  // Stop the extension service worker.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+
+  // The request should be unblocked.
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(url, web_contents->GetLastCommittedURL());
+}
+
 // Tests that a MV3 extension that doesn't have the `webRequestAuthProvider`
 // permission cannot use blocking listeners for `onAuthRequired`.
 IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
