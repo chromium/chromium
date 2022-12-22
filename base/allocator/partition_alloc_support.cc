@@ -22,8 +22,6 @@
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
-#include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
-#include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -53,6 +51,8 @@
 
 #if BUILDFLAG(STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
+#include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
 #endif  // BUILDFLAG(STARSCAN)
@@ -631,6 +631,7 @@ void InstallUnretainedDanglingRawPtrChecks() {
 namespace {
 
 void SetProcessNameForPCScan(const std::string& process_type) {
+#if BUILDFLAG(STARSCAN)
   const char* name = [&process_type] {
     if (process_type.empty()) {
       // Empty means browser process.
@@ -651,6 +652,7 @@ void SetProcessNameForPCScan(const std::string& process_type) {
   if (name) {
     partition_alloc::internal::PCScan::SetProcessName(name);
   }
+#endif  // BUILDFLAG(STARSCAN)
 }
 
 bool EnablePCScanForMallocPartitionsIfNeeded() {
@@ -952,12 +954,16 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       }
       if (base::FeatureList::IsEnabled(
               base::features::kPartitionAllocPCScanImmediateFreeing)) {
+#if BUILDFLAG(STARSCAN)
         partition_alloc::internal::PCScan::EnableImmediateFreeing();
+#endif  // BUILDFLAG(STARSCAN)
       }
       if (base::FeatureList::IsEnabled(
               base::features::kPartitionAllocPCScanEagerClearing)) {
+#if BUILDFLAG(STARSCAN)
         partition_alloc::internal::PCScan::SetClearType(
             partition_alloc::internal::PCScan::ClearType::kEager);
+#endif  // BUILDFLAG(STARSCAN)
       }
       SetProcessNameForPCScan(process_type);
     }
@@ -1056,6 +1062,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanMUAwareScheduler)) {
+#if BUILDFLAG(STARSCAN)
     // Assign PCScan a task-based scheduling backend.
     static base::NoDestructor<
         partition_alloc::internal::MUAwareTaskBasedBackend>
@@ -1064,6 +1071,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
             &partition_alloc::internal::PCScan::PerformDelayedScan};
     partition_alloc::internal::PCScan::scheduler().SetNewSchedulingBackend(
         *mu_aware_task_based_backend.get());
+#endif  // BUILDFLAG(STARSCAN)
   }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
