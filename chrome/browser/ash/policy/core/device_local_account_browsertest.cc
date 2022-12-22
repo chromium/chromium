@@ -1315,7 +1315,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
   embedded_test_server()->StartAcceptingConnections();
 
   // Specify an external data reference for the key::kUserAvatarImage policy.
-  std::unique_ptr<base::DictionaryValue> metadata =
+  std::unique_ptr<base::Value::Dict> metadata =
       test::ConstructExternalDataReference(
           embedded_test_server()->GetURL(kExternalDataPath).spec(),
           kExternalData);

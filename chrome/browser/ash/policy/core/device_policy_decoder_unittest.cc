@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/core/device_policy_decoder.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -77,21 +79,19 @@ class DevicePolicyDecoderTest : public testing::Test {
 };
 
 std::unique_ptr<base::Value> DevicePolicyDecoderTest::GetWallpaperDict() const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetKey(kWallpaperUrlPropertyName,
-               base::Value(kWallpaperUrlPropertyValue));
-  dict->SetKey(kWallpaperHashPropertyName,
-               base::Value(kWallpaperHashPropertyValue));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set(kWallpaperUrlPropertyName, kWallpaperUrlPropertyValue);
+  dict.Set(kWallpaperHashPropertyName, kWallpaperHashPropertyValue);
+  return std::make_unique<base::Value>(std::move(dict));
 }
 
 std::unique_ptr<base::Value>
 DevicePolicyDecoderTest::GetBluetoothServiceAllowedList() const {
-  auto list = std::make_unique<base::ListValue>();
-  list->Append(base::Value(kValidBluetoothServiceUUID4));
-  list->Append(base::Value(kValidBluetoothServiceUUID8));
-  list->Append(base::Value(kValidBluetoothServiceUUID32));
-  return list;
+  base::Value::List list;
+  list.Append(kValidBluetoothServiceUUID4);
+  list.Append(kValidBluetoothServiceUUID8);
+  list.Append(kValidBluetoothServiceUUID32);
+  return std::make_unique<base::Value>(std::move(list));
 }
 
 void DevicePolicyDecoderTest::DecodeDevicePolicyTestHelper(

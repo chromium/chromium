@@ -68,7 +68,7 @@ class UserCloudExternalDataManagerTest : public LoginPolicyTestBase {
   }
 
   std::string external_data_;
-  std::unique_ptr<base::DictionaryValue> metadata_;
+  std::unique_ptr<base::Value::Dict> metadata_;
 };
 
 IN_PROC_BROWSER_TEST_F(UserCloudExternalDataManagerTest, FetchExternalData) {

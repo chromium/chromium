@@ -77,14 +77,12 @@ class SystemProxyHandlerTest : public testing::Test {
   void SetPolicy(bool system_proxy_enabled,
                  const std::string& system_services_username,
                  const std::string& system_services_password) {
-    base::DictionaryValue dict;
-    dict.SetKey("system_proxy_enabled", base::Value(system_proxy_enabled));
-    dict.SetKey("system_services_username",
-                base::Value(system_services_username));
-    dict.SetKey("system_services_password",
-                base::Value(system_services_password));
+    base::Value::Dict dict;
+    dict.Set("system_proxy_enabled", system_proxy_enabled);
+    dict.Set("system_services_username", system_services_username);
+    dict.Set("system_services_password", system_services_password);
     scoped_testing_cros_settings_.device_settings()->Set(
-        ash::kSystemProxySettings, dict);
+        ash::kSystemProxySettings, base::Value(std::move(dict)));
     task_environment_.RunUntilIdle();
   }
 

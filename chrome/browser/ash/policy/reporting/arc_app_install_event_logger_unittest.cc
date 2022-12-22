@@ -246,7 +246,7 @@ class AppInstallEventLoggerTest : public testing::Test {
   PolicyMap CreatePolicyWithForceInstalls(std::set<std::string> package_names) {
     PolicyMap policy_map;
 
-    base::DictionaryValue arc_policy;
+    base::Value::Dict arc_policy;
     base::Value::List list;
 
     for (std::string package_name : package_names) {
@@ -256,7 +256,7 @@ class AppInstallEventLoggerTest : public testing::Test {
       list.Append(std::move(package));
     }
 
-    arc_policy.GetDict().Set("applications", std::move(list));
+    arc_policy.Set("applications", std::move(list));
     std::string arc_policy_string;
     base::JSONWriter::Write(arc_policy, &arc_policy_string);
     SetPolicy(&policy_map, key::kArcEnabled, base::Value(true));
@@ -265,7 +265,7 @@ class AppInstallEventLoggerTest : public testing::Test {
     return policy_map;
   }
 
-  base::DictionaryValue CreateComplianceReport(
+  base::Value::Dict CreateComplianceReport(
       std::set<std::string> noncompliant_packages) {
     base::Value::List details;
 
@@ -276,8 +276,8 @@ class AppInstallEventLoggerTest : public testing::Test {
       details.Append(std::move(package));
     }
 
-    base::DictionaryValue compliance_report;
-    compliance_report.GetDict().Set("nonComplianceDetails", std::move(details));
+    base::Value::Dict compliance_report;
+    compliance_report.Set("nonComplianceDetails", std::move(details));
     return compliance_report;
   }
 
@@ -464,7 +464,7 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
 
   PolicyMap new_policy_map;
 
-  base::DictionaryValue arc_policy;
+  base::Value::Dict arc_policy;
   base::Value::List list;
 
   // Test that REQUIRED, PREINSTALLED and FORCE_INSTALLED are markers to include
@@ -489,7 +489,7 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
   package5.Set("installType", "AVAILABLE");
   package5.Set("packageName", kPackageName5);
   list.Append(std::move(package5));
-  arc_policy.GetDict().Set("applications", std::move(list));
+  arc_policy.Set("applications", std::move(list));
 
   std::string arc_policy_string;
   base::JSONWriter::Write(arc_policy, &arc_policy_string);

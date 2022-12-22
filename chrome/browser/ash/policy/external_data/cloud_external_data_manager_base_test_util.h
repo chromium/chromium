@@ -10,10 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-
-namespace base {
-class DictionaryValue;
-}
+#include "base/values.h"
 
 namespace net {
 namespace test_server {
@@ -37,7 +34,7 @@ void ExternalDataFetchCallback(std::unique_ptr<std::string>* data_destination,
 
 // Constructs a value that points a policy referencing external data at |url|
 // and sets the expected hash of the external data to that of |data|.
-std::unique_ptr<base::DictionaryValue> ConstructExternalDataReference(
+std::unique_ptr<base::Value::Dict> ConstructExternalDataReference(
     const std::string& url,
     const std::string& data);
 
@@ -54,7 +51,7 @@ std::string ConstructExternalDataPolicy(
 // removed.
 void SetExternalDataReference(CloudPolicyCore* core,
                               const std::string& policy,
-                              std::unique_ptr<base::DictionaryValue> metadata);
+                              std::unique_ptr<base::Value::Dict> metadata);
 
 }  // namespace test
 }  // namespace policy

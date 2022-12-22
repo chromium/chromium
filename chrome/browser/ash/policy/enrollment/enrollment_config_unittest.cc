@@ -94,11 +94,11 @@ TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
 
   // Server-backed state: advertised enrollment.
-  base::DictionaryValue state_dict;
-  state_dict.SetStringKey(kDeviceStateMode,
-                          kDeviceStateRestoreModeReEnrollmentRequested);
-  state_dict.SetStringKey(kDeviceStateManagementDomain, "example.com");
-  local_state_.Set(prefs::kServerBackedDeviceState, state_dict);
+  base::Value::Dict state_dict;
+  state_dict.Set(kDeviceStateMode,
+                 kDeviceStateRestoreModeReEnrollmentRequested);
+  state_dict.Set(kDeviceStateManagementDomain, "example.com");
+  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
       local_state_, install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_SERVER_ADVERTISED, config.mode);
@@ -129,9 +129,8 @@ TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
 
   // Server-backed state: forced enrollment.
-  state_dict.SetStringKey(kDeviceStateMode,
-                          kDeviceStateRestoreModeReEnrollmentEnforced);
-  local_state_.Set(prefs::kServerBackedDeviceState, state_dict);
+  state_dict.Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentEnforced);
+  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
   config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
       local_state_, install_attributes_, &statistics_provider_);
   EXPECT_EQ(EnrollmentConfig::MODE_SERVER_FORCED, config.mode);

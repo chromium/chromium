@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/callback.h"
@@ -30,7 +31,7 @@
 namespace policy {
 
 namespace {
-// Keys for 'DictionaryValue' objects
+// Keys for the 'Value' objects
 const char kUrlKey[] = "url";
 const char kHashKey[] = "hash";
 }  // namespace
@@ -47,14 +48,13 @@ void ExternalDataFetchCallback(std::unique_ptr<std::string>* data_destination,
   std::move(done_callback).Run();
 }
 
-std::unique_ptr<base::DictionaryValue> ConstructExternalDataReference(
+std::unique_ptr<base::Value::Dict> ConstructExternalDataReference(
     const std::string& url,
     const std::string& data) {
   const std::string hash = crypto::SHA256HashString(data);
-  std::unique_ptr<base::DictionaryValue> metadata(new base::DictionaryValue);
-  metadata->SetKey(kUrlKey, base::Value(url));
-  metadata->SetKey(kHashKey,
-                   base::Value(base::HexEncode(hash.c_str(), hash.size())));
+  auto metadata = std::make_unique<base::Value::Dict>();
+  metadata->Set(kUrlKey, url);
+  metadata->Set(kHashKey, base::HexEncode(hash.c_str(), hash.size()));
   return metadata;
 }
 
