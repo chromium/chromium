@@ -218,11 +218,11 @@ void GeoLanguageProvider::SetGeoLanguages(
   DCHECK_CALLED_ON_VALID_SEQUENCE(creation_sequence_checker_);
   languages_ = languages;
 
-  base::ListValue cache_list;
+  base::Value::List cache_list;
   for (const std::string& language : languages_) {
     cache_list.Append(language);
   }
-  prefs_->Set(kCachedGeoLanguagesPref, cache_list);
+  prefs_->SetList(kCachedGeoLanguagesPref, std::move(cache_list));
   prefs_->SetDouble(kTimeOfLastGeoLanguagesUpdatePref,
                     base::Time::Now().ToDoubleT());
 }
