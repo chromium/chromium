@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
-import './emoji_button.js';
 import './emoji_category_button.js';
 import './emoji_group.js';
 
