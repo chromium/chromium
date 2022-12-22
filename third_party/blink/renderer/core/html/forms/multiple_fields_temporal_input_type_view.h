@@ -98,8 +98,7 @@ class MultipleFieldsTemporalInputTypeView final
   void OpenPopupView() override;
   void ClosePopupView() override;
   bool HasOpenedPopup() const override;
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
-      scoped_refptr<ComputedStyle> original_style) override;
+  void AdjustStyle(ComputedStyleBuilder&) override;
   void CreateShadowSubtree() final;
   void DestroyShadowSubtree() final;
   void DisabledAttributeChanged() final;

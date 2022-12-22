@@ -213,11 +213,8 @@ void FileInputType::OpenPopupView() {
   }
 }
 
-scoped_refptr<ComputedStyle> FileInputType::CustomStyleForLayoutObject(
-    scoped_refptr<ComputedStyle> original_style) {
-  ComputedStyleBuilder builder(*original_style);
+void FileInputType::AdjustStyle(ComputedStyleBuilder& builder) {
   builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
-  return builder.TakeStyle();
 }
 
 LayoutObject* FileInputType::CreateLayoutObject(const ComputedStyle& style,

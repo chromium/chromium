@@ -73,8 +73,7 @@ class CORE_EXPORT FileInputType final : public InputType,
   String ValueMissingText() const override;
   void HandleDOMActivateEvent(Event&) override;
   void OpenPopupView() override;
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
-      scoped_refptr<ComputedStyle> original_style) override;
+  void AdjustStyle(ComputedStyleBuilder&) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                    LegacyLayout) const override;
   FileList* Files() override;

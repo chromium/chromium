@@ -40,6 +40,7 @@
 namespace blink {
 
 class AXObject;
+class ComputedStyleBuilder;
 class DragData;
 class ExceptionState;
 class FileList;
@@ -464,8 +465,7 @@ class CORE_EXPORT HTMLInputElement
 
   void AddToRadioButtonGroup();
   void RemoveFromRadioButtonGroup();
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
-      const StyleRecalcContext&) override;
+  void AdjustStyle(ComputedStyleBuilder&) override;
 
   void MaybeReportPiiMetrics();
 

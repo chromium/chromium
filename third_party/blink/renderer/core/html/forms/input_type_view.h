@@ -49,6 +49,7 @@ namespace blink {
 class AXObject;
 class BeforeTextInsertedEvent;
 class ComputedStyle;
+class ComputedStyleBuilder;
 class Element;
 class Event;
 class FormControlState;
@@ -109,8 +110,7 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void SubtreeHasChanged();
   virtual LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                            LegacyLayout) const;
-  virtual scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
-      scoped_refptr<ComputedStyle> original_style);
+  virtual void AdjustStyle(ComputedStyleBuilder&) {}
   virtual ControlPart AutoAppearance() const;
   virtual TextDirection ComputedTextDirection();
   virtual void OpenPopupView();

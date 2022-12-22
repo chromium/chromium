@@ -376,20 +376,17 @@ void MultipleFieldsTemporalInputTypeView::Blur() {
   ClosePopupView();
 }
 
-scoped_refptr<ComputedStyle>
-MultipleFieldsTemporalInputTypeView::CustomStyleForLayoutObject(
-    scoped_refptr<ComputedStyle> original_style) {
-  EDisplay original_display = original_style->Display();
+void MultipleFieldsTemporalInputTypeView::AdjustStyle(
+    ComputedStyleBuilder& builder) {
+  EDisplay original_display = builder.Display();
   EDisplay new_display = original_display;
   if (original_display == EDisplay::kInline ||
       original_display == EDisplay::kInlineBlock)
     new_display = EDisplay::kInlineFlex;
   else if (original_display == EDisplay::kBlock)
     new_display = EDisplay::kFlex;
-  ComputedStyleBuilder builder(*original_style);
   builder.SetDisplay(new_display);
   builder.SetDirection(ComputedTextDirection());
-  return builder.TakeStyle();
 }
 
 void MultipleFieldsTemporalInputTypeView::CreateShadowSubtree() {
