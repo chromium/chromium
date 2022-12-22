@@ -474,8 +474,6 @@ if (is_android) {
       "android/java/src/org/chromium/ui/accessibility/AccessibilityState.java",
     ]
     deps = [
-      ":ax_base_android",
-      ":ax_jni_headers",
       "//base:base_java",
       "//base:jni_java",
       "//build/android:build_java",

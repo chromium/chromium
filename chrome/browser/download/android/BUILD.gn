@@ -85,7 +85,6 @@ android_library("java") {
     "//components/download/public/common:public_java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
-    "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/messages/android:java",
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
