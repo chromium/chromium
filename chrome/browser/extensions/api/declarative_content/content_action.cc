@@ -444,15 +444,12 @@ ContentAction::~ContentAction() {}
 std::unique_ptr<ContentAction> ContentAction::Create(
     content::BrowserContext* browser_context,
     const Extension* extension,
-    const base::Value& json_action,
+    const base::Value::Dict& json_action_dict,
     std::string* error) {
   error->clear();
-  // TODO(crbug.com/1306708) Refactor ContentAction::Create to take in a
-  // base::Value::Dict instead of base::Value.
-  const base::Value::Dict* action_dict = json_action.GetIfDict();
   const std::string* instance_type = nullptr;
-  if (!action_dict || !(instance_type = action_dict->FindString(
-                            declarative_content_constants::kInstanceType))) {
+  if (!(instance_type = json_action_dict.FindString(
+            declarative_content_constants::kInstanceType))) {
     *error = kMissingInstanceTypeError;
     return nullptr;
   }
@@ -461,7 +458,7 @@ std::unique_ptr<ContentAction> ContentAction::Create(
   auto factory_method_iter = factory.factory_methods.find(*instance_type);
   if (factory_method_iter != factory.factory_methods.end())
     return (*factory_method_iter->second)(browser_context, extension,
-                                          action_dict, error);
+                                          &json_action_dict, error);
 
   *error =
       base::StringPrintf(kInvalidInstanceTypeError, instance_type->c_str());
