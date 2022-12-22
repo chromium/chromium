@@ -242,14 +242,6 @@ int AudioDestination::FramesPerBuffer() const {
   return web_audio_device_->FramesPerBuffer();
 }
 
-size_t AudioDestination::HardwareBufferSize() {
-  return Platform::Current()->AudioHardwareBufferSize();
-}
-
-float AudioDestination::HardwareSampleRate() {
-  return static_cast<float>(Platform::Current()->AudioHardwareSampleRate());
-}
-
 uint32_t AudioDestination::MaxChannelCount() {
   return Platform::Current()->AudioHardwareOutputChannels();
 }
@@ -275,8 +267,19 @@ AudioDestination::AudioDestination(
     const WebAudioLatencyHint& latency_hint,
     absl::optional<float> context_sample_rate,
     unsigned render_quantum_frames)
-    : number_of_output_channels_(number_of_output_channels),
+    : web_audio_device_(
+          Platform::Current()->CreateAudioDevice(sink_descriptor,
+                                                 number_of_output_channels,
+                                                 latency_hint,
+                                                 this)),
+      callback_buffer_size_(
+          web_audio_device_ ? web_audio_device_->FramesPerBuffer() : 0),
+      number_of_output_channels_(number_of_output_channels),
       render_quantum_frames_(render_quantum_frames),
+      context_sample_rate_(
+          context_sample_rate.has_value()
+              ? context_sample_rate.value()
+              : (web_audio_device_ ? web_audio_device_->SampleRate() : 0)),
       fifo_(std::make_unique<PushPullFIFO>(number_of_output_channels,
                                            kFIFOSize,
                                            render_quantum_frames)),
@@ -286,16 +289,13 @@ AudioDestination::AudioDestination(
       render_bus_(
           AudioBus::Create(number_of_output_channels, render_quantum_frames)),
       callback_(callback) {
+  CHECK(web_audio_device_);
+
   SendLogMessage(String::Format("%s({output_channels=%u})", __func__,
                                 number_of_output_channels));
   SendLogMessage(
       String::Format("%s => (FIFO size=%u bytes)", __func__, fifo_->length()));
 
-  web_audio_device_ = Platform::Current()->CreateAudioDevice(
-      sink_descriptor, number_of_output_channels, latency_hint, this);
-  DCHECK(web_audio_device_);
-
-  callback_buffer_size_ = web_audio_device_->FramesPerBuffer();
   SendLogMessage(String::Format("%s => (device callback buffer size=%u frames)",
                                 __func__, callback_buffer_size_));
   SendLogMessage(String::Format("%s => (device sample rate=%.0f Hz)", __func__,
@@ -319,16 +319,13 @@ AudioDestination::AudioDestination(
     fifo_->Push(render_bus_.get());
   }
 
-  if (!CheckBufferSize(render_quantum_frames)) {
-    NOTREACHED();
-  }
+  // Check if the requested buffer size is too large.
+  DCHECK_LE(callback_buffer_size_ + render_quantum_frames, kFIFOSize);
 
-  double scale_factor = 1;
+  double scale_factor = 1.0;
 
-  if (context_sample_rate.has_value() &&
-      context_sample_rate.value() != web_audio_device_->SampleRate()) {
-    scale_factor =
-        context_sample_rate.value() / web_audio_device_->SampleRate();
+  if (context_sample_rate_ != web_audio_device_->SampleRate()) {
+    scale_factor = context_sample_rate_ / web_audio_device_->SampleRate();
     SendLogMessage(String::Format("%s => (resampling from %0.f Hz to %0.f Hz)",
                                   __func__, context_sample_rate.value(),
                                   web_audio_device_->SampleRate()));
@@ -343,13 +340,23 @@ AudioDestination::AudioDestination(
       resampler_bus_->SetChannelData(i, render_bus_->Channel(i)->MutableData());
     }
     resampler_bus_->set_frames(render_bus_->length());
-    context_sample_rate_ = context_sample_rate.value();
   } else {
-    context_sample_rate_ = web_audio_device_->SampleRate();
     SendLogMessage(String::Format(
         "%s => (no resampling: context sample rate set to %0.f Hz)", __func__,
         context_sample_rate_));
   }
+
+  // Record the sizes if we successfully created an output device.
+  // Histogram for audioHardwareBufferSize
+  base::UmaHistogramSparse(
+      "WebAudio.AudioDestination.HardwareBufferSize",
+      static_cast<int>(Platform::Current()->AudioHardwareBufferSize()));
+
+  // Histogram for the actual callback size used.  Typically, this is the same
+  // as audioHardwareBufferSize, but can be adjusted depending on some
+  // heuristics below.
+  base::UmaHistogramSparse("WebAudio.AudioDestination.CallbackBufferSize",
+                           callback_buffer_size_);
 
   base::UmaHistogramSparse("WebAudio.AudioContext.HardwareSampleRate",
                            web_audio_device_->SampleRate());
@@ -366,7 +373,7 @@ AudioDestination::AudioDestination(
     // the most common ratios to be the set 0.5, 44100/48000, and 48000/44100.
     // Other values are possible but seem unlikely.
     base::UmaHistogramSparse("WebAudio.AudioContextOptions.sampleRateRatio",
-                             static_cast<int32_t>(100 * scale_factor + 0.5));
+                             static_cast<int32_t>(100.0 * scale_factor + 0.5));
   }
 }
 
@@ -449,25 +456,6 @@ void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
                                              AudioBus* dest) {
   callback_.Render(dest, RenderQuantumFrames(), output_position_,
                    metric_reporter_.GetMetric());
-}
-
-bool AudioDestination::CheckBufferSize(unsigned render_quantum_frames) {
-  // Record the sizes if we successfully created an output device.
-  // Histogram for audioHardwareBufferSize
-  base::UmaHistogramSparse("WebAudio.AudioDestination.HardwareBufferSize",
-                           static_cast<int>(HardwareBufferSize()));
-
-  // Histogram for the actual callback size used.  Typically, this is the same
-  // as audioHardwareBufferSize, but can be adjusted depending on some
-  // heuristics below.
-  base::UmaHistogramSparse("WebAudio.AudioDestination.CallbackBufferSize",
-                           callback_buffer_size_);
-
-  // Check if the requested buffer size is too large.
-  const bool is_buffer_size_valid =
-      callback_buffer_size_ + render_quantum_frames <= kFIFOSize;
-  DCHECK_LE(callback_buffer_size_ + render_quantum_frames, kFIFOSize);
-  return is_buffer_size_valid;
 }
 
 void AudioDestination::SendLogMessage(const String& message) const {

@@ -104,27 +104,23 @@ class PLATFORM_EXPORT AudioDestination final
   void StartWithWorkletTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> worklet_task_runner);
 
-  // Getters must be accessed from the main thread.
-  uint32_t CallbackBufferSize() const;
-
   bool IsPlaying();
 
   // This is the context sample rate, not the device one.
   double SampleRate() const;
+
+  uint32_t CallbackBufferSize() const;
 
   // Returns the audio buffer size in frames used by the underlying audio
   // hardware.
   int FramesPerBuffer() const;
 
   // The information from the actual audio hardware. (via Platform::Current)
-  static size_t HardwareBufferSize();
-  static float HardwareSampleRate();
   static uint32_t MaxChannelCount();
 
   // Sets the detect silence flag for `web_audio_device_`.
   void SetDetectSilence(bool detect_silence);
 
-  // This should only be called from the audio thread.
   unsigned RenderQuantumFrames() const;
 
  private:
@@ -148,22 +144,19 @@ class PLATFORM_EXPORT AudioDestination final
   // Provide input to the resampler (if used).
   void ProvideResamplerInput(int resampler_frame_delay, AudioBus* dest);
 
-  // Check if the buffer size chosen by the WebAudioDevice is too large.
-  bool CheckBufferSize(unsigned render_quantum_frames);
-
   void SendLogMessage(const String& message) const;
 
   // Accessed by the main thread.
   std::unique_ptr<WebAudioDevice> web_audio_device_;
 
-  uint32_t callback_buffer_size_;
+  const uint32_t callback_buffer_size_;
 
   const unsigned number_of_output_channels_;
 
   const unsigned render_quantum_frames_;
 
   // The sample rate used for rendering the Web Audio graph.
-  float context_sample_rate_;
+  const float context_sample_rate_;
 
   // Can be accessed by both threads: resolves the buffer size mismatch between
   // the WebAudio engine and the callback function from the actual audio device.
