@@ -285,13 +285,10 @@ const AtomicString& SliderThumbElement::ShadowPseudoId() const {
   }
 }
 
-scoped_refptr<ComputedStyle> SliderThumbElement::CustomStyleForLayoutObject(
-    const StyleRecalcContext& style_recalc_context) {
+void SliderThumbElement::AdjustStyle(ComputedStyleBuilder& builder) {
   Element* host = OwnerShadowHost();
   DCHECK(host);
   const ComputedStyle& host_style = host->ComputedStyleRef();
-  ComputedStyleBuilder builder(
-      *OriginalStyleForLayoutObject(style_recalc_context));
 
   if (host_style.EffectiveAppearance() == kSliderVerticalPart)
     builder.SetEffectiveAppearance(kSliderThumbVerticalPart);
@@ -303,8 +300,6 @@ scoped_refptr<ComputedStyle> SliderThumbElement::CustomStyleForLayoutObject(
     builder.SetEffectiveAppearance(kMediaVolumeSliderThumbPart);
   if (builder.HasEffectiveAppearance())
     LayoutTheme::GetTheme().AdjustSliderThumbSize(builder);
-
-  return builder.TakeStyle();
 }
 
 // --------------------------------
