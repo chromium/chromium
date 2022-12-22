@@ -13,6 +13,11 @@ export interface BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
   bookmarkCurrentTabInFolder(folderId: string): void;
   cutBookmark(id: string): void;
+  contextMenuOpenBookmarkInNewTab(id: string, source: ActionSource): void;
+  contextMenuOpenBookmarkInNewWindow(id: string, source: ActionSource): void;
+  contextMenuOpenBookmarkInIncognitoWindow(id: string, source: ActionSource):
+      void;
+  contextMenuDelete(id: string, source: ActionSource): void;
   copyBookmark(id: string): Promise<void>;
   createFolder(parentId: string, title: string): void;
   deleteBookmarks(ids: string[]): Promise<void>;
@@ -55,6 +60,22 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
 
   cutBookmark(id: string) {
     chrome.bookmarkManagerPrivate.cut([id]);
+  }
+
+  contextMenuOpenBookmarkInNewTab(id: string, source: ActionSource) {
+    this.handler.executeOpenInNewTabCommand(BigInt(id), source);
+  }
+
+  contextMenuOpenBookmarkInNewWindow(id: string, source: ActionSource) {
+    this.handler.executeOpenInNewWindowCommand(BigInt(id), source);
+  }
+
+  contextMenuOpenBookmarkInIncognitoWindow(id: string, source: ActionSource) {
+    this.handler.executeOpenInIncognitoWindowCommand(BigInt(id), source);
+  }
+
+  contextMenuDelete(id: string, source: ActionSource) {
+    this.handler.executeDeleteCommand(BigInt(id), source);
   }
 
   copyBookmark(id: string) {

@@ -99,6 +99,8 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       {"clearSearch", IDS_BOOKMARK_MANAGER_CLEAR_SEARCH},
       {"selectedBookmarkCount", IDS_BOOKMARK_MANAGER_ITEMS_SELECTED},
       {"menuOpenNewTab", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB},
+      {"menuOpenNewWindow", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_WINDOW},
+      {"menuOpenIncognito", IDS_BOOKMARK_MANAGER_MENU_OPEN_INCOGNITO},
       {"newFolderTitle", IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME},
   };
   for (const auto& str : kLocalizedStrings)
@@ -129,6 +131,7 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
                      base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
 
   source->AddBoolean("guestMode", profile->IsGuestSession());
+  source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());
 
   source->AddBoolean(
       "showPowerBookmarks",

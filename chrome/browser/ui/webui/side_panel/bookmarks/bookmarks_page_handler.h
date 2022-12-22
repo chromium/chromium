@@ -27,6 +27,17 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
 
   // side_panel::mojom::BookmarksPageHandler:
   void BookmarkCurrentTabInFolder(int64_t folder_id) override;
+  void ExecuteOpenInNewTabCommand(
+      int64_t node_id,
+      side_panel::mojom::ActionSource source) override;
+  void ExecuteOpenInNewWindowCommand(
+      int64_t node_id,
+      side_panel::mojom::ActionSource source) override;
+  void ExecuteOpenInIncognitoWindowCommand(
+      int64_t node_id,
+      side_panel::mojom::ActionSource source) override;
+  void ExecuteDeleteCommand(int64_t node_id,
+                            side_panel::mojom::ActionSource source) override;
   void OpenBookmark(int64_t node_id,
                     int32_t parent_folder_depth,
                     ui::mojom::ClickModifiersPtr click_modifiers,

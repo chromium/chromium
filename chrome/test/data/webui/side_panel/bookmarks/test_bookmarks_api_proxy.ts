@@ -28,6 +28,10 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       'bookmarkCurrentTabInFolder',
       'openBookmark',
       'cutBookmark',
+      'contextMenuOpenBookmarkInNewTab',
+      'contextMenuOpenBookmarkInNewWindow',
+      'contextMenuOpenBookmarkInIncognitoWindow',
+      'contextMenuDelete',
       'copyBookmark',
       'createFolder',
       'deleteBookmarks',
@@ -70,6 +74,22 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
 
   setFolders(folders: chrome.bookmarks.BookmarkTreeNode[]) {
     this.folders_ = folders;
+  }
+
+  contextMenuOpenBookmarkInNewTab(id: string, source: ActionSource) {
+    this.methodCalled('contextMenuOpenBookmarkInNewTab', id, source);
+  }
+
+  contextMenuOpenBookmarkInNewWindow(id: string, source: ActionSource) {
+    this.methodCalled('contextMenuOpenBookmarkInNewWindow', id, source);
+  }
+
+  contextMenuOpenBookmarkInIncognitoWindow(id: string, source: ActionSource) {
+    this.methodCalled('contextMenuOpenBookmarkInIncognitoWindow', id, source);
+  }
+
+  contextMenuDelete(id: string, source: ActionSource) {
+    this.methodCalled('contextMenuDelete', id, source);
   }
 
   copyBookmark(id: string): Promise<void> {

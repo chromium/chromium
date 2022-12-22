@@ -22,6 +22,19 @@ export interface PowerBookmarksContextMenuElement {
   };
 }
 
+export enum MenuItemId {
+  OPEN_NEW_TAB = 0,
+  OPEN_NEW_WINDOW = 1,
+  OPEN_INCOGNITO = 2,
+  DELETE = 3,
+  DIVIDER = 4,
+}
+
+export interface MenuItem {
+  id: MenuItemId;
+  label?: string;
+}
+
 export class PowerBookmarksContextMenuElement extends PolymerElement {
   static get is() {
     return 'power-bookmarks-context-menu';
@@ -36,11 +49,6 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       bookmark_: Object,
 
       depth_: Number,
-
-      menuItems_: {
-        type: Array,
-        value: () => [loadTimeData.getString('menuOpenNewTab')],
-      },
     };
   }
 
@@ -48,7 +56,6 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       BookmarksApiProxyImpl.getInstance();
   private bookmark_: chrome.bookmarks.BookmarkTreeNode;
   private depth_: number;
-  private menuItems_: string[];
 
   showAt(
       event: MouseEvent, bookmark: chrome.bookmarks.BookmarkTreeNode,
@@ -66,21 +73,57 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
     this.$.menu.showAtPosition({top: event.clientY, left: event.clientX});
   }
 
-  private onMenuItemClicked_(event: DomRepeatEvent<string>) {
+  private getMenuItemsForBookmark_(): MenuItem[] {
+    const menuItems: MenuItem[] = [
+      {
+        id: MenuItemId.OPEN_NEW_TAB,
+        label: loadTimeData.getString('menuOpenNewTab'),
+      },
+      {
+        id: MenuItemId.OPEN_NEW_WINDOW,
+        label: loadTimeData.getString('menuOpenNewWindow'),
+      },
+    ];
+
+    if (!loadTimeData.getBoolean('incognitoMode')) {
+      menuItems.push({
+        id: MenuItemId.OPEN_INCOGNITO,
+        label: loadTimeData.getString('menuOpenIncognito'),
+      });
+    }
+
+    menuItems.push(
+        {id: MenuItemId.DIVIDER},
+        {id: MenuItemId.DELETE, label: loadTimeData.getString('tooltipDelete')},
+    );
+
+    return menuItems;
+  }
+
+  private showDivider_(menuItem: MenuItem): boolean {
+    return menuItem.id === MenuItemId.DIVIDER;
+  }
+
+  private onMenuItemClicked_(event: DomRepeatEvent<MenuItem>) {
     event.preventDefault();
     event.stopPropagation();
-    switch (event.model.index) {
-      case 0:
-        // Open in new tab
-        this.bookmarksApi_.openBookmark(
-            this.bookmark_!.id, this.depth_, {
-              middleButton: true,
-              altKey: false,
-              ctrlKey: false,
-              metaKey: false,
-              shiftKey: false,
-            },
-            ActionSource.kBookmark);
+    switch (event.model.item.id) {
+      case MenuItemId.OPEN_NEW_TAB:
+        this.bookmarksApi_.contextMenuOpenBookmarkInNewTab(
+            this.bookmark_!.id, ActionSource.kBookmark);
+        break;
+      case MenuItemId.OPEN_NEW_WINDOW:
+        this.bookmarksApi_.contextMenuOpenBookmarkInNewWindow(
+            this.bookmark_!.id, ActionSource.kBookmark);
+        break;
+      case MenuItemId.OPEN_INCOGNITO:
+        this.bookmarksApi_.contextMenuOpenBookmarkInIncognitoWindow(
+            this.bookmark_!.id, ActionSource.kBookmark);
+        break;
+      case MenuItemId.DELETE:
+        this.bookmarksApi_.contextMenuDelete(
+            this.bookmark_!.id, ActionSource.kBookmark);
+        break;
     }
     this.$.menu.close();
   }
