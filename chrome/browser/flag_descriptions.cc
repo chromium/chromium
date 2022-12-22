@@ -2171,6 +2171,10 @@ const char kOmniboxUpdatedConnectionSecurityIndicatorsName[] =
 const char kOmniboxUpdatedConnectionSecurityIndicatorsDescription[] =
     "Use new connection security indicators for https pages in the omnibox.";
 
+const char kWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
+const char kWebUIOmniboxPopupDescription[] =
+    "If enabled, shows the omnibox suggestions popup in WebUI.";
+
 const char kOmniboxMaxURLMatchesName[] = "Omnibox Max URL Matches";
 const char kOmniboxMaxURLMatchesDescription[] =
     "The maximum number of URL matches to show, unless there are no "

@@ -1222,6 +1222,9 @@ extern const char kOmniboxSimplifiedUiUniformRowHeightDescription[];
 extern const char kOmniboxUpdatedConnectionSecurityIndicatorsName[];
 extern const char kOmniboxUpdatedConnectionSecurityIndicatorsDescription[];
 
+extern const char kWebUIOmniboxPopupName[];
+extern const char kWebUIOmniboxPopupDescription[];
+
 extern const char kOmniboxMaxURLMatchesName[];
 extern const char kOmniboxMaxURLMatchesDescription[];
 

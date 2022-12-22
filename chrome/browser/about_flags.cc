@@ -9146,6 +9146,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAuthnNewDesktopUIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(device::kWebAuthnNewDiscoverableCredentialsUi)},
 
+    {"webui-omnibox-popup", flag_descriptions::kWebUIOmniboxPopupName,
+     flag_descriptions::kWebUIOmniboxPopupDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopup)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"arc-nearby-share-fuse-box", flag_descriptions::kArcNearbyShareFuseBoxName,
      flag_descriptions::kArcNearbyShareFuseBoxDescription, kOsCrOS,

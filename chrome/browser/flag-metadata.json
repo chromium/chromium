@@ -7091,6 +7091,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "webui-omnibox-popup",
+    "owners": [ "mahmadi", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "webui-tab-strip",
     "owners": [
       "yuhengh",
