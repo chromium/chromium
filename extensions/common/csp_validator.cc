@@ -114,8 +114,8 @@ class DirectiveStatus {
  public:
   // Subframe related directives can have multiple directive names: "child-src"
   // or "frame-src".
-  DirectiveStatus(std::initializer_list<const char*> directives)
-      : directive_names_(directives.begin(), directives.end()) {}
+  explicit DirectiveStatus(std::vector<std::string> directives)
+      : directive_names_(std::move(directives)) {}
 
   DirectiveStatus(const DirectiveStatus&) = delete;
   DirectiveStatus(DirectiveStatus&&) = default;
@@ -401,9 +401,7 @@ class CSPEnforcer {
   virtual std::string GetDefaultCSPValue(const DirectiveStatus& status) = 0;
 
   // List of directives we care about.
-  // TODO(karandeepb): There is no reason for these to be on the heap. Stack
-  // allocate.
-  std::vector<std::unique_ptr<DirectiveStatus>> secure_directives_;
+  std::vector<DirectiveStatus> secure_directives_;
 
  private:
   const std::string manifest_key_;
@@ -424,9 +422,9 @@ std::string CSPEnforcer::Enforce(const DirectiveList& directives,
   for (const auto& directive : directives) {
     CSPDirectiveToken csp_directive_token(directive);
     bool matches_enforcing_directive = false;
-    for (const std::unique_ptr<DirectiveStatus>& status : secure_directives_) {
-      if (csp_directive_token.MatchAndUpdateStatus(
-              status.get(), secure_function_, manifest_key_, warnings)) {
+    for (DirectiveStatus& status : secure_directives_) {
+      if (csp_directive_token.MatchAndUpdateStatus(&status, secure_function_,
+                                                   manifest_key_, warnings)) {
         matches_enforcing_directive = true;
         break;
       }
@@ -441,8 +439,8 @@ std::string CSPEnforcer::Enforce(const DirectiveList& directives,
   }
 
   if (default_src_status.seen_in_policy()) {
-    for (const std::unique_ptr<DirectiveStatus>& status : secure_directives_) {
-      if (!status->seen_in_policy()) {
+    for (const DirectiveStatus& status : secure_directives_) {
+      if (!status.seen_in_policy()) {
         // This |status| falls back to "default-src". So warnings from
         // "default-src" will apply.
         if (warnings) {
@@ -457,16 +455,17 @@ std::string CSPEnforcer::Enforce(const DirectiveList& directives,
   } else {
     // Did not see "default-src".
     // Make sure we cover all sources from |secure_directives_|.
-    for (const std::unique_ptr<DirectiveStatus>& status : secure_directives_) {
-      if (status->seen_in_policy())  // Already covered.
+    for (const DirectiveStatus& status : secure_directives_) {
+      if (status.seen_in_policy()) {  // Already covered.
         continue;
-      enforced_csp_parts.push_back(GetDefaultCSPValue(*status));
+      }
+      enforced_csp_parts.push_back(GetDefaultCSPValue(status));
 
       if (warnings && show_missing_csp_warnings_) {
         warnings->push_back(
             InstallWarning(ErrorUtils::FormatErrorMessage(
                                manifest_errors::kInvalidCSPMissingSecureSrc,
-                               manifest_key_, status->name()),
+                               manifest_key_, status.name()),
                            manifest_key_));
       }
     }
@@ -483,9 +482,9 @@ class ExtensionCSPEnforcer : public CSPEnforcer {
       : CSPEnforcer(std::move(manifest_key),
                     true,
                     base::BindRepeating(&GetSecureDirectiveValues, options)) {
-    secure_directives_.emplace_back(new DirectiveStatus({kScriptSrc}));
+    secure_directives_.emplace_back(std::vector<std::string>({kScriptSrc}));
     if (!allow_insecure_object_src)
-      secure_directives_.emplace_back(new DirectiveStatus({kObjectSrc}));
+      secure_directives_.emplace_back(std::vector<std::string>({kObjectSrc}));
   }
 
   ExtensionCSPEnforcer(const ExtensionCSPEnforcer&) = delete;
@@ -507,8 +506,8 @@ class AppSandboxPageCSPEnforcer : public CSPEnforcer {
                     false,
                     base::BindRepeating(&GetAppSandboxSecureDirectiveValues)) {
     secure_directives_.emplace_back(
-        new DirectiveStatus({kChildSrc, kFrameSrc}));
-    secure_directives_.emplace_back(new DirectiveStatus({kScriptSrc}));
+        std::vector<std::string>({kChildSrc, kFrameSrc}));
+    secure_directives_.emplace_back(std::vector<std::string>({kScriptSrc}));
   }
 
   AppSandboxPageCSPEnforcer(const AppSandboxPageCSPEnforcer&) = delete;
