@@ -163,6 +163,12 @@ void KeyboardBacklightColorController::OnSessionStateChanged(
 void KeyboardBacklightColorController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   const auto backlight_color = GetBacklightColor(GetActiveAccountId());
+  // If backlight color is wall paper color, we will update the wall paper color
+  // in OnWallpaperColorsChanged.
+  if (backlight_color ==
+      personalization_app::mojom::BacklightColor::kWallpaper) {
+    return;
+  }
   DisplayBacklightColor(backlight_color);
 }
 

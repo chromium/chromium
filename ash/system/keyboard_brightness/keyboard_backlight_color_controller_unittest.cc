@@ -141,7 +141,7 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
   // Expect the Wallpaper color to be set to the default as wallpaper color is
   // not valid in this state.
   histogram_tester().ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 2);
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 1);
   EXPECT_EQ(kDefaultColor, displayed_color());
 
   controller_->SetBacklightColor(
@@ -192,6 +192,50 @@ TEST_F(KeyboardBacklightColorControllerTest, DisplayWhiteBacklightOnOobe) {
   EXPECT_EQ(ConvertBacklightColorToSkColor(
                 personalization_app::mojom::BacklightColor::kWhite),
             displayed_color());
+}
+
+// SwitchUserWithDifferentWallPaperColor test makes sure that the keyboard color
+// doesn't switch from user1's color until user2's wallpaper has been loaded in.
+TEST_F(KeyboardBacklightColorControllerTest,
+       SwitchUserWithDifferentWallPaperColor) {
+  controller_->OnRgbKeyboardSupportedChanged(true);
+  SimulateUserLogin(account_id_1);
+  controller_->SetBacklightColor(
+      personalization_app::mojom::BacklightColor::kBlue, account_id_1);
+  ClearLogin();
+
+  SimulateUserLogin(account_id_2);
+  controller_->SetBacklightColor(
+      personalization_app::mojom::BacklightColor::kWallpaper, account_id_2);
+  ClearLogin();
+
+  // Simulate re-login for user1 and expect blue color to be set.
+  SimulateUserLogin(account_id_1);
+  EXPECT_EQ(ConvertBacklightColorToSkColor(
+                personalization_app::mojom::BacklightColor::kBlue),
+            displayed_color());
+  EXPECT_EQ(personalization_app::mojom::BacklightColor::kBlue,
+            controller_->GetBacklightColor(account_id_1));
+
+  // Simulate re-login for user2 and expect blue color to be set.
+  SimulateUserLogin(account_id_2);
+  EXPECT_EQ(personalization_app::mojom::BacklightColor::kWallpaper,
+            controller_->GetBacklightColor(account_id_2));
+  EXPECT_EQ(ConvertBacklightColorToSkColor(
+                personalization_app::mojom::BacklightColor::kBlue),
+            displayed_color());
+
+  // Set the wallpaper and check that the displayed color now matches the
+  // default color.
+  TestWallpaperObserver observer;
+  gfx::ImageSkia one_shot_wallpaper =
+      CreateImage(640, 480, SkColorSetRGB(/*r=*/0, /*g=*/0, /*b=*/10));
+  wallpaper_controller_->ShowOneShotWallpaper(one_shot_wallpaper);
+  observer.WaitForWallpaperColorsChanged();
+
+  histogram_tester().ExpectBucketCount(
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", true, 1);
+  EXPECT_EQ(kDefaultColor, displayed_color());
 }
 
 TEST_F(KeyboardBacklightColorControllerTest,
