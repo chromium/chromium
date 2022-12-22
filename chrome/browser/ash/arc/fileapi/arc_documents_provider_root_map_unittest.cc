@@ -10,10 +10,8 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_file_system_instance.h"
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
@@ -126,22 +124,6 @@ TEST_F(ArcDocumentsProviderRootMapTest, UnregisterRoot) {
   GetRootMap()->UnregisterRoot(kMediaDocumentsProviderAuthority, kTestRootId);
   EXPECT_EQ(GetRootMap()->Lookup(kMediaDocumentsProviderAuthority, kTestRootId),
             nullptr);
-}
-
-TEST(ArcDocumentsProviderRootMapStaticTest,
-     IsDocumentProviderRootReadOnly_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({ash::features::kFiltersInRecentsV2}, {});
-
-  EXPECT_FALSE(ArcDocumentsProviderRootMap::IsDocumentProviderRootReadOnly());
-}
-
-TEST(ArcDocumentsProviderRootMapStaticTest,
-     IsDocumentProviderRootReadOnly_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {ash::features::kFiltersInRecentsV2});
-
-  EXPECT_TRUE(ArcDocumentsProviderRootMap::IsDocumentProviderRootReadOnly());
 }
 
 }  // namespace arc

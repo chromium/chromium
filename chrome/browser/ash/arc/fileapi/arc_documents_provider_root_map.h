@@ -52,9 +52,6 @@ class ArcDocumentsProviderRootMap : public KeyedService {
   // its delegates.
   static ArcDocumentsProviderRootMap* GetForArcBrowserContext();
 
-  // Checks if a given document provider root is read only or not.
-  static bool IsDocumentProviderRootReadOnly();
-
   // Looks up a root corresponding to |url|.
   // |path| is set to the remaining path part of |url|.
   // Returns nullptr if |url| is invalid or no corresponding root is registered.
