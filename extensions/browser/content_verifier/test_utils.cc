@@ -422,7 +422,7 @@ std::string TestExtensionBuilder::CreateVerifiedContents() const {
       std::string(signature_value.begin(), signature_value.end()),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &signature_b64);
 
-  std::unique_ptr<base::Value> signatures =
+  base::Value::List signatures =
       ListBuilder()
           .Append(DictionaryBuilder()
                       .Set("header",
@@ -431,7 +431,7 @@ std::string TestExtensionBuilder::CreateVerifiedContents() const {
                       .Set("signature", signature_b64)
                       .Build())
           .Build();
-  std::unique_ptr<base::Value> verified_contents =
+  base::Value::List verified_contents =
       ListBuilder()
           .Append(DictionaryBuilder()
                       .Set("description", "treehash per file")
@@ -444,8 +444,9 @@ std::string TestExtensionBuilder::CreateVerifiedContents() const {
           .Build();
 
   std::string json;
-  if (!base::JSONWriter::Write(*verified_contents, &json))
+  if (!base::JSONWriter::Write(verified_contents, &json)) {
     return "";
+  }
 
   return json;
 }

@@ -97,16 +97,13 @@ class ListBuilder {
 
   ~ListBuilder();
 
-  // Can only be called once, after which it's invalid to use the builder.
-  base::Value::List BuildList() {
+  // DEPRECATED: Use Build instead.
+  base::Value::List BuildList() { return Build(); }
+
+  base::Value::List Build() {
     base::Value::List result = std::move(list_);
     list_ = base::Value::List();
     return result;
-  }
-
-  // DEPRECATED version of BuildList().
-  std::unique_ptr<base::Value> Build() {
-    return std::make_unique<base::Value>(BuildList());
   }
 
   template <typename T>

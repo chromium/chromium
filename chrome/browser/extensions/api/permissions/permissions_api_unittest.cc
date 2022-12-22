@@ -38,7 +38,7 @@ constexpr char kNotInManifestError[] =
 using permissions_test_util::GetPatternsAsStrings;
 
 scoped_refptr<const Extension> CreateExtensionWithPermissions(
-    std::unique_ptr<base::Value> permissions,
+    base::Value::List permissions,
     const std::string& name,
     bool allow_file_access) {
   int creation_flags = Extension::NO_FLAGS;

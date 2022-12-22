@@ -39,7 +39,7 @@ TEST(ValueBuilderTest, Basic) {
 }
 
 TEST(ValueBuilderTest, AppendList) {
-  auto get_json = [](const base::Value& value) -> std::string {
+  auto get_json = [](const base::Value::List& value) -> std::string {
     std::string json;
     if (!base::JSONWriter::Write(value, &json)) {
       // Since this isn't valid JSON, there shouldn't be any risk of this
@@ -51,23 +51,23 @@ TEST(ValueBuilderTest, AppendList) {
 
   {
     std::vector<std::string> strings = {"hello", "world", "!"};
-    std::unique_ptr<base::Value> value =
+    base::Value::List value =
         ListBuilder().Append(strings.begin(), strings.end()).Build();
-    EXPECT_EQ(R"(["hello","world","!"])", get_json(*value));
+    EXPECT_EQ(R"(["hello","world","!"])", get_json(value));
   }
 
   {
     std::set<int> ints = {0, 1, 2, 3};
-    std::unique_ptr<base::Value> value =
+    base::Value::List value =
         ListBuilder().Append(ints.begin(), ints.end()).Build();
-    EXPECT_EQ(R"([0,1,2,3])", get_json(*value));
+    EXPECT_EQ(R"([0,1,2,3])", get_json(value));
   }
 
   {
     std::list<bool> bools = {false, true, false, true};
-    std::unique_ptr<base::Value> value =
+    base::Value::List value =
         ListBuilder().Append(bools.begin(), bools.end()).Build();
-    EXPECT_EQ(R"([false,true,false,true])", get_json(*value));
+    EXPECT_EQ(R"([false,true,false,true])", get_json(value));
   }
 }
 

@@ -393,7 +393,7 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
   ListBuilder builder;
   for (const auto& rule : rules)
     builder.Append(rule.ToValue());
-  JSONFileValueSerializer(source.json_path()).Serialize(*builder.Build());
+  JSONFileValueSerializer(source.json_path()).Serialize(builder.Build());
 
   // Index ruleset.
   auto parse_flags = FileBackedRulesetSource::kRaiseErrorOnInvalidRules |

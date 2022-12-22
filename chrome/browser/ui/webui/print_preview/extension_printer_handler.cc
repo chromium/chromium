@@ -360,7 +360,7 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
 
   DCHECK_GT(pending_enumeration_count_, 0);
   pending_enumeration_count_--;
-  base::Value::List list = std::move(printer_list.Build()->GetList());
+  base::Value::List list = printer_list.Build();
   if (!list.empty())
     callback.Run(std::move(list));
   if (pending_enumeration_count_ == 0)

@@ -641,7 +641,7 @@ class DeclarativeNetRequestBrowserTest
       rules_to_add_builder.Append(rule.ToValue());
 
     // Serialize |rule_ids|.
-    std::unique_ptr<base::Value> rule_ids_to_remove_value =
+    base::Value::List rule_ids_to_remove_value =
         ListBuilder()
             .Append(rule_ids_to_remove.begin(), rule_ids_to_remove.end())
             .Build();
@@ -657,10 +657,10 @@ class DeclarativeNetRequestBrowserTest
     }
 
     // A cast is necessary from ListValue to Value, else this fails to compile.
-    const std::string script = content::JsReplace(
-        base::StringPrintf(kScript, function_name),
-        static_cast<const base::Value&>(*rules_to_add_builder.Build()),
-        static_cast<const base::Value&>(*rule_ids_to_remove_value));
+    const std::string script =
+        content::JsReplace(base::StringPrintf(kScript, function_name),
+                           base::Value(rules_to_add_builder.Build()),
+                           base::Value(std::move(rule_ids_to_remove_value)));
     ASSERT_EQ("success", ExecuteScriptInBackgroundPage(extension_id, script));
   }
 
@@ -792,19 +792,18 @@ class DeclarativeNetRequestBrowserTest
       });
     )";
 
-    std::unique_ptr<base::Value> ids_to_remove =
+    base::Value::List ids_to_remove =
         ListBuilder()
             .Append(ruleset_ids_to_remove.begin(), ruleset_ids_to_remove.end())
             .Build();
-    std::unique_ptr<base::Value> ids_to_add =
+    base::Value::List ids_to_add =
         ListBuilder()
             .Append(ruleset_ids_to_add.begin(), ruleset_ids_to_add.end())
             .Build();
 
-    // A cast is necessary from ListValue to Value, else this fails to compile.
-    const std::string script = content::JsReplace(
-        kScript, static_cast<const base::Value&>(*ids_to_remove),
-        static_cast<const base::Value&>(*ids_to_add));
+    const std::string script =
+        content::JsReplace(kScript, base::Value(std::move(ids_to_remove)),
+                           base::Value(std::move(ids_to_add)));
     return ExecuteScriptInBackgroundPage(extension_id, script);
   }
 

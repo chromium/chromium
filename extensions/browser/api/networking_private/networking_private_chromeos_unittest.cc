@@ -137,7 +137,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
         ash::NetworkHandler::Get()->managed_network_configuration_handler();
 
     const std::string user_policy_ssid = kManagedUserWifiSsid;
-    std::unique_ptr<base::Value> user_policy_onc =
+    base::Value::List user_policy_onc =
         ListBuilder()
             .Append(DictionaryBuilder()
                         .Set("GUID", kManagedUserWifiGuid)
@@ -155,11 +155,11 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
             .Build();
 
     config_handler->SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUserHash,
-                              *user_policy_onc,
+                              base::Value(std::move(user_policy_onc)),
                               base::Value(base::Value::Type::DICTIONARY));
 
     const std::string device_policy_ssid = kManagedDeviceWifiSsid;
-    std::unique_ptr<base::Value> device_policy_onc =
+    base::Value::List device_policy_onc =
         ListBuilder()
             .Append(DictionaryBuilder()
                         .Set("GUID", kManagedDeviceWifiGuid)
@@ -175,7 +175,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                         .Build())
             .Build();
     config_handler->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, "",
-                              *device_policy_onc,
+                              base::Value(std::move(device_policy_onc)),
                               base::Value(base::Value::Type::DICTIONARY));
   }
 
