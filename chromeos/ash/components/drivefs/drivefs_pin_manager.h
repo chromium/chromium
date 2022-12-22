@@ -203,10 +203,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
 
    private:
     SEQUENCE_CHECKER(sequence_checker_);
-    // A map that tracks the in progress items by their key to a pair of
-    // `int64_t` with `first` being the number of bytes transferred and `second`
-    // being the `bytes_to_transfer` i.e. the total bytes of the syncing file.
-    using InProgressMap = std::map<std::string, std::pair<int64_t, int64_t>>;
+
+    // Struct keeping track of the progress of a file being synced.
+    struct Progress {
+      // Number of bytes that have been transferred so far.
+      int64_t transferred = 0;
+
+      // Total number of bytes for this file.
+      int64_t total = 0;
+    };
+
+    // Map that tracks the in-progress files indexed by their path.
+    using InProgressMap = std::map<std::string, Progress>;
     InProgressMap in_progress_items_ GUARDED_BY_CONTEXT(sequence_checker_);
 
     // Keeps track of the total bytes transferred by all the in progress syncing

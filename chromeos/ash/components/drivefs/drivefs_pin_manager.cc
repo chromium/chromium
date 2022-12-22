@@ -117,14 +117,12 @@ DriveFsPinManager::InProgressSyncingItems::~InProgressSyncingItems() = default;
 void DriveFsPinManager::InProgressSyncingItems::AddItem(
     const std::string& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Emplace an item with no progress, these values (i.e. 0,0) will get updated
-  // in the `OnSyncingStatusUpdate`.
-  const auto [it, ok] =
-      in_progress_items_.try_emplace(path, /*bytes_transferred=*/0,
-                                     /*bytes_to_transfer=*/0);
+  // Emplace an item with no progress (yet). The progress values will get
+  // updated in the `OnSyncingStatusUpdate`.
+  const auto [it, ok] = in_progress_items_.try_emplace(path);
   LOG_IF(ERROR, !ok) << "Cannot add item '" << path
-                     << "': There is already an item with bytes_transferred = "
-                     << it->second.first << " / " << it->second.second;
+                     << "': There is already an item with progress "
+                     << it->second.transferred << " / " << it->second.total;
   DCHECK_EQ(path, it->first);
 }
 
@@ -142,7 +140,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
     return total_bytes_transferred_;
   }
 
-  total_bytes_transferred_ += total_bytes - it->second.first;
+  total_bytes_transferred_ += total_bytes - it->second.transferred;
   in_progress_items_.erase(it);
   return total_bytes_transferred_;
 }
@@ -162,9 +160,11 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
     return total_bytes_transferred_;
   }
 
-  total_bytes_transferred_ += bytes_transferred - it->second.first;
-  it->second.first = bytes_transferred;
-  it->second.second = bytes_to_transfer;
+  DCHECK_EQ(it->first, path);
+  Progress& progress = it->second;
+  total_bytes_transferred_ += bytes_transferred - progress.transferred;
+  progress.transferred = bytes_transferred;
+  progress.total = bytes_to_transfer;
   return total_bytes_transferred_;
 }
 
@@ -179,7 +179,7 @@ DriveFsPinManager::InProgressSyncingItems::GetUnstartedItems() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::string> unstarted_items;
   for (const auto& [path, progress] : in_progress_items_) {
-    if (progress.second <= 0) {
+    if (progress.total <= 0) {
       unstarted_items.push_back(path);
     }
   }
