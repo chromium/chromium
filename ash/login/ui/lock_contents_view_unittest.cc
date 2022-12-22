@@ -52,6 +52,7 @@
 #include "ash/tray_action/test_tray_action_client.h"
 #include "ash/tray_action/tray_action.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/timer/mock_timer.h"
@@ -79,6 +80,11 @@ using ::testing::Mock;
 namespace ash {
 
 namespace {
+
+constexpr char kNbPasswordAttemptsUntilSuccessHistogramName[] =
+    "Ash.Login.Lock.NbPasswordAttempts.UntilSuccess";
+constexpr char kNbPasswordAttemptsUntilFailureHistogramName[] =
+    "Ash.Login.Lock.NbPasswordAttempts.UntilFailure";
 
 void PressAndReleasePowerButton() {
   base::SimpleTestTickClock tick_clock;
@@ -3144,9 +3150,7 @@ TEST_F(LockContentsViewUnitTest, UpdatingSmartLockStateSetsAuthMethod) {
       {SmartLockState::kPhoneFoundUnlockedAndDistant, true},
       {SmartLockState::kPhoneAuthenticated, true},
       {SmartLockState::kPasswordReentryRequired, true},
-      {SmartLockState::kPrimaryUserAbsent, true}
-
-  };
+      {SmartLockState::kPrimaryUserAbsent, true}};
 
   for (const auto& it : state_and_is_auth_method_expected) {
     VerifyUpdatingSmartLockStateSetsAuthMethod(
@@ -3516,6 +3520,115 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
 
   EXPECT_TRUE(test_api.kiosk_default_message());
   EXPECT_FALSE(test_api.kiosk_default_message()->GetVisible());
+}
+
+// UMA metrics recorded correctly after the successful login attempt.
+TEST_F(LockContentsViewUnitTest, MetricsRecordedOnSuccessfulLoginAttempt) {
+  int num_failed_attempts = 3;
+  base::HistogramTester histogram_tester;
+  // Build lock screen with a single user.
+  auto contents = std::make_unique<LockContentsView>(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetUserCount(1);
+  SetWidget(CreateWidgetWithContent(contents.get()));
+
+  auto submit_password = [&]() {
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+    base::RunLoop().RunUntilIdle();
+  };
+
+  auto client = std::make_unique<MockLoginScreenClient>();
+  client->set_authenticate_user_callback_result(false);
+
+  // Attempts to submit password.
+  for (int i = 0; i < num_failed_attempts; ++i) {
+    submit_password();
+  }
+
+  // Submit password successfully.
+  client->set_authenticate_user_callback_result(true);
+  submit_password();
+  contents.reset();
+
+  histogram_tester.ExpectTotalCount(
+      kNbPasswordAttemptsUntilSuccessHistogramName, 1);
+  histogram_tester.ExpectBucketCount(
+      kNbPasswordAttemptsUntilSuccessHistogramName, num_failed_attempts, 1);
+  histogram_tester.ExpectTotalCount(
+      kNbPasswordAttemptsUntilFailureHistogramName, 0);
+}
+
+// UMA metrics recorded correctly after the first successful login attempt.
+TEST_F(LockContentsViewUnitTest, MetricsRecordedOnFirstSuccessfulLoginAttempt) {
+  base::HistogramTester histogram_tester;
+  // Build lock screen with a single user.
+  auto contents = std::make_unique<LockContentsView>(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetUserCount(1);
+  SetWidget(CreateWidgetWithContent(contents.get()));
+
+  auto submit_password = [&]() {
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+    base::RunLoop().RunUntilIdle();
+  };
+
+  auto client = std::make_unique<MockLoginScreenClient>();
+  client->set_authenticate_user_callback_result(false);
+
+  // Submit password successfully.
+  client->set_authenticate_user_callback_result(true);
+  submit_password();
+  contents.reset();
+
+  histogram_tester.ExpectTotalCount(
+      kNbPasswordAttemptsUntilSuccessHistogramName, 1);
+  histogram_tester.ExpectBucketCount(
+      kNbPasswordAttemptsUntilSuccessHistogramName, 0, 1);
+  histogram_tester.ExpectTotalCount(
+      kNbPasswordAttemptsUntilFailureHistogramName, 0);
+}
+
+// UMA metrics recorded correctly after the failed login attempt.
+TEST_F(LockContentsViewUnitTest, MetricsRecordedOnFailedLoginAttempt) {
+  int num_failed_attempts = 3;
+  base::HistogramTester histogram_tester;
+  // Build lock screen with a single user.
+  auto contents = std::make_unique<LockContentsView>(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetUserCount(1);
+  SetWidget(CreateWidgetWithContent(contents.get()));
+
+  auto submit_password = [&]() {
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+    base::RunLoop().RunUntilIdle();
+  };
+
+  auto client = std::make_unique<MockLoginScreenClient>();
+  client->set_authenticate_user_callback_result(false);
+
+  // Attempts to submit password.
+  for (int i = 0; i < num_failed_attempts; ++i) {
+    submit_password();
+  }
+
+  // Exit the login screen.
+  contents.reset();
+
+  histogram_tester.ExpectTotalCount(
+      kNbPasswordAttemptsUntilSuccessHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      kNbPasswordAttemptsUntilFailureHistogramName, 1);
+  histogram_tester.ExpectBucketCount(
+      kNbPasswordAttemptsUntilFailureHistogramName, num_failed_attempts, 1);
 }
 
 }  // namespace ash
