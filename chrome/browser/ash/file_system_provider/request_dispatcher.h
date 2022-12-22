@@ -28,6 +28,8 @@ class RequestDispatcher {
   virtual bool DispatchRequest(int request_id,
                                absl::optional<std::string> file_system_id,
                                std::unique_ptr<extensions::Event> event) = 0;
+  virtual void CancelRequest(int request_id,
+                             absl::optional<std::string> file_system_id) = 0;
 };
 
 }  // namespace ash::file_system_provider

@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
+#include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
@@ -352,15 +353,23 @@ void FileSystemProviderNotifyFunction::OnNotifyCompleted(
 
 bool FileSystemProviderInternal::ForwardMountResult(int64_t request_id,
                                                     base::Value::List& args) {
+  auto* profile = Profile::FromBrowserContext(browser_context());
+  auto* sw_lifetime_manager =
+      extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
+          profile);
+  sw_lifetime_manager->FinishRequest({
+      extension_id(),
+      /*file_system_id=*/"",
+      request_id,
+  });
   auto callback =
       base::BindOnce(&FileSystemProviderInternal::RespondWithError, this);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->file_system_provider_service_ash()
-      ->MountFinishedWithProfile(
-          extension_id(), request_id, std::move(args), std::move(callback),
-          Profile::FromBrowserContext(browser_context()));
+      ->MountFinishedWithProfile(extension_id(), request_id, std::move(args),
+                                 std::move(callback), profile);
   return true;
 #else
   if (!MountFinishedInterfaceAvailable())
@@ -389,15 +398,24 @@ bool FileSystemProviderInternal::ForwardOperationResultImpl(
     crosapi::mojom::FileSystemIdPtr file_system_id,
     int request_id,
     base::Value::List args) {
+  auto* profile = Profile::FromBrowserContext(browser_context());
+  auto* sw_lifetime_manager =
+      extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
+          profile);
+  sw_lifetime_manager->FinishRequest({
+      file_system_id->provider,
+      file_system_id->id,
+      request_id,
+  });
   auto callback =
       base::BindOnce(&FileSystemProviderInternal::RespondWithError, this);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->file_system_provider_service_ash()
-      ->OperationFinishedWithProfile(
-          response, std::move(file_system_id), request_id, std::move(args),
-          std::move(callback), Profile::FromBrowserContext(browser_context()));
+      ->OperationFinishedWithProfile(response, std::move(file_system_id),
+                                     request_id, std::move(args),
+                                     std::move(callback), profile);
   return true;
 #else
   if (!OperationFinishedInterfaceAvailable()) {

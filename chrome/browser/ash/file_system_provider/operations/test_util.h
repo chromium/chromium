@@ -35,6 +35,8 @@ class LoggingDispatchEventImpl : public RequestDispatcher {
   bool DispatchRequest(int request_id,
                        absl::optional<std::string> file_system_id,
                        std::unique_ptr<extensions::Event> event) override;
+  void CancelRequest(int request_id,
+                     absl::optional<std::string> file_system_id) override;
 
   // Returns events sent to providing extensions.
   std::vector<std::unique_ptr<extensions::Event>>& events() { return events_; }

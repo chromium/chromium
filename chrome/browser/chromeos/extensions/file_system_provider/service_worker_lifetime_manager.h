@@ -10,8 +10,10 @@
 #include <string>
 
 #include "base/memory/singleton.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
 
@@ -32,7 +34,7 @@ namespace file_system_provider {
 struct RequestKey {
   extensions::ExtensionId extension_id;
   std::string file_system_id;
-  int request_id;
+  int64_t request_id;
 
   bool operator<(const RequestKey& other) const;
 };
@@ -65,6 +67,11 @@ class ServiceWorkerLifetimeManager : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  // Helper to create a callback for when an event is dispatched. The callback
+  // is safe as it handles this object's lifetime.
+  Event::DidDispatchCallback CreateDispatchCallbackForRequest(
+      const RequestKey&);
+
  protected:
   struct KeepaliveKey {
     WorkerId worker_id;
@@ -87,6 +94,8 @@ class ServiceWorkerLifetimeManager : public KeyedService {
 
   raw_ptr<ProcessManager> process_manager_;
   std::map<RequestKey, std::set<KeepaliveKey>> requests_;
+
+  base::WeakPtrFactory<ServiceWorkerLifetimeManager> weak_ptr_factory_{this};
 };
 
 // KeyedService factory for ServiceWorkerLifetimeManager.

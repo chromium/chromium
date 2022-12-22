@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "extensions/browser/event_router.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
@@ -79,6 +78,15 @@ void ServiceWorkerLifetimeManager::Shutdown() {
       DecrementKeepalive(key);
     }
   }
+}
+
+Event::DidDispatchCallback
+ServiceWorkerLifetimeManager::CreateDispatchCallbackForRequest(
+    const RequestKey& request_key) {
+  return base::BindRepeating(
+      &extensions::file_system_provider::ServiceWorkerLifetimeManager::
+          RequestDispatched,
+      weak_ptr_factory_.GetWeakPtr(), request_key);
 }
 
 bool ServiceWorkerLifetimeManager::KeepaliveKey::operator<(

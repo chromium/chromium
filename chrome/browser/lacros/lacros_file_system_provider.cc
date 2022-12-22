@@ -4,8 +4,10 @@
 
 #include "chrome/browser/lacros/lacros_file_system_provider.h"
 
+#include "base/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
@@ -133,9 +135,32 @@ void LacrosFileSystemProvider::ForwardRequest(
   extensions::events::HistogramValue histogram =
       static_cast<extensions::events::HistogramValue>(histogram_value);
 
-  auto event = std::make_unique<extensions::Event>(histogram, event_name,
-                                                   std::move(args));
-  router->DispatchEventToExtension(provider, std::move(event));
+  if (request_id > 0) {
+    // request_id will be > 0 if Ash calls ForwardRequest (crosapi with
+    // request_id as an argument).
+    auto* sw_lifetime_manager =
+        extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
+            main_profile);
+    if (!sw_lifetime_manager) {
+      LOG(ERROR) << "Could not get service worker lifetime manager";
+      std::move(callback).Run(crosapi::mojom::FSPForwardResult::kInternalError);
+      return;
+    }
+    auto event = std::make_unique<extensions::Event>(histogram, event_name,
+                                                     std::move(args));
+    extensions::file_system_provider::RequestKey request_key{
+        provider, file_system_id.value_or(""), request_id};
+    event->did_dispatch_callback =
+        sw_lifetime_manager->CreateDispatchCallbackForRequest(request_key);
+    router->DispatchEventToExtension(provider, std::move(event));
+    sw_lifetime_manager->StartRequest(request_key);
+  } else {
+    // request_id is 0 if Ash calls ForwardOperation (older crosapi without
+    // request_id).
+    auto event = std::make_unique<extensions::Event>(histogram, event_name,
+                                                     std::move(args));
+    router->DispatchEventToExtension(provider, std::move(event));
+  }
   std::move(callback).Run(crosapi::mojom::FSPForwardResult::kSuccess);
 }
 
@@ -143,9 +168,17 @@ void LacrosFileSystemProvider::CancelRequest(
     const std::string& provider,
     const absl::optional<std::string>& file_system_id,
     int64_t request_id) {
-  // TODO(b/249182641): Request cancellation should decrement service worker
-  // keep-alive reference count.
-  NOTIMPLEMENTED_LOG_ONCE();
+  Profile* main_profile = GetMainProfile();
+  if (!main_profile) {
+    LOG(ERROR) << "Could not get main profile";
+    return;
+  }
+  auto* sw_lifetime_manager =
+      extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
+          main_profile);
+  sw_lifetime_manager->FinishRequest(
+      extensions::file_system_provider::RequestKey{
+          provider, file_system_id.value_or(""), request_id});
 }
 
 void LacrosFileSystemProvider::OnExtensionLoaded(

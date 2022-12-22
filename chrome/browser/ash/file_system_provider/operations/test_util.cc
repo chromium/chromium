@@ -27,6 +27,10 @@ bool LoggingDispatchEventImpl::DispatchRequest(
   return dispatch_reply_;
 }
 
+void LoggingDispatchEventImpl::CancelRequest(
+    int request_id,
+    absl::optional<std::string> file_system_id) {}
+
 void LogStatusCallback(StatusCallbackLog* log, base::File::Error result) {
   log->push_back(result);
 }

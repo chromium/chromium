@@ -38,7 +38,8 @@ bool Operation::SendEvent(int request_id,
 }
 
 void Operation::OnAbort(int request_id) {
-  // TODO(b/249182641): plumb through request cancellation to lacros.
+  request_dispatcher_->CancelRequest(request_id,
+                                     file_system_info_.file_system_id());
 }
 
 }  // namespace operations

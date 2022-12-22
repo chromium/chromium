@@ -245,12 +245,14 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
                             storage::AsyncFileUtil::StatusCallback callback,
                             base::File::Error result);
 
+  void OnLacrosOperationForwarded(int request_id, base::File::Error error);
+
   Profile* profile_;                       // Not owned.
   extensions::EventRouter* event_router_;  // Not owned. May be NULL.
   ProvidedFileSystemInfo file_system_info_;
   std::unique_ptr<NotificationManagerInterface> notification_manager_;
-  std::unique_ptr<OperationRequestManager> request_manager_;
   std::unique_ptr<RequestDispatcher> request_dispatcher_;
+  std::unique_ptr<OperationRequestManager> request_manager_;
   Watchers watchers_;
   Queue watcher_queue_;
   OpenedFiles opened_files_;

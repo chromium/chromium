@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ash/file_system_provider/operations/unmount.h"
 #include "chrome/browser/ash/file_system_provider/operations/write_file.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
+#include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "extensions/browser/event_router.h"
@@ -45,6 +47,19 @@ class IOBuffer;
 
 namespace ash {
 namespace file_system_provider {
+
+namespace {
+
+extensions::file_system_provider::ServiceWorkerLifetimeManager*
+GetServiceWorkerLifetimeManager(Profile* profile) {
+  if (!features::IsUploadOfficeToCloudEnabled()) {
+    return nullptr;
+  }
+  return extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
+      profile);
+}
+
+}  // namespace
 
 AutoUpdater::AutoUpdater(base::OnceClosure update_callback)
     : update_callback_(std::move(update_callback)),
@@ -139,16 +154,16 @@ ProvidedFileSystem::ProvidedFileSystem(
       file_system_info_(file_system_info),
       notification_manager_(
           new NotificationManager(profile_, file_system_info_)),
-      request_manager_(new OperationRequestManager(
-          profile,
-          file_system_info.provider_id().GetExtensionId(),
-          notification_manager_.get())),
-      request_dispatcher_(std::make_unique<RequestDispatcherImpl>(
-          file_system_info_.provider_id().GetExtensionId(),
-          event_router_,
-          request_manager_.get())),
       watcher_queue_(1) {
   DCHECK_EQ(ProviderId::EXTENSION, file_system_info.provider_id().GetType());
+  request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
+      file_system_info_.provider_id().GetExtensionId(), event_router_,
+      base::BindRepeating(&ProvidedFileSystem::OnLacrosOperationForwarded,
+                          weak_ptr_factory_.GetWeakPtr()),
+      GetServiceWorkerLifetimeManager(profile_));
+  request_manager_ = std::make_unique<OperationRequestManager>(
+      profile, file_system_info.provider_id().GetExtensionId(),
+      notification_manager_.get());
 }
 
 ProvidedFileSystem::~ProvidedFileSystem() {
@@ -163,7 +178,9 @@ void ProvidedFileSystem::SetEventRouterForTesting(
   event_router_ = event_router;
   request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
       file_system_info_.provider_id().GetExtensionId(), event_router_,
-      request_manager_.get());
+      base::BindRepeating(&ProvidedFileSystem::OnLacrosOperationForwarded,
+                          weak_ptr_factory_.GetWeakPtr()),
+      GetServiceWorkerLifetimeManager(profile_));
 }
 
 void ProvidedFileSystem::SetNotificationManagerForTesting(
@@ -849,6 +866,12 @@ void ProvidedFileSystem::OnCloseFileCompleted(
   // list of opened files.
   opened_files_.erase(file_handle);
   std::move(callback).Run(result);
+}
+
+void ProvidedFileSystem::OnLacrosOperationForwarded(int request_id,
+                                                    base::File::Error error) {
+  request_manager_->RejectRequest(request_id, std::make_unique<RequestValue>(),
+                                  error);
 }
 
 }  // namespace file_system_provider

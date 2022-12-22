@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/throttled_file_system.h"
+#include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -51,6 +53,15 @@ bool GetProvidingExtensionInfo(const extensions::ExtensionId& extension_id,
   result->capabilities = *capabilities;
 
   return true;
+}
+
+extensions::file_system_provider::ServiceWorkerLifetimeManager*
+GetServiceWorkerLifetimeManager(Profile* profile) {
+  if (!features::IsUploadOfficeToCloudEnabled()) {
+    return nullptr;
+  }
+  return extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
+      profile);
 }
 
 }  // namespace
@@ -126,13 +137,14 @@ ExtensionProvider::ExtensionProvider(
     Profile* profile,
     const extensions::ExtensionId& extension_id,
     const ProvidingExtensionInfo& info)
-    : provider_id_(ProviderId::CreateFromExtensionId(extension_id)),
-      request_manager_(
-          new RequestManager(profile, /*notification_manager=*/nullptr)),
-      request_dispatcher_(std::make_unique<RequestDispatcherImpl>(
-          extension_id,
-          extensions::EventRouter::Get(profile),
-          request_manager_.get())) {
+    : provider_id_(ProviderId::CreateFromExtensionId(extension_id)) {
+  request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
+      extension_id, extensions::EventRouter::Get(profile),
+      base::BindRepeating(&ExtensionProvider::OnLacrosOperationForwarded,
+                          weak_ptr_factory_.GetWeakPtr()),
+      GetServiceWorkerLifetimeManager(profile));
+  request_manager_ = std::make_unique<RequestManager>(
+      profile, /*notification_manager=*/nullptr);
   capabilities_.configurable = info.capabilities.configurable();
   capabilities_.watchable = info.capabilities.watchable();
   capabilities_.multiple_mounts = info.capabilities.multiple_mounts();
@@ -147,13 +159,14 @@ ExtensionProvider::ExtensionProvider(Profile* profile,
                                      std::string name)
     : provider_id_(std::move(id)),
       capabilities_(std::move(capabilities)),
-      name_(std::move(name)),
-      request_manager_(
-          new RequestManager(profile, /*notification_manager=*/nullptr)),
-      request_dispatcher_(std::make_unique<RequestDispatcherImpl>(
-          provider_id_.GetExtensionId(),
-          extensions::EventRouter::Get(profile),
-          request_manager_.get())) {
+      name_(std::move(name)) {
+  request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
+      provider_id_.GetExtensionId(), extensions::EventRouter::Get(profile),
+      base::BindRepeating(&ExtensionProvider::OnLacrosOperationForwarded,
+                          weak_ptr_factory_.GetWeakPtr()),
+      GetServiceWorkerLifetimeManager(profile));
+  request_manager_ = std::make_unique<RequestManager>(
+      profile, /*notification_manager=*/nullptr);
   ObserveAppServiceForIcons(profile);
 }
 
@@ -206,6 +219,12 @@ void ExtensionProvider::OnAppUpdate(const apps::AppUpdate& update) {
 void ExtensionProvider::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   Observe(nullptr);
+}
+
+void ExtensionProvider::OnLacrosOperationForwarded(int request_id,
+                                                   base::File::Error error) {
+  request_manager_->RejectRequest(request_id, std::make_unique<RequestValue>(),
+                                  error);
 }
 
 }  // namespace file_system_provider
