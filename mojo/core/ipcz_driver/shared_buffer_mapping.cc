@@ -88,8 +88,8 @@ scoped_refptr<SharedBufferMapping> SharedBufferMapping::Create(
 }
 
 void SharedBufferMapping::Close() {
-  mapping_.reset();
   memory_ = nullptr;
+  mapping_.reset();
 }
 
 }  // namespace mojo::core::ipcz_driver
