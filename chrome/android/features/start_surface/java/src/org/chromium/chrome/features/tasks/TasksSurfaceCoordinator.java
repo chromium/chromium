@@ -335,11 +335,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         return (mTabSwitcher != null) ? mTabSwitcher.getTabSwitcherCustomViewManager() : null;
     }
 
-    @Override
-    public void initHeaderDragListener() {
-        mView.initHeaderDragListener();
-    }
-
     /** Suggestions UI Delegate for constructing the TileGroup. */
     private class MostVisitedSuggestionsUiDelegate extends SuggestionsUiDelegateImpl {
         public MostVisitedSuggestionsUiDelegate(SuggestionsNavigationDelegate navigationDelegate,

@@ -27,7 +27,6 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -164,16 +163,8 @@ public class StartSurfaceTabSwitcherTest {
         }
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-
         if (!ChromeFeatureList.sStartSurfaceRefactor.isEnabled()) {
             onViewWaiting(withId(R.id.secondary_tasks_surface_view));
-
-            // Grid tab switcher surface's height shouldn't be wrap_content. See crbug.com/1368437.
-            ViewGroup gtsSurfaceView = cta.findViewById(R.id.secondary_tasks_surface_view);
-            int surfaceHeight = gtsSurfaceView.getMeasuredHeight();
-            int bodyHeight =
-                    gtsSurfaceView.findViewById(R.id.tasks_surface_body).getMeasuredHeight();
-            Assert.assertEquals(surfaceHeight, bodyHeight);
         }
 
         onViewWaiting(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
