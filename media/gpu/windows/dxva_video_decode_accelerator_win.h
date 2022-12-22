@@ -149,8 +149,8 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
 
     // Bind the resulting GLImage to the NV12 texture. If the texture's used
     // in a an overlay than use it directly, otherwise copy it to another NV12
-    // texture when necessary.
-    DELAYED_COPY_TO_NV12 = 2,
+    // texture when necessary -- no longer used
+    // DELAYED_COPY_TO_NV12 = 2,
 
     // Bind the NV12 decoder texture directly to the texture used in ANGLE.
     BIND = 3,
@@ -552,9 +552,6 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   // Supports copying the NV12 texture to another NV12 texture to use in
   // ANGLE.
   bool support_copy_nv12_textures_;
-
-  // Supports copying NV12 textures on the main thread to use in ANGLE.
-  bool support_delayed_copy_nv12_textures_;
 
   // Copy video to FP16 scRGB textures.
   bool use_fp16_ = false;

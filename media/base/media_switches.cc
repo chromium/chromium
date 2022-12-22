@@ -986,12 +986,6 @@ BASE_FEATURE(kUseAlternateVideoDecoderImplementation,
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_WIN)
-// Does NV12->NV12 video copy on the main thread right before the texture's
-// used by GL.
-BASE_FEATURE(kDelayCopyNV12Textures,
-             "DelayCopyNV12Textures",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables DirectShow GetPhotoState implementation
 // Created to act as a kill switch by disabling it, in the case of the
 // resurgence of https://crbug.com/722038

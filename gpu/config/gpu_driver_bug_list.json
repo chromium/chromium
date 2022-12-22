@@ -2066,34 +2066,6 @@
       ]
     },
     {
-      "id": 232,
-      "description": "Delayed copy NV12 crashes on Intel on Windows <= 8.1.",
-      "cr_bugs": [727216],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<=",
-          "value": "8.1"
-        }
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "disable_delayed_copy_nv12"
-      ]
-    },
-    {
-      "id": 233,
-      "description": "Delayed copy NV12 displays incorrect colors on NVIDIA drivers.",
-      "cr_bugs": [728670],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x10de",
-      "features": [
-        "disable_delayed_copy_nv12"
-      ]
-    },
-    {
       "id": 235,
       "description": "Avoid waiting on a egl fence before pageflipping and rely on implicit sync.",
       "cr_bugs": [721463],
@@ -2878,18 +2850,6 @@
       "gl_vendor": "NVIDIA.*",
       "features": [
         "force_gl_flush_on_swap_buffers"
-      ]
-    },
-    {
-      "id": 308,
-      "cr_bugs": [983787],
-      "description": "Delayed copy NV12 causes crashes on GPU main thread when DXVA video decoder runs on another thread",
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "disable_delayed_copy_nv12"
       ]
     },
     {

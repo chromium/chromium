@@ -31,7 +31,6 @@ disable_chromium_framebuffer_multisample
 disable_d3d11
 disable_d3d11_video_decoder
 disable_decode_swap_chain
-disable_delayed_copy_nv12
 disable_depth_texture
 disable_direct_composition
 disable_direct_composition_sw_video_overlays

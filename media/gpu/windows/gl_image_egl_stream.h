@@ -48,37 +48,6 @@ class GLImageEGLStream : public gl::GLImage {
   size_t level_ = 0;
 };
 
-// This copies to a new texture on bind.
-class CopyingGLImageEGLStream : public GLImageEGLStream {
- public:
-  CopyingGLImageEGLStream(
-      const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device,
-      const gfx::Size& size,
-      EGLStreamKHR stream);
-
-  bool Initialize();
-  bool InitializeVideoProcessor(
-      const Microsoft::WRL::ComPtr<ID3D11VideoProcessor>& video_processor,
-      const Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>& enumerator);
-  void UnbindFromTexture();
-
-  // GLImage implementation.
-  bool BindTexImage(unsigned target) override;
-
- private:
-  ~CopyingGLImageEGLStream() override;
-
-  bool copied_ = false;
-
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device_;
-  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context_;
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> d3d11_processor_;
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator> enumerator_;
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> decoder_copy_texture_;
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessorOutputView> output_view_;
-};
-
 }  // namespace media
 
 #endif  // MEDIA_GPU_WINDOWS_GL_IMAGE_EGL_STREAM_H_

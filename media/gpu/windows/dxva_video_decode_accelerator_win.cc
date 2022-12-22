@@ -668,9 +668,6 @@ DXVAVideoDecodeAccelerator::DXVAVideoDecodeAccelerator(
                                          : kNumPictureBuffers),
       support_copy_nv12_textures_(gpu_preferences.enable_nv12_dxgi_video &&
                                   !workarounds.disable_nv12_dxgi_video),
-      support_delayed_copy_nv12_textures_(
-          base::FeatureList::IsEnabled(kDelayCopyNV12Textures) &&
-          !workarounds.disable_delayed_copy_nv12),
       use_dx11_(false),
       use_keyed_mutex_(false),
       using_angle_device_(false),
@@ -1232,16 +1229,6 @@ void DXVAVideoDecodeAccelerator::ReusePictureBuffer(int32_t picture_buffer_id) {
     RETURN_AND_NOTIFY_ON_FAILURE(it->second->ReusePictureBuffer(),
                                  "Failed to reuse picture buffer",
                                  PLATFORM_FAILURE, );
-    if (bind_image_cb_ && (GetPictureBufferMechanism() ==
-                           PictureBufferMechanism::DELAYED_COPY_TO_NV12)) {
-      // Unbind the image to ensure it will be copied again the next time it's
-      // needed.
-      for (uint32_t client_id :
-           it->second->picture_buffer().client_texture_ids()) {
-        bind_image_cb_.Run(client_id, GetTextureTarget(),
-                           it->second->gl_image());
-      }
-    }
 
     ProcessPendingSamples();
     if (pending_flush_) {
@@ -2987,9 +2974,7 @@ bool DXVAVideoDecodeAccelerator::InitializeID3D11VideoProcessor(
   // If we're copying textures or just not using color space information, set
   // the same color space on input and output.
   if ((!use_color_info_ && !use_fp16_) ||
-      GetPictureBufferMechanism() == PictureBufferMechanism::COPY_TO_NV12 ||
-      GetPictureBufferMechanism() ==
-          PictureBufferMechanism::DELAYED_COPY_TO_NV12) {
+      GetPictureBufferMechanism() == PictureBufferMechanism::COPY_TO_NV12) {
     const auto d3d11_color_space =
         gfx::ColorSpaceWin::GetD3D11ColorSpace(color_space);
     video_context_->VideoProcessorSetOutputColorSpace(d3d11_processor_.Get(),
@@ -3196,7 +3181,6 @@ void DXVAVideoDecodeAccelerator::ConfigChanged(const Config& config) {
 uint32_t DXVAVideoDecodeAccelerator::GetTextureTarget() const {
   switch (GetPictureBufferMechanism()) {
     case PictureBufferMechanism::BIND:
-    case PictureBufferMechanism::DELAYED_COPY_TO_NV12:
     case PictureBufferMechanism::COPY_TO_NV12:
       return GL_TEXTURE_EXTERNAL_OES;
     case PictureBufferMechanism::COPY_TO_RGB:
@@ -3330,8 +3314,6 @@ DXVAVideoDecodeAccelerator::GetPictureBufferMechanism() const {
   // It works fine dealing P010/P016 with BIND mode.
   if (support_share_nv12_textures_ || decoder_output_p010_or_p016_)
     return PictureBufferMechanism::BIND;
-  if (support_delayed_copy_nv12_textures_ && support_copy_nv12_textures_)
-    return PictureBufferMechanism::DELAYED_COPY_TO_NV12;
   if (support_copy_nv12_textures_)
     return PictureBufferMechanism::COPY_TO_NV12;
   return PictureBufferMechanism::COPY_TO_RGB;
@@ -3340,7 +3322,6 @@ DXVAVideoDecodeAccelerator::GetPictureBufferMechanism() const {
 bool DXVAVideoDecodeAccelerator::ShouldUseANGLEDevice() const {
   switch (GetPictureBufferMechanism()) {
     case PictureBufferMechanism::BIND:
-    case PictureBufferMechanism::DELAYED_COPY_TO_NV12:
       return true;
     case PictureBufferMechanism::COPY_TO_NV12:
     case PictureBufferMechanism::COPY_TO_RGB:
