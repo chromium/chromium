@@ -157,6 +157,13 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
   MOCK_METHOD0(ResetCustomBackgroundInfo, void());
   MOCK_METHOD1(SelectLocalBackgroundImage, void(const base::FilePath&));
   MOCK_METHOD1(AddObserver, void(NtpCustomBackgroundServiceObserver*));
+  MOCK_METHOD6(SetCustomBackgroundInfo,
+               void(const GURL&,
+                    const GURL&,
+                    const std::string&,
+                    const std::string&,
+                    const GURL&,
+                    const std::string&));
 };
 
 class MockNtpBackgroundService : public NtpBackgroundService {
@@ -588,6 +595,14 @@ TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStore) {
   ASSERT_EQ(1, browser().tab_strip_model()->count());
   ASSERT_EQ("https://chrome.google.com/webstore?category=theme",
             browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+}
+
+TEST_F(CustomizeChromePageHandlerTest, SetBackgroundImage) {
+  EXPECT_CALL(mock_ntp_custom_background_service_, SetCustomBackgroundInfo)
+      .Times(1);
+  handler().SetBackgroundImage(
+      "attribution1", "attribution2", GURL("https://attribution.com"),
+      GURL("https://image.jpg"), GURL("https://thumbnail.jpg"));
 }
 
 class CustomizeChromePageHandlerWithModulesTest

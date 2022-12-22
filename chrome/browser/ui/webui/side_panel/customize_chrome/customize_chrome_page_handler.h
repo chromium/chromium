@@ -64,6 +64,11 @@ class CustomizeChromePageHandler
   void SetClassicChromeDefaultTheme() override;
   void ChooseLocalCustomBackground(
       ChooseLocalCustomBackgroundCallback callback) override;
+  void SetBackgroundImage(const std::string& attribution_1,
+                          const std::string& attribution_2,
+                          const GURL& attribution_url,
+                          const GURL& image_url,
+                          const GURL& thumbnail_url) override;
   void OpenChromeWebStore() override;
   void SetModulesVisible(bool visible) override;
   void SetModuleDisabled(const std::string& module_id, bool disabled) override;

@@ -247,6 +247,19 @@ void CustomizeChromePageHandler::ChooseLocalCustomBackground(
       nullptr);
 }
 
+void CustomizeChromePageHandler::SetBackgroundImage(
+    const std::string& attribution_1,
+    const std::string& attribution_2,
+    const GURL& attribution_url,
+    const GURL& image_url,
+    const GURL& thumbnail_url) {
+  // Populating the |collection_id| turns on refresh daily which overrides the
+  // the selected image.
+  ntp_custom_background_service_->SetCustomBackgroundInfo(
+      image_url, thumbnail_url, attribution_1, attribution_2, attribution_url,
+      /* collection_id= */ "");
+}
+
 void CustomizeChromePageHandler::OpenChromeWebStore() {
   NavigateParams navigate_params(
       profile_, GURL("https://chrome.google.com/webstore?category=theme"),

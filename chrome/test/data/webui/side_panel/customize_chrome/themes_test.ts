@@ -62,19 +62,25 @@ suite('ThemesTest', () => {
 
   test('themes buttons create events', async () => {
     // Check that clicking the back button produces a back-click event.
-    let eventPromise = eventToPromise('back-click', themesElement);
+    const eventPromise = eventToPromise('back-click', themesElement);
     themesElement.$.backButton.click();
-    let event = await eventPromise;
+    const event = await eventPromise;
     assertTrue(!!event);
+  });
+
+  test('set theme and send event on theme click', async () => {
+    await setCollection('test', 2);
 
     // Check that clicking a theme produces a theme-select event.
-    await setCollection('test', 2);
-    eventPromise = eventToPromise('theme-select', themesElement);
+    const eventPromise = eventToPromise('theme-select', themesElement);
     const theme =
         themesElement.shadowRoot!.querySelector('.theme')! as HTMLButtonElement;
     theme.click();
-    event = await eventPromise;
+    const event = await eventPromise;
     assertTrue(!!event);
+
+    // Check that setBackgroundImage was called on click.
+    assertEquals(1, handler.getCallCount('setBackgroundImage'));
   });
 
   test('get collection images when collection changes', async () => {

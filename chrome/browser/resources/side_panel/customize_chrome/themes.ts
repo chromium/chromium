@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundCollection, CollectionImage, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
@@ -72,7 +72,16 @@ export class ThemesElement extends PolymerElement {
     this.dispatchEvent(new Event('back-click'));
   }
 
-  private onSelectTheme_() {
+  private onSelectTheme_(e: DomRepeatEvent<CollectionImage>) {
+    const {
+      attribution1,
+      attribution2,
+      attributionUrl,
+      imageUrl,
+      previewImageUrl,
+    } = e.model.item;
+    this.pageHandler_.setBackgroundImage(
+        attribution1, attribution2, attributionUrl, imageUrl, previewImageUrl);
     this.dispatchEvent(new Event('theme-select'));
   }
 }

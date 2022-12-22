@@ -126,6 +126,11 @@ interface CustomizeChromePageHandler {
   // Choose custom background from local file system.
   ChooseLocalCustomBackground() => (bool success);
 
+  // Sets the background image and notifies all NTPs of the change.
+  SetBackgroundImage(string attribution_1, string attribution_2,
+      url.mojom.Url attribution_url, url.mojom.Url image_url,
+      url.mojom.Url thumbnail_url);
+
   // Open Chrome Web Store in a new tab.
   OpenChromeWebStore();
 
