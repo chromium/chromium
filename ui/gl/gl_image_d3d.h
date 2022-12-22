@@ -31,7 +31,6 @@ class GL_EXPORT GLImageD3D : public GLImage {
   GLImageD3D(const gfx::Size& size,
              unsigned internal_format,
              unsigned data_type,
-             const gfx::ColorSpace& color_space,
              Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
              size_t array_slice = 0,
              size_t plane_index = 0,
@@ -58,8 +57,6 @@ class GL_EXPORT GLImageD3D : public GLImage {
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override;
-
-  const gfx::ColorSpace& color_space() const { return color_space_; }
 
   const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture() const {
     return texture_;

@@ -107,10 +107,6 @@ bool GLImage::CopyTexSubImage(unsigned target,
   return false;
 }
 
-void GLImage::SetColorSpace(const gfx::ColorSpace& color_space) {
-  color_space_ = color_space;
-}
-
 void GLImage::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                            uint64_t process_tracing_id,
                            const std::string& dump_name) {

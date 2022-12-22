@@ -174,8 +174,8 @@ scoped_refptr<gles2::TexturePassthrough> D3DImageBacking::CreateGLTexture(
   const auto internal_format = GLInternalFormat(format);
   const auto data_type = GLDataType(format);
   auto image = base::MakeRefCounted<gl::GLImageD3D>(
-      size, internal_format, data_type, color_space, d3d11_texture, array_slice,
-      plane_index, swap_chain);
+      size, internal_format, data_type, d3d11_texture, array_slice, plane_index,
+      swap_chain);
   DCHECK_EQ(image->GetDataFormat(), GLDataFormat(format));
   if (!image->Initialize()) {
     LOG(ERROR) << "GLImageD3D::Initialize failed";

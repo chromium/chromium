@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image_egl.h"
@@ -38,6 +39,15 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
   // Export the wrapped EGLImage to dmabuf fds.
   gfx::NativePixmapHandle ExportHandle();
 
+  // Set the color space when the image is used as an overlay. The color space
+  // may also be useful for images backed by YUV buffers: if the GL driver can
+  // sample the YUV buffer as RGB, we need to tell it the encoding (BT.601,
+  // BT.709, or BT.2020) and range (limited or null), and |color_space| conveys
+  // this.
+  void SetColorSpace(const gfx::ColorSpace& color_space) {
+    color_space_ = color_space;
+  }
+
   // Overridden from GLImage:
   unsigned GetInternalFormat() override;
   unsigned GetDataType() override;
@@ -62,6 +72,7 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
   scoped_refptr<gfx::NativePixmap> pixmap_;
   gfx::BufferPlane plane_;
   bool has_image_dma_buf_export_;
+  gfx::ColorSpace color_space_;
 };
 
 }  // namespace gl

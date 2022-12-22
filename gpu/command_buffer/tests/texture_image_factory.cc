@@ -7,6 +7,7 @@
 namespace gpu {
 
 bool TextureImageFactory::SupportsCreateAnonymousImage() const {
+  // Not needed in tests.
   return false;
 }
 

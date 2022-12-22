@@ -31,7 +31,6 @@ class GLImagePbuffer final : public gl::GLImage {
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override;
-  void SetColorSpace(const gfx::ColorSpace& color_space) override {}
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override {}

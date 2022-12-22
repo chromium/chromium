@@ -7,6 +7,10 @@
 
 #include "ui/ozone/public/native_pixmap_gl_binding.h"
 
+namespace gfx {
+class ColorSpace;
+}
+
 namespace ui {
 
 // A binding maintained between GLImageNativePixmap and GL Textures in Ozone.

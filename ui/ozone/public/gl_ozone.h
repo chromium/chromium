@@ -26,6 +26,10 @@ struct GLContextAttribs;
 struct GLVersionInfo;
 }
 
+namespace gfx {
+class ColorSpace;
+}
+
 namespace ui {
 
 // Interface that has all of the required methods for an Ozone platform to

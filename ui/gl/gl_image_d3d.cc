@@ -20,7 +20,6 @@ namespace gl {
 GLImageD3D::GLImageD3D(const gfx::Size& size,
                        unsigned internal_format,
                        unsigned data_type,
-                       const gfx::ColorSpace& color_space,
                        Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
                        size_t array_slice,
                        size_t plane_index,
@@ -33,7 +32,6 @@ GLImageD3D::GLImageD3D(const gfx::Size& size,
       array_slice_(array_slice),
       plane_index_(plane_index),
       swap_chain_(std::move(swap_chain)) {
-  GLImage::SetColorSpace(color_space);
   DCHECK(texture_);
 }
 

@@ -110,7 +110,7 @@ bool GLImageIOSurface::InitializeWithCVPixelBuffer(
 
   cv_pixel_buffer_.reset(cv_pixel_buffer, base::scoped_policy::RETAIN);
   disable_in_use_by_window_server_ = true;
-  GLImage::SetColorSpace(color_space);
+  color_space_ = color_space;
   return true;
 }
 
@@ -190,7 +190,7 @@ void GLImageIOSurface::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
 void GLImageIOSurface::SetColorSpace(const gfx::ColorSpace& color_space) {
   if (color_space_ == color_space)
     return;
-  GLImage::SetColorSpace(color_space);
+  color_space_ = color_space;
 
   // Prefer to use data from DisplayICCProfiles, which will give a byte-for-byte
   // match for color spaces of the system displays. Note that DisplayICCProfiles
