@@ -10,10 +10,6 @@
 
 namespace syncer {
 
-// Allows device registration within trusted vault server without having trusted
-// vault key.
-BASE_DECLARE_FEATURE(kAllowSilentTrustedVaultDeviceRegistration);
-
 // If enabled, EntitySpecifics will be cached in EntityMetadata in order to
 // prevent data loss caused by older clients dealing with unknown proto fields
 // (introduced later).

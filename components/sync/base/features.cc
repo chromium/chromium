@@ -8,10 +8,6 @@
 
 namespace syncer {
 
-BASE_FEATURE(kAllowSilentTrustedVaultDeviceRegistration,
-             "AllowSilentTrustedVaultDeviceRegistration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCacheBaseEntitySpecificsInMetadata,
              "CacheBaseEntitySpecificsInMetadata",
              base::FEATURE_ENABLED_BY_DEFAULT);
