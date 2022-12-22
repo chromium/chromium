@@ -40,7 +40,6 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "filetype_tini.icon",
     "filetype_video.icon",
     "filetype_word.icon",
-    "float_button.icon",
     "float_window.icon",
     "keyboard_shortcuts.icon",
     "notification_assistant.icon",
