@@ -12,6 +12,7 @@ android_library("webengine_java_tests") {
     "src/org/chromium/webengine/test/CookieManagerTest.java",
     "src/org/chromium/webengine/test/ExecuteScriptTest.java",
     "src/org/chromium/webengine/test/TabManagerTest.java",
+    "src/org/chromium/webengine/test/TabPrerenderTest.java",
     "src/org/chromium/webengine/test/WebFragmentTest.java",
   ]
   deps = [
