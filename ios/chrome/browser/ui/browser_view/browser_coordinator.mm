@@ -1518,15 +1518,8 @@ enum class ToolbarKind {
     self.findBarCoordinator = nil;
   }
 
-  findBarCoordinator =
-      [[FindBarCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser];
-  self.findBarCoordinator = findBarCoordinator;
-
-  findBarCoordinator.presenter = _toolbarAccessoryPresenter;
-  findBarCoordinator.delegate = self;
-  findBarCoordinator.presentationDelegate = self.viewController;
-  [findBarCoordinator start];
+  self.findBarCoordinator = [self newFindBarCoordinator];
+  [self.findBarCoordinator start];
 }
 
 - (void)closeFindInPage {
@@ -1539,6 +1532,7 @@ enum class ToolbarKind {
       findTabHelper->StopFinding();
     } else {
       [self.findBarCoordinator stop];
+      self.findBarCoordinator = nil;
     }
   }
 }
@@ -1548,13 +1542,16 @@ enum class ToolbarKind {
       self.browser->GetWebStateList()->GetActiveWebState();
   auto* findHelper = FindTabHelper::FromWebState(currentWebState);
   if (findHelper && findHelper->IsFindUIActive() &&
-      !self.findBarCoordinator.presenter.isPresenting) {
+      !_toolbarAccessoryPresenter.isPresenting) {
+    DCHECK(!self.findBarCoordinator);
+    self.findBarCoordinator = [self newFindBarCoordinator];
     [self.findBarCoordinator start];
   }
 }
 
 - (void)hideFindUI {
   [self.findBarCoordinator stop];
+  self.findBarCoordinator = nil;
 }
 
 - (void)defocusFindInPage {
@@ -1602,6 +1599,18 @@ enum class ToolbarKind {
   auto* helper = FindTabHelper::FromWebState(currentWebState);
   return (helper && helper->CurrentPageSupportsFindInPage() &&
           !helper->IsFindUIActive());
+}
+
+- (FindBarCoordinator*)newFindBarCoordinator {
+  FindBarCoordinator* findBarCoordinator =
+      [[FindBarCoordinator alloc] initWithBaseViewController:self.viewController
+                                                     browser:self.browser];
+
+  findBarCoordinator.presenter = _toolbarAccessoryPresenter;
+  findBarCoordinator.delegate = self;
+  findBarCoordinator.presentationDelegate = self.viewController;
+
+  return findBarCoordinator;
 }
 
 #pragma mark - PromosManagerCommands
@@ -1759,14 +1768,8 @@ enum class ToolbarKind {
     self.textZoomCoordinator = nil;
   }
 
-  textZoomCoordinator = [[TextZoomCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  self.textZoomCoordinator = textZoomCoordinator;
-
-  textZoomCoordinator.presenter = _toolbarAccessoryPresenter;
-  textZoomCoordinator.delegate = self;
-  [textZoomCoordinator start];
+  self.textZoomCoordinator = [self newTextZoomCoordinator];
+  [self.textZoomCoordinator start];
 }
 
 - (void)closeTextZoom {
@@ -1780,6 +1783,7 @@ enum class ToolbarKind {
     }
   }
   [self.textZoomCoordinator stop];
+  self.textZoomCoordinator = nil;
 }
 
 - (void)showTextZoomUIIfActive {
@@ -1792,13 +1796,26 @@ enum class ToolbarKind {
   FontSizeTabHelper* fontSizeTabHelper =
       FontSizeTabHelper::FromWebState(currentWebState);
   if (fontSizeTabHelper && fontSizeTabHelper->IsTextZoomUIActive() &&
-      !self.textZoomCoordinator.presenter.isPresenting) {
+      !_toolbarAccessoryPresenter.isPresenting) {
+    DCHECK(!self.textZoomCoordinator);
+    self.textZoomCoordinator = [self newTextZoomCoordinator];
     [self.textZoomCoordinator start];
   }
 }
 
 - (void)hideTextZoomUI {
   [self.textZoomCoordinator stop];
+  self.textZoomCoordinator = nil;
+}
+
+- (TextZoomCoordinator*)newTextZoomCoordinator {
+  TextZoomCoordinator* textZoomCoordinator = [[TextZoomCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  textZoomCoordinator.presenter = _toolbarAccessoryPresenter;
+  textZoomCoordinator.delegate = self;
+
+  return textZoomCoordinator;
 }
 
 #pragma mark - URLLoadingServiceDelegate
