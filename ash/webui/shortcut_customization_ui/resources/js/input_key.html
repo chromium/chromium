@@ -3,7 +3,6 @@
     align-items: center;
     border-radius: 5px;
     box-sizing: border-box;
-    color: var(--cros-text-color-secondary);
     display: flex;
     font-weight: 500;
     height: 28px;
@@ -11,6 +10,10 @@
     margin-inline-start: 5px;
     min-width: 28px;
     padding-inline: 8px;
+  }
+
+  #key-text {
+    color: var(--cros-text-color-secondary);
   }
 
   :host([key-state='not-selected']) .key-container {
@@ -21,15 +24,15 @@
   }
 
   :host([key-state='modifier-selected']) .key-container {
-    background-color: var(--google-blue-50);
+    background-color: var(--cros-highlight-color);
     border: none;
-    box-shadow: 0 1px 1px var(--google-blue-50);
+    box-shadow: 0 1px 1px var(--cros-highlight-color);
   }
 
   :host([key-state='alpha-numeric-selected']) .key-container {
-    background-color: var(--google-grey-100);
+    background-color: var(--cros-bg-color-dropped-elevation-1);
     border: none;
-    box-shadow: 0 1px 1px var(--google-grey-100);
+    box-shadow: 0 1px 1px var(--cros-bg-color-dropped-elevation-1);
   }
 
   :host(#ctrlKey) .key-container, 
