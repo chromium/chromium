@@ -76,8 +76,7 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
 
 void LoginPerformer::OnOffTheRecordAuthSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  metrics_recorder_->OnGuestLoignSuccess();
-
+  metrics_recorder_->OnGuestLoginSuccess();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LoginPerformer::NotifyOffTheRecordAuthSuccess,
                                 weak_factory_.GetWeakPtr()));

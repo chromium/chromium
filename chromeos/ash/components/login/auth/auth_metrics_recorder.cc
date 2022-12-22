@@ -22,7 +22,8 @@ constexpr char kFailureReasonHistogramName[] = "Login.FailureReason";
 // Histogram for tracking the reason of login success
 constexpr char kSuccessReasonHistogramName[] = "Login.SuccessReason";
 
-// Histogram  prefix for tracking login flow
+// Histogram prefix for tracking login flow. The format:
+// "Login.Flow.{HideUsers,ShowUsers}.{0,1,2,Few,Many}"
 constexpr char kLoginFlowHistogramPrefix[] = "Login.Flow.";
 
 // Limit definition of "many users"
@@ -51,6 +52,14 @@ std::string UserCountSuffix(int user_count) {
     return "Few";
 
   return "Many";
+}
+
+// Complete name of the login flow histogram.
+std::string GetLoginFlowHistogramName(bool show_users_on_signin,
+                                      int user_count) {
+  return base::StrCat({kLoginFlowHistogramPrefix,
+                       ShowUserPrefix(show_users_on_signin),
+                       UserCountSuffix(user_count)});
 }
 
 }  // namespace
@@ -97,7 +106,7 @@ void AuthMetricsRecorder::OnLoginSuccess(const SuccessReason& reason) {
                             SuccessReason::NUM_SUCCESS_REASONS);
 }
 
-void AuthMetricsRecorder::OnGuestLoignSuccess() {
+void AuthMetricsRecorder::OnGuestLoginSuccess() {
   base::RecordAction(base::UserMetricsAction("Login_GuestLoginSuccess"));
 }
 
@@ -151,12 +160,10 @@ void AuthMetricsRecorder::MaybeReportFlowMetrics() {
       !user_login_type_.has_value())
     return;
 
-  std::string prefix =
-      base::StrCat({kLoginFlowHistogramPrefix,
-                    ShowUserPrefix(show_users_on_signin_.value())});
-  std::string suffix = UserCountSuffix(user_count_.value());
-  base::UmaHistogramEnumeration(base::StrCat({prefix, suffix}),
-                                user_login_type_.value());
+  base::UmaHistogramEnumeration(
+      GetLoginFlowHistogramName(show_users_on_signin_.value(),
+                                user_count_.value()),
+      user_login_type_.value());
 }
 
 void AuthMetricsRecorder::Reset() {
