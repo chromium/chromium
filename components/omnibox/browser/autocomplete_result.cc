@@ -52,6 +52,20 @@ typedef AutocompleteMatchType ACMatchType;
 
 namespace {
 
+constexpr bool is_android =
+#if BUILDFLAG(IS_ANDROID)
+    true;
+#else
+    false;
+#endif
+
+constexpr bool is_ios =
+#if BUILDFLAG(IS_IOS)
+    true;
+#else
+    false;
+#endif
+
 // Rotates |it| to be in the front of |matches|.
 // |it| must be a valid iterator of |matches| or equal to |matches->end()|.
 void RotateMatchToFront(ACMatches::iterator it, ACMatches* matches) {
@@ -62,17 +76,13 @@ void RotateMatchToFront(ACMatches::iterator it, ACMatches* matches) {
   std::rotate(matches->begin(), it, next);
 }
 
-#if BUILDFLAG(IS_IOS)
 // Maximum number of pedals to show.
 // On iOS, the UI for pedals gets too visually cluttered with too many pedals.
-constexpr size_t kMaxPedalCount = 1;
+constexpr size_t kMaxPedalCount =
+    is_ios ? 1 : std::numeric_limits<size_t>::max();
 // Maximum index of a match in a result for which the pedal should be displayed.
-// On iOS, the UI for pedals gets too visually cluttered with too many pedals.
-constexpr size_t kMaxPedalMatchIndex = 3;
-#else
-constexpr size_t kMaxPedalCount = std::numeric_limits<size_t>::max();
-constexpr size_t kMaxPedalMatchIndex = std::numeric_limits<size_t>::max();
-#endif
+constexpr size_t kMaxPedalMatchIndex =
+    is_ios ? 3 : std::numeric_limits<size_t>::max();
 
 enum class DontCopyDoneProviders { kFalse, kTrue, kUnknown };
 
@@ -83,25 +93,21 @@ DontCopyDoneProviders g_dont_copy_done_providers =
 
 // static
 size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
-#if BUILDFLAG(IS_ANDROID)
-  constexpr size_t kDefaultMaxAutocompleteMatches = 10;
-  constexpr size_t kDefaultMaxZeroSuggestMatches = 15;
-#elif BUILDFLAG(IS_IOS)
-  constexpr size_t kDefaultMaxAutocompleteMatches = 6;
+  constexpr size_t kDefaultMaxAutocompleteMatches =
+      is_android ? 10 : (is_ios ? 6 : 8);
+  constexpr size_t kDefaultMaxZeroSuggestMatches =
+      is_android ? 15 : (is_ios ? 20 : 8);
+#if BUILDFLAG(IS_IOS)
   // By default, iPad has the same max as iPhone.
   // `kDefaultMaxAutocompleteMatches` defines a hard limit on the number of
   // autocomplete suggestions on iPad, so if an experiment defines
   // MaxZeroSuggestMatches to 15, it would be 15 on iPhone and 10 on iPad.
   constexpr size_t kMaxAutocompleteMatchesOnIPad = 10;
-  constexpr size_t kDefaultMaxZeroSuggestMatches = 20;
   // By default, iPad has the same max as iPhone. `kMaxZeroSuggestMatchesOnIPad`
   // defines a hard limit on the number of ZPS suggestions on iPad, so if an
   // experiment defines MaxZeroSuggestMatches to 15, it would be 15 on iPhone
   // and 10 on iPad.
   constexpr size_t kMaxZeroSuggestMatchesOnIPad = 10;
-#else
-  constexpr size_t kDefaultMaxAutocompleteMatches = 8;
-  constexpr size_t kDefaultMaxZeroSuggestMatches = 8;
 #endif
   static_assert(kMaxAutocompletePositionValue > kDefaultMaxAutocompleteMatches,
                 "kMaxAutocompletePositionValue must be larger than the largest "
@@ -149,11 +155,7 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
 
 // static
 size_t AutocompleteResult::GetDynamicMaxMatches() {
-#if BUILDFLAG(IS_ANDROID)
-  constexpr const int kDynamicMaxMatchesLimit = 15;
-#else
-  constexpr const int kDynamicMaxMatchesLimit = 10;
-#endif
+  constexpr const int kDynamicMaxMatchesLimit = is_android ? 15 : 10;
   if (!base::FeatureList::IsEnabled(omnibox::kDynamicMaxAutocomplete))
     return AutocompleteResult::GetMaxMatches();
   return base::GetFieldTrialParamByFeatureAsInt(
@@ -291,19 +293,17 @@ void AutocompleteResult::SortAndCull(
   for (auto& match : matches_)
     match.ComputeStrippedDestinationURL(input, template_url_service);
 
-#if !BUILDFLAG(IS_IOS)
-  DemoteOnDeviceSearchSuggestions();
-#endif  // !BUILDFLAG(IS_IOS)
+  if (!is_ios)
+    DemoteOnDeviceSearchSuggestions();
 
   const auto& page_classification = input.current_page_classification();
   CompareWithDemoteByType<AutocompleteMatch> comparing_object(
       page_classification);
 
-#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
   // Because tail suggestions are a "last resort", we cull the tail suggestions
   // if there are any non-default, non-tail suggestions.
-  MaybeCullTailSuggestions(&matches_, comparing_object);
-#endif
+  if (!is_android && !is_ios)
+    MaybeCullTailSuggestions(&matches_, comparing_object);
 
   DeduplicateMatches(&matches_);
 
