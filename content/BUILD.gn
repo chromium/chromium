@@ -117,12 +117,8 @@ grit("dev_ui_content_resources") {
     "dev_ui_content_resources.pak",
   ]
   deps = [
-    "//components/attribution_reporting:mojom_js__generator",
     "//content/browser/aggregation_service:mojo_bindings_js__generator",
-    "//content/browser/attribution_reporting:internals_mojo_bindings_js__generator",
-    "//content/browser/attribution_reporting:mojo_bindings_js__generator",
     "//content/browser/resources/aggregation_service:build_ts",
-    "//content/browser/resources/attribution_reporting:build_ts",
     "//content/browser/resources/gpu:html_wrapper_files",
     "//content/browser/resources/process:build_ts",
     "//storage/browser/quota:mojo_bindings_js__generator",

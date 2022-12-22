@@ -22,14 +22,6 @@ files that belong there instead.
       <include name="IDR_AGGREGATION_SERVICE_INTERNALS_TABLE_HTML_JS" file="${root_gen_dir}/content/browser/resources/aggregation_service/tsc/aggregation_service_internals_table.html.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_AGGREGATION_SERVICE_INTERNALS_CSS" file="browser/resources/aggregation_service/aggregation_service_internals.css" type="BINDATA" />
       <include name="IDR_AGGREGATION_SERVICE_INTERNALS_MOJOM_JS" file="${root_gen_dir}/mojom-webui/content/browser/aggregation_service/aggregation_service_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_ATTRIBUTION_INTERNALS_HTML" file="browser/resources/attribution_reporting/attribution_internals.html" type="BINDATA" />
-      <include name="IDR_ATTRIBUTION_INTERNALS_JS" file="${root_gen_dir}/content/browser/resources/attribution_reporting/tsc/attribution_internals.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_ATTRIBUTION_INTERNALS_TABLE_MODEL_JS" file="${root_gen_dir}/content/browser/resources/attribution_reporting/tsc/table_model.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_ATTRIBUTION_INTERNALS_TABLE_JS" file="${root_gen_dir}/content/browser/resources/attribution_reporting/tsc/attribution_internals_table.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_ATTRIBUTION_INTERNALS_TABLE_HTML_JS" file="${root_gen_dir}/content/browser/resources/attribution_reporting/tsc/attribution_internals_table.html.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_ATTRIBUTION_INTERNALS_CSS" file="browser/resources/attribution_reporting/attribution_internals.css" type="BINDATA" />
-      <include name="IDR_ATTRIBUTION_INTERNALS_MOJOM_JS" file="${root_gen_dir}/mojom-webui/content/browser/attribution_reporting/attribution_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_ATTRIBUTION_REPORTING_MOJOM_JS" file="${root_gen_dir}/mojom-webui/content/browser/attribution_reporting/attribution_reporting.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_GPU_BROWSER_BRIDGE_JS" file="browser/resources/gpu/browser_bridge.js" type="BINDATA" />
       <include name="IDR_GPU_INTERNALS_HTML" file="browser/resources/gpu/gpu_internals.html" type="BINDATA" />
       <include name="IDR_GPU_INTERNALS_JS" file="browser/resources/gpu/gpu_internals.js" type="BINDATA" />
@@ -50,7 +42,6 @@ files that belong there instead.
       <include name="IDR_SERVICE_WORKER_INTERNALS_HTML" file="browser/resources/service_worker/serviceworker_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_JS" file="browser/resources/service_worker/serviceworker_internals.js" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_CSS" file="browser/resources/service_worker/serviceworker_internals.css" type="BINDATA" />
-      <include name="IDR_SOURCE_REGISTRATION_ERROR_MOJOM_JS" file="${root_gen_dir}/mojom-webui/components/attribution_reporting/source_registration_error.mojom-webui.js" use_base_dir="false" type="BINDATA" />
     </includes>
   </release>
 </grit>

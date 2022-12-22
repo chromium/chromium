@@ -4,8 +4,10 @@
 
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
 
+#include "base/containers/span.h"
 #include "content/browser/attribution_reporting/attribution_internals_handler_impl.h"
-#include "content/grit/dev_ui_content_resources.h"
+#include "content/grit/attribution_internals_resources.h"
+#include "content/grit/attribution_internals_resources_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -25,23 +27,12 @@ AttributionInternalsUI::AttributionInternalsUI(WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIAttributionInternalsHost);
 
-  source->AddResourcePath("attribution_internals.mojom-webui.js",
-                          IDR_ATTRIBUTION_INTERNALS_MOJOM_JS);
-  source->AddResourcePath("attribution_internals.js",
-                          IDR_ATTRIBUTION_INTERNALS_JS);
-  source->AddResourcePath("attribution_internals_table.js",
-                          IDR_ATTRIBUTION_INTERNALS_TABLE_JS);
-  source->AddResourcePath("attribution_internals_table.html.js",
-                          IDR_ATTRIBUTION_INTERNALS_TABLE_HTML_JS);
-  source->AddResourcePath("attribution_reporting.mojom-webui.js",
-                          IDR_ATTRIBUTION_REPORTING_MOJOM_JS);
-  source->AddResourcePath("source_registration_error.mojom-webui.js",
-                          IDR_SOURCE_REGISTRATION_ERROR_MOJOM_JS);
-  source->AddResourcePath("table_model.js",
-                          IDR_ATTRIBUTION_INTERNALS_TABLE_MODEL_JS);
-  source->AddResourcePath("attribution_internals.css",
-                          IDR_ATTRIBUTION_INTERNALS_CSS);
-  source->SetDefaultResource(IDR_ATTRIBUTION_INTERNALS_HTML);
+  source->AddResourcePaths(base::make_span(kAttributionInternalsResources,
+                                           kAttributionInternalsResourcesSize));
+
+  source->SetDefaultResource(
+      IDR_ATTRIBUTION_INTERNALS_ATTRIBUTION_INTERNALS_HTML);
+
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");

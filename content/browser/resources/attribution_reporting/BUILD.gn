@@ -2,53 +2,44 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-html_to_wrapper("html_wrapper_files") {
-  in_files = [ "attribution_internals_table.html" ]
-  template = "native"
-}
+build_webui("build") {
+  grd_prefix = "attribution_internals"
 
-# Copy (via creating sym links) all the other files into the same folder for
-# ts_library.
-copy("copy_files") {
-  deps = [
-    "//components/attribution_reporting:mojom_js__generator",
-    "//content/browser/attribution_reporting:internals_mojo_bindings_js__generator",
-    "//content/browser/attribution_reporting:mojo_bindings_js__generator",
+  static_files = [
+    "attribution_internals.html",
+    "attribution_internals.css",
   ]
-  sources = [
-    "$root_gen_dir/mojom-webui/components/attribution_reporting/source_registration_error.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/content/browser/attribution_reporting/attribution_internals.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/content/browser/attribution_reporting/attribution_reporting.mojom-webui.js",
+
+  non_web_component_files = [
     "attribution_internals.ts",
-    "attribution_internals_table.ts",
     "table_model.ts",
   ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
 
-ts_library("build_ts") {
-  root_dir = target_gen_dir
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "attribution_internals.ts",
-    "attribution_internals_table.ts",
-    "attribution_internals_table.html.ts",
-    "table_model.ts",
-    "attribution_internals.mojom-webui.js",
-    "attribution_reporting.mojom-webui.js",
-    "source_registration_error.mojom-webui.js",
-  ]
-  deps = [
+  web_component_files = [ "attribution_internals_table.ts" ]
+
+  ts_deps = [
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",
   ]
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  extra_deps = [
-    ":copy_files",
-    ":html_wrapper_files",
+
+  mojom_folder = "$root_gen_dir/mojom-webui"
+  attribution_reporting_component_folder = "components/attribution_reporting"
+  attribution_reporting_content_folder = "content/browser/attribution_reporting"
+
+  mojo_files = [
+    "$mojom_folder/$attribution_reporting_component_folder/source_registration_error.mojom-webui.js",
+    "$mojom_folder/$attribution_reporting_content_folder/attribution_internals.mojom-webui.js",
+    "$mojom_folder/$attribution_reporting_content_folder/attribution_reporting.mojom-webui.js",
   ]
+
+  mojo_files_deps = [
+    "//$attribution_reporting_component_folder:mojom_js__generator",
+    "//$attribution_reporting_content_folder:internals_mojo_bindings_js__generator",
+    "//$attribution_reporting_content_folder:mojo_bindings_js__generator",
+  ]
+
+  grit_output_dir = "$root_gen_dir/content"
+  html_to_wrapper_template = "native"
 }
