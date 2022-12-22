@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"

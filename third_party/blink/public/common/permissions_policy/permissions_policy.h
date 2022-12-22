@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -20,6 +19,10 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/origin.h"
+
+namespace network {
+struct ResourceRequest;
+}  // namespace network
 
 namespace blink {
 
