@@ -67,11 +67,6 @@ constexpr int kCursorPanningMargin = 100;
 // MoveMagnifierWindowFollowPoint() when |reduce_bottom_margin| is true.
 constexpr int kKeyboardBottomPanningMargin = 10;
 
-void MoveCursorTo(aura::WindowTreeHost* host, const gfx::Point& root_location) {
-  host->MoveCursorToLocationInPixels(gfx::ToCeiledPoint(
-      host->GetRootTransform().MapPoint(gfx::PointF(root_location))));
-}
-
 }  // namespace
 
 class FullscreenMagnifierController::GestureProviderClient
@@ -273,7 +268,7 @@ gfx::Transform FullscreenMagnifierController::GetMagnifierTransform() const {
 
 void FullscreenMagnifierController::OnImplicitAnimationsCompleted() {
   if (move_cursor_after_animation_) {
-    MoveCursorTo(root_window_->GetHost(), position_after_animation_);
+    MoveCursorTo(position_after_animation_);
     move_cursor_after_animation_ = false;
 
     aura::client::CursorClient* cursor_client =
@@ -524,7 +519,9 @@ bool FullscreenMagnifierController::RedrawDIP(
     y = max_y;
 
   // Does nothing if both the origin and the scale are not changed.
-  if (origin_.x() == x && origin_.y() == y && scale == scale_) {
+  // Cast origin points back to int, as viewport can only be integer values.
+  if (static_cast<int>(origin_.x()) == static_cast<int>(x) &&
+      static_cast<int>(origin_.y()) == static_cast<int>(y) && scale == scale_) {
     return false;
   }
 
@@ -892,7 +889,7 @@ void FullscreenMagnifierController::MoveMagnifierWindowFollowPoint(
       // good already).
       if ((x_diff != 0 || y_diff != 0) &&
           mouse_following_mode_ != MagnifierMouseFollowingMode::kContinuous) {
-        MoveCursorTo(root_window_->GetHost(), point);
+        MoveCursorTo(point);
       }
     }
   }
@@ -964,6 +961,17 @@ void FullscreenMagnifierController::MoveMagnifierWindowFollowRect(
     RedrawDIP(gfx::PointF(x, y), scale_,
               0,  // No animation on panning.
               kDefaultAnimationTweenType);
+  }
+}
+
+void FullscreenMagnifierController::MoveCursorTo(
+    const gfx::Point& root_location) {
+  aura::WindowTreeHost* host = root_window_->GetHost();
+  host->MoveCursorToLocationInPixels(gfx::ToCeiledPoint(
+      host->GetRootTransform().MapPoint(gfx::PointF(root_location))));
+
+  if (cursor_moved_callback_for_testing_) {
+    cursor_moved_callback_for_testing_.Run(root_location);
   }
 }
 

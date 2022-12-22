@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window_tree_host.h"
@@ -1078,6 +1079,38 @@ TEST_F(FullscreenMagnifierControllerTest, ContinuousFollowingReachesEdges) {
   while (GetViewport().ToString() != "720,540 80x60") {
     event_generator->MoveMouseToInHost(bottom_right);
   }
+}
+
+TEST_F(FullscreenMagnifierControllerTest, DoesNotRedrawIfViewportIsNotChanged) {
+  auto* magnifier = GetFullscreenMagnifierController();
+  // Picking a floating point scale makes the float/int conversion
+  // more likely to fail (which is what this test guards against).
+  magnifier->SetEnabled(true);
+  magnifier->set_mouse_following_mode(MagnifierMouseFollowingMode::kEdge);
+  magnifier->SetScale(10.345, /*animate=*/false);
+  int num_cursor_moves = 0;
+  magnifier->set_cursor_moved_callback_for_testing(base::BindLambdaForTesting(
+      [&num_cursor_moves](const gfx::Point& point) { num_cursor_moves++; }));
+
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+
+  // Move until viewport is in bottom right corner, asymetrically.
+  gfx::Point bottom_right(kRootWidth - 70, kRootHeight - 53);
+  while (GetViewport().ToString() != "722,542 78x58") {
+    event_generator->MoveMouseToInHost(bottom_right);
+  }
+
+  // The cursor has been moved.
+  EXPECT_GT(num_cursor_moves, 1);
+
+  num_cursor_moves = 0;
+
+  // Moving around further doesn't try to move the cursor position and
+  // doesn't change the viewport.
+  // If this were to happen we could end up in an infinite cursor-moving loop.
+  event_generator->MoveMouseToInHost(bottom_right);
+  EXPECT_EQ(GetViewport().ToString(), "722,542 78x58");
+  EXPECT_EQ(0, num_cursor_moves);
 }
 
 }  // namespace ash

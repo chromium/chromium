@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
+#include "base/functional/callback.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/event_handler.h"
@@ -142,6 +143,11 @@ class ASH_EXPORT FullscreenMagnifierController
   // Returns the current number of touch points.
   int32_t GetTouchPointsForTesting() const { return touch_points_; }
 
+  void set_cursor_moved_callback_for_testing(
+      base::RepeatingCallback<void(const gfx::Point&)> callback) {
+    cursor_moved_callback_for_testing_ = std::move(callback);
+  }
+
  private:
   class GestureProviderClient;
 
@@ -244,6 +250,9 @@ class ASH_EXPORT FullscreenMagnifierController
   // to center the |rect| in that dimension.
   void MoveMagnifierWindowFollowRect(const gfx::Rect& rect);
 
+  // Moves the cursor to the given location in the root window.
+  void MoveCursorTo(const gfx::Point& root_location);
+
   // Target root window. This must not be NULL.
   aura::Window* root_window_;
 
@@ -306,6 +315,10 @@ class ASH_EXPORT FullscreenMagnifierController
   // Flag to draw a preview box around magnifier viewport area instead of
   // magnifying the screen for debugging.
   bool magnifier_debug_draw_rect_ = false;
+
+  // Called every time MoveCursorTo is called, when set in tests.
+  base::RepeatingCallback<void(const gfx::Point&)>
+      cursor_moved_callback_for_testing_;
 };
 
 }  // namespace ash
