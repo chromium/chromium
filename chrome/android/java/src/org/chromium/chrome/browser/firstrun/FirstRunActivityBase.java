@@ -21,6 +21,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
@@ -112,6 +113,7 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
 
     @Override
     public void onResume() {
+        SimpleStartupForegroundSessionDetector.discardSession();
         super.onResume();
         // Since the FRE may be shown before any tab is shown, mark that this is the point at which
         // Chrome went to foreground. Other activities can only

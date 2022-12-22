@@ -14,7 +14,6 @@ import android.text.format.DateUtils;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -30,25 +29,25 @@ public class UmaUtils {
     /** Observer for this class. */
     public interface Observer {
         /**
-         * Called when hasComeToForeground() changes from false to true.
+         * Called when hasComeToForeground() changes from false to true for the first time after
+         * post-native initialization has started.
          */
-        void onHasComeToForeground();
+        void onHasComeToForegroundWithNative();
     }
 
-    private static ObserverList<Observer> sObservers;
+    private static Observer sObserver;
 
-    /** Adds an observer. */
-    public static boolean addObserver(Observer observer) {
+    /** Sets the observer. */
+    public static void setObserver(Observer observer) {
         ThreadUtils.assertOnUiThread();
-        if (sObservers == null) sObservers = new ObserverList<>();
-        return sObservers.addObserver(observer);
+        assert sObserver == null;
+        sObserver = observer;
     }
 
-    /** Removes an observer. */
-    public static boolean removeObserver(Observer observer) {
+    /** Removes the observer. */
+    public static void removeObserver() {
         ThreadUtils.assertOnUiThread();
-        if (sObservers == null) return false;
-        return sObservers.removeObserver(observer);
+        sObserver = null;
     }
 
     // All these values originate from SystemClock.uptimeMillis().
@@ -113,10 +112,8 @@ public class UmaUtils {
         // Chrome has been sent to background since the last foreground time.
         if (sForegroundStartWithNativeTimeMs == 0
                 || sForegroundStartWithNativeTimeMs < sBackgroundWithNativeTimeMs) {
-            if (sObservers != null && sForegroundStartWithNativeTimeMs == 0) {
-                for (Observer observer : sObservers) {
-                    observer.onHasComeToForeground();
-                }
+            if (sObserver != null && sForegroundStartWithNativeTimeMs == 0) {
+                sObserver.onHasComeToForegroundWithNative();
             }
             sForegroundStartWithNativeTimeMs = SystemClock.uptimeMillis();
         }
@@ -254,9 +251,6 @@ public class UmaUtils {
 
     @CalledByNative
     public static long getProcessStartTime() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            return 0;
-        }
         return ApiHelperForN.getStartUptimeMillis();
     }
 

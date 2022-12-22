@@ -11,8 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
@@ -25,6 +23,7 @@ import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -42,9 +41,6 @@ import dagger.Lazy;
 @ActivityScope
 public class WebApkActivityLifecycleUmaTracker
         implements ActivityStateListener, InflationObserver, PauseResumeWithNativeObserver {
-    @VisibleForTesting
-    public static final String STARTUP_UMA_HISTOGRAM_SUFFIX = ".WebApk";
-
     private final Activity mActivity;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final SplashController mSplashController;
@@ -93,7 +89,7 @@ public class WebApkActivityLifecycleUmaTracker
         // Decide whether to record startup UMA histograms. This is a similar check to the one done
         // in ChromeTabbedActivity.performPreInflationStartup refer to the comment there for why.
         if (!LibraryLoader.getInstance().isInitialized()) {
-            mStartupMetricsTracker.get().trackStartupMetrics(STARTUP_UMA_HISTOGRAM_SUFFIX);
+            mStartupMetricsTracker.get().setHistogramSuffix(ActivityType.WEB_APK);
             // If there is a saved instance state, then the intent (and its stored timestamp) might
             // be stale (Android replays intents if there is a recents entry for the activity).
             if (mSavedInstanceStateSupplier.get() == null) {

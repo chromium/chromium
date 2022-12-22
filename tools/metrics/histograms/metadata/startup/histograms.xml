@@ -117,6 +117,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed"
+    units="ms" expires_after="2023-06-04">
+  <owner>pasko@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <summary>
+    Experimental. Same as
+    Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed with two
+    modifications.
+
+    The first difference is to record navigation commits happening before
+    post-native initialization. The second modifications is not to record
+    samples when FRE is shown.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.Cold.TimeToFirstVisibleContent" units="ms"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->

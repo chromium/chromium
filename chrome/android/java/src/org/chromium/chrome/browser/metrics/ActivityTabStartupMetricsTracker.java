@@ -8,6 +8,7 @@ import android.os.SystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.PaintPreviewMetricsObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -26,7 +27,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * startup.
  */
 public class ActivityTabStartupMetricsTracker {
-    private static final String UMA_HISTOGRAM_TABBED_SUFFIX = ".Tabbed";
     private static final String FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
             "Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground";
     private static final String FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
@@ -60,10 +60,9 @@ public class ActivityTabStartupMetricsTracker {
 
     // Event duration recorded from the |mActivityStartTimeMs|.
     private long mFirstCommitTimeMs;
-    private String mHistogramSuffix;
+    private @ActivityType int mHistogramSuffix;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private PageLoadMetricsObserverImpl mPageLoadMetricsObserver;
-    private UmaUtils.Observer mUmaUtilsObserver;
     private boolean mShouldTrackStartupMetrics;
     private boolean mFirstVisibleContentRecorded;
     private boolean mVisibleContentRecorded;
@@ -85,12 +84,22 @@ public class ActivityTabStartupMetricsTracker {
     public ActivityTabStartupMetricsTracker(
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
-        tabModelSelectorSupplier.addObserver((selector) -> registerObservers(selector));
+        tabModelSelectorSupplier.addObserver(this::registerObservers);
         SafeBrowsingApiBridge.setOneTimeUrlCheckObserver(this::updateSafeBrowsingCheckTime);
     }
 
     private void updateSafeBrowsingCheckTime(long urlCheckTimeDeltaMicros) {
         mFirstSafeBrowsingResponseTimeMicros.compareAndSet(0, urlCheckTimeDeltaMicros);
+    }
+
+    /**
+     * Choose the UMA histogram to record later. The {@link ActivityType} parameter indicates the
+     * kind of startup scenario to track. Only two scenarios are supported.
+     * @param activityType Either TABBED or WEB_APK.
+     */
+    public void setHistogramSuffix(@ActivityType int activityType) {
+        mHistogramSuffix = activityType;
+        mShouldTrackStartupMetrics = true;
     }
 
     // Note: In addition to returning false when startup metrics are not being tracked at all, this
@@ -138,15 +147,14 @@ public class ActivityTabStartupMetricsTracker {
                 };
         mPageLoadMetricsObserver = new PageLoadMetricsObserverImpl();
         PageLoadMetrics.addObserver(mPageLoadMetricsObserver, false);
-        mUmaUtilsObserver = this::registerHasComeToForeground;
-        UmaUtils.addObserver(mUmaUtilsObserver);
+        UmaUtils.setObserver(this::registerHasComeToForegroundWithNative);
     }
 
     /**
      * Registers the fact that UmaUtils#hasComeToForeground() has just become true for the first
      * time.
      */
-    private void registerHasComeToForeground() {
+    private void registerHasComeToForegroundWithNative() {
         // Record cases where first navigation commit and/or StartupPaintPreview's first
         // paint happened pre-foregrounding.
         if (mRegisteredFirstCommitPreForeground) {
@@ -158,7 +166,7 @@ public class ActivityTabStartupMetricsTracker {
                     FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, true);
         }
 
-        clearUmaUtilsObserver();
+        UmaUtils.removeObserver();
     }
 
     /**
@@ -189,15 +197,6 @@ public class ActivityTabStartupMetricsTracker {
     }
 
     /**
-     * Marks that startup metrics should be tracked with the |histogramSuffix|.
-     * Must only be called on the UI thread.
-     */
-    public void trackStartupMetrics(String histogramSuffix) {
-        mHistogramSuffix = histogramSuffix;
-        mShouldTrackStartupMetrics = true;
-    }
-
-    /**
      * Cancels tracking the startup metrics.
      * Must only be called on the UI thread.
      */
@@ -207,14 +206,13 @@ public class ActivityTabStartupMetricsTracker {
         // Ensure we haven't tried to record metrics already.
         assert mFirstCommitTimeMs == 0;
 
-        mHistogramSuffix = null;
         mShouldTrackStartupMetrics = false;
     }
 
     public void destroy() {
         mShouldTrackStartupMetrics = false;
         clearNavigationObservers();
-        clearUmaUtilsObserver();
+        UmaUtils.removeObserver();
     }
 
     private void clearNavigationObservers() {
@@ -229,13 +227,6 @@ public class ActivityTabStartupMetricsTracker {
         }
     }
 
-    private void clearUmaUtilsObserver() {
-        if (mUmaUtilsObserver != null) {
-            UmaUtils.removeObserver(mUmaUtilsObserver);
-            mUmaUtilsObserver = null;
-        }
-    }
-
     /**
      * Registers the fact that a navigation has finished. Based on this fact, may discard recording
      * histograms later.
@@ -247,9 +238,10 @@ public class ActivityTabStartupMetricsTracker {
                 && !UmaUtils.hasComeToBackgroundWithNative()) {
             mFirstCommitTimeMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
             RecordHistogram.recordMediumTimesHistogram(
-                    "Startup.Android.Cold.TimeToFirstNavigationCommit" + mHistogramSuffix,
+                    "Startup.Android.Cold.TimeToFirstNavigationCommit"
+                            + activityTypeToSuffix(mHistogramSuffix),
                     mFirstCommitTimeMs);
-            if (mHistogramSuffix.equals(UMA_HISTOGRAM_TABBED_SUFFIX)) {
+            if (mHistogramSuffix == ActivityType.TABBED) {
                 recordFirstVisibleContent(mFirstCommitTimeMs);
                 recordFirstSafeBrowsingResponseTime();
             }
@@ -260,7 +252,19 @@ public class ActivityTabStartupMetricsTracker {
             mRegisteredFirstCommitPreForeground = true;
         }
 
+        if (mHistogramSuffix == ActivityType.TABBED && isTrackedPage
+                && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed", mFirstCommitTimeMs);
+        }
+
         mShouldTrackStartupMetrics = false;
+    }
+
+    private String activityTypeToSuffix(@ActivityType int type) {
+        if (type == ActivityType.TABBED) return ".Tabbed";
+        assert type == ActivityType.WEB_APK;
+        return ".WebApk";
     }
 
     private void recordFirstSafeBrowsingResponseTime() {
@@ -283,9 +287,10 @@ public class ActivityTabStartupMetricsTracker {
         if (UmaUtils.hasComeToForegroundWithNative() && !UmaUtils.hasComeToBackgroundWithNative()) {
             long durationMs = firstContentfulPaintMs - mActivityStartTimeMs;
             RecordHistogram.recordMediumTimesHistogram(
-                    "Startup.Android.Cold.TimeToFirstContentfulPaint" + mHistogramSuffix,
+                    "Startup.Android.Cold.TimeToFirstContentfulPaint"
+                            + activityTypeToSuffix(mHistogramSuffix),
                     durationMs);
-            if (mHistogramSuffix.equals(UMA_HISTOGRAM_TABBED_SUFFIX)) {
+            if (mHistogramSuffix == ActivityType.TABBED) {
                 recordVisibleContent(durationMs);
             }
         }

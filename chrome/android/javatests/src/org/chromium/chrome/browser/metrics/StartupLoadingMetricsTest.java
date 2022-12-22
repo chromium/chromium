@@ -28,10 +28,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.webapps.WebApkActivityLifecycleUmaTracker;
 import org.chromium.chrome.browser.webapps.WebApkActivityTestRule;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -55,6 +53,8 @@ public class StartupLoadingMetricsTest {
     private static final String SLOW_PAGE = "/slow?2";
     private static final String FIRST_COMMIT_HISTOGRAM =
             "Startup.Android.Cold.TimeToFirstNavigationCommit";
+    private static final String FIRST_COMMIT_HISTOGRAM2 =
+            "Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed";
     private static final String FIRST_CONTENTFUL_PAINT_HISTOGRAM =
             "Startup.Android.Cold.TimeToFirstContentfulPaint";
     private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM =
@@ -64,9 +64,8 @@ public class StartupLoadingMetricsTest {
     private static final String FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
             "Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground";
 
-    private static final String TABBED_SUFFIX = ChromeTabbedActivity.STARTUP_UMA_HISTOGRAM_SUFFIX;
-    private static final String WEBAPK_SUFFIX =
-            WebApkActivityLifecycleUmaTracker.STARTUP_UMA_HISTOGRAM_SUFFIX;
+    private static final String TABBED_SUFFIX = ".Tabbed";
+    private static final String WEB_APK_SUFFIX = ".WebApk";
 
     @Rule
     public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
@@ -140,6 +139,8 @@ public class StartupLoadingMetricsTest {
                             FIRST_VISIBLE_CONTENT_HISTOGRAM));
             Assert.assertEquals(expectedCount,
                     RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM));
+            Assert.assertEquals(expectedCount,
+                    RecordHistogram.getHistogramTotalCountForTesting(FIRST_COMMIT_HISTOGRAM2));
         }
 
         if (expectedCount > 0) {
@@ -169,9 +170,9 @@ public class StartupLoadingMetricsTest {
     public void testWebApkStartRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mWebApkActivityTestRule.startWebApkActivity(mTestPage));
-        assertHistogramsRecorded(1, WEBAPK_SUFFIX);
+        assertHistogramsRecorded(1, WEB_APK_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mWebApkActivityTestRule, mTestPage2);
-        assertHistogramsRecorded(1, WEBAPK_SUFFIX);
+        assertHistogramsRecorded(1, WEB_APK_SUFFIX);
     }
 
     /**
@@ -239,9 +240,9 @@ public class StartupLoadingMetricsTest {
     public void testWebApkErrorPageNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mWebApkActivityTestRule.startWebApkActivity(mErrorPage));
-        assertHistogramsRecorded(0, WEBAPK_SUFFIX);
+        assertHistogramsRecorded(0, WEB_APK_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mWebApkActivityTestRule, mTestPage2);
-        assertHistogramsRecorded(0, WEBAPK_SUFFIX);
+        assertHistogramsRecorded(0, WEB_APK_SUFFIX);
     }
 
     /**
@@ -302,6 +303,10 @@ public class StartupLoadingMetricsTest {
                         FIRST_COMMIT_HISTOGRAM + TABBED_SUFFIX));
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
+
+        // The metric based on early foreground notification should be recorded.
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramTotalCountForTesting(FIRST_COMMIT_HISTOGRAM2));
 
         // The metric for the first navigation commit having occurred pre-foregrounding should also
         // not have been recorded at this point, as there hasn't yet been a notification that the

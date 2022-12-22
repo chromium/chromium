@@ -257,9 +257,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private static final String ACTION_CLOSE_TABS =
             "com.google.android.apps.chrome.ACTION_CLOSE_TABS";
 
-    @VisibleForTesting
-    public static final String STARTUP_UMA_HISTOGRAM_SUFFIX = ".Tabbed";
-
     // Name of the ChromeTabbedActivity alias that handles MAIN intents.
     public static final String MAIN_LAUNCHER_ACTIVITY_NAME = "com.google.android.apps.chrome.Main";
 
@@ -1206,7 +1203,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         assert getActivityTabStartupMetricsTracker() != null;
 
         if (shouldTrackColdStartupMetrics) {
-            getActivityTabStartupMetricsTracker().trackStartupMetrics(STARTUP_UMA_HISTOGRAM_SUFFIX);
+            getActivityTabStartupMetricsTracker().setHistogramSuffix(ActivityType.TABBED);
         } else {
             getActivityTabStartupMetricsTracker().cancelTrackingStartupMetrics();
         }
