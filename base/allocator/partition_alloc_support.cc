@@ -32,7 +32,6 @@
 #include "base/feature_list.h"
 #include "base/immediate_crash.h"
 #include "base/location.h"
-#include "base/memory/nonscannable_memory.h"
 #include "base/memory/raw_ptr_asan_service.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -49,13 +48,14 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(STARSCAN)
+#if defined(PA_ALLOW_PCSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
-#endif  // BUILDFLAG(STARSCAN)
+#include "base/memory/nonscannable_memory.h"
+#endif  // defined(PA_ALLOW_PCSCAN)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
@@ -72,10 +72,12 @@ namespace {
 // This is defined in content/public/common/content_switches.h, which is not
 // accessible in ::base. They must be kept in sync.
 namespace switches {
-constexpr char kGpuProcess[] = "gpu-process";
-constexpr char kRendererProcess[] = "renderer";
-constexpr char kUtilityProcess[] = "utility";
+[[maybe_unused]] constexpr char kRendererProcess[] = "renderer";
 constexpr char kZygoteProcess[] = "zygote";
+#if defined(PA_ALLOW_PCSCAN)
+constexpr char kGpuProcess[] = "gpu-process";
+constexpr char kUtilityProcess[] = "utility";
+#endif
 }  // namespace switches
 
 #if defined(PA_ALLOW_PCSCAN)
@@ -630,8 +632,8 @@ void InstallUnretainedDanglingRawPtrChecks() {
 
 namespace {
 
+#if defined(PA_ALLOW_PCSCAN)
 void SetProcessNameForPCScan(const std::string& process_type) {
-#if BUILDFLAG(STARSCAN)
   const char* name = [&process_type] {
     if (process_type.empty()) {
       // Empty means browser process.
@@ -652,11 +654,10 @@ void SetProcessNameForPCScan(const std::string& process_type) {
   if (name) {
     partition_alloc::internal::PCScan::SetProcessName(name);
   }
-#endif  // BUILDFLAG(STARSCAN)
 }
 
 bool EnablePCScanForMallocPartitionsIfNeeded() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   using Config = partition_alloc::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
@@ -665,12 +666,12 @@ bool EnablePCScanForMallocPartitionsIfNeeded() {
     base::allocator::RegisterPCScanStatsReporter();
     return true;
   }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return false;
 }
 
 bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   using Config = partition_alloc::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
@@ -687,12 +688,12 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
     base::allocator::RegisterPCScanStatsReporter();
     return true;
   }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return false;
 }
 
 bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   using Config = partition_alloc::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
@@ -709,9 +710,10 @@ bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
     base::allocator::RegisterPCScanStatsReporter();
     return true;
   }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return false;
 }
+#endif  // defined(PA_ALLOW_PCSCAN)
 
 }  // namespace
 
@@ -812,7 +814,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
   CHECK(base::FeatureList::GetInstance());
 
-  bool enable_brp = false;
+  [[maybe_unused]] bool enable_brp = false;
   [[maybe_unused]] bool enable_brp_zapping = false;
   [[maybe_unused]] bool split_main_partition = false;
   [[maybe_unused]] bool use_dedicated_aligned_partition = false;
@@ -930,7 +932,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   // If BRP is not enabled, check if any of PCScan flags is enabled.
-  bool scan_enabled = false;
+  [[maybe_unused]] bool scan_enabled = false;
+#if defined(PA_ALLOW_PCSCAN)
   if (!enable_brp) {
     scan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
     // No specified process type means this is the Browser process.
@@ -950,26 +953,24 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         // Notify PCScan about the main thread.
         partition_alloc::internal::PCScan::NotifyThreadCreated(
             partition_alloc::internal::GetStackTop());
-#endif
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
       }
       if (base::FeatureList::IsEnabled(
               base::features::kPartitionAllocPCScanImmediateFreeing)) {
-#if BUILDFLAG(STARSCAN)
         partition_alloc::internal::PCScan::EnableImmediateFreeing();
-#endif  // BUILDFLAG(STARSCAN)
       }
       if (base::FeatureList::IsEnabled(
               base::features::kPartitionAllocPCScanEagerClearing)) {
-#if BUILDFLAG(STARSCAN)
         partition_alloc::internal::PCScan::SetClearType(
             partition_alloc::internal::PCScan::ClearType::kEager);
-#endif  // BUILDFLAG(STARSCAN)
       }
       SetProcessNameForPCScan(process_type);
     }
   }
+#endif  // defined(PA_ALLOW_PCSCAN)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if defined(PA_ALLOW_PCSCAN)
   // Non-quarantinable partition is dealing with hot V8's zone allocations.
   // In case PCScan is enabled in Renderer, enable thread cache on this
   // partition. At the same time, thread cache on the main(malloc) partition
@@ -978,7 +979,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     base::internal::NonQuarantinableAllocator::Instance()
         .root()
         ->EnableThreadCacheIfSupported();
-  } else {
+  } else
+#endif  // defined(PA_ALLOW_PCSCAN)
+  {
     allocator_shim::internal::PartitionAllocMalloc::Allocator()
         ->EnableThreadCacheIfSupported();
   }
@@ -1056,13 +1059,12 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 
     ::partition_alloc::ThreadCache::SetLargestCachedSize(largest_cached_size_);
   }
-
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
+#if defined(PA_ALLOW_PCSCAN)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanMUAwareScheduler)) {
-#if BUILDFLAG(STARSCAN)
     // Assign PCScan a task-based scheduling backend.
     static base::NoDestructor<
         partition_alloc::internal::MUAwareTaskBasedBackend>
@@ -1071,8 +1073,8 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
             &partition_alloc::internal::PCScan::PerformDelayedScan};
     partition_alloc::internal::PCScan::scheduler().SetNewSchedulingBackend(
         *mu_aware_task_based_backend.get());
-#endif  // BUILDFLAG(STARSCAN)
   }
+#endif  // defined(PA_ALLOW_PCSCAN)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::StartMemoryReclaimer(
