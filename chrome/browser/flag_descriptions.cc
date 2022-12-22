@@ -4988,12 +4988,6 @@ const char kFastPairSoftwareScanningDescription[] =
     "Allow using Fast Pair on devices which don't support hardware offloading "
     "of BLE scans. For development use.";
 
-const char kFastPairSubsequentPairingUXName[] =
-    "Enable Fast Pair Subsequent Pairing UX";
-const char kFastPairSubsequentPairingUXDescription[] =
-    "Enables the \"Subsequent Pairing\" Fast Pair scenario in Bluetooth "
-    "Settings and Quick Settings.";
-
 const char kFastPairSavedDevicesName[] = "Enable Fast Pair Saved Devices";
 const char kFastPairSavedDevicesDescription[] =
     "Enables the Fast Pair \"Saved Devices\" page to display a list of the "

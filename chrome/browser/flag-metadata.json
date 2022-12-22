@@ -3595,11 +3595,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "fast-pair-subsequent-pairing-ux",
-    "owners": [ "//ash/quick_pair/OWNERS", "dclasson@google.com" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "feature-notification-guide",
     "owners": [ "shaktisahu"],
     "expiry_milestone": 110

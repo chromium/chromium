@@ -914,12 +914,6 @@ BASE_FEATURE(kFastPairSoftwareScanning,
              "FastPairSoftwareScanning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the "Subsequent Pairing" Fast Pair scenario in Bluetooth Settings
-// and Quick Settings.
-BASE_FEATURE(kFastPairSubsequentPairingUX,
-             "FastPairSubsequentPairingUX",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the "Saved Devices" Fast Pair page in scenario in Bluetooth Settings.
 BASE_FEATURE(kFastPairSavedDevices,
              "FastPairSavedDevices",
@@ -2541,10 +2535,6 @@ bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled() {
 
 bool IsFastPairSoftwareScanningEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSoftwareScanning);
-}
-
-bool IsFastPairSubsequentPairingUXEnabled() {
-  return base::FeatureList::IsEnabled(kFastPairSubsequentPairingUX);
 }
 
 bool IsFastPairSavedDevicesEnabled() {
