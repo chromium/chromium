@@ -65,7 +65,7 @@ export class FirmwareUpdateDialogElement extends
       installationProgress: {
         type: Object,
         value: {percentage: 0, state: UpdateState.kIdle},
-        observer: 'progressChanged_',
+        observer: FirmwareUpdateDialogElement.prototype.progressChanged_,
       },
 
       /** @private {boolean} */
