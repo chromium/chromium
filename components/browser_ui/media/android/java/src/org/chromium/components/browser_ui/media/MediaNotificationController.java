@@ -9,7 +9,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
@@ -81,11 +80,6 @@ public class MediaNotificationController {
     public static final int MEDIA_ACTION_NEXT_TRACK = 21;
     public static final int MEDIA_ACTION_SEEK_FORWARD = 22;
     public static final int MEDIA_ACTION_SEEK_BACKWARD = 23;
-
-    // Overrides N detection. The production code will use |null|, which uses the Android version
-    // code. Otherwise, |isRunningAtLeastN()| will return whatever value is set.
-    @VisibleForTesting
-    public static Boolean sOverrideIsRunningNForTesting;
 
     // ListenerService running for the notification. Only non-null when showing.
     @VisibleForTesting
@@ -270,12 +264,6 @@ public class MediaNotificationController {
         return PendingIntentProvider.getService(getContext(), 0, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
-    }
-
-    private static boolean isRunningAtLeastN() {
-        return (sOverrideIsRunningNForTesting != null)
-                ? sOverrideIsRunningNForTesting
-                : Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
     }
 
     /**
@@ -755,17 +743,7 @@ public class MediaNotificationController {
         } else if (mMediaNotificationInfo.notificationLargeIcon != null
                 && !mMediaNotificationInfo.isPrivate) {
             builder.setLargeIcon(mMediaNotificationInfo.notificationLargeIcon);
-        } else if (!isRunningAtLeastN()) {
-            if (mDefaultNotificationLargeIcon == null
-                    && mMediaNotificationInfo.defaultNotificationLargeIcon != 0) {
-                mDefaultNotificationLargeIcon =
-                        MediaNotificationImageUtils.downscaleIconToIdealSize(
-                                BitmapFactory.decodeResource(getContext().getResources(),
-                                        mMediaNotificationInfo.defaultNotificationLargeIcon));
-            }
-            builder.setLargeIcon(mDefaultNotificationLargeIcon);
         }
-
         addNotificationButtons(builder);
     }
 
@@ -812,30 +790,17 @@ public class MediaNotificationController {
         if (mMediaNotificationInfo.isPrivate) {
             // Notifications in incognito shouldn't show what is playing to avoid leaking
             // information.
-            if (isRunningAtLeastN()) {
-                builder.setContentTitle(getContext().getResources().getString(
-                        R.string.media_notification_incognito));
-                builder.setSubText(
-                        getContext().getResources().getString(R.string.notification_incognito_tab));
-            } else {
-                // App name is automatically added to the title from Android N,
-                // but needs to be added explicitly for prior versions.
-                builder.setContentTitle(mDelegate.getAppName())
-                        .setContentText(getContext().getResources().getString(
-                                R.string.media_notification_incognito));
-            }
+            builder.setContentTitle(
+                    getContext().getResources().getString(R.string.media_notification_incognito));
+            builder.setSubText(
+                    getContext().getResources().getString(R.string.notification_incognito_tab));
             return;
         }
 
         builder.setContentTitle(mMediaNotificationInfo.metadata.getTitle());
         String artistAndAlbumText = getArtistAndAlbumText(mMediaNotificationInfo.metadata);
-        if (isRunningAtLeastN() || !artistAndAlbumText.isEmpty()) {
-            builder.setContentText(artistAndAlbumText);
-            builder.setSubText(mMediaNotificationInfo.origin);
-        } else {
-            // Leaving ContentText empty looks bad, so move origin up to the ContentText.
-            builder.setContentText(mMediaNotificationInfo.origin);
-        }
+        builder.setContentText(artistAndAlbumText);
+        builder.setSubText(mMediaNotificationInfo.origin);
     }
 
     private static String getArtistAndAlbumText(MediaMetadata metadata) {
