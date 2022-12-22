@@ -18,13 +18,13 @@ import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js'
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {Route, Router} from '../router.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './input_method_options_page.html.js';
-import {generateOptions, getDefaultValue, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isOptionLabelTranslated, OPTION_MAP, OptionType, PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT, shouldStoreAsNumber, SubmenuButton, UiType} from './input_method_util.js';
+import {AUTOCORRECT_OPTION_MAP_OVERRIDE, generateOptions, getDefaultValue, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isOptionLabelTranslated, OptionType, PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT, shouldStoreAsNumber, SubmenuButton, UiType} from './input_method_util.js';
 import {LanguageHelper} from './languages_types.js';
 
 /**
@@ -190,8 +190,8 @@ class SettingsInputMethodOptionsPageElement extends
           currentSettings[name] :
           getDefaultValue(name, defaultOverrides);
       if (loadTimeData.getBoolean('allowAutocorrectToggle') &&
-          name in OPTION_MAP) {
-        value = OPTION_MAP[name].mapValueForDisplay(value);
+          name in AUTOCORRECT_OPTION_MAP_OVERRIDE) {
+        value = AUTOCORRECT_OPTION_MAP_OVERRIDE[name].mapValueForDisplay(value);
       }
       if (!this.isSettingValueValid_(name, value)) {
         value = getDefaultValue(name, defaultOverrides);
@@ -312,12 +312,12 @@ class SettingsInputMethodOptionsPageElement extends
     if (updatedSettings[engineId] === undefined) {
       updatedSettings[engineId] = {};
     }
-    if (shouldStoreAsNumber(optionName)) {
-      if (loadTimeData.getBoolean('allowAutocorrectToggle')) {
-        newValue = OPTION_MAP[optionName].mapValueForWrite(newValue);
-      } else {
-        newValue = parseInt(newValue, 10);
-      }
+    if (loadTimeData.getBoolean('allowAutocorrectToggle') &&
+        optionName in AUTOCORRECT_OPTION_MAP_OVERRIDE) {
+      newValue = AUTOCORRECT_OPTION_MAP_OVERRIDE[optionName].mapValueForWrite(
+          newValue);
+    } else if (shouldStoreAsNumber(optionName)) {
+      newValue = parseInt(newValue, 10);
     }
     updatedSettings[engineId][optionName] = newValue;
 

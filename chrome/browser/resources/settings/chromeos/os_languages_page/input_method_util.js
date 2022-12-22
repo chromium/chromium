@@ -210,13 +210,13 @@ export function getDefaultValue(optionName, overrides) {
 }
 
 /**
- * Type conversions functions for reading and writing options.
- *
- * WARNING: Keep this in sync with shouldStoreAsNumber
+ * Type conversions functions for reading and writing options.  Use these for
+ * reading and writing pref values when we don't want the default mappings. This
+ * is only used if allow autocorrect toggle is on.
  *
  * @const
  */
-export const OPTION_MAP = {
+export const AUTOCORRECT_OPTION_MAP_OVERRIDE = {
   [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: {
     mapValueForDisplay: (value) => value > 0 ? true : false,
     mapValueForWrite: (value) => value ? 1 : 0,
@@ -926,14 +926,14 @@ export function getOptionMenuItems(option) {
 
 
 /**
- * WARNING: Keep this in sync with OPTION_MAP
  *
  * @param {!OptionType} option The option type.
  * @return {boolean} true if the value for |option| is a number.
  */
 export function shouldStoreAsNumber(option) {
   return option === OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL ||
-      option === OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL;
+      option === OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL ||
+      option === OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS;
 }
 /**
  * @param {!OptionType} option The option type.
