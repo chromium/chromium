@@ -118,6 +118,8 @@ void FileSelectHelper::RunFileChooser(
 void FileSelectHelper::RunFileChooserEnd() {
   if (listener_)
     listener_->FileSelectionCanceled();
+
+  select_file_dialog_->ListenerDestroyed();
   select_file_dialog_.reset();
   Release();
 }
