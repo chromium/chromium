@@ -298,7 +298,8 @@ TEST_F(DriveFsPinManagerTest, IfPinnedItemSizeExceedsFreeDiskSpaceShouldFail) {
   run_loop.Run();
 }
 
-TEST_F(DriveFsPinManagerTest, FailingToPinOneItemShouldFailCompletely) {
+TEST_F(DriveFsPinManagerTest,
+       DISABLED_FailingToPinOneItemShouldFailCompletely) {
   base::MockOnceCallback<void(SetupError)> mock_callback;
   auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
 

@@ -438,7 +438,6 @@ void DriveFsPinManager::OnFilePinned(const std::string& path,
   if (status != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Cannot pin '" << path << "': " << status;
     state_.progress.error_count++;
-    Complete(SetupError::kErrorFailedToPinItem);
     return;
   }
 
