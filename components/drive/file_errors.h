@@ -32,6 +32,8 @@ enum FileError {
   FILE_ERROR_SERVICE_UNAVAILABLE = -18,
 };
 
+std::ostream& operator<<(std::ostream& out, FileError error);
+
 // Returns a string representation of FileError.
 std::string FileErrorToString(FileError error);
 
