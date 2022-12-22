@@ -147,7 +147,6 @@ void ReadingListModelStorageImpl::OnReadAllMetadata(
 
 void ReadingListModelStorageImpl::OnDatabaseSave(
     const absl::optional<syncer::ModelError>& error) {
-  // TODO(crbug.com/1386158): Errors should be propagated up.
   return;
 }
 

@@ -41,6 +41,12 @@ syncer::MetadataChangeList* ReadingListModelImpl::
   return storage_token_->GetSyncMetadataChangeList();
 }
 
+ReadingListModelStorage::ScopedBatchUpdate*
+ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::GetStorageBatch() {
+  DCHECK(storage_token_);
+  return storage_token_.get();
+}
+
 void ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::
     ReadingListModelLoaded(const ReadingListModel* model) {}
 
@@ -134,8 +140,10 @@ void ReadingListModelImpl::MarkAllSeen() {
   if (unseen_entry_count_ == 0) {
     return;
   }
-  std::unique_ptr<ReadingListModelImpl::ScopedReadingListBatchUpdate>
-      model_batch_updates = BeginBatchUpdates();
+
+  std::unique_ptr<ScopedReadingListBatchUpdateImpl> batch =
+      BeginBatchUpdatesWithSyncMetadata();
+
   for (auto& iterator : entries_) {
     ReadingListEntry& entry = iterator.second;
     if (entry.HasBeenSeen()) {
@@ -148,10 +156,7 @@ void ReadingListModelImpl::MarkAllSeen() {
     entry.SetRead(false, clock_->Now());
     UpdateEntryStateCountersOnEntryInsertion(entry);
 
-    // TODO(crbug.com/1386158): Reuse same batch.
-    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
-        storage_layer_->EnsureBatchCreated();
-    batch->SaveEntry(entry);
+    batch->GetStorageBatch()->SaveEntry(entry);
     sync_bridge_.DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
 
     for (ReadingListModelObserver& observer : observers_) {

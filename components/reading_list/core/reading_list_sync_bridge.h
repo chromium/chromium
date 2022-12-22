@@ -44,8 +44,7 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
       std::unique_ptr<syncer::MetadataBatch> sync_metadata_batch);
   void ReportError(const syncer::ModelError& error);
 
-  // TODO(crbug.com/1386158): Remove the functions below and instead register
-  // the bridge as model observer.
+  // Observer-like functions that explicitly pass syncer::MetadataChangeList.
   void DidAddOrUpdateEntry(const ReadingListEntry& entry,
                            syncer::MetadataChangeList* metadata_change_list);
   void DidRemoveEntry(const ReadingListEntry& entry,

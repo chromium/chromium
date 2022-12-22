@@ -89,6 +89,7 @@ class ReadingListModelImpl : public ReadingListModel {
     ~ScopedReadingListBatchUpdateImpl() override;
 
     syncer::MetadataChangeList* GetSyncMetadataChangeList();
+    ReadingListModelStorage::ScopedBatchUpdate* GetStorageBatch();
 
     // ReadingListModelObserver overrides.
     void ReadingListModelLoaded(const ReadingListModel* model) override;
