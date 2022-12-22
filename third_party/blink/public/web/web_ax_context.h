@@ -25,8 +25,6 @@ class BLINK_EXPORT WebAXContext {
   explicit WebAXContext(WebDocument document, const ui::AXMode& mode);
   ~WebAXContext();
 
-  bool HasActiveDocument() const;
-
   const ui::AXMode& GetAXMode() const;
 
   void SetAXMode(const ui::AXMode&) const;

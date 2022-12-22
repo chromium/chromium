@@ -92,7 +92,7 @@ void ComputedAccessibleNodePromiseResolver::EnsureUpToDate() {
 }
 
 void ComputedAccessibleNodePromiseResolver::UpdateTreeAndResolve() {
-  if (!ax_context_->HasActiveDocument()) {
+  if (!ax_context_->GetDocument()) {
     resolver_->Resolve();
     return;
   }
@@ -114,7 +114,7 @@ void ComputedAccessibleNodePromiseResolver::UpdateTreeAndResolve() {
   ax_context_->GetDocument()->View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kAccessibility);
   AXObjectCache& cache = ax_context_->GetAXObjectCache();
-  AXID ax_id = ax_id_ ? ax_id_ : cache.GetExistingAXID(element_);
+  AXID ax_id = ax_id_ ? ax_id_ : cache.GetAXID(element_);
   if (!ax_id || !cache.ObjectFromAXID(ax_id)) {
     resolver_->Resolve();  // No AXObject exists for this element.
     return;
