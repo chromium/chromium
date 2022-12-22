@@ -181,8 +181,8 @@ scoped_refptr<VideoFrame> VaapiDmaBufVideoFrameMapper::Map(
     return nullptr;
   }
 
-  if (!(permissions & PROT_READ && permissions & PROT_WRITE)) {
-    LOG(ERROR) << "VAAPI DMA Buffer must be mapped read/write.";
+  if (!(permissions & PROT_READ)) {
+    LOG(ERROR) << "VAAPI DMA Buffer must be mapped with read permissions.";
     return nullptr;
   }
 
