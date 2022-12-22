@@ -47,11 +47,8 @@ const auto kCloseButtonContainerInsetsJelly = gfx::Insets::TLBR(8, 16, 8, 26);
 constexpr auto kContentInsets = gfx::Insets::TLBR(0, 0, 20, 0);
 constexpr auto kContentInsetsJelly = gfx::Insets::TLBR(0, 16, 20, 16);
 
-// The insets for `CalendarEmptyEventListView` label.
-constexpr auto kOpenGoogleCalendarInsets = gfx::Insets::VH(6, 16);
-
 // The insets for `CalendarEmptyEventListView`.
-constexpr auto kOpenGoogleCalendarContainerInsets = gfx::Insets::VH(20, 80);
+constexpr auto kOpenGoogleCalendarContainerInsets = gfx::Insets::VH(20, 60);
 
 // Border thickness for `CalendarEmptyEventListView`.
 constexpr int kOpenGoogleCalendarBorderThickness = 1;
@@ -87,7 +84,6 @@ class CalendarEmptyEventListView : public PillButton {
                    /*icon=*/nullptr),
         controller_(controller) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-    label()->SetBorder(views::CreateEmptyBorder(kOpenGoogleCalendarInsets));
     label()->SetTextContext(CONTEXT_CALENDAR_DATE);
     SetBorder(views::CreateRoundedRectBorder(
         kOpenGoogleCalendarBorderThickness, GetPreferredSize().height() / 2,
