@@ -9,8 +9,8 @@ automated way.
 
 -   Trybots include all platforms for which we currently build Chromium, though
     they may not support all configurations built on CI.
--   The commit queue runs a subset of available trybots. See [here][1] for more
-    information.
+-   The commit queue (CQ) runs a subset of available trybots. See [here][1] for
+    more information.
 -   trybots can be manually invoked via `git cl try` or the "Choose Trybots" UI
     in gerrit.
 -   Any committer can use the trybots.
