@@ -453,7 +453,7 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
         [menuElements addObject:openInNewIncognitoTab];
 
         const ReadingListEntry* entry = [self.mediator entryFromItem:item];
-        if (entry->DistilledState() == ReadingListEntry::PROCESSED) {
+        if (entry && entry->DistilledState() == ReadingListEntry::PROCESSED) {
           [menuElements
               addObject:[actionFactory
                             actionToOpenOfflineVersionInNewTabWithBlock:^{
