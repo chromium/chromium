@@ -132,7 +132,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
       isOnline_: {
         type: Boolean,
         value: false,
-        observer: 'onIsOnlineChange_',
+        observer: OnboardingNetworkPage.prototype.onIsOnlineChange_,
       },
     };
   }

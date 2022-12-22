@@ -71,7 +71,8 @@ export class RepairComponentChip extends RepairComponentChipBase {
       isFirstClickableComponent: {
         type: Boolean,
         value: false,
-        observer: 'onIsFirstClickableComponentChanged_',
+        observer:
+            RepairComponentChip.prototype.onIsFirstClickableComponentChanged_,
       },
 
     };

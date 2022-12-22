@@ -57,7 +57,8 @@ export class OnboardingEnterRsuWpDisableCodePage extends
        */
       errorCode: {
         type: Object,
-        observer: 'onErrorCodeChanged_',
+        observer:
+            OnboardingEnterRsuWpDisableCodePage.prototype.onErrorCodeChanged_,
       },
 
       /** @protected */
@@ -82,7 +83,8 @@ export class OnboardingEnterRsuWpDisableCodePage extends
       rsuCode_: {
         type: String,
         value: '',
-        observer: 'onRsuCodeChanged_',
+        observer:
+            OnboardingEnterRsuWpDisableCodePage.prototype.onRsuCodeChanged_,
       },
 
       /** @protected */

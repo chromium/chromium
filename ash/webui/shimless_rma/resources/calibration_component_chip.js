@@ -56,7 +56,8 @@ export class CalibrationComponentChipElement extends PolymerElement {
       isFirstClickableComponent: {
         type: Boolean,
         value: false,
-        observer: 'onIsFirstClickableComponentChanged_',
+        observer: CalibrationComponentChipElement.prototype
+                      .onIsFirstClickableComponentChanged_,
       },
 
       /** @type {number} */

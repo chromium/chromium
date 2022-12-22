@@ -82,7 +82,8 @@ export class OnboardingUpdatePageElement extends
       updateInProgress_: {
         type: Boolean,
         value: false,
-        observer: 'onUpdateInProgressChange_',
+        observer:
+            OnboardingUpdatePageElement.prototype.onUpdateInProgressChange_,
       },
 
       /** @protected */
