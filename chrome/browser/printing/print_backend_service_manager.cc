@@ -56,7 +56,7 @@ PrintBackendServiceManager* g_print_backend_service_manager_singleton = nullptr;
 
 size_t GetClientsCountForRemoteId(
     const PrintBackendServiceManager::PrintClientsMap& clients,
-    const std::string& remote_id) {
+    const PrintBackendServiceManager::RemoteId& remote_id) {
   auto iter = clients.find(remote_id);
   if (iter != clients.end()) {
     DCHECK(!iter->second.empty());
@@ -74,6 +74,13 @@ uint32_t NativeViewToUint(gfx::NativeView view) {
 #endif
 
 }  // namespace
+
+PrintBackendServiceManager::CallbackContext::CallbackContext() = default;
+
+PrintBackendServiceManager::CallbackContext::CallbackContext(
+    const PrintBackendServiceManager::CallbackContext& other) = default;
+
+PrintBackendServiceManager::CallbackContext::~CallbackContext() = default;
 
 PrintBackendServiceManager::PrintBackendServiceManager() = default;
 
@@ -126,7 +133,7 @@ uint32_t PrintBackendServiceManager::RegisterPrintDocumentClient(
 void PrintBackendServiceManager::UnregisterClient(uint32_t id) {
   // Determine which client type has this ID, and remove it once found.
   absl::optional<ClientType> client_type;
-  std::string remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
+  RemoteId remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
   if (query_clients_.erase(id) != 0) {
     client_type = ClientType::kQuery;
   } else if (query_with_ui_clients_.erase(id) != 0) {
@@ -455,7 +462,8 @@ void PrintBackendServiceManager::SetServiceForTesting(
   sandboxed_service_remote_for_test_ = remote;
   sandboxed_service_remote_for_test_->set_disconnect_handler(base::BindOnce(
       &PrintBackendServiceManager::OnRemoteDisconnected, base::Unretained(this),
-      /*sandboxed=*/true, /*remote_id=*/std::string()));
+      /*sandboxed=*/true,
+      GetRemoteIdForPrinterName(/*printer_name=*/std::string())));
 }
 
 void PrintBackendServiceManager::SetServiceForFallbackTesting(
@@ -463,7 +471,8 @@ void PrintBackendServiceManager::SetServiceForFallbackTesting(
   unsandboxed_service_remote_for_test_ = remote;
   unsandboxed_service_remote_for_test_->set_disconnect_handler(base::BindOnce(
       &PrintBackendServiceManager::OnRemoteDisconnected, base::Unretained(this),
-      /*sandboxed=*/false, /*remote_id=*/std::string()));
+      /*sandboxed=*/false,
+      GetRemoteIdForPrinterName(/*printer_name=*/std::string())));
 }
 
 // static
@@ -483,20 +492,21 @@ void PrintBackendServiceManager::ResetForTesting() {
   }
 }
 
-std::string PrintBackendServiceManager::GetRemoteIdForPrinterName(
+PrintBackendServiceManager::RemoteId
+PrintBackendServiceManager::GetRemoteIdForPrinterName(
     const std::string& printer_name) const {
   if (sandboxed_service_remote_for_test_) {
     // Test environment is always just one instance for all printers.
-    return std::string();
+    return RemoteId(std::string());
   }
 
 #if BUILDFLAG(IS_WIN)
   // Windows drivers are not thread safe.  Use a process per driver to prevent
   // bad interactions when interfacing to multiple drivers in parallel.
   // https://crbug.com/957242
-  return printer_name;
+  return RemoteId(printer_name);
 #else
-  return std::string();
+  return RemoteId(std::string());
 #endif
 }
 
@@ -504,7 +514,7 @@ absl::optional<uint32_t> PrintBackendServiceManager::RegisterClient(
     ClientType client_type,
     const std::string& printer_name) {
   uint32_t client_id = ++last_client_id_;
-  std::string remote_id = GetRemoteIdForPrinterName(printer_name);
+  RemoteId remote_id = GetRemoteIdForPrinterName(printer_name);
 
   VLOG(1) << "Registering a client with ID " << client_id
           << " for print backend service.";
@@ -627,7 +637,7 @@ PrintBackendServiceManager::GetService(const std::string& printer_name,
     }
   }
 
-  std::string remote_id = GetRemoteIdForPrinterName(printer_name);
+  RemoteId remote_id = GetRemoteIdForPrinterName(printer_name);
   if (should_sandbox) {
     return GetServiceFromBundle(remote_id, client_type, /*sandboxed=*/true,
                                 sandboxed_remotes_bundles_);
@@ -639,7 +649,7 @@ PrintBackendServiceManager::GetService(const std::string& printer_name,
 template <class T>
 mojo::Remote<mojom::PrintBackendService>&
 PrintBackendServiceManager::GetServiceFromBundle(
-    const std::string& remote_id,
+    const RemoteId& remote_id,
     ClientType client_type,
     bool sandboxed,
     RemotesBundleMap<T>& bundle_map) {
@@ -732,7 +742,7 @@ constexpr base::TimeDelta PrintBackendServiceManager::GetClientTypeIdleTimeout(
 absl::optional<base::TimeDelta>
 PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnRegisteredClient(
     ClientType registered_client_type,
-    const std::string& remote_id) const {
+    const RemoteId& remote_id) const {
   switch (registered_client_type) {
     case ClientType::kQuery:
       DCHECK(!query_clients_.empty());
@@ -790,7 +800,7 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnRegisteredClient(
 absl::optional<base::TimeDelta>
 PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnUnregisteredClient(
     ClientType unregistered_client_type,
-    const std::string& remote_id) const {
+    const RemoteId& remote_id) const {
   switch (unregistered_client_type) {
     case ClientType::kQuery:
       // Other query types have longer timeouts, so no need to update if
@@ -847,7 +857,7 @@ PrintBackendServiceManager::DetermineIdleTimeoutUpdateOnUnregisteredClient(
 void PrintBackendServiceManager::SetServiceIdleHandler(
     mojo::Remote<printing::mojom::PrintBackendService>& service,
     bool sandboxed,
-    const std::string& remote_id,
+    const RemoteId& remote_id,
     const base::TimeDelta& timeout) {
   DVLOG(1) << "Updating idle timeout for "
            << (sandboxed ? "sandboxed" : "unsandboxed")
@@ -864,7 +874,7 @@ void PrintBackendServiceManager::SetServiceIdleHandler(
 }
 
 void PrintBackendServiceManager::UpdateServiceIdleTimeoutByRemoteId(
-    const std::string& remote_id,
+    const RemoteId& remote_id,
     const base::TimeDelta& timeout) {
   auto sandboxed_iter = sandboxed_remotes_bundles_.find(remote_id);
   if (sandboxed_iter != sandboxed_remotes_bundles_.end()) {
@@ -883,7 +893,7 @@ void PrintBackendServiceManager::UpdateServiceIdleTimeoutByRemoteId(
 }
 
 void PrintBackendServiceManager::OnIdleTimeout(bool sandboxed,
-                                               const std::string& remote_id) {
+                                               const RemoteId& remote_id) {
   DVLOG(1) << "Print Backend service idle timeout for "
            << (sandboxed ? "sandboxed" : "unsandboxed") << " remote id `"
            << remote_id << "`";
@@ -896,7 +906,7 @@ void PrintBackendServiceManager::OnIdleTimeout(bool sandboxed,
 
 void PrintBackendServiceManager::OnRemoteDisconnected(
     bool sandboxed,
-    const std::string& remote_id) {
+    const RemoteId& remote_id) {
   DVLOG(1) << "Print Backend service disconnected for "
            << (sandboxed ? "sandboxed" : "unsandboxed") << " remote id `"
            << remote_id << "`";
@@ -1048,7 +1058,7 @@ PrintBackendServiceManager::GetServiceAndCallbackContext(
 template <class... T, class... X>
 void PrintBackendServiceManager::SaveCallback(
     RemoteSavedCallbacks<T...>& saved_callbacks,
-    const std::string& remote_id,
+    const RemoteId& remote_id,
     const base::UnguessableToken& saved_callback_id,
     base::OnceCallback<void(X...)> callback) {
   saved_callbacks[remote_id].emplace(saved_callback_id, std::move(callback));
@@ -1057,7 +1067,7 @@ void PrintBackendServiceManager::SaveCallback(
 template <class... T, class... X>
 void PrintBackendServiceManager::ServiceCallbackDone(
     RemoteSavedCallbacks<T...>& saved_callbacks,
-    const std::string& remote_id,
+    const RemoteId& remote_id,
     const base::UnguessableToken& saved_callback_id,
     X... data) {
   auto found_callback_map = saved_callbacks.find(remote_id);
@@ -1187,7 +1197,7 @@ void PrintBackendServiceManager::OnDidCancel(const CallbackContext& context) {
 template <class T>
 void PrintBackendServiceManager::RunSavedCallbacksStructResult(
     RemoteSavedStructCallbacks<T>& saved_callbacks,
-    const std::string& remote_id,
+    const RemoteId& remote_id,
     mojo::StructPtr<T> result_to_clone) {
   auto found_callbacks_map = saved_callbacks.find(remote_id);
   if (found_callbacks_map == saved_callbacks.end())
@@ -1213,7 +1223,7 @@ void PrintBackendServiceManager::RunSavedCallbacksStructResult(
 template <class... T>
 void PrintBackendServiceManager::RunSavedCallbacks(
     RemoteSavedCallbacks<T...>& saved_callbacks,
-    const std::string& remote_id,
+    const RemoteId& remote_id,
     T... result) {
   auto found_callbacks_map = saved_callbacks.find(remote_id);
   if (found_callbacks_map == saved_callbacks.end())

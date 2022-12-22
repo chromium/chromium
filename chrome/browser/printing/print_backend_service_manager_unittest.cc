@@ -17,11 +17,12 @@ namespace printing {
 
 using ClientsSet = PrintBackendServiceManager::ClientsSet;
 using PrintClientsMap = PrintBackendServiceManager::PrintClientsMap;
+using RemoteId = PrintBackendServiceManager::RemoteId;
 
 namespace {
 
-constexpr char kRemoteIdEmpty[] = "";
-constexpr char kRemoteIdTestPrinter[] = "test-printer";
+const RemoteId kRemoteIdEmpty{std::string()};
+const RemoteId kRemoteIdTestPrinter{"test-printer"};
 
 const ClientsSet kTestQueryNoClients;
 const ClientsSet kTestQueryWithOneClient{1};

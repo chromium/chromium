@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/types/strong_alias.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -43,8 +44,13 @@ class PrintedPage;
 
 class PrintBackendServiceManager {
  public:
+  using RemoteId = base::StrongAlias<class RemoteIdTag, std::string>;
+
+  // Contains set of client IDs.
   using ClientsSet = base::flat_set<uint32_t>;
-  using PrintClientsMap = base::flat_map<std::string, ClientsSet>;
+
+  // Mapping of clients to each remote ID that is for printing.
+  using PrintClientsMap = base::flat_map<RemoteId, ClientsSet>;
 
   // Amount of idle time to wait before resetting the connection to the service.
   static constexpr base::TimeDelta kNoClientsRegisteredResetOnIdleTimeout =
@@ -201,8 +207,7 @@ class PrintBackendServiceManager {
   // Key is the remote ID that enables finding the correct remote.  Note that
   // the remote ID does not necessarily mean the printer name.
   template <class... T>
-  using RemoteSavedCallbacks =
-      base::flat_map<std::string, SavedCallbacks<T...>>;
+  using RemoteSavedCallbacks = base::flat_map<RemoteId, SavedCallbacks<T...>>;
   template <class... T>
   using RemoteSavedStructCallbacks =
       RemoteSavedCallbacks<mojo::StructPtr<T...>>;
@@ -247,14 +252,18 @@ class PrintBackendServiceManager {
 
   template <class T>
   using RemotesBundleMap =
-      base::flat_map<std::string, std::unique_ptr<RemotesBundle<T>>>;
+      base::flat_map<RemoteId, std::unique_ptr<RemotesBundle<T>>>;
 
   // PrintBackendServiceManager needs to be able to run a callback either after
   // a successful return from the service or after the remote was disconnected.
   // This structure is used to save the callback's context.
   struct CallbackContext {
+    CallbackContext();
+    CallbackContext(const CallbackContext& other);
+    ~CallbackContext();
+
     bool is_sandboxed;
-    std::string remote_id;
+    RemoteId remote_id;
     base::UnguessableToken saved_callback_id;
   };
 
@@ -269,7 +278,7 @@ class PrintBackendServiceManager {
   void SetCrashKeys(const std::string& printer_name);
 
   // Determine the remote ID that is used for the specified `printer_name`.
-  std::string GetRemoteIdForPrinterName(const std::string& printer_name) const;
+  RemoteId GetRemoteIdForPrinterName(const std::string& printer_name) const;
 
   // Common helper for registering clients.
   absl::optional<uint32_t> RegisterClient(ClientType client_type,
@@ -299,7 +308,7 @@ class PrintBackendServiceManager {
   // Helper to `GetService` for a particular remotes bundle type.
   template <class T>
   mojo::Remote<mojom::PrintBackendService>& GetServiceFromBundle(
-      const std::string& remote_id,
+      const RemoteId& remote_id,
       ClientType client_type,
       bool sandboxed,
       RemotesBundleMap<T>& bundle_map);
@@ -312,33 +321,33 @@ class PrintBackendServiceManager {
   // a new client registered for `registered_client_type`.
   absl::optional<base::TimeDelta> DetermineIdleTimeoutUpdateOnRegisteredClient(
       ClientType registered_client_type,
-      const std::string& remote_id) const;
+      const RemoteId& remote_id) const;
 
   // Determine if idle timeout should be modified after a client of type
   // `unregistered_client_type` has been unregistered.
   absl::optional<base::TimeDelta>
   DetermineIdleTimeoutUpdateOnUnregisteredClient(
       ClientType unregistered_client_type,
-      const std::string& remote_id) const;
+      const RemoteId& remote_id) const;
 
   // Helper functions to adjust service idle timeout duration.
   void SetServiceIdleHandler(
       mojo::Remote<printing::mojom::PrintBackendService>& service,
       bool sandboxed,
-      const std::string& remote_id,
+      const RemoteId& remote_id,
       const base::TimeDelta& timeout);
-  void UpdateServiceIdleTimeoutByRemoteId(const std::string& remote_id,
+  void UpdateServiceIdleTimeoutByRemoteId(const RemoteId& remote_id,
                                           const base::TimeDelta& timeout);
 
   // Callback when predetermined idle timeout occurs indicating no in-flight
   // messages for a short period of time.  `sandboxed` is used to distinguish
   // which mapping of remotes the timeout applies to.
-  void OnIdleTimeout(bool sandboxed, const std::string& remote_id);
+  void OnIdleTimeout(bool sandboxed, const RemoteId& remote_id);
 
   // Callback when service has disconnected (e.g., process crashes).
   // `sandboxed` is used to distinguish which mapping of remotes the
   // disconnection applies to.
-  void OnRemoteDisconnected(bool sandboxed, const std::string& remote_id);
+  void OnRemoteDisconnected(bool sandboxed, const RemoteId& remote_id);
 
   // Helper function to choose correct saved callbacks mapping.
   RemoteSavedEnumeratePrintersCallbacks&
@@ -379,14 +388,14 @@ class PrintBackendServiceManager {
   // Helper functions to save outstanding callbacks.
   template <class... T, class... X>
   void SaveCallback(RemoteSavedCallbacks<T...>& saved_callbacks,
-                    const std::string& remote_id,
+                    const RemoteId& remote_id,
                     const base::UnguessableToken& saved_callback_id,
                     base::OnceCallback<void(X...)> callback);
 
   // Helper functions for local callback wrappers for mojom calls.
   template <class... T, class... X>
   void ServiceCallbackDone(RemoteSavedCallbacks<T...>& saved_callbacks,
-                           const std::string& remote_id,
+                           const RemoteId& remote_id,
                            const base::UnguessableToken& saved_callback_id,
                            X... data);
 
@@ -427,11 +436,11 @@ class PrintBackendServiceManager {
   template <class T>
   void RunSavedCallbacksStructResult(
       RemoteSavedStructCallbacks<T>& saved_callbacks,
-      const std::string& remote_id,
+      const RemoteId& remote_id,
       mojo::StructPtr<T> result_to_clone);
   template <class... T>
   void RunSavedCallbacks(RemoteSavedCallbacks<T...>& saved_callbacks,
-                         const std::string& remote_id,
+                         const RemoteId& remote_id,
                          T... result);
 
   // Test support for client ID management.
