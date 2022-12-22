@@ -652,7 +652,7 @@ void TabletModeWindowState::DoTabletSnap(WindowState* window_state,
       window_state->GetStateType(), new_state_type);
 
   // A snap WMEvent will put the window in tablet split view.
-  split_view_controller->OnWindowSnapWMEvent(window, snap_event_type);
+  split_view_controller->OnWMEvent(window, snap_event_type);
 
   // Change window state and bounds to the snapped window state and bounds.
   UpdateWindow(window_state, new_state_type, /*animate=*/false, new_snap_ratio);

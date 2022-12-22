@@ -188,7 +188,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // This is called by WindowState::State when receiving a snap WMEvent (i.e.,
   // WM_EVENT_SNAP_PRIMARY or WM_EVENT_SNAP_SECONDARY). SplitViewController will
   // decide if this window needs to be snapped in split view.
-  void OnWindowSnapWMEvent(aura::Window* window, WMEventType event_type);
+  void OnWMEvent(aura::Window* window, WMEventType event_type);
 
   // Attaches the to-be-snapped |window| to split view at |snap_position|. It
   // will try to remove |window| from the overview window grid first if |window|

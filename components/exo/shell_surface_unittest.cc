@@ -1285,7 +1285,7 @@ TEST_F(ShellSurfaceTest, CycleSnap) {
   EXPECT_EQ(buffer_size,
             shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
 
-  ash::WindowSnapWMEvent event(ash::WM_EVENT_CYCLE_SNAP_PRIMARY);
+  ash::WMEvent event(ash::WM_EVENT_CYCLE_SNAP_PRIMARY);
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
 
   // Enter snapped mode.
@@ -2940,8 +2940,7 @@ TEST_F(ShellSurfaceTest, PostWindowChangeCallback) {
   // Make sure we are in a non-snapped state before testing state change.
   ASSERT_FALSE(state->IsSnapped());
 
-  auto snap_event =
-      std::make_unique<ash::WindowSnapWMEvent>(ash::WM_EVENT_SNAP_PRIMARY);
+  auto snap_event = std::make_unique<ash::WMEvent>(ash::WM_EVENT_SNAP_PRIMARY);
 
   // Trigger a snap event, this should cause a configure event.
   state->OnWMEvent(snap_event.get());

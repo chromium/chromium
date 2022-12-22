@@ -892,7 +892,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
         window_state()->set_snap_action_source(
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeLeft"));
-        const WindowSnapWMEvent snap_primary_event(WM_EVENT_SNAP_PRIMARY);
+        const WMEvent snap_primary_event(WM_EVENT_SNAP_PRIMARY);
         window_state()->OnWMEvent(&snap_primary_event);
         return;
       }
@@ -900,7 +900,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
         window_state()->set_snap_action_source(
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeRight"));
-        const WindowSnapWMEvent snap_secondary_event(WM_EVENT_SNAP_SECONDARY);
+        const WMEvent snap_secondary_event(WM_EVENT_SNAP_SECONDARY);
         window_state()->OnWMEvent(&snap_secondary_event);
         return;
       }
@@ -1708,7 +1708,7 @@ void WorkspaceWindowResizer::SetWindowStateTypeFromGesture(
         window_state->set_snap_action_source(
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
 
-        const WindowSnapWMEvent event(WM_EVENT_SNAP_PRIMARY);
+        const WMEvent event(WM_EVENT_SNAP_PRIMARY);
         window_state->OnWMEvent(&event);
       }
       break;
@@ -1718,7 +1718,7 @@ void WorkspaceWindowResizer::SetWindowStateTypeFromGesture(
         window_state->set_snap_action_source(
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
 
-        const WindowSnapWMEvent event(WM_EVENT_SNAP_SECONDARY);
+        const WMEvent event(WM_EVENT_SNAP_SECONDARY);
         window_state->OnWMEvent(&event);
       }
       break;

@@ -159,9 +159,9 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
                       ? SplitViewController::SnapPosition::kPrimary
                       : SplitViewController::SnapPosition::kSecondary);
     } else {
-      const WindowSnapWMEvent wm_event(is_desired_primary_snapped
-                                           ? WM_EVENT_SNAP_PRIMARY
-                                           : WM_EVENT_SNAP_SECONDARY);
+      const WMEvent wm_event(is_desired_primary_snapped
+                                 ? WM_EVENT_SNAP_PRIMARY
+                                 : WM_EVENT_SNAP_SECONDARY);
       window_state->OnWMEvent(&wm_event);
     }
     window_state->ReadOutWindowCycleSnapAction(
@@ -252,7 +252,7 @@ void BaseState::HandleWindowSnapping(WindowState* window_state,
   aura::Window* window = window_state->window();
   // SplitViewController will decide if the window needs to be snapped in split
   // view.
-  SplitViewController::Get(window)->OnWindowSnapWMEvent(window, event_type);
+  SplitViewController::Get(window)->OnWMEvent(window, event_type);
 }
 
 }  // namespace ash

@@ -871,8 +871,8 @@ void SplitViewController::SnapWindow(aura::Window* window,
   base::RecordAction(base::UserMetricsAction("SplitView_SnapWindow"));
 }
 
-void SplitViewController::OnWindowSnapWMEvent(aura::Window* window,
-                                              WMEventType event_type) {
+void SplitViewController::OnWMEvent(aura::Window* window,
+                                    WMEventType event_type) {
   DCHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
          event_type == WM_EVENT_SNAP_SECONDARY);
 
@@ -915,15 +915,16 @@ void SplitViewController::OnWindowSnapWMEvent(aura::Window* window,
     if (split_view_divider_) {
       split_view_divider_->UpdateDividerBounds();
     }
-    // Only notify observers if there is only one snapped window, i.e. overview
-    // is open.
     if (state_ == State::kPrimarySnapped ||
         state_ == State::kSecondarySnapped) {
+      // Only notify observers if there is only one snapped window, i.e.
+      // overview is open.
       NotifyDividerPositionChanged();
+    } else if (BothSnapped()) {
+      // If both windows are snapped and one window snap ratio changes, the
+      // other window should also get updated.
+      UpdateSnappedWindowsAndDividerBounds();
     }
-    // TODO(sophiewen): When both are windows, if one window snap ratio changes,
-    // i.e. in `OnWindowBoundsChanged()`, the other should also update its snap
-    // ratio.
   }
 
   // Start observe the to-be-snapped window.
@@ -1047,12 +1048,12 @@ void SplitViewController::SwapWindows() {
   // the opposite position. If there is no window, i.e. Overview is open,
   // `UpdateStateAndNotifyObservers()` will update the bounds themselves.
   if (IsSnapped(primary_window_)) {
-    const WindowSnapWMEvent primary_window_event(WM_EVENT_SNAP_PRIMARY);
+    const WMEvent primary_window_event(WM_EVENT_SNAP_PRIMARY);
     WindowState::Get(primary_window_)->OnWMEvent(&primary_window_event);
   }
   secondary_window_ = new_right_window;
   if (IsSnapped(secondary_window_)) {
-    const WindowSnapWMEvent secondary_window_event(WM_EVENT_SNAP_SECONDARY);
+    const WMEvent secondary_window_event(WM_EVENT_SNAP_SECONDARY);
     WindowState::Get(secondary_window_)->OnWMEvent(&secondary_window_event);
   }
 
@@ -2452,9 +2453,9 @@ void SplitViewController::OnWindowSnapped(
             GetPositionOfSnappedWindow(window) == SnapPosition::kPrimary
                 ? SnapPosition::kSecondary
                 : SnapPosition::kPrimary;
-        WindowSnapWMEvent event(snap_position == SnapPosition::kPrimary
-                                    ? WM_EVENT_SNAP_PRIMARY
-                                    : WM_EVENT_SNAP_SECONDARY);
+        WMEvent event(snap_position == SnapPosition::kPrimary
+                          ? WM_EVENT_SNAP_PRIMARY
+                          : WM_EVENT_SNAP_SECONDARY);
         WindowState::Get(mru_window)->OnWMEvent(&event);
         return;
       }

@@ -105,10 +105,6 @@ bool WMEvent::IsSnapEvent() const {
   return false;
 }
 
-bool WMEvent::IsSnapInfoAvailable() const {
-  return false;
-}
-
 const DisplayMetricsChangedWMEvent* WMEvent::AsDisplayMetricsChangedWMEvent()
     const {
   DCHECK_EQ(type(), WM_EVENT_DISPLAY_BOUNDS_CHANGED);
@@ -131,36 +127,6 @@ SetBoundsWMEvent::SetBoundsWMEvent(const gfx::Rect& requested_bounds,
       animate_(false) {}
 
 SetBoundsWMEvent::~SetBoundsWMEvent() = default;
-
-WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type) : WMEvent(type) {
-  DCHECK(IsSnapEvent());
-}
-
-WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type,
-                                     WindowSnapWMEvent::SnapRatio snap_ratio)
-    : WMEvent(type), snap_ratio_(snap_ratio) {
-  DCHECK(IsSnapEvent());
-}
-
-WindowSnapWMEvent::~WindowSnapWMEvent() = default;
-
-float WindowSnapWMEvent::GetFloatValueForSnapRatio(
-    WindowSnapWMEvent::SnapRatio snap_ratio) {
-  switch (snap_ratio) {
-    case WindowSnapWMEvent::SnapRatio::kOneThirdSnapRatio:
-      return kOneThirdSnapRatio;
-    case WindowSnapWMEvent::SnapRatio::kDefaultSnapRatio:
-      return kDefaultSnapRatio;
-    case WindowSnapWMEvent::SnapRatio::kTwoThirdSnapRatio:
-      return kTwoThirdSnapRatio;
-    default:
-      return kDefaultSnapRatio;
-  }
-}
-
-bool WindowSnapWMEvent::IsSnapInfoAvailable() const {
-  return true;
-}
 
 DisplayMetricsChangedWMEvent::DisplayMetricsChangedWMEvent(int changed_metrics)
     : WMEvent(WM_EVENT_DISPLAY_BOUNDS_CHANGED),

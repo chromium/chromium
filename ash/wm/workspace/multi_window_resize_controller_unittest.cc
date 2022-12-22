@@ -625,7 +625,7 @@ TEST_F(MultiWindowResizeControllerTest, TwoSnappedWindows) {
       &delegate1, -1, gfx::Rect(100, 100, 100, 100)));
   delegate1.set_window_component(HTRIGHT);
   WindowState* w1_state = WindowState::Get(w1.get());
-  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   w1_state->OnWMEvent(&snap_left);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, w1_state->GetStateType());
   aura::test::TestWindowDelegate delegate2;
@@ -633,7 +633,7 @@ TEST_F(MultiWindowResizeControllerTest, TwoSnappedWindows) {
       &delegate2, -2, gfx::Rect(100, 100, 100, 100)));
   delegate2.set_window_component(HTRIGHT);
   WindowState* w2_state = WindowState::Get(w2.get());
-  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   w2_state->OnWMEvent(&snap_right);
   EXPECT_EQ(WindowStateType::kSecondarySnapped, w2_state->GetStateType());
   EXPECT_EQ(0.5f, *w1_state->snap_ratio());
@@ -770,11 +770,11 @@ TEST_F(MultiWindowResizeControllerTest, MultiWindowResizeUserActionMetrics) {
   // over the edge and both `kMultiWindowResizerShow` and
   // `kMultiWindowResizerShowTwoWindowsSnapped` will be recorded.
   WindowState* w1_state = WindowState::Get(w1.get());
-  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   w1_state->OnWMEvent(&snap_left);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, w1_state->GetStateType());
   WindowState* w2_state = WindowState::Get(w2.get());
-  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   w2_state->OnWMEvent(&snap_right);
   EXPECT_EQ(WindowStateType::kSecondarySnapped, w2_state->GetStateType());
   EXPECT_EQ(0.5f, *w1_state->snap_ratio());
@@ -879,11 +879,11 @@ TEST_F(MultiWindowResizeControllerTest, MultiWindowResizeHistogramTest) {
 
   // Snap two windows
   WindowState* w1_state = WindowState::Get(w1.get());
-  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   w1_state->OnWMEvent(&snap_left);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, w1_state->GetStateType());
   WindowState* w2_state = WindowState::Get(w2.get());
-  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   w2_state->OnWMEvent(&snap_right);
   EXPECT_EQ(WindowStateType::kSecondarySnapped, w2_state->GetStateType());
 

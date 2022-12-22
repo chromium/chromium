@@ -1582,11 +1582,11 @@ TEST_F(TabletWindowFloatSplitviewTest, BothSnappedToFloat) {
 
   // Create two windows and snap one on each side.
   auto left_window = CreateAppWindow();
-  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(left_window.get())->OnWMEvent(&snap_left);
 
   auto right_window = CreateAppWindow();
-  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(right_window.get())->OnWMEvent(&snap_right);
 
   auto* split_view_controller =
@@ -1613,7 +1613,7 @@ TEST_F(TabletWindowFloatSplitviewTest, FloatToSnapped) {
 
   // If there are no other windows, expect to enter overview. The hotseat will
   // extended and users can pick a second app from there.
-  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(window.get())->OnWMEvent(&snap_left);
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   ASSERT_TRUE(split_view_controller->InSplitViewMode());

@@ -91,7 +91,7 @@ TEST_F(WindowStateTest, SnapWindowBasic) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
   WindowState* window_state = WindowState::Get(window.get());
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
   gfx::Rect expected = gfx::Rect(kPrimaryDisplayWorkAreaBounds.x(),
                                  kPrimaryDisplayWorkAreaBounds.y(),
@@ -99,7 +99,7 @@ TEST_F(WindowStateTest, SnapWindowBasic) {
                                  kPrimaryDisplayWorkAreaBounds.height());
   EXPECT_EQ(expected.ToString(), window->GetBoundsInScreen().ToString());
 
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
   expected.set_x(kPrimaryDisplayWorkAreaBounds.right() - expected.width());
   EXPECT_EQ(expected.ToString(), window->GetBoundsInScreen().ToString());
@@ -135,8 +135,8 @@ TEST_F(WindowStateTest, SnapWindowOddWorkAreaLength) {
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
   std::unique_ptr<aura::Window> right_window(
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(left_window.get())->OnWMEvent(&snap_primary);
   WindowState::Get(right_window.get())->OnWMEvent(&snap_secondary);
   EXPECT_EQ(gfx::Rect(0, work_area.y(), 758, work_area.bottom()),
@@ -161,7 +161,7 @@ TEST_F(WindowStateTest, SnapWindowMinimumSizeLandscape) {
   delegate.set_minimum_size(gfx::Size(kMinimumWidth, 0));
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->CanSnap());
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
   // Expect right snap with the minimum width.
   const gfx::Rect expected_right_snap(kWorkAreaBounds.width() - kMinimumWidth,
@@ -497,7 +497,7 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
       &delegate, -1, gfx::Rect(100, 100, 100, 100)));
   delegate.set_window_component(HTRIGHT);
   WindowState* window_state = WindowState::Get(window.get());
-  const WindowSnapWMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state->OnWMEvent(&cycle_snap_primary);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   gfx::Rect expected =
@@ -549,7 +549,7 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
           .Build();
   delegate.set_window_component(HTCAPTION);
   WindowState* window_state = WindowState::Get(window.get());
-  const WindowSnapWMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state->OnWMEvent(&cycle_snap_primary);
 
   // Snap window to primary position (left).
@@ -597,9 +597,9 @@ TEST_F(WindowStateTest, RestoreBounds) {
   gfx::Rect restore_bounds = window->GetBoundsInScreen();
   restore_bounds.set_width(restore_bounds.width() + 1);
   window_state->SetRestoreBoundsInScreen(restore_bounds);
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
   EXPECT_NE(restore_bounds.ToString(), window->GetBoundsInScreen().ToString());
   EXPECT_EQ(restore_bounds.ToString(),
@@ -636,7 +636,7 @@ TEST_F(WindowStateTest, AutoManaged) {
   window->Show();
 
   window_state->Maximize();
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
 
   const gfx::Rect kWorkAreaBounds =
@@ -1001,14 +1001,14 @@ TEST_F(WindowStateTest, OpacityChange) {
   EXPECT_TRUE(window_state->IsNormalStateType());
   EXPECT_TRUE(window->GetTransparent());
 
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
   EXPECT_FALSE(window->GetTransparent());
 
   window_state->Restore();
   EXPECT_TRUE(window->GetTransparent());
 
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_primary);
   EXPECT_FALSE(window->GetTransparent());
 
@@ -1029,7 +1029,7 @@ TEST_F(WindowStateTest, WindowStateRestoreHistoryBasicFunctionalites) {
   EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
 
   // Transition to kPrimarySnapped window state.
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
   EXPECT_EQ(restore_stack.size(), 1u);
   EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
@@ -1118,7 +1118,7 @@ TEST_F(WindowStateTest, TransitionFromHighToLowerLayerEraseRestoreHistory) {
   EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
 
   // Transition to kPrimarySnapped window state.
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
 
   // Then transition to kMaximized window state.
@@ -1166,7 +1166,7 @@ TEST_F(WindowStateTest, TransitionInTheSameLayerKeepSameRestoreHistory) {
 
   // Test kPrimarySnapped & kSecondarySnapped.
   // Transition to kPrimarySnapped window state.
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
   EXPECT_EQ(restore_stack.size(), 1u);
   EXPECT_EQ(restore_stack[0], WindowStateType::kNormal);
@@ -1175,7 +1175,7 @@ TEST_F(WindowStateTest, TransitionInTheSameLayerKeepSameRestoreHistory) {
   // Transition to kSecondarySnapped window state. Since it's on the same layer
   // as kPrimarySnapped, kPrimarySnapped won't be pushed into the restore
   // history stack.
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
   EXPECT_EQ(restore_stack.size(), 1u);
   EXPECT_EQ(restore_stack[0], WindowStateType::kNormal);
@@ -1216,7 +1216,7 @@ TEST_F(WindowStateTest, PinnedRestoreTest) {
   EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
 
   // Transition to kPrimarySnapped window state.
-  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
 
   // Then transition to kMaximized window state.
@@ -1346,7 +1346,7 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   WindowState* window_state = WindowState::Get(window.get());
 
   // Use WMEvent to directly snap the window.
-  WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_primary);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
                                WindowSnapActionSource::kOthers, 1);
@@ -1460,7 +1460,7 @@ TEST_F(WindowStateTest, SnapWindowMinimumSizePortrait) {
   delegate.set_minimum_size(kMinimumSize);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->CanSnap());
-  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_secondary);
   // Expect right snap for horizontal snap layout with the minimum width and
   // bottom snap for vertical snap layout with the minimum height.

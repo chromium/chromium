@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameAshTest, SnappedWindowSaveBounds) {
   window->SetBounds(restored_bounds);
 
   // Snap the window to the left.
-  const ash::WindowSnapWMEvent left_snap_event(ash::WM_EVENT_SNAP_PRIMARY);
+  const ash::WMEvent left_snap_event(ash::WM_EVENT_SNAP_PRIMARY);
   ash::WindowState::Get(window)->OnWMEvent(&left_snap_event);
   const gfx::Size snapped_size = window->GetBoundsInScreen().size();
 

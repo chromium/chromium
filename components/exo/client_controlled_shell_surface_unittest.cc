@@ -1947,7 +1947,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedInTabletMode) {
 
   EnableTabletMode(true);
 
-  ash::WindowSnapWMEvent event(ash::WM_EVENT_SNAP_PRIMARY);
+  ash::WMEvent event(ash::WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&event);
   EXPECT_EQ(window_state->GetStateType(), WindowStateType::kPrimarySnapped);
 
@@ -2510,7 +2510,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
   surface->Commit();
   EXPECT_EQ(gfx::Rect(50, 68, 200, 332), widget->GetWindowBoundsInScreen());
 
-  ash::WindowSnapWMEvent event(ash::WM_EVENT_SNAP_PRIMARY);
+  ash::WMEvent event(ash::WM_EVENT_SNAP_PRIMARY);
   ash::WindowState::Get(window)->OnWMEvent(&event);
   EXPECT_EQ(gfx::Rect(0, 32, 400, 568), delegate->requested_bounds().back());
 

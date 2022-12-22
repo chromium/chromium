@@ -656,7 +656,7 @@ TEST_F(WorkspaceWindowResizerTest, DragSnapped) {
   window_->Show();
   AllowSnap(window_.get());
 
-  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   gfx::Rect snapped_bounds = window_->bounds();
@@ -681,7 +681,7 @@ TEST_F(WorkspaceWindowResizerTest, ResizeSnapped) {
   window_->SetBounds(kInitialBounds);
   window_->Show();
 
-  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   gfx::Rect snapped_bounds = window_->bounds();
@@ -739,7 +739,7 @@ TEST_F(WorkspaceWindowResizerTest, ResizeRestoreSnappedWindow) {
   window_->Show();
 
   // Snap the window to the left.
-  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   gfx::Rect snapped_bounds = window_->bounds();
 
@@ -2207,7 +2207,7 @@ TEST_F(WorkspaceWindowResizerTest, FlingRestoreSize) {
   EXPECT_EQ(window_size, touch_resize_window_->bounds().size());
 
   // Snap a window and do the same test.
-  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   ASSERT_TRUE(window_state->IsSnapped());
   const gfx::Rect snapped_bounds = window_state->window()->bounds();
@@ -2620,7 +2620,7 @@ TEST_F(PortraitWorkspaceWindowResizerTest, ResizeSnapped) {
   const gfx::Rect work_area =
       screen_util::GetDisplayWorkAreaBoundsInParent(window_.get());
 
-  const WindowSnapWMEvent snap_top(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_top(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_top);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   gfx::Rect expected_snap_bounds =

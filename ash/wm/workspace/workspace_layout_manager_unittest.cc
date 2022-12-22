@@ -584,7 +584,7 @@ TEST_F(WorkspaceLayoutManagerTest,
   auto insets = gfx::Insets::TLBR(0, 0, 56, 0);
   WorkAreaInsets::ForWindow(window.get())
       ->UpdateWorkAreaInsetsForTest(window.get(), gfx::Rect(), insets, insets);
-  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
   const gfx::Rect kWorkAreaBounds = GetPrimaryDisplay().work_area();
@@ -619,7 +619,7 @@ TEST_F(WorkspaceLayoutManagerTest, AdjustSnappedBoundsWidth) {
   std::unique_ptr<aura::Window> window1(
       CreateTestWindow(gfx::Rect(10, 20, 100, 200)));
   WindowState* window1_state = WindowState::Get(window1.get());
-  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window1_state->OnWMEvent(&snap_left);
   const gfx::Rect work_area =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
@@ -630,7 +630,7 @@ TEST_F(WorkspaceLayoutManagerTest, AdjustSnappedBoundsWidth) {
   std::unique_ptr<aura::Window> window2(
       CreateTestWindow(gfx::Rect(10, 20, 100, 200)));
   WindowState* window2_state = WindowState::Get(window2.get());
-  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   window2_state->OnWMEvent(&snap_right);
   const gfx::Rect expected_right_snapped_bounds =
       gfx::Rect(work_area.right() - work_area.width() / 2, work_area.y(),

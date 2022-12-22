@@ -321,15 +321,18 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
           event_type == WM_EVENT_RESTORE;
       // TODO(b/246683799): Investigate why window_state->snap_ratio() can be
       // empty.
-      const float snap_ratio_to_restore =
-          event->IsSnapInfoAvailable()
-              ? WindowSnapWMEvent::GetFloatValueForSnapRatio(
-                    static_cast<const WindowSnapWMEvent*>(event)->snap_ratio())
-              : (is_restoring && window_state->snap_ratio().has_value()
-                     ? window_state->snap_ratio().value()
-                     : kDefaultSnapRatio);
+      // Use the saved `window_state->snap_ratio()` if restoring, otherwise use
+      // the event requested snap ratio, which has a default value.
+      float next_snap_ratio;
+      if (is_restoring) {
+        next_snap_ratio =
+            window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
+      } else {
+        DCHECK(event->IsSnapEvent());
+        next_snap_ratio = event->snap_ratio();
+      }
       gfx::Rect bounds = GetSnappedWindowBoundsInParent(window, next_state_type,
-                                                        snap_ratio_to_restore);
+                                                        next_snap_ratio);
       // We don't want Unminimize() to restore the pre-snapped state during the
       // transition. See crbug.com/1031313 for why we need this.
       // kRestoreShowStateKey property will be updated properly after the window

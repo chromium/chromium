@@ -340,12 +340,12 @@ TEST_F(ClientControlledStateTest, SnapWindow) {
   ASSERT_FALSE(window_state()->CanSnap());
 
   // The event should be ignored.
-  const WindowSnapWMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
   EXPECT_FALSE(window_state()->IsSnapped());
   EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
 
-  const WindowSnapWMEvent snap_right_event(WM_EVENT_CYCLE_SNAP_SECONDARY);
+  const WMEvent snap_right_event(WM_EVENT_CYCLE_SNAP_SECONDARY);
   window_state()->OnWMEvent(&snap_right_event);
   EXPECT_FALSE(window_state()->IsSnapped());
   EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
@@ -387,7 +387,7 @@ TEST_F(ClientControlledStateTest, SnapInSecondaryDisplay) {
   widget_delegate()->EnableSnap();
 
   // Make sure the requested bounds for snapped window is local to display.
-  const WindowSnapWMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
 
   EXPECT_EQ(second_display_id, delegate()->display_id());
@@ -410,7 +410,7 @@ TEST_F(ClientControlledStateTest, SnapMinimizeAndUnminimize) {
   UpdateDisplay("800x600");
   widget_delegate()->EnableSnap();
 
-  const WindowSnapWMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
   state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_EQ(gfx::Rect(0, 0, 400, 600 - ShelfConfig::Get()->shelf_size()),
