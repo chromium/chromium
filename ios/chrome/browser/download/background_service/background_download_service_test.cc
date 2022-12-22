@@ -96,6 +96,11 @@ class BackgroundDownloadServiceTest
   void SetUp() override {
     download::test::BackgroundDownloadTestBase::SetUp();
     TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        BackgroundDownloadServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &BackgroundDownloadServiceTest::MakeBackgroundDowloadService,
+            base::Unretained(this)));
     browser_state_ = builder.Build();
 
     // Create a random file in root dir and an unknown file in downoad dir.
@@ -108,22 +113,9 @@ class BackgroundDownloadServiceTest
     ASSERT_TRUE(base::CreateTemporaryFileInDir(download_dir,
                                                &temp_file_path_to_delete_));
 
-    // Inject a fake client through SetTestingFactory.
-    BackgroundDownloadServiceFactory* factory =
-        BackgroundDownloadServiceFactory::GetInstance();
-    factory->SetTestingFactory(
-        browser_state_.get(),
-        base::BindLambdaForTesting([&](web::BrowserState* browser_state) {
-          auto fake_client = std::make_unique<NiceMock<FakeClient>>();
-          fake_client_ = fake_client.get();
-          auto clients = std::make_unique<download::DownloadClientMap>();
-          clients->emplace(download::DownloadClient::TEST,
-                           std::move(fake_client));
-          return factory->BuildServiceWithClients(browser_state,
-                                                  std::move(clients));
-        }));
     service_ = BackgroundDownloadServiceFactory::GetForBrowserState(
         browser_state_.get());
+    ASSERT_TRUE(fake_client_);
   }
 
   // Download a file from embedded test server. Use different `relative_url` for
@@ -137,16 +129,34 @@ class BackgroundDownloadServiceTest
     service_->StartDownload(std::move(params));
   }
 
-  FakeClient* client() { return fake_client_; }
+  FakeClient* client() {
+    DCHECK(fake_client_);
+    return fake_client_;
+  }
+
   const base::FilePath& temp_file_path() const { return temp_file_path_; }
   const base::FilePath& temp_file_path_to_delete() const {
     return temp_file_path_to_delete_;
   }
 
+  // Factory for BackgroundDownloadService injecting a FakeClient into the
+  // service. A pointer to the FakeClient object is kept in the test fixture
+  // instance to allow test cases to manipulate it.
+  std::unique_ptr<KeyedService> MakeBackgroundDowloadService(
+      web::BrowserState* browser_state) {
+    DCHECK(!fake_client_);
+    auto fake_client = std::make_unique<NiceMock<FakeClient>>();
+    fake_client_ = fake_client.get();
+    auto clients = std::make_unique<download::DownloadClientMap>();
+    clients->emplace(download::DownloadClient::TEST, std::move(fake_client));
+    return BackgroundDownloadServiceFactory::GetInstance()
+        ->BuildServiceWithClients(browser_state, std::move(clients));
+  }
+
  private:
   std::unique_ptr<ChromeBrowserState> browser_state_;
   download::BackgroundDownloadService* service_;
-  FakeClient* fake_client_;
+  FakeClient* fake_client_ = nullptr;
   base::FilePath temp_file_path_;
   base::FilePath temp_file_path_to_delete_;
 };

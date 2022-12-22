@@ -56,6 +56,11 @@ class SettingsNavigationControllerTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        IOSChromePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<
+                web::BrowserState, password_manager::TestPasswordStore>));
     chrome_browser_state_ = test_cbs_builder.Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
@@ -68,12 +73,6 @@ class SettingsNavigationControllerTest : public PlatformTest {
 
     mockDelegate_ = [OCMockObject
         niceMockForProtocol:@protocol(SettingsNavigationControllerDelegate)];
-
-    IOSChromePasswordStoreFactory::GetInstance()->SetTestingFactory(
-        browser_->GetBrowserState(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                web::BrowserState, password_manager::TestPasswordStore>));
 
     TemplateURLService* template_url_service =
         ios::TemplateURLServiceFactory::GetForBrowserState(
