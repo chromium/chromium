@@ -348,7 +348,7 @@ void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyleBuilder& builder) {
   builder.SetWordSpacing(0.0f);
   builder.SetWritingMode(WritingMode::kHorizontalTb);
 
-  builder.MutableInternalStyle()->ClearAppliedTextDecorations();
+  builder.ClearAppliedTextDecorations();
   builder.ResetTextIndent();
   builder.UpdateFontOrientation();
 
@@ -950,10 +950,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // Highlight pseudos propagate decorations with inheritance only.
   if (StopPropagateTextDecorations(builder, element) ||
       state.IsForHighlight()) {
-    builder.MutableInternalStyle()->ClearAppliedTextDecorations();
+    builder.ClearAppliedTextDecorations();
   } else {
-    builder.MutableInternalStyle()->RestoreParentTextDecorations(
-        layout_parent_style);
+    builder.RestoreParentTextDecorations(layout_parent_style);
   }
 
   // The computed value of currentColor for highlight pseudos is the
@@ -972,10 +971,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   }
 
   if (builder.Display() != EDisplay::kContents) {
-    builder.MutableInternalStyle()->ApplyTextDecorations(
-        parent_style.VisitedDependentColorFast(
-            GetCSSPropertyTextDecorationColor()),
-        OverridesTextDecorationColors(element));
+    builder.ApplyTextDecorations(parent_style.VisitedDependentColorFast(
+                                     GetCSSPropertyTextDecorationColor()),
+                                 OverridesTextDecorationColors(element));
   }
 
   // Cull out any useless layers and also repeat patterns into additional

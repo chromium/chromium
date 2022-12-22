@@ -301,7 +301,6 @@
       type_name: "bool",
       inherited: true,
       computed_style_custom_functions: ["getter", "setter"],
-      writable: true,
     },
     // FIXME: vertical align is actually a CSS property, but since we don't support union fields
     // which can be either a keyword or Length, this is specified in this file for now. Remove this
@@ -478,7 +477,6 @@
       wrapper_pointer_name: "scoped_refptr",
       field_group: "*",
       computed_style_custom_functions: ["getter", "setter"],
-      writable: true,
     },
     {
       name: "InheritedVariables",

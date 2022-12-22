@@ -1803,10 +1803,6 @@ class ComputedStyle : public ComputedStyleBase,
 
   // Text decoration utility functions.
   bool TextDecorationVisualOverflowEqual(const ComputedStyle& o) const;
-  void ApplyTextDecorations(const blink::Color& parent_text_decoration_color,
-                            bool override_existing_colors);
-  void ClearAppliedTextDecorations();
-  void RestoreParentTextDecorations(const ComputedStyle& parent_style);
   CORE_EXPORT const Vector<AppliedTextDecoration>& AppliedTextDecorations()
       const;
   CORE_EXPORT TextDecorationLine TextDecorationsInEffect() const;
@@ -2464,8 +2460,6 @@ class ComputedStyle : public ComputedStyleBase,
 
   bool HasAppearance() const { return Appearance() != kNoControlPart; }
 
-  void AddAppliedTextDecoration(const AppliedTextDecoration&);
-  void OverrideTextDecorationColors(blink::Color propagated_color);
   void ApplyMotionPathTransform(float origin_x,
                                 float origin_y,
                                 const gfx::RectF& bounding_box,
@@ -3310,7 +3304,16 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
                          static_cast<unsigned>(ViewportUnitFlag::kDynamic));
   }
 
+  // Text decoration
+  void ApplyTextDecorations(const blink::Color& parent_text_decoration_color,
+                            bool override_existing_colors);
+  void ClearAppliedTextDecorations();
+  void RestoreParentTextDecorations(const ComputedStyle& parent_style);
+
  private:
+  void AddAppliedTextDecoration(const AppliedTextDecoration&);
+  void OverrideTextDecorationColors(blink::Color propagated_color);
+
   ComputedStyleBuilder() = default;
 
   CORE_EXPORT void ClearVariableNamesCache();

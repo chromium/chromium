@@ -2113,107 +2113,6 @@ LayoutUnit ComputedStyle::ComputedLineHeightAsFixed() const {
   return ComputedLineHeightAsFixed(GetFont());
 }
 
-void ComputedStyle::AddAppliedTextDecoration(
-    const AppliedTextDecoration& decoration) {
-  scoped_refptr<AppliedTextDecorationList>& list =
-      MutableAppliedTextDecorationsInternal();
-
-  if (!list) {
-    list = base::MakeRefCounted<AppliedTextDecorationList>();
-  } else if (!list->HasOneRef()) {
-    list = base::MakeRefCounted<AppliedTextDecorationList>(list->data);
-  }
-
-  list->data.push_back(decoration);
-
-  // Most of the time, this vector will only have a single element,
-  // and thus, the default Vector initial size of 4 is wasteful.
-  //
-  // In the rare case, AddAppliedTextDecoration() might be called twice
-  // for a single element (if it has both a simple underline and another
-  // decoration), and so this will cause two allocations instead of one,
-  // but that is an edge case we're willing to live with.
-  list->data.shrink_to_fit();
-}
-
-void ComputedStyle::OverrideTextDecorationColors(blink::Color override_color) {
-  scoped_refptr<AppliedTextDecorationList>& list =
-      MutableAppliedTextDecorationsInternal();
-  DCHECK(list);
-  if (!list->HasOneRef()) {
-    list = base::MakeRefCounted<AppliedTextDecorationList>(list->data);
-  }
-
-  for (AppliedTextDecoration& decoration : list->data) {
-    decoration.SetColor(override_color);
-  }
-}
-
-void ComputedStyle::ApplyTextDecorations(
-    const blink::Color& parent_text_decoration_color,
-    bool override_existing_colors) {
-  if (GetTextDecorationLine() == TextDecorationLine::kNone &&
-      !HasSimpleUnderlineInternal() && !AppliedTextDecorationsInternal()) {
-    return;
-  }
-
-  // If there are any color changes or decorations set by this element, stop
-  // using m_hasSimpleUnderline.
-  blink::Color current_text_decoration_color =
-      VisitedDependentColor(GetCSSPropertyTextDecorationColor());
-  if (HasSimpleUnderlineInternal() &&
-      (GetTextDecorationLine() != TextDecorationLine::kNone ||
-       current_text_decoration_color != parent_text_decoration_color)) {
-    SetHasSimpleUnderlineInternal(false);
-    AddAppliedTextDecoration(AppliedTextDecoration(
-        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid,
-        parent_text_decoration_color, TextDecorationThickness(),
-        Length::Auto()));
-  }
-  if (override_existing_colors && AppliedTextDecorationsInternal()) {
-    OverrideTextDecorationColors(current_text_decoration_color);
-  }
-  if (GetTextDecorationLine() == TextDecorationLine::kNone) {
-    return;
-  }
-  DCHECK(!HasSimpleUnderlineInternal());
-  // To save memory, we don't use AppliedTextDecoration objects in the common
-  // case of a single simple underline of currentColor.
-  TextDecorationLine decoration_lines = GetTextDecorationLine();
-  ETextDecorationStyle decoration_style = TextDecorationStyle();
-  bool is_simple_underline =
-      decoration_lines == TextDecorationLine::kUnderline &&
-      decoration_style == ETextDecorationStyle::kSolid &&
-      TextDecorationColor().IsCurrentColor() &&
-      TextUnderlineOffset().IsAuto() && GetTextDecorationThickness().IsAuto();
-  if (is_simple_underline && !AppliedTextDecorationsInternal()) {
-    SetHasSimpleUnderlineInternal(true);
-    return;
-  }
-
-  AddAppliedTextDecoration(AppliedTextDecoration(
-      decoration_lines, decoration_style, current_text_decoration_color,
-      GetTextDecorationThickness(), TextUnderlineOffset()));
-}
-
-void ComputedStyle::ClearAppliedTextDecorations() {
-  SetHasSimpleUnderlineInternal(false);
-
-  if (AppliedTextDecorationsInternal()) {
-    SetAppliedTextDecorationsInternal(nullptr);
-  }
-}
-
-void ComputedStyle::RestoreParentTextDecorations(
-    const ComputedStyle& parent_style) {
-  SetHasSimpleUnderlineInternal(parent_style.HasSimpleUnderlineInternal());
-  if (AppliedTextDecorationsInternal() !=
-      parent_style.AppliedTextDecorationsInternal()) {
-    SetAppliedTextDecorationsInternal(scoped_refptr<AppliedTextDecorationList>(
-        parent_style.AppliedTextDecorationsInternal()));
-  }
-}
-
 StyleColor ComputedStyle::DecorationColorIncludingFallback(
     bool visited_link) const {
   StyleColor style_color = visited_link ? InternalVisitedTextDecorationColor()
@@ -2773,6 +2672,109 @@ ComputedStyleBuilder::MutableNonInheritedVariables() {
     variables = std::make_unique<StyleNonInheritedVariables>();
   }
   return *variables;
+}
+
+void ComputedStyleBuilder::AddAppliedTextDecoration(
+    const AppliedTextDecoration& decoration) {
+  scoped_refptr<AppliedTextDecorationList>& list =
+      MutableAppliedTextDecorationsInternal();
+
+  if (!list) {
+    list = base::MakeRefCounted<AppliedTextDecorationList>();
+  } else if (!list->HasOneRef()) {
+    list = base::MakeRefCounted<AppliedTextDecorationList>(list->data);
+  }
+
+  list->data.push_back(decoration);
+
+  // Most of the time, this vector will only have a single element,
+  // and thus, the default Vector initial size of 4 is wasteful.
+  //
+  // In the rare case, AddAppliedTextDecoration() might be called twice
+  // for a single element (if it has both a simple underline and another
+  // decoration), and so this will cause two allocations instead of one,
+  // but that is an edge case we're willing to live with.
+  list->data.shrink_to_fit();
+}
+
+void ComputedStyleBuilder::OverrideTextDecorationColors(
+    blink::Color override_color) {
+  scoped_refptr<AppliedTextDecorationList>& list =
+      MutableAppliedTextDecorationsInternal();
+  DCHECK(list);
+  if (!list->HasOneRef()) {
+    list = base::MakeRefCounted<AppliedTextDecorationList>(list->data);
+  }
+
+  for (AppliedTextDecoration& decoration : list->data) {
+    decoration.SetColor(override_color);
+  }
+}
+
+void ComputedStyleBuilder::ApplyTextDecorations(
+    const blink::Color& parent_text_decoration_color,
+    bool override_existing_colors) {
+  if (GetTextDecorationLine() == TextDecorationLine::kNone &&
+      !HasSimpleUnderlineInternal() && !AppliedTextDecorationsInternal()) {
+    return;
+  }
+
+  // If there are any color changes or decorations set by this element, stop
+  // using m_hasSimpleUnderline.
+  // TODO(crbug.com/1377295): Eliminate this dependency on `style_`.
+  blink::Color current_text_decoration_color =
+      style_->VisitedDependentColor(GetCSSPropertyTextDecorationColor());
+  if (HasSimpleUnderlineInternal() &&
+      (GetTextDecorationLine() != TextDecorationLine::kNone ||
+       current_text_decoration_color != parent_text_decoration_color)) {
+    SetHasSimpleUnderlineInternal(false);
+    AddAppliedTextDecoration(AppliedTextDecoration(
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid,
+        parent_text_decoration_color, TextDecorationThickness(),
+        Length::Auto()));
+  }
+  if (override_existing_colors && AppliedTextDecorationsInternal()) {
+    OverrideTextDecorationColors(current_text_decoration_color);
+  }
+  if (GetTextDecorationLine() == TextDecorationLine::kNone) {
+    return;
+  }
+  DCHECK(!HasSimpleUnderlineInternal());
+  // To save memory, we don't use AppliedTextDecoration objects in the common
+  // case of a single simple underline of currentColor.
+  TextDecorationLine decoration_lines = GetTextDecorationLine();
+  ETextDecorationStyle decoration_style = TextDecorationStyle();
+  bool is_simple_underline =
+      decoration_lines == TextDecorationLine::kUnderline &&
+      decoration_style == ETextDecorationStyle::kSolid &&
+      TextDecorationColor().IsCurrentColor() &&
+      TextUnderlineOffset().IsAuto() && GetTextDecorationThickness().IsAuto();
+  if (is_simple_underline && !AppliedTextDecorationsInternal()) {
+    SetHasSimpleUnderlineInternal(true);
+    return;
+  }
+
+  AddAppliedTextDecoration(AppliedTextDecoration(
+      decoration_lines, decoration_style, current_text_decoration_color,
+      GetTextDecorationThickness(), TextUnderlineOffset()));
+}
+
+void ComputedStyleBuilder::ClearAppliedTextDecorations() {
+  SetHasSimpleUnderlineInternal(false);
+
+  if (AppliedTextDecorationsInternal()) {
+    SetAppliedTextDecorationsInternal(nullptr);
+  }
+}
+
+void ComputedStyleBuilder::RestoreParentTextDecorations(
+    const ComputedStyle& parent_style) {
+  SetHasSimpleUnderlineInternal(parent_style.HasSimpleUnderlineInternal());
+  if (AppliedTextDecorationsInternal() !=
+      parent_style.AppliedTextDecorationsInternal()) {
+    SetAppliedTextDecorationsInternal(scoped_refptr<AppliedTextDecorationList>(
+        parent_style.AppliedTextDecorationsInternal()));
+  }
 }
 
 void ComputedStyleBuilder::ClearVariableNamesCache() {
