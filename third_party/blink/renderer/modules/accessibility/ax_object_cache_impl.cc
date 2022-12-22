@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -489,15 +488,14 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   if (layout_object.IsText())
     return IsLayoutTextRelevantForAccessibility(To<LayoutText>(layout_object));
 
-  // An AXMenuListOption will be created, which is a subclass of AXNodeObject,
-  // not of AXLayoutObject.
+  // Menu list option and HTML area elements are indexed by DOM node, never by
+  // layout object.
+  // TODO(accessibility) Remove this special case once we prefer to always
+  // back/index by DOM node when present.
   if (AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(
           layout_object.GetNode())) {
     return false;
   }
-
-  // An AXImageMapLink will be created, which is a subclass of AXNodeObject, not
-  // of AXLayoutObject.
   if (IsA<HTMLAreaElement>(layout_object.GetNode()))
     return false;
 
@@ -884,19 +882,12 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
   DCHECK(!result->IsDetached() || has_been_disposed_)
       << "Detached AXNodeObject in map: "
       << "AXID#" << ax_id << " Node=" << node;
-  DCHECK(!result->IsMissingParent())
-      << "Had AXObject but was missing parent: " << layout_object << " "
-      << result->ToString(true, true) << "\nComputed parent: "
-      << AXObject::ComputeNonARIAParent(*this, layout_object->GetNode())
-             ->ToString(true, true);
 #endif
-
   return result;
 }
 
 AXObject* AXObjectCacheImpl::SafeGet(const Node* node,
-                                     bool allow_display_locking_invalidation,
-                                     bool allow_layout_object_relevance_check) {
+                                     bool allow_display_locking_invalidation) {
   if (!node)
     return nullptr;
 
@@ -911,62 +902,155 @@ AXObject* AXObjectCacheImpl::SafeGet(const Node* node,
   }
 #endif
 
-  AXID node_id =
-      static_cast<AXID>(DOMNodeIds::ExistingIdForNode(const_cast<Node*>(node)));
-  if (!node_id) {
-    // An ID hasn't yet been generated for this DOM node, but ::CreateAndInit()
-    // will ensure a DOMNodeID is generated. Therefore if an id doesn't exist
-    // for a DOM node, it means that it can't have an associated AXObject.
+  LayoutObject* layout_object = node->GetLayoutObject();
+
+  AXID layout_id = 0;
+  if (layout_object) {
+    auto it = layout_object_mapping_.find(layout_object);
+    if (it != layout_object_mapping_.end())
+      layout_id = it->value;
+  }
+  DCHECK(!HashTraits<AXID>::IsDeletedValue(layout_id));
+  if (layout_id) {
+    auto it = objects_.find(layout_id);
+    if (it != objects_.end()) {
+      if (allow_display_locking_invalidation && IsDisplayLocked(node)) {
+        // Change from AXLayoutObject -> AXNodeObject.
+        // The node is in a display locked subtree, but we've previously put it
+        // in the cache with its layout object.
+        Invalidate(layout_object->GetDocument(), layout_id);
+      }
+      return it->value;
+    }
     return nullptr;
   }
 
-  auto it_result = objects_.find(node_id);
-  if (it_result == objects_.end()) {
-    return nullptr;
-  }
-
-  AXObject* result = it_result->value;
-  DCHECK(result) << "AXID#" << node_id
-                 << " in map, but matches an AXObject of null, for " << node;
-
-  // When shutting down, allow detached nodes to be in the map, and do not
-  // attempt invalidations.
-  if (has_been_disposed_) {
-    return result->IsDetached() ? nullptr : result;
-  }
-
-  DCHECK(!result->IsDetached()) << "Detached object was in map.";
-
-  // Compute whether an allowed invalidation is necessary that alter whether the
-  // current object should be an AXLayoutObject vs AXNodeObject.
-  bool is_ax_layout_object = IsA<AXLayoutObject>(result);
-  bool should_be_ax_layout_object = is_ax_layout_object;
-  if (node->GetLayoutObject()) {
-    if (allow_display_locking_invalidation) {
-      // Nodes that are display locked may have stale layout objects. We enforce
-      // that they use AXNodeObject because the layout is not up-to-date.
-      should_be_ax_layout_object = !IsDisplayLocked(node);
-    }
-    if (should_be_ax_layout_object && allow_layout_object_relevance_check &&
-        !IsLayoutObjectRelevantForAccessibility(*node->GetLayoutObject())) {
-      should_be_ax_layout_object = false;
+  auto it_node = node_object_mapping_.find(node);
+  AXID node_id = it_node != node_object_mapping_.end() ? it_node->value : 0;
+  DCHECK(!HashTraits<AXID>::IsDeletedValue(node_id));
+  if (node_id) {
+    auto it = objects_.find(node_id);
+    if (it != objects_.end()) {
+      if (allow_display_locking_invalidation && layout_object &&
+          !IsDisplayLocked(node)) {
+        // Change from AXNodeObject -> AXLayoutObject.
+        // Has a layout object but no layout_id, meaning that when the AXObject
+        // was originally created only for Node*, the LayoutObject* didn't exist
+        // yet. This can happen if an AXNodeObject is created for a node that's
+        // not laid out, but later something changes and it gets a layoutObject
+        // (like if it's reparented). It's also possible the layout object
+        // changed.
+        Invalidate(layout_object->GetDocument(), node_id);
+      }
+      return it->value;
     }
   }
 
-  // Process any computed invalidation, queuing the work for later.
-  // TODO(crbug.com/1380449) Replace this system with notifications that
-  // invalidate based on Blink's knowledge of what's changing, instead of
-  // checking objects when we touch them.
-  if (is_ax_layout_object != should_be_ax_layout_object) {
-    Invalidate(node->GetDocument(), result->AXObjectID());
-  }
-
-  return result;
+  return nullptr;
 }
 
 AXObject* AXObjectCacheImpl::Get(const Node* node) {
-  return SafeGet(node, /* allow_display_locking_invalidation */ true,
-                 /* allow_layout_object_relevance_check */ true);
+  if (!node)
+    return nullptr;
+
+  if (has_been_disposed_)
+    return SafeGet(node);
+
+#if DCHECK_IS_ON()
+  if (const Element* element = DynamicTo<Element>(node)) {
+    if (AccessibleNode* accessible_node = element->ExistingAccessibleNode()) {
+      DCHECK(!accessible_node_mapping_.Contains(accessible_node))
+          << "The accessible node directly attached to an element should not "
+             "have its own AXObject: "
+          << element;
+    }
+  }
+#endif
+
+  LayoutObject* layout_object = node->GetLayoutObject();
+
+  AXID layout_id = 0;
+  if (layout_object) {
+    auto it = layout_object_mapping_.find(layout_object);
+    if (it != layout_object_mapping_.end())
+      layout_id = it->value;
+  }
+  DCHECK(!HashTraits<AXID>::IsDeletedValue(layout_id));
+
+  auto it_node = node_object_mapping_.find(node);
+  AXID node_id = it_node != node_object_mapping_.end() ? it_node->value : 0;
+  DCHECK(!HashTraits<AXID>::IsDeletedValue(node_id));
+
+  if (!layout_id && !node_id)
+    return nullptr;
+
+  // Some elements such as <area> are indexed by DOM node, not by layout object.
+  if (!layout_object ||
+      !IsLayoutObjectRelevantForAccessibility(*layout_object)) {
+    // Only text nodes still are able to become suddenly irrelevant.
+    if (layout_id && node->IsTextNode() &&
+        !IsHiddenTextNodeRelevantForAccessibility(To<Text>(*node),
+                                                  IsDisplayLocked(node))) {
+      // Layout object and node are now both irrelevant for accessibility.
+      // For example, text becomes irrelevant when it changes to whitespace, or
+      // if it already is whitespace and the text around it changes to makes it
+      // redundant whitespace. In this case, Invalidate(), which will remove
+      // objects that are no longer relevant.
+      Invalidate(node->GetDocument(), layout_id);
+    } else {
+      // Layout object is irrelevant, but node object can still be relevant.
+      if (!node_id) {
+        DCHECK(layout_id);  // One of of node_id, layout_id is non-zero.
+        Invalidate(node->GetDocument(), layout_id);
+      } else {
+        layout_object = nullptr;
+        layout_id = 0;
+      }
+    }
+  }
+
+  if (layout_id && IsDisplayLocked(node)) {
+    // Change from AXLayoutObject -> AXNodeObject.
+    // The node is in a display locked subtree, but we've previously put it in
+    // the cache with its layout object.
+    Invalidate(node->GetDocument(), layout_id);
+  } else if (layout_object && node_id && !layout_id && !IsDisplayLocked(node)) {
+    // Change from AXNodeObject -> AXLayoutObject.
+    // Has a layout object but no layout_id, meaning that when the AXObject was
+    // originally created only for Node*, the LayoutObject* didn't exist yet.
+    // This can happen if an AXNodeObject is created for a node that's not laid
+    // out, but later something changes and it gets a layoutObject (like if it's
+    // reparented). It's also possible the layout object changed.
+    Invalidate(layout_object->GetDocument(), node_id);
+  }
+
+  if (layout_id) {
+    auto it = objects_.find(layout_id);
+    AXObject* result = it != objects_.end() ? it->value : nullptr;
+#if DCHECK_IS_ON()
+    DCHECK(result) << "Had AXID for LayoutObject but no entry in objects_";
+    DCHECK(result->IsAXLayoutObject());
+    // Do not allow detached objects except when disposing entire tree.
+    DCHECK(!result->IsDetached() || has_been_disposed_)
+        << "Detached AXLayoutObject in map: "
+        << "AXID#" << layout_id << " LayoutObject=" << layout_object;
+#endif
+    return result;
+  }
+
+  DCHECK(node_id);
+
+  auto it_result = objects_.find(node_id);
+  AXObject* result = it_result != objects_.end() ? it_result->value : nullptr;
+#if DCHECK_IS_ON()
+  DCHECK(result) << "Had AXID for Node but no entry in objects_";
+  DCHECK(result->IsAXNodeObject());
+  // Do not allow detached objects except when disposing entire tree.
+  DCHECK(!result->IsDetached() || has_been_disposed_)
+      << "Detached AXNodeObject in map: "
+      << "AXID#" << node_id << " Node=" << node;
+#endif
+  return result;
 }
 
 AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
@@ -1001,14 +1085,14 @@ void AXObjectCacheImpl::Invalidate(Document& document, AXID ax_id) {
 AXID AXObjectCacheImpl::GetAXID(Node* node) {
   AXObject* ax_object = GetOrCreate(node);
   if (!ax_object)
-    return ui::AXNodeData::kInvalidAXID;
+    return 0;
   return ax_object->AXObjectID();
 }
 
 AXID AXObjectCacheImpl::GetExistingAXID(Node* node) {
   AXObject* ax_object = SafeGet(node);
   if (!ax_object)
-    return ui::AXNodeData::kInvalidAXID;
+    return 0;
   return ax_object->AXObjectID();
 }
 
@@ -1066,6 +1150,7 @@ AXObject* AXObjectCacheImpl::GetAXImageForMap(HTMLMapElement& map) {
 }
 
 AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
+  // FIXME: How could layoutObject->node() ever not be an Element?
   Node* node = layout_object->GetNode();
 
   // media element
@@ -1330,93 +1415,79 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
   if (AXObject* obj = Get(node))
     return obj;
 
-  return CreateAndInit(node, node->GetLayoutObject(), parent_if_known);
+  return CreateAndInit(node, parent_if_known);
 }
 
-// Caller must provide a node, a layout object, or both (where they match).
-AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
-                                           LayoutObject* layout_object,
-                                           AXObject* parent_if_known) {
-#if DCHECK_IS_ON()
-  DCHECK(node || layout_object);
-  DCHECK(!node || !layout_object || layout_object->GetNode() == node);
+AXObject* AXObjectCacheImpl::CreateAndInit(
+    Node* node,
+    AXObject* parent_if_known,
+    AXID use_axid,
+    absl::optional<AXObjectType> ax_type) {
+  DCHECK(node);
   DCHECK(!parent_if_known || parent_if_known->CanHaveChildren());
-  DCHECK(GetDocument().Lifecycle().GetState() >=
-         DocumentLifecycle::kAfterPerformLayout)
-      << "Unclean document at lifecycle "
-      << GetDocument().Lifecycle().ToString();
-#endif  // DCHECK_IS_ON()
 
-  // Determine the type of accessibility object to be created.
-  AXObjectType ax_type =
-      DetermineAXObjectType(node, layout_object, parent_if_known);
-  if (ax_type == kPruneSubtree) {
-    return nullptr;
+  // If the node has a layout object, prefer using that as the primary key for
+  // the AXObject, with the exception of the HTMLAreaElement and nodes within
+  // a locked subtree, which are created based on its node.
+  LayoutObject* layout_object = node->GetLayoutObject();
+  if (!ax_type)
+    ax_type = DetermineAXObjectType(node, layout_object, parent_if_known);
+
+  if (*ax_type == kAXLayoutObject) {
+    return CreateAndInit(layout_object, parent_if_known, use_axid,
+                         kAXLayoutObject);
   }
 
+  if (*ax_type == kPruneSubtree)
+    return nullptr;
+
 #if DCHECK_IS_ON()
-  if (node) {
-    DCHECK(layout_object || ax_type != kAXLayoutObject);
-    DCHECK(node->isConnected());
-    DCHECK(node->IsElementNode() || node->IsTextNode() ||
-           node->IsDocumentNode())
-        << "Should only attempt to create AXObjects for the following types of "
-           "node types: document, element and text."
-        << "\n* Node is: " << node;
-  } else {
-    // No node, therefore the only possibility is to create an AXLayoutObject.
-    DCHECK_EQ(ax_type, kAXLayoutObject);
-    DCHECK(!IsA<LayoutView>(layout_object))
-        << "AXObject for document is always created with a node.";
+  DCHECK(node->isConnected());
+  DCHECK(node->IsElementNode() || node->IsTextNode() || node->IsDocumentNode());
+  Document* document = &node->GetDocument();
+  DCHECK(document);
+  DCHECK(document->Lifecycle().GetState() >=
+         DocumentLifecycle::kAfterPerformLayout)
+      << "Unclean document at lifecycle " << document->Lifecycle().ToString();
+  DCHECK_NE(node, document_)
+      << "The document's AXObject is backed by its layout object.";
+
+  if (!IsA<HTMLOptionElement>(node) && node->IsInUserAgentShadowRoot()) {
+    if (Node* owner_shadow_host = node->OwnerShadowHost()) {
+      DCHECK(!AXObjectCacheImpl::ShouldCreateAXMenuListFor(
+          owner_shadow_host->GetLayoutObject()))
+          << "DOM descendants of an AXMenuList should not be added to the AX "
+             "hierarchy, except for the AXMenuListOption children added in "
+             "AXMenuListPopup. An attempt was made to create an AXObject for: "
+          << node;
+    }
   }
 #endif
 
-  // Determine the parent.
-  AXObject* parent = nullptr;
-  if (parent_if_known) {
-    // Parent is known because the tree is being explored downward, and as the
-    // parent adds its children it passes itself in.
-    parent = parent_if_known;
-  } else if (node == &GetDocument()) {
-    // The root object does not have a parent.
-    parent = nullptr;
-  } else {
-    // Must compute the parent, which occurs when an AXObject is being created
-    // in the middle of the tree.
-    parent = AXObject::ComputeNonARIAParent(*this, node);
-    if (!parent) {
-      // An AXObject must have a parent, unless it's the root.
-      // This because when no parent can be computed, it means that any AXObject
-      // we would create would not have a path to the root. We do not create
-      // ophaned AXObjects, so return null.
-      return nullptr;
-    }
-  }
+  AXObject* parent = parent_if_known
+                         ? parent_if_known
+                         : AXObject::ComputeNonARIAParent(*this, node);
+  // An AXObject backed only by a DOM node must have a parent, because it's
+  // never the root, which will always have a layout object.
+  if (!parent)
+    return nullptr;
 
-  // If there is a DOM node, use its dom_node_id, otherwise, generate an AXID.
-  // The dom_node_id can be used even if there is also a layout object.
-  AXID axid =
-      node ? static_cast<AXID>(DOMNodeIds::IdForNode(node)) : GenerateAXID();
-  DCHECK(objects_.find(axid) == objects_.end());
+  DCHECK(parent->CanHaveChildren());
 
-  // Create the new AXObject.
-  AXObject* new_obj = nullptr;
-  if (ax_type == kAXLayoutObject) {
-    // Prefer to create from renderer if there is a layout object because
-    // AXLayoutObjects can provide information about bounding boxes.
-    DCHECK(!layout_object_mapping_.Contains(layout_object))
-        << "Already have an AXObject for " << layout_object;
-    if (!node) {
-      layout_object_mapping_.Set(layout_object, axid);
-    }
-    new_obj = CreateFromRenderer(layout_object);
-  } else {
-    new_obj = CreateFromNode(node);
-  }
-  DCHECK(new_obj) << "Could not create AXObject.";
+  // One of the above calls could have already created the planned object via a
+  // recursive call to GetOrCreate(). If so, just return that object.
+  if (node_object_mapping_.Contains(node))
+    return Get(node);
 
-  // Give the AXObject its ID and initialize.
-  AssociateAXID(new_obj, axid);
+  AXObject* new_obj = CreateFromNode(node);
+
+  // Will crash later if we have two objects for the same node.
+  DCHECK(!node_object_mapping_.Contains(node))
+      << "Already have an AXObject for " << node;
+
+  const AXID ax_id = AssociateAXID(new_obj, use_axid);
+  DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
+  node_object_mapping_.Set(node, ax_id);
   new_obj->Init(parent);
 
   return new_obj;
@@ -1434,8 +1505,101 @@ AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object,
   if (AXObject* obj = Get(layout_object))
     return obj;
 
-  return CreateAndInit(layout_object->GetNode(), layout_object,
-                       parent_if_known);
+  return CreateAndInit(layout_object, parent_if_known);
+}
+
+AXObject* AXObjectCacheImpl::CreateAndInit(
+    LayoutObject* layout_object,
+    AXObject* parent_if_known,
+    AXID use_axid,
+    absl::optional<AXObjectType> ax_type) {
+#if DCHECK_IS_ON()
+  DCHECK(layout_object);
+  Document* document = &layout_object->GetDocument();
+  DCHECK(document);
+  DCHECK(document->Lifecycle().GetState() >=
+         DocumentLifecycle::kAfterPerformLayout)
+      << "Unclean document at lifecycle " << document->Lifecycle().ToString();
+  DCHECK(!parent_if_known || parent_if_known->CanHaveChildren());
+#endif  // DCHECK_IS_ON()
+  Node* node = layout_object->GetNode();
+
+  if (!ax_type)
+    ax_type = DetermineAXObjectType(node, layout_object, parent_if_known);
+  if (*ax_type == kAXNodeObject)
+    return CreateAndInit(node, parent_if_known, use_axid, kAXNodeObject);
+  if (*ax_type == kPruneSubtree)
+    return nullptr;
+
+#if DCHECK_IS_ON()
+  if (node && !IsA<HTMLOptionElement>(node) &&
+      node->IsInUserAgentShadowRoot()) {
+    if (Node* owner_shadow_host = node->OwnerShadowHost()) {
+      DCHECK(!AXObjectCacheImpl::ShouldCreateAXMenuListFor(
+          owner_shadow_host->GetLayoutObject()))
+          << "DOM descendants of an AXMenuList should not be added to the AX "
+             "hierarchy, except for the AXMenuListOption children added in "
+             "AXMenuListPopup. An attempt was made to create an AXObject for: "
+          << node;
+    }
+  }
+#endif
+
+  AXObject* parent = parent_if_known
+                         ? parent_if_known
+                         : AXObject::ComputeNonARIAParent(*this, node);
+  if (node == document_)
+    DCHECK(!parent);
+  else if (!parent)
+    return nullptr;
+  else
+    DCHECK(parent->CanHaveChildren());
+
+  // One of the above calls could have already created the planned object via a
+  // recursive call to GetOrCreate(). If so, just return that object.
+  // Example: parent calls Init() => ComputeAccessibilityIsIgnored() =>
+  // CanSetFocusAttribute() => CanBeActiveDescendant() =>
+  // IsARIAControlledByTextboxWithActiveDescendant() => GetOrCreate().
+  if (layout_object_mapping_.Contains(layout_object)) {
+    AXObject* result = Get(layout_object);
+    DCHECK(result) << "Missing cached AXObject for " << layout_object;
+    return result;
+  }
+
+  if (!parent_if_known &&
+      (layout_object->IsText() || layout_object->IsPseudoElement() || !node)) {
+    // If the parent is not known, it means we are creating an AXObject at an
+    // arbitrary place in the tree. Ensure its parent has it as a
+    // child. an thus is connected to the root in both directions,
+    // and is not an orphan.
+    // This is accomplished by creating  an AXObject for |layout_object|, by
+    // first asking the parent to create its children, and then returning the
+    // matching AXObject for |layout_object|.
+    // This prevents situations where we attempt to serialize a node
+    // and fail, because the parent does not reach it via its children.
+    // It is only known to be an issue with AXObjects backed by layout, where a
+    // change to layout has invalidated the inclusion of something in the tree.
+    // For now, do this only for text and pseudo content, as it is a smaller
+    // change, but consider doing it for more/all nodes in the future.
+    DCHECK(!use_axid)
+        << "Cannot enforce an AXID when creating in the middle of the tree.";
+    parent->UpdateChildrenIfNecessary();
+    return Get(layout_object);
+  }
+
+  AXObject* new_obj = CreateFromRenderer(layout_object);
+
+  DCHECK(new_obj) << "Could not create AXObject for " << layout_object;
+
+  // Will crash later if we have two objects for the same layoutObject.
+  DCHECK(!layout_object_mapping_.Contains(layout_object))
+      << "Already have an AXObject for " << layout_object;
+
+  const AXID axid = AssociateAXID(new_obj, use_axid);
+  layout_object_mapping_.Set(layout_object, axid);
+  new_obj->Init(parent);
+
+  return new_obj;
 }
 
 AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
@@ -1479,7 +1643,7 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
 
   AXObject* new_obj = CreateFromInlineTextBox(inline_text_box);
 
-  AXID axid = AssociateAXID(new_obj);
+  const AXID axid = AssociateAXID(new_obj);
 
   inline_text_box_object_mapping_.Set(inline_text_box, axid);
   new_obj->Init(parent);
@@ -1569,6 +1733,8 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   // and it will still make sure that the object is cleaned up?
   if (!objects_.Take(ax_id))
     return;
+
+  DCHECK_EQ(objects_.size(), ids_in_use_.size());
 }
 
 // This is safe to call even if there isn't a current mapping.
@@ -1586,9 +1752,9 @@ void AXObjectCacheImpl::Remove(AccessibleNode* accessible_node) {
 }
 
 // This is safe to call even if there isn't a current mapping.
-void AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
+bool AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
   if (!layout_object)
-    return;
+    return false;
 
   if (IsA<LayoutView>(layout_object)) {
     // A document is being destroyed.
@@ -1602,42 +1768,49 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
     invalidated_ids_popup_.clear();
   }
 
-  // If a DOM node is present, it will have been used to back the AXObject, in
-  // which case we need to call Remove(node) instead.
-  if (Node* node = layout_object->GetNode()) {
-    // Pseudo elements are a special case. They need to be marked dirty so that
-    // their entire subtree is recomputed (it is disappearing or changing).
-    if (node->IsPseudoElement()) {
-      DeferTreeUpdate(&AXObjectCacheImpl::EnsureMarkDirtyWithCleanLayout, node);
-    }
-    Remove(node);
-    return;
-  }
-
   auto iter = layout_object_mapping_.find(layout_object);
   if (iter == layout_object_mapping_.end())
-    return;
+    return false;
 
   AXID ax_id = iter->value;
   DCHECK(ax_id);
 
   layout_object_mapping_.erase(iter);
   Remove(ax_id);
+
+  return true;
 }
 
 // This is safe to call even if there isn't a current mapping.
-void AXObjectCacheImpl::Remove(Node* node) {
-  DCHECK(node);
-  AXID axid = static_cast<AXID>(DOMNodeIds::ExistingIdForNode(node));
-  if (axid) {
-    DCHECK_GE(axid, 1);
-    Remove(axid);
+void AXObjectCacheImpl::Remove(const Node* node) {
+  if (!node)
+    return;
+
+  LayoutObject* layout_object = node->GetLayoutObject();
+
+  // A layout object will be used whenever it is available and relevant. It's
+  // the preferred backing object, rather than the DOM node.
+  if (Remove(node->GetLayoutObject())) {
+    DCHECK_EQ(node_object_mapping_.find(node), node_object_mapping_.end())
+        << "AXObject cannot be backed by both a layout object and node.";
+    return;
+  }
+
+  auto iter = node_object_mapping_.find(node);
+  if (iter != node_object_mapping_.end()) {
+    DCHECK(!layout_object || layout_object_mapping_.find(layout_object) ==
+                                 layout_object_mapping_.end())
+        << "AXObject cannot be backed by both a layout object and node.";
+    AXID ax_id = iter->value;
+    DCHECK(ax_id);
+    node_object_mapping_.erase(iter);
+    Remove(ax_id);
   }
 }
 
 void AXObjectCacheImpl::Remove(Document* document) {
   DCHECK(IsPopup(*document)) << "Call Dispose() to remove the main document.";
-  for (Node* node = document; node;
+  for (const Node* node = document; node;
        node = LayoutTreeBuilderTraversal::Next(*node, nullptr)) {
     Remove(node);
   }
@@ -1661,29 +1834,15 @@ void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
   Remove(ax_id);
 }
 
-// All generated AXIDs are negative, ranging from kFirstGeneratedId to INT_MIN,
-// in order to avoid conflict with the ids reused from dom_node_ids, which are
-// positive, and generated IDs on the browser side, which are negative, starting
-// at -1.
 AXID AXObjectCacheImpl::GenerateAXID() const {
-  // The first id is close to INT_MIN/2, leaving plenty of room for negative
-  // generated IDs both her and on the browser side, but starting at an even
-  // number makes it easier to read when debugging.
-  constexpr int kFirstGeneratedId = -1000000000;
-  static AXID last_used_id = kFirstGeneratedId;
-
-  // This is very unlikely to happen, but if we find that it happens often, we
-  // could gracefully turn off a11y instead of crashing the renderer.
-  CHECK(objects_.size() < kFirstGeneratedId - INT_MIN - 1)
-      << "Not enough room in map for more accessibility objects.";
+  static AXID last_used_id = 0;
 
   // Generate a new ID.
   AXID obj_id = last_used_id;
   do {
-    if (--obj_id == INT_MIN) {
-      obj_id = kFirstGeneratedId;
-    }
-  } while (objects_.Contains(obj_id));
+    ++obj_id;
+  } while (!obj_id || HashTraits<AXID>::IsDeletedValue(obj_id) ||
+           ids_in_use_.Contains(obj_id));
 
   last_used_id = obj_id;
 
@@ -1708,11 +1867,9 @@ AXID AXObjectCacheImpl::AssociateAXID(AXObject* obj, AXID use_axid) {
   // Check for already-assigned ID.
   DCHECK(!obj->AXObjectID()) << "Object should not already have an AXID";
 
-  AXID new_axid = use_axid ? use_axid : GenerateAXID();
+  const AXID new_axid = use_axid ? use_axid : GenerateAXID();
 
-  DCHECK_EQ(obj->GetNode() && !obj->IsAXInlineTextBox(), IsDOMNodeID(new_axid))
-      << "AXObjects with a DOM node must use a dom_node_id for the AXID.";
-
+  ids_in_use_.insert(new_axid);
   obj->SetAXObjectID(new_axid);
   objects_.Set(new_axid, obj);
 
@@ -1730,6 +1887,7 @@ void AXObjectCacheImpl::RemoveAXID(AXObject* object) {
   if (!obj_id)
     return;
   DCHECK(!HashTraits<AXID>::IsDeletedValue(obj_id));
+  DCHECK(ids_in_use_.Contains(obj_id));
   object->SetAXObjectID(0);
   // Clear AXIDs from maps. Note: do not need to erase id from
   // changed_bounds_ids_, a set which is cleared each time
@@ -1737,21 +1895,12 @@ void AXObjectCacheImpl::RemoveAXID(AXObject* object) {
   // invalidated_ids_main_ or invalidated_ids_popup_, which are cleared each
   // time ProcessInvalidatedObjects() finishes, and having extra ids in those
   // sets is not harmful.
+  ids_in_use_.erase(obj_id);
+  autofill_state_map_.erase(obj_id);
+  fixed_or_sticky_node_ids_.erase(obj_id);
   cached_bounding_boxes_.erase(obj_id);
-
-  if (IsDOMNodeID(obj_id)) {
-    // Optimization: these maps only contain ids for AXObjects with a DOM node.
-    autofill_state_map_.erase(obj_id);
-    fixed_or_sticky_node_ids_.erase(obj_id);
-    // Only objects with a DOM node can be in the relation cache.
-    relation_cache_->RemoveAXID(obj_id);
-    // Allow the new AXObject for the same node to be serialized correctly.
-    nodes_with_pending_children_changed_.erase(obj_id);
-  } else {
-    // Non-DOM ids should never find their way into these maps.
-    DCHECK(!autofill_state_map_.Contains(obj_id));
-    DCHECK(!fixed_or_sticky_node_ids_.Contains(obj_id));
-  }
+  // Clear id from relation cache.
+  relation_cache_->RemoveAXID(obj_id);
 }
 
 AXObject* AXObjectCacheImpl::NearestExistingAncestor(Node* node) {
@@ -1952,11 +2101,9 @@ void AXObjectCacheImpl::TextChanged(Node* node) {
     return;
 
   // A text changed event is redundant with children changed on the same node.
-  if (AXID node_id = static_cast<AXID>(DOMNodeIds::ExistingIdForNode(node))) {
-    if (nodes_with_pending_children_changed_.find(node_id) !=
-        nodes_with_pending_children_changed_.end()) {
-      return;
-    }
+  if (nodes_with_pending_children_changed_.find(node) !=
+      nodes_with_pending_children_changed_.end()) {
+    return;
   }
 
   DeferTreeUpdate(&AXObjectCacheImpl::TextChangedWithCleanLayout, node);
@@ -1971,13 +2118,10 @@ void AXObjectCacheImpl::TextChanged(const LayoutObject* layout_object) {
   // when it has a block sibling.
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
-    if (AXID node_id = static_cast<AXID>(DOMNodeIds::ExistingIdForNode(node))) {
-      // A text changed event is redundant with children changed on the same
-      // node.
-      if (nodes_with_pending_children_changed_.find(node_id) !=
-          nodes_with_pending_children_changed_.end()) {
-        return;
-      }
+    // A text changed event is redundant with children changed on the same node.
+    if (nodes_with_pending_children_changed_.find(node) !=
+        nodes_with_pending_children_changed_.end()) {
+      return;
     }
 
     DeferTreeUpdate(&AXObjectCacheImpl::TextChangedWithCleanLayout, node);
@@ -2065,7 +2209,7 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttached(Node* node) {
   if (document) {
     // A popup is being shown.
     DCHECK(*document != GetDocument());
-    DCHECK(!popup_document_) << "Last popup was not cleared.";
+    DCHECK(!popup_document_);
     popup_document_ = document;
     DCHECK(IsPopup(*document));
     // Fire children changed on the focused element that owns this popup.
@@ -2098,12 +2242,13 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
+  // Process any relation attributes that can affect ax objects already created.
+
   // Force computation of aria-owns, so that original parents that already
   // computed their children get the aria-owned children removed.
   if (AXObject::HasARIAOwns(element))
     HandleAttributeChangedWithCleanLayout(html_names::kAriaOwnsAttr, element);
 
-  // Process any relation attributes that can affect ax objects already created.
   MaybeNewRelationTarget(*node, Get(node));
 
   // Even if the node or parent are ignored, an ancestor may need to include
@@ -2111,7 +2256,7 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
   // must be called. It handles ignored logic, ensuring that the first ancestor
   // that should have this as a child will be updated.
   ChildrenChangedWithCleanLayout(
-      GetOrCreate(LayoutTreeBuilderTraversal::Parent(*node)));
+      Get(LayoutTreeBuilderTraversal::Parent(*node)));
 
   // If an image map area is added, we need to update children on the image.
   if (IsA<HTMLAreaElement>(node))
@@ -2218,8 +2363,7 @@ AXObject* AXObjectCacheImpl::InvalidateChildren(AXObject* obj) {
     return nullptr;
   // Don't enqueue a deferred event on the same node more than once.
   if (ancestor->GetNode() &&
-      !nodes_with_pending_children_changed_
-           .insert(DOMNodeIds::ExistingIdForNode(ancestor->GetNode()))
+      !nodes_with_pending_children_changed_.insert(ancestor->GetNode())
            .is_new_entry) {
     return nullptr;
   }
@@ -2292,6 +2436,23 @@ void AXObjectCacheImpl::ChildrenChanged(AccessibleNode* accessible_node) {
 }
 
 void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* node) {
+  if (!node)
+    return;
+
+  LayoutObject* layout_object = node->GetLayoutObject();
+  AXID layout_id = 0;
+  if (layout_object) {
+    auto it = layout_object_mapping_.find(layout_object);
+    if (it != layout_object_mapping_.end())
+      layout_id = it->value;
+  }
+  DCHECK(!HashTraits<AXID>::IsDeletedValue(layout_id));
+
+  auto it = node_object_mapping_.find(node);
+  AXID node_id = it != node_object_mapping_.end() ? it->value : 0;
+  DCHECK(!HashTraits<AXID>::IsDeletedValue(node_id));
+  DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
+
   ChildrenChangedWithCleanLayout(node, Get(node));
 }
 
@@ -2517,7 +2678,17 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     }
 
     AXID retained_axid = current->AXObjectID();
-    DCHECK_EQ(retained_axid, DOMNodeIds::ExistingIdForNode(node));
+    // Remove from relevant maps, but not from relation cache, as the relations
+    // between AXIDs will still be the same.
+    node_object_mapping_.erase(node);
+    if (is_ax_layout_object) {
+      layout_object_mapping_.erase(current->GetLayoutObject());
+    } else {
+      DCHECK(will_be_ax_layout_object);
+      DCHECK(node->GetLayoutObject());
+      DCHECK(!layout_object_mapping_.Contains(node->GetLayoutObject()))
+          << node << " " << node->GetLayoutObject();
+    }
 
     ChildrenChangedOnAncestorOf(current);
     current->Detach();
@@ -2530,9 +2701,8 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     // TODO(accessibility) That may be the only example of this, in which case
     // it could be handled in RoleChangedWithCleanLayout(), and the cached
     // parent could be used.
-    AXObject* new_object =
-        CreateAndInit(node, node->GetLayoutObject(),
-                      AXObject::ComputeNonARIAParent(*this, node));
+    AXObject* new_object = CreateAndInit(
+        node, AXObject::ComputeNonARIAParent(*this, node), retained_axid);
     if (new_object) {
       // Any owned objects need to reset their parent_ to point to the
       // new object.
@@ -2540,7 +2710,6 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
           AXRelationCache::IsValidOwner(new_object)) {
         relation_cache_->UpdateAriaOwnsWithCleanLayout(new_object, true);
       }
-      DCHECK_EQ(new_object->AXObjectID(), retained_axid);
     } else {
       // Failed to create, so remove object completely.
       RemoveAXID(current);
@@ -3095,13 +3264,8 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
     // because some roles allow aria-owns and others don't.
     // In addition, any owned objects need to reset their parent_ to point
     // to the new object.
-    if (AXObject* new_object = GetOrCreate(node)) {
+    if (AXObject* new_object = GetOrCreate(node))
       relation_cache_->UpdateAriaOwnsWithCleanLayout(new_object, true);
-      // Need to mark dirty because the dom_node_id-based ID remains the same,
-      // and therefore the serializer may not automatically serialize this node
-      // from the children changed on the parent.
-      MarkAXObjectDirtyWithCleanLayout(new_object);
-    }
   }
 }
 
@@ -3821,11 +3985,9 @@ bool AXObjectCacheImpl::SerializeEntireTree(bool exclude_offscreen,
   tree_source->Freeze();
 
   if (!tree_source->GetRoot() || tree_source->GetRoot()->IsDetached()) {
-    // TODO(chrishtr): not clear why this can happen.
-    DCHECK(tree_source->GetRoot());
-    DCHECK(!tree_source->GetRoot()->IsDetached())
-        << tree_source->GetRoot()->ToString(true);
     tree_source->Thaw();
+    // TODO(chrishtr): not clear why this can happen.
+    NOTREACHED();
     return false;
   }
 
@@ -3934,9 +4096,9 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     DCHECK(success);
     DCHECK_GT(update.nodes.size(), 0U);
 
-    for (auto& node_data : update.nodes) {
-      DCHECK(node_data.id);
-      already_serialized_ids.insert(node_data.id);
+    for (auto& node : update.nodes) {
+      DCHECK(node.id);
+      already_serialized_ids.insert(node.id);
     }
 
     DCHECK(already_serialized_ids.Contains(obj->AXObjectID()))
@@ -4092,14 +4254,10 @@ void AXObjectCacheImpl::HandleTextMarkerDataAddedWithCleanLayout(Node* node) {
       !marker_controller.MarkersFor(*text_node, spelling_and_grammar_markers)
            .empty();
   if (has_spelling_or_grammar_markers) {
-    if (nodes_with_spelling_or_grammar_markers_
-            .insert(DOMNodeIds::IdForNode(node))
-            .is_new_entry) {
+    if (nodes_with_spelling_or_grammar_markers_.insert(node).is_new_entry)
       ChildrenChangedWithCleanLayout(node);
-    }
   } else {
-    const auto& iter = nodes_with_spelling_or_grammar_markers_.find(
-        DOMNodeIds::IdForNode(node));
+    const auto& iter = nodes_with_spelling_or_grammar_markers_.find(node);
     if (iter != nodes_with_spelling_or_grammar_markers_.end()) {
       nodes_with_spelling_or_grammar_markers_.erase(iter);
       ChildrenChangedWithCleanLayout(node);
@@ -4394,6 +4552,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(last_selected_from_active_descendant_);
   visitor->Trace(accessible_node_mapping_);
   visitor->Trace(layout_object_mapping_);
+  visitor->Trace(node_object_mapping_);
   visitor->Trace(active_aria_modal_dialog_);
 
   visitor->Trace(objects_);
@@ -4403,6 +4562,8 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(permission_observer_receiver_);
   visitor->Trace(tree_update_callback_queue_main_);
   visitor->Trace(tree_update_callback_queue_popup_);
+  visitor->Trace(nodes_with_pending_children_changed_);
+  visitor->Trace(nodes_with_spelling_or_grammar_markers_);
   visitor->Trace(ax_tree_source_);
   visitor->Trace(dirty_objects_);
   visitor->Trace(aria_notifications_);

@@ -1917,8 +1917,7 @@ void AXTree::NotifyNodeAttributesHaveBeenChanged(
   for (AXTreeObserver& observer : observers_)
     observer.OnNodeDataChanged(this, old_data, new_data);
 
-  if (old_data.role != new_data.role && !old_data.IsInvisibleOrIgnored() &&
-      !new_data.IsInvisibleOrIgnored()) {
+  if (old_data.role != new_data.role) {
     for (AXTreeObserver& observer : observers_)
       observer.OnRoleChanged(this, node, old_data.role, new_data.role);
   }
