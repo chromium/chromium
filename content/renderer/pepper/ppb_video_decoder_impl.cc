@@ -183,8 +183,6 @@ void PPB_VideoDecoder_Impl::AssignPictureBuffers(
     const PP_PictureBuffer_Dev* buffers) {
   if (!decoder_)
     return;
-  UMA_HISTOGRAM_COUNTS_100("Media.PepperVideoDecoderPictureCount",
-                           no_of_buffers);
 
   std::vector<media::PictureBuffer> wrapped_buffers;
   for (uint32_t i = 0; i < no_of_buffers; i++) {
@@ -195,8 +193,6 @@ void PPB_VideoDecoder_Impl::AssignPictureBuffers(
     media::PictureBuffer buffer(
         in_buf.id, gfx::Size(in_buf.size.width, in_buf.size.height), ids);
     wrapped_buffers.push_back(buffer);
-    UMA_HISTOGRAM_COUNTS_10000("Media.PepperVideoDecoderPictureHeight",
-                               in_buf.size.height);
   }
 
   FlushCommandBuffer();
@@ -291,8 +287,6 @@ void PPB_VideoDecoder_Impl::NotifyError(
 
   PP_VideoDecodeError_Dev pp_error = MediaToPPError(error);
   GetPPP()->NotifyError(pp_instance(), pp_resource(), pp_error);
-  UMA_HISTOGRAM_ENUMERATION("Media.PepperVideoDecoderError", error,
-                            media::VideoDecodeAccelerator::ERROR_MAX + 1);
 }
 
 void PPB_VideoDecoder_Impl::NotifyResetDone() {

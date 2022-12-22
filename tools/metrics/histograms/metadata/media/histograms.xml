@@ -3695,13 +3695,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.PepperVideoDecoderError"
-    enum="VideoDecodeAcceleratorError" expires_after="M77">
-  <owner>ihf@chromium.org</owner>
-  <owner>posciak@chromium.org</owner>
-  <summary>Counts of video decode errors reported to plugin.</summary>
-</histogram>
-
 <histogram base="true" name="Media.PepperVideoDecoderOutputPictureCount"
     enum="MediaVideoHeight" expires_after="2020-12-31">
   <owner>sandersd@chromium.org</owner>
@@ -3710,31 +3703,6 @@ chromium-metrics-reviews@google.com.
     Counts every output picture emitted to a PPAPI client, categorized by size
     and decoder type. Flash will only use platform decoders, but NaCl clients
     can use either decoder type.
-  </summary>
-</histogram>
-
-<histogram name="Media.PepperVideoDecoderPictureCount" units="units"
-    expires_after="M77">
-  <obsolete>
-    Removed 07/2022.
-  </obsolete>
-  <owner>ihf@chromium.org</owner>
-  <owner>posciak@chromium.org</owner>
-  <summary>
-    Number of PictureBuffers/textures requested per hardware decoder creation.
-    This value varies by platform and video. A user visible video may trigger
-    multiple decoder creations (sometimes every 5 seconds) but would normally
-    not hold more than 2 sets of buffers at any given time in memory.
-  </summary>
-</histogram>
-
-<histogram name="Media.PepperVideoDecoderPictureHeight" units="units"
-    expires_after="M77">
-  <owner>ihf@chromium.org</owner>
-  <owner>posciak@chromium.org</owner>
-  <summary>
-    Vertical video resolution rounded to the nearest bucket. (Corresponds
-    roughly to the number in 720p.)
   </summary>
 </histogram>
 
