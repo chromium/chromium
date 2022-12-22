@@ -1199,6 +1199,14 @@ void PathVerifier::WrapUp(const ParsedCertificate& cert,
 void PathVerifier::ApplyTrustAnchorConstraints(const ParsedCertificate& cert,
                                                KeyPurpose required_key_purpose,
                                                CertErrors* errors) {
+  // If keyUsage is present, verify that |cert| has correct keyUsage bits for a
+  // CA. This matches the handling for intermediates from RFC 5280 section
+  // 6.1.4 step n.
+  if (cert.has_key_usage() &&
+      !cert.key_usage().AssertsBit(KEY_USAGE_BIT_KEY_CERT_SIGN)) {
+    errors->AddError(cert_errors::kKeyCertSignBitNotSet);
+  }
+
   // This is not part of RFC 5937 nor RFC 5280, but matches the EKU handling
   // done for intermediates (described in Web PKI's Baseline Requirements).
   VerifyExtendedKeyUsage(cert, required_key_purpose, errors,

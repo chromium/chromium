@@ -136,6 +136,9 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, KeyUsage) {
   this->RunTest("target-serverauth-various-keyusages/ec-digitalSignature.test");
   this->RunTest("target-serverauth-various-keyusages/ec-keyAgreement.test");
   this->RunTest("target-serverauth-various-keyusages/ec-keyEncipherment.test");
+
+  this->RunTest("root-lacks-keycertsign-key-usage/main.test");
+  this->RunTest("root-lacks-keycertsign-key-usage/ta-with-constraints.test");
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, ExtendedKeyUsage) {

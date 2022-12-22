@@ -123,7 +123,7 @@ def get_or_generate_key(generation_arguments, path):
   # If the file doesn't already exist, generate a new key using the generation
   # parameters.
   if not os.path.isfile(path):
-    key_contents = subprocess.check_output(generation_arguments)
+    key_contents = subprocess.check_output(generation_arguments, text=True)
 
     # Prepend the generation parameters to the key file.
     write_string_to_file(generation_arguments_str + '\n' + key_contents,

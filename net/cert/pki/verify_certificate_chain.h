@@ -222,7 +222,7 @@ class NET_EXPORT VerifyCertificateChainDelegate {
 //
 //  * Signature:             No
 //  * Validity (expiration): No
-//  * Key usage:             No
+//  * Key usage:             Yes
 //  * Extended key usage:    Yes (required if required_key_purpose is STRICT)
 //  * Basic constraints:     Yes
 //  * Name constraints:      Yes
