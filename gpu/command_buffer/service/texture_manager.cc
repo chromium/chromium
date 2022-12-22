@@ -580,11 +580,11 @@ gl::GLImage* TexturePassthrough::GetLevelImage(GLenum target,
   return level_images_[face_idx][level].image.get();
 }
 
-void TexturePassthrough::SetStreamLevelImage(GLenum target,
-                                             gl::GLImage* stream_texture_image,
-                                             GLuint service_id) {
-  SetLevelImageInternal(target, /*level=*/0, stream_texture_image, service_id);
-  UpdateStreamTextureServiceId(target, /*level=*/0);
+void TexturePassthrough::BindToServiceId(GLuint service_id) {
+  // TODO(crbug.com/1310020): Determine what needs to execute from this method
+  // call and inline it here.
+  SetLevelImageInternal(target(), /*level=*/0, /*image=*/nullptr, service_id);
+  UpdateStreamTextureServiceId(target(), /*level=*/0);
 }
 
 void TexturePassthrough::SetEstimatedSize(size_t size) {
@@ -1903,12 +1903,12 @@ void Texture::SetLevelImage(GLenum target,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void Texture::SetLevelStreamTextureImage(GLenum target,
-                                         gl::GLImage* image,
-                                         ImageState state,
-                                         GLuint service_id) {
+void Texture::BindToServiceId(GLuint service_id) {
   SetStreamTextureServiceId(service_id);
-  SetLevelImageInternal(target, /*level=*/0, image, state);
+  // TODO(crbug.com/1310020): Confirm that this method call is a no-op
+  // and eliminate it.
+  SetLevelImageInternal(target(), /*level=*/0, /*image=*/nullptr,
+                        /*state=*/ImageState::UNBOUND);
 }
 #endif
 

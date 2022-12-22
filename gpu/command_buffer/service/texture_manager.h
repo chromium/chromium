@@ -82,9 +82,7 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   void SetLevelImage(GLenum target, GLint level, gl::GLImage* image);
   gl::GLImage* GetLevelImage(GLenum target, GLint level) const;
 
-  void SetStreamLevelImage(GLenum target,
-                           gl::GLImage* stream_texture_image,
-                           GLuint service_id);
+  void BindToServiceId(GLuint service_id);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Return true if and only if the decoder should BindTexImage / CopyTexImage
@@ -305,23 +303,19 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
       GLint target, GLint level, GLenum* type, GLenum* internal_format) const;
 
   // Set the image for a particular level. If a GLImage was previously set with
-  // SetLevelStreamTextureImage(), this will reset |service_id_| back to
+  // BindToServiceId(), this will reset |service_id_| back to
   // |owned_service_id_|, removing the service id override set by the
-  // SetLevelStreamTextureImage.
+  // BindToServiceId.
   void SetLevelImage(GLenum target,
                      GLint level,
                      gl::GLImage* image,
                      ImageState state);
 
 #if BUILDFLAG(IS_ANDROID)
-  // Set the GLImage for level 0.  This is like SetLevelImage, but it
-  // also makes it optional to override |service_id_| with a texture bound to
+  // Overrides |service_id_| with a texture bound to
   // the stream texture. See SetStreamTextureServiceId() for the details of how
   // |service_id| is used.
-  void SetLevelStreamTextureImage(GLenum target,
-                                  gl::GLImage* image,
-                                  ImageState state,
-                                  GLuint service_id);
+  void BindToServiceId(GLuint service_id);
 #endif
 
   // Set the ImageState for the image bound to the given level.
