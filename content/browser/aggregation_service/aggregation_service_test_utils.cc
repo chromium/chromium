@@ -260,7 +260,8 @@ AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request) {
   return AggregatableReportRequest::CreateForTesting(
              request.processing_urls(), request.payload_contents(),
-             request.shared_info().Clone(), request.reporting_path())
+             request.shared_info().Clone(), request.reporting_path(),
+             request.debug_key(), request.failed_send_attempts())
       .value();
 }
 
