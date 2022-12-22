@@ -41,6 +41,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
       "Network.Ash.Cellular.Apn.RemoveCustomApn.Result";
   static constexpr char kRemoveCustomApnApnTypesHistogram[] =
       "Network.Ash.Cellular.Apn.RemoveCustomApn.ApnTypes";
+  static constexpr char kModifyCustomApnResultHistogram[] =
+      "Network.Ash.Cellular.Apn.ModifyCustomApn.Result";
+  static constexpr char kModifyCustomApnApnTypesHistogram[] =
+      "Network.Ash.Cellular.Apn.ModifyCustomApn.ApnTypes";
+  static constexpr char kEnableCustomApnResultHistogram[] =
+      "Network.Ash.Cellular.Apn.EnableCustomApn.Result";
+  static constexpr char kEnableCustomApnApnTypesHistogram[] =
+      "Network.Ash.Cellular.Apn.EnableCustomApn.ApnTypes";
+  static constexpr char kDisableCustomApnResultHistogram[] =
+      "Network.Ash.Cellular.Apn.DisableCustomApn.Result";
+  static constexpr char kDisableCustomApnApnTypesHistogram[] =
+      "Network.Ash.Cellular.Apn.DisableCustomApn.ApnTypes";
 
   CellularNetworkMetricsLogger(
       NetworkStateHandler* network_state_handler,
@@ -58,6 +70,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   static void LogRemoveCustomApnResult(
       bool success,
       std::vector<chromeos::network_config::mojom::ApnType> apn_types);
+  static void LogModifyCustomApnResult(
+      bool success,
+      std::vector<chromeos::network_config::mojom::ApnType> old_apn_types,
+      absl::optional<chromeos::network_config::mojom::ApnState> apn_state,
+      absl::optional<chromeos::network_config::mojom::ApnState> old_apn_state);
 
  private:
   // ConnectionInfoMetricsLogger::Observer:

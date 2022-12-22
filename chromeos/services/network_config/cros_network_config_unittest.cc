@@ -966,6 +966,66 @@ class CrosNetworkConfigTest : public testing::Test {
         apn_types, apn_types_count);
   }
 
+  void AssertModifyCustomApnResultBucketCount(size_t num_success,
+                                              size_t num_failure) {
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kModifyCustomApnResultHistogram,
+        true, num_success);
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kModifyCustomApnResultHistogram,
+        false, num_failure);
+    histogram_tester_.ExpectTotalCount(
+        ash::CellularNetworkMetricsLogger::kModifyCustomApnApnTypesHistogram,
+        num_success);
+  }
+
+  void AssertModifyCustomApnPropertiesBucketCount(ApnTypes apn_types,
+                                                  size_t apn_types_count) {
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kModifyCustomApnApnTypesHistogram,
+        apn_types, apn_types_count);
+  }
+
+  void AssertEnableCustomApnResultBucketCount(size_t num_success,
+                                              size_t num_failure) {
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kEnableCustomApnResultHistogram,
+        true, num_success);
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kEnableCustomApnResultHistogram,
+        false, num_failure);
+    histogram_tester_.ExpectTotalCount(
+        ash::CellularNetworkMetricsLogger::kEnableCustomApnApnTypesHistogram,
+        num_success);
+  }
+
+  void AssertEnableCustomApnPropertiesBucketCount(ApnTypes apn_types,
+                                                  size_t apn_types_count) {
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kEnableCustomApnApnTypesHistogram,
+        apn_types, apn_types_count);
+  }
+
+  void AssertDisableCustomApnResultBucketCount(size_t num_success,
+                                               size_t num_failure) {
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kDisableCustomApnResultHistogram,
+        true, num_success);
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kDisableCustomApnResultHistogram,
+        false, num_failure);
+    histogram_tester_.ExpectTotalCount(
+        ash::CellularNetworkMetricsLogger::kDisableCustomApnApnTypesHistogram,
+        num_success);
+  }
+
+  void AssertDisableCustomApnPropertiesBucketCount(ApnTypes apn_types,
+                                                   size_t apn_types_count) {
+    histogram_tester_.ExpectBucketCount(
+        ash::CellularNetworkMetricsLogger::kDisableCustomApnApnTypesHistogram,
+        apn_types, apn_types_count);
+  }
+
   NetworkHandlerTestHelper* helper() { return helper_.get(); }
   CrosNetworkConfigTestObserver* observer() { return observer_.get(); }
   CrosNetworkConfig* cros_network_config() {
@@ -2086,12 +2146,19 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
                               mojom::ApnType::kAttach};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
                              ::onc::cellular_apn::kApnTypeAttach};
+  test_apn1.mojo_state = mojom::ApnState::kEnabled;
+  test_apn1.onc_state = ::onc::cellular_apn::kStateEnabled;
+
   test_apn1.id = "apn_id_1";
   ModifyCustomApn(kCellularGuid, test_apn1.AsMojoApn());
   EXPECT_EQ(expected_network_config_calls,
             network_config_observer.GetOnConfigurationModifiedCallCount());
   ASSERT_FALSE(network_metadata_store()->GetCustomApnList(kCellularGuid));
-
+  AssertModifyCustomApnResultBucketCount(/*num_success=*/0, /*num_failure=*/1);
+  AssertDisableCustomApnResultBucketCount(/*num_success=*/0,
+                                          /*num_failure=*/0);
+  AssertEnableCustomApnResultBucketCount(/*num_success=*/0,
+                                         /*num_failure=*/0);
   // Try to replace an APN when the custom APN list is empty, it should do
   // nothing
   network_metadata_store()->SetCustomApnList(kCellularGuid,
@@ -2100,6 +2167,11 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
   EXPECT_EQ(expected_network_config_calls,
             network_config_observer.GetOnConfigurationModifiedCallCount());
   EXPECT_TRUE(UserApnsInNetworkMetadataStoreMatch(kCellularGuid, {}));
+  AssertModifyCustomApnResultBucketCount(/*num_success=*/0, /*num_failure=*/2);
+  AssertDisableCustomApnResultBucketCount(/*num_success=*/0,
+                                          /*num_failure=*/0);
+  AssertEnableCustomApnResultBucketCount(/*num_success=*/0,
+                                         /*num_failure=*/0);
 
   TestApnData test_apn2;
   test_apn2.access_point_name = kCellularTestApn2;
@@ -2111,6 +2183,8 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
                               mojom::ApnType::kAttach};
   test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
                              ::onc::cellular_apn::kApnTypeAttach};
+  test_apn2.mojo_state = mojom::ApnState::kEnabled;
+  test_apn2.onc_state = ::onc::cellular_apn::kStateEnabled;
 
   // Add two custom APNs using the official API
   {
@@ -2127,9 +2201,8 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_TRUE(custom_apns);
   ASSERT_EQ(2u, custom_apns->size());
-  const std::string* first_apn_id =
-      custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
-  ASSERT_TRUE(first_apn_id);
+  const std::string first_apn_id =
+      *custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
 
   TestApnData test_apn3;
   test_apn3.access_point_name = kCellularTestApn3;
@@ -2139,6 +2212,8 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
   test_apn3.attach = kCellularTestApnAttach3;
   test_apn3.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
+  test_apn3.mojo_state = mojom::ApnState::kEnabled;
+  test_apn3.onc_state = ::onc::cellular_apn::kStateEnabled;
 
   // Verify that ModifyCustomApn does nothing if the input APN does not have an
   // ID.
@@ -2153,8 +2228,14 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
                                               network_config_observer));
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-
-  test_apn3.id = *first_apn_id;
+  AssertModifyCustomApnResultBucketCount(/*num_success=*/0,
+                                         /*num_failure=*/3);
+  AssertDisableCustomApnResultBucketCount(/*num_success=*/0,
+                                          /*num_failure=*/0);
+  AssertEnableCustomApnResultBucketCount(/*num_success=*/0,
+                                         /*num_failure=*/0);
+  // Verify that ModifyCustomApn replaces the first custom APN
+  test_apn3.id = first_apn_id;
   ModifyCustomApn(kCellularGuid, test_apn3.AsMojoApn());
   EXPECT_EQ(++expected_network_config_calls,
             network_config_observer.GetOnConfigurationModifiedCallCount());
@@ -2165,6 +2246,17 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
     EXPECT_TRUE(UserApnsInCellularConfigMatch(kCellularGuid, expected_apns,
                                               network_config_observer));
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+
+    AssertModifyCustomApnResultBucketCount(/*num_success=*/1,
+                                           /*num_failure=*/3);
+    // Note: The old APN types should be logged
+    AssertModifyCustomApnPropertiesBucketCount(ApnTypes::kDefaultAndAttach,
+                                               /*apn_types_count=*/1);
+    // Enable/Disable metrics are not logged if the ApnState doesn't change.
+    AssertDisableCustomApnResultBucketCount(/*num_success=*/0,
+                                            /*num_failure=*/0);
+    AssertEnableCustomApnResultBucketCount(/*num_success=*/0,
+                                           /*num_failure=*/0);
   }
 
   // Try to update an ID not found in the list, API should do nothing
@@ -2180,6 +2272,109 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
                                               network_config_observer));
     EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
+  AssertModifyCustomApnResultBucketCount(/*num_success=*/1,
+                                         /*num_failure=*/4);
+  AssertModifyCustomApnPropertiesBucketCount(ApnTypes::kDefaultAndAttach,
+                                             /*apn_types_count=*/1);
+
+  // Verify that disabling a custom APN changes its ApnState to disabled and
+  // logs metrics
+  test_apn3.id = first_apn_id;
+  test_apn3.mojo_state = mojom::ApnState::kDisabled;
+  test_apn3.onc_state = ::onc::cellular_apn::kStateDisabled;
+  ModifyCustomApn(kCellularGuid, test_apn3.AsMojoApn());
+  EXPECT_EQ(++expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn3, &test_apn1});
+    EXPECT_TRUE(
+        UserApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(UserApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                              network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+  AssertModifyCustomApnResultBucketCount(/*num_success=*/2,
+                                         /*num_failure=*/4);
+  AssertModifyCustomApnPropertiesBucketCount(ApnTypes::kAttach,
+                                             /*apn_types_count=*/1);
+  AssertModifyCustomApnPropertiesBucketCount(ApnTypes::kDefaultAndAttach,
+                                             /*apn_types_count=*/1);
+  AssertDisableCustomApnResultBucketCount(/*num_success=*/1,
+                                          /*num_failure=*/0);
+  AssertDisableCustomApnPropertiesBucketCount(ApnTypes::kAttach,
+                                              /*apn_types_count=*/1);
+  AssertEnableCustomApnResultBucketCount(/*num_success=*/0,
+                                         /*num_failure=*/0);
+  AssertEnableCustomApnPropertiesBucketCount(ApnTypes::kAttach,
+                                             /*apn_types_count=*/0);
+
+  // Verify that enabling a custom APN changes its ApnState to enabled and
+  // logs metrics
+  test_apn3.id = first_apn_id;
+  test_apn3.mojo_state = mojom::ApnState::kEnabled;
+  test_apn3.onc_state = ::onc::cellular_apn::kStateEnabled;
+  test_apn3.mojo_apn_types = {mojom::ApnType::kDefault};
+  test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
+  ModifyCustomApn(kCellularGuid, test_apn3.AsMojoApn());
+  EXPECT_EQ(++expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn3, &test_apn1});
+    EXPECT_TRUE(
+        UserApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(UserApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                              network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+  AssertModifyCustomApnResultBucketCount(/*num_success=*/3,
+                                         /*num_failure=*/4);
+  AssertModifyCustomApnPropertiesBucketCount(ApnTypes::kAttach,
+                                             /*apn_types_count=*/2);
+  AssertModifyCustomApnPropertiesBucketCount(ApnTypes::kDefaultAndAttach,
+                                             /*apn_types_count=*/1);
+  AssertModifyCustomApnPropertiesBucketCount(ApnTypes::kDefault,
+                                             /*apn_types_count=*/0);
+  AssertEnableCustomApnResultBucketCount(/*num_success=*/1,
+                                         /*num_failure=*/0);
+  AssertEnableCustomApnPropertiesBucketCount(ApnTypes::kAttach,
+                                             /*apn_types_count=*/1);
+  AssertDisableCustomApnResultBucketCount(/*num_success=*/1,
+                                          /*num_failure=*/0);
+  AssertDisableCustomApnPropertiesBucketCount(ApnTypes::kAttach,
+                                              /*apn_types_count=*/1);
+
+  // Verify that changing the APN type logs an event when changing from default
+  // APN type to a different type
+  test_apn3.id = first_apn_id;
+  test_apn3.mojo_apn_types = {mojom::ApnType::kAttach};
+  test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
+  test_apn3.mojo_state = mojom::ApnState::kDisabled;
+  test_apn3.onc_state = ::onc::cellular_apn::kStateDisabled;
+  ModifyCustomApn(kCellularGuid, test_apn3.AsMojoApn());
+  EXPECT_EQ(++expected_network_config_calls,
+            network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn3, &test_apn1});
+    EXPECT_TRUE(
+        UserApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(UserApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                              network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+  AssertModifyCustomApnResultBucketCount(/*num_success=*/4,
+                                         /*num_failure=*/4);
+  AssertModifyCustomApnPropertiesBucketCount(ApnTypes::kDefault,
+                                             /*apn_types_count=*/1);
+  AssertModifyCustomApnPropertiesBucketCount(ApnTypes::kAttach,
+                                             /*apn_types_count=*/2);
+  AssertModifyCustomApnPropertiesBucketCount(ApnTypes::kDefaultAndAttach,
+                                             /*apn_types_count=*/1);
+  AssertDisableCustomApnResultBucketCount(/*num_success=*/2,
+                                          /*num_failure=*/0);
+  AssertDisableCustomApnPropertiesBucketCount(ApnTypes::kAttach,
+                                              /*apn_types_count=*/1);
+  AssertDisableCustomApnPropertiesBucketCount(ApnTypes::kDefault,
+                                              /*apn_types_count=*/1);
 }
 
 TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampEnabled) {

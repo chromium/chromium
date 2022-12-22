@@ -101,6 +101,52 @@ void CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
                                 apn_types_enum.value());
 }
 
+// static
+void CellularNetworkMetricsLogger::LogModifyCustomApnResult(
+    bool success,
+    std::vector<chromeos::network_config::mojom::ApnType> old_apn_types,
+    absl::optional<chromeos::network_config::mojom::ApnState> apn_state,
+    absl::optional<chromeos::network_config::mojom::ApnState> old_apn_state) {
+  using ApnState = chromeos::network_config::mojom::ApnState;
+  base::UmaHistogramBoolean(kModifyCustomApnResultHistogram, success);
+
+  bool has_apn_state = old_apn_state.has_value() && apn_state.has_value();
+  bool was_apn_disabled = has_apn_state &&
+                          old_apn_state == ApnState::kEnabled &&
+                          apn_state == ApnState::kDisabled;
+  bool was_apn_enabled = has_apn_state &&
+                         old_apn_state == ApnState::kDisabled &&
+                         apn_state == ApnState::kEnabled;
+
+  if (was_apn_enabled) {
+    base::UmaHistogramBoolean(kEnableCustomApnResultHistogram, success);
+  } else if (was_apn_disabled) {
+    base::UmaHistogramBoolean(kDisableCustomApnResultHistogram, success);
+  }
+
+  // Only emit APN property metrics if the APN was successfully modified.
+  if (!success) {
+    return;
+  }
+
+  absl::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types_enum =
+      GetApnTypes(old_apn_types);
+  if (!apn_types_enum.has_value()) {
+    NET_LOG(DEBUG) << "ApnTypes not logged for APN because it "
+                   << "doesn't have any APN types.";
+    return;
+  }
+  base::UmaHistogramEnumeration(kModifyCustomApnApnTypesHistogram,
+                                apn_types_enum.value());
+  if (was_apn_enabled) {
+    base::UmaHistogramEnumeration(kEnableCustomApnApnTypesHistogram,
+                                  apn_types_enum.value());
+  } else if (was_apn_disabled) {
+    base::UmaHistogramEnumeration(kDisableCustomApnApnTypesHistogram,
+                                  apn_types_enum.value());
+  }
+}
+
 void CellularNetworkMetricsLogger::OnConnectionResult(
     const std::string& guid,
     const absl::optional<std::string>& shill_error) {

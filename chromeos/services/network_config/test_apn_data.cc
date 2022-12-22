@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "chromeos/ash/components/network/policy_util.h"
 #include "components/onc/onc_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos::network_config {
@@ -75,10 +76,11 @@ mojom::ApnPropertiesPtr TestApnData::AsMojoApn() const {
   apn->password = password;
   apn->attach = attach;
   if (ash::features::IsApnRevampEnabled()) {
-    apn->id = id;
+    apn->id = id.empty() ? absl::nullopt : absl::optional<std::string>(id);
     apn->authentication_type = mojo_authentication_type;
     apn->ip_type = mojo_ip_type;
     apn->apn_types = mojo_apn_types;
+    apn->state = mojo_state;
   }
   return apn;
 }

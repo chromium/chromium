@@ -3758,6 +3758,9 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
   if (!network || network->profile_path().empty()) {
     NET_LOG(ERROR) << "ModifyCustomApn: Called with unconfigured network: "
                    << network_guid << ".";
+    ash::CellularNetworkMetricsLogger::LogModifyCustomApnResult(
+        /*success=*/false, /*old_apn_types=*/{}, /*apn_state=*/absl::nullopt,
+        /*old_apn_state=*/absl::nullopt);
     return;
   }
 
@@ -3765,6 +3768,9 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
     NET_LOG(ERROR)
         << "ModifyCustomApn: Called with an APN without ID for network: "
         << network_guid << '.';
+    ash::CellularNetworkMetricsLogger::LogModifyCustomApnResult(
+        /*success=*/false, /*old_apn_types=*/{}, /*apn_state=*/absl::nullopt,
+        /*old_apn_state=*/absl::nullopt);
     return;
   }
 
@@ -3777,17 +3783,28 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
   if (!old_custom_apns || old_custom_apns->empty()) {
     NET_LOG(ERROR) << "ModifyCustomApn: Called for network: " << network_guid
                    << " that does not have any user APNs.";
+    ash::CellularNetworkMetricsLogger::LogModifyCustomApnResult(
+        /*success=*/false, /*old_apn_types=*/{}, /*apn_state=*/absl::nullopt,
+        /*old_apn_state=*/absl::nullopt);
     return;
   }
 
   base::Value::List new_custom_apns;
+  std::vector<mojom::ApnType> modified_apn_old_apn_types;
+  mojom::ApnState modified_apn_old_apn_state;
+
   bool was_value_replaced = false;
   for (const base::Value& old_apn : *old_custom_apns) {
     const std::string* old_apn_id =
         old_apn.GetDict().FindString(::onc::cellular_apn::kId);
     DCHECK(old_apn_id);
+
     if (*apn->id == *old_apn_id) {
       new_custom_apns.Append(MojoApnToOnc(*apn));
+      modified_apn_old_apn_types = OncApnTypesToMojo(
+          GetRequiredStringList(&old_apn, ::onc::cellular_apn::kApnTypes));
+      modified_apn_old_apn_state = OncApnStateTypeToMojo(
+          old_apn.GetDict().FindString(::onc::cellular_apn::kState));
       was_value_replaced = true;
     } else {
       new_custom_apns.Append(old_apn.Clone());
@@ -3798,6 +3815,9 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
     NET_LOG(ERROR) << "ModifyCustomApn: Called for network: " << network_guid
                    << " that does have an user APNs with id: " << *apn->id
                    << '.';
+    ash::CellularNetworkMetricsLogger::LogModifyCustomApnResult(
+        /*success=*/false, /*old_apn_types=*/{}, /*apn_state=*/absl::nullopt,
+        /*old_apn_state=*/absl::nullopt);
     return;
   }
   NET_LOG(USER) << "ModifyCustomApn: Setting user APNs for: " << network_guid
@@ -3808,7 +3828,9 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
   SetPropertiesInternal(
       network_guid, *network, UserApnListToOnc(network_guid, &new_custom_apns),
       base::BindOnce(
-          [](const std::string& guid, bool success,
+          [](const std::string& guid, std::vector<mojom::ApnType> old_apn_types,
+             const mojom::ApnState apn_state,
+             const mojom::ApnState old_apn_state, bool success,
              const std::string& message) {
             if (!success) {
               NET_LOG(ERROR)
@@ -3816,8 +3838,13 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
                      "list in Shill for network: "
                   << guid << ": [" << message << ']';
             }
+            // TODO(b/162365553) Add test coverage for the case when there is a
+            // failure from shill.
+            ash::CellularNetworkMetricsLogger::LogModifyCustomApnResult(
+                success, old_apn_types, apn_state, old_apn_state);
           },
-          network_guid));
+          network_guid, std::move(modified_apn_old_apn_types), apn->state,
+          modified_apn_old_apn_state));
 }
 
 // static
