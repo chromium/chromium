@@ -165,9 +165,15 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
   log(FeatureCoepRO(rfh->cross_origin_embedder_policy().report_only_value));
 
   // [Blob]
-  base::UmaHistogramBoolean(
-      "Navigation.BlobUrl",
-      rfh->GetLastCommittedURL().SchemeIs(url::kBlobScheme));
+  if (rfh->GetLastCommittedURL().SchemeIs(url::kBlobScheme)) {
+    base::UmaHistogramBoolean("Navigation.BlobUrl", true);
+    base::UmaHistogramBoolean("Navigation.BlobUrl.MainFrame",
+                              rfh->IsInPrimaryMainFrame());
+    base::UmaHistogramBoolean("Navigation.BlobUrl.Sandboxed",
+                              rfh->GetLastCommittedOrigin().opaque());
+  } else {
+    base::UmaHistogramBoolean("Navigation.BlobUrl", false);
+  }
 
   // Record iframes embedded in cross-origin contexts without a CSP
   // frame-ancestor directive.

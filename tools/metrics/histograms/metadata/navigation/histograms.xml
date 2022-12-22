@@ -514,6 +514,26 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.BlobUrl.MainFrame" enum="Boolean"
+    expires_after="2023-06-11">
+  <owner>jkokatsu@google.com</owner>
+  <owner>chrome-security-owp-team@google.com</owner>
+  <summary>
+    Record if navigation has occured to Blob URL in main frame or iframe, to
+    better understand the usage of Blob URL in active document.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.BlobUrl.Sandboxed" enum="Boolean"
+    expires_after="2023-06-11">
+  <owner>jkokatsu@google.com</owner>
+  <owner>chrome-security-owp-team@google.com</owner>
+  <summary>
+    Record if navigation has occured to opaque Blob URL, to better understand
+    the usage of Blob URL in active document.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame"
     enum="NavigationBrowserMappedUrnUuidInIframeOrFencedFrame"
     expires_after="2023-04-30">
