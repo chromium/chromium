@@ -474,10 +474,7 @@ bool ArgumentSpec::ParseArgumentToObject(
     v8::Local<v8::Value>* v8_out_value,
     std::string* error) const {
   DCHECK_EQ(ArgumentType::OBJECT, type_);
-  std::unique_ptr<base::DictionaryValue> result;
-  // Only construct the result if we have an |out_value| to populate.
-  if (out_value)
-    result = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict result;
 
   // We don't convert to a new object in two cases:
   // - If instanceof is specified, we don't want to create a new data object,
@@ -561,8 +558,8 @@ bool ArgumentSpec::ParseArgumentToObject(
         return false;
       }
       if (preserve_null_ && prop_value->IsNull()) {
-        if (result) {
-          result->SetKey(*utf8_key, base::Value());
+        if (out_value) {
+          result.Set(*utf8_key, base::Value());
         }
         if (convert_to_v8)
           v8_result.Set(*utf8_key, prop_value);
@@ -581,8 +578,8 @@ bool ArgumentSpec::ParseArgumentToObject(
       return false;
     }
     if (out_value)
-      result->SetKey(*utf8_key,
-                     base::Value::FromUniquePtrValue(std::move(property)));
+      result.Set(*utf8_key,
+                 base::Value::FromUniquePtrValue(std::move(property)));
     if (convert_to_v8)
       v8_result.Set(*utf8_key, v8_property);
   }
@@ -630,7 +627,7 @@ bool ArgumentSpec::ParseArgumentToObject(
   }
 
   if (out_value)
-    *out_value = std::move(result);
+    *out_value = std::make_unique<base::Value>(std::move(result));
 
   if (v8_out_value) {
     if (convert_to_v8) {

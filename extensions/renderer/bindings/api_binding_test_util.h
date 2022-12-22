@@ -32,11 +32,6 @@ base::Value::Dict DictValueFromString(base::StringPiece str);
 // DEPRECATED: prefer `ValueFromString`.
 std::unique_ptr<base::Value> DeprecatedValueFromString(base::StringPiece str);
 
-// As above, but returning a DictionaryValue.
-// DEPRECATED: prefer `DictValueFromString`.
-std::unique_ptr<base::DictionaryValue> DeprecatedDictionaryValueFromString(
-    base::StringPiece str);
-
 // Converts the given |value| to a JSON string. EXPECTs the conversion to
 // succeed.
 std::string ValueToString(const base::ValueView&);

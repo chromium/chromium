@@ -29,15 +29,13 @@ v8::Local<v8::Object> ChromeSetting::Create(
     APITypeReferenceMap* type_refs,
     const BindingAccessChecker* access_checker) {
   CHECK_GE(property_values->size(), 2u);
+  CHECK((*property_values)[1u].is_dict());
   const std::string& pref_name = (*property_values)[0u].GetString();
-  const base::Value& value_spec = (*property_values)[1u];
-  CHECK(value_spec.is_dict());
+  const base::Value::Dict& value_spec = (*property_values)[1u].GetDict();
 
   gin::Handle<ChromeSetting> handle = gin::CreateHandle(
-      isolate,
-      new ChromeSetting(request_handler, event_handler, type_refs,
-                        access_checker, pref_name,
-                        static_cast<const base::DictionaryValue&>(value_spec)));
+      isolate, new ChromeSetting(request_handler, event_handler, type_refs,
+                                 access_checker, pref_name, value_spec));
   return handle.ToV8().As<v8::Object>();
 }
 
@@ -46,7 +44,7 @@ ChromeSetting::ChromeSetting(APIRequestHandler* request_handler,
                              const APITypeReferenceMap* type_refs,
                              const BindingAccessChecker* access_checker,
                              const std::string& pref_name,
-                             const base::DictionaryValue& set_value_spec)
+                             const base::Value::Dict& set_value_spec)
     : request_handler_(request_handler),
       event_handler_(event_handler),
       type_refs_(type_refs),

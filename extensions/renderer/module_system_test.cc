@@ -312,12 +312,11 @@ void ModuleSystemTest::TearDown() {
 }
 
 scoped_refptr<const Extension> ModuleSystemTest::CreateExtension() {
-  std::unique_ptr<base::DictionaryValue> manifest =
-      DictionaryBuilder()
-          .Set("name", "test")
-          .Set("version", "1.0")
-          .Set("manifest_version", 2)
-          .Build();
+  base::Value::Dict manifest = DictionaryBuilder()
+                                   .Set("name", "test")
+                                   .Set("version", "1.0")
+                                   .Set("manifest_version", 2)
+                                   .BuildDict();
   return ExtensionBuilder().SetManifest(std::move(manifest)).Build();
 }
 

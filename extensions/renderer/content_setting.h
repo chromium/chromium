@@ -51,7 +51,7 @@ class ContentSetting final : public gin::Wrappable<ContentSetting> {
                  const APITypeReferenceMap* type_refs,
                  const BindingAccessChecker* access_checker,
                  const std::string& pref_name,
-                 const base::DictionaryValue& argument_spec);
+                 const base::Value::Dict& argument_spec);
 
   // JS function handlers:
   void Get(gin::Arguments* arguments);
