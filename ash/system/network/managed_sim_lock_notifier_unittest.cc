@@ -107,13 +107,13 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
   }
 
   void SetAllowCellularSimLock(bool allow_cellular_sim_lock) {
-    base::DictionaryValue global_config;
-    global_config.SetBoolKey(
-        ::onc::global_network_config::kAllowCellularSimLock,
-        allow_cellular_sim_lock);
+    base::Value::Dict global_config;
+    global_config.Set(::onc::global_network_config::kAllowCellularSimLock,
+                      allow_cellular_sim_lock);
     managed_network_configuration_handler()->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-        base::Value(base::Value::Type::LIST), global_config);
+        base::Value(base::Value::Type::LIST),
+        base::Value(std::move(global_config)));
     base::RunLoop().RunUntilIdle();
   }
 

@@ -131,18 +131,18 @@ class NetworkInfoBubbleTest : public AshTestBase {
   }
 
   void AddDefaultNetworkWithIPAddresses() {
-    base::DictionaryValue ipv4;
-    ipv4.SetKey(shill::kAddressProperty, base::Value(kIpv4Address));
-    ipv4.SetKey(shill::kMethodProperty, base::Value(shill::kTypeIPv4));
+    base::Value::Dict ipv4;
+    ipv4.Set(shill::kAddressProperty, base::Value(kIpv4Address));
+    ipv4.Set(shill::kMethodProperty, base::Value(shill::kTypeIPv4));
 
-    base::DictionaryValue ipv6;
-    ipv6.SetKey(shill::kAddressProperty, base::Value(kIpv6Address));
-    ipv6.SetKey(shill::kMethodProperty, base::Value(shill::kTypeIPv6));
+    base::Value::Dict ipv6;
+    ipv6.Set(shill::kAddressProperty, base::Value(kIpv6Address));
+    ipv6.Set(shill::kMethodProperty, base::Value(shill::kTypeIPv6));
 
     network_config_helper_.network_state_helper().ip_config_test()->AddIPConfig(
-        kIPv4ConfigPath, ipv4);
+        kIPv4ConfigPath, base::Value(std::move(ipv4)));
     network_config_helper_.network_state_helper().ip_config_test()->AddIPConfig(
-        kIPv6ConfigPath, ipv6);
+        kIPv6ConfigPath, base::Value(std::move(ipv6)));
 
     base::Value::List ip_configs;
     ip_configs.Append(kIPv4ConfigPath);

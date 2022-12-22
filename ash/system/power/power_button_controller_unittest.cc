@@ -1085,29 +1085,29 @@ class PowerButtonControllerWithPositionTest
       public testing::WithParamInterface<PowerButtonPosition> {
  public:
   PowerButtonControllerWithPositionTest() : power_button_position_(GetParam()) {
-    base::DictionaryValue position_info;
+    base::Value::Dict position_info;
     switch (power_button_position_) {
       case PowerButtonPosition::LEFT:
-        position_info.SetStringKey(PowerButtonController::kEdgeField,
-                                   PowerButtonController::kLeftEdge);
+        position_info.Set(PowerButtonController::kEdgeField,
+                          PowerButtonController::kLeftEdge);
         break;
       case PowerButtonPosition::RIGHT:
-        position_info.SetStringKey(PowerButtonController::kEdgeField,
-                                   PowerButtonController::kRightEdge);
+        position_info.Set(PowerButtonController::kEdgeField,
+                          PowerButtonController::kRightEdge);
         break;
       case PowerButtonPosition::TOP:
-        position_info.SetStringKey(PowerButtonController::kEdgeField,
-                                   PowerButtonController::kTopEdge);
+        position_info.Set(PowerButtonController::kEdgeField,
+                          PowerButtonController::kTopEdge);
         break;
       case PowerButtonPosition::BOTTOM:
-        position_info.SetStringKey(PowerButtonController::kEdgeField,
-                                   PowerButtonController::kBottomEdge);
+        position_info.Set(PowerButtonController::kEdgeField,
+                          PowerButtonController::kBottomEdge);
         break;
       default:
         return;
     }
-    position_info.SetDoubleKey(PowerButtonController::kPositionField,
-                               kPowerButtonPercentage);
+    position_info.Set(PowerButtonController::kPositionField,
+                      kPowerButtonPercentage);
 
     std::string json_position_info;
     base::JSONWriter::Write(position_info, &json_position_info);

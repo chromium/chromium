@@ -1559,9 +1559,9 @@ TEST_F(AcceleratorControllerTest, SideVolumeButtonLocation) {
 
   // Tests that |side_volume_button_location_| is read correctly if the location
   // file exists.
-  base::DictionaryValue location;
-  location.SetString(kVolumeButtonRegion, kVolumeButtonRegionScreen);
-  location.SetString(kVolumeButtonSide, kVolumeButtonSideLeft);
+  base::Value::Dict location;
+  location.Set(kVolumeButtonRegion, kVolumeButtonRegionScreen);
+  location.Set(kVolumeButtonSide, kVolumeButtonSideLeft);
   std::string json_location;
   base::JSONWriter::Write(location, &json_location);
   base::ScopedTempDir file_tmp_dir;

@@ -21,18 +21,17 @@ namespace ash {
 
 namespace {
 
-std::unique_ptr<base::DictionaryValue> CreateMessage(
+base::Value::Dict CreateMessage(
     const char* kDefaultMessage = "FakeSMSClient: \xF0\x9F\x98\x8A",
     const char* kDefaultNumber = "000-000-0000",
     const char* kDefaultTimestamp = "Fri Jun  8 13:26:04 EDT 2016") {
-  std::unique_ptr<base::DictionaryValue> sms =
-      std::make_unique<base::DictionaryValue>();
+  base::Value::Dict sms;
   if (kDefaultNumber)
-    sms->SetStringKey("number", kDefaultNumber);
+    sms.Set("number", kDefaultNumber);
   if (kDefaultMessage)
-    sms->SetStringKey("text", kDefaultMessage);
+    sms.Set("text", kDefaultMessage);
   if (kDefaultTimestamp)
-    sms->SetStringKey("timestamp", kDefaultMessage);
+    sms.Set("timestamp", kDefaultMessage);
   return sms;
 }
 
@@ -56,8 +55,7 @@ TEST_F(SmsObserverTest, SendTextMessage) {
   SmsObserver* sms_observer = GetSmsObserver();
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 
-  std::unique_ptr<base::DictionaryValue> sms(CreateMessage());
-  sms_observer->MessageReceived(*sms);
+  sms_observer->MessageReceived(base::Value(CreateMessage()));
 
   const message_center::NotificationList::Notifications notifications =
       MessageCenter::Get()->GetVisibleNotifications();
@@ -76,9 +74,8 @@ TEST_F(SmsObserverTest, TextMessageMissingNumber) {
   SmsObserver* sms_observer = GetSmsObserver();
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 
-  std::unique_ptr<base::DictionaryValue> sms(
-      CreateMessage("FakeSMSClient: Test Message.", nullptr));
-  sms_observer->MessageReceived(*sms);
+  sms_observer->MessageReceived(
+      base::Value(CreateMessage("FakeSMSClient: Test Message.", nullptr)));
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 }
 
@@ -87,8 +84,7 @@ TEST_F(SmsObserverTest, TextMessageEmptyText) {
   SmsObserver* sms_observer = GetSmsObserver();
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 
-  std::unique_ptr<base::DictionaryValue> sms(CreateMessage(""));
-  sms_observer->MessageReceived(*sms);
+  sms_observer->MessageReceived(base::Value(CreateMessage("")));
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 }
 
@@ -96,8 +92,7 @@ TEST_F(SmsObserverTest, TextMessageEmptyText) {
 TEST_F(SmsObserverTest, TextMessageMissingText) {
   SmsObserver* sms_observer = GetSmsObserver();
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
-  std::unique_ptr<base::DictionaryValue> sms(CreateMessage(""));
-  sms_observer->MessageReceived(*sms);
+  sms_observer->MessageReceived(base::Value(CreateMessage("")));
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 }
 
@@ -107,10 +102,8 @@ TEST_F(SmsObserverTest, MultipleTextMessages) {
   SmsObserver* sms_observer = GetSmsObserver();
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 
-  std::unique_ptr<base::DictionaryValue> sms(CreateMessage("first message"));
-  sms_observer->MessageReceived(*sms);
-  std::unique_ptr<base::DictionaryValue> sms2(CreateMessage("second message"));
-  sms_observer->MessageReceived(*sms2);
+  sms_observer->MessageReceived(base::Value(CreateMessage("first message")));
+  sms_observer->MessageReceived(base::Value(CreateMessage("second message")));
   const message_center::NotificationList::Notifications notifications =
       MessageCenter::Get()->GetVisibleNotifications();
   EXPECT_EQ(2u, notifications.size());
