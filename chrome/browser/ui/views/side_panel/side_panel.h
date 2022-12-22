@@ -37,9 +37,6 @@ class SidePanel : public views::AccessiblePaneView,
   HorizontalAlignment GetHorizontalAlignment();
   bool IsRightAligned();
   gfx::Size GetMinimumSize() const override;
-  void SetMinimumSidePanelContentsWidthForTesting(int width) {
-    min_side_panel_contents_width_ = width;
-  }
 
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
@@ -75,8 +72,6 @@ class SidePanel : public views::AccessiblePaneView,
 
   // Observes and listens to side panel alignment changes.
   PrefChangeRegistrar pref_change_registrar_;
-
-  int min_side_panel_contents_width_ = 320;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_

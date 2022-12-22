@@ -217,8 +217,9 @@ bool SidePanel::IsRightAligned() {
 }
 
 gfx::Size SidePanel::GetMinimumSize() const {
+  const int min_side_panel_contents_width = 320;
   const int min_height = 0;
-  return gfx::Size(min_side_panel_contents_width_ + kBorderInsets.width(),
+  return gfx::Size(min_side_panel_contents_width + kBorderInsets.width(),
                    min_height);
 }
 
@@ -256,21 +257,8 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
     starting_width_on_resize_ = -1;
   }
   const int minimum_width = GetMinimumSize().width();
-  // The side panel may be resized up to leaving the main contents at
-  // kMainBrowserContentsMinimumWidth.
-  DCHECK_EQ(browser_view_->GetMinimumSize().width(),
-            BrowserViewLayout::kMainBrowserContentsMinimumWidth);
-  const int maximum_width = width() +
-                            browser_view_->contents_container()->width() -
-                            BrowserViewLayout::kMainBrowserContentsMinimumWidth;
-  // Side panel must stay at minimum width if either:
-  // a) The proposed width is less than the minimum.
-  // b) There is not enough room for the side panel to be wider than the
-  //    minimum.
-  if (proposed_width < minimum_width || maximum_width < minimum_width) {
+  if (proposed_width < minimum_width) {
     proposed_width = minimum_width;
-  } else if (proposed_width > maximum_width) {
-    proposed_width = maximum_width;
   }
   if (width() != proposed_width) {
     SetPanelWidth(proposed_width);
