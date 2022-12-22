@@ -1308,6 +1308,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2165102982098084499">Dispositivos que vinculaches escaneando un código QR.</translation>
 <translation id="2165177462441582039">Escolle canto tempo debe permanecer destacado cada elemento</translation>
 <translation id="2166369534954157698">Necesitamos unha tipografía chuliña de cor kiwi que lle zorregue unha labazada visual á xente</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Bloqueouse este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Xa non se admite a xestión de dispositivos Chrome con <ph name="MS_AD_NAME" />. Para iniciar sesión, usa outro dispositivo ou ponte en contacto co administrador do teu dispositivo.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Iniciar sesión igualmente</translation>
 <translation id="2173302385160625112">Comproba a túa conexión a Internet</translation>
 <translation id="2173801458090845390">Engade o ID de solicitude para este dispositivo</translation>

@@ -1312,6 +1312,8 @@
 <translation id="2165102982098084499">Вы звязалі гэтыя прылады шляхам сканіравання QR-кода.</translation>
 <translation id="2165177462441582039">Выберыце працягласць вылучэння аднаго аб'екта</translation>
 <translation id="2166369534954157698">абвгдеёжзійклмнопрстуўфхцчшыьэюя</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Гэта прылада (серыйны нумар: <ph name="SERIAL_NUMBER" />) была заблакіравана.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Кіраванне прыладамі Chrome праз <ph name="MS_AD_NAME" /> больш не падтрымліваецца. Каб увайсці ва ўліковы запіс, звярніцеся да адміністратара гэтай прылады або выкарыстайце іншую.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Усё роўна ўвайсці</translation>
 <translation id="2173302385160625112">Праверце падключэнне да інтэрнэту</translation>
 <translation id="2173801458090845390">Дадаць ідэнтыфікатар заяўкі для гэтай прылады</translation>

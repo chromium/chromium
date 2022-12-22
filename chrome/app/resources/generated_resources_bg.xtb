@@ -1317,6 +1317,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2165102982098084499">Свързахте тези устройства, като сканирахте QR код.</translation>
 <translation id="2165177462441582039">Изберете продължителността на открояване на отделните елементи</translation>
 <translation id="2166369534954157698">Ах, чудна българска земьо, полюшвай цъфтящи жита!</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Това устройство (сериен номер <ph name="SERIAL_NUMBER" />) е заключено.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Управлението на устройства с Chrome с <ph name="MS_AD_NAME" /> вече не се поддържа. За да влезете в профила си, използвайте друго устройство или се обърнете към администратора на устройството си.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Влизане въпреки това</translation>
 <translation id="2173302385160625112">Проверете връзката си с интернет</translation>
 <translation id="2173801458090845390">Добавяне на идентификационен номер на заявка към това устройство</translation>

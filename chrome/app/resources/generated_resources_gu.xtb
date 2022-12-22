@@ -1306,6 +1306,8 @@
 <translation id="2165102982098084499">તમે QR કોડ સ્કૅન કરીને આ ડિવાઇસ લિંક કર્યા છે.</translation>
 <translation id="2165177462441582039">દરેક આઇટમ પર હાઇલાઇટ કેટલીવાર સુધી રહેશે તે પસંદ કરો</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />આ ડિવાઇસ (SN: <ph name="SERIAL_NUMBER" />) લૉક હતું.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" /> વડે Chrome ડિવાઇસ મેનેજમેન્ટ હવેથી સપોર્ટેડ રહેશે નહીં. સાઇન ઇન કરવા માટે, કોઈ અન્ય ડિવાઇસનો ઉપયોગ કરો અથવા તમારા ડિવાઇસ ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">કોઈપણ રીતે સાઇન ઇન કરો</translation>
 <translation id="2173302385160625112">તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો</translation>
 <translation id="2173801458090845390">આ ઉપકરણમાં માગણી ID ઉમેરો</translation>

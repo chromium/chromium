@@ -1309,6 +1309,8 @@
 <translation id="2165102982098084499">透過掃描 QR 圖碼的方式連結了這些裝置。</translation>
 <translation id="2165177462441582039">選擇醒目顯示範圍停留在每個項目上的時間長度</translation>
 <translation id="2166369534954157698">狐狗大戰</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />這部裝置 (序號：<ph name="SERIAL_NUMBER" />) 已鎖定。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />系統不再支援 <ph name="MS_AD_NAME" /> 的 Chrome 裝置管理模式。如要登入，請使用其他裝置或與裝置管理員聯絡。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">繼續登入</translation>
 <translation id="2173302385160625112">檢查你的網際網路連線</translation>
 <translation id="2173801458090845390">新增這部裝置的申請 ID</translation>
@@ -4548,7 +4550,7 @@
 <translation id="5177549709747445269">您正在使用行動數據</translation>
 <translation id="5178667623289523808">尋找上一個項目</translation>
 <translation id="5181140330217080051">下載中</translation>
-<translation id="5181172023548002891">儲存至 <ph name="ACCOUNT" /> 的 Google 密碼管理員</translation>
+<translation id="5181172023548002891">儲存至 <ph name="ACCOUNT" /> 的 Google 密碼管理工具</translation>
 <translation id="5184063094292164363">JavaScript 控制台(&amp;J)</translation>
 <translation id="5184209580557088469">已有票證使用這個使用者名稱</translation>
 <translation id="5184662919967270437">正在更新您的裝置</translation>

@@ -1306,6 +1306,8 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2165102982098084499">Asociaste estos dispositivos mediante un escaneo de código QR.</translation>
 <translation id="2165177462441582039">Elige cuánto tiempo debe permanecer destacado cada elemento</translation>
 <translation id="2166369534954157698">El veloz murciélago hindú comía feliz cardillo y kiwi</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Se bloqueó este dispositivo (Número de serie: <ph name="SERIAL_NUMBER" />).<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Ya no se admite la administración de dispositivos Chrome con <ph name="MS_AD_NAME" />. Para acceder, usa otro dispositivo o comunícate con el administrador del dispositivo.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Acceder de todos modos</translation>
 <translation id="2173302385160625112">Comprueba tu conexión a Internet</translation>
 <translation id="2173801458090845390">Agregar la ID de la solicitud a este dispositivo</translation>

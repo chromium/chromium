@@ -37,6 +37,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1175572348579024023">Keri</translation>
 <translation id="1178581264944972037">Peata</translation>
 <translation id="1181037720776840403">Eemalda</translation>
+<translation id="1182225749592316782">Sisselülitamisel antakse juurdepääsuluba kõikidele kaamerale ja mikrofonile juurdepääsemise loaga rakendustele ning veebisaitidele</translation>
 <translation id="1183863904939664422">Pole sellest soovitusest huvitatud</translation>
 <translation id="118437560755358292">Sisestage tugevama turvalisuse jaoks PIN-kood</translation>
 <translation id="118532027333893379">Täisekraani jäädvustamiseks puudutage ekraanikuval kus tahes</translation>
@@ -464,6 +465,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3542066395059568317">Näete soovitusi, et saaksite jätkata sealt, kus pooleli jäite. Soovituste eemaldamiseks võite paremklõpsata.</translation>
 <translation id="3552189655002856821">WiFi on välja lülitatud</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> kinnitati</translation>
+<translation id="3558768885091059911">Kas lülitada kaamerale ja mikrofonile juurdepääsemine sisse?</translation>
 <translation id="3560174576767922131">Video salvestamine</translation>
 <translation id="3563775809269155755">Kuumkoha lubamine</translation>
 <translation id="3566240529365775567">Äsja avatud</translation>
@@ -875,6 +877,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5763928712329149804">Shelf Party on välja lülitatud.</translation>
 <translation id="576453121877257266">Öövalgus on sees.</translation>
 <translation id="5769373120130404283">Privaatsuskuva</translation>
+<translation id="5773950591113557721">Sisselülitamisel antakse juurdepääsuluba rakendusele <ph name="APP_NAME" /> ning kõikidele kaamerale ja mikrofonile juurdepääsemise loaga rakendustele ning veebisaitidele</translation>
 <translation id="5777841717266010279">Kas peatada ekraani jagamine?</translation>
 <translation id="5779721926447984944">Kinnitatud failid</translation>
 <translation id="5788127256798019331">Play failid</translation>
@@ -1062,6 +1065,7 @@ Uus installimine</translation>
 <translation id="6787595647772650851">Taasta eelmine seanss</translation>
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6801878137098616817">Hiljuti muudetud</translation>
+<translation id="6802687695197837794">Sisselülitamisel antakse juurdepääsuluba rakendustele <ph name="APP1_NAME" /> ja <ph name="APP2_NAME" /> ning kõikidele kaamerale ja mikrofonile juurdepääsemise loaga rakendustele ning veebisaitidele</translation>
 <translation id="6803622936009808957">Ei saanud kuvasid peegeldada, kuna toetatud eraldusvõimeid ei leitud. Selle asemel siseneti laiendatud töölaua režiimi.</translation>
 <translation id="6812232930908427253">Töölauda ei õnnestunud salvestada. Liiga palju aknaid või vahelehti.</translation>
 <translation id="6818242057446442178">Sõna võrra tagasi</translation>
@@ -1094,6 +1098,7 @@ Uus installimine</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Alustamine</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">Lülita juurdepääs sisse</translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
 <translation id="698231206551913481">Kõik selle kasutajaga seotud failid ja kohalikud andmed kustutatakse jäädavalt kohe, kui see kasutaja eemaldatakse.</translation>
 <translation id="7005239792648594238">Alustamiseks avage rakendus</translation>

@@ -37,6 +37,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1175572348579024023">Lëviz</translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1181037720776840403">Hiq</translation>
+<translation id="1182225749592316782">Kjo lejon qasjen për të gjitha aplikacionet dhe sajtet e uebit që kanë lejen për kamerën dhe mikrofonin</translation>
 <translation id="1183863904939664422">Nuk më intereson ky sugjerim</translation>
 <translation id="118437560755358292">Fut fjalëkalimin ose kodin PIN për më shumë siguri</translation>
 <translation id="118532027333893379">Trokit diku për të regjistruar ekranin e plotë</translation>
@@ -464,6 +465,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3542066395059568317">Do të shohësh rekomandime, në mënyrë që të vazhdosh aty ku e ke lënë. Mund të klikosh me butonin djathtas për të hequr rekomandimet.</translation>
 <translation id="3552189655002856821">Wi-Fi është çaktivizuar</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> u gozhdua</translation>
+<translation id="3558768885091059911">Të aktivizohet qasja te kamera dhe mikrofoni?</translation>
 <translation id="3560174576767922131">Regjistro një video</translation>
 <translation id="3563775809269155755">Aktivizo zonën e qasjes për internet</translation>
 <translation id="3566240529365775567">Hapur tani</translation>
@@ -874,6 +876,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5763928712329149804">"Grupi i rafteve" është joaktiv.</translation>
 <translation id="576453121877257266">"Drita e natës" është aktive.</translation>
 <translation id="5769373120130404283">Ekrani i privatësisë</translation>
+<translation id="5773950591113557721">Kjo lejon qasjen për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit që kanë lejen për kamerën dhe mikrofonin</translation>
 <translation id="5777841717266010279">Dëshiron të ndalosh ndarjen e ekranit?</translation>
 <translation id="5779721926447984944">Skedarët e gozhduar</translation>
 <translation id="5788127256798019331">Skedarët e Play</translation>
@@ -1061,6 +1064,7 @@ Instalim i ri</translation>
 <translation id="6787595647772650851">Restauro sesionin e fundit</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6801878137098616817">Modifikuar së fundi</translation>
+<translation id="6802687695197837794">Kjo lejon qasjen për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit që kanë lejen për kamerën dhe mikrofonin</translation>
 <translation id="6803622936009808957">Nuk mundi të pasqyrojë ekranet sepse nuk u gjetën rezolucione të mbështetura. Në vend të kësaj kaloi në desktopin e zgjeruar.</translation>
 <translation id="6812232930908427253">Tavolina e punës nuk mund të ruhej. Shumë dritare ose skeda.</translation>
 <translation id="6818242057446442178">Një fjalë pas</translation>
@@ -1093,6 +1097,7 @@ Instalim i ri</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6972754398087986839">Fillo</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
+<translation id="6981291220124935078">Aktivizo qasjen</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="698231206551913481">Të gjithë skedarët dhe të dhënat lokale të lidhura me këtë përdorues do të fshihen përgjithmonë pasi të hiqet ky përdorues.</translation>
 <translation id="7005239792648594238">Hap një aplikacion për të filluar</translation>

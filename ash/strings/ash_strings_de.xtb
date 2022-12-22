@@ -37,6 +37,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1175572348579024023">Scrollen</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Entfernen</translation>
+<translation id="1182225749592316782">Dies erlaubt den Zugriff für alle Apps und Websites mit Kamera- und Mikrofonberechtigung</translation>
 <translation id="1183863904939664422">Ich bin nicht an diesem Vorschlag interessiert</translation>
 <translation id="118437560755358292">Für mehr Sicherheit ist das Passwort oder die PIN erforderlich</translation>
 <translation id="118532027333893379">Auf eine beliebige Stelle tippen, um den ganzen Bildschirm aufzunehmen</translation>
@@ -464,6 +465,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3542066395059568317">Empfehlungen werden angezeigt, damit du dort fortfahren kannst, wo du aufgehört hast. Per Rechtsklick kannst du Empfehlungen entfernen.</translation>
 <translation id="3552189655002856821">WLAN ist deaktiviert</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> wurde angepinnt</translation>
+<translation id="3558768885091059911">Zugriff auf Kamera und Mikrofon aktivieren?</translation>
 <translation id="3560174576767922131">Video aufzeichnen</translation>
 <translation id="3563775809269155755">Hotspot aktivieren</translation>
 <translation id="3566240529365775567">Soeben geöffnet</translation>
@@ -873,6 +875,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5763928712329149804">Shelf Party ist deaktiviert.</translation>
 <translation id="576453121877257266">Nachtlicht ist eingeschaltet.</translation>
 <translation id="5769373120130404283">Datenschutzbildschirm</translation>
+<translation id="5773950591113557721">Dies erlaubt den Zugriff für <ph name="APP_NAME" /> und alle Apps und Websites mit Kamera- und Mikrofonberechtigung</translation>
 <translation id="5777841717266010279">Bildschirmfreigabe beenden?</translation>
 <translation id="5779721926447984944">Angepinnte Dateien</translation>
 <translation id="5788127256798019331">Google Play-Dateien</translation>
@@ -1060,6 +1063,7 @@ Neuinstallation</translation>
 <translation id="6787595647772650851">Letzte Sitzung wiederherstellen</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="6801878137098616817">Vor Kurzem bearbeitet</translation>
+<translation id="6802687695197837794">Dies erlaubt den Zugriff für <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> und alle Apps und Websites mit Kamera- und Mikrofonberechtigung</translation>
 <translation id="6803622936009808957">Der Bildschirm konnte nicht gespiegelt werden, da die Auflösung nicht unterstützt wird. Stattdessen wurde der Modus für den erweiterten Desktop gestartet.</translation>
 <translation id="6812232930908427253">Desktop konnte nicht gespeichert werden. Zu viele Fenster oder Tabs.</translation>
 <translation id="6818242057446442178">Zurück um ein Wort</translation>
@@ -1092,6 +1096,7 @@ Neuinstallation</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6972754398087986839">Erste Schritte</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">Zugriff aktivieren</translation>
 <translation id="6981982820502123353">Bedienungshilfen</translation>
 <translation id="698231206551913481">Durch das Entfernen des Nutzers werden alle mit ihm verknüpften Dateien und lokalen Daten endgültig gelöscht.</translation>
 <translation id="7005239792648594238">Öffne eine App, um loszulegen</translation>

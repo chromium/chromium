@@ -37,6 +37,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1175572348579024023">Ritināt</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="1181037720776840403">Noņemt</translation>
+<translation id="1182225749592316782">Tādējādi piekļuve tiek atļauta visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja.</translation>
 <translation id="1183863904939664422">Neinteresē šis ieteikums</translation>
 <translation id="118437560755358292">Papildu drošībai ievadiet paroli vai PIN</translation>
 <translation id="118532027333893379">Pieskarieties jebkurā vietā, lai tvertu visu ekrānu</translation>
@@ -464,6 +465,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3542066395059568317">Tā kā tiks rādīti ieteikumi, varēsiet turpināt no vietas, kur beidzāt darbu. Lai noņemtu ieteikumus, varat noklikšķināt ar peles labo pogu.</translation>
 <translation id="3552189655002856821">Wi-Fi ir izslēgts</translation>
 <translation id="3554637740840164787">Vienums <ph name="ITEM_TITLE" /> tika piesprausts</translation>
+<translation id="3558768885091059911">Vai ieslēgt piekļuvi kamerai un mikrofonam?</translation>
 <translation id="3560174576767922131">Ierakstīt videoklipu</translation>
 <translation id="3563775809269155755">Iespējot tīklāju</translation>
 <translation id="3566240529365775567">Tikko atvērts</translation>
@@ -874,6 +876,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5763928712329149804">Režīms Shelf Party ir izslēgts.</translation>
 <translation id="576453121877257266">Nakts režīms ir ieslēgts.</translation>
 <translation id="5769373120130404283">Konfidencialitātes ekrāns</translation>
+<translation id="5773950591113557721">Tādējādi piekļuve tiek atļauta lietotnei <ph name="APP_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja.</translation>
 <translation id="5777841717266010279">Vai apturēt ekrāna koplietošanu?</translation>
 <translation id="5779721926447984944">Piespraustie faili</translation>
 <translation id="5788127256798019331">Play faili</translation>
@@ -1061,6 +1064,7 @@ Jauna instalācija</translation>
 <translation id="6787595647772650851">Atjaunot pēdējo sesiju</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6801878137098616817">Nesen rediģēts</translation>
+<translation id="6802687695197837794">Tādējādi piekļuve tiek atļauta lietotnei <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja.</translation>
 <translation id="6803622936009808957">Nevarēja spoguļot displejus, jo netika atrasta atbalstīta izšķirtspēja. Tā vietā tika aktivizēts paplašinātās darbvirsmas režīms.</translation>
 <translation id="6812232930908427253">Nevarēja saglabāt darbvietu. Pārāk daudz logu vai ciļņu.</translation>
 <translation id="6818242057446442178">Pāriet atpakaļ pa vārdam</translation>
@@ -1093,6 +1097,7 @@ Jauna instalācija</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6972754398087986839">Sākt darbu</translation>
 <translation id="6979158407327259162">Google disks</translation>
+<translation id="6981291220124935078">Ieslēgt piekļuvi</translation>
 <translation id="6981982820502123353">Pieejamība</translation>
 <translation id="698231206551913481">Visi faili un lokālie dati, kas ir saistīti ar šo lietotāju, tiks neatgriezeniski dzēsti, tiklīdz šis lietotājs tiks noņemts.</translation>
 <translation id="7005239792648594238">Lai sāktu, atveriet kādu lietotni</translation>

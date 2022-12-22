@@ -37,6 +37,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1175572348579024023">Aylantirish</translation>
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
+<translation id="1182225749592316782">Kamera va mikrofon ruxsatiga ega barcha ilova va saytlarga kirish imkonini beradi</translation>
 <translation id="1183863904939664422">Bu tavsiya menga qiziq emas</translation>
 <translation id="118437560755358292">Xavfsizlikni oshirish uchun parol yoki PIN kodni kiriting</translation>
 <translation id="118532027333893379">Butun ekranni rasmga olish uchun ekranning istalgan joyiga bosing</translation>
@@ -464,6 +465,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3542066395059568317">Siz uchun takliflar kelgan joyidan davom etadi. Takliflarni oʻng klik bilan olib tashlash mumkin.</translation>
 <translation id="3552189655002856821">Wi-Fi yoqilmagan</translation>
 <translation id="3554637740840164787">Mahkamlandi: <ph name="ITEM_TITLE" /></translation>
+<translation id="3558768885091059911">Kamera va mikrofondan foydalanish uchun ruxsat berilsinmi?</translation>
 <translation id="3560174576767922131">Videoga olish</translation>
 <translation id="3563775809269155755">Hotspotni yoqish</translation>
 <translation id="3566240529365775567">Hozirgina ochildi</translation>
@@ -874,6 +876,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5763928712329149804">Shelf Party oʻchiq.</translation>
 <translation id="576453121877257266">Tungi rejim yoniq.</translation>
 <translation id="5769373120130404283">Maxfiylik ekrani</translation>
+<translation id="5773950591113557721">Kamera va mikrofon ruxsatiga ega <ph name="APP_NAME" /> va barcha ilova va saytlarga kirish imkonini beradi</translation>
 <translation id="5777841717266010279">Ekrandan foydalanish ruxsati to‘xtatilsinmi?</translation>
 <translation id="5779721926447984944">Mahkamlangan fayllar</translation>
 <translation id="5788127256798019331">Play fayllari</translation>
@@ -1061,6 +1064,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6787595647772650851">Oxirgi seansni tiklash</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6801878137098616817">Yaqinda tahrirlangan</translation>
+<translation id="6802687695197837794">Kamera va mikrofon ruxsatiga ega <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> va barcha ilova va saytlarga kirish imkonini beradi</translation>
 <translation id="6803622936009808957">Ekran tasvirini nusxalab bo‘lmadi, chunki ko‘rsatilgan ekran sig‘imi qo‘llab-quvvatlanmaydi. Kengaytirilgan ish stoli rejimi yoqildi.</translation>
 <translation id="6812232930908427253">Ish stoli saqlanmadi. Haddan ziyod oynalar yoki varaqlar ochilgan.</translation>
 <translation id="6818242057446442178">Bitta soʻz orqaga</translation>
@@ -1093,6 +1097,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Boshlash</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6981291220124935078">Ruxsat berish</translation>
 <translation id="6981982820502123353">Qulayliklar</translation>
 <translation id="698231206551913481">Bu foydalanuvchiga tegishli barcha fayllar va mahalliy ma’lumotlar foydalanuvchi olib tashlanganda butunlay o‘chib ketadi.</translation>
 <translation id="7005239792648594238">Boshlash uchun ilovani oching</translation>

@@ -125,6 +125,7 @@
 <translation id="3140883423282498090">‏השינויים ייכנסו לתוקף בפעם הבאה ש-Google Chrome יופעל מחדש.</translation>
 <translation id="3149510190863420837">‏אפליקציות Chrome</translation>
 <translation id="3169523567916669830">‏במהלך הפעולה של גרסאות הניסיון, תהיה לך אפשרות לראות ולהסיר את תחומי העניין שלפיהם האתרים הציגו לך את המודעות. ההערכה של תחומי העניין ב-Chrome מתבססת על היסטוריית הגלישה שלך מהזמן האחרון.</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{‏Google Chrome מחובר להתקן HID}one{‏Google Chrome מחובר להתקני HID}two{‏Google Chrome מחובר להתקני HID}other{‏Google Chrome מחובר להתקני HID}}</translation>
 <translation id="3245429137663807393">‏אם בנוסף ישותפו דוחות שימוש ב-Chrome, הדוחות האלה יכללו את כתובות ה-URL שבהן ביקרת</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
 <translation id="3286538390144397061">הפעל מחדש כעת</translation>

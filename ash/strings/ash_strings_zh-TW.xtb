@@ -37,6 +37,7 @@
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1182225749592316782">這將允許具有攝影機和麥克風權限的所有應用程式和網站存取</translation>
 <translation id="1183863904939664422">對這項建議不感興趣</translation>
 <translation id="118437560755358292">基於安全考量，請輸入密碼或 PIN 碼</translation>
 <translation id="118532027333893379">輕觸任一處即可擷取全螢幕畫面</translation>
@@ -464,6 +465,7 @@
 <translation id="3542066395059568317">系統會顯示建議項目，以便你繼續使用上次開啟的內容。只要在建議項目上按一下滑鼠右鍵即可移除。</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
 <translation id="3554637740840164787">已固定「<ph name="ITEM_TITLE" />」</translation>
+<translation id="3558768885091059911">要開啟攝影機和麥克風存取權嗎？</translation>
 <translation id="3560174576767922131">錄影</translation>
 <translation id="3563775809269155755">啟用無線基地台</translation>
 <translation id="3566240529365775567">剛才開啟過</translation>
@@ -873,6 +875,7 @@
 <translation id="5763928712329149804">Shelf Party 已關閉。</translation>
 <translation id="576453121877257266">夜燈模式已開啟。</translation>
 <translation id="5769373120130404283">隱私保護畫面</translation>
+<translation id="5773950591113557721">這將允許「<ph name="APP_NAME" />」與具有攝影機和麥克風權限的所有應用程式和網站存取</translation>
 <translation id="5777841717266010279">停止共用螢幕？</translation>
 <translation id="5779721926447984944">固定的檔案</translation>
 <translation id="5788127256798019331">Play 檔案</translation>
@@ -1059,6 +1062,7 @@
 <translation id="6787595647772650851">還原上一個工作階段</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6801878137098616817">最近編輯過</translation>
+<translation id="6802687695197837794">這將允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」與具有攝影機和麥克風權限的所有應用程式和網站存取</translation>
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
 <translation id="6812232930908427253">視窗或分頁過多，無法儲存桌面。</translation>
 <translation id="6818242057446442178">移至上一個字詞</translation>
@@ -1091,6 +1095,7 @@
 <translation id="6965382102122355670">確定</translation>
 <translation id="6972754398087986839">開始使用</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
+<translation id="6981291220124935078">開啟存取權</translation>
 <translation id="6981982820502123353">無障礙設定</translation>
 <translation id="698231206551913481">將這位使用者移除後，與這位使用者相關聯的所有檔案和本機資料都會遭到永久刪除。</translation>
 <translation id="7005239792648594238">開啟應用程式即可開始</translation>

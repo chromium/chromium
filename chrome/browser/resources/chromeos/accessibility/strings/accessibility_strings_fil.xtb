@@ -116,7 +116,7 @@
 <translation id="1657616855184033958">Ipakita ang mga filter ng stream ng event</translation>
 <translation id="1659072772017912254">Hindi nilagyan ng check</translation>
 <translation id="1666326070478924810">Mga Setting ng Select to Speak</translation>
-<translation id="1674262202423278359">Nabigasyon sa ChromeVox</translation>
+<translation id="1674262202423278359">Navigation sa ChromeVox</translation>
 <translation id="16777221443363124">Menu bar</translation>
 <translation id="1680732992526857724"><ph name="NAME" />, i-on</translation>
 <translation id="1686878109459149415">Gold</translation>
@@ -340,7 +340,7 @@
 <translation id="3153024374267644603">I-on ang pananalita</translation>
 <translation id="3153928844647607688">Talahanayan na <ph name="TABLENAME" />, <ph name="TABLEROWS" /> by <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beige</translation>
-<translation id="316542773973815724">Nabigasyon</translation>
+<translation id="316542773973815724">Navigation</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{espasyo}one{# espasyo}other{# na espasyo}}</translation>
 <translation id="3179119189286472195">Hindi link</translation>
 <translation id="320041337977930740">Palitan ang istilo ng display para i-interleave</translation>
@@ -749,7 +749,7 @@
 <translation id="5968607524793740041">Ipakita ang menu ng konteksto</translation>
 <translation id="597121107011153418">{COUNT,plural, =1{may # item}one{may # item}other{may # na item}}</translation>
 <translation id="5981446804259161541">Light Cyan</translation>
-<translation id="5983179082906765664">Paramihin ang granularity ng nabigasyon</translation>
+<translation id="5983179082906765664">Paramihin ang granularity ng navigation</translation>
 <translation id="5992285135956208197">Dokumento ng graphics</translation>
 <translation id="5999630716831179808">Mga Boses</translation>
 <translation id="6006050241733874051">Form</translation>
@@ -1093,7 +1093,7 @@
 <translation id="8476408756881832830">I-pause ang pag-playback kapag nagsasalita ang ChromeVox</translation>
 <translation id="8476508772960940536">pangkalahatang-ideya ng window</translation>
 <translation id="8480873377842220259">Ngayon, matuto ka ng ilang basic na pag-navigate. Puwede mong pindutin nang matagal ang Search at pindutin ang mga arrow key para gumalaw-galaw sa screen. Para magpatuloy, pindutin ang Search + Pakanang arrow.</translation>
-<translation id="8503360654911991865">Bawasan ang granularity ng nabigasyon</translation>
+<translation id="8503360654911991865">Bawasan ang granularity ng navigation</translation>
 <translation id="8520472399088452386">Spin button</translation>
 <translation id="8534394844575788431">Pag-format</translation>
 <translation id="8542271685829952264">Upang i-explore ang lahat ng command at shortcut sa ChromeVox, pindutin ang Search + Period, pagkatapos ay gamitin ang mga Arrow key upang i-navigate ang mga menu, at ang Enter upang mag-activate ng command. Bumalik dito sa pamamagitan ng pagpindot sa Search+o pagktapos ay sa t.</translation>

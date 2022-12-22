@@ -1312,6 +1312,8 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2165102982098084499">Linkisite need seadmed QR-koodi skannimise kaudu.</translation>
 <translation id="2165177462441582039">Valige, kui kaua iga üksus on esile tõstetud</translation>
 <translation id="2166369534954157698">Väle pruun rebane hüppab üle laisa koera</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />See seade (seerianumber: <ph name="SERIAL_NUMBER" />) oli lukustatud.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Chrome'i seadmete haldamist teenusega <ph name="MS_AD_NAME" /> ei toetata enam. Sisselogimiseks kasutage teist seadet või võtke ühendust seadme administraatoriga.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Logi ikkagi sisse</translation>
 <translation id="2173302385160625112">Kontrollige Interneti-ühendust</translation>
 <translation id="2173801458090845390">Lisa seadmesse nõude ID</translation>

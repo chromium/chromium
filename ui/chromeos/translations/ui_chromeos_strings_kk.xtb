@@ -181,7 +181,7 @@
 <translation id="2517472476991765520">Іздеу</translation>
 <translation id="252641322760726369">Сөредегі файлдарға жылдам кіру үшін файлды басып тұрып, <ph name="ICON" />, белгішесін түртіңіз де, "<ph name="PIN_COMMAND" />" пәрменін таңдаңыз.</translation>
 <translation id="2534460670861217804">Қауіпсіз HTTP прокси-сервері</translation>
-<translation id="2541377937973966830">Бұл қалтадағы мазмұнды тек оқуға болады. Кейбір әрекеттерге қолдау көрсетілмейді.</translation>
+<translation id="2541377937973966830">Бұл қалтадағы контентті тек оқуға болады. Кейбір әрекеттерге қолдау көрсетілмейді.</translation>
 <translation id="2542049655219295786">Google кестесі</translation>
 <translation id="2544853746127077729">Желі аутентификация сертификатын қабылдамады</translation>
 <translation id="255937426064304553">АҚШ халықаралық</translation>
@@ -331,7 +331,7 @@
 <translation id="3817579325494460411">Берілмеген</translation>
 <translation id="3819448694985509187">PIN коды дұрыс емес. 1 әрекет қалды.</translation>
 <translation id="3822559385185038546">Бұл прокси-серверді әкімші іске қосқан</translation>
-<translation id="3830674330436234648">Ойнатылатын мазмұн жоқ</translation>
+<translation id="3830674330436234648">Ойнатылатын контент жоқ</translation>
 <translation id="383652340667548381">серб</translation>
 <translation id="385051799172605136">Артқа</translation>
 <translation id="3851491607336266896">Қосылған, интернет шектеулі</translation>
@@ -400,7 +400,7 @@
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, қосылу</translation>
 <translation id="4442424173763614572">DNS іздеу сәтсіз аяқталды</translation>
 <translation id="4462159676511157176">Реттелетін атау серверлері</translation>
-<translation id="4465725236958772856"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, әкімші басқарады, мазмұн</translation>
+<translation id="4465725236958772856"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, әкімші басқарады, контент</translation>
 <translation id="4470564870223067757">2-ханғыл жинағы</translation>
 <translation id="4477002475007461989">Румын</translation>
 <translation id="4477219268485577442">Болгар (фонетикалық)</translation>

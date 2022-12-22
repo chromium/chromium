@@ -1306,6 +1306,8 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2165102982098084499">Du hast einen QR-Code gescannt, um diese Geräte zu verknüpfen.</translation>
 <translation id="2165177462441582039">Du kannst festlegen, wie lange ein Element markiert bleiben soll</translation>
 <translation id="2166369534954157698">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich</translation>
+<translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Dieses Gerät (Seriennummer: <ph name="SERIAL_NUMBER" />) wurde gesperrt.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Die Chrome-Geräteverwaltung mit <ph name="MS_AD_NAME" /> wird nicht mehr unterstützt. Verwende ein anderes Gerät, um dich anzumelden, oder wende dich an deinen Geräteadministrator.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">Trotzdem anmelden</translation>
 <translation id="2173302385160625112">Bitte überprüfe deine Internetverbindung</translation>
 <translation id="2173801458090845390">Diesem Gerät eine Anforderungs-ID hinzufügen</translation>
