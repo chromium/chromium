@@ -44,13 +44,11 @@ class GL_EXPORT GLImageD3D : public GLImage {
   // GLImage implementation
   Type GetType() const override;
   void* GetEGLImage() const override;
-  BindOrCopy ShouldBindOrCopy() override;
   gfx::Size GetSize() override;
   unsigned GetInternalFormat() override;
   unsigned GetDataType() override;
   bool BindTexImage(unsigned target) override;
   void ReleaseTexImage(unsigned target) override {}
-  bool CopyTexImage(unsigned target) override;
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override;

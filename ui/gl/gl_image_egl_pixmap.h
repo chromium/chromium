@@ -30,7 +30,6 @@ class GL_EXPORT GLImageEGLPixmap : public GLImage {
   gfx::Size GetSize() override;
   unsigned GetInternalFormat() override;
   unsigned GetDataType() override;
-  BindOrCopy ShouldBindOrCopy() override;
   bool BindTexImage(unsigned target) override;
   void ReleaseTexImage(unsigned target) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,

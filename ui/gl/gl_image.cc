@@ -81,11 +81,6 @@ unsigned GLImage::GetDataType() {
   return GL_NONE;
 }
 
-GLImage::BindOrCopy GLImage::ShouldBindOrCopy() {
-  NOTREACHED();
-  return BIND;
-}
-
 bool GLImage::BindTexImage(unsigned target) {
   NOTREACHED();
   return false;
@@ -93,11 +88,6 @@ bool GLImage::BindTexImage(unsigned target) {
 
 void GLImage::ReleaseTexImage(unsigned target) {
   NOTREACHED();
-}
-
-bool GLImage::CopyTexImage(unsigned target) {
-  NOTREACHED();
-  return false;
 }
 
 bool GLImage::CopyTexSubImage(unsigned target,

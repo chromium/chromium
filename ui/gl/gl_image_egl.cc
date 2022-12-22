@@ -47,14 +47,8 @@ void* GLImageEGL::GetEGLImage() const {
   return egl_image_;
 }
 
-GLImageEGL::BindOrCopy GLImageEGL::ShouldBindOrCopy() {
-  DCHECK_NE(egl_image_, EGL_NO_IMAGE_KHR);
-  return BIND;
-}
-
 bool GLImageEGL::BindTexImage(unsigned target) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK_EQ(BIND, ShouldBindOrCopy());
 
   glEGLImageTargetTexture2DOES(target, egl_image_);
   return true;

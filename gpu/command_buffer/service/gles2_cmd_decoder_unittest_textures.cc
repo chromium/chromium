@@ -3351,7 +3351,6 @@ class MockGLImage : public gl::GLImage {
   MOCK_METHOD0(GetInternalFormat, unsigned());
   MOCK_METHOD0(GetDataFormat, unsigned());
   MOCK_METHOD0(GetDataType, unsigned());
-  MOCK_METHOD0(ShouldBindOrCopy, gl::GLImage::BindOrCopy());
   MOCK_METHOD1(BindTexImage, bool(unsigned));
   MOCK_METHOD1(ReleaseTexImage, void(unsigned));
   MOCK_METHOD1(CopyTexImage, bool(unsigned));

@@ -70,7 +70,6 @@ void PassthroughAbstractTextureImpl::BindImageInternal(gl::GLImage* image,
     gl::GLImage* current_image =
         texture_passthrough_->GetLevelImage(target, level);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    // TODO(sandersd): This isn't correct if CopyTexImage() was used.
     bool is_bound = !texture_passthrough_->is_bind_pending();
 #else
     bool is_bound = true;

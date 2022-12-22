@@ -104,12 +104,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   virtual unsigned GetDataFormat();
   virtual unsigned GetDataType();
 
-  enum BindOrCopy { BIND, COPY };
-  // Returns whether this image is meant to be bound or copied to textures. The
-  // suggested method is not guaranteed to succeed, but the alternative will
-  // definitely fail.
-  virtual BindOrCopy ShouldBindOrCopy();
-
   // Bind image to texture currently bound to |target|. Returns true on success.
   // It is valid for an implementation to always return false.
   virtual bool BindTexImage(unsigned target);
@@ -125,11 +119,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   void ReleaseTexImageForTesting(unsigned target) { ReleaseTexImage(target); }
 
  protected:
-  // Define texture currently bound to |target| by copying image into it.
-  // Returns true on success. It is valid for an implementation to always
-  // return false.
-  virtual bool CopyTexImage(unsigned target);
-
   // Copy |rect| of image to |offset| in texture currently bound to |target|.
   // Returns true on success. It is valid for an implementation to always
   // return false.

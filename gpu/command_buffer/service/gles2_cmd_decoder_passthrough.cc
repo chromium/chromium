@@ -2156,7 +2156,7 @@ void GLES2DecoderPassthroughImpl::BindOnePendingImage(
   // here.  In that case, just ignore it.
   //
   // Similarly, we might not even get here if an image was bound to a
-  // texture that requries bind/copy, but that texture was already bound
+  // texture that requires binding, but that texture was already bound
   // to a sampler in this decoder.
   if (!image) {
     UMA_HISTOGRAM_BOOLEAN(
@@ -2175,12 +2175,9 @@ void GLES2DecoderPassthroughImpl::BindOnePendingImage(
   api()->glBindTextureFn(texture_type, texture->service_id());
 
   // TODO: internalformat?
-  if (image->ShouldBindOrCopy() == gl::GLImage::BIND)
-    image->BindTexImage(target);
-  else
-    image->CopyTexImage(target);
+  image->BindTexImage(target);
 
-  // If copy / bind fail, then we could keep the bind state the same.
+  // If bind fails, then we could keep the bind state the same.
   // However, for now, we only try once.
   texture->clear_bind_pending();
 

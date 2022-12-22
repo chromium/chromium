@@ -69,10 +69,6 @@ GLImage::Type GLImageD3D::GetType() const {
   return Type::D3D;
 }
 
-GLImage::BindOrCopy GLImageD3D::ShouldBindOrCopy() {
-  return GLImage::BIND;
-}
-
 void* GLImageD3D::GetEGLImage() const {
   return egl_image_;
 }
@@ -93,10 +89,6 @@ bool GLImageD3D::BindTexImage(unsigned target) {
   DCHECK_NE(egl_image_, EGL_NO_IMAGE_KHR);
   glEGLImageTargetTexture2DOES(target, egl_image_);
   return glGetError() == static_cast<GLenum>(GL_NO_ERROR);
-}
-
-bool GLImageD3D::CopyTexImage(unsigned target) {
-  return false;
 }
 
 bool GLImageD3D::CopyTexSubImage(unsigned target,

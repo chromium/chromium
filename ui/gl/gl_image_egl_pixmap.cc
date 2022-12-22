@@ -78,10 +78,6 @@ unsigned GLImageEGLPixmap::GetDataType() {
   return GL_UNSIGNED_BYTE;
 }
 
-GLImageEGLPixmap::BindOrCopy GLImageEGLPixmap::ShouldBindOrCopy() {
-  return BIND;
-}
-
 bool GLImageEGLPixmap::BindTexImage(unsigned target) {
   if (!surface_)
     return false;

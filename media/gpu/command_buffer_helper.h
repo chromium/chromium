@@ -123,15 +123,14 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Binds level 0 of the texture to an unbound image.
   //
-  // BindTexImage()/CopyTexImage() will be called when the texture is used.
+  // BindTexImage() will be called when the texture is used.
   virtual bool BindDecoderManagedImage(GLuint service_id,
                                        gl::GLImage* image) = 0;
 #else
   // Binds level 0 of the texture to an image for which the sampler binding
   // already exists.
   //
-  // BindTexImage()/CopyTexImage() will *not* be called when the texture is
-  // used.
+  // BindTexImage() will *not* be called when the texture is used.
   virtual bool BindClientManagedImage(GLuint service_id,
                                       gl::GLImage* image) = 0;
 #endif

@@ -18,17 +18,8 @@ namespace media {
 GLImageEGLStream::GLImageEGLStream(const gfx::Size& size, EGLStreamKHR stream)
     : size_(size), stream_(stream) {}
 
-GLImageEGLStream::BindOrCopy GLImageEGLStream::ShouldBindOrCopy() {
-  return BIND;
-}
-
 bool GLImageEGLStream::BindTexImage(unsigned target) {
   return true;
-}
-
-bool GLImageEGLStream::CopyTexImage(unsigned target) {
-  NOTREACHED();
-  return false;
 }
 
 bool GLImageEGLStream::CopyTexSubImage(unsigned target,

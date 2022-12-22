@@ -2178,20 +2178,15 @@ class GLES2DecoderImpl : public GLES2Decoder,
       const char* function_name, GLuint max_vertex_accessed, bool* simulated);
   void RestoreStateForAttrib(GLuint attrib, bool restore_array_binding);
 
-  // Copies the image to the texture currently bound to |textarget|. The image
-  // state of |texture| is updated to reflect the new state.
-  void DoCopyTexImage(Texture* texture, GLenum textarget, gl::GLImage* image);
-
-  // If the texture has an image but that image is not bound or copied to the
-  // texture, this will first attempt to bind it, and if that fails
-  // DoCopyTexImage on it. texture_unit is the texture unit it should be bound
-  // to, or 0 if it doesn't matter - setting it to 0 will cause the previous
-  // binding to be restored after the operation. This returns true if a copy
-  // or bind happened and the caller needs to restore the previous texture
+  // If the texture has an image but that image is not bound to the texture,
+  // this will attempt to bind it. texture_unit is the texture unit it should
+  // be bound to, or 0 if it doesn't matter - setting it to 0 will cause the
+  // previous binding to be restored after the operation. This returns true if
+  // a bind happened and the caller needs to restore the previous texture
   // binding.
-  bool DoBindOrCopyTexImageIfNeeded(Texture* texture,
-                                    GLenum textarget,
-                                    GLuint texture_unit);
+  bool DoBindTexImageIfNeeded(Texture* texture,
+                              GLenum textarget,
+                              GLuint texture_unit);
 
   void DoWindowRectanglesEXT(GLenum mode, GLsizei n, const volatile GLint* box);
 
@@ -8635,7 +8630,7 @@ void GLES2DecoderImpl::DoFramebufferTexture2DCommon(
   }
 
   if (texture_ref)
-    DoBindOrCopyTexImageIfNeeded(texture_ref->texture(), textarget, 0);
+    DoBindTexImageIfNeeded(texture_ref->texture(), textarget, 0);
 
   std::vector<GLenum> attachments;
   if (attachment == GL_DEPTH_STENCIL_ATTACHMENT) {
@@ -10559,21 +10554,9 @@ void GLES2DecoderImpl::PerformanceWarning(
                      std::string("PERFORMANCE WARNING: ") + msg);
 }
 
-void GLES2DecoderImpl::DoCopyTexImage(Texture* texture,
-                                      GLenum textarget,
-                                      gl::GLImage* image) {
-  // Note: We update the state to COPIED prior to calling CopyTexImage()
-  // as that allows the GLImage implemenatation to set it back to UNBOUND
-  // and ensure that CopyTexImage() is called each time the texture is
-  // used.
-  texture->SetLevelImageState(textarget, 0, Texture::COPIED);
-  bool rv = image->CopyTexImage(textarget);
-  DCHECK(rv) << "CopyTexImage() failed";
-}
-
-bool GLES2DecoderImpl::DoBindOrCopyTexImageIfNeeded(Texture* texture,
-                                                    GLenum textarget,
-                                                    GLuint texture_unit) {
+bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
+                                              GLenum textarget,
+                                              GLuint texture_unit) {
   // Image is already in use if texture is attached to a framebuffer.
   if (texture && !texture->IsAttachedToFramebuffer()) {
     Texture::ImageState old_image_state;
@@ -10583,17 +10566,13 @@ bool GLES2DecoderImpl::DoBindOrCopyTexImageIfNeeded(Texture* texture,
           "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", true);
 
       ScopedGLErrorSuppressor suppressor(
-          "GLES2DecoderImpl::DoBindOrCopyTexImageIfNeeded", error_state_.get());
+          "GLES2DecoderImpl::DoBindTexImageIfNeeded", error_state_.get());
       if (texture_unit)
         api()->glActiveTextureFn(texture_unit);
       api()->glBindTextureFn(textarget, texture->service_id());
-      if (image->ShouldBindOrCopy() == gl::GLImage::BIND) {
-        bool rv = image->BindTexImage(textarget);
-        DCHECK(rv) << "BindTexImage() failed";
-        texture->SetLevelImageState(textarget, 0, Texture::BOUND);
-      } else {
-        DoCopyTexImage(texture, textarget, image);
-      }
+      bool rv = image->BindTexImage(textarget);
+      DCHECK(rv) << "BindTexImage() failed";
+      texture->SetLevelImageState(textarget, 0, Texture::BOUND);
       if (!texture_unit) {
         RestoreCurrentTextureBindings(&state_, textarget,
                                       state_.active_texture_unit);
@@ -10716,8 +10695,8 @@ bool GLES2DecoderImpl::PrepareTexturesForRender(bool* textures_set,
 
         if (textarget != GL_TEXTURE_CUBE_MAP) {
           Texture* texture = texture_ref->texture();
-          if (DoBindOrCopyTexImageIfNeeded(texture, textarget,
-                                           GL_TEXTURE0 + texture_unit_index)) {
+          if (DoBindTexImageIfNeeded(texture, textarget,
+                                     GL_TEXTURE0 + texture_unit_index)) {
             *textures_set = true;
             continue;
           }
@@ -17928,13 +17907,9 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
   if (image && internal_format == source_internal_format && dest_level == 0 &&
       !unpack_flip_y && !unpack_premultiply_alpha_change) {
     api()->glBindTextureFn(dest_binding_target, dest_texture->service_id());
-    if (image->ShouldBindOrCopy() == gl::GLImage::COPY &&
-        image->CopyTexImage(dest_target)) {
-      return;
-    }
   }
 
-  DoBindOrCopyTexImageIfNeeded(source_texture, source_target, 0);
+  DoBindTexImageIfNeeded(source_texture, source_target, 0);
 
   CopyTextureMethod method = GetCopyTextureCHROMIUMMethod(
       GetFeatureInfo(), source_target, source_level, source_internal_format,
@@ -18140,7 +18115,7 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
     }
   }
 
-  DoBindOrCopyTexImageIfNeeded(source_texture, source_target, 0);
+  DoBindTexImageIfNeeded(source_texture, source_target, 0);
 
   CopyTextureMethod method = GetCopyTextureCHROMIUMMethod(
       GetFeatureInfo(), source_target, source_level, source_internal_format,

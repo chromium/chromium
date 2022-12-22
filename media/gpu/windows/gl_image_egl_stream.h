@@ -20,9 +20,7 @@ class GLImageEGLStream : public gl::GLImage {
   GLImageEGLStream(const gfx::Size& size, EGLStreamKHR stream);
 
   // GLImage implementation.
-  BindOrCopy ShouldBindOrCopy() override;
   bool BindTexImage(unsigned target) override;
-  bool CopyTexImage(unsigned target) override;
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override;

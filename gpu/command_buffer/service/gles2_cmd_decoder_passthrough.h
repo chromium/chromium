@@ -527,11 +527,11 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // functionality related to binding textures is relevant only on those
   // platforms.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // Issue BindTexImage / CopyTexImage calls for |passthrough_texture|, if
+  // Issue BindTexImage calls for |passthrough_texture|, if
   // they're pending.
   void BindOnePendingImage(GLenum target, TexturePassthrough* texture);
 
-  // Issue BindTexImage / CopyTexImage calls for any GLImages that
+  // Issue BindTexImage calls for any GLImages that
   // requested it in BindImage, and are currently bound to textures that
   // are bound to samplers (i.e., are in |textures_pending_binding_|).
   void BindPendingImagesForSamplers();
@@ -685,7 +685,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
       bound_textures_;
 
   // [target, texture unit, texture] where texture has a bound GLImage that
-  // requires bind / copy before draw.
+  // requires binding before draw.
   struct TexturePendingBinding {
     TexturePendingBinding(GLenum target,
                           GLuint unit,

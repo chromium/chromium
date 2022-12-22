@@ -100,8 +100,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   // Returns true if |texture_base| is a gles2::Texture and all necessary
   // operations completed successfully. In this case, |*size| is the size of
   // of level 0.
-  bool BindOrCopyTextureIfNecessary(gpu::TextureBase* texture_base,
-                                    gfx::Size* size);
+  bool BindTextureIfNecessary(gpu::TextureBase* texture_base, gfx::Size* size);
 
   const bool maybe_concurrent_reads_ = false;
   const bool allow_keeping_read_access_ = true;

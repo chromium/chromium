@@ -126,10 +126,6 @@ unsigned GLImageIOSurface::GetDataType() {
   return BufferFormatToGLDataType(format_);
 }
 
-GLImage::BindOrCopy GLImageIOSurface::ShouldBindOrCopy() {
-  return BIND;
-}
-
 bool GLImageIOSurface::BindTexImage(unsigned target) {
   LOG(ERROR) << "GLImageIOSurface::BindTexImage should not be reached.";
   NOTREACHED();

@@ -282,7 +282,6 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
       gl::GLImage::ToGLImageD3D(front_texture->GetLevelImage(GL_TEXTURE_2D, 0));
 
   ASSERT_TRUE(back_image);
-  EXPECT_EQ(back_image->ShouldBindOrCopy(), gl::GLImage::BIND);
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
   EXPECT_EQ(S_OK, back_image->swap_chain()->GetBuffer(
@@ -292,7 +291,6 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
   d3d11_texture.Reset();
 
   ASSERT_TRUE(front_image);
-  EXPECT_EQ(front_image->ShouldBindOrCopy(), gl::GLImage::BIND);
 
   EXPECT_EQ(S_OK, front_image->swap_chain()->GetBuffer(
                       1 /* buffer_index */, IID_PPV_ARGS(&d3d11_texture)));
@@ -425,7 +423,6 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
     GLint sampler_location = api->glGetUniformLocationFn(program, "u_texture");
     ASSERT_NE(sampler_location, -1);
     api->glActiveTextureFn(GL_TEXTURE0);
-    // ExpectUnboundAndBindOrCopyTexImage(front_buffer_mailbox);
     api->glBindTextureFn(GL_TEXTURE_2D, front_texture_id);
     api->glUniform1iFn(sampler_location, 0);
 
