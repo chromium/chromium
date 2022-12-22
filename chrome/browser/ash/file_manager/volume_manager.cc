@@ -123,8 +123,16 @@ bool FindDownloadsMountPointPath(Profile* profile, base::FilePath* path) {
       util::GetDownloadsMountPointName(profile);
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
-
   return mount_points->GetRegisteredPath(mount_point_name, path);
+}
+
+// Returns true if the mount point is registered with FileSystem API backend.
+// Return false if it is not registered.
+bool FindExternalMountPoint(const std::string& mount_point_name) {
+  storage::ExternalMountPoints* const mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  base::FilePath path;
+  return mount_points->GetRegisteredPath(mount_point_name, &path);
 }
 
 VolumeType MountTypeToVolumeType(ash::MountType type) {
@@ -792,6 +800,9 @@ void VolumeManager::Initialize() {
   RegisterShareCacheMountPoint(profile_);
   DoMountEvent(
       Volume::CreateForShareCache(util::GetShareCacheFilePath(profile_)));
+
+  // TODO(b/263194149): remember to remove this useless dcheck.
+  DCHECK_EQ(false, FindExternalMountPoint(""));
 }
 
 void VolumeManager::Shutdown() {
