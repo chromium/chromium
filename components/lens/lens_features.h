@@ -27,11 +27,6 @@ BASE_DECLARE_FEATURE(kLensImageCompression);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchOptimizations);
 
-// Enables Lens integration into the Chrome screenshot sharing feature by adding
-// a "Search Image" button.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensSearchImageInScreenshotSharing);
-
 // Enables Latency logging for the LensStandalone feature.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableLatencyLogging);
@@ -98,16 +93,6 @@ extern const base::FeatureParam<bool> kEnableLensHtmlRedirectFix;
 // Enables Lens fullscreen search on Desktop platforms.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kEnableFullscreenSearch;
-
-// Enables using side panel in the Chrome Screenshot sharing feature integration
-// instead of a new tab.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kUseSidePanelForScreenshotSharing;
-
-// Forces the Chrome Screenshot sharing dialog bubble to stay open after the
-// user clicks the Search Image button.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kEnablePersistentBubble;
 
 // Enables the use of the selection with image icon when using the instruction
 // chip improvements feature.
@@ -220,16 +205,6 @@ extern bool IsLensInScreenshotSharingEnabled();
 // Returns whether the instruction chip improvement feature is enabled.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensInstructionChipImprovementsEnabled();
-
-// Returns whether to use the Chrome Side Panel for the Lens integration in
-// Chrome Screenshot Sharing feature
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseSidePanelForScreenshotSharing();
-
-// Returns whether the Chrome Screenshot Sharing Bubble disappears after the
-// user clicks the Search Image button
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool EnablePersistentBubble();
 
 // Returns if we should use the selection with image icon instead of the default
 // when using the instruction chip improvements feature.

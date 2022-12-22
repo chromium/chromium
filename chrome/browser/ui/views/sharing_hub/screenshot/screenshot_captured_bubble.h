@@ -69,8 +69,6 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
 
   void EditButtonPressed();
 
-  void SearchImageButtonPressed();
-
   gfx::Size GetImageSize();
 
   // Requests navigation to the image editor page.
@@ -92,7 +90,6 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   views::ImageView* image_view_ = nullptr;
   views::MdTextButton* download_button_ = nullptr;
   views::LabelButton* edit_button_ = nullptr;
-  views::LabelButton* search_image_button_ = nullptr;
 
   base::WeakPtrFactory<ScreenshotCapturedBubble> weak_factory_{this};
 };

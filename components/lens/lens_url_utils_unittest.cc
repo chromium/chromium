@@ -70,14 +70,6 @@ TEST(LensUrlUtilsTest, GetFullscreenSearchQueryParameterTest) {
   EXPECT_THAT(query_param, MatchesRegex("ep=cfs&re=avsf&s=&st=\\d+"));
 }
 
-TEST(LensUrlUtilsTest, GetScreenshotSearchQueryParameterTest) {
-  lens::EntryPoint lens_ep = lens::EntryPoint::CHROME_SCREENSHOT_SEARCH;
-  std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens_ep, /* is_side_panel_request= */ false,
-      /* is_full_screen_region_search_request= */ false);
-  EXPECT_THAT(query_param, MatchesRegex("ep=css&re=df&s=&st=\\d+"));
-}
-
 TEST(LensUrlUtilsTest, GetUnknownEntryPointTest) {
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens::EntryPoint::UNKNOWN, /* is_side_panel_request= */ false,
@@ -161,16 +153,6 @@ TEST(LensUrlUtilsTest, AppendFullscreenSearchQueryParameterTest) {
   GURL url = lens::AppendOrReplaceQueryParametersForLensRequest(
       original_url, lens_ep, re, /* is_side_panel_request= */ false);
   EXPECT_THAT(url.query(), MatchesRegex("ep=cfs&re=avsf&s=&st=\\d+"));
-}
-
-TEST(LensUrlUtilsTest, AppendScreenshotSearchQueryParameterTest) {
-  lens::EntryPoint lens_ep = lens::EntryPoint::CHROME_SCREENSHOT_SEARCH;
-  lens::RenderingEnvironment re =
-      lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN;
-  GURL original_url = GURL("https://lens.google.com/");
-  GURL url = lens::AppendOrReplaceQueryParametersForLensRequest(
-      original_url, lens_ep, re, /* is_side_panel_request= */ false);
-  EXPECT_THAT(url.query(), MatchesRegex("ep=css&re=df&s=&st=\\d+"));
 }
 
 TEST(LensUrlUtilsTest, AppendUnknownEntryPointTest) {
