@@ -148,6 +148,14 @@ class RetroactivePairingDetectorImpl final
                          const std::string& classic_address);
 
   void RemoveDeviceInformation(const std::string& device_address);
+  void RemoveDeviceInformationHelper(const std::string& device_address);
+
+  // Iterates over |device_pairing_information_| and if a device's
+  // |expiry_timestamp| has been reached, removes devices from
+  // |device_pairing_information_|, |potential_retroactive_addresses_|, and
+  // removes an observer for a corresponding MessageStream and from
+  // |message_streams_| if a MessageStream exists for the device.
+  void RemoveExpiredDevicesFromStoredDeviceData();
 
   // The classic pairing addresses of potential Retroactive Pair supported
   // devices that are found in the adapter. We have to store them and wait for a
