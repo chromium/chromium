@@ -8,9 +8,7 @@
 #include <set>
 #include <utility>
 
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
-#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
@@ -289,7 +287,6 @@ SearchProvider::Results AppSearchDataSource::GetRecommendations(
     result->SetTitle(title);
 
     const int default_rank = GetDefaultAppRank(app->id());
-    const auto find_in_app_list = id_to_app_list_index.find(app->id());
     const base::Time time = app->last_activity_time();
 
     // Set app->relevance based on the following criteria. Scores are set
@@ -307,13 +304,8 @@ SearchProvider::Results AppSearchDataSource::GetRecommendations(
       const double relevance = 0.34 - (kEps * (default_rank + 1));
       DCHECK(0.33 < relevance && relevance < 0.34);
       result->set_relevance(relevance);
-    } else if (find_in_app_list != id_to_app_list_index.end()) {
-      // Case 3: if it's in the app_list_index, set the relevance in [0.1,
-      // 0.33]
-      result->set_relevance(
-          ReRange(1.0 / (1.0 + find_in_app_list->second), 0.1, 0.33));
     } else {
-      // Case 4: otherwise set the relevance as 0.0;
+      // Case 3: otherwise set the relevance as 0.0;
       result->set_relevance(0.0);
     }
 
