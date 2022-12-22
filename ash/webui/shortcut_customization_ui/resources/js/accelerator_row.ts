@@ -75,7 +75,7 @@ export class AcceleratorRowElement extends PolymerElement {
       source: {
         type: Number,
         value: 0,
-        observer: 'onSourceChanged',
+        observer: AcceleratorRowElement.prototype.onSourceChanged,
       },
     };
   }

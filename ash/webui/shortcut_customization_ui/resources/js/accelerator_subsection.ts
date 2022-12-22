@@ -55,7 +55,7 @@ export class AcceleratorSubsectionElement extends
       subcategory: {
         type: Number,
         value: null,
-        observer: 'onCategoryUpdated',
+        observer: AcceleratorSubsectionElement.prototype.onCategoryUpdated,
       },
 
       /**

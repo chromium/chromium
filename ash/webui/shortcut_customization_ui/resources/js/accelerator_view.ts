@@ -82,7 +82,7 @@ export class AcceleratorViewElement extends PolymerElement {
         type: Number,
         value: ViewState.VIEW,
         notify: true,
-        observer: 'onViewStateChanged',
+        observer: AcceleratorViewElement.prototype.onViewStateChanged,
       },
 
       modifiers: {

@@ -85,7 +85,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
       statusMessage: {
         type: String,
         value: '',
-        observer: 'onStatusMessageChanged',
+        observer: AcceleratorEditViewElement.prototype.onStatusMessageChanged,
       },
 
       hasError: {
