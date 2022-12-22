@@ -88,6 +88,11 @@ using ::testing::UnorderedElementsAre;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
+using DebugReportSentCallback =
+    ::content::AttributionReportSender::DebugReportSentCallback;
+using ReportSentCallback =
+    ::content::AttributionReportSender::ReportSentCallback;
+
 constexpr size_t kMaxPendingEvents = 5;
 
 constexpr AttributionStorageDelegate::OfflineReportDelayConfig
@@ -95,6 +100,13 @@ constexpr AttributionStorageDelegate::OfflineReportDelayConfig
         .min = base::Minutes(0),
         .max = base::Minutes(1),
     };
+
+auto InvokeReportSentCallback(SendResult::Status status) {
+  return [=](AttributionReport report, bool is_debug_report,
+             ReportSentCallback callback) {
+    std::move(callback).Run(std::move(report), SendResult(status));
+  };
+}
 
 AggregatableReport CreateExampleAggregatableReport() {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
@@ -132,83 +144,17 @@ constexpr base::TimeDelta kImpressionExpiry = base::Days(30);
 
 class MockReportSender : public AttributionReportSender {
  public:
-  // AttributionReportSender:
-  void SendReport(AttributionReport report,
-                  bool is_debug_report,
-                  ReportSentCallback callback) override {
-    if (is_debug_report) {
-      debug_calls_.push_back(report);
-    } else {
-      calls_.push_back(report);
-    }
+  MOCK_METHOD(void,
+              SendReport,
+              (AttributionReport report,
+               bool is_debug_report,
+               ReportSentCallback callback),
+              (override));
 
-    callbacks_.emplace_back(std::move(report), std::move(callback));
-  }
-
-  void SendReport(AttributionDebugReport report,
-                  DebugReportSentCallback callback) override {
-    verbose_debug_calls_.emplace_back(std::move(report), std::move(callback));
-  }
-
-  const std::vector<AttributionReport>& calls() const { return calls_; }
-
-  const std::vector<AttributionReport>& debug_calls() const {
-    return debug_calls_;
-  }
-
-  const std::vector<std::pair<AttributionDebugReport, DebugReportSentCallback>>&
-  verbose_debug_calls() const {
-    return verbose_debug_calls_;
-  }
-
-  void RunCallback(size_t index, SendResult::Status status) {
-    std::move(callbacks_[index].second)
-        .Run(std::move(callbacks_[index].first),
-             SendResult(status, /*http_response_code=*/0));
-  }
-
-  void Reset() {
-    calls_.clear();
-    debug_calls_.clear();
-    callbacks_.clear();
-    verbose_debug_calls_.clear();
-  }
-
-  void RunCallbacksAndReset(
-      std::initializer_list<SendResult::Status> statuses) {
-    ASSERT_THAT(callbacks_, SizeIs(statuses.size()));
-
-    const auto* status_it = statuses.begin();
-
-    for (auto& callback : callbacks_) {
-      std::move(callback.second)
-          .Run(std::move(callback.first),
-               SendResult(*status_it, /*http_response_code=*/0));
-      status_it++;
-    }
-
-    Reset();
-  }
-
-  void RunVerboseDebugCallbacks(std::initializer_list<int> statuses) {
-    ASSERT_THAT(verbose_debug_calls_, SizeIs(statuses.size()));
-
-    const auto* status_it = statuses.begin();
-
-    for (auto& callback : verbose_debug_calls_) {
-      std::move(callback.second).Run(std::move(callback.first), *status_it);
-      status_it++;
-    }
-
-    verbose_debug_calls_.clear();
-  }
-
- private:
-  std::vector<AttributionReport> calls_;
-  std::vector<AttributionReport> debug_calls_;
-  std::vector<std::pair<AttributionReport, ReportSentCallback>> callbacks_;
-  std::vector<std::pair<AttributionDebugReport, DebugReportSentCallback>>
-      verbose_debug_calls_;
+  MOCK_METHOD(void,
+              SendReport,
+              (AttributionDebugReport report, DebugReportSentCallback callback),
+              (override));
 };
 
 class MockCookieChecker : public AttributionCookieChecker {
@@ -414,6 +360,16 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
 TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportSent) {
   base::HistogramTester histograms;
 
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+  }
+
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -421,10 +377,10 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportSent) {
   // Make sure the report is not sent earlier than its report time.
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   base::Microseconds(1));
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
+
+  checkpoint.Call(1);
 
   task_environment_.FastForwardBy(base::Microseconds(1));
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
   histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed", true,
                                 1);
@@ -447,6 +403,22 @@ TEST_F(AttributionManagerImplTest,
   const auto origin_a = *SuitableOrigin::Create(url_a);
   const auto origin_b = *SuitableOrigin::Create(url_b);
   const auto origin_c = *SuitableOrigin::Create(url_c);
+
+  std::vector<AttributionReport> sent_reports;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillRepeatedly([&](AttributionReport report, bool is_debug_report,
+                            ReportSentCallback callback) {
+          sent_reports.push_back(std::move(report));
+        });
+  }
 
   attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
@@ -474,13 +446,14 @@ TEST_F(AttributionManagerImplTest,
   // Make sure the reports are not sent earlier than their report time.
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   base::Microseconds(1));
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
+
+  checkpoint.Call(1);
 
   task_environment_.FastForwardBy(base::Microseconds(1));
 
   // The 3 reports can be sent in any order due to the `base::RandomShuffle()`
   // in `AttributionManagerImpl::OnGetReportsToSend()`.
-  EXPECT_THAT(report_sender_->calls(),
+  EXPECT_THAT(sent_reports,
               UnorderedElementsAre(ReportURLIs(url_a), ReportURLIs(url_b),
                                    ReportURLIs(url_c)));
 }
@@ -496,6 +469,20 @@ TEST_F(AttributionManagerImplTest,
 
   const auto origin_a = *SuitableOrigin::Create(url_a);
   const auto origin_b = *SuitableOrigin::Create(url_b);
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_,
+                SendReport(ReportURLIs(url_a), /*is_debug_report=*/false, _));
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*report_sender_,
+                SendReport(ReportURLIs(url_b), /*is_debug_report=*/false, _));
+  }
 
   attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
@@ -518,51 +505,75 @@ TEST_F(AttributionManagerImplTest,
   // Make sure the reports are not sent earlier than their report time.
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   base::Microseconds(2));
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
+
+  checkpoint.Call(1);
 
   task_environment_.FastForwardBy(base::Microseconds(1));
-  EXPECT_THAT(report_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
-  report_sender_->Reset();
+
+  checkpoint.Call(2);
 
   task_environment_.FastForwardBy(base::Microseconds(1));
-  EXPECT_THAT(report_sender_->calls(), ElementsAre(ReportURLIs(url_b)));
 }
 
 TEST_F(AttributionManagerImplTest, SenderStillHandlingReport_NotSentAgain) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+  }
+
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-  report_sender_->Reset();
 
-  ForceGetReportsToSend();
+  checkpoint.Call(1);
+
   // The sender hasn't invoked the callback, so the manager shouldn't try to
   // send the report again.
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
+  ForceGetReportsToSend();
 }
 
 TEST_F(AttributionManagerImplTest,
        QueuedReportFailedWithShouldRetry_QueuedAgain) {
   base::HistogramTester histograms;
 
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(
+            InvokeReportSentCallback(SendResult::Status::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(
+            InvokeReportSentCallback(SendResult::Status::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(
+            InvokeReportSentCallback(SendResult::Status::kTransientFailure));
+  }
+
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
+
+  checkpoint.Call(1);
 
   // First report delay.
   task_environment_.FastForwardBy(base::Minutes(5));
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
+
+  checkpoint.Call(2);
 
   // Second report delay.
   task_environment_.FastForwardBy(base::Minutes(15));
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
 
   // kFailed = 1.
   histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
@@ -582,6 +593,23 @@ TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
   const auto origin_a = *SuitableOrigin::Create(url_a);
   const auto origin_b = *SuitableOrigin::Create(url_b);
 
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_,
+                SendReport(ReportURLIs(url_a), /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_,
+                SendReport(ReportURLIs(url_a), /*is_debug_report=*/false, _))
+        .WillOnce(
+            InvokeReportSentCallback(SendResult::Status::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*report_sender_,
+                SendReport(ReportURLIs(url_a), /*is_debug_report=*/false, _));
+  }
+
   attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
                                          .SetReportingOrigin(origin_a)
@@ -599,15 +627,16 @@ TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
 
   EXPECT_THAT(StoredReports(), SizeIs(2));
 
-  task_environment_.FastForwardBy(kFirstReportingWindow - base::Minutes(10));
-  EXPECT_THAT(report_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
+  checkpoint.Call(1);
+
   // Because this report will be retried at its original report time + 5
   // minutes, the get-reports timer, which was originally scheduled to run at
   // the second report's report time, should be overridden to run earlier.
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
+  task_environment_.FastForwardBy(kFirstReportingWindow - base::Minutes(10));
+
+  checkpoint.Call(2);
 
   task_environment_.FastForwardBy(base::Minutes(5));
-  EXPECT_THAT(report_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -628,9 +657,9 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_CALL(observer, OnSourcesChanged).Times(0);
   EXPECT_CALL(observer, OnReportsChanged);
 
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .WillOnce(InvokeReportSentCallback(SendResult::Status::kFailure));
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kFailure});
 
   EXPECT_THAT(StoredReports(), IsEmpty());
 
@@ -643,6 +672,26 @@ TEST_F(AttributionManagerImplTest,
 
 TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   base::HistogramTester histograms;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(
+            InvokeReportSentCallback(SendResult::Status::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(
+            InvokeReportSentCallback(SendResult::Status::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(3));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(
+            InvokeReportSentCallback(SendResult::Status::kTransientFailure));
+  }
 
   MockAttributionObserver observer;
   base::ScopedObservation<AttributionManager, AttributionObserver> observation(
@@ -660,22 +709,21 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   base::Milliseconds(1));
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
+
+  checkpoint.Call(1);
 
   // The report is sent at its expected report time.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
+
+  checkpoint.Call(2);
 
   // The report is sent at the first retry time of +5 minutes.
   task_environment_.FastForwardBy(base::Minutes(5));
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
+
+  checkpoint.Call(3);
 
   // The report is sent at the second retry time of +15 minutes.
   task_environment_.FastForwardBy(base::Minutes(15));
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
 
   // At this point, the report has reached the maximum number of attempts and it
   // should no longer be present in the DB.
@@ -692,7 +740,6 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   ShutdownManager();
 
@@ -704,8 +751,9 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   // Advance by the max offline report delay, per
   // `AttributionStorageDelegate::GetOfflineReportDelayConfig()`.
   CreateManager();
+
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
   task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
 TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
@@ -713,12 +761,13 @@ TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
+
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .WillOnce(InvokeReportSentCallback(SendResult::Status::kSent));
+
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kSent});
 
   EXPECT_THAT(StoredReports(), IsEmpty());
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // kSent = 0.
   histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
@@ -726,6 +775,13 @@ TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
 
 TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
   base::HistogramTester histograms;
+
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .WillOnce(InvokeReportSentCallback(SendResult::Status::kSent))
+      .WillOnce(InvokeReportSentCallback(SendResult::Status::kDropped))
+      .WillOnce(InvokeReportSentCallback(SendResult::Status::kSent))
+      .WillOnce(
+          InvokeReportSentCallback(SendResult::Status::kTransientFailure));
 
   MockAttributionObserver observer;
   base::ScopedObservation<AttributionManager, AttributionObserver> observation(
@@ -760,11 +816,6 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
       SourceBuilder().SetSourceEventId(4).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow);
-
-  EXPECT_THAT(report_sender_->calls(), SizeIs(4));
-  report_sender_->RunCallbacksAndReset(
-      {SendResult::Status::kSent, SendResult::Status::kDropped,
-       SendResult::Status::kSent, SendResult::Status::kTransientFailure});
 
   // kSent = 0.
   histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 0, 2);
@@ -899,21 +950,49 @@ TEST_F(AttributionManagerImplTest, ClearData) {
 }
 
 TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+  }
+
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   std::vector<AttributionReport> reports = StoredReports();
   EXPECT_THAT(reports, SizeIs(1));
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
+
+  checkpoint.Call(1);
 
   attribution_manager_->SendReportsForWebUI({reports.front().ReportId()},
                                             base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
 TEST_F(AttributionManagerImplTest,
        ConversionsSentFromUI_CallbackInvokedWhenAllDone) {
+  std::vector<ReportSentCallback> report_sent_callbacks;
+  std::vector<AttributionReport> sent_reports;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillRepeatedly([&](AttributionReport report, bool is_debug_report,
+                            ReportSentCallback callback) {
+          report_sent_callbacks.push_back(std::move(callback));
+          sent_reports.push_back(std::move(report));
+        });
+  }
+
   size_t callback_calls = 0;
 
   attribution_manager_->HandleSource(
@@ -922,25 +1001,33 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleTrigger(DefaultTrigger());
   std::vector<AttributionReport> reports = StoredReports();
   EXPECT_THAT(reports, SizeIs(2));
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
+
+  checkpoint.Call(1);
 
   attribution_manager_->SendReportsForWebUI(
       {reports.front().ReportId(), reports.back().ReportId()},
       base::BindLambdaForTesting([&]() { callback_calls++; }));
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_THAT(report_sender_->calls(), SizeIs(2));
   EXPECT_EQ(callback_calls, 0u);
 
-  report_sender_->RunCallback(0, SendResult::Status::kSent);
+  ASSERT_THAT(report_sent_callbacks, SizeIs(2));
+  ASSERT_THAT(sent_reports, SizeIs(2));
+
+  std::move(report_sent_callbacks[0])
+      .Run(std::move(sent_reports[0]), SendResult(SendResult::Status::kSent));
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(callback_calls, 0u);
 
-  report_sender_->RunCallback(1, SendResult::Status::kTransientFailure);
+  std::move(report_sent_callbacks[1])
+      .Run(std::move(sent_reports[1]), SendResult(SendResult::Status::kSent));
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(callback_calls, 1u);
 }
 
 TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .Times(0);
+
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -961,12 +1048,13 @@ TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
               ElementsAre(ReportTimeIs(
                   AllOf(Ge(min_new_time + kDefaultOfflineReportDelay.min),
                         Le(min_new_time + kDefaultOfflineReportDelay.max)))));
-
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest,
        NonExpiredReportsQueuedAtStartup_NotDelayed) {
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .Times(0);
+
   base::Time start_time = base::Time::Now();
 
   // Create a report that will be reported at t= 2 days.
@@ -985,8 +1073,6 @@ TEST_F(AttributionManagerImplTest,
   // Ensure that this report does not receive additional delay.
   EXPECT_THAT(StoredReports(),
               ElementsAre(ReportTimeIs(start_time + kFirstReportingWindow)));
-
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
@@ -1054,21 +1140,30 @@ TEST_F(AttributionManagerImplTest, ConversionPrioritization_OneReportSent) {
       SourceBuilder().SetExpiry(base::Days(7)).Build());
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(3)
+        .WillRepeatedly(InvokeReportSentCallback(SendResult::Status::kSent));
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+  }
+
   attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(1).Build());
   attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(1).Build());
   attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(1).Build());
   EXPECT_THAT(StoredReports(), SizeIs(3));
 
   task_environment_.FastForwardBy(base::Days(7) - base::Minutes(30));
-  EXPECT_THAT(report_sender_->calls(), SizeIs(3));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kSent,
-                                        SendResult::Status::kSent,
-                                        SendResult::Status::kSent});
+
+  checkpoint.Call(1);
 
   task_environment_.FastForwardBy(base::Minutes(5));
   attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(2).Build());
   task_environment_.FastForwardBy(base::Hours(1));
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
@@ -1106,9 +1201,9 @@ TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {
   EXPECT_CALL(observer, OnSourcesChanged).Times(0);
   EXPECT_CALL(observer, OnReportsChanged);
 
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .WillOnce(InvokeReportSentCallback(SendResult::Status::kSent));
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
-  report_sender_->RunCallbacksAndReset({SendResult::Status::kSent});
   EXPECT_THAT(StoredReports(), IsEmpty());
 }
 
@@ -1226,13 +1321,12 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
                                 AggregationService::AssemblyStatus::kOk);
       });
 
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .Times(6)
+      .WillRepeatedly(InvokeReportSentCallback(SendResult::Status::kSent));
+
   task_environment_.FastForwardBy(kFirstReportingWindow);
 
-  EXPECT_THAT(report_sender_->calls(), SizeIs(6));
-  report_sender_->RunCallbacksAndReset(
-      {SendResult::Status::kSent, SendResult::Status::kSent,
-       SendResult::Status::kSent, SendResult::Status::kSent,
-       SendResult::Status::kSent, SendResult::Status::kSent});
   EXPECT_THAT(StoredReports(), IsEmpty());
   checkpoint.Call(3);
 
@@ -1381,6 +1475,9 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
 
   base::HistogramTester histograms;
 
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .Times(0);
+
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -1398,7 +1495,6 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
   task_environment_.FastForwardBy(kFirstReportingWindow);
 
   EXPECT_THAT(StoredReports(), IsEmpty());
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // kDropped = 2.
   histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 2, 1);
@@ -1435,6 +1531,9 @@ TEST_F(AttributionManagerImplTest,
       .WillOnce(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/true, _))
+      .Times(0);
+
   attribution_manager_->HandleSource(
       SourceBuilder()
           .SetSourceOrigin(source_origin)
@@ -1452,10 +1551,19 @@ TEST_F(AttributionManagerImplTest,
           .Build());
 
   EXPECT_THAT(StoredReports(), SizeIs(1));
-  EXPECT_THAT(report_sender_->debug_calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+  }
+
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -1464,11 +1572,11 @@ TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {
   SetConnectionTypeAndWaitForObserversToBeNotified(
       network::mojom::ConnectionType::CONNECTION_NONE);
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
+
+  checkpoint.Call(1);
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
       network::mojom::ConnectionType::CONNECTION_UNKNOWN);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
 class AttributionManagerImplOnlineConnectionTypeTest
@@ -1498,13 +1606,15 @@ TEST_F(AttributionManagerImplOnlineConnectionTypeTest,
   // `AdjustOfflineReportTimes()` would have no effect if we used
   // `FastForwardBy()` here, and we wouldn't be able to detect it below.
   task_environment_.AdvanceClock(kFirstReportingWindow + base::Microseconds(1));
+
+  // This will fail with 0 calls if the report time was adjusted to +1 minute.
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+
   SetConnectionTypeAndWaitForObserversToBeNotified(
       network::mojom::ConnectionType::CONNECTION_4G);
 
   // Cause any scheduled tasks to run.
   task_environment_.FastForwardBy(base::TimeDelta());
-  // This will fail with 0 calls if the report time was adjusted to +1 minute.
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
 TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
@@ -1514,14 +1624,27 @@ TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
+  ReportSentCallback report_sent_callback;
+  absl::optional<AttributionReport> sent_report;
+
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .WillOnce([&](AttributionReport report, bool is_debug_report,
+                    ReportSentCallback callback) {
+        report_sent_callback = std::move(callback);
+        sent_report = std::move(report);
+      });
+
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
   histograms.ExpectUniqueSample("Conversions.TimeFromConversionToReportSend",
                                 kFirstReportingWindow.InHours(), 1);
 
   task_environment_.FastForwardBy(base::Hours(1));
-  report_sender_->RunCallback(0, SendResult::Status::kSent);
+
+  ASSERT_TRUE(report_sent_callback);
+  ASSERT_TRUE(sent_report);
+  std::move(report_sent_callback)
+      .Run(std::move(*sent_report), SendResult(SendResult::Status::kSent));
 
   histograms.ExpectUniqueSample(
       "Conversions.TimeFromTriggerToReportSentSuccessfully",
@@ -1530,6 +1653,16 @@ TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
 
 TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
   base::HistogramTester histograms;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+  }
 
   attribution_manager_->HandleSource(TestAggregatableSourceProvider()
                                          .GetBuilder()
@@ -1542,13 +1675,13 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
   SetConnectionTypeAndWaitForObserversToBeNotified(
       network::mojom::ConnectionType::CONNECTION_NONE);
   task_environment_.FastForwardBy(kFirstReportingWindow + base::Days(3));
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
+
+  checkpoint.Call(1);
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
       network::mojom::ConnectionType::CONNECTION_UNKNOWN);
 
   task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
   histograms.ExpectUniqueTimeSample(
       "Conversions.ExtraReportDelay2",
@@ -1590,10 +1723,11 @@ TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+
   attribution_manager_->SendReportsForWebUI(
       {AttributionReport::EventLevelData::Id(1)}, base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
   histograms.ExpectTotalCount("Conversions.ExtraReportDelay2", 0);
   histograms.ExpectTotalCount("Conversions.TimeFromConversionToReportSend", 0);
@@ -1616,13 +1750,21 @@ class AttributionManagerImplFakeReportTest : public AttributionManagerImplTest {
 // Regression test for https://crbug.com/1294519.
 TEST_F(AttributionManagerImplFakeReportTest,
        FakeReport_UpdatesSendReportTimer) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+  }
+
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
 
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
-
+  checkpoint.Call(1);
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
 // Test that multiple source and trigger registrations, with and without debug
@@ -1842,6 +1984,24 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
       EXPECT_CALL(*aggregation_service_, AssembleReport).Times(0);
     }
 
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+
+    if (test_case.send_expected) {
+      EXPECT_CALL(
+          *report_sender_,
+          SendReport(AllOf(ReportSourceIs(
+                               SourceDebugKeyIs(test_case.source_debug_key)),
+                           TriggerDebugKeyIs(test_case.trigger_debug_key)),
+                     true, _))
+          .Times(2)
+          .WillRepeatedly(
+              InvokeReportSentCallback(SendResult::Status::kTransientFailure));
+    } else {
+      EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/true, _))
+          .Times(0);
+    }
+
     attribution_manager_->HandleTrigger(
         DefaultAggregatableTriggerBuilder()
             .SetReportingOrigin(reporting_origin)
@@ -1849,26 +2009,6 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
             .Build());
     // one event-level-report, one aggregatable report.
     EXPECT_THAT(StoredReports(), SizeIs(2)) << test_case.name;
-
-    EXPECT_THAT(report_sender_->calls(), IsEmpty()) << test_case.name;
-
-    if (test_case.send_expected) {
-      EXPECT_THAT(
-          report_sender_->debug_calls(),
-          ElementsAre(AllOf(ReportSourceIs(
-                                SourceDebugKeyIs(test_case.source_debug_key)),
-                            TriggerDebugKeyIs(test_case.trigger_debug_key)),
-                      AllOf(ReportSourceIs(
-                                SourceDebugKeyIs(test_case.source_debug_key)),
-                            TriggerDebugKeyIs(test_case.trigger_debug_key))))
-          << test_case.name;
-
-      report_sender_->RunCallbacksAndReset(
-          {SendResult::Status::kTransientFailure,
-           SendResult::Status::kTransientFailure});
-    } else {
-      EXPECT_THAT(report_sender_->debug_calls(), IsEmpty());
-    }
 
     attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
                                     /*filter=*/base::NullCallback(),
@@ -1943,14 +2083,27 @@ TEST_F(AttributionManagerImplTest,
 
   checkpoint.Call(1);
 
-  task_environment_.FastForwardBy(base::Microseconds(1));
+  std::vector<ReportSentCallback> report_sent_callbacks;
+  std::vector<AttributionReport> sent_reports;
 
   // One event-level report, one aggregatable report.
-  EXPECT_THAT(report_sender_->calls(), SizeIs(2));
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .WillRepeatedly([&](AttributionReport report, bool is_debug_report,
+                          ReportSentCallback callback) {
+        report_sent_callbacks.push_back(std::move(callback));
+        sent_reports.push_back(std::move(report));
+      });
+  task_environment_.FastForwardBy(base::Microseconds(1));
+
+  ASSERT_THAT(report_sent_callbacks, SizeIs(2));
+  ASSERT_THAT(sent_reports, SizeIs(2));
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  report_sender_->RunCallbacksAndReset(
-      {SendResult::Status::kSent, SendResult::Status::kSent});
+
+  std::move(report_sent_callbacks[0])
+      .Run(std::move(sent_reports[0]), SendResult(SendResult::Status::kSent));
+  std::move(report_sent_callbacks[1])
+      .Run(std::move(sent_reports[1]), SendResult(SendResult::Status::kSent));
 
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.AssembleReportStatus",
@@ -2007,10 +2160,10 @@ TEST_F(AttributionManagerImplTest,
 
   checkpoint.Call(1);
 
-  task_environment_.FastForwardBy(base::Microseconds(1));
-
   // Event-level report was sent.
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+
+  task_environment_.FastForwardBy(base::Microseconds(1));
 
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.AssembleReportStatus",
@@ -2036,9 +2189,10 @@ TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {
   attribution_manager_->HandleTrigger(
       DefaultAggregatableTriggerBuilder().Build());
 
-  task_environment_.FastForwardBy(kFirstReportingWindow);
   // Event-level report was sent.
-  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+
+  task_environment_.FastForwardBy(kFirstReportingWindow);
 
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.AssembleReportStatus",
@@ -2103,11 +2257,19 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
   const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, _));
+  }
+
   // Failed without debug reporting.
   attribution_manager_->HandleTrigger(
       TriggerBuilder().SetReportingOrigin(reporting_origin).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
 
   // Trigger registered within a fenced frame failed with debug reporting, but
   // no debug report is sent.
@@ -2117,7 +2279,6 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
                                           .SetIsWithinFencedFrame(true)
                                           .Build());
   task_environment_.RunUntilIdle();
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
 
   // Trigger registered outside a fenced frame tree failed with debug reporting
   // but no debug cookie is set, therefore no debug report is sent.
@@ -2127,7 +2288,6 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
           .SetDebugReporting(true)
           .Build());
   task_environment_.RunUntilIdle();
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
 
   {
     // Trigger registered outside a fenced frame tree failed with debug
@@ -2142,8 +2302,9 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
             .SetDebugReporting(true)
             .Build());
     task_environment_.RunUntilIdle();
-    EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
   }
+
+  checkpoint.Call(1);
 
   {
     // Trigger registered outside a fenced frame tree failed with debug
@@ -2157,7 +2318,6 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
             .SetDebugReporting(true)
             .Build());
     task_environment_.RunUntilIdle();
-    EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
   }
 }
 
@@ -2165,6 +2325,8 @@ TEST_F(AttributionManagerImplTest,
        EmbedderDisallowsTriggerVerboseDebugReport_NoReportSent) {
   const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
+
+  EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
 
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
@@ -2190,7 +2352,6 @@ TEST_F(AttributionManagerImplTest,
                                           .SetDebugReporting(true)
                                           .Build());
   task_environment_.RunUntilIdle();
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
 }
 
 class AttributionManagerImplDebugReportTest
@@ -2203,6 +2364,21 @@ class AttributionManagerImplDebugReportTest
 };
 
 TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
+  absl::optional<AttributionDebugReport> sent_report;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, _))
+        .WillOnce([&](AttributionDebugReport report,
+                      DebugReportSentCallback callback) {
+          sent_report = std::move(report);
+        });
+  }
+
   attribution_manager_->HandleSource(SourceBuilder().Build());
 
   const auto destination_origin =
@@ -2215,7 +2391,6 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
   task_environment_.RunUntilIdle();
 
   EXPECT_THAT(StoredSources(), SizeIs(1));
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
 
   // Source registered within a fenced frame failed with debug reporting, but
   // no debug report is sent.
@@ -2229,7 +2404,6 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
   task_environment_.RunUntilIdle();
 
   EXPECT_THAT(StoredSources(), SizeIs(1));
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
 
   {
     // Source registered outside a fenced frame failed with debug reporting, but
@@ -2247,8 +2421,9 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
     task_environment_.RunUntilIdle();
 
     EXPECT_THAT(StoredSources(), SizeIs(1));
-    EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
   }
+
+  checkpoint.Call(1);
 
   {
     // Source registered outside a fenced frame failed with debug reporting, and
@@ -2265,10 +2440,8 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
     task_environment_.RunUntilIdle();
 
     EXPECT_THAT(StoredSources(), SizeIs(1));
-    EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
-
-    const base::Value::List& report_body =
-        report_sender_->verbose_debug_calls().front().first.ReportBody();
+    ASSERT_TRUE(sent_report);
+    const base::Value::List& report_body = sent_report->ReportBody();
     ASSERT_EQ(report_body.size(), 1u);
     ASSERT_TRUE(report_body.front().is_dict());
     const base::Value::Dict* report_data =
@@ -2298,6 +2471,8 @@ TEST_F(AttributionManagerImplDebugReportTest,
       .WillRepeatedly(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
+  EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
+
   attribution_manager_->HandleSource(SourceBuilder().Build());
 
   attribution_manager_->HandleSource(
@@ -2309,7 +2484,6 @@ TEST_F(AttributionManagerImplDebugReportTest,
   task_environment_.RunUntilIdle();
 
   EXPECT_THAT(StoredSources(), SizeIs(1));
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
 }
 
 class AttributionManagerImplCookieBasedDebugReportTest
@@ -2334,13 +2508,25 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
   const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, _))
+        .WillOnce([](AttributionDebugReport report,
+                     DebugReportSentCallback callback) {
+          std::move(callback).Run(std::move(report), kExpectedStatus);
+        });
+  }
+
   attribution_manager_->HandleSource(SourceBuilder().Build());
 
   // Failed without debug reporting.
   attribution_manager_->HandleSource(
       SourceBuilder().SetReportingOrigin(reporting_origin).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
 
   // Source registered within a fenced frame failed with debug reporting, but
   // no debug report is sent.
@@ -2350,7 +2536,6 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
                                          .SetIsWithinFencedFrame(true)
                                          .Build());
   task_environment_.RunUntilIdle();
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
 
   // Source registered outside a fenced frame failed with debug reporting but no
   // debug cookie is set, therefore no debug report is sent.
@@ -2360,7 +2545,8 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
           .SetDebugReporting(true)
           .Build());
   task_environment_.RunUntilIdle();
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
+
+  checkpoint.Call(1);
 
   // Source registered outside a fenced frame with debug reporting and debug
   // cookie is set.
@@ -2369,9 +2555,6 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
                                          .SetDebugReporting(true)
                                          .Build());
   task_environment_.RunUntilIdle();
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
-
-  report_sender_->RunVerboseDebugCallbacks({kExpectedStatus});
 }
 
 }  // namespace content
