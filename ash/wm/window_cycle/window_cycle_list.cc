@@ -91,26 +91,14 @@ aura::Window* GetRootWindowForCycleView() {
 }  // namespace
 
 WindowCycleList::WindowCycleList(const WindowList& windows, bool same_app_only)
-    : windows_(windows) {
+    : windows_(windows), same_app_only_(same_app_only) {
   if (!ShouldShowUi())
     Shell::Get()->mru_window_tracker()->SetIgnoreActivations(true);
 
   active_window_before_window_cycle_ = window_util::GetActiveWindow();
 
-  if (same_app_only && windows_.size() > 1) {
-    WindowCycleController::WindowList same_app_window_list;
-    const std::string* const mru_window_app_id =
-        windows_.front()->GetProperty(kAppIDKey);
-    if (mru_window_app_id) {
-      windows_.erase(base::ranges::remove_if(
-                         windows_.begin(), windows_.end(),
-                         [&mru_window_app_id](aura::Window* window) {
-                           const auto* const app_id =
-                               window->GetProperty(kAppIDKey);
-                           return !app_id || *app_id != *mru_window_app_id;
-                         }),
-                     windows_.end());
-    }
+  if (same_app_only) {
+    MakeSameAppOnly();
   }
 
   for (auto* window : windows_)
@@ -174,6 +162,10 @@ aura::Window* WindowCycleList::GetTargetWindow() {
 void WindowCycleList::ReplaceWindows(const WindowList& windows) {
   RemoveAllWindows();
   windows_ = windows;
+
+  if (same_app_only_) {
+    MakeSameAppOnly();
+  }
 
   for (auto* new_window : windows_)
     new_window->AddObserver(this);
@@ -454,6 +446,26 @@ void WindowCycleList::Scroll(int offset) {
                          cycle_view_->CalculateMaxWidth()) {
     cycle_view_->ScrollToWindow(windows_[current_index_]);
   }
+}
+
+void WindowCycleList::MakeSameAppOnly() {
+  DCHECK(same_app_only_);
+  if (windows_.size() < 2) {
+    return;
+  }
+  const std::string* const mru_window_app_id =
+      windows_.front()->GetProperty(kAppIDKey);
+  if (!mru_window_app_id) {
+    return;
+  }
+  windows_.erase(
+      base::ranges::remove_if(windows_.begin(), windows_.end(),
+                              [&mru_window_app_id](aura::Window* window) {
+                                const auto* const app_id =
+                                    window->GetProperty(kAppIDKey);
+                                return !app_id || *app_id != *mru_window_app_id;
+                              }),
+      windows_.end());
 }
 
 int WindowCycleList::GetOffsettedWindowIndex(int offset) const {

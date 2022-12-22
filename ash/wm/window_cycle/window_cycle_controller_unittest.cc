@@ -1968,7 +1968,7 @@ TEST_F(ReverseGestureWindowCycleControllerTest,
       Shell::Get()->session_controller()->GetActivePrefService();
   pref->SetBoolean(prefs::kNaturalScroll, false);
 
-  // Start cycle, scroll right with two finger gesture. Note: two figner swipes
+  // Start cycle, scroll right with two finger gesture. Note: two finger swipes
   // are negated, so negate in tests to mimic how this actually behaves on
   // devices.
   // Current order is [5,4,3,2,1].
@@ -2093,7 +2093,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ModeChangesOnTap) {
   CompleteCycling(cycle_controller);
 }
 
-// Tests that when user taps tab slider buttons, but then scrolles and releases
+// Tests that when user taps tab slider buttons, but then scrolls and releases
 // finger on a window. Mode change should not happen in this use case.
 TEST_F(ModeSelectionWindowCycleControllerTest,
        TapTabSliderButtonButReleaseOnWindow) {
@@ -3696,6 +3696,91 @@ TEST_F(SameAppWindowCycleControllerTest, AlternateCyclingTypes) {
                                 ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
   generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
   EXPECT_TRUE(wm::IsActiveWindow(w5.get()));
+}
+
+// Tests that same app window cycling works in all desk mode, current desk mode,
+// switching between the two modes, and switching between same app window
+// cycling and normal window cycling.
+TEST_F(SameAppWindowCycleControllerTest, PerDeskMode) {
+  // On desk 1 create 1 window of app A and 3 windows of app B.
+  std::unique_ptr<aura::Window> w0(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w1(CreateTestWindowWithAppID(std::string("B")));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowWithAppID(std::string("B")));
+  std::unique_ptr<aura::Window> w3(CreateTestWindowWithAppID(std::string("B")));
+
+  // On desk 2 create 2 windows of app A and 4 windows of app B.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  std::unique_ptr<aura::Window> w4(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w5(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w6(CreateTestWindowWithAppID(std::string("B")));
+  std::unique_ptr<aura::Window> w7(CreateTestWindowWithAppID(std::string("B")));
+  std::unique_ptr<aura::Window> w8(CreateTestWindowWithAppID(std::string("B")));
+  std::unique_ptr<aura::Window> w9(CreateTestWindowWithAppID(std::string("B")));
+
+  // Start cycling, all desks mode should be default so we should see 7 windows
+  // of app B.
+  auto* generator = GetEventGenerator();
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  auto cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(7u, cycle_windows.size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_TRUE(base::Contains(cycle_windows, w1.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w2.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w3.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w6.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w7.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w8.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w9.get()));
+
+  // Select current-desk mode. We should see 4 windows of app B.
+  generator->MoveMouseTo(
+      GetWindowCycleTabSliderButtons()[1]->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(4u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_TRUE(base::Contains(cycle_windows, w6.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w7.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w8.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w9.get()));
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+
+  // Go to desk 1 and start cycling, we should still be on current-desk mode and
+  // see 3 windows of app B.
+  ActivateDesk(desks_controller->desks()[0].get());
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(3u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_TRUE(base::Contains(cycle_windows, w1.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w2.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w3.get()));
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+
+  // Start alt tabbing. The mode selection should be shared between alt tab and
+  // alt backtick so we should still be on current-desk mode and see 4 windows.
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(4u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_TRUE(base::Contains(cycle_windows, w0.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w1.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w2.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, w3.get()));
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
 }
 
 }  // namespace ash
