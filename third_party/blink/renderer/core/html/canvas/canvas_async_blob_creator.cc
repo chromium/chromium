@@ -163,7 +163,6 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     ScriptPromiseResolver* resolver)
     : fail_encoder_initialization_for_test_(false),
       enforce_idle_encoding_for_test_(false),
-      image_(image),
       context_(context),
       encode_options_(options),
       function_type_(function_type),
@@ -172,7 +171,6 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
       input_digest_(input_digest),
       callback_(callback),
       script_promise_resolver_(resolver) {
-  DCHECK(image);
   DCHECK(context);
 
   mime_type_ = ImageEncoderUtils::ToEncodingMimeType(
@@ -181,9 +179,9 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
 
   // We use pixmap to access the image pixels. Make the image unaccelerated if
   // necessary.
-  image_ = image_->MakeUnaccelerated();
+  DCHECK(image);
+  image_ = image->MakeUnaccelerated();
 
-  DCHECK(image_);
   sk_sp<SkImage> skia_image =
       image_->PaintImageForCurrentFrame().GetSwSkImage();
   DCHECK(skia_image);
