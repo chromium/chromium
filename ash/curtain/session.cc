@@ -115,7 +115,8 @@ void Session::CurtainOffRootWindow(aura::Window* root_window) {
   controller->SetSecurityCurtainWidgetController(
       std::make_unique<SecurityCurtainWidgetController>(
           SecurityCurtainWidgetController::CreateForRootWindow(
-              root_window, init_params_.event_filter)));
+              root_window, init_params_.event_filter,
+              init_params_.curtain_factory.Run())));
 }
 
 void Session::RemoveCurtainOfAllRootWindows() {

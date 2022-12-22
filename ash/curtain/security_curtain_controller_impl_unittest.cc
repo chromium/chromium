@@ -16,6 +16,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/metadata/view_factory.h"
+#include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 
 namespace aura {
@@ -80,6 +82,25 @@ class EventTester {
   raw_ref<ui::test::EventGenerator> event_generator_;
 };
 
+EventFilter only_mouse_events_filter() {
+  return base::BindRepeating([](const ui::Event& event) {
+    return event.IsMouseEvent() ? FilterResult::kKeepEvent
+                                : FilterResult::kSuppressEvent;
+  });
+}
+
+ViewFactory FakeViewFactory() {
+  return base::BindRepeating(
+      []() { return views::Builder<views::View>().Build(); });
+}
+
+EventFilter FakeEventFilter() {
+  return base::BindRepeating(
+      [](const ui::Event&) { return FilterResult::kSuppressEvent; });
+}
+
+}  // namespace
+
 class SecurityCurtainControllerImplTest : public AshTestBase {
  public:
   SecurityCurtainControllerImplTest() = default;
@@ -98,7 +119,8 @@ class SecurityCurtainControllerImplTest : public AshTestBase {
   }
 
   SecurityCurtainController::InitParams init_params() {
-    return SecurityCurtainController::InitParams();
+    return SecurityCurtainController::InitParams{FakeEventFilter(),
+                                                 FakeViewFactory()};
   }
 
   bool IsNativeCursorEnabled() {
@@ -109,7 +131,11 @@ class SecurityCurtainControllerImplTest : public AshTestBase {
   }
 
   SecurityCurtainController::InitParams WithEventFilter(EventFilter filter) {
-    return SecurityCurtainController::InitParams{filter};
+    return SecurityCurtainController::InitParams{filter, FakeViewFactory()};
+  }
+
+  SecurityCurtainController::InitParams WithViewFactory(ViewFactory factory) {
+    return SecurityCurtainController::InitParams{FakeEventFilter(), factory};
   }
 
   bool IsCurtainShownOnDisplay(const display::Display& display) {
@@ -197,13 +223,6 @@ class SecurityCurtainControllerImplTest : public AshTestBase {
   }
 };
 
-EventFilter only_mouse_events_filter() {
-  return base::BindRepeating([](const ui::Event& event) {
-    return event.IsMouseEvent() ? FilterResult::kKeepEvent
-                                : FilterResult::kSuppressEvent;
-  });
-}
-
 TEST_F(SecurityCurtainControllerImplTest,
        ShouldNotBeEnabledBeforeEnableIsCalled) {
   EXPECT_THAT(security_curtain_controller().IsEnabled(), Eq(false));
@@ -285,6 +304,23 @@ TEST_F(SecurityCurtainControllerImplTest,
        {gfx::Size(1000, 500), gfx::Size(2000, 1000)}) {
     ResizeDisplay(display, new_resolution);
     EXPECT_THAT(curtain.GetWindowBoundsInScreen().size(), Eq(new_resolution));
+  }
+}
+
+TEST_F(SecurityCurtainControllerImplTest, CurtainShouldUseViewFactory) {
+  // To test that the view factory is used we simply create views with a very
+  // specific id, and check that the curtain views have this id.
+  constexpr int kId = 1234567;
+
+  CreateMultipleDisplays();
+
+  security_curtain_controller().Enable(WithViewFactory(base::BindRepeating(
+      []() { return views::Builder<views::View>().SetID(kId).Build(); })));
+
+  for (auto display : GetDisplays()) {
+    views::Widget& curtain = GetCurtainForDisplay(display);
+
+    EXPECT_EQ(curtain.GetContentsView()->GetID(), kId);
   }
 }
 
@@ -492,5 +528,4 @@ TEST_F(SecurityCurtainControllerImplTest,
   ASSERT_THAT(IsNativeCursorEnabled(), Eq(true));
 }
 
-}  // namespace
 }  // namespace ash::curtain

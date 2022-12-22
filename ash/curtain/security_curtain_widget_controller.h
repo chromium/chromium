@@ -17,6 +17,7 @@ class Window;
 }  // namespace aura
 
 namespace views {
+class View;
 class Widget;
 }  // namespace views
 
@@ -40,7 +41,8 @@ class ASH_EXPORT SecurityCurtainWidgetController {
   // Creates a new curtain overlay.
   static SecurityCurtainWidgetController CreateForRootWindow(
       aura::Window* curtain_container,
-      EventFilter event_filter);
+      EventFilter event_filter,
+      std::unique_ptr<views::View> curtain_view);
 
   const views::Widget& GetWidget() const;
   views::Widget& GetWidget();

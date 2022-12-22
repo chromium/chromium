@@ -4,14 +4,17 @@
 
 #include "ash/curtain/security_curtain_widget_controller.h"
 
+#include <memory>
+#include <vector>
+
 #include "ash/curtain/input_event_filter.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/views/background.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash::curtain {
@@ -51,21 +54,13 @@ views::Widget::InitParams GetWidgetInitParams(aura::Window* parent) {
   return result;
 }
 
-std::unique_ptr<views::View> CreateContentsView() {
-  // Use a simple solid colored curtain for now.
-  // TODO(b/243626980): Update once UX has decided on the content of the
-  // curtain screen.
-  auto result = std::make_unique<views::View>();
-  result->SetLayoutManager(std::make_unique<views::FillLayout>());
-  result->SetBackground(views::CreateSolidBackground(SK_ColorYELLOW));
-  return result;
-}
-
-std::unique_ptr<views::Widget> CreateWidget(aura::Window* parent) {
+std::unique_ptr<views::Widget> CreateWidget(
+    aura::Window* parent,
+    std::unique_ptr<views::View> content_view) {
   auto widget = std::make_unique<views::Widget>();
   widget->Init(GetWidgetInitParams(parent));
   widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
-  widget->SetContentsView(CreateContentsView());
+  widget->SetContentsView(std::move(content_view));
   return widget;
 }
 
@@ -146,9 +141,11 @@ SecurityCurtainWidgetController::SecurityCurtainWidgetController(
 
 // static
 SecurityCurtainWidgetController
-SecurityCurtainWidgetController::CreateForRootWindow(aura::Window* root_window,
-                                                     EventFilter event_filter) {
-  auto widget = CreateWidget(root_window);
+SecurityCurtainWidgetController::CreateForRootWindow(
+    aura::Window* root_window,
+    EventFilter event_filter,
+    std::unique_ptr<views::View> curtain_view) {
+  auto widget = CreateWidget(root_window, std::move(curtain_view));
   auto layers = InitWidgetLayers(*widget->GetLayer());
   return SecurityCurtainWidgetController(
       std::move(widget), std::move(layers),
