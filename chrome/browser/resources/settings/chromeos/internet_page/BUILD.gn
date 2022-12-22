@@ -11,29 +11,10 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":apn_subpage",
     ":internet_page",
     ":internet_page_browser_proxy",
     ":internet_subpage",
   ]
-}
-
-js_library("apn_subpage") {
-  deps = [
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources/network:apn_list",
-    "//ash/webui/common/resources/network:cellular_utils",
-    "//ash/webui/common/resources/network:mojo_interface_provider",
-    "//ash/webui/common/resources/network:network_listener_behavior",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos:router",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//chromeos/services/network_config/public/mojom:network_types_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-
-  externs_list = []
 }
 
 js_library("internet_page") {
@@ -98,7 +79,6 @@ js_library("internet_subpage") {
 
 html_to_js("web_components") {
   js_files = [
-    "apn_subpage.js",
     "internet_page.js",
     "internet_subpage.js",
   ]

@@ -18,10 +18,11 @@ import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../../prefs/prefs.js';
+import '../../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
-import '../../settings_shared.css.js';
 import '../os_settings_icons.css.js';
+import './apn_subpage.js';
 import './cellular_setup_dialog.js';
 import './internet_config.js';
 import './internet_detail_menu.js';
@@ -54,7 +55,6 @@ import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 import {Route, Router} from '../router.js';
 
-import {ApnSubpageElement} from './apn_subpage';
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 
 // TODO(crbug/1315757) The following type definitions are only needed for
@@ -92,6 +92,13 @@ InternetConfigElement.prototype.showConnect;
 /** @type {string} */
 InternetConfigElement.prototype.type;
 InternetConfigElement.prototype.open = function() {};
+
+/**
+ * @constructor
+ * @extends {HTMLElement}
+ */
+function ApnSubpageElement() {}
+ApnSubpageElement.prototype.openApnDetailDialogInCreateMode = function() {};
 
 /** @type {number} */
 const ESIM_PROFILE_LIMIT = 5;
