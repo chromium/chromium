@@ -75,13 +75,13 @@ class UnusedSitePermissionsServiceTest
         url, url, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
         nullptr));
 
-    base::Value::List permissions;
+    base::Value::List permissions_list;
     if (!setting_value.is_dict() ||
         !setting_value.GetDict().FindList(kRevokedKey)) {
-      return permissions;
+      return permissions_list;
     }
 
-    base::Value::List permissions_list =
+    permissions_list =
         std::move(*setting_value.GetDict().FindList(kRevokedKey));
 
     return permissions_list;
@@ -212,20 +212,28 @@ TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
 
-  // Travel through time for 50 days.
-  clock()->Advance(base::Days(50));
+  // Travel through time for 20 days.
+  clock()->Advance(base::Days(20));
 
   // Grant MEDIASTREAM_CAMERA permission for the url.
   hcsm()->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSetting::CONTENT_SETTING_ALLOW, constraint);
 
-  // Travel through time for 20 days.
-  clock()->Advance(base::Days(20));
+  // GEOLOCATION permission should be on the tracked unused site permissions
+  // list as it is granted 20 days before. MEDIASTREAM_CAMERA permission should
+  // not be tracked as it is just granted.
+  service()->UpdateUnusedPermissionsForTesting();
+  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 1u);
+  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting()[0].type,
+            ContentSettingsType::GEOLOCATION);
 
-  // GEOLOCATION permission should be on the revoked permissions list.
-  // MEDIASTREAM_CAMERA permissions should be on the recently unused permissions
-  // list.
+  // Travel through time for 50 days.
+  clock()->Advance(base::Days(50));
+
+  // GEOLOCATION permission should be on the revoked permissions list as it is
+  // granted 70 days before. MEDIASTREAM_CAMERA permission should be on the
+  // recently unused permissions list as it is granted 50 days before.
   service()->UpdateUnusedPermissionsForTesting();
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 1u);
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url)[0].GetInt(),
@@ -234,17 +242,25 @@ TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting()[0].type,
             ContentSettingsType::MEDIASTREAM_CAMERA);
 
-  // Travel through time for 70 days.
-  clock()->Advance(base::Days(70));
+  // Travel through time for 20 days.
+  clock()->Advance(base::Days(20));
 
   // Both GEOLOCATION and MEDIASTREAM_CAMERA permissions should be on the
-  // revoked permissions list.
+  // revoked permissions list as they are granted more than 60 days before.
   service()->UpdateUnusedPermissionsForTesting();
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 2u);
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url)[0].GetInt(),
             static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url)[1].GetInt(),
             static_cast<int32_t>(ContentSettingsType::MEDIASTREAM_CAMERA));
+
+  // Travel through time for 30 days.
+  clock()->Advance(base::Days(30));
+
+  // No permission should be on the revoked permissions list as they are revoked
+  // more than 30 days before.
+  service()->UpdateUnusedPermissionsForTesting();
+  EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 0u);
 }
 
 }  // namespace permissions

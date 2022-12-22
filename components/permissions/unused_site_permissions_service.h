@@ -105,6 +105,11 @@ class UnusedSitePermissionsService
   // days ago.
   void RevokeUnusedPermissions();
 
+  // Stores revoked permissions data on HCSM.
+  void StorePermissionInRevokedPermissionSetting(
+      const std::list<UnusedSitePermissionsService::ContentSettingEntry>&
+          recently_revoked_permissions);
+
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;
   // Repeating timer that updates the recently_unused_permissions_ map.

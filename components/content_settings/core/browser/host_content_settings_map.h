@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/clock.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -398,7 +399,8 @@ class HostContentSettingsMap : public content_settings::Observer,
       bool include_incognito,
       ContentSettingsPattern* primary_pattern,
       ContentSettingsPattern* secondary_pattern,
-      content_settings::RuleMetaData* metadata);
+      content_settings::RuleMetaData* metadata,
+      base::Clock* clock);
 
   static base::Value GetContentSettingValueAndPatterns(
       content_settings::RuleIterator* rule_iterator,
@@ -406,7 +408,8 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& secondary_url,
       ContentSettingsPattern* primary_pattern,
       ContentSettingsPattern* secondary_pattern,
-      content_settings::RuleMetaData* metadata);
+      content_settings::RuleMetaData* metadata,
+      base::Clock* clock);
 
   // Migrate requesting and top level origin content settings to remove all
   // settings that have a top level pattern. If there is a pattern set for
@@ -470,6 +473,8 @@ class HostContentSettingsMap : public content_settings::Observer,
   // allow them. Only used for testing that inserts previously valid patterns in
   // order to ensure the migration logic is sound.
   bool allow_invalid_secondary_pattern_for_testing_;
+
+  raw_ptr<base::Clock> clock_;
 
   base::WeakPtrFactory<HostContentSettingsMap> weak_ptr_factory_{this};
 };

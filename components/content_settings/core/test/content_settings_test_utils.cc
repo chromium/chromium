@@ -4,6 +4,7 @@
 
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 
+#include "base/time/default_clock.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
@@ -21,7 +22,7 @@ base::Value TestUtils::GetContentSettingValue(const ProviderInterface* provider,
                                               RuleMetaData* metadata) {
   return HostContentSettingsMap::GetContentSettingValueAndPatterns(
       provider, primary_url, secondary_url, content_type, include_incognito,
-      nullptr, nullptr, metadata);
+      nullptr, nullptr, metadata, base::DefaultClock::GetInstance());
 }
 
 // static
@@ -58,7 +59,7 @@ base::Value TestUtils::GetContentSettingValueAndPatterns(
     RuleMetaData* metadata) {
   return HostContentSettingsMap::GetContentSettingValueAndPatterns(
       rule_iterator, primary_url, secondary_url, primary_pattern,
-      secondary_pattern, metadata);
+      secondary_pattern, metadata, base::DefaultClock::GetInstance());
 }
 
 // static
