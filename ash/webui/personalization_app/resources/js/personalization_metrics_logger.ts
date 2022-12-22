@@ -22,9 +22,12 @@ enum MetricsPath {
   MAX_VALUE = USER,
 }
 
-const PersonalizationPathHistogramName: string = 'Ash.Personalization.Path';
-const PersonalizationAmbientModeOptInHistogramName: string =
-    'Ash.Personalization.AmbientMode.OptIn';
+const enum HistogramName {
+  PATH = 'Ash.Personalization.Path',
+  AMBIENT_OPTIN = 'Ash.Personalization.AmbientMode.OptIn',
+  AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS =
+      'Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime',
+}
 
 function toMetricsEnum(path: Paths) {
   switch (path) {
@@ -51,10 +54,18 @@ export function logPersonalizationPathUMA(path: Paths) {
   const metricsPath = toMetricsEnum(path);
   assert(metricsPath <= MetricsPath.MAX_VALUE);
   chrome.metricsPrivate.recordEnumerationValue(
-      PersonalizationPathHistogramName, metricsPath, MetricsPath.MAX_VALUE + 1);
+      HistogramName.PATH, metricsPath, MetricsPath.MAX_VALUE + 1);
 }
 
 export function logAmbientModeOptInUMA() {
-  chrome.metricsPrivate.recordBoolean(
-      PersonalizationAmbientModeOptInHistogramName, true);
+  chrome.metricsPrivate.recordBoolean(HistogramName.AMBIENT_OPTIN, true);
+}
+
+export function logGooglePhotosPreviewsLoadTime() {
+  // Get elapsed time in ms since the page initialized.
+  const timeMs = Math.round(performance.now());
+  console.debug(
+      HistogramName.AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS, timeMs);
+  chrome.metricsPrivate.recordTime(
+      HistogramName.AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS, timeMs);
 }

@@ -3703,6 +3703,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime"
+    units="ms" expires_after="2023-12-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted when a request to load ambient mode google photos albums preview
+    images completes, but only upon first page load. This roughly corresponds to
+    user perceived time it takes to load the ambient preview section of
+    Personalization App. Does not emit if a user opens Personalization App onto
+    a page that does not load google photos albums previews. Does not emit
+    unless the user already has ambient mode enabled and Google Photos selected
+    as the source upon first opening Personalization App.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Personalization.AmbientMode.AnimationTheme"
     enum="AmbientModeAnimationTheme" expires_after="2023-06-18">
   <owner>jasontt@chromium.org</owner>

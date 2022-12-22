@@ -1,6 +1,7 @@
 {
   "extends": "../../../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
+    "target": "es2021",
     "allowJs": true,
     "noUncheckedIndexedAccess": false,
     "noUnusedLocals": false,

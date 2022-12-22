@@ -6,7 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {AmbientActionName, AmbientModeAlbum, AmbientObserver, emptyState, SetAlbumsAction, TopicSource} from 'chrome://personalization/js/personalization_app.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {baseSetup} from './personalization_app_test_utils.js';
 import {TestAmbientProvider} from './test_ambient_interface_provider.js';
@@ -96,5 +96,77 @@ suite('AmbientObserverTest', function() {
     assertEquals(
         'new-regular-album-url', albums[1]!.url.url,
         'used updated regular album url');
+  });
+});
+
+suite('GooglePhotosPreviewLoadPerformance', () => {
+  let ambientProvider: TestAmbientProvider;
+  let personalizationStore: TestPersonalizationStore;
+
+  setup(() => {
+    const mocks = baseSetup();
+    ambientProvider = mocks.ambientProvider;
+    personalizationStore = mocks.personalizationStore;
+    // Reset the value to always start true in test.
+    AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance = true;
+    AmbientObserver.initAmbientObserverIfNeeded();
+  });
+
+  teardown(() => {
+    AmbientObserver.shutdown();
+  });
+
+  test('sets to false if ambient mode disabled', async () => {
+    ambientProvider.ambientObserverRemote!.onAmbientModeEnabledChanged(false);
+    personalizationStore.expectAction(
+        AmbientActionName.SET_AMBIENT_MODE_ENABLED);
+    await personalizationStore.waitForAction(
+        AmbientActionName.SET_AMBIENT_MODE_ENABLED);
+    assertFalse(AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance);
+  });
+
+  test('sets to false if topic source is not kGooglePhotos', async () => {
+    ambientProvider.ambientObserverRemote!.onTopicSourceChanged(
+        TopicSource.kArtGallery);
+    personalizationStore.expectAction(AmbientActionName.SET_TOPIC_SOURCE);
+    await personalizationStore.waitForAction(
+        AmbientActionName.SET_TOPIC_SOURCE);
+    assertFalse(AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance);
+  });
+
+  test('sets to false if already received preview images', async () => {
+    personalizationStore.data.ambient.googlePhotosAlbumsPreviews = [];
+    ambientProvider.ambientObserverRemote!.onGooglePhotosAlbumsPreviewsFetched(
+        []);
+    personalizationStore.expectAction(
+        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
+    await personalizationStore.waitForAction(
+        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
+    assertTrue(
+        AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance,
+        'still true because no previews stored yet');
+
+    personalizationStore.data.ambient.googlePhotosAlbumsPreviews = [
+      {url: 'asdf'},
+    ];
+    ambientProvider.ambientObserverRemote!.onGooglePhotosAlbumsPreviewsFetched(
+        []);
+    personalizationStore.expectAction(
+        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
+    await personalizationStore.waitForAction(
+        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
+    assertFalse(AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance);
+  });
+
+  test('sets to false after receiving preview images', async () => {
+    personalizationStore.data.ambient.googlePhotosAlbumsPreviews = [];
+    ambientProvider.ambientObserverRemote!.onGooglePhotosAlbumsPreviewsFetched([
+      {url: 'asdf'},
+    ]);
+    personalizationStore.expectAction(
+        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
+    await personalizationStore.waitForAction(
+        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
+    assertFalse(AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance);
   });
 });

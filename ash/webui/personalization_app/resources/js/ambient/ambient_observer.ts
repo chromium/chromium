@@ -5,7 +5,10 @@
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, AmbientUiVisibility, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
+import {logGooglePhotosPreviewsLoadTime} from '../personalization_metrics_logger.js';
+import {Paths} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
+import {isNonEmptyArray} from '../utils.js';
 
 import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientUiVisibilityAction, setAnimationThemeAction, setGooglePhotosAlbumsPreviewsAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
@@ -19,6 +22,12 @@ let instance: AmbientObserver|null = null;
  * Observes ambient mode changes and saves updates to PersonalizationStore.
  */
 export class AmbientObserver implements AmbientObserverInterface {
+  // Allow logging first load performance if the user began on a page where
+  // google photos preview images are loaded immediately.
+  static shouldLogGooglePhotosPreviewsLoadPerformance: boolean =
+      window.location.pathname === Paths.ROOT ||
+      window.location.pathname === Paths.AMBIENT;
+
   static initAmbientObserverIfNeeded(): void {
     if (!instance) {
       instance = new AmbientObserver();
@@ -48,6 +57,11 @@ export class AmbientObserver implements AmbientObserverInterface {
   }
 
   onAmbientModeEnabledChanged(ambientModeEnabled: boolean) {
+    // Only record google photos previews load performance if ambient mode
+    // starts enabled.
+    AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance =
+        AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance &&
+        ambientModeEnabled;
     const store = PersonalizationStore.getInstance();
     store.dispatch(setAmbientModeEnabledAction(ambientModeEnabled));
   }
@@ -59,6 +73,12 @@ export class AmbientObserver implements AmbientObserverInterface {
 
   onTopicSourceChanged(topicSource: TopicSource) {
     const store = PersonalizationStore.getInstance();
+    // If the first time receiving `topicSource` and it is already set to
+    // `kGooglePhotos`, allow logging google photos load performance.
+    AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance =
+        AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance &&
+        store.data.ambient.topicSource === null &&
+        topicSource === TopicSource.kGooglePhotos;
     store.dispatch(setTopicSourceAction(topicSource));
   }
 
@@ -89,7 +109,21 @@ export class AmbientObserver implements AmbientObserverInterface {
 
   onGooglePhotosAlbumsPreviewsFetched(previews: Url[]) {
     const store = PersonalizationStore.getInstance();
+
+    // Only log performance metrics if this is the first time receiving google
+    // photos previews.
+    AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance =
+        AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance &&
+        (!store.data.ambient.googlePhotosAlbumsPreviews ||
+         store.data.ambient.googlePhotosAlbumsPreviews.length === 0);
+
     store.dispatch(setGooglePhotosAlbumsPreviewsAction(previews));
+
+    if (AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance &&
+        isNonEmptyArray(previews)) {
+      logGooglePhotosPreviewsLoadTime();
+      AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance = false;
+    }
   }
 
   onAmbientUiVisibilityChanged(ambientUiVisibility: AmbientUiVisibility) {
