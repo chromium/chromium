@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewConfiguration;
 
@@ -22,7 +21,6 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -148,8 +146,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
      * Tests that a Tap gesture followed by scrolling clears the selection.
      */
     @Test
-    @DisableIf.
-    Build(sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP, message = "crbug.com/841017")
+    @DisabledTest(message = "crbug.com/841017")
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testTapGestureFollowedByScrollClearsSelection() throws Exception {
@@ -256,11 +253,9 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.M,
-            message = "crbug.com/1071080, crbug.com/1362185")
-    public void
-    testLongPressGestureFollowedByScrollMaintainsSelection(@EnabledFeature int enabledFeature)
-            throws Exception {
+    @DisabledTest(message = "crbug.com/1071080, crbug.com/1362185")
+    public void testLongPressGestureFollowedByScrollMaintainsSelection(
+            @EnabledFeature int enabledFeature) throws Exception {
         longPressNode("intelligence");
         waitForPanelToPeek();
         scrollBasePage();
