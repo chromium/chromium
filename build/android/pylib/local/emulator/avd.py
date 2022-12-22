@@ -357,6 +357,29 @@ class AvdConfig:
   def _features_ini_path(self):
     return os.path.join(self.emulator_home, 'advancedFeatures.ini')
 
+  @property
+  def xdg_config_dir(self):
+    """The base directory to store qt config file.
+
+    This dir should be added to the env variable $XDG_CONFIG_DIRS so that
+    _qt_config_path can take effect. See https://bit.ly/3HIQRZ3 for context.
+    """
+    config_dir = os.path.join(self.emulator_home, '.config')
+    if not os.path.exists(config_dir):
+      os.makedirs(config_dir)
+
+    return config_dir
+
+  @property
+  def _qt_config_path(self):
+    """The qt config file for emulator."""
+    qt_config_dir = os.path.join(self.xdg_config_dir,
+                                 'Android Open Source Project')
+    if not os.path.exists(qt_config_dir):
+      os.makedirs(qt_config_dir)
+
+    return os.path.join(qt_config_dir, 'Emulator.conf')
+
   def HasSnapshot(self, snapshot_name):
     """Check if a given snapshot exists or not."""
     snapshot_path = os.path.join(self._avd_dir, 'snapshots', snapshot_name)
@@ -731,16 +754,17 @@ class AvdConfig:
      * Emulator instance can be booted correctly.
      * The snapshot can be loaded successfully.
     """
+    logging.info('Updating AVD configurations.')
     # Update the absolute avd path in root_ini file
     with ini.update_ini_file(self._root_ini_path) as r_ini_contents:
       r_ini_contents['path'] = self._avd_dir
 
     # Update hardware settings.
-    config_files = [self._config_ini_path]
+    config_paths = [self._config_ini_path]
     # The file hardware.ini within each snapshot need to be updated as well.
     hw_ini_glob_pattern = os.path.join(self._avd_dir, 'snapshots', '*',
                                        'hardware.ini')
-    config_files.extend(glob.glob(hw_ini_glob_pattern))
+    config_paths.extend(glob.glob(hw_ini_glob_pattern))
 
     properties = {}
     # Update hw.sdCard.path if applicable
@@ -748,9 +772,13 @@ class AvdConfig:
     if os.path.exists(sdcard_path):
       properties['hw.sdCard.path'] = sdcard_path
 
-    for config_file in config_files:
-      with ini.update_ini_file(config_file) as config_contents:
+    for config_path in config_paths:
+      with ini.update_ini_file(config_path) as config_contents:
         config_contents.update(properties)
+
+    # Create qt config file to disable adb warning when launched in window mode.
+    with ini.update_ini_file(self._qt_config_path) as config_contents:
+      config_contents['set'] = {'autoFindAdb': 'false'}
 
   def _Initialize(self):
     if self._initialized:
@@ -882,9 +910,9 @@ class _AvdInstance:
       emulator_env = {
           # kill immediately when emulator hang.
           'ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL': '0',
+          # Sets the emulator configuration directory
+          'ANDROID_EMULATOR_HOME': self._emulator_home,
       }
-      if self._emulator_home:
-        emulator_env['ANDROID_EMULATOR_HOME'] = self._emulator_home
       if 'DISPLAY' in os.environ:
         emulator_env['DISPLAY'] = os.environ.get('DISPLAY')
       if window:
@@ -892,6 +920,12 @@ class _AvdInstance:
           raise AvdException('Emulator failed to start: DISPLAY not defined')
       else:
         emulator_cmd.append('-no-window')
+
+      # Need this for the qt config file to take effect.
+      xdg_config_dirs = [self._avd_config.xdg_config_dir]
+      if 'XDG_CONFIG_DIRS' in os.environ:
+        xdg_config_dirs.append(os.environ.get('XDG_CONFIG_DIRS'))
+      emulator_env['XDG_CONFIG_DIRS'] = ':'.join(xdg_config_dirs)
 
       sock.listen(1)
 
