@@ -2110,9 +2110,6 @@ extern const char kMessagesForAndroidAdsBlockedDescription[];
 extern const char kMessagesForAndroidInfrastructureName[];
 extern const char kMessagesForAndroidInfrastructureDescription[];
 
-extern const char kMessagesForAndroidNearOomReductionName[];
-extern const char kMessagesForAndroidNearOomReductionDescription[];
-
 extern const char kMessagesForAndroidNotificationBlockedName[];
 extern const char kMessagesForAndroidNotificationBlockedDescription[];
 

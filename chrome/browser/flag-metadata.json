@@ -4603,11 +4603,6 @@
     "expiry_milestone": 101
   },
   {
-    "name": "messages-for-android-near-oom-reduction",
-    "owners": [ "pavely", "aishwaryarj" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "messages-for-android-notification-blocked",
     "owners": [ "pavely", "lazzzis" ],
     "expiry_milestone": 105

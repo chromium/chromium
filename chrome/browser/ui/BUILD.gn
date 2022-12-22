@@ -783,8 +783,6 @@ static_library("ui") {
       "android/infobars/infobar_container_android.h",
       "android/infobars/near_oom_infobar.cc",
       "android/infobars/near_oom_infobar.h",
-      "android/infobars/near_oom_reduction_infobar.cc",
-      "android/infobars/near_oom_reduction_infobar.h",
       "android/infobars/permission_infobar.cc",
       "android/infobars/permission_infobar.h",
       "android/infobars/reader_mode_infobar.cc",

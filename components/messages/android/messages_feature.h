@@ -18,10 +18,6 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidAdsBlocked);
 // implementations also fallback to Infobar implementations.
 BASE_DECLARE_FEATURE(kMessagesForAndroidInfrastructure);
 
-// Feature that controls whether "near OOM reduction" messages use Messages or
-// Infobars infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidNearOomReduction);
-
 // Feature that controls whether notifiation blocked prompts use Messages or
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidNotificationBlocked);
@@ -47,8 +43,6 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidSaveCard);
 BASE_DECLARE_FEATURE(kMessagesForAndroidStackingAnimation);
 
 bool IsAdsBlockedMessagesUiEnabled();
-
-bool IsNearOomReductionMessagesUiEnabled();
 
 bool IsNotificationBlockedMessagesUiEnabled();
 

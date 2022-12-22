@@ -5118,12 +5118,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_NEAR_OOM_INTERVENTION_DECLINE" desc="The text of the button letting the user decline the browser's intervention, so that the page can resume what it was doing.">
          Resume
       </message>
-      <message name="IDS_NEAR_OOM_REDUCTION_MESSAGE" desc="The message stating that the browser removed some content of the page using too much memory.">
-         This page uses too much memory, so Chrome removed some content.
-      </message>
-      <message name="IDS_NEAR_OOM_REDUCTION_DECLINE" desc="The text of the button letting the user decline the browser's intervention, so that the page can be reloaded.">
-         Show original
-      </message>
 
       <!-- Autofill Assistant preferences -->
       <!-- TODO(b/168178344): Move to Assistant settings strings section below. -->

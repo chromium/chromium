@@ -40,10 +40,6 @@ BASE_FEATURE(kMessagesForAndroidInfrastructure,
              "MessagesForAndroidInfrastructure",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidNearOomReduction,
-             "MessagesForAndroidNearOomReduction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMessagesForAndroidNotificationBlocked,
              "MessagesForAndroidNotificationBlocked",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -71,11 +67,6 @@ BASE_FEATURE(kMessagesForAndroidStackingAnimation,
 bool IsAdsBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
-}
-
-bool IsNearOomReductionMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidNearOomReduction);
 }
 
 bool IsOfferNotificationMessagesUiEnabled() {
