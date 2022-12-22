@@ -32,18 +32,6 @@ std::map<std::string, std::string> kTestMap = {
     {"testPackage3", "BLOCKED"},        {"testPackage4", "AVAILABLE"},
     {"testPackage5", "AVAILABLE"},      {"testPackage6", "REQUIRED"}};
 
-}  // namespace
-
-class ArcPolicyUtilTest : public testing::Test {
- public:
-  ArcPolicyUtilTest(const ArcPolicyUtilTest&) = delete;
-  ArcPolicyUtilTest& operator=(const ArcPolicyUtilTest&) = delete;
-
- protected:
-  ArcPolicyUtilTest() = default;
-  base::HistogramTester tester;
-};
-
 std::string CreatePolicyWithAppInstalls(
     std::map<std::string, std::string> package_map) {
   base::Value::Dict arc_policy;
@@ -62,6 +50,19 @@ std::string CreatePolicyWithAppInstalls(
   return arc_policy_string;
 }
 
+}  // namespace
+
+class ArcPolicyUtilTest : public testing::Test {
+ public:
+  ArcPolicyUtilTest(const ArcPolicyUtilTest&) = delete;
+  ArcPolicyUtilTest& operator=(const ArcPolicyUtilTest&) = delete;
+
+ protected:
+  ArcPolicyUtilTest() = default;
+
+  base::HistogramTester tester_;
+};
+
 TEST_F(ArcPolicyUtilTest, GetRequestedPackagesFromArcPolicy) {
   std::set<std::string> expected = {"testPackage", "testPackage6"};
   std::string policy = CreatePolicyWithAppInstalls(kTestMap);
@@ -71,7 +72,7 @@ TEST_F(ArcPolicyUtilTest, GetRequestedPackagesFromArcPolicy) {
   EXPECT_EQ(result, expected);
 }
 
-TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicy_OneOfEachType) {
+TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicyWithOneOfEachType) {
   std::map<std::string, std::string> test_map = {
       {"testPackage", "OPTIONAL"},
       {"testPackage2", "REQUIRED"},
@@ -86,49 +87,46 @@ TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicy_OneOfEachType) {
   std::string policy = CreatePolicyWithAppInstalls(test_map);
   arc::policy_util::RecordInstallTypesInPolicy(policy);
 
-  tester.ExpectBucketCount(kInstallTypeHistogram, kUnknownBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kOptionalBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kRequiredBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kPreloadBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kForceInstalledBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kBlockedBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kAvailableBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kRequiredForSetupBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kKioskBucket, 1);
-  tester.ExpectTotalCount(kInstallTypeHistogram, 9);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kUnknownBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kOptionalBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kRequiredBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kPreloadBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kForceInstalledBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kBlockedBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kAvailableBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kRequiredForSetupBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kKioskBucket, 1);
+  tester_.ExpectTotalCount(kInstallTypeHistogram, 9);
 }
 
-TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicy_ComplexPolicy) {
+TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicyWithComplexPolicy) {
   std::string policy = CreatePolicyWithAppInstalls(kTestMap);
   arc::policy_util::RecordInstallTypesInPolicy(policy);
 
-  tester.ExpectBucketCount(kInstallTypeHistogram, kForceInstalledBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kBlockedBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kAvailableBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kRequiredBucket, 1);
-  tester.ExpectTotalCount(kInstallTypeHistogram, 4);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kForceInstalledBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kBlockedBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kAvailableBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kRequiredBucket, 1);
+  tester_.ExpectTotalCount(kInstallTypeHistogram, 4);
 }
 
-TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicy_PolicyUpdate) {
-  std::string policy = CreatePolicyWithAppInstalls(kTestMap);
+TEST_F(ArcPolicyUtilTest, RecordInstallTypesInPolicyAfterPolicyUpdate) {
+  std::map<std::string, std::string> test_map = {
+      {"testPackage", "FORCE_INSTALLED"}};
+  std::string policy = CreatePolicyWithAppInstalls(test_map);
   arc::policy_util::RecordInstallTypesInPolicy(policy);
 
-  tester.ExpectBucketCount(kInstallTypeHistogram, kForceInstalledBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kBlockedBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kAvailableBucket, 1);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kRequiredBucket, 1);
-  tester.ExpectTotalCount(kInstallTypeHistogram, 4);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kForceInstalledBucket, 1);
+  tester_.ExpectTotalCount(kInstallTypeHistogram, 1);
 
-  kTestMap["anotherTestPackage"] = "BLOCKED";
-  kTestMap["anotherTestPackage2"] = "KIOSK";
-  policy = CreatePolicyWithAppInstalls(kTestMap);
+  test_map["anotherTestPackage"] = "BLOCKED";
+  test_map["anotherTestPackage2"] = "KIOSK";
+  policy = CreatePolicyWithAppInstalls(test_map);
   arc::policy_util::RecordInstallTypesInPolicy(policy);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kForceInstalledBucket, 2);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kBlockedBucket, 2);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kAvailableBucket, 2);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kRequiredBucket, 2);
-  tester.ExpectBucketCount(kInstallTypeHistogram, kKioskBucket, 1);
-  tester.ExpectTotalCount(kInstallTypeHistogram, 9);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kForceInstalledBucket, 2);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kBlockedBucket, 1);
+  tester_.ExpectBucketCount(kInstallTypeHistogram, kKioskBucket, 1);
+  tester_.ExpectTotalCount(kInstallTypeHistogram, 4);
 }
 
 }  // namespace arc::policy_util
