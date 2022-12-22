@@ -66,9 +66,6 @@ class MEDIA_EXPORT SourceBufferState {
   // append failure using a `QuotaExceededErr` exception per the MSE
   // specification. App could use a back-off and retry strategy or otherwise
   // alter their behavior to attempt to buffer media for further playback.
-  // TODO(crbug.com/1286810): Update resource allocation paths in the
-  // StreamParser implementations called by this method to recognize and report
-  // allocation failure.
   [[nodiscard]] bool AppendToParseBuffer(const uint8_t* data, size_t length);
 
   // Tells the stream parser to parse more of the data previously sent to it

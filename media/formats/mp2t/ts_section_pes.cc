@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/bit_reader.h"
+#include "media/base/byte_queue.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/mp2t/es_parser.h"
@@ -76,8 +77,9 @@ bool TsSectionPes::Parse(bool payload_unit_start_indicator,
   }
 
   // Add the data to the parser state.
-  if (size > 0)
-    pes_byte_queue_.Push(buf, size);
+  if (size > 0) {
+    RCHECK(pes_byte_queue_.Push(buf, size));  // Can fail if allocation fails.
+  }
 
   // Try emitting the current PES packet.
   return (parse_result && Emit(false));

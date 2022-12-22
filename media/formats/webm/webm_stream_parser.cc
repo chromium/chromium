@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
+#include "media/base/byte_queue.h"
 #include "media/base/media_track.h"
 #include "media/base/media_tracks.h"
 #include "media/base/stream_parser.h"
@@ -102,7 +103,10 @@ bool WebMStreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
   CHECK_EQ(uninspected_pending_bytes_, 0);
 
   uninspected_pending_bytes_ = base::checked_cast<int>(size);
-  byte_queue_.Push(buf, uninspected_pending_bytes_);
+  if (!byte_queue_.Push(buf, uninspected_pending_bytes_)) {
+    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size " << size;
+    return false;
+  }
 
   return true;
 }

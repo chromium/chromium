@@ -27,7 +27,7 @@ class MEDIA_EXPORT OffsetByteQueue {
 
   // These work like their underlying ByteQueue counterparts.
   void Reset();
-  void Push(const uint8_t* buf, int size);
+  [[nodiscard]] bool Push(const uint8_t* buf, int size);
   void Peek(const uint8_t** buf, int* size);
   void Pop(int count);
 

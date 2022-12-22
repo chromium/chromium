@@ -216,9 +216,16 @@ void EsParserH264::Flush() {
   // Simulate an additional AUD to force emitting the last access unit
   // which is assumed to be complete at this point.
   uint8_t aud[] = {0x00, 0x00, 0x01, 0x09};
-  es_queue_->Push(aud, sizeof(aud));
-  ParseFromEsQueue();
 
+  // Fail if this AUD's push fails allocation, since otherwise the behavior of
+  // the subsequent parse would vary based on whether or not the system is
+  // near-OOM.
+  // TODO(crbug.com/1266639): Consider plumbing parse failure for this push
+  // failure case, instead of what used to OOM but now instead would fail this
+  // CHECK.
+  CHECK(es_queue_->Push(aud, sizeof(aud)));
+
+  ParseFromEsQueue();
   es_adapter_.Flush();
 }
 

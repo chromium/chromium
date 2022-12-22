@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/numerics/checked_math.h"
+#include "media/base/byte_queue.h"
 #include "media/base/media_tracks.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
@@ -334,7 +335,10 @@ bool Mp2tStreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
 
   // Add the data to the parser state.
   uninspected_pending_bytes_ = base::checked_cast<int>(size);
-  ts_byte_queue_.Push(buf, uninspected_pending_bytes_);
+  if (!ts_byte_queue_.Push(buf, uninspected_pending_bytes_)) {
+    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size " << size;
+    return false;
+  }
 
   return true;
 }

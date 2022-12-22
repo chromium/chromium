@@ -939,7 +939,10 @@ bool ChunkDemuxer::AppendToParseBuffer(const std::string& id,
       case INITIALIZED:
         DCHECK(IsValidId_Locked(id));
         if (!source_state_map_[id]->AppendToParseBuffer(data, length)) {
-          ReportError_Locked(CHUNK_DEMUXER_ERROR_APPEND_FAILED);
+          // Just indicate that the append failed. Let the caller give app an
+          // error so that it may adapt. This is different from
+          // RunSegmentParserLoop(), where fatal MediaSource failure should
+          // occur if the underlying parse fails.
           return false;
         }
         break;

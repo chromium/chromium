@@ -21,8 +21,8 @@ class OffsetByteQueueTest : public testing::Test {
       buf[i] = i;
     }
     queue_ = std::make_unique<OffsetByteQueue>();
-    queue_->Push(buf, sizeof(buf));
-    queue_->Push(buf, sizeof(buf));
+    ASSERT_TRUE(queue_->Push(buf, sizeof(buf))) << "Test should not hit OOM";
+    ASSERT_TRUE(queue_->Push(buf, sizeof(buf))) << "Test should not hit OOM";
     queue_->Pop(384);
 
     // Queue will start with 128 bytes of data and an offset of 384 bytes.

@@ -19,10 +19,15 @@ void OffsetByteQueue::Reset() {
   head_ = 0;
 }
 
-void OffsetByteQueue::Push(const uint8_t* buf, int size) {
-  queue_.Push(buf, size);
+bool OffsetByteQueue::Push(const uint8_t* buf, int size) {
+  if (!queue_.Push(buf, size)) {
+    DVLOG(4) << "Failed to push buf of size " << size;
+    Sync();
+    return false;
+  }
   Sync();
   DVLOG(4) << "Buffer pushed. head=" << head() << " tail=" << tail();
+  return true;
 }
 
 void OffsetByteQueue::Peek(const uint8_t** buf, int* size) {

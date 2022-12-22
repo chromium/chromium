@@ -9,10 +9,26 @@
 
 #include "base/check_op.h"
 #include "base/numerics/checked_math.h"
+#include "base/process/memory.h"
 
 namespace media {
 
-ByteQueue::ByteQueue() : buffer_(new uint8_t[size_]) {}
+ByteQueue::ByteQueue() {
+  uint8_t* new_buffer = nullptr;
+
+  // Though ::Push() is allowed to fail memory allocation for `buffer_`, do not
+  // allow memory allocation failure here during ByteQueue construction.
+  // TODO(crbug.com/1266639): Consider refactoring to an Initialize() method
+  // that does this allocation and that can indicate failure, so callers can
+  // more gracefully handle the former OOM case that now fails this CHECK. For
+  // example, some StreamParsers create additional ByteQueues during Parse, so
+  // such handling could be a parse error in that case. Other handling
+  // customization could be done where ByteQueues are created as part of
+  // StreamParser creation.
+  CHECK(base::UncheckedMalloc(size_, reinterpret_cast<void**>(&new_buffer)) &&
+        new_buffer);
+  buffer_.reset(new_buffer);
+}
 
 ByteQueue::~ByteQueue() = default;
 
@@ -21,7 +37,7 @@ void ByteQueue::Reset() {
   used_ = 0;
 }
 
-void ByteQueue::Push(const uint8_t* data, int size) {
+bool ByteQueue::Push(const uint8_t* data, int size) {
   DCHECK(data);
   DCHECK_GT(size, 0);
 
@@ -35,24 +51,28 @@ void ByteQueue::Push(const uint8_t* data, int size) {
         (base::CheckedNumeric<size_t>(size_) + size_ / 4).ValueOrDie();
     const size_t new_size = std::max(size_needed, safe_size);
 
-    // Copy the data from the old buffer to the start of the new one.
-    if (used_ > 0) {
-      // Note: We could use realloc() here, but would need an additional move to
-      // pack data at offset_ = 0 after a potential internal new allocation +
-      // copy by realloc().
-      //
-      // In local tests on a few top video sites that ends up being the common
-      // case, so just prefer to copy and pack ourselves.
-      auto new_buffer = std::make_unique<uint8_t[]>(new_size);
-      memcpy(new_buffer.get(), Front(), used_);
-      buffer_ = std::move(new_buffer);
-    } else {
-      // Free the existing |data| first so that the memory can be reused, if
-      // possible. Note that the new array is purposely not initialized.
-      buffer_.reset();
-      buffer_ = std::make_unique<uint8_t[]>(new_size);
+    // Try to obtain a new backing buffer of `new_size` capacity. Note: If
+    // `used_` is positive, we could use realloc() here, but would need an
+    // additional move to pack data at offset_ = 0 after a potential internal
+    // new allocation + copy by realloc(). In local tests on a few top video
+    // sites that ends up being the common case, so just prefer to copy and pack
+    // ourselves. Further, we need to handle potential allocation failure, since
+    // callers may have fallback paths for that scenario, and the allocation
+    // path allowing this must not be used with realloc.
+    uint8_t* new_buffer = nullptr;
+    if (!base::UncheckedMalloc(new_size,
+                               reinterpret_cast<void**>(&new_buffer)) ||
+        !new_buffer) {
+      return false;
     }
 
+    // Note that the new array is purposely not initialized. Copy the data, if
+    // any, from the old buffer to the start of the new one.
+    if (used_ > 0) {
+      memcpy(new_buffer, Front(), used_);
+    }
+
+    buffer_.reset(new_buffer);  // This also frees the previous `buffer_`.
     size_ = new_size;
     offset_ = 0;
   } else if ((offset_ + used_ + size) > size_) {
@@ -63,6 +83,8 @@ void ByteQueue::Push(const uint8_t* data, int size) {
 
   memcpy(Front() + used_, data, size);
   used_ += size;
+
+  return true;
 }
 
 void ByteQueue::Peek(const uint8_t** data, int* size) const {

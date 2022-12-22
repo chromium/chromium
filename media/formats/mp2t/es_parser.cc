@@ -4,6 +4,8 @@
 
 #include "media/formats/mp2t/es_parser.h"
 
+#include "base/logging.h"
+#include "media/base/byte_queue.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/common/offset_byte_queue.h"
@@ -45,7 +47,11 @@ bool EsParser::Parse(const uint8_t* buf,
   }
 
   // Add the incoming bytes to the ES queue.
-  es_queue_->Push(buf, size);
+  if (!es_queue_->Push(buf, size)) {
+    DVLOG(2) << "Failed to push buf of size " << size;
+    return false;
+  }
+
   return ParseFromEsQueue();
 }
 

@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
+#include "media/base/byte_queue.h"
 #include "media/base/media_log.h"
 #include "media/base/media_tracks.h"
 #include "media/base/media_util.h"
@@ -132,7 +133,10 @@ bool MPEGAudioStreamParserBase::AppendToParseBuffer(const uint8_t* buf,
   CHECK_EQ(uninspected_pending_bytes_, 0);
 
   uninspected_pending_bytes_ = base::checked_cast<int>(size);
-  queue_.Push(buf, uninspected_pending_bytes_);
+  if (!queue_.Push(buf, uninspected_pending_bytes_)) {
+    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size " << size;
+    return false;
+  }
 
   return true;
 }

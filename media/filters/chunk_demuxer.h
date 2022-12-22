@@ -305,9 +305,6 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // per the MSE specification. App could use a back-off and retry strategy or
   // otherwise alter their behavior to attempt to buffer media for further
   // playback.
-  // TODO(crbug.com/1286810): Update resource allocation paths in the
-  // StreamParser implementations eventually executed within this method to
-  // recognize and report allocation failure.
   [[nodiscard]] bool AppendToParseBuffer(const std::string& id,
                                          const uint8_t* data,
                                          size_t length);
