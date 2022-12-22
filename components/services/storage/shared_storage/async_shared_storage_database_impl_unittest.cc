@@ -2025,12 +2025,10 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStale) {
     origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin4));
 
-  // `kOrigin1` is still in `per_origin_mapping` even though it has no entries,
-  // as we didn't override its creation time to be old enough to have expired.
   origins.clear();
   for (const auto& info : infos6)
     origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin4));
+  EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin4));
 
   // Database is still intact after trimming memory.
   EXPECT_EQ(OperationResult::kSuccess, result14);

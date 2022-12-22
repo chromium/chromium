@@ -766,57 +766,43 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::PurgeStale() {
   if (!transaction.Begin())
     return OperationResult::kSqlError;
 
+  static constexpr char kUpdateLengthsSql[] =
+      "UPDATE per_origin_mapping SET length = length - counts.num_expired "
+      "FROM "
+      "    (SELECT context_origin, COUNT(context_origin) AS num_expired "
+      "    FROM values_mapping WHERE last_used_time<? "
+      "    GROUP BY context_origin) "
+      "AS counts "
+      "WHERE per_origin_mapping.context_origin = counts.context_origin";
+
+  sql::Statement update_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kUpdateLengthsSql));
+  base::Time cutoff_time = clock_->Now() - staleness_threshold_;
+  update_statement.BindTime(0, cutoff_time);
+
+  if (!update_statement.Run()) {
+    return OperationResult::kSqlError;
+  }
+
   static constexpr char kDeleteEntriesSql[] =
       "DELETE FROM values_mapping WHERE last_used_time<?";
   sql::Statement entries_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteEntriesSql));
-  entries_statement.BindTime(0, clock_->Now() - staleness_threshold_);
+  entries_statement.BindTime(0, cutoff_time);
 
   // Delete expired entries.
   if (!entries_statement.Run())
     return OperationResult::kSqlError;
 
-  static constexpr char kSelectSql[] =
-      "SELECT context_origin,creation_time,length FROM per_origin_mapping "
-      "ORDER BY creation_time";
-  sql::Statement select_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  static constexpr char kDeleteOriginsSql[] =
+      "DELETE FROM per_origin_mapping WHERE length<=0";
+  sql::Statement origins_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteOriginsSql));
 
-  // Update `per_origin_mapping` to agree with the correct post-purge `length`s.
-  // Also, for any origins that are now empty and whose `creation_time`s are
-  // prior to the lookback window, remove them from `per_origin_mapping`
-  // entirely.
-  while (select_statement.Step()) {
-    std::string origin = select_statement.ColumnString(0);
-    base::Time creation_time = select_statement.ColumnTime(1);
-    int64_t reported_length = select_statement.ColumnInt64(2);
-
-    // We want the count of all entries for this origin. There are unlikely to
-    // be any expired ones, since we just purged them, but one or more
-    // additional unpurged entries could have become expired in the meantime.
-    int64_t actual_length =
-        NumEntriesManualCount(origin, /*include_expired=*/true);
-
-    if (actual_length == -1)
-      return OperationResult::kSqlError;
-
-    if (actual_length == 0 &&
-        creation_time < clock_->Now() - staleness_threshold_) {
-      if (!DeleteFromPerOriginMapping(origin))
-        return OperationResult::kSqlError;
-      continue;
-    }
-
-    if (actual_length == reported_length) {
-      continue;
-    }
-
-    if (!UpdateLength(origin, actual_length - reported_length))
-      return OperationResult::kSqlError;
-  }
-
-  if (!select_statement.Succeeded())
+  // Delete empty origins.
+  if (!origins_statement.Run()) {
     return OperationResult::kSqlError;
+  }
 
   static constexpr char kDeleteWithdrawalsSql[] =
       "DELETE FROM budget_mapping WHERE time_stamp<?";
@@ -1416,19 +1402,14 @@ int64_t SharedStorageDatabase::NumEntriesTotal(
 }
 
 int64_t SharedStorageDatabase::NumEntriesManualCount(
-    const std::string& context_origin,
-    bool include_expired) {
-  const char* kCountSql =
-      (include_expired)
-          ? "SELECT COUNT(*) FROM values_mapping WHERE context_origin=?"
-          : "SELECT COUNT(*) FROM values_mapping "
-            "WHERE context_origin=? AND last_used_time>=?";
+    const std::string& context_origin) {
+  static constexpr char kCountSql[] =
+      "SELECT COUNT(*) FROM values_mapping "
+      "WHERE context_origin=? AND last_used_time>=?";
 
-  sql::Statement statement(db_.GetUniqueStatement(kCountSql));
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kCountSql));
   statement.BindString(0, context_origin);
-
-  if (!include_expired)
-    statement.BindTime(1, clock_->Now() - staleness_threshold_);
+  statement.BindTime(1, clock_->Now() - staleness_threshold_);
 
   int64_t length = 0;
   if (statement.Step())

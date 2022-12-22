@@ -473,12 +473,8 @@ class SharedStorageDatabase {
 
   // Returns the number of entries for `context_origin`, as determined by a
   // manual "COUNT(*)" query, rather than relying on the `length` recorded in
-  // `per_origin_mapping`. If `include_expired`, then the count is scoped to all
-  // entries; otherwise it is only scoped to entries within the lookback window
-  // determined by `staleness_threshold_`. Returns -1 if there is a database
-  // error.
-  [[nodiscard]] int64_t NumEntriesManualCount(const std::string& context_origin,
-                                              bool include_expired = false)
+  // `per_origin_mapping`. Returns -1 if there is a database error.
+  [[nodiscard]] int64_t NumEntriesManualCount(const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns whether an entry exists for `context_origin` and `key`.
