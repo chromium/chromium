@@ -12,7 +12,6 @@ include_rules = [
   "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity2.java",
 
-  "+ash/components/arc",
   "+chrome/android/native_j_unittests_jni_headers",
   "+chrome/android/chrome_jni_headers",
   "+chrome/android/features/dev_ui",
@@ -454,15 +453,15 @@ include_rules = [
   "+third_party/widevine/cdm/widevine_cdm_common.h",
   "+chrome/services/machine_learning",
   "+chrome/services/speech",
+
   # Code under //ash should be accessed via its public API. See //ash/README.md.
   "-ash",
-  "+ash/components",
+  "+ash/components/arc",
   "+ash/constants",
-  "+ash/webui",
-  "+ash/public",
   "+ash/keyboard/ui/grit",
   "+ash/keyboard/ui/resources",
-  "+ash/services",
+  "+ash/public",
+  "+ash/webui",
 
   # The message center should only be accessed through
   # //chrome/browser/notifications.

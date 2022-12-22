@@ -6,7 +6,4 @@ specific_include_rules = {
   "display_color_manager.cc": [
     "+third_party/qcms/src/qcms.h",
   ],
-  "cursor_window_controller.cc": [
-    "+ash/components/cursor",
-  ],
 }
