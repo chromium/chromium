@@ -357,8 +357,8 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   if (flags & static_cast<Flags>(Flag::kEm)) {
     builder.SetHasEmUnits();
   }
-  if (flags & static_cast<Flags>(Flag::kRem)) {
-    builder.SetHasRemUnits();
+  if (flags & static_cast<Flags>(Flag::kRootFontRelative)) {
+    builder.SetHasRootFontRelativeUnits();
   }
   if (flags & static_cast<Flags>(Flag::kGlyphRelative)) {
     builder.SetHasGlyphRelativeUnits();
@@ -1030,11 +1030,12 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
 
   GetDocument().AddViewportUnitFlags(state.Style()->ViewportUnitFlags());
 
-  if (state.Style()->HasRemUnits()) {
-    GetDocument().GetStyleEngine().SetUsesRemUnit(true);
+  if (state.Style()->HasRootFontRelativeUnits()) {
+    GetDocument().GetStyleEngine().SetUsesRootFontRelativeUnits(true);
   }
 
   if (state.Style()->HasGlyphRelativeUnits()) {
+    GetDocument().GetStyleEngine().SetUsesGlyphRelativeUnits(true);
     UseCounter::Count(GetDocument(), WebFeature::kHasGlyphRelativeUnits);
   }
 
@@ -1403,8 +1404,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (match_result.DependsOnDynamicViewportUnits()) {
     state.StyleBuilder().SetHasDynamicViewportUnits();
   }
-  if (match_result.DependsOnRemContainerQueries()) {
-    state.StyleBuilder().SetHasRemUnits();
+  if (match_result.DependsOnRootFontContainerQueries()) {
+    state.StyleBuilder().SetHasRootFontRelativeUnits();
   }
   if (match_result.ConditionallyAffectsAnimations()) {
     state.SetCanAffectAnimations();

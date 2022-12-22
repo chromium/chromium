@@ -173,8 +173,9 @@ TEST_F(CSSToLengthConversionDataTest, Flags) {
   using Flags = CSSToLengthConversionData::Flags;
 
   Flags em = static_cast<Flags>(Flag::kEm);
-  Flags rem = static_cast<Flags>(Flag::kRem);
+  Flags rem = static_cast<Flags>(Flag::kRootFontRelative);
   Flags glyph = static_cast<Flags>(Flag::kGlyphRelative);
+  Flags rex = rem | glyph;
   Flags lh = static_cast<Flags>(Flag::kLineHeightRelative);
   Flags sv = static_cast<Flags>(Flag::kStaticViewport);
   Flags dv = static_cast<Flags>(Flag::kDynamicViewport);
@@ -185,6 +186,7 @@ TEST_F(CSSToLengthConversionDataTest, Flags) {
   EXPECT_EQ(em, ConversionFlags("1em"));
 
   EXPECT_EQ(rem, ConversionFlags("1rem"));
+  EXPECT_EQ(rex, ConversionFlags("1rex"));
 
   EXPECT_EQ(glyph, ConversionFlags("1ex"));
   EXPECT_EQ(glyph, ConversionFlags("1ch"));

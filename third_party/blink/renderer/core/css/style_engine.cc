@@ -2690,16 +2690,23 @@ bool StyleEngine::StyleMaybeAffectedByLayout(const Node& node) {
          ComputedStyle::IsNullOrEnsured(node.GetComputedStyle());
 }
 
-bool StyleEngine::UpdateRemUnits(const ComputedStyle* old_root_style,
-                                 const ComputedStyle* new_root_style) {
-  if (!new_root_style || !UsesRemUnits()) {
+bool StyleEngine::UpdateRootFontRelativeUnits(
+    const ComputedStyle* old_root_style,
+    const ComputedStyle* new_root_style) {
+  if (!new_root_style || !UsesRootFontRelativeUnits()) {
     return false;
   }
-  if (!old_root_style || old_root_style->SpecifiedFontSize() !=
-                             new_root_style->SpecifiedFontSize()) {
-    // Resolved rem units are stored in the matched properties cache so we need
-    // to make sure to invalidate the cache if the documentElement font size
-    // changes.
+  bool rem_changed = !old_root_style || old_root_style->SpecifiedFontSize() !=
+                                            new_root_style->SpecifiedFontSize();
+  bool root_font_glyphs_changed =
+      !old_root_style ||
+      (UsesGlyphRelativeUnits() &&
+       old_root_style->GetFont() != new_root_style->GetFont());
+  bool root_font_changed = rem_changed || root_font_glyphs_changed;
+  if (root_font_changed) {
+    // Resolved root font relative units are stored in the matched properties
+    // cache so we need to make sure to invalidate the cache if the
+    // documentElement font size changes.
     GetStyleResolver().InvalidateMatchedPropertiesCache();
     return true;
   }

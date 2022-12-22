@@ -269,7 +269,7 @@ float CSSToLengthConversionData::EmFontSize(float zoom) const {
 }
 
 float CSSToLengthConversionData::RemFontSize(float zoom) const {
-  SetFlag(Flag::kRem);
+  SetFlag(Flag::kRootFontRelative);
   return font_sizes_.Rem(zoom);
 }
 
@@ -279,7 +279,14 @@ float CSSToLengthConversionData::ExFontSize(float zoom) const {
 }
 
 float CSSToLengthConversionData::RexFontSize(float zoom) const {
+  // Need to mark the current element's ComputedStyle as having glyph relative
+  // styles, even if it is not relative to the current element's font because
+  // the invalidation that happens when a web font finishes loading for the root
+  // element does not necessarily cause a style difference for the root element,
+  // hence will not cause an invalidation of root font relative dependent
+  // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
   SetFlag(Flag::kGlyphRelative);
+  SetFlag(Flag::kRootFontRelative);
   return font_sizes_.Rex(zoom);
 }
 

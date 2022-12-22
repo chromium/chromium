@@ -204,7 +204,7 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
     match_result.SetDependsOnStaticViewportUnits();
   }
   if (result.unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative) {
-    match_result.SetDependsOnRemContainerQueries();
+    match_result.SetDependsOnRootFontContainerQueries();
   }
   if (!depends_on_style_) {
     depends_on_style_ = query.Selector().SelectsStyleContainers();

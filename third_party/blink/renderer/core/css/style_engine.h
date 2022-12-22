@@ -309,10 +309,19 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void IncrementSkippedContainerRecalc() { ++skipped_container_recalc_; }
   void DecrementSkippedContainerRecalc() { --skipped_container_recalc_; }
 
-  bool UsesRemUnits() const { return uses_rem_units_; }
-  void SetUsesRemUnit(bool uses_rem_units) { uses_rem_units_ = uses_rem_units; }
-  bool UpdateRemUnits(const ComputedStyle* old_root_style,
-                      const ComputedStyle* new_root_style);
+  bool UsesGlyphRelativeUnits() const { return uses_glyph_relative_units_; }
+  void SetUsesGlyphRelativeUnits(bool uses_glyph_relative_units) {
+    uses_glyph_relative_units_ = uses_glyph_relative_units;
+  }
+
+  bool UsesRootFontRelativeUnits() const {
+    return uses_root_font_relative_units_;
+  }
+  void SetUsesRootFontRelativeUnits(bool uses_root_font_relative_units) {
+    uses_root_font_relative_units_ = uses_root_font_relative_units;
+  }
+  bool UpdateRootFontRelativeUnits(const ComputedStyle* old_root_style,
+                                   const ComputedStyle* new_root_style);
 
   void ResetCSSFeatureFlags(const RuleFeatureSet&);
 
@@ -840,7 +849,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   String preferred_stylesheet_set_name_;
 
-  bool uses_rem_units_{false};
+  bool uses_root_font_relative_units_{false};
+  bool uses_glyph_relative_units_{false};
   // True if we have performed style recalc for at least one element that
   // depends on container queries.
   bool style_affected_by_layout_{false};

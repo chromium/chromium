@@ -185,11 +185,11 @@ class CORE_EXPORT MatchResult {
   bool DependsOnDynamicViewportUnits() const {
     return depends_on_dynamic_viewport_units_;
   }
-  void SetDependsOnRemContainerQueries() {
-    depends_on_rem_container_queries_ = true;
+  void SetDependsOnRootFontContainerQueries() {
+    depends_on_root_font_container_queries_ = true;
   }
-  bool DependsOnRemContainerQueries() const {
-    return depends_on_rem_container_queries_;
+  bool DependsOnRootFontContainerQueries() const {
+    return depends_on_root_font_container_queries_;
   }
   void SetConditionallyAffectsAnimations() {
     conditionally_affects_animations_ = true;
@@ -244,7 +244,7 @@ class CORE_EXPORT MatchResult {
   bool first_line_depends_on_size_container_queries_{false};
   bool depends_on_static_viewport_units_{false};
   bool depends_on_dynamic_viewport_units_{false};
-  bool depends_on_rem_container_queries_{false};
+  bool depends_on_root_font_container_queries_{false};
   bool conditionally_affects_animations_{false};
   bool has_non_universal_highlight_pseudo_styles_{false};
   bool has_non_ua_highlight_pseudo_styles_{false};

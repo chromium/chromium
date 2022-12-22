@@ -193,9 +193,9 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   enum class Flag : Flags {
     // em
     kEm = 1u << 0,
-    // rem
-    kRem = 1u << 1,
-    // ex, ch, ic, lh, rex
+    // rem, rex
+    kRootFontRelative = 1u << 1,
+    // ex, ch, ic, lh
     kGlyphRelative = 1u << 2,
     // lh
     kLineHeightRelative = 1u << 3,

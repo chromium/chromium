@@ -821,7 +821,8 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool HasIdenticalAscentDescentAndLineGap(const ComputedStyle& other) const;
   bool HasFontRelativeUnits() const {
-    return HasEmUnits() || HasRemUnits() || HasGlyphRelativeUnits();
+    return HasEmUnits() || HasRootFontRelativeUnits() ||
+           HasGlyphRelativeUnits();
   }
 
   // If true, the ComputedStyle must be recalculated when fonts are updated.
