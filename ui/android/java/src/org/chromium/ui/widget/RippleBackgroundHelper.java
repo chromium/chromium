@@ -83,9 +83,7 @@ public class RippleBackgroundHelper {
      * @param borderSizeDimenId The resource id of the border size.
      * @param verticalInset The vertical inset of the background drawable.
      */
-    // TODO(jdemeulenaere): Make this constructor package-private once it is not accessed by {@link
-    // org.chromium.chrome.browser.autofill_assistant.carousel.ButtonView} anymore.
-    public RippleBackgroundHelper(View view, @ColorRes int backgroundColorResId,
+    RippleBackgroundHelper(View view, @ColorRes int backgroundColorResId,
             @ColorRes int rippleColorResId, @Px int cornerRadius, @ColorRes int borderColorResId,
             @DimenRes int borderSizeDimenId, @Px int verticalInset) {
         this(view, backgroundColorResId, rippleColorResId,
