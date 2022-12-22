@@ -7,6 +7,7 @@ package org.chromium.webengine.test;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
@@ -23,17 +24,23 @@ import java.util.List;
 public class DigitalAssetLinksServerRule extends TestWatcher {
     private static final String ASSETLINKS_PATH = "/.well-known/assetlinks.json";
 
-    // TODO(crbug.com/1376522): Figure out how to not hardcode a port number.
-    private static final int PORT = 8888;
     private TestWebServer mServer;
 
     @Override
     protected void starting(Description desc) {
         super.starting(desc);
-        try {
-            mServer = TestWebServer.start(PORT);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+
+        // Try to start a server on any of the ports in the 8900s range.
+        // The 1P port ranges are defined in
+        // //weblayer/shell/android/webengine_shell_apk/res_template/values/strings.xml.
+        for (int port = 8900; port < 9000; port++) {
+            try {
+                mServer = TestWebServer.start(port);
+            } catch (Exception e) {
+            }
+        }
+        if (mServer == null) {
+            Assert.fail("Failed to start a TestWebServer.");
         }
         // By default, the asset links are not set up.
         mServer.setResponseWithNotFoundStatus(ASSETLINKS_PATH, null);

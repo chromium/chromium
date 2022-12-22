@@ -121,6 +121,12 @@ public class CookieManagerTest {
         Tab tab = mTabManager.getActiveTab();
 
         mActivityTestRule.navigateAndWait(tab, url);
+
+        // Run JS to make sure the script had time to run before we actually check via the cookie
+        // manager.
+        Assert.assertEquals("\"foo=bar42\"",
+                runOnUiThreadBlocking(() -> tab.executeScript("document.cookie", false)).get());
+
         String updatedCookie = runOnUiThreadBlocking(() -> mCookieManager.getCookie(url)).get();
         Assert.assertEquals(updatedCookie, "foo=bar42");
     }

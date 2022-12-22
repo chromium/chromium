@@ -118,14 +118,23 @@ android_apk("weblayer_support_apk") {
   shared_libraries = [ "//weblayer:libweblayer_test" ]
 }
 
+webengine_shell_strings =
+    "$target_gen_dir/webengine_shell_apk/res/values/strings.xml"
+
+jinja_template("webengine_shell_strings") {
+  input = "webengine_shell_apk/res_template/values/strings.xml"
+  output = webengine_shell_strings
+}
+
 android_resources("webengine_shell_resources") {
   sources = [
     "webengine_shell_apk/res/layout/main.xml",
     "webengine_shell_apk/res/layout/navigation_test.xml",
     "webengine_shell_apk/res/layout/state_test.xml",
-    "webengine_shell_apk/res/values/strings.xml",
     "webengine_shell_apk/res/values/styles.xml",
+    webengine_shell_strings,
   ]
+  deps = [ ":webengine_shell_strings" ]
 }
 
 android_library("webengine_shell_java") {
