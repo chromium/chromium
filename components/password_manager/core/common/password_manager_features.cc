@@ -245,6 +245,11 @@ BASE_FEATURE(kUnifiedPasswordManagerReenrollment,
 BASE_FEATURE(kUnifiedPasswordManagerAndroidBranding,
              "UnifiedPasswordManagerAndroidBranding",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables new exploratory strings for the save/update password prompts.
+BASE_FEATURE(kExploratorySaveUpdatePasswordStrings,
+             "ExploratorySaveUpdatePasswordStrings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables support of sending additional votes on username first flow. The votes
@@ -287,6 +292,11 @@ extern const base::FeatureParam<bool> kIgnoreAuthErrorMessageTimeouts = {
 extern const base::FeatureParam<int> kMaxShownUPMErrorsBeforeEviction = {
     &kUnifiedPasswordManagerErrorMessages,
     "max_shown_auth_errors_before_eviction", -1};
+
+// The string version to use for the save/update password prompts when the user
+// is syncing passwords. The only supported versions currently are 1 and 2.
+extern const base::FeatureParam<int> kSaveUpdatePromptSyncingStringVersion = {
+    &kExploratorySaveUpdatePasswordStrings, "syncing_string_version", 1};
 #endif
 
 // Field trial identifier for password generation requirements.

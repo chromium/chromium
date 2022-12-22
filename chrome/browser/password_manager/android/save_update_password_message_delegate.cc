@@ -293,40 +293,74 @@ std::u16string SaveUpdatePasswordMessageDelegate::GetMessageDescription(
     const password_manager::PasswordForm& pending_credentials,
     bool update_password,
     bool unified_password_manager) {
-  std::u16string description;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kExploratorySaveUpdatePasswordStrings)) {
+    return GetExploratoryStringsMessageDescription(update_password);
+  }
+
   if (unified_password_manager) {
-    if (!account_email_.empty()) {
-      description = l10n_util::GetStringFUTF16(
-          update_password
-              ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION
-              : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION,
-          base::UTF8ToUTF16(account_email_));
-    } else {
-      description = l10n_util::GetStringUTF16(
-          update_password
-              ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION
-              : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION);
-    }
-    return description;
+    return GetUnifiedPasswordManagerMessageDescription(update_password);
   }
 
   if (!account_email_.empty()) {
-    description = l10n_util::GetStringFUTF16(
+    return l10n_util::GetStringFUTF16(
         update_password
             ? IDS_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_GOOGLE_ACCOUNT
             : IDS_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_GOOGLE_ACCOUNT,
         base::UTF8ToUTF16(account_email_));
-  } else {
+  }
+
     // TODO(crbug.com/1188971): There is no password when federation_origin is
     // set. Instead we should display federated provider in the description.
     // GetDisplayFederation() returns federation origin for a given form.
     const std::u16string masked_password =
         std::u16string(pending_credentials.password_value.size(), L'•');
+    std::u16string description;
     description.append(pending_credentials.username_value)
         .append(u" ")
         .append(masked_password);
-  }
-  return description;
+    return description;
+}
+
+std::u16string
+SaveUpdatePasswordMessageDelegate::GetExploratoryStringsMessageDescription(
+    bool update_password) {
+    if (account_email_.empty()) {
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_SAVE_UPDATE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION_V1);
+    }
+
+    int string_version =
+        password_manager::features::kSaveUpdatePromptSyncingStringVersion.Get();
+    DCHECK(string_version == 1 || string_version == 2);
+    if (string_version == 1) {
+      return l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_SAVE_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_V1,
+          base::UTF8ToUTF16(account_email_));
+    }
+
+    return l10n_util::GetStringFUTF16(
+        update_password
+            ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_V2
+            : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_V2,
+        base::UTF8ToUTF16(account_email_));
+}
+
+std::u16string
+SaveUpdatePasswordMessageDelegate::GetUnifiedPasswordManagerMessageDescription(
+    bool update_password) {
+    if (!account_email_.empty()) {
+      return l10n_util::GetStringFUTF16(
+          update_password
+              ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION
+              : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION,
+          base::UTF8ToUTF16(account_email_));
+    }
+
+    return l10n_util::GetStringUTF16(
+        update_password
+            ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION
+            : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION);
 }
 
 int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(
