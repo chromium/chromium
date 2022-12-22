@@ -3468,8 +3468,8 @@ extern const char kLauncherFuzzyMatchForOmniboxDescription[];
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 
-extern const char kOobeMaterialNextName[];
-extern const char kOobeMaterialNextDescription[];
+extern const char kOobeJellyName[];
+extern const char kOobeJellyDescription[];
 
 extern const char kLibAssistantV2MigrationName[];
 extern const char kLibAssistantV2MigrationDescription[];

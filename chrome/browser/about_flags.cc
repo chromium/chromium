@@ -7448,9 +7448,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMacAddressRandomizationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kMacAddressRandomization)},
 
-    {"oobe-material-next", flag_descriptions::kOobeMaterialNextName,
-     flag_descriptions::kOobeMaterialNextDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kOobeMaterialNext)},
+    {"oobe-jelly", flag_descriptions::kOobeJellyName,
+     flag_descriptions::kOobeJellyDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kOobeJelly)},
 
     {"search-result-inline-icon",
      flag_descriptions::kSearchResultInlineIconName,

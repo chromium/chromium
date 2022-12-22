@@ -6012,9 +6012,9 @@ const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
     "networks.";
 
-const char kOobeMaterialNextName[] = "Material Next design for OOBE";
-const char kOobeMaterialNextDescription[] =
-    "Feature to enable the Material Next design in out of box experience.";
+const char kOobeJellyName[] = "Jelly design for OOBE";
+const char kOobeJellyDescription[] =
+    "Feature to enable the Jelly design in out of box experience.";
 
 const char kLibAssistantV2MigrationName[] = "LibAssistant V2 migration";
 const char kLibAssistantV2MigrationDescription[] =

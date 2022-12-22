@@ -287,7 +287,7 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   const bool is_oobe_flow = display_type == OobeUI::kOobeDisplay;
   source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
   source->AddBoolean("isOobeFlow", is_oobe_flow);
-  source->AddBoolean("isMaterialNext", features::IsOobeMaterialNextEnabled());
+  source->AddBoolean("isOobeJelly", features::IsOobeJellyEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
 
   // Configure shared resources

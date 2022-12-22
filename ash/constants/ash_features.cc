@@ -1504,14 +1504,12 @@ BASE_FEATURE(kOobeHidDetectionRevamp,
              "OobeHidDetectionRevamp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables OOBE Jelly features.
+BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Oobe quick start flow.
 BASE_FEATURE(kOobeQuickStart,
              "OobeQuickStart",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables OOBE Material Next features.
-BASE_FEATURE(kOobeMaterialNext,
-             "OobeMaterialNext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Removes "Shut down" button from OOBE, except first login screen and
@@ -2857,8 +2855,8 @@ bool IsKioskLoginScreenEnabled() {
   return base::FeatureList::IsEnabled(kEnableKioskLoginScreen);
 }
 
-bool IsOobeMaterialNextEnabled() {
-  return IsJellyEnabled() && base::FeatureList::IsEnabled(kOobeMaterialNext);
+bool IsOobeJellyEnabled() {
+  return IsJellyEnabled() && base::FeatureList::IsEnabled(kOobeJelly);
 }
 
 bool IsOobeNetworkScreenSkipEnabled() {
