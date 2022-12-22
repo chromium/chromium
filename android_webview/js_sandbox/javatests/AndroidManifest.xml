@@ -6,7 +6,7 @@
 
 <manifest
       xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.chromium.webview_js_sandbox_test.test">
+      package="androidx.javascriptengine.test">
 
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
 
@@ -18,6 +18,6 @@
     </application>
 
     <instrumentation android:name="androidx.test.runner.AndroidJUnitRunner"
-        android:targetPackage="org.chromium.webview_js_sandbox_test.test"
-        android:label="Tests for org.chromium.webview_js_sandbox_test.test"/>
+        android:targetPackage="androidx.javascriptengine.test"
+        android:label="Tests for androidx.javascriptengine.test"/>
 </manifest>

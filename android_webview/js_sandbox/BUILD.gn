@@ -11,19 +11,6 @@ generate_jni("js_sandbox_jni_headers") {
   ]
 }
 
-android_aidl("js_sandbox_aidl") {
-  import_include = [ "java/src" ]
-  sources = [
-    "java/src/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolate.aidl",
-    "java/src/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateCallback.aidl",
-    "java/src/org/chromium/android_webview/js_sandbox/common/IJsSandboxService.aidl",
-  ]
-}
-
-android_library("js_sandbox_aidl_java") {
-  srcjar_deps = [ ":js_sandbox_aidl" ]
-}
-
 android_library("js_sandbox_service_java") {
   sources = [
     "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolate.java",
@@ -33,47 +20,13 @@ android_library("js_sandbox_service_java") {
   ]
 
   deps = [
-    ":js_sandbox_aidl_java",
     ":js_sandbox_jni_headers",
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/androidx_javascriptengine:js_sandbox_aidl_java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-}
-
-android_library("js_sandbox_java") {
-  sources = [
-    "java/src/androidx/javascriptengine/CloseGuardHelper.java",
-    "java/src/androidx/javascriptengine/EvaluationFailedException.java",
-    "java/src/androidx/javascriptengine/ExecutionErrorTypes.java",
-    "java/src/androidx/javascriptengine/IsolateStartupParameters.java",
-    "java/src/androidx/javascriptengine/IsolateTerminatedException.java",
-    "java/src/androidx/javascriptengine/JavaScriptException.java",
-    "java/src/androidx/javascriptengine/JavaScriptIsolate.java",
-    "java/src/androidx/javascriptengine/JavaScriptSandbox.java",
-    "java/src/androidx/javascriptengine/MemoryLimitExceededException.java",
-    "java/src/androidx/javascriptengine/SandboxDeadException.java",
-    "java/src/androidx/javascriptengine/SandboxUnsupportedException.java",
-  ]
-
-  deps = [
-    ":js_sandbox_aidl_java",
-    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/android_deps:com_google_guava_listenablefuture_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
-    "//third_party/androidx:androidx_core_core_java",
-  ]
-}
-
-dist_aar("js_sandbox_client_aar") {
-  deps = [ ":js_sandbox_java" ]
-  output = "$root_build_dir/JsSandboxClient.aar"
-  jar_included_patterns = [
-    "androidx/javascriptengine/*",
-    "org/chromium/android_webview/js_sandbox/*",
-  ]
 }

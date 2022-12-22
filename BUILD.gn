@@ -348,7 +348,6 @@ group("gn_all") {
 
   if (is_android) {
     deps += [
-      "//android_webview/js_sandbox/javatests:webview_js_sandbox_test_app",
       "//base:base_junit_tests",
       "//base/android/jni_generator:jni_generator_tests",
       "//base/android/linker:chromium_android_linker",
@@ -369,6 +368,7 @@ group("gn_all") {
       "//services:services_junit_tests",
       "//testing/android/junit:junit_unit_tests",
       "//third_party/android_build_tools/lint:custom_lint_java",
+      "//third_party/androidx_javascriptengine",
       "//third_party/catapult/devil",
       "//third_party/r8:custom_d8_java",
       "//tools/android:android_tools",
