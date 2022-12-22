@@ -820,6 +820,9 @@ constexpr char kInitializePairingProcessRetriesBeforeSuccessSubsequent[] =
     "FastPair.SubsequentPairing.Initialization.RetriesBeforeSuccess";
 constexpr char kInitializePairingProcessRetriesBeforeSuccessRetroactive[] =
     "FastPair.RetroactivePairing.Initialization.RetriesBeforeSuccess";
+const char kHandshakeEffectiveSuccessRate[] =
+    "FastPair.Handshake.EffectiveSuccessRate";
+const char kHandshakeAttemptCount[] = "FastPair.Handshake.AttemptCount";
 
 const std::string GetEngagementFlowInitialModelIdMetric(
     const ash::quick_pair::Device& device) {
@@ -1361,6 +1364,15 @@ void RecordGattInitializationStep(
     FastPairGattConnectionSteps initialization_step) {
   base::UmaHistogramEnumeration(kFastPairGattConnectionStep,
                                 initialization_step);
+}
+
+void RecordEffectiveHandshakeSuccess(bool success) {
+  base::UmaHistogramBoolean(kHandshakeEffectiveSuccessRate, success);
+}
+
+void RecordHandshakeAttemptCount(int num_attempts) {
+  base::UmaHistogramExactLinear(kHandshakeAttemptCount, num_attempts,
+                                /*exclusive_max=*/10);
 }
 
 void RecordHandshakeResult(bool success) {

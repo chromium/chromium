@@ -381,6 +381,12 @@ void RecordGattInitializationStep(
     FastPairGattConnectionSteps initialization_step);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordEffectiveHandshakeSuccess(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordHandshakeAttemptCount(int num_attempts);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordHandshakeResult(bool success);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

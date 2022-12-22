@@ -73,6 +73,7 @@ class PairerBrokerImpl final : public PairerBroker {
   base::flat_map<std::string, int> pair_failure_counts_;
   base::flat_map<std::string, bool>
       did_handshake_previously_complete_successfully_map_;
+  base::flat_map<std::string, int> num_handshake_attempts_;
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<FastPairUnpairHandler> fast_pair_unpair_handler_;

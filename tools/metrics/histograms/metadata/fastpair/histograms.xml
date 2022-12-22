@@ -34,6 +34,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FastPair.Handshake.AttemptCount" units="count"
+    expires_after="2023-06-01">
+  <owner>akingsb@google.com</owner>
+  <owner>jackshira@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the number of attempts needed to successfully create a handshake.
+    Currently the highest allowed attempt number is 3. Emitted following a
+    successful handshake. No metric is emitted on failure.
+  </summary>
+</histogram>
+
+<histogram name="FastPair.Handshake.EffectiveSuccessRate" enum="BooleanSuccess"
+    expires_after="2023-06-01">
+  <owner>akingsb@google.com</owner>
+  <owner>jackshira@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the effective success rate of creating a handshake during the Fast
+    Pair pairing protocol. Emitted following the attempted creation of the
+    handshake and all retries.
+  </summary>
+</histogram>
+
 <histogram name="FastPair.InitialPairing"
     enum="FastPairInitialSuccessFunnelEvent" expires_after="2023-06-01">
   <owner>jackshira@chromium.org</owner>

@@ -27,6 +27,7 @@
 namespace {
 
 constexpr int kMaxFailureRetryCount = 3;
+constexpr int kMaxNumHandshakeAttempts = 3;
 
 // 1s delay after cancelling pairing was chosen to align with Android's Fast
 // Pair implementation.
@@ -113,19 +114,26 @@ void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
 }
 
 void PairerBrokerImpl::CreateHandshake(scoped_refptr<Device> device) {
-  // TODO(b/259429032): Add 3 retries for this handshake.
   auto* fast_pair_handshake =
       FastPairHandshakeLookup::GetInstance()->Get(device);
-  if (fast_pair_handshake && fast_pair_handshake->completed_successfully()) {
-    QP_LOG(INFO) << __func__
-                 << ": Reusing existing handshake for pair attempt.";
-    RecordFastPairInitializePairingProcessEvent(
-        *device, FastPairInitializePairingProcessEvent::kHandshakeReused);
-    StartBondingAttempt(device);
-    return;
+
+  if (fast_pair_handshake) {
+    if (fast_pair_handshake->completed_successfully()) {
+      QP_LOG(INFO) << __func__
+                   << ": Reusing existing handshake for pair attempt.";
+      RecordFastPairInitializePairingProcessEvent(
+          *device, FastPairInitializePairingProcessEvent::kHandshakeReused);
+      StartBondingAttempt(device);
+      return;
+    } else {
+      // If the previous handshake did not complete successfully, erase it
+      // before attempting to create a new handshake for the device.
+      FastPairHandshakeLookup::GetInstance()->Erase(device);
+    }
   }
 
   QP_LOG(INFO) << __func__ << ": Creating new handshake for pair attempt.";
+  num_handshake_attempts_[device->ble_address]++;
   FastPairHandshakeLookup::GetInstance()->Create(
       adapter_, device,
       base::BindOnce(&PairerBrokerImpl::OnHandshakeComplete,
@@ -165,13 +173,27 @@ void PairerBrokerImpl::OnHandshakeComplete(
         device->ble_address, true);
   }
 
+  RecordEffectiveHandshakeSuccess(/*success=*/true);
+  RecordHandshakeAttemptCount(num_handshake_attempts_[device->ble_address]);
+
+  // Reset |num_handshake_attempts_| so if the handshake is lost during pairing,
+  // we will attempt to create it 3 more times. This should be an extremely rare
+  // situation, such as handshake happening directly before the device rotates
+  // ble addresses.
+  num_handshake_attempts_[device->ble_address] = 0;
   StartBondingAttempt(device);
 }
 
 void PairerBrokerImpl::OnHandshakeFailure(scoped_refptr<Device> device,
                                           PairFailure failure) {
+  if (num_handshake_attempts_[device->ble_address] < kMaxNumHandshakeAttempts) {
+    CreateHandshake(device);
+    return;
+  }
+
   QP_LOG(INFO) << __func__
                << ": Handshake failed to be created. Notifying observers.";
+  RecordEffectiveHandshakeSuccess(/*success=*/false);
   RecordInitializationFailureReason(*device, failure);
   for (auto& observer : observers_) {
     observer.OnPairFailure(device, failure);
