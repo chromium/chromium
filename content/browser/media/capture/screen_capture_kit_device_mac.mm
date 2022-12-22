@@ -66,16 +66,24 @@ API_AVAILABLE(macos(12.3))
     if (attachment) {
       CFDictionaryRef contentRectValue = base::mac::CFCast<CFDictionaryRef>(
           CFDictionaryGetValue(attachment, SCStreamFrameInfoContentRect));
+      CFNumberRef scaleFactorValue = base::mac::CFCast<CFNumberRef>(
+          CFDictionaryGetValue(attachment, SCStreamFrameInfoScaleFactor));
       CFNumberRef contentScaleValue = base::mac::CFCast<CFNumberRef>(
           CFDictionaryGetValue(attachment, SCStreamFrameInfoContentScale));
-      if (contentRectValue && contentScaleValue) {
+
+      if (contentRectValue && scaleFactorValue && contentScaleValue) {
         CGRect contentRect = {};
         bool succeed = CGRectMakeWithDictionaryRepresentation(contentRectValue,
                                                               &contentRect);
+        float scaleFactor = 1.0f;
+        succeed &= CFNumberGetValue(scaleFactorValue, kCFNumberFloatType,
+                                    &scaleFactor);
         float contentScale = 1.0f;
         succeed &= CFNumberGetValue(contentScaleValue, kCFNumberFloatType,
                                     &contentScale);
         if (succeed) {
+          contentRect.size.width *= scaleFactor;
+          contentRect.size.height *= scaleFactor;
           visibleRect.emplace(contentRect);
           contentSize.emplace(round(contentRect.size.width / contentScale),
                               round(contentRect.size.height / contentScale));
@@ -267,8 +275,11 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
       }
     } else {
       // No current request for new capture format. Check to see if content_size
-      // has changed and requires an updated configuration.
-      if (content_size &&
+      // has changed and requires an updated configuration. We only track the
+      // content size for window capturing since the resolution does not
+      // normally change during a session and because the content scale is wrong
+      // for retina displays.
+      if (source_.type == DesktopMediaID::TYPE_WINDOW && content_size &&
           (stream_config_content_size_.width() != content_size->width() ||
            stream_config_content_size_.height() != content_size->height())) {
         DVLOG(3) << "Content size changed to " << content_size->width() << " x "
