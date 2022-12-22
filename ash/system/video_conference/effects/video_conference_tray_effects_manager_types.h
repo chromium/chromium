@@ -36,16 +36,21 @@ class ASH_EXPORT VcEffectState {
   //
   // `button_callback` - A callback that's invoked when the user sets the effect
   // to this state.
+  //
+  // `state` - The actual state value. Optional because only certain types of
+  // effects (e.g. set-value) actually need it.
   VcEffectState(const gfx::VectorIcon* icon,
                 const std::u16string& label_text,
                 int accessible_name_id,
-                views::Button::PressedCallback button_callback);
+                views::Button::PressedCallback button_callback,
+                absl::optional<int> state = absl::nullopt);
 
   VcEffectState(const VcEffectState&) = delete;
   VcEffectState& operator=(const VcEffectState&) = delete;
 
   ~VcEffectState();
 
+  absl::optional<int> state() const { return state_; }
   const gfx::VectorIcon* icon() const { return icon_; }
   const std::u16string& label_text() const { return label_text_; }
   int accessible_name_id() const { return accessible_name_id_; }
@@ -68,6 +73,9 @@ class ASH_EXPORT VcEffectState {
   // with the effect's ID and the actual (integer) value (e.g.
   // kBackgroundBlurMedium) member as arguments.
   views::Button::PressedCallback button_callback_;
+
+  // The state value.
+  absl::optional<int> state_;
 };
 
 // Designates the type of user-adjustments made to this effect.
@@ -92,8 +100,13 @@ class ASH_EXPORT VcHostedEffect {
     kOn = 1,
   };
 
+  // Callback for obtaining the current state of the effect. The callback must
+  // have the effect ID bound as an argument.
+  using GetEffectStateCallback = base::RepeatingCallback<int(void)>;
+
   // `type` is the type of value adjustment allowed.
-  explicit VcHostedEffect(VcEffectType type);
+  explicit VcHostedEffect(VcEffectType type,
+                          GetEffectStateCallback get_state_callback);
 
   VcHostedEffect(const VcHostedEffect&) = delete;
   VcHostedEffect& operator=(const VcHostedEffect&) = delete;
@@ -111,6 +124,9 @@ class ASH_EXPORT VcHostedEffect {
 
   VcEffectType type() const { return type_; }
   void set_id(int id) { id_ = id; }
+  const GetEffectStateCallback& get_state_callback() const {
+    return get_state_callback_;
+  }
   int id() const { return id_; }
   void set_label_text(const std::u16string label_text) {
     label_text_ = label_text;
@@ -122,10 +138,14 @@ class ASH_EXPORT VcHostedEffect {
   // user-supplied ID.
   VcEffectType type_;
 
+  // Callback supplied by the parent `VcEffectsDelegate`, for obtaining the
+  // state of the effect.
+  GetEffectStateCallback get_state_callback_;
+
   // Unique ID of the effect, if desired.
   int id_;
 
-  // Label text for the effect itself (that's separate from the label text of
+  // Label text for the effect (that's separate from the label text of
   // individual child states).
   std::u16string label_text_;
 

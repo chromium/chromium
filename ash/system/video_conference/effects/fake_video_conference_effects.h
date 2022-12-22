@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/controls/button/button.h"
 
 namespace gfx {
@@ -36,7 +37,7 @@ class SimpleToggleEffect : public VcEffectsDelegate {
   SimpleToggleEffect(const SimpleToggleEffect&) = delete;
   SimpleToggleEffect& operator=(const SimpleToggleEffect&) = delete;
 
-  ~SimpleToggleEffect() override = default;
+  ~SimpleToggleEffect() override;
 
   // VcEffectsDelegate:
   int GetEffectState(int effect_id) override;
@@ -47,6 +48,8 @@ class SimpleToggleEffect : public VcEffectsDelegate {
  private:
   // Number of times the control has been activated, used by unit tests.
   int num_activations_for_testing_ = 0;
+
+  base::WeakPtrFactory<SimpleToggleEffect> weak_factory_{this};
 };
 
 // Delegates that host a series of "fake" effects used in unit tests and the
@@ -149,9 +152,16 @@ class ASH_EXPORT ShaggyFurEffect : public VcEffectsDelegate {
   int GetNumActivationsForTesting(int value);
 
  private:
+  // Adds a `std::unique_ptr<VcEffectState>` to `effect`.
+  void AddStateToEffect(VcHostedEffect* effect,
+                        int state_value,
+                        std::u16string label_text);
+
   // Number of times each value has been clicked, one count for each value in
   // `FurShagginess`.
   std::vector<int> num_activations_for_testing_;
+
+  base::WeakPtrFactory<ShaggyFurEffect> weak_factory_{this};
 };
 
 class ASH_EXPORT SuperCutnessEffect : public VcEffectsDelegate {
@@ -180,9 +190,16 @@ class ASH_EXPORT SuperCutnessEffect : public VcEffectsDelegate {
   int GetNumActivationsForTesting(int value);
 
  private:
+  // Adds a `std::unique_ptr<VcEffectState>` to `effect`.
+  void AddStateToEffect(VcHostedEffect* effect,
+                        int state_value,
+                        std::u16string label_text);
+
   // Number of times each value has been clicked, one count for each value in
   // `HowCute`.
   std::vector<int> num_activations_for_testing_;
+
+  base::WeakPtrFactory<SuperCutnessEffect> weak_factory_{this};
 };
 
 // A simple residence for any fake effects used for testing. For all of these

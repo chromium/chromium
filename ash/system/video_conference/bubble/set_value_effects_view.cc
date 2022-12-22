@@ -35,6 +35,7 @@ class ValueButtonContainer : public views::View {
     }
 
     // Add a button for each state.
+    const int current_state = effect->get_state_callback().Run();
     for (int i = 0; i < effect->GetNumStates(); ++i) {
       const VcEffectState* state = effect->GetState(/*index=*/i);
       std::unique_ptr<views::RadioButton> state_button =
@@ -48,6 +49,11 @@ class ValueButtonContainer : public views::View {
                                       BubbleViewID::kSetValueButtonMin
                               ? BubbleViewID::kSetValueButtonMin + i
                               : BubbleViewID::kSetValueButtonMax);
+
+      // Set-value effects require an actual integer state. Mark it checked
+      // (selected) if the current state of the effect is this state's value,
+      DCHECK(state->state().has_value());
+      state_button->SetChecked(state->state().value() == current_state);
 
       AddChildView(std::move(state_button));
     }

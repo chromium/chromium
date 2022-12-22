@@ -21,19 +21,24 @@ SimpleToggleEffect::SimpleToggleEffect(const std::u16string& label_text)
                          /*icon=*/absl::nullopt,
                          /*accessible_name_id=*/absl::nullopt) {}
 
+SimpleToggleEffect::~SimpleToggleEffect() = default;
+
 SimpleToggleEffect::SimpleToggleEffect(
     const std::u16string& label_text,
     absl::optional<const gfx::VectorIcon*> icon,
     absl::optional<int> accessible_name_id) {
-  std::unique_ptr<VcHostedEffect> effect =
-      std::make_unique<VcHostedEffect>(VcEffectType::kToggle);
+  std::unique_ptr<VcHostedEffect> effect = std::make_unique<VcHostedEffect>(
+      VcEffectType::kToggle,
+      base::BindRepeating(&SimpleToggleEffect::GetEffectState,
+                          base::Unretained(this),
+                          /*effect_id=*/VcEffectState::kUnusedId));
 
   // Use default `icon` and/or `accessible_name_id` if none was passed in.
   std::unique_ptr<VcEffectState> state = std::make_unique<VcEffectState>(
       icon.value_or(&ash::kPrivacyIndicatorsCameraIcon), label_text,
       accessible_name_id.value_or(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
       base::BindRepeating(&SimpleToggleEffect::OnEffectControlActivated,
-                          base::Unretained(this),
+                          weak_factory_.GetWeakPtr(),
                           /*effect_id=*/VcEffectState::kUnusedId,
                           /*value=*/0));
   effect->AddState(std::move(state));
@@ -79,42 +84,22 @@ GreenhouseEffect::GreenhouseEffect()
 // Delegates that host a set-value effect.
 
 ShaggyFurEffect::ShaggyFurEffect() {
-  std::unique_ptr<VcHostedEffect> effect =
-      std::make_unique<VcHostedEffect>(VcEffectType::kSetValue);
-  std::unique_ptr<VcEffectState> bald_state = std::make_unique<VcEffectState>(
-      /*icon=*/nullptr,
-      /*label_text=*/u"Bald",
-      /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
-      /*button_callback=*/
-      base::BindRepeating(&ShaggyFurEffect::OnEffectControlActivated,
+  std::unique_ptr<VcHostedEffect> effect = std::make_unique<VcHostedEffect>(
+      VcEffectType::kSetValue,
+      base::BindRepeating(&ShaggyFurEffect::GetEffectState,
                           base::Unretained(this),
-                          /*effect_id=*/0,
-                          /*value=*/static_cast<int>(FurShagginess::kBald)));
-  std::unique_ptr<VcEffectState> buzzcut_state =
-      std::make_unique<VcEffectState>(
-          /*icon=*/nullptr,
-          /*label_text=*/u"Buzzcut",
-          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
-          /*button_callback=*/
-          base::BindRepeating(
-              &ShaggyFurEffect::OnEffectControlActivated,
-              base::Unretained(this),
-              /*effect_id=*/0,
-              /*value=*/static_cast<int>(FurShagginess::kBuzzcut)));
-  std::unique_ptr<VcEffectState> thick_state = std::make_unique<VcEffectState>(
-      /*icon=*/nullptr,
-      /*label_text=*/u"Thick",
-      /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
-      /*button_callback=*/
-      base::BindRepeating(&ShaggyFurEffect::OnEffectControlActivated,
-                          base::Unretained(this),
-                          /*effect_id=*/0,
-                          /*value=*/static_cast<int>(FurShagginess::kThick)));
-  effect->AddState(std::move(bald_state));
-  effect->AddState(std::move(buzzcut_state));
-  effect->AddState(std::move(thick_state));
+                          /*effect_id=*/0));
   effect->set_label_text(u"Shaggy Fur");
   effect->set_id(100);
+  AddStateToEffect(effect.get(),
+                   /*state_value=*/static_cast<int>(FurShagginess::kBald),
+                   /*label_text=*/u"Bald");
+  AddStateToEffect(effect.get(),
+                   /*state_value=*/static_cast<int>(FurShagginess::kBuzzcut),
+                   /*label_text=*/u"Buzzcut");
+  AddStateToEffect(effect.get(),
+                   /*state_value=*/static_cast<int>(FurShagginess::kThick),
+                   /*label_text=*/u"Thick");
   AddEffect(std::move(effect));
 
   // Initialize click counts.
@@ -139,55 +124,41 @@ int ShaggyFurEffect::GetNumActivationsForTesting(int value) {
   return num_activations_for_testing_[value];
 }
 
-SuperCutnessEffect::SuperCutnessEffect() {
-  std::unique_ptr<VcHostedEffect> effect =
-      std::make_unique<VcHostedEffect>(VcEffectType::kSetValue);
-  std::unique_ptr<VcEffectState> ugly_dog_state =
-      std::make_unique<VcEffectState>(
-          /*icon=*/nullptr,
-          /*label_text=*/u"Ugly Dog",
-          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
-          /*button_callback=*/
-          base::BindRepeating(&SuperCutnessEffect::OnEffectControlActivated,
-                              base::Unretained(this),
-                              /*effect_id=*/0,
-                              /*value=*/static_cast<int>(HowCute::kUglyDog)));
-  std::unique_ptr<VcEffectState> teddy_bear_state =
-      std::make_unique<VcEffectState>(
-          /*icon=*/nullptr,
-          /*label_text=*/u"Teddy Bear",
-          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
-          /*button_callback=*/
-          base::BindRepeating(&SuperCutnessEffect::OnEffectControlActivated,
-                              base::Unretained(this),
-                              /*effect_id=*/0,
-                              /*value=*/static_cast<int>(HowCute::kTeddyBear)));
-  std::unique_ptr<VcEffectState> zara_state = std::make_unique<VcEffectState>(
+void ShaggyFurEffect::AddStateToEffect(VcHostedEffect* effect,
+                                       int state_value,
+                                       std::u16string label_text) {
+  DCHECK(effect);
+  effect->AddState(std::make_unique<VcEffectState>(
       /*icon=*/nullptr,
-      /*label_text=*/u"Zara",
+      /*label_text=*/label_text,
       /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
       /*button_callback=*/
-      base::BindRepeating(&SuperCutnessEffect::OnEffectControlActivated,
+      base::BindRepeating(&ShaggyFurEffect::OnEffectControlActivated,
+                          weak_factory_.GetWeakPtr(), /*effect_id=*/0,
+                          /*value=*/state_value),
+      /*state=*/state_value));
+}
+
+SuperCutnessEffect::SuperCutnessEffect() {
+  std::unique_ptr<VcHostedEffect> effect = std::make_unique<VcHostedEffect>(
+      VcEffectType::kSetValue,
+      base::BindRepeating(&SuperCutnessEffect::GetEffectState,
                           base::Unretained(this),
-                          /*effect_id=*/0,
-                          /*value=*/static_cast<int>(HowCute::kZara)));
-  std::unique_ptr<VcEffectState> inscrutable_state =
-      std::make_unique<VcEffectState>(
-          /*icon=*/nullptr,
-          /*label_text=*/u"Inscrutable",
-          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
-          /*button_callback=*/
-          base::BindRepeating(
-              &SuperCutnessEffect::OnEffectControlActivated,
-              base::Unretained(this),
-              /*effect_id=*/0,
-              /*value=*/static_cast<int>(HowCute::kInscrutable)));
-  effect->AddState(std::move(ugly_dog_state));
-  effect->AddState(std::move(teddy_bear_state));
-  effect->AddState(std::move(zara_state));
-  effect->AddState(std::move(inscrutable_state));
+                          /*effect_id=*/0));
   effect->set_label_text(u"Super Cuteness");
   effect->set_id(200);
+  AddStateToEffect(effect.get(),
+                   /*state_value=*/static_cast<int>(HowCute::kUglyDog),
+                   /*label_text=*/u"Ugly Dog");
+  AddStateToEffect(effect.get(),
+                   /*state_value=*/static_cast<int>(HowCute::kTeddyBear),
+                   /*label_text=*/u"Teddy Bear");
+  AddStateToEffect(effect.get(),
+                   /*state_value=*/static_cast<int>(HowCute::kZara),
+                   /*label_text=*/u"Zara");
+  AddStateToEffect(effect.get(),
+                   /*state_value=*/static_cast<int>(HowCute::kInscrutable),
+                   /*label_text=*/u"Inscrutable");
   AddEffect(std::move(effect));
 
   // Initialize click counts.
@@ -210,6 +181,21 @@ void SuperCutnessEffect::OnEffectControlActivated(int effect_id, int value) {
 int SuperCutnessEffect::GetNumActivationsForTesting(int value) {
   DCHECK(value >= 0 && value < static_cast<int>(HowCute::kMaxNumValues));
   return num_activations_for_testing_[value];
+}
+
+void SuperCutnessEffect::AddStateToEffect(VcHostedEffect* effect,
+                                          int state_value,
+                                          std::u16string label_text) {
+  DCHECK(effect);
+  effect->AddState(std::make_unique<VcEffectState>(
+      /*icon=*/nullptr,
+      /*label_text=*/label_text,
+      /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+      /*button_callback=*/
+      base::BindRepeating(&SuperCutnessEffect::OnEffectControlActivated,
+                          weak_factory_.GetWeakPtr(), /*effect_id=*/0,
+                          /*value=*/state_value),
+      /*state=*/state_value));
 }
 
 // This registers/unregisters all effects owned by `EffectRepository`.

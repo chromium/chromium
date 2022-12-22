@@ -10,6 +10,7 @@
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -21,10 +22,11 @@ namespace {
 
 // A single toggle button for a video conference effect, combined with a text
 // label.
-class ButtonContainer : public views::View {
+class ButtonContainer : public views::View, public IconButton::Delegate {
  public:
   ButtonContainer(views::Button::PressedCallback callback,
                   const gfx::VectorIcon* icon,
+                  bool toggle_state,
                   const std::u16string& label_text,
                   const int accessible_name_id) {
     views::FlexLayout* layout =
@@ -35,11 +37,26 @@ class ButtonContainer : public views::View {
 
     AddChildView(std::make_unique<views::Label>(label_text));
 
+    // Construct the `IconButton`, set ID and initial toggle state (from the
+    // passed-in value, which is the current state of the effect).
     std::unique_ptr<IconButton> button = std::make_unique<IconButton>(
         callback, IconButton::Type::kMedium, icon, accessible_name_id,
         /*is_togglable=*/true,
         /*has_border=*/true);
     button->SetID(video_conference::BubbleViewID::kToggleEffectsButton);
+    button->SetToggled(toggle_state);
+
+    // Delegate is the `ButtonContainer`, which changes the toggle-state of the
+    // button when clicked.
+    button->set_delegate(this);
+
+    // TODO(b/253249205): This is temporary, will be replaced wholesale when the
+    // effect toggle buttons are made to conform with the spec.
+    button->SetBackgroundToggledColorId(
+        cros_tokens::kCrosSysSystemNegativeContainer);
+    button->SetIconToggledColorId(
+        cros_tokens::kCrosSysSystemOnNegativeContainer);
+
     AddChildView(std::move(button));
 
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(10, 10)));
@@ -51,6 +68,12 @@ class ButtonContainer : public views::View {
   ButtonContainer& operator=(const ButtonContainer&) = delete;
 
   ~ButtonContainer() override = default;
+
+  // IconButton::Delegate:
+  void OnButtonToggled(IconButton* button) override {}
+  void OnButtonClicked(IconButton* button) override {
+    button->SetToggled(!button->toggled());
+  }
 };
 
 }  // namespace
@@ -86,8 +109,10 @@ ToggleEffectsView::ToggleEffectsView(
       DCHECK_EQ(tile->type(), VcEffectType::kToggle);
       DCHECK_EQ(tile->GetNumStates(), 1);
       const VcEffectState* state = tile->GetState(/*index=*/0);
+      bool current_state = tile->get_state_callback().Run();
       row_view->AddChildView(std::make_unique<ButtonContainer>(
-          state->button_callback(), state->icon(), state->label_text(),
+          state->button_callback(), state->icon(),
+          /*toggle_state=*/current_state, state->label_text(),
           state->accessible_name_id()));
     }
 
