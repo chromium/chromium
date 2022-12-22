@@ -37,8 +37,9 @@ class AddressProfileSaveManager;
 // Owned by `ChromeAutofillClient`.
 class FormDataImporter : public PersonalDataManagerObserver {
  public:
-  // Record type of the credit card imported from the form, if one exists.
-  enum ImportedCreditCardRecordType {
+  // Record type of the credit card import candidate extracted from the form, if
+  // one exists.
+  enum CreditCardImportType {
     // No card was successfully imported from the form.
     kNoCard,
     // The imported card is already stored locally on the device.
@@ -121,13 +122,12 @@ class FormDataImporter : public PersonalDataManagerObserver {
     return form_associator_.GetFormAssociations(form_signature);
   }
 
-  ImportedCreditCardRecordType imported_credit_card_record_type_for_testing()
-      const {
-    return imported_credit_card_record_type_;
+  CreditCardImportType credit_card_import_type_for_testing() const {
+    return credit_card_import_type_;
   }
-  void set_imported_credit_card_record_type_for_testing(
-      ImportedCreditCardRecordType imported_credit_card_record_type) {
-    imported_credit_card_record_type_ = imported_credit_card_record_type;
+  void set_credit_card_import_type_for_testing(
+      CreditCardImportType credit_card_import_type) {
+    credit_card_import_type_ = credit_card_import_type;
   }
 
  protected:
@@ -171,50 +171,50 @@ class FormDataImporter : public PersonalDataManagerObserver {
     ProfileImportMetadata import_metadata;
   };
 
-  // Defines data imported from the form.
-  struct ImportFormDataResult {
-    ImportFormDataResult();
-    ImportFormDataResult(const ImportFormDataResult& imported_form_data);
-    ImportFormDataResult& operator=(
-        const ImportFormDataResult& imported_form_data);
-    ~ImportFormDataResult();
+  // Defines data extracted from the form.
+  struct ExtractedFormData {
+    ExtractedFormData();
+    ExtractedFormData(const ExtractedFormData& extracted_form_data);
+    ExtractedFormData& operator=(const ExtractedFormData& extracted_form_data);
+    ~ExtractedFormData();
 
     // Credit card extracted from the form, which is a candidate for importing.
     // This credit card will be present after extraction if the form contained a
     // valid credit card, and the preconditions for extracting the credit card
-    // were met. See ImportCreditCard() for details on when
+    // were met. See `ExtractCreditCard()` for details on when
     // the preconditions are met for extracting a credit card from a form.
     absl::optional<CreditCard> credit_card_import_candidate;
-    // List of address profiles which are candidates for importing. The list is
-    // empty if none of the address profile fulfill import requirements.
+    // List of address profiles extracted from the form, which are candidates
+    // for importing. The list is empty if none of the address profile fulfill
+    // import requirements.
     std::vector<AddressProfileImportCandidate>
         address_profile_import_candidates;
     // IBAN extracted from the form, which is a candidate for importing. Present
     // if an IBAN is found in the form.
     absl::optional<IBAN> iban_import_candidate;
     // Present if a UPI (Unified Payment Interface) ID is found in the form.
-    absl::optional<std::string> imported_upi_id;
+    absl::optional<std::string> extracted_upi_id;
   };
 
-  // Scans the given `form` for importable Autofill data.
-  ImportFormDataResult ImportFormData(const FormStructure& form,
-                                      bool profile_autofill_enabled,
-                                      bool payment_methods_autofill_enabled);
+  // Scans the given `form` for extractable Autofill data.
+  ExtractedFormData ExtractFormData(const FormStructure& form,
+                                    bool profile_autofill_enabled,
+                                    bool payment_methods_autofill_enabled);
 
   // Attempts to construct AddressProfileImportCandidates by extracting values
-  // from the fields in the |form|'s sections. Extraction can fail if the
+  // from the fields in the `form`'s sections. Extraction can fail if the
   // fields' values don't pass validation. Apart from complete address profiles,
   // partial profiles for silent updates are extracted. All are stored in
-  // |imported_form_data|'s |address_profile_import_candidates|.
+  // `extracted_form_data`'s `address_profile_import_candidates`.
   // The function returns the number of _complete_ extracted profiles.
-  size_t ImportAddressProfiles(const FormStructure& form,
-                               std::vector<AddressProfileImportCandidate>*
-                                   address_profile_import_candidates);
+  size_t ExtractAddressProfiles(const FormStructure& form,
+                                std::vector<AddressProfileImportCandidate>*
+                                    address_profile_import_candidates);
 
   // Helper method for ImportAddressProfiles which only considers the fields for
-  // a specified |section|. If no section is passed, the import is performed on
+  // a specified `section`. If no section is passed, the import is performed on
   // the union of all sections.
-  bool ImportAddressProfileForSection(
+  bool ExtractAddressProfileFromSection(
       const FormStructure& form,
       const absl::optional<Section>& section,
       std::vector<AddressProfileImportCandidate>*
@@ -235,11 +235,11 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // The function has two side-effects:
   // - all matching local cards are updated to include the information from the
   //   extracted card;
-  // - `imported_credit_card_record_type_` is set to
+  // - `credit_card_import_type_` is set to
   //   - SERVER_CARD if a server card matches;
   //   - LOCAL_CARD if a local and no server card matches;
   //   - NEW_CARD otherwise.
-  absl::optional<CreditCard> ImportCreditCard(const FormStructure& form);
+  absl::optional<CreditCard> ExtractCreditCard(const FormStructure& form);
 
   // Returns the extracted IBAN from the `form` if applicable.
   // This is the case if it is a new IBAN or a local IBAN.
@@ -248,17 +248,17 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // - record_type of the returned IBAN is set to
   //   - LOCAL_IBAN if a local IBAN matches;
   //   - NEW_IBAN if no local IBAN matches
-  absl::optional<IBAN> ImportIBAN(const FormStructure& form);
+  absl::optional<IBAN> ExtractIBAN(const FormStructure& form);
 
   // Tries to initiate the saving of the `credit_card_import_candidate`
   // if applicable. `submitted_form` is the form from which the card was
-  // imported. If a UPI id was found it is stored in `imported_upi_id`.
+  // imported. If a UPI id was found it is stored in `extracted_upi_id`.
   // `is_credit_card_upstream_enabled` indicates if server card storage is
   // enabled. Returns true if a save is initiated.
   bool ProcessCreditCardImportCandidate(
       const FormStructure& submitted_form,
       const absl::optional<CreditCard>& credit_card_import_candidate,
-      const absl::optional<std::string>& imported_upi_id,
+      const absl::optional<std::string>& extracted_upi_id,
       bool payment_methods_autofill_enabled,
       bool is_credit_card_upstream_enabled);
 
@@ -274,9 +274,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // Extracts the IBAN from the form structure.
   IBAN ExtractIBANFromForm(const FormStructure& form);
 
-  // Go through the |form| fields and find a UPI ID to import. The return value
+  // Go through the `form` fields and find a UPI ID to extract. The return value
   // will be empty if no UPI ID was found.
-  absl::optional<std::string> ImportUpiId(const FormStructure& form);
+  absl::optional<std::string> ExtractUpiId(const FormStructure& form);
 
   // Returns true if credit card upload or local save should be offered to user.
   // |credit_card_import_candidate| is the credit card imported from the form if
@@ -342,11 +342,11 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // May be NULL.  NULL indicates OTR.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
-  // Represents the type of the imported credit card from the submitted form.
-  // It will be used to determine whether to offer upload save or card
-  // migration. Will be passed to `credit_card_save_manager_` for metrics.
-  ImportedCreditCardRecordType imported_credit_card_record_type_ =
-      ImportedCreditCardRecordType::kNoCard;
+  // Represents the type of the credit card import candidate from the submitted
+  // form. It will be used to determine whether to offer upload save or card
+  // migration. Will be passed to `credit_card_save_manager_` for metrics. If no
+  // credit card was found in the form, the type will be `kNoCard`.
+  CreditCardImportType credit_card_import_type_ = CreditCardImportType::kNoCard;
 
   std::string app_locale_;
 

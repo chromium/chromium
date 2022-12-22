@@ -49,20 +49,20 @@ LocalCardMigrationManager::~LocalCardMigrationManager() {}
 
 bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
     const absl::optional<CreditCard>& credit_card_import_candidate,
-    int imported_credit_card_record_type) {
-  // Reset and store the imported credit card info for a later check of whether
-  // the imported card is supported.
-  imported_credit_card_number_.reset();
+    int credit_card_import_type) {
+  // Reset and store the extracted credit card info for a later check of whether
+  // the extracted card is supported.
+  extracted_credit_card_number_.reset();
   if (credit_card_import_candidate)
-    imported_credit_card_number_ = credit_card_import_candidate->number();
-  imported_credit_card_record_type_ = imported_credit_card_record_type;
+    extracted_credit_card_number_ = credit_card_import_candidate->number();
+  credit_card_import_type_ = credit_card_import_type;
   // Must be an existing card. New cards always get Upstream or local save.
-  switch (imported_credit_card_record_type_) {
-    case FormDataImporter::ImportedCreditCardRecordType::kLocalCard:
+  switch (credit_card_import_type_) {
+    case FormDataImporter::CreditCardImportType::kLocalCard:
       local_card_migration_origin_ =
           autofill_metrics::LocalCardMigrationOrigin::UseOfLocalCard;
       break;
-    case FormDataImporter::ImportedCreditCardRecordType::kServerCard:
+    case FormDataImporter::CreditCardImportType::kServerCard:
       local_card_migration_origin_ =
           autofill_metrics::LocalCardMigrationOrigin::UseOfServerCard;
       break;
@@ -82,12 +82,12 @@ bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
 
   // Don't show the prompt if max strike count was reached.
   if (GetLocalCardMigrationStrikeDatabase()->ShouldBlockFeature()) {
-    switch (imported_credit_card_record_type_) {
-      case FormDataImporter::ImportedCreditCardRecordType::kLocalCard:
+    switch (credit_card_import_type_) {
+      case FormDataImporter::CreditCardImportType::kLocalCard:
         autofill_metrics::LogLocalCardMigrationNotOfferedDueToMaxStrikesMetric(
             AutofillMetrics::SaveTypeMetric::LOCAL);
         break;
-      case FormDataImporter::ImportedCreditCardRecordType::kServerCard:
+      case FormDataImporter::CreditCardImportType::kServerCard:
         autofill_metrics::LogLocalCardMigrationNotOfferedDueToMaxStrikesMetric(
             AutofillMetrics::SaveTypeMetric::SERVER);
         break;
@@ -105,15 +105,15 @@ bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
   // of Upstream if there are other local cards to migrate as well. If the form
   // was submitted with a server card, offer migration if ANY local cards can be
   // migrated.
-  if ((imported_credit_card_record_type_ ==
-           FormDataImporter::ImportedCreditCardRecordType::kLocalCard &&
+  if ((credit_card_import_type_ ==
+           FormDataImporter::CreditCardImportType::kLocalCard &&
        migratable_credit_cards_.size() > 1) ||
-      (imported_credit_card_record_type_ ==
-           FormDataImporter::ImportedCreditCardRecordType::kServerCard &&
+      (credit_card_import_type_ ==
+           FormDataImporter::CreditCardImportType::kServerCard &&
        !migratable_credit_cards_.empty())) {
     return true;
-  } else if (imported_credit_card_record_type_ ==
-                 FormDataImporter::ImportedCreditCardRecordType::kLocalCard &&
+  } else if (credit_card_import_type_ ==
+                 FormDataImporter::CreditCardImportType::kLocalCard &&
              migratable_credit_cards_.size() == 1) {
     autofill_metrics::LogLocalCardMigrationDecisionMetric(
         autofill_metrics::LocalCardMigrationDecisionMetric::
@@ -231,15 +231,15 @@ void LocalCardMigrationManager::OnDidGetUploadDetails(
       // Pops up a larger, modal dialog showing the local cards to be uploaded.
       ShowMainMigrationDialog();
     } else {
-      // Check if an imported local card is listed in
-      // |supported_card_bin_ranges|. Abort the migration when the user uses an
+      // Check if an extracted local card is listed in
+      // `supported_card_bin_ranges`. Abort the migration when the user uses an
       // unsupported local card.
       if (!supported_card_bin_ranges.empty() &&
-          imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::kLocalCard &&
-          imported_credit_card_number_.has_value() &&
+          credit_card_import_type_ ==
+              FormDataImporter::CreditCardImportType::kLocalCard &&
+          extracted_credit_card_number_.has_value() &&
           !payments::IsCreditCardNumberSupported(
-              imported_credit_card_number_.value(),
+              extracted_credit_card_number_.value(),
               supported_card_bin_ranges)) {
         autofill_metrics::LogLocalCardMigrationDecisionMetric(
             autofill_metrics::LocalCardMigrationDecisionMetric::

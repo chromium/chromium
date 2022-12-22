@@ -286,16 +286,16 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
         field->set_heuristic_type(GetActivePatternSource(), type);
       }
 
-      // Import the profile.
-      auto imported_data = form_data_importer_->ImportFormData(
+      // Extract the profile.
+      auto extracted_data = form_data_importer_->ExtractFormData(
           form_structure,
           /*profile_autofill_enabled=*/true,
           /*payment_methods_autofill_enabled=*/true);
       form_data_importer_->ProcessAddressProfileImportCandidates(
-          imported_data.address_profile_import_candidates,
+          extracted_data.address_profile_import_candidates,
           /*allow_prompt=*/true);
-      EXPECT_FALSE(imported_data.credit_card_import_candidate);
-      EXPECT_FALSE(imported_data.imported_upi_id.has_value());
+      EXPECT_FALSE(extracted_data.credit_card_import_candidate);
+      EXPECT_FALSE(extracted_data.extracted_upi_id.has_value());
 
       // Clear the |form| to start a new profile.
       form.fields.clear();

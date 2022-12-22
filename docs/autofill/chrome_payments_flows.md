@@ -83,17 +83,17 @@
 
 1.  The user submits a form, triggering
     [AutofillManager::OnFormSubmitted](https://cs.chromium.org/chromium/src/components/autofill/core/browser/autofill_manager.cc?l=368&rcl=ab8d0ea46daf7673a53524a3708f0ffd1ea9ee2d).
-    If the form was autofillable, FormDataImporter::ImportFormData [is
+    If the form was autofillable, FormDataImporter::ExtractFormData [is
     called](https://cs.chromium.org/chromium/src/components/autofill/core/browser/autofill_manager.cc?l=392-393&rcl=ab8d0ea46daf7673a53524a3708f0ffd1ea9ee2d)
-2.  An inner [FormDataImporter::ImportFormData
+2.  An inner [FormDataImporter::ExtractFormData
     helper](https://cs.chromium.org/chromium/src/components/autofill/core/browser/form_data_importer.cc?l=169&rcl=ab8d0ea46daf7673a53524a3708f0ffd1ea9ee2d)
-    is called, which begins the process of importing both credit card and
+    is called, which begins the process of extracting both credit card and
     address profile information
-3.  [FormDataImporter::ImportCreditCard](https://cs.chromium.org/chromium/src/components/autofill/core/browser/form_data_importer.cc?l=307&rcl=ab8d0ea46daf7673a53524a3708f0ffd1ea9ee2d)
+3.  [FormDataImporter::ExtractCreditCard](https://cs.chromium.org/chromium/src/components/autofill/core/browser/form_data_importer.cc?l=307&rcl=ab8d0ea46daf7673a53524a3708f0ffd1ea9ee2d)
     is called which tries to detect if a new credit card was entered on the
-    form, storing it in `|imported_credit_card|` if so
-4.  [FormDataImporter::ImportAddressProfiles](https://cs.chromium.org/chromium/src/components/autofill/core/browser/form_data_importer.cc?l=196&rcl=ab8d0ea46daf7673a53524a3708f0ffd1ea9ee2d)
-    is called, which tries to [import one address profile per form
+    form, storing it in `imported_credit_card` if so
+4.  [FormDataImporter::ExtractAddressProfiles](https://cs.chromium.org/chromium/src/components/autofill/core/browser/form_data_importer.cc?l=196&rcl=ab8d0ea46daf7673a53524a3708f0ffd1ea9ee2d)
+    is called, which tries to [extract one address profile per form
     section](https://cs.chromium.org/chromium/src/components/autofill/core/browser/form_data_importer.cc?l=222&rcl=ab8d0ea46daf7673a53524a3708f0ffd1ea9ee2d)
     (maximum of 2)
 5.  If the submitted form [included a credit
@@ -198,4 +198,3 @@
     [CreditCardSaveManager::OnDidUploadCard](https://cs.chromium.org/chromium/src/components/autofill/core/browser/credit_card_save_manager.cc?l=215&rcl=6ad45bcd758ad6eaba1da3a71b909f7ca7b46217),
     which, on a success, saves the credit card as a FULL_SERVER_CARD (so it
     doesn’t need to be unmasked on next use on the same device)
-

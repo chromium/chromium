@@ -122,16 +122,16 @@ bool ShouldOfferVirtualCardEnrollment(
 
 }  // namespace
 
-FormDataImporter::ImportFormDataResult::ImportFormDataResult() = default;
+FormDataImporter::ExtractedFormData::ExtractedFormData() = default;
 
-FormDataImporter::ImportFormDataResult::ImportFormDataResult(
-    const ImportFormDataResult& imported_form_data) = default;
+FormDataImporter::ExtractedFormData::ExtractedFormData(
+    const ExtractedFormData& extracted_form_data) = default;
 
-FormDataImporter::ImportFormDataResult&
-FormDataImporter::ImportFormDataResult::operator=(
-    const ImportFormDataResult& imported_form_data) = default;
+FormDataImporter::ExtractedFormData&
+FormDataImporter::ExtractedFormData::operator=(
+    const ExtractedFormData& extracted_form_data) = default;
 
-FormDataImporter::ImportFormDataResult::~ImportFormDataResult() = default;
+FormDataImporter::ExtractedFormData::~ExtractedFormData() = default;
 
 FormDataImporter::FormDataImporter(AutofillClient* client,
                                    payments::PaymentsClient* payments_client,
@@ -187,16 +187,16 @@ void FormDataImporter::ImportAndProcessFormData(
     const FormStructure& submitted_form,
     bool profile_autofill_enabled,
     bool payment_methods_autofill_enabled) {
-  ImportFormDataResult imported_data =
-      ImportFormData(submitted_form, profile_autofill_enabled,
-                     payment_methods_autofill_enabled);
+  ExtractedFormData extracted_data =
+      ExtractFormData(submitted_form, profile_autofill_enabled,
+                      payment_methods_autofill_enabled);
 
   // Create a vector of address profile import candidates.
   // This is used to make preliminarily imported profiles available
   // to the credit card import logic.
   std::vector<AutofillProfile> preliminary_imported_address_profiles;
   for (const auto& candidate :
-       imported_data.address_profile_import_candidates) {
+       extracted_data.address_profile_import_candidates) {
     if (candidate.all_requirements_fulfilled)
       preliminary_imported_address_profiles.push_back(candidate.profile);
   }
@@ -204,22 +204,22 @@ void FormDataImporter::ImportAndProcessFormData(
       preliminary_imported_address_profiles);
 
   bool cc_prompt_potentially_shown = ProcessCreditCardImportCandidate(
-      submitted_form, imported_data.credit_card_import_candidate,
-      imported_data.imported_upi_id, payment_methods_autofill_enabled,
+      submitted_form, extracted_data.credit_card_import_candidate,
+      extracted_data.extracted_upi_id, payment_methods_autofill_enabled,
       credit_card_save_manager_->IsCreditCardUploadEnabled());
   fetched_card_instrument_id_.reset();
 
   bool iban_prompt_potentially_shown = false;
-  if (imported_data.iban_import_candidate.has_value() &&
+  if (extracted_data.iban_import_candidate.has_value() &&
       payment_methods_autofill_enabled) {
     iban_prompt_potentially_shown =
-        ProcessIBANImportCandidate(*imported_data.iban_import_candidate);
+        ProcessIBANImportCandidate(*extracted_data.iban_import_candidate);
   }
 
   // If a prompt for credit cards or IBANs is potentially shown, do not allow
   // for a second address profile import dialog.
   ProcessAddressProfileImportCandidates(
-      imported_data.address_profile_import_candidates,
+      extracted_data.address_profile_import_candidates,
       !cc_prompt_potentially_shown && !iban_prompt_potentially_shown);
 }
 
@@ -273,38 +273,40 @@ void FormDataImporter::SetFetchedCardInstrumentId(int64_t instrument_id) {
   fetched_card_instrument_id_ = instrument_id;
 }
 
-FormDataImporter::ImportFormDataResult FormDataImporter::ImportFormData(
+FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
     const FormStructure& submitted_form,
     bool profile_autofill_enabled,
     bool payment_methods_autofill_enabled) {
-  ImportFormDataResult imported_form_data;
+  ExtractedFormData extracted_form_data;
   // We try the same `form` for both credit card and address import/update.
-  // - `ImportCreditCard()` may update an existing card, or fill
-  //   `credit_card_import_candidate` contained in `imported_form_data` with an
+  // - `ExtractCreditCard()` may update an existing card, or fill
+  //   `credit_card_import_candidate` contained in `extracted_form_data` with an
   //   extracted card.
-  // - `ImportAddressProfiles()` collects all importable profiles, but currently
+  // - `ExtractAddressProfiles()` collects all importable
+  // profiles, but currently
   //   at most one import prompt is shown.
-  // Reset `imported_credit_card_record_type_` every time we import data from
-  // form no matter whether `ImportCreditCard()` is called or not.
-  imported_credit_card_record_type_ = ImportedCreditCardRecordType::kNoCard;
+  // Reset `credit_card_import_type_` every time we extract
+  // data from form no matter whether `ExtractCreditCard()` is
+  // called or not.
+  credit_card_import_type_ = CreditCardImportType::kNoCard;
   if (payment_methods_autofill_enabled) {
-    imported_form_data.credit_card_import_candidate =
-        ImportCreditCard(submitted_form);
-    imported_form_data.imported_upi_id = ImportUpiId(submitted_form);
+    extracted_form_data.credit_card_import_candidate =
+        ExtractCreditCard(submitted_form);
+    extracted_form_data.extracted_upi_id = ExtractUpiId(submitted_form);
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(features::kAutofillFillIbanFields) &&
       payment_methods_autofill_enabled) {
-    imported_form_data.iban_import_candidate = ImportIBAN(submitted_form);
+    extracted_form_data.iban_import_candidate = ExtractIBAN(submitted_form);
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   size_t num_complete_address_profiles = 0;
   if (profile_autofill_enabled &&
       !base::FeatureList::IsEnabled(features::kAutofillDisableAddressImport)) {
-    num_complete_address_profiles = ImportAddressProfiles(
-        submitted_form, &imported_form_data.address_profile_import_candidates);
+    num_complete_address_profiles = ExtractAddressProfiles(
+        submitted_form, &extracted_form_data.address_profile_import_candidates);
   }
 
   if (profile_autofill_enabled && payment_methods_autofill_enabled &&
@@ -317,24 +319,24 @@ FormDataImporter::ImportFormDataResult FormDataImporter::ImportFormData(
       form_associator_.TrackFormAssociations(
           origin, form_signature, FormAssociator::FormType::kAddressForm);
     }
-    if (imported_form_data.credit_card_import_candidate) {
+    if (extracted_form_data.credit_card_import_candidate) {
       form_associator_.TrackFormAssociations(
           origin, form_signature, FormAssociator::FormType::kCreditCardForm);
     }
   }
 
-  if (!imported_form_data.credit_card_import_candidate &&
-      !imported_form_data.imported_upi_id &&
+  if (!extracted_form_data.credit_card_import_candidate &&
+      !extracted_form_data.extracted_upi_id &&
       num_complete_address_profiles == 0 &&
-      (!imported_form_data.iban_import_candidate ||
-       imported_form_data.iban_import_candidate->record_type() !=
+      (!extracted_form_data.iban_import_candidate ||
+       extracted_form_data.iban_import_candidate->record_type() !=
            IBAN::NEW_IBAN)) {
     personal_data_manager_->MarkObserversInsufficientFormDataForImport();
   }
-  return imported_form_data;
+  return extracted_form_data;
 }
 
-size_t FormDataImporter::ImportAddressProfiles(
+size_t FormDataImporter::ExtractAddressProfiles(
     const FormStructure& form,
     std::vector<FormDataImporter::AddressProfileImportCandidate>*
         address_profile_import_candidates) {
@@ -371,25 +373,26 @@ size_t FormDataImporter::ImportAddressProfiles(
       LOG_AF(import_log_buffer)
           << LogMessage::kImportAddressProfileFromFormSection << section
           << CTag{};
-      // Try to import an address profile from the form fields of this section.
+      // Try to extract an address profile from the form fields of this section.
       // Only allow for a prompt if no other complete profile was found so far.
-      if (ImportAddressProfileForSection(form, section,
-                                         address_profile_import_candidates,
-                                         &import_log_buffer))
+      if (ExtractAddressProfileFromSection(form, section,
+                                           address_profile_import_candidates,
+                                           &import_log_buffer)) {
         num_complete_profiles++;
+      }
       // And close the div of the section import log.
       LOG_AF(import_log_buffer) << CTag{"div"};
     }
-    // Run the import on the union of the section if the import was not
+    // Run the extract on the union of the section if the import was not
     // successful and if there is more than one section.
     if (num_complete_profiles > 0) {
       AutofillMetrics::LogAddressFormImportStatusMetric(
           AutofillMetrics::AddressProfileImportStatusMetric::REGULAR_IMPORT);
     } else if (sections.size() > 1) {
-      // Try to import by combining all sections.
-      if (ImportAddressProfileForSection(form, absl::nullopt,
-                                         address_profile_import_candidates,
-                                         &import_log_buffer)) {
+      // Try to extract by combining all sections.
+      if (ExtractAddressProfileFromSection(form, absl::nullopt,
+                                           address_profile_import_candidates,
+                                           &import_log_buffer)) {
         num_complete_profiles++;
         AutofillMetrics::LogAddressFormImportStatusMetric(
             AutofillMetrics::AddressProfileImportStatusMetric::
@@ -411,7 +414,7 @@ size_t FormDataImporter::ImportAddressProfiles(
   return num_complete_profiles;
 }
 
-bool FormDataImporter::ImportAddressProfileForSection(
+bool FormDataImporter::ExtractAddressProfileFromSection(
     const FormStructure& form,
     const absl::optional<Section>& section,
     std::vector<FormDataImporter::AddressProfileImportCandidate>*
@@ -466,7 +469,7 @@ bool FormDataImporter::ImportAddressProfileForSection(
 
     AutofillType field_type = field->Type();
 
-    // Credit card fields are handled by ImportCreditCard().
+    // Credit card fields are handled by ExtractCreditCard().
     if (field_type.group() == FieldTypeGroup::kCreditCard)
       continue;
 
@@ -728,18 +731,17 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
 bool FormDataImporter::ProcessCreditCardImportCandidate(
     const FormStructure& submitted_form,
     const absl::optional<CreditCard>& credit_card_import_candidate,
-    const absl::optional<std::string>& imported_upi_id,
+    const absl::optional<std::string>& extracted_upi_id,
     bool payment_methods_autofill_enabled,
     bool is_credit_card_upstream_enabled) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (imported_upi_id && payment_methods_autofill_enabled &&
+  if (extracted_upi_id && payment_methods_autofill_enabled &&
       base::FeatureList::IsEnabled(features::kAutofillSaveAndFillVPA)) {
-    upi_vpa_save_manager_->OfferLocalSave(*imported_upi_id);
+    upi_vpa_save_manager_->OfferLocalSave(*extracted_upi_id);
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // If no card was successfully imported from the form, return.
-  if (imported_credit_card_record_type_ ==
-      ImportedCreditCardRecordType::kNoCard) {
+  // If no card was successfully extracted from the form, return.
+  if (credit_card_import_type_ == CreditCardImportType::kNoCard) {
     return false;
   }
   // Do not offer upload save for google domain.
@@ -757,12 +759,12 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // A credit card was successfully imported, but it's possible it is already a
+  // A credit card was successfully extracted, but it's possible it is already a
   // local or server card. First, check to see if we should offer local card
   // migration in this case, as local cards could go either way.
   if (local_card_migration_manager_ &&
       local_card_migration_manager_->ShouldOfferLocalCardMigration(
-          credit_card_import_candidate, imported_credit_card_record_type_)) {
+          credit_card_import_candidate, credit_card_import_type_)) {
     local_card_migration_manager_->AttemptToOfferLocalCardMigration(
         /*is_from_settings_page=*/false);
     return true;
@@ -780,25 +782,22 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
   // We have a card to save; decide what type of save flow to display.
   if (is_credit_card_upstream_enabled) {
     // Attempt to offer upload save. Because we pass
-    // |credit_card_upstream_enabled| to ImportFormData, this block can be
-    // reached on observing either a new card or one already stored locally
-    // which doesn't match an existing server card. If Google Payments declines
-    // allowing upload, |credit_card_save_manager_| is tasked with deciding if
-    // we should fall back to local save or not.
-    DCHECK(imported_credit_card_record_type_ ==
-               ImportedCreditCardRecordType::kLocalCard ||
-           imported_credit_card_record_type_ ==
-               ImportedCreditCardRecordType::kNewCard);
+    // `credit_card_upstream_enabled` to ExtractFormImportCandidates, this block
+    // can be reached on observing either a new card or one already stored
+    // locally which doesn't match an existing server card. If Google Payments
+    // declines allowing upload, `credit_card_save_manager_` is tasked with
+    // deciding if we should fall back to local save or not.
+    DCHECK(credit_card_import_type_ == CreditCardImportType::kLocalCard ||
+           credit_card_import_type_ == CreditCardImportType::kNewCard);
     credit_card_save_manager_->AttemptToOfferCardUploadSave(
         submitted_form, from_dynamic_change_form_, has_non_focusable_field_,
         *credit_card_import_candidate,
-        /*uploading_local_card=*/imported_credit_card_record_type_ ==
-            ImportedCreditCardRecordType::kLocalCard);
+        /*uploading_local_card=*/credit_card_import_type_ ==
+            CreditCardImportType::kLocalCard);
     return true;
   };
   // If upload save is not allowed, new cards should be saved locally.
-  DCHECK(imported_credit_card_record_type_ ==
-         ImportedCreditCardRecordType::kNewCard);
+  DCHECK(credit_card_import_type_ == CreditCardImportType::kNewCard);
   if (credit_card_save_manager_->AttemptToOfferCardLocalSave(
           from_dynamic_change_form_, has_non_focusable_field_,
           *credit_card_import_candidate)) {
@@ -821,7 +820,7 @@ bool FormDataImporter::ProcessIBANImportCandidate(
   return false;
 }
 
-absl::optional<CreditCard> FormDataImporter::ImportCreditCard(
+absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(
     const FormStructure& form) {
   // The candidate for credit card import. There are many ways for the candidate
   // to be rejected as indicated by the `return absl::nullopt` statements below.
@@ -856,7 +855,7 @@ absl::optional<CreditCard> FormDataImporter::ImportCreditCard(
 
   // Can import one valid card per form. Start by treating it as kNewCard, but
   // overwrite this type if we discover it is already a local or server card.
-  imported_credit_card_record_type_ = ImportedCreditCardRecordType::kNewCard;
+  credit_card_import_type_ = CreditCardImportType::kNewCard;
 
   // Attempt to merge with an existing local credit card without presenting a
   // prompt.
@@ -867,8 +866,7 @@ absl::optional<CreditCard> FormDataImporter::ImportCreditCard(
     CreditCard maybe_updated_card = *local_card;
     if (maybe_updated_card.UpdateFromImportedCard(candidate, app_locale_)) {
       personal_data_manager_->UpdateCreditCard(maybe_updated_card);
-      imported_credit_card_record_type_ =
-          ImportedCreditCardRecordType::kLocalCard;
+      credit_card_import_type_ = CreditCardImportType::kLocalCard;
       if (!maybe_updated_card.nickname().empty()) {
         // The nickname may be shown in the upload save bubble.
         candidate.SetNickname(maybe_updated_card.nickname());
@@ -900,7 +898,7 @@ absl::optional<CreditCard> FormDataImporter::ImportCreditCard(
   if (candidate.expiration_month() == 0 || candidate.expiration_year() == 0)
     return absl::nullopt;
 
-  imported_credit_card_record_type_ = ImportedCreditCardRecordType::kServerCard;
+  credit_card_import_type_ = CreditCardImportType::kServerCard;
 
   if (candidate.expiration_month() == server_card->expiration_month() &&
       candidate.expiration_year() == server_card->expiration_year()) {
@@ -919,7 +917,7 @@ absl::optional<CreditCard> FormDataImporter::ImportCreditCard(
   return server_card;
 }
 
-absl::optional<IBAN> FormDataImporter::ImportIBAN(const FormStructure& form) {
+absl::optional<IBAN> FormDataImporter::ExtractIBAN(const FormStructure& form) {
   IBAN candidate_iban = ExtractIBANFromForm(form);
   if (candidate_iban.value().empty())
     return absl::nullopt;
@@ -1018,7 +1016,7 @@ IBAN FormDataImporter::ExtractIBANFromForm(const FormStructure& form) {
   return candidate_iban;
 }
 
-absl::optional<std::string> FormDataImporter::ImportUpiId(
+absl::optional<std::string> FormDataImporter::ExtractUpiId(
     const FormStructure& form) {
   for (const auto& field : form) {
     if (IsUPIVirtualPaymentAddress(field->value))
@@ -1037,8 +1035,7 @@ bool FormDataImporter::ShouldOfferUploadCardOrLocalCardSave(
     return false;
 
   // We do not want to offer upload save or local card save for server cards.
-  if (imported_credit_card_record_type_ ==
-      ImportedCreditCardRecordType::kServerCard) {
+  if (credit_card_import_type_ == CreditCardImportType::kServerCard) {
     return false;
   }
 
@@ -1046,8 +1043,7 @@ bool FormDataImporter::ShouldOfferUploadCardOrLocalCardSave(
   // want to offer upload save as it is disabled and we do not want to offer
   // local card save as it is already saved as a local card.
   if (!is_credit_card_upload_enabled &&
-      imported_credit_card_record_type_ ==
-          ImportedCreditCardRecordType::kLocalCard) {
+      credit_card_import_type_ == CreditCardImportType::kLocalCard) {
     return false;
   }
 
