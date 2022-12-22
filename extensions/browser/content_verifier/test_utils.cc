@@ -488,18 +488,22 @@ TestExtensionBuilder::CreateVerifiedContentsPayload() const {
                      .Build());
   }
 
-  return DictionaryBuilder()
-      .Set("item_id", extension_id_)
-      .Set("item_version", "1.0")
-      .Set("content_hashes", ListBuilder()
-                                 .Append(DictionaryBuilder()
-                                             .Set("format", "treehash")
-                                             .Set("block_size", block_size)
-                                             .Set("hash_block_size", block_size)
-                                             .Set("files", files.Build())
-                                             .Build())
-                                 .Build())
-      .Build();
+  base::Value::Dict result =
+      DictionaryBuilder()
+          .Set("item_id", extension_id_)
+          .Set("item_version", "1.0")
+          .Set("content_hashes",
+               ListBuilder()
+                   .Append(DictionaryBuilder()
+                               .Set("format", "treehash")
+                               .Set("block_size", block_size)
+                               .Set("hash_block_size", block_size)
+                               .Set("files", files.Build())
+                               .Build())
+                   .Build())
+          .Build();
+
+  return std::make_unique<base::Value>(std::move(result));
 }
 
 // Other stuff ----------------------------------------------------------------

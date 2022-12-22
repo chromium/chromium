@@ -13,22 +13,17 @@ namespace extensions {
 
 // DictionaryBuilder
 
-DictionaryBuilder::DictionaryBuilder() : dict_(new base::DictionaryValue) {}
-
-DictionaryBuilder::DictionaryBuilder(const base::DictionaryValue& init)
-    : dict_(base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(init.Clone()))) {}
+DictionaryBuilder::DictionaryBuilder() = default;
 
 DictionaryBuilder::DictionaryBuilder(const base::Value::Dict& init)
-    : dict_(base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(base::Value(init.Clone())))) {}
+    : dict_(init.Clone()) {}
 
 DictionaryBuilder::~DictionaryBuilder() = default;
 
 std::string DictionaryBuilder::ToJSON() const {
   std::string json;
   base::JSONWriter::WriteWithOptions(
-      *dict_, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
+      dict_, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
   return json;
 }
 

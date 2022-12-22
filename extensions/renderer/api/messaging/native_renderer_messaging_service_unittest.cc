@@ -151,8 +151,7 @@ TEST_F(NativeRendererMessagingServiceTest, OpenMessagePort) {
   tab_connection_info.frame_id = 0;
   const int tab_id = 10;
   GURL source_url("http://example.com");
-  tab_connection_info.tab =
-      DictionaryBuilder().Set("tabId", tab_id).BuildDict();
+  tab_connection_info.tab = DictionaryBuilder().Set("tabId", tab_id).Build();
   ExtensionMsg_ExternalConnectionInfo external_connection_info;
   external_connection_info.target_id = extension()->id();
   external_connection_info.source_endpoint =
@@ -191,8 +190,8 @@ TEST_F(NativeRendererMessagingServiceTest, OpenMessagePort) {
           .Set("tab", DictionaryBuilder().Set("tabId", tab_id).BuildDict())
           .Set("url", source_url.spec())
           .Set("id", extension()->id())
-          .BuildDict();
-  EXPECT_EQ(ValueToString(expected_sender),
+          .Build();
+  EXPECT_EQ(ValueToString(base::Value(std::move(expected_sender))),
             GetStringPropertyFromObject(context->Global(), context, "sender"));
 }
 
@@ -497,8 +496,7 @@ TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
   tab_connection_info.frame_id = 0;
   const int tab_id = 10;
   GURL source_url("http://example.com");
-  tab_connection_info.tab =
-      DictionaryBuilder().Set("tabId", tab_id).BuildDict();
+  tab_connection_info.tab = DictionaryBuilder().Set("tabId", tab_id).Build();
   ExtensionMsg_ExternalConnectionInfo external_connection_info;
   external_connection_info.target_id = extension()->id();
   external_connection_info.source_endpoint =
@@ -570,8 +568,7 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
     tab_connection_info.frame_id = 0;
     const int tab_id = 10;
     GURL source_url("http://example.com");
-    tab_connection_info.tab =
-        DictionaryBuilder().Set("tabId", tab_id).BuildDict();
+    tab_connection_info.tab = DictionaryBuilder().Set("tabId", tab_id).Build();
 
     ExtensionMsg_ExternalConnectionInfo external_connection_info;
     external_connection_info.target_id = extension()->id();

@@ -309,10 +309,10 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
                           extensions::DictionaryBuilder()
                               .Set("scripts", extensions::ListBuilder()
                                                   .Append("background.js")
-                                                  .BuildList())
-                              .BuildDict())
-                     .BuildDict())
-            .BuildDict();
+                                                  .Build())
+                              .Build())
+                     .Build())
+            .Build();
 
     if (action_handlers)
       manifest.Set("action_handlers", std::move(*action_handlers));

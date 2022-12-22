@@ -889,7 +889,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.name);
-    std::unique_ptr<base::Value> command_dict =
+    base::Value::Dict command_dict =
         DictionaryBuilder()
             .Set("suggested_key",
                  DictionaryBuilder().Set("default", "Ctrl+Shift+P").BuildDict())

@@ -316,7 +316,7 @@ scoped_refptr<const Extension> ModuleSystemTest::CreateExtension() {
                                    .Set("name", "test")
                                    .Set("version", "1.0")
                                    .Set("manifest_version", 2)
-                                   .BuildDict();
+                                   .Build();
   return ExtensionBuilder().SetManifest(std::move(manifest)).Build();
 }
 

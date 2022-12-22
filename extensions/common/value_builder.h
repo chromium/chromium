@@ -45,7 +45,6 @@ namespace extensions {
 class DictionaryBuilder {
  public:
   DictionaryBuilder();
-  explicit DictionaryBuilder(const base::DictionaryValue& init);
   explicit DictionaryBuilder(const base::Value::Dict& init);
 
   DictionaryBuilder(const DictionaryBuilder&) = delete;
@@ -53,15 +52,14 @@ class DictionaryBuilder {
 
   ~DictionaryBuilder();
 
-  // Can only be called once, after which it's invalid to use the builder.
-  base::Value::Dict BuildDict() {
-    base::Value::Dict result = std::move(*dict_).TakeDict();
-    dict_.reset();
+  // Deprecated: Use Build instead.
+  base::Value::Dict BuildDict() { return Build(); }
+
+  base::Value::Dict Build() {
+    base::Value::Dict result = std::move(dict_);
+    dict_ = base::Value::Dict();
     return result;
   }
-
-  // DEPRECATED version of BuildDict().
-  std::unique_ptr<base::DictionaryValue> Build() { return std::move(dict_); }
 
   // Immediately serializes the current state to JSON. Can be called as many
   // times as you like.
@@ -69,7 +67,7 @@ class DictionaryBuilder {
 
   template <typename T>
   DictionaryBuilder& Set(base::StringPiece key, T in_value) {
-    dict_->GetDict().Set(key, std::move(in_value));
+    dict_.Set(key, std::move(in_value));
     return *this;
   }
 
@@ -80,12 +78,12 @@ class DictionaryBuilder {
   // a base::Value (or one of its subclasses).
   template <typename T>
   DictionaryBuilder& Set(base::StringPiece key, std::unique_ptr<T> in_value) {
-    dict_->SetKey(key, std::move(*in_value));
+    dict_.Set(key, std::move(*in_value));
     return *this;
   }
 
  private:
-  std::unique_ptr<base::DictionaryValue> dict_;
+  base::Value::Dict dict_;
 };
 
 class ListBuilder {

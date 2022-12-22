@@ -134,13 +134,12 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
     extensions::ExtensionService* extension_service =
         extensions::ExtensionSystem::Get(GetActiveUserProfile())
             ->extension_service();
-    std::unique_ptr<base::DictionaryValue> manifest(
-        extensions::DictionaryBuilder()
-            .Set("name", "Foo")
-            .Set("description", "Bar")
-            .Set("manifest_version", 2)
-            .Set("version", "1.0")
-            .Build());
+    base::Value::Dict manifest(extensions::DictionaryBuilder()
+                                   .Set("name", "Foo")
+                                   .Set("description", "Bar")
+                                   .Set("manifest_version", 2)
+                                   .Set("version", "1.0")
+                                   .Build());
 
     auto observer = GetTestExtensionRegistryObserver(extension_id);
     scoped_refptr<const extensions::Extension> extension =

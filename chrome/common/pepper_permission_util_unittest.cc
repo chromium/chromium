@@ -25,7 +25,7 @@ namespace {
 scoped_refptr<const Extension> CreateExtensionImportingModule(
     const std::string& import_id,
     const std::string& id) {
-  std::unique_ptr<base::DictionaryValue> manifest =
+  base::Value::Dict manifest =
       DictionaryBuilder()
           .Set("name", "Has Dependent Modules")
           .Set("version", "1.0")
@@ -49,12 +49,11 @@ TEST(PepperPermissionUtilTest, ExtensionAllowed) {
   ScopedCurrentChannel current_channel(version_info::Channel::UNKNOWN);
   ExtensionSet extensions;
   std::string allowed_id = crx_file::id_util::GenerateId("allowed_extension");
-  std::unique_ptr<base::DictionaryValue> manifest =
-      DictionaryBuilder()
-          .Set("name", "Allowed Extension")
-          .Set("version", "1.0")
-          .Set("manifest_version", 2)
-          .Build();
+  base::Value::Dict manifest = DictionaryBuilder()
+                                   .Set("name", "Allowed Extension")
+                                   .Set("version", "1.0")
+                                   .Set("manifest_version", 2)
+                                   .Build();
   scoped_refptr<const Extension> ext = ExtensionBuilder()
                                            .SetManifest(std::move(manifest))
                                            .SetID(allowed_id)
@@ -86,7 +85,7 @@ TEST(PepperPermissionUtilTest, SharedModuleAllowed) {
   std::string allowed_id = crx_file::id_util::GenerateId("extension_id");
   std::string bad_id = crx_file::id_util::GenerateId("bad_id");
 
-  std::unique_ptr<base::DictionaryValue> shared_module_manifest =
+  base::Value::Dict shared_module_manifest =
       DictionaryBuilder()
           .Set("name", "Allowed Shared Module")
           .Set("version", "1.0")

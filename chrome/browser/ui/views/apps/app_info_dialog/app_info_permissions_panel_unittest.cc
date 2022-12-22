@@ -39,7 +39,7 @@ class AppInfoPermissionsPanelTest : public testing::Test {
  protected:
   AppInfoPermissionsPanelTest() {}
 
-  std::unique_ptr<base::DictionaryValue> ValidAppManifest() {
+  base::Value::Dict ValidAppManifest() {
     return extensions::DictionaryBuilder()
         .Set("name", "Test App Name")
         .Set("version", "2.0")

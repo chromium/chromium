@@ -23,6 +23,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -42,7 +43,7 @@ class HostedAppsCounterTest : public testing::Test {
   // Adding and removing apps and extensions. ----------------------------------
 
   std::string AddExtension() {
-    return AddItem(base::GenerateGUID(), /*app_manifest=*/nullptr);
+    return AddItem(base::GenerateGUID(), /*app_manifest=*/absl::nullopt);
   }
 
   std::string AddPackagedApp() {
@@ -70,15 +71,16 @@ class HostedAppsCounterTest : public testing::Test {
   }
 
   std::string AddItem(const std::string& name,
-                      std::unique_ptr<base::Value> app_manifest) {
+                      absl::optional<base::Value::Dict> app_manifest) {
     DictionaryBuilder manifest_builder;
     manifest_builder
         .Set("manifest_version", 2)
         .Set("name", name)
         .Set("version", "1");
 
-    if (app_manifest)
-        manifest_builder.Set("app", std::move(app_manifest));
+    if (app_manifest) {
+      manifest_builder.Set("app", std::move(*app_manifest));
+    }
 
     scoped_refptr<const extensions::Extension> item =
         extensions::ExtensionBuilder()
