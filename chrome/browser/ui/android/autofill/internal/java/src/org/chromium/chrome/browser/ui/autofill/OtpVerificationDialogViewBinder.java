@@ -11,10 +11,6 @@ import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogPrope
 import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.SHOW_PROGRESS_BAR_OVERLAY;
 import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.VIEW_DELEGATE;
 
-import android.os.Build.VERSION_CODES;
-
-import androidx.annotation.RequiresApi;
-
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -24,7 +20,6 @@ import java.util.Optional;
 class OtpVerificationDialogViewBinder {
     private OtpVerificationDialogViewBinder() {}
 
-    @RequiresApi(api = VERSION_CODES.N)
     static void bind(
             PropertyModel model, OtpVerificationDialogView dialogView, PropertyKey propertyKey) {
         if (propertyKey.equals(EDIT_TEXT)) {

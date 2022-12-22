@@ -9,11 +9,9 @@ import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogPrope
 import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.OTP_LENGTH;
 
 import android.content.Context;
-import android.os.Build.VERSION_CODES;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -87,7 +85,6 @@ class OtpVerificationDialogCoordinator {
      *
      * @param otpLength The expected length of the OTP input field.
      */
-    @RequiresApi(api = VERSION_CODES.N)
     void show(int otpLength) {
         PropertyModel otpVerificationDialogModel = buildOtpVerificationDialogModel(otpLength);
         PropertyModelChangeProcessor.create(
@@ -100,7 +97,6 @@ class OtpVerificationDialogCoordinator {
      *
      * @param errorMessage The string that is displayed in the error message.
      */
-    @RequiresApi(api = VERSION_CODES.N)
     void showOtpErrorMessage(String errorMessage) {
         mMediator.showOtpErrorMessage(Optional.of(errorMessage));
     }
@@ -127,7 +123,6 @@ class OtpVerificationDialogCoordinator {
      * @param otpLength The only non-static state of the dialog, needs to be passed in so that it
      * can be added to the model.
      */
-    @RequiresApi(api = VERSION_CODES.N)
     private PropertyModel buildOtpVerificationDialogModel(int otpLength) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(OTP_LENGTH, otpLength)
