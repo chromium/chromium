@@ -2944,6 +2944,19 @@ class AudioResultsViewer {
 
   let script = document.createElement('script');
   script.src = jsonpUrl.substring(slashPos + 1);
+  script.onerror = () => {
+    let message = `Fail to load ${jsonpUrl}.<br>` +
+                  'This may be because the web test step has not finished yet';
+    if (location.search) {
+      let oldResults =
+          `https://test-results.appspot.com/data/layout_results/${jsonpUrl.substring(0, slashPos)}/results.html`;
+      message += ', or the results are in the old format which can be' +
+                 ` accessed through <a href="${oldResults}">this link</a>.`;
+    } else {
+      message += '.';
+    }
+    document.write(message);
+  };
   document.body.appendChild(script);
 })();
 </script>
