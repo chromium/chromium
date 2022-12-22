@@ -282,6 +282,16 @@ let availableTests = [
     // The C++ side verifies that the extension is attached in the main profile
     // as well as an associated incognito profile.
   },
+  async function policyBlockedHosts() {
+    chrome.webAuthenticationProxy.onIsUvpaaRequest.addListener(
+        async (requestInfo) => {
+          await chrome.webAuthenticationProxy.completeIsUvpaaRequest(
+              {requestId: requestInfo.requestId, isUvpaa: true});
+          chrome.test.assertNoLastError();
+        });
+    await chrome.webAuthenticationProxy.attach();
+    chrome.test.sendMessage('ready');
+  },
 ];
 
 chrome.test.getConfig((config) => {

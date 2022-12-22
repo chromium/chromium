@@ -69,13 +69,13 @@ void AuthenticatorImpl::GetAssertion(
 void AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
     IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
   authenticator_common_impl_->IsUserVerifyingPlatformAuthenticatorAvailable(
-      std::move(callback));
+      origin(), std::move(callback));
 }
 
 void AuthenticatorImpl::IsConditionalMediationAvailable(
     IsConditionalMediationAvailableCallback callback) {
   authenticator_common_impl_->IsConditionalMediationAvailable(
-      std::move(callback));
+      origin(), std::move(callback));
 }
 
 void AuthenticatorImpl::Cancel() {

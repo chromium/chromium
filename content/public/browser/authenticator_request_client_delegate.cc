@@ -15,6 +15,7 @@
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/webauthn_api.h"
@@ -93,7 +94,8 @@ absl::optional<bool> WebAuthenticationDelegate::
 }
 
 WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
-    BrowserContext* browser_context) {
+    BrowserContext* browser_context,
+    const url::Origin& caller_origin) {
   return nullptr;
 }
 #endif  // !IS_ANDROID

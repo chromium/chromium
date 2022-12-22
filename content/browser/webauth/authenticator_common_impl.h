@@ -82,10 +82,12 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::PaymentOptionsPtr payment,
       blink::mojom::Authenticator::GetAssertionCallback callback) override;
   void IsUserVerifyingPlatformAuthenticatorAvailable(
+      url::Origin caller_origin,
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
       override;
   void IsConditionalMediationAvailable(
+      url::Origin caller_origin,
       blink::mojom::Authenticator::IsConditionalMediationAvailableCallback
           callback) override;
   void Cancel() override;
@@ -223,7 +225,8 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   device::FidoDiscoveryFactory* discovery_factory();
   void InitDiscoveryFactory();
 
-  WebAuthenticationRequestProxy* GetWebAuthnRequestProxyIfActive();
+  WebAuthenticationRequestProxy* GetWebAuthnRequestProxyIfActive(
+      const url::Origin& caller_origin);
 
   void OnMakeCredentialProxyResponse(
       WebAuthenticationRequestProxy::RequestId request_id,

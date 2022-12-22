@@ -1528,7 +1528,9 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 
   Observations& observations() { return observations_; }
 
-  bool IsActive() override { return config_.is_active; }
+  bool IsActive(const url::Origin& caller_origin) override {
+    return config_.is_active;
+  }
 
   RequestId SignalCreateRequest(
       const PublicKeyCredentialCreationOptionsPtr& options,
@@ -1685,8 +1687,11 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
 #endif
 
   WebAuthenticationRequestProxy* MaybeGetRequestProxy(
-      content::BrowserContext* browser_context) override {
-    return request_proxy.get();
+      content::BrowserContext* browser_context,
+      const url::Origin& caller_origin) override {
+    return request_proxy && request_proxy->IsActive(caller_origin)
+               ? request_proxy.get()
+               : nullptr;
   }
 
   bool OriginMayUseRemoteDesktopClientOverride(
@@ -9150,9 +9155,9 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialOriginAndRpIds) {
 
     NavigateAndCommit(GURL(test_case.origin));
     BrowserContext* context = main_rfh()->GetBrowserContext();
-    ASSERT_TRUE(test_client_.GetWebAuthenticationDelegate()
-                    ->MaybeGetRequestProxy(context)
-                    ->IsActive());
+    ASSERT_TRUE(
+        test_client_.GetWebAuthenticationDelegate()->MaybeGetRequestProxy(
+            context, url::Origin::Create(GURL(test_case.origin))));
 
     PublicKeyCredentialCreationOptionsPtr options =
         GetTestPublicKeyCredentialCreationOptions();
@@ -9192,9 +9197,9 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, AppId) {
                  std::string(test_case.claimed_authority));
 
     BrowserContext* context = main_rfh()->GetBrowserContext();
-    ASSERT_TRUE(test_client_.GetWebAuthenticationDelegate()
-                    ->MaybeGetRequestProxy(context)
-                    ->IsActive());
+    ASSERT_TRUE(
+        test_client_.GetWebAuthenticationDelegate()->MaybeGetRequestProxy(
+            context, url::Origin::Create(GURL(test_case.origin))));
 
     EXPECT_EQ(TryAuthenticationWithAppId(test_case.origin,
                                          test_case.claimed_authority),
@@ -9222,9 +9227,9 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, AppId) {
     }
 
     BrowserContext* context = main_rfh()->GetBrowserContext();
-    ASSERT_TRUE(test_client_.GetWebAuthenticationDelegate()
-                    ->MaybeGetRequestProxy(context)
-                    ->IsActive());
+    ASSERT_TRUE(
+        test_client_.GetWebAuthenticationDelegate()->MaybeGetRequestProxy(
+            context, url::Origin::Create(GURL(test_case.origin))));
 
     AuthenticatorStatus test_status = TryAuthenticationWithAppId(
         test_case.origin, test_case.claimed_authority);
@@ -9325,9 +9330,9 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionOriginAndRpIds) {
 
     NavigateAndCommit(GURL(test_case.origin));
     BrowserContext* context = main_rfh()->GetBrowserContext();
-    ASSERT_TRUE(test_client_.GetWebAuthenticationDelegate()
-                    ->MaybeGetRequestProxy(context)
-                    ->IsActive());
+    ASSERT_TRUE(
+        test_client_.GetWebAuthenticationDelegate()->MaybeGetRequestProxy(
+            context, url::Origin::Create(GURL(test_case.origin))));
 
     PublicKeyCredentialRequestOptionsPtr options =
         GetTestPublicKeyCredentialRequestOptions();

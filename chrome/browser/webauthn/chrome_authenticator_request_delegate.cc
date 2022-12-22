@@ -447,9 +447,12 @@ absl::optional<bool> ChromeWebAuthenticationDelegate::
 
 content::WebAuthenticationRequestProxy*
 ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
-    content::BrowserContext* browser_context) {
-  return extensions::WebAuthenticationProxyServiceFactory::GetForBrowserContext(
-      browser_context);
+    content::BrowserContext* browser_context,
+    const url::Origin& caller_origin) {
+  extensions::WebAuthenticationProxyService* proxy =
+      extensions::WebAuthenticationProxyServiceFactory::GetForBrowserContext(
+          browser_context);
+  return proxy->IsActive(caller_origin) ? proxy : nullptr;
 }
 
 #endif  // !IS_ANDROID
