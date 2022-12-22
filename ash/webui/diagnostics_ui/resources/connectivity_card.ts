@@ -53,12 +53,12 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
       activeGuid: {
         type: String,
         value: '',
-        observer: 'activeGuidChanged_',
+        observer: ConnectivityCardElement.prototype.activeGuidChanged_,
       },
 
       isActive: {
         type: Boolean,
-        observer: 'isActiveChanged_',
+        observer: ConnectivityCardElement.prototype.isActiveChanged_,
       },
 
       network: {
