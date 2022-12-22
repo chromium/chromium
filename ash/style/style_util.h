@@ -7,10 +7,12 @@
 
 #include "ash/ash_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace views {
+class Background;
 class Button;
 class FocusRing;
 class InkDrop;
@@ -86,6 +88,13 @@ class ASH_EXPORT StyleUtil {
   static views::FocusRing* SetUpFocusRingForView(
       views::View* view,
       absl::optional<int> halo_inset = absl::nullopt);
+
+  // Creates a background that fills the canvas with a fully rounded rect whose
+  // rounded corner radius is set to the half of the minimum dimension of view's
+  // local bounds. The background is painted in the color specified by the
+  // view's ColorProvider and the given color identifier.
+  static std::unique_ptr<views::Background>
+  CreateThemedFullyRoundedRectBackground(ui::ColorId color_id);
 
  private:
   StyleUtil() = default;

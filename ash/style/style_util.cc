@@ -5,16 +5,65 @@
 #include "ash/style/style_util.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/canvas.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_host_view.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
 
 namespace ash {
+
+namespace {
+
+// A themed fully rounded rect background whose corner radius equals to the half
+// of the minimum dimension of its view's local bounds.
+class ThemedFullyRoundedRectBackground : public views::Background {
+ public:
+  explicit ThemedFullyRoundedRectBackground(ui::ColorId color_id)
+      : color_id_(color_id) {}
+  ThemedFullyRoundedRectBackground(const ThemedFullyRoundedRectBackground&) =
+      delete;
+  ThemedFullyRoundedRectBackground& operator=(
+      const ThemedFullyRoundedRectBackground&) = delete;
+  ~ThemedFullyRoundedRectBackground() override = default;
+
+  // views::Background:
+  void OnViewThemeChanged(views::View* view) override {
+    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
+    view->SchedulePaint();
+  }
+
+  void Paint(gfx::Canvas* canvas, views::View* view) const override {
+    // Draw a fully rounded rect filling in the view's local bounds.
+    cc::PaintFlags paint;
+    paint.setAntiAlias(true);
+
+    SkColor color = get_color();
+    if (!view->GetEnabled()) {
+      color = ColorUtil::GetDisabledColor(color);
+    }
+    paint.setColor(color);
+
+    const gfx::Rect bounds = view->GetLocalBounds();
+    // Set the rounded corner radius to the half of the minimum dimension of
+    // local bounds.
+    const int rounded_corner_radius =
+        std::min(bounds.width(), bounds.height()) / 2;
+    canvas->DrawRoundRect(bounds, rounded_corner_radius, paint);
+  }
+
+ private:
+  // Color Id of the background.
+  const ui::ColorId color_id_;
+};
+
+}  // namespace
 
 // static
 float StyleUtil::GetInkDropOpacity() {
@@ -112,6 +161,12 @@ views::FocusRing* StyleUtil::SetUpFocusRingForView(
   if (halo_inset)
     focus_ring->SetHaloInset(*halo_inset);
   return focus_ring;
+}
+
+// static
+std::unique_ptr<views::Background>
+StyleUtil::CreateThemedFullyRoundedRectBackground(ui::ColorId color_id) {
+  return std::make_unique<ThemedFullyRoundedRectBackground>(color_id);
 }
 
 }  // namespace ash

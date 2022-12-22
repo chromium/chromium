@@ -5,6 +5,7 @@
 #include "ash/style/knob_switch.h"
 
 #include "ash/style/color_util.h"
+#include "ash/style/style_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -31,52 +32,6 @@ constexpr ui::ColorId kSelectedKnobColorId = cros_tokens::kCrosSysOnPrimary;
 constexpr ui::ColorId kUnSelectedTrackColorId = cros_tokens::kCrosSysSecondary;
 constexpr ui::ColorId kUnSelectedKnobColorId = cros_tokens::kCrosSysOnSecondary;
 
-//------------------------------------------------------------------------------
-// ThemedFullyRoundedRectBackground
-// A themed fully rounded rect background whose corner radius equals to the half
-// of the minimum dimension of its view's local bounds.
-
-class ThemedFullyRoundedRectBackground : public views::Background {
- public:
-  explicit ThemedFullyRoundedRectBackground(ui::ColorId color_id)
-      : color_id_(color_id) {}
-
-  ThemedFullyRoundedRectBackground(const ThemedFullyRoundedRectBackground&) =
-      delete;
-  ThemedFullyRoundedRectBackground& operator=(
-      const ThemedFullyRoundedRectBackground&) = delete;
-  ~ThemedFullyRoundedRectBackground() override = default;
-
-  static std::unique_ptr<Background> Create(ui::ColorId color_id) {
-    return std::make_unique<ThemedFullyRoundedRectBackground>(color_id);
-  }
-
-  void OnViewThemeChanged(views::View* view) override {
-    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
-    view->SchedulePaint();
-  }
-
-  void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    // Draw a fully rounded rect filling in the view's local bounds.
-    cc::PaintFlags paint;
-    paint.setAntiAlias(true);
-
-    SkColor color = get_color();
-    if (!view->GetEnabled()) {
-      color = ColorUtil::GetDisabledColor(color);
-    }
-    paint.setColor(color);
-
-    const gfx::Rect bounds = view->GetLocalBounds();
-    const int radius = std::min(bounds.width(), bounds.height()) / 2;
-    canvas->DrawRoundRect(bounds, radius, paint);
-  }
-
- private:
-  // Color Id of the background.
-  ui::ColorId color_id_;
-};
-
 }  // namespace
 
 //------------------------------------------------------------------------------
@@ -98,7 +53,7 @@ KnobSwitch::KnobSwitch(KnobSwitch::Callback switch_callback)
               .SetCanProcessEventsWithinSubtree(false)
               .SetBorder(
                   views::CreateEmptyBorder(gfx::Insets(kTrackInnerPadding)))
-              .SetBackground(ThemedFullyRoundedRectBackground::Create(
+              .SetBackground(StyleUtil::CreateThemedFullyRoundedRectBackground(
                   kUnSelectedTrackColorId))
               .AddChildren(
                   views::Builder<views::View>()
@@ -108,8 +63,9 @@ KnobSwitch::KnobSwitch(KnobSwitch::Callback switch_callback)
                       .SetCanProcessEventsWithinSubtree(false)
                       .SetPreferredSize(
                           gfx::Size(2 * kKnobRadius, 2 * kKnobRadius))
-                      .SetBackground(ThemedFullyRoundedRectBackground::Create(
-                          kUnSelectedKnobColorId))))
+                      .SetBackground(
+                          StyleUtil::CreateThemedFullyRoundedRectBackground(
+                              kUnSelectedKnobColorId))))
       .BuildChildren();
 
   track_->layer()->SetFillsBoundsOpaquely(false);
@@ -142,9 +98,10 @@ void KnobSwitch::SetSelected(bool selected) {
       selected_ ? kSelectedKnobColorId : kUnSelectedKnobColorId;
   const ui::ColorId track_color_id =
       selected_ ? kSelectedTrackColorId : kUnSelectedTrackColorId;
-  knob_->SetBackground(ThemedFullyRoundedRectBackground::Create(knob_color_id));
+  knob_->SetBackground(
+      StyleUtil::CreateThemedFullyRoundedRectBackground(knob_color_id));
   track_->SetBackground(
-      ThemedFullyRoundedRectBackground::Create(track_color_id));
+      StyleUtil::CreateThemedFullyRoundedRectBackground(track_color_id));
 
   Layout();
   SchedulePaint();
