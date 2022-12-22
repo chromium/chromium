@@ -19,12 +19,4 @@ public interface ToolbarBrandingDelegate {
 
     /** Show the regular location with URL and Title, with start transition. */
     void showRegularToolbar();
-
-    /**
-     * Whether the animation transition between state for toolbar icon should be disable. By
-     * default, the animation transition will be enabled if this is not set.
-     * @param enabled If true, the animation will be enabled; if false, the animation will be
-     *                disabled.
-     */
-    void setIconTransitionEnabled(boolean enabled);
 }
