@@ -109,39 +109,33 @@
 
     <section id="bulk-pinning-section" hidden>
       <h2>Bulk Pinning</h2>
-      <label>
-        Enable Bulk Pinning
-        <input type="checkbox" id="bulk-pinning-toggle">
-      </label>
       <table>
-        <tr colspan="2">
-          <td><progress id="bulk-pinning-progress"></progress></td>
-        </tr>
         <tr>
-          <th>Current Stage</th>
+          <th>
+            <label for="bulk-pinning-toggle">Enable</label>
+          </th>
+          <td>
+            <input type="checkbox" id="bulk-pinning-toggle">
+          </td>
+        <tr>
+          <th>Stage</th>
           <td id="bulk-pinning-setup-stage">?</td>
         </tr>
         <tr>
-          <th>Setup Stage Error</th>
+          <th>Error</th>
           <td id="bulk-pinning-setup-stage-error">?</td>
         </tr>
         <tr>
-          <th>Available Space</th>
-          <td>
-            <span id="bulk-pinning-available-disk-space">?</span> MB
-           </td>
+          <th>Free Space</th>
+          <td id="bulk-pinning-available-disk-space">?</td>
         </tr>
         <tr>
           <th>Required Space</th>
-          <td>
-            <span id="bulk-pinning-required-disk-space">?</span> MB
-           </td>
+          <td id="bulk-pinning-required-disk-space">?</td>
         </tr>
         <tr>
           <th>Pinned Space</th>
-          <td>
-            <span id="bulk-pinning-pinned-disk-space">?</span> MB
-           </td>
+          <td id="bulk-pinning-pinned-disk-space">?</td>
         </tr>
       </table>
     </section>
