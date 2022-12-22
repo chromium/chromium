@@ -99,7 +99,7 @@ export class OutputFormatter {
     } else if (token === 'cellIndexText') {
       this.formatCellIndexText_(this.params_, token, options);
     } else if (token === 'node') {
-      this.output_.formatNode_(this.params_, token, tree, options);
+      this.formatNode_(this.params_, token, tree, options);
     } else if (token === 'nameOrTextContent' || token === 'textContent') {
       this.output_.formatTextContent_(this.params_, token, options);
     } else if (this.params_.node[token] !== undefined) {
@@ -501,6 +501,63 @@ export class OutputFormatter {
         outputBuffer: buff,
         outputFormatLogger: formatLog,
       });
+    }
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!OutputFormatTree} tree
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatNode_(data, token, tree, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+    let prevNode = data.opt_prevNode;
+
+    if (!tree.firstChild) {
+      return;
+    }
+
+    const relationName = tree.firstChild.value;
+    if (relationName === 'tableCellColumnHeaders') {
+      // Skip output when previous position falls on the same column.
+      while (prevNode && !AutomationPredicate.cellLike(prevNode)) {
+        prevNode = prevNode.parent;
+      }
+      if (prevNode &&
+          prevNode.tableCellColumnIndex === node.tableCellColumnIndex) {
+        return;
+      }
+
+      const headers = node.tableCellColumnHeaders;
+      if (headers) {
+        for (let i = 0; i < headers.length; i++) {
+          const header = headers[i].name;
+          if (header) {
+            this.output_.append_(buff, header, options);
+            formatLog.writeTokenWithValue(token, header);
+          }
+        }
+      }
+    } else if (relationName === 'tableCellRowHeaders') {
+      const headers = node.tableCellRowHeaders;
+      if (headers) {
+        for (let i = 0; i < headers.length; i++) {
+          const header = headers[i].name;
+          if (header) {
+            this.output_.append_(buff, header, options);
+            formatLog.writeTokenWithValue(token, header);
+          }
+        }
+      }
+    } else if (node[relationName]) {
+      const related = node[relationName];
+      this.output_.formatNode(
+          related, related, outputTypes.OutputCustomEvent.NAVIGATE, buff,
+          formatLog);
     }
   }
 

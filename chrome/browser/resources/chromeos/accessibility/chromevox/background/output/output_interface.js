@@ -85,14 +85,6 @@ export class OutputInterface {
 
   /**
    * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!OutputFormatTree} tree
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatNode_(data, token, tree, options) {}
-
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
    */
   formatPhoneticReading_(data) {}
 
@@ -107,6 +99,15 @@ export class OutputInterface {
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatTextContent_(data, token, options) {}
+
+  /**
+   * @param {!AutomationNode} node
+   * @param {!AutomationNode} prevNode
+   * @param {!outputTypes.OutputEventType} type
+   * @param {!Array<Spannable>} buff
+   * @param {!OutputFormatLogger} formatLog
+   */
+  formatNode(node, prevNode, type, buff, formatLog) {}
 
   /**
    * Renders the given range using optional context previous range and event
