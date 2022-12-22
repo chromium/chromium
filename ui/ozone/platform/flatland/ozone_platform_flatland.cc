@@ -109,9 +109,6 @@ class OzonePlatformFlatland : public OzonePlatform,
               std::move(parent_token));
     }
 
-    // TODO(fxbug.dev/93998): Add a hook for the RootPresenter equivalent of
-    // Flatland to ui::fuchsia::InitializeViewTokenAndPresentView() create a
-    // window.
     CHECK(properties.view_creation_token.value.is_valid());
     return std::make_unique<FlatlandWindow>(window_manager_.get(), delegate,
                                             std::move(properties));
