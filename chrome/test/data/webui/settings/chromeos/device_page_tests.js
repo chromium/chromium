@@ -721,6 +721,9 @@ suite('SettingsDevicePage', function() {
         fakeCrosAudioConfig.defaultFakeSpeaker,
         fakeCrosAudioConfig.defaultFakeMicJack,
       ],
+
+      /** @type {!Array<!AudioDevice>} */
+      inputDevices: [],
     };
 
     /** @type {!AudioSystemProperties} */
@@ -735,6 +738,9 @@ suite('SettingsDevicePage', function() {
         fakeCrosAudioConfig.defaultFakeSpeaker,
         fakeCrosAudioConfig.defaultFakeMicJack,
       ],
+
+      /** @type {!Array<!AudioDevice>} */
+      inputDevices: [],
     };
 
     /** @type {!AudioSystemProperties} */
@@ -749,6 +755,9 @@ suite('SettingsDevicePage', function() {
         fakeCrosAudioConfig.defaultFakeSpeaker,
         fakeCrosAudioConfig.defaultFakeMicJack,
       ],
+
+      /** @type {!Array<!AudioDevice>} */
+      inputDevices: [],
     };
 
     /** @type {!AudioSystemProperties} */
@@ -763,6 +772,9 @@ suite('SettingsDevicePage', function() {
         fakeCrosAudioConfig.defaultFakeSpeaker,
         fakeCrosAudioConfig.defaultFakeMicJack,
       ],
+
+      /** @type {!Array<!AudioDevice>} */
+      inputDevices: [],
     };
 
     /** @type {!AudioSystemProperties} */
@@ -774,6 +786,9 @@ suite('SettingsDevicePage', function() {
 
       /** @type {!Array<!AudioDevice>} */
       outputDevices: [],
+
+      /** @type {!Array<!AudioDevice>} */
+      inputDevices: [],
     };
 
     /** @type {!AudioSystemProperties} */
@@ -788,6 +803,9 @@ suite('SettingsDevicePage', function() {
         fakeCrosAudioConfig.fakeSpeakerActive,
         fakeCrosAudioConfig.fakeMicJackInactive,
       ],
+
+      /** @type {!Array<!AudioDevice>} */
+      inputDevices: [],
     };
 
     /**
@@ -819,6 +837,9 @@ suite('SettingsDevicePage', function() {
       // FakeAudioConfig must be set before audio subpage is loaded.
       crosAudioConfig = new fakeCrosAudioConfig.FakeCrosAudioConfig();
       setCrosAudioConfigForTesting(crosAudioConfig);
+      // Ensure data reset to fresh state.
+      crosAudioConfig.setAudioSystemProperties(
+          {...fakeCrosAudioConfig.defaultFakeAudioSystemProperties});
       return showAndGetDeviceSubpage('audio', routes.AUDIO)
           .then(function(page) {
             audioPage = page;
@@ -887,9 +908,8 @@ suite('SettingsDevicePage', function() {
       await flushTasks();
 
       assertEquals(
-          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
-              .outputVolumePercent,
-          minOutputVolumePercent);
+          minOutputVolumePercent,
+          audioPage.audioSystemProperties_.outputVolumePercent);
 
       // Ensure value clamps to min.
       outputSlider.value = 101;
@@ -897,9 +917,8 @@ suite('SettingsDevicePage', function() {
       await flushTasks();
 
       assertEquals(
-          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
-              .outputVolumePercent,
-          maxOutputVolumePercent);
+          maxOutputVolumePercent,
+          audioPage.audioSystemProperties_.outputVolumePercent);
     });
 
     test('output mute state changes slider disabled state', async function() {
@@ -1073,8 +1092,7 @@ suite('SettingsDevicePage', function() {
       const inputSlider = audioPage.shadowRoot.querySelector(sliderSelector);
       assertTrue(isVisible(inputSlider));
       assertEquals(
-          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
-              .inputVolumePercent,
+          audioPage.audioSystemProperties_.inputVolumePercent,
           inputSlider.value);
 
       const minimumValue = 0;
@@ -1082,24 +1100,21 @@ suite('SettingsDevicePage', function() {
 
       assertEquals(minimumValue, inputSlider.value);
       assertEquals(
-          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
-              .inputVolumePercent,
+          audioPage.audioSystemProperties_.inputVolumePercent,
           inputSlider.value);
       const maximumValue = 100;
       await simulateSliderClicked(sliderSelector, maximumValue);
 
       assertEquals(maximumValue, inputSlider.value);
       assertEquals(
-          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
-              .inputVolumePercent,
+          audioPage.audioSystemProperties_.inputVolumePercent,
           inputSlider.value);
       const middleValue = 50;
       await simulateSliderClicked(sliderSelector, middleValue);
 
       assertEquals(middleValue, inputSlider.value);
       assertEquals(
-          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
-              .inputVolumePercent,
+          audioPage.audioSystemProperties_.inputVolumePercent,
           inputSlider.value);
 
       // Ensure value clamps to min.
@@ -1108,9 +1123,7 @@ suite('SettingsDevicePage', function() {
       await flushTasks();
 
       assertEquals(
-          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
-              .inputVolumePercent,
-          minimumValue);
+          audioPage.audioSystemProperties_.inputVolumePercent, minimumValue);
 
       // Ensure value clamps to min.
       inputSlider.value = 101;
@@ -1118,9 +1131,7 @@ suite('SettingsDevicePage', function() {
       await flushTasks();
 
       assertEquals(
-          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
-              .inputVolumePercent,
-          maximumValue);
+          audioPage.audioSystemProperties_.inputVolumePercent, maximumValue);
     });
   });
 

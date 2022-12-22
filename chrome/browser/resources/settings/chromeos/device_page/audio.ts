@@ -27,7 +27,7 @@ import {getTemplate} from './audio.html.js';
 import {CrosAudioConfigInterface, getCrosAudioConfig} from './cros_audio_config.js';
 // TODO(b/260277007): Update import to get `AudioSystemProperties` from
 // `cros_audio_config.mojom-webui.js` once mojo updated to handle audio input.
-import {AudioSystemProperties, FakeCrosAudioConfig} from './fake_cros_audio_config.js';
+import {AudioDevice, AudioEffectState, AudioSystemProperties, FakeCrosAudioConfig} from './fake_cros_audio_config.js';
 
 /** Utility for keeping percent in inclusive range of [0,100].  */
 function clampPercent(percent: number): number {
@@ -59,6 +59,12 @@ class SettingsAudioElement extends SettingsAudioElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+
+      isNoiseCancellationEnabled_: {
+        type: Boolean,
+        observer:
+            SettingsAudioElement.prototype.onNoiseCancellationEnabledChanged,
+      },
     };
   }
 
@@ -68,6 +74,7 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   private crosAudioConfig_: CrosAudioConfigInterface;
   private isOutputMuted_: boolean;
   private isInputMuted_: boolean;
+  private isNoiseCancellationEnabled_: boolean;
 
   constructor() {
     super();
@@ -95,6 +102,11 @@ class SettingsAudioElement extends SettingsAudioElementBase {
         this.audioSystemProperties_.outputMuteState !== MuteState.kNotMuted;
     this.isInputMuted_ =
         this.audioSystemProperties_.inputMuteState !== MuteState.kNotMuted;
+    const activeInputDevice = this.audioSystemProperties_.inputDevices.find(
+        (device: AudioDevice) => device.isActive);
+    this.isNoiseCancellationEnabled_ =
+        (activeInputDevice?.noiseCancellationState ===
+         AudioEffectState.ENABLED);
   }
 
   getIsOutputMutedForTest(): boolean {
@@ -143,6 +155,18 @@ class SettingsAudioElement extends SettingsAudioElementBase {
         '#audioInputDeviceDropdown');
     assert(!!inputDeviceSelect);
     this.crosAudioConfig_.setActiveDevice(BigInt(inputDeviceSelect.value));
+  }
+
+  /** Handles updates to noise cancellation state. */
+  protected onNoiseCancellationEnabledChanged(
+      enabled: SettingsAudioElement['isNoiseCancellationEnabled_']): void {
+    // TODO(b/260277007): Remove condition when setActiveDevice added to mojo
+    // definition.
+    if (!this.crosAudioConfig_.setNoiseCancellationEnabled) {
+      return;
+    }
+
+    this.crosAudioConfig_.setNoiseCancellationEnabled(enabled);
   }
 
   /**
