@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
 
+#import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "components/history/core/browser/browsing_history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/web_history_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -33,6 +35,18 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+history::WebHistoryService* WebHistoryServiceGetter(
+    base::WeakPtr<ChromeBrowserState> weak_browser_state) {
+  DCHECK(weak_browser_state.get())
+      << "Getter should not be called after ChromeBrowserState destruction.";
+  return ios::WebHistoryServiceFactory::GetForBrowserState(
+      weak_browser_state.get());
+}
+
+}  // anonymous namespace
 
 @interface HistoryCoordinator () <BrowserObserving,
                                   HistoryMenuProvider,
@@ -95,7 +109,9 @@
       std::make_unique<IOSBrowsingHistoryDriverDelegateBridge>(
           self.historyTableViewController);
   _browsingHistoryDriver = std::make_unique<IOSBrowsingHistoryDriver>(
-      self.browser->GetBrowserState(), _browsingHistoryDriverDelegate.get());
+      base::BindRepeating(&WebHistoryServiceGetter,
+                          self.browser->GetBrowserState()->AsWeakPtr()),
+      _browsingHistoryDriverDelegate.get());
   _browsingHistoryService = std::make_unique<history::BrowsingHistoryService>(
       _browsingHistoryDriver.get(),
       ios::HistoryServiceFactory::GetForBrowserState(

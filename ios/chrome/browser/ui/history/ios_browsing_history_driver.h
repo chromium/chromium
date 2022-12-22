@@ -7,19 +7,22 @@
 
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
+#include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/history/core/browser/browsing_history_driver.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "url/gurl.h"
 
-class ChromeBrowserState;
 class IOSBrowsingHistoryDriverDelegate;
 
 // A simple implementation of BrowsingHistoryServiceHandler that delegates to
 // IOSBrowsingHistoryDriverDelegate for most actions.
 class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
  public:
-  IOSBrowsingHistoryDriver(ChromeBrowserState* browser_state,
+  using WebHistoryServiceGetter =
+      base::RepeatingCallback<history::WebHistoryService*()>;
+
+  IOSBrowsingHistoryDriver(WebHistoryServiceGetter history_service_getter,
                            IOSBrowsingHistoryDriverDelegate* delegate);
 
   IOSBrowsingHistoryDriver(const IOSBrowsingHistoryDriver&) = delete;
@@ -49,10 +52,9 @@ class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
       history::WebHistoryService* history_service,
       base::OnceCallback<void(bool)> callback) override;
 
-  // The current browser state.
-  ChromeBrowserState* browser_state_;  // weak
-
-  IOSBrowsingHistoryDriverDelegate* delegate_ = nullptr;  // weak
+  // The current web history service.
+  WebHistoryServiceGetter history_service_getter_;
+  raw_ptr<IOSBrowsingHistoryDriverDelegate> delegate_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_HISTORY_IOS_BROWSING_HISTORY_DRIVER_H_

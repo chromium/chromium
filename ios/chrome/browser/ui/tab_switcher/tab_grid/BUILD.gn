@@ -199,6 +199,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/commerce:commerce",
+    "//ios/chrome/browser/history",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/sessions",

@@ -23,6 +23,7 @@
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -184,6 +185,8 @@ class TabGridMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
+                              ios::HistoryServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),

@@ -12,6 +12,7 @@
 #import "components/sessions/core/tab_restore_service_impl.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -70,10 +71,13 @@ class TabsSearchServiceTest : public PlatformTest {
       : scoped_browser_state_manager_(
             std::make_unique<TestChromeBrowserStateManager>(base::FilePath())) {
     TestChromeBrowserState::Builder test_browser_state_builder;
-    chrome_browser_state_ = test_browser_state_builder.Build();
-    IOSChromeTabRestoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        chrome_browser_state_.get(),
+    test_browser_state_builder.AddTestingFactory(
+        IOSChromeTabRestoreServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTabRestoreService));
+    test_browser_state_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
+    chrome_browser_state_ = test_browser_state_builder.Build();
 
     browser_list_ =
         BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());

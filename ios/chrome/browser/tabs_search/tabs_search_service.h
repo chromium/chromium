@@ -10,22 +10,41 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/session_id.h"
-#import "ios/chrome/browser/ui/history/ios_browsing_history_driver.h"
-#import "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate.h"
+#include "ios/chrome/browser/ui/history/ios_browsing_history_driver.h"
+#include "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate.h"
 
 class Browser;
-class ChromeBrowserState;
+class BrowserList;
+
+namespace history {
+class HistoryService;
+class WebHistoryService;
+}  // namespace history
 
 namespace sessions {
+class TabRestoreService;
 class SerializedNavigationEntry;
 }  // namespace sessions
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace sync_sessions {
+class SessionSyncService;
+}  // namespace sync_sessions
 
 namespace synced_sessions {
 struct DistantTabsSet;
 class SyncedSessions;
 }  // namespace synced_sessions
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace web {
 class WebState;
@@ -36,7 +55,17 @@ class WebState;
 class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
                           public KeyedService {
  public:
-  TabsSearchService(ChromeBrowserState* browser_state);
+  using WebHistoryServiceGetter =
+      base::RepeatingCallback<history::WebHistoryService*()>;
+
+  TabsSearchService(bool is_off_the_record,
+                    BrowserList* browser_list,
+                    signin::IdentityManager* identity_manager,
+                    syncer::SyncService* sync_service,
+                    sessions::TabRestoreService* restore_service,
+                    sync_sessions::SessionSyncService* session_sync_service,
+                    history::HistoryService* history_service,
+                    WebHistoryServiceGetter web_history_service_getter);
   ~TabsSearchService() override;
 
   // A container to store matched WebStates with a reference to their associated
@@ -116,15 +145,25 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   void ShowNoticeAboutOtherFormsOfBrowsingHistory(
       BOOL should_show_notice) override {}
 
-  // The associated BrowserState.
-  ChromeBrowserState* browser_state_;
+  // Is the service used for off-the-record BrowserState?
+  const bool is_off_the_record_;
+  // The KeyedServices used.
+  raw_ptr<BrowserList> browser_list_;
+  // The optional KeyedServices used (may be null when off-the-record).
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<sessions::TabRestoreService> restore_service_;
+  raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
+  raw_ptr<history::HistoryService> history_service_;
+  WebHistoryServiceGetter web_history_service_getter_;
+
   // The most recent search history term.
   std::u16string ongoing_history_search_term_;
   // A callback to return history search results once the current in progress
   // history search completes. Will be null if no search is in progress.
   base::OnceCallback<void(size_t result_count)> history_search_callback_;
   // A history service instance for the associated `browser_state_`.
-  std::unique_ptr<history::BrowsingHistoryService> history_service_;
+  std::unique_ptr<history::BrowsingHistoryService> browsing_history_service_;
   // Provides dependencies and funnels callbacks from BrowsingHistoryService.
   std::unique_ptr<IOSBrowsingHistoryDriver> history_driver_;
 };

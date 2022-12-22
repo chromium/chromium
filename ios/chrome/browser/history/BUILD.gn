@@ -12,14 +12,13 @@ source_set("history") {
     "history_client_impl.h",
     "history_service_factory.cc",
     "history_service_factory.h",
-    "history_utils.cc",
-    "history_utils.h",
     "top_sites_factory.cc",
     "top_sites_factory.h",
     "web_history_service_factory.cc",
     "web_history_service_factory.h",
   ]
   deps = [
+    ":history_utils",
     "//base",
     "//components/bookmarks/browser",
     "//components/browser_sync",
@@ -41,6 +40,20 @@ source_set("history") {
     "//ios/components/webui:url_constants",
     "//ios/web",
     "//net",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("history_utils") {
+  sources = [
+    "history_utils.cc",
+    "history_utils.h",
+  ]
+  deps = [
+    "//components/dom_distiller/core",
+    "//ios/chrome/browser/url:constants",
+    "//ios/components/webui:url_constants",
     "//url",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]

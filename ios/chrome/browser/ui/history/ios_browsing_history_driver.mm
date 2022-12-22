@@ -9,9 +9,7 @@
 #import "base/check.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/browsing_data/core/history_notice_utils.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/history/history_utils.h"
-#import "ios/chrome/browser/history/web_history_service_factory.h"
 #import "ios/chrome/browser/ui/history/history_consumer.h"
 #import "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate.h"
 
@@ -24,10 +22,10 @@ using history::BrowsingHistoryService;
 #pragma mark - IOSBrowsingHistoryDriver
 
 IOSBrowsingHistoryDriver::IOSBrowsingHistoryDriver(
-    ChromeBrowserState* browser_state,
+    WebHistoryServiceGetter history_service_getter,
     IOSBrowsingHistoryDriverDelegate* delegate)
-    : browser_state_(browser_state), delegate_(delegate) {
-  DCHECK(browser_state_);
+    : history_service_getter_(history_service_getter), delegate_(delegate) {
+  DCHECK(!history_service_getter_.is_null());
 }
 
 IOSBrowsingHistoryDriver::~IOSBrowsingHistoryDriver() = default;
@@ -77,7 +75,7 @@ bool IOSBrowsingHistoryDriver::ShouldHideWebHistoryUrl(const GURL& url) {
 }
 
 history::WebHistoryService* IOSBrowsingHistoryDriver::GetWebHistoryService() {
-  return ios::WebHistoryServiceFactory::GetForBrowserState(browser_state_);
+  return history_service_getter_.Run();
 }
 
 void IOSBrowsingHistoryDriver::ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
