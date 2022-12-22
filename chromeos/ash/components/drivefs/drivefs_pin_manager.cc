@@ -119,15 +119,20 @@ void DriveFsPinManager::InProgressSyncingItems::AddItem(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Emplace an item with no progress, these values (i.e. 0,0) will get updated
   // in the `OnSyncingStatusUpdate`.
-  in_progress_items_.try_emplace(path, /*bytes_transferred=*/0,
-                                 /*bytes_to_transfer=*/0);
+  const auto [it, ok] =
+      in_progress_items_.try_emplace(path, /*bytes_transferred=*/0,
+                                     /*bytes_to_transfer=*/0);
+  LOG_IF(ERROR, !ok) << "Cannot add item '" << path
+                     << "': There is already an item with bytes_transferred = "
+                     << it->second.first << " / " << it->second.second;
+  DCHECK_EQ(path, it->first);
 }
 
 int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
     const std::string& path,
     int64_t total_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = in_progress_items_.find(path);
+  const auto it = in_progress_items_.find(path);
   if (it == in_progress_items_.end()) {
     // TODO(b/261530520): Items can end up in this flow when a removal is
     // attempted on an item that wasn't tracked via an explicit pin operation.
@@ -136,6 +141,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::RemoveItem(
     // identified as they affect disk space.
     return total_bytes_transferred_;
   }
+
   total_bytes_transferred_ += total_bytes - it->second.first;
   in_progress_items_.erase(it);
   return total_bytes_transferred_;
@@ -146,7 +152,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
     int64_t bytes_transferred,
     int64_t bytes_to_transfer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = in_progress_items_.find(path);
+  const auto it = in_progress_items_.find(path);
   if (it == in_progress_items_.end()) {
     // TODO(b/261530520): Items can end up in this flow when an update is
     // attempted on an item that wasn't tracked via an explicit pin operation.
@@ -155,6 +161,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
     // identified as they affect disk space.
     return total_bytes_transferred_;
   }
+
   total_bytes_transferred_ += bytes_transferred - it->second.first;
   it->second.first = bytes_transferred;
   it->second.second = bytes_to_transfer;
@@ -163,7 +170,7 @@ int64_t DriveFsPinManager::InProgressSyncingItems::UpdateItem(
 
 size_t DriveFsPinManager::InProgressSyncingItems::GetItemCount() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "Remaining syncing items: " << in_progress_items_.size();
+  VLOG(1) << "Syncing " << in_progress_items_.size() << " files...";
   return in_progress_items_.size();
 }
 
@@ -171,12 +178,14 @@ std::vector<std::string>
 DriveFsPinManager::InProgressSyncingItems::GetUnstartedItems() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::string> unstarted_items;
-  for (const auto& item : in_progress_items_) {
-    if (item.second.second > 0) {
-      continue;
+  for (const auto& [path, progress] : in_progress_items_) {
+    if (progress.second <= 0) {
+      unstarted_items.push_back(path);
     }
-    unstarted_items.emplace_back(item.first);
   }
+
+  VLOG_IF(1, !unstarted_items.empty())
+      << "There are " << unstarted_items.size() << " unstarted items";
   return unstarted_items;
 }
 
@@ -274,7 +283,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     return;
   }
 
-  if (items.value().size() == 0) {
+  if (items->empty()) {
     VLOG(1) << "Computed required space in "
             << timer_.Elapsed().InMilliseconds() << " ms";
     VLOG(1) << "Required space: " << state_.progress.required_disk_space
@@ -285,9 +294,9 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     return;
   }
 
-  VLOG(2) << "Iterating over " << items.value().size()
+  VLOG(2) << "Iterating over " << items->size()
           << " items for space calculation";
-  for (const drivefs::mojom::QueryItemPtr& item : items.value()) {
+  for (const drivefs::mojom::QueryItemPtr& item : *items) {
     DCHECK(item);
     DCHECK(item->metadata);
 
@@ -373,7 +382,7 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     return;
   }
 
-  if (items.value().size() == 0) {
+  if (items->empty()) {
     VLOG(1) << "Pinned all files in " << timer_.Elapsed().InMilliseconds()
             << " ms";
     Complete(SetupError::kSuccess);
@@ -384,25 +393,8 @@ void DriveFsPinManager::OnSearchResultsForPinning(
   // batch of pinning operations has completed to identify if any other
   // operations writing to disk might cause cause the free space to get used
   // faster than anticipated.
-  auto unpinned_items =
-      base::ranges::count_if(items.value().begin(), items.value().end(),
-                             [](const drivefs::mojom::QueryItemPtr& item) {
-                               return !item->metadata->pinned;
-                             });
-
-  if (unpinned_items == 0) {
-    if (!search_query_.is_bound()) {
-      Complete(SetupError::kErrorSearchQueryNotBound);
-      return;
-    }
-    VLOG(1) << "All items in current batch are already pinned";
-    search_query_->GetNextPage(
-        base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  for (const drivefs::mojom::QueryItemPtr& item : items.value()) {
+  bool processed = false;
+  for (const drivefs::mojom::QueryItemPtr& item : *items) {
     DCHECK(item);
     const base::FilePath& path = item->path;
 
@@ -416,11 +408,27 @@ void DriveFsPinManager::OnSearchResultsForPinning(
         path, /*pinned=*/true,
         base::BindOnce(&DriveFsPinManager::OnFilePinned,
                        weak_ptr_factory_.GetWeakPtr(), path.value()));
+    processed = true;
   }
+
+  if (processed) {
+    return;
+  }
+
+  if (!search_query_.is_bound()) {
+    Complete(SetupError::kErrorSearchQueryNotBound);
+    return;
+  }
+
+  VLOG(1) << "All items in current batch are already pinned";
+  VLOG(1) << "Getting next batch of items...";
+  search_query_->GetNextPage(
+      base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DriveFsPinManager::OnFilePinned(const std::string& path,
-                                     drive::FileError status) {
+                                     const drive::FileError status) {
   if (status != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Cannot pin '" << path << "': " << status;
     Complete(SetupError::kErrorFailedToPinItem);
@@ -436,20 +444,20 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
     return;
   }
 
-  for (const auto& item : status.item_events) {
-    auto cloned_item = item.Clone();
+  for (const mojom::ItemEventPtr& item : status.item_events) {
+    DCHECK(item);
+
     // TODO(b/259454320): Hosted files (e.g. gdoc) do not send an update via the
     // `OnSyncingStatusUpdate` method. Need to add a method to cleanse the
     // `in_progress_items_` map to ensure any values that are small enough or
     // optimistically pinned get removed.
-    if (cloned_item->state == mojom::ItemEvent::State::kCompleted) {
-      VLOG(2) << "Synced '" << cloned_item->path << "'";
-      GetMetadataForPath(base::FilePath(cloned_item->path));
+    if (item->state == mojom::ItemEvent::State::kCompleted) {
+      VLOG(2) << "Synced '" << item->path << "'";
+      GetMetadataForPath(base::FilePath(item->path));
       continue;
     }
     syncing_items_.AsyncCall(&InProgressSyncingItems::UpdateItem)
-        .WithArgs(cloned_item->path, cloned_item->bytes_transferred,
-                  cloned_item->bytes_to_transfer)
+        .WithArgs(item->path, item->bytes_transferred, item->bytes_to_transfer)
         .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
                              weak_ptr_factory_.GetWeakPtr()));
   }
@@ -499,7 +507,7 @@ void DriveFsPinManager::RemoveObserver(DriveFsBulkPinObserver* observer) {
 }
 
 void DriveFsPinManager::PeriodicallyRemovePinnedItems() {
-  VLOG(1) << "Periodically removing pinned items";
+  VLOG(1) << "Removing already pinned items from list of items to sync";
 
   syncing_items_.AsyncCall(&InProgressSyncingItems::GetUnstartedItems)
       .Then(base::BindOnce(&DriveFsPinManager::GetMetadata,
