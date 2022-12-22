@@ -7,7 +7,7 @@
 <translation id="2447485272386224171">Chrome er gjort mulig av åpen kildekode-prosjektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> og annen <ph name="BEGIN_LINK_OSS" />programvare med åpen kildekode<ph name="END_LINK_OSS" />.</translation>
 <translation id="2505647373045235387">ChromeOS har ikke vært gjennom den innledende konfigurasjonen.</translation>
 <translation id="2588322182880276190">Chrome-logo</translation>
-<translation id="3444832043240812445">Denne siden viser kun informasjon om nylige programstopp hvis du <ph name="BEGIN_LINK" />aktiverer rapportering av programstopp<ph name="END_LINK" />.</translation>
+<translation id="3444832043240812445">Denne siden viser kun informasjon om nylige krasj hvis du <ph name="BEGIN_LINK" />aktiverer rapportering av krasj<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Tillat at Chrome bruker nettverket, i brannmur- eller
           antivirusinnstillingene dine.</translation>
 <translation id="5005121315113832363">Denne siden er blokkert av Chrome</translation>

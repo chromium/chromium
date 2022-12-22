@@ -29,7 +29,7 @@
 <translation id="1145536944570833626">Учурдагы дайындарды жок кылуу.</translation>
 <translation id="1146678959555564648">VR режимине кирүү</translation>
 <translation id="1149401351239820326">Колдонуу мөөнөтү аяктаган ай</translation>
-<translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макулдугуңузду билдиресиз.</translation>
+<translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макул болосуз.</translation>
 <translation id="1154704303112745282">Барак оффлайнда жеткиликсиз: <ph name="VIOLATED_URL" /></translation>
 <translation id="1171770572613082465">"Мыкты шаарлар" баскычын басып, таанымал вебсайттарды көрүңүз</translation>
 <translation id="1173894706177603556">Атын өзгөртүү</translation>
@@ -167,7 +167,7 @@
 <translation id="1877026089748256423">Chrome эскирип калган.</translation>
 <translation id="1883903952484604915">Менин файлдарым</translation>
 <translation id="189358972401248634">Башка тилдер</translation>
-<translation id="1900260903084164610">Улантуу менен, <ph name="BEGIN_TOS_LINK" />Тейлөө шарттарына<ph name="END_TOS_LINK" /> макулдугуңузду билдиресиз.</translation>
+<translation id="1900260903084164610">Улантуу менен, <ph name="BEGIN_TOS_LINK" />Тейлөө шарттарына<ph name="END_TOS_LINK" /> макул болосуз.</translation>
 <translation id="1904580727789512086">Сиз кирген URL даректери Google аккаунтуңузга сакталат</translation>
 <translation id="1910950723001426294">Бөлүшүү параметрлеринин тизмеси жабылды.</translation>
 <translation id="1918175104945982129">Жардамчыга айтып издөөгө уруксат берүү интерфейсинин жарымы ачылды</translation>
@@ -213,7 +213,7 @@
 <translation id="2122601567107267586">Колдонмо ачылбай койду</translation>
 <translation id="2132122640199389833">Бардык байланыштырылган түзмөктөрдү өчүрүү</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> жабылган</translation>
-<translation id="2134927169889348449">Chrome'ду колдонуу менен, <ph name="BEGIN_TOS_LINK" />Google'дун Тейлөө шарттарына<ph name="END_TOS_LINK" /> жана <ph name="BEGIN_ATOS_LINK" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_ATOS_LINK" /> макулдугуңузду билдиресиз.</translation>
+<translation id="2134927169889348449">Chrome'ду колдонуу менен, <ph name="BEGIN_TOS_LINK" />Google'дун Тейлөө шарттарына<ph name="END_TOS_LINK" /> жана <ph name="BEGIN_ATOS_LINK" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_ATOS_LINK" /> макул болосуз.</translation>
 <translation id="2139186145475833000">Башкы экранга кошуу</translation>
 <translation id="2141396931810938595">Колдонулушуна жараша</translation>
 <translation id="214888715418183969">Chrome менен бөлүшкүңүз келген нерселерди тандаңыз. Сиз бөлүшкөн маалымат Chrome'дун функцияларын, ишин жана туруктуулугун жакшыртууга жардам берет.</translation>
@@ -391,7 +391,7 @@
 <translation id="3062802207422175757">Chrome'догу сизди кызыктырган макалалар</translation>
 <translation id="3066573403916685335">Төмөн жылдыруу</translation>
 <translation id="3070005020161560471">Автоматтык түрдө которуу</translation>
-<translation id="3072980200212375806"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макулдугуңузду билдиресиз. <ph name="BEGIN_LINK3" />Купуялык саясаты<ph name="END_LINK3" /> да колдонулат.</translation>
+<translation id="3072980200212375806"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макул болосуз. <ph name="BEGIN_LINK3" />Купуялык саясаты<ph name="END_LINK3" /> да колдонулат.</translation>
 <translation id="3091010850649238832">Алмашуу буфериндеги мазмундарды көрсөтүү</translation>
 <translation id="3098745985164956033">Сүрөттөмөлөрдү жакшыртуу үчүн айрым сүрөттөр Google'га жөнөтүлөт</translation>
 <translation id="3114507951000454849">Бүгүнкү жаңылыктарды окуңуз <ph name="NEWS_ICON" /></translation>
@@ -596,7 +596,7 @@
 <translation id="4269820728363426813">Шилтеме дарегин көчүрүү</translation>
 <translation id="4283102315569707115">Демейки компьютердик версияларды суранасызбы?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android'дин жөндөөлөрүнөн экранды кулпулоону күйгүзүңүз<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Chrome'ду колдонуу менен, <ph name="BEGIN_TOS_LINK" />Google'дун Тейлөө шарттарына<ph name="END_TOS_LINK" /> жана <ph name="BEGIN_ATOS_LINK" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_ATOS_LINK" /> макулдугуңузду билдиресиз. <ph name="BEGIN_PRIVACY_LINK" />Купуялык саясаты<ph name="END_PRIVACY_LINK" /> да колдонулат.</translation>
+<translation id="4293476595220860475">Chrome'ду колдонуу менен, <ph name="BEGIN_TOS_LINK" />Google'дун Тейлөө шарттарына<ph name="END_TOS_LINK" /> жана <ph name="BEGIN_ATOS_LINK" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_ATOS_LINK" /> макул болосуз. <ph name="BEGIN_PRIVACY_LINK" />Купуялык саясаты<ph name="END_PRIVACY_LINK" /> да колдонулат.</translation>
 <translation id="4296252229500326964">Жаңы жашыруун өтмөк</translation>
 <translation id="4298388696830689168">Байланышкан сайттар</translation>
 <translation id="4303044213806199882">chrome_скриншот_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -764,7 +764,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5161254044473106830">Аталышы керек</translation>
 <translation id="5170568018924773124">Куржунда көрсөтүү</translation>
 <translation id="5171045022955879922">URL издеңиз же териңиз</translation>
-<translation id="517734441743343109">Улантуу менен, <ph name="BEGIN_TOS_LINK" />Тейлөө шарттарына<ph name="END_TOS_LINK" /> жана <ph name="BEGIN_PRIVACY_LINK" />Купуялык саясатына<ph name="END_PRIVACY_LINK" /> макулдугуңузду билдиресиз.</translation>
+<translation id="517734441743343109">Улантуу менен, <ph name="BEGIN_TOS_LINK" />Тейлөө шарттарына<ph name="END_TOS_LINK" /> жана <ph name="BEGIN_PRIVACY_LINK" />Купуялык саясатына<ph name="END_PRIVACY_LINK" /> макул болосуз.</translation>
 <translation id="5184329579814168207">Chrome'до ачуу</translation>
 <translation id="5191251636205085390">Үчүнчү тараптын cookie файлдарын алмаштыруучу жаңы технологиялар жөнүндө маалымат алып, аларды башкарыңыз</translation>
 <translation id="5193988420012215838">Алмашуу буферине көчүрүлдү</translation>

@@ -89,10 +89,10 @@
 <translation id="3994783594793697310">Дисплейді масштабтау деңгейін бастапқы күйге қайтару</translation>
 <translation id="4026837045671473537">Түс инверсиясы режимін қосу</translation>
 <translation id="4026843240379844265">Қосулы терезені дисплейлер арасында ауыстырып қосу</translation>
-<translation id="4035482366624727273">Беттегі барлық мазмұнды таңдау</translation>
+<translation id="4035482366624727273">Беттегі барлық контентті таңдау</translation>
 <translation id="4060703249685950734">Соңғы жабылған қойындыны немесе терезені қайта ашу</translation>
 <translation id="4090342722461256974"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="SHIFT" /> пернесін, одан кейін <ph name="TAB" /> пернесін басып тұрып, қажет терезеге ауысқанда жіберіңіз.</translation>
-<translation id="4092538597492297615">Таңдалған мазмұнды буферге көшіру</translation>
+<translation id="4092538597492297615">Таңдалған контентті буферге көшіру</translation>
 <translation id="4101772068965291327">Негізгі бетті ашу</translation>
 <translation id="4123108089450197101">Сілтемені бетбелгі ретінде сақтау</translation>
 <translation id="4141203561740478845">Мекенжай жолағы бар жолды ерекшелеу</translation>
@@ -114,7 +114,7 @@
 <translation id="5104462712192763270">Ағымдағы бетті сақтау</translation>
 <translation id="5121628974188116412">Беттің соңына өту</translation>
 <translation id="5222676887888702881">Шығу</translation>
-<translation id="5236674127086649162">Кэштелген мазмұнды пайдаланбай, ағымдағы бетті қайта жүктеу</translation>
+<translation id="5236674127086649162">Кэштелген контентті пайдаланбай, ағымдағы бетті қайта жүктеу</translation>
 <translation id="526651782186312376">Жолдың басына енгізілетін мәтінді таңдау</translation>
 <translation id="5316716239522500219">Айна мониторлары</translation>
 <translation id="539072479502328326">Бекітілген ұлғайтқышты қосу не өшіру</translation>
@@ -176,7 +176,7 @@
 <translation id="7500368597227394048">сызықша</translation>
 <translation id="7611271430932669992">Қалқымалы терезелерге және диалогтарға өту</translation>
 <translation id="7635348532214572995">Қолданба белгішесін қолданба торының айналасына жылжыту.</translation>
-<translation id="766326951329901120">Мазмұнды буферден қарапайым мәтін ретінде қою</translation>
+<translation id="766326951329901120">Контентті буферден қарапайым мәтін ретінде қою</translation>
 <translation id="7673453620027697230">Терезенің скриншотын жасау/жазу</translation>
 <translation id="7703010453515335249">сол жақ жақша</translation>
 <translation id="7724603315864178912">Қиып алу</translation>
@@ -202,12 +202,12 @@
 <translation id="8881584919399569791">Іске қосулы терезені сол жақтағы жұмыс үстеліне жылжыту</translation>
 <translation id="88986195241502842">Төменгі бетке өту</translation>
 <translation id="8924883688469390268">Алдыңғы пайдаланушыға ауысу</translation>
-<translation id="8941626538514548667">Браузердегі веб-мазмұнды ерекшелеу</translation>
-<translation id="8977648847395357314">Мекенжай жолағындағы мазмұнды таңдау</translation>
+<translation id="8941626538514548667">Браузердегі веб-контентті ерекшелеу</translation>
+<translation id="8977648847395357314">Мекенжай жолағындағы контентті таңдау</translation>
 <translation id="8982190978301344584">Қолжетімді IME құралдарының тізімін шығаратын мәзірді көрсету</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1-ден 8-ге дейін</translation>
 <translation id="9005984960510803406">Crosh терезесін ашу</translation>
-<translation id="9041599225465145264">Буфердегі мазмұнды қою</translation>
+<translation id="9041599225465145264">Буфердегі контентті қою</translation>
 <translation id="9052808072970550123">Келесі пайдаланушыға ауысу</translation>
 <translation id="906458777597946297">Терезені жаю</translation>
 <translation id="9072882242928138086"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />, одан кейін <ph name="LEFT" /> не <ph name="RIGHT" /> немесе <ph name="UP" /> не <ph name="DOWN" /></translation>
