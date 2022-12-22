@@ -4,7 +4,7 @@
 
 {% macro decl_public_methods(field) %}
 {{base.decl_public_getter_method(field)}}
-{% if field.writable or field.mutable %}
+{% if field.builder or field.mutable %}
 void {{field.setter_method_name}}() {{print_if(field.mutable, "const ")}}{
   {{set_if_changed(field, encode(field, "true"))|indent(2)}}
 }

@@ -9,7 +9,7 @@
 {%- endmacro %}
 
 {% macro decl_setter_method(field, visibility) -%}
-{% if field.setter_visibility == visibility and field.writable %}
+{% if field.setter_visibility == visibility and field.builder %}
 void {{setter_method_name(field)}}({{const_ref(field)}} v) {
   {{set_if_changed(field, encode(field, "v"))|indent(2)}}
 }
@@ -17,7 +17,7 @@ void {{setter_method_name(field)}}({{const_ref(field)}} v) {
 {%- endmacro %}
 
 {% macro decl_move_method(field, visibility) -%}
-{% if field.setter_visibility == visibility and field.writable %}
+{% if field.setter_visibility == visibility and field.builder %}
 void {{setter_method_name(field)}}({{rvalue_ref(field)}} v) {
   {{move_if_changed(field, encode(field, "v"))|indent(2)}}
 }
@@ -25,7 +25,7 @@ void {{setter_method_name(field)}}({{rvalue_ref(field)}} v) {
 {%- endmacro %}
 
 {% macro decl_resetter_method(field, visibility) -%}
-{% if field.resetter_visibility == visibility and field.writable %}
+{% if field.resetter_visibility == visibility and field.builder %}
 inline void {{resetter_method_name(field)}}() {
   {{setter_expression(field)}} = {{encode(field, field.default_value)}};
 }
@@ -37,7 +37,7 @@ inline void {{resetter_method_name(field)}}() {
   Internal suffix.
 #}
 {% macro decl_mutable_method(field) -%}
-{% if field.writable %}
+{% if field.builder %}
 {{nonconst_ref(field)}} {{mutable_method_name(field)}}() {
   return {{decode(field, setter_expression(field))}};
 }

@@ -71,16 +71,6 @@
       ],
     },
 
-    // Properties which are writable have setters on ComputedStyle.
-    // All other properties must use the ComputedStyleBuilder for setting
-    // the values of properties.
-    //
-    // TODO(crbug.com/1377295): Eventually nothing should be writable.
-    writable: {
-      default: false,
-      valid_type: "bool",
-    },
-
     // Affects how the style building functions are generated.
     //
     // Several property groups (e.g. color properties) deviate from the default

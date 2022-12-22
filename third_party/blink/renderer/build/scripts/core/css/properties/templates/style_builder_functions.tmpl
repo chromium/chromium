@@ -38,11 +38,7 @@ void {{class_name}}::ApplyValue(StyleResolverState& state, const ScopedCSSValue&
 {% endmacro %}
 
 {% macro style_access(property) %}
-  {%- if property.writable %}
-state.Style()->
-  {%- else %}
 state.StyleBuilder().
-  {%- endif %}
 {% endmacro %}
 
 {% macro set_value(property) %}

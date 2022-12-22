@@ -170,10 +170,9 @@ def _create_groups(properties):
 
 
 def _mark_builder_flags(group):
-    """Mark all fields as builder fields, and set writable."""
+    """Mark all fields as builder fields."""
     for field in group.fields:
         field.builder = True
-        field.writable = True
     for subgroup in group.subgroups:
         _mark_builder_flags(subgroup)
 
@@ -321,7 +320,6 @@ def _create_property_field(property_):
         'property',
         name_for_methods,
         property_name=property_.name.original,
-        writable=property_.writable,
         inherited=property_.inherited,
         independent=property_.independent,
         semi_independent_variable=property_.semi_independent_variable,
@@ -357,7 +355,6 @@ def _create_inherited_flag_field(property_):
         'inherited_flag',
         name_for_methods,
         property_name=property_.name.original,
-        writable=False,
         type_name='bool',
         wrapper_pointer_name=None,
         field_template='primitive',

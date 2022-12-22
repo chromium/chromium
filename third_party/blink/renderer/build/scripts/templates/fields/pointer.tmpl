@@ -6,7 +6,7 @@
   return {{decode(field, getter_expression(field))}}.get();
 }
 
-{% if field.writable %}
+{% if field.builder %}
 void {{field.setter_method_name}}({{field.wrapper_pointer_name}}<{{field.type_name}}> v) {
 {% if field.group.parent %}
   {{setter_expression(field)}} = std::move(v);
