@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/attestation/soft_bind_attestation_flow.h"
+#include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service_factory.h"
 #include "chrome/browser/ash/cryptauth/gcm_device_info_provider_impl.h"
@@ -48,7 +48,7 @@ class DeviceSyncClientHolder : public KeyedService {
  public:
   explicit DeviceSyncClientHolder(content::BrowserContext* context)
       : soft_bind_attestation_flow_(
-            std::make_unique<attestation::SoftBindAttestationFlow>()),
+            std::make_unique<attestation::SoftBindAttestationFlowImpl>()),
         device_sync_(CreateDeviceSyncImplForProfile(
             Profile::FromBrowserContext(context))),
         device_sync_client_(DeviceSyncClientImpl::Factory::Create()) {
@@ -97,7 +97,7 @@ class DeviceSyncClientHolder : public KeyedService {
         user ? user->GetAccountId() : EmptyAccountId(), user_key);
   }
 
-  std::unique_ptr<attestation::SoftBindAttestationFlow>
+  std::unique_ptr<attestation::SoftBindAttestationFlowImpl>
       soft_bind_attestation_flow_;
 
   std::unique_ptr<DeviceSyncBase> device_sync_;

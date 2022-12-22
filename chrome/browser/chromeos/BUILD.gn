@@ -1061,7 +1061,7 @@ config("allow_shadow_variables") {
 source_set("test_with_shadow_variables") {
   testonly = true
 
-  sources = [ "../ash/attestation/soft_bind_attestation_flow_unittest.cc" ]
+  sources = [ "../ash/attestation/soft_bind_attestation_flow_impl_unittest.cc" ]
 
   configs += [ ":allow_shadow_variables" ]
 

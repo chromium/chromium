@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/attestation/soft_bind_attestation_flow.h"
+#include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 
 #include "base/bind.h"
 #include "base/containers/span.h"
@@ -93,34 +93,34 @@ constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
 }  // namespace
 
-SoftBindAttestationFlow::Session::Session(Callback callback,
-                                          AccountId account_id,
-                                          const std::string& user_key)
+SoftBindAttestationFlowImpl::Session::Session(Callback callback,
+                                              AccountId account_id,
+                                              const std::string& user_key)
     : callback_(std::move(callback)),
       account_id_(account_id),
       user_key_(user_key) {
   base::RepeatingClosure timeout_callback =
-      base::BindRepeating(&SoftBindAttestationFlow::Session::OnTimeout,
+      base::BindRepeating(&SoftBindAttestationFlowImpl::Session::OnTimeout,
                           weak_ptr_factory_.GetWeakPtr());
   timer_.Start(FROM_HERE, kTimeout, std::move(timeout_callback));
 }
 
-SoftBindAttestationFlow::Session::~Session() = default;
+SoftBindAttestationFlowImpl::Session::~Session() = default;
 
-void SoftBindAttestationFlow::Session::OnTimeout() {
+void SoftBindAttestationFlowImpl::Session::OnTimeout() {
   LOG(WARNING) << "Timeout exceeded";
   ReportFailure("timeout");
 }
 
-bool SoftBindAttestationFlow::Session::IsTimerRunning() const {
+bool SoftBindAttestationFlowImpl::Session::IsTimerRunning() const {
   return timer_.IsRunning();
 }
 
-void SoftBindAttestationFlow::Session::StopTimer() {
+void SoftBindAttestationFlowImpl::Session::StopTimer() {
   timer_.Stop();
 }
 
-bool SoftBindAttestationFlow::Session::ResetTimer() {
+bool SoftBindAttestationFlowImpl::Session::ResetTimer() {
   if (max_retries_-- > 0) {
     timer_.Reset();
     return true;
@@ -128,15 +128,15 @@ bool SoftBindAttestationFlow::Session::ResetTimer() {
   return false;
 }
 
-const AccountId& SoftBindAttestationFlow::Session::GetAccountId() const {
+const AccountId& SoftBindAttestationFlowImpl::Session::GetAccountId() const {
   return account_id_;
 }
 
-const std::string& SoftBindAttestationFlow::Session::GetUserKey() const {
+const std::string& SoftBindAttestationFlowImpl::Session::GetUserKey() const {
   return user_key_;
 }
 
-void SoftBindAttestationFlow::Session::ReportFailure(
+void SoftBindAttestationFlowImpl::Session::ReportFailure(
     const std::string& error_message) {
   if (!callback_) {
     LOG(ERROR) << "Attestation session failure callback in null.";
@@ -146,28 +146,28 @@ void SoftBindAttestationFlow::Session::ReportFailure(
                            /*valid=*/false);
 }
 
-void SoftBindAttestationFlow::Session::ReportSuccess(
+void SoftBindAttestationFlowImpl::Session::ReportSuccess(
     const std::vector<std::string>& certificate_chain) {
   std::move(callback_).Run(certificate_chain, /*valid=*/true);
 }
 
-SoftBindAttestationFlow::SoftBindAttestationFlow()
+SoftBindAttestationFlowImpl::SoftBindAttestationFlowImpl()
     : attestation_client_(AttestationClient::Get()) {
   std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
   attestation_flow_ =
       std::make_unique<AttestationFlow>(std::move(attestation_ca_client));
 }
 
-SoftBindAttestationFlow::~SoftBindAttestationFlow() = default;
+SoftBindAttestationFlowImpl::~SoftBindAttestationFlowImpl() = default;
 
-void SoftBindAttestationFlow::SetAttestationFlowForTesting(
+void SoftBindAttestationFlowImpl::SetAttestationFlowForTesting(
     std::unique_ptr<AttestationFlow> attestation_flow) {
   attestation_flow_ = std::move(attestation_flow);
 }
 
-void SoftBindAttestationFlow::GetCertificate(Callback callback,
-                                             const AccountId& account_id,
-                                             const std::string& user_key) {
+void SoftBindAttestationFlowImpl::GetCertificate(Callback callback,
+                                                 const AccountId& account_id,
+                                                 const std::string& user_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsAttestationAllowedByPolicy()) {
     LOG(ERROR) << "Attestation not allowed by device policy";
@@ -181,12 +181,12 @@ void SoftBindAttestationFlow::GetCertificate(Callback callback,
       std::make_unique<Session>(std::move(callback), account_id, user_key));
 }
 
-void SoftBindAttestationFlow::GetCertificateInternal(
+void SoftBindAttestationFlowImpl::GetCertificateInternal(
     bool force_new_key,
     std::unique_ptr<Session> session) {
   AccountId account_id(session->GetAccountId());
   AttestationFlow::CertificateCallback certificate_callback =
-      base::BindOnce(&SoftBindAttestationFlow::OnCertificateReady,
+      base::BindOnce(&SoftBindAttestationFlowImpl::OnCertificateReady,
                      weak_ptr_factory_.GetWeakPtr(), std::move(session));
   attestation_flow_->GetCertificate(
       /*certificate_profile=*/PROFILE_SOFT_BIND_CERTIFICATE,
@@ -198,7 +198,7 @@ void SoftBindAttestationFlow::GetCertificateInternal(
       /*callback=*/std::move(certificate_callback));
 }
 
-void SoftBindAttestationFlow::OnCertificateReady(
+void SoftBindAttestationFlowImpl::OnCertificateReady(
     std::unique_ptr<Session> session,
     AttestationStatus operation_status,
     const std::string& certificate_chain) {
@@ -214,10 +214,11 @@ void SoftBindAttestationFlow::OnCertificateReady(
   }
   CertificateExpiryStatus expiry_status = CheckExpiry(certificate_chain);
   if (expiry_status == CertificateExpiryStatus::kExpired) {
-    if (session->ResetTimer())
+    if (session->ResetTimer()) {
       GetCertificateInternal(/*force_new_key=*/true, std::move(session));
-    else
+    } else {
       session->ReportFailure("tooManyRetries");
+    }
     return;
   }
   VLOG(1) << "Intermediate certificate obtained successfully";
@@ -280,13 +281,13 @@ void SoftBindAttestationFlow::OnCertificateReady(
   request.set_data_to_sign(std::move(leaf_cert));
   AttestationClient::Get()->Sign(
       request,
-      base::BindOnce(&SoftBindAttestationFlow::OnCertificateSigned,
+      base::BindOnce(&SoftBindAttestationFlowImpl::OnCertificateSigned,
                      weak_ptr_factory_.GetWeakPtr(), std::move(session),
                      tbs_cert, certificate_chain,
                      expiry_status == CertificateExpiryStatus::kExpiringSoon));
 }
 
-void SoftBindAttestationFlow::OnCertificateSigned(
+void SoftBindAttestationFlowImpl::OnCertificateSigned(
     std::unique_ptr<Session> session,
     const std::string& tbs_cert,
     const std::string& certificate_chain,
@@ -347,7 +348,7 @@ void SoftBindAttestationFlow::OnCertificateSigned(
   if (should_renew && renewals_in_progress_.count(certificate_chain) == 0) {
     renewals_in_progress_.insert(certificate_chain);
     AttestationFlow::CertificateCallback renew_callback = base::BindOnce(
-        &SoftBindAttestationFlow::RenewCertificateCallback,
+        &SoftBindAttestationFlowImpl::RenewCertificateCallback,
         weak_ptr_factory_.GetWeakPtr(), std::move(certificate_chain));
     attestation_flow_->GetCertificate(
         /*certificate_profile=*/PROFILE_SOFT_BIND_CERTIFICATE,
@@ -359,7 +360,7 @@ void SoftBindAttestationFlow::OnCertificateSigned(
   }
 }
 
-bool SoftBindAttestationFlow::IsAttestationAllowedByPolicy() const {
+bool SoftBindAttestationFlowImpl::IsAttestationAllowedByPolicy() const {
   bool enabled_for_device = false;
   if (!CrosSettings::Get()->GetBoolean(kAttestationForContentProtectionEnabled,
                                        &enabled_for_device)) {
@@ -375,7 +376,7 @@ bool SoftBindAttestationFlow::IsAttestationAllowedByPolicy() const {
 }
 
 // TODO(b/185520169): create utility method for both this and content protection
-CertificateExpiryStatus SoftBindAttestationFlow::CheckExpiry(
+CertificateExpiryStatus SoftBindAttestationFlowImpl::CheckExpiry(
     const std::string& certificate_chain) {
   int num_certificates = 0;
   net::PEMTokenizer pem_tokenizer(certificate_chain, {"CERTIFICATE"});
@@ -409,7 +410,7 @@ CertificateExpiryStatus SoftBindAttestationFlow::CheckExpiry(
   return CertificateExpiryStatus::kValid;
 }
 
-void SoftBindAttestationFlow::RenewCertificateCallback(
+void SoftBindAttestationFlowImpl::RenewCertificateCallback(
     const std::string& old_certificate_chain,
     AttestationStatus operation_status,
     const std::string& certificate_chain) {
@@ -421,10 +422,11 @@ void SoftBindAttestationFlow::RenewCertificateCallback(
   VLOG(1) << "Certificate successfully renewed";
 }
 
-bool SoftBindAttestationFlow::GenerateLeafCert(EVP_PKEY* key,
-                                               base::Time not_valid_before,
-                                               base::Time not_valid_after,
-                                               std::string* der_encoded_cert) {
+bool SoftBindAttestationFlowImpl::GenerateLeafCert(
+    EVP_PKEY* key,
+    base::Time not_valid_before,
+    base::Time not_valid_after,
+    std::string* der_encoded_cert) {
   crypto::EnsureOpenSSLInit();
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
@@ -471,8 +473,9 @@ bool SoftBindAttestationFlow::GenerateLeafCert(EVP_PKEY* key,
     return false;
   }
 
-  if (!CBB_finish(cbb.get(), &cert_bytes, &cert_len))
+  if (!CBB_finish(cbb.get(), &cert_bytes, &cert_len)) {
     return false;
+  }
 
   der_encoded_cert->assign(reinterpret_cast<char*>(cert_bytes), cert_len);
   bssl::UniquePtr<uint8_t> delete_cert_bytes(cert_bytes);

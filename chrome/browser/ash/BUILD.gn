@@ -606,8 +606,9 @@ source_set("ash") {
     "attestation/machine_certificate_uploader_impl.h",
     "attestation/platform_verification_flow.cc",
     "attestation/platform_verification_flow.h",
-    "attestation/soft_bind_attestation_flow.cc",
     "attestation/soft_bind_attestation_flow.h",
+    "attestation/soft_bind_attestation_flow_impl.cc",
+    "attestation/soft_bind_attestation_flow_impl.h",
     "attestation/tpm_challenge_key.cc",
     "attestation/tpm_challenge_key.h",
     "attestation/tpm_challenge_key_result.cc",
@@ -5749,6 +5750,32 @@ source_set("unit_tests") {
   data = [
     "//chromeos/test/data/",
     "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
+  ]
+}
+
+config("allow_shadow_variables") {
+  cflags = [ "-Wno-shadow" ]
+}
+
+# TODO(b/247823913): Merge this target back into the unit_tests target above
+# when third_party/securemessage code stops generating -Wshadow warnings.
+source_set("test_with_shadow_variables") {
+  testonly = true
+  sources = [ "attestation/soft_bind_attestation_flow_impl_unittest.cc" ]
+  configs += [ ":allow_shadow_variables" ]
+  deps = [
+    ":ash",
+    "//base",
+    "//chrome/browser/ash",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/attestation:test_support",
+    "//chromeos/ash/components/settings",
+    "//content/test:test_support",
+    "//crypto",
+    "//net",
+    "//testing/gtest",
+    "//third_party/securemessage",
+    "//third_party/securemessage:securemessage_cpp_protobuf",
   ]
 }
 

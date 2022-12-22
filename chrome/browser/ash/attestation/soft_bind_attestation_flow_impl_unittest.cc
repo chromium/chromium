@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/attestation/soft_bind_attestation_flow.h"
+#include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -40,17 +40,18 @@ const AccountId kTestAccountId =
 
 }  // namespace
 
-class SoftBindAttestationFlowTest : public ::testing::Test {
+class SoftBindAttestationFlowImplTest : public ::testing::Test {
  public:
-  SoftBindAttestationFlowTest() { AttestationClient::InitializeFake(); }
+  SoftBindAttestationFlowImplTest() { AttestationClient::InitializeFake(); }
 
-  ~SoftBindAttestationFlowTest() override { AttestationClient::Shutdown(); }
+  ~SoftBindAttestationFlowImplTest() override { AttestationClient::Shutdown(); }
 
   void SetUp() override {
     auto mock_attestation_flow =
         std::make_unique<StrictMock<MockAttestationFlow>>();
     mock_attestation_flow_ = mock_attestation_flow.get();
-    soft_bind_attestation_flow_ = std::make_unique<SoftBindAttestationFlow>();
+    soft_bind_attestation_flow_ =
+        std::make_unique<SoftBindAttestationFlowImpl>();
     soft_bind_attestation_flow_->SetAttestationFlowForTesting(
         std::move(mock_attestation_flow));
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
@@ -59,7 +60,7 @@ class SoftBindAttestationFlowTest : public ::testing::Test {
 
   SoftBindAttestationFlow::Callback CreateCallback() {
     return base::BindOnce(
-        &SoftBindAttestationFlowTest::OnAttestationCertificates,
+        &SoftBindAttestationFlowImplTest::OnAttestationCertificates,
         base::Unretained(this));
   }
 
@@ -82,8 +83,8 @@ class SoftBindAttestationFlowTest : public ::testing::Test {
     EXPECT_CALL(
         *mock_attestation_flow_,
         GetCertificate(PROFILE_SOFT_BIND_CERTIFICATE, _, _, _, _, _, _, _))
-        .WillRepeatedly(WithArgs<7>(
-            Invoke(this, &SoftBindAttestationFlowTest::FakeGetCertificate)));
+        .WillRepeatedly(WithArgs<7>(Invoke(
+            this, &SoftBindAttestationFlowImplTest::FakeGetCertificate)));
   }
 
   void ExpectMockAttestationFlowGetCertificateTimeout() {
@@ -91,7 +92,8 @@ class SoftBindAttestationFlowTest : public ::testing::Test {
         *mock_attestation_flow_,
         GetCertificate(PROFILE_SOFT_BIND_CERTIFICATE, _, _, _, _, _, _, _))
         .WillRepeatedly(WithArgs<7>(Invoke(
-            this, &SoftBindAttestationFlowTest::FakeGetCertificateTimeout)));
+            this,
+            &SoftBindAttestationFlowImplTest::FakeGetCertificateTimeout)));
   }
 
   void FakeGetCertificate(AttestationFlow::CertificateCallback callback) {
@@ -129,7 +131,7 @@ class SoftBindAttestationFlowTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   StrictMock<MockAttestationFlow>* mock_attestation_flow_;
   ScopedCrosSettingsTestHelper settings_helper_;
-  std::unique_ptr<SoftBindAttestationFlow> soft_bind_attestation_flow_;
+  std::unique_ptr<SoftBindAttestationFlowImpl> soft_bind_attestation_flow_;
 
   AttestationStatus fake_certificate_status_ = ATTESTATION_SUCCESS;
   std::vector<std::string> fake_cert_chains_;
@@ -139,7 +141,7 @@ class SoftBindAttestationFlowTest : public ::testing::Test {
   bool result_validity_ = false;
 };
 
-TEST_F(SoftBindAttestationFlowTest, Success) {
+TEST_F(SoftBindAttestationFlowImplTest, Success) {
   ExpectMockAttestationFlowGetCertificate();
   SetFakeCertChain(0, 90);
   const std::string user_key = CreateUserKey();
@@ -150,7 +152,7 @@ TEST_F(SoftBindAttestationFlowTest, Success) {
   EXPECT_TRUE(result_validity_);
 }
 
-TEST_F(SoftBindAttestationFlowTest, FeatureDisabledByPolicy) {
+TEST_F(SoftBindAttestationFlowImplTest, FeatureDisabledByPolicy) {
   settings_helper_.SetBoolean(kAttestationForContentProtectionEnabled, false);
   const std::string user_key = CreateUserKey();
   soft_bind_attestation_flow_->GetCertificate(CreateCallback(), kTestAccountId,
@@ -161,7 +163,7 @@ TEST_F(SoftBindAttestationFlowTest, FeatureDisabledByPolicy) {
   EXPECT_FALSE(result_validity_);
 }
 
-TEST_F(SoftBindAttestationFlowTest, NotVerifiedDueToUnspecifiedFailure) {
+TEST_F(SoftBindAttestationFlowImplTest, NotVerifiedDueToUnspecifiedFailure) {
   ExpectMockAttestationFlowGetCertificate();
   SetFakeCertChain(0, 90);
   fake_certificate_status_ = ATTESTATION_UNSPECIFIED_FAILURE;
@@ -174,7 +176,7 @@ TEST_F(SoftBindAttestationFlowTest, NotVerifiedDueToUnspecifiedFailure) {
   EXPECT_FALSE(result_validity_);
 }
 
-TEST_F(SoftBindAttestationFlowTest, NotVerifiedDueToBadRequestFailure) {
+TEST_F(SoftBindAttestationFlowImplTest, NotVerifiedDueToBadRequestFailure) {
   ExpectMockAttestationFlowGetCertificate();
   SetFakeCertChain(0, 90);
   fake_certificate_status_ = ATTESTATION_SERVER_BAD_REQUEST_FAILURE;
@@ -187,7 +189,7 @@ TEST_F(SoftBindAttestationFlowTest, NotVerifiedDueToBadRequestFailure) {
   EXPECT_FALSE(result_validity_);
 }
 
-TEST_F(SoftBindAttestationFlowTest, Timeout) {
+TEST_F(SoftBindAttestationFlowImplTest, Timeout) {
   ExpectMockAttestationFlowGetCertificateTimeout();
   const std::string user_key = CreateUserKey();
   soft_bind_attestation_flow_->GetCertificate(CreateCallback(), kTestAccountId,
@@ -198,7 +200,7 @@ TEST_F(SoftBindAttestationFlowTest, Timeout) {
   EXPECT_FALSE(result_validity_);
 }
 
-TEST_F(SoftBindAttestationFlowTest, NearlyExpiredCert) {
+TEST_F(SoftBindAttestationFlowImplTest, NearlyExpiredCert) {
   ExpectMockAttestationFlowGetCertificate();
   SetFakeCertChain(-89, 1);
   SetFakeCertChain(0, 90);
@@ -211,7 +213,7 @@ TEST_F(SoftBindAttestationFlowTest, NearlyExpiredCert) {
   EXPECT_EQ(2u, fake_cert_chain_read_index_);
 }
 
-TEST_F(SoftBindAttestationFlowTest, ExpiredCertRenewed) {
+TEST_F(SoftBindAttestationFlowImplTest, ExpiredCertRenewed) {
   ExpectMockAttestationFlowGetCertificate();
   SetFakeCertChain(-90, 0);
   SetFakeCertChain(0, 90);
@@ -224,7 +226,7 @@ TEST_F(SoftBindAttestationFlowTest, ExpiredCertRenewed) {
   EXPECT_EQ(2u, fake_cert_chain_read_index_);
 }
 
-TEST_F(SoftBindAttestationFlowTest, MultipleRenewalsExceedsMaxRetries) {
+TEST_F(SoftBindAttestationFlowImplTest, MultipleRenewalsExceedsMaxRetries) {
   ExpectMockAttestationFlowGetCertificate();
   SetFakeCertChain(-90, 0);
   SetFakeCertChain(-90, 0);
@@ -241,7 +243,7 @@ TEST_F(SoftBindAttestationFlowTest, MultipleRenewalsExceedsMaxRetries) {
   EXPECT_EQ(4u, fake_cert_chain_read_index_);
 }
 
-TEST_F(SoftBindAttestationFlowTest, MultipleSuccessesSimultaneously) {
+TEST_F(SoftBindAttestationFlowImplTest, MultipleSuccessesSimultaneously) {
   ExpectMockAttestationFlowGetCertificate();
   SetFakeCertChain(0, 90);
   SetFakeCertChain(0, 90);
