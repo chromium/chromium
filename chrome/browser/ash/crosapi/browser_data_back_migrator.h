@@ -23,6 +23,15 @@ namespace browser_data_back_migrator {
 constexpr char kTmpDir[] = "back_migrator_tmp";
 }  // namespace browser_data_back_migrator
 
+// Injects the restart function called from
+// `BrowserDataBackMigrator::AttemptRestart()` in RAII manner.
+class ScopedBackMigratorRestartAttemptForTesting {
+ public:
+  explicit ScopedBackMigratorRestartAttemptForTesting(
+      base::RepeatingClosure callback);
+  ~ScopedBackMigratorRestartAttemptForTesting();
+};
+
 class BrowserDataBackMigrator {
  public:
   // Represents a result status.
@@ -42,11 +51,14 @@ class BrowserDataBackMigrator {
   BrowserDataBackMigrator& operator=(const BrowserDataBackMigrator&) = delete;
   ~BrowserDataBackMigrator();
 
+  // Calls `chrome::AttemptRestart()` unless
+  // `ScopedBackMigratorRestartAttemptForTesting` is in scope.
+  static void AttemptRestart();
+
   // Migrate performs the Lacros -> Ash migration.
   // progress_callback is called repeatedly with the current progress.
   // finished_callback is called when migration completes successfully or with
   // an error.
-
   // Migrate can only be called once.
   void Migrate(BackMigrationProgressCallback progress_callback,
                BackMigrationFinishedCallback finished_callback);
@@ -157,7 +169,7 @@ class BrowserDataBackMigrator {
   // Called as a reply to `DeleteAshItems()`.
   void OnDeleteAshItems(TaskResult result);
 
-  // Moves Lacros-only items back into the Ash profile directory.
+  // Moves Lacros-only items back into the temporary directory.
   static TaskResult MoveLacrosItemsToTmpDir(
       const base::FilePath& ash_profile_dir);
 

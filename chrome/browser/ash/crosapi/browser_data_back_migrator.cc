@@ -41,10 +41,27 @@ namespace {
 const char kBrowserDataBackwardMigrationForceSkip[] = "force-skip";
 const char kBrowserDataBackwardMigrationForceMigration[] = "force-migration";
 
+base::RepeatingClosure* g_back_migrator_attempt_restart_for_testing = nullptr;
+
 // We set a generous recursion depth, that should never be reached, but this
 // way we protect against file system loops.
 const unsigned int kMaxRecursionDepth = 2000;
 }  // namespace
+
+ScopedBackMigratorRestartAttemptForTesting::
+    ScopedBackMigratorRestartAttemptForTesting(
+        base::RepeatingClosure callback) {
+  DCHECK(!g_back_migrator_attempt_restart_for_testing);
+  g_back_migrator_attempt_restart_for_testing =
+      new base::RepeatingClosure(std::move(callback));
+}
+
+ScopedBackMigratorRestartAttemptForTesting::
+    ~ScopedBackMigratorRestartAttemptForTesting() {
+  DCHECK(g_back_migrator_attempt_restart_for_testing);
+  delete g_back_migrator_attempt_restart_for_testing;
+  g_back_migrator_attempt_restart_for_testing = nullptr;
+}
 
 BrowserDataBackMigrator::BrowserDataBackMigrator(
     const base::FilePath& ash_profile_dir,
@@ -55,6 +72,16 @@ BrowserDataBackMigrator::BrowserDataBackMigrator(
       local_state_(local_state) {}
 
 BrowserDataBackMigrator::~BrowserDataBackMigrator() = default;
+
+// static
+void BrowserDataBackMigrator::AttemptRestart() {
+  if (g_back_migrator_attempt_restart_for_testing) {
+    g_back_migrator_attempt_restart_for_testing->Run();
+    return;
+  }
+
+  chrome::AttemptRestart();
+}
 
 void BrowserDataBackMigrator::Migrate(
     BackMigrationProgressCallback progress_callback,
@@ -325,7 +352,7 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteAshItems(
     // persmissions of the directories created in `MoveMergedItemsBackToAsh`.
     int permissions;
     if (base::GetPosixFilePermissions(item.path, &permissions)) {
-      VLOG(1) << "Deleting " << item.path.value() << " with permissions "
+      VLOG(5) << "Deleting " << item.path.value() << " with permissions "
               << permissions;
     }
 
@@ -428,9 +455,9 @@ bool BrowserDataBackMigrator::MoveFilesToAshDirectory(
     const base::FilePath& source_dir,
     const base::FilePath& dest_dir,
     unsigned int recursion_depth) {
-  LOG(WARNING) << "Calling MoveFilesToAshDirectory from " << source_dir.value()
-               << " to " << dest_dir.value() << " at recursion depth "
-               << recursion_depth;
+  VLOG(5) << "Calling MoveFilesToAshDirectory from " << source_dir.value()
+          << " to " << dest_dir.value() << " at recursion depth "
+          << recursion_depth;
 
   if (recursion_depth >= kMaxRecursionDepth) {
     LOG(WARNING) << "We have reached maximum recursion depth "
@@ -466,7 +493,7 @@ bool BrowserDataBackMigrator::MoveFilesToAshDirectory(
         // the persmissions of the directories deleted in `DeleteAshItems`.
         int permissions;
         if (base::GetPosixFilePermissions(new_dest_dir, &permissions)) {
-          VLOG(1) << "Created " << new_dest_dir << " with permissions "
+          VLOG(5) << "Created " << new_dest_dir << " with permissions "
                   << permissions;
         }
       }
@@ -1212,8 +1239,7 @@ bool BrowserDataBackMigrator::RestartToMigrateBack(
     return false;
   }
 
-  // TODO(b/253621578): Add g_attempt_restart helper for testing
-  chrome::AttemptRestart();
+  AttemptRestart();
   return true;
 }
 
