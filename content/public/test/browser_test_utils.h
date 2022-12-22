@@ -1699,8 +1699,9 @@ class TestNavigationManager : public WebContentsObserver {
   // where throttles run and none defer, this will break at the same time as
   // WaitForRequestStart. Note: since we won't know which throttle deferred,
   // don't use ResumeNavigation() after this call since it assumes we paused
-  // from the TestNavigationManagerThrottle.
-  void WaitForFirstYieldAfterDidStartNavigation();
+  // from the TestNavigationManagerThrottle. Returns false if the waiting was
+  // terminated before reaching DidStartNavigation (e.g. timeout).
+  bool WaitForFirstYieldAfterDidStartNavigation();
 
   // Waits until the navigation request is ready to be sent to the network
   // stack. This will wait until all NavigationThrottles have proceeded through
@@ -1714,8 +1715,9 @@ class TestNavigationManager : public WebContentsObserver {
   [[nodiscard]] bool WaitForResponse();
 
   // Waits until the navigation has been finished. Will automatically resume
-  // navigations paused before this point.
-  void WaitForNavigationFinished();
+  // navigations paused before this point. Returns false if the waiting was
+  // terminated before reaching DidStartNavigation (e.g. timeout).
+  bool WaitForNavigationFinished();
 
   // Resume the navigation.
   // * Called after |WaitForRequestStart|, it causes the request to be sent.
@@ -1767,7 +1769,7 @@ class TestNavigationManager : public WebContentsObserver {
 
   // Waits for the desired state. Returns false if the desired state cannot be
   // reached (eg the navigation finishes before reaching this state).
-  bool WaitForDesiredState();
+  [[nodiscard]] bool WaitForDesiredState();
 
   // Called when the state of the navigation has changed. This will either stop
   // the message loop if the state specified by the user has been reached, or
