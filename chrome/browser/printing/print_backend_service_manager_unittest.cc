@@ -21,8 +21,8 @@ using RemoteId = PrintBackendServiceManager::RemoteId;
 
 namespace {
 
-const RemoteId kRemoteIdEmpty{std::string()};
-const RemoteId kRemoteIdTestPrinter{"test-printer"};
+const RemoteId kRemoteIdEmpty{1};
+const RemoteId kRemoteIdTestPrinter{2};
 
 const ClientsSet kTestQueryNoClients;
 const ClientsSet kTestQueryWithOneClient{1};

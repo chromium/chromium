@@ -44,7 +44,7 @@ class PrintedPage;
 
 class PrintBackendServiceManager {
  public:
-  using RemoteId = base::StrongAlias<class RemoteIdTag, std::string>;
+  using RemoteId = base::StrongAlias<class RemoteIdTag, uint32_t>;
 
   // Contains set of client IDs.
   using ClientsSet = base::flat_set<uint32_t>;
@@ -278,7 +278,7 @@ class PrintBackendServiceManager {
   void SetCrashKeys(const std::string& printer_name);
 
   // Determine the remote ID that is used for the specified `printer_name`.
-  RemoteId GetRemoteIdForPrinterName(const std::string& printer_name) const;
+  RemoteId GetRemoteIdForPrinterName(const std::string& printer_name);
 
   // Common helper for registering clients.
   absl::optional<uint32_t> RegisterClient(ClientType client_type,
@@ -533,6 +533,13 @@ class PrintBackendServiceManager {
   // that (and thus fail with access denied errors) then we need to fallback to
   // performing the operation with modified restrictions.
   base::flat_set<std::string> drivers_requiring_elevated_privilege_;
+
+#if BUILDFLAG(IS_WIN)
+  // Support for process model where there can be multiple PrintBackendService
+  // instances.  This is necessary because Windows printer drivers are not
+  // thread safe.  Map key is a printer name.
+  base::flat_map<std::string, RemoteId> remote_id_map_;
+#endif
 
   // Crash key is kept at class level so that we can obtain printer driver
   // information for a prior call should the process be terminated due to Mojo
