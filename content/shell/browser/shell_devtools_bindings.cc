@@ -61,10 +61,10 @@ std::vector<ShellDevToolsBindings*>* GetShellDevtoolsBindingsInstances() {
   return instance.get();
 }
 
-base::Value BuildObjectForResponse(const net::HttpResponseHeaders* rh,
-                                   bool success,
-                                   int net_error) {
-  base::Value response(base::Value::Type::DICTIONARY);
+base::Value::Dict BuildObjectForResponse(const net::HttpResponseHeaders* rh,
+                                         bool success,
+                                         int net_error) {
+  base::Value::Dict response;
   int responseCode = 200;
   if (rh) {
     responseCode = rh->response_code();
@@ -72,20 +72,20 @@ base::Value BuildObjectForResponse(const net::HttpResponseHeaders* rh,
     // In case of no headers, assume file:// URL and failed to load
     responseCode = 404;
   }
-  response.SetIntKey("statusCode", responseCode);
-  response.SetIntKey("netError", net_error);
-  response.SetStringKey("netErrorName", net::ErrorToString(net_error));
+  response.Set("statusCode", responseCode);
+  response.Set("netError", net_error);
+  response.Set("netErrorName", net::ErrorToString(net_error));
 
-  base::Value headers(base::Value::Type::DICTIONARY);
+  base::Value::Dict headers;
   size_t iterator = 0;
   std::string name;
   std::string value;
   // TODO(caseq): this probably needs to handle duplicate header names
   // correctly by folding them.
   while (rh && rh->EnumerateHeaderLines(&iterator, &name, &value))
-    headers.SetStringKey(name, value);
+    headers.Set(name, value);
 
-  response.SetKey("headers", std::move(headers));
+  response.Set("headers", std::move(headers));
   return response;
 }
 
@@ -303,7 +303,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
       base::Value::Dict response;
       response.Set("statusCode", 404);
       response.Set("urlValid", false);
-      SendMessageAck(request_id, base::Value(std::move(response)));
+      SendMessageAck(request_id, std::move(response));
       return;
     }
 
@@ -364,12 +364,12 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     if (!name || !params[1].is_string())
       return;
 
-    preferences_.SetKey(*name, std::move(params[1]));
+    preferences_.Set(*name, std::move(params[1]));
   } else if (*method == "removePreference") {
     const std::string* name = params[0].GetIfString();
     if (!name)
       return;
-    preferences_.RemoveKey(*name);
+    preferences_.Remove(*name);
   } else if (*method == "requestFileSystems") {
     CallClientFunction("DevToolsAPI", "fileSystemsLoaded",
                        base::Value(base::Value::Type::LIST));
@@ -443,9 +443,10 @@ void ShellDevToolsBindings::CallClientFunction(
       std::move(arguments), std::move(cb));
 }
 
-void ShellDevToolsBindings::SendMessageAck(int request_id, base::Value arg) {
+void ShellDevToolsBindings::SendMessageAck(int request_id,
+                                           base::Value::Dict arg) {
   CallClientFunction("DevToolsAPI", "embedderMessageAck",
-                     base::Value(request_id), std::move(arg));
+                     base::Value(request_id), base::Value(std::move(arg)));
 }
 
 void ShellDevToolsBindings::AgentHostClosed(DevToolsAgentHost* agent_host) {
