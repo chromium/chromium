@@ -156,6 +156,9 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
       incoming_serialization_mode_(g_default_incoming_serialization_mode),
       interface_name_(interface_name),
       nesting_observer_(RunLoopNestingObserver::GetForThread()) {
+  // https://linear.app/replay/issue/RUN-999
+  CHECK(!recordreplay::AreEventsDisallowed());
+
   recordreplay::RegisterPointer("Connector", this);
   if (config == MULTI_THREADED_SEND)
     lock_.emplace("Connector.lock_");

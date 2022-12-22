@@ -23,6 +23,9 @@ WatcherDispatcher::WatcherDispatcher(MojoTrapEventHandler handler)
   // Registering dispatchers is needed for deterministic sort order in WatcherSets.
   recordreplay::RegisterPointer("WatcherDispatcher", this);
 
+  // https://linear.app/replay/issue/RUN-999
+  CHECK(!recordreplay::AreEventsDisallowed());
+
   // https://linear.app/replay/issue/RUN-816
   if (recordreplay::IsRecordingOrReplaying("pointer-ids"))
     CHECK(recordreplay::PointerId(this));

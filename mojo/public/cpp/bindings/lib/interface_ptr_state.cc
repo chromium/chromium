@@ -88,6 +88,9 @@ bool InterfacePtrStateBase::InitializeEndpointClient(
     bool has_sync_methods,
     std::unique_ptr<MessageReceiver> payload_validator,
     const char* interface_name) {
+  // https://linear.app/replay/issue/RUN-999
+  CHECK(!recordreplay::AreEventsDisallowed());
+
   // The object hasn't been bound.
   if (!handle_.is_valid())
     return false;
