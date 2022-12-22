@@ -125,6 +125,8 @@ export class DynamicColorElement extends WithPersonalizationStore {
   }
 
   automaticSeedColorEnabled: boolean;
+  private previousStaticColorSelected_: SkColor|null;
+  private previousColorSchemeSelected_: ColorScheme|null;
   private staticColorSelected_: SkColor|null;
   private colorSchemeSelected_: ColorScheme|null;
   private staticColors_: string[];
@@ -164,10 +166,14 @@ export class DynamicColorElement extends WithPersonalizationStore {
 
   private onToggleChanged_() {
     if (this.automaticSeedColorEnabled) {
-      const staticColor = this.staticColorSelected_ || DEFAULT_STATIC_COLOR;
+      this.previousColorSchemeSelected_ = this.colorSchemeSelected_;
+      const staticColor =
+          this.previousStaticColorSelected_ || DEFAULT_STATIC_COLOR;
       setStaticColorPref(staticColor, getThemeProvider(), this.getStore());
     } else {
-      const colorScheme = this.colorSchemeSelected_ || DEFAULT_COLOR_SCHEME;
+      this.previousStaticColorSelected_ = this.staticColorSelected_;
+      const colorScheme =
+          this.previousColorSchemeSelected_ || DEFAULT_COLOR_SCHEME;
       setColorSchemePref(colorScheme, getThemeProvider(), this.getStore());
     }
   }
