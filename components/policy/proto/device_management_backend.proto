@@ -4037,7 +4037,7 @@ message CertProvNextActionResponse {
 
   oneof instruction {
     CertProvAuthorizeInstruction authorize_instruction = 2;
-    CertProvProofOfPossessionInstruction proof_of_possession_instructoin = 3;
+    CertProvProofOfPossessionInstruction proof_of_possession_instruction = 3;
     CertProvImportCertificateInstruction import_certificate_instruction = 4;
   }
 }
