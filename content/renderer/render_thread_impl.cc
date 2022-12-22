@@ -1423,6 +1423,12 @@ extern "C" void V8RecordReplayBrowserEvent(const char* name, const char* payload
 void RenderThreadImpl::RecordReplayBrowserEvent(
     const std::string& name,
     base::Value value) {
+
+  // Do nothing if not in record/replay mode.
+  if (!recordreplay::IsRecordingOrReplaying("browser-event") || !v8::IsMainThread()) {
+    return;
+  }
+
   if (!value.GetAsDictionary(nullptr)) {
     fprintf(stderr, "RecordReplayBrowserEvent not a dictionary\n");
     return;

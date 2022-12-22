@@ -497,6 +497,7 @@ void FrameFetchContext::PrepareRequest(
     uint64_t identifier = RecordReplayNetworkRequestId(request.InspectorId());
 
     String request_id = IdentifiersFactory::RequestId(document_loader_, identifier);
+    dict.SetDouble("bookmark", (double) bookmark);
     dict.SetString("requestUrl", url_string);
     dict.SetString("requestMethod", request.HttpMethod().Utf8());
     dict.SetString("requestId", request_id.Utf8());
@@ -514,7 +515,6 @@ void FrameFetchContext::PrepareRequest(
     }
     dict.SetKey("requestHeaders", std::move(headers));
 
-    recordreplay::OnNetworkRequest(request_id.Utf8().c_str(), "http", bookmark);
     recordreplay::BrowserEvent("Network.PrepareRequest", dict);
 
     // Check the request body for request data or stream.
