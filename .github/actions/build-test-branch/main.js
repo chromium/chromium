@@ -70,6 +70,11 @@ function platformTasks(platform) {
         revision: chromiumRevision,
         driverRevision,
         numTests,
+        // https://linear.app/replay/issue/RUN-885
+        env: {
+          RECORD_REPLAY_JS_ASSERTS: "1",
+          RECORD_REPLAY_DISABLE_FEATURES: "use-baseline-jit,use-optimizing-jit",
+        },
       },
       platform,
       [buildTask]
