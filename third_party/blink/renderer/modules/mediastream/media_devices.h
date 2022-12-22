@@ -70,10 +70,11 @@ class MODULES_EXPORT MediaDevices final
   ScriptPromise getUserMedia(ScriptState*,
                              const UserMediaStreamConstraints*,
                              ExceptionState&);
-  ScriptPromise SendUserMediaRequest(ScriptState*,
-                                     UserMediaRequestType,
-                                     const MediaStreamConstraints*,
-                                     ExceptionState&);
+  ScriptPromise SendUserMediaRequest(
+      UserMediaRequestType,
+      ScriptPromiseResolverWithTracker<UserMediaRequestResult>*,
+      const MediaStreamConstraints*,
+      ExceptionState&);
 
   ScriptPromise getDisplayMediaSet(ScriptState*,
                                    const DisplayMediaStreamOptions*,

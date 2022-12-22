@@ -24,7 +24,8 @@ class GetOpenDeviceRequestCallbacks final : public UserMediaRequest::Callbacks {
                  CaptureController* capture_controller) override {}
   void OnError(ScriptWrappable* callback_this_value,
                const V8MediaStreamError* error,
-               CaptureController* capture_controller) override {}
+               CaptureController* capture_controller,
+               UserMediaRequestResult result) override {}
 };
 
 }  // namespace

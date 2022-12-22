@@ -102836,6 +102836,15 @@ Full version information for the fingerprint enum values:
   <int value="2" label="drag"/>
 </enum>
 
+<enum name="UserMediaRequestResult">
+  <int value="0" label="Ok"/>
+  <int value="1" label="TimedOut"/>
+  <int value="2" label="Unknown Error"/>
+  <int value="3" label="Invalid Constraints"/>
+  <int value="4" label="OverConstrained Error"/>
+  <int value="5" label="Context Destroyed"/>
+</enum>
+
 <enum name="UsernameDetectionMethod">
   <int value="0" label="No username detected"/>
   <int value="1" label="Base heuristic"/>

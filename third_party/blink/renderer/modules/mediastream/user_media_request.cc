@@ -818,7 +818,7 @@ void UserMediaRequest::FailConstraint(const String& constraint_name,
       nullptr,
       MakeGarbageCollected<V8MediaStreamError>(
           OverconstrainedError::Create(constraint_name, message)),
-      capture_controller_);
+      capture_controller_, UserMediaRequestResult::kOverConstrainedError);
   is_resolved_ = true;
 }
 
@@ -879,7 +879,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       nullptr,
       MakeGarbageCollected<V8MediaStreamError>(
           MakeGarbageCollected<DOMException>(exception_code, message)),
-      capture_controller_);
+      capture_controller_, UserMediaRequestResult::kUnknownError);
   is_resolved_ = true;
 }
 
@@ -899,7 +899,7 @@ void UserMediaRequest::ContextDestroyed() {
           MakeGarbageCollected<V8MediaStreamError>(
               MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                                  "Context destroyed")),
-          capture_controller_);
+          capture_controller_, UserMediaRequestResult::kContextDestroyed);
     }
     client_ = nullptr;
   }

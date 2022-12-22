@@ -53,6 +53,16 @@ class UserMediaClient;
 
 enum class UserMediaRequestType { kUserMedia, kDisplayMedia, kDisplayMediaSet };
 
+enum class UserMediaRequestResult {
+  kOk = 0,
+  kTimedOut = 1,
+  kUnknownError = 2,
+  kInvalidConstraints = 3,
+  kOverConstrainedError = 4,
+  kContextDestroyed = 5,
+  kMaxValue = kContextDestroyed
+};
+
 class MODULES_EXPORT UserMediaRequest final
     : public GarbageCollected<UserMediaRequest>,
       public ExecutionContextLifecycleObserver {
@@ -65,7 +75,8 @@ class MODULES_EXPORT UserMediaRequest final
                            CaptureController* capture_controller) = 0;
     virtual void OnError(ScriptWrappable* callback_this_value,
                          const V8MediaStreamError* error,
-                         CaptureController* capture_controller) = 0;
+                         CaptureController* capture_controller,
+                         UserMediaRequestResult result) = 0;
 
     virtual void Trace(Visitor*) const {}
 
