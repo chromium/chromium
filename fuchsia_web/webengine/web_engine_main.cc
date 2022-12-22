@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
+#include "base/files/file_path.h"
+#include "components/fuchsia_component_support/append_arguments_from_file.h"
 #include "components/fuchsia_component_support/config_reader.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
@@ -19,15 +21,16 @@ static void LoadConfigAndUpdateCommandLine(base::CommandLine* command_line) {
   if (!is_browser_process)
     return;
 
-  const absl::optional<base::Value::Dict>& config =
-      fuchsia_component_support::LoadPackageConfig();
-  if (!config)
-    return;
+  if (const auto& config = fuchsia_component_support::LoadPackageConfig();
+      config.has_value()) {
+    CHECK(UpdateCommandLineFromConfigFile(config.value(), command_line))
+        << "WebEngine config is invalid.";
+  }
 
-  bool config_valid =
-      UpdateCommandLineFromConfigFile(config.value(), command_line);
-  if (!config_valid)
-    LOG(FATAL) << "WebEngine config is invalid.";
+  CHECK(fuchsia_component_support::AppendArgumentsFromFile(
+      base::FilePath(FILE_PATH_LITERAL("/config/command-line/argv.json")),
+      *command_line))
+      << "Malformed argv.json file.";
 }
 
 int main(int argc, const char** argv) {

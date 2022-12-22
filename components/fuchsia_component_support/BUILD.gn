@@ -18,14 +18,18 @@ source_set("fuchsia_component_support") {
     "//fuchsia_web/webinstance_host/*",
   ]
   public = [
+    "append_arguments_from_file.h",
     "config_reader.h",
     "feedback_registration.h",
     "inspect.h",
+    "serialize_arguments.h",
   ]
   sources = [
+    "append_arguments_from_file.cc",
     "config_reader.cc",
     "feedback_registration.cc",
     "inspect.cc",
+    "serialize_arguments.cc",
   ]
   public_deps = [
     "//base",
@@ -35,6 +39,7 @@ source_set("fuchsia_component_support") {
     "//build:branding_buildflags",
     "//components/version_info",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
+    "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_base",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]

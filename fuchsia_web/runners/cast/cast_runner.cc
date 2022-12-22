@@ -30,6 +30,7 @@
 #include "fuchsia_web/runners/cast/cast_streaming.h"
 #include "fuchsia_web/runners/cast/pending_cast_component.h"
 #include "fuchsia_web/runners/common/web_content_runner.h"
+#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
 #include "url/gurl.h"
 
 namespace {
@@ -209,7 +210,9 @@ CastRunner::CastRunner(WebInstanceHostV1& web_instance_host, Options options)
       main_services_(std::make_unique<base::FilteredServiceDirectory>(
           base::ComponentContextForProcess()->svc())),
       main_context_(std::make_unique<WebContentRunner>(
-          *web_instance_host_,
+          base::BindRepeating(
+              &WebInstanceHostV1::CreateInstanceForContextWithCopiedArgs,
+              base::Unretained(&web_instance_host_.get())),
           base::BindRepeating(&CastRunner::GetMainWebInstanceConfig,
                               base::Unretained(this)))),
       isolated_services_(std::make_unique<base::FilteredServiceDirectory>(
@@ -504,8 +507,11 @@ CastRunner::GetWebInstanceConfigForAppConfig(
 WebContentRunner* CastRunner::CreateIsolatedRunner(
     WebContentRunner::WebInstanceConfig config) {
   // Create an isolated context which will own the CastComponent.
-  auto context = std::make_unique<WebContentRunner>(*web_instance_host_,
-                                                    std::move(config));
+  auto context = std::make_unique<WebContentRunner>(
+      base::BindRepeating(
+          &WebInstanceHostV1::CreateInstanceForContextWithCopiedArgs,
+          base::Unretained(&web_instance_host_.get())),
+      std::move(config));
   context->SetOnEmptyCallback(
       base::BindOnce(&CastRunner::OnIsolatedContextEmpty,
                      base::Unretained(this), base::Unretained(context.get())));
