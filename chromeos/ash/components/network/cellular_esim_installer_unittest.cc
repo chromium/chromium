@@ -44,6 +44,7 @@ using InstallResultTuple = std::tuple<HermesResponseStatus,
 
 const char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
 const char kTestEid[] = "12345678901234567890123456789012";
+const char kTestCellularServicePath[] = "/service/cellular101";
 const char kInstallViaQrCodeHistogram[] =
     "Network.Cellular.ESim.InstallViaQrCode.Result";
 const char kESimInstallNonUserErrorSuccessRate[] =
@@ -151,7 +152,8 @@ class CellularESimInstallerTest : public testing::Test {
       bool wait_for_connect,
       bool fail_connect,
       bool is_initial_install = true,
-      bool is_install_via_qr_code = false) {
+      bool is_install_via_qr_code = false,
+      bool auto_connected = false) {
     HermesResponseStatus out_install_result;
     absl::optional<dbus::ObjectPath> out_esim_profile_path;
     absl::optional<std::string> out_service_path;
@@ -174,15 +176,23 @@ class CellularESimInstallerTest : public testing::Test {
     FastForwardProfileRefreshDelay();
 
     if (wait_for_connect) {
-      base::RunLoop().RunUntilIdle();
-      EXPECT_LE(1u, network_connection_handler_->connect_calls().size());
-      if (fail_connect) {
-        network_connection_handler_->connect_calls().back().InvokeErrorCallback(
-            "fake_error_name");
+      if (auto_connected) {
+        ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
+            kTestCellularServicePath, shill::kStateProperty,
+            base::Value(shill::kStateOnline));
       } else {
-        network_connection_handler_->connect_calls()
-            .back()
-            .InvokeSuccessCallback();
+        FastForwardAutoConnectWaiting();
+        base::RunLoop().RunUntilIdle();
+        EXPECT_LE(1u, network_connection_handler_->connect_calls().size());
+        if (fail_connect) {
+          network_connection_handler_->connect_calls()
+              .back()
+              .InvokeErrorCallback("fake_error_name");
+        } else {
+          network_connection_handler_->connect_calls()
+              .back()
+              .InvokeSuccessCallback();
+        }
       }
     }
 
@@ -282,6 +292,11 @@ class CellularESimInstallerTest : public testing::Test {
     // Connect can result in two profile refresh calls before and after
     // enabling profile. Fast forward by delay after refresh.
     task_environment_.FastForwardBy(2 * kProfileRefreshCallbackDelay);
+  }
+
+  void FastForwardAutoConnectWaiting() {
+    task_environment_.FastForwardBy(
+        CellularConnectionHandler::kWaitingForAutoConnectTimeout);
   }
 
   base::HistogramTester* HistogramTesterPtr() { return &histogram_tester_; }
@@ -430,7 +445,32 @@ TEST_F(CellularESimInstallerTest, InstallProfileViaQrCodeSuccess) {
       /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
       /*new_shill_properties=*/base::Value(base::Value::Type::DICTIONARY),
       /*wait_for_connect=*/true, /*fail_connect=*/false,
-      /*is_initial_install=*/true, /*install_via_qr_code=*/true);
+      /*is_initial_install=*/true, /*is_install_via_qr_code=*/true);
+  CheckInstallSuccess(result_tuple);
+
+  HistogramTesterPtr()->ExpectTotalCount(kESimProfileDownloadLatencyHistogram,
+                                         1);
+  CheckESimInstallHistograms(
+      /*expected_count=*/1, HermesResponseStatus::kSuccess,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess);
+  CheckDetailedESimInstallHistograms(
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*is_managed=*/false, /*is_retry=*/false,
+      /*is_install_via_qr_code=*/true);
+}
+
+TEST_F(CellularESimInstallerTest, InstallProfileAutoConnect) {
+  // Verify that install succeeds when valid activation code is passed.
+  InstallResultTuple result_tuple = InstallProfileFromActivationCode(
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode(),
+      /*confirmation_code=*/std::string(),
+      /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
+      /*new_shill_properties=*/base::Value(base::Value::Type::DICTIONARY),
+      /*wait_for_connect=*/true, /*fail_connect=*/false,
+      /*is_initial_install=*/true, /*is_install_via_qr_code=*/true,
+      /*auto_connected=*/true);
   CheckInstallSuccess(result_tuple);
 
   HistogramTesterPtr()->ExpectTotalCount(kESimProfileDownloadLatencyHistogram,

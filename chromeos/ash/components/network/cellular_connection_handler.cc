@@ -75,6 +75,9 @@ absl::optional<dbus::ObjectPath> GetProfilePath(const std::string& eid,
 }  // namespace
 
 // static
+const base::TimeDelta CellularConnectionHandler::kWaitingForAutoConnectTimeout =
+    base::Minutes(2);
+
 absl::optional<std::string> CellularConnectionHandler::ResultToErrorString(
     PrepareCellularConnectionResult result) {
   switch (result) {
@@ -216,7 +219,8 @@ void CellularConnectionHandler::TransitionToConnectionState(
 }
 
 void CellularConnectionHandler::CompleteConnectionAttempt(
-    PrepareCellularConnectionResult result) {
+    PrepareCellularConnectionResult result,
+    bool auto_connected) {
   DCHECK(state_ != ConnectionState::kIdle);
   DCHECK(!request_queue_.empty());
 
@@ -244,7 +248,7 @@ void CellularConnectionHandler::CompleteConnectionAttempt(
     std::move(metadata->error_callback)
         .Run(service_path, NetworkConnectionHandler::kErrorNotFound);
   } else {
-    std::move(metadata->success_callback).Run(service_path);
+    std::move(metadata->success_callback).Run(service_path, auto_connected);
   }
 
   ProcessRequestQueue();
@@ -322,14 +326,16 @@ void CellularConnectionHandler::CheckServiceStatus() {
     NET_LOG(ERROR) << "Could not find network for ICCID "
                    << *request_queue_.front()->iccid;
     CompleteConnectionAttempt(
-        PrepareCellularConnectionResult::kCouldNotFindNetworkWithIccid);
+        PrepareCellularConnectionResult::kCouldNotFindNetworkWithIccid,
+        /*auto_connected=*/false);
     return;
   }
 
   if (CanInitiateShillConnection(network_state)) {
     NET_LOG(USER) << "Cellular service with ICCID " << iccid
                   << " is connectable";
-    CompleteConnectionAttempt(PrepareCellularConnectionResult::kSuccess);
+    CompleteConnectionAttempt(PrepareCellularConnectionResult::kSuccess,
+                              /*auto_connected=*/false);
     return;
   }
 
@@ -362,7 +368,8 @@ void CellularConnectionHandler::OnInhibitScanResult(
 
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "eSIM connection flow failed to inhibit scan";
-    CompleteConnectionAttempt(PrepareCellularConnectionResult::kInhibitFailed);
+    CompleteConnectionAttempt(PrepareCellularConnectionResult::kInhibitFailed,
+                              /*auto_connected=*/false);
     return;
   }
 
@@ -378,7 +385,8 @@ void CellularConnectionHandler::RequestInstalledProfiles() {
   if (!euicc_path) {
     NET_LOG(ERROR) << "eSIM connection flow could not find relevant EUICC";
     CompleteConnectionAttempt(
-        PrepareCellularConnectionResult::kCouldNotFindRelevantEuicc);
+        PrepareCellularConnectionResult::kCouldNotFindRelevantEuicc,
+        /*auto_connected=*/false);
     return;
   }
 
@@ -396,7 +404,8 @@ void CellularConnectionHandler::OnRefreshProfileListResult(
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "eSIM connection flow failed to request profiles";
     CompleteConnectionAttempt(
-        PrepareCellularConnectionResult::kRefreshProfilesFailed);
+        PrepareCellularConnectionResult::kRefreshProfilesFailed,
+        /*auto_connected=*/false);
     return;
   }
 
@@ -412,7 +421,8 @@ void CellularConnectionHandler::EnableProfile() {
   if (!profile_path) {
     NET_LOG(ERROR) << "eSIM connection flow could not find profile";
     CompleteConnectionAttempt(
-        PrepareCellularConnectionResult::kCouldNotFindRelevantESimProfile);
+        PrepareCellularConnectionResult::kCouldNotFindRelevantESimProfile,
+        /*auto_connected=*/false);
     return;
   }
 
@@ -436,9 +446,14 @@ void CellularConnectionHandler::OnEnableCarrierProfileResult(
   if (!success) {
     NET_LOG(ERROR) << "eSIM connection flow failed to enable profile";
     CompleteConnectionAttempt(
-        PrepareCellularConnectionResult::kEnableProfileFailed);
+        PrepareCellularConnectionResult::kEnableProfileFailed,
+        /*auto_connected=*/false);
     return;
   }
+
+  // kErrorAlreadyEnabled implies that the SIM profile was already enabled.
+  request_queue_.front()->did_connection_require_enabling_profile =
+      status == HermesResponseStatus::kSuccess;
 
   // Reset the inhibit_lock so that the device will be uninhibited
   // automatically.
@@ -452,12 +467,24 @@ void CellularConnectionHandler::HandleNetworkPropertiesUpdate() {
     CheckForConnectable();
 }
 
+void CellularConnectionHandler::NetworkConnectionStateChanged(
+    const NetworkState* network) {
+  if (state_ == ConnectionState::kWaitingForShillAutoConnect) {
+    CheckForAutoConnected();
+  }
+}
+
 void CellularConnectionHandler::CheckForConnectable() {
   DCHECK_EQ(state_, ConnectionState::kWaitingForConnectable);
 
   const NetworkState* network_state = GetNetworkStateForCurrentOperation();
   if (network_state && CanInitiateShillConnection(network_state)) {
-    CompleteConnectionAttempt(PrepareCellularConnectionResult::kSuccess);
+    if (!request_queue_.front()->did_connection_require_enabling_profile) {
+      CompleteConnectionAttempt(PrepareCellularConnectionResult::kSuccess,
+                                /*auto_connected=*/false);
+    } else {
+      StartWaitingForShillAutoConnect();
+    }
     return;
   }
 
@@ -477,7 +504,46 @@ void CellularConnectionHandler::OnWaitForConnectableTimeout() {
   NET_LOG(ERROR) << "Cellular connection timed out waiting for network to "
                     "become connectable";
   CompleteConnectionAttempt(
-      PrepareCellularConnectionResult::kTimeoutWaitingForConnectable);
+      PrepareCellularConnectionResult::kTimeoutWaitingForConnectable,
+      /*auto_connected=*/false);
+}
+
+void CellularConnectionHandler::StartWaitingForShillAutoConnect() {
+  // Stop the timer that wait for the network to become connectable.
+  if (timer_.IsRunning()) {
+    timer_.Stop();
+  }
+
+  TransitionToConnectionState(ConnectionState::kWaitingForShillAutoConnect);
+  CheckForAutoConnected();
+}
+
+void CellularConnectionHandler::CheckForAutoConnected() {
+  CHECK_EQ(state_, ConnectionState::kWaitingForShillAutoConnect);
+
+  const NetworkState* network_state = GetNetworkStateForCurrentOperation();
+  if (network_state && network_state->IsConnectedState()) {
+    CompleteConnectionAttempt(PrepareCellularConnectionResult::kSuccess,
+                              /*auto_connected=*/true);
+    return;
+  }
+
+  // If network hasn't autoconnected by Shill yet, start a timer and wait for
+  // the network to become connected.
+  if (!timer_.IsRunning()) {
+    timer_.Start(
+        FROM_HERE, kWaitingForAutoConnectTimeout,
+        base::BindOnce(&CellularConnectionHandler::OnWaitForAutoConnectTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void CellularConnectionHandler::OnWaitForAutoConnectTimeout() {
+  DCHECK_EQ(state_, ConnectionState::kWaitingForShillAutoConnect);
+  NET_LOG(ERROR) << "Cellular connection timed out waiting for network to "
+                    "become auto connected";
+  CompleteConnectionAttempt(PrepareCellularConnectionResult::kSuccess,
+                            /*auto_connected=*/false);
 }
 
 std::ostream& operator<<(
@@ -502,6 +568,10 @@ std::ostream& operator<<(
       break;
     case CellularConnectionHandler::ConnectionState::kWaitingForConnectable:
       stream << "[Waiting for network to become connectable]";
+      break;
+    case CellularConnectionHandler::ConnectionState::
+        kWaitingForShillAutoConnect:
+      stream << "[Waiting for network to become auto-connected]";
       break;
   }
   return stream;

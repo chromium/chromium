@@ -295,7 +295,8 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
   HermesProfileClient::Properties* profile_properties =
       HermesProfileClient::Get()->GetProperties(*profile_path);
   managed_cellular_pref_handler_->AddIccidSmdpPair(
-      profile_properties->iccid().value(), current_request->smdp_address);
+      profile_properties->iccid().value(), current_request->smdp_address,
+      /*sync_stub_networks=*/false);
 
   managed_network_configuration_handler_->NotifyPolicyAppliedToNetwork(
       *service_path);

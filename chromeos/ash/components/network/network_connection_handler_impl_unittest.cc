@@ -63,6 +63,7 @@ const char kTestEid[] = "123456789012345678901234567890123";
 
 const char kTestCellularServicePath2[] = "cellular_service_path_2";
 const char kTestIccid2[] = "9876543210987654321";
+constexpr base::TimeDelta kCellularAutoConnectTimeout = base::Seconds(120);
 
 class TestNetworkConnectionObserver : public NetworkConnectionObserver {
  public:
@@ -701,7 +702,8 @@ TEST_F(NetworkConnectionHandlerImplTest,
 TEST_F(NetworkConnectionHandlerImplTest, IgnoreConnectInProgressError_Fails) {
   Init();
 
-  AddCellularServiceWithESimProfile();
+  AddNonConnectablePSimService();
+  SetCellularServiceConnectable();
   SetShillConnectError(shill::kErrorResultInProgress);
   Connect(kTestCellularServicePath);
   EXPECT_TRUE(GetResultAndReset().empty());
@@ -1169,7 +1171,8 @@ TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_AlreadyConnectable) {
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 }
 
-TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_EnableProfile) {
+TEST_F(NetworkConnectionHandlerImplTest,
+       ESimProfile_EnableProfileAndWaitForAutoconnect) {
   Init();
   AddCellularServiceWithESimProfile();
 
@@ -1177,6 +1180,23 @@ TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_EnableProfile) {
   // connection is initiated, we attempt to enable the profile via Hermes.
   Connect(kTestCellularServicePath);
   SetCellularServiceConnectable();
+  // Set cellular service to connected state.
+  SetCellularServiceState(shill::kStateOnline);
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
+       ESimProfile_EnableProfileAndAutoconnectTimeout) {
+  Init();
+  AddCellularServiceWithESimProfile();
+
+  // Do not set the service to be connectable before trying to connect. When a
+  // connection is initiated, we attempt to enable the profile via Hermes.
+  Connect(kTestCellularServicePath);
+  SetCellularServiceConnectable();
+  EXPECT_TRUE(GetResultAndReset().empty());
+
+  AdvanceClock(kCellularAutoConnectTimeout);
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 }
 
@@ -1191,6 +1211,8 @@ TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_StubToShillBacked) {
   // Now, create a non-stub service and make it connectable.
   AddNonConnectableESimService();
   SetCellularServiceConnectable();
+  // Set cellular service to connected state.
+  SetCellularServiceState(shill::kStateOnline);
 
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 

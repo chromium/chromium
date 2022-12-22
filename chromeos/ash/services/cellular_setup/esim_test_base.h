@@ -52,6 +52,7 @@ class ESimTestBase : public testing::Test {
   ~ESimTestBase() override;
 
   void FastForwardProfileRefreshDelay();
+  void FastForwardAutoConnectWaiting();
 
   ESimManager* esim_manager() { return esim_manager_.get(); }
   ESimManagerTestObserver* observer() { return observer_.get(); }

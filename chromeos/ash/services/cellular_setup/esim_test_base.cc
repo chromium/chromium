@@ -139,4 +139,9 @@ void ESimTestBase::FastForwardProfileRefreshDelay() {
   task_environment()->FastForwardBy(2 * kProfileRefreshCallbackDelay);
 }
 
+void ESimTestBase::FastForwardAutoConnectWaiting() {
+  task_environment_.FastForwardBy(
+      CellularConnectionHandler::kWaitingForAutoConnectTimeout);
+}
+
 }  // namespace ash::cellular_setup

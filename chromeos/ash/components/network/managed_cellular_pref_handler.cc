@@ -50,7 +50,8 @@ void ManagedCellularPrefHandler::NotifyManagedCellularPrefChanged() {
 
 void ManagedCellularPrefHandler::AddIccidSmdpPair(
     const std::string& iccid,
-    const std::string& smdp_address) {
+    const std::string& smdp_address,
+    bool sync_stub_networks) {
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet.";
     return;
@@ -64,7 +65,10 @@ void ManagedCellularPrefHandler::AddIccidSmdpPair(
   ScopedDictPrefUpdate update(device_prefs_,
                               prefs::kManagedCellularIccidSmdpPair);
   update->SetByDottedPath(iccid, smdp_address);
-  network_state_handler_->SyncStubCellularNetworks();
+  if (sync_stub_networks) {
+    network_state_handler_->SyncStubCellularNetworks();
+  }
+
   NotifyManagedCellularPrefChanged();
 }
 

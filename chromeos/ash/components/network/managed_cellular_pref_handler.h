@@ -41,9 +41,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
   void SetDevicePrefs(PrefService* device_prefs);
 
   // Add a new ICCID and SMDP+ address pair to device pref for a managed
-  // cellular network.
+  // cellular network. If |sync_stub_networks| is set true,
+  // NetworkStateHandler::SyncStubCellularNetworks() will be called.
   void AddIccidSmdpPair(const std::string& iccid,
-                        const std::string& smdp_address);
+                        const std::string& smdp_address,
+                        bool sync_stub_networks = true);
 
   // Remove the ICCID and SMDP+ address pair from the device pref with given
   // |iccid|.

@@ -358,6 +358,11 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     task_environment_.FastForwardBy(2 * kProfileRefreshCallbackDelay);
   }
 
+  void FastForwardAutoConnectWaiting() {
+    task_environment_.FastForwardBy(
+        CellularConnectionHandler::kWaitingForAutoConnectTimeout);
+  }
+
   ProhibitedTechnologiesHandler* prohibited_technologies_handler() {
     return prohibited_technologies_handler_.get();
   }
@@ -614,6 +619,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
   SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
             "policy/policy_cellular.onc");
   FastForwardProfileRefreshDelay();
+  FastForwardAutoConnectWaiting();
   base::RunLoop().RunUntilIdle();
 
   std::string service_path = GetShillServiceClient()->FindServiceMatchingGUID(
