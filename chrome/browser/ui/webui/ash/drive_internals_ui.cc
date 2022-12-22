@@ -622,6 +622,16 @@ class DriveInternalsWebUIHandler
 
   void OnSetupProgress(
       const drivefs::pinning::SetupProgress& progress) override {
+    using drivefs::pinning::HumanReadableSize;
+    VLOG(1) << "Stage = " << progress.stage;
+    VLOG(1) << "Error = " << progress.error;
+    VLOG(1) << "Free space = "
+            << HumanReadableSize(progress.available_disk_space);
+    VLOG(1) << "Required space = "
+            << HumanReadableSize(progress.required_disk_space);
+    VLOG(1) << "Pinned space = "
+            << HumanReadableSize(progress.pinned_disk_space);
+
     base::Value::Dict setup_progress;
     setup_progress.Set("stage", ToString(progress.stage));
     setup_progress.Set("setupError", ToString(progress.error));

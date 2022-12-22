@@ -11,13 +11,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/drive/file_errors.h"
 
 namespace drivefs::pinning {
-
 namespace {
 
 mojom::QueryParametersPtr CreateMyDriveQuery() {
@@ -55,6 +55,32 @@ class FreeDiskSpaceImpl : public FreeDiskSpaceDelegate {
 };
 
 }  // namespace
+
+std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
+  int64_t i = static_cast<int64_t>(size);
+  if (i == 0) {
+    return out << '0';
+  }
+
+  if (i < 0) {
+    out << '-';
+    i = -i;
+  }
+
+  if (i < 1024) {
+    return out << i << " B";
+  }
+
+  double d = static_cast<double>(i) / 1024;
+  const char* unit = "KMGT";
+  while (d >= 1024 && *unit != '\0') {
+    d /= 1024;
+    unit++;
+  }
+
+  const int precision = d < 10 ? 2 : d < 100 ? 1 : 0;
+  return out << base::StringPrintf("%.*f %ciB", precision, d, *unit);
+}
 
 std::ostream& operator<<(std::ostream& out, const SetupError error) {
   switch (error) {
@@ -122,7 +148,8 @@ void DriveFsPinManager::InProgressSyncingItems::AddItem(
   const auto [it, ok] = in_progress_items_.try_emplace(path);
   LOG_IF(ERROR, !ok) << "Cannot add item '" << path
                      << "': There is already an item with progress "
-                     << it->second.transferred << " / " << it->second.total;
+                     << HumanReadableSize(it->second.transferred) << " / "
+                     << HumanReadableSize(it->second.total);
   DCHECK_EQ(path, it->first);
 }
 
@@ -259,7 +286,8 @@ void DriveFsPinManager::OnFreeDiskSpaceRetrieved(int64_t free_space) {
   NotifyProgress();
 
   VLOG(1) << "Starting to search for items to calculate required space";
-  VLOG(2) << "Free space: " << state_.progress.available_disk_space << " bytes";
+  VLOG(2) << "Free space: "
+          << HumanReadableSize(state_.progress.available_disk_space);
   mojom::QueryParametersPtr query = CreateMyDriveQuery();
   drivefs_interface_->StartSearchQuery(
       search_query_.BindNewPipeAndPassReceiver(), std::move(query));
@@ -286,10 +314,10 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
   if (items->empty()) {
     VLOG(1) << "Computed required space in "
             << timer_.Elapsed().InMilliseconds() << " ms";
-    VLOG(1) << "Required space: " << state_.progress.required_disk_space
-            << " bytes";
-    VLOG(1) << "Free space: " << state_.progress.available_disk_space
-            << " bytes";
+    VLOG(1) << "Required space: "
+            << HumanReadableSize(state_.progress.required_disk_space);
+    VLOG(1) << "Free space: "
+            << HumanReadableSize(state_.progress.available_disk_space);
     StartBatchPinning();
     return;
   }
@@ -314,9 +342,9 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
   if (state_.progress.required_disk_space >=
       state_.progress.available_disk_space) {
     LOG(ERROR) << "Not enough space: Required = "
-               << state_.progress.required_disk_space
-               << " bytes, Free = " << state_.progress.available_disk_space
-               << " bytes";
+               << HumanReadableSize(state_.progress.required_disk_space)
+               << ", Free = "
+               << HumanReadableSize(state_.progress.available_disk_space);
     Complete(SetupError::kErrorNotEnoughFreeSpace);
     return;
   }

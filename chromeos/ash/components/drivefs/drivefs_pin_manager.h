@@ -27,6 +27,12 @@
 
 namespace drivefs::pinning {
 
+// Prints a size in bytes in a human-readable way.
+enum HumanReadableSize : int64_t;
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
+std::ostream& operator<<(std::ostream& out, HumanReadableSize size);
+
 // Constant representing the GCache folder name.
 extern const char kGCacheFolderName[];
 
