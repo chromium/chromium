@@ -5,8 +5,11 @@
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_api.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/web_authentication_proxy.h"
+#include "content/public/browser/browser_context.h"
 
 namespace extensions {
 
@@ -67,17 +70,13 @@ WebAuthenticationProxyAttachFunction::~WebAuthenticationProxyAttachFunction() =
 ExtensionFunction::ResponseAction WebAuthenticationProxyAttachFunction::Run() {
   DCHECK(extension());
 
-  WebAuthenticationProxyService* proxy_service =
-      WebAuthenticationProxyServiceFactory::GetForBrowserContext(
-          browser_context());
-
-  const Extension* active_proxy = proxy_service->GetActiveRequestProxy();
-  if (active_proxy) {
-    return RespondNow(Error("Another extension is already attached"));
-  }
-
-  proxy_service->SetActiveRequestProxy(extension());
-  return RespondNow(NoArguments());
+  const bool success =
+      WebAuthenticationProxyRegistrarFactory::GetForBrowserContext(
+          browser_context())
+          ->SetRequestProxy(Profile::FromBrowserContext(browser_context()),
+                            extension());
+  return RespondNow(success ? NoArguments()
+                            : Error("Another extension is already attached"));
 }
 
 WebAuthenticationProxyDetachFunction::WebAuthenticationProxyDetachFunction() =
@@ -91,12 +90,15 @@ ExtensionFunction::ResponseAction WebAuthenticationProxyDetachFunction::Run() {
   WebAuthenticationProxyService* proxy_service =
       WebAuthenticationProxyServiceFactory::GetForBrowserContext(
           browser_context());
-
   if (proxy_service->GetActiveRequestProxy() != extension()) {
-    return RespondNow(Error("This extension is not currently attached"));
+    return RespondNow(NoArguments());
   }
 
-  proxy_service->ClearActiveRequestProxy();
+  WebAuthenticationProxyRegistrar* proxy_registrar =
+      WebAuthenticationProxyRegistrarFactory::GetForBrowserContext(
+          browser_context());
+  proxy_registrar->ClearRequestProxy(
+      Profile::FromBrowserContext(browser_context()));
   return RespondNow(NoArguments());
 }
 

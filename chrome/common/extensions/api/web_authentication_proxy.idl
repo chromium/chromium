@@ -165,8 +165,7 @@ namespace webAuthenticationProxy {
     // events from this extension API are raised.
     //
     // This method fails with an error if a different extension is already
-    // attached or if the extension has not subscribed to all of the events
-    // defined in this API.
+    // attached.
     //
     // The attached extension must call `detach()` once the remote desktop
     // session has ended in order to resume regular WebAuthn request
@@ -182,8 +181,8 @@ namespace webAuthenticationProxy {
     // request proxy.
     //
     // This method is typically called when the extension detects that a remote
-    // desktop session was terminated. Once this method returns without error,
-    // regular processing of WebAuthn requests continues.
+    // desktop session was terminated. Once this method returns, the extension
+    // ceases to be the active Web Authentication API request proxy.
     //
     // Refer to the `onRemoteSessionStateChange` event for signaling a change
     // of remote session attachment from a native application to to the

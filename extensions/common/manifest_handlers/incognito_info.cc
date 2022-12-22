@@ -22,14 +22,14 @@ IncognitoInfo::~IncognitoInfo() = default;
 bool IncognitoInfo::IsSplitMode(const Extension* extension) {
   IncognitoInfo* info = static_cast<IncognitoInfo*>(
       extension->GetManifestData(IncognitoManifestKeys::kIncognito));
-  return info ? info->mode == api::incognito::INCOGNITO_MODE_SPLIT : false;
+  return info->mode == api::incognito::INCOGNITO_MODE_SPLIT;
 }
 
 // static
 bool IncognitoInfo::IsIncognitoAllowed(const Extension* extension) {
   IncognitoInfo* info = static_cast<IncognitoInfo*>(
       extension->GetManifestData(IncognitoManifestKeys::kIncognito));
-  return info ? info->mode != api::incognito::INCOGNITO_MODE_NOT_ALLOWED : true;
+  return info->mode != api::incognito::INCOGNITO_MODE_NOT_ALLOWED;
 }
 
 IncognitoHandler::IncognitoHandler() = default;

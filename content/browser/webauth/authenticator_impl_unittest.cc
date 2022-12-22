@@ -9149,8 +9149,9 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialOriginAndRpIds) {
                  std::string(test_case.origin));
 
     NavigateAndCommit(GURL(test_case.origin));
+    BrowserContext* context = main_rfh()->GetBrowserContext();
     ASSERT_TRUE(test_client_.GetWebAuthenticationDelegate()
-                    ->MaybeGetRequestProxy(main_rfh()->GetBrowserContext())
+                    ->MaybeGetRequestProxy(context)
                     ->IsActive());
 
     PublicKeyCredentialCreationOptionsPtr options =
@@ -9190,8 +9191,9 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, AppId) {
     SCOPED_TRACE(std::string(test_case.origin) + " " +
                  std::string(test_case.claimed_authority));
 
+    BrowserContext* context = main_rfh()->GetBrowserContext();
     ASSERT_TRUE(test_client_.GetWebAuthenticationDelegate()
-                    ->MaybeGetRequestProxy(main_rfh()->GetBrowserContext())
+                    ->MaybeGetRequestProxy(context)
                     ->IsActive());
 
     EXPECT_EQ(TryAuthenticationWithAppId(test_case.origin,
@@ -9219,8 +9221,9 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, AppId) {
       continue;
     }
 
+    BrowserContext* context = main_rfh()->GetBrowserContext();
     ASSERT_TRUE(test_client_.GetWebAuthenticationDelegate()
-                    ->MaybeGetRequestProxy(main_rfh()->GetBrowserContext())
+                    ->MaybeGetRequestProxy(context)
                     ->IsActive());
 
     AuthenticatorStatus test_status = TryAuthenticationWithAppId(
@@ -9321,8 +9324,9 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionOriginAndRpIds) {
                  std::string(test_case.origin));
 
     NavigateAndCommit(GURL(test_case.origin));
+    BrowserContext* context = main_rfh()->GetBrowserContext();
     ASSERT_TRUE(test_client_.GetWebAuthenticationDelegate()
-                    ->MaybeGetRequestProxy(main_rfh()->GetBrowserContext())
+                    ->MaybeGetRequestProxy(context)
                     ->IsActive());
 
     PublicKeyCredentialRequestOptionsPtr options =

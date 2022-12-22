@@ -4,8 +4,6 @@
 
 const ERROR_INVALID_SENDER = 'Error: Invalid sender';
 const ERROR_INVALID_REQUEST_ID = 'Error: Invalid requestId';
-const ERROR_ATTACH = 'Error: Another extension is already attached';
-const ERROR_DETACH = 'Error: This extension is not currently attached';
 
 //  A dummy JSON-encoded PublicKeyCredential for completeCreateRequest(). The
 //  credential ID is base64url('test') = 'dGVzdA'.
@@ -74,11 +72,13 @@ function completeGetRequest(requestId, optErrorName) {
 let availableTests = [
   async function attachDetach() {
     await chrome.webAuthenticationProxy.attach();
-    await chrome.test.assertPromiseRejects(
-        chrome.webAuthenticationProxy.attach(), ERROR_ATTACH);
+    // Attaching the same extension again should be a no-op. (Attaching a
+    // *different* extension would fail. This is tested in
+    // WebAuthenticationProxyApiTest.AttachSecondExtension)
+    await chrome.webAuthenticationProxy.attach();
     await chrome.webAuthenticationProxy.detach();
-    await chrome.test.assertPromiseRejects(
-        chrome.webAuthenticationProxy.detach(), ERROR_DETACH);
+    // Similarly, detaching an unattached extension does nothing.
+    await chrome.webAuthenticationProxy.detach();
     chrome.test.succeed();
   },
   async function attachReload() {
@@ -276,6 +276,12 @@ let availableTests = [
     await chrome.webAuthenticationProxy.attach();
     chrome.test.sendMessage('ready');
   },
+  async function incognitoSpanning() {
+    await chrome.webAuthenticationProxy.attach();
+    chrome.test.sendMessage('ready');
+    // The C++ side verifies that the extension is attached in the main profile
+    // as well as an associated incognito profile.
+  },
 ];
 
 chrome.test.getConfig((config) => {
@@ -283,6 +289,9 @@ chrome.test.getConfig((config) => {
     return config.customArg == t.name;
   });
   if (tests.length == 0) {
+    // Log because the C++ side might stall rather than notice the call to
+    // notifyFail.
+    console.error('No test found');
     chrome.test.notifyFail('No test found');
     return;
   }
