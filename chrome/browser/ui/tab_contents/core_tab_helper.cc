@@ -58,7 +58,7 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #endif
 
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_SIDE_PANEL)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #endif
 
@@ -502,12 +502,12 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
         content_type.c_str());
   }
   if (use_side_panel) {
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_SIDE_PANEL)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
     lens::OpenLensSidePanel(chrome::FindBrowserWithWebContents(web_contents()),
                             open_url_params);
 #else
     web_contents()->OpenURL(open_url_params);
-#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_SIDE_PANEL)
+#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   } else {
     web_contents()->OpenURL(open_url_params);
   }

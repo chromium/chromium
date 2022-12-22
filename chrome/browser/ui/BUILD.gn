@@ -5497,7 +5497,7 @@ static_library("ui") {
     }
   }
 
-  if (enable_lens_desktop_side_panel) {
+  if (enable_lens_desktop_google_branded_features) {
     sources += [ "lens/lens_side_panel_helper.h" ]
   }
 

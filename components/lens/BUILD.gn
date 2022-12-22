@@ -11,7 +11,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "ENABLE_LENS_DESKTOP=$enable_lens_desktop",
-    "ENABLE_LENS_DESKTOP_SIDE_PANEL=$enable_lens_desktop_side_panel",
+    "ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES=$enable_lens_desktop_google_branded_features",
   ]
 }
 

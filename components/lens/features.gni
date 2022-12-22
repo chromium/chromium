@@ -16,6 +16,11 @@ declare_args() {
 }
 
 declare_args() {
-  # Lens in the side panel is a Chrome specific feature
-  enable_lens_desktop_side_panel = enable_lens_desktop && is_chrome_branded
+  # Lens features that are specific to the Google Chrome branded browser.
+  # Features include:
+  #  - Region Search
+  #  - Side Panel
+  #  - PDF Support
+  enable_lens_desktop_google_branded_features =
+      enable_lens_desktop && is_chrome_branded
 }
