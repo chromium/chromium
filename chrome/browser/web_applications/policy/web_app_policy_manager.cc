@@ -239,6 +239,10 @@ void WebAppPolicyManager::OnDisableListPolicyChanged() {
 void WebAppPolicyManager::OnSyncCommandsComplete(
     std::vector<std::string> app_ids) {
   app_registrar_->NotifyWebAppSettingsPolicyChanged();
+
+  if (refresh_policy_settings_completed_) {
+    std::move(refresh_policy_settings_completed_).Run();
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -422,9 +426,6 @@ void WebAppPolicyManager::RefreshPolicySettings() {
   }
 
   ApplyPolicySettings();
-
-  if (refresh_policy_settings_completed_)
-    std::move(refresh_policy_settings_completed_).Run();
 }
 
 void WebAppPolicyManager::ApplyPolicySettings() {

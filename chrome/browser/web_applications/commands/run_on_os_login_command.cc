@@ -145,8 +145,7 @@ void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
   if (login_mode_.value() == current_mode.value) {
     RecordCompletionState(
         RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
-    SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                    std::move(callback_));
+    OnOsHooksSet(OsHooksErrors());
     return;
   }
 
@@ -188,8 +187,7 @@ void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration(
   if (os_integration_state && login_mode_.value() == *os_integration_state) {
     RecordCompletionState(
         RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
-    SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                    std::move(callback_));
+    std::move(os_hooks_callback).Run(OsHooksErrors());
     return;
   }
 
@@ -197,13 +195,13 @@ void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration(
   // once OS integration
   // sub managers have been implemented.
   if (login_mode_.value() == RunOnOsLoginMode::kNotRun) {
-    web_app::OsHooksOptions os_hooks;
-    os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+    OsHooksOptions os_hooks;
+    os_hooks[OsHookType::kRunOnOsLogin] = true;
     lock_->os_integration_manager().UninstallOsHooks(
         app_id_, os_hooks, std::move(os_hooks_callback));
   } else {
-    web_app::InstallOsHooksOptions install_options;
-    install_options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+    InstallOsHooksOptions install_options;
+    install_options.os_hooks[OsHookType::kRunOnOsLogin] = true;
     install_options.reason = SHORTCUT_CREATION_AUTOMATED;
     lock_->os_integration_manager().InstallOsHooks(
         app_id_, std::move(os_hooks_callback), nullptr,
@@ -211,19 +209,24 @@ void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration(
   }
 }
 
-void RunOnOsLoginCommand::OnOsHooksSet(web_app::OsHooksErrors errors) {
-  if (errors[web_app::OsHookType::kRunOnOsLogin] == true) {
+void RunOnOsLoginCommand::OnOsHooksSet(OsHooksErrors errors) {
+  if (errors[OsHookType::kRunOnOsLogin] == true) {
     Abort(RunOnOsLoginCommandCompletionState::kOSHooksNotProperlySet);
     return;
   }
-  RecordCompletionState(
-      RunOnOsLoginCommandCompletionState::kSuccessfulCompletion);
+
+  if (!completion_state_set_) {
+    RecordCompletionState(
+        RunOnOsLoginCommandCompletionState::kSuccessfulCompletion);
+  }
+
   SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
                                   std::move(callback_));
 }
 
 void RunOnOsLoginCommand::RecordCompletionState(
     RunOnOsLoginCommandCompletionState completed_state) {
+  completion_state_set_ = true;
   base::UmaHistogramEnumeration("WebApp.RunOnOsLogin.CommandCompletionState",
                                 completed_state);
 }

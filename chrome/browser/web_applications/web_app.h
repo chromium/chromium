@@ -485,6 +485,8 @@ class WebApp {
   // Tracks if the app run on os login mode has been registered with the OS.
   // This might go out of sync with actual OS integration status, as Chrome does
   // not actively monitor OS registries.
+  // TODO(crbug.com/1401125): Remove after all OS Integration sub managers have
+  // been implemented and Synchronize() is running fine.
   absl::optional<RunOnOsLoginMode> run_on_os_login_os_integration_state_;
   SyncFallbackData sync_fallback_data_;
   blink::mojom::CaptureLinks capture_links_ =
