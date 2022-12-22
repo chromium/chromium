@@ -74,6 +74,11 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
   absl::optional<vm_tools::concierge::VmInfo> GetVmInfo(
       const std::string& vm_name);
 
+  // Given a container_token for a running guest, returns its GuestId. Returns
+  // nullopt if the token isn't recognised.
+  absl::optional<GuestId> GetGuestIdForToken(
+      const std::string& container_token);
+
   // Returns true if a guest is running, false otherwise.
   bool IsRunning(const GuestId& id);
 
@@ -106,19 +111,22 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
   void OnGetGarconSessionInfo(
       std::string vm_name,
       std::string container_name,
+      std::string container_token,
       absl::optional<vm_tools::cicerone::GetGarconSessionInfoResponse>
           response);
   void HandleNewGuest(const std::string& vm_name,
                       const std::string& container_name,
+                      const std::string& container_token,
                       const std::string& username,
                       const std::string& homedir,
                       const std::string& ipv4_address,
-                      uint32_t sftp_vsock_port);
+                      const uint32_t& sftp_vsock_port);
   void HandleContainerShutdown(const std::string& vm_name,
                                const std::string& container_name);
   std::string owner_id_;
   base::flat_map<std::string, vm_tools::concierge::VmInfo> vms_;
   base::flat_map<GuestId, GuestInfo> guests_;
+  base::flat_map<std::string, GuestId> tokens_to_guests_;
 
   base::flat_map<GuestId,
                  std::unique_ptr<base::OnceCallbackList<void(GuestInfo)>>>
