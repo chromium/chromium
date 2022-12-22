@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.browserservices.ui.splashscreen;
 
 import android.app.Activity;
 import android.graphics.PixelFormat;
-import android.os.Build;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
@@ -283,8 +282,7 @@ public class SplashController
         // we also see visual glitches in the following cases:
         // - closing activity (example: https://crbug.com/856544#c41)
         // - send activity to the background (example: https://crbug.com/856544#c30)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                && ChromeFeatureList.sSwapPixelFormatToFixConvertFromTranslucent.isEnabled()) {
+        if (ChromeFeatureList.sSwapPixelFormatToFixConvertFromTranslucent.isEnabled()) {
             return TranslucencyRemoval.ON_SPLASH_HIDDEN;
         }
         return TranslucencyRemoval.ON_SPLASH_SHOWN;

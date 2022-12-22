@@ -163,9 +163,8 @@ public class NotificationIntentInterceptor {
 
         // This flag ensures the broadcast is delivered with foreground priority to speed up the
         // broadcast delivery.
-        if (shouldUseBroadcast && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
-        }
+        if (shouldUseBroadcast) intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+
         // Use request code to distinguish different PendingIntents on Android.
         int originalRequestCode =
                 pendingIntentProvider != null ? pendingIntentProvider.getRequestCode() : 0;

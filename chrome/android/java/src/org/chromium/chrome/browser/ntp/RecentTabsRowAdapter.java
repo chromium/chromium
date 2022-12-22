@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.LruCache;
@@ -954,8 +953,6 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
      * Retrieves the user's preferred locale from the app's configurations.
      */
     private Locale getPreferredLocale() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? mActivity.getResources().getConfiguration().getLocales().get(0)
-                : mActivity.getResources().getConfiguration().locale;
+        return mActivity.getResources().getConfiguration().getLocales().get(0);
     }
 }

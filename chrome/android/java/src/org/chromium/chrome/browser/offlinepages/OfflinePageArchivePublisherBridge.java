@@ -14,7 +14,6 @@ import android.os.Environment;
 import android.provider.MediaStore.MediaColumns;
 import android.text.format.DateUtils;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContentUriUtils;
@@ -69,11 +68,6 @@ public class OfflinePageArchivePublisherBridge {
     public static long addCompletedDownload(String title, String description, String path,
             long length, String uri, String referer) {
         try {
-            // Call the proper version of the pass through based on the supported API level.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                return callAddCompletedDownload(title, description, path, length);
-            }
-
             return callAddCompletedDownload(title, description, path, length, uri, referer);
         } catch (Exception e) {
             // In case of exception, we return a download id of 0.
@@ -82,18 +76,6 @@ public class OfflinePageArchivePublisherBridge {
         }
     }
 
-    // Use this pass through before API level 24.
-    private static long callAddCompletedDownload(
-            String title, String description, String path, long length) {
-        DownloadManager downloadManager = getDownloadManager();
-        if (downloadManager == null) return 0;
-
-        return downloadManager.addCompletedDownload(title, description, IS_MEDIA_SCANNER_SCANNABLE,
-                MIME_TYPE, path, length, SHOW_NOTIFICATION);
-    }
-
-    // Use this pass through for API levels 24 and higher.
-    @RequiresApi(Build.VERSION_CODES.N)
     private static long callAddCompletedDownload(String title, String description, String path,
             long length, String uri, String referer) {
         DownloadManager downloadManager = getDownloadManager();

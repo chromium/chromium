@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import android.app.Activity;
-import android.os.Build;
 import android.support.test.runner.lifecycle.Stage;
 import android.view.View;
 
@@ -323,10 +322,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         // Long Screenshots is supported >= Android N (7.0).
         List<String> expectedModels = new ArrayList<String>();
         expectedModels.add(mActivity.getResources().getString(R.string.sharing_screenshot));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            expectedModels.add(
-                    mActivity.getResources().getString(R.string.sharing_long_screenshot));
-        }
+        expectedModels.add(mActivity.getResources().getString(R.string.sharing_long_screenshot));
         expectedModels.addAll(ImmutableList.of(
                 mActivity.getResources().getString(R.string.sharing_copy_url),
                 mActivity.getResources().getString(R.string.sharing_copy_image),
@@ -349,10 +345,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
         List<String> expectedModels = new ArrayList<String>();
         expectedModels.add(mActivity.getResources().getString(R.string.sharing_screenshot));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            expectedModels.add(
-                    mActivity.getResources().getString(R.string.sharing_long_screenshot));
-        }
+        expectedModels.add(mActivity.getResources().getString(R.string.sharing_long_screenshot));
         expectedModels.addAll(ImmutableList.of(
                 mActivity.getResources().getString(R.string.sharing_copy_image),
                 mActivity.getResources().getString(R.string.send_tab_to_self_share_activity_title),

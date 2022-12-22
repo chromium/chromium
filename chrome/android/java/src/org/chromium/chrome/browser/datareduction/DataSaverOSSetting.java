@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.datareduction;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.os.Build;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -23,7 +22,7 @@ public class DataSaverOSSetting {
         Context context = ContextUtils.getApplicationContext();
         ConnectivityManager connMgr =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connMgr.isActiveNetworkMetered() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (connMgr.isActiveNetworkMetered()) {
             return ApiHelperForN.getRestrictBackgroundStatus(connMgr)
                     == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
         }

@@ -5,10 +5,7 @@
 package org.chromium.chrome.browser.feed;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.DisplayMetrics;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -89,11 +86,8 @@ public final class FeedServiceBridge {
     }
 
     /** Returns the top user specified locale. */
-    @RequiresApi(Build.VERSION_CODES.N)
     private static Locale getLocale(Context context) {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? context.getResources().getConfiguration().getLocales().get(0)
-                : context.getResources().getConfiguration().locale;
+        return context.getResources().getConfiguration().getLocales().get(0);
     }
 
     // Java functionality needed for the native FeedService.

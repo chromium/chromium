@@ -15,7 +15,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Browser;
 import android.text.TextUtils;
 
@@ -274,9 +273,6 @@ public class MediaViewerUtils {
 
     private static boolean willExposeFileUri(Uri uri) {
         assert uri != null && !uri.equals(Uri.EMPTY) : "URI is not successfully generated.";
-
-        // On Android N and later, an Exception is thrown if we try to expose a file:// URI.
-        return uri.getScheme().equals(ContentResolver.SCHEME_FILE)
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+        return uri.getScheme().equals(ContentResolver.SCHEME_FILE);
     }
 }

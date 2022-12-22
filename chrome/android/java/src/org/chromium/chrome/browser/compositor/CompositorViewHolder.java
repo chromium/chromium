@@ -286,7 +286,6 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return null;
         View activeView = getContentView();
         if (activeView == null || !ViewCompat.isAttachedToWindow(activeView)) return null;
         return ApiHelperForN.onResolvePointerIcon(activeView, event, pointerIndex);

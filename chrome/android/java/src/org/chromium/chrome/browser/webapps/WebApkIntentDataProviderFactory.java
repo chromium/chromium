@@ -338,8 +338,7 @@ public class WebApkIntentDataProviderFactory {
         }
 
         boolean isSplashProvidedByWebApk =
-                (canUseSplashFromContentProvider && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                        && hasContentProviderForSplash(webApkPackageName));
+                (canUseSplashFromContentProvider && hasContentProviderForSplash(webApkPackageName));
 
         return create(intent, url, scope,
                 new WebappIcon(webApkPackageName,

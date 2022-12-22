@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.os.Build;
 import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
@@ -205,9 +204,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
      * Retrieves the user's preferred locale from the app's configurations.
      */
     private Locale getPreferredLocale() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? mActivity.getResources().getConfiguration().getLocales().get(0)
-                : mActivity.getResources().getConfiguration().locale;
+        return mActivity.getResources().getConfiguration().getLocales().get(0);
     }
 
     private String addQuotes(String text) {
