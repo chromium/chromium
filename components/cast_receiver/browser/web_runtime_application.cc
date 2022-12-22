@@ -127,12 +127,12 @@ void WebRuntimeApplication::OnAllBindingsReceived(
       embedder_application().GetWebContents());
 
   // Application is initialized now - we can load the URL.
-  LoadPage(app_url());
+  NavigateToPage(app_url());
 }
 
 void WebRuntimeApplication::OnPageLoadComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnPageLoaded();
+  OnPageNavigationComplete();
 }
 
 void WebRuntimeApplication::OnError() {

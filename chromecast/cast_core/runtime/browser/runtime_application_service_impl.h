@@ -75,7 +75,7 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
 #if !BUILDFLAG(IS_CAST_DESKTOP_BUILD)
   cast_receiver::StreamingConfigManager* GetStreamingConfigManager() override;
 #endif
-  void LoadPage(const GURL& url) override;
+  void NavigateToPage(const GURL& url) override;
 
  private:
   // Gets the current |message_port_service_|, attempting to create it if it

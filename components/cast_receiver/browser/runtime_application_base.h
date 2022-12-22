@@ -86,11 +86,12 @@ class RuntimeApplicationBase
 
   ApplicationClient& application_client() { return *application_client_; }
 
-  // Loads the page at the given |url| in the associated WebContents.
-  void LoadPage(const GURL& url);
+  // Navigated to the page at the given |url| in the associated WebContents.
+  void NavigateToPage(const GURL& url);
 
-  // Called by the actual implementation as Cast application page has loaded.
-  void OnPageLoaded();
+  // Called by the actual implementation after the Cast application page has
+  // been navigated to, following a call to NavigateToPage().
+  void OnPageNavigationComplete();
 
   // Sets the permissions for the provided |web_contents| to that as configured
   // in |app_config_|.

@@ -238,7 +238,7 @@ void RuntimeApplicationServiceImpl::Launch(
   runtime_application_->Launch(std::move(callback));
 }
 
-void RuntimeApplicationServiceImpl::LoadPage(const GURL& url) {
+void RuntimeApplicationServiceImpl::NavigateToPage(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto* cast_web_contents = cast_web_view_->cast_web_contents();

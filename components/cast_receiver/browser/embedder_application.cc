@@ -75,7 +75,7 @@ EmbedderApplication::CreateWebUIControllerFactory(
   return nullptr;
 }
 
-void EmbedderApplication::LoadPage(const GURL& gurl) {
+void EmbedderApplication::NavigateToPage(const GURL& gurl) {
   content::WebContents* web_contents = GetWebContents();
   DCHECK(web_contents);
   web_contents->GetController().LoadURL(gurl, content::Referrer(),

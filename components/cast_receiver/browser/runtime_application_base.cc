@@ -77,12 +77,12 @@ RuntimeApplicationBase::GetApplicationControls() {
       *embedder_application().GetWebContents());
 }
 
-void RuntimeApplicationBase::LoadPage(const GURL& url) {
+void RuntimeApplicationBase::NavigateToPage(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  embedder_application().LoadPage(url);
+  embedder_application().NavigateToPage(url);
 
-  SetWebVisibilityAndPaint(false);
+  SetWebVisibilityAndPaint(is_visible_);
 }
 
 void RuntimeApplicationBase::SetContentPermissions(
@@ -104,29 +104,19 @@ void RuntimeApplicationBase::SetContentPermissions(
   }
 }
 
-void RuntimeApplicationBase::OnPageLoaded() {
+void RuntimeApplicationBase::OnPageNavigationComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Page loaded: " << *this;
 
   auto* window_controls = embedder_application().GetContentWindowControls();
   DCHECK(window_controls);
   window_controls->AddVisibilityChangeObserver(*this);
-  if (is_touch_input_enabled_) {
-    window_controls->EnableTouchInput();
-  } else {
-    window_controls->DisableTouchInput();
-  }
-
-  // Create the window and show the web view.
-  if (is_visible_) {
-    DVLOG(1) << "Loading page in full screen: " << *this;
-    window_controls->ShowWindow();
-  } else {
-    DVLOG(1) << "Loading page in background: " << *this;
-    window_controls->HideWindow();
-  }
 
   embedder_application().NotifyApplicationStarted();
+
+  SetWebVisibilityAndPaint(is_visible_);
+  SetTouchInputEnabled(is_touch_input_enabled_);
+  SetMediaBlocking(is_media_load_blocked_, is_media_start_blocked_);
 }
 
 void RuntimeApplicationBase::SetUrlRewriteRules(
@@ -139,7 +129,12 @@ void RuntimeApplicationBase::SetUrlRewriteRules(
   url_rewrite::UrlRequestRewriteRulesManager&
       url_request_rewrite_rules_manager =
           GetApplicationControls().GetUrlRequestRewriteRulesManager();
-  url_request_rewrite_rules_manager.OnRulesUpdated(std::move(mojom_rules));
+  if (!url_request_rewrite_rules_manager.OnRulesUpdated(
+          std::move(mojom_rules))) {
+    LOG(ERROR) << "URL rewrite rules update failed.";
+    StopApplication(EmbedderApplication::ApplicationStopReason::kRuntimeError,
+                    net::Error::ERR_UNEXPECTED);
+  }
 }
 
 void RuntimeApplicationBase::SetMediaBlocking(bool load_blocked,
@@ -242,6 +237,15 @@ void RuntimeApplicationBase::SetWebVisibilityAndPaint(bool is_visible) {
   if (is_visible) {
     web_contents->WasShown();
   } else {
+    // NOTE: Calling WasHidden() and later WasShown() does not behave properly
+    // on some platforms (e.g. Linux devices using X11 platform for Ozone). In
+    // such cases, the WasShown() call will execute, and the browser-side code
+    // associated with this call will run, but it will never reach the Renderer
+    // process, so the LayerTreeHost will never draw the surface assocaited with
+    // this WebContents.
+    DLOG(WARNING)
+        << "WebContents hidden. NOTE: Changing from hidden to visible does not "
+           "work in all cases, and such calls may not be respected.";
     web_contents->WasHidden();
   }
 

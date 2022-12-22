@@ -86,7 +86,7 @@ class EmbedderApplication {
   CreateWebUIControllerFactory(std::vector<std::string> hosts);
 
   // Loads |url| in the associated WebContents.
-  virtual void LoadPage(const GURL& url);
+  virtual void NavigateToPage(const GURL& url);
 };
 
 std::ostream& operator<<(std::ostream& os,

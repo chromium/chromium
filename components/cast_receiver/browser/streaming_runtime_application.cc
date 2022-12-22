@@ -43,7 +43,7 @@ StreamingRuntimeApplication::~StreamingRuntimeApplication() {
 
 void StreamingRuntimeApplication::OnStreamingSessionStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnPageLoaded();
+  OnPageNavigationComplete();
 }
 
 void StreamingRuntimeApplication::OnError() {
@@ -86,7 +86,7 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
   receiver_session_client_->LaunchStreamingReceiverAsync();
 
   // Application is initialized now - we can load the URL.
-  LoadPage(GURL(base::StringPrintf(
+  NavigateToPage(GURL(base::StringPrintf(
       kStreamingPageUrlTemplate,
       cast_streaming::GetCastStreamingMediaSourceUrl().spec().c_str())));
 
