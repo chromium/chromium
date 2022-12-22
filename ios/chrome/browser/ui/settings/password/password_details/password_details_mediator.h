@@ -43,6 +43,9 @@ class IOSChromePasswordCheckManager;
 // Disconnects the mediator from all observers.
 - (void)disconnect;
 
+// Remove credential from credentials cache.
+- (void)removeCredential:(const password_manager::CredentialUIEntry&)credential;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_MEDIATOR_H_

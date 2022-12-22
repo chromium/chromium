@@ -269,6 +269,15 @@
   [self.viewController showEditViewWithoutAuthentication];
 }
 
+- (void)removeCredentialFromCacheAndRefreshTableView:
+    (const password_manager::CredentialUIEntry&)credential {
+  // Remove credential from the credentials cache of the password details
+  // manager.
+  [self.mediator removeCredential:credential];
+
+  [self.mediator didFinishEditingPasswordDetails];
+}
+
 - (void)onPasswordCopiedByUser {
   if (IsCredentialProviderExtensionPromoEnabled()) {
     DCHECK(_credentialProviderPromoHandler);
@@ -337,8 +346,10 @@
 // Notifies delegate about password deletion and records metric if needed.
 - (void)passwordDeletionConfirmedForCompromised:(BOOL)compromised
                                        forIndex:(int)index {
-  [self.delegate passwordDetailsCoordinator:self
-                           deleteCredential:self.mediator.credentials[index]];
+  [self.delegate
+      passwordDetailsCoordinator:self
+                deleteCredential:self.mediator.credentials[index]
+               shouldDismissView:(self.mediator.credentials.size() - 1 == 0)];
   if (compromised) {
     base::UmaHistogramEnumeration(
         "PasswordManager.BulkCheck.UserAction",

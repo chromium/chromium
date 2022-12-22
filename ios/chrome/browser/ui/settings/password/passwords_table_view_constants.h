@@ -40,6 +40,9 @@ extern NSString* const kPasswordIssuesTableViewId;
 // displayed in the table.
 extern NSString* const kAddPasswordButtonId;
 
+// Delete button accessibility identifier for Password Details.
+extern NSString* const kDeleteButtonForPasswordDetailsId;
+
 // Sections of the password settings
 typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
   SectionIdentifierSavePasswordsSwitch = kSectionIdentifierEnumZero,

@@ -272,10 +272,17 @@
 
 - (void)passwordDetailsCoordinator:(PasswordDetailsCoordinator*)coordinator
                   deleteCredential:
-                      (const password_manager::CredentialUIEntry&)credential {
+                      (const password_manager::CredentialUIEntry&)credential
+                 shouldDismissView:(BOOL)shouldDismiss {
   DCHECK_EQ(self.passwordDetailsCoordinator, coordinator);
   [self.mediator deleteCredential:credential];
-  [self.baseNavigationController popViewControllerAnimated:YES];
+
+  if (shouldDismiss) {
+    [self.baseNavigationController popViewControllerAnimated:YES];
+  } else {
+    [self.passwordDetailsCoordinator
+        removeCredentialFromCacheAndRefreshTableView:credential];
+  }
 }
 
 #pragma mark AddPasswordDetailsCoordinatorDelegate

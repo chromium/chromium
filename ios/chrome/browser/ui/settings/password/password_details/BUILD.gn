@@ -81,7 +81,6 @@ source_set("password_details_ui") {
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/list_model:list_model",
     "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings:settings_root_constants",
     "//ios/chrome/browser/ui/settings/autofill",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/password:password_constants",

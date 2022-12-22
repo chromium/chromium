@@ -192,6 +192,17 @@ id<GREYMatcher> HidePasswordButton() {
                     grey_interactable(), nullptr);
 }
 
+// Matcher for the Delete button at with accessibility identifier containing
+// `username` and `password` in Password Details view.
+id<GREYMatcher> DeleteButtonForUsernameAndPassword(NSString* username,
+                                                   NSString* password) {
+  return grey_allOf(
+      grey_accessibilityID([NSString
+          stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsId,
+                           username, password]),
+      grey_interactable(), nullptr);
+}
+
 // Matcher for the Delete button in Password Details view.
 id<GREYMatcher> DeleteButton() {
   return grey_allOf(
@@ -2556,6 +2567,96 @@ id<GREYMatcher> EditDoneButton() {
   [PasswordsInOtherAppsAppInterface setAutoFillStatus:YES];
   [[EarlGrey selectElementWithMatcher:onMatcher]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the detail view is dismissed when the last password is deleted,
+// but stays if there are still passwords on the page.
+- (void)testPasswordsDeletionNavigation {
+  if (![self groupingEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is only for grouped passwords.");
+  }
+
+  // Save forms with the same origin to be deleted later.
+  GREYAssert([PasswordSettingsAppInterface
+                 saveExamplePassword:@"password1"
+                            userName:@"user1"
+                              origin:@"https://example1.com"],
+             @"Stored form was not found in the PasswordStore results.");
+  GREYAssert([PasswordSettingsAppInterface
+                 saveExamplePassword:@"password2"
+                            userName:@"user2"
+                              origin:@"https://example1.com"],
+             @"Stored form was not found in the PasswordStore results.");
+  GREYAssert([PasswordSettingsAppInterface
+                 saveExamplePassword:@"password3"
+                            userName:@"user3"
+                              origin:@"https://example3.com"],
+             @"Stored form was not found in the PasswordStore results.");
+
+  OpenPasswordManager();
+
+  [GetInteractionForPasswordEntry(@"example1.com, 2 accounts")
+      assertWithMatcher:grey_notNil()];
+  [GetInteractionForPasswordEntry(@"example1.com, 2 accounts")
+      performAction:grey_tap()];
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  // Delete first password.
+  [[EarlGrey selectElementWithMatcher:DeleteButtonForUsernameAndPassword(
+                                          @"user1", @"password1")]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the current view is still the password details since there is
+  // still one more password left on the view.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kPasswordDetailsTableViewId)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Waiting for the view to load");
+
+  // Delete last password.
+  [[EarlGrey selectElementWithMatcher:DeleteButtonForUsernameAndPassword(
+                                          @"user2", @"password2")]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the current view is now the password manager since we deleted
+  // the last password.
+  condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Waiting for the view to load");
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 @end

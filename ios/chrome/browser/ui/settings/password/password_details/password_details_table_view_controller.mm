@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
@@ -357,7 +356,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   return item;
 }
 
-- (TableViewTextButtonItem*)deleteButtonItem {
+- (TableViewTextButtonItem*)deleteButtonItemForPasswordDetails:
+    (PasswordDetails*)passwordDetails {
   TableViewTextButtonItem* item =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeDeleteButton];
   item.buttonText = l10n_util::GetNSString(IDS_IOS_SETTINGS_TOOLBAR_DELETE);
@@ -365,7 +365,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   item.disableButtonIntrinsicWidth = YES;
   item.buttonTextColor = [UIColor colorNamed:kRedColor];
   item.buttonBackgroundColor = [UIColor clearColor];
-  item.buttonAccessibilityIdentifier = kSettingsToolbarDeleteButtonId;
+  item.buttonAccessibilityIdentifier = [NSString
+      stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsId,
+                       passwordDetails.username, passwordDetails.password];
   return item;
 }
 
@@ -978,7 +980,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   }
 
   if (IsPasswordGroupingEnabled() && self.tableView.editing) {
-    [model addItem:[self deleteButtonItem]
+    [model addItem:[self deleteButtonItemForPasswordDetails:passwordDetails]
         toSectionWithIdentifier:sectionForPassword];
   }
   [self.passwordDetailsInfoItems addObject:passwordItem];

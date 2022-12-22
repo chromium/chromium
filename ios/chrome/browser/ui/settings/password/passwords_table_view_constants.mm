@@ -39,3 +39,6 @@ NSString* const kSettingsPasswordsInOtherAppsCellId =
 NSString* const kAddPasswordButtonId = @"addPasswordItem";
 
 NSString* const kPasswordIssuesTableViewId = @"kPasswordIssuesTableViewId";
+
+NSString* const kDeleteButtonForPasswordDetailsId =
+    @"kDeleteButtonForPasswordDetailsId";

@@ -18,11 +18,14 @@ struct CredentialUIEntry;
 - (void)passwordDetailsCoordinatorDidRemove:
     (PasswordDetailsCoordinator*)coordinator;
 
-// Called when user deleted password. This action should be handled
-// outside to update the list of passwords immediately.
+// Called when user deleted password. This action should be handled outside to
+// update the list of passwords immediately. Callers should pass YES for
+// `shouldDismiss` if this is the last password on the page, to ensure the view
+// controller gets dismissed.
 - (void)passwordDetailsCoordinator:(PasswordDetailsCoordinator*)coordinator
                   deleteCredential:
-                      (const password_manager::CredentialUIEntry&)credential;
+                      (const password_manager::CredentialUIEntry&)credential
+                 shouldDismissView:(BOOL)shouldDismiss;
 
 @end
 
