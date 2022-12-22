@@ -185,13 +185,13 @@ enum class WireType : uint64_t {
   k32Bit = 5,
 };
 
-constexpr uint64_t VarintSize(uint64_t value) {
+constexpr size_t VarintSize(uint64_t value) {
   return value < 128 ? 1 : 1 + VarintSize(value >> 7);
 }
-constexpr uint64_t MinVarintSize() {
+constexpr size_t MinVarintSize() {
   return VarintSize((std::numeric_limits<uint64_t>::min)());
 }
-constexpr uint64_t MaxVarintSize() {
+constexpr size_t MaxVarintSize() {
   return VarintSize((std::numeric_limits<uint64_t>::max)());
 }
 

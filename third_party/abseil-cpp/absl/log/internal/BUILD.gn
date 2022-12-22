@@ -247,12 +247,6 @@ absl_source_set("proto") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/types:span",
   ]
-  if (is_clang) {
-    cflags_cc = [
-      "-Wno-shorten-64-to-32",
-      "-Wno-sign-conversion",
-    ]
-  }
 }
 
 absl_test("stderr_log_sink_test") {

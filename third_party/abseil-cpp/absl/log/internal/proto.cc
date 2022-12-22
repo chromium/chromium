@@ -42,8 +42,8 @@ constexpr uint64_t MakeTagType(uint64_t tag, WireType type) {
 
 bool EncodeVarint(uint64_t tag, uint64_t value, absl::Span<char> *buf) {
   const uint64_t tag_type = MakeTagType(tag, WireType::kVarint);
-  const uint64_t tag_type_size = VarintSize(tag_type);
-  const uint64_t value_size = VarintSize(value);
+  const size_t tag_type_size = VarintSize(tag_type);
+  const size_t value_size = VarintSize(value);
   if (tag_type_size + value_size > buf->size()) {
     buf->remove_suffix(buf->size());
     return false;
@@ -55,7 +55,7 @@ bool EncodeVarint(uint64_t tag, uint64_t value, absl::Span<char> *buf) {
 
 bool Encode64Bit(uint64_t tag, uint64_t value, absl::Span<char> *buf) {
   const uint64_t tag_type = MakeTagType(tag, WireType::k64Bit);
-  const uint64_t tag_type_size = VarintSize(tag_type);
+  const size_t tag_type_size = VarintSize(tag_type);
   if (tag_type_size + sizeof(value) > buf->size()) {
     buf->remove_suffix(buf->size());
     return false;
@@ -71,7 +71,7 @@ bool Encode64Bit(uint64_t tag, uint64_t value, absl::Span<char> *buf) {
 
 bool Encode32Bit(uint64_t tag, uint32_t value, absl::Span<char> *buf) {
   const uint64_t tag_type = MakeTagType(tag, WireType::k32Bit);
-  const uint64_t tag_type_size = VarintSize(tag_type);
+  const size_t tag_type_size = VarintSize(tag_type);
   if (tag_type_size + sizeof(value) > buf->size()) {
     buf->remove_suffix(buf->size());
     return false;
@@ -88,9 +88,9 @@ bool Encode32Bit(uint64_t tag, uint32_t value, absl::Span<char> *buf) {
 bool EncodeBytes(uint64_t tag, absl::Span<const char> value,
                  absl::Span<char> *buf) {
   const uint64_t tag_type = MakeTagType(tag, WireType::kLengthDelimited);
-  const uint64_t tag_type_size = VarintSize(tag_type);
+  const size_t tag_type_size = VarintSize(tag_type);
   uint64_t length = value.size();
-  const uint64_t length_size = VarintSize(length);
+  const size_t length_size = VarintSize(length);
   if (tag_type_size + length_size + value.size() > buf->size()) {
     buf->remove_suffix(buf->size());
     return false;
@@ -105,9 +105,9 @@ bool EncodeBytes(uint64_t tag, absl::Span<const char> value,
 bool EncodeBytesTruncate(uint64_t tag, absl::Span<const char> value,
                          absl::Span<char> *buf) {
   const uint64_t tag_type = MakeTagType(tag, WireType::kLengthDelimited);
-  const uint64_t tag_type_size = VarintSize(tag_type);
+  const size_t tag_type_size = VarintSize(tag_type);
   uint64_t length = value.size();
-  const uint64_t length_size =
+  const size_t length_size =
       VarintSize(std::min<uint64_t>(length, buf->size()));
   if (tag_type_size + length_size <= buf->size() &&
       tag_type_size + length_size + value.size() > buf->size()) {
@@ -129,9 +129,9 @@ bool EncodeBytesTruncate(uint64_t tag, absl::Span<const char> value,
 ABSL_MUST_USE_RESULT absl::Span<char> EncodeMessageStart(
     uint64_t tag, uint64_t max_size, absl::Span<char> *buf) {
   const uint64_t tag_type = MakeTagType(tag, WireType::kLengthDelimited);
-  const uint64_t tag_type_size = VarintSize(tag_type);
+  const size_t tag_type_size = VarintSize(tag_type);
   max_size = std::min<uint64_t>(max_size, buf->size());
-  const uint64_t length_size = VarintSize(max_size);
+  const size_t length_size = VarintSize(max_size);
   if (tag_type_size + length_size > buf->size()) {
     buf->remove_suffix(buf->size());
     return absl::Span<char>();
@@ -146,9 +146,9 @@ void EncodeMessageLength(absl::Span<char> msg, const absl::Span<char> *buf) {
   if (!msg.data()) return;
   assert(buf->data() >= msg.data());
   if (buf->data() < msg.data()) return;
-  const uint64_t length_size = msg.size();
-  EncodeRawVarint(static_cast<uint64_t>(buf->data() - msg.data()) - length_size,
-                  length_size, &msg);
+  EncodeRawVarint(
+      static_cast<uint64_t>(buf->data() - (msg.data() + msg.size())),
+      msg.size(), &msg);
 }
 
 namespace {
@@ -203,7 +203,8 @@ bool ProtoField::DecodeFrom(absl::Span<const char> *data) {
       break;
     case WireType::kLengthDelimited: {
       value_ = DecodeVarint(data);
-      data_ = data->subspan(0, std::min<size_t>(value_, data->size()));
+      data_ = data->subspan(
+          0, static_cast<size_t>(std::min<uint64_t>(value_, data->size())));
       data->remove_prefix(data_.size());
       break;
     }

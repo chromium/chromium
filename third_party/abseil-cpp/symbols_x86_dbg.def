@@ -2700,7 +2700,7 @@ EXPORTS
     ?MatchesConversions@ParsedFormatBase@str_format_internal@absl@@ABE_N_NV?$initializer_list@W4FormatConversionCharSet@absl@@@std@@@Z
     ?MaxFlatLength@CordTestAccess@strings_internal@absl@@SAIXZ
     ?MaxFramesInLogStackTrace@log_internal@absl@@YAHXZ
-    ?MaxVarintSize@log_internal@absl@@YA_KXZ
+    ?MaxVarintSize@log_internal@absl@@YAIXZ
     ?MaybeGetCrcCordState@Cord@absl@@ABEPBVCrcCordState@crc_internal@2@XZ
     ?MaybeRemoveEmptyCrcNode@InlineRep@Cord@absl@@AAEXXZ
     ?MaybeTrackCordImpl@CordzInfo@cord_internal@absl@@CAXAAVInlineData@23@ABV423@W4MethodIdentifier@CordzUpdateTracker@23@@Z
@@ -3201,7 +3201,7 @@ EXPORTS
     ?Value@?$Manager@_K$01@FormatArgImpl@str_format_internal@absl@@SA_KTData@234@@Z
     ?Value@?$Manager@_N$01@FormatArgImpl@str_format_internal@absl@@SA_NTData@234@@Z
     ?Value@CordzUpdateTracker@cord_internal@absl@@QBE_JW4MethodIdentifier@123@@Z
-    ?VarintSize@log_internal@absl@@YA_K_K@Z
+    ?VarintSize@log_internal@absl@@YAI_K@Z
     ?Version@Impl@time_zone@cctz@time_internal@absl@@QBE?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@XZ
     ?Version@TimeZoneInfo@cctz@time_internal@absl@@UBE?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@XZ
     ?Version@TimeZoneLibC@cctz@time_internal@absl@@UBE?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@XZ
