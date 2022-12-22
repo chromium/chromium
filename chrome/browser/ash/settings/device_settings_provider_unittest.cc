@@ -1170,20 +1170,6 @@ TEST_F(DeviceSettingsProviderTest, FeatureFlags) {
   EXPECT_EQ(expected_feature_flags, provider_->Get(kFeatureFlags)->GetList());
 }
 
-TEST_F(DeviceSettingsProviderTest, DecodeBorealisAllowed) {
-  device_policy_->payload().mutable_device_borealis_allowed()->set_allowed(
-      true);
-  BuildAndInstallDevicePolicy();
-  EXPECT_EQ(base::Value(true), *provider_->Get(kBorealisAllowedForDevice));
-}
-
-TEST_F(DeviceSettingsProviderTest, DecodeBorealisDisallowed) {
-  device_policy_->payload().mutable_device_borealis_allowed()->set_allowed(
-      false);
-  BuildAndInstallDevicePolicy();
-  EXPECT_EQ(base::Value(false), *provider_->Get(kBorealisAllowedForDevice));
-}
-
 TEST_F(DeviceSettingsProviderTest, DeviceAllowedBluetoothServices) {
   em::DeviceAllowedBluetoothServicesProto* proto =
       device_policy_->payload().mutable_device_allowed_bluetooth_services();
