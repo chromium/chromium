@@ -13,18 +13,18 @@
 namespace value_store {
 
 base::Value ValueStoreChange::ToValue(ValueStoreChangeList changes) {
-  base::Value changes_value(base::Value::Type::DICTIONARY);
+  base::Value::Dict changes_dict;
   for (auto& change : changes) {
-    base::Value change_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict change_dict;
     if (change.old_value) {
-      change_value.SetKey("oldValue", std::move(*change.old_value));
+      change_dict.Set("oldValue", std::move(*change.old_value));
     }
     if (change.new_value) {
-      change_value.SetKey("newValue", std::move(*change.new_value));
+      change_dict.Set("newValue", std::move(*change.new_value));
     }
-    changes_value.SetKey(change.key, std::move(change_value));
+    changes_dict.Set(change.key, std::move(change_dict));
   }
-  return changes_value;
+  return base::Value(std::move(changes_dict));
 }
 
 ValueStoreChange::ValueStoreChange(const std::string& key,

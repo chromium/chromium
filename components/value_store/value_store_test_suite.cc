@@ -77,7 +77,7 @@ void ValueStoreTestSuite::TearDown() {
 TEST_P(ValueStoreTestSuite, NonexistentKeysReturnOk) {
   auto result = storage_->Get("key");
   ASSERT_TRUE(result.status().ok());
-  EXPECT_EQ(result.settings(), base::Value(base::Value::Type::DICTIONARY));
+  EXPECT_EQ(result.settings(), base::Value::Dict());
 }
 
 TEST_P(ValueStoreTestSuite, SetProducesMatchingChanges) {

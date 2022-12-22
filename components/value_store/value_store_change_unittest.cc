@@ -15,13 +15,13 @@ TEST(ValueStoreChangeTest, ToValue) {
   changes.push_back(ValueStoreChange("foo", absl::nullopt, base::Value("bar")));
   changes.push_back(ValueStoreChange("baz", base::Value("qux"), absl::nullopt));
 
-  base::Value expected(base::Value::Type::DICTIONARY);
-  base::Value expected_foo(base::Value::Type::DICTIONARY);
-  base::Value expected_baz(base::Value::Type::DICTIONARY);
-  expected_foo.SetStringKey("newValue", "bar");
-  expected_baz.SetStringKey("oldValue", "qux");
-  expected.SetKey("foo", std::move(expected_foo));
-  expected.SetKey("baz", std::move(expected_baz));
+  base::Value::Dict expected;
+  base::Value::Dict expected_foo;
+  base::Value::Dict expected_baz;
+  expected_foo.Set("newValue", "bar");
+  expected_baz.Set("oldValue", "qux");
+  expected.Set("foo", std::move(expected_foo));
+  expected.Set("baz", std::move(expected_baz));
 
   EXPECT_EQ(expected, ValueStoreChange::ToValue(std::move(changes)));
 }
