@@ -22,6 +22,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using extensions::mojom::ManifestLocation;
 
@@ -54,38 +55,38 @@ class ManifestUnitTest : public testing::Test {
 
   // Helper function that replaces the Manifest held by |manifest| with a copy
   // with its |key| changed to |value|.
-  void MutateManifest(std::unique_ptr<Manifest>* manifest,
+  void MutateManifest(std::unique_ptr<Manifest>& manifest,
                       const std::string& key,
                       base::Value value) {
-    base::Value::Dict manifest_value = (*manifest)->value()->Clone();
+    base::Value::Dict manifest_value = manifest->value()->Clone();
     manifest_value.SetByDottedPath(key, std::move(value));
-    ExtensionId extension_id = manifest->get()->extension_id();
-    *manifest = std::make_unique<Manifest>(
+    ExtensionId extension_id = manifest->extension_id();
+    manifest = std::make_unique<Manifest>(
         ManifestLocation::kInternal, std::move(manifest_value), extension_id);
   }
 
   // Helper function to delete the |key| from |manifest|.
-  void DeleteManifestKey(std::unique_ptr<Manifest>* manifest,
+  void DeleteManifestKey(std::unique_ptr<Manifest>& manifest,
                          const std::string& key) {
-    base::Value::Dict manifest_value = (*manifest)->value()->Clone();
+    base::Value::Dict manifest_value = manifest->value()->Clone();
     manifest_value.RemoveByDottedPath(key);
-    ExtensionId extension_id = manifest->get()->extension_id();
-    *manifest = std::make_unique<Manifest>(
+    ExtensionId extension_id = manifest->extension_id();
+    manifest = std::make_unique<Manifest>(
         ManifestLocation::kInternal, std::move(manifest_value), extension_id);
   }
 
   // Helper function that replaces the manifest held by |manifest| with a copy
   // and uses the |for_login_screen| during creation to determine its type.
-  void MutateManifestForLoginScreen(std::unique_ptr<Manifest>* manifest,
+  void MutateManifestForLoginScreen(std::unique_ptr<Manifest>& manifest,
                                     bool for_login_screen) {
-    auto manifest_value = (*manifest)->value()->Clone();
-    ExtensionId extension_id = manifest->get()->extension_id();
+    auto manifest_value = manifest->value()->Clone();
+    ExtensionId extension_id = manifest->extension_id();
     if (for_login_screen) {
-      *manifest = Manifest::CreateManifestForLoginScreen(
+      manifest = Manifest::CreateManifestForLoginScreen(
           ManifestLocation::kExternalPolicy, std::move(manifest_value),
           extension_id);
     } else {
-      *manifest = std::make_unique<Manifest>(
+      manifest = std::make_unique<Manifest>(
           ManifestLocation::kInternal, std::move(manifest_value), extension_id);
     }
   }
@@ -130,7 +131,7 @@ TEST_F(ManifestUnitTest, Extension) {
       crx_file::id_util::GenerateId("extid"));
   EXPECT_TRUE(manifest->EqualsForTesting(*manifest2));
   EXPECT_TRUE(manifest2->EqualsForTesting(*manifest));
-  MutateManifest(&manifest, "foo", base::Value("blah"));
+  MutateManifest(manifest, "foo", base::Value("blah"));
   EXPECT_FALSE(manifest->EqualsForTesting(*manifest2));
 }
 
@@ -139,6 +140,8 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
   base::Value::Dict value;
   value.Set(keys::kName, "extension");
   value.Set(keys::kVersion, "1");
+
+  const base::Value empty_dict(base::Value::Type::DICT);
 
   std::unique_ptr<Manifest> manifest(
       new Manifest(ManifestLocation::kInternal, std::move(value),
@@ -153,43 +156,43 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
   AssertType(manifest.get(), Manifest::TYPE_EXTENSION);
 
   // Login screen extension
-  MutateManifestForLoginScreen(&manifest, true);
+  MutateManifestForLoginScreen(manifest, true);
   AssertType(manifest.get(), Manifest::TYPE_LOGIN_SCREEN_EXTENSION);
-  MutateManifestForLoginScreen(&manifest, false);
+  MutateManifestForLoginScreen(manifest, false);
 
   // Theme.
-  MutateManifest(&manifest, keys::kTheme, base::Value(base::Value::Dict()));
+  MutateManifest(manifest, keys::kTheme, base::Value(base::Value::Dict()));
   AssertType(manifest.get(), Manifest::TYPE_THEME);
-  DeleteManifestKey(&manifest, keys::kTheme);
+  DeleteManifestKey(manifest, keys::kTheme);
 
   // Shared module.
-  MutateManifest(&manifest, api::shared_module::ManifestKeys::kExport,
+  MutateManifest(manifest, api::shared_module::ManifestKeys::kExport,
                  base::Value(base::Value::Dict()));
   AssertType(manifest.get(), Manifest::TYPE_SHARED_MODULE);
-  DeleteManifestKey(&manifest, api::shared_module::ManifestKeys::kExport);
+  DeleteManifestKey(manifest, api::shared_module::ManifestKeys::kExport);
 
   // Packaged app.
-  MutateManifest(&manifest, keys::kApp, base::Value(base::Value::Dict()));
+  MutateManifest(manifest, keys::kApp, base::Value(base::Value::Dict()));
   AssertType(manifest.get(), Manifest::TYPE_LEGACY_PACKAGED_APP);
 
   // Packaged app for login screen remains a packaged app.
-  MutateManifestForLoginScreen(&manifest, true);
+  MutateManifestForLoginScreen(manifest, true);
   AssertType(manifest.get(), Manifest::TYPE_LEGACY_PACKAGED_APP);
-  MutateManifestForLoginScreen(&manifest, false);
+  MutateManifestForLoginScreen(manifest, false);
 
   // Platform app with event page.
-  MutateManifest(&manifest, keys::kPlatformAppBackground,
+  MutateManifest(manifest, keys::kPlatformAppBackground,
                  base::Value(base::Value::Dict()));
   AssertType(manifest.get(), Manifest::TYPE_PLATFORM_APP);
-  DeleteManifestKey(&manifest, keys::kPlatformAppBackground);
+  DeleteManifestKey(manifest, keys::kPlatformAppBackground);
 
   // Hosted app.
-  MutateManifest(&manifest, keys::kWebURLs, base::Value(base::Value::List()));
+  MutateManifest(manifest, keys::kWebURLs, base::Value(base::Value::List()));
   AssertType(manifest.get(), Manifest::TYPE_HOSTED_APP);
-  DeleteManifestKey(&manifest, keys::kWebURLs);
-  MutateManifest(&manifest, keys::kLaunchWebURL, base::Value("foo"));
+  DeleteManifestKey(manifest, keys::kWebURLs);
+  MutateManifest(manifest, keys::kLaunchWebURL, base::Value("foo"));
   AssertType(manifest.get(), Manifest::TYPE_HOSTED_APP);
-  DeleteManifestKey(&manifest, keys::kLaunchWebURL);
+  DeleteManifestKey(manifest, keys::kLaunchWebURL);
 }
 
 // Verifies that the getters filter restricted keys taking into account the
@@ -211,13 +214,13 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
   EXPECT_TRUE(warnings.empty());
 
   // "host_permissions" requires manifest version 3.
-  MutateManifest(&manifest, keys::kHostPermissions,
+  MutateManifest(manifest, keys::kHostPermissions,
                  base::Value(base::Value::List()));
   EXPECT_FALSE(manifest->FindKey(keys::kHostPermissions));
 
   // Update the extension to be manifest_version: 3; the host_permissions
   // should then be available.
-  MutateManifest(&manifest, keys::kManifestVersion, base::Value(3));
+  MutateManifest(manifest, keys::kManifestVersion, base::Value(3));
   EXPECT_TRUE(manifest->FindKey(keys::kHostPermissions));
 }
 
@@ -244,7 +247,7 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ItemType) {
   // Extensions can specify "page_action"...
   EXPECT_TRUE(manifest->FindKey(keys::kPageAction));
 
-  MutateManifest(&manifest, keys::kPlatformAppBackground,
+  MutateManifest(manifest, keys::kPlatformAppBackground,
                  base::Value(base::Value::Dict()));
   AssertType(manifest.get(), Manifest::TYPE_PLATFORM_APP);
   // ...But platform apps may not.
