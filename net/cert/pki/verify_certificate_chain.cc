@@ -5,6 +5,7 @@
 #include "net/cert/pki/verify_certificate_chain.h"
 
 #include <algorithm>
+#include <cassert>
 
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
@@ -16,7 +17,6 @@
 #include "net/cert/pki/trust_store.h"
 #include "net/cert/pki/verify_signed_data.h"
 #include "net/der/input.h"
-#include "net/der/parser.h"
 
 namespace net {
 
@@ -359,196 +359,265 @@ void VerifyExtendedKeyUsage(const ParsedCertificate& cert,
   }
 }
 
-// Returns |true| if |policies| contains the OID |search_oid|.
-bool SetContains(const std::set<der::Input>& policies,
-                 const der::Input& search_oid) {
-  return policies.count(search_oid) > 0;
-}
-
 // Representation of RFC 5280's "valid_policy_tree", used to keep track of the
-// valid policies and policy re-mappings.
+// valid policies and policy re-mappings. This structure is defined in
+// section 6.1.2.
 //
-// ValidPolicyTree differs slightly from RFC 5280's description in that:
+// ValidPolicyGraph differs from RFC 5280's description in that:
 //
 //  (1) It does not track "qualifier_set". This is not needed as it is not
 //      output by this implementation.
 //
-//  (2) It only stores the most recent level of the policy tree rather than
-//      the full tree of nodes.
-class ValidPolicyTree {
+//  (2) It builds a directed acyclic graph, rather than a tree. When a given
+//      policy matches multiple parents, RFC 5280 makes a separate node for
+//      each parent. This representation condenses them into one node with
+//      multiple parents.
+//
+//  (3) It does not track "expected_policy_set" or anyPolicy nodes directly.
+//      Rather it maintains, only for the most recent level, whether there is an
+//      anyPolicy node and an inverted map of all "expected_policy_set" values.
+//
+//  (4) Some pruning steps are deferred to when policies are evaluated, as a
+//      reachability pass.
+class ValidPolicyGraph {
  public:
-  ValidPolicyTree() = default;
+  ValidPolicyGraph() = default;
 
-  ValidPolicyTree(const ValidPolicyTree&) = delete;
-  ValidPolicyTree& operator=(const ValidPolicyTree&) = delete;
+  ValidPolicyGraph(const ValidPolicyGraph&) = delete;
+  ValidPolicyGraph& operator=(const ValidPolicyGraph&) = delete;
 
+  // A Node is an entry in the policy graph. It contains information about some
+  // policy asserted by a certificate in the chain. The policy OID itself is
+  // omitted because it is the key in the Level map.
   struct Node {
-    // |root_policy| is equivalent to |valid_policy|, but in the domain of the
-    // caller.
+    // The list of "valid_policy" values for all nodes which are a parent of
+    // this node, other than anyPolicy. If empty, this node has a single parent,
+    // anyPolicy.
     //
-    // The reason for this distinction is the Policy Mappings extension.
+    // Nodes whose parent is anyPolicy are root policies, and may be returned
+    // in the authorities-constrained-policy-set. Nodes with a concrete policy
+    // as a parent are derived from that policy in the issuer certificate,
+    // possibly with a policy mapping applied.
     //
-    // So whereas |valid_policy| is in the remapped domain defined by the
-    // issuing certificate, |root_policy| is in the fixed domain of the caller.
-    //
-    // OIDs in "user_initial_policy_set" and "user_constrained_policy_set" are
-    // directly comparable to |root_policy| values, but not necessarily to
-    // |valid_policy|.
-    //
-    // In terms of the valid policy tree, |root_policy| can be found by
-    // starting at the node's root ancestor, and finding the first node with a
-    // valid_policy other than anyPolicy. This is effectively the same process
-    // as used during policy tree intersection in RFC 5280 6.1.5.g.iii.1
-    der::Input root_policy;
+    // Note it is not possible for a policy to have both anyPolicy and a
+    // concrete policy as a parent. Section 6.1.3, step d.1.ii only runs if
+    // there was no match in step d.1.i.
+    std::vector<der::Input> parent_policies;
 
-    // The same as RFC 5280's "valid_policy" variable.
-    der::Input valid_policy;
+    // Whether this node matches a policy mapping in the certificate. If true,
+    // its "expected_policy_set" comes from the policy mappings extension. If
+    // false, its "expected_policy_set" is itself.
+    bool mapped = false;
 
-    // The same as RFC 5280s "expected_policy_set" variable.
-    std::set<der::Input> expected_policy_set;
-
-    // Note that RFC 5280's "qualifier_set" is omitted.
+    // Whether this node is reachable from some valid policy in the end-entity
+    // certificate. Computed during GetValidRootPolicySet().
+    bool reachable = false;
   };
 
-  // Level represents all the nodes at depth "i" in the valid_policy_tree.
-  using Level = std::vector<Node>;
+  // The policy graph is organized into "levels", each corresponding to a
+  // certificate in the chain. We maintain a map from "valid_policy" to the
+  // corresponding Node. This is the set of policies asserted by this
+  // certificate. The special anyPolicy OID is handled separately below.
+  using Level = std::map<der::Input, Node>;
 
-  // Initializes the ValidPolicyTree for the given "user_initial_policy_set".
+  // Additional per-level information that only needs to be maintained for the
+  // bottom-most level.
+  struct LevelDetails {
+    // Maintains the "expected_policy_set" values for nodes in a level of the
+    // graph, but the map is inverted from RFC 5280's formulation. For a given
+    // policy OID P, other than anyPolicy, this map gives the set of nodes where
+    // P appears in the node's "expected_policy_set". anyPolicy is handled
+    // separately below.
+    std::map<der::Input, std::vector<der::Input>> expected_policy_map;
+
+    // Whether there is a node at this level whose "valid_policy" is anyPolicy.
+    //
+    // Note anyPolicy's "expected_policy_set" always {anyPolicy}, and anyPolicy
+    // will never appear in the "expected_policy_set" of any other policy. That
+    // means this field also captures how anyPolicy appears in
+    // "expected_policy_set".
+    bool has_any_policy = false;
+  };
+
+  // Initializes the ValidPolicyGraph for the given "user_initial_policy_set".
   //
-  // In RFC 5280, the valid_policy_tree is initialized to a root node at depth
+  // In RFC 5280, the valid_policy_tree is initialized to a root node at level
   // 0 of "anyPolicy"; the intersection with the "user_initial_policy_set" is
   // done at the end (Wrap Up) as described in section 6.1.5 step g.
   //
   // Whereas in this implementation, the restriction on policies is added here,
-  // and intersecting the valid policy tree during Wrap Up is no longer needed.
+  // and intersecting during Wrap Up is no longer needed.
   //
   // The final "user_constrained_policy_set" obtained will be the same. The
   // advantages of this approach is simpler code.
-  void Init(const std::set<der::Input>& user_initial_policy_set) {
-    Clear();
-    for (const der::Input& policy_oid : user_initial_policy_set)
-      AddRootNode(policy_oid);
+  //
+  // TODO(davidben): It is not quite the same in some edge cases around
+  // anyPolicy. Switch this to match RFC 5280's formulation.
+  void Init(const std::set<der::Input>& user_constained_policy_set) {
+    SetNull();
+    StartLevel();
+    for (der::Input policy : user_constained_policy_set) {
+      if (policy == der::Input(kAnyPolicyOid)) {
+        AddAnyPolicyNode();
+      } else {
+        AddNode(policy, {});
+      }
+    }
   }
-
-  // Returns the current level (i.e. all nodes at depth i in the valid
-  // policy tree).
-  const Level& current_level() const { return current_level_; }
-  Level& current_level() { return current_level_; }
 
   // In RFC 5280 valid_policy_tree may be set to null. That is represented here
   // by emptiness.
-  bool IsNull() const { return current_level_.empty(); }
-  void SetNull() { Clear(); }
+  bool IsNull() const {
+    return !current_level_.has_any_policy &&
+           (levels_.empty() || levels_.back().empty());
+  }
+  void SetNull() {
+    levels_.clear();
+    current_level_ = LevelDetails{};
+  }
 
-  // This implementation keeps only the last level of the valid policy
-  // tree. Calling StartLevel() returns the nodes for the previous
-  // level, and starts a new level.
-  Level StartLevel() {
-    Level prev_level;
-    std::swap(prev_level, current_level_);
+  // Completes the previous level, returning a corresponding LevelDetails
+  // structure, and starts a new level.
+  LevelDetails StartLevel() {
+    // Finish building expected_policy_map for the previous level.
+    if (!levels_.empty()) {
+      for (const auto& [policy, node] : levels_.back()) {
+        if (!node.mapped) {
+          current_level_.expected_policy_map[policy].push_back(policy);
+        }
+      }
+    }
+
+    LevelDetails prev_level = std::move(current_level_);
+    levels_.emplace_back();
+    current_level_ = LevelDetails{};
     return prev_level;
   }
 
   // Gets the set of policies (in terms of root authority's policy domain) that
-  // are valid at the curent level of the policy tree.
+  // are valid at the bottom level of the policy graph. This is what X.509 calls
+  // "user-constrained-policy-set".
   //
-  // For example:
-  //
-  //  * If the valid policy tree was initialized with anyPolicy, then this
-  //    function returns what X.509 calls "authorities-constrained-policy-set".
-  //
-  //  * If the valid policy tree was instead initialized with the
-  //    "user-initial-policy_set", then this function returns what X.509
-  //    calls "user-constrained-policy-set"
-  //    ("authorities-constrained-policy-set" intersected with the
-  //    "user-initial-policy-set").
+  // This method may only be called once, after the policy graph is constructed.
   void GetValidRootPolicySet(std::set<der::Input>* policy_set) {
     policy_set->clear();
-    for (const Node& node : current_level_)
-      policy_set->insert(node.root_policy);
+    if (levels_.empty()) {
+      return;
+    }
 
-    // If the result includes anyPolicy, simplify it to a set of size 1.
-    if (policy_set->size() > 1 &&
-        SetContains(*policy_set, der::Input(kAnyPolicyOid))) {
+    if (current_level_.has_any_policy) {
       *policy_set = {der::Input(kAnyPolicyOid)};
+      return;
     }
-  }
 
-  // Adds a node |n| to the current level which is a child of |parent|
-  // such that:
-  //   * n.valid_policy = policy_oid
-  //   * n.expected_policy_set = {policy_oid}
-  void AddNode(const Node& parent, const der::Input& policy_oid) {
-    AddNodeWithExpectedPolicySet(parent, policy_oid, {policy_oid});
-  }
-
-  // Adds a node |n| to the current level which is a child of |parent|
-  // such that:
-  //   * n.valid_policy = policy_oid
-  //   * n.expected_policy_set = expected_policy_set
-  void AddNodeWithExpectedPolicySet(
-      const Node& parent,
-      const der::Input& policy_oid,
-      const std::set<der::Input>& expected_policy_set) {
-    Node new_node;
-    new_node.valid_policy = policy_oid;
-    new_node.expected_policy_set = expected_policy_set;
-
-    // Consider the root policy as the first policy other than anyPolicy (or
-    // anyPolicy if it hasn't been restricted yet).
-    new_node.root_policy = (parent.root_policy == der::Input(kAnyPolicyOid))
-                               ? policy_oid
-                               : parent.root_policy;
-
-    current_level_.push_back(std::move(new_node));
-  }
-
-  // Returns the first node having valid_policy == anyPolicy in |level|, or
-  // nullptr if there is none.
-  static const Node* FindAnyPolicyNode(const Level& level) {
-    for (const Node& node : level) {
-      if (node.valid_policy == der::Input(kAnyPolicyOid))
-        return &node;
+    // The root's policy domain is determined by nodes with anyPolicy as a
+    // parent. However, we must limit to those which are reachable from the
+    // end-entity certificate because we defer some pruning steps.
+    for (auto& [policy, node] : levels_.back()) {
+      node.reachable = true;
     }
-    return nullptr;
-  }
-
-  // Deletes all nodes |n| in |level| where |n.valid_policy| matches the given
-  // |valid_policy|. This may re-order the nodes in |level|.
-  static void DeleteNodesMatchingValidPolicy(const der::Input& valid_policy,
-                                             Level* level) {
-    // This works by swapping nodes to the end of the vector, and then doing a
-    // single resize to delete them all.
-    auto cur = level->begin();
-    auto end = level->end();
-    while (cur != end) {
-      bool should_delete_node = cur->valid_policy == valid_policy;
-      if (should_delete_node) {
-        end = std::prev(end);
-        if (cur != end)
-          std::iter_swap(cur, end);
-      } else {
-        ++cur;
+    for (size_t i = levels_.size() - 1; i < levels_.size(); i--) {
+      for (auto& [policy, node] : levels_[i]) {
+        if (!node.reachable) {
+          continue;
+        }
+        if (node.parent_policies.empty()) {
+          // |node|'s parent is anyPolicy, so this is in the root policy domain.
+          policy_set->insert(policy);
+        } else if (i > 0) {
+          // Otherwise, continue searching the previous level.
+          for (der::Input parent : node.parent_policies) {
+            auto iter = levels_[i - 1].find(parent);
+            if (iter != levels_[i - 1].end()) {
+              iter->second.reachable = true;
+            }
+          }
+        }
       }
     }
-    level->erase(end, level->end());
+  }
+
+  // Adds a node with policy anyPolicy to the current level.
+  void AddAnyPolicyNode() {
+    assert(!levels_.empty());
+    current_level_.has_any_policy = true;
+  }
+
+  // Adds a node to the current level which is a child of |parent_policies| with
+  // the specified policy.
+  void AddNode(der::Input policy, std::vector<der::Input> parent_policies) {
+    assert(policy != der::Input(kAnyPolicyOid));
+    AddNodeReturningIterator(policy, std::move(parent_policies));
+  }
+
+  // Adds a node to the current level which is a child of anyPolicy with the
+  // specified policy.
+  void AddNodeWithParentAnyPolicy(der::Input policy) {
+    // An empty parent set represents a node parented by anyPolicy.
+    AddNode(policy, {});
+  }
+
+  // Maps |issuer_policy| to |subject_policy|, as in RFC 5280, section 6.1.4,
+  // step b.1.
+  void AddPolicyMapping(der::Input issuer_policy, der::Input subject_policy) {
+    assert(issuer_policy != der::Input(kAnyPolicyOid));
+    assert(subject_policy != der::Input(kAnyPolicyOid));
+    if (levels_.empty()) {
+      return;
+    }
+
+    // The mapping only applies if |issuer_policy| exists in the current level.
+    auto issuer_policy_iter = levels_.back().find(issuer_policy);
+    if (issuer_policy_iter == levels_.back().end()) {
+      // If there is no match, it can instead match anyPolicy.
+      if (!current_level_.has_any_policy) {
+        return;
+      }
+
+      // From RFC 5280, section 6.1.4, step b.1:
+      //
+      //    If no node of depth i in the valid_policy_tree has a
+      //    valid_policy of ID-P but there is a node of depth i with a
+      //    valid_policy of anyPolicy, then generate a child node of
+      //    the node of depth i-1 that has a valid_policy of anyPolicy
+      //    as follows: [...]
+      //
+      // The anyPolicy node of depth i-1 is referring to the parent of the
+      // anyPolicy node of depth i. The parent of anyPolicy is always anyPolicy.
+      issuer_policy_iter = AddNodeReturningIterator(issuer_policy, {});
+    }
+
+    // Unmapped nodes have a singleton "expected_policy_set" containing their
+    // valid_policy. Track whether nodes have been mapped so this can be filled
+    // in at StartLevel().
+    issuer_policy_iter->second.mapped = true;
+
+    // Add |subject_policy| to |issuer_policy|'s "expected_policy_set".
+    current_level_.expected_policy_map[subject_policy].push_back(issuer_policy);
+  }
+
+  // Removes the node with the specified policy from the current level.
+  void DeleteNode(der::Input policy) {
+    if (!levels_.empty()) {
+      levels_.back().erase(policy);
+    }
   }
 
  private:
-  // Deletes all nodes in the valid policy tree.
-  void Clear() { current_level_.clear(); }
-
-  // Adds a node to the current level for OID |policy_oid|. The current level
-  // is assumed to be the root level.
-  void AddRootNode(const der::Input& policy_oid) {
-    Node new_node;
-    new_node.root_policy = policy_oid;
-    new_node.valid_policy = policy_oid;
-    new_node.expected_policy_set = {policy_oid};
-    current_level_.push_back(std::move(new_node));
+  Level::iterator AddNodeReturningIterator(
+      der::Input policy,
+      std::vector<der::Input> parent_policies) {
+    assert(policy != der::Input(kAnyPolicyOid));
+    auto [iter, inserted] = levels_.back().insert(
+        std::pair{policy, Node{std::move(parent_policies)}});
+    assert(inserted);
+    return iter;
   }
 
-  Level current_level_;
+  // The list of levels, starting from the root.
+  std::vector<Level> levels_;
+  // Additional information about the current level.
+  LevelDetails current_level_;
 };
 
 // Class that encapsulates the state variables used by certificate path
@@ -623,7 +692,7 @@ class PathVerifier {
   bssl::UniquePtr<EVP_PKEY> ParseAndCheckPublicKey(const der::Input& spki,
                                                    CertErrors* errors);
 
-  ValidPolicyTree valid_policy_tree_;
+  ValidPolicyGraph valid_policy_graph_;
 
   // Will contain a NameConstraints for each previous cert in the chain which
   // had nameConstraints. This corresponds to the permitted_subtrees and
@@ -719,12 +788,9 @@ void PathVerifier::VerifyPolicies(const ParsedCertificate& cert,
   //       certificate and the valid_policy_tree is not NULL, process
   //       the policy information by performing the following steps in
   //       order:
-  if (cert.has_policy_oids() && !valid_policy_tree_.IsNull()) {
-    ValidPolicyTree::Level previous_level = valid_policy_tree_.StartLevel();
-
-    // Identify if there was a node with valid_policy == anyPolicy at depth i-1.
-    const ValidPolicyTree::Node* any_policy_node_prev_level =
-        ValidPolicyTree::FindAnyPolicyNode(previous_level);
+  if (cert.has_policy_oids() && !valid_policy_graph_.IsNull()) {
+    ValidPolicyGraph::LevelDetails previous_level =
+        valid_policy_graph_.StartLevel();
 
     //     (1)  For each policy P not equal to anyPolicy in the
     //          certificate policies extension, let P-OID denote the OID
@@ -742,22 +808,20 @@ void PathVerifier::VerifyPolicies(const ParsedCertificate& cert,
       //              child node as follows: set the valid_policy to P-OID,
       //              set the qualifier_set to P-Q, and set the
       //              expected_policy_set to {P-OID}.
-      bool found_match = false;
-      for (const ValidPolicyTree::Node& prev_node : previous_level) {
-        if (SetContains(prev_node.expected_policy_set, p_oid)) {
-          valid_policy_tree_.AddNode(prev_node, p_oid);
-          found_match = true;
-        }
+      auto iter = previous_level.expected_policy_map.find(p_oid);
+      if (iter != previous_level.expected_policy_map.end()) {
+        valid_policy_graph_.AddNode(
+            p_oid, /*parent_policies=*/std::move(iter->second));
+        previous_level.expected_policy_map.erase(iter);
+      } else if (previous_level.has_any_policy) {
+        //      (ii)  If there was no match in step (i) and the
+        //            valid_policy_tree includes a node of depth i-1 with
+        //            the valid_policy anyPolicy, generate a child node with
+        //            the following values: set the valid_policy to P-OID,
+        //            set the qualifier_set to P-Q, and set the
+        //            expected_policy_set to  {P-OID}.
+        valid_policy_graph_.AddNodeWithParentAnyPolicy(p_oid);
       }
-
-      //        (ii)  If there was no match in step (i) and the
-      //              valid_policy_tree includes a node of depth i-1 with
-      //              the valid_policy anyPolicy, generate a child node with
-      //              the following values: set the valid_policy to P-OID,
-      //              set the qualifier_set to P-Q, and set the
-      //              expected_policy_set to  {P-OID}.
-      if (!found_match && any_policy_node_prev_level)
-        valid_policy_tree_.AddNode(*any_policy_node_prev_level, p_oid);
     }
 
     //     (2)  If the certificate policies extension includes the policy
@@ -775,20 +839,12 @@ void PathVerifier::VerifyPolicies(const ParsedCertificate& cert,
     //          this node.
     if (cert_has_any_policy && ((inhibit_any_policy_ > 0) ||
                                 (!is_target_cert && IsSelfIssued(cert)))) {
-      // Keep track of the existing policies at depth i.
-      std::set<der::Input> child_node_policies;
-      for (const ValidPolicyTree::Node& node :
-           valid_policy_tree_.current_level())
-        child_node_policies.insert(node.valid_policy);
-
-      for (const ValidPolicyTree::Node& prev_node : previous_level) {
-        for (const der::Input& expected_policy :
-             prev_node.expected_policy_set) {
-          if (!SetContains(child_node_policies, expected_policy)) {
-            child_node_policies.insert(expected_policy);
-            valid_policy_tree_.AddNode(prev_node, expected_policy);
-          }
-        }
+      for (auto& [p_oid, parent_policies] :
+           previous_level.expected_policy_map) {
+        valid_policy_graph_.AddNode(p_oid, std::move(parent_policies));
+      }
+      if (previous_level.has_any_policy) {
+        valid_policy_graph_.AddAnyPolicyNode();
       }
     }
 
@@ -797,19 +853,18 @@ void PathVerifier::VerifyPolicies(const ParsedCertificate& cert,
     //          this step until there are no nodes of depth i-1 or less
     //          without children.
     //
-    // Nothing needs to be done for this step, since this implementation only
-    // stores the nodes at depth i, and the entire level has already been
-    // calculated.
+    // This implementation does this as part of GetValidRootPolicySet(). Only
+    // the current level needs to be pruned to compute the policy graph.
   }
 
   //  (e)  If the certificate policies extension is not present, set the
   //       valid_policy_tree to NULL.
   if (!cert.has_policy_oids())
-    valid_policy_tree_.SetNull();
+    valid_policy_graph_.SetNull();
 
   //  (f)  Verify that either explicit_policy is greater than 0 or the
   //       valid_policy_tree is not equal to NULL;
-  if (!((explicit_policy_ > 0) || !valid_policy_tree_.IsNull()))
+  if (!((explicit_policy_ > 0) || !valid_policy_graph_.IsNull()))
     errors->AddError(cert_errors::kNoValidPolicy);
 }
 
@@ -827,10 +882,11 @@ void PathVerifier::VerifyPolicyMappings(const ParsedCertificate& cert,
     if (mapping.issuer_domain_policy == der::Input(kAnyPolicyOid) ||
         mapping.subject_domain_policy == der::Input(kAnyPolicyOid)) {
       // Because this implementation continues processing certificates after
-      // this error, clear the valid policy tree to ensure the
+      // this error, clear the valid policy graph to ensure the
       // "user_constrained_policy_set" output upon failure is empty.
-      valid_policy_tree_.SetNull();
+      valid_policy_graph_.SetNull();
       errors->AddError(cert_errors::kPolicyMappingAnyPolicy);
+      return;
     }
   }
 
@@ -860,32 +916,9 @@ void PathVerifier::VerifyPolicyMappings(const ParsedCertificate& cert,
   //               equivalent to ID-P by the policy mappings extension.
   //
   if (policy_mapping_ > 0) {
-    const ValidPolicyTree::Node* any_policy_node =
-        ValidPolicyTree::FindAnyPolicyNode(valid_policy_tree_.current_level());
-
-    // Group mappings by issuer domain policy.
-    std::map<der::Input, std::set<der::Input>> mappings;
     for (const ParsedPolicyMapping& mapping : cert.policy_mappings()) {
-      mappings[mapping.issuer_domain_policy].insert(
-          mapping.subject_domain_policy);
-    }
-
-    for (const auto& it : mappings) {
-      const der::Input& issuer_domain_policy = it.first;
-      const std::set<der::Input>& subject_domain_policies = it.second;
-      bool found_node = false;
-
-      for (ValidPolicyTree::Node& node : valid_policy_tree_.current_level()) {
-        if (node.valid_policy == issuer_domain_policy) {
-          node.expected_policy_set = subject_domain_policies;
-          found_node = true;
-        }
-      }
-
-      if (!found_node && any_policy_node) {
-        valid_policy_tree_.AddNodeWithExpectedPolicySet(
-            *any_policy_node, issuer_domain_policy, subject_domain_policies);
-      }
+      valid_policy_graph_.AddPolicyMapping(mapping.issuer_domain_policy,
+                                           mapping.subject_domain_policy);
     }
   }
 
@@ -905,8 +938,7 @@ void PathVerifier::VerifyPolicyMappings(const ParsedCertificate& cert,
   //               depth i-1 or less without children.
   if (policy_mapping_ == 0) {
     for (const ParsedPolicyMapping& mapping : cert.policy_mappings()) {
-      ValidPolicyTree::DeleteNodesMatchingValidPolicy(
-          mapping.issuer_domain_policy, &valid_policy_tree_.current_level());
+      valid_policy_graph_.DeleteNode(mapping.issuer_domain_policy);
     }
   }
 }
@@ -1181,7 +1213,7 @@ void PathVerifier::WrapUp(const ParsedCertificate& cert,
   //    If either (1) the value of explicit_policy variable is greater than
   //    zero or (2) the valid_policy_tree is not NULL, then path processing
   //   has succeeded.
-  if (!(explicit_policy_ > 0 || !valid_policy_tree_.IsNull())) {
+  if (!(explicit_policy_ > 0 || !valid_policy_graph_.IsNull())) {
     errors->AddError(cert_errors::kNoValidPolicy);
   }
 
@@ -1348,7 +1380,7 @@ void PathVerifier::Run(
   // if n is used in place of n+1).
   const size_t n = certs.size() - 1;
 
-  valid_policy_tree_.Init(user_initial_policy_set);
+  valid_policy_graph_.Init(user_initial_policy_set);
 
   // RFC 5280 section section 6.1.2:
   //
@@ -1443,9 +1475,9 @@ void PathVerifier::Run(
   }
 
   if (user_constrained_policy_set) {
-    // valid_policy_tree_ already contains the intersection of valid policies
+    // valid_policy_graph_ already contains the intersection of valid policies
     // with user_initial_policy_set.
-    valid_policy_tree_.GetValidRootPolicySet(user_constrained_policy_set);
+    valid_policy_graph_.GetValidRootPolicySet(user_constrained_policy_set);
   }
 
   // TODO(eroman): RFC 5280 forbids duplicate certificates per section 6.1:

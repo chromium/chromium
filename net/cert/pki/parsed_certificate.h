@@ -302,7 +302,8 @@ class NET_EXPORT ParsedCertificate {
   std::vector<std::string_view> ca_issuers_uris_;
   std::vector<std::string_view> ocsp_uris_;
 
-  // Policies extension.
+  // Policies extension. This list will already have been checked for
+  // duplicates.
   bool has_policy_oids_ = false;
   std::vector<der::Input> policy_oids_;
 
