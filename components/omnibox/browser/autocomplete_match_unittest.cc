@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "autocomplete_match.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -126,11 +125,10 @@ TEST(AutocompleteMatchTest, MoreRelevant) {
   AutocompleteMatch m2(nullptr, 0, false,
                        AutocompleteMatchType::URL_WHAT_YOU_TYPED);
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    m1.relevance = cases[i].r1;
-    m2.relevance = cases[i].r2;
-    EXPECT_EQ(cases[i].expected_result,
-              AutocompleteMatch::MoreRelevant(m1, m2));
+  for (const auto& caseI : cases) {
+    m1.relevance = caseI.r1;
+    m2.relevance = caseI.r2;
+    EXPECT_EQ(caseI.expected_result, AutocompleteMatch::MoreRelevant(m1, m2));
   }
 }
 
@@ -422,9 +420,8 @@ TEST(AutocompleteMatchTest, Duplicates) {
     { L"http://www./", "http://www./", "http://google.com/", false },
   };
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    CheckDuplicateCase(cases[i]);
-  }
+  for (const auto& caseI : cases)
+    CheckDuplicateCase(caseI);
 }
 
 TEST(AutocompleteMatchTest, DedupeDriveURLs) {
@@ -442,9 +439,8 @@ TEST(AutocompleteMatchTest, DedupeDriveURLs) {
        "https://drive.google.com/open?id=another-doc-id", false},
   };
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    CheckDuplicateCase(cases[i]);
-  }
+  for (const auto& caseI : cases)
+    CheckDuplicateCase(caseI);
 }
 
 TEST(AutocompleteMatchTest, UpgradeMatchPropertiesWhileMergingDuplicates) {
@@ -533,7 +529,7 @@ TEST(AutocompleteMatchTest, SetAllowedToBeDefault) {
   // Test all combinations of:
   // 1) input text in ["goo", "goo ", "goo  "]
   // 2) input prevent_inline_autocomplete in [false, true]
-  // 3) match inline_autocopmletion in ["", "gle.com", " gle.com", "  gle.com"]
+  // 3) match inline_autocompletion in ["", "gle.com", " gle.com", "  gle.com"]
   // match_prefix_autocompletion will be "" for all these cases
   TestSetAllowedToBeDefault(1, "goo", false, "", "", "", true);
   TestSetAllowedToBeDefault(2, "goo", false, "gle.com", "", "gle.com", true);
