@@ -34,6 +34,16 @@ const char kSocketNotListeningString[] = "Socket is not listening.";
 // Model IDs associated with the same device (for example, each Pixel Bud Pros
 // have different Model IDs for each different color) so we append '_*' to the
 // naming for subsequent Model IDs after the first one.
+const char kPopularPeripheral_BoatRockerz255Pro_ModelId[] = "CFF121";
+const char kPopularPeripheral_BoatRockerz255Pro_Name[] = "BoatRockerz255Pro";
+
+const char kPopularPeripheral_BoseQuietComfort35II_ModelId[] = "0100F0";
+const char kPopularPeripheral_BoseQuietComfort35II_Name[] =
+    "BoseQuietComfort35II";
+const char kPopularPeripheral_BoseQuietComfort35II_1_ModelId[] = "0000F0";
+const char kPopularPeripheral_BoseQuietComfort35II_1_Name[] =
+    "BoseQuietComfort35II_1";
+
 const char kPopularPeripheral_JBLLIVEPROTWS_ModelId[] = "461BB8";
 const char kPopularPeripheral_JBLLIVEPROTWS_Name[] = "JBLLIVEPROTWS";
 const char kPopularPeripheral_JBLLIVEPROTWS_1_ModelId[] = "C6936A";
@@ -80,6 +90,15 @@ const char kPopularPeripheral_JBLTUNE125TWS_4_Name[] = "JBLTUNE125TWS_4";
 const char kPopularPeripheral_JBLTUNE125TWS_5_ModelId[] = "BD193B";
 const char kPopularPeripheral_JBLTUNE125TWS_5_Name[] = "JBLTUNE125TWS_5";
 
+const char kPopularPeripheral_JBLTUNE130NCTWS_ModelId[] = "BDB433";
+const char kPopularPeripheral_JBLTUNE130NCTWS_Name[] = "JBLTUNE130NCTWS";
+const char kPopularPeripheral_JBLTUNE130NCTWS_1_ModelId[] = "1115E7";
+const char kPopularPeripheral_JBLTUNE130NCTWS_1_Name[] = "JBLTUNE130NCTWS_1";
+const char kPopularPeripheral_JBLTUNE130NCTWS_2_ModelId[] = "436FD1";
+const char kPopularPeripheral_JBLTUNE130NCTWS_2_Name[] = "JBLTUNE130NCTWS_2";
+const char kPopularPeripheral_JBLTUNE130NCTWS_3_ModelId[] = "B73DBA";
+const char kPopularPeripheral_JBLTUNE130NCTWS_3_Name[] = "JBLTUNE130NCTWS_3";
+
 const char kPopularPeripheral_JBLTUNE225TWS_ModelId[] = "5C0C84";
 const char kPopularPeripheral_JBLTUNE225TWS_Name[] = "JBLTUNE225TWS";
 const char kPopularPeripheral_JBLTUNE225TWS_1_ModelId[] = "FAA6C3";
@@ -93,19 +112,26 @@ const char kPopularPeripheral_JBLTUNE225TWS_4_Name[] = "JBLTUNE225TWS_4";
 const char kPopularPeripheral_JBLTUNE225TWS_5_ModelId[] = "9C98DB";
 const char kPopularPeripheral_JBLTUNE225TWS_5_Name[] = "JBLTUNE225TWS_5";
 
-const char kPopularPeripheral_JBLTUNE130NCTWS_ModelId[] = "BDB433";
-const char kPopularPeripheral_JBLTUNE130NCTWS_Name[] = "JBLTUNE130NCTWS";
-const char kPopularPeripheral_JBLTUNE130NCTWS_1_ModelId[] = "1115E7";
-const char kPopularPeripheral_JBLTUNE130NCTWS_1_Name[] = "JBLTUNE130NCTWS_1";
-const char kPopularPeripheral_JBLTUNE130NCTWS_2_ModelId[] = "436FD1";
-const char kPopularPeripheral_JBLTUNE130NCTWS_2_Name[] = "JBLTUNE130NCTWS_2";
-const char kPopularPeripheral_JBLTUNE130NCTWS_3_ModelId[] = "B73DBA";
-const char kPopularPeripheral_JBLTUNE130NCTWS_3_Name[] = "JBLTUNE130NCTWS_3";
+const char kPopularPeripheral_JBLTUNE230NCTWS_ModelId[] = "96C12E";
+const char kPopularPeripheral_JBLTUNE230NCTWS_Name[] = "JBLTUNE230NCTWS";
+const char kPopularPeripheral_JBLTUNE230NCTWS_1_ModelId[] = "71F20A";
+const char kPopularPeripheral_JBLTUNE230NCTWS_1_Name[] = "JBLTUNE230NCTWS_1";
+const char kPopularPeripheral_JBLTUNE230NCTWS_2_ModelId[] = "EB01C0";
+const char kPopularPeripheral_JBLTUNE230NCTWS_2_Name[] = "JBLTUNE230NCTWS_2";
+const char kPopularPeripheral_JBLTUNE230NCTWS_3_ModelId[] = "A9394A";
+const char kPopularPeripheral_JBLTUNE230NCTWS_3_Name[] = "JBLTUNE230NCTWS_3";
 
 const char kPopularPeripheral_NothingEar1_ModelId[] = "31D53D";
 const char kPopularPeripheral_NothingEar1_Name[] = "NOTHINGEAR1";
 const char kPopularPeripheral_NothingEar1_1_ModelId[] = "624011";
 const char kPopularPeripheral_NothingEar1_1_Name[] = "NOTHINGEAR1_1";
+
+const char kPopularPeripheral_OnePlusBuds_ModelId[] = "5F5806";
+const char kPopularPeripheral_OnePlusBuds_Name[] = "OnePlusBuds";
+const char kPopularPeripheral_OnePlusBuds_1_ModelId[] = "81B915";
+const char kPopularPeripheral_OnePlusBuds_1_Name[] = "OnePlusBuds_1";
+const char kPopularPeripheral_OnePlusBuds_2_ModelId[] = "6C73F1";
+const char kPopularPeripheral_OnePlusBuds_2_Name[] = "OnePlusBuds_2";
 
 const char kPopularPeripheral_OnePlusBudsZ_ModelId[] = "A41C91";
 const char kPopularPeripheral_OnePlusBudsZ_Name[] = "OnePlusBudsZ";
@@ -148,6 +174,19 @@ const char kPopularPeripheral_RealMeBudsAir2_Name[] = "RealMeBudsAir2";
 const char kPopularPeripheral_RealMeBudsAir2Neo_ModelId[] = "0B5374";
 const char kPopularPeripheral_RealMeBudsAir2Neo_Name[] = "RealMeBudsAir2Neo";
 
+const char kPopularPeripheral_RealMeBudsQ2TWS_ModelId[] = "72C415";
+const char kPopularPeripheral_RealMeBudsQ2TWS_Name[] = "RealMeBudsQ2TWS";
+
+const char kPopularPeripheral_RealMeTechLifeBudsT100_ModelId[] = "29C992";
+const char kPopularPeripheral_RealMeTechLifeBudsT100_Name[] =
+    "RealMeTechLifeBudsT100";
+const char kPopularPeripheral_RealMeTechLifeBudsT100_1_ModelId[] = "D5C6CE";
+const char kPopularPeripheral_RealMeTechLifeBudsT100_1_Name[] =
+    "RealMeTechLifeBudsT100_1";
+const char kPopularPeripheral_RealMeTechLifeBudsT100_2_ModelId[] = "62E69F";
+const char kPopularPeripheral_RealMeTechLifeBudsT100_2_Name[] =
+    "RealMeTechLifeBudsT100_2";
+
 const char kPopularPeripheral_SonyWF1000XM3_ModelId[] = "38C95C";
 const char kPopularPeripheral_SonyWF1000XM3_Name[] = "SonyWF1000XM3";
 const char kPopularPeripheral_SonyWF1000XM3_1_ModelId[] = "9C98DB";
@@ -169,6 +208,19 @@ const char kPopularPeripheral_SonyWH1000XM3_ModelId[] = "0BC95C";
 const char kPopularPeripheral_SonyWH1000XM3_Name[] = "SonyWH1000XM3";
 const char kPopularPeripheral_SonyWH1000XM3_1_ModelId[] = "AC95C";
 const char kPopularPeripheral_SonyWH1000XM3_1_Name[] = "SonyWH1000XM3_1";
+
+const char kPopularPeripheral_SRSXB13_ModelId[] = "741594";
+const char kPopularPeripheral_SRSXB13_Name[] = "SRSXB13";
+const char kPopularPeripheral_SRSXB13_1_ModelId[] = "DF4B02";
+const char kPopularPeripheral_SRSXB13_1_Name[] = "SRSXB13_1";
+const char kPopularPeripheral_SRSXB13_2_ModelId[] = "F5CEC7";
+const char kPopularPeripheral_SRSXB13_2_Name[] = "SRSXB13_2";
+const char kPopularPeripheral_SRSXB13_3_ModelId[] = "FFB35B";
+const char kPopularPeripheral_SRSXB13_3_Name[] = "SRSXB13_3";
+const char kPopularPeripheral_SRSXB13_4_ModelId[] = "36EFA5";
+const char kPopularPeripheral_SRSXB13_4_Name[] = "SRSXB13_4";
+const char kPopularPeripheral_SRSXB13_5_ModelId[] = "3E6B5B";
+const char kPopularPeripheral_SRSXB13_5_Name[] = "SRSXB13_5";
 
 const char kPopularPeripheral_SRSXB23_ModelId[] = "30D222";
 const char kPopularPeripheral_SRSXB23_Name[] = "SRSXB23";
@@ -193,161 +245,297 @@ const char kPopularPeripheral_SRSXB33_3_Name[] = "SRSXB33_3";
 const char kPopularPeripheral_Other_Name[] = "Other";
 
 const std::string GetFastPairTrackedModelId(const std::string& model_id) {
-  if (model_id == kPopularPeripheral_JBLLIVE300TWS_ModelId)
-    return kPopularPeripheral_JBLLIVE300TWS_Name;
-  if (model_id == kPopularPeripheral_JBLLIVE300TWS_1_ModelId)
-    return kPopularPeripheral_JBLLIVE300TWS_1_Name;
-  if (model_id == kPopularPeripheral_JBLLIVE300TWS_2_ModelId)
-    return kPopularPeripheral_JBLLIVE300TWS_2_Name;
+  if (model_id == kPopularPeripheral_BoatRockerz255Pro_ModelId) {
+    return kPopularPeripheral_BoatRockerz255Pro_Name;
+  }
 
-  if (model_id == kPopularPeripheral_JBLLIVE400BT_ModelId)
-    return kPopularPeripheral_JBLLIVE400BT_Name;
-  if (model_id == kPopularPeripheral_JBLLIVE400BT_1_ModelId)
-    return kPopularPeripheral_JBLLIVE400BT_1_Name;
-  if (model_id == kPopularPeripheral_JBLLIVE400BT_2_ModelId)
-    return kPopularPeripheral_JBLLIVE400BT_2_Name;
-  if (model_id == kPopularPeripheral_JBLLIVE400BT_3_ModelId)
-    return kPopularPeripheral_JBLLIVE400BT_3_Name;
-  if (model_id == kPopularPeripheral_JBLLIVE400BT_4_ModelId)
-    return kPopularPeripheral_JBLLIVE400BT_4_Name;
+  if (model_id == kPopularPeripheral_BoseQuietComfort35II_ModelId) {
+    return kPopularPeripheral_BoseQuietComfort35II_Name;
+  }
+  if (model_id == kPopularPeripheral_BoseQuietComfort35II_1_ModelId) {
+    return kPopularPeripheral_BoseQuietComfort35II_1_Name;
+  }
 
-  if (model_id == kPopularPeripheral_JBLTUNE125TWS_ModelId)
-    return kPopularPeripheral_JBLTUNE125TWS_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE125TWS_1_ModelId)
-    return kPopularPeripheral_JBLTUNE125TWS_1_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE125TWS_2_ModelId)
-    return kPopularPeripheral_JBLTUNE125TWS_2_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE125TWS_3_ModelId)
-    return kPopularPeripheral_JBLTUNE125TWS_3_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE125TWS_4_ModelId)
-    return kPopularPeripheral_JBLTUNE125TWS_4_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE125TWS_5_ModelId)
-    return kPopularPeripheral_JBLTUNE125TWS_5_Name;
-
-  if (model_id == kPopularPeripheral_JBLTUNE225TWS_ModelId)
-    return kPopularPeripheral_JBLTUNE225TWS_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE225TWS_1_ModelId)
-    return kPopularPeripheral_JBLTUNE225TWS_1_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE225TWS_2_ModelId)
-    return kPopularPeripheral_JBLTUNE225TWS_2_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE225TWS_3_ModelId)
-    return kPopularPeripheral_JBLTUNE225TWS_3_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE225TWS_4_ModelId)
-    return kPopularPeripheral_JBLTUNE225TWS_4_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE225TWS_5_ModelId)
-    return kPopularPeripheral_JBLTUNE225TWS_5_Name;
-
-  if (model_id == kPopularPeripheral_OnePlusBudsZ_ModelId)
-    return kPopularPeripheral_OnePlusBudsZ_Name;
-  if (model_id == kPopularPeripheral_OnePlusBudsZ_1_ModelId)
-    return kPopularPeripheral_OnePlusBudsZ_1_Name;
-  if (model_id == kPopularPeripheral_OnePlusBudsZ_2_ModelId)
-    return kPopularPeripheral_OnePlusBudsZ_2_Name;
-
-  if (model_id == kPopularPeripheral_PixelBuds_ModelId)
-    return kPopularPeripheral_PixelBuds_Name;
-
-  if (model_id == kPopularPeripheral_PixelBudsASeries_ModelId)
-    return kPopularPeripheral_PixelBudsASeries_Name;
-  if (model_id == kPopularPeripheral_PixelBudsASeries_1_ModelId)
-    return kPopularPeripheral_PixelBudsASeries_1_Name;
-  if (model_id == kPopularPeripheral_PixelBudsASeries_2_ModelId)
-    return kPopularPeripheral_PixelBudsASeries_2_Name;
-
-  if (model_id == kPopularPeripheral_PixelBudsPro_ModelId)
-    return kPopularPeripheral_PixelBudsPro_Name;
-  if (model_id == kPopularPeripheral_PixelBudsPro_1_ModelId)
-    return kPopularPeripheral_PixelBudsPro_1_Name;
-  if (model_id == kPopularPeripheral_PixelBudsPro_2_ModelId)
-    return kPopularPeripheral_PixelBudsPro_2_Name;
-  if (model_id == kPopularPeripheral_PixelBudsPro_3_ModelId)
-    return kPopularPeripheral_PixelBudsPro_3_Name;
-  if (model_id == kPopularPeripheral_PixelBudsPro_4_ModelId)
-    return kPopularPeripheral_PixelBudsPro_4_Name;
-
-  if (model_id == kPopularPeripheral_RealMeBudsAir2_ModelId)
-    return kPopularPeripheral_RealMeBudsAir2_Name;
-
-  if (model_id == kPopularPeripheral_SonyWF1000XM3_ModelId)
-    return kPopularPeripheral_SonyWF1000XM3_Name;
-  if (model_id == kPopularPeripheral_SonyWF1000XM3_1_ModelId)
-    return kPopularPeripheral_SonyWF1000XM3_1_Name;
-  if (model_id == kPopularPeripheral_SonyWF1000XM3_2_ModelId)
-    return kPopularPeripheral_SonyWF1000XM3_2_Name;
-  if (model_id == kPopularPeripheral_SonyWF1000XM3_3_ModelId)
-    return kPopularPeripheral_SonyWF1000XM3_3_Name;
-  if (model_id == kPopularPeripheral_SonyWF1000XM3_4_ModelId)
-    return kPopularPeripheral_SonyWF1000XM3_4_Name;
-  if (model_id == kPopularPeripheral_SonyWF1000XM3_5_ModelId)
-    return kPopularPeripheral_SonyWF1000XM3_5_Name;
-  if (model_id == kPopularPeripheral_SonyWF1000XM3_6_ModelId)
-    return kPopularPeripheral_SonyWF1000XM3_6_Name;
-  if (model_id == kPopularPeripheral_SonyWF1000XM3_7_ModelId)
-    return kPopularPeripheral_SonyWF1000XM3_7_Name;
-
-  if (model_id == kPopularPeripheral_NothingEar1_ModelId)
-    return kPopularPeripheral_NothingEar1_Name;
-  if (model_id == kPopularPeripheral_NothingEar1_1_ModelId)
-    return kPopularPeripheral_NothingEar1_1_Name;
-
-  if (model_id == kPopularPeripheral_RealMeBudsAir2Neo_ModelId)
-    return kPopularPeripheral_RealMeBudsAir2Neo_Name;
-
-  if (model_id == kPopularPeripheral_JBLTUNE130NCTWS_ModelId)
-    return kPopularPeripheral_JBLTUNE130NCTWS_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE130NCTWS_1_ModelId)
-    return kPopularPeripheral_JBLTUNE130NCTWS_1_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE130NCTWS_2_ModelId)
-    return kPopularPeripheral_JBLTUNE130NCTWS_2_Name;
-  if (model_id == kPopularPeripheral_JBLTUNE130NCTWS_3_ModelId)
-    return kPopularPeripheral_JBLTUNE130NCTWS_3_Name;
-
-  if (model_id == kPopularPeripheral_SonyWH1000XM3_ModelId)
-    return kPopularPeripheral_SonyWH1000XM3_Name;
-  if (model_id == kPopularPeripheral_SonyWH1000XM3_1_ModelId)
-    return kPopularPeripheral_SonyWH1000XM3_1_Name;
-
-  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_ModelId)
+  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_ModelId) {
     return kPopularPeripheral_JBLLIVEPROTWS_Name;
-  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_1_ModelId)
+  }
+  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_1_ModelId) {
     return kPopularPeripheral_JBLLIVEPROTWS_1_Name;
-  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_2_ModelId)
+  }
+  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_2_ModelId) {
     return kPopularPeripheral_JBLLIVEPROTWS_2_Name;
-  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_3_ModelId)
+  }
+  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_3_ModelId) {
     return kPopularPeripheral_JBLLIVEPROTWS_3_Name;
-  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_4_ModelId)
+  }
+  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_4_ModelId) {
     return kPopularPeripheral_JBLLIVEPROTWS_4_Name;
-  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_5_ModelId)
+  }
+  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_5_ModelId) {
     return kPopularPeripheral_JBLLIVEPROTWS_5_Name;
-  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_6_ModelId)
+  }
+  if (model_id == kPopularPeripheral_JBLLIVEPROTWS_6_ModelId) {
     return kPopularPeripheral_JBLLIVEPROTWS_6_Name;
+  }
 
-  if (model_id == kPopularPeripheral_RealMeBudsAirPro_ModelId)
+  if (model_id == kPopularPeripheral_JBLLIVE300TWS_ModelId) {
+    return kPopularPeripheral_JBLLIVE300TWS_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLLIVE300TWS_1_ModelId) {
+    return kPopularPeripheral_JBLLIVE300TWS_1_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLLIVE300TWS_2_ModelId) {
+    return kPopularPeripheral_JBLLIVE300TWS_2_Name;
+  }
+
+  if (model_id == kPopularPeripheral_JBLLIVE400BT_ModelId) {
+    return kPopularPeripheral_JBLLIVE400BT_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLLIVE400BT_1_ModelId) {
+    return kPopularPeripheral_JBLLIVE400BT_1_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLLIVE400BT_2_ModelId) {
+    return kPopularPeripheral_JBLLIVE400BT_2_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLLIVE400BT_3_ModelId) {
+    return kPopularPeripheral_JBLLIVE400BT_3_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLLIVE400BT_4_ModelId) {
+    return kPopularPeripheral_JBLLIVE400BT_4_Name;
+  }
+
+  if (model_id == kPopularPeripheral_JBLTUNE125TWS_ModelId) {
+    return kPopularPeripheral_JBLTUNE125TWS_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE125TWS_1_ModelId) {
+    return kPopularPeripheral_JBLTUNE125TWS_1_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE125TWS_2_ModelId) {
+    return kPopularPeripheral_JBLTUNE125TWS_2_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE125TWS_3_ModelId) {
+    return kPopularPeripheral_JBLTUNE125TWS_3_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE125TWS_4_ModelId) {
+    return kPopularPeripheral_JBLTUNE125TWS_4_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE125TWS_5_ModelId) {
+    return kPopularPeripheral_JBLTUNE125TWS_5_Name;
+  }
+
+  if (model_id == kPopularPeripheral_JBLTUNE130NCTWS_ModelId) {
+    return kPopularPeripheral_JBLTUNE130NCTWS_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE130NCTWS_1_ModelId) {
+    return kPopularPeripheral_JBLTUNE130NCTWS_1_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE130NCTWS_2_ModelId) {
+    return kPopularPeripheral_JBLTUNE130NCTWS_2_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE130NCTWS_3_ModelId) {
+    return kPopularPeripheral_JBLTUNE130NCTWS_3_Name;
+  }
+
+  if (model_id == kPopularPeripheral_JBLTUNE225TWS_ModelId) {
+    return kPopularPeripheral_JBLTUNE225TWS_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE225TWS_1_ModelId) {
+    return kPopularPeripheral_JBLTUNE225TWS_1_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE225TWS_2_ModelId) {
+    return kPopularPeripheral_JBLTUNE225TWS_2_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE225TWS_3_ModelId) {
+    return kPopularPeripheral_JBLTUNE225TWS_3_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE225TWS_4_ModelId) {
+    return kPopularPeripheral_JBLTUNE225TWS_4_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE225TWS_5_ModelId) {
+    return kPopularPeripheral_JBLTUNE225TWS_5_Name;
+  }
+
+  if (model_id == kPopularPeripheral_JBLTUNE230NCTWS_ModelId) {
+    return kPopularPeripheral_JBLTUNE230NCTWS_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE230NCTWS_1_ModelId) {
+    return kPopularPeripheral_JBLTUNE230NCTWS_1_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE230NCTWS_2_ModelId) {
+    return kPopularPeripheral_JBLTUNE230NCTWS_2_Name;
+  }
+  if (model_id == kPopularPeripheral_JBLTUNE230NCTWS_3_ModelId) {
+    return kPopularPeripheral_JBLTUNE230NCTWS_3_Name;
+  }
+
+  if (model_id == kPopularPeripheral_NothingEar1_ModelId) {
+    return kPopularPeripheral_NothingEar1_Name;
+  }
+  if (model_id == kPopularPeripheral_NothingEar1_1_ModelId) {
+    return kPopularPeripheral_NothingEar1_1_Name;
+  }
+
+  if (model_id == kPopularPeripheral_OnePlusBuds_ModelId) {
+    return kPopularPeripheral_OnePlusBuds_Name;
+  }
+  if (model_id == kPopularPeripheral_OnePlusBuds_1_ModelId) {
+    return kPopularPeripheral_OnePlusBuds_1_Name;
+  }
+  if (model_id == kPopularPeripheral_OnePlusBuds_2_ModelId) {
+    return kPopularPeripheral_OnePlusBuds_2_Name;
+  }
+
+  if (model_id == kPopularPeripheral_OnePlusBudsZ_ModelId) {
+    return kPopularPeripheral_OnePlusBudsZ_Name;
+  }
+  if (model_id == kPopularPeripheral_OnePlusBudsZ_1_ModelId) {
+    return kPopularPeripheral_OnePlusBudsZ_1_Name;
+  }
+  if (model_id == kPopularPeripheral_OnePlusBudsZ_2_ModelId) {
+    return kPopularPeripheral_OnePlusBudsZ_2_Name;
+  }
+
+  if (model_id == kPopularPeripheral_PixelBuds_ModelId) {
+    return kPopularPeripheral_PixelBuds_Name;
+  }
+
+  if (model_id == kPopularPeripheral_PixelBudsASeries_ModelId) {
+    return kPopularPeripheral_PixelBudsASeries_Name;
+  }
+  if (model_id == kPopularPeripheral_PixelBudsASeries_1_ModelId) {
+    return kPopularPeripheral_PixelBudsASeries_1_Name;
+  }
+  if (model_id == kPopularPeripheral_PixelBudsASeries_2_ModelId) {
+    return kPopularPeripheral_PixelBudsASeries_2_Name;
+  }
+
+  if (model_id == kPopularPeripheral_PixelBudsPro_ModelId) {
+    return kPopularPeripheral_PixelBudsPro_Name;
+  }
+  if (model_id == kPopularPeripheral_PixelBudsPro_1_ModelId) {
+    return kPopularPeripheral_PixelBudsPro_1_Name;
+  }
+  if (model_id == kPopularPeripheral_PixelBudsPro_2_ModelId) {
+    return kPopularPeripheral_PixelBudsPro_2_Name;
+  }
+  if (model_id == kPopularPeripheral_PixelBudsPro_3_ModelId) {
+    return kPopularPeripheral_PixelBudsPro_3_Name;
+  }
+  if (model_id == kPopularPeripheral_PixelBudsPro_4_ModelId) {
+    return kPopularPeripheral_PixelBudsPro_4_Name;
+  }
+
+  if (model_id == kPopularPeripheral_RealMeBudsAir2_ModelId) {
+    return kPopularPeripheral_RealMeBudsAir2_Name;
+  }
+
+  if (model_id == kPopularPeripheral_RealMeBudsAir2Neo_ModelId) {
+    return kPopularPeripheral_RealMeBudsAir2Neo_Name;
+  }
+
+  if (model_id == kPopularPeripheral_RealMeBudsAirPro_ModelId) {
     return kPopularPeripheral_RealMeBudsAirPro_Name;
-  if (model_id == kPopularPeripheral_RealMeBudsAirPro_1_ModelId)
+  }
+  if (model_id == kPopularPeripheral_RealMeBudsAirPro_1_ModelId) {
     return kPopularPeripheral_RealMeBudsAirPro_1_Name;
-  if (model_id == kPopularPeripheral_RealMeBudsAirPro_2_ModelId)
+  }
+  if (model_id == kPopularPeripheral_RealMeBudsAirPro_2_ModelId) {
     return kPopularPeripheral_RealMeBudsAirPro_2_Name;
+  }
 
-  if (model_id == kPopularPeripheral_SRSXB33_ModelId)
+  if (model_id == kPopularPeripheral_RealMeBudsQ2TWS_ModelId) {
+    return kPopularPeripheral_RealMeBudsQ2TWS_Name;
+  }
+
+  if (model_id == kPopularPeripheral_RealMeTechLifeBudsT100_ModelId) {
+    return kPopularPeripheral_RealMeTechLifeBudsT100_Name;
+  }
+  if (model_id == kPopularPeripheral_RealMeTechLifeBudsT100_1_ModelId) {
+    return kPopularPeripheral_RealMeTechLifeBudsT100_1_Name;
+  }
+  if (model_id == kPopularPeripheral_RealMeTechLifeBudsT100_2_ModelId) {
+    return kPopularPeripheral_RealMeTechLifeBudsT100_2_Name;
+  }
+
+  if (model_id == kPopularPeripheral_SonyWF1000XM3_ModelId) {
+    return kPopularPeripheral_SonyWF1000XM3_Name;
+  }
+  if (model_id == kPopularPeripheral_SonyWF1000XM3_1_ModelId) {
+    return kPopularPeripheral_SonyWF1000XM3_1_Name;
+  }
+  if (model_id == kPopularPeripheral_SonyWF1000XM3_2_ModelId) {
+    return kPopularPeripheral_SonyWF1000XM3_2_Name;
+  }
+  if (model_id == kPopularPeripheral_SonyWF1000XM3_3_ModelId) {
+    return kPopularPeripheral_SonyWF1000XM3_3_Name;
+  }
+  if (model_id == kPopularPeripheral_SonyWF1000XM3_4_ModelId) {
+    return kPopularPeripheral_SonyWF1000XM3_4_Name;
+  }
+  if (model_id == kPopularPeripheral_SonyWF1000XM3_5_ModelId) {
+    return kPopularPeripheral_SonyWF1000XM3_5_Name;
+  }
+  if (model_id == kPopularPeripheral_SonyWF1000XM3_6_ModelId) {
+    return kPopularPeripheral_SonyWF1000XM3_6_Name;
+  }
+  if (model_id == kPopularPeripheral_SonyWF1000XM3_7_ModelId) {
+    return kPopularPeripheral_SonyWF1000XM3_7_Name;
+  }
+
+  if (model_id == kPopularPeripheral_SonyWH1000XM3_ModelId) {
+    return kPopularPeripheral_SonyWH1000XM3_Name;
+  }
+  if (model_id == kPopularPeripheral_SonyWH1000XM3_1_ModelId) {
+    return kPopularPeripheral_SonyWH1000XM3_1_Name;
+  }
+
+  if (model_id == kPopularPeripheral_SRSXB33_ModelId) {
     return kPopularPeripheral_SRSXB33_Name;
-  if (model_id == kPopularPeripheral_SRSXB33_1_ModelId)
+  }
+  if (model_id == kPopularPeripheral_SRSXB33_1_ModelId) {
     return kPopularPeripheral_SRSXB33_1_Name;
-  if (model_id == kPopularPeripheral_SRSXB33_2_ModelId)
+  }
+  if (model_id == kPopularPeripheral_SRSXB33_2_ModelId) {
     return kPopularPeripheral_SRSXB33_2_Name;
-  if (model_id == kPopularPeripheral_SRSXB33_3_ModelId)
+  }
+  if (model_id == kPopularPeripheral_SRSXB33_3_ModelId) {
     return kPopularPeripheral_SRSXB33_3_Name;
+  }
 
-  if (model_id == kPopularPeripheral_SRSXB23_ModelId)
+  if (model_id == kPopularPeripheral_SRSXB23_ModelId) {
     return kPopularPeripheral_SRSXB23_Name;
-  if (model_id == kPopularPeripheral_SRSXB23_1_ModelId)
+  }
+  if (model_id == kPopularPeripheral_SRSXB23_1_ModelId) {
     return kPopularPeripheral_SRSXB23_1_Name;
-  if (model_id == kPopularPeripheral_SRSXB23_2_ModelId)
+  }
+  if (model_id == kPopularPeripheral_SRSXB23_2_ModelId) {
     return kPopularPeripheral_SRSXB23_2_Name;
-  if (model_id == kPopularPeripheral_SRSXB23_3_ModelId)
+  }
+  if (model_id == kPopularPeripheral_SRSXB23_3_ModelId) {
     return kPopularPeripheral_SRSXB23_3_Name;
-  if (model_id == kPopularPeripheral_SRSXB23_4_ModelId)
+  }
+  if (model_id == kPopularPeripheral_SRSXB23_4_ModelId) {
     return kPopularPeripheral_SRSXB23_4_Name;
+  }
+
+  if (model_id == kPopularPeripheral_SRSXB13_ModelId) {
+    return kPopularPeripheral_SRSXB13_Name;
+  }
+  if (model_id == kPopularPeripheral_SRSXB13_1_ModelId) {
+    return kPopularPeripheral_SRSXB13_1_Name;
+  }
+  if (model_id == kPopularPeripheral_SRSXB13_2_ModelId) {
+    return kPopularPeripheral_SRSXB13_2_Name;
+  }
+  if (model_id == kPopularPeripheral_SRSXB13_3_ModelId) {
+    return kPopularPeripheral_SRSXB13_3_Name;
+  }
+  if (model_id == kPopularPeripheral_SRSXB13_4_ModelId) {
+    return kPopularPeripheral_SRSXB13_4_Name;
+  }
+  if (model_id == kPopularPeripheral_SRSXB13_5_ModelId) {
+    return kPopularPeripheral_SRSXB13_5_Name;
+  }
 
   return kPopularPeripheral_Other_Name;
 }

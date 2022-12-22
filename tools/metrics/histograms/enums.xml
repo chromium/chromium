@@ -36830,6 +36830,26 @@ Called by update_extension_permission.py.-->
   <int value="68" label="SRSXB33_1"/>
   <int value="69" label="SRSXB33_2"/>
   <int value="70" label="SRSXB33_3"/>
+  <int value="71" label="BoatRockerz255Pro"/>
+  <int value="72" label="BoseQuietComfort35II"/>
+  <int value="73" label="BoseQuietComfort35II_1"/>
+  <int value="74" label="JBLTUNE230NCTWS"/>
+  <int value="75" label="JBLTUNE230NCTWS_1"/>
+  <int value="76" label="JBLTUNE230NCTWS_2"/>
+  <int value="77" label="JBLTUNE230NCTWS_3"/>
+  <int value="78" label="OnePlusBuds"/>
+  <int value="79" label="OnePlusBuds_1"/>
+  <int value="80" label="OnePlusBuds_2"/>
+  <int value="81" label="RealMeBudsQ2TWS"/>
+  <int value="82" label="RealMeTechLifeBudsT100"/>
+  <int value="83" label="RealMeTechLifeBudsT100_1"/>
+  <int value="84" label="RealMeTechLifeBudsT100_2"/>
+  <int value="85" label="SRSXB13"/>
+  <int value="86" label="SRSXB13_1"/>
+  <int value="87" label="SRSXB13_2"/>
+  <int value="88" label="SRSXB13_3"/>
+  <int value="89" label="SRSXB13_4"/>
+  <int value="90" label="SRSXB13_5"/>
 </enum>
 
 <enum name="FastPairVersion">

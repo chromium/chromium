@@ -203,6 +203,9 @@ chromium-metrics-reviews@google.com.
         summary="subsequent pairing protocol"/>
   </token>
   <token key="FastPairTrackedModelID">
+    <variant name="BoatRockerz255Pro"/>
+    <variant name="BoseQuietComfort35II"/>
+    <variant name="BoseQuietComfort35II_1"/>
     <variant name="JBLLIVE300TWS"/>
     <variant name="JBLLIVE300TWS_1"/>
     <variant name="JBLLIVE300TWS_2"/>
@@ -234,8 +237,15 @@ chromium-metrics-reviews@google.com.
     <variant name="JBLTUNE225TWS_3"/>
     <variant name="JBLTUNE225TWS_4"/>
     <variant name="JBLTUNE225TWS_5"/>
+    <variant name="JBLTUNE230NCTWS_1"/>
+    <variant name="JBLTUNE230NCTWS_2"/>
+    <variant name="JBLTUNE230NCTWS_3"/>
+    <variant name="JBLTUNE230NCTWS_4"/>
     <variant name="NothingEar1"/>
     <variant name="NothingEar1_2"/>
+    <variant name="OnePlusBuds"/>
+    <variant name="OnePlusBuds_1"/>
+    <variant name="OnePlusBuds_2"/>
     <variant name="OnePlusBudsZ"/>
     <variant name="OnePlusBudsZ_1"/>
     <variant name="OnePlusBudsZ_2"/>
@@ -255,6 +265,10 @@ chromium-metrics-reviews@google.com.
     <variant name="RealMeBudsAirPro"/>
     <variant name="RealMeBudsAirPro_1"/>
     <variant name="RealMeBudsAirPro_2"/>
+    <variant name="RealMeBudsQ2TWS"/>
+    <variant name="RealMeTechLifeBudsT100"/>
+    <variant name="RealMeTechLifeBudsT100_1"/>
+    <variant name="RealMeTechLifeBudsT100_2"/>
     <variant name="SonyWF1000XM3"/>
     <variant name="SonyWF1000XM3_1"/>
     <variant name="SonyWF1000XM3_2"/>
@@ -265,6 +279,12 @@ chromium-metrics-reviews@google.com.
     <variant name="SonyWF1000XM3_7"/>
     <variant name="SonyWH1000XM3"/>
     <variant name="SonyWH1000XM3_1"/>
+    <variant name="SRSXB13"/>
+    <variant name="SRSXB13_1"/>
+    <variant name="SRSXB13_2"/>
+    <variant name="SRSXB13_3"/>
+    <variant name="SRSXB13_4"/>
+    <variant name="SRSXB13_5"/>
     <variant name="SRSXB23"/>
     <variant name="SRSXB23_1"/>
     <variant name="SRSXB23_2"/>
@@ -452,6 +472,9 @@ chromium-metrics-reviews@google.com.
         summary="subsequent pairing protocol"/>
   </token>
   <token key="FastPairTrackedModelID">
+    <variant name="BoatRockerz255Pro"/>
+    <variant name="BoseQuietComfort35II"/>
+    <variant name="BoseQuietComfort35II_1"/>
     <variant name="JBLLIVE300TWS"/>
     <variant name="JBLLIVE300TWS_1"/>
     <variant name="JBLLIVE300TWS_2"/>
@@ -483,8 +506,15 @@ chromium-metrics-reviews@google.com.
     <variant name="JBLTUNE225TWS_3"/>
     <variant name="JBLTUNE225TWS_4"/>
     <variant name="JBLTUNE225TWS_5"/>
+    <variant name="JBLTUNE230NCTWS_1"/>
+    <variant name="JBLTUNE230NCTWS_2"/>
+    <variant name="JBLTUNE230NCTWS_3"/>
+    <variant name="JBLTUNE230NCTWS_4"/>
     <variant name="NothingEar1"/>
     <variant name="NothingEar1_2"/>
+    <variant name="OnePlusBuds"/>
+    <variant name="OnePlusBuds_1"/>
+    <variant name="OnePlusBuds_2"/>
     <variant name="OnePlusBudsZ"/>
     <variant name="OnePlusBudsZ_1"/>
     <variant name="OnePlusBudsZ_2"/>
@@ -504,6 +534,10 @@ chromium-metrics-reviews@google.com.
     <variant name="RealMeBudsAirPro"/>
     <variant name="RealMeBudsAirPro_1"/>
     <variant name="RealMeBudsAirPro_2"/>
+    <variant name="RealMeBudsQ2TWS"/>
+    <variant name="RealMeTechLifeBudsT100"/>
+    <variant name="RealMeTechLifeBudsT100_1"/>
+    <variant name="RealMeTechLifeBudsT100_2"/>
     <variant name="SonyWF1000XM3"/>
     <variant name="SonyWF1000XM3_1"/>
     <variant name="SonyWF1000XM3_2"/>
@@ -514,6 +548,12 @@ chromium-metrics-reviews@google.com.
     <variant name="SonyWF1000XM3_7"/>
     <variant name="SonyWH1000XM3"/>
     <variant name="SonyWH1000XM3_1"/>
+    <variant name="SRSXB13"/>
+    <variant name="SRSXB13_1"/>
+    <variant name="SRSXB13_2"/>
+    <variant name="SRSXB13_3"/>
+    <variant name="SRSXB13_4"/>
+    <variant name="SRSXB13_5"/>
     <variant name="SRSXB23"/>
     <variant name="SRSXB23_1"/>
     <variant name="SRSXB23_2"/>
@@ -1162,6 +1202,9 @@ chromium-metrics-reviews@google.com.
     UI, and when the learn more button is pressed on the associate account UI.
   </summary>
   <token key="FastPairTrackedModelID">
+    <variant name="BoatRockerz255Pro"/>
+    <variant name="BoseQuietComfort35II"/>
+    <variant name="BoseQuietComfort35II_1"/>
     <variant name="JBLLIVE300TWS"/>
     <variant name="JBLLIVE300TWS_1"/>
     <variant name="JBLLIVE300TWS_2"/>
@@ -1193,8 +1236,15 @@ chromium-metrics-reviews@google.com.
     <variant name="JBLTUNE225TWS_3"/>
     <variant name="JBLTUNE225TWS_4"/>
     <variant name="JBLTUNE225TWS_5"/>
+    <variant name="JBLTUNE230NCTWS_1"/>
+    <variant name="JBLTUNE230NCTWS_2"/>
+    <variant name="JBLTUNE230NCTWS_3"/>
+    <variant name="JBLTUNE230NCTWS_4"/>
     <variant name="NothingEar1"/>
     <variant name="NothingEar1_2"/>
+    <variant name="OnePlusBuds"/>
+    <variant name="OnePlusBuds_1"/>
+    <variant name="OnePlusBuds_2"/>
     <variant name="OnePlusBudsZ"/>
     <variant name="OnePlusBudsZ_1"/>
     <variant name="OnePlusBudsZ_2"/>
@@ -1214,6 +1264,10 @@ chromium-metrics-reviews@google.com.
     <variant name="RealMeBudsAirPro"/>
     <variant name="RealMeBudsAirPro_1"/>
     <variant name="RealMeBudsAirPro_2"/>
+    <variant name="RealMeBudsQ2TWS"/>
+    <variant name="RealMeTechLifeBudsT100"/>
+    <variant name="RealMeTechLifeBudsT100_1"/>
+    <variant name="RealMeTechLifeBudsT100_2"/>
     <variant name="SonyWF1000XM3"/>
     <variant name="SonyWF1000XM3_1"/>
     <variant name="SonyWF1000XM3_2"/>
@@ -1224,6 +1278,12 @@ chromium-metrics-reviews@google.com.
     <variant name="SonyWF1000XM3_7"/>
     <variant name="SonyWH1000XM3"/>
     <variant name="SonyWH1000XM3_1"/>
+    <variant name="SRSXB13"/>
+    <variant name="SRSXB13_1"/>
+    <variant name="SRSXB13_2"/>
+    <variant name="SRSXB13_3"/>
+    <variant name="SRSXB13_4"/>
+    <variant name="SRSXB13_5"/>
     <variant name="SRSXB23"/>
     <variant name="SRSXB23_1"/>
     <variant name="SRSXB23_2"/>
