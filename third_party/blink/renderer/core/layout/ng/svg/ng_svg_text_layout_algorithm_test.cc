@@ -50,4 +50,18 @@ TEST_F(NGSVGTextLayoutAlgorithmTest, EmptyTextLengthSpacingAndGlyphsCrash) {
   // Pass if no crashes.
 }
 
+TEST_F(NGSVGTextLayoutAlgorithmTest, HugeScaleCrash) {
+  SetBodyInnerHTML(R"HTML(
+  <svg xmlns="http://www.w3.org/2000/svg" width="450" height="450">
+  <style>
+  #test-body-content {
+    scale: 16420065941240262705269076410170673060945878020586681613052798923953430637521913631296811416;
+  }
+  </style>
+  <text id="test-body-content" x="-10" y="14">A</text>
+  </svg>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crashes.
+}
+
 }  // namespace blink
