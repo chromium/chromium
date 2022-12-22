@@ -589,10 +589,10 @@ class NotificationPlatformBridgeLinuxImpl
     }
 
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    notification_proxy_ = nullptr;
     if (bus_)
       bus_->ShutdownAndBlock();
     bus_ = nullptr;
-    notification_proxy_ = nullptr;
     product_logo_png_bytes_ = nullptr;
     product_logo_file_.reset();
     product_logo_file_watcher_.reset();
@@ -1123,7 +1123,7 @@ class NotificationPlatformBridgeLinuxImpl
 
   scoped_refptr<dbus::Bus> bus_;
 
-  raw_ptr<dbus::ObjectProxy, DanglingUntriaged> notification_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> notification_proxy_ = nullptr;
 
   std::unordered_set<std::string> capabilities_;
 
