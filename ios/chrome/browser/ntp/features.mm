@@ -40,6 +40,10 @@ BASE_FEATURE(kEnableFeedCardMenuSignInPromo,
              "EnableFeedCardMenuSignInPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableFeedAblation,
+             "EnableFeedAblation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed background refresh. This is used because registering for
 // background refreshes must happen early in app initialization and FeatureList
@@ -181,4 +185,8 @@ bool IsFeedBottomSignInPromoEnabled() {
 
 bool IsFeedCardMenuSignInPromoEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedCardMenuSignInPromo);
+}
+
+bool IsFeedAblationEnabled() {
+  return base::FeatureList::IsEnabled(kEnableFeedAblation);
 }

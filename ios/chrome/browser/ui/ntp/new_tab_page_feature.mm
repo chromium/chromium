@@ -39,10 +39,6 @@ BASE_FEATURE(kEnableNTPViewHierarchyRepair,
              "NTPViewHierarchyRepair",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFeedAblation,
-             "EnableFeedAblation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableCheckVisibilityOnAttentionLogStart,
              "EnableCheckVisibilityOnAttentionLogStart",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -120,10 +116,6 @@ bool IsDefaultFollowingFeedSortTypeGroupedByPublisher() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFollowingFeedDefaultSortType,
       kFollowingFeedDefaultSortTypeGroupedByPublisher, true);
-}
-
-bool IsFeedAblationEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedAblation);
 }
 
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {

@@ -29,6 +29,9 @@ BASE_DECLARE_FEATURE(kEnableFeedBottomSignInPromo);
 // Use IsFeedCardMenuSignInPromoEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableFeedCardMenuSignInPromo);
 
+// Feature flag to disable the feed.
+BASE_DECLARE_FEATURE(kEnableFeedAblation);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];
@@ -113,5 +116,8 @@ bool IsFeedBottomSignInPromoEnabled();
 
 // YES if enabled Feed card menu promo.
 bool IsFeedCardMenuSignInPromoEnabled();
+
+// Whether the feed is disabled.
+bool IsFeedAblationEnabled();
 
 #endif  // IOS_CHROME_BROWSER_NTP_FEATURES_H_

@@ -34,7 +34,9 @@ NSString* const kFollowIPHHost = @"host";
 NSString* const kFollowIPHDate = @"date";
 
 FollowActionState GetFollowActionState(web::WebState* webState) {
-  if (!webState || !IsWebChannelsEnabled()) {
+  // TODO(crbug.com/1402986): Hide Follow action in safe mode.
+
+  if (!webState || !IsWebChannelsEnabled() || IsFeedAblationEnabled()) {
     return FollowActionStateHidden;
   }
 

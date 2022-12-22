@@ -25,8 +25,10 @@
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/search_engines/template_url.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp_tiles/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -599,10 +601,17 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   PrefService* pref_service =
       ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
           ->GetPrefs();
+
+  // Feed is disabled in safe mode.
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  BOOL isSafeMode = [sceneState.appState resumingFromSafeMode];
+
   BOOL isFeedVisible =
       (pref_service->GetBoolean(prefs::kArticlesForYouEnabled) &&
        pref_service->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
        !IsFeedAblationEnabled()) &&
+      !isSafeMode &&
       pref_service->GetBoolean(feed::prefs::kArticlesListVisible);
   if (ShouldOnlyShowTrendingQueriesForDisabledFeed() && isFeedVisible) {
     // Notify consumer with empty array so it knows to remove the module.

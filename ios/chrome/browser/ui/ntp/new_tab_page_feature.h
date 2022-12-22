@@ -32,9 +32,6 @@ BASE_DECLARE_FEATURE(kEnableFollowingFeedDefaultSortType);
 // TODO(crbug.com/1262536): Remove this when it is fixed.
 BASE_DECLARE_FEATURE(kEnableNTPViewHierarchyRepair);
 
-// Feature flag to remove the Feed from the NTP.
-BASE_DECLARE_FEATURE(kEnableFeedAblation);
-
 // Feature flag to enable checking feed visibility on attention log start.
 BASE_DECLARE_FEATURE(kEnableCheckVisibilityOnAttentionLogStart);
 
@@ -105,9 +102,6 @@ bool IsFollowingFeedDefaultSortTypeEnabled();
 
 // Whether the default Following feed sort type is Grouped by Publisher.
 bool IsDefaultFollowingFeedSortTypeGroupedByPublisher();
-
-// Whether the Discover feed ablation experiment is enabled.
-bool IsFeedAblationEnabled();
 
 // Whether content suggestions are enabled for supervised users.
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);

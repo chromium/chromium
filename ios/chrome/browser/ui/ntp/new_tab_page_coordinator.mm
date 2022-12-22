@@ -943,8 +943,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 }
 
 - (BOOL)shouldFeedBeVisible {
-  return [self isFeedHeaderVisible] && [self.feedExpandedPref value] &&
-         !IsFeedAblationEnabled();
+  return [self isFeedHeaderVisible] && [self.feedExpandedPref value];
 }
 
 - (BOOL)isFollowingFeedAvailable {
@@ -1366,13 +1365,19 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   [self updateFeedLayout];
 }
 
-// Feed header is always visible unless it is disabled from the Chrome settings
-// menu, or by an enterprise policy.
+// Feed header is always visible unless it is disabled (eg. Disabled from Chrome
+// settings, enterprise policy, safe mode, etc.).
 - (BOOL)isFeedHeaderVisible {
+  // Feed is disabled in safe mode.
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  BOOL isSafeMode = [sceneState.appState resumingFromSafeMode];
+
   return self.prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
          self.prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
          !IsFeedAblationEnabled() &&
-         IsContentSuggestionsForSupervisedUserEnabled(self.prefService);
+         IsContentSuggestionsForSupervisedUserEnabled(self.prefService) &&
+         !isSafeMode;
 }
 
 // Returns `YES` if the feed is currently visible on the NTP.

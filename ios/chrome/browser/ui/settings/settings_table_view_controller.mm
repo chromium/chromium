@@ -29,6 +29,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/driver/sync_service.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
@@ -65,6 +66,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/icons/buildflags.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
@@ -490,7 +493,12 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [model addItem:[self privacyDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
-  if (!IsFeedAblationEnabled() &&
+  // Feed is disabled in safe mode.
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(_browser)->GetSceneState();
+  BOOL isSafeMode = [sceneState.appState resumingFromSafeMode];
+
+  if (!IsFeedAblationEnabled() && !isSafeMode &&
       IsContentSuggestionsForSupervisedUserEnabled(_browserState->GetPrefs())) {
     if ([_contentSuggestionPolicyEnabled value]) {
       [model addItem:self.feedSettingsItem

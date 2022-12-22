@@ -99,6 +99,7 @@ source_set("metrics") {
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/paths",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/signin",

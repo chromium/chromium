@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
@@ -75,6 +77,11 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
     chrome_browser_state_ = builder.Build();
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
+
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -195,6 +202,8 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
 
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<TestBrowser> browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  SceneState* scene_state_;
 
   SettingsTableViewController* controller_ = nullptr;
 };
