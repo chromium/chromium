@@ -72719,7 +72719,7 @@
      ],
      "mix-blend-mode": {
       "mix-blend-mode-animation.html": [
-       "e5ce4684d10bd21fd66369ef75b2eaa179703cef",
+       "55618485d880d20668e7ab9d1379ef8792af5fe2",
        [
         null,
         [
@@ -72728,11 +72728,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             2
+            ],
+            [
+             0,
+             11000
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-blended-element-interposed.html": [
-       "66625478e7b1a00ca0e66f5ed64e12f514571910",
+       "768352de020801eb6294d4844ca824d271d859d2",
        [
         null,
         [
@@ -72741,11 +72757,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-blended-element-overflow-hidden-and-border-radius.html": [
-       "147b148bad2d3f5ab20a3c6206e1dd0f3ac1ab27",
+       "305e0e2e0c131a672b427438784b34849f8552be",
        [
         null,
         [
@@ -72754,7 +72786,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             10
+            ],
+            [
+             0,
+             5
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-blended-element-overflow-scroll.html": [
@@ -72784,7 +72832,7 @@
        ]
       ],
       "mix-blend-mode-blended-with-3D-transform.html": [
-       "4b4cf814121e3e726fab78a85092212bb16f93f9",
+       "1739e0138248a103b9c7632b4ac719a370469e53",
        [
         null,
         [
@@ -72793,7 +72841,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             255
+            ],
+            [
+             0,
+             350
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-blended-with-transform-and-perspective.html": [
@@ -72836,7 +72900,7 @@
        ]
       ],
       "mix-blend-mode-both-parent-and-blended-with-3D-transform.html": [
-       "e388c0566b22bbe0db0d8765f61233e64a5e5cf8",
+       "59fca74f8409f7288ff64f0828cb6c1c417e2a97",
        [
         null,
         [
@@ -72845,11 +72909,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             128
+            ],
+            [
+             0,
+             1000
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-canvas-parent.html": [
-       "3a0d6b18adca75bcfde74e5c70140559e32b8364",
+       "5107207e36022d5ea51c49f482a2980a1dbfd962",
        [
         null,
         [
@@ -72858,11 +72938,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-canvas-sibling.html": [
-       "6d4bdc6200dc783b9deb38746b3b50b716f5a745",
+       "2ecffbf51e261f248f21e61fc496d9f62fbb98a6",
        [
         null,
         [
@@ -72871,7 +72967,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-filter.html": [
@@ -72888,7 +73000,7 @@
        ]
       ],
       "mix-blend-mode-iframe-parent.html": [
-       "69c8cb8296a6b69abdd56848555043975728d03f",
+       "a24a5f933ee8d59683bea528ced3d2dbac1c79af",
        [
         null,
         [
@@ -72897,11 +73009,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-iframe-sibling.html": [
-       "6f82c9195b2d47e034bfd26e9c430359e3f94c59",
+       "d1a5518b8c83d4009e260c90ebd2390ce480adc9",
        [
         null,
         [
@@ -72910,7 +73038,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-image.html": [
@@ -72927,7 +73071,7 @@
        ]
       ],
       "mix-blend-mode-intermediate-element-overflow-hidden-and-border-radius.html": [
-       "6d900540d86b0dea02992a8d0d25479d025792c0",
+       "831747382105bc6ac83c53cd4ef3ceaef9c03b07",
        [
         null,
         [
@@ -72936,11 +73080,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             10
+            ],
+            [
+             0,
+             50
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-mask.html": [
-       "8bfeb08f8a3f9ee8b9c11df766f13380a1fec761",
+       "2a7072febbe6587310af568f73d1edcf8f959efc",
        [
         null,
         [
@@ -72949,7 +73109,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-overflowing-child-of-blended-element.html": [
@@ -72979,7 +73155,7 @@
        ]
       ],
       "mix-blend-mode-paragraph-background-image.html": [
-       "a4f5c226da603d226ac7c84289ae34894e6e33dd",
+       "51744dc7838937e06a6b4cc8436108f52cd71bc5",
        [
         null,
         [
@@ -72988,11 +73164,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-paragraph.html": [
-       "4b61d2465462018af1aa4849111ccc1700c46ae9",
+       "e0f4e383a56fc110f0323d8d2a7a09fb6be5fed5",
        [
         null,
         [
@@ -73001,11 +73193,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-parent-element-overflow-hidden-and-border-radius.html": [
-       "c73516305a6fba807ea2500f130430ca9ae405d9",
+       "840d2626bc1d350a478369dff0626f2b78830099",
        [
         null,
         [
@@ -73014,7 +73222,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             128
+            ],
+            [
+             0,
+             400
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-parent-element-overflow-scroll-blended-position-fixed.html": [
@@ -73057,7 +73281,7 @@
        ]
       ],
       "mix-blend-mode-parent-with-border-radius.html": [
-       "9c4f918bc0998da04f32f2da971b8cb990f3c717",
+       "e6562706d8ead518619f01c58b2dfe12bc350e9c",
        [
         null,
         [
@@ -73066,11 +73290,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             5
+            ],
+            [
+             0,
+             200
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-parent-with-text.html": [
-       "005b936e7e60b29ed649309c881d0372efc6319d",
+       "274bebe539f054f041d9eeadfe53ecaf5cd81bce",
        [
         null,
         [
@@ -73079,7 +73319,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-plus-lighter-basic.html": [
@@ -73196,7 +73452,7 @@
        ]
       ],
       "mix-blend-mode-script.html": [
-       "1268a8dc3f8242f03007dfc5a5afbd321ee57b7b",
+       "e842d0b39568019c0c8a4162780aa56779208ae1",
        [
         null,
         [
@@ -73205,7 +73461,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-sibling-with-3D-transform.html": [
@@ -73222,7 +73494,7 @@
        ]
       ],
       "mix-blend-mode-simple.html": [
-       "96d303df00fb3784678472632d6ad458bae0fa04",
+       "b00f81694ed8443f1d0932c2207f5fb1399fea98",
        [
         null,
         [
@@ -73231,7 +73503,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-stacking-context-001.html": [
@@ -73261,7 +73549,7 @@
        ]
       ],
       "mix-blend-mode-svg.html": [
-       "c950e540fd6b5beaff357d2af7a4efa0e3127206",
+       "b7b9f89e9253644cdcd42f265031763150b87bcd",
        [
         null,
         [
@@ -73270,7 +73558,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             10
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mix-blend-mode-video-sibling.html": [
@@ -73300,7 +73604,7 @@
        ]
       ],
       "mix-blend-mode-with-transform-and-preserve-3D.html": [
-       "c59835e9a7f4eb9e19bd11fed61ae5c9af7669e1",
+       "6d27a40ff2779e5269653275e28ba6378af46ead",
        [
         null,
         [
@@ -73309,7 +73613,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             50
+            ],
+            [
+             0,
+             300
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ]
      },
@@ -260142,16 +260462,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "768749d1587638997657e905f77c07b32a9f0b68",
-     []
-    ],
-    "mtime.json": [
-     "d79a5915ddcf8d485b82cfc595bd9649bb4d9eb5",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -275589,7 +275899,7 @@
         []
        ],
        "mix-blend-mode-animation-ref.html": [
-        "0e94efa12d0758a2f9630cc3d2f1fa57a109980e",
+        "1dc65d81312628b51820a9662f201a449d0daba6",
         []
        ],
        "mix-blend-mode-blended-element-overflow-hidden-and-border-radius-ref.html": [
@@ -275617,7 +275927,7 @@
         []
        ],
        "mix-blend-mode-both-parent-and-blended-with-3D-transform-ref.html": [
-        "af2827b1c6112c67c9bf76f9295ae3b52a298bee",
+        "b59802a229f7569ad12d5e5246c17e0c4f1830f8",
         []
        ],
        "mix-blend-mode-canvas-parent-ref.html": [
@@ -433384,14 +433694,14 @@
        ]
       ],
       "font-relative-units-dynamic.html": [
-       "67563417d7deadc0017192adebfc040a4d6374c3",
+       "36faf67c6d5edd20835f9c32fe2ddf780da3e1bf",
        [
         null,
         {}
        ]
       ],
       "font-relative-units.html": [
-       "59eec06d14181fc802c231f344e19b9474f742db",
+       "5724da2030cd0f3e9c470332583a906e1cc18a38",
        [
         null,
         {}
@@ -462607,8 +462917,15 @@
      ]
     ],
     "custom-element-registry": {
+     "define-customized-builtins.html": [
+      "b691033871c05b680c13dca7e7cae0f25962f2af",
+      [
+       null,
+       {}
+      ]
+     ],
      "define.html": [
-      "2aad1c18025af6f6322c0d7e6ce4c6089f1ac906",
+      "d3d923bd916fd04576d0de1d809e43a5395b9edb",
       [
        null,
        {}
@@ -471454,7 +471771,7 @@
      ]
     ],
     "image-src-change.html": [
-     "88436123fe9da47520dec1e7283df6bd66131a10",
+     "ae2ab5432a58d0f803ceb6749170fd1df3135bfe",
      [
       null,
       {}
