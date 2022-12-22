@@ -281,16 +281,18 @@ TEST_F(CocoaImmersiveModeControllerTest, TitlebarObserver) {
 
   // Clip the overlay view and make sure the overlay window moves off screen.
   // This simulates top chrome auto hiding.
-  [titlebar_container_view
-      setFrame:NSMakeRect(0, kOverlayViewHeight + 1, kOverlayViewWidth,
-                          kOverlayViewHeight)];
-  EXPECT_EQ(overlay().frame.origin.y, -kOverlayViewHeight);
+  if (@available(macOS 11.0, *)) {
+    [titlebar_container_view
+        setFrame:NSMakeRect(0, kOverlayViewHeight + 1, kOverlayViewWidth,
+                            kOverlayViewHeight)];
+    EXPECT_EQ(overlay().frame.origin.y, -kOverlayViewHeight);
 
-  // Remove the clip and make sure the overlay window moves back.
-  [titlebar_container_view
-      setFrame:NSMakeRect(0, kOverlayViewHeight, kOverlayViewWidth,
-                          kOverlayViewHeight)];
-  EXPECT_EQ(overlay().frame.origin.y, kOverlayViewHeight);
+    // Remove the clip and make sure the overlay window moves back.
+    [titlebar_container_view
+        setFrame:NSMakeRect(0, kOverlayViewHeight, kOverlayViewWidth,
+                            kOverlayViewHeight)];
+    EXPECT_EQ(overlay().frame.origin.y, kOverlayViewHeight);
+  }
 
   [titlebar_container_view removeObserver:titlebar_observer
                                forKeyPath:@"frame"];
