@@ -27252,7 +27252,8 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -27705,7 +27706,8 @@
         "args": [
           "--use-cmd-decoder=validating",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter"
         ],
         "isolate_profile_data": true,
         "merge": {
