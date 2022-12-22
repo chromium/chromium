@@ -24,6 +24,8 @@
 #include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 
 namespace web_app {
@@ -34,6 +36,7 @@ class WebAppRegistrar;
 namespace extensions {
 
 class ChromeAppSorting : public AppSorting,
+                         public ExtensionRegistryObserver,
                          public web_app::AppRegistrarObserver,
                          public web_app::WebAppInstallManagerObserver {
  public:
@@ -175,6 +178,10 @@ class ChromeAppSorting : public AppSorting,
   // Returns the number of items in |m| visible on the new tab page.
   size_t CountItemsVisibleOnNtp(const AppLaunchOrdinalMap& m) const;
 
+  // ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override;
+
   const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_ =
       nullptr;
   raw_ptr<const web_app::WebAppRegistrar, DanglingUntriaged>
@@ -206,6 +213,12 @@ class ChromeAppSorting : public AppSorting,
 
   // The set of extensions that don't appear in the new tab page.
   std::set<std::string> ntp_hidden_extensions_;
+
+  // Observe the ExtensionRegistry. The registry is guaranteed to outlive this
+  // object, since this is owned by the ExtensionSystem, which depends on the
+  // ExtensionRegistry.
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   base::WeakPtrFactory<ChromeAppSorting> weak_factory_{this};
 };

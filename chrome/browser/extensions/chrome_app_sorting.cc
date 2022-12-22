@@ -79,6 +79,7 @@ ChromeAppSorting::ChromeAppSorting(content::BrowserContext* browser_context)
       default_ordinals_created_(false) {
   ExtensionIdList extensions;
   ExtensionPrefs::Get(browser_context_)->GetExtensions(&extensions);
+  registry_observation_.Observe(ExtensionRegistry::Get(browser_context_));
   InitializePageOrdinalMap(extensions);
   MigrateAppIndex(extensions);
 }
@@ -743,6 +744,17 @@ size_t ChromeAppSorting::CountItemsVisibleOnNtp(
       result++;
   }
   return result;
+}
+
+void ChromeAppSorting::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  if (!extension->RequiresSortOrdinal()) {
+    return;
+  }
+
+  SetExtensionVisible(extension->id(), extension->ShouldDisplayInNewTabPage());
+  EnsureValidOrdinals(extension->id(), syncer::StringOrdinal());
 }
 
 }  // namespace extensions

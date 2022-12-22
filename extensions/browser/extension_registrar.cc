@@ -15,7 +15,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
@@ -129,15 +128,6 @@ void ExtensionRegistrar::AddNewExtension(
   } else if (extension_prefs_->IsExtensionDisabled(extension->id())) {
     registry_->AddDisabled(extension);
   } else {  // Extension should be enabled.
-    // All apps that are displayed in the launcher are ordered by their ordinals
-    // so we must ensure they have valid ordinals.
-    if (extension->RequiresSortOrdinal()) {
-      AppSorting* app_sorting = extension_system_->app_sorting();
-      app_sorting->SetExtensionVisible(extension->id(),
-                                       extension->ShouldDisplayInNewTabPage());
-      app_sorting->EnsureValidOrdinals(extension->id(),
-                                       syncer::StringOrdinal());
-    }
     registry_->AddEnabled(extension);
     ActivateExtension(extension.get(), true);
   }
