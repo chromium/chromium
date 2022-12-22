@@ -429,7 +429,7 @@ class HeadlessProtocolBrowserTestWithDataPath
 
 // TODO(crbug.com/1399463)  Re-enable after resolving flaky failures.
 HEADLESS_PROTOCOL_TEST_WITH_DATA_PATH(
-    DISABLED_FileInputDirectoryUpload,
+    FileInputDirectoryUpload,
     "sanity/file-input-directory-upload.js",
     "sanity/resources/file-input-directory-upload")
 

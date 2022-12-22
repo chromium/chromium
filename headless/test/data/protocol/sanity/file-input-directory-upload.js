@@ -11,11 +11,7 @@
   const {result} = await dp.Runtime.evaluate({
      expression: `document.getElementById('file')`
   });
-  dp.DOM.setFileInputFiles({
-    objectId: result.result.objectId,
-    files: [dataPath]
-  });
-  const value = await session.evaluateAsync(`new Promise(resolve => {
+  const valuePromise = session.evaluateAsync(`new Promise(resolve => {
     const file = document.getElementById('file');
     async function readFile(f) {
       return f.name + ': ' + await f.text() + "------------------";
@@ -25,6 +21,10 @@
       resolve(contents.join('\\n'));
     });
   })`);
-  testRunner.log(value);
+  dp.DOM.setFileInputFiles({
+    objectId: result.result.objectId,
+    files: [dataPath]
+  });
+  testRunner.log(await valuePromise);
   testRunner.completeTest();
 })
