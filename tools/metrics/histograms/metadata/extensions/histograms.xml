@@ -2931,7 +2931,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.SettingsOverridden.BackToGoogleNtpOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2022-10-04">
+    enum="SettingsOverriddenDialogResult" expires_after="2023-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2945,7 +2945,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.SettingsOverridden.BackToGoogleSearchOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2022-12-04">
+    enum="SettingsOverriddenDialogResult" expires_after="2023-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2959,7 +2959,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.SettingsOverridden.BackToOtherSearchOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2023-01-01">
+    enum="SettingsOverriddenDialogResult" expires_after="2023-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2973,7 +2973,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.SettingsOverridden.GenericNtpOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2022-10-04">
+    enum="SettingsOverriddenDialogResult" expires_after="2023-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2986,7 +2986,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.SettingsOverridden.GenericSearchOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2022-12-11">
+    enum="SettingsOverriddenDialogResult" expires_after="2023-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
