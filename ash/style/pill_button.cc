@@ -5,7 +5,6 @@
 #include "ash/style/pill_button.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"

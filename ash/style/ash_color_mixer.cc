@@ -5,7 +5,6 @@
 #include "ash/style/ash_color_mixer.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/harmonized_colors.h"
@@ -451,19 +450,6 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshLightFocusRing] = {cros_tokens::kColorProminentDark};
 
   mixer[ui::kColorAshOnboardingFocusRing] = {cros_tokens::kColorProminentDark};
-
-  if (!features::IsDarkLightModeEnabled()) {
-    ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
-    mixer[ui::kColorAshSystemUILightBorderColor1] = {
-        ui::kColorHighlightBorderBorder1};
-    mixer[ui::kColorAshSystemUILightBorderColor2] = {
-        ui::kColorHighlightBorderBorder2};
-    mixer[ui::kColorAshSystemUILightHighlightColor1] = {
-        ui::kColorHighlightBorderHighlight1};
-    mixer[ui::kColorAshSystemUILightHighlightColor2] = {
-        ui::kColorHighlightBorderHighlight2};
-    return;
-  }
 
   mixer[ui::kColorAshSystemUIMenuBackground] = {kColorAshShieldAndBase80};
   mixer[ui::kColorAshSystemUIMenuIcon] = {kColorAshIconColorPrimary};
