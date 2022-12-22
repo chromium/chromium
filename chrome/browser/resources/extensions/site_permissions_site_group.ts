@@ -17,11 +17,12 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {getTemplate} from './site_permissions_site_group.html.js';
 import {SiteSettingsDelegate} from './site_settings_mixin.js';
-import {getFaviconUrl} from './url_util.js';
+import {getFaviconUrl, matchesSubdomains, SUBDOMAIN_SPECIFIER} from './url_util.js';
 
 export interface SitePermissionsSiteGroupElement {
   $: {
     etldOrSite: HTMLElement,
+    etldOrSiteIncludesSubdomains: HTMLElement,
     etldOrSiteSubtext: HTMLElement,
   };
 }
@@ -94,8 +95,9 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
   }
 
   private getDisplayUrl_(): string {
-    return this.data.sites.length === 1 ? this.data.sites[0].site :
-                                          this.data.etldPlusOne;
+    return this.data.sites.length === 1 ?
+        this.getSiteWithoutSubdomainSpecifier_(this.data.sites[0].site) :
+        this.data.etldPlusOne;
   }
 
   private getEtldOrSiteSubText_(): string {
@@ -115,20 +117,44 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
 
     return siteSet === chrome.developerPrivate.SiteSet.USER_RESTRICTED ?
         loadTimeData.getString('restrictedSites') :
-        loadTimeData.getStringF(
-            'sitePermissionsAllSitesExtensionCount', this.data.numExtensions);
+        this.getExtensionCountText_(this.data.numExtensions);
+  }
+
+  private getSiteWithoutSubdomainSpecifier_(site: string): string {
+    return site.replace(SUBDOMAIN_SPECIFIER, '');
+  }
+
+  private etldOrFirstSiteMatchesSubdomains_(): boolean {
+    const site = this.data.sites.length === 1 ? this.data.sites[0].site :
+                                                this.data.etldPlusOne;
+    return matchesSubdomains(site);
+  }
+
+  private matchesSubdomains_(site: string): boolean {
+    return matchesSubdomains(site);
   }
 
   private getSiteSubtext_(siteInfo: chrome.developerPrivate.SiteInfo): string {
     if (siteInfo.numExtensions > 0) {
-      return loadTimeData.getStringF(
-          'sitePermissionsAllSitesExtensionCount', siteInfo.numExtensions);
+      return this.getExtensionCountText_(siteInfo.numExtensions);
     }
 
     return loadTimeData.getString(
         siteInfo.siteSet === chrome.developerPrivate.SiteSet.USER_PERMITTED ?
             'permittedSites' :
             'restrictedSites');
+  }
+
+  // TODO(crbug.com/1402795): Use PluralStringProxyImpl to retrieve the
+  // extension count text. However, this is non-trivial in this component as
+  // some of the strings are nestled inside dom-repeats and plural strings are
+  // currently retrieved asynchronously, and would need to be set directly on a
+  // property when retrieved.
+  private getExtensionCountText_(numExtensions: number): string {
+    return numExtensions === 1 ?
+        loadTimeData.getString('sitePermissionsAllSitesOneExtension') :
+        loadTimeData.getStringF(
+            'sitePermissionsAllSitesExtensionCount', numExtensions);
   }
 
   private onEditSiteClick_() {

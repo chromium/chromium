@@ -18,6 +18,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {getTemplate} from './site_permissions_edit_permissions_dialog.html.js';
 import {SiteSettingsDelegate} from './site_settings_mixin.js';
+import {matchesSubdomains, SUBDOMAIN_SPECIFIER} from './url_util.js';
 
 interface ExtensionSiteAccessInfo {
   id: string;
@@ -29,6 +30,8 @@ interface ExtensionSiteAccessInfo {
 export interface SitePermissionsEditPermissionsDialogElement {
   $: {
     dialog: CrDialogElement,
+    includesSubdomains: HTMLElement,
+    site: HTMLElement,
     submit: CrButtonElement,
   };
 }
@@ -251,8 +254,8 @@ export class SitePermissionsEditPermissionsDialogElement extends
     this.$.dialog.close();
   }
 
-  private computeDialogTitle_(): string {
-    return this.i18n('sitePermissionsEditPermissionsDialogTitle', this.site);
+  private getSiteWithoutSubdomainSpecifier_(): string {
+    return this.site.replace(SUBDOMAIN_SPECIFIER, '');
   }
 
   private getPermittedSiteLabel_(): string {
@@ -264,11 +267,7 @@ export class SitePermissionsEditPermissionsDialogElement extends
   }
 
   private matchesSubdomains_(): boolean {
-    // Sites that match all subdomains for a given host will specify "*.<host>".
-    // Given how sites are specified as origins for user specified sites and how
-    // extension host permissions are specified, it should be safe to assume
-    // that "*." will only be used to match subdomains.
-    return this.site.includes('*.');
+    return matchesSubdomains(this.site);
   }
 
   private showExtensionSiteAccessData_(): boolean {

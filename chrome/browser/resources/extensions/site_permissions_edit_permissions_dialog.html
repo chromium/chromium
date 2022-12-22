@@ -4,6 +4,17 @@
     --dialog-height: 360px;
   }
 
+  #dialog-title {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #title-subtext {
+    color: var(--cr-secondary-text-color);
+    font-size: 81.25%; /* Default font size. */
+  }
+
   cr-radio-group {
     height: var(--radio-group-height);
     padding-inline: 8px;
@@ -46,7 +57,15 @@
   }
 </style>
 <cr-dialog id="dialog" show-on-attach>
-  <div slot="title">[[computeDialogTitle_(site)]]</div>
+  <div slot="title" id="dialog-title">
+    <div>$i18n{sitePermissionsEditPermissionsDialogTitle}</div>
+    <div id="title-subtext">
+      <span id="site">[[getSiteWithoutSubdomainSpecifier_(site)]]</span>
+      <span id="includesSubdomains" hidden$="[[!matchesSubdomains_(site)]]">
+        $i18n{sitePermissionsIncludesSubdomains}
+      </span>
+    </div>
+  </div>
   <div slot="header">
     <!-- The cr-radio-group is in the header instead of the body slot so it is
          fixed in place while the list of extensions in the body slot can scroll
@@ -79,7 +98,7 @@
                 on-change="onHostAccessChange_"
                 value="[[getExtensionHostAccess_(item.id, item.siteAccess)]]">
               <option value="[[hostAccessEnum_.ON_CLICK]]">
-                $i18n{sitePermissionsOnClick}
+                $i18n{sitePermissionsAskOnEveryVisit}
               </option>
               <option value="[[hostAccessEnum_.ON_SPECIFIC_SITES]]">
                 $i18n{sitePermissionsAlwaysOnThisSite}

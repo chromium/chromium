@@ -38,6 +38,11 @@ suite('SitePermissionsSiteGroupElement', function() {
           numExtensions: 0,
           site: 'google.ca',
         },
+        {
+          siteSet: chrome.developerPrivate.SiteSet.USER_PERMITTED,
+          numExtensions: 0,
+          site: '*.google.ca',
+        },
       ],
     };
     flush();
@@ -53,10 +58,20 @@ suite('SitePermissionsSiteGroupElement', function() {
 
     assertTrue(isVisible(sitesList));
     const expandedSites =
-        element.shadowRoot!.querySelectorAll<HTMLElement>('.site');
+        element.shadowRoot!.querySelectorAll<HTMLElement>('#sites-list .site');
+    const expandedIncludesSubdomains =
+        element.shadowRoot!.querySelectorAll<HTMLElement>(
+            '#sites-list .includes-subdomains');
 
     assertEquals('images.google.ca', expandedSites[0]!.innerText);
+    assertFalse(isVisible(expandedIncludesSubdomains[0]!));
     assertEquals('google.ca', expandedSites[1]!.innerText);
+    assertFalse(isVisible(expandedIncludesSubdomains[1]!));
+
+    // The site shown should not have the subdomain specifier '*.'.
+    assertEquals('google.ca', expandedSites[2]!.innerText);
+    // But there should be text indicating that it includes subdomains.
+    assertTrue(isVisible(expandedIncludesSubdomains[2]!));
   });
 
   test('no subtext shown for sites from different sets', async function() {
@@ -86,8 +101,8 @@ suite('SitePermissionsSiteGroupElement', function() {
 
     assertTrue(isVisible(
         element.shadowRoot!.querySelector<HTMLElement>('#sites-list')));
-    const expandedSites =
-        element.shadowRoot!.querySelectorAll<HTMLElement>('.site-subtext');
+    const expandedSites = element.shadowRoot!.querySelectorAll<HTMLElement>(
+        '#sites-list .site-subtext');
 
     // The subtext for each expanded site should show which set it's from.
     assertEquals(PERMITTED_TEXT, expandedSites[0]!.innerText);
@@ -107,10 +122,29 @@ suite('SitePermissionsSiteGroupElement', function() {
     flush();
 
     assertEquals('a.example.com', element.$.etldOrSite.innerText);
+    assertFalse(isVisible(element.$.etldOrSiteIncludesSubdomains));
     assertEquals(PERMITTED_TEXT, element.$.etldOrSiteSubtext.innerText);
 
     assertFalse(isVisible(
         element.shadowRoot!.querySelector<HTMLElement>('cr-expand-button')));
+
+    // Now set the element's one site in the group to match subdomains.
+    element.data = {
+      etldPlusOne: 'example.com',
+      numExtensions: 1,
+      sites: [{
+        siteSet: chrome.developerPrivate.SiteSet.EXTENSION_SPECIFIED,
+        numExtensions: 1,
+        site: '*.example.com',
+      }],
+    };
+    flush();
+
+    assertEquals('example.com', element.$.etldOrSite.innerText);
+    assertTrue(isVisible(element.$.etldOrSiteIncludesSubdomains));
+    assertEquals(
+        loadTimeData.getString('sitePermissionsAllSitesOneExtension'),
+        element.$.etldOrSiteSubtext.innerText);
   });
 
   test(

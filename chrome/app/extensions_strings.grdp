@@ -145,8 +145,8 @@
   <message name="IDS_EXTENSIONS_HOST_ACCESS_ON_CLICK" desc="The text for the option to only allow an extension to read and change data when the user clicks on the extension.">
     On click
   </message>
-  <message name="IDS_EXTENSIONS_HOST_ACCESS_WHEN_CLICKED" desc="The text for the option to only allow an extension to read and change data when the user clicks on the extension, for the new site access settings.">
-    When I click the extension
+  <message name="IDS_EXTENSIONS_HOST_ACCESS_ASK_ON_EVERY_VISIT" desc="The text for the option to only allow an extension to read and change data after the user grants the extension access upon visiting the site, for the new site access settings.">
+    Ask on every visit
   </message>
   <message name="IDS_EXTENSIONS_HOST_ACCESS_ON_SPECIFIC_SITES" desc="The text for the option to allow an extension to read and change data on a select set of sites.">
     On specific sites
@@ -412,6 +412,9 @@
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ALL_SITES_PAGE_TITLE" desc="The title for the all sites subpage for extensions site permissions management.">
     All sites
   </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ALL_SITES_ONE_EXTENSION" desc="The subtext displayed for sites in the all sites subpage showing that one extension can run for that site.">
+    1 extension
+  </message>
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ALL_SITES_EXTENSION_COUNT" desc="The subtext displayed for sites in the all sites subpage showing the number of extensions that can run for that site.">
     <ph name="NUM_EXTENSIONS">$1</ph> extensions
   </message>
@@ -436,26 +439,29 @@
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ADD_SITE_DIALOG_TITLE" desc="The title of the dialog used to allow a user to add a new site. Used for the permitted and restricted site lists.">
     Add site
   </message>
-  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_SITE_DIALOG_TITLE" desc="The title of the dialog used to allow a user to edit an existing site. Used for the permitted and restricted site lists.">
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_SITE_DIALOG_TITLE" desc="The title of the dialog used to allow a user to edit an existing site's URL. Used for the permitted and restricted site lists.">
     Edit site
   </message>
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_URL" desc="The label for the option used to allow a user to edit a site's URL. Used in the site permissions page.">
     Edit site URL
   </message>
-  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_PERMISSIONS_DIALOG_TITLE" desc="The label for the option used to allow a user to edit a site's permissions. Used in the site permissions page.">
-    Edit site permissions for <ph name="SITE">$1</ph>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_PERMISSIONS_DIALOG_TITLE" desc="The title of the dialog used to allow a user to edit an existing site's permissions. This dialog is used on the all sites subpage.">
+    Edit site permissions
   </message>
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_PERMISSIONS" desc="The label for the option used to allow a user to edit a site's permissions. Used in the site permissions page.">
     Edit site permissions
   </message>
-  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ON_CLICK" desc="The option shown for an extension that can only access the site when clicked in the edit permissions dialog.">
-    On click for this site
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ASK_ON_EVERY_VISIT" desc="In the edit permissions dialog: the option shown for an extension that can only access the site after the user has granted it access upon visiting the site.">
+    Ask on every visit
   </message>
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_DIALOG_INPUT_ERROR" desc="The error message shown to the user when they entered an invalid site address into the input field.">
     Not a valid web address
   </message>
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_DIALOG_INPUT_LABEL" desc="The label for the input field where a user enters a new site. Used for the permitted and restricted site lists.">
     Site URL
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_INCLUDES_SUBDOMAINS" desc="The text to indicate that editing settings for a site will affect all of its subdomains. Used as a suffix, e.g. google.com - includes subdomains">
+    - includes subdomains
   </message>
   <message name="IDS_EXTENSIONS_EDIT_SHORTCUT_INPUT_LABEL" desc="The label for the input to edit the shortcut.">
     Shortcut <ph name="SHORTCUT">$1</ph> for <ph name="EXTENSION_NAME">$2</ph>

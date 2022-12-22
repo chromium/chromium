@@ -1,21 +1,35 @@
 <style include="cr-shared-style cr-icons shared-style">
   #etld-row {
     align-items: center;
-    /* border-bottom: var(--cr-separator-line); */
     display: flex;
     height: var(--cr-section-two-line-min-height);
   }
 
-  #etld-and-subtext {
+  .site-and-subtext {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     margin: 0 calc(var(--cr-section-padding) + var(--cr-icon-ripple-margin));
     overflow: hidden;
-    text-overflow: ellipsis;
   }
 
-  #etldOrSiteSubtext {
+  .site-wrapper {
+    display: flex;
+  }
+
+  .site {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .includes-subdomains {
+    color: var(--cr-secondary-text-color);
+    flex-shrink: 0;
+    margin-inline-start: 4px;
+  }
+
+  .site-subtext {
     color: var(--cr-secondary-text-color);
   }
 
@@ -25,35 +39,24 @@
 
   .site-row {
     align-items: center;
-    /* border-top: var(--cr-separator-line); */
     display: flex;
     height: var(--cr-section-min-height);
-  }
-
-  .site-and-subtext {
-    display: flex;
-    flex-grow: 1;
-    margin: 0 calc(var(--cr-section-padding) + var(--cr-icon-ripple-margin));
-    overflow: hidden;
-  }
-
-  .site {
-    margin-inline-end: 12px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .site-subtext {
-    color: var(--cr-secondary-text-color);
-    flex-shrink: 0;
   }
 </style>
 <div id="etld-row" class$="[[getClassForIndex_(listIndex)]]">
   <div class="site-favicon"
       style$="background-image:[[getEtldOrSiteFaviconUrl_(data)]]"></div>
-  <div id="etld-and-subtext">
-    <span id="etldOrSite">[[getDisplayUrl_(data)]]</span>
-    <span id="etldOrSiteSubtext">[[getEtldOrSiteSubText_(data)]]</span>
+  <div class="site-and-subtext">
+    <div class="site-wrapper">
+      <span id="etldOrSite" class="site">[[getDisplayUrl_(data)]]</span>
+      <span id="etldOrSiteIncludesSubdomains" class="includes-subdomains"
+          hidden$="[[!etldOrFirstSiteMatchesSubdomains_(data)]]">
+        $i18n{sitePermissionsIncludesSubdomains}
+      </span>
+    </div>
+    <span id="etldOrSiteSubtext" class="site-subtext">
+      [[getEtldOrSiteSubText_(data)]]
+    </span>
   </div>
   <template is="dom-if" if="[[isExpandable_]]">
     <cr-expand-button no-hover id="expand-sites-button"
@@ -72,7 +75,15 @@
       <div class="site-favicon"
           style$="background-image:[[getFaviconUrl_(item.site)]]"></div>
       <div class="site-and-subtext">
-        <span class="site">[[item.site]]</span>
+        <div class="site-wrapper">
+          <span class="site">
+            [[getSiteWithoutSubdomainSpecifier_(item.site)]]
+          </span>
+          <span class="includes-subdomains"
+              hidden$="[[!matchesSubdomains_(item.site)]]">
+            $i18n{sitePermissionsIncludesSubdomains}
+          </span>
+        </div>
         <span class="site-subtext">[[getSiteSubtext_(item)]]</span>
       </div>
       <cr-icon-button class="subpage-arrow" on-click="onEditSiteInListClick_">

@@ -66,6 +66,17 @@ suite('SitePermissionsEditPermissionsDialog', function() {
     document.body.appendChild(element);
   });
 
+  test('extra text shown if site matches subdomains', function() {
+    assertEquals('http://example.com', element.$.site.innerText);
+    assertFalse(isVisible(element.$.includesSubdomains));
+
+    element.site = '*.example.com';
+    flush();
+
+    assertEquals('example.com', element.$.site.innerText);
+    assertTrue(isVisible(element.$.includesSubdomains));
+  });
+
   test('editing current site set', async function() {
     flush();
     const siteSetRadioGroup =
