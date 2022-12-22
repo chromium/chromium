@@ -856,6 +856,12 @@ void FakeCrosHealthd::AddUsbObserver(
   usb_observers_.Add(std::move(observer));
 }
 
+void FakeCrosHealthd::AddEventObserver(
+    mojom::EventCategoryEnum category,
+    mojo::PendingRemote<mojom::EventObserver> observer) {
+  NOTIMPLEMENTED();
+}
+
 void FakeCrosHealthd::ProbeTelemetryInfo(
     const std::vector<mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {

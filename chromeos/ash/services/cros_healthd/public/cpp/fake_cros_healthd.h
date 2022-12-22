@@ -363,6 +363,10 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
       override;
   void AddUsbObserver(
       mojo::PendingRemote<mojom::CrosHealthdUsbObserver> observer) override;
+  void AddEventObserver(
+      ash::cros_healthd::mojom::EventCategoryEnum category,
+      mojo::PendingRemote<ash::cros_healthd::mojom::EventObserver> observer)
+      override;
 
   // CrosHealthdProbeService overrides:
   void ProbeTelemetryInfo(

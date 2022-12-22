@@ -666,7 +666,7 @@ interface CrosHealthdDiagnosticsService {
 
 // Event interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 2, NextIndex: 7
+// NextMinVersion: 3, NextIndex: 8
 [Stable]
 interface CrosHealthdEventService {
   // Adds an observer to be notified on Bluetooth events. The caller can remove
@@ -722,6 +722,16 @@ interface CrosHealthdEventService {
   // * |observer| - USB observer to be added to cros_healthd.
   [MinVersion=1] AddUsbObserver@6(
       pending_remote<CrosHealthdUsbObserver> observer);
+
+  // Adds an observer to be notified on events. The caller can remove the
+  // observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |category| - Event category.
+  // * |observer| - Event observer to be added to cros_healthd.
+  [MinVersion=2] AddEventObserver@7(
+      EventCategoryEnum category,
+      pending_remote<EventObserver> observer);
 };
 
 // Probe interface exposed by the cros_healthd daemon.

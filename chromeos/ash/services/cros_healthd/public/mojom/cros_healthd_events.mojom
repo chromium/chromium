@@ -83,7 +83,7 @@ interface CrosHealthdThunderboltObserver {
 
 // USB event info.
 //
-// NextMinVersion: 1, NextIndex: 5
+// NextMinVersion: 2, NextIndex: 6
 [Stable]
 struct UsbEventInfo {
   // Vendor name.
@@ -97,6 +97,18 @@ struct UsbEventInfo {
   // USB device categories.
   // https://www.usb.org/defined-class-codes
   array<string> categories@4;
+
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Usb plugs in.
+    kAdd = 1,
+    // Usb unplugs.
+    kRemove = 2,
+  };
+
+  [MinVersion=1] State state@5;
 };
 
 // Implemented by clients who desire USB notifications.
@@ -108,4 +120,156 @@ interface CrosHealthdUsbObserver {
   OnAdd@0(UsbEventInfo info);
   // Fired when the USB plug out.
   OnRemove@1(UsbEventInfo info);
+};
+
+// Thunderbolt event info.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct ThunderboltEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Thunderbolt plug in.
+    kAdd = 1,
+    // Thunderbolt plug out.
+    kRemove = 2,
+    // Thunderbolt device is authorized.
+    kAuthorized = 3,
+    // Thunderbolt device is unauthorized.
+    kUnAuthorized = 4,
+  };
+
+  State state@0;
+};
+
+// Lid event info.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct LidEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Lid closed.
+    kClosed = 1,
+    // Lid opened.
+    kOpened = 2,
+  };
+
+  State state@0;
+};
+
+// Bluetooth event info.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct BluetoothEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Adapter is added.
+    kAdapterAdded = 1,
+    // Adapter is removed.
+    kAdapterRemoved = 2,
+    // Adapter property is changed.
+    kAdapterPropertyChanged = 3,
+    // Device is added.
+    kDeviceAdded = 4,
+    // Device is removed.
+    kDeviceRemoved = 5,
+    // Device property is changed.
+    kDevicePropertyChanged = 6,
+  };
+
+  State state@0;
+};
+
+// Power event info.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct PowerEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Device begins consuming from an external power source.
+    kAcInserted = 1,
+    // Device stops consuming from an external power source.
+    kAcRemoved = 2,
+    // System receives a suspend request.
+    kOsSuspend = 3,
+    // System completes a suspend request.
+    kOsResume = 4,
+  };
+
+  State state@0;
+};
+
+// Audio event info.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct AudioEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Audio underrun happens.
+    kUnderrun = 1,
+    // Audio severe underrun happens.
+    kSevereUnderrun = 2,
+  };
+
+  State state@0;
+};
+
+// Implemented by clients who desire events.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+interface EventObserver {
+  // Fired when an event happens.
+  OnEvent@0(EventInfo info);
+};
+
+// Union of event info.
+//
+// NextMinVersion: 1, NextIndex: 7
+[Stable, Extensible]
+union EventInfo {
+  // The default value for forward compatibility. All the unknown type will be
+  // mapped to this.
+  [Default] uint8 default_type@0;
+  // Usb event info.
+  UsbEventInfo usb_event_info@1;
+  // Thunderbolt event info.
+  ThunderboltEventInfo thunderbolt_event_info@2;
+  // Lid event info.
+  LidEventInfo lid_event_info@3;
+  // Bluetooth event info.
+  BluetoothEventInfo bluetooth_event_info@4;
+  // Power event info.
+  PowerEventInfo power_event_info@5;
+  // Audio event info.
+  AudioEventInfo audio_event_info@6;
+};
+
+// An enumeration of event categories.
+//
+// NextMinVersion: 1, NextIndex: 7
+[Stable, Extensible]
+enum EventCategoryEnum {
+  // This is required for backwards compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  kUsb = 1,
+  kThunderbolt = 2,
+  kLid = 3,
+  kBluetooth = 4,
+  kPower = 5,
+  kAudio = 6,
 };
