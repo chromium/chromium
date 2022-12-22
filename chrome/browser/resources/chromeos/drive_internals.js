@@ -105,13 +105,13 @@ function updateBulkPinning(enabled) {
   if (enabled) {
     return;
   }
-  $('bulk-pinning-setup-stage').innerText = 'Unknown';
-  $('bulk-pinning-setup-stage-error').innerText = 'Unknown';
-  $('bulk-pinning-available-disk-space').innerText = 'Unknown';
-  $('bulk-pinning-required-disk-space').innerText = 'Unknown';
-  $('bulk-pinning-pinned-disk-space').innerText = 'Unknown';
-  $('bulk-pinning-progress').removeAttribute('max');
-  $('bulk-pinning-progress').removeAttribute('value');
+  $('bulk-pinning-setup-stage').innerText = '?';
+  $('bulk-pinning-setup-stage-error').innerText = '?';
+  $('bulk-pinning-available-disk-space').innerText = '?';
+  $('bulk-pinning-required-disk-space').innerText = '?';
+  $('bulk-pinning-pinned-disk-space').innerText = '?';
+  $('bulk-pinning-progress').value = 0;
+  $('bulk-pinning-progress').max = 1;
 }
 
 function onBulkPinningProgress(progress) {
@@ -124,9 +124,11 @@ function onBulkPinningProgress(progress) {
     $('bulk-pinning-setup-stage-error').innerText = progress.setupError;
   }
   $('bulk-pinning-available-disk-space').innerText =
-      progress.availableDiskSpace;
-  $('bulk-pinning-required-disk-space').innerText = progress.requiredDiskSpace;
-  $('bulk-pinning-pinned-disk-space').innerText = progress.pinnedDiskSpace;
+      toMegaByteString(Number(progress.availableDiskSpace));
+  $('bulk-pinning-required-disk-space').innerText =
+      toMegaByteString(Number(progress.requiredDiskSpace));
+  $('bulk-pinning-pinned-disk-space').innerText =
+      toMegaByteString(Number(progress.pinnedDiskSpace));
   $('bulk-pinning-progress').value = Number(progress.pinnedDiskSpace);
   $('bulk-pinning-progress').max = Number(progress.requiredDiskSpace);
 }

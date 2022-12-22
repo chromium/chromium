@@ -41,3 +41,7 @@ summary h2 {
   display: inline;
   font-size: inherit;
 }
+
+th {
+  text-align: start;
+}
