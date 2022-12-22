@@ -1652,26 +1652,12 @@ Value* DictionaryValue::SetString(StringPiece path,
   return Set(path, std::make_unique<Value>(in_value));
 }
 
-bool DictionaryValue::Get(StringPiece path, const Value** out_value) const {
-  DCHECK(IsStringUTF8AllowingNoncharacters(path));
-  const Value* value = FindPath(path);
-  if (!value)
-    return false;
-  if (out_value)
-    *out_value = value;
-  return true;
-}
-
-bool DictionaryValue::Get(StringPiece path, Value** out_value) {
-  return std::as_const(*this).Get(path, const_cast<const Value**>(out_value));
-}
-
 bool DictionaryValue::GetDictionary(StringPiece path,
                                     const DictionaryValue** out_value) const {
-  const Value* value;
-  bool result = Get(path, &value);
-  if (!result || !value->is_dict())
+  const Value* value = GetDict().FindByDottedPath(path);
+  if (!value || !value->is_dict()) {
     return false;
+  }
 
   if (out_value)
     *out_value = static_cast<const DictionaryValue*>(value);

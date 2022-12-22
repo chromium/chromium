@@ -1288,21 +1288,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // otherwise.
   Value* SetString(StringPiece path, const std::u16string& in_value);
 
-  // Gets the Value associated with the given path starting from this object.
-  // A path has the form "<key>" or "<key>.<key>.[...]", where "." indexes
-  // into the next DictionaryValue down.  If the path can be resolved
-  // successfully, the value for the last key in the path will be returned
-  // through the `out_value` parameter, and the function will return true.
-  // Otherwise, it will return false and `out_value` will be untouched.
-  // Note that the dictionary always owns the value that's returned.
-  // `out_value` is optional and will only be set if non-NULL.
-  //
-  // DEPRECATED: prefer `Value::Dict::Find()` (if the path only has one
-  // component, i.e. has no dots), or `Value::Dict::FindByDottedPath()`
-  // otherwise.
-  bool Get(StringPiece path, const Value** out_value) const;
-  bool Get(StringPiece path, Value** out_value);
-
   // These are convenience forms of `Get()`.  The value will be retrieved
   // and the return value will be true if the path is valid and the value at
   // the end of the path can be returned in the form specified.

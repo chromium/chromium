@@ -2277,15 +2277,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   main_list.Append(dict_value.Clone());
   main_list.Append(list_value.Clone());
 
-  EXPECT_TRUE(main_dict.Get("bool", nullptr));
-  EXPECT_TRUE(main_dict.Get("int", nullptr));
-  EXPECT_TRUE(main_dict.Get("double", nullptr));
-  EXPECT_TRUE(main_dict.Get("string", nullptr));
-  EXPECT_TRUE(main_dict.Get("binary", nullptr));
-  EXPECT_TRUE(main_dict.Get("dict", nullptr));
-  EXPECT_TRUE(main_dict.Get("list", nullptr));
-  EXPECT_FALSE(main_dict.Get("DNE", nullptr));
-
   EXPECT_FALSE(main_dict.GetDictionary("bool", nullptr));
   EXPECT_FALSE(main_dict.GetDictionary("int", nullptr));
   EXPECT_FALSE(main_dict.GetDictionary("double", nullptr));
