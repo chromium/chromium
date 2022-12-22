@@ -1248,30 +1248,30 @@ void DevToolsUIBindings::ClearPreferences() {
 }
 
 void DevToolsUIBindings::GetSyncInformation(DispatchCallback callback) {
-  base::Value result =
-      DevToolsUIBindings::GetSyncInformationForProfile(profile_);
+  auto result =
+      base::Value(DevToolsUIBindings::GetSyncInformationForProfile(profile_));
   std::move(callback).Run(&result);
 }
 
-base::Value DevToolsUIBindings::GetSyncInformationForProfile(Profile* profile) {
-  base::Value result(base::Value::Type::DICTIONARY);
+base::Value::Dict DevToolsUIBindings::GetSyncInformationForProfile(
+    Profile* profile) {
+  base::Value::Dict result;
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   if (!sync_service) {
-    result.SetBoolKey("isSyncActive", false);
+    result.Set("isSyncActive", false);
     return result;
   }
 
-  result.SetBoolKey("isSyncActive", sync_service->IsSyncFeatureActive());
-  result.SetBoolKey(
-      "arePreferencesSynced",
-      sync_service->GetActiveDataTypes().Has(syncer::ModelType::PREFERENCES));
+  result.Set("isSyncActive", sync_service->IsSyncFeatureActive());
+  result.Set("arePreferencesSynced", sync_service->GetActiveDataTypes().Has(
+                                         syncer::ModelType::PREFERENCES));
 
   CoreAccountInfo account_info = sync_service->GetAccountInfo();
   if (account_info.IsEmpty())
     return result;
 
-  result.SetStringKey("accountEmail", account_info.email);
+  result.Set("accountEmail", account_info.email);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -1287,7 +1287,7 @@ base::Value DevToolsUIBindings::GetSyncInformationForProfile(Profile* profile) {
   scoped_refptr<base::RefCountedMemory> png_bytes =
       account_image.As1xPNGBytes();
   if (png_bytes->size() > 0)
-    result.SetStringKey("accountImage", base::Base64Encode(*png_bytes));
+    result.Set("accountImage", base::Base64Encode(*png_bytes));
 
   return result;
 }

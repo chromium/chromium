@@ -9,6 +9,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class DevToolsUIBindingsTest : public testing::Test {
@@ -136,10 +137,10 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, SyncDisabled) {
   sync_service_->SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
 
-  base::Value info =
+  base::Value::Dict info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
 
-  EXPECT_FALSE(info.FindBoolKey("isSyncActive").value());
+  EXPECT_FALSE(info.FindBool("isSyncActive").value());
 }
 
 TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {
@@ -148,11 +149,11 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {
       /*types=*/syncer::UserSelectableTypeSet(
           syncer::UserSelectableType::kBookmarks));
 
-  base::Value info =
+  base::Value::Dict info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
 
-  EXPECT_TRUE(info.FindBoolKey("isSyncActive").value());
-  EXPECT_FALSE(info.FindBoolKey("arePreferencesSynced").value());
+  EXPECT_THAT(info.FindBool("isSyncActive"), testing::Optional(true));
+  EXPECT_THAT(info.FindBool("arePreferencesSynced"), testing::Optional(false));
 }
 
 TEST_F(DevToolsUIBindingsSyncInfoTest, ImageAlwaysProvided) {
@@ -162,9 +163,9 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, ImageAlwaysProvided) {
 
   EXPECT_TRUE(account_info.account_image.IsEmpty());
 
-  base::Value info =
+  base::Value::Dict info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
 
-  EXPECT_EQ(*info.FindStringKey("accountEmail"), "sync@devtools.dev");
-  EXPECT_NE(info.FindStringKey("accountImage"), nullptr);
+  EXPECT_EQ(*info.FindString("accountEmail"), "sync@devtools.dev");
+  EXPECT_NE(info.FindString("accountImage"), nullptr);
 }
