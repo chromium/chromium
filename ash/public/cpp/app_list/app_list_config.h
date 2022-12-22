@@ -189,7 +189,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return folder_unclipped_icon_dimension_;
   }
   int folder_icon_radius() const { return folder_icon_radius_; }
-  int folder_background_radius() const { return folder_background_radius_; }
   int item_icon_in_folder_icon_dimension() const {
     return item_icon_in_folder_icon_dimension_;
   }
@@ -279,9 +278,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // The corner radius of folder icon.
   const int folder_icon_radius_;
-
-  // The corner radius of folder background.
-  const int folder_background_radius_;
 
   // The dimension of the item icon in folder icon.
   const int item_icon_in_folder_icon_dimension_;

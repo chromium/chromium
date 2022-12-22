@@ -16,8 +16,6 @@ class AppListColorProviderImpl : public AppListColorProvider {
   // AppListColorProvider:
   SkColor GetPageSwitcherButtonColor(
       const views::Widget* app_list_widget) const override;
-  SkColor GetFolderBackgroundColor(
-      const views::Widget* app_list_widget) const override;
   SkColor GetFolderNotificationBadgeColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetGridBackgroundCardActiveColor(

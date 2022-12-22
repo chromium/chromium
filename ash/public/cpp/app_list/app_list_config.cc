@@ -175,7 +175,6 @@ AppListConfig::AppListConfig(AppListConfigType type)
       folder_unclipped_icon_dimension_(
           FolderUnclippedIconDimensionForType(type)),
       folder_icon_radius_(FolderClippedIconDimensionForType(type) / 2),
-      folder_background_radius_(12),
       item_icon_in_folder_icon_dimension_(
           ItemIconInFolderIconDimensionForType(type)),
       item_icon_in_folder_icon_margin_(4),
@@ -203,8 +202,6 @@ AppListConfig::AppListConfig(const AppListConfig& base_config, float scale_x)
       folder_unclipped_icon_dimension_(
           Scale(base_config.folder_unclipped_icon_dimension_, scale_x)),
       folder_icon_radius_(Scale(base_config.folder_icon_radius_, scale_x)),
-      folder_background_radius_(
-          Scale(base_config.folder_background_radius_, scale_x)),
       item_icon_in_folder_icon_dimension_(
           Scale(base_config.item_icon_in_folder_icon_dimension_, scale_x)),
       item_icon_in_folder_icon_margin_(

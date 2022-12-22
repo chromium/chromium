@@ -40,14 +40,6 @@ SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor(
       kColorAshButtonIconColor);
 }
 
-SkColor AppListColorProviderImpl::GetFolderBackgroundColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  return app_list_widget->GetColorProvider()->GetColor(
-      kColorAshShieldAndBase80);
-}
-
 SkColor AppListColorProviderImpl::GetFolderNotificationBadgeColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);

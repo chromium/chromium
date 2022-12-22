@@ -9,11 +9,6 @@
 
 namespace ash {
 
-SkColor TestAppListColorProvider::GetFolderBackgroundColor(
-    const views::Widget* app_list_widget) const {
-  return gfx::kGoogleGrey900;
-}
-
 SkColor TestAppListColorProvider::GetPageSwitcherButtonColor(
     const views::Widget* app_list_widget) const {
   return gfx::kGoogleGrey700;

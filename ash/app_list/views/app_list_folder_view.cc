@@ -78,6 +78,8 @@ constexpr int kTileSpacingInFolder = 8;
 
 constexpr int kScrollViewGradientSize = 16;
 
+constexpr int kFolderBackgroundRadius = 12;
+
 // Insets for the vertical scroll bar. The top is pushed down slightly to align
 // with the icons, which keeps the scroll bar out of the rounded corner area.
 constexpr auto kVerticalScrollInsets =
@@ -87,13 +89,6 @@ constexpr auto kVerticalScrollInsets =
 // or closing a folder, and the duration for the top folder icon animation
 // for flying in or out the folder.
 constexpr base::TimeDelta kFolderTransitionDuration = base::Milliseconds(250);
-
-// A utility function for `background_view` to update its background color.
-void SetBackgroundViewColor(views::View* background_view, SkColor color) {
-  background_view->SetBackground(color == SK_ColorTRANSPARENT
-                                     ? nullptr
-                                     : views::CreateSolidBackground(color));
-}
 
 // Returns true if ChromeVox (spoken feedback) is enabled.
 bool IsSpokenFeedbackEnabled() {
@@ -110,22 +105,18 @@ class BackgroundAnimation : public AppListFolderView::Animation,
  public:
   BackgroundAnimation(bool show,
                       AppListFolderView* folder_view,
-                      views::View* background_view)
+                      views::View* animating_view)
       : show_(show),
         folder_view_(folder_view),
-        background_view_(background_view),
+        animating_view_(animating_view),
         shadow_(folder_view->shadow()) {
-    background_view_observer_.Observe(background_view_);
-    shadow_->GetLayer()->SetVisible(true);
+    background_view_observer_.Observe(animating_view_);
   }
 
   BackgroundAnimation(const BackgroundAnimation&) = delete;
   BackgroundAnimation& operator=(const BackgroundAnimation&) = delete;
 
-  ~BackgroundAnimation() override {
-    if (!show_)
-      shadow_->GetLayer()->SetVisible(false);
-  }
+  ~BackgroundAnimation() override = default;
 
  private:
   // AppListFolderView::Animation:
@@ -136,37 +127,37 @@ class BackgroundAnimation : public AppListFolderView::Animation,
     // Calculate the source and target states.
     const int icon_radius =
         folder_view_->GetAppListConfig()->folder_icon_radius();
-    const int folder_radius =
-        folder_view_->GetAppListConfig()->folder_background_radius();
-    const int from_radius = show_ ? icon_radius : folder_radius;
-    const int to_radius = show_ ? folder_radius : icon_radius;
+    const int from_radius = show_ ? icon_radius : kFolderBackgroundRadius;
+    const int to_radius = show_ ? kFolderBackgroundRadius : icon_radius;
     gfx::Rect from_rect = show_ ? folder_view_->folder_item_icon_bounds()
-                                : background_view_->bounds();
-    from_rect -= background_view_->bounds().OffsetFromOrigin();
-    gfx::Rect to_rect = show_ ? background_view_->bounds()
+                                : animating_view_->bounds();
+    from_rect -= animating_view_->bounds().OffsetFromOrigin();
+    gfx::Rect to_rect = show_ ? animating_view_->bounds()
                               : folder_view_->folder_item_icon_bounds();
-    to_rect -= background_view_->bounds().OffsetFromOrigin();
+    to_rect -= animating_view_->bounds().OffsetFromOrigin();
     const views::Widget* app_list_widget = folder_view_->GetWidget();
     const SkColor background_color =
-        AppListColorProvider::Get()->GetFolderBackgroundColor(app_list_widget);
+        app_list_widget->GetColorProvider()->GetColor(kColorAshShieldAndBase80);
     const SkColor bubble_color = app_list_widget->GetColorProvider()->GetColor(
         kColorAshControlBackgroundColorInactive);
     const SkColor from_color = show_ ? bubble_color : background_color;
     const SkColor to_color = show_ ? background_color : bubble_color;
 
-    SetBackgroundViewColor(background_view_, from_color);
-    background_view_->layer()->SetClipRect(from_rect);
-    background_view_->layer()->SetRoundedCornerRadius(
+    animating_view_->layer()->SetColor(from_color);
+    animating_view_->layer()->SetClipRect(from_rect);
+    animating_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(from_radius));
 
+    AlignShadowWithAnimatingBackground();
+
     ui::ScopedLayerAnimationSettings settings(
-        background_view_->layer()->GetAnimator());
+        animating_view_->layer()->GetAnimator());
     settings.SetTransitionDuration(kFolderTransitionDuration);
     settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     settings.AddObserver(this);
-    SetBackgroundViewColor(background_view_, to_color);
-    background_view_->layer()->SetClipRect(to_rect);
-    background_view_->layer()->SetRoundedCornerRadius(
+    animating_view_->layer()->SetColor(to_color);
+    animating_view_->layer()->SetClipRect(to_rect);
+    animating_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(to_radius));
     is_animating_ = true;
   }
@@ -174,19 +165,9 @@ class BackgroundAnimation : public AppListFolderView::Animation,
   bool IsAnimationRunning() override { return is_animating_; }
 
   // ui::ImplicitAnimationObserver:
-  void OnImplicitAnimationsScheduled() override {
-    // Remove the highlight border at the start of the closing animation.
-    if (!show_)
-      folder_view_->UpdateHighlightBorder(false);
-  }
-
-  // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override {
-    // Add the highlight border when the showing animation is completed.
-    if (show_)
-      folder_view_->UpdateHighlightBorder(true);
-
     is_animating_ = false;
+
     folder_view_->RecordAnimationSmoothness();
 
     if (completion_callback_)
@@ -200,11 +181,15 @@ class BackgroundAnimation : public AppListFolderView::Animation,
     // attributes. We need to use the intermediate clip rect shape from
     // background animation to update shadow's contents bounds and corner
     // radius.
-    DCHECK_EQ(observed_view, background_view_);
+    DCHECK_EQ(observed_view, animating_view_);
 
+    AlignShadowWithAnimatingBackground();
+  }
+
+  void AlignShadowWithAnimatingBackground() {
     // If layer clip rect is not empty, we use the clip rect to update the
     // shadow's contents bounds. Otherwise, we use the layer bounds.
-    const auto* background_layer = background_view_->layer();
+    const auto* background_layer = animating_view_->layer();
     const gfx::Rect& background_bounds = background_layer->bounds();
     const gfx::Rect& clip_rect = background_layer->clip_rect();
     const gfx::Rect& content_bounds =
@@ -219,9 +204,9 @@ class BackgroundAnimation : public AppListFolderView::Animation,
   const bool show_;
   bool is_animating_ = false;
 
-  AppListFolderView* const folder_view_;  // Not owned.
-  views::View* const background_view_;    // Not owned.
-  SystemShadow* const shadow_;            // Not owned.
+  AppListFolderView* const folder_view_;
+  views::View* const animating_view_;
+  SystemShadow* const shadow_;
 
   // Observes the rect clip change of background view.
   base::ScopedObservation<views::View, views::ViewObserver>
@@ -362,7 +347,8 @@ class TopIconAnimation : public AppListFolderView::Animation,
       // Add the transitional views into child views, and set its bounds to the
       // same location of the item in the folder list view.
       top_icon_views_.push_back(
-          folder_view_->background_view()->AddChildView(std::move(icon_view)));
+          folder_view_->animating_background()->AddChildView(
+              std::move(icon_view)));
       icon_view_ptr->SetBoundsRect(first_page_item_views_bounds[i]);
       icon_view_ptr->TransformView(kFolderTransitionDuration);
     }
@@ -531,10 +517,6 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
       layer->SetTransform(transform);
     layer->SetOpacity(show_ ? 0.0f : 1.0f);
 
-    // The folder should be set visible only after it is scaled down and
-    // transparent to prevent the flash of the view right before the animation.
-    folder_view_->SetVisible(true);
-
     ui::ScopedLayerAnimationSettings animation(layer->GetAnimator());
     animation.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     animation.AddObserver(this);
@@ -643,6 +625,24 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
       ColorProvider::kBackgroundBlurSigma);
   background_view_->layer()->SetBackdropFilterQuality(
       ColorProvider::kBackgroundBlurQuality);
+  background_view_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kFolderBackgroundRadius));
+  background_view_->layer()->SetIsFastRoundedCorner(true);
+  background_view_->SetBorder(std::make_unique<views::HighlightBorder>(
+      kFolderBackgroundRadius, views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/!features::IsDarkLightModeEnabled()));
+  background_view_->SetBackground(
+      views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  background_view_->SetVisible(false);
+
+  animating_background_ = AddChildView(std::make_unique<views::View>());
+  animating_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  animating_background_->layer()->SetBackgroundBlur(
+      ColorProvider::kBackgroundBlurSigma);
+  animating_background_->layer()->SetBackdropFilterQuality(
+      ColorProvider::kBackgroundBlurQuality);
+  animating_background_->layer()->SetFillsBoundsOpaquely(false);
+  animating_background_->SetVisible(false);
 
   contents_container_ = AddChildView(std::make_unique<views::View>());
   contents_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
@@ -653,7 +653,6 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
       SystemShadow::Type::kElevation8);
   background_view_->AddLayerBeneathView(shadow_->GetLayer());
-  shadow_->GetLayer()->SetVisible(false);
 
   AppListModelProvider::Get()->AddObserver(this);
 }
@@ -779,7 +778,7 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
 
   // Animate the background corner radius, opacity and bounds.
   folder_visibility_animations_.push_back(
-      std::make_unique<BackgroundAnimation>(show, this, background_view_));
+      std::make_unique<BackgroundAnimation>(show, this, animating_background_));
 
   // Animate the folder item's title's opacity.
   views::View* const folder_title = folder_item_view_->title();
@@ -810,6 +809,12 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
         base::BindOnce(&AppListFolderView::OnShowAnimationDone,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  SetVisible(true);
+
+  background_view_->SetVisible(false);
+  animating_background_->SetVisible(true);
+  shadow_->GetLayer()->SetVisible(true);
 
   for (auto& animation : folder_visibility_animations_)
     animation->ScheduleAnimation(animation_completion_callback);
@@ -896,7 +901,8 @@ void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
 
   // Transition all the states immediately to the end of folder closing
   // animation.
-  SetBackgroundViewColor(background_view_, SK_ColorTRANSPARENT);
+  background_view_->SetVisible(false);
+
   if (restore_folder_item_view_state && folder_item_view_) {
     folder_item_view_->SetIconVisible(true);
     folder_item_view_->title()->DestroyLayer();
@@ -910,11 +916,17 @@ void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
 }
 
 void AppListFolderView::OnShowAnimationDone() {
+  animating_background_->SetVisible(false);
+  background_view_->SetVisible(true);
+
   if (animation_done_test_callback_)
     std::move(animation_done_test_callback_).Run();
 }
 
 void AppListFolderView::OnHideAnimationDone(bool hide_for_reparent) {
+  animating_background_->SetVisible(false);
+  shadow_->GetLayer()->SetVisible(false);
+
   a11y_announcer_->AnnounceFolderClosed();
 
   // If the folder view is hiding for folder closure, reset the
@@ -935,18 +947,6 @@ void AppListFolderView::OnHideAnimationDone(bool hide_for_reparent) {
 
   if (animation_done_test_callback_)
     std::move(animation_done_test_callback_).Run();
-}
-
-void AppListFolderView::UpdateHighlightBorder(bool show) {
-  if (!show) {
-    background_view_->SetBorder(nullptr);
-    return;
-  }
-
-  background_view_->SetBorder(std::make_unique<views::HighlightBorder>(
-      GetAppListConfig()->folder_background_radius(),
-      views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/!features::IsDarkLightModeEnabled()));
 }
 
 void AppListFolderView::UpdatePreferredBounds() {

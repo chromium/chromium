@@ -20,8 +20,6 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
 
   virtual SkColor GetPageSwitcherButtonColor(
       const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetFolderBackgroundColor(
-      const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetFolderNotificationBadgeColor(
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetGridBackgroundCardActiveColor(
