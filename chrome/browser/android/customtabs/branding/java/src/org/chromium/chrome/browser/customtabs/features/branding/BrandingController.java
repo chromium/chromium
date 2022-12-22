@@ -37,6 +37,8 @@ public class BrandingController {
     private static final String PARAM_BRANDING_CADENCE_NAME = "branding_cadence";
     private static final String PARAM_MAX_BLANK_TOOLBAR_TIMEOUT_MS = "max_blank_toolbar_timeout";
     private static final String PARAM_USE_TEMPORARY_STORAGE = "use_temporary_storage";
+    private static final String PARAM_ANIMATE_TOOLBAR_ICON_TRANSITION =
+            "animate_toolbar_transition";
     private static final int DEFAULT_BRANDING_CADENCE_MS = (int) TimeUnit.HOURS.toMillis(1);
     private static final int DEFAULT_MAX_BLANK_TOOLBAR_TIMEOUT_MS = 500;
     /**
@@ -67,12 +69,21 @@ public class BrandingController {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.CCT_BRAND_TRANSPARENCY, PARAM_USE_TEMPORARY_STORAGE, false);
 
+    /**
+     * Whether animation transition will be used for the security icon during toolbar branding.
+     * If set to false, the icon transition will be disabled.
+     */
+    public static final BooleanCachedFieldTrialParameter ANIMATE_TOOLBAR_ICON_TRANSITION =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
+                    PARAM_ANIMATE_TOOLBAR_ICON_TRANSITION, true);
+
     private final CallbackController mCallbackController = new CallbackController();
     private final @BrandingDecision OneshotSupplierImpl<Integer> mBrandingDecision =
             new OneshotSupplierImpl<>();
     private final BrandingChecker mBrandingChecker;
     private final Context mContext;
     private final String mAppName;
+    private final boolean mEnableIconAnimation;
 
     private ToolbarBrandingDelegate mToolbarBrandingDelegate;
     private @Nullable Toast mToast;
@@ -95,6 +106,7 @@ public class BrandingController {
         mContext = context;
         mAppName = appName;
         mExceptionReporter = exceptionReporter;
+        mEnableIconAnimation = ANIMATE_TOOLBAR_ICON_TRANSITION.getValue();
         mBrandingDecision.onAvailable(
                 mCallbackController.makeCancelable((decision) -> maybeMakeBrandingDecision()));
 
@@ -117,6 +129,7 @@ public class BrandingController {
 
         mToolbarInitializedTime = SystemClock.elapsedRealtime();
         mToolbarBrandingDelegate = delegate;
+        mToolbarBrandingDelegate.setIconTransitionEnabled(mEnableIconAnimation);
 
         // Start the task to timeout the branding check. If mBrandingChecker already finished,
         // canceling the task does nothing. Does not interrupt if the task is running, since the
