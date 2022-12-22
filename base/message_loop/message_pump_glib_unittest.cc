@@ -50,7 +50,7 @@ class EventInjector {
 
   ~EventInjector() {
     g_source_destroy(source_);
-    g_source_unref(source_);
+    g_source_unref(source_.ExtractAsDangling());
   }
 
   int HandlePrepare() {
@@ -613,8 +613,8 @@ class DeleteWatcher : public BaseWatcher {
 
   void OnFileCanWriteWithoutBlocking(int /* fd */) override {
     DCHECK(owned_controller_);
-    owned_controller_.reset();
     controller_ = nullptr;
+    owned_controller_.reset();
   }
 
  private:

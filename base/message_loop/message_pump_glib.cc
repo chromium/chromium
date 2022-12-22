@@ -234,8 +234,7 @@ bool MessagePumpGlib::FdWatchController::StopWatchingFileDescriptor() {
     return false;
 
   g_source_destroy(source_);
-  g_source_unref(source_);
-  source_ = nullptr;
+  g_source_unref(source_.ExtractAsDangling());
   watcher_ = nullptr;
   return true;
 }
