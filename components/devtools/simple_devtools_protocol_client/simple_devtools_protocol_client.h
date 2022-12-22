@@ -58,8 +58,6 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
 
   void SendCommand(const std::string& method);
 
-  std::string GetTargetId();
-
  protected:
   // content::DevToolsAgentHostClient implementation.
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,

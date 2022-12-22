@@ -23,19 +23,9 @@ if (headless_use_policy) {
          "'headless_use_policy' requires 'headless_use_prefs'.")
 }
 
-if (headless_enable_commands) {
-  assert(
-      !headless_use_embedded_resources,
-      "'headless_enable_commands' is not compatible with 'headless_use_embedded_resources'.")
-}
-
 # Headless defines config applied to every target below.
 config("headless_defines_config") {
   defines = []
-
-  if (headless_enable_commands) {
-    defines += [ "HEADLESS_ENABLE_COMMANDS" ]
-  }
 
   if (headless_use_prefs) {
     defines += [ "HEADLESS_USE_PREFS" ]
@@ -170,26 +160,6 @@ action("embedded_resource_pack_strings") {
   ]
 
   deps = [ ":resource_pack_strings" ]
-}
-
-if (headless_enable_commands) {
-  grit("headless_command_resources") {
-    source = "app/headless_command.grd"
-    outputs = [
-      "grit/headless_command_resources.h",
-      "$root_gen_dir/headless/headless_command_resources.pak",
-    ]
-
-    use_brotli = true
-  }
-
-  repack("headless_command_resources_pack") {
-    sources = [ "$root_gen_dir/headless/headless_command_resources.pak" ]
-
-    output = "$root_out_dir/headless_command_resources.pak"
-
-    deps = [ ":headless_command_resources" ]
-  }
 }
 
 devtools_domains = [
@@ -348,13 +318,6 @@ source_set("headless_shared_sources") {
     "public/util/user_agent.cc",
     "public/util/user_agent.h",
   ]
-
-  if (headless_enable_commands) {
-    sources += [
-      "app/headless_command_switches.cc",
-      "app/headless_command_switches.h",
-    ]
-  }
 
   sources += generated_devtools_api_headers + generated_devtools_api_sources
 
@@ -816,8 +779,6 @@ test("headless_browsertests") {
     "//v8:external_startup_data",
   ]
   sources = [
-    "test/capture_std_stream.cc",
-    "test/capture_std_stream.h",
     "test/headless_browser_browsertest.cc",
     "test/headless_browser_context_browsertest.cc",
     "test/headless_browser_test.cc",
@@ -836,11 +797,7 @@ test("headless_browsertests") {
   ]
 
   if (enable_printing && enable_pdf) {
-    sources += [
-      "test/headless_printtopdf_browsertest.cc",
-      "test/pdf_utils.cc",
-      "test/pdf_utils.h",
-    ]
+    sources += [ "test/headless_printtopdf_browsertest.cc" ]
   }
 
   if (headless_use_policy) {
@@ -848,10 +805,6 @@ test("headless_browsertests") {
       "test/headless_policy_browsertest.cc",
       "test/headless_policy_browsertest.h",
     ]
-  }
-
-  if (headless_enable_commands) {
-    sources += [ "test/headless_command_browsertest.cc" ]
   }
 
   # TODO(crbug.com/1318548): Enable on Fuchsia when no longer flakily timeout.
@@ -873,10 +826,6 @@ test("headless_browsertests") {
     "//third_party/blink/web_tests/http/tests/inspector-protocol/",
     "//third_party/pywebsocket3/",
   ]
-
-  if (headless_enable_commands) {
-    data += [ "$root_out_dir/headless_command_resources.pak" ]
-  }
 
   data_deps = []
 
@@ -982,17 +931,6 @@ if (is_win) {
     if (enable_printing) {
       deps += [ "//components/printing/browser/headless:headless" ]
     }
-    if (headless_enable_commands) {
-      sources += [
-        "app/headless_command_handler.cc",
-        "app/headless_command_handler.h",
-      ]
-      deps += [
-        ":headless_command_resources",
-        ":headless_command_resources_pack",
-      ]
-    }
-
     configs += [ ":headless_defines_config" ]
   }
 }
@@ -1060,17 +998,6 @@ static_library("headless_shell_lib") {
 
   if (headless_use_policy && !is_component_build) {
     deps += [ "//components/policy/content" ]
-  }
-
-  if (headless_enable_commands) {
-    sources += [
-      "app/headless_command_handler.cc",
-      "app/headless_command_handler.h",
-    ]
-    deps += [
-      ":headless_command_resources",
-      ":headless_command_resources_pack",
-    ]
   }
 
   if (is_win) {
