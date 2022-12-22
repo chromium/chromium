@@ -70,8 +70,7 @@ public class StartSurfaceToolbarCoordinator {
             boolean isTabToGtsAnimationEnabled, boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled,
-            boolean shouldCreateLogoInToolbar, Callback<Boolean> finishedTransitionCallback,
-            ToolbarColorObserverManager toolbarColorObserverManager) {
+            boolean shouldCreateLogoInToolbar, Callback<Boolean> finishedTransitionCallback) {
         mStub = startSurfaceToolbarStub;
 
         mPropertyModel =
@@ -103,7 +102,7 @@ public class StartSurfaceToolbarCoordinator {
                 isTabToGtsFadeAnimationEnabled, isTabGroupsAndroidContinuationEnabled,
                 isIncognitoModeEnabledSupplier, logoClickedCallback, isRefactorEnabled,
                 StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue(), shouldCreateLogoInToolbar,
-                finishedTransitionCallback, toolbarColorObserverManager);
+                finishedTransitionCallback);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;

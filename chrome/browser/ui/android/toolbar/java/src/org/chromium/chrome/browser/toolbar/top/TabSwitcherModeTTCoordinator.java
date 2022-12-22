@@ -46,8 +46,6 @@ class TabSwitcherModeTTCoordinator {
     private TabSwitcherModeTopToolbar mTabSwitcherToolbar;
     private TabSwitcherModeTopToolbar mTabSwitcherFullscreenToolbar;
 
-    private ToolbarColorObserverManager mToolbarColorObserverManager;
-
     @Nullable
     private IncognitoTabModelObserver mIncognitoTabModelObserver;
 
@@ -60,8 +58,7 @@ class TabSwitcherModeTTCoordinator {
     TabSwitcherModeTTCoordinator(ViewStub tabSwitcherToolbarStub,
             ViewStub tabSwitcherFullscreenToolbarStub, MenuButtonCoordinator menuButtonCoordinator,
             boolean isGridTabSwitcherEnabled, boolean isTabletGtsPolishEnabled,
-            boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier,
-            ToolbarColorObserverManager toolbarColorObserverManager) {
+            boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier) {
         mTabSwitcherToolbarStub = tabSwitcherToolbarStub;
         mTabSwitcherFullscreenToolbarStub = tabSwitcherFullscreenToolbarStub;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -71,7 +68,6 @@ class TabSwitcherModeTTCoordinator {
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         mTopToolbarInteractabilityManager =
                 new TopToolbarInteractabilityManager(enabled -> setNewTabEnabled(enabled));
-        mToolbarColorObserverManager = toolbarColorObserverManager;
     }
 
     /**
@@ -239,8 +235,7 @@ class TabSwitcherModeTTCoordinator {
      */
     private void initializeToolbar(TabSwitcherModeTopToolbar toolbar, boolean isFullscreenToolbar) {
         toolbar.initialize(mIsGridTabSwitcherEnabled, isFullscreenToolbar,
-                mIsTabToGtsAnimationEnabled, mIsIncognitoModeEnabledSupplier,
-                mToolbarColorObserverManager);
+                mIsTabToGtsAnimationEnabled, mIsIncognitoModeEnabledSupplier);
         mMenuButtonCoordinator.setMenuButton(toolbar.findViewById(R.id.menu_button_wrapper));
 
         // It's expected that these properties are set by the time the tab switcher is entered.
