@@ -32319,6 +32319,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1049" label="PrivacySandboxAdTopicsEnabled"/>
   <int value="1050" label="PrivacySandboxSiteEnabledAdsEnabled"/>
   <int value="1051" label="PrivacySandboxAdMeasurementEnabled"/>
+  <int value="1052" label="AppStoreRatingEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
