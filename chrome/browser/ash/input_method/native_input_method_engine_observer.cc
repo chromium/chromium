@@ -626,12 +626,6 @@ void NativeInputMethodEngineObserver::OnJapaneseDecoderConnected(bool bound) {
   if (!bound) {
     return;
   }
-  if (!base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping)) {
-    if (IsJapaneseSettingsMigrationComplete(*prefs_)) {
-      SetJapaneseSettingsMigrationComplete(*prefs_, false);
-    }
-    return;
-  }
   if (IsJapaneseSettingsMigrationComplete(*prefs_)) {
     return;
   }
@@ -672,6 +666,10 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
         base::BindOnce(
             &NativeInputMethodEngineObserver::OnJapaneseDecoderConnected,
             weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    if (IsJapaneseSettingsMigrationComplete(*prefs_)) {
+      SetJapaneseSettingsMigrationComplete(*prefs_, false);
+    }
   }
   // If this is fast enough, maybe this code can block the ConnectToInputMethod
   // function on waiting for the migration if and only if the input_method
