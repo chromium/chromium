@@ -84,6 +84,7 @@ source_set("sandbox_hook") {
     ":constants",
     ":loader",
     "//base",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/assistant/internal:internal",
     "//sandbox/linux:sandbox_services",
     "//sandbox/policy",

@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/system/sys_info.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/constants.h"
 #include "chromeos/ash/services/libassistant/libassistant_loader_impl.h"
 #include "chromeos/assistant/internal/libassistant_util.h"
@@ -66,7 +67,10 @@ std::vector<BrokerFilePermission> GetLibassistantFilePermissions() {
 bool LibassistantPreSandboxHook(
     sandbox::policy::SandboxLinux::Options options) {
   // Load libassistant DLC before the sandbox initializes.
-  LibassistantLoaderImpl::GetInstance()->LoadBlocking(kLibAssistantDlcRootPath);
+  if (assistant::features::IsLibAssistantDlcEnabled()) {
+    LibassistantLoaderImpl::GetInstance()->LoadBlocking(
+        kLibAssistantDlcRootPath);
+  }
 
   auto* instance = sandbox::policy::SandboxLinux::GetInstance();
   instance->StartBrokerProcess(

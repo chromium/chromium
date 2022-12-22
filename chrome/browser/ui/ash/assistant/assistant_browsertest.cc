@@ -54,8 +54,13 @@ class AssistantBrowserTest : public MixinBasedInProcessBrowserTest,
                              public testing::WithParamInterface<bool> {
  public:
   AssistantBrowserTest() {
-    if (GetParam())
-      feature_list_.InitAndEnableFeature(features::kEnableLibAssistantDlc);
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kEnableLibAssistantDlc},
+          /*disabled_features=*/{features::kEnableLibAssistantSandbox});
+    } else {
+      feature_list_.InitAndDisableFeature(features::kEnableLibAssistantSandbox);
+    }
 
     // Do not log to file in test. Otherwise multiple tests may create/delete
     // the log file at the same time. See http://crbug.com/1307868.
