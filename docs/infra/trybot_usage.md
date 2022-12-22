@@ -4,39 +4,40 @@
 
 ## Overview
 
-The trybots let committers try uncommitted patches on multiple platforms in
-an automated way.
+The trybots let committers try uncommitted patches on multiple platforms in an
+automated way.
 
- - Trybots include all platforms for which we currently build Chromium, though
-   they may not support all configurations built on CI.
- - The commit queue runs a subset of available trybots. See [here][1] for more
-   information.
- - trybots can be manually invoked via `git cl try` or the "Choose Trybots"
-   UI in gerrit.
- - Any committer can use the trybots.
- - Non-committers with tryjob access can also use the trybots. See [here][2]
-   for more information.
- - External contributors without tryjob access can ask committers to run
-   tryjobs for them.
+-   Trybots include all platforms for which we currently build Chromium, though
+    they may not support all configurations built on CI.
+-   The commit queue runs a subset of available trybots. See [here][1] for more
+    information.
+-   trybots can be manually invoked via `git cl try` or the "Choose Trybots" UI
+    in gerrit.
+-   Any committer can use the trybots.
+-   Non-committers with tryjob access can also use the trybots. See [here][2]
+    for more information.
+-   External contributors without tryjob access can ask committers to run
+    tryjobs for them.
 
 *** note
-**Warning**: Please do not trigger more than ~5-10 tryjobs per builder per
-hour. We don't have enough spare capacity for more than that, and we don't have
-per-user quotas yet (https://crbug.com/1091070 to implement that).
+**Warning**: Please do not trigger more than ~5-10 tryjobs per builder
+per hour. We don't have enough spare capacity for more than that, and we don't
+have per-user quotas yet (https://crbug.com/1091070 to implement that).
 ***
 
 ## Workflow
 
-1. Upload your change to gerrit via `git cl upload`
-2. Run trybots:
+1.  Upload your change to gerrit via `git cl upload`
+2.  Run trybots:
 
-    * Run the default set of trybots by starting a CQ dry run, either by
-      setting CQ+1 on gerrit or by running `git cl try` with no arguments.
-    * Run trybots of your choice by providing arguments to `git cl try`:
+    *   Run the default set of trybots by starting a CQ dry run, either by
+        setting CQ+1 on gerrit or by running `git cl try` with no arguments.
+    *   Run trybots of your choice by providing arguments to `git cl try`:
 
-        * specify bucket name with `-B/--bucket`. For chromium tryjobs, this
-          should always be `luci.chromium.try`
-        * specify bot names with `-b/--bot`. This can be specified more than once.
+        *   specify bucket name with `-B/--bucket`. For chromium tryjobs, this
+            should always be `luci.chromium.try`
+        *   specify bot names with `-b/--bot`. This can be specified more than
+            once.
 
 ### Examples
 
@@ -99,7 +100,7 @@ top of the same revision specified in the DEPS file to avoid this.
 
 ## Legacy documentation
 
- - [Design doc][4]
+-   [Design doc][4]
 
 [1]: /docs/infra/cq.md
 [2]: https://www.chromium.org/getting-involved/become-a-committer#TOC-Try-job-access
