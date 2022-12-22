@@ -78,11 +78,8 @@ void TooltipLacros::Update(aura::Window* parent_window,
   // Add the distance between `parent_window` and its toplevel window to
   // `position_` since Ash-side server will use this position as relative to
   // wayland toplevel window.
-  // TODO(elkurin): Use WaylandWindow instead of ToplevelWindow/Popup when it's
-  // supported on ozone.
-  // TODO(elkurin): The position is wrong for some popup such as dictionary
-  // popup shown on right-clicking a word. Should use the nearest toplevel
-  // window or popup window instead of always referring to GetToplevelWindow().
+  // TODO(crbug.com/1385219): Use WaylandWindow instead of ToplevelWindow/Popup
+  // when it's supported on ozone.
   aura::Window::ConvertPointToTarget(
       parent_window_, parent_window_->GetToplevelWindow(), &position_);
   trigger_ = trigger;
