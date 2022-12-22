@@ -100,6 +100,8 @@ class RulesetManager {
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
   void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
 
+  bool has_rulesets() const { return !rulesets_.empty(); }
+
   // Returns the number of CompositeMatchers currently being managed.
   size_t GetMatcherCountForTest() const { return rulesets_.size(); }
 
