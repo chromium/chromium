@@ -80,6 +80,35 @@ async def test_subscribeWithContext_subscribesToEventsInGivenContext(
 
 
 @pytest.mark.asyncio
+async def test_subscribeWithContext_subscribesToEventsInNestedContext(
+        websocket, context_id, page_with_nested_iframe_url):
+    await subscribe(websocket, "browsingContext.contextCreated")
+
+    # Navigate to some page.
+    await send_JSON_command(
+        websocket, {
+            "id": get_next_command_id(),
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": page_with_nested_iframe_url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    # Wait for `browsingContext.load` event.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        "method": "browsingContext.contextCreated",
+        "params": {
+            "context": any_string,
+            "url": "about:blank",
+            "children": None,
+            "parent": context_id}
+    }, resp)
+
+
+@pytest.mark.asyncio
 async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
         websocket, context_id):
     # 1. Get 2 contexts.

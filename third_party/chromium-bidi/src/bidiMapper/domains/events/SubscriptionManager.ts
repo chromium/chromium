@@ -22,6 +22,7 @@ import {
   Log,
   Session,
 } from '../../../protocol/protocol.js';
+import {BrowsingContextStorage} from '../context/browsingContextStorage';
 
 export class SubscriptionManager {
   #subscriptionPriority = 0;
@@ -73,10 +74,11 @@ export class SubscriptionManager {
     }
 
     // Get all the subscription priorities.
-    let priorities: number[] = [
-      contextToEventMap.get(null)?.get(eventMethod),
-      contextToEventMap.get(contextId)?.get(eventMethod),
-    ].filter((p) => p !== undefined) as number[];
+    let priorities: number[] = SubscriptionManager.#getRelevantContexts(
+      contextId
+    )
+      .map((c) => contextToEventMap.get(c)?.get(eventMethod))
+      .filter((p) => p !== undefined) as number[];
 
     if (priorities.length === 0) {
       // Not subscribed, return null.
@@ -85,6 +87,19 @@ export class SubscriptionManager {
 
     // Return minimal priority.
     return Math.min(...priorities);
+  }
+
+  static #getRelevantContexts(
+    contextId: CommonDataTypes.BrowsingContext | null
+  ): (CommonDataTypes.BrowsingContext | null)[] {
+    // `null` covers global subscription.
+    const result: (CommonDataTypes.BrowsingContext | null)[] = [null];
+    while (contextId !== null) {
+      result.push(contextId);
+      const maybeParentContext = BrowsingContextStorage.findContext(contextId);
+      contextId = maybeParentContext?.parentId ?? null;
+    }
+    return result;
   }
 
   subscribe(
