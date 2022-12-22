@@ -968,9 +968,8 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
 
   if (policy.has_tpm_firmware_update_settings()) {
     new_values_cache->SetValue(kTPMFirmwareUpdateSettings,
-                               base::Value::FromUniquePtrValue(
-                                   tpm_firmware_update::DecodeSettingsProto(
-                                       policy.tpm_firmware_update_settings())));
+                               tpm_firmware_update::DecodeSettingsProto(
+                                   policy.tpm_firmware_update_settings()));
   }
 
   if (policy.has_device_minimum_version()) {

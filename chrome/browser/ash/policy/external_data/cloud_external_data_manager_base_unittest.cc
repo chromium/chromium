@@ -175,10 +175,10 @@ void CloudExternalDataManagerBaseTest::SetUpExternalDataManager() {
 base::Value CloudExternalDataManagerBaseTest::ConstructMetadata(
     const std::string& url,
     const std::string& hash) {
-  base::Value metadata(base::Value::Type::DICTIONARY);
-  metadata.SetStringKey("url", url);
-  metadata.SetStringKey("hash", base::HexEncode(hash.c_str(), hash.size()));
-  return metadata;
+  base::Value::Dict metadata;
+  metadata.Set("url", url);
+  metadata.Set("hash", base::HexEncode(hash.c_str(), hash.size()));
+  return base::Value(std::move(metadata));
 }
 
 void CloudExternalDataManagerBaseTest::AddMetadataToWebAppPolicyValue(

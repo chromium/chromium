@@ -105,8 +105,8 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
   base::Value::Dict proxy_config;
   proxy_config.Set("mode", ProxyPrefs::kPacScriptProxyModeName);
   proxy_config.Set("pac_url", "http://proxy");
-  profile->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
-                               std::move(proxy_config));
+  profile->GetPrefs()->Set(proxy_config::prefs::kProxy,
+                           base::Value(std::move(proxy_config)));
   base::RunLoop().RunUntilIdle();
 
   // Mode should now be MODE_PAC_SCRIPT.

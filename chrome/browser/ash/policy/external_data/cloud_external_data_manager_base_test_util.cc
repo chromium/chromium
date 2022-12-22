@@ -31,7 +31,7 @@
 namespace policy {
 
 namespace {
-// Keys for the 'Value' objects
+// Keys for 'Value::Dict' objects
 const char kUrlKey[] = "url";
 const char kHashKey[] = "hash";
 }  // namespace
@@ -48,14 +48,13 @@ void ExternalDataFetchCallback(std::unique_ptr<std::string>* data_destination,
   std::move(done_callback).Run();
 }
 
-std::unique_ptr<base::Value::Dict> ConstructExternalDataReference(
-    const std::string& url,
-    const std::string& data) {
+base::Value ConstructExternalDataReference(const std::string& url,
+                                           const std::string& data) {
   const std::string hash = crypto::SHA256HashString(data);
-  auto metadata = std::make_unique<base::Value::Dict>();
-  metadata->Set(kUrlKey, url);
-  metadata->Set(kHashKey, base::HexEncode(hash.c_str(), hash.size()));
-  return metadata;
+  base::Value::Dict metadata;
+  metadata.Set(kUrlKey, url);
+  metadata.Set(kHashKey, base::HexEncode(hash.c_str(), hash.size()));
+  return base::Value(std::move(metadata));
 }
 
 std::string ConstructExternalDataPolicy(
@@ -75,7 +74,7 @@ std::string ConstructExternalDataPolicy(
 
   std::string policy;
   EXPECT_TRUE(base::JSONWriter::Write(
-      *ConstructExternalDataReference(url, external_data), &policy));
+      ConstructExternalDataReference(url, external_data), &policy));
   return policy;
 }
 

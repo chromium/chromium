@@ -265,7 +265,7 @@ class AppInstallEventLoggerTest : public testing::Test {
     return policy_map;
   }
 
-  base::Value::Dict CreateComplianceReport(
+  base::Value CreateComplianceReport(
       std::set<std::string> noncompliant_packages) {
     base::Value::List details;
 
@@ -278,7 +278,7 @@ class AppInstallEventLoggerTest : public testing::Test {
 
     base::Value::Dict compliance_report;
     compliance_report.Set("nonComplianceDetails", std::move(details));
-    return compliance_report;
+    return base::Value(std::move(compliance_report));
   }
 
   content::BrowserTaskEnvironment task_environment_;

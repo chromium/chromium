@@ -83,7 +83,7 @@ void ConstructAvatarPolicy(const std::string& file_name,
   ASSERT_TRUE(base::ReadFileToString(
       test_data_dir.Append("chromeos").Append(file_name), policy_data));
   base::JSONWriter::Write(
-      *test::ConstructExternalDataReference(url, *policy_data), policy);
+      test::ConstructExternalDataReference(url, *policy_data), policy);
 }
 
 }  // namespace

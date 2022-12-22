@@ -39,7 +39,7 @@ std::vector<int> ExtractIgnoredPolicyProtoTagsFromProto(
 absl::optional<std::string> ExtractTimezoneFromProto(
     const enterprise_management::DeviceOffHoursProto& container);
 
-// Return DictionaryValue in format:
+// Return Value::Dict in format:
 // { "timezone" : string,
 //   "intervals" : list of "OffHours" Intervals,
 //   "ignored_policy_proto_tags" : integer list }

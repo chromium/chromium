@@ -180,9 +180,8 @@ void MobileActivator::InitiateActivation(const std::string& service_path) {
   StartActivation();
 }
 
-void MobileActivator::GetPropertiesFailure(
-    const std::string& error_name,
-    std::unique_ptr<base::Value> error_data) {
+void MobileActivator::GetPropertiesFailure(const std::string& error_name,
+                                           base::Value error_data) {
   NET_LOG(ERROR) << "MobileActivator GetProperties failed for "
                  << NetworkPathId(service_path_) << " Error: " << error_name;
 }

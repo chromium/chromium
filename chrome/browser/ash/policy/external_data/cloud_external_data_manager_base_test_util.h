@@ -10,7 +10,10 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/values.h"
+
+namespace base {
+class Value;
+}
 
 namespace net {
 namespace test_server {
@@ -19,8 +22,6 @@ class EmbeddedTestServer;
 }  // namespace net
 
 namespace policy {
-
-class CloudPolicyCore;
 
 namespace test {
 
@@ -34,24 +35,14 @@ void ExternalDataFetchCallback(std::unique_ptr<std::string>* data_destination,
 
 // Constructs a value that points a policy referencing external data at |url|
 // and sets the expected hash of the external data to that of |data|.
-std::unique_ptr<base::Value::Dict> ConstructExternalDataReference(
-    const std::string& url,
-    const std::string& data);
+base::Value ConstructExternalDataReference(const std::string& url,
+                                           const std::string& data);
 
 // Constructs the external data policy from the content of the file located on
 // |external_data_path|.
 std::string ConstructExternalDataPolicy(
     const net::test_server::EmbeddedTestServer& test_server,
     const std::string& external_data_path);
-
-// TODO(bartfab): Makes an arbitrary |policy| in |core| reference external data
-// as specified in |metadata|. This is only done because there are no policies
-// that reference external data yet. Once the first such policy is added, it
-// will be sufficient to set its value to |metadata| and this method should be
-// removed.
-void SetExternalDataReference(CloudPolicyCore* core,
-                              const std::string& policy,
-                              std::unique_ptr<base::Value::Dict> metadata);
 
 }  // namespace test
 }  // namespace policy

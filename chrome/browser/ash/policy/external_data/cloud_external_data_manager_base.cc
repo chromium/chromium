@@ -45,7 +45,7 @@ const int kMaxParallelFetches = 2;
 // external data even if no |max_size| was specified in policy_templates.json.
 int g_max_external_data_size_for_testing = 0;
 
-// Keys for 'DictionaryValue' objects
+// Keys for 'Value::Dict' objects
 const char kUrlKey[] = "url";
 const char kHashKey[] = "hash";
 const char kCustomIconKey[] = "custom_icon";

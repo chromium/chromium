@@ -63,25 +63,24 @@ const char kSettingsKeyAllowPreserveDeviceState[] =
     "allow-user-initiated-preserve-device-state";
 const char kSettingsKeyAutoUpdateMode[] = "auto-update-mode";
 
-std::unique_ptr<base::Value> DecodeSettingsProto(
+base::Value DecodeSettingsProto(
     const enterprise_management::TPMFirmwareUpdateSettingsProto& settings) {
   base::Value::Dict result;
+
   if (settings.has_allow_user_initiated_powerwash()) {
     result.Set(kSettingsKeyAllowPowerwash,
-               base::Value(settings.allow_user_initiated_powerwash()));
+               settings.allow_user_initiated_powerwash());
   }
   if (settings.has_allow_user_initiated_preserve_device_state()) {
-    result.Set(
-        kSettingsKeyAllowPreserveDeviceState,
-        base::Value(settings.allow_user_initiated_preserve_device_state()));
+    result.Set(kSettingsKeyAllowPreserveDeviceState,
+               settings.allow_user_initiated_preserve_device_state());
   }
 
   if (settings.has_auto_update_mode()) {
-    result.Set(kSettingsKeyAutoUpdateMode,
-               base::Value(settings.auto_update_mode()));
+    result.Set(kSettingsKeyAutoUpdateMode, settings.auto_update_mode());
   }
 
-  return std::make_unique<base::Value>(std::move(result));
+  return base::Value(std::move(result));
 }
 
 // AvailabilityChecker tracks TPM firmware update availability information

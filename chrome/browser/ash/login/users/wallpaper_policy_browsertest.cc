@@ -241,7 +241,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
       ADD_FAILURE();
     }
     std::string policy;
-    base::JSONWriter::Write(*policy::test::ConstructExternalDataReference(
+    base::JSONWriter::Write(policy::test::ConstructExternalDataReference(
                                 embedded_test_server()
                                     ->GetURL(std::string("/") + relative_path)
                                     .spec(),

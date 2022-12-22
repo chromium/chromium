@@ -54,7 +54,7 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
   void SetAutoUpdateMode(AutoUpdateMode auto_update_mode) {
     base::Value::Dict dict;
     dict.Set(ash::tpm_firmware_update::kSettingsKeyAutoUpdateMode,
-             base::Value(static_cast<int>(auto_update_mode)));
+             static_cast<int>(auto_update_mode));
     scoped_testing_cros_settings_.device_settings()->Set(
         ash::kTPMFirmwareUpdateSettings, base::Value(std::move(dict)));
     base::RunLoop().RunUntilIdle();

@@ -67,8 +67,8 @@ class DevicePolicyDecoderTest : public testing::Test {
   ~DevicePolicyDecoderTest() override = default;
 
  protected:
-  std::unique_ptr<base::Value> GetWallpaperDict() const;
-  std::unique_ptr<base::Value> GetBluetoothServiceAllowedList() const;
+  base::Value GetWallpaperDict() const;
+  base::Value GetBluetoothServiceAllowedList() const;
   void DecodeDevicePolicyTestHelper(
       const em::ChromeDeviceSettingsProto& device_policy,
       const std::string& policy_path,
@@ -78,20 +78,19 @@ class DevicePolicyDecoderTest : public testing::Test {
       const std::string& policy_path) const;
 };
 
-std::unique_ptr<base::Value> DevicePolicyDecoderTest::GetWallpaperDict() const {
+base::Value DevicePolicyDecoderTest::GetWallpaperDict() const {
   base::Value::Dict dict;
   dict.Set(kWallpaperUrlPropertyName, kWallpaperUrlPropertyValue);
   dict.Set(kWallpaperHashPropertyName, kWallpaperHashPropertyValue);
-  return std::make_unique<base::Value>(std::move(dict));
+  return base::Value(std::move(dict));
 }
 
-std::unique_ptr<base::Value>
-DevicePolicyDecoderTest::GetBluetoothServiceAllowedList() const {
+base::Value DevicePolicyDecoderTest::GetBluetoothServiceAllowedList() const {
   base::Value::List list;
   list.Append(kValidBluetoothServiceUUID4);
   list.Append(kValidBluetoothServiceUUID8);
   list.Append(kValidBluetoothServiceUUID32);
-  return std::make_unique<base::Value>(std::move(list));
+  return base::Value(std::move(list));
 }
 
 void DevicePolicyDecoderTest::DecodeDevicePolicyTestHelper(
@@ -168,7 +167,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeUnknownProperty) {
       kWallpaperJsonUnknownProperty, key::kDeviceWallpaperImage, &error);
   std::string localized_error = l10n_util::GetStringFUTF8(
       IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
-  EXPECT_EQ(*GetWallpaperDict(), decoded_json.value());
+  EXPECT_EQ(GetWallpaperDict(), decoded_json.value());
   EXPECT_EQ(
       "Policy parsing error: Dropped unknown properties: Unknown property: "
       "unknown-field (at DeviceWallpaperImage)",
@@ -179,7 +178,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeSuccess) {
   std::string error;
   absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJson, key::kDeviceWallpaperImage, &error);
-  EXPECT_EQ(*GetWallpaperDict(), decoded_json.value());
+  EXPECT_EQ(GetWallpaperDict(), decoded_json.value());
   EXPECT_TRUE(error.empty());
 }
 
@@ -370,7 +369,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListSuccess) {
   absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kValidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices,
       &error);
-  EXPECT_EQ(*GetBluetoothServiceAllowedList(), decoded_json.value());
+  EXPECT_EQ(GetBluetoothServiceAllowedList(), decoded_json.value());
   EXPECT_TRUE(error.empty());
 }
 

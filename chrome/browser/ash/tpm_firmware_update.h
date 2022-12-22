@@ -10,7 +10,10 @@
 
 #include "base/callback_forward.h"
 #include "base/time/time.h"
-#include "base/values.h"
+
+namespace base {
+class Value;
+}
 
 namespace enterprise_management {
 class TPMFirmwareUpdateSettingsProto;
@@ -40,7 +43,7 @@ extern const char kSettingsKeyAllowPreserveDeviceState[];
 extern const char kSettingsKeyAutoUpdateMode[];
 
 // Decodes the TPM firmware update settings into base::Value representation.
-std::unique_ptr<base::Value> DecodeSettingsProto(
+base::Value DecodeSettingsProto(
     const enterprise_management::TPMFirmwareUpdateSettingsProto& settings);
 
 // Check what update modes are allowed. The |timeout| parameter determines how

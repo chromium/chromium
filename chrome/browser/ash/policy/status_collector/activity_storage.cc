@@ -77,7 +77,7 @@ void ActivityStorage::TrimActivityPeriods(int64_t min_day_key,
         if (duration <= 0)
           return;
         const std::string key = MakeActivityPeriodPrefKey(day_key, activity_id);
-        copy.Set(key, base::saturated_cast<int>(duration));
+        copy.SetByDottedPath(key, base::saturated_cast<int>(duration));
       },
       std::ref(copy), min_day_key, max_day_key));
 

@@ -3936,13 +3936,12 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
                                          base::Value(kShillFakeProfilePath));
       if (strlen(fake_network.address) > 0) {
         // Set the IP config.
-        base::DictionaryValue ip_config_properties;
-        ip_config_properties.SetKey(shill::kAddressProperty,
-                                    base::Value(fake_network.address));
-        ip_config_properties.SetKey(shill::kGatewayProperty,
-                                    base::Value(fake_network.gateway));
+        base::Value::Dict ip_config_properties;
+        ip_config_properties.Set(shill::kAddressProperty, fake_network.address);
+        ip_config_properties.Set(shill::kGatewayProperty, fake_network.gateway);
         const std::string kIPConfigPath = "test_ip_config";
-        ip_config_client->AddIPConfig(kIPConfigPath, ip_config_properties);
+        ip_config_client->AddIPConfig(
+            kIPConfigPath, base::Value(std::move(ip_config_properties)));
         service_client->SetServiceProperty(fake_network.name,
                                            shill::kIPConfigProperty,
                                            base::Value(kIPConfigPath));

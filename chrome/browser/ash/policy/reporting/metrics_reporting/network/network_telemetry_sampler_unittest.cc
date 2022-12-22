@@ -136,9 +136,8 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
                                          base::Value(device_path));
       base::Value::Dict ip_config_properties;
       ip_config_properties.Set(shill::kAddressProperty,
-                               base::Value(network_data.ip_address));
-      ip_config_properties.Set(shill::kGatewayProperty,
-                               base::Value(network_data.gateway));
+                               network_data.ip_address);
+      ip_config_properties.Set(shill::kGatewayProperty, network_data.gateway);
       const std::string kIPConfigPath =
           base::StrCat({"test_ip_config", network_data.guid});
       ip_config_client->AddIPConfig(

@@ -106,9 +106,9 @@ class NetworkDiagnosticsTest : public NetworkDiagnosticsTestHelper {
     // Set up the IP v4 config
     base::Value::Dict ip_config_v4_properties;
     ip_config_v4_properties.Set(shill::kNameServersProperty,
-                                dns_servers.Clone());
+                                base::Value(dns_servers.Clone()));
     helper()->ip_config_test()->AddIPConfig(
-        kIPv4ConfigPath, base::Value(std::move(ip_config_v4_properties)));
+        kIPv4ConfigPath, base::Value(ip_config_v4_properties.Clone()));
     std::string wifi_device_path =
         helper()->device_test()->GetDevicePathForType(shill::kTypeWifi);
     helper()->device_test()->SetDeviceProperty(

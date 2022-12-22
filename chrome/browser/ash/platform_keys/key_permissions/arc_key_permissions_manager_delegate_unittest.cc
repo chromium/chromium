@@ -104,8 +104,7 @@ class ArcKeyPermissionsManagerDelegateTest : public testing::Test {
   void SetCorporateUsageInPolicyForPackage(const std::string& package_name,
                                            bool allowed) {
     base::Value::Dict corporate_key_usage;
-    corporate_key_usage.SetByDottedPath("allowCorporateKeyUsage",
-                                        base::Value(allowed));
+    corporate_key_usage.SetByDottedPath("allowCorporateKeyUsage", allowed);
 
     base::Value::Dict policy_value;
     policy_value.Set(package_name, base::Value(std::move(corporate_key_usage)));
@@ -113,7 +112,7 @@ class ArcKeyPermissionsManagerDelegateTest : public testing::Test {
     policy::PolicyMap policy_map;
     policy_map.Set(policy::key::kKeyPermissions, policy::POLICY_LEVEL_MANDATORY,
                    policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
-                   base::Value(std::move(policy_value)), nullptr);
+                   base::Value(policy_value.Clone()), nullptr);
 
     policy_provider_->UpdateChromePolicy(policy_map);
   }
