@@ -321,6 +321,11 @@ void DriveFsEventRouter::OnError(const drivefs::mojom::DriveError& error) {
     case drivefs::mojom::DriveError::Type::kPinningFailedDiskFull:
       event.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE;
       break;
+    case drivefs::mojom::DriveError::Type::kCantUploadSharedDriveStorageFull:
+      event.type =
+          file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SHARED_DRIVE_SPACE;
+      event.shared_drive = error.shared_drive;
+      break;
   }
   for (const auto& listener_url : GetEventListenerURLs(
            file_manager_private::OnDriveSyncError::kEventName)) {

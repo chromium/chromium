@@ -168,6 +168,8 @@ enum DriveSyncErrorType {
   no_server_space_organization,
   // There is no local space to sync a file.
   no_local_space,
+  // There is no space left on a shared drive.
+  no_shared_drive_space,
   // Miscellaneous errors other than listed above.
   misc
 };
@@ -710,6 +712,9 @@ dictionary DriveSyncErrorEvent {
 
   // File URL of the entry that the error happens to.
   DOMString fileUrl;
+
+  // Shared drive name if the error relates to a shared drive.
+  DOMString? sharedDrive;
 };
 
 // Confirmation dialog from Drive asking the user to accept or reject an

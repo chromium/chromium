@@ -417,6 +417,16 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
             util::GetDisplayableFileName16(file_url));
         notification = CreateNotification(id, title, message);
         break;
+      case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SHARED_DRIVE_SPACE:
+        if (!sync_error.shared_drive.has_value()) {
+          DLOG(WARNING) << "No shared drive provided for error notification";
+          break;
+        }
+        message = l10n_util::GetStringFUTF16(
+            IDS_FILE_BROWSER_SYNC_ERROR_SHARED_DRIVE_OUT_OF_SPACE,
+            base::UTF8ToUTF16(sync_error.shared_drive.value()));
+        notification = CreateNotification(id, title, message);
+        break;
       default:
         DLOG(WARNING) << "Unknown Drive Sync error: " << sync_error.type;
         break;

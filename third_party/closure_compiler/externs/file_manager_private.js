@@ -165,6 +165,7 @@ chrome.fileManagerPrivate.DriveSyncErrorType = {
   NO_SERVER_SPACE: 'no_server_space',
   NO_SERVER_SPACE_ORGANIZATION: 'no_server_space_organization',
   NO_LOCAL_SPACE: 'no_local_space',
+  NO_SHARED_DRIVE_SPACE: 'no_shared_drive_space',
   MISC: 'misc',
 };
 
@@ -512,7 +513,8 @@ chrome.fileManagerPrivate.IndividualFileTransferStatus;
  * @typedef {{
  *   type: !chrome.fileManagerPrivate.DriveSyncErrorType,
  *   fileUrl: string,
- *   showNotification: boolean
+ *   showNotification: boolean,
+ *   sharedDrive: (string|undefined),
  * }}
  */
 chrome.fileManagerPrivate.DriveSyncErrorEvent;
