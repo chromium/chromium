@@ -2989,4 +2989,81 @@ IN_PROC_BROWSER_TEST_F(PortalFencedFrameBrowserTest, CreatePortalBlocked) {
   ASSERT_TRUE(console_observer.Wait());
 }
 
+class TestRenderWidgetHostViewBaseObserver
+    : public RenderWidgetHostViewBaseObserver {
+ public:
+  TestRenderWidgetHostViewBaseObserver() = default;
+  ~TestRenderWidgetHostViewBaseObserver() override = default;
+
+  // RenderWidgetHostViewBaseObserver:
+  void OnRenderWidgetHostViewBaseDestroyed(
+      RenderWidgetHostViewBase* view) override {
+    if (view == view_) {
+      std::move(quit_closure_).Run();
+      view_ = nullptr;
+    }
+    view->RemoveObserver(this);
+  }
+
+  void WaitUntilDestroyed(RenderWidgetHostViewBase* view) {
+    view_ = view;
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
+  base::OnceClosure quit_closure_;
+  RenderWidgetHostViewBase* view_ = nullptr;
+};
+
+// Tests that a RenderWidgetHostView for a fenced frame inside a portal should
+// stay that way for its entire lifetime regardless of the portal activation.
+IN_PROC_BROWSER_TEST_F(PortalFencedFrameBrowserTest,
+                       FencedFrameRenderWidgetHostViewInPortal) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* primary_rfh = web_contents->GetPrimaryMainFrame();
+
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  Portal* portal = CreatePortalToUrl(web_contents, a_url);
+  RenderFrameHostImpl* portal_rfh =
+      portal->GetPortalContents()->GetPrimaryMainFrame();
+  EXPECT_TRUE(portal_rfh);
+  RenderWidgetHostViewBase* portal_rwhv =
+      static_cast<RenderWidgetHostViewBase*>(portal_rfh->GetView());
+  ASSERT_TRUE(portal_rwhv->IsRenderWidgetHostViewChildFrame());
+
+  TestRenderWidgetHostViewBaseObserver observer;
+  portal_rwhv->AddObserver(&observer);
+
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("a.com", "/fenced_frames/title1.html");
+  RenderFrameHostImpl* fenced_frame_rfh = static_cast<RenderFrameHostImpl*>(
+      fenced_frame_helper_.CreateFencedFrame(portal_rfh, fenced_frame_url));
+  RenderWidgetHostViewBase* fenced_frame_rwhv =
+      static_cast<RenderWidgetHostViewBase*>(fenced_frame_rfh->GetView());
+  EXPECT_TRUE(fenced_frame_rwhv->IsRenderWidgetHostViewChildFrame());
+
+  PortalActivatedObserver activated_observer(portal);
+  ExecuteScriptAsync(primary_rfh,
+                     "document.querySelector('portal').activate();");
+  // During activation, a RenderWidgetHostView for a portal is destroyed.
+  observer.WaitUntilDestroyed(portal_rwhv);
+  activated_observer.WaitForActivate();
+
+  // After activation, a RenderWidgetHostView for a portal is re-created and
+  // it's not a RenderWidgetHostViewChildFrame.
+  portal_rwhv = static_cast<RenderWidgetHostViewBase*>(portal_rfh->GetView());
+  ASSERT_FALSE(portal_rwhv->IsRenderWidgetHostViewChildFrame());
+
+  fenced_frame_rwhv =
+      static_cast<RenderWidgetHostViewBase*>(fenced_frame_rfh->GetView());
+  // A RenderWidgetHostView for a fenced frame still exists as a
+  // RenderWidgetHostViewChildFrame.
+  EXPECT_TRUE(fenced_frame_rwhv->IsRenderWidgetHostViewChildFrame());
+}
+
 }  // namespace content

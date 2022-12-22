@@ -184,9 +184,6 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal(
 
   // Create the view for all RenderViewHosts that don't have a
   // RenderWidgetHostViewChildFrame view.
-  // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
-  // multiple FrameTrees. Make sure this code really just needs the
-  // primary one.
   for (auto& render_view_host :
        portal_contents_->GetPrimaryFrameTree().render_view_hosts()) {
     if (!render_view_host.second->GetWidget()->GetView() ||
@@ -621,9 +618,6 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
     // attached to an outer WebContents, and may not have an outer frame tree
     // node created (i.e. CreateProxyAndAttachPortal isn't called). In this
     // case, we can skip a few of the detachment steps above.
-    // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
-    // multiple FrameTrees. Make sure this code really just needs the
-    // primary one.
     for (auto& render_view_host :
          portal_contents_->GetPrimaryFrameTree().render_view_hosts()) {
       CreatePortalRenderWidgetHostView(portal_contents_.get(),
