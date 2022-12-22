@@ -84,7 +84,8 @@ class ContextProviderCommandBuffer
       command_buffer_metrics::ContextType type,
       base::SharedMemoryMapper* buffer_mapper = nullptr);
 
-  gpu::CommandBufferProxyImpl* GetCommandBufferProxy();
+  // Virtual for testing.
+  virtual gpu::CommandBufferProxyImpl* GetCommandBufferProxy();
   // Gives the GL internal format that should be used for calling CopyTexImage2D
   // on the default framebuffer.
   uint32_t GetCopyTextureInternalFormat();
