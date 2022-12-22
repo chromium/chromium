@@ -94,6 +94,7 @@ struct SetupProgress {
   int64_t available_disk_space = 0;
   int64_t pinned_disk_space = 0;
   int32_t batch_size = 50;
+  int32_t error_count = 0;
   SetupStage stage = SetupStage::kNotStarted;
   SetupError error = SetupError::kSuccess;
 

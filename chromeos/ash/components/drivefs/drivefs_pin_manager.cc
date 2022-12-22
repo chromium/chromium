@@ -385,7 +385,13 @@ void DriveFsPinManager::OnSearchResultsForPinning(
   if (items->empty()) {
     VLOG(1) << "Pinned all files in " << timer_.Elapsed().InMilliseconds()
             << " ms";
-    Complete(SetupError::kSuccess);
+    if (state_.progress.error_count > 0) {
+      LOG(ERROR) << "There were " << state_.progress.error_count
+                 << " errors while pinning files";
+      Complete(SetupError::kErrorFailedToPinItem);
+    } else {
+      Complete(SetupError::kSuccess);
+    }
     return;
   }
 
@@ -431,6 +437,7 @@ void DriveFsPinManager::OnFilePinned(const std::string& path,
                                      const drive::FileError status) {
   if (status != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Cannot pin '" << path << "': " << status;
+    state_.progress.error_count++;
     Complete(SetupError::kErrorFailedToPinItem);
     return;
   }
@@ -456,6 +463,13 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
       GetMetadataForPath(base::FilePath(item->path));
       continue;
     }
+
+    if (item->state == mojom::ItemEvent::State::kFailed) {
+      LOG(ERROR) << "Cannot sync '" << item->path << "'";
+      state_.progress.error_count++;
+      continue;
+    }
+
     syncing_items_.AsyncCall(&InProgressSyncingItems::UpdateItem)
         .WithArgs(item->path, item->bytes_transferred, item->bytes_to_transfer)
         .Then(base::BindOnce(&DriveFsPinManager::ReportTotalBytesTransferred,
@@ -489,7 +503,11 @@ void DriveFsPinManager::MaybeStartSearch(size_t remaining_items) {
 void DriveFsPinManager::OnUnmounted() {}
 void DriveFsPinManager::OnFilesChanged(
     const std::vector<mojom::FileChange>& changes) {}
-void DriveFsPinManager::OnError(const mojom::DriveError& error) {}
+
+void DriveFsPinManager::OnError(const mojom::DriveError& error) {
+  LOG(ERROR) << "DriveFS error " << error.type << " with '" << error.path
+             << "'";
+}
 
 void DriveFsPinManager::NotifyProgress() {
   VLOG_IF(2, !observers_.empty()) << "Notifying progress to list of observers";
