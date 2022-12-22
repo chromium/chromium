@@ -561,12 +561,9 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
     // Newly arrived keystore keys could resolve pending encryption state in
     // keystore mode.
     DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
-    const absl::optional<sync_pb::NigoriKey> keystore_decryptor_key =
-        TryDecryptPendingKeystoreDecryptorToken(
-            sync_pb::EncryptedData(*state_.pending_keystore_decryptor_token));
 
-    absl::optional<ModelError> error = TryDecryptPendingKeysWith(
-        BuildDecryptionKeyBagForRemoteKeybag(keystore_decryptor_key));
+    absl::optional<ModelError> error =
+        TryDecryptPendingKeysWith(BuildDecryptionKeyBagForRemoteKeybag());
     if (error.has_value()) {
       processor_->ReportError(*error);
       return false;
@@ -686,21 +683,21 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
 
   state_.trusted_vault_debug_info = specifics.trusted_vault_debug_info();
 
+  if (state_.passphrase_type == NigoriSpecifics::CUSTOM_PASSPHRASE) {
+    state_.custom_passphrase_key_derivation_params =
+        GetKeyDerivationParamsFromSpecifics(specifics);
+  }
+
   absl::optional<sync_pb::NigoriKey> keystore_decryptor_key;
   if (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
-    keystore_decryptor_key = TryDecryptPendingKeystoreDecryptorToken(
-        specifics.keystore_decryptor_token());
+    state_.pending_keystore_decryptor_token =
+        specifics.keystore_decryptor_token();
   } else {
     state_.pending_keystore_decryptor_token.reset();
   }
 
   const NigoriKeyBag decryption_key_bag_for_remote_update =
-      BuildDecryptionKeyBagForRemoteKeybag(keystore_decryptor_key);
-
-  if (state_.passphrase_type == NigoriSpecifics::CUSTOM_PASSPHRASE) {
-    state_.custom_passphrase_key_derivation_params =
-        GetKeyDerivationParamsFromSpecifics(specifics);
-  }
+      BuildDecryptionKeyBagForRemoteKeybag();
 
   // Set incoming encrypted keys as pending, so they are processed in
   // TryDecryptPendingKeysWith(). If the keybag is not immediately decryptable,
@@ -747,27 +744,20 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   return absl::nullopt;
 }
 
-absl::optional<sync_pb::NigoriKey>
-NigoriSyncBridgeImpl::TryDecryptPendingKeystoreDecryptorToken(
-    const sync_pb::EncryptedData& keystore_decryptor_token) {
-  DCHECK(!keystore_decryptor_token.blob().empty());
-  sync_pb::NigoriKey keystore_decryptor_key;
-  if (state_.keystore_keys_cryptographer->DecryptKeystoreDecryptorToken(
-          keystore_decryptor_token, &keystore_decryptor_key)) {
-    state_.pending_keystore_decryptor_token.reset();
-    return keystore_decryptor_key;
-  }
-  state_.pending_keystore_decryptor_token = keystore_decryptor_token;
-  return absl::nullopt;
-}
-
-NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag(
-    const absl::optional<sync_pb::NigoriKey>& keystore_decryptor_key) const {
+NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag()
+    const {
   NigoriKeyBag decryption_key_bag = NigoriKeyBag::CreateEmpty();
 
-  if (keystore_decryptor_key.has_value()) {
+  if (state_.pending_keystore_decryptor_token.has_value()) {
     DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
-    decryption_key_bag.AddKeyFromProto(*keystore_decryptor_key);
+    sync_pb::NigoriKey keystore_decryptor_key;
+    if (state_.keystore_keys_cryptographer->DecryptKeystoreDecryptorToken(
+            *state_.pending_keystore_decryptor_token,
+            &keystore_decryptor_key)) {
+      // Note: |pending_keystore_decryptor_token| will be cleared upon
+      // successful decryption of |pending_keys|.
+      decryption_key_bag.AddKeyFromProto(keystore_decryptor_key);
+    }
   }
 
   if (state_.cryptographer->CanEncrypt()) {

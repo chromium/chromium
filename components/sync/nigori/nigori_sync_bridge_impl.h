@@ -92,17 +92,12 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   absl::optional<ModelError> UpdateLocalState(
       const sync_pb::NigoriSpecifics& specifics);
 
-  absl::optional<sync_pb::NigoriKey> TryDecryptPendingKeystoreDecryptorToken(
-      const sync_pb::EncryptedData& keystore_decryptor_token);
-
   // Builds NigoriKeyBag, which contains keys acceptable for decryption of
   // |encryption_keybag| from remote NigoriSpecifics. Its content depends on
-  // current passphrase type and available keys: for KEYSTORE_PASSPHRASE it
-  // contains only |keystore_decryptor_key|, for all other passphrase types
-  // it contains deserialized |explicit_passphrase_key_| and current default
-  // encryption key.
-  NigoriKeyBag BuildDecryptionKeyBagForRemoteKeybag(
-      const absl::optional<sync_pb::NigoriKey>& keystore_decryptor_key) const;
+  // current passphrase type and available keys: it contains current default
+  // encryption key, for KEYSTORE_PASSPHRASE it additionally contains key
+  // obtained from |keystore_decryptor_token|.
+  NigoriKeyBag BuildDecryptionKeyBagForRemoteKeybag() const;
 
   // Uses |key_bag| to try to decrypt pending keys as represented in
   // |state_.pending_keys| (which must be set).
