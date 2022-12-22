@@ -358,7 +358,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   }
 
   bool request_browser_data_backward_migration_called() const {
-    return request_browser_data_migration_called_;
+    return request_browser_data_backward_migration_called_;
   }
 
  private:
