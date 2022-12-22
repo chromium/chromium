@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "base/base64url.h"
 #include "base/bind.h"
@@ -97,9 +96,8 @@ bool RegisterDownloadsMountPoint(Profile* profile, const base::FilePath& path) {
 
 // Registers a mount point for Android files to ExternalMountPoints.
 bool RegisterAndroidFilesMountPoint() {
-  if (arc::IsArcVmEnabled()) {
+  if (base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData))
     return false;
-  }
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   return mount_points->RegisterFileSystem(
@@ -1454,19 +1452,17 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
     DoMountEvent(Volume::CreateForMediaView(arc::kVideosRootDocumentId));
     DoMountEvent(Volume::CreateForMediaView(arc::kAudioRootDocumentId));
     DoMountEvent(Volume::CreateForMediaView(arc::kDocumentsRootDocumentId));
-    if (!arc::IsArcVmEnabled()) {
+    if (!base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData))
       DoMountEvent(Volume::CreateForAndroidFiles(
           base::FilePath(util::kAndroidFilesPath)));
-    }
   } else {
     DoUnmountEvent(*Volume::CreateForMediaView(arc::kImagesRootDocumentId));
     DoUnmountEvent(*Volume::CreateForMediaView(arc::kVideosRootDocumentId));
     DoUnmountEvent(*Volume::CreateForMediaView(arc::kAudioRootDocumentId));
     DoUnmountEvent(*Volume::CreateForMediaView(arc::kDocumentsRootDocumentId));
-    if (!arc::IsArcVmEnabled()) {
+    if (!base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData))
       DoUnmountEvent(*Volume::CreateForAndroidFiles(
           base::FilePath(util::kAndroidFilesPath)));
-    }
   }
 
   documents_provider_root_manager_->SetEnabled(enabled);
