@@ -36,6 +36,7 @@
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/error_console/error_console_test_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -63,7 +64,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -6120,43 +6120,6 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
   will_register_listener.Reply("unused");
 }
 
-namespace {
-
-// A helper to wait for an error to be added for an extension.
-// TODO(devlin): Pull this into a central test util file.
-class ErrorObserver : public ErrorConsole::Observer {
- public:
-  ErrorObserver(size_t errors_expected, ErrorConsole* error_console)
-      : errors_expected_(errors_expected), error_console_(error_console) {
-    observation_.Observe(error_console_.get());
-  }
-
-  // ErrorConsole::Observer implementation.
-  void OnErrorAdded(const ExtensionError* error) override {
-    ++errors_observed_;
-    if (errors_observed_ >= errors_expected_) {
-      run_loop_.Quit();
-    }
-  }
-
-  // Spin until the appropriate number of errors have been observed.
-  void WaitForErrors() {
-    if (errors_observed_ < errors_expected_) {
-      run_loop_.Run();
-    }
-  }
-
- private:
-  size_t errors_expected_;
-  raw_ptr<ErrorConsole, DanglingUntriaged> error_console_;
-  size_t errors_observed_ = 0;
-  base::ScopedObservation<ErrorConsole, ErrorConsole::Observer> observation_{
-      this};
-  base::RunLoop run_loop_;
-};
-
-}  // namespace
-
 // Tests that a MV3 extension that doesn't have the `webRequestAuthProvider`
 // permission cannot use blocking listeners for `onAuthRequired`.
 IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
@@ -6184,11 +6147,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
              ['asyncBlocking']);)";
 
   // Since we can't catch the error in the extension's JS, we instead listen to
-  // the error come into the error console. This also requires setting the user
-  // in developer mode.
-  ErrorConsole* error_console = ErrorConsole::Get(profile());
-  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
-  ErrorObserver error_observer(1u, error_console);
+  // the error come into the error console.
+  ErrorConsoleTestObserver error_observer(1u, profile());
+  error_observer.EnableErrorCollection();
 
   // Load the extension and wait for the error to come.
   TestExtensionDir test_dir;
@@ -6200,7 +6161,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   error_observer.WaitForErrors();
 
   const ErrorList& errors =
-      error_console->GetErrorsForExtension(extension->id());
+      ErrorConsole::Get(profile())->GetErrorsForExtension(extension->id());
   ASSERT_EQ(1u, errors.size());
   EXPECT_TRUE(
       base::StartsWith(errors[0]->message(),
