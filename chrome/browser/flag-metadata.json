@@ -5801,11 +5801,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "reduce-display-notifications",
-    "owners": [ "baileyberro", "zentaro" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "reduce-horizontal-fling-velocity",
     "owners": [ "flackr", "input-dev" ],
     "expiry_milestone": 95

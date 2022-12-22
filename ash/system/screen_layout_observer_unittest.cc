@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
@@ -16,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -62,8 +60,6 @@ class ScreenLayoutObserverTest : public AshTestBase {
   std::u16string GetUnifiedDisplayName();
 
   bool IsNotificationShown() const;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   const message_center::Notification* GetDisplayNotification() const;
@@ -260,8 +256,6 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
 }
 
 TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
-  scoped_feature_list_.Reset();
-
   UpdateDisplay("500x400");
   display::SetInternalDisplayIds({display_manager()->first_display_id()});
   EXPECT_TRUE(GetDisplayNotificationText().empty());
