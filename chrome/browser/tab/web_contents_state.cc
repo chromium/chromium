@@ -387,6 +387,37 @@ WebContents* RestoreContentsFromByteBuffer(void* data,
   return web_contents.release();
 }
 
+bool RestoreFromState(content::WebContents* web_contents,
+                                           void* data,
+                                           int size,
+                                           int saved_state_version,
+                                           bool initially_hidden,
+                                           bool no_renderer) {
+  bool is_off_the_record;
+  int current_entry_index;
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+  bool success = ExtractNavigationEntries(data, size, saved_state_version,
+                                          &is_off_the_record,
+                                          &current_entry_index, &navigations);
+  if (!success)
+    return false;
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  std::vector<std::unique_ptr<content::NavigationEntry>> entries =
+      sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
+          navigations, profile);
+
+  if (is_off_the_record) {
+    // Serialization and deserialization related functionalities are only
+    // supported for Incognito tabbed Activities and they use primary OTR
+    // profile.
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
+  web_contents->GetController().Restore(
+      current_entry_index, content::RestoreType::kRestored, &entries);
+  return true;
+}
+
 }  // anonymous namespace
 
 ScopedJavaLocalRef<jobject> WebContentsState::GetContentsStateAsByteBuffer(
@@ -510,6 +541,23 @@ ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
     return ScopedJavaLocalRef<jobject>();
 }
 
+bool WebContentsState::RestoreFromState(
+    JNIEnv* env,
+    content::WebContents* web_contents,
+    jobject state,
+    jint saved_state_version,
+    jboolean initially_hidden,
+    jboolean no_renderer) {
+  void* data = env->GetDirectBufferAddress(state);
+  int size = env->GetDirectBufferCapacity(state);
+
+  // If the ByteBuffer is invalid for some reason, early out.
+  if (!data || size <= 0)
+    return false;
+  return ::RestoreFromState(web_contents, data, size, saved_state_version,
+               initially_hidden, no_renderer);
+}
+
 ScopedJavaLocalRef<jobject>
 WebContentsState::CreateSingleNavigationStateAsByteBuffer(
     JNIEnv* env,
@@ -554,6 +602,20 @@ JNI_WebContentsStateBridge_RestoreContentsFromByteBuffer(
     jboolean no_renderer) {
   return WebContentsState::RestoreContentsFromByteBuffer(
       env, state, saved_state_version, initially_hidden, no_renderer);
+}
+
+static jboolean
+JNI_WebContentsStateBridge_RestoreFromState(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jweb_contents,
+    const JavaParamRef<jobject>& state,
+    jint saved_state_version,
+    jboolean initially_hidden,
+    jboolean no_renderer) {
+  WebContents* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+  return WebContentsState::RestoreFromState(
+      env, web_contents, state, saved_state_version,
+      initially_hidden, no_renderer);
 }
 
 static ScopedJavaLocalRef<jobject>

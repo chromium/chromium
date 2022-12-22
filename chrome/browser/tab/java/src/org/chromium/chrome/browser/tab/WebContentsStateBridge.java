@@ -41,6 +41,13 @@ public class WebContentsStateBridge {
                 webContentsState.buffer(), webContentsState.version(), isHidden, noRenderer);
     }
 
+    public static boolean restoreFromState(
+            WebContents webContents, WebContentsState webContentsState,
+            boolean isHidden, boolean noRenderer) {
+        return WebContentsStateBridgeJni.get().restoreFromState(webContents,
+                webContentsState.buffer(), webContentsState.version(), isHidden, noRenderer);
+    }
+
     /**
      * Deletes navigation entries from this buffer matching predicate.
      * @param predicate Handle for a deletion predicate interpreted by native code.
@@ -99,6 +106,8 @@ public class WebContentsStateBridge {
     public interface Natives {
         WebContents restoreContentsFromByteBuffer(ByteBuffer buffer, int savedStateVersion,
                 boolean initiallyHidden, boolean noRenderer);
+        boolean restoreFromState(WebContents webContents, ByteBuffer buffer, int savedStateVersion,
+                                                  boolean initiallyHidden, boolean noRenderer);
         ByteBuffer getContentsStateAsByteBuffer(WebContents webcontents);
         ByteBuffer deleteNavigationEntries(ByteBuffer state, int saveStateVersion, long predicate);
         ByteBuffer createSingleNavigationStateAsByteBuffer(String url, String referrerUrl,

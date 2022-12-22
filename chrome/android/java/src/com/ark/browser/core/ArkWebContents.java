@@ -89,6 +89,14 @@ public class ArkWebContents {
         });
     }
 
+    public int getId() {
+        return mPageInfo.getId();
+    }
+
+    public boolean isIncognito() {
+        return mPageInfo.isIncognito();
+    }
+
     public boolean isStartLoad() {
         return mStartLoad;
     }
@@ -322,12 +330,12 @@ public class ArkWebContents {
                 WebContents.createDefaultInternalsHolder());
     }
 
-    private static final SparseArray<ArkWebContents> TAB_CACHE = new SparseArray<>();
+    private static final SparseArray<ArkWebContents> PAGE_CACHE = new SparseArray<>();
 
     public static ArkWebContents remove(int id) {
         ArkWebContents arkWeb = get(id);
         if (arkWeb != null) {
-            TAB_CACHE.remove(id);
+            PAGE_CACHE.remove(id);
             if (arkWeb.isDestroyed()) {
                 arkWeb = null;
             }
@@ -336,26 +344,25 @@ public class ArkWebContents {
     }
 
     public static void destroy() {
-        for (int i = 0; i < TAB_CACHE.size(); i++) {
-            ArkWebContents web = TAB_CACHE.valueAt(i);
+        for (int i = 0; i < PAGE_CACHE.size(); i++) {
+            ArkWebContents web = PAGE_CACHE.valueAt(i);
             if (web != null && !web.isDestroyed()) {
                 web.getWebContents().destroy();
             }
         }
-        TAB_CACHE.clear();
+        PAGE_CACHE.clear();
     }
 
     public static ArkWebContents get(int id) {
-        return TAB_CACHE.get(id, null);
+        return PAGE_CACHE.get(id, null);
     }
 
     public static void put(int id, ArkWebContents arkWeb) {
-        TAB_CACHE.put(id, arkWeb);
+        PAGE_CACHE.put(id, arkWeb);
     }
 
     public static class Builder {
 
-        private Tab mParent;
         private Integer mLaunchType;
         private Integer mCreationType;
         private boolean mFromFrozenState;
@@ -372,16 +379,6 @@ public class ArkWebContents {
 
         public Builder(IPage page) {
             mPageInfo = page.getPageInfo();
-        }
-
-        /**
-         * Sets the tab from which the new one is opened.
-         * @param parent The parent Tab.
-         * @return {@link Builder} creating the Tab.
-         */
-        public Builder setParent(Tab parent) {
-            mParent = parent;
-            return this;
         }
 
         /**
@@ -440,8 +437,8 @@ public class ArkWebContents {
                 mPageInfo.setUrl(mLoadUrlParams.getUrl());
             }
 
-            ArkWebContents arkWeb = ArkWebContents.remove(mPageInfo.pageId);
-            if (arkWeb == null) {
+            ArkWebContents arkWeb = ArkWebContents.get(mPageInfo.pageId);
+            if (arkWeb == null || arkWeb.isDestroyed()) {
                 WebContents webContents = null;
                 if (mTabState != null) {
                     webContents = WebContentsStateBridge.restoreContentsFromByteBuffer(

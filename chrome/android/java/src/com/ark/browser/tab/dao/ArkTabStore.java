@@ -1,5 +1,6 @@
 package com.ark.browser.tab.dao;
 
+import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Log;
@@ -13,9 +14,14 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabAssociatedApp;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.chrome.browser.tab.WebContentsStateBridge;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -23,12 +29,15 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.common.Referrer;
 import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -39,7 +48,7 @@ public class ArkTabStore {
 
     private static final int SAVED_STATE_VERSION = 5;
 
-    private final Deque<Tab> mTabsToSave = new ArrayDeque<>();
+    private final Deque<ArkWebContents> mTabsToSave = new ArrayDeque<>();
 
     private final SequencedTaskRunner mSequencedTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING_MAY_BLOCK);
@@ -52,25 +61,24 @@ public class ArkTabStore {
 //    private byte[] mLastSavedMetadata;
 
 
-    public void addTabToSaveQueue(Tab tab) {
-        addTabToSaveQueueIfApplicable(tab);
+    public void addTabToSaveQueue(ArkWebContents web) {
+        addTabToSaveQueueIfApplicable(web);
         saveNextTab();
     }
 
-    private void addTabToSaveQueueIfApplicable(Tab tab) {
-        if (tab == null || tab.isDestroyed()) return;
-        if (mTabsToSave.contains(tab) || !TabStateAttributes.from(tab).isTabStateDirty()
-                || isTabUrlContentScheme(tab)) {
+    private void addTabToSaveQueueIfApplicable(ArkWebContents web) {
+        if (web == null || web.isDestroyed()) return;
+        if (mTabsToSave.contains(web) || isTabUrlContentScheme(web)) {
             return;
         }
 
-        if (UrlUtilities.isNTPUrl(tab.getUrl()) && !tab.canGoBack() && !tab.canGoForward()) {
+        if (UrlUtilities.isNTPUrl(web.getUrl()) && !web.canGoBack() && !web.canGoForward()) {
             return;
         }
-        mTabsToSave.addLast(tab);
+        mTabsToSave.addLast(web);
     }
 
-    private boolean isTabUrlContentScheme(Tab tab) {
+    private boolean isTabUrlContentScheme(ArkWebContents tab) {
         GURL url = tab.getUrl();
         return url != null && url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
     }
@@ -78,7 +86,7 @@ public class ArkTabStore {
     void saveNextTab() {
         if (mSaveTabTask != null) return;
         if (!mTabsToSave.isEmpty()) {
-            Tab tab = mTabsToSave.removeFirst();
+            ArkWebContents tab = mTabsToSave.removeFirst();
             mSaveTabTask = new SaveTabTask(tab);
             mSaveTabTask.executeOnTaskRunner(mSequencedTaskRunner);
         } else {
@@ -236,15 +244,43 @@ public class ArkTabStore {
 //        }
 //    }
 
+    public static TabState from(ArkWebContents tab) {
+        TabState tabState = new TabState();
+        tabState.contentsState = getWebContentsState(tab);
+        tabState.openerAppId = null;
+        tabState.parentId = Tab.INVALID_PAGE_ID;
+        tabState.timestampMillis = 0;
+        tabState.tabLaunchTypeAtCreation = TabLaunchType.FROM_CHROME_UI;
+        // Don't save the actual default theme color because it could change on night mode state
+        // changed.
+        tabState.themeColor = TabState.UNSPECIFIED_THEME_COLOR;
+        tabState.rootId = Tab.INVALID_TAB_ID;
+        tabState.userAgent = 0;
+        return tabState;
+    }
+
+    public static WebContentsState getWebContentsState(ArkWebContents web) {
+        // Native call returns null when buffer allocation needed to serialize the state failed.
+        ByteBuffer buffer = getWebContentsStateAsByteBuffer(web);
+        if (buffer == null) return null;
+
+        WebContentsState state = new WebContentsState(buffer);
+        state.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        return state;
+    }
+
+    private static ByteBuffer getWebContentsStateAsByteBuffer(ArkWebContents web) {
+        return WebContentsStateBridge.getContentsStateAsByteBuffer(web.getWebContents());
+    }
 
     private class SaveTabTask extends AsyncTask<Void> {
-        Tab mTab;
+        ArkWebContents mTab;
         int mId;
         TabState mState;
         boolean mEncrypted;
         boolean mStateSaved;
 
-        SaveTabTask(Tab tab) {
+        SaveTabTask(ArkWebContents tab) {
             mTab = tab;
             mId = tab.getId();
             mEncrypted = tab.isIncognito();
@@ -253,7 +289,7 @@ public class ArkTabStore {
         @Override
         protected void onPreExecute() {
             if (mDestroyed || isCancelled()) return;
-            mState = TabStateExtractor.from(mTab);
+            mState = from(mTab);
         }
 
         @Override
@@ -265,11 +301,11 @@ public class ArkTabStore {
         @Override
         protected void onPostExecute(Void v) {
             if (mDestroyed || isCancelled()) return;
-            if (mStateSaved) {
-                if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).setIsTabStateDirty(false);
-                mTab.setIsTabSaveEnabled(isCriticalPersistedTabDataEnabled());
-//                migrateSomeRemainingTabsToCriticalPersistedTabData();
-            }
+//            if (mStateSaved) {
+//                if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).setIsTabStateDirty(false);
+//                mTab.setIsTabSaveEnabled(isCriticalPersistedTabDataEnabled());
+////                migrateSomeRemainingTabsToCriticalPersistedTabData();
+//            }
             mSaveTabTask = null;
             saveNextTab();
         }

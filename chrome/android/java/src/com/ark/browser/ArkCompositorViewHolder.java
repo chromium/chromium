@@ -224,25 +224,25 @@ public class ArkCompositorViewHolder extends FrameLayout
 
         @Override
         public void onNavigationEntriesDeleted(Tab tab) {
-            if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
-            mTabStore.addTabToSaveQueue(tab);
+//            if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
+            mTabStore.addTabToSaveQueue(((ArkTabImpl) tab).getArkWeb());
         }
 
         @Override
         public void onPageLoadFinished(Tab tab, GURL url) {
-            if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
-            mTabStore.addTabToSaveQueue(tab);
+//            if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
+            mTabStore.addTabToSaveQueue(((ArkTabImpl) tab).getArkWeb());
         }
 
         @Override
         public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-            mTabStore.addTabToSaveQueue(tab);
             super.onLoadStopped(tab, toDifferentDocument);
         }
 
         @Override
         public void onTitleUpdated(Tab tab) {
-            if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
+//            if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
+            mTabStore.addTabToSaveQueue(((ArkTabImpl) tab).getArkWeb());
         }
 
     };

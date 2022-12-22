@@ -397,6 +397,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         }
     }
 
+    public ArkWebContents getArkWeb() {
+        return mArkWeb;
+    }
+
     public PageInfo getPageInfo() {
         return mTab.getCurrentPageInfo();
     }
@@ -444,35 +448,62 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         params.setUrl(fixedUrl.getSpec());
         ContentUtils.setUserAgentOverride(arkWeb.getWebContents(), UserAgentManager.getUserAgentByUrl(fixedUrl));
         arkWeb.loadUrl(params);
+        for (TabObserver observer : mObservers) {
+            observer.onLoadUrl(this, params, Tab.TabLoadStatus.DEFAULT_PAGE_LOAD);
+        }
     }
 
     public void selectPage(IPage page) {
         ArkLogger.e(TAG, "selectPage oldPage=" + getPageInfo() + " page=" + page.getPageInfo());
         boolean createWeb = ArkWebContents.get(page.getId()) == null;
 
-        TabState tabState = null;
-        if (createWeb) {
-            tabState = ArkTabDao.restorePageState(page.getId());
-            if (tabState != null) {
-                restoreFieldsFromState(tabState);
-                mTab.selectPage(page);
-                loadIfNeeded();
-                return;
-            }
-        }
+//        TabState tabState = null;
+//        if (createWeb) {
+//            tabState = ArkTabDao.restorePageState(page.getId());
+//            if (tabState != null) {
+//                restoreFieldsFromState(tabState);
+//                mTab.selectPage(page);
+//                loadIfNeeded();
+//                return;
+//            }
+//        }
 
         ArkLogger.e(TAG, "selectPage page=" + page.getPageInfo() + " createWeb=" + createWeb);
         ArkWebContents arkWeb = new ArkWebContents.Builder(page)
                 .setInitiallyHidden(isHidden())
-                .setTabState(tabState)
+//                .setTabState(tabState)
                 .build();
         swapWebContents(arkWeb, arkWeb.isStartLoad(), arkWeb.isFinishLoad());
 
         mTab.selectPage(page);
         if (createWeb) {
-            LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(page.getPageInfo().getUrl()));
-            params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
-            loadUrl(params);
+            ThreadPool.execute(() -> {
+                TabState tabState = ArkTabDao.restorePageState(page.getId());
+                ThreadPool.postOnUIThread(() -> {
+                    ArkLogger.e(TAG, "selectPage tabState=" + tabState);
+                    if (tabState != null) {
+                        restoreFieldsFromState(tabState);
+                        if (WebContentsStateBridge.restoreFromState(
+                                arkWeb.getWebContents(), tabState.contentsState,
+                                isHidden(), false)) {
+                            ArkLogger.e(TAG, "selectPage restoreFromState");
+                            loadIfNeeded();
+                            return;
+                        }
+                    }
+
+                    ArkLogger.e(TAG, "selectPage loadUrl");
+                    LoadUrlParams params = new LoadUrlParams(
+                            UrlFormatter.fixupUrl(page.getPageInfo().getUrl()));
+                    params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
+                    loadUrl(params);
+                });
+
+            });
+
+//            LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(page.getPageInfo().getUrl()));
+//            params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
+//            loadUrl(params);
         }
     }
 

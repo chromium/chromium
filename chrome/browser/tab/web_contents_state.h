@@ -56,6 +56,14 @@ class WebContentsState {
                                 jboolean initially_hidden,
                                 jboolean no_renderer);
 
+  static bool
+  RestoreFromState(JNIEnv* env,
+                   content::WebContents* web_contents,
+                   jobject state,
+                   jint saved_state_version,
+                   jboolean initially_hidden,
+                   jboolean no_renderer);
+
   // Synthesizes a stub, single-navigation state for a tab that will be loaded
   // lazily.
   static base::android::ScopedJavaLocalRef<jobject>
