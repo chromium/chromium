@@ -11,10 +11,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace extensions {
 
 // A structure to hold various URLs like devtools_page, homepage_url, etc
@@ -51,7 +47,6 @@ struct ManifestURL : public Extension::ManifestData {
 
   // Returns true if this extension's update URL is the extension gallery.
   static bool UpdatesFromGallery(const Extension* extension);
-  static bool UpdatesFromGallery(const base::DictionaryValue* manifest);
 
   // Returns the About Page for this extension.
   static const GURL& GetAboutPage(const Extension* extension);

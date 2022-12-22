@@ -349,15 +349,6 @@ const base::Value* Manifest::FindDictPathAsValue(base::StringPiece path) const {
   return nullptr;
 }
 
-bool Manifest::GetDictionary(const std::string& path,
-                             const base::Value** out_value) const {
-  const base::Value* value = available_values_.FindByDottedPath(path);
-  if (!value || !value->is_dict())
-    return false;
-  *out_value = value;
-  return true;
-}
-
 bool Manifest::GetList(const std::string& path,
                        const base::Value** out_value) const {
   const base::Value* value = available_values_.FindByDottedPath(path);

@@ -176,8 +176,6 @@ class Manifest final {
   const base::Value* FindDictPathAsValue(base::StringPiece path) const;
 
   // Deprecated: Use the FindDictPath(asValue) functions instead.
-  bool GetDictionary(const std::string& path,
-                     const base::Value** out_value) const;
   bool GetList(const std::string& path, const base::Value** out_value) const;
 
   // Returns true if this equals the |other| manifest.
