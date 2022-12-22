@@ -27,17 +27,15 @@ class KidsProfileManagerTest : public ::testing::Test {
                                   base::StringPiece email,
                                   base::StringPiece user_id,
                                   base::StringPiece profile_image_url,
-                                  base::StringPiece default_profile_image_url) {
+                                  base::StringPiece profile_url) {
     FamilyMember member;
     *member.mutable_profile()->mutable_display_name() =
         std::string(display_name);
     *member.mutable_profile()->mutable_email() = std::string(email);
-    *member.mutable_profile()->mutable_obfuscated_user_id() =
-        std::string(user_id);
+    *member.mutable_user_id() = std::string(user_id);
     *member.mutable_profile()->mutable_profile_image_url() =
         std::string(profile_image_url);
-    *member.mutable_profile()->mutable_default_profile_image_url() =
-        std::string(default_profile_image_url);
+    *member.mutable_profile()->mutable_profile_url() = std::string(profile_url);
     return member;
   }
 
@@ -142,9 +140,8 @@ TEST_F(KidsProfileManagerTest, SetPrimaryCustodian) {
   profile_
       .SetIsSupervisedProfile();  // Then it will be possible to clear values.
 
-  FamilyMember member =
-      CreateFamilyMember("display_name", "email", "user_id",
-                         "profile_image_url", "default_profile_image_url");
+  FamilyMember member = CreateFamilyMember("display_name", "email", "user_id",
+                                           "profile_image_url", "profile_url");
 
   under_test.SetFirstCustodian(member);
 
@@ -157,10 +154,10 @@ TEST_F(KidsProfileManagerTest, SetPrimaryCustodian) {
             "user_id");
   EXPECT_EQ(
       pref_service()->GetString(prefs::kSupervisedUserCustodianProfileURL),
-      "profile_image_url");
+      "profile_url");
   EXPECT_EQ(
       pref_service()->GetString(prefs::kSupervisedUserCustodianProfileImageURL),
-      "default_profile_image_url");
+      "profile_image_url");
 
   under_test.UpdateChildAccountStatus(false);
 
@@ -187,9 +184,8 @@ TEST_F(KidsProfileManagerTest, SetSecondaryCustodian) {
   profile_
       .SetIsSupervisedProfile();  // Then it will be possible to clear values.
 
-  FamilyMember member =
-      CreateFamilyMember("display_name", "email", "user_id",
-                         "profile_image_url", "default_profile_image_url");
+  FamilyMember member = CreateFamilyMember("display_name", "email", "user_id",
+                                           "profile_image_url", "profile_url");
 
   under_test.SetSecondCustodian(member);
 
@@ -204,10 +200,10 @@ TEST_F(KidsProfileManagerTest, SetSecondaryCustodian) {
             "user_id");
   EXPECT_EQ(pref_service()->GetString(
                 prefs::kSupervisedUserSecondCustodianProfileURL),
-            "profile_image_url");
+            "profile_url");
   EXPECT_EQ(pref_service()->GetString(
                 prefs::kSupervisedUserSecondCustodianProfileImageURL),
-            "default_profile_image_url");
+            "profile_image_url");
 
   under_test.UpdateChildAccountStatus(false);
 

@@ -102,10 +102,10 @@ FamilyInfoFetcher::FamilyMember ConvertProtoFamilyMember(
     const kids_chrome_management::FamilyMember& member) {
   FamilyInfoFetcher::FamilyMember converted;
   converted.display_name = member.profile().display_name();
-  converted.profile_image_url = member.profile().default_profile_image_url();
-  converted.profile_url = member.profile().profile_image_url();
+  converted.profile_image_url = member.profile().profile_image_url();
+  converted.profile_url = member.profile().profile_url();
   converted.email = member.profile().email();
-  converted.obfuscated_gaia_id = member.profile().obfuscated_user_id();
+  converted.obfuscated_gaia_id = member.user_id();
   converted.role = ConvertProtoRole(member.role());
   return converted;
 }

@@ -97,9 +97,9 @@ void KidsProfileManager::Custodian::Clear() {
 void KidsProfileManager::Custodian::Update(const FamilyMember& family_member) {
   name_.Set(family_member.profile().display_name());
   email_.Set(family_member.profile().email());
-  gaiaID_.Set(family_member.profile().obfuscated_user_id());
-  profileURL_.Set(family_member.profile().profile_image_url());
-  imageURL_.Set(family_member.profile().default_profile_image_url());
+  gaiaID_.Set(family_member.user_id());
+  profileURL_.Set(family_member.profile().profile_url());
+  imageURL_.Set(family_member.profile().profile_image_url());
 }
 
 KidsProfileManager::Property::Property(KidsProfileManager* manager,
