@@ -329,8 +329,6 @@ template("grit") {
     # script as inputs.
     public_deps = [ ":$_grit_custom_target" ]
 
-    deps = [ "//base" ]
-
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
@@ -436,7 +434,10 @@ if (is_android) {
       inputs = rebase_path(invoker.generated_files, ".", base_dir)
       output = _resources_zip
       if (defined(invoker.deps)) {
-        deps = invoker.deps
+        deps = []
+        foreach(_dep, invoker.deps) {
+          deps += [ "${_dep}_grit" ]
+        }
       }
     }
 
