@@ -455,9 +455,6 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
   if (!total_translate_.IsZero())
     canvas->translate(total_translate_.x(), total_translate_.y());
 
-  if (device_to_css_scale_ != 1.0f)
-    canvas->scale(device_to_css_scale_, device_to_css_scale_);
-
   // Position layer at plugin origin before layer scaling.
   if (!plugin_rect_.origin().IsOrigin())
     canvas->translate(plugin_rect_.x(), plugin_rect_.y());
@@ -544,18 +541,8 @@ void PdfViewWebPlugin::UpdateVisibility(bool visibility) {}
 blink::WebInputEventResult PdfViewWebPlugin::HandleInputEvent(
     const blink::WebCoalescedInputEvent& event,
     ui::Cursor* cursor) {
-  // TODO(crbug.com/1302059): The input events received by the Pepper plugin
-  // already have the viewport-to-DIP scale applied. The scaling done here
-  // should be moved into `HandleWebInputEvent()` once the Pepper plugin is
-  // removed.
-  std::unique_ptr<blink::WebInputEvent> scaled_event =
-      ui::ScaleWebInputEvent(event.Event(), viewport_to_dip_scale_);
-
-  const blink::WebInputEvent& event_to_handle =
-      scaled_event ? *scaled_event : event.Event();
-
   const blink::WebInputEventResult result =
-      HandleWebInputEvent(event_to_handle)
+      HandleWebInputEvent(event.Event())
           ? blink::WebInputEventResult::kHandledApplication
           : blink::WebInputEventResult::kNotHandled;
 
@@ -924,8 +911,7 @@ void PdfViewWebPlugin::NotifyTouchSelectionOccurred() {
 }
 
 void PdfViewWebPlugin::CaretChanged(const gfx::Rect& caret_rect) {
-  caret_rect_ = gfx::ScaleToEnclosingRect(
-      caret_rect + available_area_.OffsetFromOrigin(), device_to_css_scale_);
+  caret_rect_ = caret_rect + available_area_.OffsetFromOrigin();
 }
 
 void PdfViewWebPlugin::GetDocumentPassword(
@@ -1659,9 +1645,7 @@ void PdfViewWebPlugin::SaveToFile(const std::string& token) {
   message.Set("token", token);
   client_->PostMessage(std::move(message));
 
-  // TODO(crbug.com/1302059): Is there a good reason to null-terminate here?
-  pdf_service_->SaveUrlAs(GURL(url_.c_str()),
-                          network::mojom::ReferrerPolicy::kDefault);
+  pdf_service_->SaveUrlAs(GURL(url_), network::mojom::ReferrerPolicy::kDefault);
 }
 
 void PdfViewWebPlugin::InvalidatePluginContainer() {
@@ -1888,7 +1872,6 @@ void PdfViewWebPlugin::UpdateScale(float scale) {
   }
 
   viewport_to_dip_scale_ = scale;
-  device_to_css_scale_ = 1.0f;
   UpdateScaledValues();
 }
 
@@ -2002,10 +1985,12 @@ bool PdfViewWebPlugin::HandleWebInputEvent(const blink::WebInputEvent& event) {
     return false;
 
   // `engine_` expects input events in device coordinates.
+  float viewport_to_device_scale = viewport_to_dip_scale_ * device_scale_;
   std::unique_ptr<blink::WebInputEvent> transformed_event =
       ui::TranslateAndScaleWebInputEvent(
-          event, gfx::Vector2dF(-available_area_.x() / device_scale_, 0),
-          device_scale_);
+          event,
+          gfx::Vector2dF(-available_area_.x() / viewport_to_device_scale, 0),
+          viewport_to_device_scale);
 
   const blink::WebInputEvent& event_to_handle =
       transformed_event ? *transformed_event : event;

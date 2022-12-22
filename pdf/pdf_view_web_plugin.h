@@ -655,9 +655,6 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   // The viewport coordinates to DIP (device-independent pixel) ratio.
   float viewport_to_dip_scale_ = 1.0f;
 
-  // The device pixel to CSS pixel ratio.
-  float device_to_css_scale_ = 1.0f;
-
   // Combined translate from snapshot to device to CSS pixels.
   gfx::Vector2dF total_translate_;
 

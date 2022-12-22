@@ -300,7 +300,7 @@ if (enable_pdf) {
   }
 
   if (is_linux || is_chromeos) {
-    # TODO(crbug.com/1302059): After PPAPI deprecation, there will only be one
+    # TODO(crbug.com/702990): After PPAPI deprecation, there will only be one
     # caller left. Move inside the file with the caller.
     static_library("font_table_linux") {
       sources = [ "font_table_linux.cc" ]
