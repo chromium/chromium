@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
@@ -58,10 +59,10 @@ void ActivityStorage::PruneActivityPeriods(
 
 void ActivityStorage::TrimActivityPeriods(int64_t min_day_key,
                                           int64_t max_day_key) {
-  base::DictionaryValue copy;
+  base::Value::Dict copy;
 
   ForEachActivityPeriodFromPref(base::BindRepeating(
-      [](base::DictionaryValue* copy, int64_t min_day_key, int64_t max_day_key,
+      [](base::Value::Dict& copy, int64_t min_day_key, int64_t max_day_key,
          int64_t start, int64_t end, const std::string& activity_id) {
         int64_t day_key = start;
         // Remove data that is too old, or too far in the future.
@@ -76,12 +77,12 @@ void ActivityStorage::TrimActivityPeriods(int64_t min_day_key,
         if (duration <= 0)
           return;
         const std::string key = MakeActivityPeriodPrefKey(day_key, activity_id);
-        copy->SetIntPath(key, duration);
+        copy.Set(key, base::saturated_cast<int>(duration));
       },
-      &copy, min_day_key, max_day_key));
+      std::ref(copy), min_day_key, max_day_key));
 
   // Flush the activities into pref_service_
-  pref_service_->Set(pref_name_, copy);
+  pref_service_->SetDict(pref_name_, std::move(copy));
 }
 
 void ActivityStorage::RemoveOverlappingActivityPeriods() {
@@ -185,19 +186,19 @@ void ActivityStorage::AddActivityPeriod(base::Time start,
 
 void ActivityStorage::SetActivityPeriods(
     const std::map<std::string, Activities>& new_activity_periods) {
-  base::DictionaryValue copy;
+  base::Value::Dict copy;
   for (const auto& activity_pair : new_activity_periods) {
     const std::string& activity_id = activity_pair.first;
     const Activities& activities = activity_pair.second;
     for (const auto& activity : activities) {
       const std::string& key =
           MakeActivityPeriodPrefKey(activity.start_timestamp(), activity_id);
-      copy.SetIntKey(key,
-                     activity.end_timestamp() - activity.start_timestamp());
+      copy.Set(key, base::saturated_cast<int>(activity.end_timestamp() -
+                                              activity.start_timestamp()));
     }
   }
 
-  pref_service_->Set(pref_name_, copy);
+  pref_service_->SetDict(pref_name_, std::move(copy));
 }
 
 int64_t ActivityStorage::LocalTimeToUtcDayStart(base::Time timestamp) const {
