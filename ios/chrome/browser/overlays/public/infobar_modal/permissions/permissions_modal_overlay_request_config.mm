@@ -7,8 +7,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/overlays/permissions_overlay_infobar_delegate.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -25,8 +25,8 @@ PermissionsInfobarModalOverlayRequestConfig::
     PermissionsInfobarModalOverlayRequestConfig(InfoBarIOS* infobar)
     : infobar_(infobar) {
   DCHECK(infobar_);
-  PermissionsOverlayInfobarDelegate* delegate =
-      static_cast<PermissionsOverlayInfobarDelegate*>(infobar_->delegate());
+  PermissionsInfobarDelegate* delegate =
+      static_cast<PermissionsInfobarDelegate*>(infobar_->delegate());
   web_state_ = delegate->GetWebState();
 
   web::NavigationItem* visible_item =

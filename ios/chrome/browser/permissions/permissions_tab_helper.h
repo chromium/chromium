@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_PERMISSIONS_OVERLAY_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_PERMISSIONS_OVERLAY_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_PERMISSIONS_PERMISSIONS_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_PERMISSIONS_PERMISSIONS_TAB_HELPER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -24,17 +24,16 @@ class OneShotTimer;
 
 // Tab helper that observes changes to web permissions and creates/replaces the
 // respective infobar accordingly.
-class PermissionsOverlayTabHelper
+class PermissionsTabHelper
     : public infobars::InfoBarManager::Observer,
       public web::WebStateObserver,
-      public web::WebStateUserData<PermissionsOverlayTabHelper> {
+      public web::WebStateUserData<PermissionsTabHelper> {
  public:
-  explicit PermissionsOverlayTabHelper(web::WebState* web_state);
+  explicit PermissionsTabHelper(web::WebState* web_state);
 
-  PermissionsOverlayTabHelper(const PermissionsOverlayTabHelper&) = delete;
-  PermissionsOverlayTabHelper& operator=(const PermissionsOverlayTabHelper&) =
-      delete;
-  ~PermissionsOverlayTabHelper() override;
+  PermissionsTabHelper(const PermissionsTabHelper&) = delete;
+  PermissionsTabHelper& operator=(const PermissionsTabHelper&) = delete;
+  ~PermissionsTabHelper() override;
 
   // web::WebStateObserver implementation.
   void PermissionStateChanged(web::WebState* web_state,
@@ -47,7 +46,7 @@ class PermissionsOverlayTabHelper
   void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
 
  private:
-  friend class web::WebStateUserData<PermissionsOverlayTabHelper>;
+  friend class web::WebStateUserData<PermissionsTabHelper>;
 
   // Adds/replaces the infobar and show the banner.
   void ShowInfoBar();
@@ -86,4 +85,4 @@ class PermissionsOverlayTabHelper
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_PERMISSIONS_OVERLAY_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_PERMISSIONS_PERMISSIONS_TAB_HELPER_H_

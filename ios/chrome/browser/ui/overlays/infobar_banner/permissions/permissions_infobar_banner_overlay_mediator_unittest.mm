@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/permissions/permissions_infobar_banner_overlay_mediator.h"
 
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/overlays/permissions_overlay_infobar_delegate.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/permissions_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -40,8 +40,8 @@ TEST_F(PermissionsBannerOverlayMediatorTest, SetUpConsumer) {
   NSArray<NSNumber*>* recently_accessible_permissions =
       @[ @(web::PermissionCamera), @(web::PermissionMicrophone) ];
   // Second parameter is used for modal; not needed for this test.
-  std::unique_ptr<PermissionsOverlayInfobarDelegate> delegate =
-      std::make_unique<PermissionsOverlayInfobarDelegate>(
+  std::unique_ptr<PermissionsInfobarDelegate> delegate =
+      std::make_unique<PermissionsInfobarDelegate>(
           recently_accessible_permissions, nullptr);
   InfoBarIOS infobar(InfobarType::kInfobarTypePermissions, std::move(delegate));
 
@@ -68,8 +68,8 @@ TEST_F(PermissionsBannerOverlayMediatorTest, PresentModal) {
   NSArray<NSNumber*>* recently_accessible_permissions =
       @[ @(web::PermissionCamera) ];
   // Second parameter is used for modal; not needed for this test.
-  std::unique_ptr<PermissionsOverlayInfobarDelegate> delegate =
-      std::make_unique<PermissionsOverlayInfobarDelegate>(
+  std::unique_ptr<PermissionsInfobarDelegate> delegate =
+      std::make_unique<PermissionsInfobarDelegate>(
           recently_accessible_permissions, nullptr);
   InfoBarIOS infobar(InfobarType::kInfobarTypePermissions, std::move(delegate));
 

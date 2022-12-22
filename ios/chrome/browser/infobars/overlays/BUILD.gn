@@ -20,8 +20,6 @@ source_set("overlays") {
     "infobar_overlay_request_inserter.mm",
     "infobar_overlay_tab_helper.h",
     "infobar_overlay_tab_helper.mm",
-    "permissions_overlay_tab_helper.h",
-    "permissions_overlay_tab_helper.mm",
     "translate_infobar_placeholder_overlay_request_cancel_handler.h",
     "translate_infobar_placeholder_overlay_request_cancel_handler.mm",
     "translate_overlay_tab_helper.h",
@@ -29,7 +27,6 @@ source_set("overlays") {
   ]
   public_deps = [ ":overlay_type" ]
   deps = [
-    ":infobar_delegates",
     ":util",
     "//base",
     "//components/infobars/core",
@@ -51,15 +48,6 @@ source_set("overlays") {
 source_set("overlay_type") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "infobar_overlay_type.h" ]
-}
-
-source_set("infobar_delegates") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "permissions_overlay_infobar_delegate.h",
-    "permissions_overlay_infobar_delegate.mm",
-  ]
-  deps = [ "//components/infobars/core" ]
 }
 
 source_set("util") {
@@ -108,7 +96,6 @@ source_set("unit_tests") {
     "infobar_overlay_request_inserter_unittest.mm",
     "infobar_overlay_tab_helper_unittest.mm",
     "infobar_overlay_util_unittest.mm",
-    "permissions_overlay_tab_helper_unittest.mm",
     "translate_infobar_placeholder_overlay_request_cancel_handler_unittest.mm",
     "translate_overlay_tab_helper_unittest.mm",
   ]
@@ -116,7 +103,6 @@ source_set("unit_tests") {
     ":overlays",
     ":test_support",
     ":util",
-    "//base",
     "//base/test:test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/sync_preferences:test_support",
@@ -125,7 +111,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/infobars/overlays:infobar_delegates",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/main:test_support",
@@ -142,8 +127,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test:test_support",
-    "//ios/web/common",
-    "//ios/web/public/permissions",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

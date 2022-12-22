@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/infobars/overlays/permissions_overlay_tab_helper.h"
+#import "ios/chrome/browser/permissions/permissions_tab_helper.h"
 
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
-#import "ios/chrome/browser/infobars/overlays/permissions_overlay_infobar_delegate.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue_util.h"
+#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/permissions/permissions.h"
 
@@ -24,8 +24,7 @@ namespace {
 const float kTimeoutInMillisecond = 250;
 }  // namespace
 
-PermissionsOverlayTabHelper::PermissionsOverlayTabHelper(
-    web::WebState* web_state)
+PermissionsTabHelper::PermissionsTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   if (@available(iOS 15.0, *)) {
     if (web::features::IsMediaPermissionsControlEnabled()) {
@@ -40,11 +39,10 @@ PermissionsOverlayTabHelper::PermissionsOverlayTabHelper(
   }
 }
 
-PermissionsOverlayTabHelper::~PermissionsOverlayTabHelper() {}
+PermissionsTabHelper::~PermissionsTabHelper() {}
 
-void PermissionsOverlayTabHelper::PermissionStateChanged(
-    web::WebState* web_state,
-    web::Permission permission) {
+void PermissionsTabHelper::PermissionStateChanged(web::WebState* web_state,
+                                                  web::Permission permission) {
   DCHECK_EQ(web_state_, web_state);
   web::PermissionState new_state =
       web_state_->GetStateForPermission(permission);
@@ -79,7 +77,7 @@ void PermissionsOverlayTabHelper::PermissionStateChanged(
     if (!timer_.IsRunning()) {
       recently_accessible_permissions_ = [NSMutableArray array];
       timer_.Start(FROM_HERE, base::Milliseconds(kTimeoutInMillisecond), this,
-                   &PermissionsOverlayTabHelper::ShowInfoBar);
+                   &PermissionsTabHelper::ShowInfoBar);
     }
     [recently_accessible_permissions_ addObject:@(permission)];
   }
@@ -89,7 +87,7 @@ void PermissionsOverlayTabHelper::PermissionStateChanged(
   }
 }
 
-void PermissionsOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
+void PermissionsTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   DCHECK(banner_queue_);
   if (web::features::IsMediaPermissionsControlEnabled()) {
@@ -100,29 +98,29 @@ void PermissionsOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
   inserter_ = nullptr;
 }
 
-void PermissionsOverlayTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
-                                                   bool animate) {
+void PermissionsTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
+                                            bool animate) {
   if (infobar == infobar_) {
     infobar_manager_scoped_observation_.Reset();
     infobar_ = nullptr;
   }
 }
 
-void PermissionsOverlayTabHelper::OnManagerShuttingDown(
+void PermissionsTabHelper::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
   DCHECK(infobar_manager_scoped_observation_.IsObservingSource(manager));
   infobar_manager_scoped_observation_.Reset();
 }
 
-void PermissionsOverlayTabHelper::ShowInfoBar() {
+void PermissionsTabHelper::ShowInfoBar() {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state_);
   if (!infobar_manager_scoped_observation_.IsObservingSource(infobar_manager)) {
     infobar_manager_scoped_observation_.Observe(infobar_manager);
   }
 
-  std::unique_ptr<PermissionsOverlayInfobarDelegate> delegate(
-      std::make_unique<PermissionsOverlayInfobarDelegate>(
+  std::unique_ptr<PermissionsInfobarDelegate> delegate(
+      std::make_unique<PermissionsInfobarDelegate>(
           recently_accessible_permissions_, web_state_));
 
   BOOL first_activation = infobar_ == nullptr;
@@ -137,8 +135,9 @@ void PermissionsOverlayTabHelper::ShowInfoBar() {
     size_t index = 0;
     bool request_found = GetInfobarOverlayRequestIndex(
         banner_queue_, static_cast<InfoBarIOS*>(infobar_), &index);
-    if (request_found)  // The new banner is already shown.
+    if (request_found) {  // The new banner is already shown.
       return;
+    }
     InsertParams params(static_cast<InfoBarIOS*>(infobar_));
     params.overlay_type = InfobarOverlayType::kBanner;
     params.insertion_index = banner_queue_->size();
@@ -147,7 +146,7 @@ void PermissionsOverlayTabHelper::ShowInfoBar() {
   }
 }
 
-void PermissionsOverlayTabHelper::UpdateIsInfoBarAccepted() {
+void PermissionsTabHelper::UpdateIsInfoBarAccepted() {
   if (infobar_ == nullptr) {
     return;
   }
@@ -163,4 +162,4 @@ void PermissionsOverlayTabHelper::UpdateIsInfoBarAccepted() {
   static_cast<InfoBarIOS*>(infobar_)->set_accepted(accepted);
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(PermissionsOverlayTabHelper)
+WEB_STATE_USER_DATA_KEY_IMPL(PermissionsTabHelper)

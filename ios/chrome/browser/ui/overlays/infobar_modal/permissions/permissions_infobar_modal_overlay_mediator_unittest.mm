@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/permissions/permissions_infobar_modal_overlay_mediator.h"
 
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/overlays/permissions_overlay_infobar_delegate.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/permissions/permissions_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -68,9 +68,9 @@ class PermissionsInfobarModalOverlayMediatorTest : public PlatformTest {
       navigation_manager->SetVisibleItem(item.get());
       web_state_.SetNavigationManager(std::move(navigation_manager));
       // First parameter is used for banner; not needed for this test.
-      std::unique_ptr<PermissionsOverlayInfobarDelegate> delegate =
-          std::make_unique<PermissionsOverlayInfobarDelegate>([NSArray array],
-                                                              &web_state_);
+      std::unique_ptr<PermissionsInfobarDelegate> delegate =
+          std::make_unique<PermissionsInfobarDelegate>([NSArray array],
+                                                       &web_state_);
       InfoBarIOS infobar(InfobarType::kInfobarTypePermissions,
                          std::move(delegate));
       request_ = OverlayRequest::CreateWithConfig<

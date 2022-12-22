@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/infobars/overlays/permissions_overlay_infobar_delegate.h"
+#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
 
 #import "components/infobars/core/infobar_delegate.h"
 
@@ -10,31 +10,30 @@
 #error "This file requires ARC support."
 #endif
 
-PermissionsOverlayInfobarDelegate::PermissionsOverlayInfobarDelegate(
+PermissionsInfobarDelegate::PermissionsInfobarDelegate(
     NSArray<NSNumber*>* recently_accessible_permissions,
     web::WebState* web_state)
     : recently_accessible_permissions_(recently_accessible_permissions),
       web_state_(web_state) {}
 
-PermissionsOverlayInfobarDelegate::~PermissionsOverlayInfobarDelegate() =
-    default;
+PermissionsInfobarDelegate::~PermissionsInfobarDelegate() = default;
 
 NSArray<NSNumber*>*
-PermissionsOverlayInfobarDelegate::GetMostRecentlyAccessiblePermissions() {
+PermissionsInfobarDelegate::GetMostRecentlyAccessiblePermissions() {
   return recently_accessible_permissions_;
 }
 
 // As we don't need message in the infobar, we return empty message to satisfy
 // implementation requirement for ConfirmInfoBarDelegate.
-std::u16string PermissionsOverlayInfobarDelegate::GetMessageText() const {
+std::u16string PermissionsInfobarDelegate::GetMessageText() const {
   return std::u16string();
 }
 
-web::WebState* PermissionsOverlayInfobarDelegate::GetWebState() const {
+web::WebState* PermissionsInfobarDelegate::GetWebState() const {
   return web_state_;
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
-PermissionsOverlayInfobarDelegate::GetIdentifier() const {
+PermissionsInfobarDelegate::GetIdentifier() const {
   return IOS_PERMISSIONS_INFOBAR_DELEGATE;
 }

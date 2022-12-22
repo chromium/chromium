@@ -8,8 +8,8 @@
 #import "components/infobars/core/infobar.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
-#import "ios/chrome/browser/infobars/overlays/permissions_overlay_infobar_delegate.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -26,8 +26,8 @@ OVERLAY_USER_DATA_SETUP_IMPL(PermissionsBannerRequestConfig);
 PermissionsBannerRequestConfig::PermissionsBannerRequestConfig(InfoBar* infobar)
     : infobar_(infobar) {
   DCHECK(infobar_);
-  PermissionsOverlayInfobarDelegate* delegate =
-      static_cast<PermissionsOverlayInfobarDelegate*>(infobar_->delegate());
+  PermissionsInfobarDelegate* delegate =
+      static_cast<PermissionsInfobarDelegate*>(infobar_->delegate());
   NSArray<NSNumber*>* accessible_permissions =
       delegate->GetMostRecentlyAccessiblePermissions();
   if ([accessible_permissions containsObject:@(web::PermissionCamera)]) {

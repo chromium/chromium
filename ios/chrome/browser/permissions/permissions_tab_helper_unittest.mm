@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/infobars/overlays/permissions_overlay_tab_helper.h"
+#import "ios/chrome/browser/permissions/permissions_tab_helper.h"
 
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#import "ios/chrome/browser/infobars/overlays/permissions_overlay_infobar_delegate.h"
+#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -29,10 +29,10 @@ namespace {
 constexpr base::TimeDelta kTimeoutDelay = base::Milliseconds(251);
 }  // namespace
 
-// Test fixture for PermissionsOverlayTabHelper.
-class PermissionsOverlayTabHelperTest : public PlatformTest {
+// Test fixture for PermissionsTabHelper.
+class PermissionsTabHelperTest : public PlatformTest {
  public:
-  PermissionsOverlayTabHelperTest()
+  PermissionsTabHelperTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatures(
         {web::features::kMediaPermissionsControl}, {});
@@ -42,14 +42,13 @@ class PermissionsOverlayTabHelperTest : public PlatformTest {
     InfoBarManagerImpl::CreateForWebState(&web_state_);
     InfobarOverlayRequestInserter::CreateForWebState(
         &web_state_, &DefaultInfobarOverlayRequestFactory);
-    PermissionsOverlayTabHelper::CreateForWebState(&web_state_);
+    PermissionsTabHelper::CreateForWebState(&web_state_);
   }
 
-  ~PermissionsOverlayTabHelperTest() override {
+  ~PermissionsTabHelperTest() override {
     InfoBarManagerImpl::FromWebState(&web_state_)->ShutDown();
     // Observer should be removed before `scoped_feature_list_` is reset.
-    web_state_.RemoveObserver(
-        PermissionsOverlayTabHelper::FromWebState(&web_state_));
+    web_state_.RemoveObserver(PermissionsTabHelper::FromWebState(&web_state_));
   }
 
  protected:
@@ -68,10 +67,11 @@ class PermissionsOverlayTabHelperTest : public PlatformTest {
 
   // Returns recently_accessible_permissions determined by the tab helper.
   NSArray<NSNumber*>* recently_accessible_permissions() {
-    if (infobar() == nullptr)
+    if (infobar() == nullptr) {
       return [NSArray array];
-    PermissionsOverlayInfobarDelegate* delegate =
-        static_cast<PermissionsOverlayInfobarDelegate*>(infobar()->delegate());
+    }
+    PermissionsInfobarDelegate* delegate =
+        static_cast<PermissionsInfobarDelegate*>(infobar()->delegate());
     return delegate->GetMostRecentlyAccessiblePermissions();
   }
 
@@ -82,7 +82,7 @@ class PermissionsOverlayTabHelperTest : public PlatformTest {
 
 // Tests that an infobar is setup with the correct acceptance state when the
 // status of a single permission changes.
-TEST_F(PermissionsOverlayTabHelperTest, CheckInfobarCountForSinglePermission) {
+TEST_F(PermissionsTabHelperTest, CheckInfobarCountForSinglePermission) {
   if (@available(iOS 15, *)) {
     // Allowed permission.
     web_state_.SetStateForPermission(web::PermissionStateAllowed,
@@ -109,7 +109,7 @@ TEST_F(PermissionsOverlayTabHelperTest, CheckInfobarCountForSinglePermission) {
 
 // Tests that blocking a permission and allowing it again correctly resets
 // infobar and acceptance state.
-TEST_F(PermissionsOverlayTabHelperTest, BlockingAndAllowingSinglePermission) {
+TEST_F(PermissionsTabHelperTest, BlockingAndAllowingSinglePermission) {
   if (@available(iOS 15, *)) {
     // Allowed permission.
     web_state_.SetStateForPermission(web::PermissionStateAllowed,
@@ -143,7 +143,7 @@ TEST_F(PermissionsOverlayTabHelperTest, BlockingAndAllowingSinglePermission) {
 
 // Tests that making a permission inaccessible and allowing it again correctly
 // resets infobar and acceptance state.
-TEST_F(PermissionsOverlayTabHelperTest,
+TEST_F(PermissionsTabHelperTest,
        MakingPermissionNotAccessibleAndAllowingItAgain) {
   if (@available(iOS 15, *)) {
     // Allowed permission.
@@ -176,7 +176,7 @@ TEST_F(PermissionsOverlayTabHelperTest,
 
 // Tests that an infobar is setup with the correct acceptance state when the
 // status of both permission are allowed simultaneously.
-TEST_F(PermissionsOverlayTabHelperTest,
+TEST_F(PermissionsTabHelperTest,
        CheckInfobarCountForSimultaneouslyAllowedPermissions) {
   if (@available(iOS 15, *)) {
     // Allow both permissions.
@@ -217,7 +217,7 @@ TEST_F(PermissionsOverlayTabHelperTest,
 
 // Tests that an infobar is setup and replaced with the correct acceptance
 // state when the status of both permission are allowed one by one.
-TEST_F(PermissionsOverlayTabHelperTest,
+TEST_F(PermissionsTabHelperTest,
        CheckInfobarCountForSeparatelyAllowedPermissions) {
   if (@available(iOS 15, *)) {
     // Allow one permission.
@@ -264,7 +264,7 @@ TEST_F(PermissionsOverlayTabHelperTest,
 
 // Tests that infobar and acceptance state would be handled correctly when one
 // permission is blocked while the other permission changes states.
-TEST_F(PermissionsOverlayTabHelperTest,
+TEST_F(PermissionsTabHelperTest,
        CheckInfobarAndAcceptanceStateWhenOnePermissionIsBlocked) {
   if (@available(iOS 15, *)) {
     // Allow one permission.
