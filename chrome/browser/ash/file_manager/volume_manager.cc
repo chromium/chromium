@@ -801,9 +801,6 @@ void VolumeManager::Initialize() {
   RegisterShareCacheMountPoint(profile_);
   DoMountEvent(
       Volume::CreateForShareCache(util::GetShareCacheFilePath(profile_)));
-
-  // TODO(b/263194149): remember to remove this useless dcheck.
-  DCHECK_EQ(false, FindExternalMountPoint(""));
 }
 
 void VolumeManager::Shutdown() {
@@ -1344,12 +1341,12 @@ void VolumeManager::OnProvidedFileSystemMount(
                                                  volume_context);
 
   // Register the fusebox FSP storage device with chrome::storage.
-  if (!profile_->IsIncognitoProfile()) {
+  const std::string fusebox_fsid = base::StrCat(
+      {util::kFuseBoxMountNamePrefix, util::kFuseBoxSubdirPrefixFSP, fsid});
+  if (!FindExternalMountPoint(fusebox_fsid)) {
     bool result = mount_points->RegisterFileSystem(
-        base::StrCat({util::kFuseBoxMountNamePrefix,
-                      util::kFuseBoxSubdirPrefixFSP, fsid}),
-        storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
-        fusebox_volume->mount_path());
+        fusebox_fsid, storage::kFileSystemTypeFuseBox,
+        storage::FileSystemMountOption(), fusebox_volume->mount_path());
     DCHECK(result);
   }
 
