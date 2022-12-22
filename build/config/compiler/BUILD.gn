@@ -137,6 +137,11 @@ declare_args() {
   # needs to be evaluated before enabling it there as well.
   init_stack_vars = !(is_android && is_official_build)
 
+  # Zero init has favorable performance/size tradeoffs for Chrome OS
+  # but was not evaluated for other platforms.
+  # TODO(adriandole) enable for both ash and lacros once lacros updates toolchain.
+  init_stack_vars_zero = is_chromeos_ash
+
   # This argument is to control whether enabling text section splitting in the
   # final binary. When enabled, the separated text sections with prefix
   # '.text.hot', '.text.unlikely', '.text.startup' and '.text.exit' will not be
@@ -2653,12 +2658,7 @@ if (is_android || (is_chromeos_ash && is_chromeos_device)) {
 config("default_init_stack_vars") {
   cflags = []
   if (init_stack_vars && is_clang && !is_nacl && !using_sanitizer) {
-    if (is_chromeos && !chromeos_is_browser_only) {
-      # TODO(adriandole) remove chromeos_is_browser_only condition
-      # once lacros updates toolchain
-
-      # Zero init has favorable performance/size tradeoffs for Chrome OS
-      # but was not evaluated for other platforms.
+    if (init_stack_vars_zero) {
       cflags += [ "-ftrivial-auto-var-init=zero" ]
     } else {
       cflags += [ "-ftrivial-auto-var-init=pattern" ]
