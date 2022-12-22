@@ -126,6 +126,8 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // Closes the transient root of the window managed by |this|.
   void Close();
 
+  // TODO(sammiequon): Rename this function as tucked floated windows behave the
+  // same way as minimized windows.
   bool IsMinimized() const;
 
   // Ensures that a window is visible by setting its opacity to 1.

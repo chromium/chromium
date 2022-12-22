@@ -9,6 +9,7 @@
 
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -141,9 +142,9 @@ void WindowMirrorView::InitLayerOwner() {
   // This causes us to clip the non-client areas of the window.
   layer()->SetMasksToBounds(true);
 
-  // Some extra work is needed when the source window is minimized or is on an
-  // inactive desk.
-  if (WindowState::Get(source_)->IsMinimized() ||
+  // Some extra work is needed when the source window is minimized, tucked
+  // offscreen or is on an inactive desk.
+  if (window_util::IsMinimizedOrTucked(source_) ||
       !desks_util::BelongsToActiveDesk(source_)) {
     EnsureAllChildrenAreVisible(mirror_layer);
   }

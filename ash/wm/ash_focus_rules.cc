@@ -95,12 +95,19 @@ bool AshFocusRules::IsWindowConsideredVisibleForActivation(
   if (window_state->IsMinimized())
     return true;
 
-  // Floated windows are hidden if they belong to inactive desks, but they can
-  // always be activated.
-  if (window_state->IsFloated() &&
-      shell->float_controller()->FindDeskOfFloatedWindow(window) !=
-          DesksController::Get()->active_desk()) {
-    return true;
+  if (window_state->IsFloated()) {
+    auto* float_controller = shell->float_controller();
+    // Floated windows are hidden if they belong to inactive desks, but they can
+    // always be activated.
+    if (float_controller->FindDeskOfFloatedWindow(window) !=
+        DesksController::Get()->active_desk()) {
+      return true;
+    }
+
+    // Tucked windows are hidden offscreen, but they can be activated.
+    if (float_controller->IsFloatedWindowTuckedForTablet(window)) {
+      return true;
+    }
   }
 
   if (!window->TargetVisibility())

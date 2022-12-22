@@ -20,6 +20,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
@@ -400,6 +401,21 @@ bool ShouldMinimizeTopWindowOnBack() {
 
   // Minimize the window if it is at the bottom page.
   return !shell->shell_delegate()->CanGoBack(window);
+}
+
+bool IsMinimizedOrTucked(aura::Window* window) {
+  DCHECK(window->parent());
+
+  WindowState* window_state = WindowState::Get(window);
+  if (!window_state) {
+    return false;
+  }
+  if (window_state->IsFloated()) {
+    return !window->is_destroying() &&
+           Shell::Get()->float_controller()->IsFloatedWindowTuckedForTablet(
+               window);
+  }
+  return window_state->IsMinimized();
 }
 
 void SendBackKeyEvent(aura::Window* root_window) {

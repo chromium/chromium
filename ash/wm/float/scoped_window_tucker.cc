@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -227,6 +228,10 @@ void ScopedWindowTucker::AnimateTuck() {
       left_ ? -kTuckOffscreenPaddingDp : kTuckOffscreenPaddingDp, 0);
 
   views::AnimationBuilder()
+      .OnAborted(base::BindOnce(&ScopedWindowTucker::OnAnimateTuckEnded,
+                                weak_factory_.GetWeakPtr()))
+      .OnEnded(base::BindOnce(&ScopedWindowTucker::OnAnimateTuckEnded,
+                              weak_factory_.GetWeakPtr()))
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
@@ -246,6 +251,9 @@ void ScopedWindowTucker::AnimateTuck() {
 }
 
 void ScopedWindowTucker::AnimateUntuck(base::OnceClosure callback) {
+  ScopedAnimationDisabler disable(window_);
+  window_->Show();
+
   const gfx::RectF initial_bounds(window_->bounds());
 
   TabletModeWindowState::UpdateWindowPosition(
@@ -318,6 +326,11 @@ void ScopedWindowTucker::OnOverviewModeChanged(bool in_overview) {
       .SetDuration(kSlideHandleForOverviewDuration)
       .SetTransform(tuck_handle, gfx::Transform(),
                     gfx::Tween::ACCEL_20_DECEL_100);
+}
+
+void ScopedWindowTucker::OnAnimateTuckEnded() {
+  ScopedAnimationDisabler disable(window_);
+  window_->Hide();
 }
 
 void ScopedWindowTucker::UntuckWindow() {

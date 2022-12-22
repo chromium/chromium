@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -508,7 +509,7 @@ void ScopedOverviewTransformWindow::Close() {
 }
 
 bool ScopedOverviewTransformWindow::IsMinimized() const {
-  return WindowState::Get(window_)->IsMinimized();
+  return window_util::IsMinimizedOrTucked(window_);
 }
 
 void ScopedOverviewTransformWindow::PrepareForOverview() {

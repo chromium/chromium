@@ -233,9 +233,10 @@ void HandleTuckFloatedWindow(AcceleratorAction action) {
 
   DCHECK(floated_window);
 
-  float_controller->OnFlingOrSwipeForTablet(
-      floated_window,
-      /*left=*/action == DEBUG_TUCK_FLOATED_WINDOW_LEFT, /*up=*/true);
+  const float velocity_x =
+      action == DEBUG_TUCK_FLOATED_WINDOW_LEFT ? -500.f : 500.f;
+  float_controller->OnFlingOrSwipeForTablet(floated_window, velocity_x,
+                                            /*velocity_y=*/0.f);
 }
 
 }  // namespace

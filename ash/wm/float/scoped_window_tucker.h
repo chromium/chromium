@@ -9,6 +9,7 @@
 
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -54,6 +55,10 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver,
   // overview mode respectively.
   void OnOverviewModeChanged(bool in_overview);
 
+  // Hides the window after the tuck animation is finished. This is so it will
+  // behave similarly to a minimized window in overview.
+  void OnAnimateTuckEnded();
+
   // Destroys `this_`, which will untuck `window_` and set the window bounds
   // back onscreen.
   void UntuckWindow();
@@ -75,6 +80,8 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver,
 
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_observer_{this};
+
+  base::WeakPtrFactory<ScopedWindowTucker> weak_factory_{this};
 };
 
 }  // namespace ash
