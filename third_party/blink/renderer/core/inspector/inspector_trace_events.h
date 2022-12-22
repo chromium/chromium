@@ -462,6 +462,10 @@ namespace inspector_commit_load_event {
 void Data(perfetto::TracedValue context, LocalFrame*);
 }
 
+namespace inspector_layerize_event {
+void Data(perfetto::TracedValue context, LocalFrame*);
+}
+
 namespace inspector_mark_load_event {
 void Data(perfetto::TracedValue context, LocalFrame*);
 }

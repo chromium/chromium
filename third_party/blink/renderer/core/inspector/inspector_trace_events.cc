@@ -1162,6 +1162,13 @@ void inspector_commit_load_event::Data(perfetto::TracedValue context,
   FillCommonFrameData(dict, frame);
 }
 
+void inspector_layerize_event::Data(perfetto::TracedValue context,
+                                    LocalFrame* frame) {
+  auto dict = std::move(context).WriteDictionary();
+  FrameEventData(dict, frame);
+  dict.Add("frame", IdentifiersFactory::FrameId(frame));
+}
+
 void inspector_mark_load_event::Data(perfetto::TracedValue context,
                                      LocalFrame* frame) {
   auto dict = std::move(context).WriteDictionary();
