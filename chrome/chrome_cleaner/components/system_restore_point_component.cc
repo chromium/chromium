@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/win/registry.h"
-#include "base/win/windows_version.h"
 
 namespace {
 
@@ -71,19 +70,16 @@ void SystemRestorePointComponent::PreCleanup() {
   if (!set_restore_point_info_fn_)
     return;
 
-  // On Windows8, a registry value needs to be created in order for restore
-  // points to be deterministically created. Attempt to create this value, but
-  // continue with the restore point anyway even if doing so fails. See
-  // http://msdn.microsoft.com/en-us/library/windows/desktop/aa378941.aspx for
-  // more information.
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    base::win::RegKey system_restore_key(HKEY_LOCAL_MACHINE, kSystemRestoreKey,
-                                         KEY_SET_VALUE | KEY_QUERY_VALUE);
-    if (system_restore_key.Valid() &&
-        !system_restore_key.HasValue(kSystemRestoreFrequencyWin8)) {
-      system_restore_key.WriteValue(kSystemRestoreFrequencyWin8,
-                                    static_cast<DWORD>(0));
-    }
+  // A registry value needs to be created in order for restore points to be
+  // deterministically created. Attempt to create this value, but continue with
+  // the restore point anyway even if doing so fails. For more info, see
+  // http://msdn.microsoft.com/en-us/library/windows/desktop/aa378941.aspx.
+  base::win::RegKey system_restore_key(HKEY_LOCAL_MACHINE, kSystemRestoreKey,
+                                       KEY_SET_VALUE | KEY_QUERY_VALUE);
+  if (system_restore_key.Valid() &&
+      !system_restore_key.HasValue(kSystemRestoreFrequencyWin8)) {
+    system_restore_key.WriteValue(kSystemRestoreFrequencyWin8,
+                                  static_cast<DWORD>(0));
   }
 
   // Take a system restore point before doing anything else.

@@ -22,7 +22,6 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/win/windows_version.h"
 #include "chrome/chrome_cleaner/buildflags.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 #include "chrome/chrome_cleaner/ipc/chrome_prompt_test_util.h"
@@ -550,11 +549,6 @@ TEST_P(CleanerTest, NoPotentialFalsePositivesOnCleanMachine) {
 }
 
 TEST_P(CleanerTest, NoUnsanitizedPaths) {
-  // Fails on Windows7
-  if (base::win::GetVersion() <= base::win::Version::WIN7) {
-    return;
-  }
-
   CreateRemovableUwS();
 
   base::CommandLine command_line = BuildCommandLine(kCleanerExecutable);

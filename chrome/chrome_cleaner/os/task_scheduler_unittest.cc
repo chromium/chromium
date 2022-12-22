@@ -27,10 +27,6 @@
 #include "chrome/chrome_cleaner/test/test_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace chrome_cleaner {
 
 namespace {
@@ -98,13 +94,6 @@ TEST_F(TaskSchedulerTests, DeleteAndIsRegistered) {
 }
 
 TEST_F(TaskSchedulerTests, RunAProgramNow) {
-#if BUILDFLAG(IS_WIN)
-    // TODO(crbug.com/1307401): Failing on Windows7.
-    if (base::win::GetVersion() <= base::win::Version::WIN7) {
-      return;
-    }
-#endif
-
   base::FilePath executable_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
   base::CommandLine command_line(

@@ -154,11 +154,6 @@ int RunChromeCleanerTestSuite(int argc,
         chrome_cleaner::SandboxType::kNonSandboxed);
   }
 
-  // Some tests spawn sandbox targets using job objects. Windows 7 doesn't
-  // support nested job objects, so don't use them in the test suite. Otherwise
-  // all sandbox tests will fail as they try to create a second job object.
-  bool use_job_objects = base::win::GetVersion() >= base::win::Version::WIN8;
-
   // Some tests will fail if two tests try to launch test_process.exe
   // simultaneously, so run the tests serially. This will still shard them and
   // distribute the shards to different swarming bots, but tests will run
@@ -167,7 +162,7 @@ int RunChromeCleanerTestSuite(int argc,
       argc, argv,
       /*parallel_jobs=*/1U,        // Like LaunchUnitTestsSerially
       /*default_batch_limit=*/10,  // Like LaunchUnitTestsSerially
-      use_job_objects, base::DoNothing(),
+      /*use_job_objects=*/true, base::DoNothing(),
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 
   if (!IsSandboxedProcess())
