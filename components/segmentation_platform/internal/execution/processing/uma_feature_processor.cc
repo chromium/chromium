@@ -37,14 +37,18 @@ UmaFeatureProcessor::UmaFeatureProcessor(
     SignalDatabase* signal_database,
     FeatureAggregator* feature_aggregator,
     const base::Time prediction_time,
+    const base::Time observation_time,
     const base::TimeDelta bucket_duration,
-    const SegmentId segment_id)
+    const SegmentId segment_id,
+    bool is_output)
     : uma_features_(std::move(uma_features)),
       signal_database_(signal_database),
       feature_aggregator_(feature_aggregator),
       prediction_time_(prediction_time),
+      observation_time_(observation_time),
       bucket_duration_(bucket_duration),
-      segment_id_(segment_id) {}
+      segment_id_(segment_id),
+      is_output_(is_output) {}
 
 UmaFeatureProcessor::~UmaFeatureProcessor() = default;
 
@@ -102,7 +106,23 @@ void UmaFeatureProcessor::ProcessSingleUmaFeature(
   // Only fetch data that is relevant for the current proto::UMAFeature, since
   // the FeatureAggregator assumes that only relevant data is given to it.
   base::TimeDelta duration = bucket_duration_ * feature.bucket_count();
-  base::Time start_time = prediction_time_ - duration;
+  base::Time start_time;
+  base::Time end_time;
+  if (is_output_) {
+    if (observation_time_ == base::Time()) {
+      start_time = prediction_time_ - duration;
+      end_time = prediction_time_;
+    } else if (observation_time_ - prediction_time_ > duration) {
+      start_time = observation_time_ - duration;
+      end_time = observation_time_;
+    } else {
+      start_time = prediction_time_;
+      end_time = observation_time_;
+    }
+  } else {
+    start_time = prediction_time_ - duration;
+    end_time = prediction_time_;
+  }
 
   // Fetch the relevant samples for the current proto::UMAFeature. Once the
   // result has come back, it will be processed and inserted into the
@@ -114,16 +134,17 @@ void UmaFeatureProcessor::ProcessSingleUmaFeature(
   // members while invoking GetSamples is not guaranteed.
   auto signal_type = feature.type();
   signal_database_->GetSamples(
-      signal_type, name_hash, start_time, prediction_time_,
+      signal_type, name_hash, start_time, end_time,
       base::BindOnce(&UmaFeatureProcessor::OnGetSamplesForUmaFeature,
                      weak_ptr_factory_.GetWeakPtr(), index, feature,
-                     accepted_enum_ids));
+                     accepted_enum_ids, end_time));
 }
 
 void UmaFeatureProcessor::OnGetSamplesForUmaFeature(
     FeatureIndex index,
     const proto::UMAFeature& feature,
     const std::vector<int32_t>& accepted_enum_ids,
+    const base::Time end_time,
     std::vector<SignalDatabase::Sample> samples) {
   base::ElapsedTimer timer;
   // HISTOGRAM_ENUM features might require us to filter out the result to only
@@ -140,8 +161,8 @@ void UmaFeatureProcessor::OnGetSamplesForUmaFeature(
   // FeatureProcessorState::input_tensor so we can later pass it to the ML model
   // executor.
   absl::optional<std::vector<float>> result = feature_aggregator_->Process(
-      feature.type(), feature.aggregation(), feature.bucket_count(),
-      prediction_time_, bucket_duration_, samples);
+      feature.type(), feature.aggregation(), feature.bucket_count(), end_time,
+      bucket_duration_, samples);
 
   // If no feature data is available, use the default values specified instead.
   if (result.has_value()) {

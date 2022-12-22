@@ -83,9 +83,9 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
 
     // Setup behavior for |feature_list_processor_|.
     ModelProvider::Request inputs({1.f});
-    ON_CALL(feature_list_processor_, ProcessFeatureList(_, _, _, _, _, _))
+    ON_CALL(feature_list_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
         .WillByDefault(
-            RunOnceCallback<5>(false, inputs, ModelProvider::Response()));
+            RunOnceCallback<6>(false, inputs, ModelProvider::Response()));
 
     auto test_segment_info_db =
         std::make_unique<test::TestSegmentInfoDatabase>();
@@ -339,9 +339,9 @@ TEST_F(TrainingDataCollectorImplTest, PartialOutputNotAllowed) {
 }
 
 // Tests that continuous collection happens on startup.
-TEST_F(TrainingDataCollectorImplTest, ContinuousCollectionOnStartup) {
-  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+TEST_F(TrainingDataCollectorImplTest, ContinousCollectionOnStartup) {
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
                                         ModelProvider::Response{2.f, 3.f}));
   CreateSegmentInfo(kPeriodicDecisionType);
   clock()->Advance(base::Hours(24));
@@ -361,8 +361,8 @@ TEST_F(TrainingDataCollectorImplTest, ContinuousCollectionOnStartup) {
 // Tests that ReportCollectedContinuousTrainingData() works well later if
 // no data is reported on start up.
 TEST_F(TrainingDataCollectorImplTest, ReportCollectedContinuousTrainingData) {
-  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
                                         ModelProvider::Response{2.f, 3.f}));
   CreateSegmentInfo(kPeriodicDecisionType);
   Init();
@@ -389,8 +389,8 @@ TEST_F(TrainingDataCollectorImplTest, ReportCollectedContinuousTrainingData) {
 // immediately afterwards.
 TEST_F(TrainingDataCollectorImplTest,
        NoImmediateDataCollectionAfterLastCollection) {
-  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
                                         ModelProvider::Response{2.f, 3.f}));
   CreateSegmentInfo(kPeriodicDecisionType);
   Init();
@@ -413,8 +413,8 @@ TEST_F(TrainingDataCollectorImplTest,
 // Tests that if UKM allowed timestamp is not set in local state, data
 // collection won't happen.
 TEST_F(TrainingDataCollectorImplTest, NoDataCollectionIfUkmAllowedPrefNotSet) {
-  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
                                         ModelProvider::Response{2.f, 3.f}));
   LocalStateHelper::GetInstance().SetPrefTime(
       kSegmentationUkmMostRecentAllowedTimeKey, base::Time());
@@ -428,8 +428,8 @@ TEST_F(TrainingDataCollectorImplTest, NoDataCollectionIfUkmAllowedPrefNotSet) {
 // Tests that if uma histogram trigger is set, collection will happen when the
 // trigger histogram is observed.
 TEST_F(TrainingDataCollectorImplTest, DataCollectionWithUMATrigger) {
-  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
                                         ModelProvider::Response{2.f, 3.f}));
 
   // Create a segment that contain a uma trigger.
@@ -460,8 +460,8 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithUMATrigger) {
 // A histogram interested by multiple model will trigger multiple UKM reports.
 TEST_F(TrainingDataCollectorImplTest,
        DataCollectionWithUMATrigger_MultipleModels) {
-  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
                                         ModelProvider::Response{2.f, 3.f}));
 
   // Create a segment that contain a uma trigger.
@@ -499,8 +499,8 @@ TEST_F(TrainingDataCollectorImplTest,
 // Tests that if no uma histogram trigger is set, collection will happen when
 // the time delay passes.
 TEST_F(TrainingDataCollectorImplTest, DataCollectionWithTimeTrigger) {
-  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
-      .WillByDefault(RunOnceCallback<5>(false, ModelProvider::Request{1.f},
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<6>(false, ModelProvider::Request{1.f},
                                         ModelProvider::Response{2.f, 3.f}));
 
   // Create a segment that contain a time delay trigger and a uma trigger.

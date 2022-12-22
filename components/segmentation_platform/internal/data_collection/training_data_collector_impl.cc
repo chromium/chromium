@@ -396,10 +396,11 @@ void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
           : stats::TrainingDataCollectionEvent::kImmediateCollectionStart);
 
   // Start training data collection and generate training data inputs.
+  base::Time unused;  // Observation time not used for inputs.
   feature_list_query_processor_->ProcessFeatureList(
-      segment_info.model_metadata(), input_context, segment_id, clock_->Now(),
-      /*process_option=*/
-      FeatureListQueryProcessor::ProcessOption::kInputsOnly,
+      segment_info.model_metadata(), input_context, segment_id,
+      /*prediction_time*/ clock_->Now(), /*observation_time*/ unused,
+      /*process_option=*/FeatureListQueryProcessor::ProcessOption::kInputsOnly,
       base::BindOnce(
           &TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime,
           weak_ptr_factory_.GetWeakPtr(), request_id, segment_info));
@@ -458,11 +459,12 @@ void TrainingDataCollectorImpl::OnObservationTrigger(
     return;
 
   // Generate training data output.
+  // Empty observation_time means prediction_time is reused as observation_time.
   feature_list_query_processor_->ProcessFeatureList(
       segment_info.model_metadata(), /*input_context=*/nullptr,
-      segment_info.segment_id(), clock_->Now(),
-      /*process_option=*/
-      FeatureListQueryProcessor::ProcessOption::kOutputsOnly,
+      segment_info.segment_id(), /*prediction_time*/ clock_->Now(),
+      /*observation_time*/ base::Time(),
+      /*process_option=*/FeatureListQueryProcessor::ProcessOption::kOutputsOnly,
       base::BindOnce(
           &TrainingDataCollectorImpl::onGetOutputsOnObservationTrigger,
           weak_ptr_factory_.GetWeakPtr(), request_id, segment_info,

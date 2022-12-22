@@ -22,6 +22,7 @@ class MockFeatureListQueryProcessor : public FeatureListQueryProcessor {
                scoped_refptr<InputContext> input_context,
                proto::SegmentId,
                base::Time,
+               base::Time,
                FeatureListQueryProcessor::ProcessOption,
                FeatureProcessorCallback),
               (override));

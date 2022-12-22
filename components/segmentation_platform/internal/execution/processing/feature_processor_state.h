@@ -30,6 +30,7 @@ class FeatureProcessorState {
   FeatureProcessorState();
   FeatureProcessorState(
       base::Time prediction_time,
+      base::Time observation_time,
       base::TimeDelta bucket_duration,
       SegmentId segment_id,
       scoped_refptr<InputContext> input_context,
@@ -44,6 +45,8 @@ class FeatureProcessorState {
   base::TimeDelta bucket_duration() const { return bucket_duration_; }
 
   base::Time prediction_time() const { return prediction_time_; }
+
+  base::Time observation_time() const { return observation_time_; }
 
   SegmentId segment_id() const { return segment_id_; }
 
@@ -84,6 +87,7 @@ class FeatureProcessorState {
   std::vector<float> MergeTensors(const QueryProcessor::IndexedTensors& tensor);
 
   const base::Time prediction_time_;
+  const base::Time observation_time_;
   const base::TimeDelta bucket_duration_;
   const SegmentId segment_id_;
   scoped_refptr<InputContext> input_context_;

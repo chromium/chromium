@@ -129,7 +129,8 @@ void ModelExecutorImpl::ExecuteModel(
       SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info);
   feature_list_query_processor_->ProcessFeatureList(
       segment_info.model_metadata(), request->input_context, segment_id,
-      clock_->Now(), FeatureListQueryProcessor::ProcessOption::kInputsOnly,
+      clock_->Now(), base::Time(),
+      FeatureListQueryProcessor::ProcessOption::kInputsOnly,
       base::BindOnce(&ModelExecutorImpl::OnProcessingFeatureListComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(state)));
 }

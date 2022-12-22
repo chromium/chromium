@@ -172,12 +172,13 @@ class FeatureListQueryProcessorTest : public testing::Test {
       const ModelProvider::Request& expected_input_tensor,
       const ModelProvider::Response& expected_output_tensor,
       base::Time prediction_time,
+      base::Time observation_time = base::Time(),
       FeatureListQueryProcessor::ProcessOption process_option =
           FeatureListQueryProcessor::ProcessOption::kInputsOnly) {
     base::RunLoop loop;
     feature_list_query_processor_->ProcessFeatureList(
         model_metadata, /*input_context=*/nullptr, segment_id_, prediction_time,
-        process_option,
+        observation_time, process_option,
         base::BindOnce(
             &FeatureListQueryProcessorTest::OnProcessingFinishedCallback,
             base::Unretained(this), loop.QuitClosure(), expected_error,
@@ -491,13 +492,13 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithOutputs) {
   // contains {5}
   ExpectProcessedFeatureList(
       false, ModelProvider::Request{3, 6, 4}, ModelProvider::Response{5},
-      clock_.Now(),
+      clock_.Now(), base::Time(),
       FeatureListQueryProcessor::ProcessOption::kInputsAndOutputs);
 
   // Only return tensors for output features.
   ExpectProcessedFeatureList(
       false, ModelProvider::Request(), ModelProvider::Response{5}, clock_.Now(),
-      FeatureListQueryProcessor::ProcessOption::kOutputsOnly);
+      base::Time(), FeatureListQueryProcessor::ProcessOption::kOutputsOnly);
 }
 
 TEST_F(FeatureListQueryProcessorTest, SkipCollectionOnlyUmaFeatures) {
@@ -696,6 +697,67 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithMultipleBuckets) {
   // The input tensor should contain all values flattened to a single vector.
   ExpectProcessedFeatureList(false,
                              ModelProvider::Request{1, 2, 3, 4, 5, 6, 7});
+}
+
+TEST_F(FeatureListQueryProcessorTest, SingleUmaOutputWithObservationTime) {
+  CreateFeatureListQueryProcessor();
+
+  // Initialize with required metadata.
+  SetBucketDuration(3, proto::TimeUnit::HOUR);
+  base::TimeDelta bucket_duration = base::Hours(3);
+  base::Time prediction_time = clock_.Now() - base::Hours(1);
+  base::Time observation_time = clock_.Now();
+  base::Time start_time = prediction_time - bucket_duration * 2;
+
+  // Set up an output feature.
+  std::string output_user_action_name = "output_user_action";
+  AddOutputUmaFeature(proto::SignalType::USER_ACTION, output_user_action_name,
+                      2, 1, proto::Aggregation::COUNT, {});
+
+  // First uma feature should be the output user action.
+  std::vector<SignalDatabaseSample> user_action_samples{
+      {clock_.Now(), 0},
+      {clock_.Now(), 0},
+      {clock_.Now(), 0},
+  };
+  // Without observation time.
+  EXPECT_CALL(*signal_database_,
+              GetSamples(proto::SignalType::USER_ACTION,
+                         base::HashMetricName(output_user_action_name),
+                         start_time, prediction_time, _))
+      .Times(1)
+      .WillRepeatedly(RunOnceCallback<4>(user_action_samples));
+  EXPECT_CALL(*feature_aggregator_,
+              Process(proto::SignalType::USER_ACTION, proto::Aggregation::COUNT,
+                      2, prediction_time, bucket_duration, user_action_samples))
+      .Times(1)
+      .WillRepeatedly(Return(std::vector<float>{5}));
+
+  // Without observation time, output contains {5}
+  ExpectProcessedFeatureList(
+      false, ModelProvider::Request(), ModelProvider::Response{5},
+      prediction_time, base::Time(),
+      FeatureListQueryProcessor::ProcessOption::kOutputsOnly);
+
+  // With observation time.
+  EXPECT_CALL(*signal_database_,
+              GetSamples(proto::SignalType::USER_ACTION,
+                         base::HashMetricName(output_user_action_name),
+                         prediction_time, observation_time, _))
+      .Times(1)
+      .WillRepeatedly(RunOnceCallback<4>(user_action_samples));
+  EXPECT_CALL(
+      *feature_aggregator_,
+      Process(proto::SignalType::USER_ACTION, proto::Aggregation::COUNT, 2,
+              observation_time, bucket_duration, user_action_samples))
+      .Times(1)
+      .WillRepeatedly(Return(std::vector<float>{3}));
+
+  // With observation time, output contains {3}
+  ExpectProcessedFeatureList(
+      false, ModelProvider::Request(), ModelProvider::Response{3},
+      prediction_time, observation_time,
+      FeatureListQueryProcessor::ProcessOption::kOutputsOnly);
 }
 
 }  // namespace segmentation_platform::processing

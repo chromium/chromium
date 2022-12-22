@@ -8,7 +8,6 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/time/clock.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
@@ -65,6 +64,7 @@ void FeatureListQueryProcessor::ProcessFeatureList(
     scoped_refptr<InputContext> input_context,
     SegmentId segment_id,
     base::Time prediction_time,
+    base::Time observation_time,
     ProcessOption process_option,
     FeatureProcessorCallback callback) {
   // The total bucket duration is defined by product of the bucket_duration
@@ -121,8 +121,8 @@ void FeatureListQueryProcessor::ProcessFeatureList(
 
   // Capture all the relevant metadata information into a FeatureProcessorState.
   auto feature_processor_state = std::make_unique<FeatureProcessorState>(
-      prediction_time, bucket_duration, segment_id, input_context,
-      std::move(callback));
+      prediction_time, observation_time, bucket_duration, segment_id,
+      input_context, std::move(callback));
 
   CreateProcessors(std::move(feature_processor_state),
                    std::move(data_to_process));
@@ -140,7 +140,7 @@ void FeatureListQueryProcessor::CreateProcessors(
       case Data::DataType::INPUT_UMA:
         feature_processor_state->AppendProcessor(
             GetUmaFeatureProcessor(std::move(type.second),
-                                   feature_processor_state.get()),
+                                   feature_processor_state.get(), false),
             true);
         break;
       case Data::DataType::INPUT_CUSTOM:
@@ -169,7 +169,7 @@ void FeatureListQueryProcessor::CreateProcessors(
       case Data::DataType::OUTPUT_UMA:
         feature_processor_state->AppendProcessor(
             GetUmaFeatureProcessor(std::move(type.second),
-                                   feature_processor_state.get()),
+                                   feature_processor_state.get(), true),
             false);
         break;
     }
@@ -217,12 +217,14 @@ void FeatureListQueryProcessor::OnFeatureBatchProcessed(
 std::unique_ptr<UmaFeatureProcessor>
 FeatureListQueryProcessor::GetUmaFeatureProcessor(
     base::flat_map<FeatureIndex, Data>&& uma_features,
-    FeatureProcessorState* feature_processor_state) {
+    FeatureProcessorState* feature_processor_state,
+    bool is_output) {
   return std::make_unique<UmaFeatureProcessor>(
       std::move(uma_features), storage_service_->signal_database(),
       feature_aggregator_.get(), feature_processor_state->prediction_time(),
+      feature_processor_state->observation_time(),
       feature_processor_state->bucket_duration(),
-      feature_processor_state->segment_id());
+      feature_processor_state->segment_id(), is_output);
 }
 
 }  // namespace segmentation_platform::processing

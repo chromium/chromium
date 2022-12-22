@@ -237,8 +237,8 @@ TEST_F(SegmentResultProviderTest, GetFromModelExecutionFailed) {
   TestModelProvider provider(kTestSegment);
   EXPECT_CALL(*mock_execution_manager_, GetProvider(kTestSegment))
       .WillOnce(Return(&provider));
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(/*error=*/true,
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<6>(/*error=*/true,
                                    ModelProvider::Request{{1, 2}},
                                    ModelProvider::Response()));
   ExpectSegmentResultOnGet(
@@ -257,8 +257,8 @@ TEST_F(SegmentResultProviderTest, GetFromModel) {
   TestModelProvider provider(kTestSegment);
   EXPECT_CALL(*mock_execution_manager_, GetProvider(kTestSegment))
       .WillOnce(Return(&provider));
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(/*error=*/false,
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<6>(/*error=*/false,
                                    ModelProvider::Request{{1, 2}},
                                    ModelProvider::Response()));
 
@@ -296,8 +296,8 @@ TEST_F(SegmentResultProviderTest, DefaultModelFailedExecution) {
       .WillOnce(Return(true));
 
   // Set error while computing features.
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(/*error=*/true,
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<6>(/*error=*/true,
                                    ModelProvider::Request{{1, 2}},
                                    ModelProvider::Response()));
   ExpectSegmentResultOnGet(
@@ -315,8 +315,8 @@ TEST_F(SegmentResultProviderTest, GetFromDefault) {
 
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(/*error=*/false,
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<6>(/*error=*/false,
                                    ModelProvider::Request{{1, 2}},
                                    ModelProvider::Response()));
   ExpectSegmentResultOnGet(
@@ -333,8 +333,8 @@ TEST_F(SegmentResultProviderTest, GetFromDefaultIgnoringDb) {
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillOnce(Return(true))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(/*error=*/false,
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<6>(/*error=*/false,
                                    ModelProvider::Request{{1, 2}},
                                    ModelProvider::Response()));
   ExpectSegmentResultOnGet(
@@ -357,8 +357,8 @@ TEST_F(SegmentResultProviderTest, MultipleRequests) {
   // provider fails execution.
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(/*error=*/false,
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<6>(/*error=*/false,
                                    ModelProvider::Request{{1, 2}},
                                    ModelProvider::Response()));
   ExpectSegmentResultOnGet(
@@ -366,7 +366,7 @@ TEST_F(SegmentResultProviderTest, MultipleRequests) {
       SegmentResultProvider::ResultState::kDefaultModelScoreUsed, kTestRank);
 
   // For the second request the database has valid result.
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _, _))
       .Times(0);
   ExpectSegmentResultOnGet(
       kTestSegment2, /*ignore_db_scores=*/false,

@@ -159,9 +159,9 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
-                  _, _, segment_id, clock_.Now(),
+                  _, _, segment_id, clock_.Now(), base::Time(),
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
-      .WillOnce(RunOnceCallback<5>(/*error=*/true,
+      .WillOnce(RunOnceCallback<6>(/*error=*/true,
                                    ModelProvider::Request{1, 2, 3},
                                    ModelProvider::Response()));
 
@@ -175,9 +175,9 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
-                  _, _, segment_id, clock_.Now(),
+                  _, _, segment_id, clock_.Now(), base::Time(),
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
-      .WillOnce(RunOnceCallback<5>(/*error=*/true, ModelProvider::Request(),
+      .WillOnce(RunOnceCallback<6>(/*error=*/true, ModelProvider::Request(),
                                    ModelProvider::Response()));
   ExecuteModel(*metadata_writer.FindOrCreateSegment(segment_id), &mock_model_,
                std::make_unique<ModelExecutionResult>(
@@ -197,9 +197,9 @@ TEST_F(ModelExecutorTest, ExecuteModelWithMultipleFeatures) {
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
-                  _, _, kSegmentId, clock_.Now(),
+                  _, _, kSegmentId, clock_.Now(), base::Time(),
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
-      .WillOnce(RunOnceCallback<5>(/*error=*/false, inputs,
+      .WillOnce(RunOnceCallback<6>(/*error=*/false, inputs,
                                    ModelProvider::Response()));
 
   // The input tensor should contain all values flattened to a single vector.

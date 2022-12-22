@@ -76,13 +76,17 @@ class FeatureListQueryProcessor {
   // computes the input tensor for the ML model. Result is returned through a
   // callback.
   // |segment_id| is only used for recording performance metrics. This class
-  // does not need to know about the segment itself. |prediction_time| is the
-  // time at which we predict the model execution should happen.
+  // does not need to know about the segment itself.
+  // |prediction_time| is the time at which we predict the model execution
+  // should happen. |observation_time| is the time at which observation ends and
+  // metrics get uploaded.
+  // TODO(haileywang): Change this function to take an options struct.
   virtual void ProcessFeatureList(
       const proto::SegmentationModelMetadata& model_metadata,
       scoped_refptr<InputContext> input_context,
       SegmentId segment_id,
       base::Time prediction_time,
+      base::Time observation_time,
       ProcessOption process_option,
       FeatureProcessorCallback callback);
 
@@ -110,10 +114,11 @@ class FeatureListQueryProcessor {
       std::unique_ptr<FeatureProcessorState> feature_processor_state,
       QueryProcessor::IndexedTensors result);
 
-  // Gets a UMA feature processor for a
+  // Helper function to create an UmaProcessor.
   std::unique_ptr<UmaFeatureProcessor> GetUmaFeatureProcessor(
       base::flat_map<FeatureIndex, Data>&& uma_features,
-      FeatureProcessorState* feature_processor_state);
+      FeatureProcessorState* feature_processor_state,
+      bool is_output);
 
   // Storage service which provides signals to process.
   const raw_ptr<StorageService> storage_service_;

@@ -28,8 +28,10 @@ class UmaFeatureProcessor : public QueryProcessor {
                       SignalDatabase* signal_database,
                       FeatureAggregator* feature_aggregator,
                       const base::Time prediction_time,
+                      const base::Time observation_time,
                       const base::TimeDelta bucket_duration,
-                      const proto::SegmentId segment_id);
+                      const proto::SegmentId segment_id,
+                      bool is_output);
 
   ~UmaFeatureProcessor() override;
 
@@ -54,6 +56,7 @@ class UmaFeatureProcessor : public QueryProcessor {
   void OnGetSamplesForUmaFeature(FeatureIndex index,
                                  const proto::UMAFeature& feature,
                                  const std::vector<int32_t>& accepted_enum_ids,
+                                 const base::Time end_time,
                                  std::vector<SignalDatabase::Sample> samples);
 
   // List of custom inputs to process into input tensors.
@@ -67,8 +70,10 @@ class UmaFeatureProcessor : public QueryProcessor {
 
   // Data needed for the processing of uma features.
   const base::Time prediction_time_;
+  const base::Time observation_time_;
   const base::TimeDelta bucket_duration_;
   const proto::SegmentId segment_id_;
+  const bool is_output_;
 
   // Temporary storage of the processing state object.
   // TODO(haileywang): Remove dependency to the state object once error check is
