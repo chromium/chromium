@@ -1,0 +1,10 @@
+{
+  "name": "ContentScriptsManifestTest.ExecutionWorld_InvalidForMV2",
+  "version": "0.1",
+  "manifest_version": 2,
+  "content_scripts": [{
+    "matches": ["https://example.com/*"],
+    "js": ["file.js"],
+    "world": "MAIN"
+  }]
+}

@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/api/content_scripts.h"
+#include "extensions/common/api/extension_types.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -30,6 +31,7 @@
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/utils/content_script_utils.h"
+#include "extensions/common/utils/extension_types_utils.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -141,6 +143,17 @@ std::unique_ptr<UserScript> CreateUserScript(
 
   ParseGlobs(base::OptionalToPtr(content_script.include_globs),
              base::OptionalToPtr(content_script.exclude_globs), result.get());
+
+  // Parse execution world. This should only be possible for MV3.
+  if (content_script.world != api::extension_types::EXECUTION_WORLD_NONE) {
+    if (extension->manifest_version() >= 3) {
+      result->set_execution_world(ConvertExecutionWorld(content_script.world));
+    } else {
+      extension->AddInstallWarning(
+          InstallWarning(errors::kExecutionWorldRestrictedToMV3,
+                         ContentScriptsKeys::kContentScripts));
+    }
+  }
 
   if (!script_parsing::ParseFileSources(
           extension, base::OptionalToPtr(content_script.js),

@@ -20,7 +20,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "extensions/browser/api/extension_types_utils.h"
 #include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -41,6 +40,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/utils/content_script_utils.h"
+#include "extensions/common/utils/extension_types_utils.h"
 
 namespace extensions {
 

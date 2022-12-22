@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Main world content script test extension",
+  "version": "0.1",
+  "description": "Tests that scripts can be injected into the main world",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["*://main.example/*", "*://isolated.example/*"],
+  "content_scripts": [
+    {
+      "matches": ["*://main.example/*"],
+      "js": ["change_title.js"],
+      "world": "MAIN",
+      "runAt": "document_end"
+    }, {
+      "matches": ["*://isolated.example/*"],
+      "js": ["change_title.js"],
+      "world": "ISOLATED",
+      "runAt": "document_end"
+    }
+  ]
+}

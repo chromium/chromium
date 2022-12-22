@@ -164,8 +164,6 @@ source_set("browser_sources") {
     "api/device_permissions_prompt.h",
     "api/execute_code_function.cc",
     "api/execute_code_function.h",
-    "api/extension_types_utils.cc",
-    "api/extension_types_utils.h",
     "api/extensions_api_client.cc",
     "api/extensions_api_client.h",
     "api/guest_view/app_view/app_view_guest_internal_api.cc",

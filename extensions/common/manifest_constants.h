@@ -241,6 +241,7 @@ extern const char kChromeVersionTooLow[];
 extern const char kDeclarativeNetRequestPermissionNeeded[];
 extern const char16_t kDefaultStateShouldNotBeSet[];
 extern const char kDevToolsExperimental[];
+extern const char kExecutionWorldRestrictedToMV3[];
 extern const char kExpectString[];
 extern const char kFileNotFound[];
 extern const char kHasDifferentialFingerprint[];

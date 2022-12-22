@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
-#include "extensions/browser/api/extension_types_utils.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/load_and_localize_file.h"
@@ -20,6 +19,7 @@
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
+#include "extensions/common/utils/extension_types_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {

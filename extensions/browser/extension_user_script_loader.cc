@@ -33,7 +33,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
-#include "extensions/browser/api/extension_types_utils.h"
 #include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/component_extension_resource_manager.h"
@@ -53,6 +52,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/utils/content_script_utils.h"
+#include "extensions/common/utils/extension_types_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 

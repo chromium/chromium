@@ -443,6 +443,8 @@ static_library("common") {
     "utils/base_string.h",
     "utils/content_script_utils.cc",
     "utils/content_script_utils.h",
+    "utils/extension_types_utils.cc",
+    "utils/extension_types_utils.h",
     "value_builder.cc",
     "value_builder.h",
     "value_counter.cc",

@@ -441,6 +441,12 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, LargeScriptFilesNotLoaded) {
   EXPECT_EQ(extension->install_warnings(), expected_warnings);
 }
 
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, MainWorldInjections) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("content_scripts/main_world_injections"))
+      << message_;
+}
+
 class ContentScriptCssInjectionTest : public ExtensionApiTest {
  protected:
   // TODO(rdevlin.cronin): Make a testing switch that looks like FeatureSwitch,

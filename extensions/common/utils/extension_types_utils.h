@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_EXTENSION_TYPES_UTILS_H_
-#define EXTENSIONS_BROWSER_API_EXTENSION_TYPES_UTILS_H_
+#ifndef EXTENSIONS_COMMON_UTILS_EXTENSION_TYPES_UTILS_H_
+#define EXTENSIONS_COMMON_UTILS_EXTENSION_TYPES_UTILS_H_
 
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/mojom/execution_world.mojom-shared.h"
@@ -27,4 +27,4 @@ api::extension_types::ExecutionWorld ConvertExecutionWorldForAPI(
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_API_EXTENSION_TYPES_UTILS_H_
+#endif  // EXTENSIONS_COMMON_UTILS_EXTENSION_TYPES_UTILS_H_

@@ -1,0 +1,17 @@
+{
+  "name": "ContentScriptsManifestTest.ExecutionWorld",
+  "version": "0.1",
+  "manifest_version": 3,
+  "content_scripts": [{
+    "matches": ["https://example.com/*"],
+    "js": ["file.js"]
+  }, {
+    "matches": ["https://google.com/*"],
+    "js": ["file.js"],
+    "world": "MAIN"
+  }, {
+    "matches": ["https://gmail.com/*"],
+    "js": ["file.js"],
+    "world": "ISOLATED"
+  }]
+}

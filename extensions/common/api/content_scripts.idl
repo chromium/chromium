@@ -75,10 +75,8 @@ namespace contentScripts {
     // Specifies when JavaScript files are injected into the web page. The
     // preferred and default value is <code>document_idle</code>.
     RunAt? run_at;
-    // Describes the JavaScript world that this script will execute in.
-    // Currently manifest scripts will always run in the isolated world and this
-    // field should not be specified. Eventually, main world support may be
-    // added.
+    // The JavaScript "world" to run the script in. Defaults to
+    // <code>ISOLATED</code>. Only available in Manifest V3 extensions.
     [nodoc] extensionTypes.ExecutionWorld? world;
   };
 
