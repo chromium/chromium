@@ -49,13 +49,17 @@ class PairerBrokerImpl final : public PairerBroker {
 
  private:
   void PairFastPairDevice(scoped_refptr<Device> device);
-  void OnFastPairHandshakeComplete(scoped_refptr<Device> device);
-  void OnFastPairDevicePaired(scoped_refptr<Device> device);
-  void OnFastPairPairingFailure(scoped_refptr<Device> device,
+  void OnFastPairDeviceBonded(scoped_refptr<Device> device);
+  void OnFastPairBondingFailure(scoped_refptr<Device> device,
                                 PairFailure failure);
   void OnAccountKeyFailure(scoped_refptr<Device> device,
                            AccountKeyFailure failure);
   void OnFastPairProcedureComplete(scoped_refptr<Device> device);
+  void CreateHandshake(scoped_refptr<Device> device);
+  void OnHandshakeComplete(scoped_refptr<Device> device,
+                           absl::optional<PairFailure> failure);
+  void OnHandshakeFailure(scoped_refptr<Device> device, PairFailure failure);
+  void StartBondingAttempt(scoped_refptr<Device> device);
 
   // Internal method called by BluetoothAdapterFactory to provide the adapter
   // object.
@@ -63,9 +67,13 @@ class PairerBrokerImpl final : public PairerBroker {
 
   void EraseHandshakeAndFromPairers(scoped_refptr<Device> device);
 
+  // The key for all the following maps is a device BLE address.
   base::flat_map<std::string, std::unique_ptr<FastPairPairer>>
       fast_pair_pairers_;
   base::flat_map<std::string, int> pair_failure_counts_;
+  base::flat_map<std::string, bool>
+      did_handshake_previously_complete_successfully_map_;
+
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<FastPairUnpairHandler> fast_pair_unpair_handler_;
   base::ObserverList<Observer> observers_;

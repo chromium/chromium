@@ -3,12 +3,19 @@
 // found in the LICENSE file.
 
 #include "ash/quick_pair/pairing/pairer_broker_impl.h"
-
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_data_encryptor.h"
+#include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_gatt_service_client.h"
+#include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_handshake.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/feature_status_tracker/fake_bluetooth_adapter.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer_impl.h"
@@ -40,6 +47,12 @@ constexpr char kInitializePairingProcessSubsequent[] =
     "FastPair.SubsequentPairing.Initialization";
 constexpr char kInitializePairingProcessRetroactive[] =
     "FastPair.RetroactivePairing.Initialization";
+constexpr char kInitializePairingProcessFailureReasonInitial[] =
+    "FastPair.InitialPairing.Initialization.FailureReason";
+constexpr char kInitializePairingProcessFailureReasonSubsequent[] =
+    "FastPair.SubsequentPairing.Initialization.FailureReason";
+constexpr char kInitializePairingProcessFailureReasonRetroactive[] =
+    "FastPair.RetroactivePairing.Initialization.FailureReason";
 
 constexpr char kProtocolPairingStepInitial[] =
     "FastPair.InitialPairing.Pairing";
@@ -52,8 +65,6 @@ class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
       scoped_refptr<device::BluetoothAdapter> adapter,
       scoped_refptr<ash::quick_pair::Device> device,
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
-          handshake_complete_callback,
-      base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
           paired_callback,
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>,
                               ash::quick_pair::PairFailure)>
@@ -65,18 +76,12 @@ class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
           pairing_procedure_complete)
       : adapter_(adapter),
         device_(device),
-        handshake_complete_callback_(std::move(handshake_complete_callback)),
         paired_callback_(std::move(paired_callback)),
         pair_failed_callback_(std::move(pair_failed_callback)),
         account_key_failure_callback_(std::move(account_key_failure_callback)),
         pairing_procedure_complete_(std::move(pairing_procedure_complete)) {}
 
   ~FakeFastPairPairer() override = default;
-
-  void TriggerHandshakeCompleteCallback() {
-    EXPECT_TRUE(handshake_complete_callback_);
-    std::move(handshake_complete_callback_).Run(device_);
-  }
 
   void TriggerPairedCallback() {
     EXPECT_TRUE(paired_callback_);
@@ -103,8 +108,6 @@ class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<ash::quick_pair::Device> device_;
   base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
-      handshake_complete_callback_;
-  base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
       paired_callback_;
   base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>,
                           ash::quick_pair::PairFailure)>
@@ -123,8 +126,6 @@ class FakeFastPairPairerFactory
       scoped_refptr<device::BluetoothAdapter> adapter,
       scoped_refptr<ash::quick_pair::Device> device,
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
-          handshake_complete_callback,
-      base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
           paired_callback,
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>,
                               ash::quick_pair::PairFailure)>
@@ -135,8 +136,7 @@ class FakeFastPairPairerFactory
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
           pairing_procedure_complete) override {
     auto fake_fast_pair_pairer = std::make_unique<FakeFastPairPairer>(
-        std::move(adapter), std::move(device),
-        std::move(handshake_complete_callback), std::move(paired_callback),
+        std::move(adapter), std::move(device), std::move(paired_callback),
         std::move(pair_failed_callback),
         std::move(account_key_failure_callback),
         std::move(pairing_procedure_complete));
@@ -150,6 +150,35 @@ class FakeFastPairPairerFactory
 
  protected:
   FakeFastPairPairer* fake_fast_pair_pairer_ = nullptr;
+};
+
+class FakeFastPairGattServiceClientImplFactory
+    : public ash::quick_pair::FastPairGattServiceClientImpl::Factory {
+ public:
+  ~FakeFastPairGattServiceClientImplFactory() override = default;
+
+  ash::quick_pair::FakeFastPairGattServiceClient*
+  fake_fast_pair_gatt_service_client() {
+    return fake_fast_pair_gatt_service_client_;
+  }
+
+ private:
+  // FastPairGattServiceClientImpl::Factory:
+  std::unique_ptr<ash::quick_pair::FastPairGattServiceClient> CreateInstance(
+      device::BluetoothDevice* device,
+      scoped_refptr<device::BluetoothAdapter> adapter,
+      base::OnceCallback<void(absl::optional<ash::quick_pair::PairFailure>)>
+          on_initialized_callback) override {
+    auto fake_fast_pair_gatt_service_client =
+        std::make_unique<ash::quick_pair::FakeFastPairGattServiceClient>(
+            device, adapter, std::move(on_initialized_callback));
+    fake_fast_pair_gatt_service_client_ =
+        fake_fast_pair_gatt_service_client.get();
+    return fake_fast_pair_gatt_service_client;
+  }
+
+  ash::quick_pair::FakeFastPairGattServiceClient*
+      fake_fast_pair_gatt_service_client_ = nullptr;
 };
 
 }  // namespace
@@ -173,8 +202,60 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
     FastPairPairerImpl::Factory::SetFactoryForTesting(
         fast_pair_pairer_factory_.get());
 
+    FastPairGattServiceClientImpl::Factory::SetFactoryForTesting(
+        &fast_pair_gatt_service_factory_);
+    FastPairHandshakeLookup::SetCreateFunctionForTesting(base::BindRepeating(
+        &PairerBrokerImplTest::CreateHandshake, base::Unretained(this)));
+
     pairer_broker_ = std::make_unique<PairerBrokerImpl>();
     pairer_broker_->AddObserver(this);
+
+    gatt_service_client_ = FastPairGattServiceClientImpl::Factory::Create(
+        mock_bluetooth_device_ptr_, adapter_.get(), base::DoNothing());
+
+    // We have to pass in a unique_ptr when we create a Handshake, however
+    // we also want to be able to set fake responses on the encryptor. Thus
+    // we maintain 2 pointers. We won't touch fake_fast_pair_data_encryptor_
+    // aside from CreateHandshake.
+    fake_fast_pair_data_encryptor_ =
+        std::make_unique<FakeFastPairDataEncryptor>();
+  }
+
+  void CreateMockDevice(DeviceFastPairVersion version, Protocol protocol) {
+    device_ = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
+                                           protocol);
+    device_->set_classic_address(kBluetoothCanonicalizedAddress);
+
+    device_->set_version(version);
+
+    // Add a matching mock device to the bluetooth adapter with the
+    // same address to mock the relationship between Device and
+    // device::BluetoothDevice.
+    mock_bluetooth_device_ =
+        std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+            adapter_.get(), /*bluetooth_class=*/0, kDeviceName,
+            kBluetoothCanonicalizedAddress,
+            /*initially_paired=*/true, /*connected=*/false);
+    mock_bluetooth_device_ptr_ = mock_bluetooth_device_.get();
+    adapter_->AddMockDevice(std::move(mock_bluetooth_device_));
+  }
+
+  void EraseHandshake() {
+    FastPairHandshakeLookup::GetInstance()->Erase(device_);
+  }
+
+  std::unique_ptr<FastPairHandshake> CreateHandshake(
+      scoped_refptr<Device> device,
+      FastPairHandshake::OnCompleteCallback callback) {
+    // This is the only place where fake_fast_pair_data_encryptor_ is used. We
+    // assume that CreateHandshake is only called once.
+    auto fake = std::make_unique<FakeFastPairHandshake>(
+        adapter_, device, std::move(callback),
+        std::move(fake_fast_pair_data_encryptor_),
+        std::move(gatt_service_client_));
+
+    fake_fast_pair_handshake_ = fake.get();
+    return fake;
   }
 
   void TearDown() override {
@@ -223,13 +304,23 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
   std::unique_ptr<FakeFastPairPairerFactory> fast_pair_pairer_factory_;
 
   std::unique_ptr<PairerBroker> pairer_broker_;
+  FakeFastPairHandshake* fake_fast_pair_handshake_ = nullptr;
+  std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
+  FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;
+  std::unique_ptr<FakeFastPairDataEncryptor> fake_fast_pair_data_encryptor_;
+  std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>
+      mock_bluetooth_device_ = nullptr;
+  scoped_refptr<Device> device_;
 };
 
 TEST_F(PairerBrokerImplTest, PairDevice_Initial) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairInitial);
-  pairer_broker_->PairDevice(device);
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
+
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
@@ -245,16 +336,13 @@ TEST_F(PairerBrokerImplTest, PairDevice_Initial) {
 
 TEST_F(PairerBrokerImplTest, PairDevice_Subsequent) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairSubsequent);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairSubsequent);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
 
-  pairer_broker_->PairDevice(device);
   EXPECT_TRUE(pairing_started_);
   EXPECT_TRUE(pairer_broker_->IsPairing());
-
-  fast_pair_pairer_factory_->fake_fast_pair_pairer()
-      ->TriggerHandshakeCompleteCallback();
-  EXPECT_TRUE(handshake_complete_);
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
 
@@ -270,10 +358,11 @@ TEST_F(PairerBrokerImplTest, PairDevice_Subsequent) {
 
 TEST_F(PairerBrokerImplTest, PairDevice_Retroactive) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairRetroactive);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairRetroactive);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
 
-  pairer_broker_->PairDevice(device);
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
@@ -289,11 +378,11 @@ TEST_F(PairerBrokerImplTest, PairDevice_Retroactive) {
 
 TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Initial) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairInitial);
-
-  pairer_broker_->PairDevice(device);
-  pairer_broker_->PairDevice(device);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
+  pairer_broker_->PairDevice(device_);
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
@@ -309,12 +398,13 @@ TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Initial) {
 
 TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Subsequent) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairSubsequent);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairSubsequent);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
 
-  pairer_broker_->PairDevice(device);
-  pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
+  pairer_broker_->PairDevice(device_);
+
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
@@ -330,12 +420,13 @@ TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Subsequent) {
 
 TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Retroactive) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairRetroactive);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairRetroactive);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
 
-  pairer_broker_->PairDevice(device);
-  pairer_broker_->PairDevice(device);
-  base::RunLoop().RunUntilIdle();
+  pairer_broker_->PairDevice(device_);
+
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
@@ -352,22 +443,11 @@ TEST_F(PairerBrokerImplTest, AlreadyPairingDevice_Retroactive) {
 
 TEST_F(PairerBrokerImplTest, PairAfterCancelPairing) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairInitial);
-  device->set_classic_address(kBluetoothCanonicalizedAddress);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
 
-  // Add a matching mock device to the bluetooth adapter with the
-  // same address to mock the relationship between Device and
-  // device::BluetoothDevice.
-  std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>
-      mock_bluetooth_device_ =
-          std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
-              adapter_.get(), 0, kDeviceName, kBluetoothCanonicalizedAddress,
-              true, false);
-  mock_bluetooth_device_ptr_ = mock_bluetooth_device_.get();
-  adapter_->AddMockDevice(std::move(mock_bluetooth_device_));
-
-  pairer_broker_->PairDevice(device);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
   EXPECT_TRUE(pairer_broker_->IsPairing());
   EXPECT_CALL(*mock_bluetooth_device_ptr_, IsPaired())
       .WillOnce(testing::Return(false));
@@ -390,10 +470,11 @@ TEST_F(PairerBrokerImplTest, PairAfterCancelPairing) {
 
 TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Initial) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairInitial);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
 
-  pairer_broker_->PairDevice(device);
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
@@ -414,10 +495,11 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Initial) {
 
 TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Subsequent) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairSubsequent);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairSubsequent);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
 
-  pairer_broker_->PairDevice(device);
   EXPECT_TRUE(pairer_broker_->IsPairing());
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
@@ -437,10 +519,11 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Subsequent) {
 
 TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Retroactive) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairRetroactive);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairRetroactive);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
 
-  pairer_broker_->PairDevice(device);
   EXPECT_TRUE(pairer_broker_->IsPairing());
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairFailureCallback(
@@ -458,10 +541,11 @@ TEST_F(PairerBrokerImplTest, PairDeviceFailureMax_Retroactive) {
 }
 
 TEST_F(PairerBrokerImplTest, AccountKeyFailure_Initial) {
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairInitial);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
 
-  pairer_broker_->PairDevice(device);
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
@@ -473,10 +557,10 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailure_Initial) {
 }
 
 TEST_F(PairerBrokerImplTest, AccountKeyFailure_Subsequent) {
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairSubsequent);
-
-  pairer_broker_->PairDevice(device);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairSubsequent);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
@@ -488,10 +572,11 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailure_Subsequent) {
 }
 
 TEST_F(PairerBrokerImplTest, AccountKeyFailure_Retroactive) {
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairRetroactive);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairRetroactive);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
 
-  pairer_broker_->PairDevice(device);
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
@@ -503,10 +588,11 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailure_Retroactive) {
 }
 
 TEST_F(PairerBrokerImplTest, StopPairing) {
-  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
-                                             Protocol::kFastPairInitial);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
 
-  pairer_broker_->PairDevice(device);
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
   // Stop Pairing mid pair.
@@ -519,5 +605,144 @@ TEST_F(PairerBrokerImplTest, StopPairing) {
   EXPECT_FALSE(pairer_broker_->IsPairing());
 }
 
+TEST_F(PairerBrokerImplTest, ReuseHandshake_Initial) {
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+
+  // Create a Handshake that to mimic a Handshake already existing.
+  FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
+                                                 base::DoNothing());
+  fake_fast_pair_handshake_->set_completed_successfully(
+      /*completed_successfully=*/true);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
+
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
+
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+  EXPECT_EQ(device_paired_count_, 1);
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()
+      ->TriggerPairingProcedureCompleteCallback();
+  EXPECT_FALSE(pairer_broker_->IsPairing());
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessInitial,
+                FastPairInitializePairingProcessEvent::kHandshakeReused),
+            1);
+}
+
+TEST_F(PairerBrokerImplTest, ReuseHandshake_Subsequent) {
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairSubsequent);
+
+  // Create a Handshake that to mimic a Handshake already existing.
+  FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
+                                                 base::DoNothing());
+  fake_fast_pair_handshake_->set_completed_successfully(
+      /*completed_successfully=*/true);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
+
+  EXPECT_TRUE(pairing_started_);
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
+
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+  EXPECT_EQ(device_paired_count_, 1);
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()
+      ->TriggerPairingProcedureCompleteCallback();
+  EXPECT_FALSE(pairer_broker_->IsPairing());
+  EXPECT_TRUE(device_pair_complete_);
+
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessSubsequent,
+                FastPairInitializePairingProcessEvent::kHandshakeReused),
+            1);
+}
+
+TEST_F(PairerBrokerImplTest, ReuseHandshake_Retroactive) {
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairRetroactive);
+
+  // Create a Handshake that to mimic a Handshake already existing.
+  FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
+                                                 base::DoNothing());
+  fake_fast_pair_handshake_->set_completed_successfully(
+      /*completed_successfully=*/true);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback();
+
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
+
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+  EXPECT_EQ(device_paired_count_, 1);
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()
+      ->TriggerPairingProcedureCompleteCallback();
+  EXPECT_FALSE(pairer_broker_->IsPairing());
+
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessRetroactive,
+                FastPairInitializePairingProcessEvent::kHandshakeReused),
+            1);
+}
+
+TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Initial) {
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  EXPECT_FALSE(pairer_broker_->IsPairing());
+
+  EXPECT_EQ(device_paired_count_, 0);
+  EXPECT_EQ(pair_failure_count_, 1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessFailureReasonInitial,
+                PairFailure::kCreateGattConnection),
+            1);
+}
+
+TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Subsequent) {
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairSubsequent);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  EXPECT_FALSE(pairer_broker_->IsPairing());
+
+  EXPECT_EQ(device_paired_count_, 0);
+  EXPECT_EQ(pair_failure_count_, 1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessFailureReasonSubsequent,
+                PairFailure::kCreateGattConnection),
+            1);
+}
+
+TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Retroactive) {
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairRetroactive);
+  pairer_broker_->PairDevice(device_);
+  fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  EXPECT_FALSE(pairer_broker_->IsPairing());
+
+  EXPECT_EQ(device_paired_count_, 0);
+  EXPECT_EQ(pair_failure_count_, 1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kInitializePairingProcessFailureReasonRetroactive,
+                PairFailure::kCreateGattConnection),
+            1);
+}
 }  // namespace quick_pair
 }  // namespace ash
