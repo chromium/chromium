@@ -79,6 +79,29 @@ class CodeColumn<T> extends ValueColumn<T, string> {
   }
 }
 
+class ListColumn<T, V> extends ValueColumn<T, V[]> {
+  constructor(header: string, getValue: (p: T) => V[]) {
+    super(header, getValue, /*comparable=*/ false);
+  }
+
+  override render(td: HTMLElement, row: T) {
+    const values = this.getValue(row);
+    if (values.length === 0) {
+      return;
+    }
+
+    const ul = td.ownerDocument.createElement('ul');
+
+    values.forEach(value => {
+      const li = td.ownerDocument.createElement('li');
+      li.innerText = `${value}`;
+      ul.appendChild(li);
+    });
+
+    td.appendChild(ul);
+  }
+}
+
 function renderDL<T>(td: HTMLElement, row: T, cols: Array<Column<T>>) {
   const dl = td.ownerDocument.createElement('dl');
 
@@ -236,11 +259,11 @@ class Source {
   filterData: string;
   aggregationKeys: string;
   debugKey: string;
-  dedupKeys: string;
+  dedupKeys: bigint[];
   priority: bigint;
   status: string;
   aggregatableBudgetConsumed: bigint;
-  aggregatableDedupKeys: string;
+  aggregatableDedupKeys: bigint[];
   debugReportingEnabled: string;
 
   constructor(mojo: WebUISource) {
@@ -267,9 +290,9 @@ class Source {
       this.debugKey = '';
     }
 
-    this.dedupKeys = mojo.dedupKeys.join(', ');
+    this.dedupKeys = mojo.dedupKeys;
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
-    this.aggregatableDedupKeys = mojo.aggregatableDedupKeys.join(', ');
+    this.aggregatableDedupKeys = mojo.aggregatableDedupKeys;
     this.status = attributabilityToText(mojo.attributability);
     this.debugReportingEnabled = sourceDebugReportingToText(mojo.debugReportingEnabled);
   }
@@ -307,8 +330,8 @@ class SourceTableModel extends TableModel<Source> {
               'Aggregatable Budget Consumed',
               (e) => `${e.aggregatableBudgetConsumed} / ${BUDGET_PER_SOURCE}`),
           new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
-          new ValueColumn<Source, string>('Dedup Keys', (e) => e.dedupKeys),
-          new ValueColumn<Source, string>(
+          new ListColumn<Source, bigint>('Dedup Keys', (e) => e.dedupKeys),
+          new ListColumn<Source, bigint>(
               'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),
           new ValueColumn<Source, string>(
               'Verbose Debug Reporting', (e) => e.debugReportingEnabled),

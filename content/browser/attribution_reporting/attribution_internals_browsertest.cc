@@ -323,9 +323,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[1].children[14]?.innerText === '' &&
           table.children[4].children[14]?.innerText === 'Cleared (was 987)' &&
           table.children[0].children[15]?.innerText === '' &&
-          table.children[1].children[15]?.innerText === '13, 17' &&
+          table.children[1].children[15]?.children[0]?.children[0]?.innerText === '13' &&
+          table.children[1].children[15]?.children[0]?.children[1]?.innerText === '17' &&
           table.children[0].children[16]?.innerText === '' &&
-          table.children[1].children[16]?.innerText === '14, 18' &&
+          table.children[1].children[16]?.children[0]?.children[0]?.innerText === '14' &&
+          table.children[1].children[16]?.children[0]?.children[1]?.innerText === '18' &&
           table.children[0].children[1]?.innerText === 'Unattributable: noised' &&
           table.children[1].children[1]?.innerText === 'Attributable' &&
           table.children[2].children[1]?.innerText === 'Attributable: reached event-level attribution limit' &&
