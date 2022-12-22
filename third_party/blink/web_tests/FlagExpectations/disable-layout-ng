@@ -351,6 +351,8 @@ crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-094.html 
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-095.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-096.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-099.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-105.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-106.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/overflow-clip-000.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/overflow-clip-001.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/overflow-clip-010.html [ Failure ]

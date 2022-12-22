@@ -157,7 +157,8 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
             writing_direction);
     NGLayoutOverflowCalculator calculator(
         To<NGBlockNode>(builder->node_),
-        /* is_css_box */ !builder->IsFragmentainerBoxType(), borders, scrollbar,
+        /* is_css_box */ !builder->IsFragmentainerBoxType(),
+        builder->ConstraintSpace().HasBlockFragmentation(), borders, scrollbar,
         padding, physical_size, writing_direction);
 
     if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
