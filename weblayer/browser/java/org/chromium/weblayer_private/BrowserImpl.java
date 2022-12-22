@@ -362,11 +362,13 @@ public class BrowserImpl extends IBrowser.Stub {
     public void shutdown() {
         StrictModeWorkaround.apply();
         mInDestroy = true;
+
+        BrowserImplJni.get().prepareForShutdown(mNativeBrowser);
+
         for (Object tab : getTabs()) {
             destroyTabImpl((TabImpl) tab);
         }
         mBrowserFragmentImpl.shutdown();
-
         BrowserImplJni.get().deleteBrowser(mNativeBrowser);
 
         mVisibleSecurityStateObservers.clear();
