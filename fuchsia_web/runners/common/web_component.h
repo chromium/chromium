@@ -17,6 +17,7 @@
 
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/startup_context.h"
+#include "base/time/time.h"
 #include "fuchsia_web/runners/common/modular/lifecycle_impl.h"
 #include "url/gurl.h"
 
@@ -63,11 +64,9 @@ class WebComponent : public fuchsia::sys::ComponentController,
   void LoadUrl(const GURL& url,
                std::vector<fuchsia::net::http::Header> extra_headers);
 
+ protected:
   fuchsia::web::Frame* frame() const { return frame_.get(); }
 
-  WebContentRunner* runner() const { return runner_; }
-
- protected:
   // Returns the component's startup context (e.g. incoming services, public
   // service directory, etc).
   base::StartupContext* startup_context() const {
@@ -96,12 +95,16 @@ class WebComponent : public fuchsia::sys::ComponentController,
       fuchsia::web::NavigationState change,
       OnNavigationStateChangedCallback callback) override;
 
-  // Reports the supplied exit-code and reason to the |controller_binding_| and
-  // requests that the |runner_| delete this component. The EXITED |reason| is
-  // used to indicate Frame disconnection, in which case the |exit_code| is set
-  // to the status reported by the FramePtr's error handler.
+  // Reports the supplied exit-code and reason to the `controller_binding_` and
+  // requests that the `runner_` delete this component.
+  // `reason` should be set to EXITED for expected terminations, in which case
+  // `exit_code` should be set to a `zx_status_t` value, e.g. the status
+  // reported by the error-handler for the component's `Frame`.
   virtual void DestroyComponent(int64_t exit_code,
                                 fuchsia::sys::TerminationReason reason);
+
+  // Invokes `Close()` on `frame_` with the specified `timeout`.
+  void CloseFrameWithTimeout(base::TimeDelta timeout);
 
  private:
   // Optional name with which to tag console log output from the Frame.

@@ -8,6 +8,8 @@
 #include <fuchsia/io/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
+#include <lib/fidl/cpp/interface_ptr_set.h>
+
 #include <memory>
 #include <set>
 #include <vector>
@@ -15,6 +17,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/time/time.h"
 
 class WebComponent;
 
@@ -98,11 +101,10 @@ class WebContentRunner : public fuchsia::sys::Runner {
   // to be asynchronously torn-down.
   void DestroyWebContext();
 
-  // TODO(https://crbug.com/1065707): Remove this once capability routing for
-  // the fuchsia.legacymetrics.Provider service is properly set up.
-  // Returns a pointer to any currently running component, or nullptr if no
-  // components are currently running.
-  WebComponent* GetAnyComponent();
+  // Signals to the `Frame` to close the page within the specified `timeout`,
+  // retaining the channel until it closes itself.
+  void CloseFrameWithTimeout(fuchsia::web::FramePtr frame,
+                             base::TimeDelta timeout);
 
  private:
   // Ensures that there is a web_instance Component running, and connects
@@ -123,6 +125,10 @@ class WebContentRunner : public fuchsia::sys::Runner {
   fuchsia::io::DirectoryHandle web_instance_services_;
   std::set<std::unique_ptr<WebComponent>, base::UniquePtrComparator>
       components_;
+
+  // Retains `Frame`s belonging to components for which `CloseFrameWithTimeout`
+  // was called, to allow them to out-live their owning component.
+  fidl::InterfacePtrSet<fuchsia::web::Frame> closing_frames_;
 
   base::OnceClosure on_empty_callback_;
 };

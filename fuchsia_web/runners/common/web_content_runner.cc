@@ -111,13 +111,6 @@ void WebContentRunner::StartComponent(
   RegisterComponent(std::move(component));
 }
 
-WebComponent* WebContentRunner::GetAnyComponent() {
-  if (components_.empty())
-    return nullptr;
-
-  return components_.begin()->get();
-}
-
 void WebContentRunner::DestroyComponent(WebComponent* component) {
   components_.erase(components_.find(component));
   if (components_.empty() && on_empty_callback_)
@@ -136,6 +129,15 @@ void WebContentRunner::SetOnEmptyCallback(base::OnceClosure on_empty) {
 void WebContentRunner::DestroyWebContext() {
   DCHECK(get_web_instance_config_callback_);
   context_ = nullptr;
+}
+
+void WebContentRunner::CloseFrameWithTimeout(fuchsia::web::FramePtr frame,
+                                             base::TimeDelta timeout) {
+  // Signal `frame` to close within the desired `timeout`, and store it to
+  // `closing_frames_` which will retain it until it closes.
+  frame->Close(std::move(
+      fuchsia::web::FrameCloseRequest().set_timeout(timeout.ToZxDuration())));
+  closing_frames_.AddInterfacePtr(std::move(frame));
 }
 
 void WebContentRunner::EnsureWebInstanceAndContext() {

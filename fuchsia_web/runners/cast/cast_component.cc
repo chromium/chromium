@@ -91,21 +91,6 @@ CastComponent::CastComponent(base::StringPiece debug_name,
 
 CastComponent::~CastComponent() = default;
 
-bool CastComponent::HasWebPermission(
-    fuchsia::web::PermissionType permission_type) const {
-  if (!application_config_.has_permissions()) {
-    return false;
-  }
-
-  for (auto& permission : application_config_.permissions()) {
-    if (permission.has_type() && permission.type() == permission_type) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 void CastComponent::StartComponent() {
   if (application_config_.has_enable_remote_debugging() &&
       application_config_.enable_remote_debugging()) {
@@ -221,6 +206,14 @@ void CastComponent::DestroyComponent(int64_t exit_code,
   api_bindings_client_->DetachFromFrame(frame());
   connector_->DetachFromFrame();
 
+  // If the `application_config_` specifies that the web content should be
+  // granted an extended shutdown delay, then use `CloseFrameWithTimeout()` to
+  // close it before tearing down the component.
+  if (application_config_.has_shutdown_delay()) {
+    CloseFrameWithTimeout(
+        base::TimeDelta::FromZxDuration(application_config_.shutdown_delay()));
+  }
+
   WebComponent::DestroyComponent(exit_code, reason);
 }
 
@@ -294,12 +287,20 @@ void CastComponent::CreateView2(fuchsia::ui::app::CreateView2Args view_args) {
 }
 
 void CastComponent::Kill() {
-  // Signal normal termination, since the caller requested it.
+  // The Component Framework has requested forcible teardown, so immediately
+  // destroy this component.
   DestroyComponent(ZX_OK, fuchsia::sys::TerminationReason::EXITED);
 }
 
 void CastComponent::Stop() {
-  Kill();
+  // The Component Framework has requested graceful teardown, so request that
+  // the `Frame` close the page. The framework typically allows components
+  // several seconds to complete teardown, before forcibly `Kill()`ing them.
+  // Using a timeout of 1 minute here effectively ensures that the content
+  // has until the framework timeout expires, in which to teardown.
+  constexpr base::TimeDelta kStopTimeout = base::Minutes(1u);
+  frame()->Close(std::move(fuchsia::web::FrameCloseRequest().set_timeout(
+      kStopTimeout.ToZxDuration())));
 }
 
 void CastComponent::OnZxHandleSignalled(zx_handle_t handle,

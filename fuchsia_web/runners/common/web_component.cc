@@ -137,8 +137,9 @@ void WebComponent::LoadUrl(
 }
 
 void WebComponent::Kill() {
-  // Signal normal termination, since the caller requested it.
-  DestroyComponent(ZX_OK, fuchsia::sys::TerminationReason::EXITED);
+  // Close the web content, allowing the `frame_` implementation to use its
+  // default timeout.
+  frame_->Close({});
 }
 
 void WebComponent::Detach() {
@@ -217,5 +218,13 @@ void WebComponent::DestroyComponent(int64_t exit_code,
 
   termination_reason_ = reason;
   termination_exit_code_ = exit_code;
+
   runner_->DestroyComponent(this);
+  // `this` is no longer valid.
+}
+
+void WebComponent::CloseFrameWithTimeout(base::TimeDelta timeout) {
+  if (frame_) {
+    runner_->CloseFrameWithTimeout(std::move(frame_), timeout);
+  }
 }

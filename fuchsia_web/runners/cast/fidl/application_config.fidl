@@ -52,9 +52,11 @@ type ApplicationConfig = resource table {
     /// [`fuchsia.media/AudioConsumer`].
     11: audio_renderer_usage fuchsia.media.AudioRenderUsage;
 
-    /// If set, the application's forceful termination is delayed by
-    /// the duration given. This delay will take precedence over any
-    /// delay implemented by the application.
+    /// Optionally specifies an amount of time to grant to the Cast activity's
+    /// web content to perform teardown tasks, in addition to the time permitted
+    /// for the component to stop. Setting this value therefore allows the
+    /// application's web content to out-live the component itself, for up to
+    /// the specified duration.
     12: shutdown_delay zx.duration;
 };
 

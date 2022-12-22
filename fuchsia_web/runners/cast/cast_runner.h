@@ -143,7 +143,7 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
 
   const std::unique_ptr<base::FilteredServiceDirectory> isolated_services_;
 
-  // Holds fuchsia.web.Contexts used to host isolated components.
+  // Holds `fuchsia.web.Context`s used to host isolated components.
   base::flat_set<std::unique_ptr<WebContentRunner>, base::UniquePtrComparator>
       isolated_contexts_;
 

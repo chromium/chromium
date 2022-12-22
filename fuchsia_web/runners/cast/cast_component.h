@@ -59,9 +59,12 @@ class CastComponent final
     absl::optional<fuchsia::web::FrameMediaSettings> media_settings;
   };
 
-  // See WebComponent documentation for details of |debug_name| and |runner|.
-  // |params| provides the Cast application configuration to use.
-  // |is_headless| must match the headless setting of the specfied |runner|, to
+  // See WebComponent documentation for details of `debug_name` and `runner`.
+  // `debug_name` will be set on the underlying `Frame`, for use e.g. in log
+  //   tagging.
+  // `runner` must be non-null, and out-live `this`.
+  // `params` provides the Cast application configuration to use.
+  // `is_headless` must match the headless setting of the specified `runner`, to
   //   have CreateView() operations trigger enabling & disabling of off-screen
   //   rendering.
   CastComponent(base::StringPiece debug_name,
@@ -73,8 +76,6 @@ class CastComponent final
   CastComponent& operator=(const CastComponent&) = delete;
 
   ~CastComponent() override;
-
-  bool HasWebPermission(fuchsia::web::PermissionType permission_type) const;
 
   // WebComponent overrides.
   void StartComponent() override;
