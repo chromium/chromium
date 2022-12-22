@@ -150,21 +150,19 @@ bool DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
   // Add the routine section for the system category.
   log_pieces.push_back(GetRoutineResultsString(system_routines));
 
-  if (features::IsNetworkingInDiagnosticsAppEnabled()) {
-    // Add networking category.
-    log_pieces.push_back(kNetworkingLogSectionHeader);
+  // Add networking category.
+  log_pieces.push_back(kNetworkingLogSectionHeader);
 
-    // Add the network info section.
-    log_pieces.push_back(networking_log_->GetNetworkInfo());
+  // Add the network info section.
+  log_pieces.push_back(networking_log_->GetNetworkInfo());
 
-    // Add the routine section for the network category.
-    const std::string network_routines = routine_log_->GetContentsForCategory(
-        RoutineLog::RoutineCategory::kNetwork);
-    log_pieces.push_back(GetRoutineResultsString(network_routines));
+  // Add the routine section for the network category.
+  const std::string network_routines = routine_log_->GetContentsForCategory(
+      RoutineLog::RoutineCategory::kNetwork);
+  log_pieces.push_back(GetRoutineResultsString(network_routines));
 
-    // Add the network events section.
-    log_pieces.push_back(networking_log_->GetNetworkEvents());
-  }
+  // Add the network events section.
+  log_pieces.push_back(networking_log_->GetNetworkEvents());
 
   if (features::IsInputInDiagnosticsAppEnabled()) {
     std::string input_log_contents = keyboard_input_log_->GetLogContents();

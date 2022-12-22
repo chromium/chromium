@@ -27,11 +27,8 @@ DiagnosticsManager::DiagnosticsManager(SessionLogHandler* session_log_handler,
         DiagnosticsLogController::Get()->GetTelemetryLog());
     system_routine_controller_ = std::make_unique<SystemRoutineController>(
         DiagnosticsLogController::Get()->GetRoutineLog());
-
-    if (features::IsNetworkingInDiagnosticsAppEnabled()) {
-      network_health_provider_ = std::make_unique<NetworkHealthProvider>(
-          DiagnosticsLogController::Get()->GetNetworkingLog());
-    }
+    network_health_provider_ = std::make_unique<NetworkHealthProvider>(
+        DiagnosticsLogController::Get()->GetNetworkingLog());
   } else {
     // TODO(b/226574520): Remove else block as part of DiagnosticsLogController
     // flag clean up.
@@ -39,18 +36,14 @@ DiagnosticsManager::DiagnosticsManager(SessionLogHandler* session_log_handler,
         session_log_handler->GetTelemetryLog());
     system_routine_controller_ = std::make_unique<SystemRoutineController>(
         session_log_handler->GetRoutineLog());
-
-    if (features::IsNetworkingInDiagnosticsAppEnabled()) {
-      network_health_provider_ = std::make_unique<NetworkHealthProvider>(
-          session_log_handler->GetNetworkingLog());
-    }
+    network_health_provider_ = std::make_unique<NetworkHealthProvider>(
+        session_log_handler->GetNetworkingLog());
   }
 }
 
 DiagnosticsManager::~DiagnosticsManager() = default;
 
 NetworkHealthProvider* DiagnosticsManager::GetNetworkHealthProvider() const {
-  DCHECK(features::IsNetworkingInDiagnosticsAppEnabled());
   return network_health_provider_.get();
 }
 

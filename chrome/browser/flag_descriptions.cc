@@ -5281,11 +5281,6 @@ const char kEcheSWACheckAndroidNetworkInfoDescription[] =
     "Allows CrOS to analyze Android network information to provide more "
     "context on connection errors";
 
-const char kEnableNetworkingInDiagnosticsAppName[] =
-    "Enable networking cards in the Diagnostics App";
-const char kEnableNetworkingInDiagnosticsAppDescription[] =
-    "Enable networking cards in the Diagnostics App";
-
 const char kEnableOAuthIppName[] =
     "Enable OAuth when printing via the IPP protocol";
 const char kEnableOAuthIppDescription[] =

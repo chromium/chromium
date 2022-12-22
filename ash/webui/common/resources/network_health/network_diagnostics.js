@@ -5,7 +5,6 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './routine_group.js';
 
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {ArcDnsResolutionProblem, ArcHttpProblem, ArcPingProblem, CaptivePortalProblem, DnsLatencyProblem, DnsResolutionProblem, DnsResolverPresentProblem, GatewayCanBePingedProblem, HasSecureWiFiConnectionProblem, HttpFirewallProblem, HttpsFirewallProblem, HttpsLatencyProblem, RoutineProblems, RoutineType, RoutineVerdict, SignalStrengthProblem, VideoConferencingProblem} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
@@ -48,14 +47,6 @@ Polymer({
   ],
 
   properties: {
-    /** @private */
-    areArcNetworkingRoutinesEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableArcNetworkDiagnostics');
-      },
-    },
-
     /**
      * List of Diagnostics Routines
      * @private {!Array<!Routine>}
@@ -166,9 +157,7 @@ Polymer({
               },
             ],
           },
-        ];
-        if (this.areArcNetworkingRoutinesEnabled_) {
-          routineGroups.push({
+          {
             group: RoutineGroup.ARC,
             routines: [
               {
@@ -188,8 +177,8 @@ Polymer({
                     getNetworkDiagnosticsService().runArcDnsResolution(),
               },
             ],
-          });
-        }
+          },
+        ];
         const routines = [];
 
         for (const group of routineGroups) {

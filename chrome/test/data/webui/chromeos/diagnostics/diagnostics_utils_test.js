@@ -9,8 +9,6 @@ import {convertKibToGibDecimalString, getNetworkCardTitle, getRoutineGroups, get
 import {NetworkType} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {RoutineType} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('diagnosticsUtilsTestSuite', function() {
@@ -65,9 +63,7 @@ suite('diagnosticsUtilsTestSuite', function() {
   });
 
   test('AllRoutineGroupsPresent', () => {
-    loadTimeData.overrideValues({enableArcNetworkDiagnostics: true});
-    const isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
-    const routineGroups = getRoutineGroups(NetworkType.kWiFi, isArcEnabled);
+    const routineGroups = getRoutineGroups(NetworkType.kWiFi);
     const [
       localNetworkGroup,
        nameResolutionGroup,
@@ -93,26 +89,11 @@ suite('diagnosticsUtilsTestSuite', function() {
   });
 
   test('NetworkTypeIsNotWiFi', () => {
-    const isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
-    const routineGroups = getRoutineGroups(NetworkType.kEthernet, isArcEnabled);
+    const routineGroups = getRoutineGroups(NetworkType.kEthernet);
     // WiFi group should be missing.
     assertEquals(routineGroups.length, 3);
     const groupNames = routineGroups.map(group => group.groupName);
     assertFalse(groupNames.includes('wifiGroupLabel'));
-  });
-
-  test('ArcRoutinesDisabled', () => {
-    loadTimeData.overrideValues({enableArcNetworkDiagnostics: false});
-    const isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
-    const routineGroups = getRoutineGroups(NetworkType.kEthernet, isArcEnabled);
-    const [localNetworkGroup, nameResolutionGroup, internetConnectivityGroup] =
-        routineGroups;
-    assertFalse(
-        nameResolutionGroup.routines.includes(RoutineType.kArcDnsResolution));
-
-    assertFalse(localNetworkGroup.routines.includes(RoutineType.kArcPing));
-    assertFalse(
-        internetConnectivityGroup.routines.includes(RoutineType.kArcHttp));
   });
 
   test('GetNetworkCardTitle', () => {

@@ -137,7 +137,6 @@ suite('systemPageTestSuite', function() {
             document.createElement('system-page'));
     assertTrue(!!page);
     document.body.appendChild(page);
-    page.isNetworkingEnabled = false;
     return flushTasks();
   }
 
@@ -315,73 +314,6 @@ suite('systemPageTestSuite', function() {
         .then(() => changeLoggedInState(/* isLoggedIn */ (true)))
         .then(() => assertTrue(isVisible(getSessionLogButton())));
   });
-
-  // System page is only responsible for banner display when in stand-alone
-  // view.
-  if (!window.loadTimeData.getBoolean('isNetworkingEnabled')) {
-    test('RunningCpuTestsShowsBanner', () => {
-      /** @type {?RoutineSectionElement} */
-      let routineSection;
-      /** @type {!Array<!RoutineType>} */
-      const routines = [
-        RoutineType.kCpuCache,
-      ];
-      routineController.setFakeStandardRoutineResult(
-          RoutineType.kCpuCache, StandardRoutineResult.kTestPassed);
-      return initializeSystemPage(
-                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-          .then(() => {
-            routineSection = dx_utils.getRoutineSection(
-                page.shadowRoot.querySelector('cpu-card'));
-            routineSection.routines = routines;
-            assertFalse(isVisible(getCautionBanner()));
-            return flushTasks();
-          })
-          .then(() => {
-            dx_utils.getRunTestsButtonFromSection(routineSection).click();
-            return flushTasks();
-          })
-          .then(() => {
-            assertTrue(isVisible(getCautionBanner()));
-            return routineController.resolveRoutineForTesting();
-          })
-          .then(() => flushTasks())
-          .then(() => assertFalse(isVisible(getCautionBanner())));
-    });
-
-    test('RunningMemoryTestsShowsBanner', () => {
-      /** @type {?RoutineSectionElement} */
-      let routineSection;
-      /** @type {!Array<!RoutineType>} */
-      const routines = [RoutineType.kMemory];
-      routineController.setFakeStandardRoutineResult(
-          RoutineType.kMemory, StandardRoutineResult.kTestPassed);
-      return initializeSystemPage(
-                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-          .then(() => {
-            routineSection = dx_utils.getRoutineSection(
-                page.shadowRoot.querySelector('memory-card'));
-            routineSection.routines = routines;
-            assertFalse(isVisible(getCautionBanner()));
-            return flushTasks();
-          })
-          .then(() => {
-            dx_utils.getRunTestsButtonFromSection(routineSection).click();
-            return flushTasks();
-          })
-          .then(() => {
-            dx_utils.assertElementContainsText(
-                page.shadowRoot.querySelector('#banner > #bannerMsg'),
-                loadTimeData.getString('memoryBannerMessage'));
-            assertTrue(isVisible(getCautionBanner()));
-            return routineController.resolveRoutineForTesting();
-          })
-          .then(() => flushTasks())
-          .then(() => assertFalse(isVisible(getCautionBanner())));
-    });
-  }
 
   test('RecordNavigationCalled', () => {
     return initializeSystemPage(

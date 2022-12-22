@@ -20,8 +20,6 @@
     routines=
         "[[getRoutineGroup_(routines_.*, RoutineGroup_.GOOGLE_SERVICES)]]">
 </routine-group>
-<template is="dom-if" if="[[areArcNetworkingRoutinesEnabled_]]" restamp>
-    <routine-group  name="[[i18n('NetworkDiagnosticsArcGroup')]]"
-        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.ARC)]]">
-    </routine-group>
-</template>
+<routine-group  name="[[i18n('NetworkDiagnosticsArcGroup')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.ARC)]]">
+</routine-group>

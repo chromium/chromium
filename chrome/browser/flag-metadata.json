@@ -2671,11 +2671,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-networking-in-diagnostics-app",
-    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "enable-neural-palm-adaptive-hold",
     "owners": [ "robsc", "napper", "alanlxl" ],
     "expiry_milestone": 130

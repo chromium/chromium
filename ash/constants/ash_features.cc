@@ -756,11 +756,6 @@ BASE_FEATURE(kEnableLogControllerForDiagnosticsApp,
              "EnableLogControllerForDiagnosticsApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the networking cards will be shown in the diagnostics app.
-BASE_FEATURE(kEnableNetworkingInDiagnosticsApp,
-             "EnableNetworkingInDiagnosticsApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables OAuth support when printing via the IPP protocol.
 BASE_FEATURE(kEnableOAuthIpp,
              "EnableOAuthIpp",
@@ -2313,10 +2308,6 @@ bool IsArcInputOverlayAlphaV2Enabled() {
   return base::FeatureList::IsEnabled(kArcInputOverlayAlphaV2);
 }
 
-bool IsArcNetworkDiagnosticsButtonEnabled() {
-  return IsNetworkingInDiagnosticsAppEnabled();
-}
-
 bool IsAssistantNativeIconsEnabled() {
   return base::FeatureList::IsEnabled(kAssistantNativeIcons);
 }
@@ -2805,10 +2796,6 @@ bool IsEcheLauncherListViewEnabled() {
 
 bool IsNearbyKeepAliveFixEnabled() {
   return base::FeatureList::IsEnabled(kNearbyKeepAliveFix);
-}
-
-bool IsNetworkingInDiagnosticsAppEnabled() {
-  return base::FeatureList::IsEnabled(kEnableNetworkingInDiagnosticsApp);
 }
 
 bool IsOAuthIppEnabled() {

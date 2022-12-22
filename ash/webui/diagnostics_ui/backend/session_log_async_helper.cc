@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/system/diagnostics/routine_log.h"
 #include "ash/system/diagnostics/telemetry_log.h"
@@ -67,20 +66,20 @@ bool SessionLogAsyncHelper::CreateSessionLogOnBlockingPool(
   // Add the routine section for the system category.
   pieces.push_back(GetRoutineResultsString(system_routines));
 
-  if (features::IsNetworkingInDiagnosticsAppEnabled()) {
-    // Add networking category.
-    pieces.push_back(kNetworkingLogSectionHeader);
+  // Add networking category.
+  pieces.push_back(kNetworkingLogSectionHeader);
 
-    // Add the network info section.
-    if (networking_log)
-      pieces.push_back(networking_log->GetNetworkInfo());
+  // Add the network info section.
+  if (networking_log) {
+    pieces.push_back(networking_log->GetNetworkInfo());
+  }
 
-    // Add the routine section for the network category.
-    pieces.push_back(GetRoutineResultsString(network_routines));
+  // Add the routine section for the network category.
+  pieces.push_back(GetRoutineResultsString(network_routines));
 
-    // Add the network events section.
-    if (networking_log)
-      pieces.push_back(networking_log->GetNetworkEvents());
+  // Add the network events section.
+  if (networking_log) {
+    pieces.push_back(networking_log->GetNetworkEvents());
   }
 
   return base::WriteFile(file_path, base::JoinString(pieces, "\n"));

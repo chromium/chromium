@@ -11,7 +11,6 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isNavEnabled} from './diagnostics_utils.js';
 import {getTemplate} from './realtime_cpu_chart.html.js';
 
 /**
@@ -187,9 +186,8 @@ export class RealtimeCpuChartElement extends RealtimeCpuChartElementBase {
   updateChartWidth_() {
     // parseFloat() is used to convert the string returned by
     // getComputedStyleValue() into a number ("642px" --> 642).
-    const chartVar = isNavEnabled() ? '--chart-width-nav' : '--chart-width';
-    this.width_ =
-        parseFloat(window.getComputedStyle(this).getPropertyValue(chartVar));
+    this.width_ = parseFloat(
+        window.getComputedStyle(this).getPropertyValue('--chart-width-nav'));
   }
 
   /**

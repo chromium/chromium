@@ -6668,11 +6668,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableHostnameSettingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableHostnameSetting)},
 
-    {"enable-networking-in-diagnostics-app",
-     flag_descriptions::kEnableNetworkingInDiagnosticsAppName,
-     flag_descriptions::kEnableNetworkingInDiagnosticsAppDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kEnableNetworkingInDiagnosticsApp)},
-
     {"enable-oauth-ipp", flag_descriptions::kEnableOAuthIppName,
      flag_descriptions::kEnableOAuthIppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableOAuthIpp)},

@@ -378,14 +378,10 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean("isLoggedIn", LoginState::Get()->IsUserLoggedIn());
   source->AddBoolean("isInputEnabled",
                      features::IsInputInDiagnosticsAppEnabled());
-  source->AddBoolean("isNetworkingEnabled",
-                     features::IsNetworkingInDiagnosticsAppEnabled());
   source->AddBoolean("isTouchpadEnabled",
                      features::IsTouchpadInDiagnosticsAppEnabled());
   source->AddBoolean("isTouchscreenEnabled",
                      features::IsTouchscreenInDiagnosticsAppEnabled());
-  source->AddBoolean("enableArcNetworkDiagnostics",
-                     features::IsArcNetworkDiagnosticsButtonEnabled());
 }
 
 void SetUpPluralStringHandler(content::WebUI* web_ui) {
@@ -457,12 +453,10 @@ DiagnosticsDialogUI::~DiagnosticsDialogUI() {
 
 void DiagnosticsDialogUI::BindInterface(
     mojo::PendingReceiver<diagnostics::mojom::NetworkHealthProvider> receiver) {
-  if (features::IsNetworkingInDiagnosticsAppEnabled()) {
-    diagnostics::NetworkHealthProvider* network_health_provider =
-        diagnostics_manager_->GetNetworkHealthProvider();
-    if (network_health_provider) {
-      network_health_provider->BindInterface(std::move(receiver));
-    }
+  diagnostics::NetworkHealthProvider* network_health_provider =
+      diagnostics_manager_->GetNetworkHealthProvider();
+  if (network_health_provider) {
+    network_health_provider->BindInterface(std::move(receiver));
   }
 }
 

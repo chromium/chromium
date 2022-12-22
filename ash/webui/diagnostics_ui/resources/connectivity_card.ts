@@ -9,7 +9,6 @@ import './ip_config_info_drawer.js';
 import './network_info.js';
 import './routine_section.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -135,9 +134,7 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
     this.macAddress_ = network.macAddress || '';
 
     if (this.testSuiteStatus === TestSuiteStatus.NOT_RUNNING) {
-      const isArcEnabled =
-          loadTimeData.getBoolean('enableArcNetworkDiagnostics');
-      this.routineGroups_ = getRoutineGroups(network.type, isArcEnabled);
+      this.routineGroups_ = getRoutineGroups(network.type);
       this.getRoutineSectionElem_().runTests();
     }
 

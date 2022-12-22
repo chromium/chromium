@@ -6,14 +6,11 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
-#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
@@ -1477,8 +1474,6 @@ TEST_F(NetworkHealthProviderTest, ResetReceiverOnBindInterface) {
   // This test simulates a user refreshing the WebUI page. The receiver should
   // be reset before binding the new receiver. Otherwise we would get a DCHECK
   // error from mojo::Receiver
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kEnableNetworkingInDiagnosticsApp);
   mojo::Remote<mojom::NetworkHealthProvider> remote;
   network_health_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
   base::RunLoop().RunUntilIdle();

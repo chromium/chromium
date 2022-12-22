@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
 #include "base/bind.h"
@@ -632,7 +631,6 @@ void NetworkHealthProvider::OnManagedPropertiesReceived(
 
 void NetworkHealthProvider::BindInterface(
     mojo::PendingReceiver<mojom::NetworkHealthProvider> pending_receiver) {
-  DCHECK(features::IsNetworkingInDiagnosticsAppEnabled());
   receiver_.reset();
   receiver_.Bind(std::move(pending_receiver));
 }

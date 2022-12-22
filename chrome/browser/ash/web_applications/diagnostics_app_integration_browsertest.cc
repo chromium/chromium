@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -37,10 +35,7 @@ const size_t kUsedWithSuccess = 2;
 
 class DiagnosticsAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
-  DiagnosticsAppIntegrationTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kEnableNetworkingInDiagnosticsApp);
-  }
+  DiagnosticsAppIntegrationTest() = default;
 
  protected:
   base::HistogramTester histogram_tester_;
@@ -64,9 +59,6 @@ class DiagnosticsAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 
     return params;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that the Diagnostics App installs and launches correctly by running some

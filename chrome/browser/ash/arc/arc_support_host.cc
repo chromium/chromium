@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
@@ -418,9 +417,7 @@ void ArcSupportHost::ShowError(ErrorInfo error_info,
 
   message_args.Set(kErrorMessage, message);
   message_args.Set(kShouldShowSendFeedback, should_show_send_feedback);
-  message_args.Set(kShouldShowNetworkTests,
-                   should_show_run_network_tests &&
-                       ash::features::IsArcNetworkDiagnosticsButtonEnabled());
+  message_args.Set(kShouldShowNetworkTests, should_show_run_network_tests);
   message_host_->SendMessage(message_args);
 }
 

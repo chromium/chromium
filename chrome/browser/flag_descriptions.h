@@ -3023,9 +3023,6 @@ extern const char kEcheSWADisableStunServerDescription[];
 extern const char kEcheSWACheckAndroidNetworkInfoName[];
 extern const char kEcheSWACheckAndroidNetworkInfoDescription[];
 
-extern const char kEnableNetworkingInDiagnosticsAppName[];
-extern const char kEnableNetworkingInDiagnosticsAppDescription[];
-
 extern const char kEnableOAuthIppName[];
 extern const char kEnableOAuthIppDescription[];
 

@@ -4,7 +4,6 @@
 
 #include "ash/webui/network_ui/network_diagnostics_resource_provider.h"
 
-#include "ash/constants/ash_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -156,9 +155,6 @@ struct StringMap {
 
 void AddResources(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddBoolean(
-      "enableArcNetworkDiagnostics",
-      ash::features::IsArcNetworkDiagnosticsButtonEnabled());
 
   for (const auto& resource : kResources)
     html_source->AddResourcePath(resource.name, resource.id);

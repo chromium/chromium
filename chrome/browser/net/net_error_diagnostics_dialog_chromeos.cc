@@ -4,16 +4,13 @@
 
 #include "chrome/browser/net/net_error_diagnostics_dialog.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
-#include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 
 namespace {
 void LaunchDiagnosticsAppAtConnectivityScreen(Profile* profile) {
-  DCHECK(ash::features::IsNetworkingInDiagnosticsAppEnabled());
   std::string diagnostics_connectivity_url = {
       "chrome://diagnostics/?connectivity"};
   ash::SystemAppLaunchParams params;
@@ -33,10 +30,5 @@ void ShowNetworkDiagnosticsDialog(content::WebContents* web_contents,
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  if (ash::features::IsNetworkingInDiagnosticsAppEnabled()) {
-    LaunchDiagnosticsAppAtConnectivityScreen(std::move(profile));
-  } else {
-    ash::LaunchSystemWebAppAsync(
-        profile, ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS);
-  }
+  LaunchDiagnosticsAppAtConnectivityScreen(std::move(profile));
 }

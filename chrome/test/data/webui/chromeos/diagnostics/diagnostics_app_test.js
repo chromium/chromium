@@ -178,60 +178,40 @@ suite('appTestSuite', function() {
     return flushTasks();
   }
 
-  if (window.loadTimeData.getBoolean('isNetworkingEnabled') ||
-      window.loadTimeData.getBoolean('isInputEnabled')) {
-    test('SystemPagePopulated', () => {
-      return initializeDiagnosticsApp(
-                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-          .then(() => {
-            const systemPage =
-                dx_utils.getNavigationViewPanelElement(page, 'system');
-            assertTrue(!!systemPage);
-            assertTrue(isVisible(systemPage));
-            assertFalse(isVisible(getCautionBanner()));
-            assertFalse(isVisible(getBottomNavContentDrawer()));
-            assertTrue(isVisible(getBottomNavContentPanel()));
-            assertTrue(isVisible(getSessionLogButton()));
-          });
-    });
+  test('SystemPagePopulated', () => {
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => {
+          const systemPage =
+              dx_utils.getNavigationViewPanelElement(page, 'system');
+          assertTrue(!!systemPage);
+          assertTrue(isVisible(systemPage));
+          assertFalse(isVisible(getCautionBanner()));
+          assertFalse(isVisible(getBottomNavContentDrawer()));
+          assertTrue(isVisible(getBottomNavContentPanel()));
+          assertTrue(isVisible(getSessionLogButton()));
+        });
+  });
 
-    test('BannerVisibliblityTogglesWithEvents', () => {
-      const bannerMessage = 'Diagnostics Banner Message';
-      return initializeDiagnosticsApp(
-                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-          .then(() => {
-            assertFalse(isVisible(getCautionBanner()));
+  test('BannerVisibliblityTogglesWithEvents', () => {
+    const bannerMessage = 'Diagnostics Banner Message';
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => {
+          assertFalse(isVisible(getCautionBanner()));
 
-            return triggerShowBannerEvent(bannerMessage);
-          })
-          .then(() => {
-            assertTrue(isVisible(getCautionBanner()));
-            dx_utils.assertElementContainsText(
-                getCautionBannerMessage(), bannerMessage);
+          return triggerShowBannerEvent(bannerMessage);
+        })
+        .then(() => {
+          assertTrue(isVisible(getCautionBanner()));
+          dx_utils.assertElementContainsText(
+              getCautionBannerMessage(), bannerMessage);
 
-            return triggerDismissBannerEvent();
-          })
-          .then(() => assertFalse(isVisible(getCautionBanner())));
-    });
+          return triggerDismissBannerEvent();
+        })
+        .then(() => assertFalse(isVisible(getCautionBanner())));
+  });
 
-    test('SaveSessionLogDisabledUntilResolved', () => {
-      return initializeDiagnosticsApp(
-                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-          .then(() => {
-            assertFalse(getSessionLogButton().disabled);
-
-            DiagnosticsBrowserProxy.setSuccess(true);
-            getSessionLogButton().click();
-            assertTrue(getSessionLogButton().disabled);
-
-            return flushTasks();
-          })
-          .then(() => {
-            assertFalse(getSessionLogButton().disabled);
-          });
-    });
-  }
 });

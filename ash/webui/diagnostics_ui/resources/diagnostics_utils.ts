@@ -104,12 +104,12 @@ export function createRoutine(
   return {routine, blocking};
 }
 
-export function getRoutineGroups(
-    type: NetworkType, isArcEnabled: boolean): RoutineGroup[] {
+export function getRoutineGroups(type: NetworkType): RoutineGroup[] {
   const localNetworkGroup = new RoutineGroup(
       [
         createRoutine(RoutineType.kGatewayCanBePinged, false),
         createRoutine(RoutineType.kLanConnectivity, true),
+        createRoutine(RoutineType.kArcPing, false),
       ],
       'localNetworkGroupLabel');
 
@@ -118,6 +118,7 @@ export function getRoutineGroups(
         createRoutine(RoutineType.kDnsResolverPresent, true),
         createRoutine(RoutineType.kDnsResolution, true),
         createRoutine(RoutineType.kDnsLatency, true),
+        createRoutine(RoutineType.kArcDnsResolution, false),
       ],
       'nameResolutionGroupLabel');
 
@@ -133,17 +134,9 @@ export function getRoutineGroups(
         createRoutine(RoutineType.kHttpsFirewall, true),
         createRoutine(RoutineType.kHttpFirewall, true),
         createRoutine(RoutineType.kHttpsLatency, true),
+        createRoutine(RoutineType.kArcHttp, false),
       ],
       'internetConnectivityGroupLabel');
-
-  if (isArcEnabled) {
-    // Add ARC routines to their corresponding groups.
-    nameResolutionGroup.addRoutine(
-        (createRoutine(RoutineType.kArcDnsResolution, false)));
-    localNetworkGroup.addRoutine((createRoutine(RoutineType.kArcPing, false)));
-    internetConnectivityGroup.addRoutine(
-        (createRoutine(RoutineType.kArcHttp, false)));
-  }
 
   const groupsToAdd = type === NetworkType.kWiFi ?
       [wifiGroup, internetConnectivityGroup] :
@@ -185,10 +178,6 @@ export function getSubnetMaskFromRoutingPrefix(prefix: number): string {
   }
 
   return pieces.join('.');
-}
-
-export function isNavEnabled(): boolean {
-  return loadTimeData.getBoolean('isNetworkingEnabled');
 }
 
 
