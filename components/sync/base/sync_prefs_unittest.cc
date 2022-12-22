@@ -139,8 +139,7 @@ TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSynced) {
 
 TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSyncedButPolicyRestricted) {
   ASSERT_TRUE(sync_prefs_->HasKeepEverythingSynced());
-  pref_service_.SetManagedPref(prefs::kSyncPreferences,
-                               std::make_unique<base::Value>(false));
+  pref_service_.SetManagedPref(prefs::kSyncPreferences, base::Value(false));
 
   UserSelectableTypeSet expected_type_set = UserSelectableTypeSet::All();
   expected_type_set.Remove(UserSelectableType::kPreferences);
@@ -164,8 +163,7 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSynced) {
 }
 
 TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSyncedAndPolicyRestricted) {
-  pref_service_.SetManagedPref(prefs::kSyncPreferences,
-                               std::make_unique<base::Value>(false));
+  pref_service_.SetManagedPref(prefs::kSyncPreferences, base::Value(false));
   sync_prefs_->SetSelectedTypes(
       /*keep_everything_synced=*/false,
       /*registered_types=*/UserSelectableTypeSet::All(),
@@ -240,8 +238,7 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
 
 TEST_F(SyncPrefsTest, SelectedOsTypesKeepEverythingSyncedButPolicyRestricted) {
   ASSERT_TRUE(sync_prefs_->HasKeepEverythingSynced());
-  pref_service_.SetManagedPref(prefs::kSyncOsPreferences,
-                               std::make_unique<base::Value>(false));
+  pref_service_.SetManagedPref(prefs::kSyncOsPreferences, base::Value(false));
 
   UserSelectableOsTypeSet expected_type_set = UserSelectableOsTypeSet::All();
   expected_type_set.Remove(UserSelectableOsType::kOsPreferences);
@@ -250,8 +247,7 @@ TEST_F(SyncPrefsTest, SelectedOsTypesKeepEverythingSyncedButPolicyRestricted) {
 
 TEST_F(SyncPrefsTest,
        SelectedOsTypesNotKeepEverythingSyncedAndPolicyRestricted) {
-  pref_service_.SetManagedPref(prefs::kSyncOsPreferences,
-                               std::make_unique<base::Value>(false));
+  pref_service_.SetManagedPref(prefs::kSyncOsPreferences, base::Value(false));
   sync_prefs_->SetSelectedOsTypes(
       /*sync_all_os_types=*/false,
       /*registered_types=*/UserSelectableOsTypeSet::All(),

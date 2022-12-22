@@ -361,8 +361,7 @@ TEST_F(SyncServiceImplTest, SetupInProgress) {
 
 // Verify that disable by enterprise policy works.
 TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInit) {
-  prefs()->SetManagedPref(prefs::kSyncManaged,
-                          std::make_unique<base::Value>(true));
+  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(true));
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
   InitializeForNthSync();
@@ -377,8 +376,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInit) {
 }
 
 TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
-  prefs()->SetManagedPref(prefs::kSyncManaged,
-                          std::make_unique<base::Value>(true));
+  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(true));
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
   InitializeForNthSync();
@@ -393,8 +391,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
 
   // Remove the policy. Sync-the-feature is still disabled, sync-the-transport
   // can run.
-  prefs()->SetManagedPref(prefs::kSyncManaged,
-                          std::make_unique<base::Value>(false));
+  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(false));
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
       service()->GetDisableReasons());
@@ -424,8 +421,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyAfterInit) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
-  prefs()->SetManagedPref(prefs::kSyncManaged,
-                          std::make_unique<base::Value>(true));
+  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(true));
 
   // Sync was disabled due to the policy, setting SyncRequested to false and
   // causing DISABLE_REASON_USER_CHOICE.
@@ -1078,16 +1074,14 @@ TEST_F(SyncServiceImplTest,
 
 // Verify a that local sync mode isn't impacted by sync being disabled.
 TEST_F(SyncServiceImplTest, LocalBackendUnimpactedByPolicy) {
-  prefs()->SetManagedPref(prefs::kSyncManaged,
-                          std::make_unique<base::Value>(false));
+  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(false));
   CreateServiceWithLocalSyncBackend();
   InitializeForNthSync();
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
-  prefs()->SetManagedPref(prefs::kSyncManaged,
-                          std::make_unique<base::Value>(true));
+  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(true));
 
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
@@ -1096,8 +1090,7 @@ TEST_F(SyncServiceImplTest, LocalBackendUnimpactedByPolicy) {
   // Note: If standalone transport is enabled, then setting kSyncManaged to
   // false will immediately start up the engine. Otherwise, the RequestStart
   // call below will trigger it.
-  prefs()->SetManagedPref(prefs::kSyncManaged,
-                          std::make_unique<base::Value>(false));
+  prefs()->SetManagedPref(prefs::kSyncManaged, base::Value(false));
 
   service()->GetUserSettings()->SetSyncRequested(true);
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());

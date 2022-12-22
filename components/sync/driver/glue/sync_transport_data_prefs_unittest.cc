@@ -5,6 +5,7 @@
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -46,42 +47,45 @@ TEST_F(SyncTransportDataPrefsTest, InvalidationVersions) {
 
 TEST_F(SyncTransportDataPrefsTest, MigrateInvalidationVersions) {
   // Set up entries for all data types in the legacy pref.
-  base::Value legacy_invalidation_versions(base::Value::Type::DICTIONARY);
-  legacy_invalidation_versions.SetStringPath("Bookmarks", "11");
-  legacy_invalidation_versions.SetStringPath("Preferences", "12");
-  legacy_invalidation_versions.SetStringPath("Passwords", "13");
-  legacy_invalidation_versions.SetStringPath("Autofill Profiles", "14");
-  legacy_invalidation_versions.SetStringPath("Autofill", "15");
-  legacy_invalidation_versions.SetStringPath("Autofill Wallet", "16");
-  legacy_invalidation_versions.SetStringPath("Autofill Wallet Metadata", "17");
-  legacy_invalidation_versions.SetStringPath("Autofill Wallet Offer", "18");
-  legacy_invalidation_versions.SetStringPath("Themes", "19");
-  legacy_invalidation_versions.SetStringPath("Typed URLs", "20");
-  legacy_invalidation_versions.SetStringPath("Extensions", "21");
-  legacy_invalidation_versions.SetStringPath("Search Engines", "22");
-  legacy_invalidation_versions.SetStringPath("Sessions", "23");
-  legacy_invalidation_versions.SetStringPath("Apps", "24");
-  legacy_invalidation_versions.SetStringPath("App settings", "25");
-  legacy_invalidation_versions.SetStringPath("Extension settings", "26");
-  legacy_invalidation_versions.SetStringPath("History Delete Directives", "27");
-  legacy_invalidation_versions.SetStringPath("Dictionary", "28");
-  legacy_invalidation_versions.SetStringPath("Device Info", "29");
-  legacy_invalidation_versions.SetStringPath("Priority Preferences", "30");
-  legacy_invalidation_versions.SetStringPath("Managed User Settings", "31");
-  legacy_invalidation_versions.SetStringPath("App List", "32");
-  legacy_invalidation_versions.SetStringPath("Arc Package", "33");
-  legacy_invalidation_versions.SetStringPath("Printers", "34");
-  legacy_invalidation_versions.SetStringPath("Reading List", "35");
-  legacy_invalidation_versions.SetStringPath("Send Tab To Self", "36");
-  legacy_invalidation_versions.SetStringPath("Wifi Configurations", "37");
-  legacy_invalidation_versions.SetStringPath("Web Apps", "38");
-  legacy_invalidation_versions.SetStringPath("OS Preferences", "39");
-  legacy_invalidation_versions.SetStringPath("OS Priority Preferences", "40");
-  legacy_invalidation_versions.SetStringPath("Workspace Desk", "41");
-  legacy_invalidation_versions.SetStringPath("Encryption Keys", "42");
-  pref_service_.Set("sync.invalidation_versions", legacy_invalidation_versions);
+  base::Value::Dict legacy_invalidation_versions;
+  legacy_invalidation_versions.SetByDottedPath("Bookmarks", "11");
+  legacy_invalidation_versions.SetByDottedPath("Preferences", "12");
+  legacy_invalidation_versions.SetByDottedPath("Passwords", "13");
+  legacy_invalidation_versions.SetByDottedPath("Autofill Profiles", "14");
+  legacy_invalidation_versions.SetByDottedPath("Autofill", "15");
+  legacy_invalidation_versions.SetByDottedPath("Autofill Wallet", "16");
+  legacy_invalidation_versions.SetByDottedPath("Autofill Wallet Metadata",
+                                               "17");
+  legacy_invalidation_versions.SetByDottedPath("Autofill Wallet Offer", "18");
+  legacy_invalidation_versions.SetByDottedPath("Themes", "19");
+  legacy_invalidation_versions.SetByDottedPath("Typed URLs", "20");
+  legacy_invalidation_versions.SetByDottedPath("Extensions", "21");
+  legacy_invalidation_versions.SetByDottedPath("Search Engines", "22");
+  legacy_invalidation_versions.SetByDottedPath("Sessions", "23");
+  legacy_invalidation_versions.SetByDottedPath("Apps", "24");
+  legacy_invalidation_versions.SetByDottedPath("App settings", "25");
+  legacy_invalidation_versions.SetByDottedPath("Extension settings", "26");
+  legacy_invalidation_versions.SetByDottedPath("History Delete Directives",
+                                               "27");
+  legacy_invalidation_versions.SetByDottedPath("Dictionary", "28");
+  legacy_invalidation_versions.SetByDottedPath("Device Info", "29");
+  legacy_invalidation_versions.SetByDottedPath("Priority Preferences", "30");
+  legacy_invalidation_versions.SetByDottedPath("Managed User Settings", "31");
+  legacy_invalidation_versions.SetByDottedPath("App List", "32");
+  legacy_invalidation_versions.SetByDottedPath("Arc Package", "33");
+  legacy_invalidation_versions.SetByDottedPath("Printers", "34");
+  legacy_invalidation_versions.SetByDottedPath("Reading List", "35");
+  legacy_invalidation_versions.SetByDottedPath("Send Tab To Self", "36");
+  legacy_invalidation_versions.SetByDottedPath("Wifi Configurations", "37");
+  legacy_invalidation_versions.SetByDottedPath("Web Apps", "38");
+  legacy_invalidation_versions.SetByDottedPath("OS Preferences", "39");
+  legacy_invalidation_versions.SetByDottedPath("OS Priority Preferences", "40");
+  legacy_invalidation_versions.SetByDottedPath("Workspace Desk", "41");
+  legacy_invalidation_versions.SetByDottedPath("Encryption Keys", "42");
 
-  const size_t data_type_count = legacy_invalidation_versions.DictSize();
+  const size_t data_type_count = legacy_invalidation_versions.size();
+  pref_service_.SetDict("sync.invalidation_versions",
+                        std::move(legacy_invalidation_versions));
 
   // The legacy pref should not be used by GetInvalidationVersions().
   ASSERT_TRUE(sync_prefs_->GetInvalidationVersions().empty());

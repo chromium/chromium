@@ -22,7 +22,7 @@ TEST_F(ModelTypeTest, ModelTypeToValue) {
   for (int i = 0; i < GetNumModelTypes(); ++i) {
     ModelType model_type = ModelTypeFromInt(i);
     base::ExpectStringValue(ModelTypeToDebugString(model_type),
-                            *ModelTypeToValue(model_type));
+                            ModelTypeToValue(model_type));
   }
 }
 

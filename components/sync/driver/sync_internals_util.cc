@@ -43,11 +43,11 @@ const char kBadStateCSSClass[] = "in_bad_state";
 // 'stat_status'.
 class StatBase {
  public:
-  base::Value ToValue() const {
-    base::Value result(base::Value::Type::DICTIONARY);
-    result.SetKey("stat_name", base::Value(key_));
-    result.SetKey("stat_value", value_.Clone());
-    result.SetKey("stat_status", base::Value(status_));
+  base::Value::Dict ToValue() const {
+    base::Value::Dict result;
+    result.Set("stat_name", base::Value(key_));
+    result.Set("stat_value", value_.Clone());
+    result.Set("stat_status", base::Value(status_));
     return result;
   }
 
@@ -92,14 +92,14 @@ class Section {
     return AddStat(key, std::string(kUninitialized));
   }
 
-  base::Value ToValue() const {
-    base::Value result(base::Value::Type::DICTIONARY);
-    result.SetKey("title", base::Value(title_));
-    base::Value stats(base::Value::Type::LIST);
+  base::Value::Dict ToValue() const {
+    base::Value::Dict result;
+    result.Set("title", base::Value(title_));
+    base::Value::List stats;
     for (const std::unique_ptr<StatBase>& stat : stats_)
       stats.Append(stat->ToValue());
-    result.SetKey("data", std::move(stats));
-    result.SetKey("is_sensitive", base::Value(is_sensitive_));
+    result.Set("data", std::move(stats));
+    result.Set("is_sensitive", base::Value(is_sensitive_));
     return result;
   }
 
@@ -132,8 +132,8 @@ class SectionList {
 
   // If |include_sensitive_data| is true, returns all added sections. Otherwise,
   // omits those added with |is_sensitive| set to true.
-  base::Value ToValue(IncludeSensitiveData include_sensitive_data) const {
-    base::Value result(base::Value::Type::LIST);
+  base::Value::List ToValue(IncludeSensitiveData include_sensitive_data) const {
+    base::Value::List result;
     for (const std::unique_ptr<Section>& section : sections_) {
       if (include_sensitive_data || !section->is_sensitive()) {
         result.Append(section->ToValue());

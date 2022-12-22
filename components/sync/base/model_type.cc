@@ -510,8 +510,8 @@ int ModelTypeToStableIdentifier(ModelType model_type) {
   return static_cast<int>(ModelTypeHistogramValue(model_type)) + 1;
 }
 
-std::unique_ptr<base::Value> ModelTypeToValue(ModelType model_type) {
-  return std::make_unique<base::Value>(ModelTypeToDebugString(model_type));
+base::Value ModelTypeToValue(ModelType model_type) {
+  return base::Value(ModelTypeToDebugString(model_type));
 }
 
 std::string ModelTypeSetToDebugString(ModelTypeSet model_types) {

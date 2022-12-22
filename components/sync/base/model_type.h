@@ -421,7 +421,7 @@ ModelTypeForHistograms ModelTypeHistogramValue(ModelType model_type);
 int ModelTypeToStableIdentifier(ModelType model_type);
 
 // Handles all model types, and not just real ones.
-std::unique_ptr<base::Value> ModelTypeToValue(ModelType model_type);
+base::Value ModelTypeToValue(ModelType model_type);
 
 // Returns the comma-separated string representation of |model_types|.
 std::string ModelTypeSetToDebugString(ModelTypeSet model_types);

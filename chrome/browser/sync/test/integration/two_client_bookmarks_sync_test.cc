@@ -2602,15 +2602,17 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, ManagedBookmarks) {
 
   // Set the ManagedBookmarks policy for the first Profile,
   // which will add one new managed bookmark.
-  base::Value bookmark(base::Value::Type::DICTIONARY);
-  bookmark.SetStringKey("name", "Managed bookmark");
-  bookmark.SetStringKey("url", "youtube.com");
-  base::Value list(base::Value::Type::LIST);
+  base::Value::Dict bookmark;
+  bookmark.Set("name", "Managed bookmark");
+  bookmark.Set("url", "youtube.com");
+  base::Value::List list;
   list.Append(std::move(bookmark));
   policy::PolicyMap policy;
+  // TODO(https://crbug.com/1187001): Migrate PolicyMap::Set() to take a
+  // base::Value::Dict.
   policy.Set(policy::key::kManagedBookmarks, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-             std::move(list), nullptr);
+             base::Value(std::move(list)), nullptr);
   policy_provider_.UpdateChromePolicy(policy);
   base::RunLoop().RunUntilIdle();
 

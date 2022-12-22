@@ -792,14 +792,14 @@ LoopbackServer::GetPermanentSyncEntitiesByModelType(ModelType model_type) {
   return sync_entities;
 }
 
-std::unique_ptr<base::Value::Dict> LoopbackServer::GetEntitiesAsDict() {
+base::Value::Dict LoopbackServer::GetEntitiesAsDictForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto dictionary = std::make_unique<base::Value::Dict>();
+  base::Value::Dict dictionary;
 
   // Initialize an empty Value::List for all ModelTypes.
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
-    dictionary->Set(ModelTypeToDebugString(type), base::Value::List());
+    dictionary.Set(ModelTypeToDebugString(type), base::Value::List());
   }
 
   for (const auto& [id, entity] : entities_) {
@@ -811,9 +811,8 @@ std::unique_ptr<base::Value::Dict> LoopbackServer::GetEntitiesAsDict() {
     }
 
     base::Value::List* list_value =
-        dictionary->FindList(ModelTypeToDebugString(entity->GetModelType()));
-    if (!list_value)
-      return nullptr;
+        dictionary.FindList(ModelTypeToDebugString(entity->GetModelType()));
+    DCHECK(list_value);
 
     // TODO(pvalenzuela): Store more data for each entity so additional
     // verification can be performed. One example of additional verification

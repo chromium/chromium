@@ -23,20 +23,10 @@ namespace fake_server {
 
 namespace {
 
-AssertionResult DictionaryCreationAssertionFailure() {
-  return AssertionFailure() << "FakeServer failed to create an entities "
-                            << "dictionary.";
-}
-
 AssertionResult VerificationCountAssertionFailure(size_t actual_count,
                                                   size_t expected_count) {
   return AssertionFailure() << "Actual count: " << actual_count << "; "
                             << "Expected count: " << expected_count;
-}
-
-AssertionResult UnknownTypeAssertionFailure(const string& model_type) {
-  return AssertionFailure()
-         << "Verification not attempted. Unknown ModelType: " << model_type;
 }
 
 AssertionResult VerifySessionsHierarchyEquality(
@@ -69,19 +59,16 @@ FakeServerVerifier::~FakeServerVerifier() = default;
 AssertionResult FakeServerVerifier::VerifyEntityCountByType(
     size_t expected_count,
     syncer::ModelType model_type) const {
-  std::unique_ptr<base::Value::Dict> entities =
-      fake_server_->GetEntitiesAsDict();
-  if (!entities) {
-    return DictionaryCreationAssertionFailure();
-  }
+  base::Value::Dict entities = fake_server_->GetEntitiesAsDictForTesting();
+
   string model_type_string = ModelTypeToDebugString(model_type);
-  const base::Value::List* entity_list = entities->FindList(model_type_string);
+  const base::Value::List* entity_list = entities.FindList(model_type_string);
   DCHECK(entity_list);
   if (expected_count != entity_list->size()) {
     return VerificationCountAssertionFailure(entity_list->size(),
                                              expected_count)
            << "\n\n"
-           << ConvertFakeServerContentsToString(*entities);
+           << ConvertFakeServerContentsToString(entities);
   }
 
   return AssertionSuccess();
@@ -91,20 +78,14 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
     size_t expected_count,
     syncer::ModelType model_type,
     const string& name) const {
-  std::unique_ptr<base::Value::Dict> entities =
-      fake_server_->GetEntitiesAsDict();
-  if (!entities) {
-    return DictionaryCreationAssertionFailure();
-  }
+  base::Value::Dict entities = fake_server_->GetEntitiesAsDictForTesting();
 
   string model_type_string = ModelTypeToDebugString(model_type);
-  const base::Value::List* entity_list = entities->FindList(model_type_string);
+  const base::Value::List* entity_list = entities.FindList(model_type_string);
+  DCHECK(entity_list);
+
   size_t actual_count = 0;
   base::Value name_value(name);
-
-  if (!entity_list) {
-    return UnknownTypeAssertionFailure(model_type_string);
-  }
 
   for (auto& entity : *entity_list) {
     if (name_value == entity)
@@ -114,7 +95,7 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
   if (actual_count != expected_count) {
     return VerificationCountAssertionFailure(actual_count, expected_count)
            << "; Name: " << name << "\n\n"
-           << ConvertFakeServerContentsToString(*entities);
+           << ConvertFakeServerContentsToString(entities);
   }
 
   return AssertionSuccess();
