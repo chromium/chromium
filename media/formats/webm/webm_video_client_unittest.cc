@@ -162,6 +162,31 @@ TEST_P(WebMVideoClientTest, InitializeConfigVP9Profiles) {
       << expected_config.AsHumanReadableString() << ")";
 }
 
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+TEST_F(WebMVideoClientTest, InitializeConfigAV1Profile) {
+  const std::string codec_id = "V_AV1";
+  const auto expected_profile = AV1PROFILE_PROFILE_HIGH;
+  const std::vector<uint8_t> codec_private{0x81, 0x20, 0x00, 0x00, 0x0a, 0x0a,
+                                           0x20, 0x00, 0x00, 0x03, 0xbf, 0x7f,
+                                           0x7b, 0xff, 0xf3, 0x04};
+
+  VideoDecoderConfig config;
+  EXPECT_TRUE(webm_video_client_.InitializeConfig(codec_id, codec_private,
+                                                  EncryptionScheme(), &config));
+
+  VideoDecoderConfig expected_config(
+      VideoCodec::kAV1, expected_profile,
+      VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace::REC709(),
+      kNoTransformation, kCodedSize, gfx::Rect(kCodedSize), kCodedSize,
+      codec_private, EncryptionScheme::kUnencrypted);
+
+  EXPECT_TRUE(config.Matches(expected_config))
+      << "Config (" << config.AsHumanReadableString()
+      << ") does not match expected ("
+      << expected_config.AsHumanReadableString() << ")";
+}
+#endif
+
 TEST_F(WebMVideoClientTest, InvalidStereoMode) {
   EXPECT_MEDIA_LOG(UnexpectedStereoMode());
   OnUInt(kWebMIdStereoMode, 15);

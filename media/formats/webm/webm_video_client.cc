@@ -5,6 +5,7 @@
 #include "media/formats/webm/webm_video_client.h"
 
 #include "media/base/video_decoder_config.h"
+#include "media/formats/mp4/box_definitions.h"
 #include "media/formats/webm/webm_constants.h"
 #include "media/media_buildflags.h"
 
@@ -27,6 +28,22 @@ media::VideoCodecProfile GetVP9CodecProfile(const std::vector<uint8_t>& data,
   return static_cast<VideoCodecProfile>(
       static_cast<size_t>(VP9PROFILE_PROFILE0) + data[2]);
 }
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+media::VideoCodecProfile GetAV1CodecProfile(const std::vector<uint8_t>& data) {
+  if (data.empty()) {
+    return AV1PROFILE_PROFILE_MAIN;
+  }
+
+  mp4::AV1CodecConfigurationRecord av1_config;
+  if (av1_config.Parse(data.data(), data.size())) {
+    return av1_config.profile;
+  }
+
+  DLOG(WARNING) << "Failed to parser AV1 extra data for profile.";
+  return AV1PROFILE_PROFILE_MAIN;
+}
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
 // Values for "StereoMode" are spec'd here:
 // https://www.matroska.org/technical/elements.html#StereoMode
@@ -92,11 +109,8 @@ bool WebMVideoClient::InitializeConfig(
                            config->hdr_metadata().has_value() || !is_8bit);
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   } else if (codec_id == "V_AV1") {
-    // TODO(dalecurtis): AV1 profiles in WebM are not finalized, this needs
-    // updating to read the actual profile and configuration before enabling for
-    // release. http://crbug.com/784993
     video_codec = VideoCodec::kAV1;
-    profile = AV1PROFILE_PROFILE_MAIN;
+    profile = GetAV1CodecProfile(codec_private);
 #endif
   } else {
     MEDIA_LOG(ERROR, media_log_) << "Unsupported video codec_id " << codec_id;
