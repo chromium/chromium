@@ -258,6 +258,28 @@ public class BookmarkEditTest {
                 mBookmarkEditActivity.getFolderTextView().getText());
     }
 
+    @Test
+    @MediumTest
+    @Feature({"Bookmark"})
+    public void testChangeFolderWhenBookmarkRemoved() throws ExecutionException, TimeoutException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkEditActivity.getFolderTextView().performClick());
+        waitForMoveFolderActivity();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue("Expected BookmarkFolderSelectActivity.",
+                    ApplicationStatus.getLastTrackedFocusedActivity()
+                                    instanceof BookmarkFolderSelectActivity);
+            mBookmarkModel.deleteBookmark(mBookmarkId);
+        });
+        // clang-format off
+        CriteriaHelper.pollUiThread(() ->
+                !(ApplicationStatus.getLastTrackedFocusedActivity()
+                      instanceof BookmarkFolderSelectActivity),
+                "Timed out waiting for BookmarkFolderSelectActivity to close");
+        // clang-format on
+    }
+
     private BookmarkItem getBookmarkItem(BookmarkId bookmarkId) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(
                 () -> mBookmarkModel.getBookmarkById(bookmarkId));

@@ -300,10 +300,13 @@ public class BookmarkFolderSelectActivity
     private void finishActivity(List<BookmarkId> bookmarks) {
         // This means BookmarkFolderSelectActivity was called for a result.
         if (getCallingActivity() != null) {
-            assert bookmarks.size() == 1;
-            Intent result = new Intent();
-            result.putExtra(INTENT_BOOKMARK_MOVE_RESULT, bookmarks.get(0).toString());
-            setResult(Activity.RESULT_OK, result);
+            if (bookmarks.size() == 1) {
+                Intent result = new Intent();
+                result.putExtra(INTENT_BOOKMARK_MOVE_RESULT, bookmarks.get(0).toString());
+                setResult(Activity.RESULT_OK, result);
+            } else {
+                setResult(Activity.RESULT_CANCELED);
+            }
         }
         finish();
     }
