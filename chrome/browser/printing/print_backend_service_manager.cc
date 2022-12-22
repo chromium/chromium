@@ -495,29 +495,28 @@ void PrintBackendServiceManager::ResetForTesting() {
 PrintBackendServiceManager::RemoteId
 PrintBackendServiceManager::GetRemoteIdForPrinterName(
     const std::string& printer_name) {
-  if (sandboxed_service_remote_for_test_) {
-    // Test environment is always just one instance for all printers.
-    return RemoteId(1);
-  }
-
 #if BUILDFLAG(IS_WIN)
-  // Windows drivers are not thread safe.  Use a process per driver to prevent
-  // bad interactions when interfacing to multiple drivers in parallel.
-  // https://crbug.com/957242
-  auto iter = remote_id_map_.find(printer_name);
-  if (iter != remote_id_map_.end()) {
-    return iter->second;
-  }
+  if (!sandboxed_service_remote_for_test_) {
+    // Windows drivers are not thread safe.  Use a process per driver to prevent
+    // bad interactions when interfacing to multiple drivers in parallel.
+    // https://crbug.com/957242
+    auto iter = remote_id_map_.find(printer_name);
+    if (iter != remote_id_map_.end()) {
+      return iter->second;
+    }
 
-  // No remote yet for this printer so make one.  RemoteId is only used within
-  // browse process management code, so a simple incrementing sequence is
-  // sufficient.
-  static uint32_t id_sequence = 0;
-  return remote_id_map_.insert({printer_name, RemoteId(++id_sequence)})
-      .first->second;
-#else
-  return RemoteId(1);
+    // No remote yet for this printer so make one.  RemoteId is only used within
+    // browse process management code, so a simple incrementing sequence is
+    // sufficient.
+    static uint32_t id_sequence = 0;
+    return remote_id_map_.insert({printer_name, RemoteId(++id_sequence)})
+        .first->second;
+  }
 #endif
+
+  // Non-Windows platforms and the testing environment always just use one
+  // instance for all printers.
+  return RemoteId(1);
 }
 
 absl::optional<uint32_t> PrintBackendServiceManager::RegisterClient(
