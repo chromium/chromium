@@ -175,6 +175,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.EnsureRareData()->is_inside_repeatable_content = b;
   }
 
+  void DisableFurtherFragmentation() { space_.DisableFurtherFragmentation(); }
+
   void SetIsFixedInlineSize(bool b) {
     if (LIKELY(is_in_parallel_flow_))
       space_.bitfields_.is_fixed_inline_size = b;

@@ -541,7 +541,9 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
                   fixedpos_containing_block_rel_offset,
                   fixedpos_containing_block_fragment, is_inside_column_spanner,
                   multicol_info->fixedpos_containing_block
-                      .RequiresContentBeforeBreaking()),
+                      .RequiresContentBeforeBreaking(),
+                  multicol_info->fixedpos_containing_block
+                      .IsFragmentedInsideClippedContainer()),
               new_fixedpos_inline_container));
     }
   }
@@ -677,19 +679,25 @@ void NGContainerFragmentBuilder::PropagateOOFFragmentainerDescendants(
       fixedpos_containing_block_rel_offset =
           fixedpos_containing_block->RelativeOffset();
     }
+    bool is_clipped_container = fragment.HasNonVisibleBlockOverflow();
     NGLogicalOOFNodeForFragmentation oof_node(
         descendant.Node(), static_position, new_inline_container,
         NGContainingBlock<LogicalOffset>(
             containing_block_offset, containing_block_rel_offset,
             containing_block_fragment, container_inside_column_spanner,
-            descendant.containing_block.RequiresContentBeforeBreaking()),
+            descendant.containing_block.RequiresContentBeforeBreaking(),
+            descendant.containing_block.IsFragmentedInsideClippedContainer() ||
+                is_clipped_container),
         NGContainingBlock<LogicalOffset>(
             fixedpos_containing_block_offset,
             fixedpos_containing_block_rel_offset,
             fixedpos_containing_block_fragment,
             fixedpos_container_inside_column_spanner,
             descendant.fixedpos_containing_block
-                .RequiresContentBeforeBreaking()),
+                .RequiresContentBeforeBreaking(),
+            descendant.fixedpos_containing_block
+                    .IsFragmentedInsideClippedContainer() ||
+                is_clipped_container),
         new_fixedpos_inline_container);
 
     if (out_list) {
