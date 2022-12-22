@@ -1685,7 +1685,17 @@
     "prefix": "js-resizable-arraybuffer",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "external/wpt/html/infrastructure/safe-passing-of-structured-data/cross-origin-transfer-resizable-arraybuffer.html"
+      "external/wpt/html/infrastructure/safe-passing-of-structured-data/cross-origin-transfer-resizable-arraybuffer.html",
+      "external/wpt/html/infrastructure/safe-passing-of-structured-data/messagechannel.any.html",
+      "external/wpt/html/infrastructure/safe-passing-of-structured-data/messagechannel.any.serviceworker.html",
+      "external/wpt/html/infrastructure/safe-passing-of-structured-data/messagechannel.any.sharedworker.html",
+      "external/wpt/html/infrastructure/safe-passing-of-structured-data/messagechannel.any.worker.html",
+      "external/wpt/html/infrastructure/safe-passing-of-structured-data/window-postmessage.window.html",
+      "external/wpt/html/webappapis/structured-clone/structured-clone.any.html",
+      "external/wpt/html/webappapis/structured-clone/structured-clone.any.worker.html",
+      "external/wpt/webidl/ecmascript-binding/allow-resizable.html",
+      "external/wpt/workers/semantics/structured-clone/dedicated.html",
+      "external/wpt/workers/semantics/structured-clone/shared.html"
     ],
     "exclusive_tests": [
       "external/wpt/html/infrastructure/safe-passing-of-structured-data/cross-origin-transfer-resizable-arraybuffer.html"
