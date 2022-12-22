@@ -60,7 +60,6 @@ class MobileZeroInputSection : public Section {
 class DesktopNonZpsSection : public Section {
  public:
   explicit DesktopNonZpsSection(const ACMatches& matches);
-  GroupBase* CanAdd(const AutocompleteMatch& match) override;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_GROUPER_SECTIONS_H_

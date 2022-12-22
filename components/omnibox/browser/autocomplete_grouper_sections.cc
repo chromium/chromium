@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/autocomplete_grouper_sections.h"
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
 
 #include "base/ranges/algorithm.h"
@@ -79,21 +81,32 @@ DesktopNonZpsSection::DesktopNonZpsSection(const ACMatches& matches)
   groups_.push_back(std::make_unique<MultiGroup>(
       7,
       MultiGroup::GroupLimitsAndCounts{{omnibox::GROUP_OTHER_NAVS, {7, 0}}}));
+  // The default values above are reasonable placeholders. Iterate `matches` to
+  // determine the actual limits.
 
+  // Determine if `matches` contains any searches.
   bool has_search = base::ranges::any_of(
       matches, [&](const auto& match) { return groups_[1]->CanAdd(match); });
 
+  // Determine if the default match will be a search.
   auto default_match = base::ranges::find_if(
       matches, [&](const auto& match) { return groups_[0]->CanAdd(match); });
   bool default_is_search =
       default_match != matches.end() && groups_[1]->CanAdd(*default_match);
 
+  // Find the 1st nav's index.
+  size_t first_nav_index = std::distance(
+      matches.begin(), base::ranges::find_if(matches, [&](const auto& match) {
+        return groups_[2]->CanAdd(match);
+      }));
+
+  // Show at most 8 suggestions if doing so includes navs; otherwise show 9 or
+  // 10, if doing so doesn't include navs.
+  limit_ = std::clamp<size_t>(first_nav_index, 8, 10);
+  groups_[1]->limit_ = limit_ - 1;
+  groups_[2]->limit_ = limit_ - 1;
+
+  // Show at least 1 search, either in the default group or the search group.
   if (has_search && !default_is_search)
     groups_[2]->limit_--;
-}
-
-GroupBase* DesktopNonZpsSection::CanAdd(const AutocompleteMatch& match) {
-  if (groups_[2]->CanAdd(match))
-    limit_ = 8;
-  return Section::CanAdd(match);
 }
