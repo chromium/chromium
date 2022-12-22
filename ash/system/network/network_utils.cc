@@ -5,9 +5,14 @@
 #include "ash/system/network/network_utils.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/network/tray_network_state_model.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -81,6 +86,57 @@ absl::optional<std::u16string> GetPortalStateSubtext(
       return l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SIGNIN);
   }
+}
+
+bool IsNetworkDisabled(
+    const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
+        network_properties) {
+  if (network_properties->prohibited_by_policy) {
+    return true;
+  }
+
+  if (!chromeos::network_config::NetworkTypeMatchesType(
+          network_properties->type,
+          chromeos::network_config::mojom::NetworkType::kCellular)) {
+    return false;
+  }
+
+  const chromeos::network_config::mojom::CellularStateProperties* cellular =
+      network_properties->type_state->get_cellular().get();
+
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
+      cellular->sim_locked) {
+    return true;
+  }
+
+  if (cellular->activation_state ==
+      chromeos::network_config::mojom::ActivationStateType::kActivating) {
+    return true;
+  }
+
+  if (IsNetworkInhibited(network_properties)) {
+    return true;
+  }
+
+  return false;
+}
+
+bool IsNetworkInhibited(
+    const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
+        network_properties) {
+  if (!chromeos::network_config::NetworkTypeMatchesType(
+          network_properties->type,
+          chromeos::network_config::mojom::NetworkType::kCellular)) {
+    return false;
+  }
+
+  const chromeos::network_config::mojom::DeviceStateProperties*
+      cellular_device =
+          Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
+              chromeos::network_config::mojom::NetworkType::kCellular);
+
+  return cellular_device &&
+         chromeos::network_config::IsInhibited(cellular_device);
 }
 
 }  // namespace ash
