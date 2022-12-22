@@ -298,7 +298,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
       const std::string& name,
       absl::optional<base::Value::List> permissions,
       absl::optional<base::Value::List> action_handlers) {
-    std::unique_ptr<base::DictionaryValue> manifest =
+    base::Value::Dict manifest =
         extensions::DictionaryBuilder()
             .Set("name", name)
             .Set("version", "1.0")
@@ -309,16 +309,16 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
                           extensions::DictionaryBuilder()
                               .Set("scripts", extensions::ListBuilder()
                                                   .Append("background.js")
-                                                  .Build())
-                              .Build())
-                     .Build())
-            .Build();
+                                                  .BuildList())
+                              .BuildDict())
+                     .BuildDict())
+            .BuildDict();
 
     if (action_handlers)
-      manifest->GetDict().Set("action_handlers", std::move(*action_handlers));
+      manifest.Set("action_handlers", std::move(*action_handlers));
 
     if (permissions)
-      manifest->GetDict().Set("permissions", std::move(*permissions));
+      manifest.Set("permissions", std::move(*permissions));
 
     return extensions::ExtensionBuilder()
         .SetManifest(std::move(manifest))

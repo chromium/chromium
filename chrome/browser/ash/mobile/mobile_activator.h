@@ -15,11 +15,8 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace ash {
 
@@ -155,7 +152,7 @@ class MobileActivator : public NetworkStateHandlerObserver {
   void OnShuttingDown() override;
 
   void GetPropertiesFailure(const std::string& error_name,
-                            std::unique_ptr<base::DictionaryValue> error_data);
+                            std::unique_ptr<base::Value> error_data);
   // Handles the signal that the payment portal has finished loading.
   void HandlePortalLoaded(bool success);
   // Handles the signal that the user has finished with the portal.

@@ -815,8 +815,8 @@ IN_PROC_BROWSER_TEST_F(WebviewDeviceOwnedLoginTest, AllowNewUser) {
   test::OobeJS().ExpectTrue(frame_url + ".search('flow=nosignup') == -1");
 
   // Disallow new users - we also need to set an allowlist due to weird logic.
-  scoped_testing_cros_settings_.device_settings()->Set(kAccountsPrefUsers,
-                                                       base::ListValue());
+  scoped_testing_cros_settings_.device_settings()->Set(
+      kAccountsPrefUsers, base::Value(base::Value::List()));
   scoped_testing_cros_settings_.device_settings()->Set(
       kAccountsPrefAllowNewUser, base::Value(false));
   WaitForGaiaPageReload();

@@ -291,12 +291,13 @@ class TPMFirmwareUpdateModesEnterpriseTest : public TPMFirmwareUpdateModesTest {
   }
 
   void SetPolicy(const std::set<Mode>& modes) {
-    base::DictionaryValue dict;
-    dict.SetKey(kSettingsKeyAllowPowerwash,
-                base::Value(modes.count(Mode::kPowerwash) > 0));
-    dict.SetKey(kSettingsKeyAllowPreserveDeviceState,
-                base::Value(modes.count(Mode::kPreserveDeviceState) > 0));
-    cros_settings_test_helper_.Set(kTPMFirmwareUpdateSettings, dict);
+    base::Value::Dict dict;
+    dict.Set(kSettingsKeyAllowPowerwash,
+             base::Value(modes.count(Mode::kPowerwash) > 0));
+    dict.Set(kSettingsKeyAllowPreserveDeviceState,
+             base::Value(modes.count(Mode::kPreserveDeviceState) > 0));
+    cros_settings_test_helper_.Set(kTPMFirmwareUpdateSettings,
+                                   base::Value(std::move(dict)));
   }
 };
 

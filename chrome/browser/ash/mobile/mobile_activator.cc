@@ -171,18 +171,18 @@ void MobileActivator::InitiateActivation(const std::string& service_path) {
               ActivationError::kNone);
 
   // We want shill to connect us after activations, so enable autoconnect.
-  base::DictionaryValue auto_connect_property;
-  auto_connect_property.SetBoolKey(shill::kAutoConnectProperty, true);
+  base::Value::Dict auto_connect_property;
+  auto_connect_property.Set(shill::kAutoConnectProperty, true);
   NetworkHandler::Get()->network_configuration_handler()->SetShillProperties(
-      service_path_, auto_connect_property, base::DoNothing(),
-      network_handler::ErrorCallback());
+      service_path_, base::Value(std::move(auto_connect_property)),
+      base::DoNothing(), network_handler::ErrorCallback());
 
   StartActivation();
 }
 
 void MobileActivator::GetPropertiesFailure(
     const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    std::unique_ptr<base::Value> error_data) {
   NET_LOG(ERROR) << "MobileActivator GetProperties failed for "
                  << NetworkPathId(service_path_) << " Error: " << error_name;
 }

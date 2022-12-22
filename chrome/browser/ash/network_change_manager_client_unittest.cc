@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/string_split.h"
+#include "base/value_iterators.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -189,19 +190,20 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
     default_network_.set_network_technology_for_testing(
         default_network_state.network_technology);
     default_network_.set_path_for_testing(default_network_state.service_path);
-    base::Value ipv4_properties(base::Value::Type::DICTIONARY);
-    ipv4_properties.SetKey(shill::kAddressProperty,
-                           base::Value(default_network_state.ip_address));
+    base::Value::Dict ipv4_properties;
+    ipv4_properties.Set(shill::kAddressProperty,
+                        base::Value(default_network_state.ip_address));
     std::vector<std::string> dns_servers =
         base::SplitString(default_network_state.dns_servers, ",",
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    base::ListValue dns_servers_value;
+    base::Value::List dns_servers_value;
     for (const std::string& server : dns_servers)
       dns_servers_value.Append(server);
 
-    ipv4_properties.SetKey(shill::kNameServersProperty,
-                           std::move(dns_servers_value));
-    default_network_.IPConfigPropertiesChanged(ipv4_properties);
+    ipv4_properties.Set(shill::kNameServersProperty,
+                        std::move(dns_servers_value));
+    default_network_.IPConfigPropertiesChanged(
+        base::Value(std::move(ipv4_properties)));
   }
 
   // Process an default network update based on the state of |default_network_|.
