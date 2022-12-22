@@ -82,7 +82,6 @@ export class CommandHandler extends CommandHandlerInterface {
     /** @private {boolean} */
     this.languageLoggingEnabled_ = false;
 
-    SmartStickyMode.init();
     this.init_();
   }
 

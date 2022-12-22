@@ -45,6 +45,7 @@ import {PageLoadSoundHandler} from './page_load_sound_handler.js';
 import {PanelBackground} from './panel/panel_background.js';
 import {ChromeVoxPrefs} from './prefs.js';
 import {RangeAutomationHandler} from './range_automation_handler.js';
+import {SmartStickyMode} from './smart_sticky_mode.js';
 import {TtsBackground} from './tts_background.js';
 
 /**
@@ -135,6 +136,7 @@ export class Background extends ChromeVoxState {
     PageLoadSoundHandler.init();
     PanelBackground.init();
     RangeAutomationHandler.init();
+    SmartStickyMode.init();
 
     // Allow all async initializers to run simultaneously, but wait for them to
     // complete before continuing.
