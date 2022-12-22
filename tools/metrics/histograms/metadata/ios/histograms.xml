@@ -1210,6 +1210,25 @@ chromium-metrics-reviews@google.com.
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
+<histogram name="IOS.MetricKit.{MXVersion}OptimizedTimeToFirstDraw" units="ms"
+    expires_after="2023-03-19">
+  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    The amount of time taken to launch the app in cases where the launch is
+    pre-warmed. This is identical to IOS.MetricKit.{MXVersion}TimeToFirstDraw
+    except that TimeToFirstDraw considers all launches while this metric only
+    considers pre-warmed launches. Logged when a MXMetricPayload is received
+    (one per day).
+
+    This is only recorded on iOS 16+, and recorded only if user opted in for
+    sharing diagnostic data on iOS device.
+
+    Note: The date the data is reported is later than the day it accounts for.
+  </summary>
+  <token key="MXVersion" variants="MXVersion"/>
+</histogram>
+
 <histogram name="IOS.MetricKit.{MXVersion}PeakMemoryUsage" units="MB"
     expires_after="2023-03-19">
   <owner>justincohen@chromium.org</owner>
