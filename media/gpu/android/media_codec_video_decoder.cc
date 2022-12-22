@@ -142,21 +142,25 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
 
   if (device_info->IsAv1DecoderAvailable()) {
     if (device_info->IsDecoderKnownUnaccelerated(VideoCodec::kAV1)) {
-      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
-                                     gfx::Size(0, 0), gfx::Size(3840, 2160),
+      supported_configs.emplace_back(AV1PROFILE_PROFILE_MAIN,
+                                     AV1PROFILE_PROFILE_MAIN, gfx::Size(0, 0),
+                                     gfx::Size(3840, 2160),
                                      true,   // allow_encrypted
                                      true);  // require_encrypted
-      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
-                                     gfx::Size(0, 0), gfx::Size(2160, 3840),
+      supported_configs.emplace_back(AV1PROFILE_PROFILE_MAIN,
+                                     AV1PROFILE_PROFILE_MAIN, gfx::Size(0, 0),
+                                     gfx::Size(2160, 3840),
                                      true,   // allow_encrypted
                                      true);  // require_encrypted
     } else {
-      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
-                                     gfx::Size(0, 0), gfx::Size(3840, 2160),
+      supported_configs.emplace_back(AV1PROFILE_PROFILE_MAIN,
+                                     AV1PROFILE_PROFILE_MAIN, gfx::Size(0, 0),
+                                     gfx::Size(3840, 2160),
                                      true,    // allow_encrypted
                                      false);  // require_encrypted
-      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
-                                     gfx::Size(0, 0), gfx::Size(2160, 3840),
+      supported_configs.emplace_back(AV1PROFILE_PROFILE_MAIN,
+                                     AV1PROFILE_PROFILE_MAIN, gfx::Size(0, 0),
+                                     gfx::Size(2160, 3840),
                                      true,    // allow_encrypted
                                      false);  // require_encrypted
     }
