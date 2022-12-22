@@ -411,7 +411,7 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
       ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard) {
     // Reven boards have unknown keyboard layouts and should not be considered
     // internal keyboards for the purposes of diagnostics.
-    if (chromeos::switches::IsRevenBranding()) {
+    if (switches::IsRevenBranding()) {
       result->physical_layout = mojom::PhysicalLayout::kUnknown;
       result->connection_type = mojom::ConnectionType::kUnknown;
     } else if (device_info->keyboard_top_row_layout ==

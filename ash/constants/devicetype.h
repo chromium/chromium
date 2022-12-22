@@ -22,10 +22,4 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGoogleBrandedDevice();
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
-// directory migration is finished.
-namespace chromeos {
-using ::ash::IsGoogleBrandedDevice;
-}  // namespace chromeos
-
 #endif  // ASH_CONSTANTS_DEVICETYPE_H_

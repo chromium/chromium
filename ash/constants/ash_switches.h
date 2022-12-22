@@ -18,7 +18,7 @@ namespace ash::switches {
 //
 // Note: If you add a switch, consider if it needs to be copied to a subsequent
 // command line if the process executes a new copy of itself.  (For example,
-// see chromeos::LoginUtil::GetOffTheRecordCommandLine().)
+// see `GetOffTheRecordCommandLine()`.)
 
 // Please keep alphabetized.
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -403,27 +403,5 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsStabilizeTimeDependentViewForTestsEnabled();
 
 }  // namespace ash::switches
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos::switches {
-using ::ash::switches::IsOsInstallAllowed;
-using ::ash::switches::IsRevenBranding;
-using ::ash::switches::kAppOemManifestFile;
-using ::ash::switches::kArcTosHostForTests;
-using ::ash::switches::kDisableGaiaServices;
-using ::ash::switches::kEnableOobeTestAPI;
-using ::ash::switches::kEnableTouchCalibrationSetting;
-using ::ash::switches::kForceSystemCompositorMode;
-using ::ash::switches::kHasChromeOSKeyboard;
-using ::ash::switches::kLoginManager;
-using ::ash::switches::kOobeEulaUrlForTests;
-using ::ash::switches::kOobeScreenshotDirectory;
-using ::ash::switches::kOobeSkipPostLogin;
-using ::ash::switches::kPrivacyPolicyHostForTests;
-using ::ash::switches::kPublicAccountsSamlAclUrl;
-using ::ash::switches::kSamlPasswordChangeUrl;
-using ::ash::switches::kShowOobeDevOverlay;
-}  // namespace chromeos::switches
 
 #endif  // ASH_CONSTANTS_ASH_SWITCHES_H_

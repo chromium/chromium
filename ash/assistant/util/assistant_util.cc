@@ -48,7 +48,7 @@ bool IsVoiceEntryPoint(AssistantEntryPoint entry_point, bool prefer_voice) {
 }
 
 bool IsGoogleDevice() {
-  return g_override_is_google_device || chromeos::IsGoogleBrandedDevice();
+  return g_override_is_google_device || IsGoogleBrandedDevice();
 }
 
 void OverrideIsGoogleDeviceForTesting(bool is_google_device) {

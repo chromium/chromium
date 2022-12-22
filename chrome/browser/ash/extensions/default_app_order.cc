@@ -237,7 +237,7 @@ const std::string& ExternalLoader::GetOemAppsFolderName() {
 
 void ExternalLoader::Load() {
   base::FilePath ordinals_file;
-  CHECK(base::PathService::Get(FILE_DEFAULT_APP_ORDER, &ordinals_file));
+  CHECK(base::PathService::Get(ash::FILE_DEFAULT_APP_ORDER, &ordinals_file));
 
   std::unique_ptr<base::Value::List> ordinals_value =
       ReadExternalOrdinalFile(ordinals_file);

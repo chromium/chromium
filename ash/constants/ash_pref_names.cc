@@ -882,7 +882,7 @@ const char kQuickUnlockPinSecret[] = "quick_unlock.pin.secret";
 
 // Enum that specifies how often a user has to enter their password to continue
 // using quick unlock. These values are the same as the ones in
-// chromeos::quick_unlock::PasswordConfirmationFrequency.
+// `quick_unlock::PasswordConfirmationFrequency`.
 // 0 - six hours. Users will have to enter their password every six hours.
 // 1 - twelve hours. Users will have to enter their password every twelve hours.
 // 2 - two days. Users will have to enter their password every two days.

@@ -37,7 +37,7 @@ bool HasPrimaryAccount(const Profile* profile) {
 }
 
 bool IsGoogleDevice() {
-  return g_override_is_google_device || chromeos::IsGoogleBrandedDevice();
+  return g_override_is_google_device || ash::IsGoogleBrandedDevice();
 }
 
 const user_manager::User* GetUser(const Profile* profile) {

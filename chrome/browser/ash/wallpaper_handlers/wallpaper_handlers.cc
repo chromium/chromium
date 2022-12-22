@@ -338,8 +338,9 @@ void BackdropCollectionInfoFetcher::Start(OnCollectionsInfoFetched callback) {
   // The language field may include the country code (e.g. "en-US").
   request.set_language(g_browser_process->GetApplicationLocale());
   request.add_filtering_label(kFilteringLabel);
-  if (chromeos::IsGoogleBrandedDevice())
+  if (ash::IsGoogleBrandedDevice()) {
     request.add_filtering_label(kGoogleDeviceFilteringLabel);
+  }
   std::string serialized_proto;
   request.SerializeToString(&serialized_proto);
 
@@ -410,8 +411,9 @@ void BackdropImageInfoFetcher::Start(OnImagesInfoFetched callback) {
   request.set_language(g_browser_process->GetApplicationLocale());
   request.set_collection_id(collection_id_);
   request.add_filtering_label(kFilteringLabel);
-  if (chromeos::IsGoogleBrandedDevice())
+  if (ash::IsGoogleBrandedDevice()) {
     request.add_filtering_label(kGoogleDeviceFilteringLabel);
+  }
   std::string serialized_proto;
   request.SerializeToString(&serialized_proto);
 
@@ -483,8 +485,9 @@ void BackdropSurpriseMeImageFetcher::Start(OnSurpriseMeImageFetched callback) {
   request.set_language(g_browser_process->GetApplicationLocale());
   request.add_collection_ids(collection_id_);
   request.add_filtering_label(kFilteringLabel);
-  if (chromeos::IsGoogleBrandedDevice())
+  if (ash::IsGoogleBrandedDevice()) {
     request.add_filtering_label(kGoogleDeviceFilteringLabel);
+  }
   if (!resume_token_.empty())
     request.set_resume_token(resume_token_);
   std::string serialized_proto;

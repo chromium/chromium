@@ -53,7 +53,7 @@ SigninScreenExtensionsExternalLoader::SigninScreenExtensionsExternalLoader(
     Profile* profile)
     : profile_(profile),
       external_cache_(
-          base::PathService::CheckedGet(DIR_SIGNIN_PROFILE_EXTENSIONS),
+          base::PathService::CheckedGet(ash::DIR_SIGNIN_PROFILE_EXTENSIONS),
           g_browser_process->shared_url_loader_factory(),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE,

@@ -142,8 +142,7 @@ bool ShouldToggleAssistant(const ui::Accelerator& accelerator) {
   // shortcut stops working.  So we only check the key on these branded
   // devices.
   return !(accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_A &&
-           chromeos::IsGoogleBrandedDevice() &&
-           ui::DeviceKeyboardHasAssistantKey());
+           IsGoogleBrandedDevice() && ui::DeviceKeyboardHasAssistantKey());
 }
 
 void HandleSwitchToLastUsedIme(const ui::Accelerator& accelerator) {

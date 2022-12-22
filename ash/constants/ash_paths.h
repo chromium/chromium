@@ -75,14 +75,4 @@ void RegisterStubPathOverrides(const base::FilePath& stubs_dir);
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::DIR_DEVICE_DISPLAY_PROFILES;
-using ::ash::DIR_SIGNIN_PROFILE_EXTENSIONS;
-using ::ash::FILE_DEFAULT_APP_ORDER;
-using ::ash::FILE_MACHINE_INFO;
-using ::ash::FILE_VPD;
-using ::ash::FILE_VPD_STATUS;
-}  // namespace chromeos
-
 #endif  // ASH_CONSTANTS_ASH_PATHS_H_

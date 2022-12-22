@@ -19,7 +19,7 @@ bool IsRunningAsSystemCompositor() {
   static bool is_running_on_chrome_os = base::SysInfo::IsRunningOnChromeOS();
   return is_running_on_chrome_os ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kForceSystemCompositorMode);
+             ash::switches::kForceSystemCompositorMode);
 }
 
 }  // namespace chromeos
