@@ -56,7 +56,8 @@ bool IsScriptValid(const base::FilePath& path,
   InstallWarning script_file_too_large_warning(
       l10n_util::GetStringFUTF8(IDS_EXTENSION_CONTENT_SCRIPT_FILE_TOO_LARGE,
                                 relative_path.LossyDisplayName()),
-      api::content_scripts::ManifestKeys::kContentScripts);
+      api::content_scripts::ManifestKeys::kContentScripts,
+      base::UTF16ToUTF8(relative_path.LossyDisplayName()));
   if (remaining_length == 0u) {
     warnings->push_back(std::move(script_file_too_large_warning));
     return true;

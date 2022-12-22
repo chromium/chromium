@@ -22,6 +22,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/utils/content_script_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -188,6 +189,15 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, RapidLoadUnload) {
   // css_injection extension, will complete.
   OpenURLInCurrentTab(
       embedded_test_server()->GetURL("google.com", "/simple.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptsSizeLimits) {
+  auto single_scripts_limit_reset =
+      script_parsing::CreateScopedMaxScriptLengthForTesting(700u);
+  auto extension_scripts_limit_reset =
+      script_parsing::CreateScopedMaxScriptsLengthPerExtensionForTesting(1200u);
+  ASSERT_TRUE(RunExtensionTest("scripting/dynamic_scripts_size_limits"))
+      << message_;
 }
 
 // Tests that calling scripting.executeScript works on a newly created tab

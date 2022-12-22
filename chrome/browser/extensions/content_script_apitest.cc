@@ -431,11 +431,12 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, LargeScriptFilesNotLoaded) {
   expected_warnings.emplace_back(
       l10n_util::GetStringFUTF8(IDS_EXTENSION_CONTENT_SCRIPT_FILE_TOO_LARGE,
                                 u"big.js"),
-      api::content_scripts::ManifestKeys::kContentScripts);
+      api::content_scripts::ManifestKeys::kContentScripts, "big.js");
   expected_warnings.emplace_back(
       l10n_util::GetStringFUTF8(IDS_EXTENSION_CONTENT_SCRIPT_FILE_TOO_LARGE,
                                 u"inject_element_2.js"),
-      api::content_scripts::ManifestKeys::kContentScripts);
+      api::content_scripts::ManifestKeys::kContentScripts,
+      "inject_element_2.js");
 
   EXPECT_EQ(extension->install_warnings(), expected_warnings);
 }

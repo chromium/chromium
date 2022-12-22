@@ -51,6 +51,9 @@ constexpr char kDuplicateFileSpecifiedError[] =
     "Duplicate file specified: '*'.";
 constexpr char kExactlyOneOfCssAndFilesError[] =
     "Exactly one of 'css' and 'files' must be specified.";
+constexpr char kFilesExceededSizeLimitError[] =
+    "Scripts could not be loaded because '*' exceeds the maximum script size "
+    "or the extension's maximum total script size.";
 
 // Note: CSS always injects as soon as possible, so we default to
 // document_start. Because of tab loading, there's no guarantee this will
@@ -504,6 +507,15 @@ ValidateContentScriptsResult ValidateParsedScriptsOnFileThread(
   std::vector<InstallWarning> warnings;
   bool are_script_files_valid = script_parsing::ValidateFileSources(
       *scripts, symlink_policy, &error, &warnings);
+
+  // Script files over the per script/extension limit are recorded as warnings.
+  // However, for the scripting API we should treat "install warnings" as
+  // errors by turning this call into a no-op and returning an error.
+  if (!warnings.empty() && error.empty()) {
+    error = ErrorUtils::FormatErrorMessage(kFilesExceededSizeLimitError,
+                                           warnings[0].specific);
+    are_script_files_valid = false;
+  }
 
   return std::make_pair(std::move(scripts), are_script_files_valid
                                                 ? absl::nullopt
