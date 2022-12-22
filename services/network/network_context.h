@@ -677,8 +677,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   int CheckCTComplianceForSignedExchange(
       net::CertVerifyResult& cert_verify_result,
       const net::X509Certificate& certificate,
-      const net::HostPortPair& host_port_pair,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const net::HostPortPair& host_port_pair);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)

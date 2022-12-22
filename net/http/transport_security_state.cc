@@ -464,8 +464,7 @@ TransportSecurityState::CheckCTRequirements(
     const X509Certificate* served_certificate_chain,
     const SignedCertificateTimestampAndStatusList&
         signed_certificate_timestamps,
-    ct::CTPolicyCompliance policy_compliance,
-    const NetworkAnonymizationKey& network_anonymization_key) {
+    ct::CTPolicyCompliance policy_compliance) {
   using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
   std::string hostname = host_port_pair.host();
 

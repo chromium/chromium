@@ -534,8 +534,7 @@ int ProofVerifierChromium::Job::CheckCTCompliance() {
           cert_verify_result.is_issued_by_known_root,
           cert_verify_result.public_key_hashes,
           cert_verify_result.verified_cert.get(), cert_.get(),
-          cert_verify_result.scts, cert_verify_result.policy_compliance,
-          proof_verifier_->network_anonymization_key_);
+          cert_verify_result.scts, cert_verify_result.policy_compliance);
 
   if (sct_auditing_delegate_) {
     sct_auditing_delegate_->MaybeEnqueueReport(

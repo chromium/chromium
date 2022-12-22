@@ -1340,8 +1340,7 @@ int SSLClientSocketImpl::CheckCTCompliance() {
           server_cert_verify_result_.public_key_hashes,
           server_cert_verify_result_.verified_cert.get(), server_cert_.get(),
           server_cert_verify_result_.scts,
-          server_cert_verify_result_.policy_compliance,
-          ssl_config_.network_anonymization_key);
+          server_cert_verify_result_.policy_compliance);
 
   if (context_->sct_auditing_delegate()) {
     context_->sct_auditing_delegate()->MaybeEnqueueReport(

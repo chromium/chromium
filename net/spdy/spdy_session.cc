@@ -882,7 +882,7 @@ bool SpdySession::CanPool(
       HostPortPair(new_hostname, 0), ssl_info.is_issued_by_known_root,
       ssl_info.public_key_hashes, ssl_info.cert.get(),
       ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
-      ssl_info.ct_policy_compliance, network_anonymization_key)) {
+      ssl_info.ct_policy_compliance)) {
     case TransportSecurityState::CT_REQUIREMENTS_NOT_MET:
       return false;
     case TransportSecurityState::CT_REQUIREMENTS_MET:
