@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -605,6 +606,13 @@ KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
 
 content::BrowserContext* ConnectorsServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
+  // Do not construct the connectors service if the extensions are disabled for
+  // the given context.
+  if (extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(context)) {
+    return nullptr;
+  }
+
   // On Chrome OS, settings from the primary/main profile apply to all
   // profiles, besides incognito.
   // However, the primary/main profile might not exist in tests - then the
