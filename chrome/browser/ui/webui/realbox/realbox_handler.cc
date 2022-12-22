@@ -685,7 +685,8 @@ void RealboxHandler::OpenAutocompleteMatch(
           : std::u16string::npos,
       /*elapsed_time_since_last_change_to_default_match=*/
       elapsed_time_since_last_change_to_default_match,
-      /*result=*/autocomplete_controller_->result(), match.destination_url);
+      /*result=*/autocomplete_controller_->result(), match.destination_url,
+      /*is_incognito=*/profile_->IsOffTheRecord());
   autocomplete_controller_->AddProviderAndTriggeringLogs(&log);
 
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);

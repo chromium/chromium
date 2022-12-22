@@ -986,6 +986,9 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   size_t completed_length = match.allowed_to_be_default_match
                                 ? match.inline_autocompletion.length()
                                 : std::u16string::npos;
+  bool is_incognito = autocomplete_controller()
+                          ->autocomplete_provider_client()
+                          ->IsOffTheRecord();
   OmniboxLog log(
       user_text, just_deleted_text_, input_.type(), is_keyword_selected(),
       keyword_mode_entry_method_, popup_open, dropdown_ignored ? 0 : index,
@@ -994,7 +997,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
       GetPageClassification(), elapsed_time_since_user_first_modified_omnibox,
       completed_length, elapsed_time_since_last_change_to_default_match,
       dropdown_ignored ? fake_single_entry_result : result(),
-      match.destination_url);
+      match.destination_url, is_incognito);
   DCHECK(dropdown_ignored ||
          (log.elapsed_time_since_user_first_modified_omnibox >=
           log.elapsed_time_since_last_change_to_default_match))

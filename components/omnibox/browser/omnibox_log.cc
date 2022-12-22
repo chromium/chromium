@@ -22,7 +22,8 @@ OmniboxLog::OmniboxLog(
     size_t completed_length,
     base::TimeDelta elapsed_time_since_last_change_to_default_match,
     const AutocompleteResult& result,
-    const GURL& final_destination_url)
+    const GURL& final_destination_url,
+    bool is_incognito)
     : text(text),
       just_deleted_text(just_deleted_text),
       input_type(input_type),
@@ -40,7 +41,8 @@ OmniboxLog::OmniboxLog(
       elapsed_time_since_last_change_to_default_match(
           elapsed_time_since_last_change_to_default_match),
       result(result),
-      final_destination_url(final_destination_url) {
+      final_destination_url(final_destination_url),
+      is_incognito(is_incognito) {
   DCHECK(selected_index < result.size())
       << "The selected index should always be valid. See comments on "
          "OmniboxLog::selected_index.";

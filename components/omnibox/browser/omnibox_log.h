@@ -40,7 +40,8 @@ struct OmniboxLog {
              size_t completed_length,
              base::TimeDelta elapsed_time_since_last_change_to_default_match,
              const AutocompleteResult& result,
-             const GURL& destination_url);
+             const GURL& destination_url,
+             bool is_incognito);
   ~OmniboxLog();
 
   // The user's input text in the omnibox.
@@ -128,6 +129,10 @@ struct OmniboxLog {
   // destination URL within |result| as the match URLs are computed to add
   // additional data from the client.
   GURL final_destination_url;
+
+  // Whether the item selection happened on an off-the-record/incognito profile.
+  // This is used to disable logging of scoring signals in incognito mode.
+  bool is_incognito;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_LOG_H_
