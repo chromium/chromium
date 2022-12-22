@@ -133,14 +133,14 @@ GURL ResolveConfigUrl(const GURL& config_url, const std::string& endpoint) {
 }
 
 absl::optional<content::IdentityRequestAccount> ParseAccount(
-    const base::Value& account,
+    const base::Value::Dict& account,
     const std::string& client_id) {
-  auto* id = account.FindStringKey(kAccountIdKey);
-  auto* email = account.FindStringKey(kAccountEmailKey);
-  auto* name = account.FindStringKey(kAccountNameKey);
-  auto* given_name = account.FindStringKey(kAccountGivenNameKey);
-  auto* picture = account.FindStringKey(kAccountPictureKey);
-  auto* approved_clients = account.FindListKey(kAccountApprovedClientsKey);
+  auto* id = account.FindString(kAccountIdKey);
+  auto* email = account.FindString(kAccountEmailKey);
+  auto* name = account.FindString(kAccountNameKey);
+  auto* given_name = account.FindString(kAccountGivenNameKey);
+  auto* picture = account.FindString(kAccountPictureKey);
+  auto* approved_clients = account.FindList(kAccountApprovedClientsKey);
 
   // required fields
   if (!(id && email && name))
@@ -150,7 +150,7 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
 
   absl::optional<LoginState> approved_value;
   if (approved_clients) {
-    for (const base::Value& entry : approved_clients->GetList()) {
+    for (const base::Value& entry : *approved_clients) {
       if (entry.is_string() && entry.GetString() == client_id) {
         approved_value = LoginState::kSignIn;
         break;
@@ -162,7 +162,7 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
       // kSignUp instead of leaving as nullopt.
       approved_value = LoginState::kSignUp;
     }
-    RecordApprovedClientsSize(approved_clients->GetList().size());
+    RecordApprovedClientsSize(approved_clients->size());
   }
 
   return content::IdentityRequestAccount(
@@ -172,19 +172,19 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
 
 // Parses accounts from given Value. Returns true if parse is successful and
 // adds parsed accounts to the |account_list|.
-bool ParseAccounts(const base::Value* accounts,
+bool ParseAccounts(const base::Value::List& accounts,
                    AccountList& account_list,
                    const std::string& client_id) {
   DCHECK(account_list.empty());
-  if (!accounts->is_list())
-    return false;
 
   base::flat_set<std::string> account_ids;
-  for (auto& account : accounts->GetList()) {
-    if (!account.is_dict())
+  for (auto& account : accounts) {
+    const base::Value::Dict* account_dict = account.GetIfDict();
+    if (!account_dict) {
       return false;
+    }
 
-    auto parsed_account = ParseAccount(account, client_id);
+    auto parsed_account = ParseAccount(*account_dict, client_id);
     if (parsed_account) {
       if (account_ids.count(parsed_account->id))
         return false;
@@ -208,18 +208,15 @@ absl::optional<SkColor> ParseCssColor(const std::string* value) {
 
 // Parse IdentityProviderMetadata from given value. Overwrites |idp_metadata|
 // with the parsed value.
-void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
+void ParseIdentityProviderMetadata(const base::Value::Dict& idp_metadata_value,
                                    int brand_icon_ideal_size,
                                    int brand_icon_minimum_size,
                                    IdentityProviderMetadata& idp_metadata) {
-  if (!idp_metadata_value.is_dict())
-    return;
-
-  idp_metadata.brand_background_color = ParseCssColor(
-      idp_metadata_value.FindStringKey(kIdpBrandingBackgroundColor));
+  idp_metadata.brand_background_color =
+      ParseCssColor(idp_metadata_value.FindString(kIdpBrandingBackgroundColor));
   if (idp_metadata.brand_background_color) {
     idp_metadata.brand_text_color = ParseCssColor(
-        idp_metadata_value.FindStringKey(kIdpBrandingForegroundColor));
+        idp_metadata_value.FindString(kIdpBrandingForegroundColor));
     if (idp_metadata.brand_text_color) {
       float text_contrast_ratio = color_utils::GetContrastRatio(
           *idp_metadata.brand_background_color, *idp_metadata.brand_text_color);
@@ -228,39 +225,45 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
     }
   }
 
-  const base::Value* icons_value =
-      idp_metadata_value.FindKey(kIdpBrandingIcons);
-  if (icons_value != nullptr && icons_value->is_list()) {
-    std::vector<blink::Manifest::ImageResource> icons;
-    for (const base::Value& icon_value : icons_value->GetList()) {
-      if (!icon_value.is_dict())
-        continue;
+  const base::Value::List* icons_value =
+      idp_metadata_value.FindList(kIdpBrandingIcons);
+  if (!icons_value) {
+    return;
+  }
 
-      const std::string* icon_src =
-          icon_value.FindStringKey(kIdpBrandingIconUrl);
-      if (icon_src == nullptr)
-        continue;
-
-      blink::Manifest::ImageResource icon;
-      icon.src = GURL(*icon_src);
-      if (!icon.src.is_valid())
-        continue;
-
-      icon.purpose = {blink::mojom::ManifestImageResource_Purpose::MASKABLE};
-
-      absl::optional<int> icon_size =
-          icon_value.FindIntKey(kIdpBrandingIconSize);
-      int icon_size_int = icon_size ? icon_size.value() : 0;
-      icon.sizes.emplace_back(icon_size_int, icon_size_int);
-
-      icons.push_back(icon);
+  std::vector<blink::Manifest::ImageResource> icons;
+  for (const base::Value& icon_value : *icons_value) {
+    const base::Value::Dict* icon_value_dict = icon_value.GetIfDict();
+    if (!icon_value_dict) {
+      continue;
     }
 
-    idp_metadata.brand_icon_url =
-        blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-            icons, brand_icon_ideal_size, brand_icon_minimum_size,
-            blink::mojom::ManifestImageResource_Purpose::MASKABLE);
+    const std::string* icon_src =
+        icon_value_dict->FindString(kIdpBrandingIconUrl);
+    if (!icon_src) {
+      continue;
+    }
+
+    blink::Manifest::ImageResource icon;
+    icon.src = GURL(*icon_src);
+    if (!icon.src.is_valid()) {
+      continue;
+    }
+
+    icon.purpose = {blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+
+    absl::optional<int> icon_size =
+        icon_value_dict->FindInt(kIdpBrandingIconSize);
+    int icon_size_int = icon_size.value_or(0);
+    icon.sizes.emplace_back(icon_size_int, icon_size_int);
+
+    icons.push_back(icon);
   }
+
+  idp_metadata.brand_icon_url =
+      blink::ManifestIconSelector::FindBestMatchingSquareIcon(
+          icons, brand_icon_ideal_size, brand_icon_minimum_size,
+          blink::mojom::ManifestImageResource_Purpose::MASKABLE);
 }
 
 ParseStatus GetResponseError(std::string* response_body, int response_code) {
@@ -278,9 +281,10 @@ ParseStatus GetParsingError(
   if (!result.has_value())
     return ParseStatus::kInvalidResponseError;
 
-  auto& response = *result;
-  if (!response.is_dict())
+  const base::Value::Dict* response = result->GetIfDict();
+  if (!response) {
     return ParseStatus::kInvalidResponseError;
+  }
 
   return ParseStatus::kSuccess;
 }
@@ -374,13 +378,13 @@ void OnConfigParsed(const GURL& provider,
     return;
   }
 
-  auto& response = *result;
+  const base::Value::Dict& response = result->GetDict();
   auto ExtractEndpoint = [&](const char* key) {
-    const base::Value* endpoint = response.FindKey(key);
-    if (!endpoint || !endpoint->is_string()) {
+    const std::string* endpoint = response.FindString(key);
+    if (!endpoint) {
       return GURL();
     }
-    return ResolveConfigUrl(provider, endpoint->GetString());
+    return ResolveConfigUrl(provider, *endpoint);
   };
 
   Endpoints endpoints;
@@ -389,7 +393,8 @@ void OnConfigParsed(const GURL& provider,
   endpoints.client_metadata = ExtractEndpoint(kClientMetadataEndpointKey);
   endpoints.metrics = ExtractEndpoint(kMetricsEndpoint);
 
-  const base::Value* idp_metadata_value = response.FindKey(kIdpBrandingKey);
+  const base::Value::Dict* idp_metadata_value =
+      response.FindDict(kIdpBrandingKey);
   IdentityProviderMetadata idp_metadata;
   idp_metadata.config_url = provider;
   if (idp_metadata_value) {
@@ -412,13 +417,13 @@ void OnClientMetadataParsed(
     return;
   }
 
-  auto& response = *result;
+  const base::Value::Dict& response = result->GetDict();
   auto ExtractUrl = [&](const char* key) {
-    const base::Value* endpoint = response.FindKey(key);
-    if (!endpoint || !endpoint->is_string()) {
+    const std::string* endpoint = response.FindString(key);
+    if (!endpoint) {
       return std::string();
     }
-    return endpoint->GetString();
+    return *endpoint;
   };
 
   IdpNetworkRequestManager::ClientMetadata data;
@@ -440,10 +445,10 @@ void OnAccountsRequestParsed(
   }
 
   AccountList account_list;
-  auto& response = *result;
-  const base::Value* accounts = response.FindKey(kAccountsKey);
+  const base::Value::Dict& response = result->GetDict();
+  const base::Value::List* accounts = response.FindList(kAccountsKey);
   bool accounts_present =
-      accounts && ParseAccounts(accounts, account_list, client_id);
+      accounts && ParseAccounts(*accounts, account_list, client_id);
 
   if (!accounts_present) {
     std::move(callback).Run(
@@ -465,18 +470,17 @@ void OnTokenRequestParsed(
     return;
   }
 
-  auto& response = *result;
-  const base::Value* token = response.FindKey(kTokenKey);
-  bool token_present = token && token->is_string();
+  const base::Value::Dict& response = result->GetDict();
+  const std::string* token = response.FindString(kTokenKey);
 
-  if (!token_present) {
+  if (!token) {
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
         std::string());
     return;
   }
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
-                          token->GetString());
+                          *token);
 }
 
 void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
