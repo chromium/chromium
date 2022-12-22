@@ -119,6 +119,14 @@ enum FSPOperationResponse {
   kGenericFailure,
 };
 
+[Stable, Extensible]
+enum FSPForwardResult {
+  [Default] kUnknown,
+  kSuccess,
+  kInternalError,
+  kNoListener,
+};
+
 // Implemented by Lacros.
 [Stable, Uuid="8cbcf151-c189-4fe9-90ff-892c7f5637a9"]
 interface FileSystemProvider {
@@ -148,6 +156,23 @@ interface FileSystemProvider {
   ForwardOperation@2(
       string provider, int32 histogram_value, string event_name,
       mojo_base.mojom.ListValue args) => (bool delivery_failure);
+  // Same as ForwardOperation, but exposes request metadata uniquely identifying
+  // a request. A request is uniquely identified by a tuple of:
+  // - |provider|, |file_system_id|, |request_id|: for requests addressed to a
+  //   specific file system instance.
+  // - |provider|, |request_id|: for requests addressed to a provider in general
+  //   (e.g. a request to mount a new filesystem). In this case,
+  //   |file_system_id| will be null.
+  [MinVersion=4]
+  ForwardRequest@3(
+      string provider, string? file_system_id, int64 request_id,
+      int32 histogram_value, string event_name,
+      mojo_base.mojom.ListValue args) => (FSPForwardResult result);
+  // Signal to Lacros that Ash cancelled a request uniquely identified by
+  // given parameters.
+  [MinVersion=4]
+  CancelRequest@4(
+      string provider, string? file_system_id, int64 request_id);
 };
 
 // Implemented by Ash. Extensions in Lacros can register themselves as file

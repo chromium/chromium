@@ -79,23 +79,42 @@ void LacrosFileSystemProvider::ForwardOperation(
     const std::string& event_name,
     base::Value::List args,
     ForwardOperationCallback callback) {
+  ForwardRequest(
+      provider, "", 0, histogram_value, event_name, std::move(args),
+      base::BindOnce(
+          [](ForwardOperationCallback callback,
+             crosapi::mojom::FSPForwardResult result) {
+            std::move(callback).Run(result !=
+                                    crosapi::mojom::FSPForwardResult::kSuccess);
+          },
+          std::move(callback)));
+}
+
+void LacrosFileSystemProvider::ForwardRequest(
+    const std::string& provider,
+    const absl::optional<std::string>& file_system_id,
+    int64_t request_id,
+    int32_t histogram_value,
+    const std::string& event_name,
+    base::Value::List args,
+    ForwardRequestCallback callback) {
   Profile* main_profile = GetMainProfile();
   if (!main_profile) {
     LOG(ERROR) << "Could not get main profile";
-    std::move(callback).Run(/*delivery_failure=*/true);
+    std::move(callback).Run(crosapi::mojom::FSPForwardResult::kInternalError);
     return;
   }
 
   extensions::EventRouter* router = extensions::EventRouter::Get(main_profile);
   if (!router) {
     LOG(ERROR) << "Could not get event router";
-    std::move(callback).Run(/*delivery_failure=*/true);
+    std::move(callback).Run(crosapi::mojom::FSPForwardResult::kInternalError);
     return;
   }
 
   if (!router->ExtensionHasEventListener(provider, event_name)) {
     LOG(ERROR) << "Could not get event listener";
-    std::move(callback).Run(/*delivery_failure=*/true);
+    std::move(callback).Run(crosapi::mojom::FSPForwardResult::kNoListener);
     return;
   }
 
@@ -108,7 +127,7 @@ void LacrosFileSystemProvider::ForwardOperation(
   if (histogram_value < lowest_valid_enum ||
       histogram_value > highest_valid_enum) {
     LOG(ERROR) << "Invalid histogram";
-    std::move(callback).Run(/*delivery_failure=*/true);
+    std::move(callback).Run(crosapi::mojom::FSPForwardResult::kInternalError);
     return;
   }
   extensions::events::HistogramValue histogram =
@@ -117,7 +136,16 @@ void LacrosFileSystemProvider::ForwardOperation(
   auto event = std::make_unique<extensions::Event>(histogram, event_name,
                                                    std::move(args));
   router->DispatchEventToExtension(provider, std::move(event));
-  std::move(callback).Run(/*delivery_failure=*/false);
+  std::move(callback).Run(crosapi::mojom::FSPForwardResult::kSuccess);
+}
+
+void LacrosFileSystemProvider::CancelRequest(
+    const std::string& provider,
+    const absl::optional<std::string>& file_system_id,
+    int64_t request_id) {
+  // TODO(b/249182641): Request cancellation should decrement service worker
+  // keep-alive reference count.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void LacrosFileSystemProvider::OnExtensionLoaded(
