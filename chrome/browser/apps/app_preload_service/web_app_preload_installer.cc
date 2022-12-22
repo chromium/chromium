@@ -9,9 +9,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -146,14 +145,13 @@ void WebAppPreloadInstaller::InstallAppImpl(
     return;
   }
 
-  provider->command_manager().ScheduleCommand(
-      std::make_unique<web_app::InstallFromInfoCommand>(
-          std::move(info),
-          /*overwrite_existing_manifest_fields=*/false,
-          webapps::WebappInstallSource::PRELOADED_OEM,
-          base::BindOnce(&WebAppPreloadInstaller::OnAppInstalled,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-          params));
+  provider->scheduler().InstallFromInfoWithParams(
+      std::move(info),
+      /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::PRELOADED_OEM,
+      base::BindOnce(&WebAppPreloadInstaller::OnAppInstalled,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      params);
 }
 
 void WebAppPreloadInstaller::OnAppInstalled(
