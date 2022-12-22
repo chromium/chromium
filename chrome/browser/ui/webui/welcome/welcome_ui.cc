@@ -30,10 +30,6 @@
 #include "net/base/url_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace {
 
 const char kPreviewBackgroundPath[] = "preview-background.jpg";
@@ -145,8 +141,7 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  html_source->AddBoolean("is_win10",
-                          base::win::GetVersion() >= base::win::Version::WIN10);
+  html_source->AddBoolean("is_win10", true);
 #endif
 
   // Add the shared bookmark handler for welcome modules.

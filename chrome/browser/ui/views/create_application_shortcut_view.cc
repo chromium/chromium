@@ -27,7 +27,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/shortcut.h"
-#include "base/win/windows_version.h"
 #include "chrome/installer/util/taskbar_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -123,14 +122,9 @@ void CreateChromeApplicationShortcutView::InitControls() {
   std::unique_ptr<views::Checkbox> pin_to_taskbar_checkbox;
 
 #if BUILDFLAG(IS_WIN)
-  base::win::Version version = base::win::GetVersion();
-  // Do not allow creating shortcuts on the Start Screen for Windows 8.
-  if (version != base::win::Version::WIN8 &&
-      version != base::win::Version::WIN8_1) {
-    menu_check_box = AddCheckbox(
-        l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_START_MENU_CHKBOX),
-        prefs::kWebAppCreateInAppsMenu);
-  }
+  menu_check_box = AddCheckbox(
+      l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_START_MENU_CHKBOX),
+      prefs::kWebAppCreateInAppsMenu);
 
   // Only include the pin-to-taskbar option when running on versions of Windows
   // that support pinning.

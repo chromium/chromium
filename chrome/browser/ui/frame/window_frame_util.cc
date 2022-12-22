@@ -8,7 +8,6 @@
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -36,7 +35,6 @@ bool WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(
     const Browser* browser) {
 #if BUILDFLAG(IS_WIN)
   return browser->is_type_normal() &&
-         base::win::GetVersion() >= base::win::Version::WIN10 &&
          base::FeatureList::IsEnabled(features::kWin10TabSearchCaptionButton);
 #else
   return false;

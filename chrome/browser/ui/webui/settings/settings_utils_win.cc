@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,7 +30,7 @@ namespace {
 // Shows a Windows certificate management dialog on the dialog thread.
 class ManageCertificatesDialog : public ui::BaseShellDialogImpl {
  public:
-  ManageCertificatesDialog() {}
+  ManageCertificatesDialog() = default;
 
   ManageCertificatesDialog(const ManageCertificatesDialog&) = delete;
   ManageCertificatesDialog& operator=(const ManageCertificatesDialog&) = delete;
@@ -103,15 +102,9 @@ void OpenConnectionDialogCallback() {
 }
 
 void ShowNetworkProxySettings(content::WebContents* /*web_contents*/) {
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    // See
-    // https://docs.microsoft.com/en-us/windows/uwp/launch-resume/launch-settings-app#network--internet
-    platform_util::OpenExternal(GURL("ms-settings:network-proxy"));
-  } else {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(&OpenConnectionDialogCallback));
-  }
+  // See
+  // https://docs.microsoft.com/en-us/windows/uwp/launch-resume/launch-settings-app#network--internet
+  platform_util::OpenExternal(GURL("ms-settings:network-proxy"));
 }
 
 void ShowManageSSLCertificates(content::WebContents* web_contents) {

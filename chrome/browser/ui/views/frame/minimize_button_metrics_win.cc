@@ -4,35 +4,20 @@
 
 #include "chrome/browser/ui/views/frame/minimize_button_metrics_win.h"
 
+#include <dwmapi.h>
+
 #include "base/check.h"
 #include "base/i18n/rtl.h"
-#include "base/win/windows_version.h"
-#include "dwmapi.h"
 #include "ui/base/win/shell.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace {
 
-// These constants were determined by manually adding various offsets
-// until the identity switcher was placed at the same location as before.
-// When a new or updated OS version is released, a new constant may need
-// to be added to this list and GetDefaultButtonBoundsOffset() is updated.
-const int kWin7ButtonBoundsPositionOffset = 1;
-const int kWin8ButtonBoundsPositionOffset = 10;
-const int kWin10ButtonBoundsPositionOffset = 6;
+const int kButtonBoundsPositionOffset = 6;
 const int kInvalidOffset = static_cast<int>(0x80000000);
 
-using base::win::GetVersion;
 using display::win::ScreenWin;
-
-int GetDefaultButtonBoundsOffset() {
-  if (GetVersion() >= base::win::Version::WIN10)
-    return kWin10ButtonBoundsPositionOffset;
-  if (GetVersion() >= base::win::Version::WIN8)
-    return kWin8ButtonBoundsPositionOffset;
-  return kWin7ButtonBoundsPositionOffset;
-}
 
 }  // namespace
 
@@ -42,14 +27,9 @@ int MinimizeButtonMetrics::last_cached_minimize_button_x_delta_ = 0;
 // static
 int MinimizeButtonMetrics::button_bounds_position_offset_ = kInvalidOffset;
 
-MinimizeButtonMetrics::MinimizeButtonMetrics()
-    : hwnd_(nullptr),
-      cached_minimize_button_x_delta_(last_cached_minimize_button_x_delta_),
-      was_activated_(false) {
-}
+MinimizeButtonMetrics::MinimizeButtonMetrics() = default;
 
-MinimizeButtonMetrics::~MinimizeButtonMetrics() {
-}
+MinimizeButtonMetrics::~MinimizeButtonMetrics() = default;
 
 void MinimizeButtonMetrics::Init(HWND hwnd) {
   DCHECK(!hwnd_);
@@ -78,16 +58,18 @@ int MinimizeButtonMetrics::GetButtonBoundsPositionOffset(
     const RECT& button_bounds,
     const RECT& window_bounds) const {
   if (button_bounds_position_offset_ == kInvalidOffset) {
-    if (!was_activated_ || !IsWindowVisible(hwnd_))
-      return GetDefaultButtonBoundsOffset();
+    if (!was_activated_ || !IsWindowVisible(hwnd_)) {
+      return kButtonBoundsPositionOffset;
+    }
     TITLEBARINFOEX info = {0};
     info.cbSize = sizeof(info);
     SendMessage(hwnd_, WM_GETTITLEBARINFOEX, 0,
                 reinterpret_cast<LPARAM>(&info));
     if (info.rgrect[2].right == info.rgrect[2].left ||
         (info.rgstate[2] & (STATE_SYSTEM_INVISIBLE | STATE_SYSTEM_OFFSCREEN |
-                            STATE_SYSTEM_UNAVAILABLE)))
-      return GetDefaultButtonBoundsOffset();
+                            STATE_SYSTEM_UNAVAILABLE))) {
+      return kButtonBoundsPositionOffset;
+    }
     button_bounds_position_offset_ =
         info.rgrect[2].left - (button_bounds.left + window_bounds.left);
   }

@@ -88,8 +88,6 @@ class BrowserDesktopWindowTreeHostWin
   // WindowTreeHost of its value.
   void UpdateWorkspace();
 
-  bool IsOpaqueHostedAppFrame() const;
-
   void SetWindowIcon(bool badged);
 
   raw_ptr<BrowserView> browser_view_;

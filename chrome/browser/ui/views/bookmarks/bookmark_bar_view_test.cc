@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -71,7 +74,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "ui/aura/window_tree_host.h"
 #endif
 
@@ -1451,7 +1453,6 @@ class BookmarkBarViewTest14 : public BookmarkBarViewEventTestBase {
   }
 
  private:
-
   void Step2() {
     // Menu should NOT be showing.
     views::MenuItemView* menu = bb_view_->GetMenu();
@@ -1594,14 +1595,6 @@ class BookmarkBarViewTest17 : public BookmarkBarViewEventTestBase {
 
  protected:
   void DoTestOnMessageLoop() override {
-#if BUILDFLAG(IS_WIN)
-    // TODO(crbug.com/453796): Flaky on Windows7.
-    if (base::win::GetVersion() <= base::win::Version::WIN7) {
-      Done();
-      return;
-    }
-#endif
-
     // Move the mouse to the other folder on the bookmark bar and press the
     // left mouse button.
     views::LabelButton* button = bb_view_->other_bookmarks_button();

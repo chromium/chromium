@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_navigation_button_container.h"
 
+#include <memory>
+#include <utility>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -26,10 +29,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/window/hit_test_utils.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace {
 
 constexpr int kPaddingBetweenNavigationButtons = 5;
@@ -47,12 +46,6 @@ class WebAppToolbarButton : public BaseClass {
   WebAppToolbarButton(const WebAppToolbarButton&) = delete;
   WebAppToolbarButton& operator=(const WebAppToolbarButton&) = delete;
   ~WebAppToolbarButton() override = default;
-
-#if BUILDFLAG(IS_WIN)
-  bool ShouldUseWindowsIconsForMinimalUI() const {
-    return base::win::GetVersion() >= base::win::Version::WIN10;
-  }
-#endif
 
   void SetIconColor(SkColor icon_color) {
     if (icon_color_ == icon_color)
@@ -108,13 +101,11 @@ WebAppToolbarBackButton::WebAppToolbarBackButton(PressedCallback callback,
 
 const gfx::VectorIcon* WebAppToolbarBackButton::GetAlternativeIcon() const {
 #if BUILDFLAG(IS_WIN)
-  if (ShouldUseWindowsIconsForMinimalUI()) {
-    return ui::TouchUiController::Get()->touch_ui()
-               ? &kBackArrowWindowsTouchIcon
-               : &kBackArrowWindowsIcon;
-  }
-#endif
+  return ui::TouchUiController::Get()->touch_ui() ? &kBackArrowWindowsTouchIcon
+                                                  : &kBackArrowWindowsIcon;
+#else
   return nullptr;
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 BEGIN_METADATA(WebAppToolbarBackButton, BackForwardButton)
@@ -135,16 +126,15 @@ class WebAppToolbarReloadButton : public WebAppToolbarButton<ReloadButton> {
 
 const gfx::VectorIcon* WebAppToolbarReloadButton::GetAlternativeIcon() const {
 #if BUILDFLAG(IS_WIN)
-  if (ShouldUseWindowsIconsForMinimalUI()) {
-    const bool is_reload = visible_mode() == ReloadButton::Mode::kReload;
-    if (ui::TouchUiController::Get()->touch_ui()) {
-      return is_reload ? &kReloadWindowsTouchIcon
-                       : &kNavigateStopWindowsTouchIcon;
-    }
-    return is_reload ? &kReloadWindowsIcon : &kNavigateStopWindowsIcon;
+  const bool is_reload = visible_mode() == ReloadButton::Mode::kReload;
+  if (ui::TouchUiController::Get()->touch_ui()) {
+    return is_reload ? &kReloadWindowsTouchIcon
+                     : &kNavigateStopWindowsTouchIcon;
   }
-#endif
+  return is_reload ? &kReloadWindowsIcon : &kNavigateStopWindowsIcon;
+#else
   return nullptr;
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 BEGIN_METADATA(WebAppToolbarReloadButton, ReloadButton)

@@ -172,10 +172,6 @@ using testing::Return;
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/chrome_browser_application_mac.h"
 #endif
@@ -204,14 +200,6 @@ Browser* FindOneOtherBrowser(Browser* browser) {
       other_browser = b;
   }
   return other_browser;
-}
-
-bool IsWindows10OrNewer() {
-#if BUILDFLAG(IS_WIN)
-  return base::win::GetVersion() >= base::win::Version::WIN10;
-#else
-  return false;
-#endif
 }
 
 void DisableWelcomePages(const std::vector<Profile*>& profiles) {
@@ -2771,14 +2759,6 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
  protected:
   StartupBrowserWebAppProtocolHandlingTest() = default;
 
-  bool AreProtocolHandlersSupported() {
-#if BUILDFLAG(IS_WIN)
-    return base::win::GetVersion() > base::win::Version::WIN7;
-#else
-    return true;
-#endif
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
   }
@@ -2839,9 +2819,6 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel) {
-  if (!AreProtocolHandlersSupported())
-    GTEST_SKIP() << "Protocol Handlers unsupported";
-
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "ProtocolHandlerLaunchDialogView");
 
@@ -2866,9 +2843,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept) {
-  if (!AreProtocolHandlersSupported())
-    GTEST_SKIP() << "Protocol Handlers unsupported";
-
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "ProtocolHandlerLaunchDialogView");
 
@@ -2922,9 +2896,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl) {
-  if (!AreProtocolHandlersSupported())
-    GTEST_SKIP() << "Protocol Handlers unsupported";
-
   // Register web app as a protocol handler that should *not* handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
@@ -2955,9 +2926,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsLaunchedWithAllowedProtocolUrlPref) {
-  if (!AreProtocolHandlersSupported())
-    GTEST_SKIP() << "Protocol Handlers unsupported";
-
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "ProtocolHandlerLaunchDialogView");
 
@@ -3024,9 +2992,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
                        WebAppLaunch_WebAppIsLaunchedWithAllowedProtocol) {
-  if (!AreProtocolHandlersSupported())
-    GTEST_SKIP() << "Protocol Handlers unsupported";
-
   // Register web app as a protocol handler that should handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
@@ -3096,9 +3061,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsLaunchedWithDiallowedProtocolUrlPref) {
-  if (!AreProtocolHandlersSupported())
-    GTEST_SKIP() << "Protocol Handlers unsupported";
-
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "ProtocolHandlerLaunchDialogView");
 
@@ -3134,9 +3096,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsLaunchedWithDisallowedOnceProtocol) {
-  if (!AreProtocolHandlersSupported())
-    GTEST_SKIP() << "Protocol Handlers unsupported";
-
   // Register web app as a protocol handler that should handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
@@ -3189,9 +3148,6 @@ class StartupBrowserWebAppProtocolAndFileHandlingTest
 // handling launch, not a protocol handling or URL launch.
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
                        WebAppLaunch_FileProtocol) {
-  if (!AreProtocolHandlersSupported())
-    GTEST_SKIP() << "Protocol Handlers unsupported";
-
   // Install an app with protocol handlers and a handler for plain text files.
   apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/protocol=%s";
@@ -3325,8 +3281,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, AddFirstRunTabs) {
 #endif
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
                        MAYBE_RestoreOnStartupURLsPolicySpecified) {
-  if (IsWindows10OrNewer())
-    return;
+#if BUILDFLAG(IS_WIN)
+  return;
+#endif  // BUILDFLAG(IS_WIN)
 
   ASSERT_TRUE(embedded_test_server()->Start());
   StartupBrowserCreator browser_creator;
@@ -3524,18 +3481,17 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   ScopedProfileKeepAlive profile1_keep_alive(
       profile1_ptr, ProfileKeepAliveOrigin::kBrowserWindow);
 
-  // Windows 10 has its own Welcome page but even that should not show up when
+#if BUILDFLAG(IS_WIN)
+  // Windows has its own Welcome page but even that should not show up when
   // the policy is set.
-  if (IsWindows10OrNewer()) {
-    ASSERT_EQ(1, tab_strip->count());
-    EXPECT_EQ(
-        "title1.html",
-        tab_strip->GetWebContentsAt(0)->GetVisibleURL().ExtractFileName());
+  ASSERT_EQ(1, tab_strip->count());
+  EXPECT_EQ("title1.html",
+            tab_strip->GetWebContentsAt(0)->GetVisibleURL().ExtractFileName());
 
-    browser = CloseBrowserAndOpenNew(browser, profile1_ptr);
-    ASSERT_TRUE(browser);
-    tab_strip = browser->tab_strip_model();
-  }
+  browser = CloseBrowserAndOpenNew(browser, profile1_ptr);
+  ASSERT_TRUE(browser);
+  tab_strip = browser->tab_strip_model();
+#endif  // BUILDFLAG(IS_WIN)
 
   // Ensure that the policy page page appears on second run on Win 10, and
   // on first run on all other platforms.

@@ -12,7 +12,6 @@
 
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
-#include "base/win/windows_version.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/chrome_dll_resource.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -156,10 +155,6 @@ bool GlassBrowserFrameView::HasVisibleBackgroundTabShapes(
     BrowserFrameActiveState active_state) const {
   DCHECK(GetWidget());
 
-  // Pre-Win 8, tabs never match the glass frame appearance.
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return true;
-
   // Enabling high contrast mode disables the custom-drawn titlebar (so the
   // system-drawn frame will respect the native frame colors) and enables the
   // IncreasedContrastThemeSupplier (which does not respect the native frame
@@ -170,15 +165,6 @@ bool GlassBrowserFrameView::HasVisibleBackgroundTabShapes(
     return true;
 
   return BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(active_state);
-}
-
-bool GlassBrowserFrameView::CanDrawStrokes() const {
-  // On Win 7, the tabs are drawn as flat shapes against the glass frame, so
-  // the active tab always has a visible shape and strokes are unnecessary.
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return false;
-
-  return BrowserNonClientFrameView::CanDrawStrokes();
 }
 
 SkColor GlassBrowserFrameView::GetCaptionColor(
@@ -302,41 +288,39 @@ int GlassBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
     }
   }
 
-  // On Windows 8+, the caption buttons are almost butted up to the top right
+  // On Windows, the caption buttons are almost butted up to the top right
   // corner of the window. This code ensures the mouse isn't set to a size
   // cursor while hovering over the caption buttons, thus giving the incorrect
   // impression that the user can resize the window.
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    RECT button_bounds = {0};
-    if (SUCCEEDED(DwmGetWindowAttribute(views::HWNDForWidget(frame()),
-                                        DWMWA_CAPTION_BUTTON_BOUNDS,
-                                        &button_bounds,
-                                        sizeof(button_bounds)))) {
-      gfx::RectF button_bounds_in_dips = gfx::ConvertRectToDips(
-          gfx::Rect(button_bounds), display::win::GetDPIScale());
-      // TODO(crbug.com/1131681): GetMirroredRect() requires an integer rect,
-      // but the size in DIPs may not be an integer with a fractional device
-      // scale factor. If we want to keep using integers, the choice to use
-      // ToFlooredRectDeprecated() seems to be doing the wrong thing given the
-      // comment below about insetting 1 DIP instead of 1 physical pixel. We
-      // should probably use ToEnclosedRect() and then we could have inset 1
-      // physical pixel here.
-      gfx::Rect buttons =
-          GetMirroredRect(gfx::ToFlooredRectDeprecated(button_bounds_in_dips));
+  RECT button_bounds = {0};
+  if (SUCCEEDED(DwmGetWindowAttribute(views::HWNDForWidget(frame()),
+                                      DWMWA_CAPTION_BUTTON_BOUNDS,
+                                      &button_bounds, sizeof(button_bounds)))) {
+    gfx::RectF button_bounds_in_dips = gfx::ConvertRectToDips(
+        gfx::Rect(button_bounds), display::win::GetDPIScale());
+    // TODO(crbug.com/1131681): GetMirroredRect() requires an integer rect,
+    // but the size in DIPs may not be an integer with a fractional device
+    // scale factor. If we want to keep using integers, the choice to use
+    // ToFlooredRectDeprecated() seems to be doing the wrong thing given the
+    // comment below about insetting 1 DIP instead of 1 physical pixel. We
+    // should probably use ToEnclosedRect() and then we could have inset 1
+    // physical pixel here.
+    gfx::Rect buttons =
+        GetMirroredRect(gfx::ToFlooredRectDeprecated(button_bounds_in_dips));
 
-      // There is a small one-pixel strip right above the caption buttons in
-      // which the resize border "peeks" through.
-      constexpr int kCaptionButtonTopInset = 1;
-      // The sizing region at the window edge above the caption buttons is
-      // 1 px regardless of scale factor. If we inset by 1 before converting
-      // to DIPs, the precision loss might eliminate this region entirely. The
-      // best we can do is to inset after conversion. This guarantees we'll
-      // show the resize cursor when resizing is possible. The cost of which
-      // is also maybe showing it over the portion of the DIP that isn't the
-      // outermost pixel.
-      buttons.Inset(gfx::Insets::TLBR(kCaptionButtonTopInset, 0, 0, 0));
-      if (buttons.Contains(point))
-        return HTNOWHERE;
+    // There is a small one-pixel strip right above the caption buttons in
+    // which the resize border "peeks" through.
+    constexpr int kCaptionButtonTopInset = 1;
+    // The sizing region at the window edge above the caption buttons is
+    // 1 px regardless of scale factor. If we inset by 1 before converting
+    // to DIPs, the precision loss might eliminate this region entirely. The
+    // best we can do is to inset after conversion. This guarantees we'll
+    // show the resize cursor when resizing is possible. The cost of which
+    // is also maybe showing it over the portion of the DIP that isn't the
+    // outermost pixel.
+    buttons.Inset(gfx::Insets::TLBR(kCaptionButtonTopInset, 0, 0, 0));
+    if (buttons.Contains(point)) {
+      return HTNOWHERE;
     }
   }
 

@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -192,28 +191,6 @@ class TooltipBrowserTest : public InProcessBrowserTest {
     return ChildFrameAt(web_contents_->GetPrimaryMainFrame(), index);
   }
 
-  bool SkipTestForOldWinVersion() const {
-#if BUILDFLAG(IS_WIN)
-    // On older Windows version, tooltips are displayed with TooltipWin instead
-    // of TooltipAura. For TooltipAura, a tooltip is displayed using a Widget
-    // and a Label and for TooltipWin, it is displayed using a native win32
-    // control. Since the observer we use in this class is the
-    // AnyWidgetObserver, we don't receive any update from non-Widget tooltips.
-    // This doesn't mean that no tooltip is displayed on older platforms, but
-    // that we are unable to execute the browser test successfully because the
-    // tooltip displayed is not displayed using a Widget.
-    //
-    // For now, we can simply skip the tests on older platforms, but it might be
-    // a good idea to eventually implement a custom observer (e.g.,
-    // TooltipStateObserver) that would work for both TooltipAura and
-    // TooltipWin, or remove once and for all TooltipWin. For more information
-    // on why we still need TooltipWin on Win7, see https://crbug.com/1201440.
-    if (base::win::GetVersion() <= base::win::Version::WIN7)
-      return true;
-#endif  // BUILDFLAG(IS_WIN)
-    return false;
-  }
-
   gfx::Point WebContentPositionToScreenCoordinate(int x, int y) {
     return gfx::Point(x, y) + rwhv_->GetViewBounds().OffsetFromOrigin();
   }
@@ -242,9 +219,6 @@ class TooltipBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
                        ShowTooltipFromWebContentWithCursor) {
-  if (SkipTestForOldWinVersion())
-    return;
-
   NavigateToURL("/tooltip.html");
   std::u16string expected_text = u"my tooltip";
 
@@ -279,9 +253,6 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
                        MAYBE_ShowTooltipFromWebContentWithKeyboard) {
-  if (SkipTestForOldWinVersion())
-    return;
-
   NavigateToURL("/tooltip.html");
   std::u16string expected_text = u"my tooltip";
 
@@ -308,9 +279,6 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
                        MAYBE_ShowTooltipFromIFrameWithKeyboard) {
-  if (SkipTestForOldWinVersion())
-    return;
-
   // There are two tooltips in this file: one above the iframe and one inside
   // the iframe.
   NavigateToURL("/tooltip_in_iframe.html");
@@ -361,9 +329,6 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
                        MAYBE_HideTooltipOnKeyPressTriggeredByCursor) {
-  if (SkipTestForOldWinVersion())
-    return;
-
   NavigateToURL("/tooltip.html");
   std::u16string expected_text = u"my tooltip";
 
@@ -400,10 +365,6 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
                        MAYBE_HideTooltipOnKeyPressTriggeredByKeyboard) {
-  if (SkipTestForOldWinVersion()) {
-    return;
-  }
-
   NavigateToURL("/tooltip.html");
   std::u16string expected_text = u"my tooltip";
 
@@ -434,9 +395,6 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
                        MAYBE_ScriptFocusHidesKeyboardTriggeredTooltip) {
-  if (SkipTestForOldWinVersion())
-    return;
-
   NavigateToURL("/tooltip_two_buttons.html");
   std::u16string expected_text_1 = u"my tooltip 1";
   std::u16string expected_text_2 = u"my tooltip 2";

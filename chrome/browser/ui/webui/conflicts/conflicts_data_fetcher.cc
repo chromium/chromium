@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
-#include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -265,10 +264,6 @@ ThirdPartyFeaturesStatus GetThirdPartyFeaturesStatus(
     }
   }
 
-  // Figure out why the manager instance doesn't exist.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return kNotAvailableWin7;
-
   if (!ModuleDatabase::IsThirdPartyBlockingPolicyEnabled())
     return kPolicyDisabled;
 
@@ -299,9 +294,6 @@ std::string GetThirdPartyFeaturesStatusString(ThirdPartyFeaturesStatus status) {
     case ThirdPartyFeaturesStatus::kPolicyDisabled:
       return "The ThirdPartyBlockingEnabled group policy is disabled.";
     case ThirdPartyFeaturesStatus::kFeatureDisabled:
-      if (base::win::GetVersion() < base::win::Version::WIN10)
-        return "The ThirdPartyModulesBlocking feature is disabled.";
-
       return "Both the IncompatibleApplicationsWarning and "
              "ThirdPartyModulesBlocking features are disabled.";
     case ThirdPartyFeaturesStatus::kModuleListInvalid:
@@ -309,17 +301,12 @@ std::string GetThirdPartyFeaturesStatusString(ThirdPartyFeaturesStatus status) {
     case ThirdPartyFeaturesStatus::kNoModuleListAvailable:
       return "Disabled - There is no Module List version available.";
     case ThirdPartyFeaturesStatus::kWarningInitialized:
-      DCHECK_GE(base::win::GetVersion(), base::win::Version::WIN10);
       return "The IncompatibleApplicationsWarning feature is enabled, while "
              "the ThirdPartyModulesBlocking feature is disabled.";
     case ThirdPartyFeaturesStatus::kBlockingInitialized:
-      if (base::win::GetVersion() < base::win::Version::WIN10)
-        return "The ThirdPartyModulesBlocking feature is enabled.";
-
       return "The ThirdPartyModulesBlocking feature is enabled, while the "
              "IncompatibleApplicationsWarning feature is disabled.";
     case ThirdPartyFeaturesStatus::kWarningAndBlockingInitialized:
-      DCHECK_GE(base::win::GetVersion(), base::win::Version::WIN10);
       return "Both the IncompatibleApplicationsWarning and "
              "ThirdPartyModulesBlocking features are enabled";
   }
@@ -477,7 +464,7 @@ void ConflictsDataFetcher::OnModuleDatabaseIdle() {
   ModuleDatabase::GetInstance()->RemoveObserver(this);
 
   base::Value::Dict results;
-  results.Set("moduleCount", int(module_list_->size()));
+  results.Set("moduleCount", static_cast<int>(module_list_->size()));
   results.Set("moduleList", std::move(*module_list_));
   module_list_ = absl::nullopt;
 

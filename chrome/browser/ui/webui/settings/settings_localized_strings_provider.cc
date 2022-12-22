@@ -127,7 +127,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
 #include "device/fido/win/webauthn_api.h"
 
@@ -263,8 +262,7 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
 #if BUILDFLAG(IS_WIN)
-  html_source->AddBoolean("isWindows10OrNewer",
-                          base::win::GetVersion() >= base::win::Version::WIN10);
+  html_source->AddBoolean("isWindows10OrNewer", true);
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

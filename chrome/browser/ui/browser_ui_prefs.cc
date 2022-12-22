@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_ui_prefs.h"
 
 #include <memory>
+#include <string>
 
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -23,10 +24,6 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/accessibility/accessibility_features.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #endif
 
 namespace {
@@ -69,7 +66,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterInt64Pref(prefs::kDefaultBrowserLastDeclined, 0);
   bool reset_check_default = false;
 #if BUILDFLAG(IS_WIN)
-  reset_check_default = base::win::GetVersion() >= base::win::Version::WIN10;
+  reset_check_default = true;
 #endif
   registry->RegisterBooleanPref(prefs::kResetCheckDefaultBrowser,
                                 reset_check_default);

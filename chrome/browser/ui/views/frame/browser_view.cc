@@ -284,7 +284,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "chrome/browser/taskbar/taskbar_decorator_win.h"
 #include "chrome/browser/win/jumplist.h"
 #include "chrome/browser/win/jumplist_factory.h"
@@ -1367,8 +1366,6 @@ bool BrowserView::IsOnCurrentWorkspace() const {
   return chromeos::DesksHelper::Get(native_win)
       ->BelongsToActiveDesk(native_win);
 #elif BUILDFLAG(IS_WIN)
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return true;
   absl::optional<bool> on_current_workspace =
       native_win->GetHost()->on_current_workspace();
   base::UmaHistogramBoolean("Windows.OnCurrentWorkspaceCached",
