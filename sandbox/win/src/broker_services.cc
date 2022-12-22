@@ -521,6 +521,7 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   startup_info->UpdateFlags(STARTF_FORCEOFFFEEDBACK);
   startup_info->SetDesktop(GetDesktopName(config_base->desktop()));
   startup_info->SetMitigations(config_base->GetProcessMitigations());
+  startup_info->SetFilterEnvironment(config_base->GetEnvironmentFiltered());
 
   if (base::win::GetVersion() >= base::win::Version::WIN10_TH2 &&
       config_base->GetJobLevel() <= JobLevel::kLimitedUser) {

@@ -288,6 +288,7 @@ test("sbox_unittests") {
     "src/restricted_token_unittest.cc",
     "src/sandbox_nt_util_unittest.cc",
     "src/service_resolver_unittest.cc",
+    "src/target_process_unittest.cc",
     "src/threadpool_unittest.cc",
     "src/win_utils_unittest.cc",
     "tests/common/test_utils.cc",

@@ -164,6 +164,8 @@ enum ResultCode : int {
   SBOX_ERROR_MISMATCH_SENTINEL_VALUE = 68,
   // The process of consolidating the ConfigBase for a policy failed.
   SBOX_ERROR_FAILED_TO_FREEZE_CONFIG = 69,
+  // Unable to obtain the environment in the broker process.
+  SBOX_ERROR_CANNOT_OBTAIN_ENVIRONMENT = 70,
   // Placeholder for last item of the enum.
   SBOX_ERROR_LAST
 };

@@ -118,6 +118,8 @@ class TestTargetConfig : public TargetConfig {
     return app_container_;
   }
   void SetDesktop(Desktop desktop) override {}
+  void SetFilterEnvironment(bool env) override {}
+  bool GetEnvironmentFiltered() override { return false; }
 
  private:
   std::vector<std::wstring> blocklisted_dlls_;

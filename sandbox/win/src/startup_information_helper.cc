@@ -194,4 +194,12 @@ bool StartupInformationHelper::BuildStartupInformation() {
   return true;
 }
 
+void StartupInformationHelper::SetFilterEnvironment(bool filter) {
+  filter_environment_ = filter;
+}
+
+bool StartupInformationHelper::IsEnvironmentFiltered() {
+  return filter_environment_;
+}
+
 }  // namespace sandbox

@@ -243,6 +243,20 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // requested alternate desktop must have been created via the TargetPolicy
   // interface before any processes are spawned.
   virtual void SetDesktop(Desktop desktop) = 0;
+
+  // Sets whether or not the environment for the target will be filtered. If an
+  // environment for a target is filtered, then only a fixed list of
+  // environment variables will be copied from the broker to the target. These
+  // are:
+  //  * "Path", "SystemDrive", "SystemRoot", "TEMP", "TMP": Needed for normal
+  //    operation and tests.
+  //  * "LOCALAPPDATA": Needed for App Container processes.
+  //  * "CHROME_CRASHPAD_PIPE_NAME": Needed for crashpad.
+  virtual void SetFilterEnvironment(bool filter) = 0;
+
+  // Obtains whether or not the environment for this target should be filtered.
+  // See above for the variables that are allowed.
+  virtual bool GetEnvironmentFiltered() = 0;
 };
 
 // We need [[clang::lto_visibility_public]] because instances of this class are

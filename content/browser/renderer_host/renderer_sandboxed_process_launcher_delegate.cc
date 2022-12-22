@@ -13,9 +13,11 @@
 #include <windows.h>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/win/nt_status.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
 #include "sandbox/win/src/security_level.h"
@@ -116,6 +118,9 @@ bool RendererSandboxedProcessLauncherDelegateWin::PreSpawnTarget(
         return false;
       }
     }
+
+    config->SetFilterEnvironment(base::FeatureList::IsEnabled(
+        sandbox::policy::features::kRendererFilterEnvironment));
   }
 
   ContentBrowserClient::ChildSpawnFlags flags(

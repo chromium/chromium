@@ -55,6 +55,14 @@ class StartupInformationHelper {
   // information. Must be called before GetStartupInformation().
   bool BuildStartupInformation();
 
+  // Sets whether or not the process created using this startup information will
+  // have its environment filtered.
+  void SetFilterEnvironment(bool filter);
+
+  // Obtains whether or not the environment for the process created with this
+  // startup information should be filtered.
+  bool IsEnvironmentFiltered();
+
   // Gets wrapped object, valid once BuildStartupInformation() has been called.
   base::win::StartupInformation* GetStartupInformation() {
     return &startup_info_;
@@ -72,6 +80,7 @@ class StartupInformationHelper {
   HANDLE stdout_handle_ = INVALID_HANDLE_VALUE;
   HANDLE stderr_handle_ = INVALID_HANDLE_VALUE;
   bool inherit_handles_ = false;
+  bool filter_environment_ = false;
   size_t mitigations_size_ = 0;
 
   // startup_info_.startup_info() is passed to CreateProcessAsUserW().

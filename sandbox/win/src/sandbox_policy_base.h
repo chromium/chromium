@@ -82,6 +82,8 @@ class ConfigBase final : public TargetConfig {
                                     const wchar_t* handle_name) override;
   ResultCode SetDisconnectCsrss() override;
   void SetDesktop(Desktop desktop) override;
+  void SetFilterEnvironment(bool filter) override;
+  bool GetEnvironmentFiltered() override;
 
  private:
   // Can call Freeze()
@@ -139,6 +141,7 @@ class ConfigBase final : public TargetConfig {
   size_t memory_limit_;
   uint32_t ui_exceptions_;
   Desktop desktop_;
+  bool filter_environment_;
 
   // Object in charge of generating the low level policy. Will be reset() when
   // Freeze() is called.

@@ -55463,6 +55463,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
   <int value="67" label="SBOX_ERROR_INVALID_READ_SENTINEL_SIZE"/>
   <int value="68" label="SBOX_ERROR_MISMATCH_SENTINEL_VALUE"/>
   <int value="69" label="SBOX_ERROR_FAILED_TO_FREEZE_CONFIG"/>
+  <int value="70" label="SBOX_ERROR_CANNOT_OBTAIN_ENVIRONMENT"/>
   <int value="1002" label="LAUNCH_RESULT_SUCCESS"/>
   <int value="1003" label="LAUNCH_RESULT_FAILURE"/>
 </enum>

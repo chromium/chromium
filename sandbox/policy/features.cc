@@ -53,6 +53,12 @@ BASE_FEATURE(kChromePipeLockdown,
              "ChromePipeLockdown",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Emergency "off switch" for renderer environment filtering, this feature can
+// be removed around the M113 timeline. See https://crbug.com/1403087.
+BASE_FEATURE(kRendererFilterEnvironment,
+             "RendererFilterEnvironment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
