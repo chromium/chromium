@@ -887,12 +887,12 @@ void FocusFakebox() {
 }
 
 - (void)testNoDefaultMatch {
-  // TODO(crbug.com/1253345) Re-enable this test for iOS 15 and earlier. There
-  // is currently a problem with the test on iOS 15 devices where copying to the
-  // pasteboard fails.
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15 and earlier.");
+  // TODO(crbug.com/1253345) This test fails on iOS 15 devices.
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      !base::ios::IsRunningOnIOS16OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
   }
+
   NSString* copiedText = @"test no default match1";
 
   // Put some text in pasteboard.
