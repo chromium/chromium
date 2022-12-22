@@ -491,20 +491,8 @@ void BrowserServiceLacros::OpenUrlImpl(Profile* profile,
       params ? params->disposition
              : OpenUrlParams::WindowOpenDisposition::kLegacyAutoDetection;
   switch (mojo_disposition) {
-    // This is to support M99 or earlier ash-chrome behavior.
-    // We can drop this when we deprecate to support it.
+    // kLegacyAutoDetection is no longer supported but the API still allows it.
     case OpenUrlParams::WindowOpenDisposition::kLegacyAutoDetection:
-      if (url.SchemeIs(content::kChromeUIScheme) &&
-          (url.host() == chrome::kChromeUIFlagsHost ||
-           url.host() == chrome::kChromeUIVersionHost ||
-           url.host() == chrome::kChromeUIAboutHost ||
-           url.host() == chrome::kChromeUIComponentsHost)) {
-        // Try to re-activate an existing tab for a few specified URLs.
-        navigate_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-      } else {
-        navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-      }
-      break;
     case OpenUrlParams::WindowOpenDisposition::kNewForegroundTab:
       navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
       break;

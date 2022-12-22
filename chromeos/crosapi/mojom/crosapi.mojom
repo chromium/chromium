@@ -1413,9 +1413,7 @@ struct OpenUrlParams {
   // Decides the disposition of the opening page.
   [Stable, Extensible]
   enum WindowOpenDisposition {
-    // DEPRECATED. OpenUrl used to check the URL to decide the disposition
-    // of the page. This is kept just for the compatibility. New callers
-    // should not use this value.
+    // DEPRECATED. Equivalent to kNewForegroundTab since M111.
     [Default] kLegacyAutoDetection = 0,
 
     // Opens the given URL in a new tab.
