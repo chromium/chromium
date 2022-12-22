@@ -1133,15 +1133,6 @@ util.isMirrorSyncEnabled = () => {
 };
 
 /**
- * Returns true if filters in Recents view V2 is enabled.
- * @return {boolean}
- */
-util.isRecentsFilterV2Enabled = () => {
-  return loadTimeData.valueExists('FILTERS_IN_RECENTS_V2_ENABLED') &&
-      loadTimeData.getBoolean('FILTERS_IN_RECENTS_V2_ENABLED');
-};
-
-/**
  * Returns true if search v2 feature flag is enabled.
  * @return {boolean}
  */

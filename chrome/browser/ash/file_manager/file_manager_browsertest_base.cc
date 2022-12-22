@@ -1977,12 +1977,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     command_line->AppendSwitch(ash::switches::kEnableArcVm);
   }
 
-  if (options.enable_filters_in_recents_v2) {
-    enabled_features.push_back(ash::features::kFiltersInRecentsV2);
-  } else {
-    disabled_features.push_back(ash::features::kFiltersInRecentsV2);
-  }
-
   if (options.enable_file_transfer_connector) {
     enabled_features.push_back(
         enterprise_connectors::kEnterpriseConnectorsEnabled);
@@ -3037,11 +3031,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isBannersFrameworkEnabled") {
     *output = options.enable_banners_framework ? "true" : "false";
-    return;
-  }
-
-  if (name == "isFiltersInRecentsEnabledV2") {
-    *output = options.enable_filters_in_recents_v2 ? "true" : "false";
     return;
   }
 

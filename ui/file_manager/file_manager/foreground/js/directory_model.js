@@ -119,10 +119,8 @@ export class DirectoryModel extends EventTarget {
         this.onWatcherDirectoryChanged_.bind(this));
     // For non-watchable directory (e.g. FakeEntry), we need to subscribe to
     // the IOTask and manually refresh.
-    if (util.isRecentsFilterV2Enabled() || util.isTrashEnabled()) {
-      chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
-          this.updateFileListAfterIOTask_.bind(this));
-    }
+    chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
+        this.updateFileListAfterIOTask_.bind(this));
 
     /** @private {string} */
     this.lastSearchQuery_ = '';

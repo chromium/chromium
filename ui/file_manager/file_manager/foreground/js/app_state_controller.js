@@ -198,9 +198,7 @@ export class AppStateController {
         event.previousDirEntry && util.isRecentRoot(event.previousDirEntry);
     if (isOnRecent != isOnRecentBefore) {
       if (isOnRecent) {
-        if (util.isRecentsFilterV2Enabled()) {
-          fileListModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;
-        }
+        fileListModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;
         fileListModel.sort(
             AppStateController.DEFAULT_SORT_FIELD,
             AppStateController.DEFAULT_SORT_DIRECTION);

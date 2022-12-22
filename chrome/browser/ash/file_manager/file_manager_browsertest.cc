@@ -137,11 +137,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableFiltersInRecentsV2() {
-    options.enable_filters_in_recents_v2 = true;
-    return *this;
-  }
-
   TestCase& EnableTrash() {
     options.enable_trash = true;
     return *this;
@@ -224,9 +219,6 @@ struct TestCase {
 
     if (options.enable_trash)
       full_name += "_Trash";
-
-    if (options.enable_filters_in_recents_v2)
-      full_name += "_FiltersInRecentsV2";
 
     if (options.enable_mirrorsync)
       full_name += "_MirrorSync";
@@ -992,7 +984,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableGenericDocumentsProvider(),
         TestCase("checkContextMenuFocus"),
         TestCase("checkContextMenusForInputElements"),
-        TestCase("checkDeleteDisabledInRecents"),
+        TestCase("checkDeleteEnabledInRecents"),
         TestCase("checkGoToFileLocationEnabledInRecents"),
         TestCase("checkGoToFileLocationDisabledInMultipleSelection"),
         TestCase("checkDefaultTask"),
@@ -1636,19 +1628,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("recentsA11yMessages"),
-        TestCase("recentsAllowCutForDownloads").EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowCutForDrive").EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowCutForPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowDeletion").EnableArc().EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowMultipleFilesDeletion")
-            .EnableArc()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowRename").EnableArc().EnableFiltersInRecentsV2(),
-        TestCase("recentsEmptyFolderMessage").EnableFiltersInRecentsV2(),
-        TestCase("recentsEmptyFolderMessageAfterDeletion")
-            .EnableFiltersInRecentsV2(),
+        TestCase("recentsAllowCutForDownloads"),
+        TestCase("recentsAllowCutForDrive"),
+        TestCase("recentsAllowCutForPlayFiles").EnableArc(),
+        TestCase("recentsAllowDeletion").EnableArc(),
+        TestCase("recentsAllowMultipleFilesDeletion").EnableArc(),
+        TestCase("recentsAllowRename").EnableArc(),
+        TestCase("recentsEmptyFolderMessage"),
+        TestCase("recentsEmptyFolderMessageAfterDeletion"),
         TestCase("recentsDownloads"),
         TestCase("recentsDrive"),
         TestCase("recentsCrostiniNotMounted"),
@@ -1658,26 +1645,19 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentsDownloadsAndDriveWithOverlap"),
         TestCase("recentsFilterResetToAll"),
         TestCase("recentsNested"),
-        TestCase("recentsNoRenameForPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecentsV2(),
+        TestCase("recentsNoRenameForPlayFiles").EnableArc(),
         TestCase("recentsPlayFiles").EnableArc(),
-        TestCase("recentsReadOnlyHidden").EnableFiltersInRecentsV2(),
-        TestCase("recentsRespectSearchWhenSwitchingFilter")
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsRespondToTimezoneChangeForGridView")
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsRespondToTimezoneChangeForListView")
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsTimePeriodHeadings").EnableFiltersInRecentsV2(),
+        TestCase("recentsReadOnlyHidden"),
+        TestCase("recentsRespectSearchWhenSwitchingFilter"),
+        TestCase("recentsRespondToTimezoneChangeForGridView"),
+        TestCase("recentsRespondToTimezoneChangeForListView"),
+        TestCase("recentsTimePeriodHeadings"),
         TestCase("recentAudioDownloads"),
         TestCase("recentAudioDownloadsAndDrive"),
         TestCase("recentAudioDownloadsAndDriveAndPlayFiles").EnableArc(),
-        TestCase("recentDocumentsDownloads").EnableFiltersInRecentsV2(),
-        TestCase("recentDocumentsDownloadsAndDrive").EnableFiltersInRecentsV2(),
-        TestCase("recentDocumentsDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecentsV2(),
+        TestCase("recentDocumentsDownloads"),
+        TestCase("recentDocumentsDownloadsAndDrive"),
+        TestCase("recentDocumentsDownloadsAndDriveAndPlayFiles").EnableArc(),
         TestCase("recentImagesDownloads"),
         TestCase("recentImagesDownloadsAndDrive"),
         TestCase("recentImagesDownloadsAndDriveAndPlayFiles").EnableArc(),

@@ -255,9 +255,7 @@ export class ListContainer {
 
       case ListContainer.ListType.THUMBNAIL:
         if (this.isOnRecent) {
-          this.dataModel.groupByField = util.isRecentsFilterV2Enabled() ?
-              GROUP_BY_FIELD_MODIFICATION_TIME :
-              null;
+          this.dataModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;
         } else {
           this.dataModel.groupByField = GROUP_BY_FIELD_DIRECTORY;
         }

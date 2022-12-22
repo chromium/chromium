@@ -92,10 +92,8 @@ export class FileTypeFiltersController {
      * @private {!HTMLElement|null}
      * @const
      */
-    this.documentFilterButton_ = util.isRecentsFilterV2Enabled() ?
-        this.createFilterButton_(
-            chrome.fileManagerPrivate.RecentFileType.DOCUMENT) :
-        null;
+    this.documentFilterButton_ = this.createFilterButton_(
+        chrome.fileManagerPrivate.RecentFileType.DOCUMENT);
 
     /**
      * @private {!HTMLElement}

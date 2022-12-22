@@ -422,8 +422,7 @@ export class VolumeManagerImpl extends EventTarget {
       // actually defer their logic to some underlying implementation or
       // delegate to the location filesystem.
       let isReadOnly = true;
-      if ((entry.rootType === VolumeManagerCommon.RootType.RECENT &&
-           util.isRecentsFilterV2Enabled()) ||
+      if (entry.rootType === VolumeManagerCommon.RootType.RECENT ||
           entry.rootType === VolumeManagerCommon.RootType.TRASH) {
         isReadOnly = false;
       }

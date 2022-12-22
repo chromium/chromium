@@ -125,9 +125,8 @@ export class MockVolumeManager {
   getLocationInfo(entry) {
     if (util.isFakeEntry(entry)) {
       const isReadOnly =
-          entry.rootType === VolumeManagerCommon.RootType.RECENT ?
-          !util.isRecentsFilterV2Enabled() :
-          true;
+          entry.rootType !== VolumeManagerCommon.RootType.RECENT &&
+          entry.rootType !== VolumeManagerCommon.RootType.TRASH;
       return new EntryLocationImpl(
           this.volumeInfoList.item(0),
           /** @type {!FakeEntry} */ (entry).rootType, /* isRootType= */ true,

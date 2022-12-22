@@ -829,8 +829,8 @@ async function checkRecentsContextMenu(
 /**
  * Tests that the Delete menu item is disabled for files in Recents.
  */
-testcase.checkDeleteDisabledInRecents = () => {
-  return checkRecentsContextMenu('delete', 'My Desktop Background.png', false);
+testcase.checkDeleteEnabledInRecents = () => {
+  return checkRecentsContextMenu('delete', 'My Desktop Background.png', true);
 };
 
 /**

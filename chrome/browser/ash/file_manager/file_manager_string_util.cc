@@ -1096,8 +1096,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("DRIVE_DSS_PIN_ENABLED",
             base::FeatureList::IsEnabled(
                 ash::features::kDriveFsBidirectionalNativeMessaging));
-  dict->Set("FILTERS_IN_RECENTS_V2_ENABLED",
-            base::FeatureList::IsEnabled(ash::features::kFiltersInRecentsV2));
   dict->Set(
       "FILES_SINGLE_PARTITION_FORMAT_ENABLED",
       base::FeatureList::IsEnabled(ash::features::kFilesSinglePartitionFormat));
