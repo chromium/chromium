@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_server_socket.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
@@ -237,8 +238,8 @@ class WifiLanMediumTest : public ::testing::Test {
       managed_network_config_handler_->SetPolicy(
           ::onc::ONC_SOURCE_DEVICE_POLICY,
           /*userhash=*/std::string(),
-          /*network_configs_onc=*/base::ListValue(),
-          /*global_network_config=*/base::DictionaryValue());
+          /*network_configs_onc=*/base::Value(base::Value::List()),
+          /*global_network_config=*/base::Value(base::Value::Dict()));
 
       base::RunLoop().RunUntilIdle();
     }
@@ -256,12 +257,12 @@ class WifiLanMediumTest : public ::testing::Test {
 
   void AddWifiService(bool add_ip_configs, const net::IPAddress& local_addr) {
     if (add_ip_configs) {
-      base::DictionaryValue ipv4;
-      ipv4.SetKey(shill::kAddressProperty, base::Value(local_addr.ToString()));
-      ipv4.SetKey(shill::kMethodProperty, base::Value(shill::kTypeIPv4));
+      base::Value::Dict ipv4;
+      ipv4.Set(shill::kAddressProperty, local_addr.ToString());
+      ipv4.Set(shill::kMethodProperty, shill::kTypeIPv4);
       cros_network_config_helper_->network_state_helper()
           .ip_config_test()
-          ->AddIPConfig(kIPv4ConfigPath, ipv4);
+          ->AddIPConfig(kIPv4ConfigPath, base::Value(std::move(ipv4)));
       base::RunLoop().RunUntilIdle();
     }
 
