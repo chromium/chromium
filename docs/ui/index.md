@@ -5,19 +5,20 @@ contact the Views team? You've reached the right place.
 ## Quick Links
 |||---|||
 
-### **[Create](/docs/ui/create/index.md)**
+### **[Create](create/index.md)**
 
 Recipes to help you work with Chrome UI.
 
-* [Examples](/docs/ui/create/index.md)
+* [Examples](create/index.md)
 
-### **[Learn](/docs/ui/learn/index.md)**
+### **[Learn](learn/index.md)**
 
 Details on Chrome UI.
 
 * [Activation and Focus](/docs/ui/learn/activation_and_focus.md)
 * [Animation Builder](/docs/ui/animation_builder/animation_builder.md)
 * [Best Practices](/docs/ui/learn/index.md#best-practices)
+* [Glossary](learn/glossary.md)
 * [Input Event Routing](/docs/ui/input_event/index.md)
 * [Metadata and Properties](/docs/ui/views/metadata_properties.md)
 * [Platform Styling](/docs/ui/views/platform_style.md)
@@ -28,19 +29,19 @@ Details on Chrome UI.
 * [Views](/docs/ui/views/overview.md)
 
 Archival Documentation on Chrome UI.
-* [Aura](/docs/ui/aura/index.md)
-* [Compositor](/docs/ui/compositor/index.md)
+* [Aura](aura/index.md)
+* [Compositor](compositor/index.md)
 
 Processes
 
 * [Frontline Triage Procedures](frontline_triage.md)
 
-### **[Ask](/docs/ui/ask/index.md)**
+### **[Ask](ask/index.md)**
 
 Ways to get help.
 
-* [Chat](/docs/ui/ask/index.md#chat)
-* [Discuss](/docs/ui/ask/index.md#discuss)
-* [E-mail](/docs/ui/ask/index.md#e_mail)
+* [Chat](ask/index.md#chat)
+* [Discuss](ask/index.md#discuss)
+* [E-mail](ask/index.md#e_mail)
 
 |||---|||
