@@ -359,10 +359,15 @@ GeneratedCookieDefaultContentSettingPref::
 
 extensions::settings_private::SetPrefResult
 GeneratedCookieDefaultContentSettingPref::SetPref(const base::Value* value) {
-  if (!value->is_int())
+  if (!value->is_string()) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+  }
 
-  int setting = value->GetInt();
+  ContentSetting setting;
+  if (!content_settings::ContentSettingFromString(value->GetString(),
+                                                  &setting)) {
+    return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+  }
   if (setting != CONTENT_SETTING_ALLOW &&
       setting != CONTENT_SETTING_SESSION_ONLY &&
       setting != CONTENT_SETTING_BLOCK) {
@@ -382,13 +387,14 @@ std::unique_ptr<settings_api::PrefObject>
 GeneratedCookieDefaultContentSettingPref::GetPrefObject() const {
   auto pref_object = std::make_unique<settings_api::PrefObject>();
   pref_object->key = pref_name_;
-  pref_object->type = settings_api::PREF_TYPE_NUMBER;
+  pref_object->type = settings_api::PREF_TYPE_STRING;
 
   std::string content_setting_provider;
   auto content_setting = host_content_settings_map_->GetDefaultContentSetting(
       ContentSettingsType::COOKIES, &content_setting_provider);
 
-  pref_object->value = base::Value(content_setting);
+  pref_object->value =
+      base::Value(content_settings::ContentSettingToString(content_setting));
 
   // Cookies content setting can be managed via policy, extension or
   // supervision, but cannot be recommended.

@@ -14,6 +14,9 @@ import {createContentSettingTypeToValuePair, createRawSiteException, createSiteS
 
 // clang-format on
 
+// Name of the cookie default content setting pref.
+const PREF_NAME = 'generated.cookie_default_content_setting';
+
 suite('SiteDataTest', function() {
   let page: SettingsSiteDataElement;
   let settingsPrefs: SettingsPrefsElement;
@@ -39,11 +42,44 @@ suite('SiteDataTest', function() {
     page.remove();
   });
 
+  test('DefaultSettingChangesUpdatePref', function() {
+    // Default is 'allow'.
+    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
+
+    page.$.defaultSessionOnly.click();
+    assertEquals(
+        page.getPref(PREF_NAME + '.value'), ContentSetting.SESSION_ONLY);
+
+    page.$.defaultBlock.click();
+    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.BLOCK);
+
+    page.$.defaultAllow.click();
+    assertEquals(page.getPref(PREF_NAME + '.value'), ContentSetting.ALLOW);
+  });
+
+  test('PrefChangesUpdateDefaultSetting', function() {
+    // Default is 'allow'.
+    assertEquals(page.$.defaultGroup.selected, ContentSetting.ALLOW);
+
+    page.set('prefs.' + PREF_NAME + '.value', ContentSetting.SESSION_ONLY);
+    flush();
+    assertEquals(page.$.defaultGroup.selected, ContentSetting.SESSION_ONLY);
+
+    page.set('prefs.' + PREF_NAME + '.value', ContentSetting.BLOCK);
+    flush();
+    assertEquals(page.$.defaultGroup.selected, ContentSetting.BLOCK);
+
+    page.set('prefs.' + PREF_NAME + '.value', ContentSetting.ALLOW);
+    flush();
+    assertEquals(page.$.defaultGroup.selected, ContentSetting.ALLOW);
+  });
+
   test('ExceptionListsReadOnly', function() {
     // Check all exception lists are read only when the preference
     // reports as managed.
-    page.set('prefs.generated.cookie_default_content_setting', {
+    page.set('prefs.' + PREF_NAME, {
       value: ContentSetting.ALLOW,
+      type: chrome.settingsPrivate.PrefType.STRING,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     });
     let exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
@@ -54,8 +90,9 @@ suite('SiteDataTest', function() {
 
     // Return preference to unmanaged state and check all exception lists
     // are no longer read only.
-    page.set('prefs.generated.cookie_default_content_setting', {
+    page.set('prefs.' + PREF_NAME, {
       value: ContentSetting.ALLOW,
+      type: chrome.settingsPrivate.PrefType.STRING,
     });
     exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
     assertEquals(exceptionLists.length, 3);

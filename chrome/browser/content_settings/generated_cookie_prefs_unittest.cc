@@ -549,37 +549,33 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref) {
   map->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                 CONTENT_SETTING_ALLOW);
   auto pref_object = pref->GetPrefObject();
-  EXPECT_EQ(pref_object->value->GetInt(), CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(pref_object->value->GetString(), "allow");
 
   // Ensure setting the preference correctly updates content settings and the
   // preference state.
-  EXPECT_EQ(
-      pref->SetPref(
-          std::make_unique<base::Value>(CONTENT_SETTING_SESSION_ONLY).get()),
-      extensions::settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>("session_only").get()),
+            extensions::settings_private::SetPrefResult::SUCCESS);
   EXPECT_EQ(
       map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr),
       CONTENT_SETTING_SESSION_ONLY);
   pref_object = pref->GetPrefObject();
-  EXPECT_EQ(pref_object->value->GetInt(), CONTENT_SETTING_SESSION_ONLY);
+  EXPECT_EQ(pref_object->value->GetString(), "session_only");
 
-  EXPECT_EQ(
-      pref->SetPref(std::make_unique<base::Value>(CONTENT_SETTING_ALLOW).get()),
-      extensions::settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>("allow").get()),
+            extensions::settings_private::SetPrefResult::SUCCESS);
   EXPECT_EQ(
       map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr),
       CONTENT_SETTING_ALLOW);
   pref_object = pref->GetPrefObject();
-  EXPECT_EQ(pref_object->value->GetInt(), CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(pref_object->value->GetString(), "allow");
 
-  EXPECT_EQ(
-      pref->SetPref(std::make_unique<base::Value>(CONTENT_SETTING_BLOCK).get()),
-      extensions::settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>("block").get()),
+            extensions::settings_private::SetPrefResult::SUCCESS);
   EXPECT_EQ(
       map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr),
       CONTENT_SETTING_BLOCK);
   pref_object = pref->GetPrefObject();
-  EXPECT_EQ(pref_object->value->GetInt(), CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(pref_object->value->GetString(), "block");
 }
 
 TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_TypeMismatch) {
@@ -589,12 +585,14 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_TypeMismatch) {
   // Confirm that a type mismatch is reported as such.
   EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(false).get()),
             extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
-  EXPECT_EQ(
-      pref->SetPref(std::make_unique<base::Value>(CONTENT_SETTING_ASK).get()),
-      extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
-  EXPECT_EQ(pref->SetPref(
-                std::make_unique<base::Value>(CONTENT_SETTING_DEFAULT).get()),
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>("default").get()),
             extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>("ask").get()),
+            extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
+  EXPECT_EQ(
+      pref->SetPref(
+          std::make_unique<base::Value>("detect_important_content").get()),
+      extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
   EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(100).get()),
             extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
 }
@@ -645,9 +643,8 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_Enforced) {
             settings_api::Enforcement::ENFORCEMENT_ENFORCED);
 
   // Ensure the preference cannot be changed when it is enforced.
-  EXPECT_EQ(
-      pref->SetPref(std::make_unique<base::Value>(CONTENT_SETTING_BLOCK).get()),
-      extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>("block").get()),
+            extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
   EXPECT_EQ(
       map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr),
       CONTENT_SETTING_ALLOW);

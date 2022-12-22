@@ -1,4 +1,26 @@
 <style include="settings-shared">
+  .content-settings-header,
+  .radio-group {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .radio-group-sub-heading {
+    padding-bottom: 10px;
+  }
+
+  settings-collapse-radio-button {
+    --settings-collapse-toggle-min-height: var(--settings-row-min-height);
+  }
+
+  settings-collapse-radio-button.two-line {
+    --settings-collapse-toggle-min-height:
+        var(--settings-row-two-line-min-height);
+  }
+
+  settings-collapse-radio-button:not(:first-of-type) {
+    --settings-collapse-separator-line: var(--cr-separator-line);
+  }
+
   #exceptionHeader {
     padding: 0 var(--cr-section-padding);
   }
@@ -7,6 +29,39 @@
     padding-bottom: 10px;
   }
 </style>
+<!-- TODO(crbug.com/1378703): Update all strings in this page. -->
+<div class="content-settings-header secondary">$i18n{privacyPageTitle}</div>
+<div id="notificationRadioGroup" class="radio-group">
+  <h2>$i18n{privacyPageTitle}</h2>
+  <div class="secondary radio-group-sub-heading">$i18n{privacyPageTitle}</div>
+  <settings-radio-group id="defaultGroup"
+      pref="{{prefs.generated.cookie_default_content_setting}}"
+      selectable-elements="cr-radio-button, settings-collapse-radio-button">
+    <settings-collapse-radio-button id="defaultAllow" no-collapse
+        name="[[contentSettingEnum_.ALLOW]]"
+        pref="[[prefs.generated.cookie_default_content_setting]]"
+        label="$i18n{privacyPageTitle}"
+        sub-label="$i18n{privacyPageTitle}"
+        icon="settings:notifications">
+    </settings-collapse-radio-button>
+    <settings-collapse-radio-button id="defaultSessionOnly" no-collapse
+        class="two-line"
+        name="[[contentSettingEnum_.SESSION_ONLY]]"
+        pref="[[prefs.generated.cookie_default_content_setting]]"
+        label="$i18n{privacyPageTitle}"
+        sub-label="$i18n{privacyPageTitle}"
+        icon="settings:notifications">
+    </settings-collapse-radio-button>
+    <settings-collapse-radio-button id="defaultBlock" no-collapse
+        class="two-line"
+        name="[[contentSettingEnum_.BLOCK]]"
+        pref="[[prefs.generated.cookie_default_content_setting]]"
+        label="$i18n{privacyPageTitle}"
+        sub-label="$i18n{privacyPageTitle}"
+        icon="settings:notifications-off">
+    </settings-collapse-radio-button>
+  </settings-radio-group>
+</div>
 <div id="exceptionHeader">
   <!-- TODO(crbug.com/1378703): Update all strings in this page. -->
   <h2>$i18n{privacyPageTitle}</h2>

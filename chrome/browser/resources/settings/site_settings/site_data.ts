@@ -7,14 +7,28 @@
  * 'settings-site-data' is the polymer element for showing the
  * settings for site data under Site Settings.
  */
+import '../controls/settings_radio_group.js';
+import '../prefs/prefs.js';
+import '../privacy_page/collapse_radio_button.js';
 import './site_list.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
+import {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './site_data.html.js';
+
+export interface SettingsSiteDataElement {
+  $: {
+    defaultGroup: SettingsRadioGroupElement,
+    defaultAllow: SettingsCollapseRadioButtonElement,
+    defaultSessionOnly: SettingsCollapseRadioButtonElement,
+    defaultBlock: SettingsCollapseRadioButtonElement,
+  };
+}
 
 const SettingsSiteDataElementBase = PrefsMixin(PolymerElement);
 
@@ -46,6 +60,7 @@ export class SettingsSiteDataElement extends SettingsSiteDataElementBase {
         value: ContentSettingsTypes.COOKIES,
       },
 
+      /** Expose ContentSetting enum to HTML bindings. */
       contentSettingEnum_: {
         type: Object,
         value: ContentSetting,

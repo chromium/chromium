@@ -327,7 +327,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kCookieControlsMode] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[::content_settings::kCookieDefaultContentSetting] =
-      settings_api::PrefType::PREF_TYPE_NUMBER;
+      settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[::content_settings::kCookiePrimarySetting] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[::content_settings::kCookieSessionOnly] =
