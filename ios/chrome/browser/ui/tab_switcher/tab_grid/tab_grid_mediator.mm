@@ -372,8 +372,8 @@ void RecordTabGridCloseTabsCount(int count) {
 }
 
 - (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)index {
+    willDetachWebState:(web::WebState*)webState
+               atIndex:(int)index {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress())
     return;
