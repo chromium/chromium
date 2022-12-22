@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 
 #include "base/logging.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -132,7 +133,7 @@ class NetworkingAttributesAshTest : public testing::Test {
     network_handler_test_helper_.ip_config_test()->AddIPConfig(
         kWifiIPConfigV6Path, base::Value(std::move(ipconfig_v6_dictionary)));
 
-    base::ListValue ip_configs;
+    base::Value::List ip_configs;
     ip_configs.Append(kWifiIPConfigV4Path);
     ip_configs.Append(kWifiIPConfigV6Path);
 
@@ -157,7 +158,8 @@ class NetworkingAttributesAshTest : public testing::Test {
     base::RunLoop device_client_ip_config_run_loop;
     shill_device_client->SetProperty(
         dbus::ObjectPath(kWifiDevicePath), shill::kIPConfigsProperty,
-        ip_configs, device_client_ip_config_run_loop.QuitClosure(),
+        base::Value(std::move(ip_configs)),
+        device_client_ip_config_run_loop.QuitClosure(),
         base::BindOnce(&ShillErrorCallbackFunction));
     device_client_ip_config_run_loop.Run();
 
