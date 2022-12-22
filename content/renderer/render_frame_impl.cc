@@ -4152,6 +4152,14 @@ void RenderFrameImpl::OnMainFrameViewportRectangleChanged(
   }
 }
 
+void RenderFrameImpl::OnMainFrameImageAdRectangleChanged(
+    int element_id,
+    const gfx::Rect& image_ad_rect) {
+  for (auto& observer : observers_) {
+    observer.OnMainFrameImageAdRectangleChanged(element_id, image_ad_rect);
+  }
+}
+
 void RenderFrameImpl::OnOverlayPopupAdDetected() {
   for (auto& observer : observers_) {
     observer.OnOverlayPopupAdDetected();

@@ -307,6 +307,12 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) {}
 
+  // Called when an image ad rectangle changed. An empty `image_ad_rect` is used
+  // to signal the removal of the rectangle. Only invoked on the main frame.
+  virtual void OnMainFrameImageAdRectangleChanged(
+      int element_id,
+      const gfx::Rect& image_ad_rect) {}
+
   // Overlay-popup-ad violates The Better Ads Standards
   // (https://www.betterads.org/standards/). This method will be called when an
   // overlay-popup-ad is detected, to let the embedder

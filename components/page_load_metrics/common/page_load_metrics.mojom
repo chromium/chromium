@@ -212,6 +212,12 @@ struct FrameMetadata {
   // computed, and for any subsequent changes, and is null otherwise (i.e.
   // hasn't changed).
   gfx.mojom.Rect? main_frame_viewport_rect;
+
+  // The image ad rectangles within the main frame. Empty rectangles are used to
+  // signal the removal of the rectangle. The map keys are the element ids. This
+  // is only populated for the main frame, for the first time
+  // each rectangle is initially computed and for any subsequent changes.
+  map<int32, gfx.mojom.Rect> main_frame_image_ad_rects;
 };
 
 struct SubresourceLoadMetrics {

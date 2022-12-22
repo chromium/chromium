@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
@@ -516,6 +517,13 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
 }
 
 void HTMLImageElement::RemovedFrom(ContainerNode& insertion_point) {
+  if (InActiveDocument() && !last_reported_ad_rect_.IsEmpty()) {
+    gfx::Rect empty_rect;
+    GetDocument().GetFrame()->Client()->OnMainFrameImageAdRectangleChanged(
+        DOMNodeIds::IdForNode(this), empty_rect);
+    last_reported_ad_rect_ = empty_rect;
+  }
+
   if (!form_ || NodeTraversal::HighestAncestorOrSelf(*form_.Get()) !=
                     NodeTraversal::HighestAncestorOrSelf(*this))
     ResetFormOwner();
@@ -660,6 +668,48 @@ bool HTMLImageElement::HasLegalLinkAttribute(const QualifiedName& name) const {
 
 const QualifiedName& HTMLImageElement::SubResourceAttributeName() const {
   return html_names::kSrcAttr;
+}
+
+void HTMLImageElement::SetIsAdRelated() {
+  if (!is_ad_related_ && GetDocument().View()) {
+    GetDocument().View()->RegisterForLifecycleNotifications(this);
+  }
+
+  is_ad_related_ = true;
+}
+
+void HTMLImageElement::DidFinishLifecycleUpdate(
+    const LocalFrameView& local_frame_view) {
+  DCHECK(is_ad_related_);
+
+  // Scope to the outermost frame to avoid counting image ads that are (likely)
+  // already in ad iframes.
+  LocalFrame* frame = GetDocument().GetFrame();
+  if (!frame || !frame->View() || !frame->IsOutermostMainFrame()) {
+    return;
+  }
+
+  gfx::Rect rect_to_report;
+  if (LayoutObject* r = GetLayoutObject()) {
+    gfx::Rect rect_in_viewport = r->AbsoluteBoundingBoxRect();
+
+    // Exclude image ads that are invisible or too small (e.g. tracking pixels).
+    if (rect_in_viewport.width() > 1 && rect_in_viewport.height() > 1) {
+      if (!image_ad_use_counter_recorded_) {
+        UseCounter::Count(GetDocument(), WebFeature::kImageAd);
+        image_ad_use_counter_recorded_ = true;
+      }
+
+      rect_to_report =
+          rect_in_viewport + frame->View()->LayoutViewport()->ScrollOffsetInt();
+    }
+  }
+
+  if (last_reported_ad_rect_ != rect_to_report) {
+    frame->Client()->OnMainFrameImageAdRectangleChanged(
+        DOMNodeIds::IdForNode(this), rect_to_report);
+    last_reported_ad_rect_ = rect_to_report;
+  }
 }
 
 bool HTMLImageElement::draggable() const {

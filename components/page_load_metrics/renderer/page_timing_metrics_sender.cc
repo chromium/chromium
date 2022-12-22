@@ -226,6 +226,13 @@ void PageTimingMetricsSender::OnMainFrameViewportRectangleChanged(
   EnsureSendTimer();
 }
 
+void PageTimingMetricsSender::OnMainFrameImageAdRectangleChanged(
+    int element_id,
+    const gfx::Rect& image_ad_rect) {
+  metadata_->main_frame_image_ad_rects[element_id] = image_ad_rect;
+  EnsureSendTimer();
+}
+
 void PageTimingMetricsSender::UpdateResourceMetadata(
     int resource_id,
     bool reported_as_ad_resource,
@@ -336,6 +343,7 @@ void PageTimingMetricsSender::SendNow() {
   new_features_.clear();
   metadata_->main_frame_intersection_rect.reset();
   metadata_->main_frame_viewport_rect.reset();
+  metadata_->main_frame_image_ad_rects.clear();
   last_cpu_timing_->task_time = base::TimeDelta();
   modified_resources_.clear();
   render_data_.new_layout_shifts.clear();

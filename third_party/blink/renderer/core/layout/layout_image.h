@@ -179,8 +179,6 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   // This field stores whether this image is generated with 'content'.
   bool is_generated_content_ = false;
-
-  bool image_ad_use_counter_recorded_ = false;
 };
 
 template <>

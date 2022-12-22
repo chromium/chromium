@@ -121,6 +121,8 @@ class PageLoadMetricsForwardObserver final
       const gfx::Rect& main_frame_intersection_rect) override;
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
+  void OnMainFrameImageAdRectsChanged(
+      const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const mojom::PageLoadTiming& timing) override;
   void OnComplete(const mojom::PageLoadTiming& timing) override;

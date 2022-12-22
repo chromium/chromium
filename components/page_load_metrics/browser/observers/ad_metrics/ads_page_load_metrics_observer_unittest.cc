@@ -1712,24 +1712,24 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityDistributionMoments) {
   NavigateFrame(kNonAdUrl, main_frame);
 
   auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::AdPageLoadCustomSampling2::kEntryName);
+      ukm::builders::AdPageLoadCustomSampling3::kEntryName);
   EXPECT_EQ(1u, entries.size());
 
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling2::kAverageViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling3::kAverageViewportAdDensityName,
       20);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling2::kVarianceViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling3::kVarianceViewportAdDensityName,
       /*ukm::GetExponentialBucketMin(300, 1.3)=*/248);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling2::kSkewnessViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling3::kSkewnessViewportAdDensityName,
       /*ukm::GetExponentialBucketMin(std::llround(1.1547), 1.3)=*/1);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling2::kKurtosisViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling3::kKurtosisViewportAdDensityName,
       /*-ukm::GetExponentialBucketMin(-std::llround(-0.666667), 1.3)=*/-1);
 }
 
@@ -1740,7 +1740,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityOnPageWithoutAdBytes) {
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
-  // No ad resource so that only AdPageLoadCustomSampling2 is recorded in the
+  // No ad resource so that only AdPageLoadCustomSampling3 is recorded in the
   // end.
 
   AdvancePageDuration(base::Seconds(1));
@@ -1748,23 +1748,23 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityOnPageWithoutAdBytes) {
   NavigateFrame(kNonAdUrl, main_frame);
 
   auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::AdPageLoadCustomSampling2::kEntryName);
+      ukm::builders::AdPageLoadCustomSampling3::kEntryName);
   EXPECT_EQ(1u, entries.size());
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling2::kAverageViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling3::kAverageViewportAdDensityName,
       0);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling2::kVarianceViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling3::kVarianceViewportAdDensityName,
       0);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling2::kSkewnessViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling3::kSkewnessViewportAdDensityName,
       0);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling2::kKurtosisViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling3::kKurtosisViewportAdDensityName,
       -3);
 }
 

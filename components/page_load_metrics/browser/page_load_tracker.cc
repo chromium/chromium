@@ -984,6 +984,13 @@ void PageLoadTracker::OnMainFrameViewportRectChanged(
   }
 }
 
+void PageLoadTracker::OnMainFrameImageAdRectsChanged(
+    const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) {
+  for (const auto& observer : observers_) {
+    observer->OnMainFrameImageAdRectsChanged(main_frame_image_ad_rects);
+  }
+}
+
 content::WebContents* PageLoadTracker::GetWebContents() const {
   return web_contents_;
 }

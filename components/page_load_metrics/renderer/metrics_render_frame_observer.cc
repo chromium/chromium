@@ -388,6 +388,15 @@ void MetricsRenderFrameObserver::OnMainFrameViewportRectangleChanged(
   }
 }
 
+void MetricsRenderFrameObserver::OnMainFrameImageAdRectangleChanged(
+    int element_id,
+    const gfx::Rect& image_ad_rect) {
+  if (page_timing_metrics_sender_) {
+    page_timing_metrics_sender_->OnMainFrameImageAdRectangleChanged(
+        element_id, image_ad_rect);
+  }
+}
+
 void MetricsRenderFrameObserver::OnFrameDetached() {
   WillDetach();
 }

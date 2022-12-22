@@ -306,12 +306,12 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::AdPageLoadCustomSampling2::kEntryName);
+      ukm::builders::AdPageLoadCustomSampling3::kEntryName);
   EXPECT_EQ(1u, entries.size());
 
   const int64_t* reported_average_viewport_density =
       ukm_recorder.GetEntryMetric(entries.front(),
-                                  ukm::builders::AdPageLoadCustomSampling2::
+                                  ukm::builders::AdPageLoadCustomSampling3::
                                       kAverageViewportAdDensityName);
 
   EXPECT_TRUE(reported_average_viewport_density);
@@ -321,6 +321,59 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   EXPECT_GE(*reported_average_viewport_density, 0);
   EXPECT_LE(*reported_average_viewport_density,
             expected_final_viewport_density);
+}
+
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       AverageViewportAdDensity_ImageAd) {
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule("pixel.png")});
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/ads_observer/blank_with_adiframe_writer.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  waiter->SetMainFrameImageAdRectsExpectation();
+
+  GURL image_url =
+      embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png");
+
+  std::string create_image_script = content::JsReplace(R"(
+          const img = document.createElement('img');
+          img.style.position = 'fixed';
+          img.style.left = 0;
+          img.style.top = 0;
+          img.width = 5;
+          img.height = 5;
+          img.src = $1;
+          document.body.appendChild(img);)",
+                                                       image_url.spec());
+
+  EXPECT_TRUE(ExecJs(web_contents, create_image_script));
+
+  waiter->Wait();
+
+  EXPECT_TRUE(waiter->DidObserveMainFrameImageAdRect(gfx::Rect(0, 0, 5, 5)));
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AdPageLoadCustomSampling3::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  const int64_t* reported_average_viewport_density =
+      ukm_recorder.GetEntryMetric(entries.front(),
+                                  ukm::builders::AdPageLoadCustomSampling3::
+                                      kAverageViewportAdDensityName);
+
+  EXPECT_TRUE(reported_average_viewport_density);
 }
 
 // Verifies that the page ad density records the maximum value during

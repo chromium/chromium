@@ -281,6 +281,14 @@ void PageLoadMetricsForwardObserver::OnMainFrameViewportRectChanged(
   parent_observer_->OnMainFrameViewportRectChanged(main_frame_viewport_rect);
 }
 
+void PageLoadMetricsForwardObserver::OnMainFrameImageAdRectsChanged(
+    const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) {
+  if (!parent_observer_) {
+    return;
+  }
+  parent_observer_->OnMainFrameImageAdRectsChanged(main_frame_image_ad_rects);
+}
+
 // Don't need to forward FlushMetricsOnAppEnterBackground and OnComplete as they
 // are dispatched to all trackers.
 PageLoadMetricsObserverInterface::ObservePolicy

@@ -170,6 +170,8 @@ class AssertPageLoadMetricsObserver final
       const gfx::Rect& main_frame_intersection_rect) override {}
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) override {}
+  void OnMainFrameImageAdRectsChanged(const base::flat_map<int, gfx::Rect>&
+                                          main_frame_image_ad_rects) override {}
   void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
                             extra_request_complete_info) override {}
   void FrameReceivedUserActivation(

@@ -81,6 +81,10 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // TODO(skobes): Unify this API with AddMainFrameIntersectionExpectation.
   void SetMainFrameIntersectionExpectation();
 
+  // Indicates that we expect at least one notification for the
+  // main frame image ad rectangles update, with any rect allowed.
+  void SetMainFrameImageAdRectsExpectation();
+
   // Add a main frame viewport intersection expectation. Expects that the
   // mainframe receives its viewport rectangle in the main frame document's
   // coornidate. Subsequent calls overwrite unmet expectations.
@@ -125,6 +129,9 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   // Whether the given WebFeature was observed in the page.
   bool DidObserveWebFeature(blink::mojom::WebFeature feature) const;
+
+  // Whether the given image ad rect was observed in the page.
+  bool DidObserveMainFrameImageAdRect(const gfx::Rect& rect) const;
 
   // Waits for PageLoadMetrics events that match the fields set by the add
   // expectation methods. All matching fields must be set to end this wait.
@@ -276,6 +283,9 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect);
 
+  void OnMainFrameImageAdRectsChanged(
+      const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects);
+
   void OnDidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle);
 
@@ -298,6 +308,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool SubframeDataExpectationsSatisfied() const;
   bool MainFrameIntersectionExpectationsSatisfied() const;
   bool MainFrameViewportRectExpectationsSatisfied() const;
+  bool MainFrameImageAdRectsExpectationsSatisfied() const;
   bool MemoryUpdateExpectationsSatisfied() const;
   bool TotalInputDelayExpectationsSatisfied() const;
   bool LayoutShiftExpectationsSatisfied() const;
@@ -321,6 +332,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     bool subframe_data_ = false;
     std::set<gfx::Size, FrameSizeComparator> frame_sizes_;
     bool did_set_main_frame_intersection_ = false;
+    bool did_observed_main_frame_image_ad_rects_ = false;
     std::vector<gfx::Rect> main_frame_intersections_;
     absl::optional<gfx::Rect> main_frame_viewport_rect_;
     std::unordered_set<content::GlobalRenderFrameHostId,
@@ -333,6 +345,10 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   int current_complete_resources_ = 0;
   int64_t current_network_bytes_ = 0;
+
+  // The last observed main frame image ad rectangle for each image id. This
+  // doesn't get reset in `ResetExpectations`.
+  base::flat_map<int, gfx::Rect> main_frame_image_ad_rects_;
 
   // Network body bytes are only counted for complete resources.
   int64_t current_network_body_bytes_ = 0;

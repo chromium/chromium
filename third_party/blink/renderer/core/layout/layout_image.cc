@@ -463,17 +463,6 @@ void LayoutImage::UpdateAfterLayout() {
     media_element_parser_helpers::CheckUnsizedMediaViolation(
         this, image_element->IsDefaultIntrinsicSize());
     image_element->SetAutoSizesUsecounter();
-
-    // Scope to the outermost frame to avoid counting image ads that are
-    // (likely) already in ad iframes. Exclude image ads that are invisible or
-    // too small (e.g. tracking pixels).
-    if (!image_ad_use_counter_recorded_ && image_element->IsAdRelated() &&
-        GetDocument().IsInOutermostMainFrame() &&
-        image_element->LayoutBoxWidth() > 1 &&
-        image_element->LayoutBoxHeight() > 1) {
-      UseCounter::Count(GetDocument(), WebFeature::kImageAd);
-      image_ad_use_counter_recorded_ = true;
-    }
   } else if (auto* video_element = DynamicTo<HTMLVideoElement>(node)) {
     media_element_parser_helpers::CheckUnsizedMediaViolation(
         this, video_element->IsDefaultIntrinsicSize());

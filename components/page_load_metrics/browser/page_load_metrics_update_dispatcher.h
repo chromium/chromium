@@ -149,6 +149,8 @@ class PageLoadMetricsUpdateDispatcher {
         const gfx::Rect& main_frame_intersection_rect) = 0;
     virtual void OnMainFrameViewportRectChanged(
         const gfx::Rect& main_frame_viewport_rect) = 0;
+    virtual void OnMainFrameImageAdRectsChanged(
+        const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) = 0;
     virtual void SetUpSharedMemoryForSmoothness(
         base::ReadOnlySharedMemoryRegion shared_memory) = 0;
   };

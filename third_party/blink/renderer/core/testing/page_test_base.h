@@ -67,7 +67,8 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   void SetUp(gfx::Size);
   void SetupPageWithClients(ChromeClient* = nullptr,
                             LocalFrameClient* = nullptr,
-                            FrameSettingOverrideFunction = nullptr);
+                            FrameSettingOverrideFunction = nullptr,
+                            gfx::Size size = gfx::Size(800, 600));
   // TODO(shanmuga.m@samsung.com): These two function to be unified.
   void SetBodyContent(const std::string&);
   void SetBodyInnerHTML(const String&);

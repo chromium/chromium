@@ -575,6 +575,9 @@ class CONTENT_EXPORT RenderFrameImpl
       const gfx::Rect& main_frame_intersection_rect) override;
   void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
+  void OnMainFrameImageAdRectangleChanged(
+      int element_id,
+      const gfx::Rect& image_ad_rect) override;
   void WillSendRequest(blink::WebURLRequest& request,
                        ForRedirect for_redirect) override;
   void OnOverlayPopupAdDetected() override;

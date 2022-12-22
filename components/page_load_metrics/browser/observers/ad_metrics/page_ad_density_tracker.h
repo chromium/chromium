@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_PAGE_AD_DENSITY_TRACKER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_PAGE_AD_DENSITY_TRACKER_H_
 
+#include <map>
 #include <set>
-#include <unordered_map>
 
+#include <base/containers/flat_map.h>
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -28,6 +29,24 @@ namespace page_load_metrics {
 //       current viewport ad density using CalculateViewportAdDensity.
 class PageAdDensityTracker {
  public:
+  enum class RectType { kIFrame, kElement };
+
+  struct RectId {
+    RectId(RectType rect_type, int id);
+    RectId(const RectId& other);
+
+    RectType rect_type;
+
+    // For iframe, the id comes from the frame tree node id. For other elements
+    // (e.g. main frame ad rectangles), the id comes from the node id from the
+    // renderer.
+    int id;
+
+    bool operator<(const RectId& rhs) const;
+    bool operator==(const RectId& rhs) const;
+    bool operator!=(const RectId& rhs) const;
+  };
+
   struct AdDensityCalculationResult {
     absl::optional<int> ad_density_by_height;
     absl::optional<int> ad_density_by_area;
@@ -39,12 +58,15 @@ class PageAdDensityTracker {
   PageAdDensityTracker(const PageAdDensityTracker&) = delete;
   PageAdDensityTracker& operator=(const PageAdDensityTracker&) = delete;
 
-  // Operations to track sub frame rects in the page density calcluation.
-  void AddRect(int rect_id, const gfx::Rect& rect);
+  // Operations to track sub frame rects in the page density calcluation. If
+  // `recalculate_density` is true, the max page ad density and the viewport ad
+  // density will be recalculated in the end.
+  void AddRect(RectId rect_id, const gfx::Rect& rect, bool recalculate_density);
 
   // Removes a rect from the tracker if it is currently being tracked.
-  // Otherwise RemoveRect is a no op.
-  void RemoveRect(int rect_id);
+  // Otherwise RemoveRect is a no op. If `recalculate_viewport_density` is true,
+  // the viewport ad density will be recalculated in the end.
+  void RemoveRect(RectId rect_id, bool recalculate_viewport_density);
 
   // Operations to track the main frame dimensions. The main frame rect has to
   // be set to calculate the page ad density.
@@ -53,6 +75,10 @@ class PageAdDensityTracker {
   // Operations to track the main frame viewport position and dimensions. This
   // rect has to be set to calculate the viewport ad density.
   void UpdateMainFrameViewportRect(const gfx::Rect& rect);
+
+  // Operations to track the main frame ad rectangles' position and dimensions.
+  void UpdateMainFrameImageAdRects(
+      const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects);
 
   // Returns the density by height, as a value from 0-100. If the density
   // calculation fails (i.e. no main frame size), this returns -1. Percentage
@@ -83,12 +109,12 @@ class PageAdDensityTracker {
  private:
   // An event to process corresponding to the top or bottom of each rect.
   struct RectEvent {
-    RectEvent(int id, bool is_bottom, const gfx::Rect& rect);
+    RectEvent(RectId id, bool is_bottom, const gfx::Rect& rect);
     RectEvent(const RectEvent& other);
 
     // A unique identifier set when adding and removing rect events
     // corresponding to a single rect.
-    int rect_id;
+    RectId rect_id;
     bool is_bottom;
     gfx::Rect rect;
 
@@ -127,7 +153,7 @@ class PageAdDensityTracker {
 
   // Map from rect_id to iterators of rect events in rect_events_. This allows
   // efficient removal according to rect_id.
-  std::unordered_map<int, RectEventSetIterators> rect_events_iterators_;
+  std::map<RectId, RectEventSetIterators> rect_events_iterators_;
 
   // Percentage of page ad density as a value from 0-100. These only have
   // a value of -1 when ad density has not yet been calculated successfully.

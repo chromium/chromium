@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/canvas/image_element_base.h"
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -52,7 +53,8 @@ class CORE_EXPORT HTMLImageElement final
     : public HTMLElement,
       public ImageElementBase,
       public ActiveScriptWrappable<HTMLImageElement>,
-      public FormAssociated {
+      public FormAssociated,
+      public LocalFrameView::LifecycleNotificationObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -185,7 +187,7 @@ class CORE_EXPORT HTMLImageElement final
   }
 
   // Keeps track of whether the image comes from an ad.
-  void SetIsAdRelated() { is_ad_related_ = true; }
+  void SetIsAdRelated();
   bool IsAdRelated() const override { return is_ad_related_; }
 
   // Keeps track whether this image is an LCP element.
@@ -269,6 +271,9 @@ class CORE_EXPORT HTMLImageElement final
   void NotifyViewportChanged();
   void CreateMediaQueryListIfDoesNotExist();
 
+  // LocalFrameView::LifecycleNotificationObserver
+  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
+
   Member<HTMLImageLoader> image_loader_;
   Member<ViewportChangeListener> listener_;
   Member<HTMLFormElement> form_;
@@ -294,6 +299,14 @@ class CORE_EXPORT HTMLImageElement final
 
   std::unique_ptr<LazyLoadImageObserver::VisibleLoadTimeMetrics>
       visible_load_time_metrics_;
+
+  bool image_ad_use_counter_recorded_ = false;
+
+  // The last rectangle reported to the the `PageTimingMetricsSender`.
+  // `last_reported_ad_rect_` is empty if there's no report before, or if the
+  // last report was used to signal the removal of this element (i.e. both cases
+  // will be handled the same way).
+  gfx::Rect last_reported_ad_rect_;
 };
 
 }  // namespace blink

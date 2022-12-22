@@ -82,6 +82,8 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
       const gfx::Rect& main_frame_intersection_rect) override;
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
+  void OnMainFrameImageAdRectsChanged(
+      const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) override;
   void OnV8MemoryChanged(
       const std::vector<MemoryUpdate>& memory_updates) override;
   void OnPageRenderDataUpdate(const mojom::FrameRenderDataUpdate& render_data,
@@ -181,6 +183,10 @@ void PageLoadMetricsTestWaiter::SetMainFrameIntersectionExpectation() {
   expected_.did_set_main_frame_intersection_ = true;
 }
 
+void PageLoadMetricsTestWaiter::SetMainFrameImageAdRectsExpectation() {
+  expected_.did_observed_main_frame_image_ad_rects_ = true;
+}
+
 void PageLoadMetricsTestWaiter::AddMainFrameViewportRectExpectation(
     const gfx::Rect& rect) {
   expected_.main_frame_viewport_rect_ = rect;
@@ -253,6 +259,17 @@ bool PageLoadMetricsTestWaiter::DidObserveWebFeature(
   return observed_.feature_tracker_.Test(
       {blink::mojom::UseCounterFeatureType::kWebFeature,
        static_cast<blink::UseCounterFeature::EnumValue>(feature)});
+}
+
+bool PageLoadMetricsTestWaiter::DidObserveMainFrameImageAdRect(
+    const gfx::Rect& rect) const {
+  for (auto& [id, observed_rect] : main_frame_image_ad_rects_) {
+    if (observed_rect == rect) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void PageLoadMetricsTestWaiter::Wait() {
@@ -387,6 +404,23 @@ void PageLoadMetricsTestWaiter::OnMainFrameViewportRectChanged(
 
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();
+}
+
+void PageLoadMetricsTestWaiter::OnMainFrameImageAdRectsChanged(
+    const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) {
+  if (main_frame_image_ad_rects.empty()) {
+    return;
+  }
+
+  observed_.did_observed_main_frame_image_ad_rects_ = true;
+
+  for (auto& [id, rect] : main_frame_image_ad_rects) {
+    main_frame_image_ad_rects_[id] = rect;
+  }
+
+  if (ExpectationsSatisfied() && run_loop_) {
+    run_loop_->Quit();
+  }
 }
 
 void PageLoadMetricsTestWaiter::OnDidFinishSubFrameNavigation(
@@ -605,6 +639,15 @@ bool PageLoadMetricsTestWaiter::MainFrameViewportRectExpectationsSatisfied()
              expected_.main_frame_viewport_rect_;
 }
 
+bool PageLoadMetricsTestWaiter::MainFrameImageAdRectsExpectationsSatisfied()
+    const {
+  if (!expected_.did_observed_main_frame_image_ad_rects_) {
+    return true;
+  }
+
+  return observed_.did_observed_main_frame_image_ad_rects_;
+}
+
 bool PageLoadMetricsTestWaiter::MemoryUpdateExpectationsSatisfied() const {
   return IsSubset(expected_.memory_update_frame_ids_,
                   observed_.memory_update_frame_ids_);
@@ -638,6 +681,7 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          CpuTimeExpectationsSatisfied() &&
          MainFrameIntersectionExpectationsSatisfied() &&
          MainFrameViewportRectExpectationsSatisfied() &&
+         MainFrameImageAdRectsExpectationsSatisfied() &&
          MemoryUpdateExpectationsSatisfied() &&
          TotalInputDelayExpectationsSatisfied() &&
          LayoutShiftExpectationsSatisfied() &&
@@ -755,6 +799,13 @@ void WaiterMetricsObserver::OnMainFrameViewportRectChanged(
     const gfx::Rect& main_frame_viewport_rect) {
   if (waiter_) {
     waiter_->OnMainFrameViewportRectChanged(main_frame_viewport_rect);
+  }
+}
+
+void WaiterMetricsObserver::OnMainFrameImageAdRectsChanged(
+    const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) {
+  if (waiter_) {
+    waiter_->OnMainFrameImageAdRectsChanged(main_frame_image_ad_rects);
   }
 }
 

@@ -509,6 +509,12 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) {}
 
+  // Called when an image ad rectangle changed. An empty `image_ad_rect` is used
+  // to signal the removal of the rectangle. Only invoked on the main frame.
+  virtual void OnMainFrameImageAdRectangleChanged(
+      int element_id,
+      const gfx::Rect& image_ad_rect) {}
+
   // Called when an overlay interstitial pop up ad is detected.
   virtual void OnOverlayPopupAdDetected() {}
 
