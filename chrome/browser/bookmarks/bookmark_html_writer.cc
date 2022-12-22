@@ -180,27 +180,25 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
       return;
     }
 
-    base::Value* roots = bookmarks_.FindDictKey(BookmarkCodec::kRootsKey);
+    base::Value::Dict* roots =
+        bookmarks_.GetDict().FindDict(BookmarkCodec::kRootsKey);
     DCHECK(roots);
 
-    base::Value* root_folder_value =
-        roots->FindDictKey(BookmarkCodec::kBookmarkBarFolderNameKey);
-    base::Value* other_folder_value =
-        roots->FindDictKey(BookmarkCodec::kOtherBookmarkFolderNameKey);
-    base::Value* mobile_folder_value =
-        roots->FindDictKey(BookmarkCodec::kMobileBookmarkFolderNameKey);
+    base::Value::Dict* root_folder_value =
+        roots->FindDict(BookmarkCodec::kBookmarkBarFolderNameKey);
+    base::Value::Dict* other_folder_value =
+        roots->FindDict(BookmarkCodec::kOtherBookmarkFolderNameKey);
+    base::Value::Dict* mobile_folder_value =
+        roots->FindDict(BookmarkCodec::kMobileBookmarkFolderNameKey);
     DCHECK(root_folder_value);
     DCHECK(other_folder_value);
     DCHECK(mobile_folder_value);
 
     IncrementIndent();
 
-    if (!WriteNode(*static_cast<base::DictionaryValue*>(root_folder_value),
-                   BookmarkNode::BOOKMARK_BAR) ||
-        !WriteNode(*static_cast<base::DictionaryValue*>(other_folder_value),
-                   BookmarkNode::OTHER_NODE) ||
-        !WriteNode(*static_cast<base::DictionaryValue*>(mobile_folder_value),
-                   BookmarkNode::MOBILE)) {
+    if (!WriteNode(*root_folder_value, BookmarkNode::BOOKMARK_BAR) ||
+        !WriteNode(*other_folder_value, BookmarkNode::OTHER_NODE) ||
+        !WriteNode(*mobile_folder_value, BookmarkNode::MOBILE)) {
       NotifyOnFinish(BookmarksExportObserver::Result::kCouldNotWriteNodes);
       return;
     }
@@ -313,13 +311,12 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   }
 
   // Writes the node and all its children, returning true on success.
-  bool WriteNode(const base::Value& value, BookmarkNode::Type folder_type) {
-    DCHECK(value.is_dict());
-    const std::string* title_ptr = value.FindStringKey(BookmarkCodec::kNameKey);
+  bool WriteNode(const base::Value::Dict& value,
+                 BookmarkNode::Type folder_type) {
+    const std::string* title_ptr = value.FindString(BookmarkCodec::kNameKey);
     const std::string* date_added_string =
-        value.FindStringKey(BookmarkCodec::kDateAddedKey);
-    const std::string* type_string =
-        value.FindStringKey(BookmarkCodec::kTypeKey);
+        value.FindString(BookmarkCodec::kDateAddedKey);
+    const std::string* type_string = value.FindString(BookmarkCodec::kTypeKey);
     if (!title_ptr || !date_added_string || !type_string ||
         (*type_string != BookmarkCodec::kTypeURL &&
          *type_string != BookmarkCodec::kTypeFolder)) {
@@ -329,8 +326,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 
     std::string title = *title_ptr;
     if (*type_string == BookmarkCodec::kTypeURL) {
-      const std::string* url_string =
-          value.FindStringKey(BookmarkCodec::kURLKey);
+      const std::string* url_string = value.FindString(BookmarkCodec::kURLKey);
       if (!url_string) {
         NOTREACHED();
         return false;
@@ -362,9 +358,9 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 
     // Folder.
     const std::string* last_modified_date =
-        value.FindStringKey(BookmarkCodec::kDateModifiedKey);
-    const base::Value* child_values =
-        value.FindListKey(BookmarkCodec::kChildrenKey);
+        value.FindString(BookmarkCodec::kDateModifiedKey);
+    const base::Value::List* child_values =
+        value.FindList(BookmarkCodec::kChildrenKey);
     if (!last_modified_date || !child_values) {
       NOTREACHED();
       return false;
@@ -398,13 +394,14 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     }
 
     // Write the children.
-    for (const base::Value& child_value : child_values->GetList()) {
+    for (const base::Value& child_value : *child_values) {
       if (!child_value.is_dict()) {
         NOTREACHED();
         return false;
       }
-      if (!WriteNode(child_value, BookmarkNode::FOLDER))
+      if (!WriteNode(child_value.GetDict(), BookmarkNode::FOLDER)) {
         return false;
+      }
     }
     if (folder_type != BookmarkNode::OTHER_NODE &&
         folder_type != BookmarkNode::MOBILE) {
