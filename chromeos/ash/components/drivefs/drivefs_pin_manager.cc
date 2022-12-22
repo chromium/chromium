@@ -360,15 +360,16 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DriveFsPinManager::Complete(SetupError status) {
-  state_.progress.stage = (status == SetupError::kSuccess)
+void DriveFsPinManager::Complete(const SetupError error) {
+  state_.progress.error = error;
+  state_.progress.stage = error == SetupError::kSuccess
                               ? SetupStage::kFinishedSetup
                               : SetupStage::kError;
   NotifyProgress();
   weak_ptr_factory_.InvalidateWeakPtrs();
   search_query_.reset();
   if (complete_callback_) {
-    std::move(complete_callback_).Run(status);
+    std::move(complete_callback_).Run(error);
   }
 }
 
