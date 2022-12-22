@@ -300,6 +300,19 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
   return specialized_request;
 }
 
+CtapGetAssertionOptions SpecializeOptionsForAuthenticator(
+    const CtapGetAssertionOptions& options,
+    const FidoAuthenticator& authenticator) {
+  CtapGetAssertionOptions specialized_options(options);
+
+  if (!options.prf_inputs.empty() &&
+      !authenticator.SupportsHMACSecretExtension()) {
+    specialized_options.prf_inputs.clear();
+  }
+
+  return specialized_options;
+}
+
 }  // namespace
 
 GetAssertionRequestHandler::GetAssertionRequestHandler(
@@ -408,6 +421,8 @@ void GetAssertionRequestHandler::DispatchRequest(
 
   CtapGetAssertionRequest request =
       SpecializeRequestForAuthenticator(request_, *authenticator);
+  CtapGetAssertionOptions options =
+      SpecializeOptionsForAuthenticator(options_, *authenticator);
   PINUVDisposition uv_disposition =
       authenticator->PINUVDispositionForGetAssertion(request, observer());
   switch (uv_disposition) {
@@ -443,7 +458,7 @@ void GetAssertionRequestHandler::DispatchRequest(
 
   CtapGetAssertionRequest request_copy(request);
   authenticator->GetAssertion(
-      std::move(request_copy), options_,
+      std::move(request_copy), std::move(options),
       base::BindOnce(&GetAssertionRequestHandler::HandleResponse,
                      weak_factory_.GetWeakPtr(), authenticator,
                      std::move(request), base::ElapsedTimer()));

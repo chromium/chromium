@@ -4619,6 +4619,27 @@ TEST_F(AuthenticatorImplTest, CancellingAuthenticatorDoesNotTerminateRequest) {
   }
 }
 
+TEST_F(AuthenticatorImplTest, PRFWithoutSupport) {
+  // This tests that the PRF extension doesn't trigger any DCHECKs or crashes
+  // when used with an authenticator doesn't doesn't support hmac-secret.
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  auto prf_value = blink::mojom::PRFValues::New();
+  const std::vector<uint8_t> salt1(32, 1);
+  prf_value->first = salt1;
+  std::vector<blink::mojom::PRFValuesPtr> prf_inputs;
+  prf_inputs.emplace_back(std::move(prf_value));
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->prf = true;
+  options->prf_inputs = std::move(prf_inputs);
+
+  GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+
+  EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
 class AuthenticatorDevicePublicKeyTest : public AuthenticatorImplTest {
   void SetUp() override {
     AuthenticatorImplTest::SetUp();
