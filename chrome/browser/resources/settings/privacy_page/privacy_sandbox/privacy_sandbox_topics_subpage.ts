@@ -4,10 +4,13 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
@@ -23,7 +26,7 @@ export interface SettingsPrivacySandboxTopicsSubpageElement {
 }
 
 const SettingsPrivacySandboxTopicsSubpageElementBase =
-    PrefsMixin(PolymerElement);
+    I18nMixin(PrefsMixin(PolymerElement));
 
 export class SettingsPrivacySandboxTopicsSubpageElement extends
     SettingsPrivacySandboxTopicsSubpageElementBase {
@@ -52,6 +55,13 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         },
       },
 
+      blockedTopicsList_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
       /**
        * Used to determine that the Topics list was already fetched and to
        * display the current topics description only after the list is loaded,
@@ -68,12 +78,19 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         type: Boolean,
         value: false,
       },
+
+      blockedTopicsExpanded_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private topicsList_: PrivacySandboxInterest[];
+  private blockedTopicsList_: PrivacySandboxInterest[];
   private isTopicsListLoaded_: boolean;
   private isLearnMoreDialogOpen_: boolean;
+  private blockedTopicsExpanded_: boolean;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
 
@@ -88,6 +105,9 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     this.topicsList_ = state.topTopics.map(topic => {
       return {topic, removed: false};
     });
+    this.blockedTopicsList_ = state.blockedTopics.map(topic => {
+      return {topic, removed: true};
+    });
     this.isTopicsListLoaded_ = true;
   }
 
@@ -98,6 +118,13 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
   private isTopicsListEmpty_(): boolean {
     return this.topicsList_.length === 0;
+  }
+
+  private computeBlockedTopicsDescription_(): string {
+    return this.i18n(
+        this.blockedTopicsList_.length === 0 ?
+            'topicsPageBlockedTopicsDescriptionEmpty' :
+            'topicsPageBlockedTopicsDescription');
   }
 
   private onLearnMoreClick_() {

@@ -230,6 +230,36 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     await waitAfterNextRender(page);
     assertEquals(learnMoreButton, page.shadowRoot!.activeElement);
   });
+
+  // TODO(crbug.com/1378703): Add test for empty blocked topics list description
+  // when `getTopicsState()` returns an empty list.
+  test('blockedTopicsDescriptionNotEmpty', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
+    const blockedTopicsRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#blockedTopicsRow')!;
+    let blockedTopicsDescription = page.shadowRoot!.querySelector<HTMLElement>(
+        '#blockedTopicsDescription')!;
+    assertTrue(isVisible(blockedTopicsRow));
+    assertFalse(isVisible(blockedTopicsDescription));
+    blockedTopicsRow.click();
+    await flushTasks();
+
+    blockedTopicsDescription = page.shadowRoot!.querySelector<HTMLElement>(
+        '#blockedTopicsDescription')!;
+    assertTrue(isVisible(blockedTopicsDescription));
+    assertEquals(
+        loadTimeData.getString('topicsPageBlockedTopicsDescription'),
+        blockedTopicsDescription.innerText);
+
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    await flushTasks();
+    blockedTopicsDescription = page.shadowRoot!.querySelector<HTMLElement>(
+        '#blockedTopicsDescription')!;
+    assertTrue(isVisible(blockedTopicsDescription));
+    assertEquals(
+        loadTimeData.getString('topicsPageBlockedTopicsDescription'),
+        blockedTopicsDescription.innerText);
+  });
 });
 
 suite('PrivacySandboxFledgeSubpageTests', function() {

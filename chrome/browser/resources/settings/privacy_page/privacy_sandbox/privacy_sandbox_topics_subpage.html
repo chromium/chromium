@@ -37,6 +37,12 @@
     padding-inline-start: 40px;
   }
 
+  #blockedTopicsDescription {
+    min-height: auto;
+    padding-block-end: 16px;
+    padding-block-start: 16px;
+  }
+
   #dialog p {
     margin: 0;
     padding-block-end: 16px;
@@ -82,6 +88,17 @@
     </div>
   </div>
 </div>
+<cr-expand-button id="blockedTopicsRow" class="cr-row"
+    expanded="{{blockedTopicsExpanded_}}">
+  $i18n{topicsPageBlockedTopicsHeading}
+</cr-expand-button>
+<iron-collapse opened="[[blockedTopicsExpanded_]]">
+  <div id="blockedTopicsDescription"
+      class="cr-row continuation cr-secondary-text">
+    [[computeBlockedTopicsDescription_(blockedTopicsList_.length)]]
+  </div>
+  <!-- TODO(b/254412594): Add blocked topics list. -->
+</iron-collapse>
 
 <template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
   <cr-dialog id="dialog" on-close="onCloseDialog_" show-on-attach>
