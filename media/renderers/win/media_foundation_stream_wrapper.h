@@ -124,6 +124,8 @@ class MediaFoundationStreamWrapper
 
   void ReportEncryptionType(const scoped_refptr<DecoderBuffer>& buffer);
 
+  void SetLastStartPosition(const PROPVARIANT* start_position);
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   enum class State {
     kInitialized,
@@ -170,6 +172,12 @@ class MediaFoundationStreamWrapper
 
   bool stream_ended_ = false;
   GUID last_key_id_ = GUID_NULL;
+
+  static constexpr MFTIME kInvalidTime = -1;
+  // The starting position in 100-nanosecond units, relative to the start of
+  // the presentation. Set from MediaFoundationSourceWrapper::Start, and used
+  // to send Stream ticks in ServicePostFlushSampleRequest.
+  MFTIME last_start_time_ GUARDED_BY(lock_) = kInvalidTime;
 
   // Save media::DecoderBuffer from OnDemuxerStreamRead call when we are in
   // progress of a flush operation.
