@@ -915,13 +915,9 @@ void HTMLImageElement::SetLayoutDisposition(
   SetForceReattachLayoutTree();
 }
 
-scoped_refptr<ComputedStyle> HTMLImageElement::CustomStyleForLayoutObject(
-    const StyleRecalcContext& style_recalc_context) {
+void HTMLImageElement::AdjustStyle(ComputedStyleBuilder& builder) {
   DCHECK_EQ(layout_disposition_, LayoutDisposition::kFallbackContent);
-  ComputedStyleBuilder builder(
-      *OriginalStyleForLayoutObject(style_recalc_context));
   HTMLImageFallbackHelper::CustomStyleForAltText(*this, builder);
-  return builder.TakeStyle();
 }
 
 void HTMLImageElement::AssociateWith(HTMLFormElement* form) {
