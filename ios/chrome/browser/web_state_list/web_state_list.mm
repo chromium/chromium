@@ -285,7 +285,23 @@ void WebStateList::CloseWebStateAt(int index, int close_flags) {
 void WebStateList::CloseAllWebStates(int close_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
-  return CloseAllWebStatesImpl(close_flags);
+  PerformBatchOperation(base::BindOnce(
+      [](int start_index, int close_flags, WebStateList* web_state_list) {
+        web_state_list->CloseAllWebStatesAfterIndexImpl(start_index,
+                                                        close_flags);
+      },
+      0, close_flags));
+}
+
+void WebStateList::CloseAllNonPinnedWebStates(int close_flags) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto lock = LockForMutation();
+  PerformBatchOperation(base::BindOnce(
+      [](int start_index, int close_flags, WebStateList* web_state_list) {
+        web_state_list->CloseAllWebStatesAfterIndexImpl(start_index,
+                                                        close_flags);
+      },
+      GetIndexOfFirstNonPinnedWebState(), close_flags));
 }
 
 void WebStateList::ActivateWebStateAt(int index) {
@@ -462,25 +478,33 @@ void WebStateList::CloseWebStateAtImpl(int index, int close_flags) {
   // Dropping detached_web_state will destroy it.
 }
 
-void WebStateList::CloseAllWebStatesImpl(int close_flags) {
+void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
+                                                   int close_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
 
-  PerformBatchOperation(base::BindOnce(
-      [](int close_flags, WebStateList* web_state_list) {
-        // Since all the WebStates will be closed, notify that the active
-        // WebState is de-activated before closing them. This avoid sending
-        // one notification per WebState in the worst case (when the active
-        // WebState is the last one and no opener is set to any WebState).
-        web_state_list->ActivateWebStateAtImpl(
-            kInvalidIndex, ActiveWebStateChangeReason::Closed);
+  // Immediately determine the new active index to avoid
+  // sending multiple notification about changing active
+  // WebState.
+  int new_active_index = kInvalidIndex;
+  if (start_index != 0) {
+    std::vector<int> removing_indexes;
+    removing_indexes.reserve(count() - start_index);
+    for (int i = start_index; i < count(); ++i) {
+      removing_indexes.push_back(i);
+    }
 
-        // Close the WebStates from last to first.
-        while (!web_state_list->empty())
-          web_state_list->CloseWebStateAtImpl(web_state_list->count() - 1,
-                                              close_flags);
-      },
-      close_flags));
+    WebStateListOrderController order_controller(*this);
+    new_active_index = order_controller.DetermineNewActiveIndex(
+        active_index_,
+        WebStateListRemovingIndexes(std::move(removing_indexes)));
+  }
+
+  ActivateWebStateAtImpl(new_active_index, ActiveWebStateChangeReason::Closed);
+
+  while (count() > start_index) {
+    CloseWebStateAtImpl(count() - 1, close_flags);
+  }
 }
 
 void WebStateList::ActivateWebStateAtImpl(int index,

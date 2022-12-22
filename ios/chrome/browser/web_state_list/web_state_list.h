@@ -182,6 +182,10 @@ class WebStateList {
   // is a bitwise combination of ClosingFlags values.
   void CloseWebStateAt(int index, int close_flags);
 
+  // Closes and destroys all non-pinned WebStates. The `close_flags` is a
+  // bitwise combination of ClosingFlags values.
+  void CloseAllNonPinnedWebStates(int close_flags);
+
   // Closes and destroys all WebStates. The `close_flags` is a bitwise
   // combination of ClosingFlags values.
   void CloseAllWebStates(int close_flags);
@@ -249,11 +253,11 @@ class WebStateList {
   // Assumes that the WebStateList is locked.
   void CloseWebStateAtImpl(int index, int close_flags);
 
-  // Closes and destroys all WebStates. The `close_flags` is a bitwise
-  // combination of ClosingFlags values.
+  // Closes and destroys all WebStates after `start_index`. The `close_flags`
+  // is a bitwise combination of ClosingFlags values.
   //
   // Assumes that the WebStateList is locked.
-  void CloseAllWebStatesImpl(int close_flags);
+  void CloseAllWebStatesAfterIndexImpl(int start_index, int close_flags);
 
   // Makes the WebState at the specified index the active WebState.
   //

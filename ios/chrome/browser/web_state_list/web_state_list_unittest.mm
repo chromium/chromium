@@ -686,8 +686,104 @@ TEST_F(WebStateListTest, OpenersChildsBeforeOpener) {
                    opener, start_index, false));
 }
 
-// Tests closing all webstates.
-TEST_F(WebStateListTest, CloseAllWebStates) {
+// Tests closing all non-pinned webstates (pinned WebStates present).
+TEST_F(WebStateListTest, CloseAllNonPinnedWebStates_PinnedWebStatesPresent) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+
+  web_state_list_.SetWebStatePinnedAt(0, true);
+
+  // Sanity checks before closing WebStates.
+  EXPECT_EQ(3, web_state_list_.count());
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
+
+  observer_.ResetStatistics();
+  web_state_list_.CloseAllNonPinnedWebStates(WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ(1, web_state_list_.count());
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
+
+  EXPECT_TRUE(observer_.web_state_detached_called());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all non-pinned webstates (non-pinned WebStates not present).
+TEST_F(WebStateListTest,
+       CloseAllNonPinnedWebStates_NonPinnedWebStatesNotPresent) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+
+  web_state_list_.SetWebStatePinnedAt(0, true);
+  web_state_list_.SetWebStatePinnedAt(1, true);
+  web_state_list_.SetWebStatePinnedAt(2, true);
+
+  // Sanity checks before closing WebStates.
+  EXPECT_EQ(3, web_state_list_.count());
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(1));
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(2));
+
+  observer_.ResetStatistics();
+  web_state_list_.CloseAllNonPinnedWebStates(WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ(3, web_state_list_.count());
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(1));
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(2));
+
+  EXPECT_FALSE(observer_.web_state_detached_called());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all non-pinned webstates (pinned WebStates not present).
+TEST_F(WebStateListTest, CloseAllNonPinnedWebStates_PinnedWebStatesNotPresent) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+
+  // Sanity checks before closing WebStates.
+  EXPECT_EQ(3, web_state_list_.count());
+
+  observer_.ResetStatistics();
+  web_state_list_.CloseAllNonPinnedWebStates(WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ(0, web_state_list_.count());
+
+  EXPECT_TRUE(observer_.web_state_detached_called());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all webstates (non-pinned).
+TEST_F(WebStateListTest, CloseAllWebStates_NonPinned) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+
+  web_state_list_.SetWebStatePinnedAt(0, true);
+  web_state_list_.SetWebStatePinnedAt(1, true);
+
+  // Sanity check before closing WebStates.
+  EXPECT_EQ(3, web_state_list_.count());
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(1));
+
+  observer_.ResetStatistics();
+  web_state_list_.CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ(0, web_state_list_.count());
+
+  EXPECT_TRUE(observer_.web_state_detached_called());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all webstates (pinned and non-pinned).
+TEST_F(WebStateListTest, CloseAllWebStates_PinnedNonPinned) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
   AppendNewWebState(kURL2);
