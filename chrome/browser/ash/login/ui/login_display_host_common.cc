@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -297,6 +298,14 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
   if (system::DeviceDisablingManager::IsDeviceDisabledDuringNormalOperation()) {
     // If the device is disabled, bail out. A device disabled screen will be
     // shown by the DeviceDisablingManager.
+    return;
+  }
+
+  const auto& existing_user_controller =
+      CHECK_DEREF(GetExistingUserController());
+  if (existing_user_controller.IsSigninInProgress() ||
+      existing_user_controller.IsUserSigninCompleted()) {
+    LOG(ERROR) << "Cancel kiosk launch. Another user signin detected.";
     return;
   }
 
