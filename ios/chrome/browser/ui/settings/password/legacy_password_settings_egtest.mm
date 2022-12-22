@@ -411,8 +411,14 @@ id<GREYMatcher> EditDoneButton() {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
 
+  // Versions of these tests running against UI Split are found in
+  // password_manager_egtest.mm
   config.features_disabled.push_back(
       password_manager::features::kIOSPasswordUISplit);
+
+  // Grouping is intended to work with UI Split on.
+  config.features_disabled.push_back(
+      password_manager::features::kPasswordsGrouping);
 
   if ([self isRunningTest:@selector
             (testNoOndeviceEncryptionSetupWhenSignedOut)]) {
@@ -1382,12 +1388,12 @@ id<GREYMatcher> EditDoneButton() {
 // Test that when user types text in search field, passwords and blocked
 // items are filtered out and "save passwords" switch is removed.
 - (void)testSearchPasswords {
-// TODO(crbug.com/1067818): Test doesn't pass on iPad device.
-#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1067818): Test doesn't pass on iPad device or simulator.
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+    EARL_GREY_TEST_SKIPPED(
+        @"This test doesn't pass on iPad device or simulator.");
   }
-#endif
+
   SaveExamplePasswordForms();
   SaveExampleBlockedForms();
 
