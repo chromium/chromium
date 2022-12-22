@@ -153,11 +153,11 @@ TEST_P(ProtocolHandlingSubManagerTest, ConfigureOnlyProtocolHandler) {
     ASSERT_TRUE(state.has_value());
     const proto::WebAppOsIntegrationState& os_integration_state = state.value();
 
-    ASSERT_THAT(os_integration_state.manifest_protocol_handlers_states_size(),
+    ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
                 testing::Eq(1));
 
-    const proto::WebAppProtocolHandler& protocol_handler_state =
-        os_integration_state.manifest_protocol_handlers_states(0);
+    const proto::ProtocolsHandled::Protocol& protocol_handler_state =
+        os_integration_state.protocols_handled().protocols(0);
 
     ASSERT_THAT(protocol_handler_state.protocol(),
                 testing::Eq(protocol_handler.protocol));
@@ -213,11 +213,11 @@ TEST_P(ProtocolHandlingSubManagerTest, ConfigureProtocolHandlerDisallowed) {
     ASSERT_TRUE(state.has_value());
     const proto::WebAppOsIntegrationState& os_integration_state = state.value();
 
-    ASSERT_THAT(os_integration_state.manifest_protocol_handlers_states_size(),
+    ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
                 testing::Eq(1));
 
-    const proto::WebAppProtocolHandler& protocol_handler_state =
-        os_integration_state.manifest_protocol_handlers_states(0);
+    const proto::ProtocolsHandled::Protocol& protocol_handler_state =
+        os_integration_state.protocols_handled().protocols(0);
 
     ASSERT_THAT(protocol_handler_state.protocol(),
                 testing::Eq(protocol_handler2.protocol));

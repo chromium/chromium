@@ -40,14 +40,12 @@ void ProtocolHandlingSubManager::Configure(
   }
 #endif
 
-  DCHECK_EQ(desired_state.manifest_protocol_handlers_states().size(), 0);
+  DCHECK(!desired_state.has_protocols_handled());
 
   if (!registrar_->IsLocallyInstalled(app_id)) {
     std::move(configure_done).Run();
     return;
   }
-
-  desired_state.clear_manifest_protocol_handlers_states();
 
   const WebApp* web_app = registrar_->GetAppById(app_id);
   if (!web_app) {
@@ -61,10 +59,10 @@ void ProtocolHandlingSubManager::Configure(
       continue;
     }
 
-    proto::WebAppProtocolHandler* protocol_handler_state =
-        desired_state.add_manifest_protocol_handlers_states();
-    protocol_handler_state->set_protocol(protocol_handler.protocol);
-    protocol_handler_state->set_url(protocol_handler.url.spec());
+    proto::ProtocolsHandled::Protocol* protocol =
+        desired_state.mutable_protocols_handled()->add_protocols();
+    protocol->set_protocol(protocol_handler.protocol);
+    protocol->set_url(protocol_handler.url.spec());
   }
   std::move(configure_done).Run();
 }
