@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.text.TextUtils;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
@@ -228,25 +227,6 @@ class TabGridViewBinder {
                             }
                         });
             }, false);
-        } else if (TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
-            StoreHoursCardView storeHoursCardView =
-                    (StoreHoursCardView) view.fastFindViewById(R.id.store_hours_box_outer);
-            if (model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER) != null) {
-                model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER)
-                        .fetch((storePersistedTabData) -> {
-                            if (storePersistedTabData == null
-                                    || TextUtils.isEmpty(
-                                            storePersistedTabData.getStoreHoursString())) {
-                                storeHoursCardView.setVisibility(View.GONE);
-                            } else {
-                                storeHoursCardView.setStoreHours(
-                                        storePersistedTabData.getStoreHoursString());
-                                storeHoursCardView.setVisibility(View.VISIBLE);
-                            }
-                        });
-            } else {
-                storeHoursCardView.setVisibility(View.GONE);
-            }
         } else if (TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP == propertyKey) {
             if (model.get(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP)) {
                 PriceCardView priceCardView =
