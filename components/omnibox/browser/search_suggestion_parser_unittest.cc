@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1660,4 +1661,101 @@ TEST(SearchSuggestionParserTest, BadAnswersFailGracefully) {
         *root_val, input, scheme_classifier, /*default_result_relevance=*/400,
         /*is_keyword_result=*/false, &results));
   }
+}
+
+TEST(SearchSuggestionParserTest, ParseCalculatorSuggestion) {
+  TestSchemeClassifier scheme_classifier;
+  AutocompleteInput input(u"1 + 1", metrics::OmniboxEventProto::NTP_REALBOX,
+                          scheme_classifier);
+
+  const std::string json_data = R"([
+    "1 + 1",
+    [
+      "1 + 1",
+      "= 2",
+      "1 + 1"
+    ],
+    ["", "Calculator", ""],
+    [],
+    {
+      "google:clientdata": {
+        "bpc": false,
+        "tlw": false
+      },
+      "google:suggestdetail": [
+        {},
+        {},
+        {
+          "a": "Song",
+          "dc": "#424242",
+          "i": "https://encrypted-tbn0.gstatic.com/images?q=song",
+          "q": "gs_ssp=eJzj4tFP1zcsNjAzMykwKDZg9GI1VNBWMAQAOlEEsA",
+          "t": "1+1",
+          "zae": "/g/1s0664p0s"
+        }
+      ],
+      "google:suggestrelevance": [1300, 1252, 1250],
+      "google:suggestsubtypes": [
+        [512, 355],
+        [],
+        [512]
+      ],
+      "google:suggesttype": [
+        "QUERY",
+        "CALCULATOR",
+        "ENTITY"
+      ],
+      "google:verbatimrelevance": 1300
+    }
+  ])";
+
+  absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  ASSERT_TRUE(root_val);
+
+  SearchSuggestionParser::Results results;
+  ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+      *root_val, input, scheme_classifier, /*default_result_relevance=*/400,
+      /*is_keyword_result=*/false, &results));
+
+  ASSERT_EQ(3U, results.suggest_results.size());
+
+  // Most fields for a verbatim suggestion should be empty.
+  ASSERT_EQ(u"1 + 1", results.suggest_results[0].suggestion());
+  ASSERT_EQ(u"", results.suggest_results[0].annotation());
+  ASSERT_EQ("", results.suggest_results[0].image_dominant_color());
+  ASSERT_EQ("", results.suggest_results[0].image_url().spec());
+  ASSERT_EQ("", results.suggest_results[0].additional_query_params());
+  ASSERT_EQ(u"1 + 1", results.suggest_results[0].match_contents());
+  ASSERT_EQ("", results.suggest_results[0].entity_id());
+
+  // Calculator suggestions should have specific values for the |suggestion|,
+  // |match_contents|, and |annotation| fields.
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  ASSERT_EQ(u"2", results.suggest_results[1].suggestion());
+  ASSERT_EQ(u"2", results.suggest_results[1].annotation());
+  ASSERT_EQ("", results.suggest_results[1].image_dominant_color());
+  ASSERT_EQ("", results.suggest_results[1].image_url().spec());
+  ASSERT_EQ("", results.suggest_results[1].additional_query_params());
+  ASSERT_EQ(u"1 + 1", results.suggest_results[1].match_contents());
+  ASSERT_EQ("", results.suggest_results[1].entity_id());
+#else
+  ASSERT_EQ(u"2", results.suggest_results[1].suggestion());
+  ASSERT_EQ(u"", results.suggest_results[1].annotation());
+  ASSERT_EQ("", results.suggest_results[1].image_dominant_color());
+  ASSERT_EQ("", results.suggest_results[1].image_url().spec());
+  ASSERT_EQ("", results.suggest_results[1].additional_query_params());
+  ASSERT_EQ(u"= 2", results.suggest_results[1].match_contents());
+  ASSERT_EQ("", results.suggest_results[1].entity_id());
+#endif
+
+  // Entity data should be correctly sourced as usual.
+  ASSERT_EQ(u"1 + 1", results.suggest_results[2].suggestion());
+  ASSERT_EQ(u"Song", results.suggest_results[2].annotation());
+  ASSERT_EQ("#424242", results.suggest_results[2].image_dominant_color());
+  ASSERT_EQ("https://encrypted-tbn0.gstatic.com/images?q=song",
+            results.suggest_results[2].image_url().spec());
+  ASSERT_EQ("gs_ssp=eJzj4tFP1zcsNjAzMykwKDZg9GI1VNBWMAQAOlEEsA",
+            results.suggest_results[2].additional_query_params());
+  ASSERT_EQ(u"1+1", results.suggest_results[2].match_contents());
+  ASSERT_EQ("/g/1s0664p0s", results.suggest_results[2].entity_id());
 }
