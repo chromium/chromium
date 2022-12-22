@@ -291,7 +291,7 @@ void PerfettoTracedProcess::RequestStartupTracing(
     const perfetto::TraceConfig& config,
     const perfetto::Tracing::SetupStartupTracingOpts& opts) {
   if (platform_->did_start_task_runner()) {
-    perfetto::Tracing::SetupStartupTracing(config, opts);
+    perfetto::Tracing::SetupStartupTracingBlocking(config, opts);
   } else {
     saved_config_ = config;
     saved_opts_ = opts;
@@ -335,11 +335,6 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   TrackNameRecorder::GetInstance();
   CustomEventRecorder::GetInstance();
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
-  if (startup_tracing_needed_) {
-    perfetto::Tracing::SetupStartupTracing(saved_config_, saved_opts_);
-    startup_tracing_needed_ = false;
-  }
 }
 
 void PerfettoTracedProcess::OnThreadPoolAvailable(bool enable_consumer) {
@@ -355,6 +350,11 @@ void PerfettoTracedProcess::OnThreadPoolAvailable(bool enable_consumer) {
     system_producer_->OnThreadPoolAvailable();
   if (!platform_->did_start_task_runner())
     platform_->StartTaskRunner(GetTaskRunner()->GetOrCreateTaskRunner());
+
+  if (startup_tracing_needed_) {
+    perfetto::Tracing::SetupStartupTracingBlocking(saved_config_, saved_opts_);
+    startup_tracing_needed_ = false;
+  }
 }
 
 void PerfettoTracedProcess::SetAllowSystemTracingConsumerCallback(
