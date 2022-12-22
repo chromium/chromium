@@ -38,9 +38,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="base/test/android/javatests/src"/>
     <classpathentry kind="src" path="base/test/android/junit/src"/>
     <classpathentry kind="src" path="build/android/pylib/device/commands/java/src"/>
-    <classpathentry kind="src" path="chrome/android/features/autofill_assistant/java/src"/>
-    <classpathentry kind="src" path="chrome/android/features/autofill_assistant/javatests/src"/>
-    <classpathentry kind="src" path="chrome/android/features/autofill_assistant/public/java/src"/>
     <classpathentry kind="src" path="chrome/android/features/dev_ui/java/src"/>
     <classpathentry kind="src" path="chrome/android/features/dev_ui/public/java/src"/>
     <classpathentry kind="src" path="chrome/android/features/keyboard_accessory/factory/java/src"/>

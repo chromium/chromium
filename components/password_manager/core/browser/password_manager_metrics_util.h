@@ -204,9 +204,10 @@ enum class CredentialManagerGetResult {
   kAutoSignIn = 8,
   // No credentials are returned in incognito mode.
   kNoneIncognito = 9,
-  // No credentials are returned while autofill_assistant is running.
-  kNoneAutofillAssistant = 10,
-  kMaxValue = kNoneAutofillAssistant,
+  // No credentials are returned while autofill_assistant is running. Deprecated
+  // as part of autofill_assistant removal.
+  // kNoneAutofillAssistant = 10,
+  kMaxValue = kNoneIncognito,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
