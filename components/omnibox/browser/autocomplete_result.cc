@@ -14,7 +14,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/debug/stack_trace.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
@@ -189,13 +188,9 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
             : DontCopyDoneProviders::kFalse;
   }
   if (g_dont_copy_done_providers == DontCopyDoneProviders::kTrue) {
-    old_matches->matches_.erase(
-        base::ranges::remove_if(*old_matches,
-                                [](const auto& old_match) {
-                                  return old_match.provider &&
-                                         old_match.provider->done();
-                                }),
-        old_matches->matches_.end());
+    base::EraseIf(old_matches->matches_, [](const auto& old_match) {
+      return old_match.provider && old_match.provider->done();
+    });
   }
 
   if (old_matches->empty())
@@ -203,14 +198,10 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
 
   // Exclude specialized suggestion types from being transferred to prevent
   // user-visible artifacts.
-  old_matches->matches_.erase(
-      std::remove_if(
-          old_matches->begin(), old_matches->end(),
-          [](const auto& match) {
-            return match.type == AutocompleteMatchType::TILE_NAVSUGGEST ||
-                   match.type == AutocompleteMatchType::TILE_SUGGESTION;
-          }),
-      old_matches->matches_.end());
+  base::EraseIf(old_matches->matches_, [](const auto& match) {
+    return match.type == AutocompleteMatchType::TILE_NAVSUGGEST ||
+           match.type == AutocompleteMatchType::TILE_SUGGESTION;
+  });
 
   if (empty()) {
     // If we've got no matches we can copy everything from the last result.
@@ -1254,15 +1245,11 @@ void AutocompleteResult::LimitNumberOfURLsShown(
   size_t url_count = 0;
   // Erase URL suggestions past the count of allowed ones, or anything past
   // maximum.
-  matches_.erase(
-      std::remove_if(matches_.begin(), matches_.end(),
-                     [&url_count, max_url_count](const AutocompleteMatch& m) {
-                       if (!AutocompleteMatch::IsSearchType(m.type) &&
-                           ++url_count > max_url_count)
-                         return true;
-                       return false;
-                     }),
-      matches_.end());
+  base::EraseIf(matches_,
+                [&url_count, max_url_count](const AutocompleteMatch& m) {
+                  return !AutocompleteMatch::IsSearchType(m.type) &&
+                         ++url_count > max_url_count;
+                });
 }
 
 // static
