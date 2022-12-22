@@ -210,6 +210,7 @@ bool IsLocalFile(const GURL& url) {
 void DestructionHelper(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> vfc_task_runner,
+    std::unique_ptr<media::DemuxerManager> demuxer_manager,
     std::unique_ptr<Demuxer> demuxer,
     std::unique_ptr<media::DataSource> data_source,
     std::unique_ptr<VideoFrameCompositor> compositor,
@@ -231,6 +232,7 @@ void DestructionHelper(
   // ChunkDemuxer can be deleted on any thread, but other demuxers are bound to
   // the main thread and must be deleted there now that the renderer is gone.
   if (demuxer_type != media::DemuxerType::kChunkDemuxer) {
+    main_task_runner->DeleteSoon(FROM_HERE, std::move(demuxer_manager));
     main_task_runner->DeleteSoon(FROM_HERE, std::move(demuxer));
     main_task_runner->DeleteSoon(FROM_HERE, std::move(data_source));
     main_task_runner->DeleteSoon(FROM_HERE, std::move(cdm_context_1));
@@ -254,19 +256,21 @@ void DestructionHelper(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
           [](scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+             std::unique_ptr<media::DemuxerManager> demuxer_manager,
              std::unique_ptr<Demuxer> demuxer_to_destroy,
              std::unique_ptr<media::CdmContextRef> cdm_context_1,
              std::unique_ptr<media::CdmContextRef> cdm_context_2,
              std::unique_ptr<media::MediaLog> media_log) {
             SCOPED_UMA_HISTOGRAM_TIMER("Media.MSE.DemuxerDestructionTime");
+            demuxer_manager.reset();
             demuxer_to_destroy.reset();
             main_task_runner->DeleteSoon(FROM_HERE, std::move(cdm_context_1));
             main_task_runner->DeleteSoon(FROM_HERE, std::move(cdm_context_2));
             main_task_runner->DeleteSoon(FROM_HERE, std::move(media_log));
           },
-          std::move(main_task_runner), std::move(demuxer),
-          std::move(cdm_context_1), std::move(cdm_context_2),
-          std::move(media_log)));
+          std::move(main_task_runner), std::move(demuxer_manager),
+          std::move(demuxer), std::move(cdm_context_1),
+          std::move(cdm_context_2), std::move(media_log)));
 }
 
 std::string SanitizeUserStringProperty(WebString value) {
@@ -329,60 +333,6 @@ bool UsesAudioService(media::RendererType renderer_type) {
   return renderer_type != media::RendererType::kMediaFoundation;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class MimeType {
-  kOtherMimeType = 0,
-  kApplicationDashXml = 1,
-  kApplicationOgg = 2,
-  kApplicationMpegUrl = 3,
-  kApplicationVndAppleMpegUrl = 4,
-  kApplicationXMpegUrl = 5,
-  kAudioMpegUrl = 6,
-  kAudioXMpegUrl = 7,
-  kNonspecificAudio = 8,
-  kNonspecificImage = 9,
-  kNonspecificVideo = 10,
-  kTextVtt = 11,
-  kMaxValue = kTextVtt,  // For UMA histograms.
-};
-MimeType TranslateMimeTypeToHistogramEnum(const std::string& mime_type) {
-  constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
-  if (base::StartsWith(mime_type, "application/dash+xml", kCaseInsensitive))
-    return MimeType::kApplicationDashXml;
-  if (base::StartsWith(mime_type, "application/ogg", kCaseInsensitive))
-    return MimeType::kApplicationOgg;
-  if (base::StartsWith(mime_type, "application/mpegurl", kCaseInsensitive))
-    return MimeType::kApplicationMpegUrl;
-  if (base::StartsWith(mime_type, "application/vnd.apple.mpegurl",
-                       kCaseInsensitive)) {
-    return MimeType::kApplicationVndAppleMpegUrl;
-  }
-  if (base::StartsWith(mime_type, "application/x-mpegurl", kCaseInsensitive))
-    return MimeType::kApplicationXMpegUrl;
-
-  if (base::StartsWith(mime_type, "audio/mpegurl", kCaseInsensitive))
-    return MimeType::kAudioMpegUrl;
-  if (base::StartsWith(mime_type, "audio/x-mpegurl", kCaseInsensitive))
-    return MimeType::kAudioXMpegUrl;
-
-  if (base::StartsWith(mime_type, "audio/", kCaseInsensitive))
-    return MimeType::kNonspecificAudio;
-  if (base::StartsWith(mime_type, "image/", kCaseInsensitive))
-    return MimeType::kNonspecificImage;
-  if (base::StartsWith(mime_type, "video/", kCaseInsensitive))
-    return MimeType::kNonspecificVideo;
-
-  if (base::StartsWith(mime_type, "text/vtt", kCaseInsensitive))
-    return MimeType::kTextVtt;
-
-  return MimeType::kOtherMimeType;
-}
-
-#endif
-
 }  // namespace
 
 STATIC_ASSERT_ENUM(WebMediaPlayer::kCorsModeUnspecified,
@@ -435,6 +385,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
       delegate_has_audio_(HasUnmutedAudio()),
       defer_load_cb_(std::move(defer_load_cb)),
       adjust_allocated_memory_cb_(std::move(adjust_allocated_memory_cb)),
+      demuxer_manager_(std::make_unique<media::DemuxerManager>(this)),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       url_index_(url_index),
       raster_context_provider_(std::move(raster_context_provider)),
@@ -606,7 +557,7 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   // The underlying Pipeline must be stopped before it is destroyed.
   //
   // Note: This destruction happens synchronously on the media thread and
-  // `demuxer_`, `data_source_`, `compositor_`, and `media_log_` must outlive
+  // `demuxer_`, `data_source`, `compositor_`, and `media_log_` must outlive
   // this process. They will be destructed by the DestructionHelper below
   // after trampolining through the media thread.
   pipeline_controller_->Stop();
@@ -625,8 +576,7 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   simple_watch_timer_.Stop();
   media_log_->OnWebMediaPlayerDestroyed();
 
-  if (data_source_)
-    data_source_->Stop();
+  auto data_source = demuxer_manager_->StopAndGetDataSourceForDestruction();
 
   // Disconnect from the surface layer. We still preserve the `bridge_` until
   // after pipeline shutdown to ensure any pending frames are painted for tests.
@@ -651,9 +601,9 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   media_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DestructionHelper, std::move(main_task_runner_),
-                     std::move(vfc_task_runner_), std::move(demuxer_),
-                     std::move(data_source_), std::move(compositor_),
-                     std::move(cdm_context_ref_),
+                     std::move(vfc_task_runner_), std::move(demuxer_manager_),
+                     std::move(demuxer_), std::move(data_source),
+                     std::move(compositor_), std::move(cdm_context_ref_),
                      std::move(pending_cdm_context_ref_), std::move(media_log_),
                      std::move(renderer_factory_selector_), std::move(bridge_),
                      GetDemuxerType()));
@@ -866,10 +816,6 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   // (kCorsModeUnspecified) or "use-credentials" (kCorsModeUseCredentials).
   // This value is only used by the MediaPlayerRenderer.
   // See https://crbug.com/936566.
-  //
-  // The credentials mode also has repercussions in WouldTaintOrigin(), but we
-  // access what we need from `data_source_`->cors_mode() directly, instead
-  // of storing it here.
   allow_media_player_renderer_credentials_ = cors_mode != kCorsModeAnonymous;
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -926,25 +872,26 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
     std::string mime_type, charset, data;
     if (!net::DataURL::Parse(loaded_url_, &mime_type, &charset, &data) ||
         data.empty()) {
-      MemoryDataSourceInitialized(false, 0);
-      return;
+      return MemoryDataSourceInitialized(false, 0);
     }
-
     size_t data_size = data.size();
-    data_source_ = std::make_unique<media::MemoryDataSource>(std::move(data));
+    demuxer_manager_->SetLoadedUrl(loaded_url_);
+    demuxer_manager_->SetDataSource(
+        std::make_unique<media::MemoryDataSource>(std::move(data)));
     MemoryDataSourceInitialized(true, data_size);
     return;
   }
 
-  auto url_data = url_index_->GetByUrl(
-      url, static_cast<UrlData::CorsMode>(cors_mode),
-      is_cache_disabled ? UrlIndex::kCacheDisabled : UrlIndex::kNormal);
   auto data_source = std::make_unique<MultiBufferDataSource>(
-      main_task_runner_, std::move(url_data), media_log_.get(),
-      buffered_data_source_host_.get(),
+      main_task_runner_,
+      url_index_->GetByUrl(
+          url, static_cast<UrlData::CorsMode>(cors_mode),
+          is_cache_disabled ? UrlIndex::kCacheDisabled : UrlIndex::kNormal),
+      media_log_.get(), buffered_data_source_host_.get(),
       base::BindRepeating(&WebMediaPlayerImpl::NotifyDownloading, weak_this_));
-  MultiBufferDataSource* mb_data_source = data_source.get();
-  data_source_ = std::move(data_source);
+
+  auto* mb_data_source = data_source.get();
+  demuxer_manager_->SetDataSource(std::move(data_source));
 
   mb_data_source->OnRedirect(base::BindRepeating(
       &WebMediaPlayerImpl::OnDataSourceRedirected, weak_this_));
@@ -1226,10 +1173,8 @@ STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadAuto, media::DataSource::AUTO);
 void WebMediaPlayerImpl::SetPreload(WebMediaPlayer::Preload preload) {
   DVLOG(1) << __func__ << "(" << preload << ")";
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-
   preload_ = static_cast<media::DataSource::Preload>(preload);
-  if (data_source_)
-    data_source_->SetPreload(preload_);
+  demuxer_manager_->SetPreload(preload_);
 }
 
 bool WebMediaPlayerImpl::HasVideo() const {
@@ -1529,10 +1474,7 @@ bool WebMediaPlayerImpl::WouldTaintOrigin() const {
     return true;
   }
 
-  // TODO(crbug/1377053): The default |false| value might have to be
-  // re-considered for MediaPlayerRenderer, but for now, leave behavior the
-  // same as it was.
-  return data_source_ ? data_source_->WouldTaintOrigin() : false;
+  return demuxer_manager_->WouldTaintOrigin();
 }
 
 double WebMediaPlayerImpl::MediaTimeForTimeValue(double timeValue) const {
@@ -1784,7 +1726,7 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
 
   // Tell the data source we have enough data so that it may release the
   // connection (unless blink is waiting on us to signal play()).
-  if (data_source_ && !client_->CouldPlayIfEnoughData()) {
+  if (demuxer_manager_->HasDataSource() && !client_->CouldPlayIfEnoughData()) {
     // `attempting_suspended_start_` will be cleared by OnPipelineSeeked() which
     // will occur after this method during a suspended startup.
     if (attempting_suspended_start_ && did_lazy_load_) {
@@ -1797,17 +1739,17 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
       // enough" to the MultiBufferDataSource.
       //
       // base::Unretained() is safe here since the base::CancelableOnceClosure
-      // will cancel upon destruction of this class and `data_source_` is
+      // will cancel upon destruction of this class and `demuxer_manager_` is
       // gauranteeed to outlive us as a result of the DestructionHelper.
       have_enough_after_lazy_load_cb_.Reset(
-          base::BindOnce(&media::DataSource::OnBufferingHaveEnough,
-                         base::Unretained(data_source_.get()), true));
+          base::BindOnce(&media::DemuxerManager::OnBufferingHaveEnough,
+                         base::Unretained(demuxer_manager_.get()), true));
       main_task_runner_->PostDelayedTask(
           FROM_HERE, have_enough_after_lazy_load_cb_.callback(),
           base::Milliseconds(250));
     } else {
       have_enough_after_lazy_load_cb_.Cancel();
-      data_source_->OnBufferingHaveEnough(true);
+      demuxer_manager_->OnBufferingHaveEnough(true);
     }
   }
 
@@ -1905,47 +1847,14 @@ void WebMediaPlayerImpl::OnFallback(media::PipelineStatus status) {
 
 #if BUILDFLAG(IS_ANDROID)
 media::PipelineStatus WebMediaPlayerImpl::StartHLSFallback() {
-  // HLS isn't enabled, so HLS detection should be the error.
-  if (!base::FeatureList::IsEnabled(media::kHlsPlayer))
-    return media::DEMUXER_ERROR_DETECTED_HLS;
-
-  // |data_source_| may be a MultiBufferDataSource if someone passes in a m3u8
-  // as a data:// URL, and since MediaPlayer doesn't support data:// URLs, fail
-  // playback now. Since HLS is enabled, the error is now a failing renderer.
-  if (!data_source_)
-    return media::PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED;
-
-  const auto* co_data_source = data_source_->GetAsCrossOriginDataSource();
-  if (!co_data_source)
-    return media::PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED;
-
   // Note: Does not consider the full redirect chain, which could contain
   // undetected mixed content.
-  bool frame_url_is_cryptographic =
-      url::Origin(frame_->GetSecurityOrigin()).GetURL().SchemeIsCryptographic();
-  bool manifest_url_is_cryptographic =
-      loaded_url_.SchemeIsCryptographic() &&
-      data_source_->GetUrlAfterRedirects().SchemeIsCryptographic();
-  MimeType mime_type =
-      TranslateMimeTypeToHistogramEnum(co_data_source->GetMimeType());
-  bool is_cross_origin = co_data_source->IsCorsCrossOrigin();
-  base::UmaHistogramEnumeration("Media.WebMediaPlayerImpl.HLS.MimeType",
-                                mime_type);
-  UMA_HISTOGRAM_BOOLEAN("Media.WebMediaPlayerImpl.HLS.IsCorsCrossOrigin",
-                        is_cross_origin);
-  UMA_HISTOGRAM_BOOLEAN(
-      "Media.WebMediaPlayerImpl.HLS.IsMixedContent",
-      frame_url_is_cryptographic && !manifest_url_is_cryptographic);
-  if (is_cross_origin) {
-    UMA_HISTOGRAM_BOOLEAN("Media.WebMediaPlayerImpl.HLS.HasAccessControl",
-                          co_data_source->HasAccessControl());
-    base::UmaHistogramEnumeration(
-        "Media.WebMediaPlayerImpl.HLS.CorsCrossOrigin.MimeType", mime_type);
-  }
-
-  return media::PIPELINE_OK;
+  demuxer_manager_->SetLoadedUrl(loaded_url_);
+  return demuxer_manager_->StartAndRecordHLSFallback(
+      url::Origin(frame_->GetSecurityOrigin())
+          .GetURL()
+          .SchemeIsCryptographic());
 }
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
@@ -1968,9 +1877,8 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
       renderer_factory_selector_->SetBaseRendererType(
           media::RendererType::kMediaPlayer);
 
-      loaded_url_ = data_source_->GetUrlAfterRedirects();
-
-      data_source_->Stop();
+      loaded_url_ = demuxer_manager_->GetDataSourceUrlAfterRedirects().value();
+      auto data_source = demuxer_manager_->StopAndGetDataSourceForDestruction();
 
       pipeline_controller_->Stop();
       SetMemoryReportingState(false);
@@ -1992,7 +1900,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
 
                 std::move(start_pipeline_cb).Run();
               },
-              std::move(demuxer_), std::move(data_source_),
+              std::move(demuxer_), std::move(data_source),
               base::BindOnce(&WebMediaPlayerImpl::StartPipeline, weak_this_))));
 
       return;
@@ -2274,8 +2182,9 @@ bool WebMediaPlayerImpl::CanPlayThrough() {
     return true;
   if (GetDemuxerType() == media::DemuxerType::kChunkDemuxer)
     return true;
-  if (data_source_ && data_source_->AssumeFullyBuffered())
+  if (demuxer_manager_->DataSourceFullyBuffered()) {
     return true;
+  }
   // If we're not currently downloading, we have as much buffer as
   // we're ever going to get, which means we say we can play through.
   if (network_state_ == WebMediaPlayer::kNetworkStateIdle)
@@ -2329,12 +2238,13 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
     // It may use this information to update buffer sizes or release unused
     // network connections.
     MaybeUpdateBufferSizesForPlayback();
-    if (data_source_ && !client_->CouldPlayIfEnoughData()) {
+    if (demuxer_manager_->HasDataSource() &&
+        !client_->CouldPlayIfEnoughData()) {
       // For LazyLoad this will be handled during OnPipelineSuspended().
       if (for_suspended_start && did_lazy_load_)
         DCHECK(!have_enough_after_lazy_load_cb_.IsCancelled());
       else
-        data_source_->OnBufferingHaveEnough(false);
+        demuxer_manager_->OnBufferingHaveEnough(false);
     }
 
     // Blink expects a timeChanged() in response to a seek().
@@ -2808,13 +2718,15 @@ void WebMediaPlayerImpl::DataSourceInitialized(bool success) {
 
 void WebMediaPlayerImpl::MultiBufferDataSourceInitialized(bool success) {
   DVLOG(1) << __func__;
-  DCHECK(data_source_);
-  if (observer_)
-    observer_->OnDataSourceInitialized(data_source_->GetUrlAfterRedirects());
+  DCHECK(demuxer_manager_->HasDataSource());
+  if (observer_) {
+    observer_->OnDataSourceInitialized(
+        demuxer_manager_->GetDataSourceUrlAfterRedirects().value());
+  }
 
   // No point in preloading data as we'll probably just throw it away anyways.
   if (success && IsStreaming() && preload_ > media::DataSource::METADATA)
-    data_source_->SetPreload(media::DataSource::METADATA);
+    demuxer_manager_->SetPreload(media::DataSource::METADATA);
   DataSourceInitialized(success);
 }
 
@@ -2957,7 +2869,7 @@ std::unique_ptr<media::Renderer> WebMediaPlayerImpl::CreateRenderer(
 #if BUILDFLAG(ENABLE_FFMPEG)
 std::unique_ptr<Demuxer> WebMediaPlayerImpl::CreateFFmpegDemuxer() {
   return std::make_unique<media::FFmpegDemuxer>(
-      media_task_runner_, data_source_.get(),
+      media_task_runner_, demuxer_manager_->GetRawDataSource(),
       media::BindToCurrentLoop(base::BindRepeating(
           &WebMediaPlayerImpl::OnEncryptedMediaInitData, weak_this_)),
       media::BindToCurrentLoop(base::BindRepeating(
@@ -3042,7 +2954,7 @@ void WebMediaPlayerImpl::StartPipeline() {
     // run in the demuxer override case?
   } else if (load_type_ != kLoadTypeMediaSource) {
     DCHECK(GetDemuxerType() != media::DemuxerType::kChunkDemuxer);
-    DCHECK(data_source_);
+    DCHECK(demuxer_manager_->HasDataSource());
 #if BUILDFLAG(ENABLE_FFMPEG)
     SetDemuxer(CreateFFmpegDemuxer());
 #else
@@ -3051,7 +2963,7 @@ void WebMediaPlayerImpl::StartPipeline() {
 #endif
   } else {
     DCHECK(GetDemuxerType() != media::DemuxerType::kChunkDemuxer);
-    DCHECK(!data_source_);
+    DCHECK(!demuxer_manager_->HasDataSource());
     SetDemuxer(CreateChunkDemuxer());
     DCHECK(demuxer_);
   }
@@ -3092,8 +3004,8 @@ void WebMediaPlayerImpl::SetReadyState(WebMediaPlayer::ReadyState state) {
   DVLOG(1) << __func__ << "(" << state << ")";
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  if (state == WebMediaPlayer::kReadyStateHaveEnoughData && data_source_ &&
-      data_source_->AssumeFullyBuffered() &&
+  if (state == WebMediaPlayer::kReadyStateHaveEnoughData &&
+      demuxer_manager_->DataSourceFullyBuffered() &&
       network_state_ == WebMediaPlayer::kNetworkStateLoading) {
     SetNetworkState(WebMediaPlayer::kNetworkStateLoaded);
   }
@@ -3443,7 +3355,7 @@ void WebMediaPlayerImpl::FinishMemoryUsageReport(int64_t demuxer_memory_usage) {
 
   const auto stats = GetPipelineStatistics();
   const int64_t data_source_memory_usage =
-      data_source_ ? data_source_->GetMemoryUsage() : 0;
+      demuxer_manager_->GetDataSourceMemoryUsage();
 
   // If we have video and no video memory usage and we've rendered the first
   // frame, assume the VideoFrameCompositor is holding onto the last frame after
@@ -3499,8 +3411,10 @@ void WebMediaPlayerImpl::OnMainThreadMemoryDump(
   CreateAllocation(pmd, id, "audio", stats.audio_memory_usage);
   CreateAllocation(pmd, id, "video", stats.video_memory_usage);
 
-  if (data_source_)
-    CreateAllocation(pmd, id, "data_source", data_source_->GetMemoryUsage());
+  if (demuxer_manager_->HasDataSource()) {
+    CreateAllocation(pmd, id, "data_source",
+                     demuxer_manager_->GetDataSourceMemoryUsage());
+  }
 }
 
 // static
@@ -3616,7 +3530,7 @@ bool WebMediaPlayerImpl::IsHidden() const {
 }
 
 bool WebMediaPlayerImpl::IsStreaming() const {
-  return data_source_ && data_source_->IsStreaming();
+  return demuxer_manager_->IsStreamingDataSource();
 }
 
 bool WebMediaPlayerImpl::DoesOverlaySupportMetadata() const {
@@ -3949,7 +3863,8 @@ void WebMediaPlayerImpl::WriteSplitHistogram(
 }
 
 void WebMediaPlayerImpl::RecordUnderflowDuration(base::TimeDelta duration) {
-  DCHECK(data_source_ || GetDemuxerType() == media::DemuxerType::kChunkDemuxer);
+  DCHECK(demuxer_manager_->HasDataSource() ||
+         GetDemuxerType() == media::DemuxerType::kChunkDemuxer);
   WriteSplitHistogram<kPlaybackType | kEncrypted>(
       &base::UmaHistogramTimes, "Media.UnderflowDuration2", duration);
 }
@@ -4040,12 +3955,11 @@ void WebMediaPlayerImpl::MaybeUpdateBufferSizesForPlayback() {
   // Don't increase the MultiBufferDataSource buffer size until we've reached
   // kReadyStateHaveEnoughData. Otherwise we will unnecessarily slow down
   // playback startup -- it can instead be done for free after playback starts.
-  if (!data_source_ || highest_ready_state_ < kReadyStateHaveEnoughData)
+  if (highest_ready_state_ < kReadyStateHaveEnoughData) {
     return;
+  }
 
-  data_source_->OnMediaPlaybackRateChanged(playback_rate_);
-  if (!paused_)
-    data_source_->OnMediaIsPlaying();
+  demuxer_manager_->OnDataSourcePlaybackRateChange(playback_rate_, paused_);
 }
 
 void WebMediaPlayerImpl::OnSimpleWatchTimerTick() {
@@ -4054,7 +3968,7 @@ void WebMediaPlayerImpl::OnSimpleWatchTimerTick() {
 }
 
 GURL WebMediaPlayerImpl::GetSrcAfterRedirects() {
-  return data_source_ ? data_source_->GetUrlAfterRedirects() : GURL();
+  return demuxer_manager_->GetDataSourceUrlAfterRedirects().value_or(GURL());
 }
 
 void WebMediaPlayerImpl::UpdateSmoothnessHelper() {
@@ -4159,21 +4073,7 @@ void WebMediaPlayerImpl::ReportSessionUMAs() const {
 }
 
 bool WebMediaPlayerImpl::PassedTimingAllowOriginCheck() const {
-  // If there is no MultiBuffer, then there are no HTTP responses, and so this
-  // can safely return true. Specifically for the MSE case, the app itself
-  // sources the ArrayBuffer[Views], possibly not even from HTTP responses. Any
-  // TAO checks which are present to prevent deduction of the resource content
-  // can be assumed to have passed, as the content is already readable by the
-  // app. TAO checks which would be used to determine other network timing
-  // info, such as DNS lookup time, are not relevant as the media data is far
-  // removed from the network itself at this point, and so that info cannot be
-  // revealed via the MediaSource or WebMediaPlayer that's using MSE.
-  // TODO(1266991): Ensure that this returns the correct value for HLS media,
-  // based on the TAO checks performed on those resources.
-  // TODO(crbug/1377053): The default |true| value might have to be
-  // re-considered for MediaPlayerRenderer, but for now, leave behavior the
-  // same as it was.
-  return data_source_ ? data_source_->PassedTimingAllowOriginCheck() : true;
+  return demuxer_manager_->PassedDataSourceTimingAllowOriginCheck();
 }
 
 }  // namespace blink

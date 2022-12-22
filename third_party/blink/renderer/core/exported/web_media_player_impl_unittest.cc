@@ -596,7 +596,7 @@ class WebMediaPlayerImplTest
   bool IsSuspended() { return wmpi_->pipeline_controller_->IsSuspended(); }
 
   int64_t GetDataSourceMemoryUsage() const {
-    return wmpi_->data_source_->GetMemoryUsage();
+    return wmpi_->demuxer_manager_->GetDataSourceMemoryUsage();
   }
 
   void AddBufferedRanges() {
@@ -690,8 +690,9 @@ class WebMediaPlayerImplTest
   }
 
   bool ShouldCancelUponDefer() const {
-    CHECK_NE(wmpi_->data_source_, nullptr);
-    CHECK_NE(wmpi_->data_source_->GetAsCrossOriginDataSource(), nullptr);
+    const auto* ds = wmpi_->demuxer_manager_->GetDataSourceForTesting();
+    CHECK_NE(ds, nullptr);
+    CHECK_NE(ds->GetAsCrossOriginDataSource(), nullptr);
     // Right now, the only implementation of DataSource that WMPI can get
     // which returns non-null from GetAsCrossOriginDataSource is
     // MultiBufferDataSource, so the CHECKs above allow us to be safe casting
@@ -699,16 +700,16 @@ class WebMediaPlayerImplTest
     // TODO(crbug/1377053): Can we add |cancel_on_defer_for_testing| to
     // CrossOriginDataSource? We can't do a |GetAsMultiBufferDataSource| since
     // MBDS is in blink, and we can't import that into media.
-    return static_cast<MultiBufferDataSource*>(wmpi_->data_source_.get())
+    return static_cast<const MultiBufferDataSource*>(ds)
         ->cancel_on_defer_for_testing();
   }
 
   bool IsDataSourceMarkedAsPlaying() const {
-    CHECK_NE(wmpi_->data_source_, nullptr);
-    CHECK_NE(wmpi_->data_source_->GetAsCrossOriginDataSource(), nullptr);
+    const auto* ds = wmpi_->demuxer_manager_->GetDataSourceForTesting();
+    CHECK_NE(ds, nullptr);
+    CHECK_NE(ds->GetAsCrossOriginDataSource(), nullptr);
     // See comment in |ShouldCancelUponDefer|.
-    return static_cast<MultiBufferDataSource*>(wmpi_->data_source_.get())
-        ->media_has_played();
+    return static_cast<const MultiBufferDataSource*>(ds)->media_has_played();
   }
 
   scoped_refptr<media::VideoFrame> CreateFrame() {
@@ -807,7 +808,7 @@ class WebMediaPlayerImplTest
     }
 
     // Verify we made it through pipeline startup.
-    EXPECT_TRUE(wmpi_->data_source_);
+    EXPECT_TRUE(wmpi_->demuxer_manager_->HasDataSource());
     EXPECT_TRUE(wmpi_->demuxer_);
 
     if (ready_state > WebMediaPlayer::kReadyStateHaveCurrentData)

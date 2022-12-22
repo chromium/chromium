@@ -672,7 +672,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // RequestAnimationFrame() is called.
   void OnNewFramePresentedCallback();
 
-  // Notifies |mb_data_source_| of playback and rate changes which may increase
+  // Notifies |demuxer_manager_| of playback and rate changes which may increase
   // the amount of data the DataSource buffers. Does nothing prior to reaching
   // kReadyStateHaveEnoughData for the first time.
   void MaybeUpdateBufferSizesForPlayback();
@@ -722,7 +722,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   WebMediaPlayer::ReadyState highest_ready_state_ =
       WebMediaPlayer::kReadyStateHaveNothing;
 
-  // Preload state for when |data_source_| is created after setPreload().
+  // Preload state for when a DataSource is created after setPreload().
   media::DataSource::Preload preload_ = media::DataSource::METADATA;
 
   // Poster state (for UMA reporting).
@@ -838,12 +838,12 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Routes audio playback to either AudioRendererSink or WebAudio.
   scoped_refptr<WebAudioSourceProviderImpl> audio_source_provider_;
 
+  // Manages the lifetime of the DataSource, and soon the Demuxer.
+  std::unique_ptr<media::DemuxerManager> demuxer_manager_;
+
   // |demuxer_| holds the the appropriate demuxer based on which resource load
   // strategy we're using.
   std::unique_ptr<media::Demuxer> demuxer_;
-
-  // |data_source_| will be null if we're using the ChunkDemuxer.
-  std::unique_ptr<media::DataSource> data_source_;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
