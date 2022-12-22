@@ -18,6 +18,7 @@
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/bulk_leak_check_service.h"
 #import "components/password_manager/core/browser/mock_bulk_leak_check_service.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -74,26 +75,9 @@ struct MockPasswordCheckManagerObserver
               (override));
 };
 
-scoped_refptr<TestPasswordStore> CreateAndUseTestPasswordStore(
-    ChromeBrowserState* _browserState) {
-  return base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-      IOSChromePasswordStoreFactory::GetInstance()
-          ->SetTestingFactoryAndUse(
-              _browserState,
-              base::BindRepeating(&password_manager::BuildPasswordStore<
-                                  web::BrowserState, TestPasswordStore>))
-          .get()));
-}
-
-MockBulkLeakCheckService* CreateAndUseBulkLeakCheckService(
-    ChromeBrowserState* _browserState) {
-  return static_cast<MockBulkLeakCheckService*>(
-      IOSChromeBulkLeakCheckServiceFactory::GetInstance()
-          ->SetTestingFactoryAndUse(
-              _browserState, base::BindLambdaForTesting([](web::BrowserState*) {
-                return std::unique_ptr<KeyedService>(
-                    std::make_unique<MockBulkLeakCheckService>());
-              })));
+std::unique_ptr<KeyedService> MakeMockPasswordCheckManagerObserver(
+    web::BrowserState*) {
+  return std::make_unique<MockBulkLeakCheckService>();
 }
 
 PasswordForm MakeSavedPassword(
@@ -127,11 +111,25 @@ void AddIssueToForm(PasswordForm* form,
 
 class IOSChromePasswordCheckManagerTest : public PlatformTest {
  public:
-  IOSChromePasswordCheckManagerTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
-        bulk_leak_check_service_(
-            CreateAndUseBulkLeakCheckService(browser_state_.get())),
-        store_(CreateAndUseTestPasswordStore(browser_state_.get())) {
+  IOSChromePasswordCheckManagerTest() {
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        IOSChromeBulkLeakCheckServiceFactory::GetInstance(),
+        base::BindRepeating(&MakeMockPasswordCheckManagerObserver));
+    builder.AddTestingFactory(
+        IOSChromePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<web::BrowserState,
+                                                  TestPasswordStore>));
+    browser_state_ = builder.Build();
+    bulk_leak_check_service_ = static_cast<MockBulkLeakCheckService*>(
+        IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
+            browser_state_.get()));
+    store_ =
+        base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
+            IOSChromePasswordStoreFactory::GetForBrowserState(
+                browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+                .get()));
     manager_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
         browser_state_.get());
   }

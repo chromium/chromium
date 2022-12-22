@@ -11,6 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
@@ -18,10 +19,6 @@
 namespace syncer {
 class MockSyncService;
 }  // namespace syncer
-
-namespace web {
-class BrowserState;
-}  // namespace web
 
 @class AppState;
 class Browser;
@@ -35,15 +32,17 @@ class TestChromeBrowserState;
 // supporting structure they require.
 class PassphraseTableViewControllerTest : public ChromeTableViewControllerTest {
  public:
-  static std::unique_ptr<KeyedService> CreateNiceMockSyncService(
-      web::BrowserState* context);
-
   PassphraseTableViewControllerTest();
   ~PassphraseTableViewControllerTest() override;
 
  protected:
   void SetUp() override;
   void TearDown() override;
+
+  // Allow sub-classes to register testing factories in the builder for the
+  // new TestChromeBrowserState.
+  virtual void RegisterTestingFactories(
+      TestChromeBrowserState::Builder& builder);
 
   void SetUpNavigationController(UIViewController* test_controller);
 

@@ -62,6 +62,10 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ReadingListModelFactory::GetInstance(),
+        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
+                            std::vector<ReadingListEntry>()));
     chrome_browser_state_ = test_cbs_builder.Build();
     large_icon_service_.reset(new favicon::LargeIconServiceImpl(
         &mock_favicon_service_, nullptr, 32, favicon_base::IconType::kTouchIcon,
@@ -69,7 +73,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     web_state_list_ = browser_->GetWebStateList();
     fake_web_state_ = std::make_unique<web::FakeWebState>();
-    InitializeReadingListModel();
+    fake_web_state_->SetBrowserState(chrome_browser_state_.get());
     dispatcher_ =
         OCMProtocolMock(@protocol(ContentSuggestionsMediatorDispatcher));
     consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
@@ -117,15 +121,6 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
         std::make_unique<web::FakeNavigationManager>());
     test_web_state->SetBrowserState(chrome_browser_state_.get());
     return test_web_state;
-  }
-
-  // Initialize reading list model and its required tab helpers.
-  void InitializeReadingListModel() {
-    fake_web_state_->SetBrowserState(chrome_browser_state_.get());
-    ReadingListModelFactory::GetInstance()->SetTestingFactoryAndUse(
-        chrome_browser_state_.get(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::vector<ReadingListEntry>()));
   }
 
   web::WebTaskEnvironment task_environment_;

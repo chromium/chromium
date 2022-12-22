@@ -6,6 +6,7 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
@@ -55,26 +56,23 @@ void SetSyncStatus(SyncServiceForPasswordTests* sync_service,
       .WillByDefault(testing::Return(passphrase_type));
 }
 
-// Sets up a password store factory for testing, and returns the test store.
-scoped_refptr<TestPasswordStore> CreateAndUseTestPasswordStore(
-    ChromeBrowserState* browser_state) {
-  return base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-      IOSChromePasswordStoreFactory::GetInstance()
-          ->SetTestingFactoryAndUse(
-              browser_state,
-              base::BindRepeating(&password_manager::BuildPasswordStore<
-                                  web::BrowserState, TestPasswordStore>))
-          .get()));
-}
-
 class PasswordSettingsMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        IOSChromePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<web::BrowserState,
+                                                  TestPasswordStore>));
     browser_state_ = builder.Build();
 
     password_manager::MockAffiliationService affiliation_service_;
-    store_ = CreateAndUseTestPasswordStore(browser_state_.get());
+    store_ =
+        base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
+            IOSChromePasswordStoreFactory::GetForBrowserState(
+                browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+                .get()));
     presenter_ = std::make_unique<SavedPasswordsPresenter>(
         &affiliation_service_, store_, /*accont_store=*/nullptr);
 

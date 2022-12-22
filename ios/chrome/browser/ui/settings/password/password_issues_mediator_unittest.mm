@@ -7,6 +7,7 @@
 #import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -45,18 +46,6 @@ using password_manager::PasswordForm;
 using password_manager::InsecureCredential;
 using password_manager::TestPasswordStore;
 
-// Sets test password store and returns pointer to it.
-scoped_refptr<TestPasswordStore> CreateAndUseTestPasswordStore(
-    ChromeBrowserState* _browserState) {
-  return base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-      IOSChromePasswordStoreFactory::GetInstance()
-          ->SetTestingFactoryAndUse(
-              _browserState,
-              base::BindRepeating(&password_manager::BuildPasswordStore<
-                                  web::BrowserState, TestPasswordStore>))
-          .get()));
-}
-
 }  // namespace
 
 // Test class that conforms to PasswordIssuesConsumer in order to test the
@@ -88,9 +77,18 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     test_cbs_builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
+    test_cbs_builder.AddTestingFactory(
+        IOSChromePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<web::BrowserState,
+                                                  TestPasswordStore>));
     chrome_browser_state_ = test_cbs_builder.Build();
 
-    store_ = CreateAndUseTestPasswordStore(chrome_browser_state_.get());
+    store_ =
+        base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
+            IOSChromePasswordStoreFactory::GetForBrowserState(
+                chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+                .get()));
 
     password_check_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
         chrome_browser_state_.get());

@@ -111,18 +111,6 @@ using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 using l10n_util::GetNSString;
 
-// Sets test password store and returns pointer to it.
-scoped_refptr<TestPasswordStore> BuildTestPasswordStore(
-    ChromeBrowserState* _browserState) {
-  return base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-      IOSChromePasswordStoreFactory::GetInstance()
-          ->SetTestingFactoryAndUse(
-              _browserState,
-              base::BindRepeating(&password_manager::BuildPasswordStore<
-                                  web::BrowserState, TestPasswordStore>))
-          .get()));
-}
-
 // Registers account preference that will be used for Safe Browsing.
 PrefService* SetPrefService() {
   TestingPrefServiceSimple* prefs = new TestingPrefServiceSimple();
@@ -162,6 +150,11 @@ class SafetyCheckMediatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
+    test_cbs_builder.AddTestingFactory(
+        IOSChromePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<web::BrowserState,
+                                                  TestPasswordStore>));
     browser_state_ = test_cbs_builder.Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -170,7 +163,11 @@ class SafetyCheckMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
 
-    store_ = BuildTestPasswordStore(browser_state_.get());
+    store_ =
+        base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
+            IOSChromePasswordStoreFactory::GetForBrowserState(
+                browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+                .get()));
 
     password_check_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
         browser_state_.get());

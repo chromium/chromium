@@ -71,9 +71,8 @@ class SyncEncryptionPassphraseTableViewControllerTest
   void SetUp() override {
     PassphraseTableViewControllerTest::SetUp();
     mock_sync_setup_service_ = static_cast<NiceMock<SyncSetupServiceMock>*>(
-        SyncSetupServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            chrome_browser_state_.get(),
-            base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService)));
+        SyncSetupServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get()));
     ON_CALL(*fake_sync_service_, GetTransportState)
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
     ON_CALL(*fake_sync_service_->GetMockUserSettings(),
@@ -85,6 +84,13 @@ class SyncEncryptionPassphraseTableViewControllerTest
   void TearDown() override {
     [SyncController() settingsWillBeDismissed];
     PassphraseTableViewControllerTest::TearDown();
+  }
+
+  void RegisterTestingFactories(
+      TestChromeBrowserState::Builder& builder) override {
+    builder.AddTestingFactory(
+        SyncSetupServiceFactory::GetInstance(),
+        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
   }
 
   ChromeTableViewController* InstantiateController() override {

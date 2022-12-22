@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
@@ -74,6 +75,11 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        IOSChromePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<
+                web::BrowserState, password_manager::TestPasswordStore>));
     chrome_browser_state_ = builder.Build();
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
@@ -97,12 +103,8 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
 
     password_store_mock_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromePasswordStoreFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    chrome_browser_state_.get(),
-                    base::BindRepeating(&password_manager::BuildPasswordStore<
-                                        web::BrowserState,
-                                        password_manager::TestPasswordStore>))
+            IOSChromePasswordStoreFactory::GetForBrowserState(
+                chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
 
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];

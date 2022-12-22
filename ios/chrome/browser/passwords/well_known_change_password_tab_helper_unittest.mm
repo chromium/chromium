@@ -70,6 +70,10 @@ void LoadUrlWithTransition(web::WebState* web_state,
   navigation_manager->LoadURLWithParams(params);
 }
 
+std::unique_ptr<KeyedService> MakeMockAffiliationService(web::BrowserState*) {
+  return std::make_unique<NiceMock<password_manager::MockAffiliationService>>();
+}
+
 }  // namespace
 
 // This test uses a mockserver to simulate different response. To handle the
@@ -85,7 +89,10 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
         &WellKnownChangePasswordTabHelperTest::HandleRequest,
         base::Unretained(this)));
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(IOSChromeAffiliationServiceFactory::GetInstance(),
+                              base::BindRepeating(&MakeMockAffiliationService));
+    browser_state_ = builder.Build();
 
     web::WebState::CreateParams params(browser_state_.get());
     web_state_ = web::WebState::Create(params);
@@ -100,14 +107,8 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
 
     affiliation_service_ =
         static_cast<password_manager::MockAffiliationService*>(
-            IOSChromeAffiliationServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    web_state()->GetBrowserState(),
-                    base::BindRepeating([](web::BrowserState* browser_state) {
-                      return std::unique_ptr<KeyedService>(
-                          std::make_unique<NiceMock<
-                              password_manager::MockAffiliationService>>());
-                    })));
+            IOSChromeAffiliationServiceFactory::GetForBrowserState(
+                browser_state_.get()));
 
     web_state()->SetDelegate(&delegate_);
     password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(

@@ -44,6 +44,8 @@ using testing::DefaultValue;
 using testing::NiceMock;
 using testing::Return;
 
+namespace {
+
 std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
   sync_preferences::PrefServiceMockFactory factory;
   scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
@@ -54,11 +56,12 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
   return prefs;
 }
 
-std::unique_ptr<KeyedService>
-PassphraseTableViewControllerTest::CreateNiceMockSyncService(
+std::unique_ptr<KeyedService> CreateNiceMockSyncService(
     web::BrowserState* context) {
   return std::make_unique<NiceMock<syncer::MockSyncService>>();
 }
+
+}  // anonymous namespace
 
 PassphraseTableViewControllerTest::PassphraseTableViewControllerTest()
     : ChromeTableViewControllerTest(),
@@ -79,11 +82,12 @@ void PassphraseTableViewControllerTest::SetUp() {
       AuthenticationServiceFactory::GetInstance(),
       AuthenticationServiceFactory::GetDefaultFactory());
   test_cbs_builder.AddTestingFactory(
-      SyncServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateMockSyncService));
-  test_cbs_builder.AddTestingFactory(
       SyncSetupServiceFactory::GetInstance(),
       base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
+  test_cbs_builder.AddTestingFactory(
+      SyncServiceFactory::GetInstance(),
+      base::BindRepeating(&CreateNiceMockSyncService));
+  RegisterTestingFactories(test_cbs_builder);
   test_cbs_builder.SetPrefService(CreatePrefService());
   chrome_browser_state_ = test_cbs_builder.Build();
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
@@ -97,9 +101,7 @@ void PassphraseTableViewControllerTest::SetUp() {
   SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
   fake_sync_service_ = static_cast<syncer::MockSyncService*>(
-      SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          chrome_browser_state_.get(),
-          base::BindRepeating(&CreateNiceMockSyncService)));
+      SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
 
   // Set up non-default return values for our sync service mock.
   ON_CALL(*fake_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
@@ -126,6 +128,11 @@ void PassphraseTableViewControllerTest::TearDown() {
   [nav_controller_ setViewControllers:@[] animated:NO];
   nav_controller_ = nil;
   ChromeTableViewControllerTest::TearDown();
+}
+
+void PassphraseTableViewControllerTest::RegisterTestingFactories(
+    TestChromeBrowserState::Builder& builder) {
+  // nothing to do, this is for sub-classes to override
 }
 
 void PassphraseTableViewControllerTest::SetUpNavigationController(

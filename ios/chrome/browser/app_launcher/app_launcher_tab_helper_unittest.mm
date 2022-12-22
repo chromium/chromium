@@ -90,9 +90,14 @@ class FakeNavigationManager : public web::FakeNavigationManager {
 // Test fixture for AppLauncherTabHelper class.
 class AppLauncherTabHelperTest : public PlatformTest {
  protected:
-  AppLauncherTabHelperTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
-        abuse_detector_([[FakeAppLauncherAbuseDetector alloc] init]) {
+  AppLauncherTabHelperTest() {
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        ReadingListModelFactory::GetInstance(),
+        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
+                            std::vector<ReadingListEntry>()));
+    browser_state_ = builder.Build();
+    abuse_detector_ = [[FakeAppLauncherAbuseDetector alloc] init];
     AppLauncherTabHelper::CreateForWebState(&web_state_, abuse_detector_);
     // Allow is the default policy for this test.
     abuse_detector_.policy = ExternalAppLaunchPolicyAllow;
@@ -131,27 +136,11 @@ class AppLauncherTabHelperTest : public PlatformTest {
     return policy_decision.ShouldAllowNavigation();
   }
 
-  // Initialize reading list model and its required tab helpers.
-  void InitializeReadingListModel() {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
-    web_state_.SetBrowserState(chrome_browser_state_.get());
-    ReadingListModelFactory::GetInstance()->SetTestingFactoryAndUse(
-        chrome_browser_state_.get(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::vector<ReadingListEntry>()));
-    is_reading_list_initialized_ = true;
-  }
-
   // Returns true if the `expected_read_status` matches the read status for any
   // non empty source URL based on the transition type and the app policy.
   bool TestReadingListUpdate(bool is_app_blocked,
                              bool is_link_transition,
                              bool expected_read_status) {
-    // Make sure reading list model is initialized.
-    if (!is_reading_list_initialized_)
-      InitializeReadingListModel();
-
     web_state_.SetCurrentURL(GURL("https://chromium.org"));
     GURL pending_url("http://google.com");
     navigation_manager_->AddItem(pending_url, ui::PAGE_TRANSITION_LINK);
@@ -159,8 +148,8 @@ class AppLauncherTabHelperTest : public PlatformTest {
     navigation_manager_->SetPendingItem(item);
     item->SetOriginalRequestURL(pending_url);
 
-    ReadingListModel* model = ReadingListModelFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    ReadingListModel* model =
+        ReadingListModelFactory::GetForBrowserState(browser_state_.get());
     EXPECT_TRUE(model->DeleteAllEntries());
     model->AddOrReplaceEntry(pending_url, "unread",
                              reading_list::ADDED_VIA_CURRENT_APP,
@@ -199,11 +188,8 @@ class AppLauncherTabHelperTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
   FakeNavigationManager* navigation_manager_ = nullptr;
-
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_ = nil;
   FakeAppLauncherAbuseDetector* abuse_detector_ = nil;
   FakeAppLauncherTabHelperDelegate delegate_;
-  bool is_reading_list_initialized_ = false;
   AppLauncherTabHelper* tab_helper_ = nullptr;
 };
 
