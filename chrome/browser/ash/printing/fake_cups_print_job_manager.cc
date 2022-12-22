@@ -139,9 +139,4 @@ void FakeCupsPrintJobManager::ChangePrintJobState(CupsPrintJob* job) {
       base::Milliseconds(3000));
 }
 
-// static
-CupsPrintJobManager* CupsPrintJobManager::CreateInstance(Profile* profile) {
-  return new FakeCupsPrintJobManager(profile);
-}
-
 }  // namespace ash

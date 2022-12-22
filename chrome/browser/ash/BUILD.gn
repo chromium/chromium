@@ -2680,6 +2680,8 @@ source_set("ash") {
     "printing/cups_printers_manager_proxy.h",
     "printing/enterprise_printers_provider.cc",
     "printing/enterprise_printers_provider.h",
+    "printing/fake_cups_print_job_manager.cc",
+    "printing/fake_cups_print_job_manager.h",
     "printing/history/print_job_database.h",
     "printing/history/print_job_database_impl.cc",
     "printing/history/print_job_database_impl.h",
@@ -4054,8 +4056,7 @@ source_set("ash") {
     public_deps += [ "//chrome/services/cups_proxy" ]
   } else {
     sources += [
-      "printing/fake_cups_print_job_manager.cc",
-      "printing/fake_cups_print_job_manager.h",
+      "printing/fake_cups_print_job_manager_factory.cc",
       "printing/printer_info_stub.cc",
     ]
   }
@@ -5099,6 +5100,7 @@ source_set("unit_tests") {
     "printing/automatic_usb_printer_configurer_unittest.cc",
     "printing/bulk_printers_calculator_unittest.cc",
     "printing/calculators_policies_binder_unittest.cc",
+    "printing/cups_print_job_notification_manager_unittest.cc",
     "printing/cups_printer_status_creator_unittest.cc",
     "printing/cups_printers_manager_unittest.cc",
     "printing/enterprise_printers_provider_unittest.cc",
