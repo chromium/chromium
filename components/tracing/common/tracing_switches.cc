@@ -107,4 +107,10 @@ const char kBackgroundTracingOutputFile[] = "background-tracing-output-file";
 // (currently 32kB on Desktop or 4kB on Android).
 const char kTraceSmbSize[] = "trace-smb-size";
 
+// This is only used when we did not set buffer size in trace config and will be
+// used for all trace sessions. If not provided, we will use the default value
+// provided in perfetto_config.cc
+const char kDefaultTraceBufferSizeLimitInKb[] =
+    "default-trace-buffer-size-limit-in-kb";
+
 }  // namespace switches
