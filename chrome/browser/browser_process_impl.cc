@@ -455,6 +455,12 @@ void BrowserProcessImpl::StartTearDown() {
 
   battery_metrics_.reset();
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // The Extensions Browser Client needs to teardown some members while the
+  // profile manager is still alive.
+  extensions_browser_client_->StartTearDown();
+#endif
+
   // Need to clear profiles (download managers) before the IO thread.
   {
     TRACE_EVENT0("shutdown",
@@ -472,6 +478,8 @@ void BrowserProcessImpl::StartTearDown() {
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  // The `media_file_system_registry_` cannot be reset until the
+  // `profile_manager_` has been.
   media_file_system_registry_.reset();
   // Remove the global instance of the Storage Monitor now. Otherwise the
   // FILE thread would be gone when we try to release it in the dtor and

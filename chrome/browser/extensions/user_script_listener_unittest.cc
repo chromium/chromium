@@ -86,12 +86,20 @@ class UserScriptListenerTest : public testing::Test {
         profile_manager_(
             new TestingProfileManager(TestingBrowserProcess::GetGlobal())) {}
 
+  ~UserScriptListenerTest() override {}
+
+  UserScriptListenerTest(const UserScriptListenerTest&) = delete;
+  UserScriptListenerTest& operator=(const UserScriptListenerTest&) = delete;
+
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
 #endif
     ASSERT_TRUE(profile_manager_->SetUp());
+    // The listener must be set up after the profile manager has been set up/
+    // installed itself on the browser process.
+    listener_ = std::make_unique<UserScriptListener>();
     profile_ = profile_manager_->CreateTestingProfile("test-profile");
     ASSERT_TRUE(profile_);
     TestExtensionSystem* test_extension_system =
@@ -103,6 +111,14 @@ class UserScriptListenerTest : public testing::Test {
     instance->GetProcess()->Init();
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_, std::move(instance));
+  }
+
+  void TearDown() override {
+    // The Listener unsubscribes itself from the profile in StartTearDown;
+    // failure to unsubscribe will result in the profile_manager's destructor
+    // throwing an error since there's still a subscription in the callback
+    // list.
+    listener_->StartTearDown();
   }
 
   void MarkNavigationResumed() { was_navigation_resumed_ = true; }
@@ -133,7 +149,7 @@ class UserScriptListenerTest : public testing::Test {
   std::unique_ptr<NavigationThrottle> CreateListenerNavigationThrottle(
       content::NavigationHandle* handle) {
     std::unique_ptr<NavigationThrottle> throttle =
-        listener_.CreateNavigationThrottle(handle);
+        listener_->CreateNavigationThrottle(handle);
     throttle->set_resume_callback_for_testing(
         base::BindRepeating(&UserScriptListenerTest::MarkNavigationResumed,
                             base::Unretained(this)));
@@ -151,7 +167,7 @@ class UserScriptListenerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  UserScriptListener listener_;
+  std::unique_ptr<UserScriptListener> listener_;
   raw_ptr<TestingProfile> profile_ = nullptr;
   raw_ptr<ExtensionService> service_ = nullptr;
   bool was_navigation_resumed_ = false;
@@ -172,7 +188,7 @@ TEST_F(UserScriptListenerTest, DelayAndUpdate) {
       CreateListenerNavigationThrottle(&handle);
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
 
-  listener_.TriggerUserScriptsReadyForTesting(profile_);
+  listener_->TriggerUserScriptsReadyForTesting(profile_);
   EXPECT_TRUE(was_navigation_resumed_);
 }
 
@@ -190,7 +206,7 @@ TEST_F(UserScriptListenerTest, DelayForPersistentScriptPatterns) {
       CreateListenerNavigationThrottle(&handle);
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
 
-  listener_.TriggerUserScriptsReadyForTesting(profile_);
+  listener_->TriggerUserScriptsReadyForTesting(profile_);
   EXPECT_TRUE(was_navigation_resumed_);
 }
 
@@ -210,7 +226,7 @@ TEST_F(UserScriptListenerTest, DelayAndUnload) {
   // listener that the user scripts have been updated.
   EXPECT_FALSE(was_navigation_resumed_);
 
-  listener_.TriggerUserScriptsReadyForTesting(profile_);
+  listener_->TriggerUserScriptsReadyForTesting(profile_);
   EXPECT_TRUE(was_navigation_resumed_);
 }
 
@@ -218,7 +234,7 @@ TEST_F(UserScriptListenerTest, NoDelayNoExtension) {
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
                                        web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
-      listener_.CreateNavigationThrottle(&handle);
+      listener_->CreateNavigationThrottle(&handle);
   EXPECT_EQ(nullptr, throttle);
 }
 
@@ -229,7 +245,7 @@ TEST_F(UserScriptListenerTest, NoDelayNotMatching) {
   content::MockNavigationHandle handle(GURL(kNotMatchingUrl),
                                        web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
-      listener_.CreateNavigationThrottle(&handle);
+      listener_->CreateNavigationThrottle(&handle);
   EXPECT_EQ(nullptr, throttle);
 }
 
@@ -258,11 +274,11 @@ TEST_F(UserScriptListenerTest, MultiProfile) {
 
   // When the first profile's user scripts are ready, the request should still
   // be blocked waiting for profile2.
-  listener_.TriggerUserScriptsReadyForTesting(profile_);
+  listener_->TriggerUserScriptsReadyForTesting(profile_);
   EXPECT_FALSE(was_navigation_resumed_);
 
   // After profile2 is ready, the request should proceed.
-  listener_.TriggerUserScriptsReadyForTesting(profile2);
+  listener_->TriggerUserScriptsReadyForTesting(profile2);
   EXPECT_TRUE(was_navigation_resumed_);
 }
 
@@ -274,10 +290,10 @@ TEST_F(UserScriptListenerTest, ResumeBeforeStart) {
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
                                        web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
-      listener_.CreateNavigationThrottle(&handle);
+      listener_->CreateNavigationThrottle(&handle);
   ASSERT_TRUE(throttle);
 
-  listener_.TriggerUserScriptsReadyForTesting(profile_);
+  listener_->TriggerUserScriptsReadyForTesting(profile_);
 
   ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
 }

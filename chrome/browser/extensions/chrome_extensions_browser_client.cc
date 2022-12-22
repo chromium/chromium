@@ -142,6 +142,10 @@ ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient() {
 
 ChromeExtensionsBrowserClient::~ChromeExtensionsBrowserClient() {}
 
+void ChromeExtensionsBrowserClient::StartTearDown() {
+  user_script_listener_.StartTearDown();
+}
+
 bool ChromeExtensionsBrowserClient::IsShuttingDown() {
   return g_browser_process->IsShuttingDown();
 }

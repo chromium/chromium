@@ -11,13 +11,14 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 class GURL;
 class URLPattern;
+class ProfileManager;
 
 namespace content {
 class BrowserContext;
@@ -34,8 +35,8 @@ class Extension;
 // script has not been loaded yet, then we delay the request.
 //
 // This class lives on the UI thread.
-class UserScriptListener : public content::NotificationObserver,
-                           public ExtensionRegistryObserver {
+class UserScriptListener : public ExtensionRegistryObserver,
+                           public ProfileManagerObserver {
  public:
   UserScriptListener();
 
@@ -52,6 +53,10 @@ class UserScriptListener : public content::NotificationObserver,
   // Called when manifest scripts have finished loading for the given
   // BrowserContext.
   void OnScriptsLoaded(content::BrowserContext* context);
+
+  // Called when the owning BrowserClient is notified that we should begin
+  // releasing our resources.
+  void StartTearDown();
 
   void SetUserScriptsNotReadyForTesting(content::BrowserContext* context);
   void TriggerUserScriptsReadyForTesting(content::BrowserContext* context);
@@ -104,10 +109,8 @@ class UserScriptListener : public content::NotificationObserver,
                           const Extension* extension,
                           URLPatterns* patterns);
 
-  // content::NotificationObserver
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ProfileManagerObserver
+  void OnProfileAdded(Profile* profile) override;
 
   // ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -121,7 +124,8 @@ class UserScriptListener : public content::NotificationObserver,
                                      extensions::ExtensionRegistryObserver>
       extension_registry_observations_{this};
 
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 };
 
 }  // namespace extensions
