@@ -11,22 +11,25 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/debug/stack_trace.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/default_clock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "content/browser/indexed_db/fake_indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
+#include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
-#include "content/browser/indexed_db/indexed_db_factory_impl.h"
+#include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_fake_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
-#include "content/browser/indexed_db/mock_indexed_db_factory.h"
+#include "storage/browser/test/mock_quota_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
@@ -59,19 +62,31 @@ class IndexedDBTransactionTest : public testing::Test {
  public:
   IndexedDBTransactionTest()
       : task_environment_(std::make_unique<base::test::TaskEnvironment>()),
-        backing_store_(std::make_unique<IndexedDBFakeBackingStore>()),
-        factory_(std::make_unique<MockIndexedDBFactory>()) {}
+        backing_store_(std::make_unique<IndexedDBFakeBackingStore>()) {}
 
   IndexedDBTransactionTest(const IndexedDBTransactionTest&) = delete;
   IndexedDBTransactionTest& operator=(const IndexedDBTransactionTest&) = delete;
 
   void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, temp_dir_.GetPath(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        /*special_storage_policy=*/nullptr);
+    indexed_db_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
+        temp_dir_.GetPath(), quota_manager_->proxy(),
+        base::DefaultClock::GetInstance(),
+        /*blob_storage_context=*/mojo::NullRemote(),
+        /*file_system_access_context=*/mojo::NullRemote(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        base::SequencedTaskRunner::GetCurrentDefault());
     // DB is created here instead of the constructor to workaround a
     // "peculiarity of C++". More info at
     // https://github.com/google/googletest/blob/main/docs/faq.md#my-compiler-complains-that-a-constructor-or-destructor-cannot-return-a-value-whats-going-on
     leveldb::Status s;
     std::tie(db_, s) = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
-        u"db", backing_store_.get(), factory_.get(), CreateRunTasksCallback(),
+        u"db", backing_store_.get(), indexed_db_context_->GetIDBFactory(),
+        CreateRunTasksCallback(),
         std::make_unique<FakeIndexedDBMetadataCoding>(),
         IndexedDBDatabase::Identifier(), &lock_manager_);
     ASSERT_TRUE(s.ok());
@@ -134,10 +149,12 @@ class IndexedDBTransactionTest : public testing::Test {
   PartitionedLockManager* lock_manager() { return &lock_manager_; }
 
  protected:
+  base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::unique_ptr<IndexedDBFakeBackingStore> backing_store_;
   std::unique_ptr<IndexedDBDatabase> db_;
-  std::unique_ptr<MockIndexedDBFactory> factory_;
+  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
 
   bool error_called_ = false;
 

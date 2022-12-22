@@ -28,7 +28,7 @@
 namespace content {
 class IndexedDBBackingStore;
 class IndexedDBDatabase;
-class IndexedDBFactoryImpl;
+class IndexedDBFactory;
 class IndexedDBPreCloseTaskQueue;
 class TransactionalLevelDBFactory;
 
@@ -43,7 +43,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kCompactIDBOnClose);
 //
 // This class is expected to manage its own lifetime by using the
 // `destruct_myself_` closure, which is expected to destroy this object in the
-// parent IndexedDBFactoryImpl (and remove it from any collections, etc).
+// parent IndexedDBFactory (and remove it from any collections, etc).
 // However, IndexedDBBucketState should still handle destruction without the
 // use of that closure when the storage partition is destructed.
 //
@@ -168,7 +168,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
   }
 
  private:
-  friend IndexedDBFactoryImpl;
+  friend IndexedDBFactory;
   friend IndexedDBBucketStateHandle;
 
   // Test needs access to ShouldRunTombstoneSweeper.
@@ -228,7 +228,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
   bool running_tasks_ = false;
   bool task_run_scheduled_ = false;
 
-  // This is safe because it is owned by IndexedDBFactoryImpl, which owns this
+  // This is safe because it is owned by IndexedDBFactory, which owns this
   // object.
   raw_ptr<base::Time> earliest_global_sweep_time_;
   raw_ptr<base::Time> earliest_global_compaction_time_;

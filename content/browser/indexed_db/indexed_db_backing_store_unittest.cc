@@ -41,7 +41,7 @@
 #include "content/browser/indexed_db/indexed_db_bucket_state.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
-#include "content/browser/indexed_db/indexed_db_factory_impl.h"
+#include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_metadata_coding.h"
@@ -123,15 +123,15 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
 
 // Factory subclass to allow the test to use the
 // TestableIndexedDBBackingStore subclass.
-class TestIDBFactory : public IndexedDBFactoryImpl {
+class TestIDBFactory : public IndexedDBFactory {
  public:
   explicit TestIDBFactory(
       IndexedDBContextImpl* idb_context,
       storage::mojom::BlobStorageContext* blob_storage_context,
       storage::mojom::FileSystemAccessContext* file_system_access_context)
-      : IndexedDBFactoryImpl(idb_context,
-                             IndexedDBClassFactory::Get(),
-                             base::DefaultClock::GetInstance()),
+      : IndexedDBFactory(idb_context,
+                         IndexedDBClassFactory::Get(),
+                         base::DefaultClock::GetInstance()),
         blob_storage_context_(blob_storage_context),
         file_system_access_context_(file_system_access_context) {}
 
@@ -384,7 +384,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
   void TearDown() override {
     DestroyFactoryAndBackingStore();
     if (idb_context_ && !idb_context_->IsInMemoryContext()) {
-      IndexedDBFactoryImpl* factory = idb_context_->GetIDBFactory();
+      IndexedDBFactory* factory = idb_context_->GetIDBFactory();
 
       // Loop through all open buckets, and force close them, and request the
       // deletion of the leveldb state. Once the states are no longer around,

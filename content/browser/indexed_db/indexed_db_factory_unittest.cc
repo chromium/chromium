@@ -33,7 +33,7 @@
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
-#include "content/browser/indexed_db/indexed_db_factory_impl.h"
+#include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
@@ -89,7 +89,7 @@ class IndexedDBFactoryTest : public testing::Test {
 
   void TearDown() override {
     if (context_ && !context_->IsInMemoryContext()) {
-      IndexedDBFactoryImpl* factory = context_->GetIDBFactory();
+      IndexedDBFactory* factory = context_->GetIDBFactory();
 
       // Loop through all open storage keys, and force close them, and request
       // the deletion of the leveldb state. Once the states are no longer
@@ -208,7 +208,7 @@ class IndexedDBFactoryTest : public testing::Test {
  protected:
   IndexedDBContextImpl* context() const { return context_.get(); }
 
-  IndexedDBFactoryImpl* factory() const { return context_->GetIDBFactory(); }
+  IndexedDBFactory* factory() const { return context_->GetIDBFactory(); }
 
   base::test::TaskEnvironment* task_environment() const {
     return task_environment_.get();

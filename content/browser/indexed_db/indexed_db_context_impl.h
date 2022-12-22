@@ -51,7 +51,7 @@ class QuotaClientCallbackWrapper;
 }  // namespace storage
 
 namespace content {
-class IndexedDBFactoryImpl;
+class IndexedDBFactory;
 class IndexedDBQuotaClient;
 
 class CONTENT_EXPORT IndexedDBContextImpl
@@ -154,7 +154,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void DeleteBucketData(const storage::BucketLocator& bucket_locator,
                         base::OnceCallback<void(bool success)> callback);
 
-  IndexedDBFactoryImpl* GetIDBFactory();
+  IndexedDBFactory* GetIDBFactory();
 
   // Called by StoragePartitionImpl to clear session-only data.
   // *not* called on the IDBTaskRunner.
@@ -165,7 +165,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // This getter is thread-safe.
   base::SequencedTaskRunner* IDBTaskRunner() { return idb_task_runner_.get(); }
 
-  // Methods called by IndexedDBFactoryImpl or IndexedDBDispatcherHost for
+  // Methods called by IndexedDBFactory or IndexedDBDispatcherHost for
   // quota support.
   void FactoryOpened(const storage::BucketLocator& bucket_locator);
   void ConnectionOpened(const storage::BucketLocator& bucket_locator);
@@ -307,7 +307,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;
   mojo::Remote<storage::mojom::FileSystemAccessContext>
       file_system_access_context_;
-  std::unique_ptr<IndexedDBFactoryImpl> indexeddb_factory_;
+  std::unique_ptr<IndexedDBFactory> indexeddb_factory_;
 
   // If `base_data_path_` is empty then this is an incognito session and the
   // backing store will be held in-memory rather than on-disk.

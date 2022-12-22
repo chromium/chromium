@@ -47,7 +47,7 @@
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
-#include "content/browser/indexed_db/indexed_db_factory_impl.h"
+#include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
@@ -782,7 +782,7 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
 void IndexedDBContextImpl::CompactBackingStoreForTesting(
     const storage::BucketLocator& bucket_locator,
     base::OnceClosure callback) {
-  IndexedDBFactoryImpl* factory = GetIDBFactory();
+  IndexedDBFactory* factory = GetIDBFactory();
 
   std::vector<IndexedDBDatabase*> databases =
       factory->GetOpenDatabasesForBucket(bucket_locator);
@@ -819,10 +819,10 @@ void IndexedDBContextImpl::GetDatabaseKeysForTesting(
   std::move(callback).Run(SchemaVersionKey::Encode(), DataVersionKey::Encode());
 }
 
-IndexedDBFactoryImpl* IndexedDBContextImpl::GetIDBFactory() {
+IndexedDBFactory* IndexedDBContextImpl::GetIDBFactory() {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   if (!indexeddb_factory_.get()) {
-    indexeddb_factory_ = std::make_unique<IndexedDBFactoryImpl>(
+    indexeddb_factory_ = std::make_unique<IndexedDBFactory>(
         this, IndexedDBClassFactory::Get(), clock_);
   }
   return indexeddb_factory_.get();
@@ -1005,7 +1005,7 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence() {
   if (sites_to_purge_on_shutdown_.empty())
     return;
 
-  IndexedDBFactoryImpl* factory = GetIDBFactory();
+  IndexedDBFactory* factory = GetIDBFactory();
   const auto& storage_key_to_file_path = FindLegacyIndexedDBFiles();
   const auto& bucket_id_to_file_path = FindIndexedDBFiles();
   for (const auto& bucket_locator : bucket_set_) {

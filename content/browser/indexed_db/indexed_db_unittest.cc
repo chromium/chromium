@@ -24,7 +24,7 @@
 #include "content/browser/indexed_db/indexed_db_client_state_checker_wrapper.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
-#include "content/browser/indexed_db/indexed_db_factory_impl.h"
+#include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/mock_indexed_db_callbacks.h"
@@ -192,7 +192,7 @@ class IndexedDBTest : public testing::Test,
 
   void TearDown() override {
     if (context_ && !context_->IsInMemoryContext()) {
-      IndexedDBFactoryImpl* factory = context_->GetIDBFactory();
+      IndexedDBFactory* factory = context_->GetIDBFactory();
 
       // Loop through all open buckets, and force close them, and request
       // the deletion of the leveldb state. Once the states are no longer
@@ -576,8 +576,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureFirstParty) {
   bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
   bucket_locator.storage_key = kTestStorageKey;
 
-  auto* factory =
-      static_cast<IndexedDBFactoryImpl*>(context()->GetIDBFactory());
+  auto* factory = static_cast<IndexedDBFactory*>(context()->GetIDBFactory());
 
   const int64_t transaction_id = 1;
 
@@ -617,8 +616,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
   bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
   bucket_locator.storage_key = kTestStorageKey;
 
-  auto* factory =
-      static_cast<IndexedDBFactoryImpl*>(context()->GetIDBFactory());
+  auto* factory = static_cast<IndexedDBFactory*>(context()->GetIDBFactory());
 
   const int64_t transaction_id = 1;
 

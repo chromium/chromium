@@ -15,7 +15,7 @@ class IndexedDBBucketState;
 // using the bucket, and the IndexedDBBucketState won't close until all
 // handles are destroyed. Destroying this handle can cause the bucket state
 // to synchronously destruct, which modifies the `factories_per_bucket_`
-// map in IndexedDBFactoryImpl.
+// map in IndexedDBFactory.
 class CONTENT_EXPORT IndexedDBBucketStateHandle {
  public:
   IndexedDBBucketStateHandle();

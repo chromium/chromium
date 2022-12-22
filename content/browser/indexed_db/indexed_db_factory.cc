@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/indexed_db_factory_impl.h"
+#include "content/browser/indexed_db/indexed_db_factory.h"
 
 #include <inttypes.h>
 #include <stdint.h>
@@ -74,17 +74,19 @@ leveldb::Status GetDBSizeFromEnv(leveldb::Env* env,
   // This assumes that leveldb will not put a subdirectory into the directory
   std::vector<std::string> file_names;
   leveldb::Status s = env->GetChildren(path_without_slash, &file_names);
-  if (!s.ok())
+  if (!s.ok()) {
     return s;
+  }
 
   for (std::string& file_name : file_names) {
     file_name.insert(0, path);
     uint64_t file_size;
     s = env->GetFileSize(file_name, &file_size);
-    if (!s.ok())
+    if (!s.ok()) {
       return s;
-    else
+    } else {
       *total_size_out += static_cast<int64_t>(file_size);
+    }
   }
   return s;
 }
@@ -132,14 +134,16 @@ std::tuple<bool, leveldb::Status> AreSchemasKnown(
   bool found = false;
   leveldb::Status s = indexed_db::GetInt(db, SchemaVersionKey::Encode(),
                                          &db_schema_version, &found);
-  if (!s.ok())
+  if (!s.ok()) {
     return {false, s};
+  }
   if (!found) {
     return {true, s};
   }
-  if (db_schema_version < 0)
+  if (db_schema_version < 0) {
     return {false, leveldb::Status::Corruption(
                        "Invalid IndexedDB database schema version.")};
+  }
   if (db_schema_version > indexed_db::kLatestKnownSchemaVersion) {
     return {false, s};
   }
@@ -147,14 +151,16 @@ std::tuple<bool, leveldb::Status> AreSchemasKnown(
   int64_t raw_db_data_version = 0;
   s = indexed_db::GetInt(db, DataVersionKey::Encode(), &raw_db_data_version,
                          &found);
-  if (!s.ok())
+  if (!s.ok()) {
     return {false, s};
+  }
   if (!found) {
     return {true, s};
   }
-  if (raw_db_data_version < 0)
+  if (raw_db_data_version < 0) {
     return {false,
             leveldb::Status::Corruption("Invalid IndexedDB data version.")};
+  }
 
   return {IndexedDBDataFormatVersion::GetCurrent().IsAtLeast(
               IndexedDBDataFormatVersion::Decode(raw_db_data_version)),
@@ -163,7 +169,7 @@ std::tuple<bool, leveldb::Status> AreSchemasKnown(
 
 }  // namespace
 
-IndexedDBFactoryImpl::IndexedDBFactoryImpl(
+IndexedDBFactory::IndexedDBFactory(
     IndexedDBContextImpl* context,
     IndexedDBClassFactory* indexed_db_class_factory,
     base::Clock* clock)
@@ -175,23 +181,23 @@ IndexedDBFactoryImpl::IndexedDBFactoryImpl(
   DCHECK(clock);
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
-          this, "IndexedDBFactoryImpl",
+          this, "IndexedDBFactory",
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::trace_event::MemoryDumpProvider::Options());
 }
 
-IndexedDBFactoryImpl::~IndexedDBFactoryImpl() {
+IndexedDBFactory::~IndexedDBFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }
 
-void IndexedDBFactoryImpl::GetDatabaseInfo(
+void IndexedDBFactory::GetDatabaseInfo(
     scoped_refptr<IndexedDBCallbacks> callbacks,
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& data_directory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT0("IndexedDB", "IndexedDBFactoryImpl::GetDatabaseInfo");
+  TRACE_EVENT0("IndexedDB", "IndexedDBFactory::GetDatabaseInfo");
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
@@ -231,14 +237,14 @@ void IndexedDBFactoryImpl::GetDatabaseInfo(
   callbacks->OnSuccess(std::move(names_and_versions));
 }
 
-void IndexedDBFactoryImpl::Open(
+void IndexedDBFactory::Open(
     const std::u16string& name,
     std::unique_ptr<IndexedDBPendingConnection> connection,
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& data_directory,
     scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT0("IndexedDB", "IndexedDBFactoryImpl::Open");
+  TRACE_EVENT0("IndexedDB", "IndexedDBFactory::Open");
   IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
@@ -265,7 +271,7 @@ void IndexedDBFactoryImpl::Open(
   std::unique_ptr<IndexedDBDatabase> database;
   std::tie(database, s) = class_factory_->CreateIndexedDBDatabase(
       name, factory->backing_store(), this,
-      base::BindRepeating(&IndexedDBFactoryImpl::MaybeRunTasksForBucket,
+      base::BindRepeating(&IndexedDBFactory::MaybeRunTasksForBucket,
                           bucket_state_destruction_weak_factory_.GetWeakPtr(),
                           bucket_locator),
       std::make_unique<IndexedDBMetadataCoding>(), std::move(unique_identifier),
@@ -290,14 +296,14 @@ void IndexedDBFactoryImpl::Open(
                                        std::move(client_state_checker));
 }
 
-void IndexedDBFactoryImpl::DeleteDatabase(
+void IndexedDBFactory::DeleteDatabase(
     const std::u16string& name,
     scoped_refptr<IndexedDBCallbacks> callbacks,
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& data_directory,
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT0("IndexedDB", "IndexedDBFactoryImpl::DeleteDatabase");
+  TRACE_EVENT0("IndexedDB", "IndexedDBFactory::DeleteDatabase");
   IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
@@ -321,7 +327,7 @@ void IndexedDBFactoryImpl::DeleteDatabase(
     base::WeakPtr<IndexedDBDatabase> database = it->second->AsWeakPtr();
     database->ScheduleDeleteDatabase(
         std::move(bucket_state_handle), callbacks,
-        base::BindOnce(&IndexedDBFactoryImpl::OnDatabaseDeleted,
+        base::BindOnce(&IndexedDBFactory::OnDatabaseDeleted,
                        weak_factory_.GetWeakPtr(), bucket_locator));
     if (force_close) {
       leveldb::Status status = database->ForceCloseAndRunTasks();
@@ -359,7 +365,7 @@ void IndexedDBFactoryImpl::DeleteDatabase(
   std::unique_ptr<IndexedDBDatabase> database;
   std::tie(database, s) = class_factory_->CreateIndexedDBDatabase(
       name, factory->backing_store(), this,
-      base::BindRepeating(&IndexedDBFactoryImpl::MaybeRunTasksForBucket,
+      base::BindRepeating(&IndexedDBFactory::MaybeRunTasksForBucket,
                           bucket_state_destruction_weak_factory_.GetWeakPtr(),
                           bucket_locator),
       std::make_unique<IndexedDBMetadataCoding>(), unique_identifier,
@@ -379,7 +385,7 @@ void IndexedDBFactoryImpl::DeleteDatabase(
       factory->AddDatabase(name, std::move(database))->AsWeakPtr();
   database_ptr->ScheduleDeleteDatabase(
       std::move(bucket_state_handle), std::move(callbacks),
-      base::BindOnce(&IndexedDBFactoryImpl::OnDatabaseDeleted,
+      base::BindOnce(&IndexedDBFactory::OnDatabaseDeleted,
                      weak_factory_.GetWeakPtr(), bucket_locator));
   if (force_close) {
     leveldb::Status status = database_ptr->ForceCloseAndRunTasks();
@@ -389,19 +395,20 @@ void IndexedDBFactoryImpl::DeleteDatabase(
   }
 }
 
-void IndexedDBFactoryImpl::HandleBackingStoreFailure(
+void IndexedDBFactory::HandleBackingStoreFailure(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // nullptr after ContextDestroyed() called, and in some unit tests.
-  if (!context_)
+  if (!context_) {
     return;
+  }
   context_->ForceClose(
       bucket_locator.id,
       storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE,
       base::DoNothing());
 }
 
-void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
+void IndexedDBFactory::HandleBackingStoreCorruption(
     const storage::BucketLocator& bucket_locator,
     const IndexedDBDatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -430,12 +437,13 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
 }
 
-std::vector<IndexedDBDatabase*> IndexedDBFactoryImpl::GetOpenDatabasesForBucket(
+std::vector<IndexedDBDatabase*> IndexedDBFactory::GetOpenDatabasesForBucket(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = factories_per_bucket_.find(bucket_locator.id);
-  if (it == factories_per_bucket_.end())
+  if (it == factories_per_bucket_.end()) {
     return std::vector<IndexedDBDatabase*>();
+  }
   IndexedDBBucketState* factory = it->second.get();
   std::vector<IndexedDBDatabase*> out;
   out.reserve(factory->databases().size());
@@ -444,19 +452,21 @@ std::vector<IndexedDBDatabase*> IndexedDBFactoryImpl::GetOpenDatabasesForBucket(
   return out;
 }
 
-void IndexedDBFactoryImpl::ForceClose(storage::BucketId bucket_id,
-                                      bool delete_in_memory_store) {
+void IndexedDBFactory::ForceClose(storage::BucketId bucket_id,
+                                  bool delete_in_memory_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = factories_per_bucket_.find(bucket_id);
-  if (it == factories_per_bucket_.end())
+  if (it == factories_per_bucket_.end()) {
     return;
+  }
 
   base::WeakPtr<IndexedDBBucketState> weak_ptr;
   {
     IndexedDBBucketStateHandle bucket_state_handle = it->second->CreateHandle();
 
-    if (delete_in_memory_store)
+    if (delete_in_memory_store) {
       bucket_state_handle.bucket_state()->StopPersistingForIncognito();
+    }
     bucket_state_handle.bucket_state()->ForceClose();
     weak_ptr = bucket_state_handle.bucket_state()->AsWeakPtr();
   }
@@ -464,30 +474,32 @@ void IndexedDBFactoryImpl::ForceClose(storage::BucketId bucket_id,
   RunTasksForBucket(std::move(weak_ptr));
 }
 
-void IndexedDBFactoryImpl::ForceSchemaDowngrade(
+void IndexedDBFactory::ForceSchemaDowngrade(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = factories_per_bucket_.find(bucket_locator.id);
-  if (it == factories_per_bucket_.end())
+  if (it == factories_per_bucket_.end()) {
     return;
+  }
 
   IndexedDBBackingStore* backing_store = it->second->backing_store();
   leveldb::Status s = backing_store->RevertSchemaToV2();
   DLOG_IF(ERROR, !s.ok()) << "Unable to force downgrade: " << s.ToString();
 }
 
-V2SchemaCorruptionStatus IndexedDBFactoryImpl::HasV2SchemaCorruption(
+V2SchemaCorruptionStatus IndexedDBFactory::HasV2SchemaCorruption(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = factories_per_bucket_.find(bucket_locator.id);
-  if (it == factories_per_bucket_.end())
+  if (it == factories_per_bucket_.end()) {
     return V2SchemaCorruptionStatus::kUnknown;
+  }
 
   IndexedDBBackingStore* backing_store = it->second->backing_store();
   return backing_store->HasV2SchemaCorruption();
 }
 
-void IndexedDBFactoryImpl::ContextDestroyed() {
+void IndexedDBFactory::ContextDestroyed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Set `context_` to nullptr first to ensure no re-entry into the `cotext_`
   // object during shutdown. This can happen in methods like BlobFilesCleaned.
@@ -503,33 +515,35 @@ void IndexedDBFactoryImpl::ContextDestroyed() {
   factories_per_bucket_.clear();
 }
 
-void IndexedDBFactoryImpl::ReportOutstandingBlobs(
+void IndexedDBFactory::ReportOutstandingBlobs(
     const storage::BucketLocator& bucket_locator,
     bool blobs_outstanding) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!context_)
+  if (!context_) {
     return;
+  }
   auto it = factories_per_bucket_.find(bucket_locator.id);
   CHECK(it != factories_per_bucket_.end());
 
   it->second->ReportOutstandingBlobs(blobs_outstanding);
 }
 
-void IndexedDBFactoryImpl::BlobFilesCleaned(
+void IndexedDBFactory::BlobFilesCleaned(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // nullptr after ContextDestroyed() called, and in some unit tests.
-  if (!context_)
+  if (!context_) {
     return;
+  }
   context_->BlobFilesCleaned(bucket_locator);
 }
 
-size_t IndexedDBFactoryImpl::GetConnectionCount(
-    storage::BucketId bucket_id) const {
+size_t IndexedDBFactory::GetConnectionCount(storage::BucketId bucket_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = factories_per_bucket_.find(bucket_id);
-  if (it == factories_per_bucket_.end())
+  if (it == factories_per_bucket_.end()) {
     return 0;
+  }
   size_t count = 0;
   for (const auto& name_database_pair : it->second->databases()) {
     count += name_database_pair.second->ConnectionCount();
@@ -538,44 +552,48 @@ size_t IndexedDBFactoryImpl::GetConnectionCount(
   return count;
 }
 
-void IndexedDBFactoryImpl::NotifyIndexedDBContentChanged(
+void IndexedDBFactory::NotifyIndexedDBContentChanged(
     const storage::BucketLocator& bucket_locator,
     const std::u16string& database_name,
     const std::u16string& object_store_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!context_)
+  if (!context_) {
     return;
+  }
   context_->NotifyIndexedDBContentChanged(bucket_locator, database_name,
                                           object_store_name);
 }
 
-int64_t IndexedDBFactoryImpl::GetInMemoryDBSize(
+int64_t IndexedDBFactory::GetInMemoryDBSize(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = factories_per_bucket_.find(bucket_locator.id);
-  if (it == factories_per_bucket_.end())
+  if (it == factories_per_bucket_.end()) {
     return 0;
+  }
   IndexedDBBackingStore* backing_store = it->second->backing_store();
   int64_t level_db_size = 0;
   leveldb::Status s =
       GetDBSizeFromEnv(backing_store->db()->env(), "/", &level_db_size);
-  if (!s.ok())
+  if (!s.ok()) {
     LOG(ERROR) << "Failed to GetDBSizeFromEnv: " << s.ToString();
+  }
 
   return backing_store->GetInMemoryBlobSize() + level_db_size;
 }
 
-base::Time IndexedDBFactoryImpl::GetLastModified(
+base::Time IndexedDBFactory::GetLastModified(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = factories_per_bucket_.find(bucket_locator.id);
-  if (it == factories_per_bucket_.end())
+  if (it == factories_per_bucket_.end()) {
     return base::Time();
+  }
   IndexedDBBackingStore* backing_store = it->second->backing_store();
   return backing_store->db()->LastModified();
 }
 
-std::vector<storage::BucketId> IndexedDBFactoryImpl::GetOpenBuckets() const {
+std::vector<storage::BucketId> IndexedDBFactory::GetOpenBuckets() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<storage::BucketId> output;
   output.reserve(factories_per_bucket_.size());
@@ -585,12 +603,13 @@ std::vector<storage::BucketId> IndexedDBFactoryImpl::GetOpenBuckets() const {
   return output;
 }
 
-IndexedDBBucketState* IndexedDBFactoryImpl::GetBucketFactory(
+IndexedDBBucketState* IndexedDBFactory::GetBucketFactory(
     const storage::BucketId& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = factories_per_bucket_.find(id);
-  if (it != factories_per_bucket_.end())
+  if (it != factories_per_bucket_.end()) {
     return it->second.get();
+  }
   return nullptr;
 }
 
@@ -599,7 +618,7 @@ std::tuple<IndexedDBBucketStateHandle,
            IndexedDBDatabaseError,
            IndexedDBDataLossInfo,
            /*is_cold_open=*/bool>
-IndexedDBFactoryImpl::GetOrOpenBucketFactory(
+IndexedDBFactory::GetOrOpenBucketFactory(
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& data_directory,
     bool create_if_missing) {
@@ -629,9 +648,10 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
     auto filesystem_proxy = storage::CreateFilesystemProxy();
     std::tie(database_path, blob_path, s) = CreateDatabaseDirectories(
         filesystem_proxy.get(), data_directory, bucket_locator);
-    if (!s.ok())
+    if (!s.ok()) {
       return {IndexedDBBucketStateHandle(), s, CreateDefaultError(),
               IndexedDBDataLossInfo(), /*was_cold_open=*/true};
+    }
   }
 
   // TODO(dmurph) Have these factories be given in the constructor, or as
@@ -650,9 +670,10 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
     scopes_options.metadata_key_prefix = ScopesPrefix::Encode();
     scopes_options.failure_callback = base::BindRepeating(
         [](const storage::BucketLocator& bucket_locator,
-           base::WeakPtr<IndexedDBFactoryImpl> factory, leveldb::Status s) {
-          if (!factory)
+           base::WeakPtr<IndexedDBFactory> factory, leveldb::Status s) {
+          if (!factory) {
             return;
+          }
           factory->OnDatabaseError(bucket_locator, s, nullptr);
         },
         bucket_locator, weak_factory_.GetWeakPtr());
@@ -665,14 +686,17 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
             bucket_locator, data_directory, database_path, blob_path,
             std::move(scopes_options), &scopes_factory,
             std::move(filesystem_proxy), is_first_attempt, create_if_missing);
-    if (LIKELY(is_first_attempt))
+    if (LIKELY(is_first_attempt)) {
       first_try_status = s;
-    if (LIKELY(s.ok()))
+    }
+    if (LIKELY(s.ok())) {
       break;
+    }
     DCHECK(!backing_store);
     // If the disk is full, always exit immediately.
-    if (disk_full)
+    if (disk_full) {
       break;
+    }
     if (s.IsCorruption()) {
       std::string sanitized_message = leveldb_env::GetCorruptionMessage(s);
       base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
@@ -728,19 +752,21 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
             data_loss_info, /*was_cold_open=*/true};
   }
 
-  if (!is_incognito_and_in_memory)
+  if (!is_incognito_and_in_memory) {
     ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_SUCCESS,
                      bucket_locator);
+  }
 
   auto run_tasks_callback = base::BindRepeating(
-      &IndexedDBFactoryImpl::MaybeRunTasksForBucket,
+      &IndexedDBFactory::MaybeRunTasksForBucket,
       bucket_state_destruction_weak_factory_.GetWeakPtr(), bucket_locator);
 
   auto tear_down_callback = base::BindRepeating(
       [](const storage::BucketLocator& bucket_locator,
-         base::WeakPtr<IndexedDBFactoryImpl> factory, leveldb::Status s) {
-        if (!factory)
+         base::WeakPtr<IndexedDBFactory> factory, leveldb::Status s) {
+        if (!factory) {
           return;
+        }
         factory->OnDatabaseError(bucket_locator, s, nullptr);
       },
       bucket_locator, weak_factory_.GetWeakPtr());
@@ -760,7 +786,7 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
           data_loss_info, /*was_cold_open=*/true};
 }
 
-std::unique_ptr<IndexedDBBackingStore> IndexedDBFactoryImpl::CreateBackingStore(
+std::unique_ptr<IndexedDBBackingStore> IndexedDBFactory::CreateBackingStore(
     IndexedDBBackingStore::Mode backing_store_mode,
     TransactionalLevelDBFactory* transactional_leveldb_factory,
     const storage::BucketLocator& bucket_locator,
@@ -784,7 +810,7 @@ std::tuple<std::unique_ptr<IndexedDBBackingStore>,
            leveldb::Status,
            IndexedDBDataLossInfo,
            bool /* is_disk_full */>
-IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
+IndexedDBFactory::OpenAndVerifyIndexedDBBackingStore(
     const storage::BucketLocator& bucket_locator,
     base::FilePath data_directory,
     base::FilePath database_path,
@@ -838,7 +864,7 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
   scoped_refptr<LevelDBState> database_state;
   bool is_disk_full;
   {
-    TRACE_EVENT0("IndexedDB", "IndexedDBFactoryImpl::OpenLevelDB");
+    TRACE_EVENT0("IndexedDB", "IndexedDBFactory::OpenLevelDB");
     base::TimeTicks begin_time = base::TimeTicks::Now();
     size_t write_buffer_size = leveldb_env::WriteBufferSize(
         base::SysInfo::AmountOfTotalDiskSpace(database_path));
@@ -859,13 +885,14 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
   // Create the LevelDBScopes wrapper.
   std::unique_ptr<LevelDBScopes> scopes;
   {
-    TRACE_EVENT0("IndexedDB", "IndexedDBFactoryImpl::OpenLevelDBScopes");
+    TRACE_EVENT0("IndexedDB", "IndexedDBFactory::OpenLevelDBScopes");
     DCHECK(scopes_factory);
     std::tie(scopes, status) = scopes_factory->CreateAndInitializeLevelDBScopes(
         std::move(scopes_options), database_state);
-    if (UNLIKELY(!status.ok()))
+    if (UNLIKELY(!status.ok())) {
       return {nullptr, status, std::move(data_loss_info),
               /*is_disk_full=*/false};
+    }
   }
 
   // Create the TransactionalLevelDBDatabase wrapper.
@@ -906,23 +933,24 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
       bucket_locator, blob_path, std::move(database),
       context_->blob_storage_context(), context_->file_system_access_context(),
       std::move(filesystem_proxy),
-      base::BindRepeating(&IndexedDBFactoryImpl::BlobFilesCleaned,
+      base::BindRepeating(&IndexedDBFactory::BlobFilesCleaned,
                           weak_factory_.GetWeakPtr(), bucket_locator),
-      base::BindRepeating(&IndexedDBFactoryImpl::ReportOutstandingBlobs,
+      base::BindRepeating(&IndexedDBFactory::ReportOutstandingBlobs,
                           weak_factory_.GetWeakPtr(), bucket_locator),
       context_->IDBTaskRunner());
   status = backing_store->Initialize(
       /*clean_active_blob_journal=*/(!is_incognito_and_in_memory &&
                                      first_open_since_startup));
 
-  if (UNLIKELY(!status.ok()))
+  if (UNLIKELY(!status.ok())) {
     return {nullptr, status, IndexedDBDataLossInfo(), /*is_disk_full=*/false};
+  }
 
   return {std::move(backing_store), status, std::move(data_loss_info),
           /*is_disk_full=*/false};
 }
 
-void IndexedDBFactoryImpl::OnDatabaseError(
+void IndexedDBFactory::OnDatabaseError(
     const storage::BucketLocator& bucket_locator,
     leveldb::Status status,
     const char* message) {
@@ -945,41 +973,46 @@ void IndexedDBFactoryImpl::OnDatabaseError(
   }
 }
 
-void IndexedDBFactoryImpl::OnDatabaseDeleted(
+void IndexedDBFactory::OnDatabaseDeleted(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (call_on_database_deleted_for_testing_)
+  if (call_on_database_deleted_for_testing_) {
     call_on_database_deleted_for_testing_.Run(bucket_locator);
+  }
 
-  if (!context_)
+  if (!context_) {
     return;
+  }
   context_->DatabaseDeleted(bucket_locator);
 }
 
-void IndexedDBFactoryImpl::MaybeRunTasksForBucket(
+void IndexedDBFactory::MaybeRunTasksForBucket(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = factories_per_bucket_.find(bucket_locator.id);
-  if (it == factories_per_bucket_.end())
+  if (it == factories_per_bucket_.end()) {
     return;
+  }
 
   IndexedDBBucketState* bucket_state = it->second.get();
-  if (bucket_state->is_task_run_scheduled())
+  if (bucket_state->is_task_run_scheduled()) {
     return;
+  }
 
   bucket_state->set_task_run_scheduled();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&IndexedDBFactoryImpl::RunTasksForBucket,
+      base::BindOnce(&IndexedDBFactory::RunTasksForBucket,
                      bucket_state_destruction_weak_factory_.GetWeakPtr(),
                      bucket_state->AsWeakPtr()));
 }
 
-void IndexedDBFactoryImpl::RunTasksForBucket(
+void IndexedDBFactory::RunTasksForBucket(
     base::WeakPtr<IndexedDBBucketState> bucket_state) {
-  if (!bucket_state)
+  if (!bucket_state) {
     return;
+  }
   IndexedDBBucketState::RunTasksResult result;
   leveldb::Status status;
   std::tie(result, status) = bucket_state->RunTasks();
@@ -995,23 +1028,24 @@ void IndexedDBFactoryImpl::RunTasksForBucket(
   }
 }
 
-bool IndexedDBFactoryImpl::IsDatabaseOpen(
+bool IndexedDBFactory::IsDatabaseOpen(
     const storage::BucketLocator& bucket_locator,
     const std::u16string& name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = factories_per_bucket_.find(bucket_locator.id);
-  if (it == factories_per_bucket_.end())
+  if (it == factories_per_bucket_.end()) {
     return false;
+  }
   return base::Contains(it->second->databases(), name);
 }
 
-bool IndexedDBFactoryImpl::IsBackingStoreOpen(
+bool IndexedDBFactory::IsBackingStoreOpen(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Contains(factories_per_bucket_, bucket_locator.id);
 }
 
-bool IndexedDBFactoryImpl::OnMemoryDump(
+bool IndexedDBFactory::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   for (const auto& bucket_state_pair : factories_per_bucket_) {
@@ -1038,7 +1072,7 @@ bool IndexedDBFactoryImpl::OnMemoryDump(
   return true;
 }
 
-void IndexedDBFactoryImpl::CallOnDatabaseDeletedForTesting(
+void IndexedDBFactory::CallOnDatabaseDeletedForTesting(
     OnDatabaseDeletedCallback callback) {
   call_on_database_deleted_for_testing_ = std::move(callback);
 }

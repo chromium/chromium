@@ -2264,8 +2264,6 @@ test("content_unittests") {
     "../browser/indexed_db/mock_indexed_db_callbacks.h",
     "../browser/indexed_db/mock_indexed_db_database_callbacks.cc",
     "../browser/indexed_db/mock_indexed_db_database_callbacks.h",
-    "../browser/indexed_db/mock_indexed_db_factory.cc",
-    "../browser/indexed_db/mock_indexed_db_factory.h",
     "../browser/indexed_db/mock_mojo_indexed_db_callbacks.cc",
     "../browser/indexed_db/mock_mojo_indexed_db_callbacks.h",
     "../browser/indexed_db/mock_mojo_indexed_db_database_callbacks.cc",
