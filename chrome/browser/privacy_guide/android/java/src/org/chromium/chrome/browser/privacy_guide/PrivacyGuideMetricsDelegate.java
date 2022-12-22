@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -17,19 +19,19 @@ class PrivacyGuideMetricsDelegate {
     /**
      * Initial state of the MSBB when {@link MSBBFragment} is created.
      */
-    private Boolean mInitialMsbbState;
+    private @Nullable Boolean mInitialMsbbState;
     /**
      * Initial state of History Sync when {@link HistorySyncFragment} is created.
      */
-    private boolean mInitialHistorySyncState;
+    private @Nullable Boolean mInitialHistorySyncState;
     /**
      * Initial state of the Safe Browsing when {@link SafeBrowsingFragment} is created.
      */
-    private @SafeBrowsingState int mInitialSafeBrowsingState;
+    private @Nullable @SafeBrowsingState Integer mInitialSafeBrowsingState;
     /**
      * Initial mode of the Cookies Control when {@link CookiesFragment} is created.
      */
-    private @CookieControlsMode int mInitialCookiesControlMode;
+    private @Nullable @CookieControlsMode Integer mInitialCookiesControlMode;
 
     /**
      * A method to record metrics on the next click of {@link MSBBFragment}
@@ -65,8 +67,10 @@ class PrivacyGuideMetricsDelegate {
      * A method to record metrics on the next click of {@link HistorySyncFragment}.
      */
     private void recordMetricsOnNextForHistorySyncCard() {
-        boolean currentValue = PrivacyGuideUtils.isHistorySyncEnabled();
+        assert mInitialHistorySyncState != null : "Initial state of History Sync not set.";
 
+        boolean currentValue = PrivacyGuideUtils.isHistorySyncEnabled();
+        @PrivacyGuideSettingsStates
         int stateChange;
 
         if (mInitialHistorySyncState && currentValue) {
@@ -94,6 +98,8 @@ class PrivacyGuideMetricsDelegate {
      * A method to record metrics on the next click of {@link SafeBrowsingFragment}
      */
     private void recordMetricsOnNextForSafeBrowsingCard() {
+        assert mInitialSafeBrowsingState != null : "Initial state of Safe Browsing not set.";
+
         @SafeBrowsingState
         int currentValue = PrivacyGuideUtils.getSafeBrowsingState();
 
@@ -101,6 +107,7 @@ class PrivacyGuideMetricsDelegate {
                 mInitialSafeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION;
         boolean isEndStateEnhance = currentValue == SafeBrowsingState.ENHANCED_PROTECTION;
 
+        @PrivacyGuideSettingsStates
         int stateChange;
 
         if (isStartStateEnhance && isEndStateEnhance) {
@@ -128,6 +135,8 @@ class PrivacyGuideMetricsDelegate {
      * A method to record metrics on the next click of {@link CookiesFragment}
      */
     private void recordMetricsOnNextForCookiesCard() {
+        assert mInitialCookiesControlMode != null : "Initial mode of Cookie Control not set.";
+
         @CookieControlsMode
         int currentValue = PrivacyGuideUtils.getCookieControlsMode();
 
@@ -135,6 +144,7 @@ class PrivacyGuideMetricsDelegate {
                 mInitialCookiesControlMode == CookieControlsMode.INCOGNITO_ONLY;
         boolean isEndStateBlock3PIncognito = currentValue == CookieControlsMode.INCOGNITO_ONLY;
 
+        @PrivacyGuideSettingsStates
         int stateChange;
 
         if (isInitialStateBlock3PIncognito && isEndStateBlock3PIncognito) {
