@@ -14,6 +14,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_scanning_impl.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -341,6 +342,22 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
   bool HandleDlpCommands(const std::string& name,
                          const base::Value::Dict& value,
                          std::string* output) override {
+    if (name == "setBlockedFilesTransfer") {
+      base::FilePath result =
+          file_manager::util::GetDownloadsFolderForProfile(profile());
+      auto* file_names = value.FindList("fileNames");
+      EXPECT_TRUE(file_names);
+      ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+      for (const auto& file_name : *file_names) {
+        check_files_transfer_response.add_files_paths(
+            result.Append(file_name.GetString()).value());
+      }
+      chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->SetCheckFilesTransferResponse(check_files_transfer_response);
+      return true;
+    }
     if (name == "setIsRestrictedDestinationRestriction") {
       EXPECT_CALL(*mock_rules_manager_, IsRestrictedDestination)
           .WillRepeatedly(

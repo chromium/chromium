@@ -10,16 +10,19 @@ import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 
 /**
- * Tests DLP block toast is shown when a restricted file is copied.
+ * Tests that DLP block toast is shown when a restricted file is cut.
  */
 testcase.transferShowDlpToast = async () => {
-  // Setup the restrictions.
-  await sendTestMessage({name: 'setIsRestrictedDestinationRestriction'});
-
   const entry = ENTRIES.hello;
 
   // Open Files app.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Setup the restrictions.
+  await sendTestMessage({
+    name: 'setBlockedFilesTransfer',
+    fileNames: [entry.nameText],
+  });
 
   // Mount a USB volume.
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
@@ -31,19 +34,25 @@ testcase.transferShowDlpToast = async () => {
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
 
-  // Copy the file.
+  // Cut the file.
   chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']));
+      await remoteCall.callRemoteTestUtil('execCommand', appId, ['cut']));
 
   // Select USB volume.
   await navigateWithDirectoryTree(appId, '/fake-usb');
 
-  // Paste the file to begin a copy operation.
+  // Paste the file.
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']));
 
-  // Check that a toast is displayed because copy is disallowed.
+  // Check: a toast should be displayed because cut is disallowed.
   await remoteCall.waitForElement(appId, '#toast');
+
+  // Navigate back to Downloads.
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+
+  // The file should be there because the transfer was restricted.
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 };
 
 /**
