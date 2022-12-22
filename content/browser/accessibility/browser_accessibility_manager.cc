@@ -327,7 +327,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {
   if (popup_root_ids_.size() == 1) {
     BrowserAccessibility* node = GetFromID(*popup_root_ids_.begin());
     if (node) {
-      DCHECK(node->GetRole() == ax::mojom::Role::kRootWebArea);
+      DCHECK(node->GetRole() == ax::mojom::Role::kGroup);
       return node;
     }
   }
@@ -1463,8 +1463,7 @@ void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
 
   id_wrapper_map_[node->id()] = BrowserAccessibility::Create(this, node);
 
-  if (tree->root() != node &&
-      node->GetRole() == ax::mojom::Role::kRootWebArea) {
+  if (node->HasIntAttribute(ax::mojom::IntAttribute::kPopupForId)) {
     popup_root_ids_.insert(node->id());
   }
 }
@@ -1493,20 +1492,6 @@ void BrowserAccessibilityManager::OnNodeReparented(ui::AXTree* tree,
   BrowserAccessibility* wrapper = iter->second.get();
   DCHECK(wrapper);
   wrapper->SetNode(*node);
-}
-
-void BrowserAccessibilityManager::OnRoleChanged(ui::AXTree* tree,
-                                                ui::AXNode* node,
-                                                ax::mojom::Role old_role,
-                                                ax::mojom::Role new_role) {
-  DCHECK(node);
-  if (tree->root() == node)
-    return;
-  if (new_role == ax::mojom::Role::kRootWebArea) {
-    popup_root_ids_.insert(node->id());
-  } else if (old_role == ax::mojom::Role::kRootWebArea) {
-    popup_root_ids_.erase(node->id());
-  }
 }
 
 void BrowserAccessibilityManager::OnAtomicUpdateFinished(

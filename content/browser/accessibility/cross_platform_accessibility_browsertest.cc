@@ -1588,7 +1588,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     const BrowserAccessibility* popup_area =
         manager->GetFromID(controls_ids[1]);
     ASSERT_NE(nullptr, popup_area);
-    EXPECT_EQ(ax::mojom::Role::kRootWebArea, popup_area->GetRole());
+    EXPECT_EQ(ax::mojom::Role::kGroup, popup_area->GetRole());
 
 #if !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
     // Ensure that the bounding box of the popup area is at least 100
@@ -1653,7 +1653,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     const BrowserAccessibility* popup_area =
         manager->GetFromID(controls_ids[0]);
     ASSERT_NE(nullptr, popup_area);
-    EXPECT_EQ(ax::mojom::Role::kRootWebArea, popup_area->GetRole());
+    EXPECT_EQ(ax::mojom::Role::kGroup, popup_area->GetRole());
   }
 }
 

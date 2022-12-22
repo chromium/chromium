@@ -860,7 +860,7 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
   DCHECK(node->isConnected())
       << "Should not call with disconnected node: " << node;
 
-  // A WebArea's parent should be the page popup owner, if any, otherwise null.
+  // A document's parent should be the page popup owner, if any, otherwise null.
   if (auto* document = DynamicTo<Document>(node)) {
     LocalFrame* frame = document->GetFrame();
     DCHECK(frame);
@@ -1500,7 +1500,7 @@ void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
 void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) {
   Element* element = GetElement();
   if (!element) {
-    if (ui::IsPlatformDocument(RoleValue())) {
+    if (IsA<Document>(GetNode())) {
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kHtmlTag, "#document");
     }
@@ -1762,8 +1762,17 @@ void AXObject::SerializeOtherScreenReaderAttributes(
     }
   }
 
-  if (ui::IsPlatformDocument(node_data->role) && !IsLoaded())
-    node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy, true);
+  if (IsA<Document>(GetNode())) {
+    if (!IsLoaded()) {
+      node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy, true);
+    }
+    if (AXObject* parent = ParentObject()) {
+      DCHECK(parent->ChooserPopup() == this)
+          << "ChooserPopup missing for: " << parent->ToString(true);
+      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kPopupForId,
+                                 parent->AXObjectID());
+    }
+  }
 
   if (node_data->role == ax::mojom::blink::Role::kColorWell) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kColorValue,
@@ -3048,8 +3057,9 @@ bool AXObject::IsAriaHidden() const {
 
 bool AXObject::ComputeIsAriaHidden(IgnoredReasons* ignored_reasons) const {
   // The root node of a document or popup document cannot be aria-hidden.
-  if (IsWebArea())
+  if (IsA<Document>(GetNode())) {
     return false;
+  }
 
   // aria-hidden:true works a bit like display:none.
   // * aria-hidden=true affects entire subtree.
@@ -5792,13 +5802,14 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   }
 
   if (clips_children) {
-    if (IsWebArea())
+    if (IsA<Document>(GetNode())) {
       *clips_children = true;
-    else
+    } else {
       *clips_children = layout_object->HasNonVisibleOverflow();
+    }
   }
 
-  if (IsWebArea()) {
+  if (IsA<Document>(GetNode())) {
     if (LocalFrameView* view = layout_object->GetFrame()->View()) {
       out_bounds_in_container.set_size(gfx::SizeF(view->Size()));
 
@@ -5844,8 +5855,9 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
           if (layout_object->IsAbsolutePositioned()) {
             // If it's absolutely positioned, the container must be the
             // nearest positioned container, or the root.
-            if (container->IsWebArea())
+            if (IsA<LayoutView>(layout_object)) {
               break;
+            }
             if (container_layout_object->IsPositioned())
               break;
           } else {

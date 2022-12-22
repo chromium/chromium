@@ -28,7 +28,7 @@ UNKNOWN focusable
 ++++++++++++++STATIC_TEXT label='PM'
 ++++++++++++++++UNKNOWN label='PM'
 ++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}'
-++++++++UNKNOWN focusable
+++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN

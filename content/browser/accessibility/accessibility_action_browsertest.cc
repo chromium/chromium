@@ -1239,7 +1239,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
 
   ASSERT_EQ(1U, target->PlatformChildCount());
   BrowserAccessibility* popup_web_area = target->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kRootWebArea, popup_web_area->GetRole());
+  EXPECT_EQ(ax::mojom::Role::kGroup, popup_web_area->GetRole());
 
   BrowserAccessibility* listbox = FindNode(ax::mojom::Role::kListBox, "");
   ASSERT_TRUE(listbox);
@@ -1274,7 +1274,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
 
   ASSERT_EQ(1U, target->PlatformChildCount());
   BrowserAccessibility* popup_web_area = target->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kRootWebArea, popup_web_area->GetRole());
+  EXPECT_EQ(ax::mojom::Role::kGroup, popup_web_area->GetRole());
 }
 #endif  // BUILDFLAG(OS_WIN) || BUILDFLAG(OS_CHROMEOS) || BUILDFLAG(USE_ATK)
 }  // namespace content

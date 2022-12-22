@@ -2245,31 +2245,30 @@ bool AXTree::CreateNewChildVector(AXNode* node,
                                          node->id()));
         } else {
           // --- Begin temporary change ---
-          // TODO(crbug.com/1156601) Revert this once we have the crash data we
-          // need (crrev.com/c/2892259)
-          // Diagnose strange errors "Node 1 reparented from 0 to 2", which
-          // sounds like the root node is getting the <html> element as a parent
-          // -- in the normal case, the root is 1 and <html> is 2.
+          // TODO(crbug.com/1156601, crbug.com/1402673) Revert this once we have
+          // the crash data we need (crrev.com/c/2892259) Diagnose strange
+          // errors:
+          // Node did not have a previous parent, but reparenting error
+          // triggered:
+          // * New parent = id=3 rootWebArea FOCUSABLE
+          // * Child = id=1 rootWebArea (0, 0)-(0, 0) busy=true
           std::ostringstream error;
           error << "Node did not have a previous parent, but "
                    "reparenting error triggered:"
-                << "\n* Child = " << *child << "\n* New parent = " << *node
                 << "\n* root_will_be_created = "
                 << update_state->root_will_be_created
                 << "\n* pending_root_id = "
                 << (update_state->pending_root_id
                         ? *update_state->pending_root_id
                         : kInvalidAXNodeID)
-                << "\nTree update: "
-                << update_state->pending_tree_update->ToString(
-                       /*verbose*/ false);
-
-          // Add a crash key so we can figure out why this is happening.
-          static crash_reporter::CrashKeyString<256> ax_tree_error(
-              "ax_reparenting_error");
-          ax_tree_error.Set(error.str());
-          LOG(ERROR) << error.str();
-          CHECK(false);
+                << "\n* new parent = " << *node << "\n* Old parent = "
+                << (child->parent()
+                        ? child->parent()->data().ToString(/*verbose*/ false)
+                        : "-")
+                << "\n* child = " << *child;
+          // Crash with crash keys for debugging.
+          RecordError(*update_state, error.str());
+          CHECK(false) << error.str();
           // --- End temporary change ---
         }
         success = false;

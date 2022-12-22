@@ -410,10 +410,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   void OnNodeCreated(ui::AXTree* tree, ui::AXNode* node) override;
   void OnNodeDeleted(ui::AXTree* tree, int32_t node_id) override;
   void OnNodeReparented(ui::AXTree* tree, ui::AXNode* node) override;
-  void OnRoleChanged(ui::AXTree* tree,
-                     ui::AXNode* node,
-                     ax::mojom::Role old_role,
-                     ax::mojom::Role new_role) override;
   void OnAtomicUpdateFinished(
       ui::AXTree* tree,
       bool root_changed,

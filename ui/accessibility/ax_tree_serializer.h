@@ -614,6 +614,8 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
     client_id_map_[client_node->id] = client_node;
   }
 
+  DCHECK_EQ(tree_->GetId(tree_->GetRoot()), client_root_->id);
+
   // We're about to serialize it, so mark it as valid.
   client_node->invalid = false;
   client_node->ignored = tree_->IsIgnored(node);
@@ -716,8 +718,25 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
     AXNodeData* serialized_node = &out_update->nodes[serialized_node_index];
 
     tree_->SerializeNode(node, serialized_node);
-    if (serialized_node->id == client_root_->id)
+    if (serialized_node->id == client_root_->id) {
       out_update->root_id = serialized_node->id;
+      CHECK(!client_root_->parent) << "The root cannot have a parent:";
+      // << "\n* Root: "
+      // << tree_->GetDebugString(tree_->GetFromId(out_update->root_id))
+      // << "\n* Root's parent: "
+      // << tree_->GetDebugString(tree_->GetFromId(client_root_->parent->id));
+
+    } else {
+      DCHECK(serialized_node->role != ax::mojom::Role::kRootWebArea)
+          << "A kRootWebArea role was used on an object that is not the root: "
+          << "\n* Actual root: " << tree_->GetDebugString(tree_->GetRoot())
+          << "\n* Illegal node with root web area role: "
+          << tree_->GetDebugString(tree_->GetFromId(serialized_node->id))
+          << "\n* Parent of illegal node: "
+          << (client_node->parent ? tree_->GetDebugString(tree_->GetFromId(
+                                        client_node->parent->id))
+                                  : "");
+    }
   }
 
   // Iterate over the children, serialize them, and update the ClientTreeNode

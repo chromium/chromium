@@ -1525,8 +1525,9 @@ TEST_F(BrowserAccessibilityManagerTest, NestedChildRoot) {
 
   ui::AXNodeData child_tree_root;
   child_tree_root.id = 3;
-  child_tree_root.role = ax::mojom::Role::kRootWebArea;
-  root.child_ids.push_back(3);
+  child_tree_root.role = ax::mojom::Role::kGroup;
+  child_tree_root.AddIntAttribute(ax::mojom::IntAttribute::kPopupForId, 2);
+  popup_button.child_ids.push_back(3);
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
@@ -1536,37 +1537,15 @@ TEST_F(BrowserAccessibilityManagerTest, NestedChildRoot) {
   ASSERT_NE(manager->GetPopupRoot(), nullptr);
   EXPECT_EQ(manager->GetPopupRoot()->GetId(), 3);
 
-  // Update tree to change the role of the nested child root, add new child root
-  // in same update.
-  child_tree_root.role = ax::mojom::Role::kGroup;
-  ui::AXNodeData second_child_tree_root;
-  second_child_tree_root.id = 4;
-  second_child_tree_root.role = ax::mojom::Role::kRootWebArea;
-  root.child_ids.push_back(4);
-
-  manager->Initialize(MakeAXTreeUpdateForTesting(root, child_tree_root,
-                                                 second_child_tree_root));
-
-  ASSERT_NE(manager->GetPopupRoot(), nullptr);
-  EXPECT_EQ(manager->GetPopupRoot()->GetId(), 4);
-
-  // Update tree to change the role of the nested child root, so that there is
-  // no longer any nested child root.
-  second_child_tree_root.role = ax::mojom::Role::kGroup;
-  manager->Initialize(MakeAXTreeUpdateForTesting(second_child_tree_root));
-  EXPECT_EQ(manager->GetPopupRoot(), nullptr);
-
   // Test deleting child root.
 
-  // First, ensure a child root exists.
-  second_child_tree_root.role = ax::mojom::Role::kRootWebArea;
-  manager->Initialize(MakeAXTreeUpdateForTesting(second_child_tree_root));
-  ASSERT_NE(manager->GetPopupRoot(), nullptr);
-  EXPECT_EQ(manager->GetPopupRoot()->GetId(), 4);
-
   // Now remove the child root from the tree.
-  root.child_ids = {2, 3};
-  manager->Initialize(MakeAXTreeUpdateForTesting(root));
+  popup_button.child_ids = {};
+  ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(popup_button);
+  AXEventNotificationDetails events;
+  events.updates = {update};
+  ASSERT_TRUE(manager->OnAccessibilityEvents(events));
+
   EXPECT_EQ(manager->GetPopupRoot(), nullptr);
 }
 

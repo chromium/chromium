@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++inputTime inputType='time' value='13:50:02.922'
+++++++inputTime inputType='time' value='13:50:02.922' controlsIds=group
 ++++++++genericContainer
 ++++++++++genericContainer
 ++++++++++++spinButton name='Hours' placeholder='--' value='01' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=12.00
@@ -28,7 +28,7 @@ rootWebArea
 ++++++++++++++staticText name='PM'
 ++++++++++++++++inlineTextBox name='PM'
 ++++++++popUpButton name='Show time picker'
-++++++++rootWebArea
+++++++++group
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer
