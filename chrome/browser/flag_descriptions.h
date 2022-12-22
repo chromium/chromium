@@ -3091,9 +3091,6 @@ extern const char kFilesSinglePartitionFormatDescription[];
 extern const char kFilesTrashName[];
 extern const char kFilesTrashDescription[];
 
-extern const char kFiltersInRecentsV2Name[];
-extern const char kFiltersInRecentsV2Description[];
-
 extern const char kFirstPartyVietnameseInputName[];
 extern const char kFirstPartyVietnameseInputDescription[];
 

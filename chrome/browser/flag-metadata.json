@@ -3730,11 +3730,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "files-filters-in-recents-v2",
-    "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "wenbojie" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "files-inline-sync-status",
     "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "msalomao" ],
     "expiry_milestone": 111

@@ -5050,10 +5050,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"files-inline-sync-status", flag_descriptions::kFilesInlineSyncStatusName,
      flag_descriptions::kFilesInlineSyncStatusDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFilesInlineSyncStatus)},
-    {"files-filters-in-recents-v2", flag_descriptions::kFiltersInRecentsV2Name,
-     flag_descriptions::kFiltersInRecentsV2Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFiltersInRecentsV2)},
-
     {"files-single-partition-format",
      flag_descriptions::kFilesSinglePartitionFormatName,
      flag_descriptions::kFilesSinglePartitionFormatDescription, kOsCrOS,

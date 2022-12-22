@@ -5397,10 +5397,6 @@ const char kForceSpectreVariant2MitigationDescription[] =
     "override #spectre-variant2-mitigation and any system-level setting that "
     "disables Spectre variant 2 mitigation.";
 
-const char kFiltersInRecentsV2Name[] = "Filters in Recents enhancement";
-const char kFiltersInRecentsV2Description[] =
-    "More enhancements for the filters in Recents.";
-
 const char kFirstPartyVietnameseInputName[] =
     "First party Vietnamese Input Method";
 const char kFirstPartyVietnameseInputDescription[] =

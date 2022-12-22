@@ -975,11 +975,6 @@ BASE_FEATURE(kFilesSinglePartitionFormat,
 // Enable files app trash.
 BASE_FEATURE(kFilesTrash, "FilesTrash", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables filters in Files app Recents view V2.
-BASE_FEATURE(kFiltersInRecentsV2,
-             "FiltersInRecentsV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables first party Vietnamese input method.
 BASE_FEATURE(kFirstPartyVietnameseInput,
              "FirstPartyVietnameseInput",
