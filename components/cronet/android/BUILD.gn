@@ -19,6 +19,7 @@ import("//tools/binary_size/sizes.gni")
 import("//url/features.gni")
 
 _templates_dir = "$target_gen_dir/templates"
+_gn_path = "//buildtools/linux64/gn"
 
 declare_args() {
   # In integrated mode, CronetEngine will use the shared network task runner by
@@ -566,10 +567,10 @@ java_prebuilt("package_impl_native_java") {
   jar_path = "$_package_dir/cronet_impl_native_java.jar"
   supports_android = true
   requires_android = true
-  
-  # To avoid dual definition of classes some dependencies are added 
+
+  # To avoid dual definition of classes some dependencies are added
   # downstream (Maven deps, BUILD dependencies), and the bytecode check
-  # doesn't like that. 
+  # doesn't like that.
   enable_bytecode_checks = false
 
   deps = [
@@ -742,7 +743,7 @@ template("repackage_jars") {
     _excludes += invoker.jar_excluded_patterns
   }
   if (!defined(invoker.remove_gen_jni) || invoker.remove_gen_jni) {
-    _excludes += ["*/GEN_JNI.class"]
+    _excludes += [ "*/GEN_JNI.class" ]
   }
   dist_jar(target_name) {
     requires_android = true
@@ -750,7 +751,7 @@ template("repackage_jars") {
     use_unprocessed_jars = true
     no_build_hooks = true
     jar_excluded_patterns = _excludes
-    forward_variables_from(invoker, "*", ["jar_excluded_patterns"])
+    forward_variables_from(invoker, "*", [ "jar_excluded_patterns" ])
   }
 }
 
@@ -1642,6 +1643,26 @@ if (!is_component_build) {
     ]
   }
 
+  action("dependencies_checks") {
+    script = "//components/cronet/tools/check_cronet_dependencies.py"
+    inputs = [ "//components/cronet/android/dependencies.txt" ]
+    sources = [
+      "$_gn_path",
+      "//components/cronet/tools/check_cronet_dependencies.sh",
+    ]
+    outputs = [ "$target_gen_dir/$target_name.stamp" ]
+    args = [
+      "--new_dependencies_script",
+      rebase_path("//components/cronet/tools/check_cronet_dependencies.sh",
+                  root_build_dir),
+      "--old_dependencies",
+      rebase_path(inputs[0], root_build_dir),
+      "--stamp",
+      rebase_path(outputs[0], root_build_dir),
+    ]
+    deps = [ ":cronet" ]
+  }
+
   group("cronet_package_android") {
     # Marked as testonly as it contains test-only targets too.
     testonly = true
@@ -1660,6 +1681,7 @@ if (!is_component_build) {
         ":cronet_package_copy_resources",
         ":cronet_sizes",
         ":cronet_test_package",
+        ":dependencies_checks",
         ":generate_javadoc",
         ":generate_licenses",
         ":jar_cronet_api_source",
