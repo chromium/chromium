@@ -25,6 +25,7 @@
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {
 
@@ -729,13 +730,9 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(), state_.pending_keys.has_value());
 
-  // TODO(crbug.com/1057655): issuing OnPassphraseAccepted() should be allowed
-  // for all passphrase types, but going out from |pending_keys| state might
-  // be disallowed for some circumstances (such as CUSTOM_PASSPHRASE ->
-  // CUSTOM_PASSPHRASE updates). Keep temporarily as is to avoid behavioral
-  // changes.
-  if (!state_.pending_keys.has_value() && had_pending_keys_before_update &&
-      state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
+  if (!state_.pending_keys.has_value() && had_pending_keys_before_update) {
+    // Guaranteed by BuildDecryptionKeyBagForRemoteKeybag() logic.
+    DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
     broadcasting_observer_->OnPassphraseAccepted();
   }
 
@@ -773,11 +770,7 @@ NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag(
     decryption_key_bag.AddKeyFromProto(*keystore_decryptor_key);
   }
 
-  // TODO(crbug.com/1057655): this should be allowed for KEYSTORE_PASSPHRASE,
-  // but should be disallowed if |passphrase_type| was changed in current
-  // update.
-  if (state_.passphrase_type != NigoriSpecifics::KEYSTORE_PASSPHRASE &&
-      state_.cryptographer->CanEncrypt()) {
+  if (state_.cryptographer->CanEncrypt()) {
     decryption_key_bag.AddKeyFromProto(
         state_.cryptographer->ExportDefaultKey());
   }
@@ -826,6 +819,7 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
   state_.cryptographer->EmplaceKeysFrom(new_key_bag);
   state_.cryptographer->SelectDefaultEncryptionKey(new_default_key_name);
   state_.pending_keys.reset();
+  state_.pending_keystore_decryptor_token.reset();
 
   return absl::nullopt;
 }
