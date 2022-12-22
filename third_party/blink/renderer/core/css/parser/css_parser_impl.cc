@@ -2207,6 +2207,12 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
                               .ConvertTo<Timing::TimelineNamedPhase>();
         auto percent =
             To<CSSPrimitiveValue>(range_name_percent->Item(1)).GetFloatValue();
+
+        if (!RuntimeEnabledFeatures::CSSViewTimelineEnabled() &&
+            range_name != Timing::TimelineNamedPhase::kNone) {
+          return nullptr;
+        }
+
         result->push_back(KeyframeOffset(range_name, percent / 100.0));
       }
     } else {

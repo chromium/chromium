@@ -119,6 +119,7 @@ StringKeyframeVector ProcessKeyframesRule(
     const Vector<KeyframeOffset>& offsets = style_keyframe->Keys();
     DCHECK(!offsets.empty());
 
+    bool drop_keyframe = false;
     // If keyframe doesn't have a named range offset, act as before, we don't
     // care if we have a timeline at this point or not in this case.
     if (offsets[0].phase == Timing::TimelineNamedPhase::kNone) {
@@ -131,6 +132,12 @@ StringKeyframeVector ProcessKeyframesRule(
         auto fractional_offset = To<ViewTimeline>(timeline)->ToFractionalOffset(
             Timing::Delay(offsets[0].phase, offsets[0].percent));
         keyframe->SetOffset(fractional_offset.value());
+      } else {
+        // This happens when you have a DocumentTimeline/ScrollTimeline with
+        // Named Range keyframes, and also sometimes when you have a
+        // ViewTimeline, the first time ProcessKeyframesRule is called, timeline
+        // does not exist yet.
+        drop_keyframe = true;
       }
     }
 
@@ -163,7 +170,9 @@ StringKeyframeVector ProcessKeyframesRule(
         keyframe->SetCSSPropertyValue(name, property_reference.Value());
       }
     }
-    keyframes.push_back(keyframe);
+    if (!drop_keyframe) {
+      keyframes.push_back(keyframe);
+    }
     // The last keyframe specified at a given offset is used.
     for (wtf_size_t j = 1; j < offsets.size(); ++j) {
       if (offsets[j].phase == Timing::TimelineNamedPhase::kNone) {
