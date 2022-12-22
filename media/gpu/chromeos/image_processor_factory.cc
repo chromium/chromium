@@ -284,18 +284,18 @@ ImageProcessorFactory::CreateWithInputCandidates(
     if (processor)
       return processor;
   }
-  if (base::FeatureList::IsEnabled(media::kPreferLibYuvImageProcessor)) {
+
     auto processor = CreateLibYUVImageProcessorWithInputCandidates(
         input_candidates, input_visible_rect, output_size, client_task_runner,
         out_format_picker, error_cb);
     if (processor)
       return processor;
-  }
-  auto processor = CreateV4L2ImageProcessorWithInputCandidates(
-      input_candidates, input_visible_rect, num_buffers, client_task_runner,
-      out_format_picker, error_cb);
-  if (processor)
-    return processor;
+
+    processor = CreateV4L2ImageProcessorWithInputCandidates(
+        input_candidates, input_visible_rect, num_buffers, client_task_runner,
+        out_format_picker, error_cb);
+    if (processor)
+      return processor;
 
 #endif
 
