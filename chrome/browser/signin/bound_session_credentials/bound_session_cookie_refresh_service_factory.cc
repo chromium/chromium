@@ -7,7 +7,9 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 
 // static
 BoundSessionCookieRefreshServiceFactory*
@@ -25,12 +27,23 @@ BoundSessionCookieRefreshServiceFactory::GetForProfile(Profile* profile) {
 
 BoundSessionCookieRefreshServiceFactory::
     BoundSessionCookieRefreshServiceFactory()
-    : ProfileKeyedServiceFactory("BoundSessionCookieRefreshService") {}
+    : ProfileKeyedServiceFactory("BoundSessionCookieRefreshService") {
+  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(AccountConsistencyModeManagerFactory::GetInstance());
+}
 
 BoundSessionCookieRefreshServiceFactory::
     ~BoundSessionCookieRefreshServiceFactory() = default;
 
 KeyedService* BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new BoundSessionCookieRefreshService();
+  Profile* profile = Profile::FromBrowserContext(context);
+  // The account consistency method should not change during the lifetime of a
+  // profile. This service is needed when Dice is enabled.
+  if (!AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
+    return nullptr;
+  }
+
+  return new BoundSessionCookieRefreshService(
+      IdentityManagerFactory::GetForProfile(profile));
 }
