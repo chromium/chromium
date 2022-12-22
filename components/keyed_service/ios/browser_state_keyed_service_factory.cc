@@ -24,20 +24,6 @@ void BrowserStateKeyedServiceFactory::SetTestingFactory(
   KeyedServiceFactory::SetTestingFactory(context, std::move(wrapped_factory));
 }
 
-KeyedService* BrowserStateKeyedServiceFactory::SetTestingFactoryAndUse(
-    web::BrowserState* context,
-    TestingFactory testing_factory) {
-  DCHECK(testing_factory);
-  return KeyedServiceFactory::SetTestingFactoryAndUse(
-      context,
-      base::BindRepeating(
-          [](const TestingFactory& testing_factory, void* context) {
-            return testing_factory.Run(
-                static_cast<web::BrowserState*>(context));
-          },
-          std::move(testing_factory)));
-}
-
 BrowserStateKeyedServiceFactory::BrowserStateKeyedServiceFactory(
     const char* name,
     BrowserStateDependencyManager* manager)

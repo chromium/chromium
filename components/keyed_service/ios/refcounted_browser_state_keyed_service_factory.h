@@ -48,13 +48,6 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserStateKeyedServiceFactory
   void SetTestingFactory(web::BrowserState* context,
                          TestingFactory testing_factory);
 
-  // Associates |testing_factory| with |context| and immediately returns the
-  // created KeyedService. Since the factory will be used immediately, it may
-  // not be empty.
-  scoped_refptr<RefcountedKeyedService> SetTestingFactoryAndUse(
-      web::BrowserState* context,
-      TestingFactory testing_factory);
-
  protected:
   // RefcountedBrowserStateKeyedServiceFactories must communicate with a
   // BrowserStateDependencyManager. For all non-test code, write your subclass

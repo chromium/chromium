@@ -25,21 +25,6 @@ void RefcountedBrowserStateKeyedServiceFactory::SetTestingFactory(
                                                    std::move(wrapped_factory));
 }
 
-scoped_refptr<RefcountedKeyedService>
-RefcountedBrowserStateKeyedServiceFactory::SetTestingFactoryAndUse(
-    web::BrowserState* context,
-    TestingFactory testing_factory) {
-  DCHECK(testing_factory);
-  return RefcountedKeyedServiceFactory::SetTestingFactoryAndUse(
-      context,
-      base::BindRepeating(
-          [](const TestingFactory& testing_factory, void* context) {
-            return testing_factory.Run(
-                static_cast<web::BrowserState*>(context));
-          },
-          std::move(testing_factory)));
-}
-
 RefcountedBrowserStateKeyedServiceFactory::
     RefcountedBrowserStateKeyedServiceFactory(
         const char* name,

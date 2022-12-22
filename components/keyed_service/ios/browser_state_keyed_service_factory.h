@@ -46,12 +46,6 @@ class KEYED_SERVICE_EXPORT BrowserStateKeyedServiceFactory
   void SetTestingFactory(web::BrowserState* context,
                          TestingFactory testing_factory);
 
-  // Associates |testing_factory| with |context| and immediately returns the
-  // created KeyedService. Since the factory will be used immediately, it may
-  // not be empty.
-  KeyedService* SetTestingFactoryAndUse(web::BrowserState* context,
-                                        TestingFactory testing_factory);
-
  protected:
   // BrowserStateKeyedServiceFactories must communicate with a
   // BrowserStateDependencyManager. For all non-test code, write your subclass
