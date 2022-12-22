@@ -24,6 +24,7 @@ CreateRadioButtonInstancesGridView();
 std::unique_ptr<SystemUIComponentsGridView>
 CreateRadioButtonGroupInstancesGridView();
 std::unique_ptr<SystemUIComponentsGridView> CreateKnobSwitchInstancesGridView();
+std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView();
 
 }  // namespace ash
 
