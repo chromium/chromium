@@ -766,6 +766,37 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     return origins;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  scoped_refptr<const extensions::Extension> LoadExtension(
+      const std::string& extension_name) {
+    auto extension = extensions::ExtensionBuilder()
+                         .SetManifest(extensions::DictionaryBuilder()
+                                          .Set("name", kExtensionName)
+                                          .Set("version", "1.0.0")
+                                          .Set("manifest_version", 3)
+                                          .Build())
+                         .Build();
+
+    extensions::TestExtensionSystem* extension_system =
+        static_cast<extensions::TestExtensionSystem*>(
+            extensions::ExtensionSystem::Get(profile()));
+    extensions::ExtensionService* extension_service =
+        extension_system->CreateExtensionService(
+            base::CommandLine::ForCurrentProcess(), base::FilePath(),
+            /*autoupdate_enabled=*/false);
+    extension_service->AddExtension(extension.get());
+    return extension;
+  }
+
+  void UnloadExtension(std::string extension_id) {
+    auto* extension_service =
+        extensions::ExtensionSystem::Get(profile())->extension_service();
+    ASSERT_TRUE(extension_service);
+    extension_service->UnloadExtension(
+        extension_id, extensions::UnloadedExtensionReason::DISABLE);
+  }
+#endif  // #if BUILDFLAG(ENABLE_EXTENSIONS)
+
   // Content setting group name for the relevant ContentSettingsType.
   const std::string kNotifications;
   const std::string kCookies;
@@ -1002,6 +1033,35 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
     EXPECT_EQ("example.com", site_groups[0].FindKey("etldPlus1")->GetString());
     EXPECT_EQ("example2.net", site_groups[1].FindKey("etldPlus1")->GetString());
   }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Same extension url from different content setting types shows only one
+  // extension site group.
+  auto extension = LoadExtension(kExtensionName);
+  map->SetContentSettingDefaultScope(extension->url(), extension->url(),
+                                     ContentSettingsType::NOTIFICATIONS,
+                                     CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(extension->url(), extension->url(),
+                                     ContentSettingsType::GEOLOCATION,
+                                     CONTENT_SETTING_BLOCK);
+  handler()->HandleGetAllSites(get_all_sites_args);
+  {
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+    EXPECT_EQ("cr.webUIResponse", data.function_name());
+    EXPECT_EQ(kCallbackId, data.arg1()->GetString());
+    ASSERT_TRUE(data.arg2()->GetBool());
+
+    const base::Value::List& site_groups = data.arg3()->GetList();
+    EXPECT_EQ(3UL, site_groups.size());
+    // Extension etldPlus1 string will be in the pattern of
+    // "chrome-extension://<extension_id>" so it is before other site groups in
+    // the list.
+    EXPECT_EQ(extension->url().spec(),
+              site_groups[0].FindKey("etldPlus1")->GetString());
+    EXPECT_EQ("example.com", site_groups[1].FindKey("etldPlus1")->GetString());
+    EXPECT_EQ("example2.net", site_groups[2].FindKey("etldPlus1")->GetString());
+  }
+#endif
 
   // Each call to HandleGetAllSites() above added a callback to the profile's
   // browsing_data::LocalStorageHelper, so make sure these aren't stuck waiting
@@ -4805,4 +4865,44 @@ TEST_F(SiteSettingsHandlerTest,
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(SiteSettingsHandlerTest, HandleGetExtensionName) {
+  auto extension = LoadExtension(kExtensionName);
+
+  // When the extension is loaded, it returns the extension name.
+  {
+    base::Value::List get_extension_name_args;
+    get_extension_name_args.Append(kCallbackId);
+    get_extension_name_args.Append(extension->id());
+    handler()->HandleGetExtensionName(get_extension_name_args);
+
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(kCallbackId, data.arg1()->GetString());
+    ASSERT_TRUE(data.arg2()->is_bool());
+    EXPECT_TRUE(data.arg2()->GetBool());
+    ASSERT_TRUE(data.arg3()->is_string());
+    EXPECT_EQ(kExtensionName, data.arg3()->GetString());
+  }
+
+  // When the extension is unloaded, the display name is extension's origin as
+  // the extension isn't available for the profile.
+  UnloadExtension(extension->id());
+  {
+    base::Value::List get_extension_name_args;
+    get_extension_name_args.Append(kCallbackId);
+    get_extension_name_args.Append(extension->id());
+    handler()->HandleGetExtensionName(get_extension_name_args);
+
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(kCallbackId, data.arg1()->GetString());
+    ASSERT_TRUE(data.arg2()->is_bool());
+    EXPECT_TRUE(data.arg2()->GetBool());
+    ASSERT_TRUE(data.arg3()->is_string());
+    EXPECT_EQ("", data.arg3()->GetString());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }  // namespace settings

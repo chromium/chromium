@@ -100,6 +100,10 @@
 #include "chrome/browser/media/cdm_document_service_impl.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif
+
 using extensions::mojom::APIPermissionID;
 
 namespace settings {
@@ -241,6 +245,22 @@ void CreateOrAppendSiteGroupEntry(
     const GURL& url,
     bool url_is_origin_with_cookies = false,
     absl::optional<std::string> partition_etld_plus1 = absl::nullopt) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // As extension doesn't have ETLD+1, handle it in a different logic.
+  if (url.SchemeIs(extensions::kExtensionScheme)) {
+    // |url| for an extension should always be in the format of
+    // "chrome-extension://<extension_id>" and it will be a single origin site
+    // group. So insert single origin site group to |site_group_map| if it
+    // doesn't exist.
+    if (site_group_map->find(url.spec()) == site_group_map->end()) {
+      site_group_map->emplace(url.spec(),
+                              std::set<std::pair<std::string, bool>>(
+                                  {{url.spec(), /*is_partitioned=*/false}}));
+    }
+    return;
+  }
+#endif
+
   bool is_partitioned = partition_etld_plus1.has_value();
   std::string effective_etld_plus1_string =
       is_partitioned
@@ -792,6 +812,12 @@ void SiteSettingsHandler::RegisterMessages() {
       "getNumCookiesString",
       base::BindRepeating(&SiteSettingsHandler::HandleGetNumCookiesString,
                           base::Unretained(this)));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  web_ui()->RegisterMessageCallback(
+      "getExtensionName",
+      base::BindRepeating(&SiteSettingsHandler::HandleGetExtensionName,
+                          base::Unretained(this)));
+#endif
 }
 
 void SiteSettingsHandler::OnJavascriptAllowed() {
@@ -2257,6 +2283,27 @@ void SiteSettingsHandler::HandleGetNumCookiesString(
 
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(string));
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void SiteSettingsHandler::HandleGetExtensionName(
+    const base::Value::List& args) {
+  CHECK_EQ(2U, args.size());
+  std::string callback_id;
+  callback_id = args[0].GetString();
+  std::string extension_id = args[1].GetString();
+
+  AllowJavascript();
+  const auto* extension_registry = extensions::ExtensionRegistry::Get(profile_);
+  const extensions::Extension* extension = extension_registry->GetExtensionById(
+      extension_id, extensions::ExtensionRegistry::EVERYTHING);
+  if (extension) {
+    ResolveJavascriptCallback(base::Value(callback_id),
+                              base::Value(extension->name()));
+  } else {
+    ResolveJavascriptCallback(base::Value(callback_id), base::Value(""));
+  }
+}
+#endif
 
 void SiteSettingsHandler::RemoveNonTreeModelData(
     const std::vector<url::Origin>& origins) {

@@ -70,6 +70,10 @@
                   hidden$="[[!isFpsMember_(siteGroup.fpsOwner)]]">
                 &middot; [[fpsMembershipLabel_]]
               </span>
+              <span id="extensionIdDescription"
+                  hidden$="[[!isExtension_(siteGroup)]]">
+                &middot; [[extensionIdDescription_(siteGroup)]]
+              </span>
             </div>
           </div>
           <template is="dom-if" restamp if="[[shouldShowPolicyPrefIndicator_(

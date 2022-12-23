@@ -577,4 +577,28 @@ suite('SiteEntry', function() {
             '#fpsOverflowMenuButton');
     assertEquals('More actions for foo.com', moreActionsButton!.ariaLabel);
   });
+
+  test('extension site group is shown correctly', async function() {
+    const extensionSiteGroup =
+        JSON.parse(JSON.stringify(TEST_SINGLE_SITE_GROUP));
+    extensionSiteGroup.origins[0].origin =
+        'chrome-extension://mhabknllooicelmdboebjilbohdbihln';
+    testElement.siteGroup = extensionSiteGroup;
+    flush();
+
+    const arg = await browserProxy.whenCalled('getExtensionName');
+    assertEquals(arg, 'mhabknllooicelmdboebjilbohdbihln');
+
+    // Check if the extension name shown correctly.
+    assertEquals(
+        testElement.$.collapseParent.querySelector('.url-directionality')!
+            .textContent!.trim(),
+        'Test Extension mhabknllooicelmdboebjilbohdbihln');
+
+    // Check if the extension id is shown correctly.
+    assertFalse(testElement.$.extensionIdDescription.hidden);
+    assertEquals(
+        testElement.$.extensionIdDescription.textContent!.trim(),
+        '· ID: mhabknllooicelmdboebjilbohdbihln');
+  });
 });
