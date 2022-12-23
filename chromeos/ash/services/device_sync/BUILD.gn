@@ -11,7 +11,10 @@ static_library("feature_status_change") {
 }
 
 static_library("group_private_key_and_better_together_metadata_status") {
-  sources = [ "group_private_key_and_better_together_metadata_status.h" ]
+  sources = [
+    "group_private_key_and_better_together_metadata_status.cc",
+    "group_private_key_and_better_together_metadata_status.h",
+  ]
 }
 
 static_library("device_sync") {

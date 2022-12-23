@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/multidevice_setup/oobe_completion_tracker_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/multidevice_setup_screen_handler.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
@@ -154,6 +155,9 @@ void MultiDeviceSetupScreen::GetBetterTogetherMetadataStatus() {
 
 void MultiDeviceSetupScreen::OnGetBetterTogetherMetadataStatus(
     device_sync::BetterTogetherMetadataStatus status) {
+  PA_LOG(INFO) << "Skipped MultiDevice setup screen; "
+                  "better_together_metadata_status: "
+               << status;
   switch (status) {
     case device_sync::BetterTogetherMetadataStatus::kMetadataDecrypted:
       // If the better together metadata status is in its expected final state,
@@ -203,6 +207,9 @@ void MultiDeviceSetupScreen::GetGroupPrivateKeyStatus() {
 
 void MultiDeviceSetupScreen::OnGetGroupPrivateKeyStatus(
     device_sync::GroupPrivateKeyStatus status) {
+  PA_LOG(INFO) << "Skipped MultiDevice setup screen; group private key status: "
+               << status;
+
   switch (status) {
     case device_sync::GroupPrivateKeyStatus::kWaitingForGroupPrivateKey:
       RecordOobeMultideviceScreenSkippedReasonHistogram(

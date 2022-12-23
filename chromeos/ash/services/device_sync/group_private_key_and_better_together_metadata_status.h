@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_GROUP_PRIVATE_KEY_AND_BETTER_TOGETHER_METADATA_STATUS_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_GROUP_PRIVATE_KEY_AND_BETTER_TOGETHER_METADATA_STATUS_H_
 
+#include <ostream>
+
 namespace ash::device_sync {
 
 // The group private key and better together metadata status in the
@@ -62,6 +64,11 @@ enum class BetterTogetherMetadataStatus {
   // flow.
   kMetadataDecrypted,
 };
+
+std::ostream& operator<<(std::ostream& stream,
+                         const GroupPrivateKeyStatus& state);
+std::ostream& operator<<(std::ostream& stream,
+                         const BetterTogetherMetadataStatus& state);
 
 }  // namespace ash::device_sync
 
