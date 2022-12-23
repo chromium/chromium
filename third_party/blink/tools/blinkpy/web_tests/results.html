@@ -2949,7 +2949,7 @@ class AudioResultsViewer {
                   'This may be because the web test step has not finished yet';
     if (location.search) {
       let oldResults =
-          `https://test-results.appspot.com/data/layout_results/${jsonpUrl.substring(0, slashPos)}/results.html`;
+          `https://test-results.appspot.com/data/layout_results/${jsonpUrl.substring(0, slashPos)}/layout-test-results/results.html`;
       message += ', or the results are in the old format which can be' +
                  ` accessed through <a href="${oldResults}">this link</a>.`;
     } else {
