@@ -158,6 +158,7 @@ class PixelTestPages():
   def DefaultPages(base_name: str) -> List[PixelTestPage]:
     sw_compositing_args = [cba.DISABLE_GPU_COMPOSITING]
     browser_args_DXVA = [cba.DISABLE_FEATURES_D3D11_VIDEO_DECODER]
+    experimental_hdr_args = [cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES]
 
     return [
         PixelTestPage('pixel_background_image.html',
@@ -398,6 +399,10 @@ class PixelTestPages():
         PixelTestPage('pixel_webgl_display_p3.html',
                       base_name + '_WebGLDisplayP3',
                       test_rect=[0, 0, 300, 300]),
+        PixelTestPage('pixel_webgl_float.html',
+                      base_name + '_WebGLFloat',
+                      test_rect=[0, 0, 200, 100],
+                      browser_args=experimental_hdr_args),
     ]
 
   @staticmethod

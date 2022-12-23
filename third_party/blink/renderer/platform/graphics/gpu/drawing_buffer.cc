@@ -1850,6 +1850,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   gpu::Mailbox back_buffer_mailbox;
   // Set only when using swap chains.
   gpu::Mailbox front_buffer_mailbox;
+  GLenum texture_target = GL_TEXTURE_2D;
   GLuint texture_id = 0;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
@@ -1899,6 +1900,11 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
           back_buffer_mailbox = sii->CreateSharedImage(
               gpu_memory_buffer.get(), gpu_memory_buffer_manager, color_space_,
               origin, back_buffer_alpha_type, usage | additional_usage_flags);
+#if BUILDFLAG(IS_MAC)
+          // A CHROMIUM_image backed texture requires a specialized set of
+          // parameters on OSX.
+          texture_target = gpu::GetPlatformSpecificTextureTarget();
+#endif
         }
       }
     }
@@ -1910,8 +1916,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       // the case of ShouldUseChromiumImage() we instead keep this buffer
       // premultiplied, draw to |premultiplied_alpha_false_mailbox_|, and
       // convert during copy.
-      if (!ShouldUseChromiumImage() &&
-          requested_alpha_type_ == kUnpremul_SkAlphaType) {
+      if (requested_alpha_type_ == kUnpremul_SkAlphaType) {
         back_buffer_alpha_type = kUnpremul_SkAlphaType;
       }
 
@@ -1928,15 +1933,6 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   premultiplied_alpha_false_texture_needed_ =
       requested_alpha_type_ == kUnpremul_SkAlphaType &&
       requested_alpha_type_ != back_buffer_alpha_type;
-
-  GLenum texture_target = GL_TEXTURE_2D;
-#if BUILDFLAG(IS_MAC)
-  if (ShouldUseChromiumImage()) {
-    // A CHROMIUM_image backed texture requires a specialized set of parameters
-    // on OSX.
-    texture_target = gpu::GetPlatformSpecificTextureTarget();
-  }
-#endif
 
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
   gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
