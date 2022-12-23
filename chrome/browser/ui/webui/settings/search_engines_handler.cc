@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -30,6 +31,10 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/new_window_delegate.h"
+#endif
 
 namespace {
 // The following strings need to match with the IDs of the text input elements
@@ -92,6 +97,13 @@ void SearchEnginesHandler::RegisterMessages() {
       base::BindRepeating(
           &SearchEnginesHandler::HandleSearchEngineEditCompleted,
           base::Unretained(this)));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  web_ui()->RegisterMessageCallback(
+      "openBrowserSearchSettings",
+      base::BindRepeating(
+          &SearchEnginesHandler::HandleOpenBrowserSearchSettings,
+          base::Unretained(this)));
+#endif
 }
 
 void SearchEnginesHandler::OnJavascriptAllowed() {
@@ -379,5 +391,15 @@ void SearchEnginesHandler::HandleSearchEngineEditCompleted(
                                       base::UTF8ToUTF16(keyword), query_url);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void SearchEnginesHandler::HandleOpenBrowserSearchSettings(
+    const base::Value::List& args) {
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSearchSubPage),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kSwitchToTab);
+}
+#endif
 
 }  // namespace settings

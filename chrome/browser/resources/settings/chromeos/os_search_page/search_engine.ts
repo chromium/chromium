@@ -88,7 +88,7 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
   }
 
   private onSearchEngineLinkClick_() {
-    window.open('chrome://settings/search');
+    this.browserProxy_.openBrowserSearchSettings();
   }
 
   private getBrowserSearchSettingsLink_() {

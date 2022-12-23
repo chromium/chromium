@@ -42,16 +42,6 @@ namespace ash::settings {
 
 namespace {
 
-class TestStorageHandler : public StorageHandler {
- public:
-  explicit TestStorageHandler(Profile* profile,
-                              content::WebUIDataSource* html_source)
-      : StorageHandler(profile, html_source) {}
-
-  // Pull WebUIMessageHandler::set_web_ui() into public so tests can call it.
-  using StorageHandler::set_web_ui;
-};
-
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
@@ -94,7 +84,7 @@ class StorageHandlerTest : public testing::Test {
     content::WebUIDataSource* html_source =
         content::WebUIDataSource::CreateAndAdd(profile_,
                                                chrome::kChromeUIOSSettingsHost);
-    auto handler = std::make_unique<TestStorageHandler>(profile_, html_source);
+    auto handler = std::make_unique<StorageHandler>(profile_, html_source);
     handler_ = handler.get();
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->AddMessageHandler(std::move(handler));
@@ -214,7 +204,7 @@ class StorageHandlerTest : public testing::Test {
     ASSERT_EQ(expected_size, stat.st_size);
   }
 
-  TestStorageHandler* handler_;
+  StorageHandler* handler_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;

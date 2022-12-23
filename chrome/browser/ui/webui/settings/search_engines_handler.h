@@ -86,6 +86,11 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   // Called from WebUI.
   void HandleSearchEngineEditCompleted(const base::Value::List& args);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Request the browser to open its search settings.
+  void HandleOpenBrowserSearchSettings(const base::Value::List& args);
+#endif
+
   // Returns a dictionary to pass to WebUI representing the given search engine.
   base::Value::Dict CreateDictionaryForEngine(size_t index, bool is_default);
 

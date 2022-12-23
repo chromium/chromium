@@ -44,6 +44,7 @@ export interface SearchEnginesInfo {
 export interface SearchEnginesBrowserProxy {
   setDefaultSearchEngine(modelIndex: number): void;
   getSearchEnginesList(): Promise<SearchEnginesInfo>;
+  openBrowserSearchSettings(): void;
 }
 
 let instance: SearchEnginesBrowserProxy|null = null;
@@ -64,5 +65,9 @@ export class SearchEnginesBrowserProxyImpl implements
 
   getSearchEnginesList() {
     return sendWithPromise('getSearchEnginesList');
+  }
+
+  openBrowserSearchSettings() {
+    chrome.send('openBrowserSearchSettings');
   }
 }
