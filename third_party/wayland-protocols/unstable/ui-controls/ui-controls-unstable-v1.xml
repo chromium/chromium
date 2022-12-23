@@ -103,8 +103,8 @@
       </description>
       <arg name="x" type="int" summary="x-coordinate in DIP"/>
       <arg name="y" type="int" summary="x-coordinate in DIP"/>
-      <arg name="surface" type="object" interface="wl_surface" allow-null="true"
-           summary="surface that x and y are relative to"/>
+      <arg name="surface" type="object" interface="xdg_surface"
+           allow-null="true" summary="surface that x and y are relative to"/>
       <arg name="id" type="uint"
            summary="will be echoed back in the matching sent event"/>
     </request>
@@ -118,9 +118,6 @@
         events to generate in response to this request. After the compositor has
         finished processing this request, a request_processed event with a
         matching `id` will be emitted.
-
-        `button` is a button code as defined in the Linux kernel's
-        linux/input-event-codes.h header, e.g. BTN_LEFT.
       </description>
       <arg name="button" type="uint" enum="mouse_button"
            summary="button code of the mouse button"/>
@@ -152,8 +149,8 @@
            summary="unique ID of the touch point (see wl_touch.down)"/>
       <arg name="x" type="int" summary="x-coordinate in DIP"/>
       <arg name="y" type="int" summary="x-coordinate in DIP"/>
-      <arg name="surface" type="object" interface="wl_surface" allow-null="true"
-           summary="surface that x and y are relative to"/>
+      <arg name="surface" type="object" interface="xdg_surface"
+           allow-null="true" summary="surface that x and y are relative to"/>
       <arg name="id" type="uint"
            summary="will be echoed back in the matching sent event"/>
     </request>
