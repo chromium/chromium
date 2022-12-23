@@ -27,7 +27,7 @@
 <translation id="1830179671306812954">{HOURS,plural, =1{1 сағат және }other{# сағат және }}</translation>
 <translation id="1859234291848436338">Жазу бағыты</translation>
 <translation id="1860796786778352021">Хабарландыруды жабу</translation>
-<translation id="186476001994626254">Web Smart Paste мазмұны</translation>
+<translation id="186476001994626254">Web Smart Paste контенті</translation>
 <translation id="1871244248791675517">Ins</translation>
 <translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
 <translation id="1901303067676059328">Барлығын &amp;таңдау</translation>
@@ -79,7 +79,7 @@
 <translation id="3306688585798492231">Ендірілген дисплей</translation>
 <translation id="335581015389089642">Сөйлеу</translation>
 <translation id="3389286852084373014">Мәтін өте үлкен</translation>
-<translation id="3406306243914553062">HTML мазмұны</translation>
+<translation id="3406306243914553062">HTML контенті</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 күн қалды}other{# күн қалды}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> файлы</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
@@ -151,7 +151,7 @@
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 сек бұрын}other{# сек бұрын}}</translation>
 <translation id="6430678249303439055">Бұл қолданбадан келетін барлық хабарландыруларды бөгеу</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{1 секунд бұрын}other{# секунд бұрын}}</translation>
-<translation id="6503257047630241175">RTF мазмұны</translation>
+<translation id="6503257047630241175">RTF контенті</translation>
 <translation id="6539092367496845964">Бірдеңе дұрыс болмады. Кейінірек қайталап көріңіз.</translation>
 <translation id="654149438358937226">Барлық хабарландыруларды бөгеу</translation>
 <translation id="6612467943526193239">Калибрлеуден шығу үшін "Esc" пернесін басыңыз.</translation>
@@ -161,7 +161,7 @@
 <translation id="6845383723252244143">Қалта таңдау</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 сағат қалды}other{# сағат қалды}}</translation>
 <translation id="688711909580084195">Атаусыз веб-бет</translation>
-<translation id="6902419395050653510">HTML мазмұны.</translation>
+<translation id="6902419395050653510">HTML контенті.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> ПБ/с</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 жыл қалды}other{# жыл қалды}}</translation>
 <translation id="6945221475159498467">Таңдау</translation>
