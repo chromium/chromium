@@ -130,6 +130,10 @@ AccessibilityTest.define('CrExtensionsA11yTest', {
 CrExtensionsA11yTestWithMultipleExensions = class extends CrExtensionsA11yTest {
   /** @override */
   testGenPreamble() {
+    // (crbug.com/1397832): Flaky on mac builder.
+    GEN('#if BUILDFLAG(IS_MAC)');
+    GEN('#define DISABLED_All');
+    GEN('#endif');
     GEN('  InstallGoodExtension();');
     GEN('  InstallPackagedApp();');
     GEN('  InstallHostedApp();');
