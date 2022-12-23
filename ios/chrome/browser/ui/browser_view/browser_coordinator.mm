@@ -445,8 +445,6 @@ enum class ToolbarKind {
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
 }
 
-@synthesize NTPCoordinator = _ntpCoordinator;
-
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -771,10 +769,10 @@ enum class ToolbarKind {
     }
   }
 
-  _ntpCoordinator =
+  _NTPCoordinator =
       [[NewTabPageCoordinator alloc] initWithBrowser:self.browser];
-  _ntpCoordinator.toolbarDelegate = _toolbarCoordinatorAdaptor;
-  _ntpCoordinator.bubblePresenter = _bubblePresenter;
+  _NTPCoordinator.toolbarDelegate = _toolbarCoordinatorAdaptor;
+  _NTPCoordinator.bubblePresenter = _bubblePresenter;
 
   _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
 
@@ -794,7 +792,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.popupMenuCoordinator = self.popupMenuCoordinator;
   _viewControllerDependencies.downloadManagerCoordinator =
       self.downloadManagerCoordinator;
-  _viewControllerDependencies.ntpCoordinator = _ntpCoordinator;
+  _viewControllerDependencies.ntpCoordinator = _NTPCoordinator;
   _viewControllerDependencies.lensCoordinator = _lensCoordinator;
   _viewControllerDependencies.primaryToolbarCoordinator =
       _primaryToolbarCoordinator;
@@ -838,7 +836,7 @@ enum class ToolbarKind {
   _primaryToolbarCoordinator.popupPresenterDelegate = self.viewController;
   [_primaryToolbarCoordinator start];
 
-  _ntpCoordinator.baseViewController = self.viewController;
+  _NTPCoordinator.baseViewController = self.viewController;
 
   [_dispatcher startDispatchingToTarget:self.viewController
                             forProtocol:@protocol(BrowserCommands)];
@@ -897,8 +895,8 @@ enum class ToolbarKind {
   [self.browserContainerCoordinator stop];
   self.browserContainerCoordinator = nil;
 
-  [_ntpCoordinator stop];
-  _ntpCoordinator = nil;
+  [_NTPCoordinator stop];
+  _NTPCoordinator = nil;
 
   _keyCommandsProvider = nil;
   _dispatcher = nil;
@@ -1168,7 +1166,7 @@ enum class ToolbarKind {
 
   self.tabEventsMediator = [[TabEventsMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
-            ntpCoordinator:_ntpCoordinator];
+            ntpCoordinator:_NTPCoordinator];
 
   self.viewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
@@ -1406,7 +1404,7 @@ enum class ToolbarKind {
 
 - (void)focusFakebox {
   if ([self isNTPActiveForCurrentWebState]) {
-    [_ntpCoordinator focusFakebox];
+    [_NTPCoordinator focusFakebox];
   }
 }
 
@@ -2476,7 +2474,7 @@ enum class ToolbarKind {
   DCHECK(webState);
 
   if (self.isNTPActiveForCurrentWebState) {
-    [_ntpCoordinator willUpdateSnapshot];
+    [_NTPCoordinator willUpdateSnapshot];
   }
   OverscrollActionsTabHelper::FromWebState(webState)->Clear();
 }
@@ -2485,7 +2483,7 @@ enum class ToolbarKind {
          baseViewForWebState:(web::WebState*)webState {
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive())
-    return _ntpCoordinator.viewController.view;
+    return _NTPCoordinator.viewController.view;
   return webState->GetView();
 }
 
@@ -2509,11 +2507,11 @@ enum class ToolbarKind {
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
-  [_ntpCoordinator updateFollowingFeedHasUnseenContent:hasUnseenContent];
+  [_NTPCoordinator updateFollowingFeedHasUnseenContent:hasUnseenContent];
 }
 
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
-  [_ntpCoordinator handleFeedModelDidEndUpdates:feedType];
+  [_NTPCoordinator handleFeedModelDidEndUpdates:feedType];
 }
 
 - (void)scrollToNTPAfterPresentedStateCleared:(FeedType)feedType {
@@ -2550,7 +2548,7 @@ enum class ToolbarKind {
 }
 
 - (void)reloadNTPForWebState:(web::WebState*)webState {
-  [_ntpCoordinator reload];
+  [_NTPCoordinator reload];
 }
 
 #pragma mark - PageInfoPresentation
