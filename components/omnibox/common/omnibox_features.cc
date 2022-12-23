@@ -73,11 +73,10 @@ BASE_FEATURE(kDocumentProviderDedupingOptimization,
              "OmniboxDocumentProviderDedupingOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature to tweak how the default suggestion is preserved. Feature params
-// control which tweaks specifically are enabled. Enabling this feature without
-// params is a no-op.
-BASE_FEATURE(kPreserveDefault,
-             "OmniboxPreserveDefault",
+// When enabled, uses the grouping framework (i.e.
+// autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
+BASE_FEATURE(kGroupingFramework,
+             "OmniboxGroupingFramework",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Demotes the relevance scores when comparing suggestions based on the
@@ -94,6 +93,20 @@ BASE_FEATURE(kOmniboxRemoveExcessiveRecycledViewClearCalls,
              "OmniboxRemoveExcessiveRecycledViewClearCalls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature to tweak how the default suggestion is preserved. Feature params
+// control which tweaks specifically are enabled. Enabling this feature without
+// params is a no-op.
+BASE_FEATURE(kPreserveDefault,
+             "OmniboxPreserveDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When disabled, when providers update their matches, the new set of matches
+// are sorted and culled, then merged with the old matches, then sorted and
+// culled again. When enabled, the first sort and cull is skipped.
+BASE_FEATURE(kSingleSortAndCullPass,
+             "OmniboxSingleSortAndCullPass",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature to enable memoizing URLs when replacing search terms in
 // `AutocompleteMatch::GURLToStrippedGURL()`.
 // TODO(manukh) Enabled by default on 10/20/22 m109. Clean up feature code
@@ -105,13 +118,6 @@ BASE_FEATURE(kStrippedGurlOptimization,
 // Feature to debounce `AutocompleteController::NotifyChanged()`.
 BASE_FEATURE(kUpdateResultDebounce,
              "OmniboxUpdateResultDebounce",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When disabled, when providers update their matches, the new set of matches
-// are sorted and culled, then merged with the old matches, then sorted and
-// culled again. When enabled, the first sort and cull is skipped.
-BASE_FEATURE(kSingleSortAndCullPass,
-             "OmniboxSingleSortAndCullPass",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature used to cap max zero suggestions shown according to the param

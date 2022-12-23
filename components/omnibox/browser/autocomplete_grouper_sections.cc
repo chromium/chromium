@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <limits>
 #include <memory>
 
 #include "base/ranges/algorithm.h"
@@ -19,11 +20,12 @@ Section::~Section() = default;
 
 // static
 ACMatches Section::GroupMatches(PSections sections, ACMatches matches) {
-  int last_relevance = -1;
+  int last_relevance = std::numeric_limits<int>::max();
   for (const auto& match : matches) {
     DCHECK(match.suggestion_group_id.has_value());
-    DCHECK(last_relevance == -1 || match.relevance <= last_relevance);
-    last_relevance = match.relevance;
+    DCHECK(match.relevance <= last_relevance);
+    if (!match.allowed_to_be_default_match)
+      last_relevance = match.relevance;
     for (const auto& section : sections) {
       if (section->Add(match))
         break;

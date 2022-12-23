@@ -5404,6 +5404,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxSuggestionHeightVariations,
                                     "Uniform Omnibox Suggest Heights")},
 
+    {"omnibox-grouping-framework",
+     flag_descriptions::kOmniboxGroupingFrameworkName,
+     flag_descriptions::kOmniboxGroupingFrameworkDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kGroupingFramework)},
+
     {"optimization-guide-debug-logs",
      flag_descriptions::kOptimizationGuideDebugLogsName,
      flag_descriptions::kOptimizationGuideDebugLogsDescription, kOsAll,

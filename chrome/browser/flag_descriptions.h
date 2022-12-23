@@ -1127,6 +1127,9 @@ extern const char kOmniboxExperimentalSuggestScoringDescription[];
 extern const char kOmniboxFuzzyUrlSuggestionsName[];
 extern const char kOmniboxFuzzyUrlSuggestionsDescription[];
 
+extern const char kOmniboxGroupingFrameworkName[];
+extern const char kOmniboxGroupingFrameworkDescription[];
+
 extern const char
     kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsName[];
 extern const char

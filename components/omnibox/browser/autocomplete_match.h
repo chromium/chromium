@@ -354,6 +354,10 @@ struct AutocompleteMatch {
   // clipboard or query tile.
   static bool ShouldBeSkippedForGroupBySearchVsUrl(Type type);
 
+  // Return a group ID based on type. Should only be used as a fill in for
+  // matches that don't already have a group ID set by providers.
+  static omnibox::GroupId GetDefaultGroupId(Type type);
+
   // A static version GetTemplateURL() that takes the match's keyword and
   // match's hostname as parameters.  In short, returns the TemplateURL
   // associated with |keyword| if it exists; otherwise returns the TemplateURL

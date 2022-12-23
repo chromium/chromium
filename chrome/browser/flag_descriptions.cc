@@ -1998,6 +1998,11 @@ const char kOmniboxFuzzyUrlSuggestionsName[] = "Omnibox Fuzzy URL Suggestions";
 const char kOmniboxFuzzyUrlSuggestionsDescription[] =
     "Enables URL suggestions for inputs that may contain typos.";
 
+const char kOmniboxGroupingFrameworkName[] = "Omnibox Grouping Framework";
+const char kOmniboxGroupingFrameworkDescription[] =
+    "Enables an alternative grouping implementation for omnibox "
+    "autocompletion.";
+
 const char kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsName[] =
     "Omnibox HQP Specificity";
 const char

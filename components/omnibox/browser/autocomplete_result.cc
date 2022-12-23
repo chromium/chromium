@@ -27,6 +27,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
+#include "components/omnibox/browser/autocomplete_grouper_sections.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -355,82 +356,101 @@ void AutocompleteResult::SortAndCull(
       matches_[0].ComputeStrippedDestinationURL(input, template_url_service);
   }
 
-  // TODO(manukh): Limiting (history clusters, zero suggest, max URL
-  //  suggestions, max suggestions, and max keyword suggestions) should be done
-  //  by the grouping framework.
-  // Limit history cluster suggestions to 1. This has to be done before limiting
-  // URL matches below so that a to-be-removed history cluster suggestion
-  // doesn't waste a URL slot.
-  bool history_cluster_included = false;
-  base::EraseIf(matches_, [&](const auto& match) {
-    // If not a history cluster match, don't erase it.
-    if (match.type != AutocompleteMatch::Type::HISTORY_CLUSTER)
-      return false;
-    // If not the 1st history cluster match, do erase it.
-    if (history_cluster_included)
-      return true;
-    // If the 1st history cluster match, don't erase it.
-    history_cluster_included = true;
-    return false;
-  });
-
-  // Limit URL matches per OmniboxMaxURLMatches.
-  size_t max_url_count = 0;
+  // If `kGroupingFramework` is enabled and the current input & platform are
+  // supported, delegate to the framework.
   const bool is_zero_suggest = input.IsZeroSuggest();
-  if (OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled() &&
-      (max_url_count = OmniboxFieldTrial::GetMaxURLMatches()) != 0)
-    LimitNumberOfURLsShown(GetMaxMatches(is_zero_suggest), max_url_count,
-                           comparing_object);
-
-  // Limit total matches accounting for suggestions score <= 0, sub matches, and
-  // feature configs such as OmniboxUIExperimentMaxAutocompleteMatches,
-  // OmniboxMaxZeroSuggestMatches, and OmniboxDynamicMaxAutocomplete.
-  const size_t num_matches =
-      CalculateNumMatches(is_zero_suggest, matches_, comparing_object);
-
-  // Group and trim suggestions to the given limit.
-  if (!is_zero_suggest) {
-    // Until limits are applied by the grouping framework, typed suggestions are
-    // trimmed then grouped.
-    // TODO(manukh): Limiting should be done by the grouping framework.
-    matches_.resize(num_matches);
-
-    // Group search suggestions above URL suggestions.
-    if (matches_.size() > 2 &&
-        !base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
-      // TODO(manukh): Grouping search v URL (actually
-      //  `GroupSuggestionsBySearchVsURL` now groups by other types as well)
-      //  should be done by the grouping framework.
-      GroupSuggestionsBySearchVsURL(std::next(matches_.begin()),
-                                    matches_.end());
-    }
-    GroupAndDemoteMatchesInGroups();
-
-  } else if (base::FeatureList::IsEnabled(omnibox::kKeepSecondaryZeroSuggest)) {
-    // Until limits are applied by the grouping framework, zero-prefix
-    // suggestions are grouped then trimmed.
-    // TODO(manukh): Limiting should be done by the grouping framework.
-    GroupAndDemoteMatchesInGroups();
-    size_t num_primary_suggestions = 0;
-    base::EraseIf(matches_, [&](const auto& match) {
-      if (!match.suggestion_group_id.has_value() ||
-          GetSideTypeForSuggestionGroup(match.suggestion_group_id.value()) ==
-              omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {
-        // Trim the primary suggestions to the given limit.
-        return ++num_primary_suggestions > num_matches;
-      } else {
-        // Keep the secondary suggestions for the NTP realbox.
-        // TODO(ender): Add appropriate page classification for Android.
-        return page_classification != OmniboxEventProto::NTP_REALBOX;
+  if (base::FeatureList::IsEnabled(omnibox::kGroupingFramework) &&
+      !is_zero_suggest && !is_android && !is_ios) {
+    // Grouping requires all matches have a group ID. To keep providers 'dumb',
+    // they only assign IDs when their ID isn't obvious from the match type.
+    // Most matches will instead set IDs here to keep providers 'dumb' and the
+    // type->group mapping consistent between providers.
+    base::ranges::for_each(matches_, [&](auto& match) {
+      if (!match.suggestion_group_id.has_value()) {
+        match.suggestion_group_id =
+            AutocompleteMatch::GetDefaultGroupId(match.type);
       }
+      DCHECK(match.suggestion_group_id.has_value());
     });
 
+    // Some providers give 0 relevance matches that are meant for deduping only
+    // but shouldn't be shown otherwise. Filter them out.
+    base::EraseIf(matches_,
+                  [&](const auto& match) { return match.relevance == 0; });
+
+    // If there's only 1 match, then grouping is a no-op.
+    if (matches_.size() > 2) {
+      PSections sections;
+      sections.push_back(std::make_unique<DesktopNonZpsSection>(matches_));
+      matches_ = Section::GroupMatches(std::move(sections), matches_);
+    }
+
   } else {
-    // Until limits are applied by the grouping framework, zero-prefix
-    // suggestions are grouped then trimmed.
-    // TODO(manukh): Limiting should be done by the grouping framework.
-    GroupAndDemoteMatchesInGroups();
-    matches_.resize(num_matches);
+    // Limit history cluster suggestions to 1. This has to be done before
+    // limiting URL matches below so that a to-be-removed history cluster
+    // suggestion doesn't waste a URL slot.
+    bool history_cluster_included = false;
+    base::EraseIf(matches_, [&](const auto& match) {
+      // If not a history cluster match, don't erase it.
+      if (match.type != AutocompleteMatch::Type::HISTORY_CLUSTER)
+        return false;
+      // If not the 1st history cluster match, do erase it.
+      if (history_cluster_included)
+        return true;
+      // If the 1st history cluster match, don't erase it.
+      history_cluster_included = true;
+      return false;
+    });
+
+    // Limit URL matches per OmniboxMaxURLMatches.
+    size_t max_url_count = 0;
+    if (OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled() &&
+        (max_url_count = OmniboxFieldTrial::GetMaxURLMatches()) != 0)
+      LimitNumberOfURLsShown(GetMaxMatches(is_zero_suggest), max_url_count,
+                             comparing_object);
+
+    // Limit total matches accounting for suggestions score <= 0, sub matches,
+    // and feature configs such as OmniboxUIExperimentMaxAutocompleteMatches,
+    // OmniboxMaxZeroSuggestMatches, and OmniboxDynamicMaxAutocomplete.
+    const size_t num_matches =
+        CalculateNumMatches(is_zero_suggest, matches_, comparing_object);
+
+    // Group and trim suggestions to the given limit.
+    if (!is_zero_suggest) {
+      // Typed suggestions are trimmed then grouped.
+      matches_.resize(num_matches);
+
+      // Group search suggestions above URL suggestions.
+      if (matches_.size() > 2 &&
+          !base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
+        GroupSuggestionsBySearchVsURL(std::next(matches_.begin()),
+                                      matches_.end());
+      }
+      GroupAndDemoteMatchesInGroups();
+
+    } else if (base::FeatureList::IsEnabled(
+                   omnibox::kKeepSecondaryZeroSuggest)) {
+      // Zero-prefix suggestions are grouped then trimmed.
+      GroupAndDemoteMatchesInGroups();
+      size_t num_primary_suggestions = 0;
+      base::EraseIf(matches_, [&](const auto& match) {
+        if (!match.suggestion_group_id.has_value() ||
+            GetSideTypeForSuggestionGroup(match.suggestion_group_id.value()) ==
+                omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {
+          // Trim the primary suggestions to the given limit.
+          return ++num_primary_suggestions > num_matches;
+        } else {
+          // Keep the secondary suggestions for the NTP realbox.
+          // TODO(ender): Add appropriate page classification for Android.
+          return page_classification != OmniboxEventProto::NTP_REALBOX;
+        }
+      });
+
+    } else {
+      // Zero-prefix suggestions are grouped then trimmed.
+      GroupAndDemoteMatchesInGroups();
+      matches_.resize(num_matches);
+    }
   }
 
 #if DCHECK_IS_ON()

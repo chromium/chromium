@@ -31,6 +31,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "inline_autocompletion_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -804,6 +805,31 @@ bool AutocompleteMatch::ShouldBeSkippedForGroupBySearchVsUrl(Type type) {
          type == AutocompleteMatchType::CLIPBOARD_IMAGE ||
          type == AutocompleteMatchType::TILE_NAVSUGGEST ||
          type == AutocompleteMatchType::TILE_SUGGESTION;
+}
+
+// static
+omnibox::GroupId AutocompleteMatch::GetDefaultGroupId(Type type) {
+  if (type == AutocompleteMatchType::TILE_NAVSUGGEST ||
+      type == AutocompleteMatchType::TILE_SUGGESTION) {
+    return omnibox::GROUP_MOBILE_MOST_VISITED;
+  }
+
+  if (type == AutocompleteMatchType::CLIPBOARD_URL ||
+      type == AutocompleteMatchType::CLIPBOARD_TEXT ||
+      type == AutocompleteMatchType::CLIPBOARD_IMAGE) {
+    return omnibox::GROUP_MOBILE_CLIPBOARD;
+  }
+
+  if (IsStarterPackType(type))
+    return omnibox::GROUP_STARTER_PACK;
+
+  if (IsSearchType(type))
+    return omnibox::GROUP_SEARCH;
+
+  if (type == AutocompleteMatchType::HISTORY_CLUSTER)
+    return omnibox::GROUP_HISTORY_CLUSTER;
+
+  return omnibox::GROUP_OTHER_NAVS;
 }
 
 // static
