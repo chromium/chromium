@@ -219,12 +219,15 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
     this.methodCalled('openUrl', url);
   }
 
-  packExtension(
-      rootPath: string, keyPath: string, flag?: number,
-      _callback?:
-          (response: chrome.developerPrivate.PackDirectoryResponse) => void):
-      void {
+  packExtension(rootPath: string, keyPath: string, flag?: number) {
     this.methodCalled('packExtension', [rootPath, keyPath, flag]);
+    return Promise.resolve({
+      message: '',
+      item_path: '',
+      pem_path: '',
+      override_flags: 0,
+      status: chrome.developerPrivate.PackStatus.ERROR,
+    });
   }
 
   repairItem(id: string): void {

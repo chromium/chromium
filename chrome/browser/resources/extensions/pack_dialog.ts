@@ -30,11 +30,8 @@ export interface PackDialogDelegate {
   choosePrivateKeyPath(): Promise<string>;
 
   /** Packs the extension into a .crx. */
-  packExtension(
-      rootPath: string, keyPath: string, flag?: number,
-      callback?:
-          (response: chrome.developerPrivate.PackDirectoryResponse) => void):
-      void;
+  packExtension(rootPath: string, keyPath: string, flag?: number):
+      Promise<chrome.developerPrivate.PackDirectoryResponse>;
 }
 
 export interface ExtensionsPackDialogElement {
@@ -101,8 +98,8 @@ export class ExtensionsPackDialogElement extends PolymerElement {
   }
 
   private onConfirmTap_() {
-    this.delegate.packExtension(
-        this.packDirectory_, this.keyFile_, 0, this.onPackResponse_.bind(this));
+    this.delegate.packExtension(this.packDirectory_, this.keyFile_, 0)
+        .then(response => this.onPackResponse_(response));
   }
 
   /**
@@ -132,9 +129,11 @@ export class ExtensionsPackDialogElement extends PolymerElement {
     if (this.shadowRoot!.querySelector(
                             'extensions-pack-dialog-alert')!.returnValue ===
         'success') {
-      this.delegate.packExtension(
-          this.lastResponse_!.item_path, this.lastResponse_!.pem_path,
-          this.lastResponse_!.override_flags, this.onPackResponse_.bind(this));
+      this.delegate
+          .packExtension(
+              this.lastResponse_!.item_path, this.lastResponse_!.pem_path,
+              this.lastResponse_!.override_flags)
+          .then(response => this.onPackResponse_(response));
     }
 
     this.lastResponse_ = null;
