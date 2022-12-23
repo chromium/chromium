@@ -105,6 +105,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @DisabledTest(message = "https://crbug.com/1211930/")
     public void testExitPipOnNavigation() throws Throwable {
         testExitOn(()
                            -> JavaScriptUtils.executeJavaScript(getWebContents(),
