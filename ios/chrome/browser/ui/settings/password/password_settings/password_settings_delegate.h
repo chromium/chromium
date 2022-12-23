@@ -12,6 +12,9 @@
 // Indicates whether or not "Offer to Save Passwords" is set to enabled.
 - (void)savedPasswordSwitchDidChange:(BOOL)enabled;
 
+// Indicates whether or not the account storage switch is set to enabled.
+- (void)accountStorageSwitchDidChange:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_DELEGATE_H_

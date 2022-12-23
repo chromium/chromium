@@ -2354,6 +2354,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_OFFER_TO_SAVE_PASSWORDS" desc="Title for the switch item in Settings that can be toggled allowing users to be prompted if they want to save their passwords when logging into webpages. [Length: 25em] [iOS only]">
         Offer To Save Passwords
       </message>
+      <message name="IDS_IOS_ACCOUNT_STORAGE_OPT_IN_LABEL" desc="Title for the switch item in Settings that controls whether signed-in users can save/autofill passwords to/from their account. [Length: 25em] [iOS only]">
+        Use and Save Passwords from Your Google Account
+      </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_ADD_PASSWORD_MANUALLY_TITLE" desc="Title of the view that allow user to enter the details for a new password credential to add it to the list the passwords. [iOS only]">
         Add Password
       </message>

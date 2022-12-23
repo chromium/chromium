@@ -62,6 +62,8 @@ namespace {
 // it too high could result in scrolling way past the searched element.
 constexpr int kScrollAmount = 150;
 
+constexpr base::TimeDelta kSyncInitializedTimeout = base::Seconds(5);
+
 NSString* GetTextFieldForID(int category_id) {
   return [NSString
       stringWithFormat:@"%@_textField", l10n_util::GetNSString(category_id)];
@@ -486,6 +488,16 @@ id<GREYMatcher> EditDoneButton() {
   if ([self isRunningTest:@selector(testNoOndeviceEncryptionWithoutFlag)]) {
     config.features_disabled.push_back(
         syncer::kSyncTrustedVaultPassphrasePromo);
+  }
+  if ([self isRunningTest:@selector
+            (testAccountStorageSwitchHiddenIfSignedInAndFlagDisabled)]) {
+    config.features_disabled.push_back(
+        password_manager::features::kEnablePasswordsAccountStorage);
+  }
+  if ([self isRunningTest:@selector
+            (testAccountStorageSwitchShownIfSignedInAndFlagEnabled)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kEnablePasswordsAccountStorage);
   }
 
   return config;
@@ -2409,7 +2421,7 @@ id<GREYMatcher> EditDoneButton() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(5)];
+                                   syncTimeout:kSyncInitializedTimeout];
 
   // Add passwords for the user.
   SaveExamplePasswordForms();
@@ -2657,6 +2669,79 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+}
+
+- (void)testAccountStorageSwitchHiddenIfSignedInAndFlagDisabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:kSyncInitializedTimeout];
+
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+
+  [EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kPasswordSettingsAccountStorageSwitchTableViewId),
+                     grey_notVisible(), nil)];
+}
+
+- (void)testAccountStorageSwitchShownIfSignedInAndFlagEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:kSyncInitializedTimeout];
+
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+
+  GREYAssert(![PasswordSettingsAppInterface isOptedInForAccountStorage],
+             @"User should be opted out by default after sign-in");
+  GREYElementInteraction* accountStorageSwitch =
+      [EarlGrey selectElementWithMatcher:
+                    chrome_test_util::TableViewSwitchCell(
+                        kPasswordSettingsAccountStorageSwitchTableViewId,
+                        /*is_toggled_on=*/NO)];
+
+  [accountStorageSwitch performAction:TurnTableViewSwitchOn(YES)];
+
+  bool success = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^{
+        return [PasswordSettingsAppInterface isOptedInForAccountStorage];
+      });
+  GREYAssert(success, @"Flipping the toggle should have opted in the user");
+  [EarlGrey selectElementWithMatcher:
+                chrome_test_util::TableViewSwitchCell(
+                    kPasswordSettingsAccountStorageSwitchTableViewId,
+                    /*is_toggled_on=*/YES)];
+}
+
+- (void)testAccountStorageSwitchHiddenIfSignedOut {
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+
+  [EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kPasswordSettingsAccountStorageSwitchTableViewId),
+                     grey_notVisible(), nil)];
+}
+
+- (void)testAccountStorageSwitchHiddenIfSyncing {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncInitializedTimeout];
+
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+
+  [EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kPasswordSettingsAccountStorageSwitchTableViewId),
+                     grey_notVisible(), nil)];
 }
 
 @end

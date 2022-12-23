@@ -43,6 +43,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Items within the password settings UI.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSavePasswordsSwitch = kItemTypeEnumZero,
+  ItemTypeAccountStorageSwitch,
   ItemTypeManagedSavePasswords,
   ItemTypePasswordsInOtherApps,
   ItemTypeExportPasswordsButton,
@@ -87,6 +88,10 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 @property(nonatomic, assign, getter=isSavePasswordsEnabled)
     BOOL savePasswordsEnabled;
 
+// Indicates the state of the account storage switch.
+@property(nonatomic, assign)
+    PasswordSettingsAccountStorageState accountStorageState;
+
 // On-device encryption state according to the sync service.
 @property(nonatomic, assign)
     PasswordSettingsOnDeviceEncryptionState onDeviceEncryptionState;
@@ -95,6 +100,9 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 
 // The item related to the switch for the password manager setting.
 @property(nonatomic, readonly) TableViewSwitchItem* savePasswordsItem;
+
+// The item related to the switch for the account storage opt-in.
+@property(nonatomic, readonly) TableViewSwitchItem* accountStorageItem;
 
 // The item related to the enterprise managed save password setting.
 @property(nonatomic, readonly)
@@ -128,6 +136,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 @implementation PasswordSettingsViewController
 
 @synthesize savePasswordsItem = _savePasswordsItem;
+@synthesize accountStorageItem = _accountStorageItem;
 @synthesize managedSavePasswordsItem = _managedSavePasswordsItem;
 @synthesize passwordsInOtherAppsItem = _passwordsInOtherAppsItem;
 @synthesize onDeviceEncryptionOptInDescriptionItem =
@@ -177,6 +186,10 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   [model addSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
   [self addSavePasswordsSwitchOrManagedInfo];
 
+  if (self.accountStorageState != PasswordSettingsAccountStorageStateNotShown) {
+    [self updateAccountStorageSwitch];
+  }
+
   [model addSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
   [model addItem:[self passwordsInOtherAppsItem]
       toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
@@ -210,6 +223,14 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
           base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(savePasswordsSwitchChanged:)
+                      forControlEvents:UIControlEventValueChanged];
+      break;
+    }
+    case ItemTypeAccountStorageSwitch: {
+      TableViewSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+      [switchCell.switchView addTarget:self
+                                action:@selector(accountStorageSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -287,6 +308,20 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
       kPasswordSettingsSavePasswordSwitchTableViewId;
   [self updateSavePasswordsSwitch];
   return _savePasswordsItem;
+}
+
+- (TableViewSwitchItem*)accountStorageItem {
+  if (_accountStorageItem) {
+    return _accountStorageItem;
+  }
+
+  _accountStorageItem =
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeAccountStorageSwitch];
+  _accountStorageItem.text =
+      l10n_util::GetNSString(IDS_IOS_ACCOUNT_STORAGE_OPT_IN_LABEL);
+  _accountStorageItem.accessibilityIdentifier =
+      kPasswordSettingsAccountStorageSwitchTableViewId;
+  return _accountStorageItem;
 }
 
 // Creates the row which replaces `savePasswordsItem` when this preference is
@@ -455,6 +490,18 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   }
 }
 
+- (void)setAccountStorageState:(PasswordSettingsAccountStorageState)state {
+  if (_accountStorageState == state) {
+    return;
+  }
+
+  _accountStorageState = state;
+
+  if (self.modelLoadStatus != ModelNotLoaded) {
+    [self updateAccountStorageSwitch];
+  }
+}
+
 - (void)setPasswordsInOtherAppsEnabled:(BOOL)enabled {
   if (_passwordsInOtherAppsEnabled.has_value() &&
       _passwordsInOtherAppsEnabled.value() == enabled) {
@@ -509,6 +556,10 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   [self.delegate savedPasswordSwitchDidChange:switchView.on];
 }
 
+- (void)accountStorageSwitchChanged:(UISwitch*)switchView {
+  [self.delegate accountStorageSwitchDidChange:switchView.on];
+}
+
 // Called when the user clicks on the information button of the managed
 // setting's UI. Shows a textual bubble with the information of the enterprise.
 - (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
@@ -546,6 +597,64 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
     return;
   }
   [self reconfigureCellsForItems:@[ self.savePasswordsItem ]];
+}
+
+- (void)updateAccountStorageSwitch {
+  const BOOL hadItem = [self.tableViewModel
+      hasItemForItemType:ItemTypeAccountStorageSwitch
+       sectionIdentifier:SectionIdentifierSavePasswordsSwitch];
+  switch (self.accountStorageState) {
+    case PasswordSettingsAccountStorageStateNotShown: {
+      if (!hadItem) {
+        return;
+      }
+
+      // Cache index path before removing.
+      NSIndexPath* indexPath = [self.tableViewModel
+          indexPathForItemType:ItemTypeAccountStorageSwitch];
+      [self.tableViewModel
+                 removeItemWithType:ItemTypeAccountStorageSwitch
+          fromSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
+      if (self.modelLoadStatus == ModelLoadComplete) {
+        [self.tableView
+            deleteRowsAtIndexPaths:@[ indexPath ]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+      }
+      return;
+    }
+    case PasswordSettingsAccountStorageStateOptedIn:
+    case PasswordSettingsAccountStorageStateOptedOut: {
+      if (!hadItem) {
+        [self.tableViewModel addItem:self.accountStorageItem
+             toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
+      }
+
+      self.accountStorageItem.on = self.accountStorageState ==
+                                   PasswordSettingsAccountStorageStateOptedIn;
+
+      if (self.modelLoadStatus != ModelLoadComplete) {
+        return;
+      }
+
+      NSIndexPath* indexPath = [self.tableViewModel
+          indexPathForItemType:ItemTypeAccountStorageSwitch];
+      if (!hadItem) {
+        [self.tableView
+            insertRowsAtIndexPaths:@[ indexPath ]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+
+      } else {
+        [self.tableView
+            reloadRowsAtIndexPaths:@[ indexPath ]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+      }
+      return;
+    }
+    default: {
+      NOTREACHED();
+      return;
+    }
+  }
 }
 
 // Updates the appearance of the Passwords In Other Apps item to reflect the

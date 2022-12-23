@@ -5,6 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSUMER_H_
 
+// State of the account storage switch.
+typedef NS_ENUM(NSInteger, PasswordSettingsAccountStorageState) {
+  // User cannot opt in/out in their current state, so the toggle should not be
+  // shown.
+  PasswordSettingsAccountStorageStateNotShown = 0,
+  // User is opted in to account storage.
+  PasswordSettingsAccountStorageStateOptedIn,
+  // User is opted out of account storage.
+  PasswordSettingsAccountStorageStateOptedOut,
+};
+
 // State of on-device encryption.
 typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
   // User can not opt-in in their current state, so the section should not be
@@ -30,6 +41,9 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 
 // Indicates whether or not the "Offer to Save Passwords" feature is enabled.
 - (void)setSavePasswordsEnabled:(BOOL)enabled;
+
+// Indicates the state of the account storage switch.
+- (void)setAccountStorageState:(PasswordSettingsAccountStorageState)state;
 
 // Indicates whether or not Chromium has been enabled as a credential provider
 // at the iOS level.
