@@ -8,18 +8,9 @@
 #include "third_party/omnibox_proto/groups.pb.h"
 
 TEST(AutocompleteGrouperGroupsTest, Group) {
-  GroupBase group(2);
-  EXPECT_TRUE(group.CanAdd({}));
-  group.Add({});
-  EXPECT_TRUE(group.CanAdd({}));
-  group.Add({});
-  EXPECT_FALSE(group.CanAdd({}));
-}
-
-TEST(AutocompleteGrouperGroupsTest, MultiGroup) {
-  MultiGroup group = {
-      4, MultiGroup::GroupLimitsAndCounts{{omnibox::GROUP_SEARCH, {2}},
-                                          {omnibox::GROUP_DOCUMENT, {4}}}};
+  Group group = {4,
+                 Group::GroupIdLimitsAndCounts{{omnibox::GROUP_SEARCH, {2}},
+                                               {omnibox::GROUP_DOCUMENT, {4}}}};
   AutocompleteMatch search_match{};
   search_match.suggestion_group_id = omnibox::GROUP_SEARCH;
   AutocompleteMatch doc_match{};
@@ -39,8 +30,7 @@ TEST(AutocompleteGrouperGroupsTest, MultiGroup) {
   EXPECT_TRUE(group.CanAdd(doc_match));
   EXPECT_FALSE(group.CanAdd(other_match));
 
-  // Verify the total `MultiGroup` limit with 2/2 searches, 2/4 docs, and 4/4
-  // total.
+  // Verify the total `Group` limit with 2/2 searches, 2/4 docs, and 4/4 total.
   group.Add(doc_match);  // 2/2 searches, 1/4 docs, 3/4 total.
   EXPECT_TRUE(group.CanAdd(doc_match));
   group.Add(doc_match);  // 2/2 searches, 2/4 docs, 4/4 total.
@@ -49,8 +39,8 @@ TEST(AutocompleteGrouperGroupsTest, MultiGroup) {
   EXPECT_FALSE(group.CanAdd(other_match));
 
   // Verify with 0/2 searches, 4/4 docs, and 4/4 total.
-  group = {4, MultiGroup::GroupLimitsAndCounts{{omnibox::GROUP_SEARCH, {2}},
-                                               {omnibox::GROUP_DOCUMENT, {4}}}};
+  group = {4, Group::GroupIdLimitsAndCounts{{omnibox::GROUP_SEARCH, {2}},
+                                            {omnibox::GROUP_DOCUMENT, {4}}}};
   group.Add(doc_match);  // 0/2 searches, 1/4 docs, 1/4 total.
   group.Add(doc_match);  // 0/2 searches, 2/4 docs, 2/4 total.
   group.Add(doc_match);  // 0/2 searches, 3/4 docs, 3/4 total.
@@ -65,13 +55,20 @@ TEST(AutocompleteGrouperGroupsTest, MultiGroup) {
 TEST(AutocompleteGrouperGroupsTest, DefaultGroup) {
   DefaultGroup group{};
   AutocompleteMatch non_default_match{};
-  AutocompleteMatch default_match{};
-  default_match.allowed_to_be_default_match = true;
+  non_default_match.suggestion_group_id = omnibox::GROUP_STARTER_PACK;
+  AutocompleteMatch default_match_search{};
+  default_match_search.suggestion_group_id = omnibox::GROUP_SEARCH;
+  default_match_search.allowed_to_be_default_match = true;
+  AutocompleteMatch default_match_nav{};
+  default_match_nav.suggestion_group_id = omnibox::GROUP_OTHER_NAVS;
+  default_match_nav.allowed_to_be_default_match = true;
 
   EXPECT_FALSE(group.CanAdd(non_default_match));
-  EXPECT_TRUE(group.CanAdd(default_match));
+  EXPECT_TRUE(group.CanAdd(default_match_search));
+  EXPECT_TRUE(group.CanAdd(default_match_nav));
 
-  group.Add(default_match);
+  group.Add(default_match_search);
   EXPECT_FALSE(group.CanAdd(non_default_match));
-  EXPECT_FALSE(group.CanAdd(default_match));
+  EXPECT_FALSE(group.CanAdd(default_match_search));
+  EXPECT_FALSE(group.CanAdd(default_match_nav));
 }

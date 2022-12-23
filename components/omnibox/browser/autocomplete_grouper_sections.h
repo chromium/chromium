@@ -10,9 +10,9 @@
 
 #include "components/omnibox/browser/autocomplete_match.h"
 
-class GroupBase;
+class Group;
 class Section;
-using PGroups = std::vector<std::unique_ptr<GroupBase>>;
+using PGroups = std::vector<std::unique_ptr<Group>>;
 using PSections = std::vector<std::unique_ptr<Section>>;
 
 // `Section` class and subclasses used to implement the various autocomplete
@@ -30,7 +30,7 @@ class Section {
  protected:
   // Return the `Group` `match` can be added to, or `nullptr` if it can't be
   // added to any group in `groups_`.
-  virtual GroupBase* CanAdd(const AutocompleteMatch& match);
+  virtual Group* CanAdd(const AutocompleteMatch& match);
   // Tries to add `match` to the appropriate `groups_`. Returns if it was added
   // to any group in `groups_`.
   bool Add(const AutocompleteMatch& match);

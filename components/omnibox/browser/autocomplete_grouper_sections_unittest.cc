@@ -29,6 +29,7 @@ void VerifyMatches(const ACMatches& matches,
   std::vector<int> relevances = {};
   base::ranges::transform(matches, std::back_inserter(relevances),
                           [&](const auto& match) { return match.relevance; });
+
   EXPECT_THAT(relevances, testing::ElementsAreArray(expected_relevances));
 }
 
@@ -102,8 +103,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNonZpsSection) {
             CreateMatch(100, omnibox::GROUP_SEARCH),
             CreateMatch(99, omnibox::GROUP_OTHER_NAVS),
             CreateMatch(98, omnibox::GROUP_SEARCH),
-            // Any group ID should work for the default suggestion.
-            CreateMatch(96, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, true),
+            CreateMatch(96, omnibox::GROUP_SEARCH, true),
             // Only the 1st default-able suggestion should be ranked 1st.
             CreateMatch(97, omnibox::GROUP_OTHER_NAVS, true),
             CreateMatch(95, omnibox::GROUP_STARTER_PACK),
@@ -112,11 +112,12 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNonZpsSection) {
   }
 
   {
-    SCOPED_TRACE("A match that qualifies for no groups, should not be added.");
+    SCOPED_TRACE("Matches that qualify for no groups, should not be added.");
     test(
         {
             CreateMatch(100, omnibox::GROUP_SEARCH, true),
             CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(98, omnibox::GROUP_MOBILE_CLIPBOARD),
         },
         {100});
   }
@@ -323,14 +324,14 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNonZpsSection) {
     SCOPED_TRACE("Show at most 1 default.");
     test(
         {
-            CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, true),
-            CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, true),
+            CreateMatch(100, omnibox::GROUP_OTHER_NAVS, true),
+            CreateMatch(99, omnibox::GROUP_OTHER_NAVS, true),
             CreateMatch(98, omnibox::GROUP_OTHER_NAVS, true),
-            CreateMatch(97, omnibox::GROUP_OTHER_NAVS, true),
+            CreateMatch(97, omnibox::GROUP_STARTER_PACK, true),
             CreateMatch(96, omnibox::GROUP_SEARCH, true),
             CreateMatch(95, omnibox::GROUP_SEARCH, true),
         },
-        {100, 96, 95, 98, 97});
+        {100, 97, 96, 95, 99, 98});
   }
 
   {
