@@ -8,6 +8,7 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/ios/browser/features.h"
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -93,6 +94,25 @@ id<GREYMatcher> GetSyncSettings() {
 - (void)setUp {
   [[self class] testForStartup];
   [super setUp];
+
+  // Because this test suite changes the state of Sync passwords, wait
+  // until the engine is initialized before startup.
+  [ChromeEarlGrey
+      waitForSyncEngineInitialized:NO
+                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
+}
+
+- (void)tearDown {
+  [SigninEarlGrey signOut];
+
+  // Tests that use `addBookmarkWithSyncPassphrase` must ensure that Sync
+  // data is cleared before tear down to reset the Sync password state.
+  [ChromeEarlGrey
+      waitForSyncEngineInitialized:NO
+                       syncTimeout:syncher::kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey clearSyncServerData];
+
+  [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

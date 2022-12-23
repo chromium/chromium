@@ -247,6 +247,7 @@ source_set("eg2_tests") {
     "//components/policy/test_support:test_support",
     "//components/signin/ios/browser:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics:eg_test_support+eg2",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/signin:fake_system_identity",
