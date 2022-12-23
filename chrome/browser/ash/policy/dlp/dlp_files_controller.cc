@@ -85,8 +85,9 @@ storage::FileSystemContext* g_file_system_context_for_testing = nullptr;
 
 absl::optional<ino64_t> GetInodeValue(const base::FilePath& path) {
   struct stat file_stats;
-  if (stat(path.value().c_str(), &file_stats) != 0)
+  if (stat(path.value().c_str(), &file_stats) != 0) {
     return absl::nullopt;
+  }
   return file_stats.st_ino;
 }
 

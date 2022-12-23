@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -31,6 +32,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -304,6 +306,12 @@ IN_PROC_BROWSER_TEST_P(ExtendedFilesAppBrowserTest, Test) {
   StartTest();
 }
 
+// DLP source URLs
+constexpr char kBlockedSourceUrl[] = "https://blocked.com";
+constexpr char kWarnSourceUrl[] = "https://warned.com";
+constexpr char kNotSetSourceUrl[] = "https://not-set.com";
+constexpr char kNotBlockedSourceUrl[] = "https://allowed.com";
+
 // A version of FilesAppBrowserTest that supports DLP files restrictions.
 class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
  public:
@@ -338,10 +346,41 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
                             base::Unretained(this)));
   }
 
+  absl::optional<ino64_t> GetInodeValue(const base::FilePath& path) {
+    struct stat file_stats;
+    if (stat(path.value().c_str(), &file_stats) != 0) {
+      return absl::nullopt;
+    }
+    return file_stats.st_ino;
+  }
+
   // TODO(b/261163959): Optimize DLP messages.
   bool HandleDlpCommands(const std::string& name,
                          const base::Value::Dict& value,
                          std::string* output) override {
+    if (name == "setGetFilesSourcesMock") {
+      base::FilePath result =
+          file_manager::util::GetDownloadsFolderForProfile(profile());
+      const base::Value::List* file_names = value.FindList("fileNames");
+      auto* source_urls = value.FindList("sourceUrls");
+      EXPECT_TRUE(file_names);
+      EXPECT_TRUE(source_urls);
+      EXPECT_EQ(file_names->size(), source_urls->size());
+
+      ::dlp::GetFilesSourcesResponse response;
+      for (unsigned long i = 0; i < file_names->size(); i++) {
+        auto* metadata = response.add_files_metadata();
+        auto inode = GetInodeValue(result.Append((*file_names)[i].GetString()));
+        EXPECT_TRUE(inode.has_value());
+        metadata->set_inode(inode.value());
+        metadata->set_source_url((*source_urls)[i].GetString());
+      }
+
+      chromeos::DlpClient::Get()->GetTestInterface()->SetGetFilesSourceMock(
+          base::BindRepeating(&DlpFilesAppBrowserTest::GetFilesSourcesMock,
+                              base::Unretained(this), response));
+      return true;
+    }
     if (name == "setBlockedFilesTransfer") {
       base::FilePath result =
           file_manager::util::GetDownloadsFolderForProfile(profile());
@@ -359,9 +398,20 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
       return true;
     }
     if (name == "setIsRestrictedDestinationRestriction") {
-      EXPECT_CALL(*mock_rules_manager_, IsRestrictedDestination)
+      EXPECT_CALL(
+          *mock_rules_manager_,
+          IsRestrictedDestination(GURL(kBlockedSourceUrl), testing::_,
+                                  policy::DlpRulesManager::Restriction::kFiles,
+                                  testing::_, testing::_))
           .WillRepeatedly(
-              ::testing::Return(policy::DlpRulesManager::Level::kBlock));
+              testing::Return(policy::DlpRulesManager::Level::kBlock));
+      EXPECT_CALL(
+          *mock_rules_manager_,
+          IsRestrictedDestination(GURL(kNotBlockedSourceUrl), testing::_,
+                                  policy::DlpRulesManager::Restriction::kFiles,
+                                  testing::_, testing::_))
+          .WillRepeatedly(
+              ::testing::Return(policy::DlpRulesManager::Level::kAllow));
       return true;
     }
     if (name == "setBlockedArc") {
@@ -381,12 +431,33 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
       return true;
     }
     if (name == "setIsRestrictedByAnyRuleRestrictions") {
-      EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule)
-          .WillOnce(::testing::Return(policy::DlpRulesManager::Level::kWarn))
-          .WillOnce(::testing::Return(policy::DlpRulesManager::Level::kAllow))
-          .WillOnce(::testing::Return(policy::DlpRulesManager::Level::kNotSet))
+      EXPECT_CALL(*mock_rules_manager_,
+                  IsRestrictedByAnyRule(
+                      GURL(kNotBlockedSourceUrl),
+                      policy::DlpRulesManager::Restriction::kFiles, testing::_))
           .WillRepeatedly(
-              ::testing::Return(policy::DlpRulesManager::Level::kBlock));
+              testing::Return(policy::DlpRulesManager::Level::kAllow));
+
+      EXPECT_CALL(*mock_rules_manager_,
+                  IsRestrictedByAnyRule(
+                      GURL(kBlockedSourceUrl),
+                      policy::DlpRulesManager::Restriction::kFiles, testing::_))
+          .WillRepeatedly(
+              testing::Return(policy::DlpRulesManager::Level::kBlock));
+
+      EXPECT_CALL(*mock_rules_manager_,
+                  IsRestrictedByAnyRule(
+                      GURL(kNotSetSourceUrl),
+                      policy::DlpRulesManager::Restriction::kFiles, testing::_))
+          .WillRepeatedly(
+              testing::Return(policy::DlpRulesManager::Level::kNotSet));
+
+      EXPECT_CALL(*mock_rules_manager_,
+                  IsRestrictedByAnyRule(
+                      GURL(kWarnSourceUrl),
+                      policy::DlpRulesManager::Restriction::kFiles, testing::_))
+          .WillRepeatedly(
+              testing::Return(policy::DlpRulesManager::Level::kWarn));
       return true;
     }
     if (name == "setIsRestrictedByAnyRuleBlocked") {
@@ -398,6 +469,15 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
     return false;
   }
 
+  // Invokes `callback` with the previosly constructed `response`. Note that the
+  // result doesn't depend on the value of `request`.
+  void GetFilesSourcesMock(
+      const dlp::GetFilesSourcesResponse response,
+      const dlp::GetFilesSourcesRequest request,
+      chromeos::DlpClient::GetFilesSourcesCallback callback) {
+    std::move(callback).Run(response);
+  }
+
   // MockDlpRulesManager is owned by KeyedService and is guaranteed to outlive
   // this class.
   policy::MockDlpRulesManager* mock_rules_manager_ = nullptr;
@@ -406,8 +486,6 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_P(DlpFilesAppBrowserTest, Test) {
-  chromeos::DlpClient::Get()->GetTestInterface()->SetFakeSource("example1.com");
-
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
   ON_CALL(*mock_rules_manager_, IsRestricted)
       .WillByDefault(::testing::Return(policy::DlpRulesManager::Level::kAllow));
