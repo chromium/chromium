@@ -915,7 +915,6 @@ void PopulateChromeWebUIFrameBinders(
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       ash::personalization_app::PersonalizationAppUI,
-      ash::settings::OSSettingsUI,
 #endif
       NewTabPageUI>(map);
 
