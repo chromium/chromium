@@ -371,6 +371,12 @@ void PhoneHubTray::CloseBubble() {
     phone_status_view_dont_use_ = nullptr;
   }
 
+  if (features::IsEcheSWAEnabled() && features::IsEcheLauncherEnabled() &&
+      phone_hub_manager_->GetAppStreamLauncherDataModel()) {
+    phone_hub_manager_->GetAppStreamLauncherDataModel()
+        ->SetShouldShowMiniLauncher(false);
+  }
+
   bubble_.reset();
   SetIsActive(false);
   shelf()->UpdateAutoHideState();

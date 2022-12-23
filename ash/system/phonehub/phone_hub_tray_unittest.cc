@@ -97,6 +97,10 @@ class PhoneHubTrayTest : public AshTestBase {
     return phone_hub_manager_.fake_onboarding_ui_tracker();
   }
 
+  phonehub::AppStreamLauncherDataModel* GetAppStreamLauncherDataModel() {
+    return phone_hub_manager_.fake_app_stream_launcher_data_model();
+  }
+
   void PressReturnKeyOnTrayButton() {
     const ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
                                  ui::EF_NONE);
@@ -612,6 +616,34 @@ TEST_F(PhoneHubTrayTest, DismissOnboardingFlowByClickingOutside) {
   EXPECT_FALSE(phone_hub_tray_->GetBubbleView());
   EXPECT_FALSE(phone_hub_tray_->GetVisible());
   EXPECT_FALSE(GetOnboardingUiTracker()->ShouldShowOnboardingUi());
+}
+
+TEST_F(PhoneHubTrayTest, ShouldNotShowMiniLauncherOnCloseBubble) {
+  GetFeatureStatusProvider()->SetStatus(
+      phonehub::FeatureStatus::kEnabledAndConnected);
+
+  ClickTrayButton();
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+
+  // Simulate showing the app stream mini launcher
+  GetAppStreamLauncherDataModel()->SetShouldShowMiniLauncher(true);
+  EXPECT_TRUE(GetAppStreamLauncherDataModel()->GetShouldShowMiniLauncher());
+
+  // Simulate a click outside the bubble.
+  phone_hub_tray_->ClickedOutsideBubble();
+
+  // Clicking outside should dismiss the bubble and should not show the app
+  // stream mini launcher.
+  EXPECT_FALSE(phone_hub_tray_->GetBubbleView());
+  EXPECT_TRUE(phone_hub_tray_->GetVisible());
+  EXPECT_FALSE(GetAppStreamLauncherDataModel()->GetShouldShowMiniLauncher());
+
+  // Opening the bubble again should still have the app stream mini launcher
+  // not shown.
+  ClickTrayButton();
+  EXPECT_TRUE(phone_hub_tray_->GetBubbleView());
+  EXPECT_TRUE(phone_hub_tray_->GetVisible());
+  EXPECT_FALSE(GetAppStreamLauncherDataModel()->GetShouldShowMiniLauncher());
 }
 
 TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
