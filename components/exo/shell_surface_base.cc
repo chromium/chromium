@@ -1310,11 +1310,15 @@ void ShellSurfaceBase::OnWindowActivated(ActivationReason reason,
 void ShellSurfaceBase::OnTooltipShown(aura::Window* target,
                                       const std::u16string& text,
                                       const gfx::Rect& bounds) {
-  root_surface()->OnTooltipShown(text, bounds);
+  if (root_surface()) {
+    root_surface()->OnTooltipShown(text, bounds);
+  }
 }
 
 void ShellSurfaceBase::OnTooltipHidden(aura::Window* target) {
-  root_surface()->OnTooltipHidden();
+  if (root_surface()) {
+    root_surface()->OnTooltipHidden();
+  }
 }
 
 // Returns true if surface is currently being resized.
