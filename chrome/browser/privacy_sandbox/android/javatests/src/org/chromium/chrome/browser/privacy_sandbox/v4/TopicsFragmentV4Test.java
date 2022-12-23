@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -398,6 +399,24 @@ public final class TopicsFragmentV4Test {
                 hasItems("Settings.PrivacySandbox.Topics.BlockedTopicsOpened",
                         "Settings.PrivacySandbox.Topics.TopicAdded"));
     }
-    // TODO(http://b/261822498): Add Managed state tests when the Privacy Sandbox policy is
-    // implemented.
+
+    @Test
+    @SmallTest
+    @Policies.Add({
+        @Policies.Item(key = "PrivacySandboxAdTopicsEnabled", string = "false")
+        , @Policies.Item(key = "PrivacySandboxPromptEnabled", string = "false")
+    })
+    public void
+    testTopicsManaged() {
+        startTopicsSettings();
+
+        // Check default state and try to press the toggle.
+        assertFalse(isTopicsPrefEnabled());
+        onView(getTopicsToggleMatcher()).check(matches(not(isChecked())));
+        onView(getTopicsToggleMatcher()).perform(click());
+
+        // Check that the state of the pref and the toggle did not change.
+        assertFalse(isTopicsPrefEnabled());
+        onView(getTopicsToggleMatcher()).check(matches(not(isChecked())));
+    }
 }

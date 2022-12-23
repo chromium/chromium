@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -457,6 +458,24 @@ public final class FledgeFragmentV4Test {
         assertThat(mUserActionTester.getActions(),
                 hasItems("Settings.PrivacySandbox.Fledge.BlockedSitesOpened"));
     }
-    // TODO(http://b/261823248): Add Managed state tests when the Privacy Sandbox policy is
-    // implemented.
+
+    @Test
+    @SmallTest
+    @Policies.Add({
+        @Policies.Item(key = "PrivacySandboxSiteEnabledAdsEnabled", string = "false")
+        , @Policies.Item(key = "PrivacySandboxPromptEnabled", string = "false")
+    })
+    public void
+    testFledgeManaged() {
+        startFledgeSettings();
+
+        // Check default state and try to press the toggle.
+        assertFalse(isFledgePrefEnabled());
+        onView(getFledgeToggleMatcher()).check(matches(not(isChecked())));
+        onView(getFledgeToggleMatcher()).perform(click());
+
+        // Check that the state of the pref and the toggle did not change.
+        assertFalse(isFledgePrefEnabled());
+        onView(getFledgeToggleMatcher()).check(matches(not(isChecked())));
+    }
 }

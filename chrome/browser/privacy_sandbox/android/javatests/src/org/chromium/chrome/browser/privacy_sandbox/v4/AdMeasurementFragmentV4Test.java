@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -169,6 +170,24 @@ public final class AdMeasurementFragmentV4Test {
         assertThat(mUserActionTester.getActions(),
                 hasItems("Settings.PrivacySandbox.AdMeasurement.Disabled"));
     }
-    // TODO(http://b/261439615): Add Managed state tests when the Privacy Sandbox policy is
-    // implemented.
+
+    @Test
+    @SmallTest
+    @Policies.Add({
+        @Policies.Item(key = "PrivacySandboxAdMeasurementEnabled", string = "false")
+        , @Policies.Item(key = "PrivacySandboxPromptEnabled", string = "false")
+    })
+    public void
+    testAdMeasurementManaged() {
+        startAdMeasuremenSettings();
+
+        // Check default state and try to press the toggle.
+        assertFalse(isAdMeasurementPrefEnabled());
+        onView(getAdMeasurementToggleMatcher()).check(matches(not(isChecked())));
+        onView(getAdMeasurementToggleMatcher()).perform(click());
+
+        // Check that the state of the pref and the toggle did not change.
+        assertFalse(isAdMeasurementPrefEnabled());
+        onView(getAdMeasurementToggleMatcher()).check(matches(not(isChecked())));
+    }
 }
