@@ -36,7 +36,7 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
-#include "gpu/command_buffer/tests/texture_image_factory.h"
+#include "gpu/command_buffer/tests/image_factory_stub.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
@@ -349,10 +349,12 @@ void GLManager::InitializeWithWorkaroundsImpl(
   command_buffer_.reset(
       new CommandBufferCheckLostContext(options.context_lost_allowed));
 
-  std::unique_ptr<TextureImageFactory> image_factory;
+  std::unique_ptr<ImageFactoryStub> image_factory;
   if (options.should_use_native_gmb_for_backbuffer) {
-    image_factory = std::make_unique<TextureImageFactory>();
-    image_factory->SetRequiredTextureType(GL_TEXTURE_RECTANGLE_ARB);
+    // If |should_use_native_gmb_for_backbuffer| is true, GLES2CmdDecoder
+    // requires a non-null ImageFactory instance in order to initialize
+    // successfully.
+    image_factory = std::make_unique<ImageFactoryStub>();
   }
 
   decoder_.reset(::gpu::gles2::GLES2Decoder::CreateForTesting(

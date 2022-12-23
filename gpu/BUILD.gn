@@ -262,9 +262,9 @@ if (!is_android && !is_fuchsia && !is_chromeos_ash) {
       "command_buffer/tests/gl_manager.h",
       "command_buffer/tests/gl_test_utils.cc",
       "command_buffer/tests/gl_test_utils.h",
+      "command_buffer/tests/image_factory_stub.cc",
+      "command_buffer/tests/image_factory_stub.h",
       "command_buffer/tests/lpm/gl_lpm_fuzzer.cc",
-      "command_buffer/tests/texture_image_factory.cc",
-      "command_buffer/tests/texture_image_factory.h",
     ]
 
     defines = [ "GL_GLEXT_PROTOTYPES" ]
@@ -354,9 +354,9 @@ test("gl_tests") {
     "command_buffer/tests/gl_virtual_contexts_ext_window_rectangles_unittest.cc",
     "command_buffer/tests/gl_virtual_contexts_unittest.cc",
     "command_buffer/tests/gl_webgl_multi_draw_test.cc",
+    "command_buffer/tests/image_factory_stub.cc",
+    "command_buffer/tests/image_factory_stub.h",
     "command_buffer/tests/occlusion_query_unittest.cc",
-    "command_buffer/tests/texture_image_factory.cc",
-    "command_buffer/tests/texture_image_factory.h",
     "ipc/client/gpu_context_tests.h",
     "ipc/client/gpu_in_process_context_tests.cc",
     "ipc/client/raster_in_process_context_tests.cc",

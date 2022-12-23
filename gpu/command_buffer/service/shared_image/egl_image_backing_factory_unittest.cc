@@ -22,7 +22,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/test_utils.h"
-#include "gpu/command_buffer/tests/texture_image_factory.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -162,7 +161,6 @@ class EGLImageBackingFactoryThreadSafeTest
   scoped_refptr<gl::GLSurface> surface2_;
   scoped_refptr<gl::GLContext> context2_;
   scoped_refptr<SharedContextState> context_state2_;
-  TextureImageFactory image_factory_;
 };
 
 class CreateAndValidateSharedImageRepresentations {
