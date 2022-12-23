@@ -74,6 +74,7 @@ BASE_DECLARE_FEATURE(kUnifiedPasswordManagerErrorMessages);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerReenrollment);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroidBranding);
+BASE_DECLARE_FEATURE(kExploratorySaveUpdatePasswordStrings);
 #endif
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 
@@ -155,6 +156,8 @@ extern const base::FeatureParam<int> kMaxUPMReenrollmentAttempts;
 
 extern const base::FeatureParam<bool> kIgnoreAuthErrorMessageTimeouts;
 extern const base::FeatureParam<int> kMaxShownUPMErrorsBeforeEviction;
+
+extern const base::FeatureParam<int> kSaveUpdatePromptSyncingStringVersion;
 #endif
 
 // Field trial and corresponding parameters.

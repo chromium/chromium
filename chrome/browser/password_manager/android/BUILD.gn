@@ -437,6 +437,7 @@ source_set("unit_tests") {
     "password_store_android_backend_bridge_helper_impl_unittest.cc",
     "password_store_android_backend_unittest.cc",
     "password_sync_controller_delegate_android_unittest.cc",
+    "save_update_password_message_delegate_unittest.cc",
   ]
 
   deps = [
