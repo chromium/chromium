@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Paketeak ez du balio: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Atzeko kamera</translation>
 <translation id="1196338895211115272">Ezin izan da gako pribatua esportatu.</translation>
+<translation id="132960226125594336">Ezin izan da kargatu <ph name="RELATIVE_PATH" /> fitxategia edukiaren scripterako, scriptaren gehieneko tamaina edo luzapenaren edukiaren scripten guztizko tamaina gaindituko lukeelako.</translation>
 <translation id="1420684932347524586">Ezin izan da sortu ausazko RSA gako pribatua.</translation>
 <translation id="1445572445564823378">Luzapen hau <ph name="PRODUCT_NAME" /> moteltzen ari da. Hori desgaitzea gomendatzen dizugu <ph name="PRODUCT_NAME" />-ren errendimendua leheneratzeko..</translation>
 <translation id="1468038450257740950">WebGL ez da bateragarria.</translation>

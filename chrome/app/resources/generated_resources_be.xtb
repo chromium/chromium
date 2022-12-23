@@ -1262,6 +1262,7 @@
 <translation id="212862741129535676">Працэнт загрузкі па частотах</translation>
 <translation id="212876957201860463">Ідзе падрыхтоўка сотавай прылады да наладжвання...</translation>
 <translation id="2131077480075264">Не атрымалася ўсталяваць праграму "<ph name="APP_NAME" />", бо "<ph name="IMPORT_NAME" />" яе не дазваляе</translation>
+<translation id="2133857665503360653">Паўтарыць спробу спампаваць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="21354425047973905">Не паказваць PIN-коды</translation>
 <translation id="2135456203358955318">Прыстыкаваная лупа</translation>
 <translation id="2135787500304447609">&amp;Узнавіць</translation>
@@ -2843,11 +2844,13 @@
 <translation id="3584169441612580296">Прагляд і змяненне з камп'ютара фота, музыкі і іншых файлаў мультымедыя</translation>
 <translation id="3586787825263265024">Для работы праграме "<ph name="APPLICATION_NAME" />" патрабуецца доступ да OneDrive.</translation>
 <translation id="3586806079541226322">Не ўдалося адкрыць гэты файл</translation>
+<translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" />: даведайцеся больш</translation>
 <translation id="3587482841069643663">Усе</translation>
 <translation id="3588790464166520201">Дазволена ўсталёўваць апрацоўшчыкаў плацяжоў</translation>
 <translation id="3589766037099229847">Небяспечнае змесціва заблакіравана</translation>
 <translation id="3590194807845837023">Разблакіраваць профіль і перазапусціць</translation>
 <translation id="3590295622232282437">Выконваецца ўваход у сеанс пад кіраваннем.</translation>
+<translation id="3591057288287063271">Захаваць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="3592260987370335752">&amp;Даведацца больш</translation>
 <translation id="3593152357631900254">Уключыць рэжым Fuzzy Pinyin</translation>
 <translation id="3593965109698325041">Абмежаванні назваў сертыфікатаў</translation>
@@ -3515,7 +3518,6 @@
 <translation id="4205157409548006256">Пры наладжванні Linux адбылася памылка.</translation>
 <translation id="4206144641569145248">Прышэлец</translation>
 <translation id="4206323443866416204">Адпраўка водгуку</translation>
-<translation id="4207522141889799150">Змяніць дазволы сайта <ph name="SITE" /></translation>
 <translation id="4207932031282227921">Запытаны дазвол. Каб адказаць, націсніце F6</translation>
 <translation id="4208390505124702064">Шукаць тут: <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Вялікі</translation>
@@ -3750,6 +3752,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" />, ваш адміністратар патрабуе, каб вы змянілі пароль.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Вы можаце дазволіць прыладам з ChromeOS адпраўляць аўтаматычныя справаздачы, каб дапамагаць нам выяўляць, над чым трэба працаваць у першую чаргу. У гэтыя справаздачы можа ўключацца, у прыватнасці, інфармацыя пра збоі ў ChromeOS, а таксама пра тое, якія функцыі выкарыстоўваліся і які аб'ём памяці быў задзейнічаны.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Вы можаце дазволіць або забараніць стварэнне такіх справаздач у любы час у наладах прылады Chrome. Калі вы з'яўляецеся адміністратарам дамена, вы можаце змяніць гэту наладу ў кансолі адміністратара.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">Выдаліць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="4426464032773610160">Перш чым пачаць работу, пераканайцеся, што да прылады Chromebook падключаны пераключальнік USB або Bluetooth. Вы можаце таксама выкарыстоўваць клавішы клавіятуры.</translation>
 <translation id="4426508677408162512">Усе закладкі</translation>
 <translation id="4427306783828095590">Функцыя палепшанай абароны яшчэ надзейней блакіруе фішынг і шкодныя праграмы</translation>
@@ -3953,7 +3956,6 @@
 <translation id="4613271546271159013">Адно з пашырэнняў змяніла старонку, якая паказваецца пры адкрыцці новай укладкі.</translation>
 <translation id="4615586811063744755">файлы cookie не выбраны</translation>
 <translation id="461661862154729886">Крыніца энергіі</translation>
-<translation id="461676224702246336">Для гэтага сайта – пры націсканні</translation>
 <translation id="4617001782309103936">Занадта кароткі</translation>
 <translation id="4617019240346358451">Каб выкарыстаць пашырэнне "<ph name="EXTENSION_NAME" />", абнавіце старонку</translation>
 <translation id="4617270414136722281">Параметры пашырэння</translation>
@@ -4020,6 +4022,7 @@
 <translation id="4666472247053585787">Праглядайце апавяшчэнні з тэлефона на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">Іншыя праграмы</translation>
 <translation id="4667027203988048332">Якія даныя выкарыстоўваюцца:</translation>
+<translation id="4672759829555593783">Адкрыць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="46733273239502219">Пазасеткавыя даныя ва ўсталяваных праграмах таксама будуць выдалены</translation>
 <translation id="4673442866648850031">Адкрываць інструменты стыла, калі яно вымаецца</translation>
 <translation id="4675065861091108046">Раней вы дазволілі ўсе пашырэнні на старонцы <ph name="ORIGIN" /></translation>
@@ -4632,6 +4635,7 @@
 <translation id="5268373933383932086">Персаналізаваныя старонкі для вас</translation>
 <translation id="5269977353971873915">Збой друку</translation>
 <translation id="5273806377963980154">Змяніць URL-адрас сайта</translation>
+<translation id="5273966423195882879">Колер на аснове тэмы</translation>
 <translation id="5275084684151588738">Карыстальніцкія слоўнікі</translation>
 <translation id="5275100789567222478">Уключаць, толькі калі ўзровень зараду акумулятара будзе складаць <ph name="PERCENT" />% або менш</translation>
 <translation id="5275338516105640560">Кнопка захаванай групы ўкладак</translation>
@@ -5911,6 +5915,7 @@
 <translation id="6465841119675156448">Без інтэрнэту</translation>
 <translation id="6466258437571594570">Сайтам забаронена адцягваць вашу ўвагу запытамі дазволу на паказ апавяшчэнняў</translation>
 <translation id="6466988389784393586">&amp;Адкрыць усе закладкі</translation>
+<translation id="6467230443178397264">Сканіраваць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="6467304607960172345">Аптымізацыя поўнаэкраннага відэа</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> можа выконваць наступныя дзеянні:</translation>
 <translation id="6468485451923838994">Шрыфты</translation>
@@ -6664,6 +6669,7 @@
 <translation id="7149893636342594995">За апошнія 24 гадзіны</translation>
 <translation id="7152478047064750137">Пашырэнне не патрабуе спецыяльных дазволаў</translation>
 <translation id="7154130902455071009">Змяніць пачатковую старонку на наступную: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">Пераўтварыць відарыс у тэкст</translation>
 <translation id="7159953856712257647">Усталявана стандартна</translation>
 <translation id="7160182524506337403">Цяпер вы можаце праглядаць нядаўнія апавяшчэнні з тэлефона</translation>
 <translation id="7163202347044721291">Ідзе спраўджанне кода актывацыі...</translation>
@@ -6925,6 +6931,7 @@
 <translation id="7412226954991670867">Памяць GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Наладка завершана</translation>
+<translation id="7416091793702109803">Разглядзець файл "<ph name="FILE_NAME" />"</translation>
 <translation id="7416263748877373774">Не ўдалося загрузіць Умовы выкарыстання. Праверце падключэнне да сеткі і паўтарыце спробу.</translation>
 <translation id="7416362041876611053">Невядомая памылка сеткі.</translation>
 <translation id="741906494724992817">Гэта праграма не патрабуе спецыяльных дазволаў.</translation>

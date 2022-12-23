@@ -510,6 +510,7 @@
 <translation id="481968316161811770">Cookie, δεδομένα ιστότοπου</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} και 1 ακόμα}other{{domain} και {count} ακόμα}}</translation>
 <translation id="4826218269716039351">Αποκλεισμός cookie τρίτους μέρους</translation>
+<translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
 <translation id="4826726074642088322">Κοινοποίηση επισήμανσης</translation>
 <translation id="48274138579728272">Επισήμανση ως αναγνωσμένη</translation>
 <translation id="4833686396768033263">Οι Πρόσφατες καρτέλες δεν είναι διαθέσιμες</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">Γραμμή σελιδοδεικτών</translation>
 <translation id="519530786644929958">Η λήψη απέτυχε και δεν μπορεί να επαναληφθεί.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Να επιτρέπεται στον ιστότοπο <ph name="SITE_NAME" /> να χρησιμοποιεί τη συσκευή <ph name="PERMISSION" />;</translation>
 <translation id="5219295696240154694">Συμβάλετε στη βελτίωση της Ασφάλειας στον Ιστό για όλους</translation>
 <translation id="5228579091201413441">Ενεργοποίηση συγχρονισμού</translation>
 <translation id="5232485538978018676">Σύνδεση με διαχειριζόμενο λογαριασμό</translation>

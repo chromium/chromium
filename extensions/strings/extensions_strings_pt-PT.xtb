@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">O pacote é inválido: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Virada para o ambiente</translation>
 <translation id="1196338895211115272">Falha ao exportar chave privada.</translation>
+<translation id="132960226125594336">Não foi possível carregar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de conteúdo porque excederia o tamanho máximo do script ou o tamanho total do script de conteúdo máximo da extensão.</translation>
 <translation id="1420684932347524586">Ora bolas! Falha ao gerar chave privada RSA aleatória.</translation>
 <translation id="1445572445564823378">Esta extensão está a tornar o <ph name="PRODUCT_NAME" /> lento. Deve desativá-la para restaurar o desempenho do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">O WebGL não é suportado.</translation>

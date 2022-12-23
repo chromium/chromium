@@ -105,6 +105,7 @@
 <translation id="1087965115100412394">禁止網站連線至 MIDI 裝置</translation>
 <translation id="1088654056000736875">Chrome 正在移除電腦中的有害軟體…</translation>
 <translation id="1088659085457112967">進入閱讀器模式</translation>
+<translation id="1089407731410758060">變更主題</translation>
 <translation id="1090126737595388931">沒有執行中的背景應用程式</translation>
 <translation id="1090541560108055381">配對前，請確認兩部裝置上均顯示這組代碼</translation>
 <translation id="1091767800771861448">按下 ESCAPE 鍵可略過 (僅限非官方版本)。</translation>
@@ -922,6 +923,7 @@
 <translation id="18260074040409954">你可以在任何裝置上使用儲存的密碼，這些密碼會儲存在 <ph name="EMAIL" /> 的<ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="1826192255355608658">同步處理 Chrome 瀏覽器的書籤、密碼和歷史記錄等資料</translation>
 <translation id="1826516787628120939">檢查中</translation>
+<translation id="1827504459960247692">無線基地台名稱</translation>
 <translation id="1828378091493947763">這部裝置不支援這個外掛程式</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{開啟所有網址(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟所有 ({COUNT} 個) 網址(&amp;O)}}</translation>
 <translation id="1828901632669367785">使用系統對話方塊進行列印...</translation>
@@ -1231,6 +1233,7 @@
 <translation id="2101225219012730419">版本：</translation>
 <translation id="2102396546234652240">禁止網站使用麥克風</translation>
 <translation id="2102495993840063010">Android 應用程式</translation>
+<translation id="2104166991923847969">自動關閉無線基地台</translation>
 <translation id="2105809836724866556">已隱藏「<ph name="MODULE_TITLE" />」</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 組電話號碼}}</translation>
 <translation id="211144231511833662">取消勾選類型</translation>
@@ -1259,6 +1262,7 @@
 <translation id="212862741129535676">頻率狀態占用率</translation>
 <translation id="212876957201860463">正在準備設定你的行動裝置...</translation>
 <translation id="2131077480075264">由於「<ph name="IMPORT_NAME" />」不允許，因此無法安裝「<ph name="APP_NAME" />」</translation>
+<translation id="2133857665503360653">重新嘗試下載「<ph name="FILE_NAME" />」</translation>
 <translation id="21354425047973905">隱藏 PIN 碼</translation>
 <translation id="2135456203358955318">停駐放大鏡</translation>
 <translation id="2135787500304447609">繼續(&amp;R)</translation>
@@ -1810,6 +1814,7 @@
 <translation id="2616366145935564096">讀取以及變更你在 <ph name="WEBSITE_1" /> 網站上的資料</translation>
 <translation id="2618797463720777311">設定鄰近分享功能</translation>
 <translation id="2620215283731032047">無法安全下載「<ph name="FILE_NAME" />」。</translation>
+<translation id="2620245777360407679">目前已連上無線基地台的裝置</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="262154978979441594">訓練 Google 助理的語音模型</translation>
 <translation id="26224892172169984">禁止任何網站處理通訊協定</translation>
@@ -2841,11 +2846,13 @@
 <translation id="3584169441612580296">讀取及變更你電腦中的相片、音樂及其他媒體</translation>
 <translation id="3586787825263265024">必須要能存取 OneDrive 才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="3586806079541226322">無法開啟這個檔案</translation>
+<translation id="3587438013689771191">進一步瞭解<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3588790464166520201">可以安裝付款處理常式</translation>
 <translation id="3589766037099229847">已封鎖不安全的內容</translation>
 <translation id="3590194807845837023">解除鎖定設定檔並重新啟動</translation>
 <translation id="3590295622232282437">正在進入受管理工作階段。</translation>
+<translation id="3591057288287063271">保留「<ph name="FILE_NAME" />」</translation>
 <translation id="3592260987370335752">瞭解詳情(&amp;L)</translation>
 <translation id="3593152357631900254">啟用模糊拼音模式</translation>
 <translation id="3593965109698325041">憑證名稱限制</translation>
@@ -3513,7 +3520,6 @@
 <translation id="4205157409548006256">設定 Linux 時發生錯誤。</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">意見回饋報告</translation>
-<translation id="4207522141889799150">編輯 <ph name="SITE" /> 的網站權限</translation>
 <translation id="4207932031282227921">已要求權限，按下 F6 鍵即可回覆</translation>
 <translation id="4208390505124702064">搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">大</translation>
@@ -3748,6 +3754,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" />，管理員要求你變更密碼。</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，可以協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可以在 Chrome 裝置的設定中允許或禁止傳送這類報告。如果你是網域管理員，可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">刪除「<ph name="FILE_NAME" />」</translation>
 <translation id="4426464032773610160">首先，請確認 USB 或藍牙開關已連接至 Chromebook。你也可以使用鍵盤按鍵。</translation>
 <translation id="4426508677408162512">所有書籤</translation>
 <translation id="4427306783828095590">強化防護功能可進一步封鎖網路詐騙和惡意軟體</translation>
@@ -3951,7 +3958,6 @@
 <translation id="4613271546271159013">擴充功能已變更開啟新分頁時所顯示的頁面。</translation>
 <translation id="4615586811063744755">未選取任何 Cookie</translation>
 <translation id="461661862154729886">電源</translation>
-<translation id="461676224702246336">點選這個網站時</translation>
 <translation id="4617001782309103936">太短</translation>
 <translation id="4617019240346358451">重新載入網頁以使用「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="4617270414136722281">擴充功能選項</translation>
@@ -4018,6 +4024,7 @@
 <translation id="4666472247053585787">在 <ph name="DEVICE_TYPE" /> 上查看手機的通知</translation>
 <translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4667027203988048332">我們會使用哪些資料：</translation>
+<translation id="4672759829555593783">立即開啟「<ph name="FILE_NAME" />」</translation>
 <translation id="46733273239502219">已安裝應用程式中的離線資料也將遭到清除</translation>
 <translation id="4673442866648850031">移除觸控筆時取出觸控筆工具</translation>
 <translation id="4675065861091108046">你先前已選擇允許 <ph name="ORIGIN" /> 上的所有擴充功能</translation>
@@ -5907,6 +5914,7 @@
 <translation id="6465841119675156448">不使用網際網路</translation>
 <translation id="6466258437571594570">網站無法要求傳送通知，以免造成干擾</translation>
 <translation id="6466988389784393586">開啟所有書籤(&amp;O)</translation>
+<translation id="6467230443178397264">掃描「<ph name="FILE_NAME" />」</translation>
 <translation id="6467304607960172345">針對全螢幕影片進行最佳化處理</translation>
 <translation id="6467377768028664108">你的 <ph name="DEVICE_TYPE" /> 將可以：</translation>
 <translation id="6468485451923838994">字型</translation>
@@ -6654,6 +6662,7 @@
 <translation id="7149893636342594995">過去 24 小時</translation>
 <translation id="7152478047064750137">這個擴充功能不需要特殊權限</translation>
 <translation id="7154130902455071009">將你的起始網頁變更為：<ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">將圖片轉成文字</translation>
 <translation id="7159953856712257647">已安裝 (預設)</translation>
 <translation id="7160182524506337403">你現在可以查看手機的通知</translation>
 <translation id="7163202347044721291">正在驗證啟用代碼…</translation>
@@ -6915,6 +6924,7 @@
 <translation id="7412226954991670867">GPU 記憶體</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7415454883318062233">設定完成</translation>
+<translation id="7416091793702109803">查看「<ph name="FILE_NAME" />」</translation>
 <translation id="7416263748877373774">無法載入《服務條款》。請檢查您的網路連線，然後再試一次。</translation>
 <translation id="7416362041876611053">不明的網路錯誤。</translation>
 <translation id="741906494724992817">這個應用程式不需要任何特殊權限。</translation>
@@ -7120,6 +7130,7 @@
 <translation id="7614260613810441905">網站必須先詢問你，才能編輯裝置上的檔案或資料夾 (建議使用)</translation>
 <translation id="761530003705945209">使用 Google 雲端硬碟備份你的資料。你隨時可以輕鬆還原資料或切換裝置。備份項目包含應用程式資料。備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。</translation>
 <translation id="7615365294369022248">新增帳戶時發生錯誤</translation>
+<translation id="7615807797520072741">重設為傳統版 Chrome</translation>
 <translation id="7616214729753637086">正在註冊裝置…</translation>
 <translation id="7617263010641145920">開啟 Play 商店</translation>
 <translation id="7617648809369507487">使用低擾式通知</translation>
@@ -8427,6 +8438,7 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{將分頁移到其他視窗}other{將分頁移到其他視窗}}</translation>
 <translation id="8805140816472474147">如要開始同步處理，請確認同步處理設定。</translation>
 <translation id="8806680466228877631">按下 <ph name="SHORTCUT" /> 鍵即可重新開啟不小心關閉的分頁</translation>
+<translation id="8807588541160250261">沒有任何裝置連線時</translation>
 <translation id="8807632654848257479">穩定版</translation>
 <translation id="8808478386290700967">線上應用程式商店</translation>
 <translation id="8808686172382650546">貓咪</translation>

@@ -510,6 +510,7 @@
 <translation id="481968316161811770">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} എന്നതും മറ്റൊന്നും}other{{domain} എന്നതും മറ്റ് {count} എണ്ണവും}}</translation>
 <translation id="4826218269716039351">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
+<translation id="4826588772550366629">ക്യാമറയും മൈക്രോഫോണും</translation>
 <translation id="4826726074642088322">ഹൈലൈറ്റ് പങ്കിടുക</translation>
 <translation id="48274138579728272">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="4833686396768033263">അടുത്തിടെയുള്ള ടാബുകൾ ലഭ്യമല്ല</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">ബുക്ക്‌മാര്‍‌ക്ക് ബാര്‍‌</translation>
 <translation id="519530786644929958">ഡൗൺലോഡ് പരാജയപ്പെട്ടതിനാൽ വീണ്ടെടുക്കാനാകില്ല.</translation>
 <translation id="5197255632782567636">ഇന്‍റര്‍നെറ്റ്</translation>
+<translation id="5211488077761630279">"<ph name="SITE_NAME" />" എന്നതിനെ നിങ്ങളുടെ <ph name="PERMISSION" /> ഉപയോഗിക്കാൻ അനുവദിക്കണോ?</translation>
 <translation id="5219295696240154694">എല്ലാവർക്കുമായി വെബിലെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
 <translation id="5228579091201413441">സമന്വയം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="5232485538978018676">മാനേജ് ചെയ്യപ്പെടുന്ന അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -1099,6 +1101,7 @@
 <translation id="9157836665414082580">ഡയലോഗുകൾ നിയന്ത്രിക്കുക</translation>
 <translation id="9177438225260810839">തുറന്നിരിക്കുന്ന ടാബുകളിൽ തിരയുക</translation>
 <translation id="9188680907066685419">മാനേജ് ചെയ്‌ത അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക</translation>
+<translation id="9193147658040604536">പിൻ ചെയ്‌ത ടാബിലേക്ക് വലിച്ചിടുക</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> ദിവസം മുമ്പ്</translation>
 <translation id="9203116392574189331">ഹാൻഡ്ഓഫ്</translation>
 <translation id="9219154867334666734">ടാബുകൾ തിരയുക…</translation>

@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">El paquete no es válido: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Cámara posterior</translation>
 <translation id="1196338895211115272">Error al exportar la clave privada.</translation>
+<translation id="132960226125594336">No se pudo cargar el archivo "<ph name="RELATIVE_PATH" />" para la secuencia de comandos del contenido porque superaría el tamaño máximo de la secuencia de comandos o el tamaño máximo total de la secuencia de comandos del contenido de la extensión.</translation>
 <translation id="1420684932347524586">¡Ay! Error al generar clave privada RSA aleatoria.</translation>
 <translation id="1445572445564823378">Esta extensión está ralentizando <ph name="PRODUCT_NAME" />. Deberías inhabilitarla para restaurar el rendimiento de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL no es compatible.</translation>

@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Paketa është e pavlefshme: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Drejtuar drejt mjedisit</translation>
 <translation id="1196338895211115272">Eksportimi i çelësit privat dështoi.</translation>
+<translation id="132960226125594336">Skedari "<ph name="RELATIVE_PATH" />" nuk mund të ngarkohej për skriptin e përmbajtjes pasi do të kalonte madhësinë maksimale të skriptit ose madhësinë maksimale totale të kriptit të përmbajtjes për shtesën.</translation>
 <translation id="1420684932347524586">Gabim! Krijimi i çelësin privat të rastësishëm RSA dështoi.</translation>
 <translation id="1445572445564823378">Kjo shtesë po e ngadalëson <ph name="PRODUCT_NAME" />. Duhet ta çaktivizosh për të restauruar cilësinë e funksionimit të <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL nuk mbështetet.</translation>

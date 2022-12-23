@@ -510,6 +510,7 @@
 <translation id="481968316161811770">ქუქი-ჩანაწერები, საიტების მონაცემები</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} და 1 სხვა}other{{domain} და {count} სხვა}}</translation>
 <translation id="4826218269716039351">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
+<translation id="4826588772550366629">კამერა და მიკროფონი</translation>
 <translation id="4826726074642088322">გამოყოფილის გაზიარება</translation>
 <translation id="48274138579728272">წაკითხულად მონიშვნა</translation>
 <translation id="4833686396768033263">ბოლოდროინდელი ჩანართები მიუწვდომელია</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">სანიშნეების ზოლი</translation>
 <translation id="519530786644929958">ჩამოტვირთვა ვერ მოხერხდა და ხელახლა ცდა შეუძლებელია.</translation>
 <translation id="5197255632782567636">ინტერნეტი</translation>
+<translation id="5211488077761630279">გსურთ, დართოთ ნება „<ph name="SITE_NAME" />“-ს, გამოიყენოს თქვენი <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">ხელი შეუწყვეთ ვებში უსაფრთხოების ყველასთვის გაუმჯობესებას</translation>
 <translation id="5228579091201413441">სინქრონიზაციის ჩართვა</translation>
 <translation id="5232485538978018676">შედით სისტემაში მართული ანგარიშით</translation>

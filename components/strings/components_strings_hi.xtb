@@ -258,6 +258,7 @@
 <translation id="1553358976309200471">Chrome अपडेट करें</translation>
 <translation id="1555130319947370107">नीला</translation>
 <translation id="1559447966090556585">क्या आप सूचनाएं पाना चाहते हैं?</translation>
+<translation id="1559486004335285648">पेमेंट की जानकारी ऑटोमैटिक भरने की सुविधा</translation>
 <translation id="1559528461873125649">कोई ऐसी फ़ाइल या निर्देशिका नहीं है</translation>
 <translation id="1559572115229829303">&lt;p&gt;<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> से निजी कनेक्‍शन जोड़ा नहीं जा सकता क्‍योंकि आपके डिवाइस की तारीख और समय (<ph name="DATE_AND_TIME" />) गलत है.&lt;/p&gt;
 
@@ -367,6 +368,7 @@
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1807528111851433570">स्टार्ट शीट</translation>
 <translation id="181000283860817563">एक से ज़्यादा साइटों पर कीमतों को ट्रैक करें</translation>
+<translation id="1810391395243432441">स्क्रीन लॉक की मदद से पासवर्ड सुरक्षित रखें</translation>
 <translation id="1812527064848182527">लैंडस्केप</translation>
 <translation id="1813414402673211292">ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="182139138257690338">अपने-आप होने वाले डाउनलोड</translation>
@@ -386,6 +388,7 @@
 <translation id="1871208020102129563">प्रॉक्‍सी की सेटिंग इस तरह से की गई है कि वह फ़िक्‍स्‍ड प्रॉक्‍सी सर्वर इस्तेमाल करे, न कि .pac स्‍क्रिप्‍ट यूआरअल.</translation>
 <translation id="1871284979644508959">ज़रूरी फ़ील्ड</translation>
 <translation id="1873899211667975540">रॉक म्यूज़िक</translation>
+<translation id="1874224422119691492"><ph name="SETTINGS" /> में पासवर्ड डालने के लिए, स्क्रीन लॉक का इस्तेमाल करने या न करने का विकल्प चुना जा सकता है</translation>
 <translation id="1875025161375567525">फ़ोटो ट्रे</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="187918866476621466">शुरुआती पन्ना खोलें</translation>
@@ -754,6 +757,7 @@
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में सुरक्षित ब्राउज़िंग वगैरह को मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="2878197950673342043">पोस्टर फ़ोल्ड</translation>
 <translation id="2878424575911748999">ए1</translation>
+<translation id="2879694782644540289">पासवर्ड डालने के लिए, स्क्रीन लॉक का इस्तेमाल करें</translation>
 <translation id="2881276955470682203">कार्ड सेव करना है?</translation>
 <translation id="2882949212241984732">डबल-गेट फ़ोल्ड</translation>
 <translation id="2893773853358652045">चौथा रोल</translation>
@@ -1407,6 +1411,7 @@
 <translation id="4541810033354695636">ऑगमेंटेड रिएलिटी (एआर)</translation>
 <translation id="4542971377163063093">ट्रे 6</translation>
 <translation id="455113658016510503">ए9</translation>
+<translation id="4556069465387849460">आपने पासवर्ड डालने के लिए, स्क्रीन लॉक का इस्तेमाल किया है</translation>
 <translation id="4558551763791394412">अपने एक्सटेंशन अक्षम करके देखें.</translation>
 <translation id="4566017918361049074">आउटडोर गतिविधियां</translation>
 <translation id="4567686777917670400">आपका एडमिन किसी दूसरे डिवाइस से आपके ब्राउज़र का सेट अप बदल सकता है. इस डिवाइस की गतिविधि को Chromium के बाहर भी मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -2925,6 +2930,7 @@
 <translation id="8396522675989118466">यह <ph name="SIDE_OF_CARD" /> मौजूद <ph name="NUMBER_OF_DIGITS" />-अंकों का कोड है</translation>
 <translation id="8398790343843005537">अपना फ़ोन ढूंढें</translation>
 <translation id="8405579342203358118">Chrome की सेटिंग में आप जो जानकारी सिंक करते हैं उसे मैनेज करें</translation>
+<translation id="8406071103346257942">पासवर्ड डालने के लिए, स्क्रीन लॉक का इस्तेमाल करना बंद करें</translation>
 <translation id="8409413588194360210">पेमेंट हैंडलर</translation>
 <translation id="8412145213513410671">क्रैश (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">आपको वही 'पासफ़्रेज़' दोबारा दर्ज करना होगा.</translation>
@@ -3195,6 +3201,7 @@
 <translation id="9128016270925453879">नीतियां लोड हो गई हैं</translation>
 <translation id="9128870381267983090">नेटवर्क से कनेक्ट करें</translation>
 <translation id="9131119348384879525">क्या गोपनीय कॉन्टेंट कैप्चर करना है?</translation>
+<translation id="9133985615769429248">अगर इस डिवाइस को अन्य लोग इस्तेमाल करते हैं, तो आपके पास स्क्रीन लॉक इस्तेमाल करने का विकल्प है, ताकि जब भी आप सेव किया गया पासवर्ड डालें, तो यह आपकी पहचान की पुष्टि कर सके</translation>
 <translation id="9136861683332321024">लग्ज़री वाहन</translation>
 <translation id="9137013805542155359">मूल दिखाएं</translation>
 <translation id="9137248913990643158">इस ऐप्लिकेशन का उपयोग करने से पहले कृपया Chrome शुरू करके उसमें साइन इन करें.</translation>

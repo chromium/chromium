@@ -1,41 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
-<translation id="130631256467250065">Промене ће ступити на снагу када следећи пут поново покренете уређај.</translation>
-<translation id="275588974610408078">Извештавање о отказивањима није доступно у Chromium-у.</translation>
-<translation id="3064346599913645280">Гледате безбедну Chromium страницу.</translation>
-<translation id="358997566136285270">Chromium логотип</translation>
-<translation id="4365115785552740256">Chromium омогућавају <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> пројекат отвореног кода и други <ph name="BEGIN_LINK_OSS" />софтвер отвореног кода<ph name="END_LINK_OSS" />.</translation>
-<translation id="4559775032954821361">Идите у
-          Chromium мени &gt;
+<translation id="130631256467250065">Promene će stupiti na snagu kada sledeći put ponovo pokrenete uređaj.</translation>
+<translation id="275588974610408078">Izveštavanje o otkazivanjima nije dostupno u Chromium-u.</translation>
+<translation id="3064346599913645280">Gledate bezbednu Chromium stranicu.</translation>
+<translation id="358997566136285270">Chromium logotip</translation>
+<translation id="4365115785552740256">Chromium omogućavaju <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> projekat otvorenog koda i drugi <ph name="BEGIN_LINK_OSS" />softver otvorenog koda<ph name="END_LINK_OSS" />.</translation>
+<translation id="4559775032954821361">Idite u
+          Chromium meni &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
           <ph name="ADVANCED_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          LAN Settings (Подешавања локалне мреже)
-          и опозовите избор у пољу за потврду „Use a proxy server for your LAN“ (Користи прокси сервер за локалну мрежу).</translation>
-<translation id="4622039161600275920">Chromium блокира ову страницу</translation>
-<translation id="48558539577516920">Дозволите Chromium-у да приступа мрежи у заштитном зиду или антивирусним
-          подешавањима.</translation>
-<translation id="580822234363523061">Идите у
-          Chromium мени &gt;
+          LAN Settings (Podešavanja lokalne mreže)
+          i opozovite izbor u polju za potvrdu „Use a proxy server for your LAN“ (Koristi proksi server za lokalnu mrežu).</translation>
+<translation id="4622039161600275920">Chromium blokira ovu stranicu</translation>
+<translation id="48558539577516920">Dozvolite Chromium-u da pristupa mreži u zaštitnom zidu ili antivirusnim
+          podešavanjima.</translation>
+<translation id="580822234363523061">Idite u
+          Chromium meni &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
           <ph name="ADVANCED_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
-          и проверите да ли је конфигурација подешена на „no proxy“ (без проксија) или „direct“ (директно).</translation>
-<translation id="6613594504749178791">Промене ће ступити на снагу када следећи пут поново покренете Chromium.</translation>
-<translation id="7861509383340276692">Отворите
-          Chromium мени &gt;
+          i proverite da li je konfiguracija podešena na „no proxy“ (bez proksija) ili „direct“ (direktno).</translation>
+<translation id="6613594504749178791">Promene će stupiti na snagu kada sledeći put ponovo pokrenete Chromium.</translation>
+<translation id="7861509383340276692">Otvorite
+          Chromium meni &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
           <ph name="ADVANCED_TITLE" />
-          и опозовите избор опције „<ph name="NO_PREFETCH_DESCRIPTION" />“.
-          Ако вам то не реши проблем, препоручујемо да поново изаберете
-          ову опцију ради бољих перформанси.</translation>
-<translation id="8187289872471304532">Идите на Applications (Апликације) &gt; System Preferences (Подешавања система) &gt; Network (Мрежа) &gt; Advanced (Више опција) &gt; Proxies (Проксији) и опозовите избор свих проксија који су изабрани.</translation>
-<translation id="8684913864886094367">Chromium се није исправно затворио.</translation>
+          i opozovite izbor opcije „<ph name="NO_PREFETCH_DESCRIPTION" />“.
+          Ako vam to ne reši problem, preporučujemo da ponovo izaberete
+          ovu opciju radi boljih performansi.</translation>
+<translation id="8187289872471304532">Idite na Applications (Aplikacije) &gt; System Preferences (Podešavanja sistema) &gt; Network (Mreža) &gt; Advanced (Više opcija) &gt; Proxies (Proksiji) i opozovite izbor svih proksija koji su izabrani.</translation>
+<translation id="8684913864886094367">Chromium se nije ispravno zatvorio.</translation>
 </translationbundle>

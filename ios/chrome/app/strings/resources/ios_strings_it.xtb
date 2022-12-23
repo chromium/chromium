@@ -510,6 +510,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="481968316161811770">Cookie, dati dei siti</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 altra}other{{domain} e altre {count}}}</translation>
 <translation id="4826218269716039351">Blocca i cookie di terze parti</translation>
+<translation id="4826588772550366629">fotocamera e microfono</translation>
 <translation id="4826726074642088322">Condividi evidenziazione</translation>
 <translation id="48274138579728272">Contrassegna come letto</translation>
 <translation id="4833686396768033263">Schede recenti non disponibili</translation>
@@ -562,6 +563,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5190835502935405962">Barra dei preferiti</translation>
 <translation id="519530786644929958">Download non riuscito. Impossibile riprovare.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Vuoi consentire a "<ph name="SITE_NAME" />" di usare <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Contribuisci a migliorare la sicurezza sul Web per tutti</translation>
 <translation id="5228579091201413441">Abilita sincronizzazione</translation>
 <translation id="5232485538978018676">Accesso con account gestito</translation>

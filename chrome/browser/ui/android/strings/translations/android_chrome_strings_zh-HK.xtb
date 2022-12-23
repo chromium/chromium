@@ -1342,7 +1342,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8221656072740924283">繼續</translation>
 <translation id="8223642481677794647">資訊提供卡選單</translation>
 <translation id="8250920743982581267">文件</translation>
-<translation id="825412236959742607">這個網頁使用過多記憶體，因此 Chrome 已移除部分內容。</translation>
 <translation id="8255617931166444521">網站只能使用 Cookie 查看您在該網站的瀏覽活動</translation>
 <translation id="8259179246279078674">由於預先載入的網頁已加密，Google 不會得知預先載入網頁內容的相關資料。Google 伺服器會知道哪些網站已透過私密方式預先載入。此資料只用於預先載入網頁，不會與您 Google 帳戶的其他資料連結。</translation>
 <translation id="8260126382462817229">請嘗試再次登入</translation>
@@ -1512,7 +1511,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="9108808586816295166">可能無法隨時使用安全 DNS</translation>
 <translation id="9128984223251192329">私隱沙箱提示宜家顯示喺畫面下半部</translation>
 <translation id="9133397713400217035">離線探索</translation>
-<translation id="9137013805542155359">顯示原文</translation>
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9158770349521403363">只分享內容</translation>
 <translation id="9159716826369098114">還原有 <ph name="TAB_COUNT" /> 個分頁嘅分頁群組做新嘅背景分頁群組。</translation>

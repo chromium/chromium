@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">এই প্যাকেজটি ভুল: '<ph name="ERROR_CODE" />'৷</translation>
 <translation id="1140871961407805696">পেছন দিকে মুখ করা</translation>
 <translation id="1196338895211115272">ব্যক্তিগত কী রপ্তানি করতে ব্যর্থ৷</translation>
+<translation id="132960226125594336">সর্বাধিক স্ক্রিপ্ট সাইজ বা এক্সটেনশনের সর্বাধিক মোট কন্টেন্ট স্ক্রিপ্ট সাইজ অতিক্রম করে যাওয়ায় কন্টেন্ট স্ক্রিপ্টের জন্য ফাইল '<ph name="RELATIVE_PATH" />' লোড করা যায়নি।</translation>
 <translation id="1420684932347524586">এ বাবা! র‌্যান্ডম RSA ব্যক্তিগত কী জেনারেট করতে ব্যর্থ৷</translation>
 <translation id="1445572445564823378">এই এক্সটেনশনটির গতি কমে যাচ্ছে <ph name="PRODUCT_NAME" />৷ আপনাকে <ph name="PRODUCT_NAME" />-এর সম্পাদনা পুনঃস্থাপন করার জন্য এটিকে বন্ধ করতে হবে৷</translation>
 <translation id="1468038450257740950">WebGL সমর্থিত নয়৷</translation>

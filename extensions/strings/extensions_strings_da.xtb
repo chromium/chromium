@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Pakken er ugyldig: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Kamera på bagsiden</translation>
 <translation id="1196338895211115272">Den personlige nøgle kunne ikke eksporteres.</translation>
+<translation id="132960226125594336">Filen "<ph name="RELATIVE_PATH" />" til indholdsscript kunne ikke indlæses, da den vil overskride den maksimale scriptstørrelse eller udvidelsens maksimale samlede scriptstørrelse.</translation>
 <translation id="1420684932347524586">Gisp! Den tilfældige personlige RSA-nøgle kunne ikke genereres.</translation>
 <translation id="1445572445564823378">Denne udvidelse gør <ph name="PRODUCT_NAME" /> langsommere. Du bør deaktivere den for at gøre <ph name="PRODUCT_NAME" /> hurtig igen.</translation>
 <translation id="1468038450257740950">WebGL understøttes ikke.</translation>

@@ -2720,6 +2720,7 @@
 <translation id="7815407501681723534">Βρέθηκαν <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> για τον όρο αναζήτησης "<ph name="SEARCH_STRING" />"</translation>
 <translation id="7822320754433038727">Κυνήγι και σκοποβολή</translation>
 <translation id="782886543891417279">Το Wi-Fi που χρησιμοποιείτε (<ph name="WIFI_NAME" />) ενδέχεται να σας ζητήσει να επισκεφτείτε τη σελίδα σύνδεσής του.</translation>
+<translation id="7840103971441592723">Η καταγραφή οθόνης ξεκίνησε</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Κανένα}=1{1 εφαρμογή (<ph name="EXAMPLE_APP_1" />)}=2{2 εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">Θέλετε να αποχωρήσετε από τον ιστότοπο;</translation>
@@ -2898,6 +2899,7 @@
 <translation id="8282947398454257691">Πρόσβαση στο μοναδικό αναγνωριστικό της συσκευής σας</translation>
 <translation id="8284769179630993263">Διαχειριστείτε την Ασφαλή περιήγηση και άλλες επιλογές από τις ρυθμίσεις του Chrome</translation>
 <translation id="8286036467436129157">Σύνδεση</translation>
+<translation id="8286799286781881307">Οι εφαρμογές που έχουν εξουσιοδοτηθεί από τον διαχειριστή σας μπορούν να καταγράψουν όλες τις οθόνες που είναι συνδεδεμένες στη συσκευή σας. Η επεξεργασία αυτών των πληροφοριών μπορεί να γίνει τοπικά ή να μεταφορτωθούν στους διακομιστές του οργανισμού σας.</translation>
 <translation id="8288807391153049143">Εμφάνιση πιστοποιητικού</translation>
 <translation id="8289355894181816810">Επικοινωνήστε με το διαχειριστή του δικτύου σας εάν δεν είστε βέβαιοι για το τι σημαίνει αυτό.</translation>
 <translation id="8293206222192510085">Προσθήκη σελιδοδείκτη</translation>

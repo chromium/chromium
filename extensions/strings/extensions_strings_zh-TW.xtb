@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">套件無效：<ph name="ERROR_CODE" />。</translation>
 <translation id="1140871961407805696">後置鏡頭</translation>
 <translation id="1196338895211115272">匯出私密金鑰失敗。</translation>
+<translation id="132960226125594336">無法載入內容指令碼的「<ph name="RELATIVE_PATH" />」檔案，因為該檔案超過指令碼大小上限或擴充功能內容指令碼大小上限。</translation>
 <translation id="1420684932347524586">哎呀！產生隨機 RSA 私密金鑰失敗。</translation>
 <translation id="1445572445564823378">這個擴充功能使得 <ph name="PRODUCT_NAME" /> 運作變慢。建議你停用這個擴充功能，以恢復 <ph name="PRODUCT_NAME" /> 的效能。</translation>
 <translation id="1468038450257740950">系統不支援 WebGL。</translation>

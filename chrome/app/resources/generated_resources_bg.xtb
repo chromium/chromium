@@ -3529,7 +3529,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4205157409548006256">При конфигурирането на Linux възникна грешка.</translation>
 <translation id="4206144641569145248">Извънземно</translation>
 <translation id="4206323443866416204">Сигнал с отзив</translation>
-<translation id="4207522141889799150">Редактиране на разрешенията за сайта за <ph name="SITE" /></translation>
 <translation id="4207932031282227921">Изисква се разрешение. Натиснете F6, за да отговорите</translation>
 <translation id="4208390505124702064">Търсене в/ъв <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Голям</translation>
@@ -3969,7 +3968,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4613271546271159013">Разширение промени страницата, която се показва при отваряне на нов раздел.</translation>
 <translation id="4615586811063744755">няма избрана „бисквитка“</translation>
 <translation id="461661862154729886">Енергиен източник</translation>
-<translation id="461676224702246336">При кликване за този сайт</translation>
 <translation id="4617001782309103936">Твърде кратък</translation>
 <translation id="4617019240346358451">Презаредете страницата, за да използвате <ph name="EXTENSION_NAME" /></translation>
 <translation id="4617270414136722281">Опции за разширението</translation>

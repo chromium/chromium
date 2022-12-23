@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">हे पॅकेज चुकीचे आहे: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">पर्यावरण-समोरील</translation>
 <translation id="1196338895211115272">खासगी की एक्सपोर्ट करण्यात अयशस्वी.</translation>
+<translation id="132960226125594336">आशय स्क्रिप्टसाठी '<ph name="RELATIVE_PATH" />' फाइल लोड करता आली नाही, कारण त्यामुळे स्क्रिप्टचा कमाल आकार किंवा एक्स्टेंशनचा एकूण आशय स्क्रिप्टचा कमाल आकार याची मर्यादा ओलांडली जाईल.</translation>
 <translation id="1420684932347524586">अरेरे! यादृच्छिक RSA खासगी की व्युत्पन्न करण्यात अयशस्वी.</translation>
 <translation id="1445572445564823378">हे एक्स्टेंशन <ph name="PRODUCT_NAME" /> हळू चालत आहे. <ph name="PRODUCT_NAME" /> चे काम रिस्टोअर करण्‍यासाठी तुम्ही ते ‍अक्षम करणे आवश्‍यक आहे.</translation>
 <translation id="1468038450257740950">WebGL ला सपोर्ट नाही.</translation>

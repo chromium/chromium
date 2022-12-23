@@ -105,6 +105,7 @@
 <translation id="1087965115100412394">Не им дозволувај на сајтовите да се поврзуваат со MIDI-уреди</translation>
 <translation id="1088654056000736875">Chrome отстранува штетен софтвер од компјутерот…</translation>
 <translation id="1088659085457112967">Влезете во режим на читач</translation>
+<translation id="1089407731410758060">Променете ја темата</translation>
 <translation id="1090126737595388931">Нема активни апликации во заднина</translation>
 <translation id="1090541560108055381">Пред спарувањето, проверете дали кодов е ист на двата уреда</translation>
 <translation id="1091767800771861448">Притиснете ESCAPE за да прескокнете (Само неофицијални верзии).</translation>
@@ -934,6 +935,7 @@
 <translation id="18260074040409954">Зачуваните лозинки може да ги користите на кој било уред. Тие се зачувуваат во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Синхронизирајте ги вашите обележувачи, лозинки, историја и друго на прелистувачот Chrome</translation>
 <translation id="1826516787628120939">Се проверува</translation>
+<translation id="1827504459960247692">Име на точката на пристап</translation>
 <translation id="1828378091493947763">Приклучоков не е поддржан на уредов</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Отвори ги сите}=1{&amp;Отвори го обележувачот}one{&amp;Отвори ги сите ({COUNT})}other{&amp;Отвори ги сите ({COUNT})}}</translation>
 <translation id="1828901632669367785">Печати со користење системски дијалог…</translation>
@@ -1244,6 +1246,7 @@
 <translation id="2101225219012730419">Верзија:</translation>
 <translation id="2102396546234652240">Не им дозволувај на сајтовите да го користат микрофонот</translation>
 <translation id="2102495993840063010">Апликации за Android</translation>
+<translation id="2104166991923847969">Автоматско исклучување на точката на пристап</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> е сокриен</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
 <translation id="211144231511833662">Избриши ги типовите</translation>
@@ -1827,6 +1830,7 @@
 <translation id="2616366145935564096">Прочитајте ги и променете ги вашите податоци на <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Поставување „Споделување во близина“</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> не може да се преземе безбедно.</translation>
+<translation id="2620245777360407679">Уреди тековно поврзани со точка на пристап</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="262154978979441594">Вежбајте го гласовниот модел на „Помошникот на Google“</translation>
 <translation id="26224892172169984">Не дозволувај која било страница да управува со протоколи</translation>
@@ -3533,7 +3537,6 @@
 <translation id="4205157409548006256">Грешка при конфигурирањето на Linux.</translation>
 <translation id="4206144641569145248">Вонземјанин</translation>
 <translation id="4206323443866416204">Извештај за повратни информации</translation>
-<translation id="4207522141889799150">Изменете ги дозволите за сајтот за <ph name="SITE" /></translation>
 <translation id="4207932031282227921">Побарана е дозвола. Притиснете F6 за да одговорите</translation>
 <translation id="4208390505124702064">Пребарај на <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Голем</translation>
@@ -3973,7 +3976,6 @@
 <translation id="4613271546271159013">Наставка ја смени страницата што се прикажува при отворање нова картичка.</translation>
 <translation id="4615586811063744755">нема избрано колаче</translation>
 <translation id="461661862154729886">Извор на енергија</translation>
-<translation id="461676224702246336">При кликнување за сајтов</translation>
 <translation id="4617001782309103936">Премногу краток</translation>
 <translation id="4617019240346358451">Повторно вчитајте ја страницата за да се користи „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4617270414136722281">Опции на екстензијата</translation>
@@ -7151,6 +7153,7 @@
 <translation id="7614260613810441905">Прашувај кога некој сајт сака да изменува датотеки или папки на уредот (препорачано)</translation>
 <translation id="761530003705945209">Направете бекап на Google Drive. Лесно враќајте ги податоците или менувајте ги уредите во секое време. Бекапот опфаќа податоци од апликациите. Вашиот бекап се прикачува во Google и се шифрира со лозинката за вашата сметка на Google.</translation>
 <translation id="7615365294369022248">Грешка при додавањето сметка</translation>
+<translation id="7615807797520072741">Ресетирајте на класичен Chrome</translation>
 <translation id="7616214729753637086">Уредот се регистрира…</translation>
 <translation id="7617263010641145920">Вклучување на Play Store</translation>
 <translation id="7617648809369507487">Користи потивка размена на пораки</translation>
@@ -8461,6 +8464,7 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Преместете ја картичката во друг прозорец}one{Преместете ги картичките во друг прозорец}other{Преместете ги картичките во друг прозорец}}</translation>
 <translation id="8805140816472474147">Потврдете ги поставките за синхронизација за да започнете со синхронизирање.</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> може повторно да ги отвори случајно затворените картички</translation>
+<translation id="8807588541160250261">Кога не е поврзан ниеден уред</translation>
 <translation id="8807632654848257479">Стабилен</translation>
 <translation id="8808478386290700967">Веб-продавница</translation>
 <translation id="8808686172382650546">Мачка</translation>

@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">Pakotne nav derīga: <ph name="ERROR_CODE" />.</translation>
 <translation id="1140871961407805696">Vērsta uz aizmuguri</translation>
 <translation id="1196338895211115272">Neizdevās eksportēt privāto atslēgu.</translation>
+<translation id="132960226125594336">Nevarēja ielādēt failu “<ph name="RELATIVE_PATH" />” satura apstrādes skriptam, jo tādējādi tiktu pārsniegts maksimālais skripta lielums vai paplašinājuma maksimālais kopējais satura apstrādes skripta lielums.</translation>
 <translation id="1420684932347524586">Vai! Neizdevās ģenerēt nejauši izvēlētu RSA privāto atslēgu.</translation>
 <translation id="1445572445564823378">Šis paplašinājums palēnina <ph name="PRODUCT_NAME" /> darbību. Atspējojiet to, lai atjaunotu <ph name="PRODUCT_NAME" /> veiktspēju.</translation>
 <translation id="1468038450257740950">Tehnoloģija WebGL netiek atbalstīta.</translation>

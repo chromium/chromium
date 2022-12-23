@@ -1261,6 +1261,7 @@
 <translation id="212862741129535676">Продолжительность работы процессора на разных ступенях частоты в процентах</translation>
 <translation id="212876957201860463">Подготовка к настройке мобильного устройства…</translation>
 <translation id="2131077480075264">Невозможно установить <ph name="APP_NAME" />: нет разрешения от <ph name="IMPORT_NAME" /></translation>
+<translation id="2133857665503360653">Попробовать скачать файл "<ph name="FILE_NAME" />" ещё раз</translation>
 <translation id="21354425047973905">Скрыть PIN-коды</translation>
 <translation id="2135456203358955318">Закрепленная лупа</translation>
 <translation id="2135787500304447609">Возобновить</translation>
@@ -2842,11 +2843,13 @@
 <translation id="3584169441612580296">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере, а также их изменение</translation>
 <translation id="3586787825263265024">Для работы приложения <ph name="APPLICATION_NAME" /> требуется хранилище OneDrive.</translation>
 <translation id="3586806079541226322">Не удалось открыть файл</translation>
+<translation id="3587438013689771191">Подробнее: статья "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3588790464166520201">Разрешить сайтам установку обработчиков платежей</translation>
 <translation id="3589766037099229847">Небезопасный контент заблокирован</translation>
 <translation id="3590194807845837023">Разблокировать профиль и перезапустить</translation>
 <translation id="3590295622232282437">Переход в управляемый сеанс.</translation>
+<translation id="3591057288287063271">Сохранить файл "<ph name="FILE_NAME" />"</translation>
 <translation id="3592260987370335752">&amp;Подробнее</translation>
 <translation id="3593152357631900254">Включить режим Fuzzy-Pinyin</translation>
 <translation id="3593965109698325041">Ограничения имени сертификата</translation>
@@ -3514,7 +3517,6 @@
 <translation id="4205157409548006256">При настройке Linux произошла ошибка.</translation>
 <translation id="4206144641569145248">Инопланетянин</translation>
 <translation id="4206323443866416204">Отправка отзыва</translation>
-<translation id="4207522141889799150">Изменить разрешения для сайта <ph name="SITE" /></translation>
 <translation id="4207932031282227921">Требуется разрешение. Нажмите F6, чтобы ответить.</translation>
 <translation id="4208390505124702064">Искать на сайте <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Крупный</translation>
@@ -3749,6 +3751,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" />, администратор просит вас сменить пароль.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Если вы разрешите устройствам с ChromeOS отправлять автоматические отчеты в Google, это поможет нам определить, что нужно исправить и улучшить в первую очередь. Такие отчеты могут содержать данные о сбоях ChromeOS, используемых функциях и объеме памяти, который обычно задействован.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Разрешить или запретить отправку отчетов можно в любое время в настройках устройства Chrome. Администратор домена может менять этот параметр в консоли администратора.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">Удалить файл "<ph name="FILE_NAME" />"</translation>
 <translation id="4426464032773610160">Чтобы начать работу, убедитесь, что к устройству Chromebook подключен переключатель USB или Bluetooth. Вы также можете использовать клавиши на клавиатуре.</translation>
 <translation id="4426508677408162512">Показать все закладки</translation>
 <translation id="4427306783828095590">В режиме "Улучшенная защита" фишинговые атаки и вредоносное ПО блокируются ещё эффективнее.</translation>
@@ -3952,7 +3955,6 @@
 <translation id="4613271546271159013">Одно из расширений изменило страницу, которая открывается в новой вкладке.</translation>
 <translation id="4615586811063744755">файлы cookie не выбраны</translation>
 <translation id="461661862154729886">Источник электропитания</translation>
-<translation id="461676224702246336">При нажатии – на этом сайте</translation>
 <translation id="4617001782309103936">Слишком короткий</translation>
 <translation id="4617019240346358451">Чтобы использовать расширение "<ph name="EXTENSION_NAME" />", обновите страницу</translation>
 <translation id="4617270414136722281">Параметры расширений</translation>
@@ -4019,6 +4021,7 @@
 <translation id="4666472247053585787">Просматривайте уведомления с телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">Больше приложений</translation>
 <translation id="4667027203988048332">Какие данные используются</translation>
+<translation id="4672759829555593783">Открыть файл "<ph name="FILE_NAME" />"</translation>
 <translation id="46733273239502219">Офлайн-данные в установленных приложениях будут также удалены.</translation>
 <translation id="4673442866648850031">Оставлять открытыми инструменты стилуса при его извлечении</translation>
 <translation id="4675065861091108046">Ранее вы разрешили все расширения на странице <ph name="ORIGIN" /></translation>
@@ -4631,6 +4634,7 @@
 <translation id="5268373933383932086">Ваша страница, ваш выбор</translation>
 <translation id="5269977353971873915">Печать не выполнена</translation>
 <translation id="5273806377963980154">Изменить URL сайта</translation>
+<translation id="5273966423195882879">Цвет зависит от темы</translation>
 <translation id="5275084684151588738">Пользовательские словари</translation>
 <translation id="5275100789567222478">Включать, когда уровень заряда батареи составляет <ph name="PERCENT" /> % или меньше</translation>
 <translation id="5275338516105640560">Кнопка сохраненных групп вкладок</translation>
@@ -5910,6 +5914,7 @@
 <translation id="6465841119675156448">Без подключения к Интернету</translation>
 <translation id="6466258437571594570">Сайтам запрещено прерывать вашу работу запросами на показ уведомлений</translation>
 <translation id="6466988389784393586">&amp;Открыть все закладки</translation>
+<translation id="6467230443178397264">Сканировать файл "<ph name="FILE_NAME" />"</translation>
 <translation id="6467304607960172345">Оптимизация полноэкранного видео</translation>
 <translation id="6467377768028664108">Теперь на устройстве <ph name="DEVICE_TYPE" /> вы можете:</translation>
 <translation id="6468485451923838994">Шрифты</translation>
@@ -6663,6 +6668,7 @@
 <translation id="7149893636342594995">Последние 24 часа</translation>
 <translation id="7152478047064750137">Расширению не требуются особые разрешения</translation>
 <translation id="7154130902455071009">Смена стартовой страницы на <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">Распознать текст на изображении</translation>
 <translation id="7159953856712257647">Установлено по умолчанию</translation>
 <translation id="7160182524506337403">Теперь вы можете просматривать уведомления с телефона</translation>
 <translation id="7163202347044721291">Проверка кода активации…</translation>
@@ -6924,6 +6930,7 @@
 <translation id="7412226954991670867">Память графического процессора</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Настройка завершена</translation>
+<translation id="7416091793702109803">Посмотреть файл "<ph name="FILE_NAME" />"</translation>
 <translation id="7416263748877373774">Не удалось загрузить Условия использования. Проверьте подключение к интернету и повторите попытку.</translation>
 <translation id="7416362041876611053">Неизвестная сетевая ошибка.</translation>
 <translation id="741906494724992817">Приложению не требуются особые разрешения.</translation>

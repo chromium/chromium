@@ -105,6 +105,7 @@
 <translation id="1087965115100412394">Заборонити сайтам підключатися до пристроїв MIDI</translation>
 <translation id="1088654056000736875">Chrome видаляє небезпечне програмне забезпечення з вашого комп'ютера…</translation>
 <translation id="1088659085457112967">Перейти в режим читання</translation>
+<translation id="1089407731410758060">Змінити тему</translation>
 <translation id="1090126737595388931">Не запущено жодну фонову програму</translation>
 <translation id="1090541560108055381">Перед підключенням переконайтеся, що ввели один код на обох пристроях</translation>
 <translation id="1091767800771861448">Натисніть ESCAPE, щоб пропустити (лише в неофіційних версіях складання).</translation>
@@ -936,6 +937,7 @@
 <translation id="18260074040409954">Збережені паролі можна використовувати на будь-якому пристрої. Паролі для облікового запису <ph name="EMAIL" /> зберігаються в сервісі <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1826192255355608658">Синхронізуйте закладки, паролі, історію та інші дані веб-переглядача Chrome</translation>
 <translation id="1826516787628120939">Перевірка</translation>
+<translation id="1827504459960247692">Назва точки доступу</translation>
 <translation id="1828378091493947763">Цей плагін не підтримується на цьому пристрої</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Відкрити всі}=1{&amp;Відкрити закладку}one{&amp;Відкрити всі ({COUNT})}few{&amp;Відкрити всі ({COUNT})}many{&amp;Відкрити всі ({COUNT})}other{&amp;Відкрити всі ({COUNT})}}</translation>
 <translation id="1828901632669367785">Друкувати за допомогою діалогового вікна системи...</translation>
@@ -1246,6 +1248,7 @@
 <translation id="2101225219012730419">Версія:</translation>
 <translation id="2102396546234652240">Заборонити сайтам доступ до мікрофона</translation>
 <translation id="2102495993840063010">Додатки Android</translation>
+<translation id="2104166991923847969">Вимикати точку доступу автоматично</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> сховано</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Номер телефону}one{# номер телефону}few{# номери телефонів}many{# номерів телефонів}other{# номера телефону}}</translation>
 <translation id="211144231511833662">Очистити типи</translation>
@@ -1829,6 +1832,7 @@
 <translation id="2616366145935564096">Читати та змінювати свої дані на веб-сайті <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Налаштуйте функцію "Передавання поблизу"</translation>
 <translation id="2620215283731032047">Не вдається безпечно завантажити файл "<ph name="FILE_NAME" />".</translation>
+<translation id="2620245777360407679">Пристрої, які зараз підключено до точки доступу</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="262154978979441594">Навчити Google Асистента розпізнавати зразок голосу</translation>
 <translation id="26224892172169984">Заборонити всім сайтам обробляти протоколи</translation>
@@ -3533,7 +3537,6 @@
 <translation id="4205157409548006256">Не вдалося налаштувати Linux.</translation>
 <translation id="4206144641569145248">Прибулець</translation>
 <translation id="4206323443866416204">Надсилання відгуку</translation>
-<translation id="4207522141889799150">Змінити дозволи для сайту <ph name="SITE" /></translation>
 <translation id="4207932031282227921">Потрібен дозвіл. Натисніть F6, щоб відповісти</translation>
 <translation id="4208390505124702064">Пошук на сайті <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Великий</translation>
@@ -3973,7 +3976,6 @@
 <translation id="4613271546271159013">Розширення змінило сторінку, яка з’являється, коли ви відкриваєте нову вкладку.</translation>
 <translation id="4615586811063744755">файли cookie не вибрано</translation>
 <translation id="461661862154729886">Джерело живлення</translation>
-<translation id="461676224702246336">Під час натискання на цьому сайті</translation>
 <translation id="4617001782309103936">Закороткий</translation>
 <translation id="4617019240346358451">Щоб використовувати розширення "<ph name="EXTENSION_NAME" />", оновіть сторінку</translation>
 <translation id="4617270414136722281">Параметри розширень</translation>
@@ -4653,6 +4655,7 @@
 <translation id="5268373933383932086">Персоналізовані налаштування сторінки</translation>
 <translation id="5269977353971873915">Помилка друку</translation>
 <translation id="5273806377963980154">Змінити URL-адресу сайту</translation>
+<translation id="5273966423195882879">Колір на основі теми</translation>
 <translation id="5275084684151588738">Словники користувача</translation>
 <translation id="5275100789567222478">Вмикати, лише коли заряд акумулятора становить <ph name="PERCENT" />% або менше</translation>
 <translation id="5275338516105640560">Кнопка "Збережена група вкладок"</translation>
@@ -7151,6 +7154,7 @@
 <translation id="7614260613810441905">Запитувати, коли сайт хоче змінювати файли або папки на пристрої (рекомендується)</translation>
 <translation id="761530003705945209">Створювати резервні копії на Google Диску. Легко відновлюйте дані чи переносьте їх на інші пристрої. Резервні копії містять дані додатків. Ваші резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google.</translation>
 <translation id="7615365294369022248">Не вдалося додати обліковий запис</translation>
+<translation id="7615807797520072741">Перейти на класичну версію Chrome</translation>
 <translation id="7616214729753637086">Реєстрація пристрою…</translation>
 <translation id="7617263010641145920">Увімкнути Play Маркет</translation>
 <translation id="7617648809369507487">Показувати лише значок повідомлення</translation>
@@ -8461,6 +8465,7 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Перемістити вкладку в інше вікно}one{Перемістити вкладки в інше вікно}few{Перемістити вкладки в інше вікно}many{Перемістити вкладки в інше вікно}other{Перемістити вкладки в інше вікно}}</translation>
 <translation id="8805140816472474147">Щоб почати синхронізацію, підтвердьте її налаштування.</translation>
 <translation id="8806680466228877631">За допомогою комбінації клавіш <ph name="SHORTCUT" /> можна знову відкрити випадково закриті вкладки</translation>
+<translation id="8807588541160250261">Коли немає підключених пристроїв</translation>
 <translation id="8807632654848257479">Стабільний</translation>
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Кіт</translation>

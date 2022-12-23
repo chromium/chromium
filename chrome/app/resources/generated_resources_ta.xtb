@@ -1271,6 +1271,7 @@
 <translation id="212862741129535676">காலஇடைவெளி நிலையின் பணிசெயல் சதவீதம்</translation>
 <translation id="212876957201860463">மொபைல் சாதனத்தை அமைக்கத் தயாராகிறது...</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" ஆல் அனுமதிக்கப்படாததால், "<ph name="APP_NAME" />"ஐ நிறுவ முடியவில்லை</translation>
+<translation id="2133857665503360653"><ph name="FILE_NAME" /> ஐ மீண்டும் முயலும்</translation>
 <translation id="21354425047973905">பின்களை மறைக்கும்</translation>
 <translation id="2135456203358955318">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
 <translation id="2135787500304447609">&amp;மீண்டும் தொடங்கு</translation>
@@ -2855,11 +2856,13 @@
 <translation id="3584169441612580296">உங்கள் கம்ப்யூட்டரிலிருந்து படங்கள், இசை மற்றும் பிற மீடியாவைப் படிக்கலாம், மாற்றலாம்</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> ஆப்ஸைத் திறக்க OneDrive வேண்டும்.</translation>
 <translation id="3586806079541226322">இந்த ஃபைலைத் திறக்க முடியாது</translation>
+<translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> குறித்து மேலும் தெரிந்துகொள்ளலாம்</translation>
 <translation id="3587482841069643663">அனைத்தும்</translation>
 <translation id="3588790464166520201">பேமெண்ட் ஹேண்ட்லர்களை நிறுவ அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="3589766037099229847">பாதுகாப்பற்ற உள்ளடக்கம் தடுக்கப்பட்டுள்ளது</translation>
 <translation id="3590194807845837023">சுயவிவரத்தை அன்லாக் செய்து மீண்டும் இயக்கு</translation>
 <translation id="3590295622232282437">நிர்வகிக்கப்பட்ட அமர்வில் உள்நுழைகிறது.</translation>
+<translation id="3591057288287063271"><ph name="FILE_NAME" /> ஐ வைத்திருக்கும்</translation>
 <translation id="3592260987370335752">&amp;மேலும் அறிக</translation>
 <translation id="3593152357631900254">பொருத்தமற்ற-பின்யின் பயன்முறையை இயக்கு</translation>
 <translation id="3593965109698325041">சான்றிதழ் பெயர் கட்டுப்பாடுகள்</translation>
@@ -3527,7 +3530,6 @@
 <translation id="4205157409548006256">Linuxஸை உள்ளமைக்கும்போது பிழை ஏற்பட்டது.</translation>
 <translation id="4206144641569145248">வேற்று கிரகவாசி</translation>
 <translation id="4206323443866416204">கருத்து அறிக்கை</translation>
-<translation id="4207522141889799150"><ph name="SITE" /> தளத்திற்கான தள அனுமதிகளை மாற்றலாம்</translation>
 <translation id="4207932031282227921">அனுமதி கோரப்பட்டுள்ளது, பதிலளிக்க F6 விசையை அழுத்தவும்</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> இல் தேடு</translation>
 <translation id="4209092469652827314">பெரிய</translation>
@@ -3762,6 +3764,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" />, உங்கள் கடவுச்சொல்லை மாற்றும்படி நிர்வாகி கோருகிறார்.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />அறிக்கைகளைத் தானாக அனுப்ப ChromeOS சாதனங்களை அனுமதிப்பது ChromeOSஸில் எதை முதலில் சரிசெய்ய வேண்டும், மேம்படுத்த வேண்டும் என்பதை நாங்கள் தீர்மானிக்க உதவுகிறது. ChromeOS எப்போது செயலிழந்தது, என்னென்ன அம்சங்கள் பயன்படுத்தப்பட்டன, வழக்கமாக எவ்வளவு நினைவகம் பயன்படுத்தப்பட்டது என்பது போன்ற தகவல்கள் இந்த அறிக்கைகளில் இருக்கும்.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />உங்கள் Chrome சாதன அமைப்புகளுக்குச் சென்று, இந்த அறிக்கைகள் அனுப்பப்படுவதை எப்போது வேண்டுமானாலும் அனுமதிக்கலாம் தடுக்கலாம். நீங்கள் டொமைன் நிர்வாகி எனில் நிர்வாகிக் கன்சோலில் இந்த அமைப்பை மாற்றலாம்.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040"><ph name="FILE_NAME" /> ஐ நீக்கும்</translation>
 <translation id="4426464032773610160">இதைப் பயன்படுத்தத் தொடங்க, USB/புளூடூத் சுவிட்ச் உங்கள் Chromebookகுடன் இணைக்கப்பட்டிருப்பதை உறுதிப்படுத்திக்கொள்ளவும். கீபோர்டு விசைகளையும் பயன்படுத்தலாம்.</translation>
 <translation id="4426508677408162512">எல்லா புத்தகக்குறிகளும்</translation>
 <translation id="4427306783828095590">ஃபிஷிங்கையும் மால்வேரையும் தடுக்க மேம்பட்ட பாதுகாப்பு உதவுகிறது</translation>
@@ -3966,7 +3969,6 @@
 <translation id="4613271546271159013">புதிய தாவலைத் திறக்கும்போது காண்பிக்கப்படும் பக்கத்தை நீட்டிப்பு மாற்றியுள்ளது.</translation>
 <translation id="4615586811063744755">குக்கீ எதுவும் தேர்ந்தெடுக்கப்படவில்லை</translation>
 <translation id="461661862154729886">மின்சக்தி மூலம்</translation>
-<translation id="461676224702246336">இந்தத் தளத்தில் கிளிக் செய்யும்போது</translation>
 <translation id="4617001782309103936">மிகவும் சிறிதாக உள்ளது</translation>
 <translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" நீட்டிப்பைப் பயன்படுத்த, பக்கத்தை ரெஃப்ரெஷ் செய்யுங்கள்</translation>
 <translation id="4617270414136722281">நீட்டிப்பு விருப்பங்கள்</translation>
@@ -4033,6 +4035,7 @@
 <translation id="4666472247053585787">உங்கள் மொபைலுக்கு வரும் அறிவிப்புகளை <ph name="DEVICE_TYPE" /> சாதனத்தில் பாருங்கள்</translation>
 <translation id="4666911709726371538">மேலும் ஆப்ஸ்</translation>
 <translation id="4667027203988048332">எந்தத் தரவு பயன்படுத்தப்படுகிறது?</translation>
+<translation id="4672759829555593783">இப்போதே <ph name="FILE_NAME" /> ஐத் திறக்கும்</translation>
 <translation id="46733273239502219">நிறுவப்பட்ட ஆப்ஸிலுள்ள ஆஃப்லைன் தரவும் அழிக்கப்படும்</translation>
 <translation id="4673442866648850031">ஸ்டைலஸ் அகற்றப்பட்டதும், ஸ்டைலஸ் கருவிகளைத் திற</translation>
 <translation id="4675065861091108046"><ph name="ORIGIN" /> இல் உள்ள அனைத்து நீட்டிப்புகளையும் அனுமதிக்க முன்பே தேர்வுசெய்துள்ளீர்கள்</translation>
@@ -4645,6 +4648,7 @@
 <translation id="5268373933383932086">உங்கள் பக்கத்தில் உங்களுக்குப் பிடித்த தகவல்கள்</translation>
 <translation id="5269977353971873915">அச்சிடுதல் தோல்வி</translation>
 <translation id="5273806377963980154">தள URLலை மாற்றுக</translation>
+<translation id="5273966423195882879">தீம் அடிப்படையிலான வண்ணம்</translation>
 <translation id="5275084684151588738">பயனர் அகராதிகள்</translation>
 <translation id="5275100789567222478">பேட்டரி <ph name="PERCENT" />% அல்லது அதற்குக் குறைவாக இருக்கும்போது மட்டும் இயக்கு</translation>
 <translation id="5275338516105640560">சேமிக்கப்பட்ட பக்கக் குழுவிற்கான பட்டன்</translation>
@@ -5925,6 +5929,7 @@
 <translation id="6465841119675156448">இணைய இணைப்பு இல்லாமல்</translation>
 <translation id="6466258437571594570">அறிவிப்புகளை அனுப்ப வேண்டுமா என்று தளங்கள் குறுக்கீடு செய்யாது</translation>
 <translation id="6466988389784393586">புக்மார்க்ஸ் அனைத்தையும் &amp;திற</translation>
+<translation id="6467230443178397264"><ph name="FILE_NAME" /> ஐ ஸ்கேன் செய்யும்</translation>
 <translation id="6467304607960172345">முழுத்திரை வீடியோக்களை மேம்படுத்து</translation>
 <translation id="6467377768028664108">உங்கள் <ph name="DEVICE_TYPE" />:</translation>
 <translation id="6468485451923838994">எழுத்துருக்கள்</translation>
@@ -6672,6 +6677,7 @@
 <translation id="7149893636342594995">கடந்த 24 மணிநேரம்</translation>
 <translation id="7152478047064750137">இந்த நீட்டிப்பிற்குச் சிறப்பு அனுமதிகள் தேவையில்லை</translation>
 <translation id="7154130902455071009">உங்கள் தொடக்கப் பக்கத்தை இதற்கு மாற்றவும்: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">படத்தை வார்த்தைகளாக மாற்று</translation>
 <translation id="7159953856712257647">இயல்பாக நிறுவப்பட்டது</translation>
 <translation id="7160182524506337403">இப்போது, உங்கள் மொபைலில் உள்ள அறிவிப்புகளைப் பார்க்கலாம்</translation>
 <translation id="7163202347044721291">செயல்படுத்தல் குறியீட்டைச் சரிபார்க்கிறது...</translation>
@@ -6933,6 +6939,7 @@
 <translation id="7412226954991670867">GPU நினைவகம்</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">அமைவு முடிந்தது</translation>
+<translation id="7416091793702109803"><ph name="FILE_NAME" /> ஐ மதிப்பாய்வு செய்யும்</translation>
 <translation id="7416263748877373774">சேவை விதிமுறைகளை ஏற்ற முடியவில்லை. நெட்வொர்க் இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.</translation>
 <translation id="7416362041876611053">அறியப்படாத நெட்வொர்க் பிழை.</translation>
 <translation id="741906494724992817">இந்தப் பயன்பாட்டிற்கு சிறப்பு அனுமதிகள் தேவையில்லை.</translation>

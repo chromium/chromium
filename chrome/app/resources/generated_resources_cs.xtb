@@ -3518,7 +3518,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4205157409548006256">Při konfiguraci Linuxu došlo k chybě.</translation>
 <translation id="4206144641569145248">Mimozemšťan</translation>
 <translation id="4206323443866416204">Zpětná vazba</translation>
-<translation id="4207522141889799150">Upravit oprávnění webu <ph name="SITE" /></translation>
 <translation id="4207932031282227921">Odpovězte na žádost o oprávnění stisknutím klávesy F6</translation>
 <translation id="4208390505124702064">Hledat na webu <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Velké</translation>
@@ -3957,7 +3956,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4613271546271159013">Rozšíření změnilo stránku, která se zobrazí při otevření nové karty.</translation>
 <translation id="4615586811063744755">není vybrán žádný soubor cookie</translation>
 <translation id="461661862154729886">Zdroj energie</translation>
-<translation id="461676224702246336">Po kliknutí na tento web</translation>
 <translation id="4617001782309103936">Příliš krátké</translation>
 <translation id="4617019240346358451">Pokud chcete použít rozšíření <ph name="EXTENSION_NAME" />, znovu načtěte stránku</translation>
 <translation id="4617270414136722281">Možnosti rozšíření</translation>

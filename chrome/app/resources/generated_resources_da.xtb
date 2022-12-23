@@ -1272,6 +1272,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="212862741129535676">Anvendt andel for frekvenstilstand</translation>
 <translation id="212876957201860463">Forbereder konfiguration af din mobilenhed...</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" kan ikke installeres, fordi den ikke tillades af "<ph name="IMPORT_NAME" />"</translation>
+<translation id="2133857665503360653">Prøv at downloade <ph name="FILE_NAME" /> igen</translation>
 <translation id="21354425047973905">Skjul pinkoder</translation>
 <translation id="2135456203358955318">Fastgjort lupvindue</translation>
 <translation id="2135787500304447609">&amp;Genoptag</translation>
@@ -2857,11 +2858,13 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3584169441612580296">Læs og rediger billeder, musik og andre medier på din computer</translation>
 <translation id="3586787825263265024">Appen <ph name="APPLICATION_NAME" /> kræver, at OneDrive er tilgængeligt.</translation>
 <translation id="3586806079541226322">Denne fil kan ikke åbnes</translation>
+<translation id="3587438013689771191">Få flere oplysninger om: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3588790464166520201">Har tilladelse til at installere betalingshandlere</translation>
 <translation id="3589766037099229847">Usikkert indhold er blokeret</translation>
 <translation id="3590194807845837023">Lås profilen op, og genstart</translation>
 <translation id="3590295622232282437">Starter administreret session.</translation>
+<translation id="3591057288287063271">Behold <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Få flere oplysninger</translation>
 <translation id="3593152357631900254">Aktiver tilstanden Fuzzy-pinyin</translation>
 <translation id="3593965109698325041">Begrænsninger for certifikatnavn</translation>
@@ -3530,7 +3533,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4205157409548006256">Der opstod en fejl under konfigurationen af Linux.</translation>
 <translation id="4206144641569145248">Rumvæsen</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
-<translation id="4207522141889799150">Rediger websitetilladelser for <ph name="SITE" /></translation>
 <translation id="4207932031282227921">Der er anmodet om tilladelse. Tryk på F6 for at svare</translation>
 <translation id="4208390505124702064">Søg på <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stor</translation>
@@ -3765,6 +3767,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, din administrator kræver, at du ændrer din adgangskode.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Ved at give ChromeOS-enheder tilladelse til at sende automatiske rapporter gør du det nemmere for os at prioritere, hvad der skal rettes og forbedres i ChromeOS. Disse rapporter kan f.eks. indeholde oplysninger om, hvornår ChromeOS oplever nedbrud, hvilke funktioner der blev brugt, og hvor meget hukommelse der normalt bruges.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for afsendelse af disse rapporter i indstillingerne for din Chrome-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">Slet <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Kom godt i gang ved at tjekke, at din USB- eller Bluetooth-kontakt har forbindelse til din Chromebook. Du kan også bruge tasterne på et tastatur.</translation>
 <translation id="4426508677408162512">Alle bogmærker</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
@@ -3969,7 +3972,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4613271546271159013">En udvidelse har ændret, hvilken side der vises, når du åbner en ny fane.</translation>
 <translation id="4615586811063744755">der er ikke valgt nogen cookie</translation>
 <translation id="461661862154729886">Energikilde</translation>
-<translation id="461676224702246336">Ved klik for dette website</translation>
 <translation id="4617001782309103936">For kort</translation>
 <translation id="4617019240346358451">Genindlæs siden for at anvende "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4617270414136722281">Valgmuligheder for udvidelser</translation>
@@ -4036,6 +4038,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4666472247053585787">Se notifikationer fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">Flere apps</translation>
 <translation id="4667027203988048332">Hvilke data bruger vi?</translation>
+<translation id="4672759829555593783">Åbn <ph name="FILE_NAME" /> nu</translation>
 <translation id="46733273239502219">Offlinedata i installerede apps ryddes også</translation>
 <translation id="4673442866648850031">Åbn styluspenværktøjer, når styluspennen fjernes</translation>
 <translation id="4675065861091108046">Du har tidligere valgt at tillade alle udvidelser på <ph name="ORIGIN" /></translation>
@@ -4648,6 +4651,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5268373933383932086">Din side på din måde</translation>
 <translation id="5269977353971873915">Udskrift mislykkedes</translation>
 <translation id="5273806377963980154">Rediger websitets webadresse</translation>
+<translation id="5273966423195882879">Farve baseret på tema</translation>
 <translation id="5275084684151588738">Brugerordbøger</translation>
 <translation id="5275100789567222478">Aktivér kun, når batteriniveauet er på <ph name="PERCENT" /> % eller lavere</translation>
 <translation id="5275338516105640560">Knappen Fanegruppe blev gemt</translation>
@@ -5927,6 +5931,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6465841119675156448">Uden internet</translation>
 <translation id="6466258437571594570">Websites kan ikke afbryde dig for at spørge, om de må sende notifikationer</translation>
 <translation id="6466988389784393586">Åbn alle bogmærker</translation>
+<translation id="6467230443178397264">Scan <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimer videoer i fuld skærm</translation>
 <translation id="6467377768028664108">Din <ph name="DEVICE_TYPE" /> kan derefter:</translation>
 <translation id="6468485451923838994">Skrifttyper</translation>
@@ -6676,6 +6681,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7149893636342594995">De seneste 24 timer</translation>
 <translation id="7152478047064750137">Denne udvidelse kræver ikke nogen særlige tilladelser</translation>
 <translation id="7154130902455071009">Skifte din startside til: <ph name="START_PAGE" /></translation>
+<translation id="7156231244155528270">Konverter billede til tekst</translation>
 <translation id="7159953856712257647">Installeret som standard</translation>
 <translation id="7160182524506337403">Du kan nu se din telefons notifikationer</translation>
 <translation id="7163202347044721291">Bekræfter aktiveringskode...</translation>
@@ -6937,6 +6943,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7412226954991670867">GPU-hukommelse</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Konfigurationen er fuldført</translation>
+<translation id="7416091793702109803">Se <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Servicevilkårene kan ikke indlæses. Tjek din netværksforbindelse, og prøv igen.</translation>
 <translation id="7416362041876611053">Ukendt netværksfejl.</translation>
 <translation id="741906494724992817">Denne app kræver ingen særlige tilladelser.</translation>

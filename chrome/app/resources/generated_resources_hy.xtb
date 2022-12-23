@@ -1261,6 +1261,7 @@
 <translation id="212862741129535676">Համակարգչի աշխատանքի տևողությունը հաճախականության տարբեր աստիճաններում</translation>
 <translation id="212876957201860463">Սարքը շուտով կկարգավորվի...</translation>
 <translation id="2131077480075264">Անհնար է տեղադրել «<ph name="APP_NAME" />» հավելվածը, քանի որ այն արգելված է «<ph name="IMPORT_NAME" />»-ի կողմից</translation>
+<translation id="2133857665503360653">Նորից փորձել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="21354425047973905">Թաքցնել PIN կոդերը</translation>
 <translation id="2135456203358955318">Ամրացված խոշորացույց</translation>
 <translation id="2135787500304447609">&amp;Շարունակել</translation>
@@ -2842,11 +2843,13 @@
 <translation id="3584169441612580296">Կարդալ և փոխել լուսանկարները, երաժշտությունը և ձեր համակարգչում պահվող այլ մեդիա ֆայլերը</translation>
 <translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> հավելվածի աշխատանքի համար պահանջվում է OneDrive պահոց։</translation>
 <translation id="3586806079541226322">Չհաջողվեց բացել ֆայլը</translation>
+<translation id="3587438013689771191">Իմանալ ավելին «<ph name="SUBPAGE_TITLE" />» ենթաէջի մասին</translation>
 <translation id="3587482841069643663">Բոլորը</translation>
 <translation id="3588790464166520201">Թույլատրվում է տեղադրել վճարումների մշակիչներ</translation>
 <translation id="3589766037099229847">Վտանգավոր բովանդակությունն արգելափակված է</translation>
 <translation id="3590194807845837023">Ապակողպել պրոֆիլը և վերագործարկել</translation>
 <translation id="3590295622232282437">Մուտք կառավարվող աշխատաշրջան</translation>
+<translation id="3591057288287063271">Պահպանել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="3592260987370335752">&amp;Իմանալ ավելին</translation>
 <translation id="3593152357631900254">Միացնել Fuzzy-Pinyin ռեժիմը</translation>
 <translation id="3593965109698325041">Վկայագրի անվան սահմանափակումներ</translation>
@@ -3514,7 +3517,6 @@
 <translation id="4205157409548006256">Չհաջողվեց կարգավորել Լինուքսը։</translation>
 <translation id="4206144641569145248">Այլմոլորակային</translation>
 <translation id="4206323443866416204">Կարծիք հայտնել</translation>
-<translation id="4207522141889799150">Փոփոխել <ph name="SITE" /> կայքի թույլտվությունները</translation>
 <translation id="4207932031282227921">Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք F6 ստեղնը։</translation>
 <translation id="4208390505124702064">Որոնել <ph name="SITE_NAME" />-ում</translation>
 <translation id="4209092469652827314">Մեծ</translation>
@@ -3749,6 +3751,7 @@
 <translation id="442397852638519243"><ph name="USER_NAME" />, ձեր ադմինիստրատորը պահանջում է, որ փոխեք ձեր գաղտնաբառը:</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Դուք կարող եք թույլ տալ, որ ChromeOS սարքերն ավտոմատ կերպով հաշվետվություններ ուղարկեն Google-ին։ Դա մեզ կօգնի որոշել, թե ինչը առաջնահերթ բարելավման կարիք ունի։ Այդպիսի հաշվետվությունները կարող են պարունակել տվյալներ ChromeOS-ի խափանումների, օգտագործվող գործառույթների և սովորաբար օգտագործվող հիշողության ծավալի մասին։<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Դուք ցանկացած ժամանակ կարող եք թույլատրել կամ արգելել հաշվետվությունների ուղարկումը ձեր Chrome սարքի կարգավորումներում։ Եթե տիրույթի ադմինիստրատոր եք, ապա կարող եք փոխել այս կարգավորումը ադմինիստրատորի վահանակում։<ph name="END_PARAGRAPH2" /></translation>
+<translation id="4426268963847471040">Ջնջել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="4426464032773610160">Սկսելու համար համոզվեք, որ USB կամ Bluetooth փոխանջատիչը միացված է ձեր Chromebook սարքին։ Դուք կարող եք նաև օգտագործել ստեղնաշարի ստեղները։</translation>
 <translation id="4426508677408162512">Բոլոր էջանիշները</translation>
 <translation id="4427306783828095590">Լրացուցիչ պաշտպանությունն օգնում է խուսափել ֆիշինգից և արգելափակել վնասաբեր ծրագրերը</translation>
@@ -3952,7 +3955,6 @@
 <translation id="4613271546271159013">Նոր ներդիր բացելիս ցուցադրվող էջը փոխվել է ընդլայնման կողմից:</translation>
 <translation id="4615586811063744755">քուքիներ ընտրված չեն</translation>
 <translation id="461661862154729886">Էներգիայի աղբյուր</translation>
-<translation id="461676224702246336">Այս կայքի վրա սեղմելուց հետո</translation>
 <translation id="4617001782309103936">Չափազանց կարճ է</translation>
 <translation id="4617019240346358451">Վերաբեռնեք էջը՝ «<ph name="EXTENSION_NAME" />» ընդլայնումն օգտագործելու համար</translation>
 <translation id="4617270414136722281">Ընդլայնումների ընտրանքներ</translation>
@@ -4019,6 +4021,7 @@
 <translation id="4666472247053585787">Դիտեք ձեր հեռախոսի ծանուցումները <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="4666911709726371538">Այլ հավելվածներ</translation>
 <translation id="4667027203988048332">Ինչ տվյալներ են օգտագործվում</translation>
+<translation id="4672759829555593783">Բացել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="46733273239502219">Տեղադրված հավելվածներից պահված տվյալները նույնպես կջնջվեն</translation>
 <translation id="4673442866648850031">Ստիլուսը հեռացնելու դեպքում բացել ստիլուսի գործիքները</translation>
 <translation id="4675065861091108046">Դուք նախկինում թույլատրել եք բոլոր ընդլայնումները <ph name="ORIGIN" /> էջում</translation>
@@ -4632,6 +4635,7 @@
 <translation id="5268373933383932086">Անհատականացրեք ձեր էջը</translation>
 <translation id="5269977353971873915">Չհաջողվեց տպել</translation>
 <translation id="5273806377963980154">Փոփոխել կայքի URL-ը</translation>
+<translation id="5273966423195882879">Գույնի վրա հիմնված թեմա</translation>
 <translation id="5275084684151588738">Օգտատիրոջ բառարաններ</translation>
 <translation id="5275100789567222478">Միացնել, միայն երբ մարտկոցի լիցքը <ph name="PERCENT" />% կամ ավելի քիչ է մնացել</translation>
 <translation id="5275338516105640560">«Պահված ներդիրների խումբ» կոճակ</translation>
@@ -5910,6 +5914,7 @@
 <translation id="6465841119675156448">Առանց ինտերնետի</translation>
 <translation id="6466258437571594570">Կայքերին արգելված է ընդհատել ձեզ, երբ դրանք խնդրեն ծանուցումներ ուղարկել</translation>
 <translation id="6466988389784393586">&amp;Բացել բոլոր էջանիշները</translation>
+<translation id="6467230443178397264">Սկանավորել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="6467304607960172345">Լիաէկրան տեսանյութերի օպտիմալացում</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> սարքն այժմ կարող է՝</translation>
 <translation id="6468485451923838994">Տառատեսակներ</translation>
@@ -6659,6 +6664,7 @@
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
 <translation id="7152478047064750137">Այս ընդլայնումը հատուկ թույլտվություն չի պահանջում</translation>
 <translation id="7154130902455071009">Դարձնել <ph name="START_PAGE" />-ը սկզբնական էջը</translation>
+<translation id="7156231244155528270">Պատկերը վերածել տեքստի</translation>
 <translation id="7159953856712257647">Տեղադրված է ըստ կանխադրման</translation>
 <translation id="7160182524506337403">Այժմ դուք կարող եք դիտել ձեր հեռախոսի ծանուցումները</translation>
 <translation id="7163202347044721291">Ակտիվացման կոդը ստուգվում է…</translation>
@@ -6920,6 +6926,7 @@
 <translation id="7412226954991670867">GPU հիշողություն</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Կարգավորումն ավարտվեց</translation>
+<translation id="7416091793702109803">Կարծիք հայտնել <ph name="FILE_NAME" /> ֆայլի մասին</translation>
 <translation id="7416263748877373774">Չհաջողվեց բեռնել օգտագործման պայմանները։ Ստուգեք կապը և նորից փորձեք։</translation>
 <translation id="7416362041876611053">Ցանցի անհայտ սխալ:</translation>
 <translation id="741906494724992817">Այս հավելվածի համար հատուկ թույլտվություններ պետք չեն:</translation>

@@ -3517,7 +3517,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4205157409548006256">Une erreur s'est produite lors de la configuration de Linux.</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Rapport de commentaire</translation>
-<translation id="4207522141889799150">Modifier les autorisations du site pour <ph name="SITE" /></translation>
 <translation id="4207932031282227921">Autorisation demandée, appuyez sur F6 pour répondre</translation>
 <translation id="4208390505124702064">Rechercher sur <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grand</translation>
@@ -3956,7 +3955,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4613271546271159013">Une extension a changé la page qui s'affiche lorsque vous ouvrez un nouvel onglet.</translation>
 <translation id="4615586811063744755">aucun témoin sélectionné</translation>
 <translation id="461661862154729886">Source d'alimentation</translation>
-<translation id="461676224702246336">Au clic pour ce site</translation>
 <translation id="4617001782309103936">Trop court</translation>
 <translation id="4617019240346358451">Actualisez la page pour utiliser « <ph name="EXTENSION_NAME" /> »</translation>
 <translation id="4617270414136722281">Options de l'extension</translation>

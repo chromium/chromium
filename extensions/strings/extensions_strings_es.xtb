@@ -4,6 +4,7 @@
 <translation id="1135328998467923690">El paquete no es válido: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Trasera</translation>
 <translation id="1196338895211115272">Se ha producido un error al exportar la clave privada.</translation>
+<translation id="132960226125594336">No se ha podido cargar el archivo <ph name="RELATIVE_PATH" /> de la secuencia de comandos de contenido porque superaría el tamaño máximo de la secuencia de comandos o el tamaño total máximo de la secuencia de comandos de contenido de la extensión.</translation>
 <translation id="1420684932347524586">¡Vaya! Se ha producido un error al generar una clave privada RSA aleatoria.</translation>
 <translation id="1445572445564823378">Esta extensión está ralentizando <ph name="PRODUCT_NAME" />. Deberías inhabilitarla para restaurar el rendimiento de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">No se admite WebGL.</translation>

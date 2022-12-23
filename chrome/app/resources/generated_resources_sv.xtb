@@ -3530,7 +3530,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4205157409548006256">Ett fel uppstod när Linux skulle konfigureras.</translation>
 <translation id="4206144641569145248">Utomjording</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
-<translation id="4207522141889799150">Redigera behörigheter för webbplatsen <ph name="SITE" /></translation>
 <translation id="4207932031282227921">Behörighet har begärts, tryck på F6 för att svara</translation>
 <translation id="4208390505124702064">Sök på <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stor</translation>
@@ -3970,7 +3969,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4613271546271159013">Vilken sida som visas när du öppnar en ny flik har ändrats av ett tillägg.</translation>
 <translation id="4615586811063744755">inga cookies har valts</translation>
 <translation id="461661862154729886">Energikälla</translation>
-<translation id="461676224702246336">Vid klick, för den här webbplatsen</translation>
 <translation id="4617001782309103936">För kort</translation>
 <translation id="4617019240346358451">Läs in sidan igen för att använda <ph name="EXTENSION_NAME" /></translation>
 <translation id="4617270414136722281">Tilläggsalternativ</translation>
@@ -4650,6 +4648,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5268373933383932086">Din sida, som du vill ha den</translation>
 <translation id="5269977353971873915">Det gick inte att skriva ut dokumentet</translation>
 <translation id="5273806377963980154">Redigera webbadress</translation>
+<translation id="5273966423195882879">Färg utifrån tema</translation>
 <translation id="5275084684151588738">Egna ordlistor</translation>
 <translation id="5275100789567222478">Aktivera endast när batterinivån är på <ph name="PERCENT" /> % eller lägre</translation>
 <translation id="5275338516105640560">Knapp för sparad flikgrupp</translation>

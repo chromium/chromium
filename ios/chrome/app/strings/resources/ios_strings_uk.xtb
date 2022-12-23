@@ -510,6 +510,7 @@
 <translation id="481968316161811770">Файли cookie й дані із сайтів</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} і ще 1}one{{domain} і ще {count}}few{{domain} і ще {count}}many{{domain} і ще {count}}other{{domain} і ще {count}}}</translation>
 <translation id="4826218269716039351">Блокувати файли cookie третіх сторін</translation>
+<translation id="4826588772550366629">камеру та мікрофон</translation>
 <translation id="4826726074642088322">Поділитися виділеним текстом</translation>
 <translation id="48274138579728272">Позначити як прочитане</translation>
 <translation id="4833686396768033263">Останні вкладки недоступні</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="519530786644929958">Помилка завантаження.</translation>
 <translation id="5197255632782567636">Інтернет</translation>
+<translation id="5211488077761630279">Дозволити сайту <ph name="SITE_NAME" /> використовувати <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Допоможіть підвищити безпеку в Інтернеті для кожного</translation>
 <translation id="5228579091201413441">Увімкнути синхронізацію</translation>
 <translation id="5232485538978018676">Увійти в керований обліковий запис</translation>
@@ -1099,6 +1101,7 @@
 <translation id="9157836665414082580">Заблокувати діалогові вікна</translation>
 <translation id="9177438225260810839">Шукати у відкритих вкладках</translation>
 <translation id="9188680907066685419">Вийти з керованого облікового запису</translation>
+<translation id="9193147658040604536">Щоб закріпити вкладку, перетягніть її сюди</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> дн. тому</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Шукати вкладки…</translation>

@@ -510,6 +510,7 @@
 <translation id="481968316161811770">ខុកឃី ទិន្នន័យគេហទំព័រ</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} និង 1 ទៀត}other{{domain} និង {count} ទៀត}}</translation>
 <translation id="4826218269716039351">ទប់ស្កាត់ខូគីភាគីទីបី</translation>
+<translation id="4826588772550366629">កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="4826726074642088322">ចែករំលែករំលេច</translation>
 <translation id="48274138579728272">សម្គាល់​ថា​បានអាន​</translation>
 <translation id="4833686396768033263">មិនអាចប្រើផ្ទាំងថ្មីៗបានទេ</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">របាចំណាំ</translation>
 <translation id="519530786644929958">ការទាញយក​មិនបានសម្រេចទេ ហើយមិនអាច​ព្យាយាមម្ដងទៀត​បានឡើយ។</translation>
 <translation id="5197255632782567636">អ៊ីនធឺណិត</translation>
+<translation id="5211488077761630279">អនុញ្ញាត​ឱ្យ "<ph name="SITE_NAME" />" ប្រើប្រាស់<ph name="PERMISSION" />របស់​អ្នកឬ?</translation>
 <translation id="5219295696240154694">ជួយ​កែលម្អ​សុវត្ថិភាព​នៅលើ​បណ្ដាញ​សម្រាប់​អ្នកគ្រប់គ្នា</translation>
 <translation id="5228579091201413441">បើកដំណើរការធ្វើសមកាលកម្ម</translation>
 <translation id="5232485538978018676">ចូលដោយប្រើ​គណនីដែលស្ថិតក្រោមការគ្រប់គ្រង</translation>

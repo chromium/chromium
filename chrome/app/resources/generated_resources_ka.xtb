@@ -105,6 +105,7 @@
 <translation id="1087965115100412394">საიტებისთვის MIDI მოწყობილობებთან დაკავშირების აკრძალვა</translation>
 <translation id="1088654056000736875">Chrome-ის მიერ მიმდინარეობს საზიანო პროგრამული უზრუნველყოფის ამოშლა თქვენი კომპიუტერიდან...</translation>
 <translation id="1088659085457112967">წამკითხველის რეჟიმში შესვლა</translation>
+<translation id="1089407731410758060">თემის შეცვლა</translation>
 <translation id="1090126737595388931">არცერთი ფონური აპი გაშვებული არ არის</translation>
 <translation id="1090541560108055381">დაწყვილებამდე ორივე მოწყობილობას ერთი და იგივე კოდი უნდა ჰქონდეს</translation>
 <translation id="1091767800771861448">გამოსატოვებლად დააჭირეთ ESCAPE-ს (მხოლოდ არაოფიციალური აწყობა).</translation>
@@ -922,6 +923,7 @@
 <translation id="18260074040409954">შენახული პაროლების გამოყენება შეგიძლიათ ნებისმიერ მოწყობილობაზე. ისინი ინახება სექციაში „<ph name="GOOGLE_PASSWORD_MANAGER" />“ <ph name="EMAIL" />-ისთვის.</translation>
 <translation id="1826192255355608658">შეასრულეთ თქვენი Chrome ბრაუზერის სანიშნეების, პაროლების, ისტორიისა და სხვა კონტენტის სინქრონიზაცია</translation>
 <translation id="1826516787628120939">შემოწმება</translation>
+<translation id="1827504459960247692">უსადენო ქსელის სახელი</translation>
 <translation id="1828378091493947763">ეს დანამატი ამ მოწყობილობაზე მხარდაუჭერელია</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{ყველას &amp;გახსნა}=1{სანიშნეს &amp;გახსნა}other{{COUNT}-ვეს &amp;გახსნა}}</translation>
 <translation id="1828901632669367785">ბეჭდვა სისტემის დიალოგის გამოყენებით…</translation>
@@ -1231,6 +1233,7 @@
 <translation id="2101225219012730419">ვერსია:</translation>
 <translation id="2102396546234652240">საიტებისთვის თქვენი მიკროფონის გამოყენების აკრძალვა</translation>
 <translation id="2102495993840063010">Android-ის აპები</translation>
+<translation id="2104166991923847969">უსადენო ქსელის ავტოგამორთვა</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> დამალულია</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ტელეფონის ნომერი}other{# ტელეფონის ნომერი}}</translation>
 <translation id="211144231511833662">ტიპების გასუფთავება</translation>
@@ -1811,6 +1814,7 @@
 <translation id="2616366145935564096">წაიკითხეთ და შეცვალეთ თქვენი მონაცემები <ph name="WEBSITE_1" />-ზე</translation>
 <translation id="2618797463720777311">მახლობლად გაზიარების დაყენეა</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" />-ის უსაფრთხოდ ჩამოტვირთვა ვერ მოხერხდება.</translation>
+<translation id="2620245777360407679">უსადენო ქსელთან ამჟამად დაკავშირებული მოწყობილობები</translation>
 <translation id="2620436844016719705">სისტემა</translation>
 <translation id="262154978979441594">Google ასისენტის ხმის მოდელის მომზადება</translation>
 <translation id="26224892172169984">საიტების მიერ პროტოკოლების დამუშავების აკრძალვა</translation>
@@ -3517,7 +3521,6 @@
 <translation id="4205157409548006256">Linux-ის კონფიგურაციისას შეცდომა მოხდა.</translation>
 <translation id="4206144641569145248">უცხოპლანეტელი</translation>
 <translation id="4206323443866416204">გამოხმაურების ანგარიში</translation>
-<translation id="4207522141889799150">საიტის ნებართვების რედაქტირება <ph name="SITE" />-ისთვის.</translation>
 <translation id="4207932031282227921">მოთხოვნილია ნებართვა, გამოხმაურებისთვის დააჭირეთ კლავიშს F6</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" />-ში ძიება</translation>
 <translation id="4209092469652827314">დიდი</translation>
@@ -3956,7 +3959,6 @@
 <translation id="4613271546271159013">გაფართოებამ შეცვალა გვერდი, რომელიც გამოჩნდება ახალი ჩანართის გახსნისას.</translation>
 <translation id="4615586811063744755">ქუქი-ჩანაწერი არჩეული არ არის</translation>
 <translation id="461661862154729886">ელკვების წყარო</translation>
-<translation id="461676224702246336">ამ საიტისთვის დაწკაპუნებისას</translation>
 <translation id="4617001782309103936">ძალიან მოკლეა</translation>
 <translation id="4617019240346358451">„<ph name="EXTENSION_NAME" />“ რომ გამოიყენოთ, გადატვირთეთ გვერდი</translation>
 <translation id="4617270414136722281">გაფართოებების ვარიანტები</translation>
@@ -7132,6 +7134,7 @@
 <translation id="7614260613810441905">შეკითხვის მიღება, როცა საიტს სურს თქვენს მოწყობილობაზე არსებული ფაილების ან საქაღალდეების რედაქტირება (რეკომენდებული)</translation>
 <translation id="761530003705945209">სარეზერვო კოპირება Google Drive-ში. მარტივად აღადგინეთ თქვენი მონაცემები, ან შეცვალეთ მოწყობილობები ნებისმიერ დროს. თქვენი სარეზერვო ასლი მოიცავს აპების მონაცემებს. სარეზერვო ასლები აიტვირთება Google-ში და დაიშიფრება თქვენი Google ანგარიშის პაროლით.</translation>
 <translation id="7615365294369022248">ანგარიშის დამატება ვერ მოხერხდა</translation>
+<translation id="7615807797520072741">კლასიკური Chrome-ზე გადაყენება</translation>
 <translation id="7616214729753637086">მიმდინარეობს მოწყობილობის რეგისტრაცია...</translation>
 <translation id="7617263010641145920">Play Store-ის ჩართვა</translation>
 <translation id="7617648809369507487">უფრო ჩუმი შეტყობინებების გამოყენება</translation>
@@ -8438,6 +8441,7 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{ჩანართის გადატანა სხვა ფანჯარაში}other{ჩანართების გადატანა სხვა ფანჯარაში}}</translation>
 <translation id="8805140816472474147">სინქრონიზაციის დასაწყებად დაადასტურეთ სინქრონიზაციის პარამეტრები.</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" />-ით შესაძლებელია შემთხვევით დახურული ჩანართების გახსნა</translation>
+<translation id="8807588541160250261">როცა არცერთი მოწყობილობა არ არის დაკავშირებული</translation>
 <translation id="8807632654848257479">სტაბილური</translation>
 <translation id="8808478386290700967">ვებ მაღაზია</translation>
 <translation id="8808686172382650546">კატა</translation>

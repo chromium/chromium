@@ -1342,7 +1342,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8221656072740924283">Continue</translation>
 <translation id="8223642481677794647">Feed card menu</translation>
 <translation id="8250920743982581267">Documents</translation>
-<translation id="825412236959742607">This page uses too much memory, so Chrome removed some content.</translation>
 <translation id="8255617931166444521">Sites can only use your cookies to see your browsing activity only on their own site</translation>
 <translation id="8259179246279078674">Because the preloaded pages are encrypted, Google will not learn anything about the preloaded page content. Google servers will learn which sites are privately preloaded. This information is only used to preload the pages and is not linked to other information from your Google Account.</translation>
 <translation id="8260126382462817229">Try signing in again</translation>
@@ -1512,7 +1511,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9108808586816295166">Secure DNS may not be available all the time</translation>
 <translation id="9128984223251192329">Privacy Sandbox prompt opened at half height</translation>
 <translation id="9133397713400217035">Explore offline</translation>
-<translation id="9137013805542155359">Show original</translation>
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9158770349521403363">Share content only</translation>
 <translation id="9159716826369098114">Restore tab group of <ph name="TAB_COUNT" /> tabs as a new background tab group.</translation>

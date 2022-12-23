@@ -3530,7 +3530,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4205157409548006256">Hiba történt a Linux konfigurálásakor.</translation>
 <translation id="4206144641569145248">Idegen</translation>
 <translation id="4206323443866416204">Visszajelzés</translation>
-<translation id="4207522141889799150">A webhely (<ph name="SITE" />) engedélyeinek módosítása</translation>
 <translation id="4207932031282227921">Engedély kérelmezve, a válaszhoz nyomja le az F6 billentyűt</translation>
 <translation id="4208390505124702064">Keresés itt: <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Nagy</translation>
@@ -3970,7 +3969,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4613271546271159013">Egy bővítmény módosította az új lap megnyitásakor megjelenített oldalt.</translation>
 <translation id="4615586811063744755">nincs kiválasztva cookie</translation>
 <translation id="461661862154729886">Energiaforrás</translation>
-<translation id="461676224702246336">Az ezen a webhelyen való kattintásra</translation>
 <translation id="4617001782309103936">Túl rövid</translation>
 <translation id="4617019240346358451">Töltse be újra az oldalt a(z) „<ph name="EXTENSION_NAME" />” használatához</translation>
 <translation id="4617270414136722281">Bővítménybeállítások</translation>
