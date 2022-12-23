@@ -10,13 +10,14 @@ import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_act
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {AppInfo, PageCallbackRouter} from './app_home.mojom-webui.js';
+import {AppInfo, PageCallbackRouter, RunOnOsLoginMode} from './app_home.mojom-webui.js';
 import {getTemplate} from './app_list.html.js';
 import {BrowserProxy} from './browser_proxy.js';
 
 export interface ActionMenuModel {
-  data: AppInfo;
+  appInfo: AppInfo;
   event: MouseEvent;
+  runOnOsLoginModeChecked: boolean;
 }
 
 type OpenMenuEvent = CustomEvent<ActionMenuModel>;
@@ -44,6 +45,8 @@ export class AppListElement extends PolymerElement {
           return [];
         },
       },
+
+      actionMenuModel_: Object,
     };
   }
 
@@ -86,7 +89,12 @@ export class AppListElement extends PolymerElement {
   }
 
   private addApp_(data: AppInfo) {
-    this.push('apps_', data);
+    const index = this.apps_.findIndex(app => app.id === data.id);
+    if (index !== -1) {
+      this.set(`apps_.${index}`, data);
+    } else {
+      this.push('apps_', data);
+    }
   }
 
   private removeApp_(data: AppInfo) {
@@ -107,8 +115,19 @@ export class AppListElement extends PolymerElement {
     this.$.menu.close();
   }
 
+  // Changing the app's launch mode.
   private onLaunchOnStartupItemClick_() {
-    this.$.menu.close();
+    if (this.selectedActionMenuModel_) {
+      const appInfo = this.selectedActionMenuModel_.appInfo;
+      if (this.selectedActionMenuModel_.runOnOsLoginModeChecked) {
+        BrowserProxy.getInstance().handler.setRunOnOsLoginMode(
+            appInfo.id, RunOnOsLoginMode.kNotRun);
+      } else {
+        BrowserProxy.getInstance().handler.setRunOnOsLoginMode(
+            appInfo.id, RunOnOsLoginMode.kWindowed);
+      }
+    }
+    this.closeMenu_();
   }
 
   private onCreateShortcutItemClick_() {
@@ -116,9 +135,9 @@ export class AppListElement extends PolymerElement {
   }
 
   private onUninstallItemClick_() {
-    if (this.selectedActionMenuModel_?.data.id) {
+    if (this.selectedActionMenuModel_?.appInfo.id) {
       BrowserProxy.getInstance().handler.uninstallApp(
-          this.selectedActionMenuModel_?.data.id);
+          this.selectedActionMenuModel_?.appInfo.id);
     }
     this.closeMenu_();
   }

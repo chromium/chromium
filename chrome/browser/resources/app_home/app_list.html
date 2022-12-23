@@ -47,11 +47,17 @@
     <cr-checkbox>Enable opening app in window</cr-checkbox>
   </div>
   <div tabindex="0" class="dropdown-item"
-      on-click="onLaunchOnStartupItemClick_">
+      on-click="onLaunchOnStartupItemClick_"
+      hidden="{{!actionMenuModel_.data.mayShowRunOnOsLoginMode}}"
+      disabled="{{!actionMenuModel_.data.mayToggleRunOnOsLoginMode}}">
     <div class="dropdown-item-label">
       Launch on startup
     </div>
-    <cr-checkbox>Enable launching app on startup</cr-checkbox>
+    <cr-checkbox 
+      checked="{{actionMenuModel_.runOnOsLoginModeChecked}}"
+      on-change="onLaunchOnStartupItemClick_">
+        Enable launching app on startup
+      </cr-checkbox>
   </div>
   <button class="dropdown-item" on-click="onCreateShortcutItemClick_">
     Create a shortcut
