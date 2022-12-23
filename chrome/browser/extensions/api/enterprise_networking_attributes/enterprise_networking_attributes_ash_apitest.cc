@@ -111,12 +111,13 @@ class EnterpriseNetworkingAttributesTest
     shill_ipconfig_client->AddIPConfig(kWifiIPConfigV6Path,
                                        ipconfig_v6_dictionary);
 
-    base::ListValue ip_configs;
+    base::Value::List ip_configs;
     ip_configs.Append(kWifiIPConfigV4Path);
     ip_configs.Append(kWifiIPConfigV6Path);
-    shill_device_client->SetDeviceProperty(
-        kWifiDevicePath, shill::kIPConfigsProperty, ip_configs,
-        /*notify_changed=*/false);
+    shill_device_client->SetDeviceProperty(kWifiDevicePath,
+                                           shill::kIPConfigsProperty,
+                                           base::Value(std::move(ip_configs)),
+                                           /*notify_changed=*/false);
 
     shill_service_client->AddService(kWifiServicePath, "wifi_guid",
                                      "wifi_network_name", shill::kTypeWifi,

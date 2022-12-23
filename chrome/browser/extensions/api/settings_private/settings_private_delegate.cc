@@ -38,17 +38,17 @@ base::Value SettingsPrivateDelegate::GetPref(const std::string& name) {
   return base::Value(pref->ToValue());
 }
 
-std::unique_ptr<base::Value> SettingsPrivateDelegate::GetAllPrefs() {
-  std::unique_ptr<base::ListValue> prefs(new base::ListValue());
+base::Value::List SettingsPrivateDelegate::GetAllPrefs() {
+  base::Value::List prefs;
 
   const TypedPrefMap& keys = prefs_util_->GetAllowlistedKeys();
   for (const auto& it : keys) {
     base::Value pref = GetPref(it.first);
     if (!pref.is_none())
-      prefs->Append(std::move(pref));
+      prefs.Append(std::move(pref));
   }
 
-  return std::move(prefs);
+  return prefs;
 }
 
 settings_private::SetPrefResult SettingsPrivateDelegate::SetPref(

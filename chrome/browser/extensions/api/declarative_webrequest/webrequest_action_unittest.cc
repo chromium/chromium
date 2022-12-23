@@ -35,7 +35,6 @@ namespace helpers = extension_web_request_api_helpers;
 namespace keys = extensions::declarative_webrequest_constants;
 
 using base::DictionaryValue;
-using base::ListValue;
 using extension_test_util::LoadManifestUnchecked;
 using helpers::EventResponseDeltas;
 using testing::HasSubstr;
@@ -172,9 +171,8 @@ TEST(WebRequestActionTest, CreateAction) {
 
   // Test wrong data type passed.
   error.clear();
-  base::ListValue empty_list;
-  result = WebRequestAction::Create(nullptr, nullptr, empty_list, &error,
-                                    &bad_message);
+  result = WebRequestAction::Create(
+      nullptr, nullptr, base::Value(base::Value::List()), &error, &bad_message);
   EXPECT_TRUE(bad_message);
   EXPECT_FALSE(result.get());
 

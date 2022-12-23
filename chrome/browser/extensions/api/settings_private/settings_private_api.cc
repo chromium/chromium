@@ -66,8 +66,7 @@ ExtensionFunction::ResponseAction SettingsPrivateGetAllPrefsFunction::Run() {
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
   DCHECK(delegate);
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(delegate->GetAllPrefs())));
+  return RespondNow(OneArgument(base::Value(delegate->GetAllPrefs())));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

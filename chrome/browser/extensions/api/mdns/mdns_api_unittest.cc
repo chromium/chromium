@@ -128,18 +128,14 @@ class EventServiceListSizeMatcher
                 << e.event_args.size();
       return false;
     }
-    const base::ListValue* services = nullptr;
-    {
-      const base::Value& out = e.event_args[0];
-      services = static_cast<const base::ListValue*>(&out);
-    }
+    const base::Value::List* services = e.event_args[0].GetIfList();
     if (!services) {
-      *listener << "event's service list argument is not a ListValue";
+      *listener << "event's service list argument is not a Value::List";
       return false;
     }
-    *listener << "number of services is " << services->GetList().size();
+    *listener << "number of services is " << services->size();
     return static_cast<testing::Matcher<size_t>>(testing::Eq(expected_size_))
-        .MatchAndExplain(services->GetList().size(), listener);
+        .MatchAndExplain(services->size(), listener);
   }
 
   virtual void DescribeTo(::std::ostream* os) const {

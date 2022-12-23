@@ -46,7 +46,7 @@ class SettingsPrivateDelegate : public KeyedService {
   base::Value GetPref(const std::string& name);
 
   // Gets the values of all allowlisted prefs.
-  virtual std::unique_ptr<base::Value> GetAllPrefs();
+  virtual base::Value::List GetAllPrefs();
 
   // Gets the value.
   virtual std::unique_ptr<base::Value> GetDefaultZoom();

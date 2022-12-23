@@ -116,7 +116,7 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
   }
 
  protected:
-  void AppendTabIdToRequestInfo(base::ListValue* params, int tab_id) {
+  void AppendTabIdToRequestInfo(base::Value::List* params, int tab_id) {
     base::Value::Dict request_info;
     request_info.Set("tabId", tab_id);
     params->Append(base::Value(std::move(request_info)));
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetAssociatedSink) {
         profile()->GetMediaDeviceIDSalt(), url::Origin::Create(origin),
         raw_device_id);
 
-    base::ListValue parameters;
+    base::Value::List parameters;
     parameters.Append(origin.spec());
     parameters.Append(source_id_in_origin);
     std::string parameter_string;
