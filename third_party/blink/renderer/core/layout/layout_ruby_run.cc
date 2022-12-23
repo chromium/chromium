@@ -132,9 +132,11 @@ void LayoutRubyRun::AddChild(LayoutObject* child, LayoutObject* before_child) {
 
       // Make sure we don't leave anything in the percentage descendant
       // map before moving the children to the new base.
-      if (HasPercentHeightDescendants())
+      LayoutRubyBase& base = EnsureRubyBase();
+      if (HasPercentHeightDescendants() || base.HasPercentHeightDescendants()) {
         ClearPercentHeightDescendants();
-      EnsureRubyBase().MoveChildren(new_base, before_child);
+      }
+      base.MoveChildren(new_base, before_child);
     }
   } else {
     // child is not a text -> insert it into the base
