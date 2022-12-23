@@ -212,8 +212,9 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     const auto it = base::ranges::find(buttons, static_cast<int>(action),
                                        &views::Button::tag);
 
-    if (it == buttons.end())
+    if (it == buttons.end()) {
       return nullptr;
+    }
 
     return *it;
   }

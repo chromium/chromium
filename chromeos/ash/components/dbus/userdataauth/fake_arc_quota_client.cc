@@ -65,13 +65,15 @@ void FakeArcQuotaClient::WaitForServiceToBeAvailable(
 
 void FakeArcQuotaClient::SetServiceIsAvailable(bool is_available) {
   service_is_available_ = is_available;
-  if (!is_available)
+  if (!is_available) {
     return;
+  }
 
   std::vector<chromeos::WaitForServiceToBeAvailableCallback> callbacks;
   callbacks.swap(pending_wait_for_service_to_be_available_callbacks_);
-  for (auto& callback : callbacks)
+  for (auto& callback : callbacks) {
     std::move(callback).Run(true);
+  }
 }
 
 void FakeArcQuotaClient::ReportServiceIsNotAvailable() {
@@ -80,8 +82,9 @@ void FakeArcQuotaClient::ReportServiceIsNotAvailable() {
 
   std::vector<chromeos::WaitForServiceToBeAvailableCallback> callbacks;
   callbacks.swap(pending_wait_for_service_to_be_available_callbacks_);
-  for (auto& callback : callbacks)
+  for (auto& callback : callbacks) {
     std::move(callback).Run(false);
+  }
 }
 
 }  // namespace ash

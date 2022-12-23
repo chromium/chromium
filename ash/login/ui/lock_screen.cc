@@ -60,8 +60,9 @@ LockScreen::LockScreen(ScreenType type) : type_(type) {
   if (active_window) {
     auto* active_widget =
         views::Widget::GetWidgetForNativeWindow(active_window);
-    if (active_widget)
+    if (active_widget) {
       paint_as_active_lock_ = active_widget->LockPaintAsActive();
+    }
   }
 
   tray_action_observation_.Observe(Shell::Get()->tray_action());
@@ -77,8 +78,9 @@ LockScreen::~LockScreen() {
   if (Shell::Get()->session_controller()->GetSessionState() !=
       session_manager::SessionState::LOGIN_SECONDARY) {
     ui::Clipboard::DestroyClipboardForCurrentThread();
-    if (saved_clipboard_)
+    if (saved_clipboard_) {
       ui::Clipboard::SetClipboardForCurrentThread(std::move(saved_clipboard_));
+    }
   }
 }
 
@@ -184,11 +186,13 @@ void LockScreen::OnSessionStateChanged(session_manager::SessionState state) {
 }
 
 void LockScreen::OnLockStateChanged(bool locked) {
-  if (type_ != ScreenType::kLock)
+  if (type_ != ScreenType::kLock) {
     return;
+  }
 
-  if (!locked)
+  if (!locked) {
     Destroy();
+  }
 }
 
 void LockScreen::OnChromeTerminating() {
@@ -198,15 +202,17 @@ void LockScreen::OnChromeTerminating() {
 // static
 void LockScreen::ShowWidgetUponWallpaperReady() {
   // |instance_| may already be destroyed in tests.
-  if (!instance_ || instance_->is_shown_)
+  if (!instance_ || instance_->is_shown_) {
     return;
+  }
   instance_->is_shown_ = true;
   instance_->widget_->Show();
 
   std::vector<base::OnceClosure> on_shown_callbacks;
   swap(instance_->on_shown_callbacks_, on_shown_callbacks);
-  for (auto& callback : on_shown_callbacks)
+  for (auto& callback : on_shown_callbacks) {
     std::move(callback).Run();
+  }
 
   Shell::Get()->login_screen_controller()->NotifyLoginScreenShown();
 }

@@ -23,9 +23,10 @@ std::unique_ptr<SmartLockAuthFactorModel>
 SmartLockAuthFactorModel::Factory::Create(
     SmartLockState initial_state,
     base::RepeatingCallback<void()> arrow_button_tap_callback) {
-  if (factory_instance_)
+  if (factory_instance_) {
     return factory_instance_->CreateInstance(initial_state,
                                              arrow_button_tap_callback);
+  }
   return std::make_unique<SmartLockAuthFactorModel>(initial_state,
                                                     arrow_button_tap_callback);
 }
@@ -51,8 +52,9 @@ void SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent() {
 }
 
 void SmartLockAuthFactorModel::SetSmartLockState(SmartLockState state) {
-  if (state_ == state)
+  if (state_ == state) {
     return;
+  }
 
   // Clear out the timeout if the state changes. This shouldn't happen
   // ordinarily -- permanent error states are permanent after all -- but this is

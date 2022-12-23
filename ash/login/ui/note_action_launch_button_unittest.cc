@@ -55,7 +55,6 @@ class NoteActionLaunchButtonTest : public LoginTestBase {
 
   TestTrayActionClient* tray_action_client() { return &tray_action_client_; }
 
-
   void PerformClick(const gfx::Point& point) {
     ui::test::EventGenerator* generator = GetEventGenerator();
     generator->MoveMouseTo(point.x(), point.y());

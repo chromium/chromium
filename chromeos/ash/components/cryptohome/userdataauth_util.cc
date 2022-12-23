@@ -39,8 +39,9 @@ cryptohome::MountError ReplyToMountError(
 template <typename ReplyType>
 CryptohomeErrorCode ReplyToCryptohomeError(
     const absl::optional<ReplyType>& reply) {
-  if (IsEmpty(reply))
+  if (IsEmpty(reply)) {
     return CRYPTOHOME_ERROR_MOUNT_FATAL;
+  }
   return reply->error();
 }
 
@@ -132,8 +133,9 @@ std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(
 
 int64_t AccountDiskUsageReplyToUsageSize(
     const absl::optional<GetAccountDiskUsageReply>& reply) {
-  if (IsEmpty(reply))
+  if (IsEmpty(reply)) {
     return -1;
+  }
 
   if (reply->error() != CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "GetAccountDiskUsage failed with error: "

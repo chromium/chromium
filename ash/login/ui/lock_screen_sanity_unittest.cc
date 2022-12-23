@@ -41,8 +41,9 @@ views::View* GetLoginShelfContentsView(gfx::NativeWindow native_window) {
   // TODO(https://crbug.com/1343114): refactor the code below after the login
   // shelf widget is ready.
   Shelf* shelf = Shelf::ForWindow(native_window);
-  if (features::IsUseLoginShelfWidgetEnabled())
+  if (features::IsUseLoginShelfWidgetEnabled()) {
     return shelf->login_shelf_widget()->GetContentsView();
+  }
 
   return shelf->shelf_widget()->GetContentsView();
 }
@@ -70,18 +71,22 @@ class LockScreenAppFocuser {
 };
 
 testing::AssertionResult VerifyFocused(views::View* view) {
-  if (!view->GetWidget()->IsActive())
+  if (!view->GetWidget()->IsActive()) {
     return testing::AssertionFailure() << "Widget not active.";
-  if (!HasFocusInAnyChildView(view))
+  }
+  if (!HasFocusInAnyChildView(view)) {
     return testing::AssertionFailure() << "No focused descendant.";
+  }
   return testing::AssertionSuccess();
 }
 
 testing::AssertionResult VerifyNotFocused(views::View* view) {
-  if (view->GetWidget()->IsActive())
+  if (view->GetWidget()->IsActive()) {
     return testing::AssertionFailure() << "Widget active";
-  if (HasFocusInAnyChildView(view))
+  }
+  if (HasFocusInAnyChildView(view)) {
     return testing::AssertionFailure() << "Has focused descendant.";
+  }
   return testing::AssertionSuccess();
 }
 

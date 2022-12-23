@@ -505,8 +505,9 @@ void PinRequestView::SetInputEnabled(bool input_enabled) {
 
 void PinRequestView::UpdatePreferredSize() {
   SetPreferredSize(CalculatePreferredSize());
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->CenterWindow(GetPreferredSize());
+  }
 }
 
 void PinRequestView::FocusSubmitButton() {
@@ -557,8 +558,9 @@ gfx::Size PinRequestView::GetPinRequestViewSize() const {
       std::min(static_cast<int>(description_label_->GetRequiredLines()),
                kDescriptionMaxLines) *
           kDescriptionTextLineHeightDp;
-  if (PinKeyboardVisible())
+  if (PinKeyboardVisible()) {
     height += kPinKeyboardHeightDp;
+  }
   return gfx::Size(kPinRequestViewWidthDp, height);
 }
 

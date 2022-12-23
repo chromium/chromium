@@ -36,8 +36,9 @@ LoginErrorBubble::LoginErrorBubble(base::WeakPtr<views::View> anchor_view)
 LoginErrorBubble::~LoginErrorBubble() = default;
 
 void LoginErrorBubble::SetContent(std::unique_ptr<views::View> content) {
-  if (content_)
+  if (content_) {
     RemoveChildViewT(content_);
+  }
   content_ = AddChildView(std::move(content));
 }
 
@@ -68,8 +69,9 @@ void LoginErrorBubble::OnThemeChanged() {
   // It is assumed that we will not have an external call to SetTextContent
   // followed by a call to SetContent (in such a case, the content would be
   // erased on theme changed and replaced with the prior message).
-  if (!message_.empty())
+  if (!message_.empty()) {
     SetTextContent(message_);
+  }
 }
 
 }  // namespace ash

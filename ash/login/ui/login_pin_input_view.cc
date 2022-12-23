@@ -108,8 +108,9 @@ bool LoginPinInput::HandleMouseEvent(views::Textfield* sender,
 
 bool LoginPinInput::HandleGestureEvent(views::Textfield* sender,
                                        const ui::GestureEvent& gesture_event) {
-  if (gesture_event.details().type() != ui::EventType::ET_GESTURE_TAP)
+  if (gesture_event.details().type() != ui::EventType::ET_GESTURE_TAP) {
     return false;
+  }
 
   FixedLengthCodeInput::RequestFocus();
   return true;
@@ -134,7 +135,7 @@ void LoginPinInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetDescription(l10n_util::GetPluralStringFUTF16(
       IDS_ASH_LOGIN_PIN_INPUT_DIGITS_REMAINING, remaining_digits));
   node_data->SetName(l10n_util::GetStringUTF8(
-          IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME));
+      IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME));
 }
 
 const int LoginPinInputView::kDefaultLength = 6;
@@ -192,8 +193,9 @@ void LoginPinInputView::SubmitPin(const std::u16string& pin) {
 void LoginPinInputView::UpdateLength(const size_t pin_length) {
   // If the length is 0 (unknown) auto submit is disabled and not visible.
   // Only recreate the UI if the length is different than the current one.
-  if (pin_length == 0 || pin_length == length_)
+  if (pin_length == 0 || pin_length == length_) {
     return;
+  }
 
   length_ = pin_length;
 
@@ -233,8 +235,9 @@ void LoginPinInputView::Backspace() {
 
 void LoginPinInputView::InsertDigit(int digit) {
   DCHECK(code_input_);
-  if (!IsReadOnly())
+  if (!IsReadOnly()) {
     code_input_->InsertDigit(digit);
+  }
 }
 
 void LoginPinInputView::SetReadOnly(bool read_only) {
@@ -247,8 +250,7 @@ bool LoginPinInputView::IsReadOnly() const {
 }
 
 gfx::Size LoginPinInputView::CalculatePreferredSize() const {
-  const int ideal_size = kFieldWidth * length_ +
-                         kFieldSpace * (length_ - 1);
+  const int ideal_size = kFieldWidth * length_ + kFieldSpace * (length_ - 1);
   return gfx::Size(std::min(kMaxWidthPinInputDp, ideal_size),
                    kPinInputTotalHeightDp);
 }
@@ -273,8 +275,9 @@ bool LoginPinInputView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 void LoginPinInputView::OnChanged(bool is_empty) {
-  if (on_changed_)
+  if (on_changed_) {
     on_changed_.Run(is_empty);
+  }
 }
 
 }  // namespace ash

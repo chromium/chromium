@@ -217,8 +217,9 @@ class LockDebugView::DebugDataDispatcherTransformer
     count = std::max(count, 0);
 
     // Trim any extra debug users.
-    if (debug_users_.size() > static_cast<size_t>(count))
+    if (debug_users_.size() > static_cast<size_t>(count)) {
       debug_users_.erase(debug_users_.begin() + count, debug_users_.end());
+    }
 
     // Build |users|, add any new users to |debug_users|.
     std::vector<LoginUserInfo> users;
@@ -238,8 +239,9 @@ class LockDebugView::DebugDataDispatcherTransformer
                                         : users[i].basic_user_info.type;
       users[i] = PopulateUserData(users[i], type, i);
 
-      if (i >= debug_users_.size())
+      if (i >= debug_users_.size()) {
         debug_users_.push_back(UserMetadata(users[i].basic_user_info));
+      }
     }
 
     return users;
@@ -247,8 +249,9 @@ class LockDebugView::DebugDataDispatcherTransformer
 
   void NotifyUsers(const std::vector<LoginUserInfo>& users) {
     // User notification resets PIN state.
-    for (UserMetadata& user : debug_users_)
+    for (UserMetadata& user : debug_users_) {
       user.enable_pin = false;
+    }
 
     debug_dispatcher_.SetUserList(users);
   }
@@ -569,8 +572,9 @@ class LockDebugView::DebugDataDispatcherTransformer
   }
 
   void RemoveKioskApp(ShelfWidget* shelf_widget) {
-    if (kiosk_apps_.empty())
+    if (kiosk_apps_.empty()) {
       return;
+    }
     kiosk_apps_.pop_back();
     shelf_widget->GetLoginShelfView()->SetKioskApps(kiosk_apps_);
   }
@@ -592,8 +596,9 @@ class LockDebugView::DebugDataDispatcherTransformer
   void OnUsersChanged(const std::vector<LoginUserInfo>& users) override {
     // Update root_users_ to new source data.
     root_users_.clear();
-    for (auto& user : users)
+    for (auto& user : users) {
       root_users_.push_back(user);
+    }
 
     // Rebuild debug users using new source data.
     SetUserCount(root_users_.size());
@@ -699,8 +704,9 @@ class LockDebugView::DebugLoginDetachableBaseModel
   // Calculates the pairing status to which the model should be changed when
   // button for cycling detachable base pairing statuses is clicked.
   DetachableBasePairingStatus NextPairingStatus() const {
-    if (!pairing_status_.has_value())
+    if (!pairing_status_.has_value()) {
       return DetachableBasePairingStatus::kNone;
+    }
 
     switch (*pairing_status_) {
       case DetachableBasePairingStatus::kNone:
@@ -724,8 +730,9 @@ class LockDebugView::DebugLoginDetachableBaseModel
 
   // Gets the descripting text for currently paired base, if any.
   std::string BaseButtonText() const {
-    if (base_id_ < 0)
+    if (base_id_ < 0) {
       return "No base";
+    }
     return kDebugDetachableBases[base_id_];
   }
 
@@ -753,8 +760,9 @@ class LockDebugView::DebugLoginDetachableBaseModel
   // Marks the paired base (as seen by the model) as the user's last used base.
   // No-op if the current pairing status is different than kAuthenticated.
   void SetBaseLastUsedForUser(const AccountId& account_id) {
-    if (GetPairingStatus() != DetachableBasePairingStatus::kAuthenticated)
+    if (GetPairingStatus() != DetachableBasePairingStatus::kAuthenticated) {
       return;
+    }
     DCHECK_GE(base_id_, 0);
 
     last_used_bases_[account_id] = base_id_;
@@ -778,21 +786,25 @@ class LockDebugView::DebugLoginDetachableBaseModel
 
   // LoginDetachableBaseModel:
   DetachableBasePairingStatus GetPairingStatus() override {
-    if (!pairing_status_.has_value())
+    if (!pairing_status_.has_value()) {
       return DetachableBasePairingStatus::kNone;
+    }
     return *pairing_status_;
   }
   bool PairedBaseMatchesLastUsedByUser(const UserInfo& user_info) override {
-    if (GetPairingStatus() != DetachableBasePairingStatus::kAuthenticated)
+    if (GetPairingStatus() != DetachableBasePairingStatus::kAuthenticated) {
       return false;
+    }
 
-    if (last_used_bases_.count(user_info.account_id) == 0)
+    if (last_used_bases_.count(user_info.account_id) == 0) {
       return true;
+    }
     return last_used_bases_[user_info.account_id] == base_id_;
   }
   bool SetPairedBaseAsLastUsedByUser(const UserInfo& user_info) override {
-    if (GetPairingStatus() != DetachableBasePairingStatus::kAuthenticated)
+    if (GetPairingStatus() != DetachableBasePairingStatus::kAuthenticated) {
       return false;
+    }
 
     last_used_bases_[user_info.account_id] = base_id_;
     return true;
@@ -976,8 +988,9 @@ void LockDebugView::Layout() {
   container_->SetPosition(gfx::Point());
   container_->SizeToPreferredSize();
 
-  for (views::View* child : container_->children())
+  for (views::View* child : container_->children()) {
     child->Layout();
+  }
 }
 
 void LockDebugView::OnThemeChanged() {
@@ -994,8 +1007,9 @@ void LockDebugView::AddOrRemoveUsersButtonPressed(int delta) {
 
 void LockDebugView::AddSystemInfoButtonPressed() {
   ++num_system_info_clicks_;
-  if (num_system_info_clicks_ >= 7)
+  if (num_system_info_clicks_ >= 7) {
     global_action_add_system_info_->SetEnabled(false);
+  }
 
   std::string os_version = num_system_info_clicks_ / 4 ? kDebugOsVersion : "";
   std::string enterprise_info =
@@ -1273,8 +1287,9 @@ void LockDebugView::UpdateDetachableBaseColumn() {
                 &LockDebugView::ToggleDebugDetachableBaseButtonPressed,
                 base::Unretained(this)),
             global_action_detachable_base_group_);
-  if (!debug_detachable_base_model_->debugging_pairing_state())
+  if (!debug_detachable_base_model_->debugging_pairing_state()) {
     return;
+  }
 
   const std::string kPairingStatusText =
       "Pairing status: " +

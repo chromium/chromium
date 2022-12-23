@@ -59,8 +59,9 @@ class LoginBubbleHandler : public ui::EventHandler {
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED)
+    if (event->type() == ui::ET_MOUSE_PRESSED) {
       ProcessPressedEvent(event->AsLocatedEvent());
+    }
   }
 
   void OnGestureEvent(ui::GestureEvent* event) override {
@@ -76,8 +77,9 @@ class LoginBubbleHandler : public ui::EventHandler {
       return;
     }
 
-    if (!bubble_->GetVisible())
+    if (!bubble_->GetVisible()) {
       return;
+    }
 
     // Hide the bubble if the bubble opener is about to lose focus from tab
     // traversal.
@@ -86,25 +88,29 @@ class LoginBubbleHandler : public ui::EventHandler {
       return;
     }
 
-    if (login_views_utils::HasFocusInAnyChildView(bubble_))
+    if (login_views_utils::HasFocusInAnyChildView(bubble_)) {
       return;
+    }
 
-    if (!bubble_->is_persistent())
+    if (!bubble_->is_persistent()) {
       bubble_->Hide();
+    }
   }
 
  private:
   void ProcessPressedEvent(const ui::LocatedEvent* event) {
-    if (!bubble_->GetVisible())
+    if (!bubble_->GetVisible()) {
       return;
+    }
 
     gfx::Point screen_location = event->location();
     ::wm::ConvertPointToScreen(static_cast<aura::Window*>(event->target()),
                                &screen_location);
 
     // Don't do anything with clicks inside the bubble.
-    if (bubble_->GetBoundsInScreen().Contains(screen_location))
+    if (bubble_->GetBoundsInScreen().Contains(screen_location)) {
       return;
+    }
 
     // Let the bubble opener handle clicks on itself.
     if (bubble_->GetBubbleOpener() &&
@@ -113,8 +119,9 @@ class LoginBubbleHandler : public ui::EventHandler {
       return;
     }
 
-    if (!bubble_->is_persistent())
+    if (!bubble_->is_persistent()) {
       bubble_->Hide();
+    }
   }
 
   LoginBaseBubbleView* bubble_;
@@ -138,8 +145,9 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
 }
 
 void LoginBaseBubbleView::EnsureLayer() {
-  if (layer())
+  if (layer()) {
     return;
+  }
   // Layer rendering is needed for animation.
   SetPaintToLayer();
   SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
@@ -153,8 +161,9 @@ void LoginBaseBubbleView::EnsureLayer() {
 LoginBaseBubbleView::~LoginBaseBubbleView() = default;
 
 void LoginBaseBubbleView::Show() {
-  if (layer())
+  if (layer()) {
     layer()->GetAnimator()->RemoveObserver(this);
+  }
 
   SetSize(GetPreferredSize());
   SetPosition(CalculatePosition());
@@ -338,8 +347,9 @@ void LoginBaseBubbleView::ScheduleAnimation(bool visible) {
                          nullptr /*event*/);
   }
 
-  if (layer())
+  if (layer()) {
     layer()->GetAnimator()->StopAnimating();
+  }
 
   EnsureLayer();
   float opacity_start = 0.0f;

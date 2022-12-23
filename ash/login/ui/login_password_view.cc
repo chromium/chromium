@@ -255,21 +255,24 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
 
   // views::Textfield:
   void OnBlur() override {
-    if (on_blur_closure_)
+    if (on_blur_closure_) {
       on_blur_closure_.Run();
+    }
     views::Textfield::OnBlur();
   }
 
   // views::Textfield:
   void OnFocus() override {
-    if (on_focus_closure_)
+    if (on_focus_closure_) {
       on_focus_closure_.Run();
+    }
     views::Textfield::OnFocus();
   }
 
   void AboutToRequestFocusFromTabTraversal(bool reverse) override {
-    if (!GetText().empty())
+    if (!GetText().empty()) {
       SelectAll(/*reversed=*/false);
+    }
   }
 
   void UpdateFontListAndCursor() {
@@ -375,8 +378,9 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
     // else, we need to abort the current opacity animation and set back the
     // opacity to 100%. This can be done by destroying the layer that we do not
     // use anymore.
-    if (layer())
+    if (layer()) {
       DestroyLayer();
+    }
 
     const gfx::VectorIcon* icon = &kLockScreenEasyUnlockCloseIcon;
     const auto* color_provider = AshColorProvider::Get();
@@ -501,8 +505,9 @@ class LoginPasswordView::AlternateIconsView : public views::View {
     shown_after->SetVisible(false);
 
     // Do not alternate between icons if ChromeVox is enabled.
-    if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
+    if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
       return;
+    }
 
     std::unique_ptr<ui::LayerAnimationSequence> opacity_sequence =
         std::make_unique<ui::LayerAnimationSequence>();
@@ -708,8 +713,9 @@ void LoginPasswordView::SetEasyUnlockIcon(
     const std::u16string& accessibility_label) {
   // Do not update EasyUnlockIconState if the Smart Lock revamp is enabled since
   // it will be removed post launch.
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
     return;
+  }
 
   // Update icon.
   easy_unlock_icon_->SetEasyUnlockIcon(icon_state, accessibility_label);
@@ -718,8 +724,9 @@ void LoginPasswordView::SetEasyUnlockIcon(
   bool has_icon = icon_state != EasyUnlockIconState::NONE;
   // We do not want to schedule a new animation when the user switches from an
   // account to another.
-  if (should_show_easy_unlock_ == has_icon)
+  if (should_show_easy_unlock_ == has_icon) {
     return;
+  }
   should_show_easy_unlock_ = has_icon;
   HandleLeftIconsVisibilities(false /*handling_capslock*/);
 }
@@ -736,8 +743,9 @@ void LoginPasswordView::SetFocusEnabledForTextfield(bool enable) {
 void LoginPasswordView::SetDisplayPasswordButtonVisible(bool visible) {
   display_password_button_->SetVisible(visible);
   // Only start the timer if the display password button is enabled.
-  if (visible)
+  if (visible) {
     clear_password_timer_.Reset();
+  }
 }
 
 void LoginPasswordView::Reset() {
@@ -750,8 +758,9 @@ void LoginPasswordView::Reset() {
 }
 
 void LoginPasswordView::InsertNumber(int value) {
-  if (textfield_->GetReadOnly())
+  if (textfield_->GetReadOnly()) {
     return;
+  }
 
   if (!textfield_->HasFocus()) {
     // RequestFocus on textfield to activate cursor.
@@ -840,26 +849,31 @@ void LoginPasswordView::ContentsChanged(views::Textfield* sender,
   on_password_text_changed_.Run(new_contents.empty() /*is_empty*/);
 
   // If the password is currently revealed.
-  if (textfield_->GetTextInputType() == ui::TEXT_INPUT_TYPE_NULL)
+  if (textfield_->GetTextInputType() == ui::TEXT_INPUT_TYPE_NULL) {
     hide_password_timer_.Reset();
+  }
 
   // The display password button could be hidden by user policy.
-  if (display_password_button_->GetVisible())
+  if (display_password_button_->GetVisible()) {
     clear_password_timer_.Reset();
+  }
 }
 
 // Implements swapping active user with arrow keys
 bool LoginPasswordView::HandleKeyEvent(views::Textfield* sender,
                                        const ui::KeyEvent& key_event) {
   // Treat the password field as normal if it has text
-  if (!textfield_->GetText().empty())
+  if (!textfield_->GetText().empty()) {
     return false;
+  }
 
-  if (key_event.type() != ui::ET_KEY_PRESSED)
+  if (key_event.type() != ui::ET_KEY_PRESSED) {
     return false;
+  }
 
-  if (key_event.is_repeat())
+  if (key_event.is_repeat()) {
     return false;
+  }
 
   switch (key_event.key_code()) {
     case ui::VKEY_LEFT:
@@ -880,8 +894,9 @@ void LoginPasswordView::UpdateUiState() {
   // Disabling the submit button will make it lose focus. The previous focusable
   // view will be the password textfield, which is more expected than the user
   // drop down button.
-  if (!enable_buttons && submit_button_->HasFocus())
+  if (!enable_buttons && submit_button_->HasFocus()) {
     RequestFocus();
+  }
   submit_button_->SetEnabled(enable_buttons);
   display_password_button_->SetEnabled(enable_buttons);
 }
@@ -938,8 +953,9 @@ void LoginPasswordView::HandleLeftIconsVisibilities(bool handling_capslock) {
 
 void LoginPasswordView::SubmitPassword() {
   DCHECK(IsPasswordSubmittable());
-  if (textfield_->GetReadOnly())
+  if (textfield_->GetReadOnly()) {
     return;
+  }
   SetReadOnly(true);
   on_submit_.Run(textfield_->GetText());
 }

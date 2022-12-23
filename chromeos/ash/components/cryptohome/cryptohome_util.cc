@@ -67,11 +67,13 @@ void KeyDefProviderDataToKeyProviderDataEntry(
     const KeyDefinition::ProviderData& provider_data,
     KeyProviderData::Entry* entry) {
   entry->set_name(provider_data.name);
-  if (provider_data.number)
+  if (provider_data.number) {
     entry->set_number(*provider_data.number);
+  }
 
-  if (provider_data.bytes)
+  if (provider_data.bytes) {
     entry->set_bytes(*provider_data.bytes);
+  }
 }
 
 }  // namespace
@@ -102,12 +104,15 @@ KeyDefinition KeyDataToKeyDefinition(const KeyData& key_data) {
 
   // Extract |privileges|.
   const KeyPrivileges& privileges = key_data.privileges();
-  if (privileges.add())
+  if (privileges.add()) {
     result.privileges |= PRIV_ADD;
-  if (privileges.remove())
+  }
+  if (privileges.remove()) {
     result.privileges |= PRIV_REMOVE;
-  if (privileges.update())
+  }
+  if (privileges.update()) {
     result.privileges |= PRIV_MIGRATE;
+  }
 
   // Extract |policy|.
   result.policy.low_entropy_credential =
@@ -174,8 +179,9 @@ AuthorizationRequest CreateAuthorizationRequestFromKeyDef(
 // TODO(crbug.com/797848): Finish testing this method.
 void KeyDefinitionToKey(const KeyDefinition& key_def, Key* key) {
   KeyData* data = key->mutable_data();
-  if (!key_def.label.value().empty())
+  if (!key_def.label.value().empty()) {
     data->set_label(key_def.label.value());
+  }
 
   switch (key_def.type) {
     case KeyDefinition::TYPE_PASSWORD:
@@ -200,8 +206,9 @@ void KeyDefinitionToKey(const KeyDefinition& key_def, Key* key) {
       break;
   }
 
-  if (key_def.revision > 0)
+  if (key_def.revision > 0) {
     data->set_revision(key_def.revision);
+  }
 
   if (key_def.privileges != 0) {
     KeyDefPrivilegesToKeyPrivileges(key_def.privileges,

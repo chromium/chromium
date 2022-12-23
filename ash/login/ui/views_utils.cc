@@ -75,8 +75,9 @@ bool ShouldShowLandscape(const views::Widget* widget) {
   // in that case. A new layout will happen when the view is attached to a
   // widget (see LockContentsView::AddedToWidget), which will let us fetch the
   // correct display orientation.
-  if (!widget)
+  if (!widget) {
     return true;
+  }
 
   // Get the orientation for |widget|.
   const display::Display& display =
@@ -101,8 +102,9 @@ bool HasFocusInAnyChildView(views::View* view) {
   // Find the topmost ancestor of the focused view, or |view|, whichever comes
   // first.
   views::View* search = view->GetFocusManager()->GetFocusedView();
-  while (search && search != view)
+  while (search && search != view) {
     search = search->parent();
+  }
   return search == view;
 }
 
@@ -156,8 +158,9 @@ std::unique_ptr<views::Label> CreateThemedBubbleLabel(
 
 views::View* GetBubbleContainer(views::View* view) {
   views::View* v = view;
-  while (v->parent() != nullptr)
+  while (v->parent() != nullptr) {
     v = v->parent();
+  }
 
   views::View* root_view = v;
   // An arbitrary id that no other child of root view should use.

@@ -111,18 +111,18 @@ TEST_P(LoginPinInputViewTest, AccessibleValues) {
 
   PressKeyHelper(ui::KeyboardCode::VKEY_1);
   ExpectDescription("5 digits remaining");
-  ExpectTextValue("\u2022     ");                     /* 1 bullet 5 spaces */
+  ExpectTextValue("\u2022     "); /* 1 bullet 5 spaces */
 
   PressKeyHelper(ui::KeyboardCode::VKEY_1);
   ExpectDescription("4 digits remaining");
-  ExpectTextValue("\u2022\u2022    ");                /* 2 bullets 4 spaces */
+  ExpectTextValue("\u2022\u2022    "); /* 2 bullets 4 spaces */
 
   PressKeyHelper(ui::KeyboardCode::VKEY_1);
   ExpectDescription("3 digits remaining");
-  ExpectTextValue("\u2022\u2022\u2022   ");           /* 3 bullets 3 spaces */
+  ExpectTextValue("\u2022\u2022\u2022   "); /* 3 bullets 3 spaces */
 
   PressKeyHelper(ui::KeyboardCode::VKEY_1);
-  ExpectTextValue("\u2022\u2022\u2022\u2022  ");      /* 4 bullets 2 spaces */
+  ExpectTextValue("\u2022\u2022\u2022\u2022  "); /* 4 bullets 2 spaces */
   ExpectDescription("2 digits remaining");
 
   PressKeyHelper(ui::KeyboardCode::VKEY_1);

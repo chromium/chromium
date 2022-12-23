@@ -151,20 +151,23 @@ void FlexCodeInput::ContentsChanged(views::Textfield* sender,
 bool FlexCodeInput::HandleKeyEvent(views::Textfield* sender,
                                    const ui::KeyEvent& key_event) {
   // Only handle keys.
-  if (key_event.type() != ui::ET_KEY_PRESSED)
+  if (key_event.type() != ui::ET_KEY_PRESSED) {
     return false;
+  }
 
   // Default handling for events with Alt modifier like spoken feedback.
-  if (key_event.IsAltDown())
+  if (key_event.IsAltDown()) {
     return false;
+  }
 
   // FlexCodeInput class responds to a limited subset of key press events.
   // All events not handled below are sent to |code_field_|.
   const ui::KeyboardCode key_code = key_event.key_code();
 
   // Allow using tab for keyboard navigation.
-  if (key_code == ui::VKEY_TAB || key_code == ui::VKEY_BACKTAB)
+  if (key_code == ui::VKEY_TAB || key_code == ui::VKEY_BACKTAB) {
     return false;
+  }
 
   if (key_code == ui::VKEY_RETURN) {
     if (GetCode().has_value()) {
@@ -287,8 +290,9 @@ void FixedLengthCodeInput::InsertDigit(int value) {
 // focus to the previous field (if exists) and clears input there.
 void FixedLengthCodeInput::Backspace() {
   // Ignore backspace on the first field, if empty.
-  if (IsFirstFieldActive() && ActiveInput().empty())
+  if (IsFirstFieldActive() && ActiveInput().empty()) {
     return;
+  }
 
   if (ActiveInput().empty()) {
     FocusPreviousField();
@@ -307,8 +311,9 @@ absl::optional<std::string> FixedLengthCodeInput::GetCode() const {
   size_t length;
   for (auto* field : input_fields_) {
     length = field->GetText().length();
-    if (!length)
+    if (!length) {
       return absl::nullopt;
+    }
 
     DCHECK_EQ(1u, length);
     base::StrAppend(&result, {base::UTF16ToUTF8(field->GetText())});
@@ -377,26 +382,31 @@ void FixedLengthCodeInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   const gfx::Range& range = GetSelectedRangeOfTextValueForA11y();
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
                              range.start());
-  if (is_obscure_pin_)
+  if (is_obscure_pin_) {
     node_data->AddState(ax::mojom::State::kProtected);
+  }
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, range.end());
 }
 
 bool FixedLengthCodeInput::HandleKeyEvent(views::Textfield* sender,
                                           const ui::KeyEvent& key_event) {
-  if (key_event.type() != ui::ET_KEY_PRESSED)
+  if (key_event.type() != ui::ET_KEY_PRESSED) {
     return false;
+  }
 
   // Default handling for events with Alt modifier like spoken feedback.
-  if (key_event.IsAltDown())
+  if (key_event.IsAltDown()) {
     return false;
+  }
 
   // Default handling for events with Control modifier like sign out.
-  if (key_event.IsControlDown())
+  if (key_event.IsControlDown()) {
     return false;
+  }
 
-  if (sender->GetReadOnly())
+  if (sender->GetReadOnly()) {
     return false;
+  }
 
   // FixedLengthCodeInput class responds to limited subset of key press
   // events. All key pressed events not handled below are ignored.
@@ -420,8 +430,9 @@ bool FixedLengthCodeInput::HandleKeyEvent(views::Textfield* sender,
   } else if (key_code == ui::VKEY_BACK) {
     Backspace();
   } else if (key_code == ui::VKEY_RETURN) {
-    if (GetCode().has_value())
+    if (GetCode().has_value()) {
       on_enter_.Run();
+    }
   } else if (key_code == ui::VKEY_ESCAPE) {
     on_escape_.Run();
   }
@@ -452,8 +463,9 @@ bool FixedLengthCodeInput::HandleMouseEvent(views::Textfield* sender,
 bool FixedLengthCodeInput::HandleGestureEvent(
     views::Textfield* sender,
     const ui::GestureEvent& gesture_event) {
-  if (gesture_event.details().type() != ui::EventType::ET_GESTURE_TAP)
+  if (gesture_event.details().type() != ui::EventType::ET_GESTURE_TAP) {
     return false;
+  }
 
   // Move focus to the field that was selected with gesture.
   for (size_t i = 0; i < input_fields_.size(); ++i) {
@@ -503,8 +515,9 @@ void FixedLengthCodeInput::ClearInput() {
 
 bool FixedLengthCodeInput::IsEmpty() const {
   for (auto* field : input_fields_) {
-    if (field->GetText().length())
+    if (field->GetText().length()) {
       return false;
+    }
   }
   return true;
 }
@@ -514,16 +527,18 @@ void FixedLengthCodeInput::SetAllowArrowNavigation(bool allowed) {
 }
 
 void FixedLengthCodeInput::FocusPreviousField() {
-  if (active_input_index_ == 0)
+  if (active_input_index_ == 0) {
     return;
+  }
 
   --active_input_index_;
   ActiveField()->RequestFocus();
 }
 
 void FixedLengthCodeInput::FocusNextField() {
-  if (IsLastFieldActive())
+  if (IsLastFieldActive()) {
     return;
+  }
 
   ++active_input_index_;
   ActiveField()->RequestFocus();

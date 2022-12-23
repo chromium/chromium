@@ -139,8 +139,9 @@ class LockContentsViewUnitTest : public LoginTestBase {
 
   // Returns true if the easy unlock icon is displayed for |view|.
   bool IsEasyUnlockIconShowing(LoginBigUserView* view) {
-    if (!view->auth_user())
+    if (!view->auth_user()) {
       return false;
+    }
 
     views::View* icon =
         LoginPasswordView::TestApi(
@@ -204,11 +205,13 @@ TEST_F(LockContentsViewUnitTest, DisplayMode) {
     // 1 extra user gets large style.
     LoginDisplayStyle expected_style = LoginDisplayStyle::kLarge;
     // 2-6 extra users get small style.
-    if (user_count >= 3)
+    if (user_count >= 3) {
       expected_style = LoginDisplayStyle::kSmall;
+    }
     // 7+ users get get extra small style.
-    if (user_count >= 7)
+    if (user_count >= 7) {
       expected_style = LoginDisplayStyle::kExtraSmall;
+    }
 
     for (size_t i = 0; i < users_list.user_views().size(); ++i) {
       LoginUserView::TestApi user_test_api(users_list.user_views()[i]);
@@ -283,8 +286,9 @@ TEST_F(LockContentsViewUnitTest, LayoutInSmallScreenSize) {
     return lock_contents.primary_big_view();
   };
   auto get_right_view = [&]() -> views::View* {
-    if (lock_contents.opt_secondary_big_view())
+    if (lock_contents.opt_secondary_big_view()) {
       return lock_contents.opt_secondary_big_view();
+    }
     return lock_contents.users_list();
   };
 
@@ -1156,8 +1160,10 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownOnLockAfterFailedAuth) {
 
   // ShowGaiaSignin is never triggered.
   EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
-  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog + 1; ++i)
+  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog + 1;
+       ++i) {
     submit_password();
+  }
 }
 
 // Gaia should not be shown after first failed login attempt for a user, even if
@@ -1182,8 +1188,10 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownAfterFirstFailedLoginAttempt) {
 
   // ShowGaiaSignin is never triggered.
   EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
-  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog - 1; ++i)
+  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog - 1;
+       ++i) {
     submit_password();
+  }
   Mock::VerifyAndClearExpectations(client.get());
 
   // Simulate a button click on the secondary UserView.
@@ -1225,8 +1233,10 @@ TEST_F(LockContentsViewUnitTest, ShowGaiaAuthAfterManyFailedLoginAttempts) {
 
   // The first n-1 attempts do not trigger ShowGaiaSignin.
   EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
-  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog - 1; ++i)
+  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog - 1;
+       ++i) {
     submit_password();
+  }
   Mock::VerifyAndClearExpectations(client.get());
 
   // The final attempt triggers ShowGaiaSignin.
@@ -1266,8 +1276,10 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownAfterFailedPinAuth) {
 
   // ShowGaiaSignin is never triggered.
   EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
-  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog + 1; ++i)
+  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog + 1;
+       ++i) {
     submit_pin();
+  }
 
   Mock::VerifyAndClearExpectations(client.get());
 }

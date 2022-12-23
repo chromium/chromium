@@ -51,8 +51,9 @@ std::unique_ptr<ui::test::EventGenerator> MakeAshEventGenerator() {
 }
 
 LoginShelfView* GetLoginShelfView() {
-  if (!Shell::HasInstance())
+  if (!Shell::HasInstance()) {
     return nullptr;
+  }
 
   return Shelf::ForWindow(Shell::GetPrimaryRootWindow())
       ->shelf_widget()
@@ -61,8 +62,9 @@ LoginShelfView* GetLoginShelfView() {
 
 bool IsLoginShelfViewButtonShown(int button_view_id) {
   LoginShelfView* shelf_view = GetLoginShelfView();
-  if (!shelf_view)
+  if (!shelf_view) {
     return false;
+  }
 
   views::View* button_view = shelf_view->GetViewByID(button_view_id);
 
@@ -71,8 +73,9 @@ bool IsLoginShelfViewButtonShown(int button_view_id) {
 
 views::View* GetShutDownButton() {
   LoginShelfView* shelf_view = GetLoginShelfView();
-  if (!shelf_view)
+  if (!shelf_view) {
     return nullptr;
+  }
 
   return shelf_view->GetViewByID(LoginShelfView::kShutdown);
 }
@@ -86,12 +89,14 @@ LoginBigUserView* GetBigUserView(const AccountId& account_id) {
 
 bool SimulateButtonPressedForTesting(LoginShelfView::ButtonId button_id) {
   LoginShelfView* shelf_view = GetLoginShelfView();
-  if (!shelf_view)
+  if (!shelf_view) {
     return false;
+  }
 
   views::View* button = shelf_view->GetViewByID(button_id);
-  if (!button->GetEnabled())
+  if (!button->GetEnabled()) {
     return false;
+  }
 
   views::test::ButtonTestApi(views::Button::AsButton(button))
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
@@ -121,8 +126,9 @@ class ShelfTestUiUpdateDelegate : public LoginShelfView::TestUiUpdateDelegate {
       delete;
 
   ~ShelfTestUiUpdateDelegate() override {
-    for (PendingCallback& entry : heap_)
+    for (PendingCallback& entry : heap_) {
       std::move(entry.callback).Run();
+    }
   }
 
   // Returns UI update count.
@@ -180,8 +186,9 @@ bool LoginScreenTestApi::IsLockShown() {
 // static
 void LoginScreenTestApi::AddOnLockScreenShownCallback(
     base::OnceClosure on_lock_screen_shown) {
-  if (!LockScreen::HasInstance())
+  if (!LockScreen::HasInstance()) {
     FAIL() << "No lock screen";
+  }
   LockScreen::TestApi lock_screen_test(LockScreen::Get());
   lock_screen_test.AddOnShownCallback(std::move(on_lock_screen_shown));
 }
@@ -270,8 +277,9 @@ bool LoginScreenTestApi::IsSystemInfoShown() {
   // Check if all views in the hierarchy are visible.
   for (views::View* view = lock_contents_test.system_info(); view != nullptr;
        view = view->parent()) {
-    if (!view->GetVisible())
+    if (!view->GetVisible()) {
       return false;
+    }
   }
   return true;
 }
@@ -390,8 +398,9 @@ void LoginScreenTestApi::SubmitPassword(const AccountId& account_id,
   ASSERT_TRUE(big_user_view);
   ASSERT_TRUE(big_user_view->IsAuthEnabled());
   LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
-  if (check_if_submittable)
+  if (check_if_submittable) {
     ASSERT_TRUE(auth_test.HasAuthMethod(LoginAuthUserView::AUTH_PASSWORD));
+  }
   LoginPasswordView::TestApi password_test(auth_test.password_view());
   ASSERT_EQ(account_id,
             auth_test.user_view()->current_user().basic_user_info.account_id);
@@ -443,13 +452,16 @@ bool LoginScreenTestApi::IsChallengeResponseButtonClickable(
 // static
 void LoginScreenTestApi::ClickChallengeResponseButton(
     const AccountId& account_id) {
-  if (!FocusUser(account_id))
+  if (!FocusUser(account_id)) {
     FAIL() << "Could not focus on user " << account_id.Serialize();
+  }
   LoginBigUserView* big_user_view = GetBigUserView(account_id);
-  if (!big_user_view)
+  if (!big_user_view) {
     FAIL() << "Could not find user " << account_id.Serialize();
-  if (!big_user_view->IsAuthEnabled())
+  }
+  if (!big_user_view->IsAuthEnabled()) {
     FAIL() << "Auth is not enabled for user " << account_id.Serialize();
+  }
   LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
   if (!auth_test.HasAuthMethod(LoginAuthUserView::AUTH_CHALLENGE_RESPONSE)) {
     FAIL() << "Challenge-response auth is not enabled for user "
@@ -524,8 +536,9 @@ bool LoginScreenTestApi::SendAcceleratorNatively(
     login_window =
         LoginScreen::Get()->GetLoginWindowWidget()->GetNativeWindow();
   }
-  if (!login_window)
+  if (!login_window) {
     return false;
+  }
   return ui_controls::SendKeyPress(
       login_window, accelerator.key_code(), accelerator.IsCtrlDown(),
       accelerator.IsShiftDown(), accelerator.IsAltDown(),
@@ -586,8 +599,9 @@ bool LoginScreenTestApi::ExpandPublicSessionPod(const AccountId& account_id) {
   LockContentsView::TestApi lock_contents_test(
       lock_screen_test.contents_view());
   LoginBigUserView* big_user_view = GetBigUserView(account_id);
-  if (!big_user_view)
+  if (!big_user_view) {
     return false;
+  }
   LoginPublicAccountUserView::TestApi public_account_test(
       big_user_view->public_account());
   if (!public_account_test.arrow_button()->GetVisible()) {
@@ -608,8 +622,9 @@ bool LoginScreenTestApi::HidePublicSessionExpandedPod() {
       lock_screen_test.contents_view());
   LoginExpandedPublicAccountView* expanded_view =
       lock_contents_test.expanded_view();
-  if (!expanded_view || !expanded_view->GetVisible())
+  if (!expanded_view || !expanded_view->GetVisible()) {
     return false;
+  }
   expanded_view->Hide();
   return true;
 }
@@ -803,8 +818,9 @@ bool LoginScreenTestApi::IsOobeDialogVisible() {
 // static
 std::u16string LoginScreenTestApi::GetShutDownButtonLabel() {
   views::View* button = GetShutDownButton();
-  if (!button)
+  if (!button) {
     return std::u16string();
+  }
 
   return static_cast<views::LabelButton*>(button)->GetText();
 }
@@ -812,8 +828,9 @@ std::u16string LoginScreenTestApi::GetShutDownButtonLabel() {
 // static
 gfx::Rect LoginScreenTestApi::GetShutDownButtonTargetBounds() {
   views::View* button = GetShutDownButton();
-  if (!button)
+  if (!button) {
     return gfx::Rect();
+  }
 
   return button->layer()->GetTargetBounds();
 }
@@ -821,8 +838,9 @@ gfx::Rect LoginScreenTestApi::GetShutDownButtonTargetBounds() {
 // static
 gfx::Rect LoginScreenTestApi::GetShutDownButtonMirroredBounds() {
   views::View* button = GetShutDownButton();
-  if (!button)
+  if (!button) {
     return gfx::Rect();
+  }
 
   return button->GetMirroredBounds();
 }
@@ -846,8 +864,9 @@ std::u16string LoginScreenTestApi::GetPinRequestWidgetTitle() {
 
 // static
 void LoginScreenTestApi::SubmitPinRequestWidget(const std::string& pin) {
-  if (!PinRequestWidget::Get())
+  if (!PinRequestWidget::Get()) {
     FAIL() << "No PIN request widget is shown";
+  }
   auto event_generator = MakeAshEventGenerator();
   PinRequestWidget::TestApi pin_widget_test(PinRequestWidget::Get());
   PinRequestView::TestApi pin_test(pin_widget_test.pin_request_view());
@@ -867,8 +886,9 @@ void LoginScreenTestApi::SubmitPinRequestWidget(const std::string& pin) {
 
 // static
 void LoginScreenTestApi::CancelPinRequestWidget() {
-  if (!PinRequestWidget::Get())
+  if (!PinRequestWidget::Get()) {
     FAIL() << "No PIN request widget is shown";
+  }
   auto event_generator = MakeAshEventGenerator();
   PinRequestWidget::TestApi pin_widget_test(PinRequestWidget::Get());
   PinRequestView::TestApi pin_view_test(pin_widget_test.pin_request_view());

@@ -27,8 +27,9 @@ std::unique_ptr<ui::InterpolatedTransform> BuildRotation(int width,
       gfx::Vector3dF(0, 1, 0), start_degrees, end_degrees);
 
   gfx::Transform from_center;
-  if (horizontal_flip)
+  if (horizontal_flip) {
     from_center.RotateAboutYAxis(180);
+  }
   from_center.Translate(-width / 2.f, 0);
   auto move_from_center =
       std::make_unique<ui::InterpolatedConstantTransform>(from_center);
@@ -76,8 +77,9 @@ bool UserSwitchFlipAnimation::OnProgress(double current,
 
   // Second half.
   else {
-    if (on_midpoint_)
+    if (on_midpoint_) {
       std::move(on_midpoint_).Run();
+    }
 
     current = (current - 0.5) * 2;
     const double tweened = gfx::Tween::CalculateValue(tween_type_, current);

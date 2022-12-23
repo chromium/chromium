@@ -97,8 +97,9 @@ class RemoveUserButton : public SystemLabelButton {
       bubble_->GetBubbleOpener()->RequestFocus();
     }
 
-    if (event->key_code() == ui::VKEY_RETURN)
+    if (event->key_code() == ui::VKEY_RETURN) {
       views::Button::OnKeyEvent(event);
+    }
   }
 
   LoginRemoveAccountDialog* bubble_;
@@ -223,8 +224,9 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
 LoginRemoveAccountDialog::~LoginRemoveAccountDialog() = default;
 
 void LoginRemoveAccountDialog::ResetState() {
-  if (management_disclosure_label_)
+  if (management_disclosure_label_) {
     management_disclosure_label_->SetVisible(true);
+  }
   if (remove_user_confirm_data_) {
     remove_user_confirm_data_->SetVisible(false);
     remove_user_button_->SetBackgroundAndFont(/*alert_mode=*/false);
@@ -265,8 +267,9 @@ void LoginRemoveAccountDialog::OnThemeChanged() {
 void LoginRemoveAccountDialog::RequestFocus() {
   // This view has no actual interesting contents to focus, so immediately
   // forward to the button.
-  if (remove_user_button_)
+  if (remove_user_button_) {
     remove_user_button_->RequestFocus();
+  }
 }
 
 bool LoginRemoveAccountDialog::HasFocus() const {
@@ -319,8 +322,9 @@ void LoginRemoveAccountDialog::RemoveUserButtonPressed() {
   // we actually allow the exit.
   if (!remove_user_confirm_data_->GetVisible()) {
     remove_user_confirm_data_->SetVisible(true);
-    if (management_disclosure_label_)
+    if (management_disclosure_label_) {
       management_disclosure_label_->SetVisible(false);
+    }
     remove_user_button_->SetBackgroundAndFont(/*alert_mode=*/true);
 
     Layout();
@@ -329,8 +333,9 @@ void LoginRemoveAccountDialog::RemoveUserButtonPressed() {
     // ChromeVox, to report the updated description.
     remove_user_button_->GetViewAccessibility().OverrideDescription(
         warning_message_);
-    if (on_remove_user_warning_shown_)
+    if (on_remove_user_warning_shown_) {
       std::move(on_remove_user_warning_shown_).Run();
+    }
     return;
   }
 
@@ -339,8 +344,9 @@ void LoginRemoveAccountDialog::RemoveUserButtonPressed() {
   // for this bubble is being torn down, we can get a crash.
   SetVisible(false);
 
-  if (on_remove_user_requested_)
+  if (on_remove_user_requested_) {
     std::move(on_remove_user_requested_).Run();
+  }
 }
 
 }  // namespace ash

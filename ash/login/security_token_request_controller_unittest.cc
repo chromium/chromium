@@ -72,8 +72,9 @@ class SecurityTokenRequestControllerTest : public LoginTestBase {
       generator->PressKey(ui::KeyboardCode(ui::KeyboardCode::VKEY_0 + i),
                           ui::EF_NONE);
     }
-    if (PinRequestView::TestApi(view_).submit_button()->GetEnabled())
+    if (PinRequestView::TestApi(view_).submit_button()->GetEnabled()) {
       SimulateButtonPress(PinRequestView::TestApi(view_).submit_button());
+    }
   }
 
   std::unique_ptr<SecurityTokenRequestController> controller_;

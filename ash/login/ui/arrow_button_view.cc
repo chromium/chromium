@@ -118,8 +118,9 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   views::ImageButton::PaintButtonContents(canvas);
 
   // Draw the arc of the loading animation.
-  if (loading_animation_)
+  if (loading_animation_) {
     PaintLoadingArc(canvas, rect, loading_animation_->GetCurrentValue());
+  }
 }
 
 void ArrowButtonView::OnThemeChanged() {
@@ -172,15 +173,17 @@ void ArrowButtonView::StopAnimating() {
 
 void ArrowButtonView::EnableLoadingAnimation(bool enabled) {
   if (!enabled) {
-    if (!loading_animation_)
+    if (!loading_animation_) {
       return;
+    }
     loading_animation_.reset();
     SchedulePaint();
     return;
   }
 
-  if (loading_animation_)
+  if (loading_animation_) {
     return;
+  }
 
   // Use MultiAnimation in order to have a continuously running analog of
   // LinearAnimation.

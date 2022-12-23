@@ -413,8 +413,9 @@ void FakeUserDataAuthClient::TestApi::OverrideGlobalInstance(
 
 void FakeUserDataAuthClient::TestApi::SetServiceIsAvailable(bool is_available) {
   FakeUserDataAuthClient::Get()->service_is_available_ = is_available;
-  if (!is_available)
+  if (!is_available) {
     return;
+  }
   FakeUserDataAuthClient::Get()
       ->RunPendingWaitForServiceToBeAvailableCallbacks();
 }
@@ -1471,8 +1472,9 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
   session.authorized_auth_session_intent.Put(
       session.requested_auth_session_intent);
   if (session.requested_auth_session_intent ==
-      user_data_auth::AUTH_INTENT_DECRYPT)
+      user_data_auth::AUTH_INTENT_DECRYPT) {
     reply.set_authenticated(true);
+  }
   reply.add_authorized_for(session.requested_auth_session_intent);
   reply.set_seconds_left(kSessionTimeoutSeconds);
 }
@@ -1525,8 +1527,9 @@ void FakeUserDataAuthClient::RemoveAuthFactor(
   DCHECK(!label.empty());
   bool erased = user_state.auth_factors.erase(label) > 0;
 
-  if (!erased)
+  if (!erased) {
     reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
+  }
 }
 
 void FakeUserDataAuthClient::GetAuthFactorExtendedInfo(
@@ -1629,8 +1632,9 @@ void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
 void FakeUserDataAuthClient::RunPendingWaitForServiceToBeAvailableCallbacks() {
   std::vector<chromeos::WaitForServiceToBeAvailableCallback> callbacks;
   callbacks.swap(pending_wait_for_service_to_be_available_callbacks_);
-  for (auto& callback : callbacks)
+  for (auto& callback : callbacks) {
     std::move(callback).Run(false);
+  }
 }
 
 FakeUserDataAuthClient::AuthResult
@@ -1640,12 +1644,14 @@ FakeUserDataAuthClient::AuthenticateViaAuthFactors(
     const std::string& secret,
     bool wildcard_allowed,
     std::string* matched_factor_label) const {
-  if (!enable_auth_check_)
+  if (!enable_auth_check_) {
     return AuthResult::kAuthSuccess;
+  }
 
   const auto user_it = users_.find(account_id);
-  if (user_it == std::end(users_))
+  if (user_it == std::end(users_)) {
     return AuthResult::kUserNotFound;
+  }
   const UserCryptohomeState& user_state = user_it->second;
 
   if (wildcard_allowed && factor_label.empty()) {
@@ -1654,8 +1660,9 @@ FakeUserDataAuthClient::AuthenticateViaAuthFactors(
     for (const auto& [candidate_label, candidate_factor] :
          user_state.auth_factors) {
       if (CheckCredentialsViaAuthFactor(candidate_factor, secret)) {
-        if (matched_factor_label)
+        if (matched_factor_label) {
           *matched_factor_label = candidate_label;
+        }
         return AuthResult::kAuthSuccess;
       }
     }
@@ -1666,13 +1673,16 @@ FakeUserDataAuthClient::AuthenticateViaAuthFactors(
   }
 
   const auto factor_it = user_state.auth_factors.find(factor_label);
-  if (factor_it == std::end(user_state.auth_factors))
+  if (factor_it == std::end(user_state.auth_factors)) {
     return AuthResult::kFactorNotFound;
+  }
   const auto& [label, factor] = *factor_it;
-  if (!CheckCredentialsViaAuthFactor(factor, secret))
+  if (!CheckCredentialsViaAuthFactor(factor, secret)) {
     return AuthResult::kAuthFailed;
-  if (matched_factor_label)
+  }
+  if (matched_factor_label) {
     *matched_factor_label = label;
+  }
   return AuthResult::kAuthSuccess;
 }
 
@@ -1685,8 +1695,9 @@ void FakeUserDataAuthClient::SetNextOperationError(
 CryptohomeErrorCode FakeUserDataAuthClient::TakeOperationError(
     Operation operation) {
   const auto op_error = operation_errors_.find(operation);
-  if (op_error == std::end(operation_errors_))
+  if (op_error == std::end(operation_errors_)) {
     return CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  }
   CryptohomeErrorCode result = op_error->second;
   operation_errors_.erase(op_error);
   return result;
@@ -1718,8 +1729,9 @@ void FakeUserDataAuthClient::OnDircryptoMigrationProgressUpdated() {
 void FakeUserDataAuthClient::NotifyLowDiskSpace(uint64_t disk_free_bytes) {
   ::user_data_auth::LowDiskSpace status;
   status.set_disk_free_bytes(disk_free_bytes);
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.LowDiskSpace(status);
+  }
 }
 
 void FakeUserDataAuthClient::NotifyDircryptoMigrationProgress(
@@ -1730,14 +1742,16 @@ void FakeUserDataAuthClient::NotifyDircryptoMigrationProgress(
   progress.set_status(status);
   progress.set_current_bytes(current);
   progress.set_total_bytes(total);
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.DircryptoMigrationProgress(progress);
+  }
 }
 
 absl::optional<base::FilePath> FakeUserDataAuthClient::GetUserProfileDir(
     const cryptohome::AccountIdentifier& account_id) const {
-  if (!user_data_dir_.has_value())
+  if (!user_data_dir_.has_value()) {
     return absl::nullopt;
+  }
 
   std::string user_dir_base_name =
       kUserDataDirNamePrefix + account_id.account_id() + kUserDataDirNameSuffix;

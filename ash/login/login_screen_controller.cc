@@ -51,8 +51,9 @@ void SetSystemTrayVisibility(SystemTrayVisibility visibility) {
   for (RootWindowController* window_controller :
        Shell::GetAllRootWindowControllers()) {
     StatusAreaWidget* status_area = window_controller->GetStatusAreaWidget();
-    if (!status_area)
+    if (!status_area) {
       continue;
+    }
     if (window_controller == primary_window_controller) {
       status_area->SetSystemTrayVisibility(
           visibility == SystemTrayVisibility::kPrimary ||
@@ -131,8 +132,9 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
   LOG(WARNING) << "crbug.com/1339004 : started authentication";
   authentication_stage_ = AuthenticationStage::kDoAuthenticate;
 
-  if (authenticated_by_pin)
+  if (authenticated_by_pin) {
     DCHECK(base::ContainsOnlyChars(password, "0123456789"));
+  }
 
   client_->AuthenticateUserWithPasswordOrPin(
       account_id, password, authenticated_by_pin,
@@ -144,8 +146,9 @@ void LoginScreenController::AuthenticateUserWithEasyUnlock(
     const AccountId& account_id) {
   // TODO(jdufault): integrate this into authenticate stage after mojom is
   // refactored to use a callback.
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->AuthenticateUserWithEasyUnlock(account_id);
 }
 
@@ -174,8 +177,9 @@ ParentCodeValidationResult LoginScreenController::ValidateParentAccessCode(
     const std::string& code) {
   DCHECK(!validation_time.is_null());
 
-  if (!client_)
+  if (!client_) {
     return ParentCodeValidationResult::kInternalError;
+  }
 
   return client_->ValidateParentAccessCode(account_id, code, validation_time);
 }
@@ -186,89 +190,103 @@ bool LoginScreenController::GetSecurityTokenPinRequestCanceled() const {
 
 void LoginScreenController::HardlockPod(const AccountId& account_id) {
   GetModel()->NotifyFocusPod(account_id);
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->HardlockPod(account_id);
 }
 
 void LoginScreenController::OnFocusPod(const AccountId& account_id) {
   GetModel()->NotifyFocusPod(account_id);
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->OnFocusPod(account_id);
 }
 
 void LoginScreenController::OnNoPodFocused() {
   GetModel()->NotifyFocusPod(EmptyAccountId());
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->OnNoPodFocused();
 }
 
 void LoginScreenController::LoadWallpaper(const AccountId& account_id) {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->LoadWallpaper(account_id);
 }
 
 void LoginScreenController::SignOutUser() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->SignOutUser();
 }
 
 void LoginScreenController::CancelAddUser() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->CancelAddUser();
 }
 
 void LoginScreenController::LoginAsGuest() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->LoginAsGuest();
 }
 
 void LoginScreenController::ShowGuestTosScreen() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->ShowGuestTosScreen();
 }
 
 void LoginScreenController::OnMaxIncorrectPasswordAttempted(
     const AccountId& account_id) {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->OnMaxIncorrectPasswordAttempted(account_id);
 }
 
 void LoginScreenController::FocusLockScreenApps(bool reverse) {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->FocusLockScreenApps(reverse);
 }
 
 void LoginScreenController::ShowGaiaSignin(const AccountId& prefilled_account) {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->ShowGaiaSignin(prefilled_account);
 }
 
 void LoginScreenController::ShowOsInstallScreen() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->ShowOsInstallScreen();
 }
 
 void LoginScreenController::OnRemoveUserWarningShown() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->OnRemoveUserWarningShown();
 }
 
 void LoginScreenController::RemoveUser(const AccountId& account_id) {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->RemoveUser(account_id);
 }
 
@@ -276,16 +294,18 @@ void LoginScreenController::LaunchPublicSession(
     const AccountId& account_id,
     const std::string& locale,
     const std::string& input_method) {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->LaunchPublicSession(account_id, locale, input_method);
 }
 
 void LoginScreenController::RequestPublicSessionKeyboardLayouts(
     const AccountId& account_id,
     const std::string& locale) {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->RequestPublicSessionKeyboardLayouts(account_id, locale);
 }
 
@@ -441,8 +461,9 @@ void LoginScreenController::ConfigureKioskCallbacks(
 
 void LoginScreenController::HandleAccelerator(
     ash::LoginAcceleratorAction action) {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->HandleAccelerator(action);
 }
 
@@ -460,14 +481,16 @@ void LoginScreenController::ShowLockScreenNotificationSettings() {
 }
 
 void LoginScreenController::FocusOobeDialog() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->FocusOobeDialog();
 }
 
 void LoginScreenController::NotifyUserActivity() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->OnUserActivity();
 }
 
@@ -498,14 +521,16 @@ void LoginScreenController::OnShow() {
 }
 
 void LoginScreenController::OnFocusLeavingSystemTray(bool reverse) {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->OnFocusLeavingSystemTray(reverse);
 }
 
 void LoginScreenController::OnSystemTrayBubbleShown() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->OnSystemTrayBubbleShown();
 }
 
@@ -518,8 +543,9 @@ void LoginScreenController::OnLockScreenDestroyed() {
 }
 
 void LoginScreenController::NotifyLoginScreenShown() {
-  if (!client_)
+  if (!client_) {
     return;
+  }
   client_->OnLoginScreenShown();
 }
 

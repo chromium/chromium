@@ -117,8 +117,9 @@ bool SecurityTokenRequestController::SetPinUiState(
 }
 
 void SecurityTokenRequestController::ClosePinUi() {
-  if (!security_token_request_in_progress_)
+  if (!security_token_request_in_progress_) {
     return;
+  }
 
   if (PinRequestWidget::Get()) {
     PinRequestWidget::Get()->Close(false);  // Parameter will be ignored.

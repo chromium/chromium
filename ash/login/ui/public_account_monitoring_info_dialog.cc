@@ -106,8 +106,9 @@ PublicAccountMonitoringInfoDialog::PublicAccountMonitoringInfoDialog(
 }
 
 PublicAccountMonitoringInfoDialog::~PublicAccountMonitoringInfoDialog() {
-  if (controller_)
+  if (controller_) {
     controller_->OnLearnMoreDialogClosed();
+  }
 }
 
 bool PublicAccountMonitoringInfoDialog::IsVisible() {
@@ -115,8 +116,9 @@ bool PublicAccountMonitoringInfoDialog::IsVisible() {
 }
 
 void PublicAccountMonitoringInfoDialog::Show() {
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->Show();
+  }
 }
 
 void PublicAccountMonitoringInfoDialog::AddedToWidget() {

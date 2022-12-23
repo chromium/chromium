@@ -79,8 +79,9 @@ LoginPublicAccountUserView::LoginPublicAccountUserView(
       kArrowButtonSizeDp);
   std::string display_name = user.basic_user_info.display_name;
   // display_name can be empty in debug builds with stub users.
-  if (display_name.empty())
+  if (display_name.empty()) {
     display_name = user.basic_user_info.display_email;
+  }
   arrow_button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_PUBLIC_ACCOUNT_DIALOG_BUTTON_ACCESSIBLE_NAME,
       base::UTF8ToUTF16(display_name)));
@@ -140,8 +141,9 @@ void LoginPublicAccountUserView::SetAuthEnabled(bool enabled, bool animate) {
   // on it will not do anything (such as swapping users).
   user_view_->SetForceOpaque(enabled);
   user_view_->SetTapEnabled(!enabled);
-  if (enabled)
+  if (enabled) {
     arrow_button_->RequestFocus();
+  }
 
   PreferredSizeChanged();
 }
@@ -165,8 +167,9 @@ gfx::Size LoginPublicAccountUserView::CalculatePreferredSize() const {
 void LoginPublicAccountUserView::ArrowButtonPressed() {
   DCHECK(arrow_button_);
   // If the pod isn't active, activate it first.
-  if (!auth_enabled_)
+  if (!auth_enabled_) {
     OnUserViewTap();
+  }
 
   DCHECK(auth_enabled_);
   on_public_account_tap_.Run();
@@ -177,8 +180,9 @@ void LoginPublicAccountUserView::OnUserViewTap() {
 }
 
 void LoginPublicAccountUserView::OnHover(bool has_hover) {
-  if (!ignore_hover_)
+  if (!ignore_hover_) {
     UpdateArrowButtonOpacity(has_hover ? 1 : 0, true /*animate*/);
+  }
 }
 
 void LoginPublicAccountUserView::UpdateArrowButtonOpacity(float target_opacity,

@@ -160,8 +160,9 @@ ui::CallbackLayerAnimationObserver* BuildObserverToHideView(views::View* view) {
          const ui::CallbackLayerAnimationObserver& observer) {
         // Don't hide the view if the animation is aborted, as |view| may no
         // longer be valid.
-        if (observer.aborted_count())
+        if (observer.aborted_count()) {
           return true;
+        }
 
         view->SetVisible(false);
         return true;
@@ -176,8 +177,9 @@ ui::CallbackLayerAnimationObserver* BuildObserverToNotifyA11yLocationChanged(
          const ui::CallbackLayerAnimationObserver& observer) {
         // Don't notify a11y event if the animation is aborted, as |view| may no
         // longer be valid.
-        if (observer.aborted_count())
+        if (observer.aborted_count()) {
           return true;
+        }
 
         view->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
                                        false /*send_native_event*/);
@@ -193,8 +195,9 @@ ui::CallbackLayerAnimationObserver* BuildObserverToNotifyA11yLocationChanged(
          const ui::CallbackLayerAnimationObserver& observer) {
         // Don't notify a11y event if the animation is aborted, as |view| may no
         // longer be valid.
-        if (observer.aborted_count())
+        if (observer.aborted_count()) {
           return true;
+        }
 
         view->NotifyAccessibilityLocationChanged();
         return true;
@@ -241,16 +244,18 @@ class FingerprintLabel : public views::Label {
         case FingerprintState::DISABLED_FROM_ATTEMPTS:
           return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_ATTEMPTS_OLD;
         case FingerprintState::DISABLED_FROM_TIMEOUT:
-          if (can_use_pin)
+          if (can_use_pin) {
             return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PIN_OR_PASSWORD_REQUIRED;
+          }
           return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PASSWORD_REQUIRED;
       }
       NOTREACHED();
     };
 
     auto get_accessible_id = [&]() {
-      if (state == FingerprintState::DISABLED_FROM_ATTEMPTS)
+      if (state == FingerprintState::DISABLED_FROM_ATTEMPTS) {
         return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_ACCESSIBLE_AUTH_DISABLED_FROM_ATTEMPTS;
+      }
       return get_displayed_id();
     };
 
@@ -415,21 +420,24 @@ class LoginAuthUserView::FingerprintView : public views::View {
   ~FingerprintView() override = default;
 
   void SetState(FingerprintState state) {
-    if (state_ == state)
+    if (state_ == state) {
       return;
+    }
 
     reset_state_.Stop();
     state_ = state;
 
     DisplayCurrentState();
 
-    if (ShouldFireChromeVoxAlert(state))
+    if (ShouldFireChromeVoxAlert(state)) {
       FireAlert();
+    }
   }
 
   void SetCanUsePin(bool value) {
-    if (can_use_pin_ == value)
+    if (can_use_pin_ == value) {
       return;
+    }
 
     can_use_pin_ = value;
     label_->SetTextBasedOnState(state_, can_use_pin_);
@@ -469,8 +477,9 @@ class LoginAuthUserView::FingerprintView : public views::View {
 
   // views::View:
   void OnGestureEvent(ui::GestureEvent* event) override {
-    if (event->type() != ui::ET_GESTURE_TAP)
+    if (event->type() != ui::ET_GESTURE_TAP) {
       return;
+    }
     if (state_ == FingerprintState::AVAILABLE_DEFAULT ||
         state_ == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING) {
       SetState(FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING);
@@ -595,8 +604,9 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
   ~ChallengeResponseView() override = default;
 
   void SetState(State state) {
-    if (state_ == state)
+    if (state_ == state) {
       return;
+    }
     state_ = state;
 
     reset_state_timer_.Stop();
@@ -664,8 +674,9 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
 
   void ArrowButtonPressed() {
     // Ignore further clicks while handling the previous one.
-    if (state_ != State::kAuthenticating)
+    if (state_ != State::kAuthenticating) {
       on_start_tap_.Run();
+    }
   }
 
   base::RepeatingClosure on_start_tap_;
@@ -1300,9 +1311,10 @@ void LoginAuthUserView::SetAuthMethods(
 
   locked_tpm_message_view_->SetVisible(current_state.tpm_is_locked);
   if (current_state.tpm_is_locked &&
-      auth_metadata.time_until_tpm_unlock.has_value())
+      auth_metadata.time_until_tpm_unlock.has_value()) {
     locked_tpm_message_view_->SetRemainingTime(
         auth_metadata.time_until_tpm_unlock.value());
+  }
 
   // Adjust the PIN keyboard visibility before the password textfield's one, so
   // that when both are about to be hidden the focus doesn't jump to the "1"
@@ -1383,8 +1395,9 @@ void LoginAuthUserView::SetEasyUnlockIcon(
 
 void LoginAuthUserView::CaptureStateForAnimationPreLayout() {
   auto stop_animation = [](views::View* view) {
-    if (view->layer()->GetAnimator()->is_animating())
+    if (view->layer()->GetAnimator()->is_animating()) {
       view->layer()->GetAnimator()->StopAnimating();
+    }
   };
 
   // Stop any running animation scheduled in ApplyAnimationPostLayout.
@@ -1447,8 +1460,9 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
 
   if (current_state.has_password != previous_state_->has_password) {
     float opacity_start = 0, opacity_end = 1;
-    if (!current_state.has_password)
+    if (!current_state.has_password) {
       std::swap(opacity_start, opacity_end);
+    }
 
     password_view_->layer()->SetOpacity(opacity_start);
 
@@ -1470,8 +1484,9 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   // Fade the pin/pwd toggle if its being hidden or shown.
   if (previous_state_->has_toggle != current_state.has_toggle) {
     float opacity_start = 0, opacity_end = 1;
-    if (!current_state.has_toggle)
+    if (!current_state.has_toggle) {
       std::swap(opacity_start, opacity_end);
+    }
 
     pin_password_toggle_->layer()->SetOpacity(opacity_start);
 
@@ -1527,8 +1542,9 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   if (!smart_lock_ui_revamp_enabled_ && fingerprint_view_ &&
       previous_state_->has_fingerprint != current_state.has_fingerprint) {
     float opacity_start = 0, opacity_end = 1;
-    if (!current_state.has_fingerprint)
+    if (!current_state.has_fingerprint) {
       std::swap(opacity_start, opacity_end);
+    }
 
     fingerprint_view_->layer()->SetOpacity(opacity_start);
 
@@ -1585,8 +1601,9 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   if (previous_state_->has_challenge_response !=
       current_state.has_challenge_response) {
     float opacity_start = 0, opacity_end = 1;
-    if (!current_state.has_challenge_response)
+    if (!current_state.has_challenge_response) {
       std::swap(opacity_start, opacity_end);
+    }
 
     challenge_response_view_->layer()->SetOpacity(opacity_start);
 
@@ -1668,8 +1685,9 @@ const LoginUserInfo& LoginAuthUserView::current_user() const {
 }
 
 base::WeakPtr<views::View> LoginAuthUserView::GetActiveInputView() {
-  if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE)
+  if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE) {
     return pin_input_view_ != nullptr ? pin_input_view_->AsWeakPtr() : nullptr;
+  }
 
   return password_view_ != nullptr ? password_view_->AsWeakPtr() : nullptr;
 }
@@ -1683,10 +1701,11 @@ gfx::Size LoginAuthUserView::CalculatePreferredSize() const {
 }
 
 void LoginAuthUserView::RequestFocus() {
-  if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE)
+  if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE) {
     pin_input_view_->RequestFocus();
-  else if (password_view_->GetEnabled())
+  } else if (password_view_->GetEnabled()) {
     RequestFocusOnPasswordView();
+  }
 }
 
 void LoginAuthUserView::OnGestureEvent(ui::GestureEvent* event) {
@@ -1803,31 +1822,35 @@ void LoginAuthUserView::OnOnlineSignInMessageTap() {
 void LoginAuthUserView::OnPinPadBackspace() {
   DCHECK(pin_input_view_);
   DCHECK(password_view_);
-  if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE)
+  if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE) {
     pin_input_view_->Backspace();
-  else
+  } else {
     password_view_->Backspace();
+  }
 }
 
 void LoginAuthUserView::OnPinPadInsertDigit(int digit) {
   DCHECK(pin_input_view_);
   DCHECK(password_view_);
-  if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE)
+  if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE) {
     pin_input_view_->InsertDigit(digit);
-  else
+  } else {
     password_view_->InsertNumber(digit);
+  }
 }
 
 void LoginAuthUserView::OnPasswordTextChanged(bool is_empty) {
   DCHECK(pin_view_);
-  if (input_field_mode_ != InputFieldMode::PIN_WITH_TOGGLE)
+  if (input_field_mode_ != InputFieldMode::PIN_WITH_TOGGLE) {
     pin_view_->OnPasswordTextChanged(is_empty);
+  }
 }
 
 void LoginAuthUserView::OnPinTextChanged(bool is_empty) {
   DCHECK(pin_view_);
-  if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE)
+  if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE) {
     pin_view_->OnPasswordTextChanged(is_empty);
+  }
 }
 
 bool LoginAuthUserView::HasAuthMethod(AuthMethods auth_method) const {
@@ -1857,8 +1880,9 @@ void LoginAuthUserView::RequestFocusOnPasswordView() {
   // Bring up the virtual keyboard if enabled as soon as we get the focus.
   // This way, the user does not have to type twice (on the user pod and
   // additionally on the textfield or user view).
-  if (GetInputMethod() && !current_state.has_pinpad)
+  if (GetInputMethod() && !current_state.has_pinpad) {
     GetInputMethod()->SetVirtualKeyboardVisibilityIfEnabled(true);
+  }
 }
 
 void LoginAuthUserView::UpdateFocus() {
@@ -1870,18 +1894,23 @@ void LoginAuthUserView::UpdateFocus() {
     return;
   }
   // All further states are exclusive.
-  if (current_state.auth_disabled)
+  if (current_state.auth_disabled) {
     disabled_auth_message_->RequestFocus();
-  if (current_state.has_challenge_response)
+  }
+  if (current_state.has_challenge_response) {
     challenge_response_view_->RequestFocus();
-  if (current_state.has_password && !previous_state_->has_password)
+  }
+  if (current_state.has_password && !previous_state_->has_password) {
     RequestFocusOnPasswordView();
-  if (current_state.has_pin_input)
+  }
+  if (current_state.has_pin_input) {
     pin_input_view_->RequestFocus();
+  }
   // Tapping the user view will trigger the online sign-in flow when
   // |force_online_sign_in| is true.
-  if (current_state.force_online_sign_in)
+  if (current_state.force_online_sign_in) {
     user_view_->RequestFocus();
+  }
 }
 
 void LoginAuthUserView::OnSwitchButtonClicked() {
@@ -1943,8 +1972,9 @@ void LoginAuthUserView::UpdateInputFieldMode() {
 }
 
 bool LoginAuthUserView::ShouldShowPinPad() const {
-  if (auth_metadata_.virtual_keyboard_visible)
+  if (auth_metadata_.virtual_keyboard_visible) {
     return false;
+  }
   switch (input_field_mode_) {
     case InputFieldMode::NONE:
       return false;
@@ -1975,14 +2005,18 @@ bool LoginAuthUserView::ShouldShowToggle() const {
 gfx::Size LoginAuthUserView::GetPaddingBelowUserView() const {
   const UiState state{this};
 
-  if (state.has_password)
+  if (state.has_password) {
     return SizeFromHeight(kDistanceBetweenUserViewAndPasswordDp);
-  if (state.has_pin_input)
+  }
+  if (state.has_pin_input) {
     return SizeFromHeight(kDistanceBetweenUserViewAndPinInputDp);
-  if (state.force_online_sign_in)
+  }
+  if (state.force_online_sign_in) {
     return SizeFromHeight(kDistanceBetweenUserViewAndOnlineSigninDp);
-  if (state.has_challenge_response)
+  }
+  if (state.has_challenge_response) {
     return SizeFromHeight(kDistanceBetweenUserViewAndChallengeResponseDp);
+  }
 
   return SizeFromHeight(0);
 }
@@ -1990,33 +2024,39 @@ gfx::Size LoginAuthUserView::GetPaddingBelowUserView() const {
 gfx::Size LoginAuthUserView::GetPaddingBelowPasswordView() const {
   const UiState state{this};
 
-  if (state.has_pinpad)
+  if (state.has_pinpad) {
     return SizeFromHeight(kDistanceBetweenPasswordFieldAndPinKeyboardDp);
+  }
   if (state.has_fingerprint ||
-      (auth_factors_view_ && auth_factors_view_->GetVisible()))
+      (auth_factors_view_ && auth_factors_view_->GetVisible())) {
     return SizeFromHeight(kDistanceBetweenPasswordFieldAndFingerprintViewDp);
-  if (state.has_challenge_response)
+  }
+  if (state.has_challenge_response) {
     return SizeFromHeight(kDistanceBetweenPwdFieldAndChallengeResponseViewDp);
+  }
 
   return SizeFromHeight(0);
 }
 
 std::u16string LoginAuthUserView::GetPinPasswordToggleText() const {
-  if (input_field_mode_ == InputFieldMode::PWD_WITH_TOGGLE)
+  if (input_field_mode_ == InputFieldMode::PWD_WITH_TOGGLE) {
     return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SWITCH_TO_PIN);
-  else
+  } else {
     return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SWITCH_TO_PASSWORD);
+  }
 }
 
 std::u16string LoginAuthUserView::GetPasswordViewPlaceholder() const {
   // Note: |AUTH_TAP| must have higher priority than |AUTH_PIN| when
   // determining the placeholder.
-  if (HasAuthMethod(AUTH_TAP) && !smart_lock_ui_revamp_enabled_)
+  if (HasAuthMethod(AUTH_TAP) && !smart_lock_ui_revamp_enabled_) {
     return l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_PASSWORD_TAP_PLACEHOLDER);
-  if (input_field_mode_ == InputFieldMode::PIN_AND_PASSWORD)
+  }
+  if (input_field_mode_ == InputFieldMode::PIN_AND_PASSWORD) {
     return l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER);
+  }
 
   return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER);
 }

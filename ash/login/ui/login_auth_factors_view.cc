@@ -92,8 +92,9 @@ PrioritizedAuthFactorViewState GetPrioritizedAuthFactorViewState(
     case AuthFactorState::kUnavailable:
       return PrioritizedAuthFactorViewState::kUnavailable;
     case AuthFactorState::kErrorPermanent:
-      if (auth_factor.has_permanent_error_display_timed_out())
+      if (auth_factor.has_permanent_error_display_timed_out()) {
         return PrioritizedAuthFactorViewState::kErrorBackground;
+      }
 
       return PrioritizedAuthFactorViewState::kErrorForeground;
     case AuthFactorState::kAvailable:
@@ -116,8 +117,9 @@ PrioritizedAuthFactorViewState GetPrioritizedAuthFactorViewState(
 // state determines the behavior of LoginAuthFactorsView.
 AuthFactorModel* GetHighestPriorityAuthFactor(
     const std::vector<std::unique_ptr<AuthFactorModel>>& auth_factors) {
-  if (auth_factors.empty())
+  if (auth_factors.empty()) {
     return nullptr;
+  }
 
   // PrioritizedAuthFactorViewState enum values are assigned so that the
   // highest numerical value corresponds to the highest priority.
@@ -216,9 +218,9 @@ LoginAuthFactorsView::LoginAuthFactorsView(
   arrow_nudge_animation_ =
       arrow_icon_container_->AddChildView(std::make_unique<AuthIconView>());
   arrow_nudge_animation_->SetCircleImage(
-      kArrowButtonSizeDp / 2, AshColorProvider::Get()->GetControlsLayerColor(
-                                  AshColorProvider::ControlsLayerType::
-                                      kHairlineBorderColor));
+      kArrowButtonSizeDp / 2,
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kHairlineBorderColor));
 
   arrow_nudge_animation_->set_on_tap_or_click_callback(base::BindRepeating(
       &LoginAuthFactorsView::RelayArrowButtonPressed, base::Unretained(this)));
@@ -256,8 +258,9 @@ void LoginAuthFactorsView::AddAuthFactor(
 }
 
 void LoginAuthFactorsView::SetCanUsePin(bool can_use_pin) {
-  if (can_use_pin == AuthFactorModel::can_use_pin())
+  if (can_use_pin == AuthFactorModel::can_use_pin()) {
     return;
+  }
 
   AuthFactorModel::set_can_use_pin(can_use_pin);
   UpdateState();
@@ -343,8 +346,9 @@ void LoginAuthFactorsView::UpdateState() {
       // the error for a period of time.
 
       // Do not replace the current error if an error is already showing.
-      if (error_timer_.IsRunning())
+      if (error_timer_.IsRunning()) {
         return;
+      }
 
       error_timer_.Start(FROM_HERE, kErrorTimeout,
                          base::BindOnce(&LoginAuthFactorsView::OnErrorTimeout,
@@ -451,8 +455,9 @@ int LoginAuthFactorsView::GetReadyLabelId() const {
     return GetDefaultLabelId();
   }
 
-  if (ready_factor_count == 1u)
+  if (ready_factor_count == 1u) {
     return ready_factor->GetLabelId();
+  }
 
   // Multiple auth factors are ready.
   switch (ready_factors) {

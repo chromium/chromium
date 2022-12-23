@@ -43,8 +43,9 @@ void PinRequestWidget::Show(PinRequest request,
                             PinRequestView::Delegate* delegate) {
   DCHECK(!instance_);
   instance_ = new PinRequestWidget(std::move(request), delegate);
-  if (GetOnShownCallback())
+  if (GetOnShownCallback()) {
     GetOnShownCallback().Run();
+  }
 }
 
 // static
@@ -104,8 +105,9 @@ PinRequestWidget::PinRequestWidget(PinRequest request,
           : kShellWindowId_LockSystemModalContainer;
   widget_params.parent =
       Shell::GetPrimaryRootWindow()->GetChildById(parent_window_id);
-  if (request.extra_dimmer)
+  if (request.extra_dimmer) {
     dimmer_ = std::make_unique<WindowDimmer>(widget_params.parent);
+  }
   request.on_pin_request_done =
       base::BindOnce(&PinRequestWidget::Close, weak_factory_.GetWeakPtr());
   widget_params.delegate = new PinRequestView(std::move(request), delegate);
@@ -119,15 +121,17 @@ PinRequestWidget::PinRequestWidget(PinRequest request,
 PinRequestWidget::~PinRequestWidget() = default;
 
 void PinRequestWidget::Show() {
-  if (dimmer_)
+  if (dimmer_) {
     dimmer_->window()->Show();
+  }
 
   DCHECK(widget_);
   widget_->Show();
 
   auto* keyboard_controller = Shell::Get()->keyboard_controller();
-  if (keyboard_controller && keyboard_controller->IsKeyboardEnabled())
+  if (keyboard_controller && keyboard_controller->IsKeyboardEnabled()) {
     keyboard_controller->HideKeyboard(HideReason::kSystem);
+  }
 }
 
 PinRequestView* PinRequestWidget::GetView() {

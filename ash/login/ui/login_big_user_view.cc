@@ -64,25 +64,28 @@ void LoginBigUserView::OnThemeChanged() {
 }
 
 void LoginBigUserView::CreateChildView(const LoginUserInfo& user) {
-  if (IsPublicAccountUser(user))
+  if (IsPublicAccountUser(user)) {
     CreatePublicAccount(user);
-  else
+  } else {
     CreateAuthUser(user);
+  }
 }
 
 void LoginBigUserView::UpdateForUser(const LoginUserInfo& user) {
   // Rebuild child view for the following swap case:
   // 1. Public Account -> Auth User
   // 2. Auth User      -> Public Account
-  if (IsPublicAccountUser(user) != IsPublicAccountUser(GetCurrentUser()))
+  if (IsPublicAccountUser(user) != IsPublicAccountUser(GetCurrentUser())) {
     CreateChildView(user);
+  }
 
   DCHECK(OnlyOneSet(public_account_, auth_user_));
   if (public_account_) {
     public_account_->UpdateForUser(user);
   }
-  if (auth_user_)
+  if (auth_user_) {
     auth_user_->UpdateForUser(user);
+  }
 }
 
 const LoginUserInfo& LoginBigUserView::GetCurrentUser() const {

@@ -116,8 +116,9 @@ class LoginExpandedPublicAccountEventHandler : public ui::EventHandler {
  private:
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED)
+    if (event->type() == ui::ET_MOUSE_PRESSED) {
       view_->ProcessPressedEvent(event->AsLocatedEvent());
+    }
   }
   void OnGestureEvent(ui::GestureEvent* event) override {
     if ((event->type() == ui::ET_GESTURE_TAP ||
@@ -202,8 +203,9 @@ class SelectionButtonView : public LoginButton {
   }
 
   void SetMargins(int left, int right) {
-    if (left_margin_ == left && right_margin_ == right)
+    if (left_margin_ == left && right_margin_ == right) {
       return;
+    }
 
     left_margin_ = left;
     right_margin_ = right;
@@ -309,8 +311,9 @@ class MonitoringWarningView : public NonAccessibleView {
     // Call sequence of UpdateForUser() and SetWarningType() is not clear.
     // In case SetWarningType is called first there is a need to wait for
     // device_manager_ is set.
-    if (warning_type_ == WarningType::kNone || !device_manager_.has_value())
+    if (warning_type_ == WarningType::kNone || !device_manager_.has_value()) {
       return;
+    }
     std::u16string label_text;
     if (warning_type_ == WarningType::kFullWarning) {
       label_text = l10n_util::GetStringFUTF16(
@@ -433,17 +436,20 @@ class RightPaneView : public NonAccessibleView {
     DCHECK_EQ(user.basic_user_info.type,
               user_manager::USER_TYPE_PUBLIC_ACCOUNT);
     current_user_ = user;
-    if (!language_changed_by_user_)
+    if (!language_changed_by_user_) {
       selected_language_item_value_ = user.public_account_info->default_locale;
+    }
 
     PopulateLanguageItems(user.public_account_info->available_locales);
 
     if (user.public_account_info->default_locale ==
-        selected_language_item_value_)
+        selected_language_item_value_) {
       PopulateKeyboardItems(user.public_account_info->keyboard_layouts);
+    }
 
-    if (!show_advanced_changed_by_user_)
+    if (!show_advanced_changed_by_user_) {
       advanced_view_->SetVisible(user.public_account_info->show_advanced_view);
+    }
   }
 
   void OnLanguageSelected(const std::string& value) {
@@ -477,8 +483,9 @@ class RightPaneView : public NonAccessibleView {
         item.is_group = false;
         item.selected = selected_language_item_value_ == locale.language_code;
       }
-      if (selected_language_item_value_ == locale.language_code)
+      if (selected_language_item_value_ == locale.language_code) {
         selected_language_index = language_items_.size();
+      }
       language_items_.push_back(item);
     }
 
@@ -649,21 +656,24 @@ LoginExpandedPublicAccountView::TestApi::selected_keyboard_item_value() {
 
 views::ImageView*
 LoginExpandedPublicAccountView::TestApi::monitoring_warning_icon() {
-  if (view_->monitoring_warning_view_)
+  if (view_->monitoring_warning_view_) {
     return view_->monitoring_warning_view_->image_;
+  }
   return nullptr;
 }
 
 views::Label*
 LoginExpandedPublicAccountView::TestApi::monitoring_warning_label() {
-  if (view_->monitoring_warning_view_)
+  if (view_->monitoring_warning_view_) {
     return view_->monitoring_warning_view_->label_;
+  }
   return nullptr;
 }
 
 void LoginExpandedPublicAccountView::TestApi::ResetUserForTest() {
-  if (view_->monitoring_warning_view_)
+  if (view_->monitoring_warning_view_) {
     view_->monitoring_warning_view_->device_manager_.reset();
+  }
 }
 
 bool LoginExpandedPublicAccountView::TestApi::SelectLanguage(
@@ -762,15 +772,18 @@ void LoginExpandedPublicAccountView::RegisterLocalStatePrefs(
 
 void LoginExpandedPublicAccountView::ProcessPressedEvent(
     const ui::LocatedEvent* event) {
-  if (!GetVisible())
+  if (!GetVisible()) {
     return;
+  }
 
   // Keep this view to be visible until learn more dialog is dismissed.
-  if (learn_more_dialog_ && learn_more_dialog_->IsVisible())
+  if (learn_more_dialog_ && learn_more_dialog_->IsVisible()) {
     return;
+  }
 
-  if (GetBoundsInScreen().Contains(event->root_location()))
+  if (GetBoundsInScreen().Contains(event->root_location())) {
     return;
+  }
 
   // Ignore press event if the language or keyboard menu is still running,
   // or if it had just been closed. Note that when we checked closed time,
@@ -800,8 +813,9 @@ void LoginExpandedPublicAccountView::ProcessPressedEvent(
 void LoginExpandedPublicAccountView::UpdateForUser(const LoginUserInfo& user) {
   user_view_->UpdateForUser(user, false /*animate*/);
   right_pane_->UpdateForUser(user);
-  if (monitoring_warning_view_)
+  if (monitoring_warning_view_) {
     monitoring_warning_view_->UpdateForUser(user);
+  }
 }
 
 const LoginUserInfo& LoginExpandedPublicAccountView::current_user() const {
@@ -880,12 +894,14 @@ void LoginExpandedPublicAccountView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void LoginExpandedPublicAccountView::OnKeyEvent(ui::KeyEvent* event) {
-  if (!GetVisible() || event->type() != ui::ET_KEY_PRESSED)
+  if (!GetVisible() || event->type() != ui::ET_KEY_PRESSED) {
     return;
+  }
 
   // Give learn more dialog a chance to handle key event.
-  if (learn_more_dialog_ && learn_more_dialog_->IsVisible())
+  if (learn_more_dialog_ && learn_more_dialog_->IsVisible()) {
     return;
+  }
 
   if (event->key_code() == ui::KeyboardCode::VKEY_ESCAPE) {
     Hide();

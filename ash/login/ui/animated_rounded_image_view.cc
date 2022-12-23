@@ -85,8 +85,9 @@ void AnimatedRoundedImageView::OnPaint(gfx::Canvas* canvas) {
   }
 
   // Nothing to render.
-  if (frames_.empty())
+  if (frames_.empty()) {
     return;
+  }
 
   View::OnPaint(canvas);
   gfx::Rect image_bounds(GetContentsBounds());

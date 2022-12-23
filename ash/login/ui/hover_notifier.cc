@@ -20,8 +20,9 @@ HoverNotifier::~HoverNotifier() {
 
 void HoverNotifier::OnEvent(ui::Event* event) {
   bool has_hover = target_view_->IsMouseHovered();
-  if (has_hover == had_hover_)
+  if (has_hover == had_hover_) {
     return;
+  }
 
   had_hover_ = has_hover;
   on_hover_.Run(has_hover);

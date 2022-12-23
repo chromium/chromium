@@ -81,10 +81,12 @@ KeyDefinition::ProviderData::ProviderData(const std::string& name)
 
 KeyDefinition::ProviderData::ProviderData(const ProviderData& other)
     : name(other.name) {
-  if (other.number)
+  if (other.number) {
     number = std::make_unique<int64_t>(*other.number);
-  if (other.bytes)
+  }
+  if (other.bytes) {
     bytes = std::make_unique<std::string>(*other.bytes);
+  }
 }
 
 KeyDefinition::ProviderData::ProviderData(const std::string& name,
@@ -157,8 +159,9 @@ bool KeyDefinition::operator==(const KeyDefinition& other) const {
   }
 
   for (size_t i = 0; i < provider_data.size(); ++i) {
-    if (!(provider_data[i] == other.provider_data[i]))
+    if (!(provider_data[i] == other.provider_data[i])) {
       return false;
+    }
   }
   return true;
 }

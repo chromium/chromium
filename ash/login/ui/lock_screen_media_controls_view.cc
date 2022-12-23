@@ -425,8 +425,9 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   // |service| can be null in tests.
   media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
-  if (!service)
+  if (!service) {
     return;
+  }
 
   // Connect to the MediaControllerManager and create a MediaController that
   // controls the active session so we can observe it.
@@ -456,8 +457,10 @@ LockScreenMediaControlsView::~LockScreenMediaControlsView() {
   // If the screen is now unlocked and we were not hidden for another reason
   // then we are being hidden because the device is now unlocked.
   if (shown_ == Shown::kShown) {
-    if (!hide_reason_ && !Shell::Get()->session_controller()->IsScreenLocked())
+    if (!hide_reason_ &&
+        !Shell::Get()->session_controller()->IsScreenLocked()) {
       hide_reason_ = HideReason::kUnlocked;
+    }
 
     // Only record hide reason if there is one. The value could be missing
     // when ash shuts down with the media controls.
@@ -486,20 +489,23 @@ void LockScreenMediaControlsView::GetAccessibleNodeData(
       l10n_util::GetStringUTF8(
           IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACCESSIBLE_NAME));
 
-  if (!accessible_name_.empty())
+  if (!accessible_name_.empty()) {
     node_data->SetName(accessible_name_);
+  }
 }
 
 void LockScreenMediaControlsView::OnMouseEntered(const ui::MouseEvent& event) {
-  if (is_in_drag_ || contents_view_->layer()->GetAnimator()->is_animating())
+  if (is_in_drag_ || contents_view_->layer()->GetAnimator()->is_animating()) {
     return;
+  }
 
   header_row_->SetForceShowCloseButton(true);
 }
 
 void LockScreenMediaControlsView::OnMouseExited(const ui::MouseEvent& event) {
-  if (is_in_drag_ || contents_view_->layer()->GetAnimator()->is_animating())
+  if (is_in_drag_ || contents_view_->layer()->GetAnimator()->is_animating()) {
     return;
+  }
 
   header_row_->SetForceShowCloseButton(false);
 }
@@ -511,8 +517,9 @@ void LockScreenMediaControlsView::OnThemeChanged() {
 
 void LockScreenMediaControlsView::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
-  if (hide_controls_timer_->IsRunning())
+  if (hide_controls_timer_->IsRunning()) {
     return;
+  }
 
   // If the controls are disabled then don't show the controls.
   if (!media_controls_enabled_.Run()) {
@@ -541,16 +548,18 @@ void LockScreenMediaControlsView::MediaSessionInfoChanged(
     return;
   }
 
-  if (!IsDrawn())
+  if (!IsDrawn()) {
     SetShown(Shown::kShown);
+  }
 
   SetIsPlaying(!is_paused);
 }
 
 void LockScreenMediaControlsView::MediaSessionMetadataChanged(
     const absl::optional<media_session::MediaMetadata>& metadata) {
-  if (hide_controls_timer_->IsRunning())
+  if (hide_controls_timer_->IsRunning()) {
     return;
+  }
 
   media_session::MediaMetadata session_metadata =
       metadata.value_or(media_session::MediaMetadata());
@@ -569,8 +578,9 @@ void LockScreenMediaControlsView::MediaSessionMetadataChanged(
 
 void LockScreenMediaControlsView::MediaSessionActionsChanged(
     const std::vector<MediaSessionAction>& actions) {
-  if (hide_controls_timer_->IsRunning())
+  if (hide_controls_timer_->IsRunning()) {
     return;
+  }
 
   enabled_actions_ =
       base::flat_set<MediaSessionAction>(actions.begin(), actions.end());
@@ -586,13 +596,15 @@ void LockScreenMediaControlsView::MediaSessionChanged(
   }
 
   // If |media_session_id_| resumed while waiting, don't hide the controls.
-  if (hide_controls_timer_->IsRunning() && request_id == media_session_id_)
+  if (hide_controls_timer_->IsRunning() && request_id == media_session_id_) {
     hide_controls_timer_->Stop();
+  }
 
   // If this session is different than the previous one, wait to see if the
   // previous one resumes before hiding the controls.
-  if (request_id == media_session_id_)
+  if (request_id == media_session_id_) {
     return;
+  }
 
   hide_controls_timer_->Start(
       FROM_HERE, kNextMediaDelay,
@@ -602,8 +614,9 @@ void LockScreenMediaControlsView::MediaSessionChanged(
 
 void LockScreenMediaControlsView::MediaSessionPositionChanged(
     const absl::optional<media_session::MediaPosition>& position) {
-  if (hide_controls_timer_->IsRunning())
+  if (hide_controls_timer_->IsRunning()) {
     return;
+  }
 
   position_ = position;
 
@@ -626,8 +639,9 @@ void LockScreenMediaControlsView::MediaSessionPositionChanged(
 void LockScreenMediaControlsView::MediaControllerImageChanged(
     media_session::mojom::MediaSessionImageType type,
     const SkBitmap& bitmap) {
-  if (hide_controls_timer_->IsRunning())
+  if (hide_controls_timer_->IsRunning()) {
     return;
+  }
 
   // Convert the bitmap to kN32_SkColorType if necessary.
   SkBitmap converted_bitmap;
@@ -644,8 +658,9 @@ void LockScreenMediaControlsView::MediaControllerImageChanged(
   switch (type) {
     case media_session::mojom::MediaSessionImageType::kArtwork: {
       absl::optional<gfx::ImageSkia> session_artwork;
-      if (!converted_bitmap.empty())
+      if (!converted_bitmap.empty()) {
         session_artwork = gfx::ImageSkia::CreateFrom1xBitmap(converted_bitmap);
+      }
       SetArtwork(session_artwork);
       break;
     }
@@ -673,8 +688,9 @@ void LockScreenMediaControlsView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::ET_SCROLL_FLING_START:
     case ui::ET_GESTURE_SCROLL_BEGIN: {
-      if (is_in_drag_)
+      if (is_in_drag_) {
         break;
+      }
 
       initial_drag_point_ = point_in_screen;
       is_in_drag_ = true;
@@ -688,8 +704,9 @@ void LockScreenMediaControlsView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     }
     case ui::ET_GESTURE_END: {
-      if (!is_in_drag_)
+      if (!is_in_drag_) {
         break;
+      }
 
       EndDrag();
       event->SetHandled();
@@ -737,8 +754,9 @@ void LockScreenMediaControlsView::UpdateActionButtonsVisibility() {
     action_button->SetVisible(should_show);
   }
 
-  if (should_invalidate)
+  if (should_invalidate) {
     button_row_->InvalidateLayout();
+  }
 }
 
 void LockScreenMediaControlsView::SetIsPlaying(bool playing) {
@@ -767,8 +785,9 @@ void LockScreenMediaControlsView::SeekTo(double seek_progress) {
 }
 
 void LockScreenMediaControlsView::Hide(HideReason reason) {
-  if (!hide_reason_ && GetVisible())
+  if (!hide_reason_ && GetVisible()) {
     hide_reason_ = reason;
+  }
 
   hide_media_controls_.Run();
 }
@@ -780,8 +799,9 @@ void LockScreenMediaControlsView::HideArtwork() {
 }
 
 void LockScreenMediaControlsView::SetShown(Shown shown) {
-  if (shown_ == shown)
+  if (shown_ == shown) {
     return;
+  }
 
   shown_ = shown;
 
@@ -806,8 +826,9 @@ void LockScreenMediaControlsView::Dismiss() {
 void LockScreenMediaControlsView::SetArtwork(
     absl::optional<gfx::ImageSkia> img) {
   if (!img.has_value()) {
-    if (!session_artwork_->GetVisible() || hide_artwork_timer_->IsRunning())
+    if (!session_artwork_->GetVisible() || hide_artwork_timer_->IsRunning()) {
       return;
+    }
 
     hide_artwork_timer_->Start(
         FROM_HERE, kNextMediaDelay,
@@ -816,8 +837,9 @@ void LockScreenMediaControlsView::SetArtwork(
     return;
   }
 
-  if (hide_artwork_timer_->IsRunning())
+  if (hide_artwork_timer_->IsRunning()) {
     hide_artwork_timer_->Stop();
+  }
 
   session_artwork_->SetVisible(true);
   session_artwork_->SetImageSize(

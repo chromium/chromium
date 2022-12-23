@@ -193,8 +193,9 @@ class LoginUserView::UserImage : public NonAccessibleView {
     // Set the initial image from |avatar| since we already have it available.
     // Then, decode the bytes via blink's PNG decoder and play any animated
     // frames if they are available.
-    if (!user.basic_user_info.avatar.image.isNull())
+    if (!user.basic_user_info.avatar.image.isNull()) {
       image_->SetImage(user.basic_user_info.avatar.image);
+    }
 
     // Decode the avatar using blink, as blink's PNG decoder supports APNG,
     // which is the format used for the animated avators.
@@ -305,8 +306,9 @@ class LoginUserView::UserLabel : public NonAccessibleView {
   void UpdateForUser(const LoginUserInfo& user) {
     std::string display_name = user.basic_user_info.display_name;
     // display_name can be empty in debug builds with stub users.
-    if (display_name.empty())
+    if (display_name.empty()) {
       display_name = user.basic_user_info.display_email;
+    }
 
     user_name_->SetText(gfx::ElideText(base::UTF8ToUTF16(display_name),
                                        user_name_->font_list(), label_width_,
@@ -473,15 +475,17 @@ LoginUserView::LoginUserView(
   };
   setup_layer(user_image_);
   setup_layer(user_label_);
-  if (dropdown_)
+  if (dropdown_) {
     setup_layer(dropdown_);
+  }
 
   hover_notifier_ = std::make_unique<HoverNotifier>(
       this,
       base::BindRepeating(&LoginUserView::OnHover, base::Unretained(this)));
 
-  if (ash::Shell::HasInstance())
+  if (ash::Shell::HasInstance()) {
     display_observation_.Observe(ash::Shell::Get()->display_configurator());
+  }
 }
 
 LoginUserView::~LoginUserView() {
@@ -607,8 +611,9 @@ views::View::Views LoginUserView::GetChildrenInZOrder() {
     std::rotate(it, it + 1, children.end());
   };
   move_child_to_top(tap_button_);
-  if (dropdown_)
+  if (dropdown_) {
     move_child_to_top(dropdown_);
+  }
   return children;
 }
 
@@ -629,9 +634,10 @@ void LoginUserView::DropdownButtonPressed() {
   bool opener_focused = remove_account_dialog_->GetBubbleOpener() &&
                         remove_account_dialog_->GetBubbleOpener()->HasFocus();
 
-  if (!remove_account_dialog_->parent())
+  if (!remove_account_dialog_->parent()) {
     login_views_utils::GetBubbleContainer(this)->AddChildView(
         remove_account_dialog_);
+  }
 
   // Reset state in case the remove-user button was clicked once previously.
   remove_account_dialog_->ResetState();
@@ -640,8 +646,9 @@ void LoginUserView::DropdownButtonPressed() {
   // If the remove account dialog was opened by pressing Enter on the focused
   // dropdown, focus should automatically go to the remove-user button (for
   // keyboard accessibility).
-  if (opener_focused)
+  if (opener_focused) {
     remove_account_dialog_->RequestFocus();
+  }
 }
 
 void LoginUserView::UpdateCurrentUserState() {
@@ -679,8 +686,9 @@ void LoginUserView::UpdateOpacity() {
   bool was_opaque = is_opaque_;
   is_opaque_ =
       force_opaque_ || tap_button_->IsMouseHovered() || tap_button_->HasFocus();
-  if (was_opaque == is_opaque_)
+  if (was_opaque == is_opaque_) {
     return;
+  }
 
   // Animate to new opacity.
   auto build_settings = [](views::View* view)
@@ -740,13 +748,15 @@ void LoginUserView::SetLargeLayout() {
                            views::LayoutAlignment::kCenter);
 
   auto* skip_column = AddChildView(std::make_unique<NonAccessibleView>());
-  if (dropdown_)
+  if (dropdown_) {
     skip_column->SetPreferredSize(dropdown_->GetPreferredSize());
+  }
 
   AddChildView(user_label_);
 
-  if (dropdown_)
+  if (dropdown_) {
     AddChildView(dropdown_);
+  }
 }
 
 void LoginUserView::SetSmallishLayout() {
@@ -762,8 +772,9 @@ void LoginUserView::SetSmallishLayout() {
 
 void LoginUserView::DeleteDialog() {
   if (remove_account_dialog_) {
-    if (remove_account_dialog_->parent())
+    if (remove_account_dialog_->parent()) {
       remove_account_dialog_->parent()->RemoveChildView(remove_account_dialog_);
+    }
     delete remove_account_dialog_;
     remove_account_dialog_ = nullptr;
   }

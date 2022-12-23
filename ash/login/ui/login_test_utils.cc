@@ -105,8 +105,9 @@ bool TabThroughView(ui::test::EventGenerator* event_generator,
   for (int i = 0; i < 50; ++i) {
     event_generator->PressKey(ui::KeyboardCode::VKEY_TAB,
                               reverse ? ui::EF_SHIFT_DOWN : 0);
-    if (!HasFocusInAnyChildView(view))
+    if (!HasFocusInAnyChildView(view)) {
       return true;
+    }
   }
 
   return false;
@@ -116,12 +117,14 @@ bool TabThroughView(ui::test::EventGenerator* event_generator,
 // The last child is on the top of the z layer stack
 views::View* FindTopButton(views::View* current_view) {
   for (auto* child : base::Reversed(current_view->children())) {
-    if (views::Button::AsButton(child))
+    if (views::Button::AsButton(child)) {
       return child;
+    }
     if (!child->children().empty()) {
       views::View* child_button = FindTopButton(child);
-      if (child_button)
+      if (child_button) {
         return child_button;
+      }
     }
   }
   return nullptr;

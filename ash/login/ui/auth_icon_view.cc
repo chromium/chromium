@@ -197,8 +197,9 @@ void AuthIconView::RunNudgeAnimation() {
 
 void AuthIconView::StartProgressAnimation() {
   // Progress animation already running.
-  if (progress_animation_timer_.IsRunning())
+  if (progress_animation_timer_.IsRunning()) {
     return;
+  }
 
   progress_animation_start_time_ = base::TimeTicks::Now();
   progress_animation_timer_.Start(
@@ -210,8 +211,9 @@ void AuthIconView::StartProgressAnimation() {
 
 void AuthIconView::StopProgressAnimation() {
   // Progress already stopped.
-  if (!progress_animation_timer_.IsRunning())
+  if (!progress_animation_timer_.IsRunning()) {
     return;
+  }
 
   progress_animation_timer_.Stop();
   SchedulePaint();
@@ -242,8 +244,9 @@ gfx::Size AuthIconView::CalculatePreferredSize() const {
 
 void AuthIconView::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() != ui::ET_GESTURE_TAP &&
-      event->type() != ui::ET_GESTURE_TAP_DOWN)
+      event->type() != ui::ET_GESTURE_TAP_DOWN) {
     return;
+  }
 
   if (on_tap_or_click_callback_) {
     on_tap_or_click_callback_.Run();

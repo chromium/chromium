@@ -143,12 +143,14 @@ TEST_F(LoginPinViewTest, AlphanumericKeyboardButtonSpacingAndSize) {
   // Validate each x or y coordinate has the correct distance between it and the
   // next one. This is correct because we have already validated button size.
   EXPECT_EQ(3u, sorted_x.size());
-  for (size_t i = 0; i < sorted_x.size() - 1; ++i)
+  for (size_t i = 0; i < sorted_x.size() - 1; ++i) {
     EXPECT_EQ(sorted_x[i] + expected_button_size.width(), sorted_x[i + 1]);
+  }
 
   EXPECT_EQ(4u, sorted_y.size());
-  for (size_t i = 0; i < sorted_y.size() - 1; ++i)
+  for (size_t i = 0; i < sorted_y.size() - 1; ++i) {
     EXPECT_EQ(sorted_y[i] + expected_button_size.height(), sorted_y[i + 1]);
+  }
 }
 
 // Validates buttons have the correct spacing for numeric PIN keyboard style.
@@ -201,12 +203,14 @@ TEST_F(LoginPinViewTest, NumericKeyboardButtonSpacingAndSize) {
   // Validate each x or y coordinate has the correct distance between it and the
   // next one. This is correct because we have already validated button size.
   EXPECT_EQ(3u, sorted_x.size());
-  for (size_t i = 0; i < sorted_x.size() - 1; ++i)
+  for (size_t i = 0; i < sorted_x.size() - 1; ++i) {
     EXPECT_EQ(sorted_x[i] + expected_button_size.width(), sorted_x[i + 1]);
+  }
 
   EXPECT_EQ(4u, sorted_y.size());
-  for (size_t i = 0; i < sorted_y.size() - 1; ++i)
+  for (size_t i = 0; i < sorted_y.size() - 1; ++i) {
     EXPECT_EQ(sorted_y[i] + expected_button_size.height(), sorted_y[i + 1]);
+  }
 }
 
 // Verifies that holding the backspace button automatically triggers and begins
