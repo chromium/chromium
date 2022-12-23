@@ -259,7 +259,7 @@ class PrintBackendServiceManager {
   // This structure is used to save the callback's context.
   struct CallbackContext {
     CallbackContext();
-    CallbackContext(const CallbackContext& other);
+    CallbackContext(CallbackContext&& other) noexcept;
     ~CallbackContext();
 
     bool is_sandboxed;

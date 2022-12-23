@@ -78,7 +78,7 @@ uint32_t NativeViewToUint(gfx::NativeView view) {
 PrintBackendServiceManager::CallbackContext::CallbackContext() = default;
 
 PrintBackendServiceManager::CallbackContext::CallbackContext(
-    const PrintBackendServiceManager::CallbackContext& other) = default;
+    PrintBackendServiceManager::CallbackContext&& other) noexcept = default;
 
 PrintBackendServiceManager::CallbackContext::~CallbackContext() = default;
 
@@ -185,7 +185,7 @@ void PrintBackendServiceManager::EnumeratePrinters(
   LogCallToRemote("EnumeratePrinters", context);
   service->EnumeratePrinters(
       base::BindOnce(&PrintBackendServiceManager::OnDidEnumeratePrinters,
-                     base::Unretained(this), context));
+                     base::Unretained(this), std::move(context)));
 }
 
 void PrintBackendServiceManager::FetchCapabilities(
@@ -205,7 +205,7 @@ void PrintBackendServiceManager::FetchCapabilities(
   service->FetchCapabilities(
       printer_name,
       base::BindOnce(&PrintBackendServiceManager::OnDidFetchCapabilities,
-                     base::Unretained(this), context));
+                     base::Unretained(this), std::move(context)));
 }
 
 void PrintBackendServiceManager::GetDefaultPrinterName(
@@ -221,7 +221,7 @@ void PrintBackendServiceManager::GetDefaultPrinterName(
   LogCallToRemote("GetDefaultPrinterName", context);
   service->GetDefaultPrinterName(
       base::BindOnce(&PrintBackendServiceManager::OnDidGetDefaultPrinterName,
-                     base::Unretained(this), context));
+                     base::Unretained(this), std::move(context)));
 }
 
 void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
@@ -244,7 +244,7 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
       printer_name,
       base::BindOnce(
           &PrintBackendServiceManager::OnDidGetPrinterSemanticCapsAndDefaults,
-          base::Unretained(this), context));
+          base::Unretained(this), std::move(context)));
 }
 
 void PrintBackendServiceManager::UseDefaultSettings(
@@ -268,7 +268,7 @@ void PrintBackendServiceManager::UseDefaultSettings(
   LogCallToRemote("UseDefaultSettings", context);
   service->UseDefaultSettings(
       base::BindOnce(&PrintBackendServiceManager::OnDidUseDefaultSettings,
-                     base::Unretained(this), context));
+                     base::Unretained(this), std::move(context)));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -293,7 +293,7 @@ void PrintBackendServiceManager::AskUserForSettings(
   service->AskUserForSettings(
       NativeViewToUint(parent_view), max_pages, has_selection, is_scripted,
       base::BindOnce(&PrintBackendServiceManager::OnDidAskUserForSettings,
-                     base::Unretained(this), context));
+                     base::Unretained(this), std::move(context)));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -315,7 +315,7 @@ void PrintBackendServiceManager::UpdatePrintSettings(
   service->UpdatePrintSettings(
       std::move(job_settings),
       base::BindOnce(&PrintBackendServiceManager::OnDidUpdatePrintSettings,
-                     base::Unretained(this), context));
+                     base::Unretained(this), std::move(context)));
 }
 
 void PrintBackendServiceManager::StartPrinting(
@@ -339,7 +339,7 @@ void PrintBackendServiceManager::StartPrinting(
   service->StartPrinting(
       document_cookie, document_name, target_type, settings,
       base::BindOnce(&PrintBackendServiceManager::OnDidStartPrinting,
-                     base::Unretained(this), context));
+                     base::Unretained(this), std::move(context)));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -369,7 +369,7 @@ void PrintBackendServiceManager::RenderPrintedPage(
       std::move(serialized_page_data), page.page_size(),
       page.page_content_rect(), page.shrink_factor(),
       base::BindOnce(&PrintBackendServiceManager::OnDidRenderPrintedPage,
-                     base::Unretained(this), context));
+                     base::Unretained(this), std::move(context)));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -394,7 +394,7 @@ void PrintBackendServiceManager::RenderPrintedDocument(
   service->RenderPrintedDocument(
       document_cookie, page_count, data_type, std::move(serialized_data),
       base::BindOnce(&PrintBackendServiceManager::OnDidRenderPrintedDocument,
-                     base::Unretained(this), context));
+                     base::Unretained(this), std::move(context)));
 }
 
 void PrintBackendServiceManager::DocumentDone(
@@ -415,7 +415,7 @@ void PrintBackendServiceManager::DocumentDone(
   service->DocumentDone(
       document_cookie,
       base::BindOnce(&PrintBackendServiceManager::OnDidDocumentDone,
-                     base::Unretained(this), context));
+                     base::Unretained(this), std::move(context)));
 }
 
 void PrintBackendServiceManager::Cancel(
@@ -435,7 +435,7 @@ void PrintBackendServiceManager::Cancel(
   LogCallToRemote("Cancel", context);
   service->Cancel(document_cookie,
                   base::BindOnce(&PrintBackendServiceManager::OnDidCancel,
-                                 base::Unretained(this), context));
+                                 base::Unretained(this), std::move(context)));
 }
 
 bool PrintBackendServiceManager::PrinterDriverFoundToRequireElevatedPrivilege(
