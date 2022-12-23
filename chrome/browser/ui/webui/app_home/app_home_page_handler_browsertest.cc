@@ -174,7 +174,6 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<TestAppHomePageHandler> GetAppHomePageHandler() {
-    AddBlankTabAndShow(browser());
     content::WebContents* contents =
         browser()->tab_strip_model()->GetWebContentsAt(0);
     test_web_ui_.set_web_contents(contents);
@@ -470,6 +469,22 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, SetRunOnOsLoginMode) {
                 ->registrar_unsafe()
                 .GetAppRunOnOsLoginMode(installed_app_id)
                 .value);
+}
+
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, HandleLaunchDeprecatedApp) {
+  std::unique_ptr<TestAppHomePageHandler> page_handler =
+      GetAppHomePageHandler();
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
+      .Times(testing::AtLeast(1));
+  scoped_refptr<const extensions::Extension> extension =
+      InstallTestExtensionApp();
+  page_handler->Wait();
+
+  auto waiter = views::NamedWidgetShownWaiter(
+      views::test::AnyWidgetTestPasskey{}, "DeprecatedAppsDialogView");
+  page_handler->LaunchApp(extension->id(), 2, nullptr);
+  // Launch deprecated app will show deprecated apps dialog view.
+  EXPECT_NE(waiter.WaitIfNeededAndGet(), nullptr);
 }
 
 }  // namespace webapps

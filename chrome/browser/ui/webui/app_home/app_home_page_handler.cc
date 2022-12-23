@@ -6,6 +6,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -157,6 +158,138 @@ void AppHomePageHandler::InstallOsHooks(const web_app::AppId& app_id,
       base::BindOnce(&AppHomePageHandler::OnOsHooksInstalled,
                      weak_ptr_factory_.GetWeakPtr(), app_id),
       /*web_app_info=*/nullptr, std::move(options));
+}
+
+void AppHomePageHandler::LaunchAppInternal(
+    const std::string& app_id,
+    int source,
+    app_home::mojom::ClickEventPtr click_event,
+    bool force_launch_deprecated_apps) {
+  if (!force_launch_deprecated_apps &&
+      extensions::IsExtensionUnsupportedDeprecatedApp(profile_, app_id) &&
+      base::FeatureList::IsEnabled(features::kChromeAppsDeprecation)) {
+    if (!extensions::IsExtensionForceInstalled(profile_, app_id, nullptr)) {
+      TabDialogs::FromWebContents(web_ui_->GetWebContents())
+          ->ShowDeprecatedAppsDialog(
+              app_id, deprecated_app_ids_, web_ui_->GetWebContents(),
+              base::BindOnce(&AppHomePageHandler::LaunchAppInternal,
+                             weak_ptr_factory_.GetWeakPtr(), app_id, source,
+                             std::move(click_event), true));
+      return;
+    } else {
+      TabDialogs::FromWebContents(web_ui_->GetWebContents())
+          ->ShowForceInstalledDeprecatedAppsDialog(
+              app_id, web_ui_->GetWebContents(),
+              base::BindOnce(&AppHomePageHandler::LaunchAppInternal,
+                             weak_ptr_factory_.GetWeakPtr(), app_id, source,
+                             std::move(click_event), true));
+      return;
+    }
+  }
+
+  extension_misc::AppLaunchBucket launch_bucket =
+      static_cast<extension_misc::AppLaunchBucket>(source);
+
+  extensions::Manifest::Type type;
+  GURL full_launch_url;
+  apps::LaunchContainer launch_container;
+
+  web_app::WebAppRegistrar& registrar = web_app_provider_->registrar_unsafe();
+  if (registrar.IsInstalled(app_id) && !IsYoutubeExtension(app_id)) {
+    type = extensions::Manifest::Type::TYPE_HOSTED_APP;
+    full_launch_url = registrar.GetAppStartUrl(app_id);
+    launch_container = web_app::ConvertDisplayModeToAppLaunchContainer(
+        registrar.GetAppEffectiveDisplayMode(app_id));
+  } else {
+    const Extension* extension = extensions::ExtensionRegistry::Get(profile_)
+                                     ->enabled_extensions()
+                                     .GetByID(app_id);
+
+    // Prompt the user to re-enable the application if disabled.
+    if (!extension) {
+      PromptToEnableExtensionApp(app_id);
+      return;
+    }
+    type = extension->GetType();
+    full_launch_url = extensions::AppLaunchInfo::GetFullLaunchURL(extension);
+    launch_container = extensions::GetLaunchContainer(
+        extensions::ExtensionPrefs::Get(profile_), extension);
+  }
+
+  WindowOpenDisposition disposition =
+      click_event ? ui::DispositionFromClick(
+                        click_event->button == 1.0, click_event->alt_key,
+                        click_event->ctrl_key, click_event->meta_key,
+                        click_event->shift_key)
+                  : WindowOpenDisposition::CURRENT_TAB;
+  GURL override_url;
+
+  if (app_id != extensions::kWebStoreAppId) {
+    CHECK_NE(launch_bucket, extension_misc::APP_LAUNCH_BUCKET_INVALID);
+    extensions::RecordAppLaunchType(launch_bucket, type);
+  } else {
+    extensions::RecordWebStoreLaunch();
+    override_url = net::AppendQueryParameter(
+        full_launch_url, extension_urls::kWebstoreSourceField,
+        "chrome-ntp-icon");
+  }
+
+  if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+      disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
+      disposition == WindowOpenDisposition::NEW_WINDOW) {
+    // TODO(jamescook): Proper support for background tabs.
+    apps::AppLaunchParams params(
+        app_id,
+        disposition == WindowOpenDisposition::NEW_WINDOW
+            ? apps::LaunchContainer::kLaunchContainerWindow
+            : apps::LaunchContainer::kLaunchContainerTab,
+        disposition, apps::LaunchSource::kFromNewTabPage);
+    params.override_url = override_url;
+    apps::AppServiceProxyFactory::GetForProfile(profile_)
+        ->BrowserAppLauncher()
+        ->LaunchAppWithParams(std::move(params), base::DoNothing());
+  } else {
+    // To give a more "launchy" experience when using the NTP launcher, we close
+    // it automatically. However, if the chrome://apps page is the LAST page in
+    // the browser window, then we don't close it.
+    Browser* browser = GetCurrentBrowser();
+    base::WeakPtr<Browser> browser_ptr;
+    content::WebContents* old_contents = nullptr;
+    base::WeakPtr<content::WebContents> old_contents_ptr;
+    if (browser) {
+      browser_ptr = browser->AsWeakPtr();
+      old_contents = browser->tab_strip_model()->GetActiveWebContents();
+      old_contents_ptr = old_contents->GetWeakPtr();
+    }
+
+    apps::AppLaunchParams params(
+        app_id, launch_container,
+        old_contents ? WindowOpenDisposition::CURRENT_TAB
+                     : WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        apps::LaunchSource::kFromNewTabPage);
+    params.override_url = override_url;
+    apps::AppServiceProxyFactory::GetForProfile(profile_)
+        ->BrowserAppLauncher()
+        ->LaunchAppWithParams(
+            std::move(params),
+            base::BindOnce(
+                [](base::WeakPtr<Browser> apps_page_browser,
+                   base::WeakPtr<content::WebContents> old_contents,
+                   content::WebContents* new_web_contents) {
+                  if (!apps_page_browser || !old_contents) {
+                    return;
+                  }
+                  if (new_web_contents != old_contents.get() &&
+                      apps_page_browser->tab_strip_model()->count() > 1) {
+                    // This will also destroy the handler, so do not perform
+                    // any actions after.
+                    chrome::CloseWebContents(apps_page_browser.get(),
+                                             old_contents.get(),
+                                             /*add_to_history=*/true);
+                  }
+                },
+                browser_ptr, old_contents_ptr));
+  }
 }
 
 void AppHomePageHandler::ShowWebAppSettings(const std::string& app_id) {
@@ -509,108 +642,7 @@ void AppHomePageHandler::CreateAppShortcut(const std::string& app_id,
 void AppHomePageHandler::LaunchApp(const std::string& app_id,
                                    int source,
                                    app_home::mojom::ClickEventPtr click_event) {
-  extension_misc::AppLaunchBucket launch_bucket =
-      static_cast<extension_misc::AppLaunchBucket>(source);
-
-  extensions::Manifest::Type type;
-  GURL full_launch_url;
-  apps::LaunchContainer launch_container;
-
-  web_app::WebAppRegistrar& registrar = web_app_provider_->registrar_unsafe();
-  if (registrar.IsInstalled(app_id) && !IsYoutubeExtension(app_id)) {
-    type = extensions::Manifest::Type::TYPE_HOSTED_APP;
-    full_launch_url = registrar.GetAppStartUrl(app_id);
-    launch_container = web_app::ConvertDisplayModeToAppLaunchContainer(
-        registrar.GetAppEffectiveDisplayMode(app_id));
-  } else {
-    const Extension* extension = extensions::ExtensionRegistry::Get(profile_)
-                                     ->enabled_extensions()
-                                     .GetByID(app_id);
-
-    // Prompt the user to re-enable the application if disabled.
-    if (!extension) {
-      PromptToEnableExtensionApp(app_id);
-      return;
-    }
-    type = extension->GetType();
-    full_launch_url = extensions::AppLaunchInfo::GetFullLaunchURL(extension);
-    launch_container = extensions::GetLaunchContainer(
-        extensions::ExtensionPrefs::Get(profile_), extension);
-  }
-
-  WindowOpenDisposition disposition =
-      click_event ? ui::DispositionFromClick(
-                        click_event->button == 1.0, click_event->alt_key,
-                        click_event->ctrl_key, click_event->meta_key,
-                        click_event->shift_key)
-                  : WindowOpenDisposition::CURRENT_TAB;
-  GURL override_url;
-
-  if (app_id != extensions::kWebStoreAppId) {
-    CHECK_NE(launch_bucket, extension_misc::APP_LAUNCH_BUCKET_INVALID);
-    extensions::RecordAppLaunchType(launch_bucket, type);
-  } else {
-    extensions::RecordWebStoreLaunch();
-    override_url = net::AppendQueryParameter(
-        full_launch_url, extension_urls::kWebstoreSourceField,
-        "chrome-ntp-icon");
-  }
-
-  if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-      disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
-      disposition == WindowOpenDisposition::NEW_WINDOW) {
-    // TODO(jamescook): Proper support for background tabs.
-    apps::AppLaunchParams params(
-        app_id,
-        disposition == WindowOpenDisposition::NEW_WINDOW
-            ? apps::LaunchContainer::kLaunchContainerWindow
-            : apps::LaunchContainer::kLaunchContainerTab,
-        disposition, apps::LaunchSource::kFromNewTabPage);
-    params.override_url = override_url;
-    apps::AppServiceProxyFactory::GetForProfile(profile_)
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParams(std::move(params), base::DoNothing());
-  } else {
-    // To give a more "launchy" experience when using the NTP launcher, we close
-    // it automatically. However, if the chrome://apps page is the LAST page in
-    // the browser window, then we don't close it.
-    Browser* browser = GetCurrentBrowser();
-    base::WeakPtr<Browser> browser_ptr;
-    content::WebContents* old_contents = nullptr;
-    base::WeakPtr<content::WebContents> old_contents_ptr;
-    if (browser) {
-      browser_ptr = browser->AsWeakPtr();
-      old_contents = browser->tab_strip_model()->GetActiveWebContents();
-      old_contents_ptr = old_contents->GetWeakPtr();
-    }
-
-    apps::AppLaunchParams params(
-        app_id, launch_container,
-        old_contents ? WindowOpenDisposition::CURRENT_TAB
-                     : WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromNewTabPage);
-    params.override_url = override_url;
-    apps::AppServiceProxyFactory::GetForProfile(profile_)
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParams(
-            std::move(params),
-            base::BindOnce(
-                [](base::WeakPtr<Browser> apps_page_browser,
-                   base::WeakPtr<content::WebContents> old_contents,
-                   content::WebContents* new_web_contents) {
-                  if (!apps_page_browser || !old_contents)
-                    return;
-                  if (new_web_contents != old_contents.get() &&
-                      apps_page_browser->tab_strip_model()->count() > 1) {
-                    // This will also destroy the handler, so do not perform
-                    // any actions after.
-                    chrome::CloseWebContents(apps_page_browser.get(),
-                                             old_contents.get(),
-                                             /*add_to_history=*/true);
-                  }
-                },
-                browser_ptr, old_contents_ptr));
-  }
+  LaunchAppInternal(app_id, source, std::move(click_event), false);
 }
 
 void AppHomePageHandler::SetRunOnOsLoginMode(
