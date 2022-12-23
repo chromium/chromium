@@ -199,9 +199,6 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
 - (void)setOmniboxSemanticContentAttribute:
     (UISemanticContentAttribute)omniboxSemanticContentAttribute {
-  if (omniboxSemanticContentAttribute == _omniboxSemanticContentAttribute) {
-    return;
-  }
   _omniboxSemanticContentAttribute = omniboxSemanticContentAttribute;
   self.contentView.semanticContentAttribute = omniboxSemanticContentAttribute;
   self.textStackView.semanticContentAttribute = omniboxSemanticContentAttribute;
