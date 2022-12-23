@@ -19,8 +19,9 @@
 import '../../controls/password_prompt_dialog.js';
 
 import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './lock_screen_password_prompt_dialog.html.js';
 import {LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavior.js';
 
 /**
@@ -39,7 +40,7 @@ class SettingsLockScreenPasswordPromptDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

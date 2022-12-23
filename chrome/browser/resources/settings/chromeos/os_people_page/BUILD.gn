@@ -244,21 +244,3 @@ js_library("users_page") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
-
-html_to_js("web_components") {
-  js_files = [
-    "account_manager.js",
-    "fingerprint_list.js",
-    "local_data_recovery_dialog.js",
-    "lock_screen.js",
-    "lock_screen_password_prompt_dialog.js",
-    "os_people_page.js",
-    "os_sync_controls.js",
-    "setup_fingerprint_dialog.js",
-    "pin_autosubmit_dialog.js",
-    "setup_pin_dialog.js",
-    "user_list.js",
-    "users_add_user_dialog.js",
-    "users_page.js",
-  ]
-}

@@ -297,7 +297,6 @@ group("generate_web_components") {
     "multidevice_page:web_components",
     "nearby_share_page:web_components",
     "os_a11y_page:web_components",
-    "os_people_page:web_components",
     "os_privacy_page:web_components",
   ]
 }

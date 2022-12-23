@@ -16,16 +16,18 @@ import '../../settings_shared.css.js';
 import './user_list.js';
 import './users_add_user_dialog.js';
 
-import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {Route} from '../router.js';
+
+import {getTemplate} from './users_page.html.js';
 
 /**
  * @constructor
@@ -43,7 +45,7 @@ class SettingsUsersPageElement extends SettingsUsersPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

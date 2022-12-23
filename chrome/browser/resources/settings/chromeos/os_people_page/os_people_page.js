@@ -26,28 +26,29 @@ import './os_sync_controls.js';
 import './os_signout_dialog.js';
 import './os_sync_page.js';
 
+import {assert} from 'chrome://resources/ash/common/assert.js';
+import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {afterNextRender, flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {ProfileInfoBrowserProxyImpl} from '../../people_page/profile_info_browser_proxy.js';
 import {SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
-import {Route, Router} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {getImage} from '../icon.js';
 import {OSPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.js';
 import {SettingsParentalControlsPageElement} from '../parental_controls_page/parental_controls_page.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {Route, Router} from '../router.js';
 
 import {Account, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 import {LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavior.js';
+import {getTemplate} from './os_people_page.html.js';
 
 /**
  * @constructor
@@ -75,7 +76,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
