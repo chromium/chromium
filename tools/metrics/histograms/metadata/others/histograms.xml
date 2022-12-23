@@ -2954,7 +2954,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ComponentUpdater.AndroidComponentLoader.LoadStatus.{Component}"
-    units="BooleanSuccess" expires_after="2022-12-15">
+    units="BooleanSuccess" expires_after="2023-12-15">
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <owner>src/components/component_updater/android/OWNERS</owner>
