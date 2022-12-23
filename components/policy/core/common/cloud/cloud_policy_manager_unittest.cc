@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -52,7 +53,7 @@ class TestHarness : public PolicyProviderTestHarness {
   void InstallBooleanPolicy(const std::string& policy_name,
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
-                               const base::ListValue* policy_value) override;
+                               const base::Value::List& policy_value) override;
   void InstallDictionaryPolicy(const std::string& policy_name,
                                const base::Value::Dict& policy_value) override;
 
@@ -107,10 +108,12 @@ void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
                          nullptr);
 }
 
-void TestHarness::InstallStringListPolicy(const std::string& policy_name,
-                                          const base::ListValue* policy_value) {
+void TestHarness::InstallStringListPolicy(
+    const std::string& policy_name,
+    const base::Value::List& policy_value) {
   store_.policy_map_.Set(policy_name, policy_level(), policy_scope(),
-                         POLICY_SOURCE_CLOUD, policy_value->Clone(), nullptr);
+                         POLICY_SOURCE_CLOUD, base::Value(policy_value.Clone()),
+                         nullptr);
 }
 
 void TestHarness::InstallDictionaryPolicy(

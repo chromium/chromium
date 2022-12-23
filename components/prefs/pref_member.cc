@@ -218,11 +218,11 @@ bool PrefMember<base::FilePath>::Internal::UpdateValueInternal(
 template <>
 void PrefMember<std::vector<std::string> >::UpdatePref(
     const std::vector<std::string>& value) {
-  base::ListValue list_value;
+  base::Value::List list_value;
   for (const std::string& val : value)
     list_value.Append(val);
 
-  prefs()->Set(pref_name(), list_value);
+  prefs()->SetList(pref_name(), std::move(list_value));
 }
 
 template <>

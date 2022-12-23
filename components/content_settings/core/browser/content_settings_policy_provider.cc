@@ -372,7 +372,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
   //      }
   //   }
   // }
-  std::unordered_map<std::string, base::DictionaryValue> filters_map;
+  std::unordered_map<std::string, base::Value::Dict> filters_map;
   for (const auto& pattern_filter_str : pref->GetValue()->GetList()) {
     if (!pattern_filter_str.is_string()) {
       NOTREACHED();
@@ -397,17 +397,16 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
 
     const std::string& pattern_str = pattern->GetString();
     if (filters_map.find(pattern_str) == filters_map.end())
-      filters_map[pattern_str].SetKey("filters",
-                                      base::Value(base::Value::Type::LIST));
+      filters_map[pattern_str].Set("filters", base::Value::List());
 
     // Don't pass removed values from `pattern_filter`, because base::Values
     // read with JSONReader use a shared string buffer. Instead, Clone() here.
-    filters_map[pattern_str].FindKey("filters")->Append(filter->Clone());
+    filters_map[pattern_str].Find("filters")->Append(filter->Clone());
   }
 
   for (const auto& it : filters_map) {
     const std::string& pattern_str = it.first;
-    const base::Value& setting = it.second;
+    const base::Value::Dict& setting = it.second;
 
     ContentSettingsPattern pattern =
         ContentSettingsPattern::FromString(pattern_str);
@@ -420,7 +419,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
 
     value_map->SetValue(pattern, ContentSettingsPattern::Wildcard(),
                         ContentSettingsType::AUTO_SELECT_CERTIFICATE,
-                        setting.Clone(), {});
+                        base::Value(setting.Clone()), {});
   }
 }
 

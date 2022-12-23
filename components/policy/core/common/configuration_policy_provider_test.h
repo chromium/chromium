@@ -92,8 +92,9 @@ class PolicyProviderTestHarness {
                                     int policy_value) = 0;
   virtual void InstallBooleanPolicy(const std::string& policy_name,
                                     bool policy_value) = 0;
-  virtual void InstallStringListPolicy(const std::string& policy_name,
-                                       const base::ListValue* policy_value) = 0;
+  virtual void InstallStringListPolicy(
+      const std::string& policy_name,
+      const base::Value::List& policy_value) = 0;
   virtual void InstallDictionaryPolicy(
       const std::string& policy_name,
       const base::Value::Dict& policy_value) = 0;

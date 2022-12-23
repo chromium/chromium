@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "components/language/content/browser/test_utils.h"
 #include "components/language/content/browser/ulp_language_code_locator/ulp_language_code_locator.h"
 #include "components/language/core/common/language_experiments.h"

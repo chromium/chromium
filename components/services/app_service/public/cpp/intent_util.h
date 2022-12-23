@@ -125,7 +125,7 @@ bool ExtensionMatched(const std::string& file_name,
 // }
 base::Value ConvertIntentToValue(const apps::IntentPtr& intent);
 
-// Gets the string value from base::DictionaryValue, e.g. { "key": "value" }
+// Gets the string value from base::Value::Dict, e.g. { "key": "value" }
 // returns "value".
 absl::optional<std::string> GetStringValueFromDict(
     const base::Value::Dict& dict,

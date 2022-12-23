@@ -177,7 +177,7 @@ TEST_F(ListPreferenceMergeTest, ServerNull) {
 }
 
 TEST_F(ListPreferenceMergeTest, ServerEmpty) {
-  std::unique_ptr<base::Value> empty_value(new base::ListValue);
+  base::Value::List empty_value;
   {
     ScopedListPrefUpdate update(pref_service_.get(), kListPrefName);
     update->Append(local_url0_);
@@ -186,7 +186,7 @@ TEST_F(ListPreferenceMergeTest, ServerEmpty) {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kListPrefName);
   base::Value merged_value(pref_sync_service_->MergePreference(
-      pref->name(), *pref->GetValue(), *empty_value));
+      pref->name(), *pref->GetValue(), base::Value(empty_value.Clone())));
   const base::Value::List& local_list_value =
       pref_service_->GetList(kListPrefName);
   EXPECT_EQ(merged_value, local_list_value);
@@ -204,7 +204,7 @@ TEST_F(ListPreferenceMergeTest, Merge) {
   base::Value merged_value(pref_sync_service_->MergePreference(
       pref->name(), *pref->GetValue(), server_url_list_));
 
-  base::ListValue expected;
+  base::Value::List expected;
   expected.Append(server_url0_);
   expected.Append(server_url1_);
   expected.Append(local_url0_);
@@ -225,7 +225,7 @@ TEST_F(ListPreferenceMergeTest, Duplicates) {
   base::Value merged_value(pref_sync_service_->MergePreference(
       pref->name(), *pref->GetValue(), server_url_list_));
 
-  base::ListValue expected;
+  base::Value::List expected;
   expected.Append(server_url0_);
   expected.Append(server_url1_);
   expected.Append(local_url0_);

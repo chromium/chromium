@@ -55,7 +55,7 @@ class TestHarness : public PolicyProviderTestHarness {
   void InstallBooleanPolicy(const std::string& policy_name,
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
-                               const base::ListValue* policy_value) override;
+                               const base::Value::List& policy_value) override;
   void InstallDictionaryPolicy(const std::string& policy_name,
                                const base::Value::Dict& policy_value) override;
 
@@ -127,17 +127,18 @@ void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
   });
 }
 
-void TestHarness::InstallStringListPolicy(const std::string& policy_name,
-                                          const base::ListValue* policy_value) {
+void TestHarness::InstallStringListPolicy(
+    const std::string& policy_name,
+    const base::Value::List& policy_value) {
   NSString* key = base::SysUTF8ToNSString(policy_name);
   base::ScopedCFTypeRef<CFPropertyListRef> value(
-      ValueToProperty(*policy_value));
+      ValueToProperty(base::Value(policy_value.Clone())));
 
   if (encode_complex_data_as_json_) {
     // Convert |policy_value| to a JSON-encoded string.
     std::string json_string;
     JSONStringValueSerializer serializer(&json_string);
-    ASSERT_TRUE(serializer.Serialize(*policy_value));
+    ASSERT_TRUE(serializer.Serialize(policy_value));
 
     AddPolicies(@{key : base::SysUTF8ToNSString(json_string)});
   } else {

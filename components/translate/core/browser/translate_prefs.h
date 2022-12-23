@@ -16,16 +16,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "url/gurl.h"
 
 class PrefService;
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -391,14 +388,6 @@ class TranslatePrefs {
   size_t GetListSize(const char* pref_id) const;
 
   bool IsDictionaryEmpty(const char* pref_id) const;
-
-  // Retrieves the dictionary mapping the number of times translation has been
-  // denied for a language, creating it if necessary.
-  base::DictionaryValue* GetTranslationDeniedCountDictionary();
-
-  // Retrieves the dictionary mapping the number of times translation has been
-  // accepted for a language, creating it if necessary.
-  base::DictionaryValue* GetTranslationAcceptedCountDictionary() const;
 
   raw_ptr<PrefService> prefs_;  // Weak.
 
