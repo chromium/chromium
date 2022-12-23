@@ -12,16 +12,12 @@ source_set("video_conference") {
     "video_conference_client_wrapper.h",
     "video_conference_manager_ash.cc",
     "video_conference_manager_ash.h",
-    "video_conference_tray_controller_impl.cc",
-    "video_conference_tray_controller_impl.h",
   ]
   deps = [
     "//ash",
     "//base",
     "//chromeos/crosapi/mojom",
     "//components/prefs",
-    "//media/capture:capture_lib",
-    "//media/capture/video/chromeos/mojom:cros_camera",
   ]
 }
 
