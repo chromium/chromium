@@ -51,6 +51,7 @@ class WaylandPopup : public WaylandWindow {
                    const base::TimeDelta show_delay,
                    const base::TimeDelta hide_delay) override;
   void HideTooltip() override;
+  bool IsScreenCoordinatesEnabled() const override;
 
   // PlatformWindow
   void Show(bool inactive) override;

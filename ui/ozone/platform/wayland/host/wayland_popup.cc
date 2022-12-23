@@ -261,6 +261,10 @@ void WaylandPopup::HideTooltip() {
   }
 }
 
+bool WaylandPopup::IsScreenCoordinatesEnabled() const {
+  return parent_window()->IsScreenCoordinatesEnabled();
+}
+
 void WaylandPopup::TooltipShown(void* data,
                                 zaura_surface* surface,
                                 const char* text,
