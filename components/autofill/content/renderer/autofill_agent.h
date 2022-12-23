@@ -39,7 +39,6 @@ class WebFormElement;
 namespace autofill {
 
 struct FormData;
-class AutofillAssistantAgent;
 class PasswordAutofillAgent;
 class PasswordGenerationAgent;
 class FieldDataManager;
@@ -73,7 +72,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   AutofillAgent(content::RenderFrame* render_frame,
                 PasswordAutofillAgent* password_autofill_agent,
                 PasswordGenerationAgent* password_generation_agent,
-                AutofillAssistantAgent* autofill_assistant_agent,
                 blink::AssociatedInterfaceRegistry* registry);
 
   AutofillAgent(const AutofillAgent&) = delete;
@@ -117,7 +115,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   void GetElementFormAndFieldDataForDevToolsNodeId(
       int backend_node_id,
       GetElementFormAndFieldDataForDevToolsNodeIdCallback callback) override;
-  void SetAssistantKeyboardSuppressState(bool suppress) override;
   void EnableHeavyFormDataScraping() override;
   void SetFieldsEligibleForManualFilling(
       const std::vector<FieldRendererId>& fields) override;
@@ -307,7 +304,6 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   PasswordAutofillAgent* password_autofill_agent_;      // Weak reference.
   PasswordGenerationAgent* password_generation_agent_;  // Weak reference.
-  AutofillAssistantAgent* autofill_assistant_agent_;    // Weak reference.
 
   // The element corresponding to the last request sent for form field Autofill.
   blink::WebFormControlElement element_;

@@ -158,7 +158,7 @@ AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
   autofill::PasswordAutofillAgent* password_autofill_agent =
       new autofill::PasswordAutofillAgent(render_frame, &registry_);
   new autofill::AutofillAgent(render_frame, password_autofill_agent, nullptr,
-                              nullptr, &registry_);
+                              &registry_);
   if (content_capture::features::IsContentCaptureEnabled())
     new content_capture::ContentCaptureSender(render_frame, &registry_);
 

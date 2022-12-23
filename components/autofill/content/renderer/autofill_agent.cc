@@ -24,7 +24,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/content/renderer/autofill_assistant_agent.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
@@ -218,13 +217,11 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
 AutofillAgent::AutofillAgent(content::RenderFrame* render_frame,
                              PasswordAutofillAgent* password_autofill_agent,
                              PasswordGenerationAgent* password_generation_agent,
-                             AutofillAssistantAgent* autofill_assistant_agent,
                              blink::AssociatedInterfaceRegistry* registry)
     : content::RenderFrameObserver(render_frame),
       form_cache_(render_frame->GetWebFrame()),
       password_autofill_agent_(password_autofill_agent),
       password_generation_agent_(password_generation_agent),
-      autofill_assistant_agent_(autofill_assistant_agent),
       query_node_autofill_state_(WebAutofillState::kNotFilled),
       is_popup_possibly_visible_(false),
       is_generation_popup_possibly_visible_(false),
@@ -876,15 +873,6 @@ void AutofillAgent::GetElementFormAndFieldDataForDevToolsNodeId(
   return std::move(callback).Run(form, field);
 }
 
-void AutofillAgent::SetAssistantKeyboardSuppressState(bool suppress) {
-  DCHECK(autofill_assistant_agent_);
-  if (suppress) {
-    autofill_assistant_agent_->DisableKeyboard();
-  } else {
-    autofill_assistant_agent_->EnableKeyboard();
-  }
-}
-
 void AutofillAgent::EnableHeavyFormDataScraping() {
   is_heavy_form_data_scraping_enabled_ = true;
 }
@@ -1100,8 +1088,7 @@ bool AutofillAgent::ShouldSuppressKeyboard(
   if (password_autofill_agent_->ShouldSuppressKeyboard())
     return true;
 #endif
-  return autofill_assistant_agent_ &&
-         autofill_assistant_agent_->ShouldSuppressKeyboard();
+  return false;
 }
 
 void AutofillAgent::FormElementReset(const WebFormElement& form) {

@@ -115,7 +115,6 @@ void ContentRendererClientImpl::RenderFrameCreated(
       new autofill::PasswordAutofillAgent(
           render_frame, render_frame_observer->associated_interfaces());
   new autofill::AutofillAgent(render_frame, password_autofill_agent, nullptr,
-                              nullptr,
                               render_frame_observer->associated_interfaces());
   auto* agent = new content_settings::ContentSettingsAgentImpl(
       render_frame, false /* should_whitelist */,

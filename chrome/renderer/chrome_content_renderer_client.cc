@@ -67,7 +67,6 @@
 #include "chrome/renderer/worker_content_settings_client.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
-#include "components/autofill/content/renderer/autofill_assistant_agent.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -674,11 +673,8 @@ void ChromeContentRendererClient::RenderFrameCreated(
     PasswordGenerationAgent* password_generation_agent =
         new PasswordGenerationAgent(render_frame, password_autofill_agent,
                                     associated_interfaces);
-    autofill::AutofillAssistantAgent* autofill_assistant_agent =
-        new autofill::AutofillAssistantAgent(render_frame);
     new AutofillAgent(render_frame, password_autofill_agent,
-                      password_generation_agent, autofill_assistant_agent,
-                      associated_interfaces);
+                      password_generation_agent, associated_interfaces);
   }
 
   if (content_capture::features::IsContentCaptureEnabled()) {
