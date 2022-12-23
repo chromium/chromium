@@ -68,33 +68,6 @@ class ScopedLacrosAvailabilityCache {
   }
 };
 
-// This implementation of RAII for LacrosSelection is to make it easy reset
-// the state between runs.
-class ScopedLacrosSelectionCache {
- public:
-  explicit ScopedLacrosSelectionCache(
-      browser_util::LacrosSelectionPolicy lacros_selection) {
-    SetLacrosSelection(lacros_selection);
-  }
-  ScopedLacrosSelectionCache(const ScopedLacrosSelectionCache&) = delete;
-  ScopedLacrosSelectionCache& operator=(const ScopedLacrosSelectionCache&) =
-      delete;
-  ~ScopedLacrosSelectionCache() {
-    browser_util::ClearLacrosSelectionCacheForTest();
-  }
-
- private:
-  void SetLacrosSelection(
-      browser_util::LacrosSelectionPolicy lacros_selection) {
-    policy::PolicyMap policy;
-    policy.Set(policy::key::kLacrosSelection, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               base::Value(GetLacrosSelectionPolicyName(lacros_selection)),
-               /*external_data_fetcher=*/nullptr);
-    browser_util::CacheLacrosSelection(policy);
-  }
-};
-
 }  // namespace
 
 class BrowserUtilTest : public testing::Test {
@@ -1142,66 +1115,6 @@ TEST_F(BrowserUtilTest, SerialNumber) {
   auto serial_number = browser_init_params->device_properties->serial_number;
   ASSERT_TRUE(serial_number.has_value());
   EXPECT_EQ(serial_number.value(), expected_serial_number);
-}
-
-TEST_F(BrowserUtilTest, LacrosSelection) {
-  // Neither policy nor command line have any preference on Lacros selection.
-  EXPECT_FALSE(browser_util::DetermineLacrosSelection());
-
-  {
-    // LacrosSelection policy has precedence over command line.
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kRootfs);
-    base::test::ScopedCommandLine cmd_line;
-    cmd_line.GetProcessCommandLine()->AppendSwitchASCII(
-        browser_util::kLacrosSelectionSwitch,
-        browser_util::kLacrosSelectionStateful);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kRootfs);
-  }
-
-  {
-    // LacrosSelection policy has precedence over command line.
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kStateful);
-    base::test::ScopedCommandLine cmd_line;
-    cmd_line.GetProcessCommandLine()->AppendSwitchASCII(
-        browser_util::kLacrosSelectionSwitch,
-        browser_util::kLacrosSelectionRootfs);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kStateful);
-  }
-
-  {
-    // LacrosSelection allows command line check, but command line is not set.
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kUserChoice);
-    EXPECT_FALSE(browser_util::DetermineLacrosSelection());
-  }
-
-  {
-    // LacrosSelection allows command line check.
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kUserChoice);
-    base::test::ScopedCommandLine cmd_line;
-    cmd_line.GetProcessCommandLine()->AppendSwitchASCII(
-        browser_util::kLacrosSelectionSwitch,
-        browser_util::kLacrosSelectionRootfs);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kRootfs);
-  }
-
-  {
-    // LacrosSelection allows command line check.
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kUserChoice);
-    base::test::ScopedCommandLine cmd_line;
-    cmd_line.GetProcessCommandLine()->AppendSwitchASCII(
-        browser_util::kLacrosSelectionSwitch,
-        browser_util::kLacrosSelectionStateful);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kStateful);
-  }
 }
 
 }  // namespace crosapi

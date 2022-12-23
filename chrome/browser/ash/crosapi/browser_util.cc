@@ -61,10 +61,6 @@ absl::optional<LacrosAvailability> g_lacros_availability_cache;
 absl::optional<LacrosDataBackwardMigrationMode>
     g_lacros_data_backward_migration_mode;
 
-// At session start the value for LacrosSelection logic is applied and the
-// result is stored in this variable which is used after that as a cache.
-absl::optional<LacrosSelectionPolicy> g_lacros_selection_cache;
-
 // The rootfs lacros-chrome metadata keys.
 constexpr char kLacrosMetadataContentKey[] = "content";
 constexpr char kLacrosMetadataVersionKey[] = "version";
@@ -917,51 +913,6 @@ void CacheLacrosDataBackwardMigrationMode(const policy::PolicyMap& map) {
       value ? value->GetString() : base::StringPiece());
 }
 
-void CacheLacrosSelection(const policy::PolicyMap& map) {
-  if (g_lacros_selection_cache.has_value()) {
-    // Some browser tests might call this multiple times.
-    LOG(ERROR) << "Trying to cache LacrosSelection and the value was set";
-    return;
-  }
-
-  const base::Value* value =
-      map.GetValue(policy::key::kLacrosSelection, base::Value::Type::STRING);
-  g_lacros_selection_cache = ParseLacrosSelectionPolicy(
-      value ? value->GetString() : base::StringPiece());
-}
-
-LacrosSelectionPolicy GetCachedLacrosSelectionPolicy() {
-  if (g_lacros_selection_cache)
-    return g_lacros_selection_cache.value();
-
-  return LacrosSelectionPolicy::kUserChoice;
-}
-
-absl::optional<LacrosSelection> DetermineLacrosSelection() {
-  switch (GetCachedLacrosSelectionPolicy()) {
-    case LacrosSelectionPolicy::kRootfs:
-      return LacrosSelection::kRootfs;
-    case LacrosSelectionPolicy::kStateful:
-      return LacrosSelection::kStateful;
-    case LacrosSelectionPolicy::kUserChoice:
-      break;
-  }
-
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-
-  if (!cmdline->HasSwitch(browser_util::kLacrosSelectionSwitch))
-    return absl::nullopt;
-
-  auto value =
-      cmdline->GetSwitchValueASCII(browser_util::kLacrosSelectionSwitch);
-  if (value == browser_util::kLacrosSelectionRootfs)
-    return LacrosSelection::kRootfs;
-  if (value == browser_util::kLacrosSelectionStateful)
-    return LacrosSelection::kStateful;
-
-  return absl::nullopt;
-}
-
 ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel) {
   // We default to the Dev component for UNKNOWN channels.
   static const auto kChannelToComponentInfoMap =
@@ -1034,10 +985,6 @@ void ClearLacrosAvailabilityCacheForTest() {
 
 void ClearLacrosDataBackwardMigrationModeCacheForTest() {
   g_lacros_data_backward_migration_mode.reset();
-}
-
-void ClearLacrosSelectionCacheForTest() {
-  g_lacros_selection_cache.reset();
 }
 
 MigrationMode GetMigrationMode(const user_manager::User* user,
@@ -1206,16 +1153,6 @@ ParseLacrosDataBackwardMigrationMode(base::StringPiece value) {
 base::StringPiece GetLacrosDataBackwardMigrationModeName(
     LacrosDataBackwardMigrationMode value) {
   for (const auto& entry : kLacrosDataBackwardMigrationModeMap) {
-    if (entry.second == value)
-      return entry.first;
-  }
-
-  NOTREACHED();
-  return base::StringPiece();
-}
-
-base::StringPiece GetLacrosSelectionPolicyName(LacrosSelectionPolicy value) {
-  for (const auto& entry : kLacrosSelectionPolicyMap) {
     if (entry.second == value)
       return entry.first;
   }

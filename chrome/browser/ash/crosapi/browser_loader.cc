@@ -206,19 +206,21 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
     return;
   }
 
-  // If the LacrosSelection policy or the user have specified to force using
-  // stateful or rootfs lacros-chrome binary, force the selection.
-  if (absl::optional<browser_util::LacrosSelection> lacros_selection =
-          browser_util::DetermineLacrosSelection()) {
+  // If the user has specified to force using stateful or rootfs lacros-chrome
+  // binary, force the selection.
+  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(browser_util::kLacrosSelectionSwitch)) {
     // TODO(crbug.com/1293250): We should check the version compatibility here,
     // too.
-    switch (lacros_selection.value()) {
-      case browser_util::LacrosSelection::kRootfs:
-        LoadRootfsLacros(std::move(callback));
-        return;
-      case browser_util::LacrosSelection::kStateful:
-        LoadStatefulLacros(std::move(callback));
-        return;
+    auto value =
+        cmdline->GetSwitchValueASCII(browser_util::kLacrosSelectionSwitch);
+    if (value == browser_util::kLacrosSelectionRootfs) {
+      LoadRootfsLacros(std::move(callback));
+      return;
+    }
+    if (value == browser_util::kLacrosSelectionStateful) {
+      LoadStatefulLacros(std::move(callback));
+      return;
     }
   }
 
