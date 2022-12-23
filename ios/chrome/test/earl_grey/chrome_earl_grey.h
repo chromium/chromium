@@ -663,12 +663,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the NewOverflowMenu feature is enabled.
 - (BOOL)isNewOverflowMenuEnabled;
 
-// Returns whether the OmniboxUpdatedPopupUI feature is enabled.
-- (BOOL)isNewOmniboxPopupEnabled;
-
-// Returns whether the kIOSNewOmniboxImplementation feature is enabled.
-- (BOOL)isExperimentalOmniboxEnabled;
-
 // Returns whether the UseLensToSearchForImage feature is enabled;
 - (BOOL)isUseLensToSearchForImageEnabled;
 

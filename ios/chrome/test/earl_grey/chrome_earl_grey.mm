@@ -1288,14 +1288,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isNewOverflowMenuEnabled];
 }
 
-- (BOOL)isNewOmniboxPopupEnabled {
-  return [ChromeEarlGreyAppInterface isNewOmniboxPopupEnabled];
-}
-
-- (BOOL)isExperimentalOmniboxEnabled {
-  return [ChromeEarlGreyAppInterface isExperimentalOmniboxEnabled];
-}
-
 // Returns whether the UseLensToSearchForImage feature is enabled;
 - (BOOL)isUseLensToSearchForImageEnabled {
   return [ChromeEarlGreyAppInterface isUseLensToSearchForImageEnabled];

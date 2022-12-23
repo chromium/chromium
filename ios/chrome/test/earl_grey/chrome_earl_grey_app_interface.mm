@@ -1098,14 +1098,6 @@ NSString* SerializedValue(const base::Value* value) {
   return IsNewOverflowMenuEnabled();
 }
 
-+ (BOOL)isNewOmniboxPopupEnabled {
-  return true;
-}
-
-+ (BOOL)isExperimentalOmniboxEnabled {
-  return base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation);
-}
-
 + (BOOL)isUseLensToSearchForImageEnabled {
   TemplateURLService* service =
       ios::TemplateURLServiceFactory::GetForBrowserState(

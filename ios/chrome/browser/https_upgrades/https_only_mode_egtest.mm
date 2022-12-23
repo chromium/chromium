@@ -333,17 +333,13 @@ const char kInterstitialText[] =
 // Tests that prerendered navigations that should be upgraded are cancelled.
 // This test is adapted from testTapPrerenderSuggestions() in
 // prerender_egtest.mm.
-- (void)test_BadHTTPS_ShouldCancelPrerender {
+// TODO(crbug.com/1315304): Reenable.
+- (void)DISABLED_test_BadHTTPS_ShouldCancelPrerender {
   // TODO(crbug.com/793306): Re-enable the test on iPad once the alternate
   // letters problem is fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(
         @"Disabled for iPad due to alternate letters educational screen.");
-  }
-
-  // TODO(crbug.com/1315304): Reenable.
-  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled for new popup");
   }
 
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
@@ -414,17 +410,13 @@ const char kInterstitialText[] =
 // 3. Type the first letter of the http:// URL in step 1. This will prerender
 //    the http URL.
 // 4. Check that the prerender was cancelled properly.
-- (void)test_Prerender_CancelShouldNotCrash {
+// TODO(crbug.com/1315304): Reenable.
+- (void)DISABLED_test_Prerender_CancelShouldNotCrash {
   // TODO(crbug.com/793306): Re-enable the test on iPad once the alternate
   // letters problem is fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(
         @"Disabled for iPad due to alternate letters educational screen.");
-  }
-
-  // TODO(crbug.com/1315304): Reenable.
-  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled for new popup");
   }
 
   // Step 1: Disable HTTPS-Only Mode and visit an http:// URL. This puts the

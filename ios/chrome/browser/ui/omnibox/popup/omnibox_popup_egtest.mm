@@ -192,19 +192,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Check that we have the suggestion for the second page, but not the switch
   // as it is the current page.
 
-  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
-    XCUIApplication* app = [[XCUIApplication alloc] init];
-    NSString* urlString = base::SysUTF8ToNSString(URL2.GetContent());
-    GREYAssert(app.staticTexts[urlString].isHittable, @"The row doesn't exist");
-    GREYAssert(![app.buttons[kOmniboxPopupRowSwitchTabAccessibilityIdentifier]
-                   waitForExistenceWithTimeout:1],
-               @"Switch to tab element found but it shouldn't have appeared");
-  } else {
-    [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(URL2)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(URL2)]
-        assertWithMatcher:grey_not(grey_interactable())];
-  }
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(URL2)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(URL2)]
+      assertWithMatcher:grey_not(grey_interactable())];
 }
 
 // Tests that the incognito tabs aren't displayed as "opened" tab in the
@@ -464,9 +455,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       ensureAppLaunchedWithFeaturesEnabled:{kEnableSuggestionsScrollingOnIPad}
                                   disabled:{}
                             relaunchPolicy:ForceRelaunchByCleanShutdown];
-  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled for new popup");
-  }
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
@@ -476,11 +464,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_typeText(@"hello")];
 
   // Matcher for a URL-what-you-typed suggestion.
-  id<GREYMatcher> textMatcher =
-      [ChromeEarlGrey isNewOmniboxPopupEnabled]
-          ? grey_accessibilityLabel(@"hello")
-          : grey_descendant(
-                chrome_test_util::StaticTextWithAccessibilityLabel(@"hello"));
+  id<GREYMatcher> textMatcher = grey_descendant(
+      chrome_test_util::StaticTextWithAccessibilityLabel(@"hello"));
   id<GREYMatcher> row =
       grey_allOf(chrome_test_util::OmniboxPopupRow(), textMatcher,
                  grey_sufficientlyVisible(), nil);

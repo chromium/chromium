@@ -129,17 +129,13 @@ GREYElementInteraction* RequestDesktopButton() {
 #pragma mark - Tests
 
 // Test that tapping the prerendered suggestions opens it.
-- (void)testTapPrerenderSuggestions {
+// TODO(crbug.com/1315304): Reenable.
+- (void)DISABLED_testTapPrerenderSuggestions {
   // TODO(crbug.com/793306): Re-enable the test on iPad once the alternate
   // letters problem is fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(
         @"Disabled for iPad due to alternate letters educational screen.");
-  }
-
-  // TODO(crbug.com/1315304): Reenable.
-  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled for new popup");
   }
 
   [self addURLToHistory];
@@ -163,34 +159,20 @@ GREYElementInteraction* RequestDesktopButton() {
   });
   GREYAssertTrue(prerendered, @"Prerender did not happen");
   // Make sure the omnibox is autocompleted.
-  if ([ChromeEarlGrey isExperimentalOmniboxEnabled]) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                            pageURL.GetContent())]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(pageString),
-                                            grey_ancestor(grey_kindOfClassName(
-                                                @"OmniboxTextFieldIOS")),
-                                            nil)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(pageString),
+                                          grey_ancestor(grey_kindOfClassName(
+                                              @"OmniboxTextFieldIOS")),
+                                          nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Open the suggestion. The suggestion needs to be the first suggestion to
   // have the prerenderer activated.
-  id<GREYMatcher> rowMatcher =
-      [ChromeEarlGrey isNewOmniboxPopupEnabled]
-          ? grey_allOf(
-                grey_accessibilityValue(pageString),
-                grey_ancestor(grey_accessibilityID(@"omnibox suggestion 0 0")),
-                chrome_test_util::OmniboxPopupRow(), grey_sufficientlyVisible(),
-                nil)
-          : grey_allOf(grey_descendant(
-                           chrome_test_util::StaticTextWithAccessibilityLabel(
-                               pageString)),
-                       grey_accessibilityID(@"omnibox suggestion 0 0"),
-                       chrome_test_util::OmniboxPopupRow(),
-                       grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> rowMatcher = grey_allOf(
+      grey_accessibilityValue(pageString),
+      grey_ancestor(grey_accessibilityID(@"omnibox suggestion 0 0")),
+      chrome_test_util::OmniboxPopupRow(), grey_sufficientlyVisible(), nil);
+
   [[EarlGrey selectElementWithMatcher:rowMatcher] performAction:grey_tap()];
 
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
