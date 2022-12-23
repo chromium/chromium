@@ -57,10 +57,14 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
       CreateVideoDecoderCb create_vd_cb,
       Client* client,
       const Config& config,
+      bool low_delay,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   VdVideoDecodeAccelerator(const VdVideoDecodeAccelerator&) = delete;
   VdVideoDecodeAccelerator& operator=(const VdVideoDecodeAccelerator&) = delete;
   ~VdVideoDecodeAccelerator() override;
+
+  // Initializer to set the |low_delay| pipeline.
+  bool Initialize(const Config& config, Client* client, bool low_delay);
 
   // Implementation of VideoDecodeAccelerator.
   bool Initialize(const Config& config, Client* client) override;

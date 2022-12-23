@@ -398,9 +398,12 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
       CreateVdaConfig(profile_, use_vd);
   if (use_vd) {
     VLOGF(2) << "Using VideoDecoder-backed VdVideoDecodeAccelerator.";
+    // Decoded video frames are sent "quickly" (i.e. without much buffering)
+    // to SurfaceFlinger, so we consider it a |low_delay| pipeline.
     vda_ = media::VdVideoDecodeAccelerator::Create(
         base::BindRepeating(&media::VideoDecoderPipeline::Create), this,
-        vda_config, base::SequencedTaskRunner::GetCurrentDefault());
+        vda_config, true /* low_delay */,
+        base::SequencedTaskRunner::GetCurrentDefault());
   } else {
     VLOGF(2) << "Using original VDA";
     auto vda_factory = media::GpuVideoDecodeAcceleratorFactory::Create(

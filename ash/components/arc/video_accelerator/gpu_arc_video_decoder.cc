@@ -131,8 +131,11 @@ void GpuArcVideoDecoder::Initialize(
   auto output_cb =
       base::BindRepeating(&GpuArcVideoDecoder::OnFrameReady, weak_this_);
 
-  decoder_->Initialize(std::move(vd_config), false, nullptr, std::move(init_cb),
-                       std::move(output_cb), media::WaitingCB());
+  // Decoded video frames are sent "quickly" (i.e. without much buffering)
+  // to SurfaceFlinger, so we consider it a |low_delay| pipeline.
+  decoder_->Initialize(std::move(vd_config), true /* low_delay */, nullptr,
+                       std::move(init_cb), std::move(output_cb),
+                       media::WaitingCB());
   VLOGF(2) << "Number of concurrent decoder instances: " << num_instances_;
 }
 
