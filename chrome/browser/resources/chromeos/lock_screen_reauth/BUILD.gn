@@ -78,7 +78,11 @@ js_type_check("closure_compile") {
                         root_build_dir),
         "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
       ]
-  deps = [ ":lock_screen_network" ]
+  deps = [
+    ":lock_screen_network",
+    ":lock_screen_reauth",
+    ":lock_screen_reauth_app",
+  ]
 }
 
 js_library("lock_screen_network") {
@@ -93,4 +97,30 @@ js_library("lock_screen_network") {
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
   ]
+}
+
+js_library("lock_screen_reauth_app") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/lock_screen_reauth/lock_screen_reauth.js" ]
+  deps = [
+    ":lock_screen_reauth",
+    "//ash/webui/common/resources:load_time_data.m",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("lock_screen_reauth") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/lock_screen_reauth/lock_screen_reauth.js" ]
+  deps = [
+    "//ash/webui/common/resources:cr.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:load_time_data.m",
+    "//chrome/browser/resources/gaia_auth_host:authenticator",
+  ]
+  externs_list = [
+    "$externs_path/chrome_send.js",
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+  ]
+  extra_deps = [ ":web_components" ]
 }

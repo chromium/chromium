@@ -778,11 +778,13 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   }
 
   /**
-   * Invoked when auth is completed successfully.
-   * @param {!Object} credentials Credentials of the completed authentication.
+   * Invoked when onAuthCompleted message received.
+   * @param {!CustomEvent<!Object>} e Event with the credentials object as the
+   *     payload.
    * @private
    */
-  onAuthCompleted_(credentials) {
+  onAuthCompletedMessage_(e) {
+    const credentials = e.detail;
     if (credentials.publicSAML) {
       this.email_ = credentials.email;
       chrome.send('launchSAMLPublicSession', [credentials.email]);
@@ -810,16 +812,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   }
 
   /**
-   * Invoked when onAuthCompleted message received.
-   * @param {!CustomEvent<!Object>} e Event with the credentials object as the
-   *     payload.
-   * @private
-   */
-  onAuthCompletedMessage_(e) {
-    this.onAuthCompleted_(e.detail);
-  }
-
-  /**
    * Invoked when onLoadAbort message received.
    * @param {!CustomEvent<!Object>} e Event with the payload containing
    *     additional information about error event like:
@@ -828,7 +820,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onLoadAbortMessage_(e) {
-    this.onWebviewError_(e.detail);
+    chrome.send('webviewLoadAborted', [e.detail.error_code]);
   }
 
   /**
@@ -847,7 +839,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onIdentifierEnteredMessage_(e) {
-    this.onIdentifierEntered_(e.detail);
+    this.userActed(['identifierEntered', e.detail.accountIdentifier]);
   }
 
   /**
@@ -857,7 +849,8 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onRemoveUserByEmailMessage_(e) {
-    this.onRemoveUserByEmail_(e.detail);
+    chrome.send('removeUserByEmail', [e.detail]);
+    this.cancel();
   }
 
   /**
@@ -893,38 +886,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       return;
     }
     this.userActed(isBackClicked ? 'back' : 'cancel');
-  }
-
-  /**
-   * Handler for webview error handling.
-   * @param {!Object} data Additional information about error event like:
-   *     {number} error_code Error code such as net::ERR_INTERNET_DISCONNECTED.
-   *     {string} src The URL that failed to load.
-   * @private
-   */
-  onWebviewError_(data) {
-    chrome.send('webviewLoadAborted', [data.error_code]);
-  }
-
-  /**
-   * Handler for identifierEntered event.
-   * @param {!Object} data The identifier entered by user:
-   *     {string} accountIdentifier User identifier.
-   * @private
-   */
-  onIdentifierEntered_(data) {
-    this.userActed(['identifierEntered', data.accountIdentifier]);
-  }
-
-  /**
-   * Handler for removeUserByEmail event.
-   * @param {!Object} data The user email:
-   *     {string} email User email.
-   * @private
-   */
-  onRemoveUserByEmail_(data) {
-    chrome.send('removeUserByEmail', [data]);
-    this.cancel();
   }
 
   /**

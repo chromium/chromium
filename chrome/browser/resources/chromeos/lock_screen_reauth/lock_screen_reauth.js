@@ -17,12 +17,10 @@ import './components/buttons/oobe_text_button.js';
 import './components/oobe_icons.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {$} from 'chrome://resources/ash/common/util.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Authenticator, AuthMode, AuthParams, SUPPORTED_PARAMS} from './gaia_auth_host/authenticator.js';
+import {Authenticator, AuthMode, AuthParams, SUPPORTED_PARAMS} from '../../gaia_auth_host/authenticator.js';
 
 const clearDataType = {
   appcache: true,
@@ -30,115 +28,146 @@ const clearDataType = {
   cookies: true,
 };
 
-Polymer({
-  is: 'lock-reauth',
-  behaviors: [I18nBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const LockReauthBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/**
+ * @polymer
+ */
+class LockReauth extends LockReauthBase {
+  static get is() {
+    return 'lock-reauth';
+  }
 
-  properties: {
-    // User non-canonicalized email for display
-    email_: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
+  static get properties() {
+    return {
+      /**
+       * User non-canonicalized email for display
+       */
+      email_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * Auth Domain property of the authenticator. Updated via events.
+       */
+      authDomain_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * Whether the ‘verify user’ screen is shown.
+       */
+      isVerifyUser_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * Whether the ‘verify user again’ screen is shown.
+       */
+      isErrorDisplayed_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether user is authenticating on SAML page.
+       */
+      isSamlPage_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether default SAML IdP is shown.
+       */
+      isDefaultSsoProvider: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether there is a failure to scrape the user's password.
+       */
+      isConfirmPassword_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether no password is scraped or multiple passwords are scraped.
+       */
+      isManualInput_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether the user's password has changed.
+       */
+      isPasswordChanged_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether to show Saml Notice Message.
+       */
+      showSamlNoticeMessage_: {
+        type: Boolean,
+        value: false,
+      },
+
+      passwordConfirmAttempt_: {
+        type: Number,
+        value: 0,
+      },
+
+      passwordChangeAttempt_: {
+        type: Number,
+        value: 0,
+      },
+    };
+  }
+
+  constructor() {
+    super();
 
     /**
-     * Auth Domain property of the authenticator. Updated via events.
+     * Saved authenticator load params.
+     * @type {?AuthParams}
+     * @private
      */
-    authDomain_: {
-      type: String,
-      value: '',
-    },
+    this.authenticatorParams_ = null;
 
     /**
-     * Whether the ‘verify user’ screen is shown.
+     * The UI component that hosts IdP pages.
+     * @type {!Authenticator|undefined}
      */
-    isVerifyUser_: {
-      type: Boolean,
-      value: true,
-    },
+    this.authenticator_ = undefined;
 
     /**
-     * Whether the ‘verify user again’ screen is shown.
+     * Webview that view IdP page
+     * @type {!WebView|undefined}
+     * @private
      */
-    isErrorDisplayed_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether user is authenticating on SAML page.
-     */
-    isSamlPage_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether default SAML IdP is shown.
-     */
-    isDefaultSsoProvider: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether there is a failure to scrape the user's password.
-     */
-    isConfirmPassword_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether no password is scraped or multiple passwords are scraped.
-     */
-    isManualInput_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether the user's password has changed.
-     */
-    isPasswordChanged_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether to show Saml Notice Message.
-     */
-    showSamlNoticeMessage_: {
-      type: Boolean,
-      value: false,
-    },
-
-    passwordConfirmAttempt_: {
-      type: Number,
-      value: 0,
-    },
-
-    passwordChangeAttempt_: {
-      type: Number,
-      value: 0,
-    },
-  },
-
-  /**
-   * The UI component that hosts IdP pages.
-   * @type {!Authenticator|undefined}
-   */
-  authenticator_: undefined,
-
-  /**
-   * Webview that view IdP page
-   * @type {!webview|undefined}
-   * @private
-   */
-  signinFrame_: undefined,
+    this.signinFrame_ = undefined;
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.signinFrame_ = this.getSigninFrame_();
     this.authenticator_ = new Authenticator(this.signinFrame_);
     this.authenticator_.addEventListener('authDomainChange', (e) => {
@@ -147,9 +176,9 @@ Polymer({
     this.authenticator_.addEventListener(
         'authCompleted', (e) => void this.onAuthCompletedMessage_(e));
     this.authenticator_.addEventListener(
-        'loadAbort', (e) => void this.onLoadAbortMessage_(e));
+        'loadAbort', (e) => void this.onLoadAbortMessage_(e.detail));
     chrome.send('initialize');
-  },
+  }
 
   /** @private */
   resetState_() {
@@ -161,7 +190,7 @@ Polymer({
     this.isPasswordChanged_ = false;
     this.showSamlNoticeMessage_ = false;
     this.authDomain_ = '';
-  },
+  }
 
   /**
    * Set the orientation which will be used in styling webui.
@@ -174,7 +203,7 @@ Polymer({
     } else {
       document.documentElement.setAttribute('orientation', 'vertical');
     }
-  },
+  }
 
   /**
    * Set the width which will be used in styling webui.
@@ -183,13 +212,16 @@ Polymer({
   setWidth(width) {
     document.documentElement.style.setProperty(
         '--lock-screen-reauth-dialog-width', width + 'px');
-  },
+  }
 
   /**
    * Loads the authentication parameter into the iframe.
-   * @param {!AuthParams} data authenticator parameters bag.
+   * @param {!Object} data authenticator parameters bag.
    */
   loadAuthenticator(data) {
+    assert(
+        'webviewPartitionName' in data,
+        'ERROR: missing webview partition name');
     this.authenticator_.setWebviewPartition(data.webviewPartitionName);
     const params = {};
     SUPPORTED_PARAMS.forEach(name => {
@@ -198,14 +230,14 @@ Polymer({
       }
     });
 
-    this.authenticatorParams_ = params;
+    this.authenticatorParams_ = /** @type {AuthParams} */ (params);
     this.email_ = data.email;
     this.isDefaultSsoProvider = data.doSamlRedirect;
     if (!data['doSamlRedirect']) {
       this.doGaiaRedirect_();
     }
     chrome.send('authenticatorLoaded');
-  },
+  }
 
 
   /**
@@ -218,7 +250,7 @@ Polymer({
       this.isButtonsEnabled_ = true;
       this.isErrorDisplayed_ = true;
     });
-  },
+  }
 
   /**
    * Reloads the page.
@@ -227,10 +259,10 @@ Polymer({
     this.signinFrame_.clearData({since: 0}, clearDataType, () => {
       this.authenticator_.resetStates();
     });
-  },
+  }
 
   /**
-   * @return {!Element}
+   * @return {!WebView}
    * @private
    */
   getSigninFrame_() {
@@ -239,8 +271,8 @@ Polymer({
     // recreated (see Authenticator.setWebviewPartition()).
     const signinFrame = this.shadowRoot.getElementById('signin-frame');
     assert(signinFrame);
-    return signinFrame;
-  },
+    return /** @type {!WebView} */ (signinFrame);
+  }
 
   onAuthCompletedMessage_(e) {
     const credentials = e.detail;
@@ -253,30 +285,18 @@ Polymer({
       credentials.services,
       credentials.passwordAttributes,
     ]);
-  },
+  }
 
   /**
    * Invoked when onLoadAbort message received.
-   * @param {!CustomEvent<!Object>} e Event with the payload containing
-   *     additional information about error event like:
+   * @param {!Object} data  Additional information about error event like:
    *     {number} error_code Error code such as net::ERR_INTERNET_DISCONNECTED.
    *     {string} src The URL that failed to load.
    * @private
    */
-  onLoadAbortMessage_(e) {
-    this.onWebviewError_(e.detail);
-  },
-
-  /**
-   * Handler for webview error handling.
-   * @param {!Object} data Additional information about error event like:
-   *     {number} error_code Error code such as net::ERR_INTERNET_DISCONNECTED.
-   *     {string} src The URL that failed to load.
-   * @private
-   */
-  onWebviewError_(data) {
+  onLoadAbortMessage_(data) {
     chrome.send('webviewLoadAborted', [data.error_code]);
-  },
+  }
 
   /**
    * Invoked when the user has successfully authenticated via SAML,
@@ -297,7 +317,7 @@ Polymer({
       this.$.passwordInput.invalid = true;
     }
     this.passwordConfirmAttempt_++;
-  },
+  }
 
   /**
    * Invoked when the user's password doesn't match his old password.
@@ -310,11 +330,13 @@ Polymer({
     if (this.passwordChangeAttempt_ > 1) {
       this.$.oldPasswordInput.invalid = true;
     }
-  },
+  }
 
   /** @private */
   onVerify_() {
-    this.authenticator_.load(AuthMode.DEFAULT, this.authenticatorParams_);
+    this.authenticator_.load(
+        AuthMode.DEFAULT,
+        /** @type {AuthParams} */ (this.authenticatorParams_));
     this.resetState_();
     /**
      * These statements override resetStates_ calls.
@@ -322,7 +344,7 @@ Polymer({
      */
     this.isSamlPage_ = true;
     this.showSamlNoticeMessage_ = true;
-  },
+  }
 
   /** @private */
   onConfirm_() {
@@ -345,19 +367,12 @@ Polymer({
     }
 
     chrome.send('onPasswordTyped', [this.$.passwordInput.value]);
-  },
+  }
 
   /** @private */
   onCloseTap_() {
     chrome.send('dialogClose');
-  },
-
-  /** @private */
-  onResetAndClose_() {
-    this.signinFrame_.clearData({since: 0}, clearDataType, () => {
-      onCloseTap_();
-    });
-  },
+  }
 
   /** @private */
   onNext_() {
@@ -367,31 +382,33 @@ Polymer({
     }
     chrome.send('updateUserPassword', [this.$.oldPasswordInput.value]);
     this.$.oldPasswordInput.value = '';
-  },
+  }
 
   /** @private */
   doGaiaRedirect_() {
-    this.authenticator_.load(AuthMode.DEFAULT, this.authenticatorParams_);
+    this.authenticator_.load(
+        AuthMode.DEFAULT,
+        /** @type {AuthParams} */ (this.authenticatorParams_));
     this.resetState_();
     /**
      * These statements override resetStates_ calls.
      * Thus have to be AFTER resetState_.
      */
     this.isSamlPage_ = true;
-  },
+  }
 
   /** @private */
   passwordPlaceholder_(locale, isManualInput_) {
     return this.i18n(
         isManualInput_ ? 'manualPasswordInputLabel' : 'confirmPasswordLabel');
-  },
+  }
 
   /** @private */
   passwordErrorText_(locale, isManualInput_) {
     return this.i18n(
         isManualInput_ ? 'manualPasswordMismatch' :
                          'passwordChangedIncorrectOldPassword');
-  },
+  }
 
   /**
    * Invoked when "Enter Google Account info" button is pressed on SAML screen.
@@ -401,7 +418,10 @@ Polymer({
     this.authenticatorParams_.doSamlRedirect = false;
     this.authenticatorParams_.enableGaiaActionButtons = true;
     this.isDefaultSsoProvider = false;
-    this.authenticator_.load(AuthMode.DEFAULT, this.authenticatorParams_);
-  },
+    this.authenticator_.load(
+        AuthMode.DEFAULT,
+        /** @type {AuthParams} */ (this.authenticatorParams_));
+  }
+}
 
-});
+customElements.define(LockReauth.is, LockReauth);

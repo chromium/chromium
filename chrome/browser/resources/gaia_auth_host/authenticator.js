@@ -685,7 +685,6 @@ export class Authenticator extends EventTarget {
    * already navigated, this function re-creates it since the storage
    * partition of an active renderer process cannot change.
    * @param {string} newWebviewPartitionName the new partition
-   * @private
    */
   setWebviewPartition(newWebviewPartitionName) {
     if (!this.webview_.src) {
