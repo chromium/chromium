@@ -18,6 +18,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -913,6 +914,7 @@ void AutocompleteController::UpdateResult(
     bool regenerate_result,
     bool force_notify_default_match_changed) {
   TRACE_EVENT0("omnibox", "AutocompleteController::UpdateResult");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Omnibox.AutocompletionTime.UpdateResult");
 
   absl::optional<AutocompleteMatch> last_default_match;
   std::u16string last_default_associated_keyword;

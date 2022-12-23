@@ -291,6 +291,9 @@ void AutocompleteResult::SortAndCull(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service,
     const AutocompleteMatch* preserve_default_match) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Omnibox.AutocompletionTime.UpdateResult.SortAndCull");
+
   for (auto& match : matches_)
     match.ComputeStrippedDestinationURL(input, template_url_service);
 

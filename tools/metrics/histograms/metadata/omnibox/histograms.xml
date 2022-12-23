@@ -313,6 +313,49 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Omnibox.AutocompletionTime.UpdateResult{Slice}" units="ms"
+    expires_after="2023-12-01">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The time `AutocompleteController::UpdateResult()` took.
+
+    That method is invoked, and this histogram is recorded: a) Once for the sync
+    autocomplete update that occurs when the omnibox input changes (e.g. the
+    user types a character, pastes text, focuses the omnibox, etc). b) Once for
+    each async autocomplete update that occurs asyncly after the omnibox input
+    changes and the various async providers complete. Usually occurs up to 3
+    times per input change. But can be less if the updates are interrupted (e.g.
+    the popup is closed or input changed again) or include no new suggestions.
+    c) Once when copied matches from the previous autocomplete pass expire. This
+    happens at most once per input change, but may not occur if all providers
+    complete or the input changes prior to the expiration.
+
+    Because this encompasses both sync and async omnibox updates, and the number
+    of async updates per sync update is not fixed, it's not a good
+    representative of how a feature effects user experienced latency. E.g., a
+    feature that makes users type slower will bias this metric towards async
+    updates. Besides, this is only a small segment of the user experienced
+    latency. This is only intended to measure changes in the actual
+    implementation of `UpdateResult()`.
+
+    {Slice}
+  </summary>
+  <token key="Slice">
+    <variant name=""/>
+    <variant name=".SortAndCull"
+        summary="The '.SortAndCull' slice measures the time
+                 `AutocompleteResult::SortAndCull()` took. This is invoked
+                 only from `AutocompleteController::UpdateResult()`; i.e.,
+                 this is included in the unsliced metric, `SortAndCull()` can
+                 be called up to twice per `UpdateResult()`. For all but the
+                 last async update, it's called twice; for the last async
+                 update (which may not occur if interrupted), it's called
+                 once."/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.BitmapFetchLatency" units="ms"
     expires_after="2022-09-11">
   <obsolete>
