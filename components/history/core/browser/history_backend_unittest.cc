@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <iterator>
+#include <limits>
 #include <memory>
 #include <set>
 #include <string>
@@ -596,7 +597,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
         url_db->CreateKeywordSearchTermVisitEnumerator(keyword_id, prefix);
     KeywordSearchTermVisitList matching_terms;
     GetAutocompleteSearchTermsFromEnumerator(
-        *enumerator, /*ignore_duplicate_visits=*/true,
+        *enumerator, /*count=*/SIZE_MAX, /*ignore_duplicate_visits=*/true,
         SearchTermRankingPolicy::kRecency, &matching_terms);
     return matching_terms.size();
   }
@@ -3591,12 +3592,8 @@ TEST_F(HistoryBackendTest, QueryMostRepeatedQueriesForKeyword) {
     EXPECT_EQ(u"first5", queries[1]->normalized_term);
     EXPECT_EQ(u"first4", queries[2]->normalized_term);
 
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
-                                      1);
-    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
-                                        result_count * 2, 1);
   }
 }
 

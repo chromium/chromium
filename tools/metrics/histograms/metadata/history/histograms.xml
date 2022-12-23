@@ -2019,6 +2019,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="History.QueryMostRepeatedQueriesCount" units="counts"
     expires_after="2023-10-10">
+  <obsolete>
+    Expired in M110.
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -2033,6 +2036,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="History.QueryMostRepeatedQueriesTime" units="ms"
     expires_after="2023-10-10">
+  <obsolete>
+    Expired in M110 in favor of History.QueryMostRepeatedQueriesTimeV2.
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -2043,6 +2049,21 @@ chromium-metrics-reviews@google.com.
     really happen. Emitted on NTP load and on omnibox popup shown on Android
     where the repeatable queries are requested to be shown in the Most Visited
     tiles.
+  </summary>
+</histogram>
+
+<histogram name="History.QueryMostRepeatedQueriesTimeV2" units="ms"
+    expires_after="2023-12-20">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The amount of time for HistoryBackend::QueryMostRepeatedQueriesForKeyword()
+    to extract up to the requested number of search terms from the
+    HistoryDatabase db_ and sort them by frecency scores to produce the most
+    repeated search terms. Excludes the case where local HistoryDatabase db_ is
+    unavailable, i.e. where the query doesn't really happen. Emitted on NTP load
+    and on omnibox popup shown on Android where the repeatable queries are
+    requested to be shown in the Most Visited tiles.
   </summary>
 </histogram>
 

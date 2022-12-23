@@ -447,9 +447,7 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
     histogram_tester.ExpectTotalCount("History.TopSites.QueryFromHistoryTime",
                                       1);
     histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
-                                      0);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       0);
   }
   {
@@ -475,12 +473,8 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
     histogram_tester.ExpectTotalCount("History.TopSites.QueryFromHistoryTime",
                                       1);
     histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
-                                      1);
-    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
-                                        2, 1);
   }
   {
     base::test::ScopedFeatureList feature_list;
@@ -506,12 +500,8 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
     histogram_tester.ExpectTotalCount("History.TopSites.QueryFromHistoryTime",
                                       1);
     histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
-                                      1);
-    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
-                                        2, 1);
   }
   {
     base::test::ScopedFeatureList feature_list;
@@ -536,12 +526,8 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
     histogram_tester.ExpectTotalCount("History.TopSites.QueryFromHistoryTime",
                                       1);
     histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
-                                      1);
-    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
-                                        2, 1);
   }
 }
 

@@ -25,6 +25,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/history/core/browser/keyword_search_term.h"
@@ -104,16 +105,6 @@ bool IsSearchEngineGoogle(const TemplateURL* template_url,
          template_url->GetEngineType(
              client->GetTemplateURLService()->search_terms_data()) ==
              SEARCH_ENGINE_GOOGLE;
-}
-
-void RecordDBMetrics(const base::TimeTicks db_query_time,
-                     const size_t result_size) {
-  base::UmaHistogramTimes(
-      "Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractionTime",
-      base::TimeTicks::Now() - db_query_time);
-  base::UmaHistogramCounts10000(
-      "Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractedCount",
-      result_size);
 }
 
 }  // namespace
@@ -692,38 +683,34 @@ void SearchProvider::DoHistoryQuery(bool minimal_changes) {
   // require multiple searches and tracking of "single- vs. multi-word" in the
   // database.
   size_t num_matches = provider_max_matches_ * 5;
+  const base::ElapsedTimer db_query_timer;
   const TemplateURL* default_url = providers_.GetDefaultProviderURL();
   if (default_url) {
-    const base::TimeTicks db_query_time = base::TimeTicks::Now();
     auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
         default_url->id(), input_.text());
     if (enumerator) {
       history::GetAutocompleteSearchTermsFromEnumerator(
-          *enumerator, /*ignore_duplicate_visits=*/true,
+          *enumerator, num_matches, /*ignore_duplicate_visits=*/true,
           history::SearchTermRankingPolicy::kRecency,
           &raw_default_history_results_);
     }
-    RecordDBMetrics(db_query_time, raw_default_history_results_.size());
-    if (raw_default_history_results_.size() > num_matches) {
-      raw_default_history_results_.resize(num_matches);
-    }
+    DCHECK_LE(raw_default_history_results_.size(), num_matches);
   }
   const TemplateURL* keyword_url = providers_.GetKeywordProviderURL();
   if (keyword_url) {
-    const base::TimeTicks db_query_time = base::TimeTicks::Now();
     auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
         keyword_url->id(), keyword_input_.text());
     if (enumerator) {
       history::GetAutocompleteSearchTermsFromEnumerator(
-          *enumerator, /*ignore_duplicate_visits=*/true,
+          *enumerator, num_matches, /*ignore_duplicate_visits=*/true,
           history::SearchTermRankingPolicy::kRecency,
           &raw_keyword_history_results_);
     }
-    RecordDBMetrics(db_query_time, raw_keyword_history_results_.size());
-    if (raw_keyword_history_results_.size() > num_matches) {
-      raw_keyword_history_results_.resize(num_matches);
-    }
+    DCHECK_LE(raw_keyword_history_results_.size(), num_matches);
   }
+  base::UmaHistogramTimes(
+      "Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractionTimeV2",
+      db_query_timer.Elapsed());
 }
 
 base::TimeDelta SearchProvider::GetSuggestQueryDelay() const {

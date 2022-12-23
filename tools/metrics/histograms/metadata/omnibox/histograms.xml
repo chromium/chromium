@@ -995,6 +995,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractedCount"
     units="counts" expires_after="2023-04-23">
+  <obsolete>
+    Expired in M110.
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1007,13 +1010,30 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractionTime"
     units="ms" expires_after="2023-04-23">
+  <obsolete>
+    Expired in M110 in favor of
+    Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractionTimeV2
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    The length of time it takes to extract search terms from the database and
+    The amount of time it takes to extract search terms from the database and
     sort them by recency (if needed) to produce local prefix search suggestions.
     Emitted when prefix search suggestions are requested as a result of the user
     typing into the Omnibox or the Realbox on the NTP.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractionTimeV2"
+    units="ms" expires_after="2023-12-20">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The amount of time it takes to extract up to the requested number of search
+    terms from the database for both the default and the keyword providers (if
+    applicable) and sort them by recency to produce local prefix search
+    suggestions. Emitted when prefix search suggestions are requested as a
+    result of the user typing into the Omnibox or the NTP Realbox.
   </summary>
 </histogram>
 
@@ -1030,6 +1050,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractedCount"
     units="counts" expires_after="2023-04-23">
+  <obsolete>
+    Expired in M110.
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1041,14 +1064,30 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime"
     units="ms" expires_after="2023-04-23">
+  <obsolete>
+    Expired in M110 in favor of
+    Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    The length of time it takes to extract search terms from the database and
+    The amount of time it takes to extract search terms from the database and
     sort them by frecency to produce local zero-prefix suggestions. Emitted when
     zero-prefix suggestions are requested as a result of the user focusing into
     the Omnibox or the Realbox on the NTP. In M103, this was changed to no
     longer include the construction of the AutocompleteMatch values.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2"
+    units="ms" expires_after="2023-12-20">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The amount of time it takes to extract up to the requested number of search
+    terms from the database and sort them by frecency to produce local
+    zero-prefix suggestions. Emitted when zero-prefix suggestions are requested
+    as a result of the user focusing into the Omnibox or the NTP Realbox.
   </summary>
 </histogram>
 

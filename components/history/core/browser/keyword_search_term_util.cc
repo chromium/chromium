@@ -4,6 +4,8 @@
 
 #include "components/history/core/browser/keyword_search_term_util.h"
 
+#include <algorithm>
+
 #include "base/time/time.h"
 #include "components/history/core/browser/keyword_search_term.h"
 
@@ -139,6 +141,7 @@ class SearchTermHelper {
 
 void GetAutocompleteSearchTermsFromEnumerator(
     KeywordSearchTermVisitEnumerator& enumerator,
+    const size_t count,
     bool ignore_duplicate_visits,
     SearchTermRankingPolicy ranking_policy,
     KeywordSearchTermVisitList* search_terms) {
@@ -152,13 +155,17 @@ void GetAutocompleteSearchTermsFromEnumerator(
     }
     search_terms->push_back(std::move(search_term));
   }
-  // Order the search terms by descending recency or frecency.
-  std::stable_sort(search_terms->begin(), search_terms->end(),
-                   [&](const auto& a, const auto& b) {
-                     return ranking_policy == SearchTermRankingPolicy::kFrecency
-                                ? a->score > b->score
-                                : a->last_visit_time > b->last_visit_time;
-                   });
+  // Populate `search_terms` with the top `count` search terms in descending
+  // recency or frecency scores.
+  size_t num_search_terms = std::min(search_terms->size(), count);
+  base::ranges::partial_sort(
+      search_terms->begin(), std::next(search_terms->begin(), num_search_terms),
+      search_terms->end(), [&](const auto& a, const auto& b) {
+        return ranking_policy == SearchTermRankingPolicy::kFrecency
+                   ? a->score > b->score
+                   : a->last_visit_time > b->last_visit_time;
+      });
+  search_terms->resize(num_search_terms);
 }
 
 // MostRepeatedSearchTermHelper ------------------------------------------------
@@ -254,6 +261,7 @@ class MostRepeatedSearchTermHelper {
 
 void GetMostRepeatedSearchTermsFromEnumerator(
     KeywordSearchTermVisitEnumerator& enumerator,
+    const size_t count,
     KeywordSearchTermVisitList* search_terms) {
   MostRepeatedSearchTermHelper helper;
   const base::Time now = base::Time::Now();
@@ -261,10 +269,14 @@ void GetMostRepeatedSearchTermsFromEnumerator(
              helper.GetNextSearchTermFromEnumerator(enumerator, now)) {
     search_terms->push_back(std::move(search_term));
   }
-  // Order the search terms by descending frecency scores.
-  std::stable_sort(
-      search_terms->begin(), search_terms->end(),
+  // Populate `search_terms` with the top `count` search terms in descending
+  // frecency scores.
+  size_t num_search_terms = std::min(search_terms->size(), count);
+  base::ranges::partial_sort(
+      search_terms->begin(), std::next(search_terms->begin(), num_search_terms),
+      search_terms->end(),
       [](const auto& a, const auto& b) { return a->score > b->score; });
+  search_terms->resize(num_search_terms);
 }
 
 }  // namespace history

@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
@@ -90,15 +91,6 @@ bool AllowLocalHistoryZeroSuggestSuggestions(AutocompleteProviderClient* client,
   return input.focus_type() == metrics::OmniboxFocusType::INTERACTION_FOCUS &&
          input.type() == OmniboxInputType::EMPTY &&
          BaseSearchProvider::IsNTPPage(input.current_page_classification());
-}
-
-void RecordDBMetrics(const base::TimeTicks db_query_time,
-                     const size_t result_size) {
-  base::UmaHistogramTimes(
-      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime",
-      base::TimeTicks::Now() - db_query_time);
-  base::UmaHistogramCounts10000(
-      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractedCount", result_size);
 }
 
 }  // namespace
@@ -207,15 +199,18 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
   }
 
   std::vector<std::unique_ptr<history::KeywordSearchTermVisit>> results;
-  const base::TimeTicks db_query_time = base::TimeTicks::Now();
+  const base::ElapsedTimer db_query_timer;
   auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
       template_url_service->GetDefaultSearchProvider()->id());
   if (enumerator) {
     history::GetAutocompleteSearchTermsFromEnumerator(
-        *enumerator, /*ignore_duplicate_visits=*/true,
+        *enumerator, max_matches_, /*ignore_duplicate_visits=*/true,
         history::SearchTermRankingPolicy::kFrecency, &results);
   }
-  RecordDBMetrics(db_query_time, results.size());
+  DCHECK_LE(results.size(), max_matches_);
+  base::UmaHistogramTimes(
+      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2",
+      db_query_timer.Elapsed());
 
   int relevance =
       OmniboxFieldTrial::kLocalHistoryZeroSuggestRelevanceScore.Get();
@@ -240,10 +235,7 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
         TemplateURLRef::NO_SUGGESTIONS_AVAILABLE,
         /*append_extra_query_params_from_command_line*/ true);
     match.deletable = client_->AllowDeletingBrowserHistory();
-
     matches_.push_back(match);
-    if (matches_.size() >= max_matches_)
-      break;
   }
 }
 

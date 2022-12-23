@@ -604,12 +604,8 @@ TEST_F(HistoryServiceTest, QueryMostRepeatedQueriesForKeyword) {
     ASSERT_EQ(1U, most_repeated_queries_.size());
     EXPECT_EQ(u"second", most_repeated_queries_[0]->normalized_term);
 
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
-                                      1);
-    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
-                                        2, 1);
   }
 
   // Add third page for first keyword.
@@ -625,12 +621,8 @@ TEST_F(HistoryServiceTest, QueryMostRepeatedQueriesForKeyword) {
     ASSERT_EQ(1U, most_repeated_queries_.size());
     EXPECT_EQ(u"third", most_repeated_queries_[0]->normalized_term);
 
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
-                                      1);
-    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
-                                        3, 1);
   }
 
   // Revisit second page for first keyword, making it the top page.
@@ -646,12 +638,8 @@ TEST_F(HistoryServiceTest, QueryMostRepeatedQueriesForKeyword) {
     ASSERT_EQ(1U, most_repeated_queries_.size());
     EXPECT_EQ(u"second", most_repeated_queries_[0]->normalized_term);
 
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
-                                      1);
-    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
-                                        3, 1);
   }
 
   // Add forth page for second keyword. This does not change the top page.
@@ -667,12 +655,8 @@ TEST_F(HistoryServiceTest, QueryMostRepeatedQueriesForKeyword) {
     ASSERT_EQ(1U, most_repeated_queries_.size());
     EXPECT_EQ(u"second", most_repeated_queries_[0]->normalized_term);
 
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
-                                      1);
-    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
-                                        3, 1);
   }
 }
 

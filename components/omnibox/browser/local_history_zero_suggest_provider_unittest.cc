@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/local_history_zero_suggest_provider.h"
 
+#include <limits>
 #include <memory>
 #include <vector>
 
@@ -231,9 +232,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Input) {
   // Following histograms should not be logged if zero-prefix suggestions are
   // not allowed.
   histogram_tester.ExpectTotalCount(
-      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractedCount", 0);
-  histogram_tester.ExpectTotalCount(
-      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime", 0);
+      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2", 0);
 
   StartProviderAndWaitUntilDone(/*text=*/"",
                                 metrics::OmniboxFocusType::INTERACTION_DEFAULT);
@@ -242,9 +241,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Input) {
   // Following histograms should not be logged if zero-prefix suggestions are
   // not allowed.
   histogram_tester.ExpectTotalCount(
-      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractedCount", 0);
-  histogram_tester.ExpectTotalCount(
-      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime", 0);
+      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2", 0);
 
   StartProviderAndWaitUntilDone();
   ExpectMatches(
@@ -252,10 +249,8 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Input) {
 
   // Following histograms should be logged when zero-prefix suggestions are
   // allowed and the keyword search terms database is queried.
-  histogram_tester.ExpectUniqueSample(
-      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractedCount", 1, 1);
   histogram_tester.ExpectTotalCount(
-      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime", 1);
+      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2", 1);
   // Deletion histograms should not be logged unless a suggestion is deleted.
   histogram_tester.ExpectTotalCount(
       "Omnibox.LocalHistoryZeroSuggest.SyncDeleteTime", 0);
@@ -468,10 +463,9 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
                   kLocalHistoryZeroSuggestRelevanceScore.Get() - 1}});
 
   // The keyword search terms database should be queried for the search terms
-  // submitted to the default search provider only; which are 2 unique
-  // normalized search terms in this case.
-  histogram_tester.ExpectUniqueSample(
-      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractedCount", 2, 1);
+  // submitted to the default search provider.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2", 1);
 
   provider_->DeleteMatch(provider_->matches()[0]);
 
@@ -515,7 +509,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
       default_search_provider()->id());
   ASSERT_TRUE(enumerator_1);
   history::GetAutocompleteSearchTermsFromEnumerator(
-      *enumerator_1, /*ignore_duplicate_visits=*/false,
+      *enumerator_1, /*count=*/SIZE_MAX, /*ignore_duplicate_visits=*/false,
       history::SearchTermRankingPolicy::kFrecency, &visits);
   EXPECT_EQ(1U, visits.size());
   EXPECT_EQ(u"not to be deleted", visits[0]->normalized_term);
@@ -527,7 +521,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
       other_search_provider->id());
   ASSERT_TRUE(enumerator_2);
   history::GetAutocompleteSearchTermsFromEnumerator(
-      *enumerator_2, /*ignore_duplicate_visits=*/false,
+      *enumerator_2, /*count=*/SIZE_MAX, /*ignore_duplicate_visits=*/false,
       history::SearchTermRankingPolicy::kFrecency, &visits);
   EXPECT_EQ(1U, visits.size());
   EXPECT_EQ(u"hello world", visits[0]->normalized_term);

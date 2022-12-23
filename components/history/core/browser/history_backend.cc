@@ -37,6 +37,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -2501,7 +2502,7 @@ KeywordSearchTermVisitList HistoryBackend::QueryMostRepeatedQueriesForKeyword(
   if (!db_)
     return {};
 
-  base::TimeTicks begin_time = base::TimeTicks::Now();
+  const base::ElapsedTimer query_timer;
 
   auto enumerator = db_->CreateKeywordSearchTermVisitEnumerator(keyword_id);
   if (!enumerator) {
@@ -2509,16 +2510,11 @@ KeywordSearchTermVisitList HistoryBackend::QueryMostRepeatedQueriesForKeyword(
   }
 
   KeywordSearchTermVisitList search_terms;
-  history::GetMostRepeatedSearchTermsFromEnumerator(*enumerator, &search_terms);
-
-  base::UmaHistogramTimes("History.QueryMostRepeatedQueriesTime",
-                          base::TimeTicks::Now() - begin_time);
-  base::UmaHistogramCounts10000("History.QueryMostRepeatedQueriesCount",
-                                search_terms.size());
-
-  if (search_terms.size() > result_count) {
-    search_terms.resize(result_count);
-  }
+  history::GetMostRepeatedSearchTermsFromEnumerator(*enumerator, result_count,
+                                                    &search_terms);
+  DCHECK_LE(search_terms.size(), result_count);
+  base::UmaHistogramTimes("History.QueryMostRepeatedQueriesTimeV2",
+                          query_timer.Elapsed());
   return search_terms;
 }
 
