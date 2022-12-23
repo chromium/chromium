@@ -29,6 +29,7 @@ mojom("mojom") {
     "screen_orientation.mojom",
     "screen_orientation_lock_types.mojom",
     "serial.mojom",
+    "smart_card.mojom",
     "time_zone_monitor.mojom",
     "vibration_manager.mojom",
     "wake_lock.mojom",

@@ -7,6 +7,9 @@
 #include "content/browser/renderer_host/isolated_context_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/smart_card_delegate.h"
+#include "services/device/public/mojom/smart_card.mojom.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
@@ -26,13 +29,28 @@ class DocumentHelper
   }
   ~DocumentHelper() override = default;
 
+  // blink::mojom::SmartCardService:
+  void GetReaders(GetReadersCallback callback) override {
+    service_->GetReaders(std::move(callback));
+  }
+
+  void RegisterClient(mojo::PendingAssociatedRemote<
+                          device::mojom::SmartCardManagerClient> client,
+                      RegisterClientCallback callback) override {
+    service_->RegisterClient(std::move(client), std::move(callback));
+  }
+
  private:
   const std::unique_ptr<SmartCardService> service_;
 };
 
 }  // namespace
 
-SmartCardService::SmartCardService() = default;
+SmartCardService::SmartCardService(SmartCardDelegate& delegate)
+    : delegate_(delegate) {
+  scoped_observation_.Observe(&delegate);
+}
+
 SmartCardService::~SmartCardService() = default;
 
 // static
@@ -61,13 +79,56 @@ void SmartCardService::Create(
     return;
   }
 
+  SmartCardDelegate* delegate =
+      GetContentClient()->browser()->GetSmartCardDelegate(browser_context);
+  if (!delegate) {
+    mojo::ReportBadMessage("Browser has no Smart Card delegate.");
+    return;
+  }
+
   // DocumentHelper observes the lifetime of the document connected to
   // `render_frame_host` and destroys the SmartCardService when the Mojo
   // connection is disconnected, RenderFrameHost is deleted, or the
   // RenderFrameHost commits a cross-document navigation. It forwards its Mojo
   // interface to SmartCardService.
-  new DocumentHelper(std::make_unique<SmartCardService>(), *render_frame_host,
-                     std::move(receiver));
+  new DocumentHelper(std::make_unique<SmartCardService>(*delegate),
+                     *render_frame_host, std::move(receiver));
+}
+
+void SmartCardService::GetReaders(
+    SmartCardService::GetReadersCallback callback) {
+  delegate_->GetReaders(std::move(callback));
+}
+
+void SmartCardService::RegisterClient(
+    mojo::PendingAssociatedRemote<device::mojom::SmartCardManagerClient> client,
+    RegisterClientCallback callback) {
+  clients_.Add(std::move(client));
+
+  const bool can_notify_added_removed =
+      delegate_->SupportsReaderAddedRemovedNotifications();
+
+  std::move(callback).Run(can_notify_added_removed);
+}
+
+void SmartCardService::OnReaderAdded(
+    const device::mojom::SmartCardReaderInfo& reader_info) {
+  for (auto& client : clients_) {
+    client->ReaderAdded(reader_info.Clone());
+  }
+}
+
+void SmartCardService::OnReaderRemoved(
+    const device::mojom::SmartCardReaderInfo& reader_info) {
+  for (auto& client : clients_) {
+    client->ReaderRemoved(reader_info.Clone());
+  }
+}
+
+void SmartCardService::OnReaderChanged(
+    const device::mojom::SmartCardReaderInfo& reader_info) {
+  NOTIMPLEMENTED();
+  // TODO(crbug.com/1386175): Implement and test.
 }
 
 }  // namespace content

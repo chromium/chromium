@@ -4,19 +4,20 @@
 
 #include "third_party/blink/renderer/modules/smart_card/smart_card_reader.h"
 
-#include "base/notreached.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 
 namespace blink {
 
-SmartCardReader::SmartCardReader(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context) {}
+SmartCardReader::SmartCardReader(SmartCardReaderInfoPtr info,
+                                 ExecutionContext* context)
+    : ExecutionContextLifecycleObserver(context) {
+  UpdateInfo(std::move(info));
+}
 
 SmartCardReader::~SmartCardReader() = default;
 
 const String& SmartCardReader::name() const {
-  NOTIMPLEMENTED();
-  return g_empty_string;
+  return reader_info_->name;
 }
 
 ExecutionContext* SmartCardReader::GetExecutionContext() const {
@@ -37,5 +38,12 @@ void SmartCardReader::Trace(Visitor* visitor) const {
 }
 
 void SmartCardReader::ContextDestroyed() {}
+
+void SmartCardReader::UpdateInfo(SmartCardReaderInfoPtr info) {
+  // name is constant
+  DCHECK(!reader_info_ || reader_info_->name == info->name);
+
+  reader_info_ = std::move(info);
+}
 
 }  // namespace blink

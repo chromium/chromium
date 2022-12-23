@@ -1916,6 +1916,10 @@ test("content_browsertests") {
     deps += [ "//services/tracing:test_utils" ]
   }
 
+  if (!is_android && !is_fuchsia) {
+    sources += [ "../browser/smart_card/smart_card_browsertest.cc" ]
+  }
+
   # HID support is not available without udev.
   is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
   if (!is_linux_without_udev && !is_android) {

@@ -1,0 +1,51 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+enum SmartCardReaderState {
+  kUnavailable,
+  kEmpty,
+  kPresent,
+  kExclusive,
+  kInuse,
+  kMute,
+  kUnpowered
+};
+
+// Information about a smart card reader.
+// Usually corresponds to a physical USB smart card reader device or some
+// other USB device that implements the CCID interface.
+struct SmartCardReaderInfo {
+  // Name of the reader.
+  // It's human-readable and unique among the currently available readers.
+  string name;
+
+  // Current state of the reader.
+  SmartCardReaderState state;
+
+  // Answer to Reset of the currently inserted card.
+  // Empty if no card is inserted.
+  array<uint8> atr;
+};
+
+// A client interface for receiving a notification
+// when a smart card reader is added, removed or
+// has a change in its attributes.
+interface SmartCardManagerClient {
+  // Notifies that a smart card reader has been added.
+  ReaderAdded(SmartCardReaderInfo reader_info);
+
+  // Notifies that a smart card reader is being removed.
+  ReaderRemoved(SmartCardReaderInfo reader_info);
+
+  // Notifies that the smart card reader info has changed.
+  // The name is the only attribute that never changes.
+  ReaderChanged(SmartCardReaderInfo reader_info);
+};
+
+// TODO(crbug.com/1386175): SmartCardConnection
+
+// TODO(crbug.com/1386175): Add a SmartCardManager interface for accessing
+//                          smart card readers

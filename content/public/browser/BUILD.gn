@@ -638,6 +638,12 @@ source_set("browser_sources") {
       # Android provides its own native implementation of that API.
       "web_authentication_request_proxy.h",
     ]
+    if (!is_fuchsia) {
+      sources += [
+        "smart_card_delegate.cc",
+        "smart_card_delegate.h",
+      ]
+    }
   }
 
   if (is_chromeos_ash) {

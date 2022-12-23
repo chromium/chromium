@@ -11,7 +11,8 @@
   IsolatedContext
 ]
 interface SmartCardResourceManager {
-  [CallWith=ScriptState] Promise<sequence<SmartCardReader>> getReaders();
+  [CallWith=ScriptState, RaisesException]
+  Promise<sequence<SmartCardReader>> getReaders();
 
   [CallWith=ScriptState, RaisesException]
   Promise<SmartCardReaderPresenceObserver> watchForReaders();

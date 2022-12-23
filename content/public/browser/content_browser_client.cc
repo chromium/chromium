@@ -1050,6 +1050,13 @@ FontAccessDelegate* ContentBrowserClient::GetFontAccessDelegate() {
   return nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+SmartCardDelegate* ContentBrowserClient::GetSmartCardDelegate(
+    BrowserContext* browser_context) {
+  return nullptr;
+}
+#endif
+
 bool ContentBrowserClient::ShowPaymentHandlerWindow(
     content::BrowserContext* browser_context,
     const GURL& url,

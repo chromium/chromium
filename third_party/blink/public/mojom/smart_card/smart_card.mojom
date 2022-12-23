@@ -4,8 +4,21 @@
 
 module blink.mojom;
 
+import "services/device/public/mojom/smart_card.mojom";
+
 // Interface for accessing smart card readers from the render process.
 // The implementation is responsible for checking access permissions.
 interface SmartCardService {
-  // TODO(crbug.com/1386175): Add methods
+  // Registers a client to be notified when smart card readers are added,
+  // removed or changed.
+  // It returns whether it's able to notify about additions and removals.
+  // If not, only changes will be notified.
+  RegisterClient(pending_associated_remote<device.mojom.SmartCardManagerClient> client)
+      => (bool can_notify_added_removed);
+
+  // Enumerates all smart card readers in the system. Returns an empty array
+  // if the client is denied access to smart cards.
+  GetReaders() => (array<device.mojom.SmartCardReaderInfo> readers);
+
+  // TODO(crbug.com/1386175): Expose SmartCardConnection
 };
