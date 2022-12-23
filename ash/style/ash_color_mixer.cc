@@ -62,9 +62,7 @@ void AddShieldAndBaseColors(ui::ColorMixer& mixer,
   }
 
   const bool use_dark_color =
-      features::IsDarkLightModeEnabled()
-          ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
-          : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
 
   // Colors of the Shield and Base layers.
   const SkColor default_background_color =
@@ -102,9 +100,7 @@ void AddShieldAndBaseColors(ui::ColorMixer& mixer,
 void AddControlsColors(ui::ColorMixer& mixer,
                        const ui::ColorProviderManager::Key& key) {
   const bool use_dark_color =
-      features::IsDarkLightModeEnabled()
-          ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
-          : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
 
   // ControlsLayer colors
   mixer[kColorAshHairlineBorderColor] =
@@ -127,9 +123,7 @@ void AddControlsColors(ui::ColorMixer& mixer,
 void AddContentColors(ui::ColorMixer& mixer,
                       const ui::ColorProviderManager::Key& key) {
   const bool use_dark_color =
-      features::IsDarkLightModeEnabled()
-          ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
-          : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
 
   // ContentLayer colors.
   mixer[kColorAshScrollBarColor] =
@@ -171,12 +165,9 @@ void AddContentColors(ui::ColorMixer& mixer,
       ui::SetAlpha(kColorAshAppStateIndicatorColor, kDisabledColorOpacity);
   mixer[kColorAshShelfHandleColor] = {cros_tokens::kIconColorSecondary};
   mixer[kColorAshShelfTooltipBackgroundColor] = {
-      features::IsDarkLightModeEnabled() ? kColorAshInvertedShieldAndBase80
-                                         : kColorAshShieldAndBase80};
+      kColorAshInvertedShieldAndBase80};
   mixer[kColorAshShelfTooltipForegroundColor] = {
-      features::IsDarkLightModeEnabled()
-          ? cros_tokens::kTextColorPrimaryInverted
-          : cros_tokens::kTextColorPrimary};
+      cros_tokens::kTextColorPrimaryInverted};
   mixer[kColorAshSliderColorActive] = {kColorAshTextColorURL};
   mixer[kColorAshSliderColorInactive] = {kColorAshScrollBarColor};
   mixer[kColorAshRadioColorActive] = {kColorAshTextColorURL};
@@ -383,11 +374,7 @@ void AddRefPalette(ui::ColorMixer& mixer,
 void AddCrosStylesColorMixer(ui::ColorProvider* provider,
                              const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
-  bool dark_mode =
-      features::IsDarkLightModeEnabled()
-          ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
-          : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
-
+  bool dark_mode = key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
   if (ash::features::IsJellyEnabled()) {
     AddRefPalette(mixer, key);
   } else {
@@ -408,9 +395,7 @@ void AddAshColorMixer(ui::ColorProvider* provider,
                       const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   const bool use_dark_color =
-      features::IsDarkLightModeEnabled()
-          ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
-          : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
 
   AddShieldAndBaseColors(mixer, key);
   AddControlsColors(mixer, key);
