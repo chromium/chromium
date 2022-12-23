@@ -186,7 +186,7 @@ void ModelExecutorImpl::OnModelExecutionComplete(
       clock_->Now() - state->model_execution_start_time);
   // TODO(ritikagup): Change the use of this according to MultiOutputModel.
   if (result.has_value()) {
-    VLOG(0) << "Segmentation model result: " << result.value().at(0)
+    VLOG(1) << "Segmentation model result: " << result.value().at(0)
             << " for segment "
             << proto::SegmentId_Name(state->segment_info.segment_id());
     const proto::SegmentationModelMetadata& model_metadata =
