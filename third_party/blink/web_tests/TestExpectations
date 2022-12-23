@@ -6936,3 +6936,6 @@ crbug.com/1402194 [ Mac ] external/wpt/css/css-images/image-set/image-set-no-res
 # Flaky CSP tests. To be re-enabled.
 crbug.com/1400930 external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-general.html [ Pass Timeout ]
 crbug.com/1399780 external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-nonces.html [ Pass Timeout ]
+
+# TODO(crbug.com/1403318): Re-enable this test
+virtual/scalefactor200/external/wpt/element-timing/image-src-change.html [ Failure Skip ]
