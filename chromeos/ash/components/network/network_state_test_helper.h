@@ -51,9 +51,4 @@ class NetworkStateTestHelper : public NetworkTestHelperBase {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::NetworkStateTestHelper;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_TEST_HELPER_H_

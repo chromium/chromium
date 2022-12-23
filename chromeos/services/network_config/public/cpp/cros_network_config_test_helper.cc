@@ -13,6 +13,11 @@
 namespace chromeos {
 namespace network_config {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+using ::ash::CellularInhibitor;
+using ::ash::ManagedNetworkConfigurationHandler;
+using ::ash::NetworkHandler;
+
 CrosNetworkConfigTestHelper::CrosNetworkConfigTestHelper()
     : CrosNetworkConfigTestHelper(true) {}
 

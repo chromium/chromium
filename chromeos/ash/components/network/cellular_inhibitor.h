@@ -14,14 +14,13 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 
 namespace ash {
 
+class DeviceState;
 class NetworkStateHandler;
 class NetworkDeviceHandler;
 
@@ -208,10 +207,5 @@ std::ostream& COMPONENT_EXPORT(CHROMEOS_NETWORK) operator<<(
     const ash::CellularInhibitor::InhibitReason& inhibit_reason);
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::CellularInhibitor;
-}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_INHIBITOR_H_

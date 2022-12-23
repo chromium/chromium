@@ -366,7 +366,7 @@ void ShillDataCollector::ExportCollectedDataWithPII(
   // Only masks shill::kNameProperty in the top levels of devices and services.
   if (!pii_types_to_keep.count(feedback::PIIType::kSSID)) {
     for (auto entry : *shill_log_.FindDict(kNetworkServices)) {
-      std::string log_name = chromeos::NetworkPathId(entry.first);  // Not PII
+      std::string log_name = ash::NetworkPathId(entry.first);  // Not PII
       entry.second.GetDict().Set(shill::kNameProperty, log_name);
     }
     for (auto entry : *shill_log_.FindDict(kNetworkDevices))

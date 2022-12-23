@@ -896,10 +896,10 @@ TEST_F(ShimlessRmaServiceTest, SelectNetworkTurnsOnWiFi) {
 
   // Simulate disabling WiFi.
   network_state_handler()->SetTechnologyEnabled(
-      chromeos::NetworkTypePattern::WiFi(), /*enabled=*/false,
+      NetworkTypePattern::WiFi(), /*enabled=*/false,
       network_handler::ErrorCallback());
-  EXPECT_FALSE(network_state_handler()->IsTechnologyEnabled(
-      chromeos::NetworkTypePattern::WiFi()));
+  EXPECT_FALSE(
+      network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));
 
   // Initialize current state.
   shimless_rma_provider_->GetCurrentState(
@@ -918,8 +918,8 @@ TEST_F(ShimlessRmaServiceTest, SelectNetworkTurnsOnWiFi) {
   run_loop.RunUntilIdle();
 
   // After transitioning to the select network page, WiFi should be enabled.
-  EXPECT_TRUE(network_state_handler()->IsTechnologyEnabled(
-      chromeos::NetworkTypePattern::WiFi()));
+  EXPECT_TRUE(
+      network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));
 }
 
 TEST_F(ShimlessRmaServiceTest, GetCurrentState) {

@@ -49,8 +49,7 @@ void NetworkingAttributesAsh::GetNetworkDetails(
 
   ash::NetworkStateHandler* network_state_handler =
       ash::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* network =
-      network_state_handler->DefaultNetwork();
+  const ash::NetworkState* network = network_state_handler->DefaultNetwork();
   if (!network) {
     // Not connected to a network.
     std::move(callback).Run(Result::NewErrorMessage(kErrorNetworkNotConnected));

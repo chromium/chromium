@@ -10,6 +10,9 @@
 namespace chromeos::network_config {
 
 namespace {
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+using ::ash::NetworkConfigurationHandler;
+
 constexpr char kUIDataKeyUserSettings[] = "user_settings";
 }
 

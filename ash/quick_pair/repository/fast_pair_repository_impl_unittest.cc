@@ -139,7 +139,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    chromeos::NetworkHandler::Initialize();
+    NetworkHandler::Initialize();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
     device_ = base::MakeRefCounted<Device>(kTestModelId, kTestBLEAddress,
                                            Protocol::kFastPairInitial);
@@ -191,7 +191,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
 
   void TearDown() override {
     fast_pair_repository_.reset();
-    chromeos::NetworkHandler::Shutdown();
+    NetworkHandler::Shutdown();
     AshTestBase::TearDown();
   }
 

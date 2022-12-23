@@ -221,8 +221,8 @@ void InternetHandler::ShowPortalSignin(const base::Value::List& args) {
     return;
   }
   const std::string& guid = args[0].GetString();
-  chromeos::NetworkConnect::Get()->ShowPortalSignin(
-      guid, NetworkConnect::Source::kSettings);
+  NetworkConnect::Get()->ShowPortalSignin(guid,
+                                          NetworkConnect::Source::kSettings);
 }
 
 void InternetHandler::ShowCellularSetupUI(const base::Value::List& args) {

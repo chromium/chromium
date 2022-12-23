@@ -114,7 +114,7 @@ class NetworkPortalDetectorImplBrowserTest
 
   void TestPortalStateAndNotification(
       const char* shill_state,
-      chromeos::NetworkState::PortalState portal_state,
+      NetworkState::PortalState portal_state,
       bool set_portal_status_for_proxy_auth,
       const std::u16string& expected_title,
       const std::u16string& expected_message,
@@ -128,13 +128,13 @@ class NetworkPortalDetectorImplBrowserTest
     // Set connected should not trigger portal detection.
     SetConnected(kWifiServicePath);
 
-    chromeos::NetworkStateHandler* network_state_handler =
-        chromeos::NetworkHandler::Get()->network_state_handler();
-    const chromeos::NetworkState* default_network =
+    NetworkStateHandler* network_state_handler =
+        NetworkHandler::Get()->network_state_handler();
+    const NetworkState* default_network =
         network_state_handler->DefaultNetwork();
     ASSERT_TRUE(default_network);
     EXPECT_EQ(default_network->GetPortalState(),
-              chromeos::NetworkState::PortalState::kOnline);
+              NetworkState::PortalState::kOnline);
     EXPECT_FALSE(display_service_->GetNotification(kNotificationId));
     EXPECT_EQ(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE,
               network_portal_detector::GetInstance()->GetCaptivePortalStatus());
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
                        InSessionDetection) {
   TestPortalStateAndNotification(
-      shill::kStateRedirectFound, chromeos::NetworkState::PortalState::kPortal,
+      shill::kStateRedirectFound, NetworkState::PortalState::kPortal,
       /*set_portal_status_for_proxy_auth=*/false,
       l10n_util::GetStringUTF16(IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
       l10n_util::GetStringFUTF16(IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIFI,
@@ -311,7 +311,7 @@ class NetworkPortalDetectorImplBrowserTestUI2022Update
 IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
                        InSessionDetectionRedirectFoundState) {
   TestPortalStateAndNotification(
-      shill::kStateRedirectFound, chromeos::NetworkState::PortalState::kPortal,
+      shill::kStateRedirectFound, NetworkState::PortalState::kPortal,
       /*set_portal_status_for_proxy_auth=*/false,
       l10n_util::GetStringUTF16(
           IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
@@ -324,8 +324,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
 IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
                        InSessionDetectionPortalSuspectedState) {
   TestPortalStateAndNotification(
-      shill::kStatePortalSuspected,
-      chromeos::NetworkState::PortalState::kPortalSuspected,
+      shill::kStatePortalSuspected, NetworkState::PortalState::kPortalSuspected,
       /*set_portal_status_for_proxy_auth=*/false,
       l10n_util::GetStringUTF16(
           IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
@@ -344,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
                        InSessionDetectionProxyAuthRequiredState) {
   TestPortalStateAndNotification(
       shill::kStatePortalSuspected,
-      chromeos::NetworkState::PortalState::kProxyAuthRequired,
+      NetworkState::PortalState::kProxyAuthRequired,
       /*set_portal_status_for_proxy_auth=*/true,
       l10n_util::GetStringUTF16(
           IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
@@ -369,13 +368,12 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
   SetState(shill::kStateRedirectFound);
 
   // Verify notification properties.
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* default_network =
-      network_state_handler->DefaultNetwork();
+  NetworkStateHandler* network_state_handler =
+      NetworkHandler::Get()->network_state_handler();
+  const NetworkState* default_network = network_state_handler->DefaultNetwork();
   ASSERT_TRUE(default_network);
   EXPECT_EQ(default_network->GetPortalState(),
-            chromeos::NetworkState::PortalState::kPortal);
+            NetworkState::PortalState::kPortal);
   EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
   EXPECT_EQ(GetNotificationTitle(),
             l10n_util::GetStringUTF16(

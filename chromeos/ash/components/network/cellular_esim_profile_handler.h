@@ -159,9 +159,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::CellularESimProfileHandler;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_ESIM_PROFILE_HANDLER_H_

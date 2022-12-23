@@ -98,10 +98,4 @@ using NetworkStateHandlerScopedObservation =
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::NetworkStateHandlerObserver;
-using ::ash::NetworkStateHandlerScopedObservation;
-}  // namespace chromeos
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_HANDLER_OBSERVER_H_

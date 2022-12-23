@@ -31,10 +31,4 @@ std::string NetworkGuidId(const std::string& guid);
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::NetworkGuidId;
-using ::ash::NetworkPathId;
-}  // namespace chromeos
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_EVENT_LOG_H_

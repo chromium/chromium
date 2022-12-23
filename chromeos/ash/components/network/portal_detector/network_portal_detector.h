@@ -83,13 +83,4 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK) bool SetForTesting();
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::NetworkPortalDetector;
-namespace network_portal_detector {
-using ::ash::network_portal_detector::GetInstance;
-using ::ash::network_portal_detector::InitializeForTesting;
-}  // namespace network_portal_detector
-}  // namespace chromeos
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_

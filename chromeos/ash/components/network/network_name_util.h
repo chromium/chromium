@@ -37,10 +37,4 @@ std::string GetNetworkName(
 }  // namespace network_name_util
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::network_name_util {
-using ::ash::network_name_util::GetESimProfileName;
-using ::ash::network_name_util::GetNetworkName;
-}  // namespace chromeos::network_name_util
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_NAME_UTIL_H_

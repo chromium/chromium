@@ -117,9 +117,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
 
 }  // namespace ash::onc
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::onc {
-using ::ash::onc::CertificateImporterImpl;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_IMPORTER_IMPL_H_

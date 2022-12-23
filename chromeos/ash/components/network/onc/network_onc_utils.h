@@ -96,10 +96,4 @@ bool HasUserPasswordSubsitutionVariable(const base::Value* network_configs);
 }  // namespace onc
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::onc {
-using ::ash::onc::ImportNetworksForUser;
-using ::ash::onc::NetworkTypePatternFromOncType;
-}  // namespace chromeos::onc
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_NETWORK_ONC_UTILS_H_

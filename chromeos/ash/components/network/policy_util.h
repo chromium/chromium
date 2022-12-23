@@ -77,9 +77,4 @@ const std::string* GetSMDPAddressFromONC(const base::Value& onc_config);
 }  // namespace policy_util
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace policy_util = ::ash::policy_util;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_UTIL_H_

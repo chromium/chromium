@@ -41,15 +41,12 @@ namespace {
 const char kFredSsid[] = "Fred";
 const char kMangoSsid[] = "Mango";
 
-const chromeos::NetworkState* FindLocalNetworkById(
-    const NetworkIdentifier& id) {
-  chromeos::NetworkStateHandler::NetworkStateList network_list;
-  chromeos::NetworkHandler::Get()
-      ->network_state_handler()
-      ->GetNetworkListByType(
-          chromeos::NetworkTypePattern::WiFi(), /* configured_only= */ true,
-          /* visible_only= */ false, /* limit= */ 0, &network_list);
-  for (const chromeos::NetworkState* network : network_list) {
+const NetworkState* FindLocalNetworkById(const NetworkIdentifier& id) {
+  NetworkStateHandler::NetworkStateList network_list;
+  NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
+      NetworkTypePattern::WiFi(), /* configured_only= */ true,
+      /* visible_only= */ false, /* limit= */ 0, &network_list);
+  for (const NetworkState* network : network_list) {
     if (network->GetHexSsid() == id.hex_ssid() &&
         network->security_class() == id.security_type()) {
       return network;
@@ -114,7 +111,7 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
   FakePendingNetworkConfigurationTracker* tracker() { return tracker_; }
   FakeTimerFactory* timer_factory() { return timer_factory_.get(); }
   SyncedNetworkUpdaterImpl* updater() { return updater_.get(); }
-  chromeos::NetworkStateTestHelper* network_state_helper() {
+  NetworkStateTestHelper* network_state_helper() {
     return local_test_helper_->network_state_test_helper();
   }
   NetworkIdentifier fred_network_id() { return fred_network_id_; }
@@ -142,7 +139,7 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_OneNetwork) {
   updater()->AddOrUpdateNetwork(specifics);
   EXPECT_TRUE(tracker()->GetPendingUpdateById(id));
   base::RunLoop().RunUntilIdle();
-  const chromeos::NetworkState* network = FindLocalNetworkById(id);
+  const NetworkState* network = FindLocalNetworkById(id);
   EXPECT_TRUE(network);
   EXPECT_FALSE(network->hidden_ssid());
   EXPECT_FALSE(tracker()->GetPendingUpdateById(id));
@@ -207,10 +204,8 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_TwoNetworks) {
   EXPECT_TRUE(tracker()->GetPendingUpdateById(mango_network_id()));
   base::RunLoop().RunUntilIdle();
 
-  const chromeos::NetworkState* fred_network =
-      FindLocalNetworkById(fred_network_id());
-  const chromeos::NetworkState* mango_network =
-      FindLocalNetworkById(mango_network_id());
+  const NetworkState* fred_network = FindLocalNetworkById(fred_network_id());
+  const NetworkState* mango_network = FindLocalNetworkById(mango_network_id());
   EXPECT_TRUE(fred_network);
   EXPECT_TRUE(mango_network);
   EXPECT_TRUE(

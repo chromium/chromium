@@ -75,9 +75,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkTypePattern {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::NetworkTypePattern;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_TYPE_PATTERN_H_

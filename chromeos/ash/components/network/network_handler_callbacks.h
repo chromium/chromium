@@ -59,9 +59,4 @@ void ShillErrorCallbackFunction(const std::string& error_name,
 
 }  // namespace ash::network_handler
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace network_handler = ::ash::network_handler;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_HANDLER_CALLBACKS_H_

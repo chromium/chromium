@@ -197,12 +197,12 @@ void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
   if (features::IsShimlessRMAOsUpdateEnabled()) {
     if (!HaveAllowedNetworkConnection()) {
       // Enable WiFi on the device.
-      chromeos::NetworkStateHandler* network_state_handler =
-          chromeos::NetworkHandler::Get()->network_state_handler();
+      NetworkStateHandler* network_state_handler =
+          NetworkHandler::Get()->network_state_handler();
       if (!network_state_handler->IsTechnologyEnabled(
-              chromeos::NetworkTypePattern::WiFi())) {
+              NetworkTypePattern::WiFi())) {
         network_state_handler->SetTechnologyEnabled(
-            chromeos::NetworkTypePattern::WiFi(), /*enabled=*/true,
+            NetworkTypePattern::WiFi(), /*enabled=*/true,
             network_handler::ErrorCallback());
       }
 

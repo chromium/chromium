@@ -14,6 +14,9 @@ namespace network_config {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+using ::ash::NetworkHandler;
+
 mojom::CrosNetworkConfig* g_network_config_override;
 
 mojo::ReceiverSet<mojom::CrosNetworkConfig>& GetOverrideReceivers() {

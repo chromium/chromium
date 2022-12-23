@@ -35,9 +35,4 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfile {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::NetworkProfile;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_PROFILE_H_

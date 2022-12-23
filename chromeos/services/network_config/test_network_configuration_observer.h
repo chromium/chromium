@@ -13,10 +13,11 @@
 
 namespace chromeos::network_config {
 
-class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
+class TestNetworkConfigurationObserver
+    : public ash::NetworkConfigurationObserver {
  public:
   explicit TestNetworkConfigurationObserver(
-      NetworkConfigurationHandler* network_configuration_handler);
+      ash::NetworkConfigurationHandler* network_configuration_handler);
   ~TestNetworkConfigurationObserver() override;
 
   TestNetworkConfigurationObserver(const TestNetworkConfigurationObserver&) =
@@ -36,8 +37,8 @@ class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
   std::unordered_map<std::string, base::Value::Dict> user_settings_;
   unsigned int on_configuration_modified_call_count_ = 0;
 
-  base::ScopedObservation<NetworkConfigurationHandler,
-                          NetworkConfigurationObserver>
+  base::ScopedObservation<ash::NetworkConfigurationHandler,
+                          ash::NetworkConfigurationObserver>
       network_configuration_observation_{this};
 };
 

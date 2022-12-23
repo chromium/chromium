@@ -817,9 +817,8 @@ FileManagerPrivateGetDriveConnectionStateFunction::Run() {
   }
 
   result.has_cellular_network_access =
-      chromeos::NetworkHandler::Get()
-          ->network_state_handler()
-          ->FirstNetworkByType(chromeos::NetworkTypePattern::Mobile());
+      ash::NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
+          ash::NetworkTypePattern::Mobile());
 
   const auto& enabled_extensions =
       extensions::ExtensionRegistry::Get(browser_context())

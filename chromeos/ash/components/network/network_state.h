@@ -400,9 +400,4 @@ std::ostream& COMPONENT_EXPORT(CHROMEOS_NETWORK) operator<<(
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::NetworkState;
-}
-
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_H_

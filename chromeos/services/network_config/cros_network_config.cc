@@ -62,9 +62,41 @@ namespace network_config {
 namespace {
 
 // TODO(https://crbug.com/1164001): remove after migrating to ash.
+using ::ash::CellularESimProfileHandler;
+using ::ash::CellularInhibitor;
+using ::ash::ConnectCallbackMode;
+using ::ash::DeviceState;
+using ::ash::GetSimSlotInfosWithUpdatedEid;
 using ::ash::HermesManagerClient;
+using ::ash::IsSimPrimary;
 using ::ash::LoginState;
+using ::ash::ManagedNetworkConfigurationHandler;
+using ::ash::NetworkCertificateHandler;
+using ::ash::NetworkConnectionHandler;
+using ::ash::NetworkDeviceHandler;
+using ::ash::NetworkHandler;
+using ::ash::NetworkMetadataStore;
+using ::ash::NetworkProfile;
+using ::ash::NetworkProfileHandler;
+using ::ash::NetworkState;
+using ::ash::NetworkStateHandler;
+using ::ash::NetworkTypePattern;
 using ::ash::ShillManagerClient;
+namespace network_handler = ::ash::network_handler;
+namespace network_util {
+using ::ash::network_util::FormattedMacAddress;
+using ::ash::network_util::TranslateONCTypeToShill;
+}  // namespace network_util
+namespace network_name_util {
+using ::ash::network_name_util::GetESimProfileName;
+using ::ash::network_name_util::GetNetworkName;
+}  // namespace network_name_util
+namespace onc {
+using ::ash::onc::kNetworkTechnologyTable;
+using ::ash::onc::kVPNTypeTable;
+using ::ash::onc::StringTranslationEntry;
+using ::ash::onc::TranslateStringToONC;
+}  // namespace onc
 namespace sync_wifi {
 using ::ash::sync_wifi::IsEligibleForSync;
 }
@@ -2980,7 +3012,7 @@ void CrosNetworkConfig::SetNetworkTypeEnabledState(
   // Set the technology enabled state and return true. The call to Shill does
   // not have a 'success' callback (and errors are already logged).
   network_state_handler_->SetTechnologyEnabled(
-      pattern, enabled, chromeos::network_handler::ErrorCallback());
+      pattern, enabled, network_handler::ErrorCallback());
   std::move(callback).Run(true);
 }
 
@@ -3281,7 +3313,7 @@ void CrosNetworkConfig::StartConnect(const std::string& guid,
                      weak_factory_.GetWeakPtr(), callback_id),
       base::BindOnce(&CrosNetworkConfig::StartConnectFailure,
                      weak_factory_.GetWeakPtr(), callback_id),
-      true /* check_error_state */, chromeos::ConnectCallbackMode::ON_STARTED);
+      true /* check_error_state */, ConnectCallbackMode::ON_STARTED);
 }
 
 void CrosNetworkConfig::StartConnectSuccess(int callback_id) {
@@ -3942,7 +3974,7 @@ void CrosNetworkConfig::OnManagedNetworkConfigurationHandlerShuttingDown() {
 
 const std::string& CrosNetworkConfig::GetServicePathFromGuid(
     const std::string& guid) {
-  const chromeos::NetworkState* network =
+  const NetworkState* network =
       network_state_handler_->GetNetworkStateFromGuid(guid);
   return network ? network->path() : base::EmptyString();
 }

@@ -62,12 +62,30 @@ namespace network_config {
 namespace {
 
 using ApnTypes = ash::CellularNetworkMetricsLogger::ApnTypes;
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-using ::ash::LoginState;
 
 // TODO(https://crbug.com/1164001): remove after migrating to ash.
+using ::ash::CellularInhibitor;
 using ::ash::FakeShillDeviceClient;
 using ::ash::HermesEuiccClient;
+using ::ash::LoginState;
+using ::ash::ManagedNetworkConfigurationHandler;
+using ::ash::NetworkCertificateHandler;
+using ::ash::NetworkCertLoader;
+using ::ash::NetworkConfigurationHandler;
+using ::ash::NetworkHandler;
+using ::ash::NetworkHandlerTestHelper;
+using ::ash::NetworkMetadataStore;
+using ::ash::NetworkProfileHandler;
+using ::ash::NetworkState;
+using ::ash::NetworkStateHandler;
+using ::ash::NetworkTypePattern;
+using ::ash::SystemTokenCertDbStorage;
+namespace network_handler {
+using ::ash::network_handler::ErrorCallback;
+}
+namespace policy_util {
+using ::ash::policy_util::kFakeCredential;
+}
 
 constexpr int kSimRetriesLeft = 3;
 constexpr char kCellularGuid[] = "cellular_guid";

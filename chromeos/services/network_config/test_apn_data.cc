@@ -12,6 +12,12 @@
 
 namespace chromeos::network_config {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace policy_util {
+using ::ash::policy_util::kFakeCredential;
+}
+
 // TODO(b/162365553) Remove when shill constants are added.
 constexpr char kShillApnId[] = "id";
 constexpr char kShillApnAuthenticationType[] = "authentication_type";
