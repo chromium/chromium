@@ -109,7 +109,7 @@ bool MeasureAppBoundEncryptionStatus(PrefService* local_state) {
   auto com_runner = base::ThreadPool::CreateCOMSTATaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::SingleThreadTaskRunnerThreadMode::SHARED);
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 
   if (local_state->HasPrefPath(prefs::kOsCryptAppBoundFixedDataPrefName)) {
     const std::string base64_encrypted_data =
