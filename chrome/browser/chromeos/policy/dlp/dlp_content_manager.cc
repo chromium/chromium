@@ -235,6 +235,8 @@ void DlpContentManager::ScreenShareInfo::UpdateAfterSourceChange(
   source_callback_ = std::move(source_callback);
   auto* web_contents = GetWebContentsFromMediaId(media_id);
   web_contents_ = web_contents ? web_contents->GetWeakPtr() : nullptr;
+  // If it's a resume after source change, request to start it if pending.
+  StartIfPending();
   // This is called from AddScreenShare() which is only called when a new stream
   // is starting or when the source was successfully changed and the stream is
   // running again, so we can set the state to running.
@@ -303,6 +305,14 @@ void DlpContentManager::ScreenShareInfo::set_latest_confidential_contents_info(
   latest_confidential_contents_info_ = confidential_contents_info;
 }
 
+void DlpContentManager::ScreenShareInfo::StartIfPending() {
+  if (pending_start_on_source_change_) {
+    state_change_callback_.Run(media_id_,
+                               blink::mojom::MediaStreamStateChange::PLAY);
+    pending_start_on_source_change_ = false;
+  }
+}
+
 const RestrictionLevelAndUrl&
 DlpContentManager::ScreenShareInfo::GetLatestRestriction() const {
   return latest_confidential_contents_info_.restriction_info;
@@ -335,6 +345,8 @@ void DlpContentManager::ScreenShareInfo::Resume() {
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
                                            main_frame->GetRoutingID())));
+    // Start after source will be changed and notified.
+    pending_start_on_source_change_ = true;
   } else {
     state_change_callback_.Run(media_id_,
                                blink::mojom::MediaStreamStateChange::PLAY);

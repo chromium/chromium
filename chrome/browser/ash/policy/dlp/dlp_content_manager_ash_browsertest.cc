@@ -1400,10 +1400,10 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
   EXPECT_CALL(state_change_cb_,
               Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
       .Times(param.paused_count);
+  EXPECT_CALL(stop_cb_, Run).Times(param.stopped_count);
   // For resuming tab shares we do not use the state_change_cb_ but the
   // source_cb_ instead:
   EXPECT_CALL(source_cb_, Run).Times(param.resumed_count);
-  EXPECT_CALL(stop_cb_, Run).Times(param.stopped_count);
 
   helper_->ChangeConfidentiality(web_contents, param.restriction_set);
   VerifyHistogramCounts(param.blocked_count, param.warned_count,
@@ -1817,11 +1817,12 @@ IN_PROC_BROWSER_TEST_P(ScreenShareNavigateWebContentsTest, Reporting) {
   // Start sharing unrestricted content.
   helper_->UpdateConfidentiality(web_contents, kEmptyRestrictionSet);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unrestricted_url));
+  MaybeStartTabShare(web_contents);
+
   // Although the share should be paused and resumed, DLP will only call
   // state_change_cb_ once to pause it. When it's supposed to be resumed, it
-  // will call source_cb which also resumes the share after a successful source
-  // change.
-  MaybeStartTabShare(web_contents);
+  // will call source_cb only first and resume only the new stream once
+  // notified.
   EXPECT_CALL(state_change_cb_,
               Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
       .Times(1);

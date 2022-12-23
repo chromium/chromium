@@ -200,6 +200,8 @@ class DlpContentManager : public DlpContentObserver,
     void ChangeStateBeforeSourceChange();
     // Stops the screen share. Can only be called once.
     void Stop();
+    // Start the screen share after source change if pending.
+    void StartIfPending();
 
     // If necessary, hides or shows the paused/resumed notification for this
     // screen share. The notification should be updated after changing the state
@@ -249,6 +251,8 @@ class DlpContentManager : public DlpContentObserver,
     // Pointer to the associated DlpWarnDialog widget.
     // Not null only while the dialog is opened.
     base::WeakPtr<views::Widget> dialog_widget_ = nullptr;
+    // Remembers that it should be restarted after source update.
+    bool pending_start_on_source_change_ = false;
 
     // Set only for tab shares.
     base::WeakPtr<content::WebContents> web_contents_;

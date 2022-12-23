@@ -644,8 +644,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   EXPECT_CALL(source_cb, Run).Times(1);
   // Although the share should be paused and resumed, DLP will only call
   // state_change_cb_ once to pause it. When it's supposed to be resumed, it
-  // will call source_cb which also resumes the share after a successful source
-  // change.
+  // will call source_cb only first and resume only the new stream once
+  // notified.
   EXPECT_CALL(state_change_cb,
               Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
       .Times(0);

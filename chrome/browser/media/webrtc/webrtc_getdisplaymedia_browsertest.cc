@@ -326,9 +326,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1396270): Re-enable.
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
-                       DISABLED_ScreenCaptureVideoWithDlp) {
+                       ScreenCaptureVideoWithDlp) {
   if (!test_config_.should_prefer_current_tab &&
       !test_config_.accept_this_tab_capture) {
     GTEST_SKIP();
