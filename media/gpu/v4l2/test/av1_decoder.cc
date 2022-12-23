@@ -837,9 +837,9 @@ void Av1Decoder::SetupFrameParams(
   // The first slot in |order_hints| is reserved for intra frame, so it is not
   // used and will always be 0.
   static_assert(std::size(decltype(v4l2_frame_params->order_hints){}) ==
-                    libgav1::kNumReferenceFrameTypes,
+                    libgav1::kNumInterReferenceFrameTypes + 1,
                 "Invalid size of |order_hints| array");
-  if (frm_header.frame_type != libgav1::kFrameKey) {
+  if (!libgav1::IsIntraFrame(frm_header.frame_type)) {
     for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++) {
       v4l2_frame_params->order_hints[i + 1] =
           ref_order_hint_[frm_header.reference_frame_index[i]];
