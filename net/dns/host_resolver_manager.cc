@@ -3166,8 +3166,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
     // Use NAT64Task for IPv4 literal when the network is IPv6 only.
     if (!default_family_due_to_no_ipv6 && ip_address.IsIPv4() &&
         base::FeatureList::IsEnabled(features::kUseNAT64ForIPv4Literal) &&
-        !IsGloballyReachable(IPAddress(ip_address), source_net_log) &&
-        source != HostResolverSource::LOCAL_ONLY) {
+        source != HostResolverSource::LOCAL_ONLY &&
+        !IsGloballyReachable(IPAddress(ip_address), source_net_log)) {
       out_tasks->push_front(TaskType::NAT64);
       return HostCache::Entry(ERR_DNS_CACHE_MISS,
                               HostCache::Entry::SOURCE_UNKNOWN);
