@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -15,7 +14,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHe
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -24,7 +22,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -64,7 +61,6 @@ public class ManualFillingUiCaptureTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
     @Feature({"KeyboardAccessory", "LTR", "UiCatalogue"})
-    @DisabledTest(message = "Flaky, see https://crbug.com/1095672")
     public void testCaptureKeyboardAccessoryWithPasswords()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(false);
@@ -92,7 +88,6 @@ public class ManualFillingUiCaptureTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
     @Feature({"KeyboardAccessory", "RTL", "UiCatalogue"})
-    @DisabledTest(message = "Flaky, see https://crbug.com/1095672")
     public void testCaptureKeyboardAccessoryWithPasswordsRTL()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(true);
@@ -119,7 +114,6 @@ public class ManualFillingUiCaptureTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
     @Feature({"KeyboardAccessoryModern", "LTR", "UiCatalogue"})
-    @DisabledTest(message = "Flaky, see https://crbug.com/1095672")
     public void testCaptureKeyboardAccessoryV2WithPasswords()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(false);
@@ -150,7 +144,6 @@ public class ManualFillingUiCaptureTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
     @Feature({"KeyboardAccessoryModern", "RTL", "UiCatalogue"})
-    @DisabledTest(message = "Flaky, see https://crbug.com/1095672")
     public void testCaptureKeyboardAccessoryV2WithPasswordsRTL()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(true);
@@ -183,17 +176,12 @@ public class ManualFillingUiCaptureTest {
 
     private void waitForActionsInAccessory() {
         whenDisplayed(withId(R.id.bar_items_view));
-        onView(withId(R.id.bar_items_view)).check((view, noViewFound) -> {
-            if (noViewFound != null) throw noViewFound;
-            RecyclerViewTestUtils.waitForStableRecyclerView((RecyclerView) view);
-        });
+        RecyclerViewTestUtils.waitForStableRecyclerView(mHelper.getAccessoryBarView());
     }
 
     private void waitForSuggestionsInSheet() {
         whenDisplayed(withId(R.id.keyboard_accessory_sheet));
-        onView(withId(R.id.passwords_sheet)).check((view, noViewFound) -> {
-            if (noViewFound != null) throw noViewFound;
-            RecyclerViewTestUtils.waitForStableRecyclerView((RecyclerView) view);
-        });
+        RecyclerViewTestUtils.waitForStableRecyclerView(
+                mActivityTestRule.getActivity().findViewById(R.id.passwords_sheet));
     }
 }
