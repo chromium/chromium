@@ -35,11 +35,6 @@ BASE_DECLARE_FEATURE(kEnableLatencyLogging);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableRegionSearchKeyboardShortcut);
 
-// Enables the modification of the instruction chip UI that is presented when
-// region search is opened.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensInstructionChipImprovements);
-
 // Enables the image search side panel experience for third party default search
 // engines
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -52,23 +47,6 @@ BASE_DECLARE_FEATURE(kLensRegionSearchStaticPage);
 // Enables using more optimized image formats for Lens requests.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensImageFormatOptimizations);
-
-// Enables using `Google` as the visual search provider instead of `Google
-// Lens`.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kUseGoogleAsVisualSearchProvider;
-
-// Enables alternate option 1 for the Region Search context menu item text.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText1;
-
-// Enables alternate option 2 for the Region Search context menu item text.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2;
-
-// Enables alternate option 3 for the Region Search context menu item text.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3;
 
 // Enables UKM logging for the Lens Region Search feature.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -93,15 +71,6 @@ extern const base::FeatureParam<bool> kEnableLensHtmlRedirectFix;
 // Enables Lens fullscreen search on Desktop platforms.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kEnableFullscreenSearch;
-
-// Enables the use of the selection with image icon when using the instruction
-// chip improvements feature.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kUseSelectionIconWithImage;
-
-// Enables the use of an alternative string for the instruction chip.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kUseAltChipString;
 
 // Enables encoding to WebP for image search queries.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -168,27 +137,6 @@ extern bool GetEnableLensHtmlRedirectFix();
 // Returns whether Lens fullscreen search is enabled.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensFullscreenSearchEnabled();
-
-// Returns whether to use alternative option 1 for the Region Search context
-// menu item text.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseRegionSearchMenuItemAltText1();
-
-// Returns whether to use alternative option 2 for the Region Search context
-// menu item text.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseRegionSearchMenuItemAltText2();
-
-// Returns whether to use alternative option 3 for the Region Search context
-// menu item text.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseRegionSearchMenuItemAltText3();
-
-// Returns whether to use `Google` as the visual search provider for all
-// relevant Lens context menu strings.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseGoogleAsVisualSearchProvider();
-
 // Returns whether the Lens side panel is enabled for image search.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensSidePanelEnabled();
@@ -201,19 +149,6 @@ extern bool IsLensSidePanelEnabledForRegionSearch();
 // feature is enabled
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensInScreenshotSharingEnabled();
-
-// Returns whether the instruction chip improvement feature is enabled.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensInstructionChipImprovementsEnabled();
-
-// Returns if we should use the selection with image icon instead of the default
-// when using the instruction chip improvements feature.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseSelectionIconWithImage();
-
-// Returns whether we should use an alternative instruction chip string.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseAltChipString();
 
 // Returns whether we should use a WebUI static page for region search.
 COMPONENT_EXPORT(LENS_FEATURES)
