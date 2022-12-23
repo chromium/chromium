@@ -67,6 +67,12 @@ const TRASH_CONFIG = [
 export const AUTO_DELETE_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**
+ * Interval (ms) when .trashinfo files with no related files entry can be
+ * considered stale and should be removed. 1 hour.
+ */
+const STALE_TRASHINFO_INTERVAL_MS = 60 * 60 * 1000;
+
+/**
  * Returns a list of strings that represent volumes that are enabled for Trash.
  * Used to validate drag drop data without resolving the URLs to Entry's.
  */
@@ -472,11 +478,36 @@ class TrashDirectoryReader implements FileSystemDirectoryReader {
           if (trashEntry) {
             entriesToDelete.push(trashEntry);
           }
+          delete infoEntryMap[parsedEntry.trashInfoFileName];
           continue;
         }
         const trashEntry = this.createTrashEntry_(parsedEntry, infoEntry);
         if (trashEntry) {
           result.push(trashEntry);
+        }
+        delete infoEntryMap[parsedEntry.trashInfoFileName];
+      }
+
+      // Any leftover entries in the `infoEntryMap` have no corresponding file
+      // entry. This can be due to 2 possible reasons:
+      // 1. An in progress trash operation that has written the trashinfo file
+      //    but not moved the corresponding item.
+      // 2. The trashinfo has been removed or is dangling from a previously
+      //    failed operation.
+      // To avoid (1) check the `modificationDate` and ensure it's >1 hour old,
+      // given a trash operation is atomic (no cross filesystem trashes) this
+      // should be sufficient time to ensure there is no file to be moved.
+      for (const entry of Object.values(infoEntryMap)) {
+        let itemMetadata = null;
+        try {
+          itemMetadata = await getFileMetadata(entry);
+        } catch (e) {
+          console.warn('Error getting trashinfo metadata:', e);
+          continue;
+        }
+        if (itemMetadata.modificationTime.getTime() <
+            (dateNow - STALE_TRASHINFO_INTERVAL_MS)) {
+          entriesToDelete.push(entry);
         }
       }
     }
@@ -523,6 +554,15 @@ export function createTrashReaders(volumeManager: VolumeManager) {
     }
   });
   return readers;
+}
+
+/**
+ * Promisifies retrieval of a files metadata.
+ */
+async function getFileMetadata(file: FileSystemEntry): Promise<Metadata> {
+  return new Promise((resolve, reject) => {
+    file.getMetadata(resolve, reject);
+  });
 }
 
 // The UMA to track the enum that is reported below.

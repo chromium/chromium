@@ -1793,7 +1793,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             "trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton")
             .EnableTrash(),
         TestCase("trashCantRenameFilesInTrashRoot").EnableTrash(),
-        TestCase("trashNudgeShownOnFirstTrashOperation").EnableTrash()));
+        TestCase("trashNudgeShownOnFirstTrashOperation").EnableTrash(),
+        TestCase("trashStaleTrashInfoFilesAreRemovedAfterOneHour")
+            .EnableTrash()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */

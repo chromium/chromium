@@ -2289,6 +2289,30 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
+  if (name == "updateModificationDate") {
+    // Update a local file modification date.
+    const std::string* relative_path = value.FindString("localPath");
+    const absl::optional<double> modification_date =
+        value.FindDouble("modificationDate");
+    ASSERT_TRUE(relative_path);
+    ASSERT_TRUE(modification_date.has_value());
+    base::FilePath full_path =
+        file_manager::util::GetMyFilesFolderForProfile(profile());
+    full_path = full_path.AppendASCII(*relative_path);
+    if (!base::PathExists(full_path)) {
+      *output = "false";
+      return;
+    }
+    base::Time modification_time =
+        base::Time::FromJsTime(modification_date.value());
+    if (!base::TouchFile(full_path, modification_time, modification_time)) {
+      *output = "false";
+      return;
+    }
+    *output = "true";
+    return;
+  }
+
   if (name == "isFilesAppExperimental") {
     // Return whether the flag Files Experimental is enabled.
     *output = base::FeatureList::IsEnabled(ash::features::kFilesAppExperimental)
