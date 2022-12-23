@@ -548,7 +548,7 @@ class PathParser {
     '-expected.png': 'expected_image',
     '-diff.png': 'image_diff',
     '-actual.txt': 'actual_text',
-    '-expected.txt': 'expected_txt',
+    '-expected.txt': 'expected_text',
     '-diff.txt': 'text_diff',
     '-pretty-diff.html': 'pretty_text_diff',
     '-actual.wav': 'actual_audio',
@@ -585,7 +585,7 @@ class PathParser {
       return this.dir + this.resultPrefix + resultName;
     }
     let artifacts = await this.getArtifacts();
-    return artifacts[PathParser.resultNameToArtifactName[resultName]];
+    return artifacts[PathParser.resultNameToArtifactName[resultName]] || 'about:blank';
   }
 
   resultFilename(resultName) {
