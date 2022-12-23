@@ -60,10 +60,6 @@ class SpotlightBookmarkModelBridge;
 // Removes the node from the Spotlight index.
 - (void)removeNodeFromIndex:(const bookmarks::BookmarkNode*)node;
 
-// Clears all the bookmarks in the Spotlight index then index the bookmarks in
-// the model.
-- (void)clearAndReindexModel;
-
 // Refreshes all nodes in the subtree of node.
 // If `initial` is YES, limit the number of nodes to kMaxInitialIndexSize.
 - (void)refreshNodeInIndex:(const bookmarks::BookmarkNode*)node
@@ -319,16 +315,28 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
   return [spotlightItems allValues];
 }
 
-- (void)clearAndReindexModel {
+- (void)clearAndReindexModelWithCompletionBlock:
+    (void (^)(NSError* error))completionHandler {
   __weak BookmarksSpotlightManager* weakSelf = self;
   [self cancelAllLargeIconPendingTasks];
   [self clearAllSpotlightItems:^(NSError* error) {
-    if (error)
+    if (error) {
+      if (completionHandler) {
+        completionHandler(error);
+      }
       return;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
       [weakSelf completedClearAllSpotlightItems];
+      if (completionHandler) {
+        completionHandler(nil);
+      }
     });
   }];
+}
+
+- (void)clearAndReindexModel {
+  [self clearAndReindexModelWithCompletionBlock:nil];
 }
 
 - (void)completedClearAllSpotlightItems {

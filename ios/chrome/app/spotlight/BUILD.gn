@@ -11,6 +11,8 @@ source_set("spotlight") {
     "base_spotlight_manager.mm",
     "bookmarks_spotlight_manager.h",
     "bookmarks_spotlight_manager.mm",
+    "spotlight_logger.h",
+    "spotlight_logger.mm",
     "spotlight_manager.h",
     "spotlight_manager.mm",
     "spotlight_util.h",

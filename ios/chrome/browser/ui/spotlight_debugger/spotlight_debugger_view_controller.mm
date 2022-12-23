@@ -6,6 +6,9 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
+#import "base/time/time.h"
+#import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
+#import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
@@ -28,11 +31,13 @@ typedef NS_ENUM(NSUInteger, Sections) {
 typedef NS_ENUM(NSUInteger, StatusSectionRows) {
   AvailabilityRow = 0,
   LastIndexDateRow,
+  DonatedItemsRow,
   StatusSectionRowsCount,
 };
 
 typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
   ClearAllRow = 0,
+  ReindexBookmarks,
   DebugCommandsRowsCount,
 };
 
@@ -107,6 +112,16 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           content.image = DefaultSymbolWithPointSize(
               @"arrow.counterclockwise.icloud", kSymbolAccessoryPointSize);
           break;
+        case DonatedItemsRow:
+          content.text = @"Donated items";
+          content.secondaryText =
+              [NSString stringWithFormat:@"Total count: %ld",
+                                         [SpotlightLogger sharedLogger]
+                                             .knownIndexedItems.count];
+          content.image = DefaultSymbolWithPointSize(
+              @"square.stack.3d.down.right", kSymbolAccessoryPointSize);
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
         default:
           NOTREACHED();
           break;
@@ -117,6 +132,12 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
       switch (indexPath.row) {
         case ClearAllRow: {
           content.text = @"Clear all Spotlight entries";
+          content.image = DefaultSymbolWithPointSize(@"bin.xmark",
+                                                     kSymbolAccessoryPointSize);
+          break;
+        }
+        case ReindexBookmarks: {
+          content.text = @"Clear and Reindex Bookmarks";
           content.image = DefaultSymbolWithPointSize(@"bin.xmark",
                                                      kSymbolAccessoryPointSize);
           break;
@@ -144,6 +165,9 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           break;
         case LastIndexDateRow:
           break;
+        case DonatedItemsRow:
+          [self.delegate showAllItems];
+          break;
         default:
           NOTREACHED();
           break;
@@ -154,6 +178,9 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
       switch (indexPath.row) {
         case ClearAllRow:
           [self clearAllSpotlightEntries];
+          break;
+        case ReindexBookmarks:
+          [self clearAndReindexBookmarks];
           break;
         default:
           NOTREACHED();
@@ -189,6 +216,35 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
       [self.tableView reloadData];
     });
   });
+}
+
+- (void)clearAndReindexBookmarks {
+  base::Time startTime = base::Time::Now();
+
+  [self.bookmarksManager
+      clearAndReindexModelWithCompletionBlock:^(NSError* error) {
+        base::Time endTime = base::Time::Now();
+        base::TimeDelta duration = endTime - startTime;
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+          UIAlertController* controller = [UIAlertController
+              alertControllerWithTitle:
+                  [NSString stringWithFormat:
+                                @"Clearing and Reindexing complete in %lld ms",
+                                duration.InMilliseconds()]
+                               message:error ? error.localizedDescription
+                                             : @"Success"
+                        preferredStyle:UIAlertControllerStyleAlert];
+          [controller
+              addAction:[UIAlertAction actionWithTitle:@"OK"
+                                                 style:UIAlertActionStyleDefault
+                                               handler:nil]];
+          [self presentViewController:controller animated:YES completion:nil];
+
+          [self removeSpinner];
+          [self.tableView reloadData];
+        });
+      }];
 }
 
 #pragma mark - private

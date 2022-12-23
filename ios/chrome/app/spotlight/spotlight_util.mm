@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
+#import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -139,6 +140,7 @@ void DeleteItemsWithIdentifiers(NSArray* items, BlockWithError callback) {
     [[CSSearchableIndex defaultSearchableIndex]
         deleteSearchableItemsWithIdentifiers:items
                            completionHandler:errorBlock];
+    [[SpotlightLogger sharedLogger] logDeletionOfItemsWithIdentifiers:items];
   };
 
   DoWithRetry(callback, deleteItems);
@@ -146,10 +148,11 @@ void DeleteItemsWithIdentifiers(NSArray* items, BlockWithError callback) {
 
 void DeleteSearchableDomainItems(Domain domain, BlockWithError callback) {
   void (^deleteItems)(BlockWithError) = ^(BlockWithError errorBlock) {
+    NSString* domainString = StringFromSpotlightDomain(domain);
     [[CSSearchableIndex defaultSearchableIndex]
-        deleteSearchableItemsWithDomainIdentifiers:@[ StringFromSpotlightDomain(
-                                                       domain) ]
+        deleteSearchableItemsWithDomainIdentifiers:@[ domainString ]
                                  completionHandler:errorBlock];
+    [[SpotlightLogger sharedLogger] logDeletionOfItemsInDomain:domainString];
   };
 
   DoWithRetry(callback, deleteItems);
@@ -167,6 +170,7 @@ void ClearAllSpotlightEntries(BlockWithError callback) {
   void (^deleteItems)(BlockWithError) = ^(BlockWithError errorBlock) {
     [[CSSearchableIndex defaultSearchableIndex]
         deleteAllSearchableItemsWithCompletionHandler:errorBlock];
+    [[SpotlightLogger sharedLogger] logDeletionOfAllItems];
   };
 
   DoWithRetry(augmentedCallback, deleteItems);

@@ -7,6 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+@class BookmarksSpotlightManager;
+
+@protocol SpotlightDebuggerViewControllerDelegate
+
+- (void)showAllItems;
+
+@end
+
 // A base view controller for showing a debug UI for Spotlight features.
 // This feature needs to be activated in Experimental Settings.
 @interface SpotlightDebuggerViewController : UITableViewController
@@ -17,6 +25,9 @@
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
+
+@property(nonatomic, weak) id<SpotlightDebuggerViewControllerDelegate> delegate;
+@property(nonatomic, strong) BookmarksSpotlightManager* bookmarksManager;
 
 @end
 

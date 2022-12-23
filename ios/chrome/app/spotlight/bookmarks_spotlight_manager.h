@@ -36,7 +36,7 @@ class BookmarkModel;
 // needed.
 - (void)reindexBookmarksIfNeeded;
 
-// Methods below here are for testing use only.
+// Methods below here are for testing or debugging only.
 
 - (instancetype)
 initWithLargeIconService:(favicon::LargeIconService*)largeIconService
@@ -53,6 +53,10 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
 // Called before the instance is deallocated. This method should be overridden
 // by the subclasses and de-activate the instance.
 - (void)shutdown;
+
+// Clears all the bookmarks in the Spotlight index then index the bookmarks in
+// the model.
+- (void)clearAndReindexModelWithCompletionBlock:(void (^)(NSError* error))block;
 
 @end
 

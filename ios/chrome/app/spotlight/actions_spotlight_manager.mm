@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/app_startup_parameters.h"
+#import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
@@ -195,6 +196,7 @@ BOOL SetStartupParametersForSpotlightAction(
           [[CSSearchableIndex defaultSearchableIndex]
               indexSearchableItems:spotlightItems
                  completionHandler:nil];
+          [[SpotlightLogger sharedLogger] logIndexedItems:spotlightItems];
         });
   }];
 }

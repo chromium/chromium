@@ -1450,6 +1450,7 @@ enum class ToolbarKind {
 }
 
 - (void)showSpotlightDebugger {
+  [self.spotlightDebuggerCoordinator stop];
   self.spotlightDebuggerCoordinator = [[SpotlightDebuggerCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];

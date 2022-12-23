@@ -20,6 +20,7 @@
 #import "components/favicon/core/large_icon_service.h"
 #import "components/favicon_base/fallback_icon_style.h"
 #import "components/favicon_base/favicon_types.h"
+#import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
 #import "skia/ext/skia_utils_ios.h"
@@ -282,6 +283,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
     [[CSSearchableIndex defaultSearchableIndex]
         indexSearchableItems:spotlightItems
            completionHandler:nil];
+    [[SpotlightLogger sharedLogger] logIndexedItems:spotlightItems];
   }
 }
 
