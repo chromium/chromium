@@ -101,8 +101,6 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest, FilterDisabled_SiteAllowed) {
 
   SetPageIsNotExplicit();
 
-  fuchsia::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
   EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(), {},
                                        GetPage1UrlSpec()));
 
@@ -247,6 +245,8 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest,
   // deleted. Then, create a new FrameHost connection, which creates a new
   // BrowserContext.
   frame_host1.Unbind();
+  frame1 = {};
+
   fuchsia::web::FrameHostPtr frame_host2 = ConnectToFrameHost();
   ASSERT_EQ(frame_host_impls().size(), 1U);
 
@@ -289,6 +289,8 @@ IN_PROC_BROWSER_TEST_F(ExplicitSitesFilterTest,
   // deleted. Then, create a new FrameHost connection, which creates a new
   // BrowserContext.
   frame_host1.Unbind();
+  frame1 = {};
+
   fuchsia::web::FrameHostPtr frame_host2 = ConnectToFrameHost();
   ASSERT_EQ(frame_host_impls().size(), 1U);
 

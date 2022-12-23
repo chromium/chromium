@@ -187,6 +187,11 @@ class KeyboardInputTest : public WebEngineBrowserTest {
         context_impl()->GetFrameImplForTest(frame_ptr)->web_contents());
   }
 
+  void TearDownOnMainThread() override {
+    frame_for_test_ = {};
+    WebEngineBrowserTest::TearDownOnMainThread();
+  }
+
   // The tests expect to have input processed immediately, even if the
   // content has not been displayed yet. That's fine for the test, but
   // we need to explicitly allow it.

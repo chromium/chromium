@@ -59,6 +59,11 @@ class ThemeManagerTest : public WebEngineBrowserTest,
     frame_.navigation_listener().RunUntilNavigationStateMatches(state);
   }
 
+  void TearDownOnMainThread() override {
+    frame_ = {};
+    WebEngineBrowserTest::TearDownOnMainThread();
+  }
+
   // Reports the system |theme_type| via the Display FIDL service.
   void ReportSystemTheme(fuchsia::settings::ThemeType theme_type) {
     if (!watch_callback_) {

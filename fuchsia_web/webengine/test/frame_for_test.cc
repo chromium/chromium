@@ -4,7 +4,9 @@
 
 #include "fuchsia_web/webengine/test/frame_for_test.h"
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 // static
 FrameForTest FrameForTest::Create(fuchsia::web::Context* context,
@@ -39,7 +41,13 @@ FrameForTest FrameForTest::Create(const fuchsia::web::FrameHostPtr& frame_host,
   return Create(frame_host.get(), std::move(params));
 }
 
-FrameForTest::FrameForTest() = default;
+FrameForTest::FrameForTest() {
+  // Fail tests by default, if any FrameForTest protocol disconnects.
+  frame_.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "Frame disconnected.";
+    ADD_FAILURE();
+  });
+}
 
 FrameForTest::FrameForTest(FrameForTest&&) = default;
 
@@ -59,6 +67,10 @@ void FrameForTest::CreateAndAttachNavigationListener(
   navigation_listener_binding_ =
       std::make_unique<fidl::Binding<fuchsia::web::NavigationEventListener>>(
           navigation_listener_.get());
+  navigation_listener_binding_->set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "NavigationEventListener disconnected.";
+    ADD_FAILURE();
+  });
   frame_->SetNavigationEventListener2(
       navigation_listener_binding_->NewBinding(), flags);
 }

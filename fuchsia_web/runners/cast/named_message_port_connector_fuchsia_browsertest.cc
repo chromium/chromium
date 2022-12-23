@@ -51,6 +51,16 @@ class NamedMessagePortConnectorFuchsiaTest : public WebEngineBrowserTest {
         std::make_unique<NamedMessagePortConnectorFuchsia>(frame_.get());
   }
 
+  void TearDownOnMainThread() override {
+    // Destroy the NamedMessagePortConnector before the Frame.
+    connector_ = nullptr;
+
+    // Destroy the Frame before the test terminates
+    frame_ = {};
+
+    WebEngineBrowserTest::TearDownOnMainThread();
+  }
+
   // Intercepts the page load event to trigger the injection of |connector_|'s
   // services.
   void OnBeforeAckHook(

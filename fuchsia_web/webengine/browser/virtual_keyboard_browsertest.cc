@@ -96,6 +96,11 @@ class VirtualKeyboardTest : public WebEngineBrowserTest {
         base::GetKoid(scenic_test_helper_.CloneViewRef().reference).value());
   }
 
+  void TearDownOnMainThread() override {
+    frame_for_test_ = {};
+    WebEngineBrowserTest::TearDownOnMainThread();
+  }
+
   // The tests expect to have input processed immediately, even if the
   // content has not been displayed yet. That's fine for the test, but
   // we need to explicitly allow it.

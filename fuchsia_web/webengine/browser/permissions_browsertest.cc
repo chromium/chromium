@@ -30,6 +30,11 @@ class PermissionsBrowserTest : public FrameImplTestBaseWithServer {
     frame_ = FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
   }
 
+  void TearDownOnMainThread() override {
+    frame_ = {};
+    FrameImplTestBaseWithServer::TearDownOnMainThread();
+  }
+
   void GrantPermission(fuchsia::web::PermissionType type,
                        const std::string& origin) {
     fuchsia::web::PermissionDescriptor permission;

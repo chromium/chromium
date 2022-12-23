@@ -129,6 +129,11 @@ class FuchsiaFrameAccessibilityTest : public WebEngineBrowserTest {
                     ->IsFullAccessibilityModeForTesting());
   }
 
+  void TearDownOnMainThread() override {
+    frame_ = {};
+    WebEngineBrowserTest::TearDownOnMainThread();
+  }
+
   void LoadPage(base::StringPiece url, base::StringPiece page_title) {
     GURL page_url(embedded_test_server()->GetURL(std::string(url)));
     ASSERT_TRUE(LoadUrlAndExpectResponse(frame_.GetNavigationController(),

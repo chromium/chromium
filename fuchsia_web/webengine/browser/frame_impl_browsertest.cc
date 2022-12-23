@@ -25,6 +25,7 @@
 #include "fuchsia_web/webengine/test/frame_for_test.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 using testing::_;
@@ -1102,12 +1103,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ImmediateNavigationEvent) {
 
   // Attach a new navigation listener, we should get the new page state, even if
   // no new navigation occurred.
-  TestNavigationListener navigation_listener;
-  fidl::Binding<fuchsia::web::NavigationEventListener>
-      navigation_listener_binding(&navigation_listener);
-  frame.ptr()->SetNavigationEventListener2(
-      navigation_listener_binding.NewBinding(), /*flags=*/{});
-  navigation_listener.RunUntilUrlAndTitleEquals(page_url, kPage1Title);
+  frame.CreateAndAttachNavigationListener(/*flags=*/{});
+  frame.navigation_listener().RunUntilUrlAndTitleEquals(page_url, kPage1Title);
 }
 
 // Check loading an invalid URL in NavigationController.LoadUrl() sets the right
@@ -1300,6 +1297,9 @@ class FrameForTestWithMessageLog : public FrameForTest {
     // If the FrameForTest becomes disconnected then store the epitaph, for
     // tests to verify.
     ptr().set_error_handler(CallbackToFitFunction(epitaph_.GetCallback()));
+
+    // Don't error-out if the Frame disconnects.
+    navigation_listener_binding().set_error_handler([](zx_status_t) {});
 
     // Start reading messages from the port into a queue, until the port closes.
     message_port_.set_error_handler(

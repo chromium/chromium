@@ -56,6 +56,11 @@ class NavigationPolicyTest : public WebEngineBrowserTest {
         frame_impl_->navigation_policy_handler()->is_provider_connected());
   }
 
+  void TearDownOnMainThread() override {
+    frame_ = {};
+    WebEngineBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   FrameForTest frame_;
   FrameImpl* frame_impl_ = nullptr;

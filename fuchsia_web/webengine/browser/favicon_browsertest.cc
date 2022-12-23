@@ -68,6 +68,12 @@ class FaviconTest : public WebEngineBrowserTest {
     frame_ = FrameForTest::Create(context(), {});
   }
 
+  void TearDownOnMainThread() override {
+    frame_ = {};
+
+    WebEngineBrowserTest::TearDownOnMainThread();
+  }
+
   FrameForTest frame_;
 };
 

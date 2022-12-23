@@ -72,7 +72,15 @@ class ApiBindingsClientTest : public WebEngineBrowserTest {
 
   void TearDownOnMainThread() override {
     // Destroy |client_| before the MessageLoop is destroyed.
-    client_.reset();
+    client_ = nullptr;
+
+    // Destroy the NamedMessagePortConnector before the Frame.
+    connector_ = nullptr;
+
+    // Destroy the Frame before the test terminates
+    frame_ = {};
+
+    WebEngineBrowserTest::TearDownOnMainThread();
   }
 
   FrameForTest frame_;
