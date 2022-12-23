@@ -484,22 +484,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.KernelKey.MaxRollforwardSetSuccess"
-    enum="BooleanSuccess" expires_after="2023-01-01">
-  <owner>kimjae@chromium.org</owner>
-  <owner>chromeos-core-services@google.com</owner>
+    enum="BooleanSuccess" expires_after="2023-11-30">
+  <owner>mpolzer@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Whether setting the MaxKernelKeyRollforward value in the TPM succeeded.
 
     This is reported every time an update check happens. This is a bool value.
 
-    This metric is specific to Chrome OS.
+    This metric is specific to ChromeOS.
   </summary>
 </histogram>
 
 <histogram name="UpdateEngine.KernelKey.MaxRollforwardVersion" units="units"
-    expires_after="2023-01-01">
-  <owner>kimjae@chromium.org</owner>
-  <owner>chromeos-core-services@google.com</owner>
+    expires_after="2023-11-30">
+  <owner>mpolzer@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Maximum value the device can roll forward the minimum kernel key version
     value in the TPM during the next boot.
@@ -512,21 +514,22 @@ chromium-metrics-reviews@google.com.
 
     This is reported every time an update check happens. This is a sparse value.
 
-    This metric is specific to Chrome OS.
+    This metric is specific to ChromeOS.
   </summary>
 </histogram>
 
 <histogram name="UpdateEngine.KernelKey.MinVersion" units="units"
-    expires_after="2023-05-14">
-  <owner>kimjae@chromium.org</owner>
-  <owner>chromeos-core-services@google.com</owner>
+    expires_after="2023-11-30">
+  <owner>mpolzer@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Minimum kernel key version already set in the TPM. This value specifies
     which images can be booted up with verified boot.
 
     This is reported every time an update check happens. This is a sparse value.
 
-    This metric is specific to Chrome OS.
+    This metric is specific to ChromeOS.
   </summary>
 </histogram>
 
