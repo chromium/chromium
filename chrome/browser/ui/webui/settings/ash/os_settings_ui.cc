@@ -46,6 +46,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace {
 
@@ -236,6 +237,17 @@ void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<auth::mojom::RecoveryFactorEditor> receiver) {
   auth::BindToRecoveryFactorEditor(
       std::move(receiver), quick_unlock::QuickUnlockFactory::GetDelegate());
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  if (!features::IsJellyEnabled()) {
+    mojo::ReportBadMessage(
+        "Jelly not enabled: OSSettingsUI should not listen to color changes.");
+    return;
+  }
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)
