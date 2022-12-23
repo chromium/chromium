@@ -6033,6 +6033,9 @@ crbug.com/1327764 inspector-protocol/overlay/overlay-persistent-overlays.js [ Fa
 # Sheriff 2022-05-26
 crbug.com/1329596 virtual/gpu-rasterization/images/jpeg-with-non-interleaved-dc-channels.html [ Failure Pass ]
 
+# Temporarily disabled to unblock https://crrev.com/c/4120261
+crbug.com/1403362 http/tests/devtools/bindings/suspendtarget-navigator.js [ Failure Pass ]
+
 # Sheriff 2022-05-30
 crbug.com/1330238 [ Mac ] http/tests/devtools/elements/styles-3/styles-computed-trace.js [ Failure Pass Timeout ]
 
