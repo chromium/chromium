@@ -36,5 +36,7 @@ found in the LICENSE file.
         <item name="android:layout_width">@dimen/split_toolbar_button_width</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
-    <style name="NavigationPopupDialog" parent="Widget.AppCompat.Light.ListPopupWindow" />
+   <style name="NavigationPopupDialog" parent="Widget.AppCompat.Light.ListPopupWindow">
+        <item name="android:popupElevation">0dp</item>
+    </style>
 </resources>

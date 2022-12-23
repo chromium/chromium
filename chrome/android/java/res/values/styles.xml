@@ -8,10 +8,18 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- TODO(huayinz): Move themes to another xml file. -->
     <!-- Application themes -->
-    <style name="LauncherTheme" parent="Theme.BrowserUI.NoDisplay" />
+    <!-- On Android N, if the ChromeLauncherActivity is NoDisplay then
+         intents are not always immediately sent when Chrome is docked to
+         the top of the screen in multi-window mode. Use Translucent.NoTitleBar
+         for the theme instead. See crbug.com/645074. -->
+    <style name="LauncherTheme" parent="Theme.BrowserUI.Translucent.NoTitleBar" />
 
-    <style name="Base.V17.Theme.Chromium" parent="Theme.BrowserUI.DayNight" />
-    <style name="Base.Theme.Chromium" parent="Base.V17.Theme.Chromium" />
+    <style name="Base.V21.Theme.Chromium" parent="Theme.BrowserUI.DayNight">
+        <!-- Set android alert dialog attributes because the context menu dialog is
+             OS-dependent. -->
+        <item name="android:alertDialogTheme">@style/ThemeOverlay.BrowserUI.AlertDialog</item>
+    </style>
+    <style name="Base.Theme.Chromium" parent="Base.V21.Theme.Chromium" />
 
     <style name="Base.Theme.Chromium.WithWindowAnimation">
         <item name="android:windowContentOverlay">@null</item>
@@ -130,6 +138,37 @@ found in the LICENSE file.
         <item name="android:windowLightNavigationBar" tools:targetApi="28">false</item>
     </style>
 
+    <!-- Theme variation for low-end devices.
+
+        Since ChromeActivities are not HW accelerated, they don't get fancy
+        material shadows for popups. This theme sets drawable with pre-baked
+        shadows to those popups to make them look better.
+        '*_bg_tinted' are a 9-patchs similar to 'abc_popup_background_mtrl_mult'
+        drawable from Android support library, where it's used to simulate
+        material design on earlier Android versions.
+    -->
+    <style name="ListPopupWindow.LowEnd" parent="android:Widget.Material.Light.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/menu_bg_tinted</item>
+    </style>
+    <style name="Spinner.LowEnd" parent="android:Widget.Material.Light.Spinner">
+        <item name="android:popupBackground">@drawable/dialog_bg_tinted</item>
+    </style>
+    <style name="AutoCompleteTextView.LowEnd" parent="android:Widget.Material.Light.AutoCompleteTextView">
+        <item name="android:popupBackground">@drawable/menu_bg_tinted</item>
+    </style>
+    <style name="Theme.Chromium.WithWindowAnimation.LowEnd"
+        parent="Theme.Chromium.WithWindowAnimation">
+        <item name="android:popupWindowStyle">@style/ListPopupWindow.LowEnd</item>
+        <item name="android:listPopupWindowStyle">@style/ListPopupWindow.LowEnd</item>
+        <item name="android:spinnerStyle">@style/Spinner.LowEnd</item>
+        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextView.LowEnd</item>
+
+        <!-- Without HW acceleration the default text cursor looks weird (top
+             half is way brighter than the bottom), so we use our own. -->
+        <item name="android:textCursorDrawable">@drawable/text_cursor_lowend</item>
+    </style>
+
+
     <!-- Settings -->
     <style name="SettingsToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
@@ -198,8 +237,9 @@ found in the LICENSE file.
     <style name="TextAppearance.FreFirstFrameTitle" parent="TextAppearance.Headline.Primary" >
         <item name="android:fontFamily">sans-serif</item>
     </style>
+    <!-- Match the fontFamily in ui/android/java/res/values/styles.xml -->
     <style name="TextAppearance.FreFirstFrameButton" parent="TextAppearance.Button.Text.Filled">
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
     <style name="FreTitle">
         <item name="android:layout_width">wrap_content</item>
