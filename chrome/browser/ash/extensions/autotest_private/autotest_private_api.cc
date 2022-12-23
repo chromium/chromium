@@ -589,6 +589,8 @@ std::string SetAllowedPref(Profile* profile,
     DCHECK(value.is_bool());
   } else if (pref_name == quick_answers::prefs::kQuickAnswersConsentStatus) {
     DCHECK(value.is_int());
+  } else if (pref_name == arc::prefs::kArcShowResizeLockSplashScreenLimits) {
+    DCHECK(value.is_int());
   } else {
     return "The pref " + pref_name + " is not allowed.";
   }
