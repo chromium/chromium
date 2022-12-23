@@ -74,22 +74,10 @@ SigninScreenHandler::SigninScreenHandler(
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
   gaia_screen_handler_->set_signin_screen_handler(this);
-  network_state_informer_->AddObserver(this);
-
-  registrar_.Add(this,
-                 chrome::NOTIFICATION_AUTH_NEEDED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this,
-                 chrome::NOTIFICATION_AUTH_SUPPLIED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this,
-                 chrome::NOTIFICATION_AUTH_CANCELLED,
-                 content::NotificationService::AllSources());
 }
 
 SigninScreenHandler::~SigninScreenHandler() {
-  weak_factory_.InvalidateWeakPtrs();
-  network_state_informer_->RemoveObserver(this);
+  StopNetworkObservation();
 }
 
 void SigninScreenHandler::DeclareLocalizedValues(
@@ -338,6 +326,23 @@ net::Error SigninScreenHandler::FrameError() const {
 NetworkStateInformer::State
 SigninScreenHandler::GetNetworkStateInformerStateForMigration() {
   return network_state_informer_->state();
+}
+
+void SigninScreenHandler::StartNetworkObservation() {
+  network_state_informer_->AddObserver(this);
+
+  registrar_.Add(this, chrome::NOTIFICATION_AUTH_NEEDED,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
+                 content::NotificationService::AllSources());
+}
+
+void SigninScreenHandler::StopNetworkObservation() {
+  network_state_informer_->RemoveObserver(this);
+  registrar_.RemoveAll();
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 }  // namespace ash

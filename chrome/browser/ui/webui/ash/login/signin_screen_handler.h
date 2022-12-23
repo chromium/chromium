@@ -62,6 +62,13 @@ class SigninScreenHandler
  private:
   friend class GaiaScreenHandler;
 
+  // Starts network and HTTP login observation. Needed as a step towards full
+  // removal of the SigninScreenHandler class and moving this logic under the
+  // GaiaScreen.
+  void StartNetworkObservation();
+  // Stops network and HTTP login observation.
+  void StopNetworkObservation();
+
   void UpdateStateInternal(NetworkError::ErrorReason reason, bool force_update);
   void HideOfflineMessage(NetworkStateInformer::State state,
                           NetworkError::ErrorReason reason);

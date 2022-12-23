@@ -872,6 +872,9 @@ void GaiaScreenHandler::SubmitLoginFormForTest() {
 }
 
 void GaiaScreenHandler::Show() {
+  // Start network observation.
+  signin_screen_handler_->StartNetworkObservation();
+
   base::Value::Dict data;
   if (LoginDisplayHost::default_host())
     data.Set("hasUserPods", LoginDisplayHost::default_host()->HasUserPods());
@@ -880,6 +883,7 @@ void GaiaScreenHandler::Show() {
 }
 
 void GaiaScreenHandler::Hide() {
+  signin_screen_handler_->StopNetworkObservation();
   hidden_ = true;
 }
 
