@@ -7,6 +7,9 @@ such the original file should be edited before changing this file.
 Due to the requirement of chrome dependencies individual service implementation
 lives in `chrome/browser/ash/chromebox_for_meetings/`.
 
+TODO(https://crbug.com/1403174): These mojoms should be migrated to namespace
+ash and should be synced with other repos where these mojoms are located.
+
 Hot-tip: Generate  Js w/
 
 ```

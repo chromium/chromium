@@ -30,7 +30,8 @@ namespace ash {
 namespace cfm {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
+// TODO(https://crbug.com/1403174): Remove when namespace of mojoms for CfM are
+// migarted to ash.
 namespace mojom = ::chromeos::cfm::mojom;
 
 class CfmServiceConnectionTest : public testing::Test {

@@ -12,7 +12,8 @@ namespace ash::cfm {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after the migration to namespace ash.
+// TODO(https://crbug.com/1403174): Remove when namespace of mojoms for CfM are
+// migarted to ash.
 namespace mojom = ::chromeos::cfm::mojom;
 
 static ExternalDisplayBrightnessService* g_external_display_brightness_service =
