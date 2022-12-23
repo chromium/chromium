@@ -885,8 +885,8 @@ TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapRegister) {
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapIgnore) {
-  base::ListValue handlers_ignored_by_pref;
-  base::ListValue handlers_ignored_by_policy;
+  base::Value::List handlers_ignored_by_pref;
+  base::Value::List handlers_ignored_by_policy;
 
   handlers_ignored_by_pref.Append(GetProtocolHandlerValue("news", URL_p1u1));
   handlers_ignored_by_pref.Append(GetProtocolHandlerValue("news", URL_p1u2));
@@ -897,10 +897,10 @@ TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapIgnore) {
   handlers_ignored_by_policy.Append(GetProtocolHandlerValue("news", URL_p1u3));
   handlers_ignored_by_policy.Append(GetProtocolHandlerValue("im", URL_p2u1));
 
-  GetPrefs()->Set(custom_handlers::prefs::kIgnoredProtocolHandlers,
-                  handlers_ignored_by_pref);
-  GetPrefs()->Set(custom_handlers::prefs::kPolicyIgnoredProtocolHandlers,
-                  handlers_ignored_by_policy);
+  GetPrefs()->SetList(custom_handlers::prefs::kIgnoredProtocolHandlers,
+                      std::move(handlers_ignored_by_pref));
+  GetPrefs()->SetList(custom_handlers::prefs::kPolicyIgnoredProtocolHandlers,
+                      std::move(handlers_ignored_by_policy));
   registry()->InitProtocolSettings();
 
   // Duplicate p1u2 eliminated in memory but not yet saved in pref
