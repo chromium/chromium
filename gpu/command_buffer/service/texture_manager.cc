@@ -564,6 +564,7 @@ void TexturePassthrough::MarkContextLost() {
   have_context_ = false;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void TexturePassthrough::SetLevelImage(GLenum target,
                                        GLint level,
                                        gl::GLImage* image) {
@@ -579,11 +580,13 @@ gl::GLImage* TexturePassthrough::GetLevelImage(GLenum target,
 
   return level_images_[face_idx][level].image.get();
 }
+#endif
 
 void TexturePassthrough::BindToServiceId(GLuint service_id) {
-  // TODO(crbug.com/1310020): Determine what needs to execute from this method
-  // call and inline it here.
-  SetLevelImageInternal(target(), /*level=*/0, /*image=*/nullptr, service_id);
+  if (service_id != 0 && service_id != service_id_) {
+    service_id_ = service_id;
+  }
+  // TODO(blundell): Inline the body of this method here.
   UpdateStreamTextureServiceId(target(), /*level=*/0);
 }
 
@@ -612,6 +615,7 @@ bool TexturePassthrough::LevelInfoExists(GLenum target,
   return true;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void TexturePassthrough::SetLevelImageInternal(
     GLenum target,
     GLint level,
@@ -624,6 +628,7 @@ void TexturePassthrough::SetLevelImageInternal(
     service_id_ = service_id;
   }
 }
+#endif
 
 void TexturePassthrough::UpdateStreamTextureServiceId(GLenum target,
                                                       GLint level) {

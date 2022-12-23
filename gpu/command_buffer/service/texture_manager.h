@@ -79,8 +79,10 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   // native GL texture in the destructor
   void MarkContextLost();
 
+#if !BUILDFLAG(IS_ANDROID)
   void SetLevelImage(GLenum target, GLint level, gl::GLImage* image);
   gl::GLImage* GetLevelImage(GLenum target, GLint level) const;
+#endif
 
   void BindToServiceId(GLuint service_id);
 
@@ -101,10 +103,12 @@ class GPU_GLES2_EXPORT TexturePassthrough final
  private:
   bool LevelInfoExists(GLenum target, GLint level, size_t* out_face_idx) const;
 
+#if !BUILDFLAG(IS_ANDROID)
   void SetLevelImageInternal(GLenum target,
                              GLint level,
                              gl::GLImage* image,
                              GLuint service_id);
+#endif
   void UpdateStreamTextureServiceId(GLenum target, GLint level);
 
   friend class base::RefCounted<TexturePassthrough>;
