@@ -31,7 +31,7 @@
 </style>
 <!-- TODO(crbug.com/1378703): Update all strings in this page. -->
 <div class="content-settings-header secondary">$i18n{privacyPageTitle}</div>
-<div id="notificationRadioGroup" class="radio-group">
+<div class="radio-group">
   <h2>$i18n{privacyPageTitle}</h2>
   <div class="secondary radio-group-sub-heading">$i18n{privacyPageTitle}</div>
   <settings-radio-group id="defaultGroup"
@@ -42,7 +42,7 @@
         pref="[[prefs.generated.cookie_default_content_setting]]"
         label="$i18n{privacyPageTitle}"
         sub-label="$i18n{privacyPageTitle}"
-        icon="settings:notifications">
+        icon="settings:database">
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="defaultSessionOnly" no-collapse
         class="two-line"
@@ -50,7 +50,7 @@
         pref="[[prefs.generated.cookie_default_content_setting]]"
         label="$i18n{privacyPageTitle}"
         sub-label="$i18n{privacyPageTitle}"
-        icon="settings:notifications">
+        icon="settings:database">
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="defaultBlock" no-collapse
         class="two-line"
@@ -58,7 +58,7 @@
         pref="[[prefs.generated.cookie_default_content_setting]]"
         label="$i18n{privacyPageTitle}"
         sub-label="$i18n{privacyPageTitle}"
-        icon="settings:notifications-off">
+        icon="settings:database-off">
     </settings-collapse-radio-button>
   </settings-radio-group>
 </div>
