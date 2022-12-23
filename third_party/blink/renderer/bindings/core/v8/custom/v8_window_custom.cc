@@ -64,6 +64,9 @@ namespace blink {
 
 template <typename CallbackInfo>
 static void LocationAttributeGet(const CallbackInfo& info) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("LocationAttributeGet");
+
   v8::Local<v8::Object> holder = info.Holder();
   DOMWindow* window = V8Window::ToImpl(holder);
   window->ReportCoopAccess("location");

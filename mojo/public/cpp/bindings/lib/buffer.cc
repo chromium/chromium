@@ -59,12 +59,12 @@ static bool gRecordReplayAssertAllocations = false;
 
 extern "C" bool V8IsMainThread();
 
-void RecordReplayAssertBufferAllocationsBegin() {
+AutoRecordReplayAssertBufferAllocations::AutoRecordReplayAssertBufferAllocations() {
   if (V8IsMainThread())
     gRecordReplayAssertAllocations = true;
 }
 
-void RecordReplayAssertBufferAllocationsEnd() {
+AutoRecordReplayAssertBufferAllocations::~AutoRecordReplayAssertBufferAllocations() {
   if (V8IsMainThread())
     gRecordReplayAssertAllocations = false;
 }

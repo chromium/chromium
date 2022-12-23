@@ -299,13 +299,6 @@ using blink::WebView;
 using blink::mojom::SelectionMenuBehavior;
 using network::mojom::ReferrerPolicy;
 
-namespace mojo {
-  namespace internal {
-    extern void RecordReplayAssertBufferAllocationsBegin();
-    extern void RecordReplayAssertBufferAllocationsEnd();
-  }
-}
-
 namespace recordreplay {
   extern void RecordReplayString(const char* why, std::string& str);
 }
@@ -5767,9 +5760,6 @@ void RenderFrameImpl::BeginNavigationInternal(
       initiator_policy_container_keep_alive_handle =
           std::move(info->initiator_policy_container_keep_alive_handle);
 
-  // https://linear.app/replay/issue/RUN-771
-  mojo::internal::RecordReplayAssertBufferAllocationsBegin();
-
   network::mojom::RequestDestination request_destination =
       blink::GetRequestDestinationForWebURLRequest(info->url_request);
 
@@ -5782,9 +5772,6 @@ void RenderFrameImpl::BeginNavigationInternal(
       std::move(navigation_client_remote),
       std::move(initiator_policy_container_keep_alive_handle),
       std::move(renderer_cancellation_listener_receiver));
-
-  // https://linear.app/replay/issue/RUN-771
-  mojo::internal::RecordReplayAssertBufferAllocationsEnd();
 }
 
 void RenderFrameImpl::DecodeDataURL(

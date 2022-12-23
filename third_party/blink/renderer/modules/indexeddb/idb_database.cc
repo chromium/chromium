@@ -132,7 +132,9 @@ int64_t IDBDatabase::NextTransactionId() {
   // Only keep a 32-bit counter to allow ports to use the other 32
   // bits of the id.
   static base::AtomicSequenceNumber current_transaction_id;
-  return current_transaction_id.GetNext() + 1;
+
+  // Record/replay the transaction ID as accesses on the atomic are unordered.
+  return recordreplay::RecordReplayValue("IDBDatabase::NextTransactionId", current_transaction_id.GetNext()) + 1;
 }
 
 void IDBDatabase::SetMetadata(const IDBDatabaseMetadata& metadata) {

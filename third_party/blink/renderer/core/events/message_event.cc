@@ -310,6 +310,9 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
 ScriptValue MessageEvent::data(ScriptState* script_state) {
   is_data_dirty_ = false;
 
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("MessageEvent::data %d", (int)data_type_);
+
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Value> value;
   switch (data_type_) {

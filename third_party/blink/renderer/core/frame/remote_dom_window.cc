@@ -51,6 +51,9 @@ void RemoteDOMWindow::ForwardPostMessage(PostedMessage* posted_message) {
   if (!GetFrame())
     return;
 
+  // https://linear.app/replay/issue/RUN-885
+  mojo::internal::AutoRecordReplayAssertBufferAllocations rraba;
+
   LocalFrame* source_frame = posted_message->source->GetFrame();
   scoped_refptr<const SecurityOrigin> source_origin =
       posted_message->source_origin;
