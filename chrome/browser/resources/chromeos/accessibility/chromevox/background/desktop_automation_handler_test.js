@@ -170,8 +170,9 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
+// TODO(crbug.com/1292501): Fix flakiness.
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest', 'DatalistSelection',
+    'ChromeVoxDesktopAutomationHandlerTest', 'DISABLED_DatalistSelection',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
