@@ -15,6 +15,7 @@ import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './battery_status_card.html.js';
@@ -51,15 +52,15 @@ function calculatePowerPercentage(
 const BatteryStatusCardElementBase = I18nMixin(PolymerElement);
 
 export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
-  static get is() {
+  static get is(): string {
     return 'battery-status-card';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       batteryChargeStatus_: {
         type: Object,
@@ -133,7 +134,7 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
     this.observeBatteryHealth_();
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     if (this.batteryChargeStatusObserverReceiver_) {

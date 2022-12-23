@@ -14,6 +14,7 @@ import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {convertKibToGibDecimalString, convertKibToMib} from './diagnostics_utils.js';
@@ -31,15 +32,15 @@ import {RoutineType} from './system_routine_controller.mojom-webui.js';
 const MemoryCardElementBase = I18nMixin(PolymerElement);
 
 export class MemoryCardElement extends MemoryCardElementBase {
-  static get is() {
+  static get is(): string {
     return 'memory-card';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       routines_: {
         type: Array,
@@ -75,7 +76,7 @@ export class MemoryCardElement extends MemoryCardElementBase {
     this.observeMemoryUsage_();
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this.memoryUsageObserverReceiver_) {
       this.memoryUsageObserverReceiver_.$.close();

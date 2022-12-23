@@ -10,6 +10,7 @@ import './network_card.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ConnectivityCardElement} from './connectivity_card.js';
@@ -35,15 +36,15 @@ export interface NetworkListElement {
 const NetworkListElementBase = I18nMixin(PolymerElement);
 
 export class NetworkListElement extends NetworkListElementBase {
-  static get is() {
+  static get is(): string {
     return 'network-list';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       testSuiteStatus: {
         type: Number,
@@ -90,7 +91,7 @@ export class NetworkListElement extends NetworkListElementBase {
     this.observeNetworkList_();
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     if (this.networkListObserverReceiver_) {

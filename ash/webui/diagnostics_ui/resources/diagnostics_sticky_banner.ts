@@ -7,6 +7,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './diagnostics_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './diagnostics_sticky_banner.html.js';
@@ -21,15 +22,15 @@ declare global {
 }
 
 export class DiagnosticsStickyBannerElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'diagnostics-sticky-banner';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       bannerMessage: {
         type: String,
@@ -53,7 +54,7 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
   protected scrollingClass_: string;
   private scrollTimerId_: number;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     window.addEventListener(
         'show-caution-banner',
@@ -63,7 +64,7 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
     window.addEventListener('scroll', this.scrollClassHandler_);
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener(
         'show-caution-banner',
@@ -78,7 +79,7 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
    * section. Event will contain message to display on message property of
    * event found on path `event.detail.message`.
    */
-  private showCautionBannerHandler_ = (e: ShowCautionBannerEvent) => {
+  private showCautionBannerHandler_ = (e: ShowCautionBannerEvent): void => {
     assert(e.detail.message);
     this.bannerMessage = e.detail.message;
   };
@@ -87,14 +88,14 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
    * Event callback for 'dismiss-caution-banner' which is triggered from
    * routine-section.
    */
-  private dismissCautionBannerHandler_ = () => {
+  private dismissCautionBannerHandler_ = (): void => {
     this.bannerMessage = '';
   };
 
   /**
    * Event callback for 'scroll'.
    */
-  private scrollClassHandler_ = () => {
+  private scrollClassHandler_ = (): void => {
     this.onScroll_();
   };
 

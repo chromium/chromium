@@ -12,6 +12,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './input_card.html.js';
@@ -43,15 +44,15 @@ export enum InputCardType {
 const InputCardElementBase = I18nMixin(PolymerElement);
 
 export class InputCardElement extends InputCardElementBase {
-  static get is() {
+  static get is(): string {
     return 'input-card';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * The type of input device to be displayed. Valid values are 'keyboard',

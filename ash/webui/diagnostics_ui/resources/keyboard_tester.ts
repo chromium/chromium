@@ -17,6 +17,7 @@ import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.j
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './input_data_provider.mojom-webui.js';
@@ -124,15 +125,15 @@ const TOAST_LINGER_MS = 1000;
 const KeyboardTesterElementBase = I18nMixin(PolymerElement);
 
 export class KeyboardTesterElement extends KeyboardTesterElementBase {
-  static get is() {
+  static get is(): string {
     return 'keyboard-tester';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * The keyboard being tested, or null if none is being tested at the
@@ -205,7 +206,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
       getInputDataProvider();
   private eventTracker: EventTracker = new EventTracker();
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.eventTracker.removeAll();
   }
@@ -214,7 +215,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
    * Event callback for 'announce-text' which is triggered from keyboard-key.
    * Event will contain text to announce to screen readers.
    */
-  private announceTextHandler = (e: AnnounceTextEvent) => {
+  private announceTextHandler = (e: AnnounceTextEvent): void => {
     assert(e.detail.text);
     e.stopPropagation();
     getInstance(this.$.dialog.getNative()).announce(e.detail.text);

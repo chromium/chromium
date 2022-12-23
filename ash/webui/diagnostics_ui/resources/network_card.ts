@@ -10,6 +10,7 @@ import './network_info.js';
 import './network_troubleshooting.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TroubleshootingInfo} from './diagnostics_types.js';
@@ -39,15 +40,15 @@ export enum TroubleshootingState {
 const NetworkCardElementBase = I18nMixin(PolymerElement);
 
 export class NetworkCardElement extends NetworkCardElementBase {
-  static get is() {
+  static get is(): string {
     return 'network-card';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       guid: {
         type: String,
@@ -130,11 +131,11 @@ export class NetworkCardElement extends NetworkCardElementBase {
   private networkStateObserverReceiver_: NetworkStateObserverReceiver|null =
       null;
 
-  static get observers() {
+  static get observers(): string[] {
     return ['observeNetwork_(guid)'];
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     this.resetTimer_();

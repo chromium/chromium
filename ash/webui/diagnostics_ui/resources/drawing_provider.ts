@@ -47,7 +47,7 @@ export class CanvasDrawingProvider implements DrawingProvider {
     this.setup();
   }
 
-  setup() {
+  setup(): void {
     assert(this.ctx);
     this.ctx.lineCap = LINE_CAP;
     this.ctx.lineWidth = LINE_WIDTH;

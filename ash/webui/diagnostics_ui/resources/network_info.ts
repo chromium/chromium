@@ -7,6 +7,7 @@ import './diagnostics_shared.css.js';
 import './ethernet_info.js';
 import './wifi_info.js';
 
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkType} from './network_health_provider.mojom-webui.js';
@@ -19,15 +20,15 @@ import {getTemplate} from './network_info.html.js';
  */
 
 export class NetworkInfoElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'network-info';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /** @type {!Network} */
       network: {

@@ -8,6 +8,7 @@ import './diagnostics_shared.css.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getSignalStrength} from './diagnostics_utils.js';
@@ -26,15 +27,15 @@ const WifiInfoElementBase = I18nMixin(PolymerElement);
 
 
 export class WifiInfoElement extends WifiInfoElementBase {
-  static get is() {
+  static get is(): string {
     return 'wifi-info';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /** @type {!Network} */
       network: {

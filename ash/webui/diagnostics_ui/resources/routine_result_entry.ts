@@ -9,6 +9,7 @@ import './text_badge.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getRoutineFailureMessage} from './diagnostics_utils.js';
@@ -92,15 +93,15 @@ export function getSimpleResult(result: RoutineResult): StandardRoutineResult {
  */
 
 export class RoutineResultEntryElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'routine-result-entry';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Added to support testing of announce behavior.
@@ -157,11 +158,11 @@ export class RoutineResultEntryElement extends PolymerElement {
   private routineType_: string;
 
 
-  static get observers() {
+  static get observers(): string[] {
     return ['entryStatusChanged_(item.*)'];
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     IronA11yAnnouncer.requestAvailability();

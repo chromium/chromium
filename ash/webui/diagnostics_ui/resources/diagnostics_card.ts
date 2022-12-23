@@ -5,6 +5,7 @@
 import './diagnostics_card_frame.js';
 import './diagnostics_shared.css.js';
 
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './diagnostics_card.html.js';
@@ -16,15 +17,15 @@ import {getTemplate} from './diagnostics_card.html.js';
  */
 
 export class DiagnosticsCardElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'diagnostics-card';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       hideDataPoints: {
         type: Boolean,

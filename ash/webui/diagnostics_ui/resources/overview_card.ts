@@ -5,6 +5,7 @@
 import './diagnostics_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getSystemDataProvider} from './mojo_interface_provider.js';
@@ -18,15 +19,15 @@ import {SystemDataProviderInterface, SystemInfo} from './system_data_provider.mo
  */
 
 export class OverviewCardElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'overview-card';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       systemInfo_: {
         type: Object,

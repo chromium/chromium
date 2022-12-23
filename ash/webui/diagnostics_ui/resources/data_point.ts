@@ -7,6 +7,7 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './diagnostics_shared.css.js';
 import './icons.html.js';
 
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './data_point.html.js';
@@ -19,15 +20,15 @@ import {getTemplate} from './data_point.html.js';
  */
 
 export class DataPointElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'data-point';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       header: {
         type: String,

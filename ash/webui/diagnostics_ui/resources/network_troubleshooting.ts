@@ -6,6 +6,7 @@ import './diagnostics_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TroubleshootingInfo} from './diagnostics_types.js';
@@ -15,15 +16,15 @@ const NetworkTroubleshootingElementBase = I18nMixin(PolymerElement);
 
 export class NetworkTroubleshootingElement extends
     NetworkTroubleshootingElementBase {
-  static get is() {
+  static get is(): string {
     return 'network-troubleshooting';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       isLoggedIn_: {
         type: Boolean,

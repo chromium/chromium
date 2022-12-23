@@ -11,6 +11,7 @@ import './routine_section.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './connectivity_card.html.js';
@@ -29,15 +30,15 @@ import {RoutineSectionElement} from './routine_section.js';
 const ConnectivityCardElementBase = I18nMixin(PolymerElement);
 
 export class ConnectivityCardElement extends ConnectivityCardElementBase {
-  static get is() {
+  static get is(): string {
     return 'connectivity-card';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       testSuiteStatus: {
         type: Number,
@@ -102,7 +103,7 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
     return routineSection;
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     this.getRoutineSectionElem_().stopTests();

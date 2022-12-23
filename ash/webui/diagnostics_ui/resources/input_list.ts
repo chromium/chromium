@@ -10,6 +10,7 @@ import './touchscreen_tester.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
@@ -35,15 +36,15 @@ export interface HostDeviceStatus {
 }
 
 export class InputListElement extends InputListElementBase {
-  static get is() {
+  static get is(): string {
     return 'input-list';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       keyboards_: {
         type: Array,
@@ -124,7 +125,7 @@ export class InputListElement extends InputListElementBase {
     this.observeTabletMode();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     const keyboardTester = this.shadowRoot!.querySelector('keyboard-tester');
     assert(keyboardTester);
@@ -215,7 +216,7 @@ export class InputListElement extends InputListElementBase {
    */
 
   private removeDeviceById_(
-      path: 'keyboards_'|'touchpads_'|'touchscreens_', id: number) {
+      path: 'keyboards_'|'touchpads_'|'touchscreens_', id: number): void {
     const index = this.get(path).findIndex(
         (device: KeyboardInfo|TouchDeviceInfo) => device.id === id);
     if (index !== -1) {

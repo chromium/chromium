@@ -19,6 +19,7 @@ import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigati
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './diagnostics_app.html.js';
@@ -59,15 +60,15 @@ interface ConnectedDevices {
 const DiagnosticsAppElementBase = I18nMixin(PolymerElement);
 
 export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
-  static get is() {
+  static get is(): string {
     return 'diagnostics-app';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Used in navigation-view-panel to set show-banner when banner is
@@ -130,7 +131,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
    * will contain message to display on message property of event found on
    * event found on path `e.detail.message`.
    */
-  private showToastHandler = (e: ShowToastEvent) => {
+  private showToastHandler = (e: ShowToastEvent): void => {
     assert(e.detail.message);
     this.toastText_ = e.detail.message;
     this.$.toast.show();
@@ -203,14 +204,14 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
     this.$.navigationPanel.addSelectors(await this.getNavPages());
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.createNavigationPanel();
     window.addEventListener(
         'show-toast', (e) => this.showToastHandler((e as ShowToastEvent)));
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener(
         'show-toast', (e) => this.showToastHandler((e as ShowToastEvent)));

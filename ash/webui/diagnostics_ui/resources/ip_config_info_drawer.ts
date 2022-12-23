@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
@@ -24,15 +25,15 @@ import {Network} from './network_health_provider.mojom-webui.js';
 const IpConfigInfoDrawerElementBase = I18nMixin(PolymerElement);
 
 export class IpConfigInfoDrawerElement extends IpConfigInfoDrawerElementBase {
-  static get is() {
+  static get is(): string {
     return 'ip-config-info-drawer';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       expanded_: {
         type: Boolean,
@@ -74,7 +75,7 @@ export class IpConfigInfoDrawerElement extends IpConfigInfoDrawerElementBase {
   private browserProxy_: DiagnosticsBrowserProxyImpl =
       DiagnosticsBrowserProxyImpl.getInstance();
 
-  static get observers() {
+  static get observers(): string[] {
     return ['getNameServersHeader_(network.ipConfig.nameServers)'];
   }
 

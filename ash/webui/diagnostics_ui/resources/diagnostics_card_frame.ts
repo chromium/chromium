@@ -15,11 +15,11 @@ import {getTemplate} from './diagnostics_card_frame.html.js';
  */
 
 class DiagnosticsCardFrameElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'diagnostics-card-frame';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 }

@@ -42,7 +42,7 @@ interface TouchEventObserver {
 
 export class TouchpadTesterElement extends TouchpadTesterElementBase implements
     TouchEventObserver {
-  static get is() {
+  static get is(): string {
     return 'touchpad-tester';
   }
 
@@ -58,7 +58,7 @@ export class TouchpadTesterElement extends TouchpadTesterElementBase implements
   // Touchpad device being tested.
   touchpad: TouchDeviceInfo|null = null;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     const ctx = this.$.testerCanvas.getContext('2d');
     assert(!!ctx);

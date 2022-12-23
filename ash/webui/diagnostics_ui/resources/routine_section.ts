@@ -17,6 +17,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getSystemRoutineController} from './mojo_interface_provider.js';
@@ -46,15 +47,15 @@ export interface RoutineSectionElement {
 const RoutineSectionElementBase = I18nMixin(PolymerElement);
 
 export class RoutineSectionElement extends RoutineSectionElementBase {
-  static get is() {
+  static get is(): string {
     return 'routine-section';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Added to support testing of announce behavior.
@@ -226,7 +227,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   private systemRoutineController_: SystemRoutineControllerInterface|null =
       null;
 
-  static get observers() {
+  static get observers(): string[] {
     return [
       'routineStatusChanged_(executionStatus_, currentTestName_,' +
           'additionalMessage)',
@@ -235,7 +236,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     ];
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     IronA11yAnnouncer.requestAvailability();
@@ -602,7 +603,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     return !this.isLoggedIn_ || this.hideRoutineStatus;
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     this.cleanUp_();

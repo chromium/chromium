@@ -70,7 +70,7 @@ export class DiagnosticsBrowserProxyImpl implements DiagnosticsBrowserProxy {
     return browserProxy || (browserProxy = new DiagnosticsBrowserProxyImpl());
   }
 
-  static setInstance(obj: DiagnosticsBrowserProxyImpl) {
+  static setInstance(obj: DiagnosticsBrowserProxyImpl): void {
     browserProxy = obj;
   }
 }

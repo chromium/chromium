@@ -17,6 +17,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
@@ -41,15 +42,15 @@ export interface SystemPageElement {
 const SystemPageElementBase = I18nMixin(PolymerElement);
 
 export class SystemPageElement extends SystemPageElementBase {
-  static get is() {
+  static get is(): string {
     return 'system-page';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       saveSessionLogEnabled_: {
         type: Boolean,

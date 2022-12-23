@@ -14,6 +14,7 @@ import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cpu_card.html.js';
@@ -30,26 +31,24 @@ import {RoutineType} from './system_routine_controller.mojom-webui.js';
 const CpuCardElementBase = I18nMixin(PolymerElement);
 
 export class CpuCardElement extends CpuCardElementBase {
-  static get is() {
+  static get is(): string {
     return 'cpu-card';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       routines_: {
         type: Array,
-        value: () => {
-          return [
-            RoutineType.kCpuStress,
-            RoutineType.kCpuCache,
-            RoutineType.kCpuFloatingPoint,
-            RoutineType.kCpuPrime,
-          ];
-        },
+        value: () =>
+            [RoutineType.kCpuStress,
+             RoutineType.kCpuCache,
+             RoutineType.kCpuFloatingPoint,
+             RoutineType.kCpuPrime,
+    ],
       },
 
       cpuUsage_: {
@@ -89,7 +88,7 @@ export class CpuCardElement extends CpuCardElementBase {
     this.fetchSystemInfo_();
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     if (this.cpuUsageObserverReceiver_) {

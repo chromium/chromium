@@ -4,6 +4,7 @@
 
 import './diagnostics_shared.css.js';
 
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './text_badge.html.js';
@@ -28,15 +29,15 @@ export enum BadgeType {
  */
 
 export class TextBadgeElement extends PolymerElement {
-  static get is() {
+  static get is(): string {
     return 'text-badge';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       badgeType: {
         type: String,
