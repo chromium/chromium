@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
@@ -216,6 +217,7 @@ enum class ToolbarKind {
                                   FormInputAccessoryCoordinatorNavigator,
                                   NetExportTabHelperDelegate,
                                   NewTabPageCommands,
+                                  NewTabPageTabHelperDelegate,
                                   PageInfoCommands,
                                   PageInfoPresentation,
                                   PasswordBreachCommands,
@@ -424,7 +426,6 @@ enum class ToolbarKind {
   PrerenderService* _prerenderService;
   BubblePresenter* _bubblePresenter;
   ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
-  NewTabPageCoordinator* _ntpCoordinator;
   LensCoordinator* _lensCoordinator;
   ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
   PrimaryToolbarCoordinator* _primaryToolbarCoordinator;
@@ -443,6 +444,8 @@ enum class ToolbarKind {
   absl::optional<ToolbarKind> _nextToolbarToPresent;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
 }
+
+@synthesize NTPCoordinator = _ntpCoordinator;
 
 #pragma mark - ChromeCoordinator
 
@@ -522,6 +525,14 @@ enum class ToolbarKind {
   // TODO(crbug.com/1272516): Update the WebUsageEnablerBrowserAgent as part of
   // setting active/inactive.
   self.viewController.active = active;
+
+  // Stop the NTP on web usage toggle. This happens when clearing browser
+  // data, and forces the NTP to be recreated the next time it is needed.
+  // TODO(crbug.com/906199): Move this to the NewTabPageTabHelper when
+  // WebStateObserver has a webUsage callback.
+  if (!active) {
+    [self stopNTP];
+  }
 }
 
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
@@ -1851,6 +1862,7 @@ enum class ToolbarKind {
     didDetachWebState:(web::WebState*)webState
               atIndex:(int)index {
   [self uninstallDelegatesForWebState:webState];
+  [self stopNTPIfNeeded];
 }
 
 // TODO(crbug.com/906525) : Move out of BrowserCoordinator along with
@@ -2016,8 +2028,7 @@ enum class ToolbarKind {
   }
 
   if (NewTabPageTabHelper::FromWebState(webState)) {
-    NewTabPageTabHelper::FromWebState(webState)->SetDelegate(
-        self.viewController);
+    NewTabPageTabHelper::FromWebState(webState)->SetDelegate(self);
   }
 
   if (AnnotationsTabHelper::FromWebState(webState)) {
@@ -2568,6 +2579,60 @@ enum class ToolbarKind {
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
+}
+
+#pragma mark - NewTabPageTabHelperDelegate
+
+- (void)newTabPageHelperDidChangeVisibility:(NewTabPageTabHelper*)NTPHelper
+                                forWebState:(web::WebState*)webState {
+  DCHECK(self.browser);
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+
+  if (webState != currentWebState) {
+    // In the instance that a pageload starts while the WebState is not the
+    // active WebState anymore, do nothing.
+    return;
+  }
+  NewTabPageCoordinator* NTPCoordinator = self.NTPCoordinator;
+  DCHECK(NTPCoordinator);
+  if (NTPHelper->IsActive()) {
+    [NTPCoordinator ntpDidChangeVisibility:YES];
+    NTPCoordinator.webState = webState;
+    [NTPCoordinator selectFeedType:NTPHelper->GetNextNTPFeedType()];
+    NTPCoordinator.shouldScrollIntoFeed = NTPHelper->GetNextNTPScrolledToFeed();
+  } else {
+    [NTPCoordinator ntpDidChangeVisibility:NO];
+    // This set needs to come after ntpDidChangeVisibility: so that the previous
+    // state can be cleaned up (e.g. if moving away from the Start surface).
+    NTPCoordinator.webState = nullptr;
+    [self stopNTPIfNeeded];
+  }
+  if (self.isActive) {
+    [self.viewController displayCurrentTab];
+  }
+}
+
+#pragma mark - Private methods to support NewTabPageTabHelperDelegate
+
+// Checks if there are any WebStates showing an NTP at this time. If not, then
+// stops the NTP.
+- (void)stopNTPIfNeeded {
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  for (int i = 0; i < webStateList->count(); i++) {
+    NewTabPageTabHelper* iterNtpHelper =
+        NewTabPageTabHelper::FromWebState(webStateList->GetWebStateAt(i));
+    if (iterNtpHelper->IsActive()) {
+      return;
+    }
+  }
+
+  // No active NTPs were found.
+  [self stopNTP];
+}
+
+- (void)stopNTP {
+  [self.NTPCoordinator stop];
 }
 
 @end

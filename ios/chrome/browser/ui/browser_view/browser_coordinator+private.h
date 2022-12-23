@@ -8,9 +8,14 @@
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 
+@class NewTabPageCoordinator;
+
 // Coordinator for BrowserViewController. This private class extension should
 // only be used by the implementation of BrowserCoordinator and tests.
 @interface BrowserCoordinator () <ActivityServiceCommands>
+
+// The coordinator used for the New Tab Page.
+@property(nonatomic, strong) NewTabPageCoordinator* NTPCoordinator;
 
 @end
 

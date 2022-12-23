@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_BROWSER_VIEW_COMMON_TAB_HELPER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_BROWSER_VIEW_COMMON_TAB_HELPER_DELEGATE_H_
 
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
@@ -16,15 +15,11 @@
 // This protocol is scaffolding for refactoring these delegate responsibilities
 // out of the BVC. The goal is to reduce the number of these delegate protocols
 // that the BVC conforms to to zero.
-@protocol
-    CommonTabHelperDelegate <BubblePresenterDelegate,
-                             // TODO(crbug.com/1300911): Factor
-                             // NewTabPageTabHelperDelegate out of the BVC.
-                             NewTabPageTabHelperDelegate,
-                             OverscrollActionsControllerDelegate,
-                             // TODO(crbug.com/1272487): Factor
-                             // PasswordControllerDelegate out of the BVC.
-                             PasswordControllerDelegate>
+@protocol CommonTabHelperDelegate <BubblePresenterDelegate,
+                                   OverscrollActionsControllerDelegate,
+                                   // TODO(crbug.com/1272487): Factor
+                                   // PasswordControllerDelegate out of the BVC.
+                                   PasswordControllerDelegate>
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BROWSER_VIEW_COMMON_TAB_HELPER_DELEGATE_H_

@@ -165,6 +165,11 @@ typedef struct {
 // Shows the voice search UI.
 - (void)startVoiceSearch;
 
+// Displays or refreshes the current tab.
+// TODO:(crbug.com/1385847): Remove this when BVC is refactored to not know
+// about model layer objects such as webstates.
+- (void)displayCurrentTab;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BROWSER_VIEW_BROWSER_VIEW_CONTROLLER_H_

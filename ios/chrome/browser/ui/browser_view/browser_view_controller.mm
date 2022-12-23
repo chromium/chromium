@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
@@ -875,6 +874,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.omniboxHandler cancelOmniboxEdit];
 }
 
+// TODO:(crbug.com/1385847): Remove this when BVC is refactored to not know
+// about model layer objects such as webstates.
+- (void)displayCurrentTab {
+  [self displayWebState:self.currentWebState];
+}
+
 #pragma mark - browser_view_controller+private.h
 
 - (void)setActive:(BOOL)active {
@@ -885,14 +890,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   self.webUsageEnabled = active;
   [self updateBroadcastState];
-
-  // Stop the NTP on web usage toggle. This happens when clearing browser
-  // data, and forces the NTP to be recreated in -displayWebState below.
-  // TODO(crbug.com/906199): Move this to the NewTabPageTabHelper when
-  // WebStateObserver has a webUsage callback.
-  if (!active) {
-    [self stopNTP];
-  }
 
   if (active) {
     // Make sure the tab (if any; it's possible to get here without a current
@@ -2264,29 +2261,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                   /*estimated_read_time=*/base::TimeDelta());
 }
 
-#pragma mark - Private SingleNTP feature helper methods
-
-// Checks if there are any WebStates showing an NTP at this time. If not, then
-// deconstructs `ntpCoordinator`.
-- (void)stopNTPIfNeeded {
-  BOOL activeNTP = NO;
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  for (int i = 0; i < webStateList->count(); i++) {
-    NewTabPageTabHelper* iterNtpHelper =
-        NewTabPageTabHelper::FromWebState(webStateList->GetWebStateAt(i));
-    if (iterNtpHelper->IsActive()) {
-      activeNTP = YES;
-    }
-  }
-  if (!activeNTP) {
-    [self stopNTP];
-  }
-}
-
-- (void)stopNTP {
-  [self.ntpCoordinator stop];
-}
-
 // TODO(crbug.com/1345210) Remove `isNTPActiveForCurrentWebState` method from
 // BVC
 - (BOOL)isNTPActiveForCurrentWebState {
@@ -3219,8 +3193,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     webState->WasHidden();
     webState->SetKeepRenderProcessAlive(false);
   }
-
-  [self stopNTPIfNeeded];
 }
 
 - (void)webStateList:(WebStateList*)webStateList
@@ -3678,33 +3650,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   viewportInsets.top = [self expandedTopToolbarHeight];
   return UIEdgeInsetsInsetRect(self.contentArea.bounds, viewportInsets);
-}
-
-#pragma mark - NewTabPageTabHelperDelegate
-
-- (void)newTabPageHelperDidChangeVisibility:(NewTabPageTabHelper*)NTPHelper
-                                forWebState:(web::WebState*)webState {
-  if (webState != self.currentWebState) {
-    // In the instance that a pageload starts while the WebState is not the
-    // active WebState anymore, do nothing.
-    return;
-  }
-  if (NTPHelper->IsActive()) {
-    [self.ntpCoordinator ntpDidChangeVisibility:YES];
-    self.ntpCoordinator.webState = webState;
-    [self.ntpCoordinator selectFeedType:NTPHelper->GetNextNTPFeedType()];
-    self.ntpCoordinator.shouldScrollIntoFeed =
-        NTPHelper->GetNextNTPScrolledToFeed();
-  } else {
-    [self.ntpCoordinator ntpDidChangeVisibility:NO];
-    // This set needs to come after ntpDidChangeVisibility: so that the previous
-    // state can be cleaned up (e.g. if moving away from the Start surface).
-    self.ntpCoordinator.webState = nullptr;
-    [self stopNTPIfNeeded];
-  }
-  if (self.active && self.currentWebState == webState) {
-    [self displayWebState:webState];
-  }
 }
 
 @end
