@@ -28,15 +28,10 @@ android_resources("content_java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
-    "java/res/drawable-hdpi/ic_menu_share_holo_light.png",
     "java/res/drawable-hdpi/ic_search.png",
-    "java/res/drawable-mdpi/ic_menu_share_holo_light.png",
     "java/res/drawable-mdpi/ic_search.png",
-    "java/res/drawable-xhdpi/ic_menu_share_holo_light.png",
     "java/res/drawable-xhdpi/ic_search.png",
-    "java/res/drawable-xxhdpi/ic_menu_share_holo_light.png",
     "java/res/drawable-xxhdpi/ic_search.png",
-    "java/res/drawable-xxxhdpi/ic_menu_share_holo_light.png",
     "java/res/drawable-xxxhdpi/ic_search.png",
     "java/res/drawable/floating_popup_background.xml",
     "java/res/layout-land/date_time_picker_dialog.xml",
@@ -48,11 +43,10 @@ android_resources("content_java_resources") {
     "java/res/layout/text_edit_suggestion_list_footer.xml",
     "java/res/layout/two_field_date_picker.xml",
     "java/res/menu/select_action_menu.xml",
-    "java/res/values-v17/styles.xml",
-    "java/res/values-v21/styles.xml",
     "java/res/values/attrs.xml",
     "java/res/values/dimens.xml",
     "java/res/values/strings.xml",
+    "java/res/values/styles.xml",
   ]
 }
 

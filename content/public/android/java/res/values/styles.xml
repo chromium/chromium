@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2014 The Chromium Authors
+Copyright 2013 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
+
 <resources>
+    <style name="SelectPopupDialog">
+        <item name="select_dialog_singlechoice">@android:layout/select_dialog_singlechoice</item>
+        <item name="select_dialog_multichoice">@android:layout/select_dialog_multichoice</item>
+    </style>
     <style name="SelectActionMenuShare">
         <item name="android:icon">?android:attr/actionModeShareDrawable</item>
     </style>
     <style name="SelectActionMenuWebSearch">
         <item name="android:icon">?android:attr/actionModeWebSearchDrawable</item>
+    </style>
+    <style name="TextAppearance.SuggestionPrefixOrSuffix">
+      <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
     <style name="TextAppearance.TextSuggestionButton">
         <item name="android:drawablePadding">8dp</item>
@@ -22,10 +30,8 @@ found in the LICENSE file.
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:singleLine">true</item>
-        <!-- v17 hard codes modern_blue_600 -->
         <item name="android:textAppearance">@style/TextAppearance.TextSuggestionButtonText</item>
     </style>
-
     <style name="TextAppearance.TextSuggestionButtonText" parent="@style/TextAppearance.Button.Text.Blue">
         <item name="android:textColor">?android:attr/colorAccent</item>
     </style>
