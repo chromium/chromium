@@ -132,6 +132,10 @@ BASE_FEATURE(kTabGridRecencySort,
              "TabGridRecencySort",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableNewBookmarksImplementation,
+             "EnableNewBookmarksImplementation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsTabGridSortedByRecency() {
   return base::FeatureList::IsEnabled(kTabGridRecencySort);
 }

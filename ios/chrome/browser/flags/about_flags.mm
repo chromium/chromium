@@ -1299,6 +1299,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillOfferToSaveCardWithSameLastFour)},
+    {"enable-new-bookmarks-implementation",
+     flag_descriptions::kEnableNewBookmarksImplementationName,
+     flag_descriptions::kEnableNewBookmarksImplementationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableNewBookmarksImplementation)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
