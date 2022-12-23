@@ -194,6 +194,10 @@ class WebrtcTransport : public Transport,
   // beyond this bound or exceed the relay server's max bitrate will be ignored.
   std::tuple<int, int> BitratesForConnection();
 
+  // Sets the min/max bitrate (using the preferred bitrate members) on the peer
+  // connection and each video RtpSender.
+  void UpdateBitrates();
+
   // Sets bitrates on the PeerConnection.
   // Called after SetRemoteDescription(), but also called if the relay status
   // changes.
