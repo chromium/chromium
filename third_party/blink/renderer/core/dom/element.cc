@@ -6351,24 +6351,54 @@ const ComputedStyle* Element::EnsureComputedStyle(
 
   Element* top = ancestors.empty() ? this : ancestors.back().Get();
 
-  // Don't call FromAncestors for elements outside the flat-tree, since
-  // those elements don't actually participate in style recalc.
+  // Prepare the selector filter to fast reject rules.
+  Element* filter_root = FlatTreeTraversal::ParentElement(*top);
+  Element* document_element = top->GetDocument().documentElement();
+
+  // The filter doesn't support rejecting rules for elements outside of the
+  // flat tree.  Detect that case and disable calls to the filter until
+  // https://crbug.com/831568 is fixed.
+  bool is_in_flat_tree =
+      top == document_element ||
+      (filter_root &&
+       !filter_root->ComputedStyleRef().IsEnsuredOutsideFlatTree());
+  if (!is_in_flat_tree) {
+    filter_root = nullptr;
+  }
+
+  SelectorFilterRootScope root_scope(filter_root);
+  SelectorFilterParentScope::EnsureParentStackIsPushed();
+  SelectorFilter& filter =
+      top->GetDocument().GetStyleResolver().GetSelectorFilter();
+
+  // Don't call FromAncestors for elements whose parent is outside the
+  // flat-tree, since those elements don't actually participate in style recalc.
   auto style_recalc_context = LayoutTreeBuilderTraversal::Parent(*top)
                                   ? StyleRecalcContext::FromAncestors(*top)
                                   : StyleRecalcContext();
 
-  while (!ancestors.empty()) {
-    Element* ancestor = ancestors.back();
-    ancestors.pop_back();
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
+    Element* ancestor = it->Get();
     const ComputedStyle* style =
         ancestor->EnsureOwnComputedStyle(style_recalc_context, kPseudoIdNone);
+    if (is_in_flat_tree) {
+      filter.PushParent(*ancestor);
+    }
     if (style->IsContainerForSizeContainerQueries()) {
       style_recalc_context.container = ancestor;
     }
   }
 
-  return EnsureOwnComputedStyle(style_recalc_context, pseudo_element_specifier,
-                                pseudo_argument);
+  const ComputedStyle* style = EnsureOwnComputedStyle(
+      style_recalc_context, pseudo_element_specifier, pseudo_argument);
+
+  if (is_in_flat_tree) {
+    for (auto& ancestor : ancestors) {
+      filter.PopParent(*ancestor.Get());
+    }
+  }
+
+  return style;
 }
 
 const ComputedStyle* Element::EnsureOwnComputedStyle(
