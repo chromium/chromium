@@ -1,4 +1,0 @@
-Verifies that the sourceMap is in fact re-requested from network as SASS watchdog updates the CSS file.
-
-SourceMap successfully re-requested.
-
