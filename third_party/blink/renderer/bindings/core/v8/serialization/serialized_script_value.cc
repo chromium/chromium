@@ -261,6 +261,9 @@ SerializedScriptValue::SerializedScriptValue(DataBufferPtr data,
   // to improve robustness and allow the replay to continue.
   size_t recorded_size = recordreplay::RecordReplayValue("SerializedScriptValue", data_size);
   if (recorded_size != data_size) {
+    recordreplay::Print("Warning: SerializedScriptValue::SerializedScriptValue mismatched size, expected %zu got %zu",
+                        recorded_size, data_size);
+
     data_buffer_ = AllocateBuffer(recorded_size);
     memset(data_buffer_.get(), 0, recorded_size);
   }

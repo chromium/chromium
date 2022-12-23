@@ -343,6 +343,9 @@ class CORE_EXPORT SerializedScriptValue
     // to improve robustness and allow the replay to continue.
     size_t recorded_size = recordreplay::RecordReplayValue("SerializedScriptValue::SetData", size);
     if (recorded_size != size) {
+      recordreplay::Print("Warning: SerializedScriptValue::SetData mismatched size, expected %zu got %zu",
+                          recorded_size, size);
+
       data_buffer_ = AllocateBuffer(recorded_size);
       memset(data_buffer_.get(), 0, recorded_size);
       return;
