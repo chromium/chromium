@@ -592,11 +592,6 @@ const char kOmniboxFocusTriggersSRPZeroSuggestDescription[] =
     "on-focus suggestions for the contextual web to be enabled. Will only work "
     "if user is signed-in and syncing.";
 
-const char kOmniboxPasteButtonName[] = "Omnibox paste to search button";
-const char kOmniboxPasteButtonDescription[] =
-    "Add a paste button when showing clipboard suggestions in the omnibox. iOS "
-    "16 and above.";
-
 const char kOmniboxLocalHistoryZeroSuggestBeyondNTPName[] =
     "Allow local history zero-prefix suggestions beyond NTP";
 const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[] =

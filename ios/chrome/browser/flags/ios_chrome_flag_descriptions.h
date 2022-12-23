@@ -532,11 +532,6 @@ extern const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[];
 extern const char kOmniboxFocusTriggersSRPZeroSuggestName[];
 extern const char kOmniboxFocusTriggersSRPZeroSuggestDescription[];
 
-// Title and description for the flag to enable paste button on clipboard
-// suggestion.
-extern const char kOmniboxPasteButtonName[];
-extern const char kOmniboxPasteButtonDescription[];
-
 // Title and description for local history zero-prefix suggestions beyond NTP.
 extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPName[];
 extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[];

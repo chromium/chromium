@@ -495,19 +495,6 @@ const FeatureEntry::FeatureVariation kBubbleRichIPHVariations[] = {
      std::size(kBubbleRichIPHRichWithSnooze), nullptr},
 };
 
-const FeatureEntry::FeatureParam kOmniboxPasteButtonBlueIconCapsule[] = {
-    {kOmniboxPasteButtonParameterName,
-     kOmniboxPasteButtonParameterBlueIconCapsule}};
-const FeatureEntry::FeatureParam kOmniboxPasteButtonBlueFullCapsule[] = {
-    {kOmniboxPasteButtonParameterName,
-     kOmniboxPasteButtonParameterBlueFullCapsule}};
-const FeatureEntry::FeatureVariation kOmniboxPasteButtonVariations[] = {
-    {"Icon only", kOmniboxPasteButtonBlueIconCapsule,
-     std::size(kOmniboxPasteButtonBlueIconCapsule), nullptr},
-    {"Icon and text", kOmniboxPasteButtonBlueFullCapsule,
-     std::size(kOmniboxPasteButtonBlueFullCapsule), nullptr},
-};
-
 const FeatureEntry::FeatureParam kDmTokenDeletionParam[] = {{"forced", "true"}};
 const FeatureEntry::FeatureVariation kDmTokenDeletionVariation[] = {
     {"(Forced)", kDmTokenDeletionParam, std::size(kDmTokenDeletionParam),
@@ -1120,11 +1107,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableNewCardUnmaskPromptView)},
-    {"omnibox-paste-button", flag_descriptions::kOmniboxPasteButtonName,
-     flag_descriptions::kOmniboxPasteButtonDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kOmniboxPasteButton,
-                                    kOmniboxPasteButtonVariations,
-                                    "OmniboxPasteButton")},
     {"omnibox-zero-suggest-prefetching",
      flag_descriptions::kOmniboxZeroSuggestPrefetchingName,
      flag_descriptions::kOmniboxZeroSuggestPrefetchingDescription,

@@ -16,14 +16,6 @@ BASE_FEATURE(kEnablePopoutOmniboxIpad,
              "EnablePopoutOmniboxIpad",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOmniboxPasteButton,
-             "OmniboxPasteButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kOmniboxPasteButtonParameterName[] = "PasteButtonVariant";
-const char kOmniboxPasteButtonParameterBlueIconCapsule[] = "SuggestionIcon";
-const char kOmniboxPasteButtonParameterBlueFullCapsule[] = "SuggestionTextIcon";
-
 BASE_FEATURE(kOmniboxKeyboardPasteButton,
              "OmniboxKeyboardPasteButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
