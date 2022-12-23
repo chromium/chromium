@@ -1075,6 +1075,7 @@ component("ash") {
     "style/style_viewer/pill_button_instances_grid_view_factory.cc",
     "style/style_viewer/radio_button_group_instances_grid_view_factory.cc",
     "style/style_viewer/radio_button_instances_grid_view_factory.cc",
+    "style/style_viewer/system_text_instances_grid_view_factory.cc",
     "style/style_viewer/system_ui_components_grid_view.cc",
     "style/style_viewer/system_ui_components_grid_view.h",
     "style/style_viewer/system_ui_components_grid_view_factories.h",

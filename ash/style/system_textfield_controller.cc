@@ -35,8 +35,9 @@ bool SystemTextfieldController::HandleKeyEvent(views::Textfield* sender,
                                                const ui::KeyEvent& key_event) {
   DCHECK_EQ(textfield_, sender);
 
-  if (key_event.type() != ui::ET_KEY_PRESSED)
+  if (key_event.type() != ui::ET_KEY_PRESSED) {
     return false;
+  }
 
   const bool active = textfield_->active();
   if (key_event.key_code() == ui::VKEY_RETURN) {
@@ -90,8 +91,9 @@ bool SystemTextfieldController::HandleMouseEvent(
       // When selecting all text was deferred, do it if there is no selection.
       if (defer_select_all_) {
         defer_select_all_ = false;
-        if (!textfield_->HasSelection())
+        if (!textfield_->HasSelection()) {
           textfield_->SelectAll(false);
+        }
         return true;
       }
       break;

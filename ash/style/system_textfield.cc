@@ -93,8 +93,9 @@ SystemTextfield::SystemTextfield(Type type) : type_(type) {
 SystemTextfield::~SystemTextfield() = default;
 
 void SystemTextfield::SetActive(bool active) {
-  if (active_ == active)
+  if (active_ == active) {
     return;
+  }
 
   active_ = active;
 
@@ -180,8 +181,9 @@ void SystemTextfield::OnEnabledStateChanged() {
 }
 
 void SystemTextfield::UpdateTextColor() {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return;
+  }
 
   // Set text color.
   auto* color_provider = GetColorProvider();
