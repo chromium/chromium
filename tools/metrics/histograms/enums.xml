@@ -83217,6 +83217,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="48" label="kSameSiteCrossOriginRedirectNotOptIn"/>
   <int value="49" label="kSameSiteCrossOriginNavigationNotOptIn"/>
   <int value="50" label="kActivationNavigationParameterMismatch"/>
+  <int value="52" label="kEmbedderHostDisallowed"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

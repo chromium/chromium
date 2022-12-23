@@ -3829,7 +3829,8 @@ class PrerenderSequentialPrerenderingBrowserTest : public PrerenderBrowserTest {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kPrerender2,
           {{"max_num_of_running_speculation_rules",
-            base::NumberToString(MaxNumOfRunningPrerenders())}}},
+            base::NumberToString(MaxNumOfRunningPrerenders())},
+           {"embedder_blocked_hosts", "a.test,b.test,c.test"}}},
          {blink::features::kPrerender2SequentialPrerendering, {}}},
         {});
   }
@@ -4236,6 +4237,37 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   embedder_observer.WaitForActivation();
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kEmbedderPrerender);
   EXPECT_TRUE(embedder_observer.was_activated());
+}
+
+// Test that hosts in the embedder blocklist are not prerendered.
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       EmbedderHostBlocklisted) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  // b.test was added to embedder_blocked_hosts in the test setup.
+  const GURL kEmbedderPrerender =
+      embedded_test_server()->GetURL("b.test", "/empty.html?embedder");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
+
+  // Start prerendering by embedder triggered prerendering. This should be
+  // blocked because b.test is in embedder_blocked_hosts.
+  std::unique_ptr<PrerenderHandle> prerender_handle =
+      web_contents_impl()->StartPrerendering(
+          kEmbedderPrerender, PrerenderTriggerType::kEmbedder,
+          "EmbedderSuffixForTest",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          nullptr);
+
+  EXPECT_FALSE(prerender_handle);
+  EXPECT_EQ(GetHostForUrl(kEmbedderPrerender),
+            RenderFrameHost::kNoFrameTreeNodeId);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "EmbedderSuffixForTest",
+      PrerenderFinalStatus::kEmbedderHostDisallowed, 1);
 }
 
 // Tests that if the running prerender is cancelled by

@@ -1574,6 +1574,8 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
       return Page::PrerenderFinalStatusEnum::
           ActivationNavigationParameterMismatch;
+    case PrerenderFinalStatus::kEmbedderHostDisallowed:
+      return Page::PrerenderFinalStatusEnum::EmbedderHostDisallowed;
   }
 }
 

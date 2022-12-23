@@ -101,6 +101,8 @@ const char* FinalStatusToString(PrerenderFinalStatus final_status) {
       return "SameSiteCrossOriginNavigationNotOptIn";
     case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
       return "ActivationNavigationParameterMismatch";
+    case PrerenderFinalStatus::kEmbedderHostDisallowed:
+      return "EmbedderHostDisallowed";
   }
   NOTREACHED();
   return "";
