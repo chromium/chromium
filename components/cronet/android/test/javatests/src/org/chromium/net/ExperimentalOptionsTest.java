@@ -278,12 +278,18 @@ public class ExperimentalOptionsTest {
     // Experimental options should be specified through a JSON compliant string. When that is not
     // the case building a Cronet engine should fail when it is allowed to do so.
     public void testWrongJsonExperimentalOptions() throws Exception {
-        if (nativeExperimentalOptionsParsingIsAllowedToFail()) {
-            expectedException.expect(IllegalArgumentException.class);
-            expectedException.expectMessage("Experimental options parsing failed");
+        try {
+            mBuilder.setExperimentalOptions("Not a serialized JSON object");
+            CronetEngine cronetEngine = mBuilder.build();
+            if (nativeExperimentalOptionsParsingIsAllowedToFail()) {
+                fail();
+            }
+        } catch (IllegalArgumentException e) {
+            if (!nativeExperimentalOptionsParsingIsAllowedToFail()) {
+                fail();
+            }
+            assertTrue(e.getMessage().contains("Experimental options parsing failed"));
         }
-        mBuilder.setExperimentalOptions("Not a serialized JSON object");
-        CronetEngine cronetEngine = mBuilder.build();
     }
 
     @Test
@@ -447,6 +453,7 @@ public class ExperimentalOptionsTest {
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
+    @DisabledTest(message = "crbug.com/1403204")
     @Test
     @MediumTest
     @Feature({"Cronet"})
@@ -488,6 +495,7 @@ public class ExperimentalOptionsTest {
         }
     }
 
+    @DisabledTest(message = "crbug.com/1403204")
     @Test
     @MediumTest
     @Feature({"Cronet"})
@@ -626,6 +634,7 @@ public class ExperimentalOptionsTest {
         assertEquals(expected, mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
+    @DisabledTest(message = "crbug.com/1403204")
     @Test
     @MediumTest
     @Feature({"Cronet"})
