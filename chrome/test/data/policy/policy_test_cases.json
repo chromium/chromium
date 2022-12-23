@@ -3265,7 +3265,7 @@
       }
     ]
   },
-  "KerberosDefaultConfiguration": {
+  "KerberosUseCustomPrefilledConfig": {
     "os": [
       "chromeos_ash"
     ],
@@ -3273,18 +3273,45 @@
       {
         "policies": {},
         "prefs": {
-          "kerberos.default_configuration": {
-            "default_value": "[libdefaults]\n  default_tgs_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96\n  default_tkt_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96\n  permitted_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96\n  forwardable = true\n",
+          "kerberos.use_custom_prefilled_config": {
+            "default_value": false,
             "location": "local_state"
           }
         }
       },
       {
         "policies": {
-          "KerberosDefaultConfiguration": "custom-config"
+          "KerberosUseCustomPrefilledConfig": true
         },
         "prefs": {
-          "kerberos.default_configuration": {
+          "kerberos.use_custom_prefilled_config": {
+            "value": true,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  },
+  "KerberosCustomPrefilledConfig": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "kerberos.custom_prefilled_config": {
+            "default_value": "",
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "KerberosCustomPrefilledConfig": "custom-config"
+        },
+        "prefs": {
+          "kerberos.custom_prefilled_config": {
             "value": "custom-config",
             "location": "local_state"
           }

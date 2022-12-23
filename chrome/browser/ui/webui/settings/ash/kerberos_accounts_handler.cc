@@ -127,10 +127,15 @@ void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
                          base::ToUpperASCII(local_state->GetString(
                              ::prefs::kKerberosDomainAutocomplete)));
 
-  // Kerberos default configuration.
-  html_source->AddString(
-      "defaultKerberosConfig",
-      local_state->GetString(::prefs::kKerberosDefaultConfiguration));
+  // Kerberos default prefilled configuration.
+  // If the 'KerberosUseCustomPrefilledConfig' policy is set to 'true', the
+  // configuration comes from the 'KerberosCustomPrefilledConfig' policy.
+  // Otherwise the default value is used.
+  const std::string prefilledConfig =
+      local_state->GetBoolean(::prefs::kKerberosUseCustomPrefilledConfig)
+          ? local_state->GetString(::prefs::kKerberosCustomPrefilledConfig)
+          : KerberosCredentialsManager::GetDefaultKerberosConfig();
+  html_source->AddString("defaultKerberosConfig", prefilledConfig);
 }
 
 // Adds load time strings to Kerberos Accounts page.

@@ -378,8 +378,7 @@ class KerberosCredentialsManagerTest : public testing::Test {
 
 // The default config sets strong crypto and allows forwardable tickets.
 TEST_F(KerberosCredentialsManagerTest, GetDefaultKerberosConfig) {
-  const std::string default_config =
-      local_state_.Get()->GetString(::prefs::kKerberosDefaultConfiguration);
+  const std::string default_config = mgr_->GetDefaultKerberosConfig();
 
   // Enforce strong crypto.
   EXPECT_TRUE(base::Contains(default_config, "default_tgs_enctypes"));
@@ -996,7 +995,7 @@ TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefConfig) {
   EXPECT_EQ(kNormalizedPrincipal, accounts[0].principal_name());
   EXPECT_EQ(expected_config, accounts[0].krb5conf());
   EXPECT_EQ(kNormalizedOtherPrincipal, accounts[1].principal_name());
-  EXPECT_EQ(mgr_->GetDefaultKerberosConfigForTesting(), accounts[1].krb5conf());
+  EXPECT_EQ(mgr_->GetDefaultKerberosConfig(), accounts[1].krb5conf());
   EXPECT_EQ(kNormalizedPrincipal, mgr_->GetActiveAccount());
 }
 

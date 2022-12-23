@@ -998,7 +998,7 @@ policies:
   997: DeviceAutofillSAMLUsername
   998: EnterpriseProfileCreationKeepBrowsingData
   999: KerberosDomainAutocomplete
-  1000: KerberosDefaultConfiguration
+  1000: KerberosCustomPrefilledConfig
   1001: UnmanagedDeviceSignalsConsentFlowEnabled
   1002: PersistentQuotaEnabled
   1003: DeviceLoginScreenContextAwareAccessSignalsAllowlist
@@ -1051,6 +1051,7 @@ policies:
   1050: PrivacySandboxSiteEnabledAdsEnabled
   1051: PrivacySandboxAdMeasurementEnabled
   1052: AppStoreRatingEnabled
+  1053: KerberosUseCustomPrefilledConfig
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1097,3 +1098,4 @@ atomic_groups:
   43: LocalFontsSettings
   44: BrowserIdle
   45: PrivacySandbox
+  46: KerberosPrefilledConfig

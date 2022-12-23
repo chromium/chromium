@@ -387,8 +387,9 @@ void KerberosCredentialsManager::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(prefs::kKerberosAddAccountsAllowed, true);
   registry->RegisterListPref(prefs::kKerberosAccounts);
   registry->RegisterStringPref(prefs::kKerberosDomainAutocomplete, "");
-  registry->RegisterStringPref(prefs::kKerberosDefaultConfiguration,
-                               kDefaultKerberosConfig);
+  registry->RegisterBooleanPref(prefs::kKerberosUseCustomPrefilledConfig,
+                                false);
+  registry->RegisterStringPref(prefs::kKerberosCustomPrefilledConfig, "");
 }
 
 void KerberosCredentialsManager::RegisterProfilePrefs(
@@ -403,6 +404,11 @@ KerberosCredentialsManager::EmptyResultCallback() {
   return base::BindOnce([](kerberos::ErrorType error) {
     // Do nothing.
   });
+}
+
+// static
+const char* KerberosCredentialsManager::GetDefaultKerberosConfig() {
+  return kDefaultKerberosConfig;
 }
 
 bool KerberosCredentialsManager::IsKerberosEnabled() const {
@@ -943,11 +949,6 @@ void KerberosCredentialsManager::SetKerberosFilesHandlerForTesting(
 void KerberosCredentialsManager::SetAddManagedAccountCallbackForTesting(
     base::RepeatingCallback<void(kerberos::ErrorType)> callback) {
   add_managed_account_callback_for_testing_ = std::move(callback);
-}
-
-// static
-const char* KerberosCredentialsManager::GetDefaultKerberosConfigForTesting() {
-  return kDefaultKerberosConfig;
 }
 
 }  // namespace ash

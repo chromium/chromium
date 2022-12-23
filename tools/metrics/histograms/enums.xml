@@ -32266,7 +32266,7 @@ Called by update_document_policy_enum.py.-->
   <int value="997" label="DeviceAutofillSAMLUsername"/>
   <int value="998" label="EnterpriseProfileCreationKeepBrowsingData"/>
   <int value="999" label="KerberosDomainAutocomplete"/>
-  <int value="1000" label="KerberosDefaultConfiguration"/>
+  <int value="1000" label="KerberosCustomPrefilledConfig"/>
   <int value="1001" label="UnmanagedDeviceSignalsConsentFlowEnabled"/>
   <int value="1002" label="PersistentQuotaEnabled"/>
   <int value="1003"
@@ -32320,6 +32320,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1050" label="PrivacySandboxSiteEnabledAdsEnabled"/>
   <int value="1051" label="PrivacySandboxAdMeasurementEnabled"/>
   <int value="1052" label="AppStoreRatingEnabled"/>
+  <int value="1053" label="KerberosUseCustomPrefilledConfig"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -80657,6 +80658,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="43" label="LocalFontsSettings"/>
   <int value="44" label="BrowserIdle"/>
   <int value="45" label="PrivacySandbox"/>
+  <int value="46" label="KerberosPrefilledConfig"/>
 </enum>
 
 <enum name="PolicyLoadStatus">

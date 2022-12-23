@@ -1147,10 +1147,16 @@ const char kKerberosActivePrincipalName[] = "kerberos.active_principal_name";
 // username field of "Add a ticket" UI window.
 // Tied to KerberosDomainAutocomplete policy.
 const char kKerberosDomainAutocomplete[] = "kerberos.domain_autocomplete";
+// Used by KerberosAccountsHandler to decide if the custom default configuration
+// should be prefilled.
+// Tied to KerberosUseCustomPrefilledConfig policy.
+const char kKerberosUseCustomPrefilledConfig[] =
+    "kerberos.use_custom_prefilled_config";
 // Used by KerberosAccountsHandler to prefill kerberos krb5 config for
 // manually creating new tickets.
-// Tied to KerberosDefaultConfiguration policy.
-const char kKerberosDefaultConfiguration[] = "kerberos.default_configuration";
+// Tied to KerberosCustomPrefilledConfig policy.
+const char kKerberosCustomPrefilledConfig[] =
+    "kerberos.custom_prefilled_config";
 
 // A boolean pref for enabling/disabling App reinstall recommendations in Zero
 // State Launcher by policy.
