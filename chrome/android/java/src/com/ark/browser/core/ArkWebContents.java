@@ -17,6 +17,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -27,6 +28,9 @@ import org.chromium.chrome.browser.tab.WebContentsStateBridge;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.version_info.VersionInfo;
+import org.chromium.content.browser.webcontents.ObserverProxyFactory;
+import org.chromium.content.browser.webcontents.WebContentsImpl;
+import org.chromium.content.browser.webcontents.WebContentsObserverProxy;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -66,27 +70,58 @@ public class ArkWebContents {
     public ArkWebContents(PageInfo pageInfo, @NonNull WebContents webContents) {
         mPageInfo = pageInfo;
         mWebContents = webContents;
-        mWebContents.addObserver(new WebContentsObserver() {
+        if (mWebContents instanceof WebContentsImpl) {
+            ((WebContentsImpl) mWebContents).setObserverFactory(new ObserverProxyFactory() {
+                @Override
+                public WebContentsObserverProxy create(WebContentsImpl webContents) {
+                    return new WebContentsObserverProxy(webContents) {
 
-            @Override
-            public void titleWasSet(String title) {
-                if (!TextUtils.equals(mPageInfo.getTitle(), title)) {
-                    mPageInfo.setTitle(title);
+                        @Override
+                        public void titleWasSet(String title) {
+                            if (!TextUtils.equals(mPageInfo.getTitle(), title)) {
+                                mPageInfo.setTitle(title);
+                            }
+                            super.titleWasSet(title);
+                        }
+
+                        @Override
+                        public void didStartLoading(GURL url) {
+                            mFinishLoad = false;
+                            mStartLoad = true;
+                            super.didStartLoading(url);
+                        }
+
+                        @Override
+                        public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid, boolean isInPrimaryMainFrame, int rfhLifecycleState) {
+                            mStartLoad = true;
+                            mFinishLoad = true;
+                            super.didFinishLoad(rfhId, url, isKnownValid, isInPrimaryMainFrame, rfhLifecycleState);
+                        }
+                    };
                 }
-            }
-
-            @Override
-            public void didStartLoading(GURL url) {
-                mFinishLoad = false;
-                mStartLoad = true;
-            }
-
-            @Override
-            public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid, boolean isInPrimaryMainFrame, int rfhLifecycleState) {
-                mStartLoad = true;
-                mFinishLoad = true;
-            }
-        });
+            });
+        }
+//        mWebContents.addObserver(new WebContentsObserver() {
+//
+//            @Override
+//            public void titleWasSet(String title) {
+//                if (!TextUtils.equals(mPageInfo.getTitle(), title)) {
+//                    mPageInfo.setTitle(title);
+//                }
+//            }
+//
+//            @Override
+//            public void didStartLoading(GURL url) {
+//                mFinishLoad = false;
+//                mStartLoad = true;
+//            }
+//
+//            @Override
+//            public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid, boolean isInPrimaryMainFrame, int rfhLifecycleState) {
+//                mStartLoad = true;
+//                mFinishLoad = true;
+//            }
+//        });
     }
 
     public int getId() {
@@ -108,6 +143,22 @@ public class ArkWebContents {
     @NonNull
     public WebContents getWebContents() {
         return mWebContents;
+    }
+
+    public void reload() {
+        if (OfflinePageUtils.isOfflinePage(mWebContents)) {
+            // If current page is an offline page, reload it with custom behavior defined in extra
+            // header respected.
+            OfflinePageUtils.reload(getWebContents(),
+                    new OfflinePageUtils.OfflinePageLoadUrlDelegate() {
+                        @Override
+                        public void loadUrl(LoadUrlParams params) {
+                            ArkWebContents.this.loadUrl(params);
+                        }
+                    });
+            return;
+        }
+        getWebContents().getNavigationController().reload(true);
     }
 
     public void loadUrl(LoadUrlParams params) {

@@ -15,7 +15,7 @@ import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.event.LoadUrlEvent;
-import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.ITab;
@@ -79,7 +79,7 @@ public class ArkMainFragment extends BaseFragment implements
                     mViewHolder.shutDown();
                     mViewHolder = null;
                 }
-                PageCacheManager.getInstance().destroy();
+                TabCacheManager.getInstance().destroy();
                 ArkWebContents.destroy();
                 super.destroy();
             }
@@ -409,7 +409,7 @@ public class ArkMainFragment extends BaseFragment implements
         if (tab == null) {
             return null;
         }
-        return PageCacheManager.getInstance().findTab(tab.getId());
+        return TabCacheManager.getInstance().findTab(tab.getId());
     }
 
 

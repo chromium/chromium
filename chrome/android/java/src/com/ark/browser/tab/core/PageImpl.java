@@ -1,6 +1,6 @@
 package com.ark.browser.tab.core;
 
-import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
 
 import org.chromium.chrome.browser.tab.Tab;
@@ -32,7 +32,7 @@ public class PageImpl implements IPage {
 
     @Override
     public Tab getNativePage() {
-        return PageCacheManager.getInstance().findTab(getId());
+        return TabCacheManager.getInstance().findTab(getId());
     }
 
 }

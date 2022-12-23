@@ -1,9 +1,7 @@
 package com.ark.browser.tab.core;
 
-import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.utils.ArkLogger;
-
-import org.chromium.base.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +110,7 @@ public class PageGroupImpl implements IPageGroup {
     @Override
     public void destroy() {
         for (IPage page : mPageInfoList) {
-            PageCacheManager.getInstance().removePage(page);
+            TabCacheManager.getInstance().removePage(page);
         }
         mPageInfoList.clear();
     }

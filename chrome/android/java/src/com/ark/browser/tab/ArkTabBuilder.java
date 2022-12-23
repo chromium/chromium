@@ -29,15 +29,10 @@ import org.chromium.ui.base.WindowAndroid;
 public class ArkTabBuilder {
 
     private Tab mParent;
-    private TabResolver mTabResolver;
     private Integer mLaunchType;
     private Integer mCreationType;
     private boolean mFromFrozenState;
-    private LoadUrlParams mLoadUrlParams;
 
-    private WebContents mWebContents;
-    private boolean mInitiallyHidden;
-    private TabState mTabState;
     private Callback<Tab> mPreInitializeAction;
 
     private final ITab mTab;
@@ -57,16 +52,6 @@ public class ArkTabBuilder {
     }
 
     /**
-     * Sets the tab resolver (tab id -> {@link Tab} mapping)
-     * @param tabResolver the {@link TabResolver}
-     * @return {@link ArkTabBuilder} creating the Tab.
-     */
-    public ArkTabBuilder setTabResolver(TabResolver tabResolver) {
-        mTabResolver = tabResolver;
-        return this;
-    }
-
-    /**
      * Sets a flag indicating how this tab is launched (from a link, external app, etc).
      * @param type Launch type.
      * @return {@link ArkTabBuilder} creating the Tab.
@@ -77,44 +62,12 @@ public class ArkTabBuilder {
     }
 
     /**
-     * Sets a {@link WebContents} object to be used on the Tab. If not set, a new one
-     * will be created.
-     * @param webContents {@link WebContents} object.
-     * @return {@link ArkTabBuilder} creating the Tab.
-     */
-    public ArkTabBuilder setWebContents(WebContents webContents) {
-        mWebContents = webContents;
-        return this;
-    }
-
-    /**
      * Sets a pre-initialization action to run.
      * @param action {@link Callback} object to invoke before {@link #initialize()}.
      * @return {@link ArkTabBuilder} creating the Tab.
      */
     public ArkTabBuilder setPreInitializeAction(Callback<Tab> action) {
         mPreInitializeAction = action;
-        return this;
-    }
-
-    /**
-     * Sets a flag indicating whether the Tab should start as hidden. Only used if
-     * {@code webContents} is {@code null}.
-     * @param initiallyHidden {@code true} if the newly created {@link WebContents} will be hidden.
-     * @return {@link ArkTabBuilder} creating the Tab.
-     */
-    public ArkTabBuilder setInitiallyHidden(boolean initiallyHidden) {
-        mInitiallyHidden = initiallyHidden;
-        return this;
-    }
-
-    /**
-     * Sets a {@link TabState} object containing information about this Tab, if it was persisted.
-     * @param tabState State object.
-     * @return {@link ArkTabBuilder} creating the Tab.
-     */
-    public ArkTabBuilder setTabState(TabState tabState) {
-        mTabState = tabState;
         return this;
     }
 
@@ -139,26 +92,13 @@ public class ArkTabBuilder {
         Tab parent = null;
         if (mParent != null) {
             parent = mParent;
-        } else if (mTabResolver != null) {
-//            if (!CriticalPersistedTabData.isEmptySerialization(
-//                        mSerializedCriticalPersistedTabData)) {
-//                parent = mTabResolver.resolve(CriticalPersistedTabData.from(tab).getParentId());
-//            }
-            if (mTabState != null) {
-                parent = mTabResolver.resolve(mTabState.parentId);
-            }
         }
-
-//        if (parent != null && mDelegateFactory == null) {
-//            mDelegateFactory = ((ArkTabImpl) parent).getDelegateFactory();
-//        }
 
         if (mPreInitializeAction != null) mPreInitializeAction.onResult(tab);
 
         // Initializes Tab. Its user data objects are also initialized through the event
         // |onInitialized| of TabObserver they register.
-        tab.initialize(parent, mCreationType, mLoadUrlParams, mWebContents,
-                mInitiallyHidden, mTabState);
+        tab.initialize(parent, mCreationType);
         return tab;
     }
 
@@ -167,28 +107,23 @@ public class ArkTabBuilder {
         return this;
     }
 
-    private ArkTabBuilder setFromFrozenState(boolean frozenState) {
-        mFromFrozenState = frozenState;
-        return this;
-    }
-
-    public ArkTabBuilder setLoadUrlParams(LoadUrlParams loadUrlParams) {
-        mLoadUrlParams = loadUrlParams;
-        return this;
-    }
-
-    /**
-     * Creates a TabBuilder for a new, "frozen" tab from a saved state. This can be used for
-     * background tabs restored on cold start that should be loaded when switched to. initialize()
-     * needs to be called afterwards to complete the second level initialization.
-     */
-    public static ArkTabBuilder createFromFrozenState(ITab tab) {
-        return new ArkTabBuilder(tab)
-                .setLaunchType(TabLaunchType.FROM_RESTORE)
-                .setCreationType(TabCreationState.FROZEN_ON_RESTORE)
-                .setFromFrozenState(true);
-    }
-
+//    private ArkTabBuilder setFromFrozenState(boolean frozenState) {
+//        mFromFrozenState = frozenState;
+//        return this;
+//    }
+//
+//    /**
+//     * Creates a TabBuilder for a new, "frozen" tab from a saved state. This can be used for
+//     * background tabs restored on cold start that should be loaded when switched to. initialize()
+//     * needs to be called afterwards to complete the second level initialization.
+//     */
+//    public static ArkTabBuilder createFromFrozenState(ITab tab) {
+//        return new ArkTabBuilder(tab)
+//                .setLaunchType(TabLaunchType.FROM_RESTORE)
+//                .setCreationType(TabCreationState.FROZEN_ON_RESTORE)
+//                .setFromFrozenState(true);
+//    }
+//
 //    /**
 //     * Creates a TabBuilder for a new tab to be loaded lazily. This can be used for tabs opened
 //     * in the background that should be loaded when switched to. initialize() needs to be called

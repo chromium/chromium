@@ -218,7 +218,7 @@ public class TabListManager {
         if (iTab == null) {
             return null;
         }
-        return PageCacheManager.getInstance().findTab(iTab.getId());
+        return TabCacheManager.getInstance().findTab(iTab.getId());
     }
 
     public int getCurrentPageId() {

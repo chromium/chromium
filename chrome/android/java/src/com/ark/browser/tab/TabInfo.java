@@ -27,7 +27,7 @@ public class TabInfo {
     protected long createTime;
 
 //    @Column
-    protected int pageIndex = 0;
+    protected int pageIndex = -1;
 
 //    @Column
     protected int currentPageId = Tab.INVALID_PAGE_ID;

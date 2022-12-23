@@ -1,7 +1,7 @@
 package com.ark.browser.tab.core;
 
 import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
@@ -307,23 +307,24 @@ public class TabGroupImpl implements ITabGroup {
 
 
 
-        PageInfo pageInfo = PageInfo.from(newTab.getTabInfo().getId(),
-                newTab.getPageSize(),
-                newTab.getTabInfo().isIncognito());
-        IPage newPage = new PageImpl(pageInfo);
-        newTab.getPageGroup().getPageInfoList().add(newPage);
+//        PageInfo pageInfo = PageInfo.from(newTab.getTabInfo().getId(),
+//                newTab.getPageSize(),
+//                newTab.getTabInfo().isIncognito());
+//        IPage newPage = new PageImpl(pageInfo);
+//        newTab.getPageGroup().getPageInfoList().add(newPage);
 
 
-        ArkTabImpl nativeTab = PageCacheManager.getInstance().createLivePageByType(
-                newTab, loadUrlParams, type);
+        ArkTabImpl nativeTab = TabCacheManager.getInstance().createLivePageByType(
+                newTab, type);
 //        nativeTab.loadInNewPage();
 
         for (TabInfoObserver obs : getObservers()) {
             obs.didAddTab(newTab, type);
         }
         ArkLogger.d(TAG, "openNewTab loadUrlParams=" + loadUrlParams);
-//        page.loadUrl(loadUrlParams);
-        selectTab(newTab, newPage);
+
+        IPage page = nativeTab.loadInNewPage(loadUrlParams);
+        selectTab(newTab, page);
     }
 
     public ITab getTabInfo(PageInfo pageInfo) {

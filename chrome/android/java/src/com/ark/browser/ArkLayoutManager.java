@@ -15,7 +15,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ObserverList;
@@ -529,7 +529,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
         ArkLogger.e(TAG, "initLayoutTabFromHost tabId=" + tabId + " getActiveLayout=" + getActiveLayout());
         if (getActiveLayout() == null) return;
 
-        Tab tab = PageCacheManager.getInstance().findTab(tabId);
+        Tab tab = TabCacheManager.getInstance().findTab(tabId);
         ArkLogger.e(TAG, "initLayoutTabFromHost tab=" + tab);
         if (tab == null) return;
 

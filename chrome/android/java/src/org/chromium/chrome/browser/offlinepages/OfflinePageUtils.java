@@ -106,6 +106,8 @@ public class OfflinePageUtils {
          */
         boolean isOfflinePage(Tab tab);
 
+        boolean isOfflinePage(WebContents webContents);
+
         /**
          * Returns whether the WebContents is showing trusted offline page.
          * @param webContents The current WebContents.
@@ -146,10 +148,14 @@ public class OfflinePageUtils {
             if (tab == null) return false;
 
             WebContents webContents = tab.getWebContents();
-            if (webContents == null) return false;
+            return isOfflinePage(webContents);
+        }
 
+        @Override
+        public boolean isOfflinePage(WebContents webContents) {
+            if (webContents == null) return false;
             OfflinePageBridge offlinePageBridge = getInstance().getOfflinePageBridge(
-                    Profile.fromWebContents(tab.getWebContents()));
+                    Profile.fromWebContents(webContents));
             if (offlinePageBridge == null) return false;
 
             return offlinePageBridge.isOfflinePage(webContents);
@@ -458,6 +464,10 @@ public class OfflinePageUtils {
      */
     public static boolean isOfflinePage(Tab tab) {
         return getInstance().isOfflinePage(tab);
+    }
+
+    public static boolean isOfflinePage(WebContents webContents) {
+        return getInstance().isOfflinePage(webContents);
     }
 
     /**

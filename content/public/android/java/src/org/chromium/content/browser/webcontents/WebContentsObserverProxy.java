@@ -23,7 +23,7 @@ import org.chromium.url.GURL;
  * avoiding redundant JNI-related work when there are multiple Java-based observers.
  */
 @JNINamespace("content")
-class WebContentsObserverProxy extends WebContentsObserver {
+public class WebContentsObserverProxy extends WebContentsObserver {
     private long mNativeWebContentsObserverProxy;
     private final ObserverList<WebContentsObserver> mObservers;
     private final RewindableIterator<WebContentsObserver> mObserversIterator;

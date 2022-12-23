@@ -203,6 +203,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     // Remember the stack for clearing native the native stack for debugging use after destroy.
     private Throwable mNativeDestroyThrowable;
 
+    private ObserverProxyFactory mObserverFactory;
+
     private static class WebContentsInternalsImpl implements WebContentsInternals {
         public UserDataHost userDataHost;
         public ViewAndroidDelegate viewAndroidDelegate;
@@ -213,6 +215,10 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         assert nativeWebContentsAndroid != 0;
         mNativeWebContentsAndroid = nativeWebContentsAndroid;
         mNavigationController = navigationController;
+    }
+
+    public void setObserverFactory(ObserverProxyFactory factory) {
+        mObserverFactory = factory;
     }
 
     @CalledByNative
@@ -817,7 +823,13 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     @Override
     public void addObserver(WebContentsObserver observer) {
         assert mNativeWebContentsAndroid != 0;
-        if (mObserverProxy == null) mObserverProxy = new WebContentsObserverProxy(this);
+        if (mObserverProxy == null) {
+            if (mObserverFactory == null) {
+                mObserverProxy = new WebContentsObserverProxy(this);
+            } else {
+                mObserverProxy = mObserverFactory.create(this);
+            }
+        }
         mObserverProxy.addObserver(observer);
     }
 

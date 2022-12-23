@@ -19,7 +19,7 @@ import androidx.core.view.ViewCompat;
 
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.settings.AppConfig;
-import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.ArkMainFragment;
@@ -227,7 +227,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         if (tab == null) {
             return null;
         }
-        return PageCacheManager.getInstance().findTab(tab.getId());
+        return TabCacheManager.getInstance().findTab(tab.getId());
     }
 
 

@@ -1,6 +1,6 @@
 package com.ark.browser.tab.core;
 
-import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabSnapshotManager;
 import com.ark.browser.utils.ArkLogger;
@@ -87,7 +87,7 @@ public interface IPageGroup {
 
     default void remove() {
         for (IPage page : getPageInfoList()) {
-            PageCacheManager.getInstance().removePage(page.getPageInfo());
+            TabCacheManager.getInstance().removePage(page.getPageInfo());
             TabSnapshotManager.getInstance().removeSnapshot(page.getPageInfo().getId());
 //            pageInfo.getPageInfo().delete();
             page.deletePageInfo();

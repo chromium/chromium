@@ -22,7 +22,7 @@ import com.ark.browser.ArkNavigationHandler;
 import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.EmptyTabInfoObserver;
-import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
@@ -35,7 +35,6 @@ import com.ark.browser.tab.core.TabImpl;
 import com.ark.browser.utils.ArkLogger;
 import com.google.android.material.tabs.TabLayout;
 
-import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -631,7 +630,7 @@ public class SmartSearchPanel extends FrameLayout {
         }
         ITab tab = mFloatTabList.getCurrentTab();
         if (tab != null) {
-            return PageCacheManager.getInstance().findTab(tab.getId());
+            return TabCacheManager.getInstance().findTab(tab.getId());
         }
         return null;
     }
@@ -672,7 +671,7 @@ public class SmartSearchPanel extends FrameLayout {
             loadUrlParams.setTransitionType(TabLaunchType.FROM_CHROME_UI);
             index = openNewTab(loadUrlParams);
         } else {
-            Tab tab = PageCacheManager.getInstance().findTab(page.getPageInfo().getTabId());
+            Tab tab = TabCacheManager.getInstance().findTab(page.getPageInfo().getTabId());
             ArkLogger.e(TAG, "loadUrl tab=" + tab);
             if (tab != null) {
                 ArkLogger.e(TAG, "loadUrl oldKey=" + item.getKeyword() + " newKey=" + keyword);
@@ -712,16 +711,17 @@ public class SmartSearchPanel extends FrameLayout {
         newTab.getPageGroup().addPage(newPage);
 //        tab.loadUrl(loadUrlParams);
 
-        ArkTabImpl tab = PageCacheManager.getInstance().createLivePageByType(newTab,
-                loadUrlParams, TabLaunchType.FROM_CHROME_UI);
-
         mFloatTabList.getTabInfoList().add(newTab);
+        newTab.selectPage(0);
+
+        ArkTabImpl tab = TabCacheManager.getInstance().createLivePageByType(newTab,
+                TabLaunchType.FROM_CHROME_UI);
+
+        tab.selectPage(newPage);
 
         for (TabInfoObserver obs : mFloatTabList.getObservers()) {
             obs.didAddTab(newTab, TabSelectionType.FROM_USER);
         }
-
-        newTab.selectPage(0);
 
         return mFloatTabList.getCount() - 1;
     }
@@ -741,13 +741,13 @@ public class SmartSearchPanel extends FrameLayout {
 
         @Override
         public void didAddTab(ITab page, int type) {
-            Tab tab = PageCacheManager.getInstance().findTab(page.getId());
+            Tab tab = TabCacheManager.getInstance().findTab(page.getId());
             mViewHolder.setTab(tab);
         }
 
         @Override
         public void didSelectTab(ITab tab, int type, int lastId) {
-            mViewHolder.setTab(PageCacheManager.getInstance().findTab(tab.getId()));
+            mViewHolder.setTab(TabCacheManager.getInstance().findTab(tab.getId()));
         }
 
         public void onDestroy() {

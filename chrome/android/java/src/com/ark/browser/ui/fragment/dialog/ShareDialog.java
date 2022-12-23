@@ -11,10 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.ark.browser.core.utils.TabPrinter;
 import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.TabListManager;
-import com.ark.browser.tab.core.IPage;
-import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.widget.DialogHeaderLayout;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.toast.ZToast;

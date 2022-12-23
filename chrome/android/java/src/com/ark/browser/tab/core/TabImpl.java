@@ -1,6 +1,6 @@
 package com.ark.browser.tab.core;
 
-import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.utils.ArkLogger;
@@ -92,7 +92,7 @@ public class TabImpl implements ITab {
         }
 
         for (IPage pageInfo : temp) {
-            PageCacheManager.getInstance().removePage(pageInfo);
+            TabCacheManager.getInstance().removePage(pageInfo);
         }
         temp.clear();
     }

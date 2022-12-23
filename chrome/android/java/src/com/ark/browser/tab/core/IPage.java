@@ -2,7 +2,7 @@ package com.ark.browser.tab.core;
 
 import androidx.core.util.AtomicFile;
 
-import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabSnapshotManager;
 import com.ark.browser.tab.dao.ArkTabDao;
@@ -10,6 +10,7 @@ import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -24,7 +25,7 @@ public interface IPage {
     PageInfo getPageInfo();
 
     default void remove() {
-        PageCacheManager.getInstance().removePage(getPageInfo());
+        TabCacheManager.getInstance().removePage(getPageInfo());
         TabSnapshotManager.getInstance().removeSnapshot(getId());
         ThreadPool.executeIO(this::deletePageInfo);
     }
@@ -44,6 +45,10 @@ public interface IPage {
         File pagesDir = ArkTabDao.getPagesDir(getPageInfo().getTabId());
         File file = new File(pagesDir, String.valueOf(getId()));
         file.delete();
+    }
+
+    default void loadUrl(LoadUrlParams params) {
+
     }
 
     default void savePageInfo() {

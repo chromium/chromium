@@ -4,9 +4,8 @@ import android.widget.Toast;
 
 import androidx.core.util.AtomicFile;
 
-import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
@@ -20,7 +19,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
@@ -233,7 +231,7 @@ public interface ITabGroup {
             lastId = currentTab.getCurrentPageId();
             ArkLogger.e(this, "selectTabInfo lastId=" + lastId + " currId=" + page.getId());
             if (lastId != page.getId()) {
-                Tab lastTab = PageCacheManager.getInstance().findTab(lastId);
+                Tab lastTab = TabCacheManager.getInstance().findTab(lastId);
                 if (lastTab != null && !lastTab.needsReload()) {
                     if (lastTab.isInitialized() && !lastTab.isDestroyed()) {
                         if (!lastTab.isClosing()) {
@@ -253,10 +251,10 @@ public interface ITabGroup {
 //            state = ArkTabDao.restorePageState(page.getId());
 //        }
 
-        ArkTabImpl tab = (ArkTabImpl) PageCacheManager.getInstance().findTab(iTab.getId());
+        ArkTabImpl tab = (ArkTabImpl) TabCacheManager.getInstance().findTab(iTab.getId());
 
         if (tab == null) {
-            tab = (ArkTabImpl) PageCacheManager.getInstance()
+            tab = (ArkTabImpl) TabCacheManager.getInstance()
                     .createLivePage(iTab, page);
 //            if (state == null) {
 //                tab = (ArkTabImpl) PageCacheManager.getInstance()
@@ -338,7 +336,7 @@ public interface ITabGroup {
     default boolean canGoBack() {
         final TabInfo tabInfo = getCurrentTabInfo();
         if (tabInfo != null) {
-            Tab currentTab = PageCacheManager.getInstance().findTab(tabInfo.getId());
+            Tab currentTab = TabCacheManager.getInstance().findTab(tabInfo.getId());
             return currentTab != null && currentTab.canGoBack();
         }
         return false;
@@ -347,7 +345,7 @@ public interface ITabGroup {
     default boolean goBack() {
         ITab tab = getCurrentTab();
         if (tab != null) {
-            Tab currentTab = PageCacheManager.getInstance().findTab(tab.getId());
+            Tab currentTab = TabCacheManager.getInstance().findTab(tab.getId());
             if (currentTab.canGoBack()) {
                 currentTab.goBack();
                 return true;
@@ -359,7 +357,7 @@ public interface ITabGroup {
     default boolean canGoForward() {
         final TabInfo tabInfo = getCurrentTabInfo();
         if (tabInfo != null) {
-            Tab currentTab = PageCacheManager.getInstance().findTab(tabInfo.getId());
+            Tab currentTab = TabCacheManager.getInstance().findTab(tabInfo.getId());
             return currentTab != null && currentTab.canGoForward();
         }
         return false;
@@ -368,7 +366,7 @@ public interface ITabGroup {
     default boolean goForward() {
         ITab tabInfo = getCurrentTab();
         if (tabInfo != null) {
-            Tab currentTab = PageCacheManager.getInstance().findTab(tabInfo.getId());
+            Tab currentTab = TabCacheManager.getInstance().findTab(tabInfo.getId());
             if (currentTab.canGoForward()) {
                 currentTab.goForward();
                 return true;
@@ -490,7 +488,7 @@ public interface ITabGroup {
     default Profile getProfile() {
         ITab iTab = getCurrentTab();
         if (iTab != null) {
-            Tab tab = PageCacheManager.getInstance().findTab(iTab.getId());
+            Tab tab = TabCacheManager.getInstance().findTab(iTab.getId());
             if (tab != null) {
                 return Profile.fromWebContents(tab.getWebContents());
             }
