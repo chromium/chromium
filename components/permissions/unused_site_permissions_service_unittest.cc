@@ -263,4 +263,76 @@ TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 0u);
 }
 
+TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
+  const std::string url1 = "https://example1.com:443";
+  const std::string url2 = "https://example2.com:443";
+  const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
+
+  base::Value::Dict dict = base::Value::Dict();
+  base::Value::List permission_type_list = base::Value::List();
+  permission_type_list.Append(static_cast<int32_t>(type));
+  dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
+
+  // Add url1 and url2 to rovoked permissions list.
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url1), GURL(url1),
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      base::Value(dict.Clone()));
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url2), GURL(url2),
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      base::Value(dict.Clone()));
+
+  // Check there are 2 origin in revoked permissions list.
+  ContentSettingsForOneType revoked_permissions_list;
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
+  EXPECT_EQ(2U, revoked_permissions_list.size());
+
+  // Allow the permission for url1 again
+  service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url1)));
+
+  // Check there is only url2 in revoked permissions list.
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
+  EXPECT_EQ(1U, revoked_permissions_list.size());
+
+  // Check if the permissions of url1 is regranted.
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
+            hcsm()->GetContentSetting(GURL(url1), GURL(url1), type));
+}
+
+TEST_F(UnusedSitePermissionsServiceTest, NotRevokeNotificationPermission) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  const GURL url("https://example1.com");
+  const content_settings::ContentSettingConstraints constraint{
+      .track_last_visit_for_autoexpiration = true};
+
+  // Grant GEOLOCATION and NOTIFICATION permission for the url.
+  hcsm()->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION,
+      ContentSetting::CONTENT_SETTING_ALLOW, constraint);
+  hcsm()->SetContentSettingDefaultScope(url, url,
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        ContentSetting::CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+
+  // Travel through time for 70 days.
+  clock()->Advance(base::Days(70));
+
+  // GEOLOCATION permission should be on the revoked permissions list, but.
+  // NOTIFICATION permissions should not be as notification permissions are out
+  // of scope.
+  service()->UpdateUnusedPermissionsForTesting();
+  EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 1u);
+  EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url)[0].GetInt(),
+            static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
+}
+
 }  // namespace permissions

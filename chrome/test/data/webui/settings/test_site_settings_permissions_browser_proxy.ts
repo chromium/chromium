@@ -34,10 +34,8 @@ export class TestSiteSettingsPermissionsBrowserProxy extends TestBrowserProxy
         [unusedSitePermissionList]);
   }
 
-  allowPermissionsAgainForUnusedSite(unusedSitePermissions:
-                                         UnusedSitePermissions) {
-    this.methodCalled(
-        'allowPermissionsAgainForUnusedSite', [unusedSitePermissions]);
+  allowPermissionsAgainForUnusedSite(origin: string) {
+    this.methodCalled('allowPermissionsAgainForUnusedSite', [origin]);
   }
 
   setUnusedSitePermissions(unusedSitePermissionsList: UnusedSitePermissions[]) {

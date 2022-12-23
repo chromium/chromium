@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/webui/settings/site_settings_permissions_handler.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/public/browser/storage_partition.h"
@@ -105,6 +107,49 @@ TEST_F(SiteSettingsPermissionsHandlerTest, PopulateUnusedSitePermissionsData) {
   const auto& revoked_permissions =
       handler()->PopulateUnusedSitePermissionsData();
   EXPECT_EQ(revoked_permissions.size(), 1UL);
-  EXPECT_EQ(url1,
-            *revoked_permissions[0].FindStringKey(site_settings::kOrigin));
+  EXPECT_EQ(
+      GURL(url1),
+      GURL(*revoked_permissions[0].FindStringKey(site_settings::kOrigin)));
+}
+
+TEST_F(SiteSettingsPermissionsHandlerTest,
+       HandleAllowPermissionsAgainForUnusedSite) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  const std::string url = "https://example1.com:443";
+  const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
+
+  base::Value::Dict dict = base::Value::Dict();
+  base::Value::List permission_type_list = base::Value::List();
+  permission_type_list.Append(static_cast<int32_t>(type));
+  dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
+
+  // Add url revoked permissions list.
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url), GURL(url),
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      base::Value(dict.Clone()));
+
+  // Check there is 1 origin in revoked permissions list.
+  ContentSettingsForOneType revoked_permissions_list;
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
+  EXPECT_EQ(1U, revoked_permissions_list.size());
+
+  // Allow the permission for url again
+  base::Value::List args;
+  args.Append(base::Value(url));
+  handler()->HandleAllowPermissionsAgainForUnusedSite(args);
+
+  // Check there is no origin in revoked permissions list.
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
+  EXPECT_EQ(0U, revoked_permissions_list.size());
+  // Check if the permissions of url is regranted.
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
+            hcsm()->GetContentSetting(GURL(url), GURL(url), type));
 }

@@ -519,13 +519,9 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
   if (base::FeatureList::IsEnabled(
           features::kRecordPermissionExpirationTimestamps)) {
     // The Permissions module in Safety check will revoke permissions after
-    // a finite amount of time.
-    // We're only interested in expiring permissions that:
-    // 1. Are ALLOWed.
-    // 2. Fall back to ASK.
-    // 3. Are not already a one-time grant.
-    if (content_setting == CONTENT_SETTING_ALLOW && !is_one_time &&
-        content_settings::CanTrackLastVisit(content_settings_type_)) {
+    // a finite amount of time if the permission can be revoked.
+    if (content_settings::CanBeAutoRevoked(content_settings_type_,
+                                           content_setting, is_one_time)) {
       // For #2, by definition, that should be all of them. If that changes in
       // the future, consider whether revocation for such permission makes
       // sense, and/or change this to an early return so that we don't

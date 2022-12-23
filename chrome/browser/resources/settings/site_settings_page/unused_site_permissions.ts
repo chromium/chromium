@@ -237,7 +237,7 @@ export class SettingsUnusedSitePermissionsElement extends
     this.hideItem_(item.origin);
     setTimeout(
         this.browserProxy_.allowPermissionsAgainForUnusedSite.bind(
-            this.browserProxy_, item),
+            this.browserProxy_, item.origin),
         this.getModelUpdateDelayMs_());
   }
 

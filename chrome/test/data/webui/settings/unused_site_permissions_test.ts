@@ -184,11 +184,9 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     // Ensure the browser proxy call is done.
     const expectedOrigin =
         siteList[0]!.querySelector('.site-representation')!.textContent!.trim();
-    const [unusedSitePermissions] =
+    const [origin] =
         await browserProxy.whenCalled('allowPermissionsAgainForUnusedSite');
-    assertEquals(unusedSitePermissions.origin, expectedOrigin);
-    assertDeepEquals(
-        unusedSitePermissions.permissions, mockData[0]!.permissions);
+    assertEquals(origin, expectedOrigin);
   });
 
   test('Undo Allow Again', async function() {

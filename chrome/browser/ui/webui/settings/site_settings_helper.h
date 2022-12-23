@@ -68,6 +68,7 @@ constexpr char kIsDirectory[] = "isDirectory";
 constexpr char kIsEmbargoed[] = "isEmbargoed";
 constexpr char kIsWritable[] = "isWritable";
 constexpr char kNotificationInfoString[] = "notificationInfoString";
+constexpr char kPermissions[] = "permissions";
 
 enum class SiteSettingSource {
   kAllowlist,

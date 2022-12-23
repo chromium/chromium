@@ -903,7 +903,7 @@ TEST_F(PermissionContextBaseTests, ExpirationAllow) {
       {features::kRecordPermissionExpirationTimestamps}, {});
 
   base::Time now = base::Time::Now();
-  TestAskAndDecide_TestContent(ContentSettingsType::NOTIFICATIONS,
+  TestAskAndDecide_TestContent(ContentSettingsType::GEOLOCATION,
                                CONTENT_SETTING_ALLOW);
 
   GURL primary_url("https://www.google.com");
@@ -911,7 +911,7 @@ TEST_F(PermissionContextBaseTests, ExpirationAllow) {
   auto* hcsm = PermissionsClient::Get()->GetSettingsMap(browser_context());
   content_settings::SettingInfo info;
   hcsm->GetWebsiteSetting(primary_url, secondary_url,
-                          ContentSettingsType::NOTIFICATIONS, &info);
+                          ContentSettingsType::GEOLOCATION, &info);
 
   // The last_visited should lie between today and a week ago.
   EXPECT_GE(info.metadata.last_visited, now - base::Days(7));
@@ -923,7 +923,7 @@ TEST_F(PermissionContextBaseTests, ExpirationBlock) {
   scoped_feature_list.InitWithFeatures(
       {features::kRecordPermissionExpirationTimestamps}, {});
 
-  TestAskAndDecide_TestContent(ContentSettingsType::NOTIFICATIONS,
+  TestAskAndDecide_TestContent(ContentSettingsType::GEOLOCATION,
                                CONTENT_SETTING_BLOCK);
 
   GURL primary_url("https://www.google.com");
@@ -931,7 +931,7 @@ TEST_F(PermissionContextBaseTests, ExpirationBlock) {
   auto* hcsm = PermissionsClient::Get()->GetSettingsMap(browser_context());
   content_settings::SettingInfo info;
   hcsm->GetWebsiteSetting(primary_url, secondary_url,
-                          ContentSettingsType::NOTIFICATIONS, &info);
+                          ContentSettingsType::GEOLOCATION, &info);
 
   // last_visited is not set for BLOCKed permissions.
   EXPECT_EQ(base::Time(), info.metadata.last_visited);

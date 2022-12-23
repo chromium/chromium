@@ -82,6 +82,12 @@ base::Time GetCoarseVisitedTime(base::Time time);
 // Returns a TimeDelta representing a week.
 base::TimeDelta GetCoarseVisitedTimePrecision();
 
+// Return whether the given permission can be auto-revoked using
+// ContentSettingConstraints::track_last_visit_for_autoexpiration.
+bool CanBeAutoRevoked(ContentSettingsType type,
+                      ContentSetting setting,
+                      bool is_one_time = false);
+
 }  // namespace content_settings
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_UTILS_H_

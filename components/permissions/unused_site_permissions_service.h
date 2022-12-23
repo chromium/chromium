@@ -82,6 +82,10 @@ class UnusedSitePermissionsService
   // a delayed task for another update after 24h.
   void StartRepeatedUpdates();
 
+  // Re-grants permissions that are auto-revoked ones and removes the origin
+  // from revoked permissions list.
+  void RegrantPermissionsForOrigin(const url::Origin& origin);
+
   // Test support:
   void SetClockForTesting(base::Clock* clock);
   std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();

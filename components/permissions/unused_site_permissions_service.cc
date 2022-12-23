@@ -5,6 +5,7 @@
 #include "components/permissions/unused_site_permissions_service.h"
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -130,6 +131,49 @@ void UnusedSitePermissionsService::StartRepeatedUpdates() {
           base::Unretained(this), base::NullCallback()));
 }
 
+void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
+    const url::Origin& origin) {
+  content_settings::SettingInfo info;
+  base::Value stored_value(hcsm_->GetWebsiteSetting(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &info));
+
+  if (!stored_value.is_dict()) {
+    return;
+  }
+
+  base::Value::List* permission_type_list =
+      stored_value.GetDict().FindList(kRevokedKey);
+  // Check the format of the returned value since it is coming from disk.
+  if (!permission_type_list) {
+    NOTREACHED();
+    return;
+  }
+
+  // Re-grant the permissions that are revoked. This service only auto-revokes
+  // permissions that were ALLOW, so re-granting will switch those permissions
+  // back to ALLOW again.
+  for (auto& permission_type : *permission_type_list) {
+    // Check if stored permission type is valid.
+    auto type_int = permission_type.GetIfInt();
+    if (!type_int.has_value()) {
+      continue;
+    }
+    hcsm_->SetContentSettingCustomScope(
+        info.primary_pattern, info.secondary_pattern,
+        static_cast<ContentSettingsType>(type_int.value()),
+        ContentSetting::CONTENT_SETTING_ALLOW);
+  }
+
+  // Ignore origin from future auto-revocations.
+  IgnoreOriginForAutoRevocation(origin);
+
+  // Remove origin from revoked permissions list.
+  hcsm_->SetWebsiteSettingCustomScope(
+      info.primary_pattern, info.secondary_pattern,
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
+}
+
 void UnusedSitePermissionsService::UpdateUnusedPermissionsAsync(
     base::RepeatingClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -215,10 +259,21 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
     for (auto permission_itr = unused_site_permissions.begin();
          permission_itr != unused_site_permissions.end();) {
       const ContentSettingEntry& entry = *permission_itr;
+      // Check if the current permission can be auto revoked.
+      auto setting = entry.source.setting_value.GetIfInt();
+      if (!setting.has_value() ||
+          !content_settings::CanBeAutoRevoked(
+              entry.type, IntToContentSetting(setting.value()))) {
+        continue;
+      }
+
       // Reset the permission to default if the site is visited before
-      // threshold.
+      // threshold. Also, the secondary pattern should be wildcard.
       DCHECK(entry.source.metadata.last_visited != base::Time());
-      if (entry.source.metadata.last_visited < threshold) {
+      DCHECK(entry.type != ContentSettingsType::NOTIFICATIONS);
+      if (entry.source.metadata.last_visited < threshold &&
+          entry.source.secondary_pattern ==
+              ContentSettingsPattern::Wildcard()) {
         revoked_permissions.push_back(entry);
         hcsm_->SetContentSettingCustomScope(
             entry.source.primary_pattern, entry.source.secondary_pattern,

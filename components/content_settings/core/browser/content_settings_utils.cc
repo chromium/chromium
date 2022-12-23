@@ -14,6 +14,8 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 
@@ -181,11 +183,11 @@ base::Time GetConstraintExpiration(const base::TimeDelta duration) {
 }
 
 bool CanTrackLastVisit(ContentSettingsType type) {
-#if BUILDFLAG(IS_ANDROID)
-  // The notification provider on Android does not support last visit tracking.
+  // Last visit is not tracked for notification permission as it shouldn't be
+  // auto-revoked.
   if (type == ContentSettingsType::NOTIFICATIONS)
     return false;
-#endif
+
   // Protocol handler don't actually use their content setting and don't have
   // a valid "initial default" value.
   if (type == ContentSettingsType::PROTOCOL_HANDLERS)
@@ -206,6 +208,30 @@ base::TimeDelta GetCoarseVisitedTimePrecision() {
   if (features::kSafetyCheckUnusedSitePermissionsNoDelay.Get())
     return base::Days(0);
   return base::Days(7);
+}
+
+bool CanBeAutoRevoked(ContentSettingsType type,
+                      ContentSetting setting,
+                      bool is_one_time) {
+  // The Permissions module in Safety check will revoke permissions after
+  // a finite amount of time.
+  // We're only interested in expiring permissions that:
+  // 1. Are ALLOWed.
+  // 2. Fall back to ASK.
+  // 3. Are not already a one-time grant.
+  if (setting != CONTENT_SETTING_ALLOW) {
+    return false;
+  }
+
+  if (!CanTrackLastVisit(type)) {
+    return false;
+  }
+
+  if (is_one_time) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace content_settings
