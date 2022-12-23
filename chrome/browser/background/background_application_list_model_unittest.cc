@@ -87,23 +87,20 @@ enum PushMessagingOption {
 static scoped_refptr<Extension> CreateExtension(
     const std::string& name,
     bool background_permission) {
-  base::DictionaryValue manifest;
-  manifest.SetStringPath(extensions::manifest_keys::kVersion, "1.0.0.0");
-  manifest.SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
-  manifest.SetStringPath(extensions::manifest_keys::kName, name);
-  base::ListValue permissions;
+  base::Value::Dict manifest;
+  manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0");
+  manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
+  manifest.Set(extensions::manifest_keys::kName, name);
+  base::Value::List permissions;
   if (background_permission) {
     permissions.Append("background");
   }
-  manifest.SetKey(extensions::manifest_keys::kPermissions,
-                  std::move(permissions));
+  manifest.Set(extensions::manifest_keys::kPermissions, std::move(permissions));
 
   std::string error;
-  scoped_refptr<Extension> extension;
-
-  extension = Extension::Create(
+  scoped_refptr<Extension> extension = Extension::Create(
       bogus_file_pathname(name), extensions::mojom::ManifestLocation::kInternal,
-      manifest.GetDict(), Extension::NO_FLAGS, &error);
+      manifest, Extension::NO_FLAGS, &error);
 
   // Cannot ASSERT_* here because that attempts an illegitimate return.
   // Cannot EXPECT_NE here because that assumes non-pointers unlike EXPECT_EQ

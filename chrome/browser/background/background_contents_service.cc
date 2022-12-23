@@ -229,13 +229,13 @@ void ReloadExtension(const std::string& extension_id, Profile* profile) {
 }  // namespace
 
 // Keys for the information we store about individual BackgroundContents in
-// prefs. There is one top-level DictionaryValue (stored at
+// prefs. There is one top-level base::Value::Dict (stored at
 // prefs::kRegisteredBackgroundContents). Information about each
-// BackgroundContents is stored under that top-level DictionaryValue, keyed
+// BackgroundContents is stored under that top-level base::Value::Dict, keyed
 // by the parent application ID for easy lookup.
 //
 // kRegisteredBackgroundContents:
-//    DictionaryValue {
+//    base::Value::Dict {
 //       <appid_1>: { "url": <url1>, "name": <frame_name> },
 //       <appid_2>: { "url": <url2>, "name": <frame_name> },
 //         ... etc ...
