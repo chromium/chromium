@@ -23,8 +23,12 @@ void GroupBase::Add(const AutocompleteMatch& match) {
 }
 
 MultiGroup::MultiGroup(size_t limit,
-                           GroupLimitsAndCounts group_id_limits_and_counts)
-    : GroupBase(limit), group_id_limits_and_counts_(group_id_limits_and_counts) {}
+                       GroupLimitsAndCounts group_id_limits_and_counts)
+    : GroupBase(limit),
+      group_id_limits_and_counts_(group_id_limits_and_counts) {}
+
+MultiGroup::MultiGroup(size_t limit, omnibox::GroupId group_id)
+    : MultiGroup(limit, GroupLimitsAndCounts{{group_id, {limit}}}) {}
 
 MultiGroup::~MultiGroup() = default;
 
@@ -37,7 +41,8 @@ bool MultiGroup::CanAdd(const AutocompleteMatch& match) const {
   const LimitAndCount& limit_and_count =
       group_id_limits_and_counts_.at(group_id);
   // Check this `Group`s total limit and the limit the particular `group_id`.
-  return GroupBase::CanAdd(match) && limit_and_count.count < limit_and_count.limit;
+  return GroupBase::CanAdd(match) &&
+         limit_and_count.count < limit_and_count.limit;
 }
 
 void MultiGroup::Add(const AutocompleteMatch& match) {

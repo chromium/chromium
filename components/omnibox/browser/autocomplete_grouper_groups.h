@@ -41,6 +41,8 @@ class MultiGroup : public GroupBase {
   using GroupLimitsAndCounts = std::map<omnibox::GroupId, LimitAndCount>;
 
   MultiGroup(size_t limit, GroupLimitsAndCounts group_id_limits_and_counts_);
+  // Construct a `MultiGroup` with just 1 `GroupId`.
+  MultiGroup(size_t limit, omnibox::GroupId group_id);
   ~MultiGroup() override;
   bool CanAdd(const AutocompleteMatch& match) const override;
   void Add(const AutocompleteMatch& match) override;

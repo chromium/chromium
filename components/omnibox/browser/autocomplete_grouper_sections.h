@@ -50,8 +50,9 @@ class MobileZeroInputSection : public Section {
 };
 
 // Section expressing the desktop, non-zps limits and grouping. The rules are:
-// - Contains up to 1 default, 10 search, 8 nav, and 1 history cluster
-//   suggestions. TODO(manukh): Add additional groups, e.g. starter pack.
+// - Contains up to 1 default, 10 starer packs, 10 search, 8 nav, and 1 history
+//   cluster suggestions.
+// - Allow up to 10 suggestions total.
 // - Only allow more than 8 suggestions if the section does not contain navs.
 // - Only allow more than 7 navs if there are no non-navs to show.
 // - The history cluster suggestion should count against the search limit.

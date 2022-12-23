@@ -96,17 +96,19 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNonZpsSection) {
   }
 
   {
-    SCOPED_TRACE("Group the default above searches, and searches above URLs.");
+    SCOPED_TRACE("Rank groups: default > starter pack > searches > navs.");
     test(
         {
             CreateMatch(100, omnibox::GROUP_SEARCH),
             CreateMatch(99, omnibox::GROUP_OTHER_NAVS),
             CreateMatch(98, omnibox::GROUP_SEARCH),
-            CreateMatch(97, omnibox::GROUP_OTHER_NAVS),
             // Any group ID should work for the default suggestion.
             CreateMatch(96, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, true),
+            // Only the 1st default-able suggestion should be ranked 1st.
+            CreateMatch(97, omnibox::GROUP_OTHER_NAVS, true),
+            CreateMatch(95, omnibox::GROUP_STARTER_PACK),
         },
-        {96, 100, 98, 99, 97});
+        {96, 95, 100, 98, 99, 97});
   }
 
   {
@@ -215,7 +217,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNonZpsSection) {
 
   {
     SCOPED_TRACE(
-        "Show at most 8 suggestions; unless there are no URLs, then show up to "
+        "Show at most 8 suggestions; unless there are no navs, then show up to "
         "10.");
     test(
         {
@@ -236,8 +238,8 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNonZpsSection) {
 
   {
     SCOPED_TRACE(
-        "Show at most 8 suggestions; unless there are no URLs, then show up to "
-        "10, even if there are URLs after the 10th suggestion.");
+        "Show at most 8 suggestions; unless there are no navs, then show up to "
+        "10, even if there are navs after the 10th suggestion.");
     test(
         {
             CreateMatch(100, omnibox::GROUP_SEARCH),
@@ -259,7 +261,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNonZpsSection) {
   {
     SCOPED_TRACE(
         "Show at most 8 suggestions; unless the 10th suggestion is the 1st "
-        "URL, then show up to 9.");
+        "nav, then show up to 9.");
     test(
         {
             CreateMatch(100, omnibox::GROUP_SEARCH),
@@ -279,7 +281,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNonZpsSection) {
 
   {
     SCOPED_TRACE(
-        "Show at most 8 suggestions if the 9th suggestion is the 1st URL.");
+        "Show at most 8 suggestions if the 9th suggestion is the 1st nav.");
     test(
         {
             CreateMatch(100, omnibox::GROUP_SEARCH),
@@ -299,7 +301,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNonZpsSection) {
 
   {
     SCOPED_TRACE(
-        "Show at most 8 suggestions if the default suggestion is a URL.");
+        "Show at most 8 suggestions if the default suggestion is a nav.");
     test(
         {
             CreateMatch(100, omnibox::GROUP_OTHER_NAVS, true),
