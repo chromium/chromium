@@ -440,12 +440,9 @@ HRESULT ConvertToVideoSinkMediaType(IMFMediaType* source_media_type,
   if (FAILED(hr))
     return hr;
 
-  hr = CopyAttribute(source_media_type, sink_media_type, MF_MT_VIDEO_PRIMARIES);
-  if (FAILED(hr))
-    return hr;
-
-  // Next two attributes may be missing, unless a HDR video is captured so
+  // Next three attributes may be missing, unless a HDR video is captured so
   // ignore errors.
+  CopyAttribute(source_media_type, sink_media_type, MF_MT_VIDEO_PRIMARIES);
   CopyAttribute(source_media_type, sink_media_type, MF_MT_TRANSFER_FUNCTION);
   CopyAttribute(source_media_type, sink_media_type, MF_MT_YUV_MATRIX);
 
