@@ -28,6 +28,7 @@
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
+#include "media/base/media_switches.h"
 #include "media/remoting/device_capability_checker.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -287,8 +288,7 @@ MediaNotificationService::CreateCastDialogControllerForSession(
 
   // Initialize MediaRouterUI with Remote Playback Media Source if there is no
   // default PresentationRequest associated with `web_contents`.
-  if (base::FeatureList::IsEnabled(
-          media_router::kMediaRemotingWithoutFullscreen)) {
+  if (base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen)) {
     base::WeakPtr<media_router::WebContentsPresentationManager>
         presentation_manager =
             media_router::WebContentsPresentationManager::Get(web_contents);

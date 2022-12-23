@@ -8,8 +8,10 @@
 #include <utility>
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/media_message_center/mock_media_notification_view.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -441,6 +443,9 @@ TEST_F(MediaSessionNotificationItemTest, GetMediaSessionActions) {
   EXPECT_TRUE(item().GetMediaSessionActions().contains(
       MediaSessionAction::kEnterPictureInPicture));
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
+
   auto session_info = media_session::mojom::MediaSessionInfo::New();
   auto remote_playback_metadata =
       media_session::mojom::RemotePlaybackMetadata::New(
@@ -456,6 +461,9 @@ TEST_F(MediaSessionNotificationItemTest, GetSessionMetadata) {
   metadata.source_title = u"source_title";
   item().MediaSessionMetadataChanged(metadata);
   EXPECT_EQ(u"source_title", item().GetSessionMetadata().source_title);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
 
   auto session_info = media_session::mojom::MediaSessionInfo::New();
   auto remote_playback_metadata =

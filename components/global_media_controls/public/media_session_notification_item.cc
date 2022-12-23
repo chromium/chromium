@@ -5,6 +5,7 @@
 #include "components/global_media_controls/public/media_session_notification_item.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -13,6 +14,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -40,6 +42,9 @@ MediaSessionNotificationItem::Source GetSource(const std::string& name) {
 
 bool GetRemotePlaybackStarted(
     const media_session::mojom::MediaSessionInfoPtr& session_info) {
+  if (!base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen)) {
+    return false;
+  }
   return session_info && session_info->remote_playback_metadata &&
          session_info->remote_playback_metadata->remote_playback_started;
 }

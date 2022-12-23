@@ -42,6 +42,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/web_contents.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_address.h"
@@ -112,8 +113,7 @@ absl::optional<MirroringActivity::MirroringType> GetMirroringType(
   if (source.IsDesktopMirroringSource())
     return MirroringActivity::MirroringType::kDesktop;
 
-  if (base::FeatureList::IsEnabled(
-          media_router::kMediaRemotingWithoutFullscreen) &&
+  if (base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen) &&
       source.IsRemotePlaybackSource()) {
     return MirroringActivity::MirroringType::kTab;
   }

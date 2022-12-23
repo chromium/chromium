@@ -184,6 +184,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsAutoDismiss);
 #if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsForCast);
 #endif
+#if !BUILDFLAG(IS_ANDROID)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaRemotingWithoutFullscreen);
+#endif
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsForChromeOS);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsPictureInPicture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsSeamlessTransfer);

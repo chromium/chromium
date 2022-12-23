@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -330,7 +331,7 @@ TEST_F(CastMediaRouteProviderTest, GetRemotePlaybackCompatibleSinks) {
   // Enable the feature and it should return sinks compatible with the
   // RemotePlayback MediaSource.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kMediaRemotingWithoutFullscreen);
+  feature_list.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   EXPECT_CALL(mock_router_,

@@ -18,6 +18,7 @@
 #include "components/media_router/common/pref_names.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "components/prefs/pref_service.h"
+#include "media/base/media_switches.h"
 
 namespace {
 
@@ -42,8 +43,7 @@ bool ShouldHideNotification(const raw_ptr<Profile> profile,
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          media_router::kMediaRemotingWithoutFullscreen) &&
+  if (base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen) &&
       route.media_source().IsRemotePlaybackSource()) {
     return true;
   }
