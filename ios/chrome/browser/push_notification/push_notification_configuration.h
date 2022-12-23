@@ -38,7 +38,7 @@ using GaiaIdToPushNotificationPreferenceMap =
 // preferences for all push notification enabled features and an number
 // representing the number of times the account is signed in across
 // BrowserStates.
-@property(nonatomic, copy)
+@property(nonatomic, strong)
     PushNotificationAccountContextManager* contextManager;
 
 @end

@@ -45,7 +45,7 @@ class ChromeBrowserStateManager;
 
 // Removes the account from the manager if the account is not signed into the
 // device in any BrowserState. This function returns a BOOL value indicating
-// whether the account was removed from the maanger.
+// whether the account was removed from the manager.
 - (BOOL)removeAccount:(NSString*)gaiaID;
 
 // A dictionary that maps a user's GAIA ID to an object containing the account's

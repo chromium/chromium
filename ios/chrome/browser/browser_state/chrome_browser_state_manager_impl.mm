@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/paths/paths.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/push_notification/push_notification_browser_state_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/account_reconcilor_factory.h"
@@ -225,6 +226,8 @@ void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
   }
   segmentation_platform::SegmentationPlatformServiceFactory::GetForBrowserState(
       browser_state);
+
+  PushNotificationBrowserStateServiceFactory::GetForBrowserState(browser_state);
 }
 
 void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(

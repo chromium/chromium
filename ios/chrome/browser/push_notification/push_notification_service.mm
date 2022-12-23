@@ -18,15 +18,7 @@
 #endif
 
 PushNotificationService::PushNotificationService()
-    : PushNotificationService(
-          GetApplicationContext()->GetChromeBrowserStateManager()) {}
-
-PushNotificationService::PushNotificationService(
-    ios::ChromeBrowserStateManager* manager)
-    : client_manager_(std::make_unique<PushNotificationClientManager>()) {
-  context_manager_ = [[PushNotificationAccountContextManager alloc]
-      initWithChromeBrowserStateManager:manager];
-}
+    : client_manager_(std::make_unique<PushNotificationClientManager>()) {}
 
 PushNotificationService::~PushNotificationService() = default;
 
@@ -35,8 +27,10 @@ PushNotificationService::GetPushNotificationClientManager() {
   return client_manager_.get();
 }
 
-bool PushNotificationService::DeviceTokenIsSet() const {
-  return false;
+void PushNotificationService::InitializeAccountContextManager(
+    ios::ChromeBrowserStateManager* manager) {
+  context_manager_ = [[PushNotificationAccountContextManager alloc]
+      initWithChromeBrowserStateManager:manager];
 }
 
 void PushNotificationService::RegisterAccount(

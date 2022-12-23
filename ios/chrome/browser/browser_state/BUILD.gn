@@ -150,6 +150,7 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/push_notification:push_notification_browser_state_service_factory",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/screen_time:buildflags",

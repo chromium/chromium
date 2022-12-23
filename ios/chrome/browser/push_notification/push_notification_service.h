@@ -40,7 +40,9 @@ class PushNotificationService {
   virtual void UnregisterDevice(CompletionHandler completion_handler) = 0;
 
   // Returns whether the device has retrieved and stored its APNS device token.
-  virtual bool DeviceTokenIsSet() const;
+  virtual bool DeviceTokenIsSet() const = 0;
+
+  void InitializeAccountContextManager(ios::ChromeBrowserStateManager* manager);
 
   // Registers the new account to the push notification server. In a multi
   // BrowserState environment, the PushNotificationService tracks the signed in
