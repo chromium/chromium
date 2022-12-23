@@ -66,12 +66,10 @@ class TabletModeWindowState : public WindowState::State {
   // Updates the window to `new_state_type` and resulting bounds:
   // Either full screen, maximized centered or minimized. If the state does not
   // change, only the bounds will be changed. If `animate` is set, the bound
-  // change get animated. If `new_snap_ratio` is set, uses it to update snapped
-  // window bounds.
+  // change get animated.
   void UpdateWindow(WindowState* window_state,
                     chromeos::WindowStateType new_state_type,
-                    bool animate,
-                    absl::optional<float> new_snap_ratio);
+                    bool animate);
 
   // If `target_state` is PRIMARY/SECONDARY_SNAPPED and the window can be
   // snapped, returns `target_state`. Otherwise depending on the capabilities
@@ -82,11 +80,8 @@ class TabletModeWindowState : public WindowState::State {
       chromeos::WindowStateType target_state);
 
   // Updates the bounds to the maximum possible bounds according to the current
-  // window state. If `animate` is set we animate the change. If
-  // `new_snap_ratio` is set, uses it to update snapped window bounds.
-  void UpdateBounds(WindowState* window_state,
-                    bool animate,
-                    absl::optional<float> new_snap_ratio);
+  // window state. If `animate` is set we animate the change.
+  void UpdateBounds(WindowState* window_state, bool animate);
 
   // Handles Alt+[ if `snap_position` is
   // `SplitViewController::SnapPosition::kPrimary`; handles // Alt+] if
@@ -95,9 +90,7 @@ class TabletModeWindowState : public WindowState::State {
                        SplitViewController::SnapPosition snap_position);
 
   // Snap the window in tablet split view if it can be snapped.
-  void DoTabletSnap(WindowState* window_state,
-                    WMEventType snap_event_type,
-                    absl::optional<float> new_snap_ratio);
+  void DoTabletSnap(WindowState* window_state, WMEventType snap_event_type);
 
   // Called by `WM_EVENT_RESTORE`, or a `WM_EVENT_NORMAL` that is restoring.
   // Restores to the state in `window_states`'s restore history.
