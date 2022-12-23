@@ -36,16 +36,16 @@ const char kSharingInfoVapidTargetInfo[] = "vapid_target_info";
 const char kSharingInfoSenderIdTargetInfo[] = "sender_id_target_info";
 const char kSharingInfoEnabledFeatures[] = "enabled_features";
 
-base::Value TargetInfoToValue(
+base::Value::Dict TargetInfoToValue(
     const syncer::DeviceInfo::SharingTargetInfo& target_info) {
   std::string base64_p256dh, base64_auth_secret;
   base::Base64Encode(target_info.p256dh, &base64_p256dh);
   base::Base64Encode(target_info.auth_secret, &base64_auth_secret);
 
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetStringKey(kDeviceFcmToken, target_info.fcm_token);
-  result.SetStringKey(kDeviceP256dh, base64_p256dh);
-  result.SetStringKey(kDeviceAuthSecret, base64_auth_secret);
+  base::Value::Dict result;
+  result.Set(kDeviceFcmToken, target_info.fcm_token);
+  result.Set(kDeviceP256dh, base64_p256dh);
+  result.Set(kDeviceAuthSecret, base64_auth_secret);
   return result;
 }
 
@@ -198,12 +198,12 @@ void SharingSyncPreference::SetLocalSharingInfo(
   if (device_info->sharing_info() == sharing_info)
     return;
 
-  base::Value vapid_target_info =
+  base::Value::Dict vapid_target_info =
       TargetInfoToValue(sharing_info.vapid_target_info);
-  base::Value sender_id_target_info =
+  base::Value::Dict sender_id_target_info =
       TargetInfoToValue(sharing_info.sender_id_target_info);
 
-  base::Value list_value(base::Value::Type::LIST);
+  base::Value::List list_value;
   for (SharingSpecificFields::EnabledFeatures feature :
        sharing_info.enabled_features) {
     list_value.Append(feature);
