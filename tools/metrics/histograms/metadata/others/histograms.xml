@@ -1873,26 +1873,44 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrotliFilter.CompressionPercent" units="%"
-    expires_after="2023-05-07">
+    expires_after="M115">
   <owner>eustas@chromium.org</owner>
   <summary>Compressed/Decompressed size ratio.</summary>
 </histogram>
 
 <histogram name="BrotliFilter.ErrorCode" enum="BrotliFilterErrorCode"
-    expires_after="M85">
+    expires_after="M115">
   <owner>eustas@chromium.org</owner>
-  <summary>More detailed failure reason.</summary>
+  <summary>
+    Error code observed after failing to decode a Brotli-compressed response
+    stream from the network. Recorded for each layer of Brotli compression, as
+    indicated using Content-Encoding header values, part of an HTTP response
+    where a decoding error occurs.
+
+    Warning: this histogram was expired from M85 to M110; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="BrotliFilter.Status" enum="BrotliFilterDecodingStatus"
-    expires_after="M81">
+    expires_after="M115">
   <owner>eustas@chromium.org</owner>
-  <summary>The final state of BrotliFilter.</summary>
+  <summary>
+    The final state of the BrotliFilter. Recorded during the decoding process as
+    bytes are consumed from a Brotli-compressed response stream.
+
+    Warning: this histogram was expired from M81 to M110; data may be missing.
+  </summary>
 </histogram>
 
-<histogram name="BrotliFilter.UsedMemoryKB" units="KiB" expires_after="M77">
+<histogram name="BrotliFilter.UsedMemoryKB" units="KiB" expires_after="M115">
   <owner>eustas@chromium.org</owner>
-  <summary>Maximal amount of memory allocated by decoder.</summary>
+  <summary>
+    Maximum amount of memory allocated to decode a Brotli-compressed response
+    stream from the network. Recorded during the process of allocating memory to
+    decode a Brotli-compressed response stream.
+
+    Warning: this histogram was expired from M77 to M110; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Canvas.TextMetrics.SetFont" units="microseconds"
