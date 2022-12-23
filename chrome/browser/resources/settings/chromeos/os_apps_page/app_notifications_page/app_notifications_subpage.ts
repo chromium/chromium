@@ -203,6 +203,15 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   private alphabeticalSort_(first: App, second: App): number {
     return first.title!.localeCompare(second.title!);
   }
+
+  private onBrowserSettingsLinkClicked_(event: CustomEvent<{event: Event}>):
+      void {
+    // Prevent the default link click behavior.
+    event.detail.event.preventDefault();
+
+    // Programmatically open browser settings.
+    this.mojoInterfaceProvider_.openBrowserNotificationSettings();
+  }
 }
 
 declare global {

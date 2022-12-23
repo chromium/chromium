@@ -44,6 +44,7 @@ class AppNotificationHandler
                                  apps::PermissionPtr permission) override;
   void GetApps(GetAppsCallback callback) override;
   void GetQuietMode(GetQuietModeCallback callback) override;
+  void OpenBrowserNotificationSettings() override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;

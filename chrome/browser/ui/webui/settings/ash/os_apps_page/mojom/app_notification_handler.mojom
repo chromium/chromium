@@ -57,6 +57,9 @@ interface AppNotificationsHandler {
 
   // Get the Quiet Mode state.
   GetQuietMode() => (bool enabled);
+
+  // Request the browser to open its notification settings.
+  OpenBrowserNotificationSettings();
 };
 
 // Frontend interface.

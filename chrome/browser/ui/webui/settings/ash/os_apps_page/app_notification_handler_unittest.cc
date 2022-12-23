@@ -9,15 +9,18 @@
 #include <vector>
 
 #include "ash/public/cpp/message_center_ash.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -87,6 +90,15 @@ class AppNotificationHandlerTestObserver
       this};
 };
 
+class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
+};
+
 }  // namespace
 
 class AppNotificationHandlerTest : public testing::Test {
@@ -105,19 +117,32 @@ class AppNotificationHandlerTest : public testing::Test {
 
     observer_ = std::make_unique<AppNotificationHandlerTestObserver>();
     handler_->AddObserver(observer_->GenerateRemote());
+
+    auto instance = std::make_unique<MockNewWindowDelegate>();
+    auto primary = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_primary_ = primary.get();
+    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
+        std::move(instance), std::move(primary));
   }
 
   void TearDown() override {
+    new_window_provider_.reset();
     handler_.reset();
     app_service_proxy_.reset();
     MessageCenterAsh::SetForTesting(nullptr);
   }
 
  protected:
+  MockNewWindowDelegate* new_window_delegate_primary_;
+
   AppNotificationHandlerTestObserver* observer() { return observer_.get(); }
 
   void SetQuietModeState(bool quiet_mode_enabled) {
     handler_->SetQuietMode(quiet_mode_enabled);
+  }
+
+  void OpenBrowserNotificationSettings() {
+    handler_->OpenBrowserNotificationSettings();
   }
 
   void CreateAndStoreFakeApp(std::string fake_id,
@@ -164,6 +189,7 @@ class AppNotificationHandlerTest : public testing::Test {
   std::unique_ptr<apps::AppServiceProxy> app_service_proxy_;
   FakeMessageCenterAsh message_center_ash_;
   std::unique_ptr<AppNotificationHandlerTestObserver> observer_;
+  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
 };
 
 // Tests for update of in_quiet_mode_ variable by MessageCenterAsh observer
@@ -259,6 +285,15 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
   EXPECT_FALSE(absl::get<bool>(observer()
                                    ->recently_updated_app()
                                    ->notification_permission->value->value));
+}
+
+TEST_F(AppNotificationHandlerTest, TestOpenBrowserNotificationSettings) {
+  EXPECT_CALL(*new_window_delegate_primary_,
+              OpenUrl(GURL(chrome::kAppNotificationsBrowserSettingsURL),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab));
+  base::Value::List empty_args;
+  OpenBrowserNotificationSettings();
 }
 
 }  // namespace ash::settings
