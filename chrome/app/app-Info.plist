@@ -257,9 +257,10 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
+				<string>public.content</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Chromium Extra</string>
+			<string>Chromium Extension</string>
 			<key>UTTypeIdentifier</key>
 			<string>org.chromium.extension</string>
 			<key>UTTypeTagSpecification</key>
@@ -267,6 +268,10 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>crx</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>application/x-chrome-extension</string>
 				</array>
 			</dict>
 		</dict>
@@ -277,6 +282,7 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
+				<string>public.content</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>MIME HTML document</string>
@@ -284,6 +290,8 @@
 			<string>document.icns</string>
 			<key>UTTypeIdentifier</key>
 			<string>org.ietf.mhtml</string>
+			<key>UTTypeReferenceURL</key>
+			<string>https://www.ietf.org/rfc/rfc2557</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>com.apple.ostype</key>
@@ -292,6 +300,11 @@
 				<array>
 					<string>mht</string>
 					<string>mhtml</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>multipart/related</string>
+					<string>application/x-mimearchive</string>
 				</array>
 			</dict>
 		</dict>
@@ -307,13 +320,17 @@
 			<key>UTTypeIdentifier</key>
 			<string>org.xiph.ogg-audio</string>
 			<key>UTTypeReferenceURL</key>
-			<string>http://xiph.org/ogg</string>
+			<string>https://xiph.org/ogg/</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
 					<string>ogg</string>
 					<string>oga</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>audio/ogg</string>
 				</array>
 			</dict>
 		</dict>
@@ -329,13 +346,17 @@
 			<key>UTTypeIdentifier</key>
 			<string>org.xiph.ogv</string>
 			<key>UTTypeReferenceURL</key>
-			<string>http://xiph.org/ogg</string>
+			<string>https://xiph.org/ogg/</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
 					<string>ogm</string>
 					<string>ogv</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>video/ogg</string>
 				</array>
 			</dict>
 		</dict>
@@ -345,7 +366,7 @@
 				<string>public.movie</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>HTML5 Video (WebM)</string>
+			<string>WebM media</string>
 			<key>UTTypeIconFile</key>
 			<string>document.icns</string>
 			<key>UTTypeIdentifier</key>
@@ -357,6 +378,11 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>webm</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>video/webm</string>
+					<string>audio/webm</string>
 				</array>
 			</dict>
 		</dict>
@@ -378,6 +404,10 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>webp</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>image/webp</string>
 				</array>
 			</dict>
 		</dict>
