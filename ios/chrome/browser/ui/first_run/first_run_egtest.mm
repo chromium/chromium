@@ -6,9 +6,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/ios/browser/features.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -646,6 +648,54 @@ GREYLayoutConstraint* BelowConstraint() {
 
   // Verify that the user is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Verify that the sync cell is visible and "On" is displayed.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [SigninEarlGrey verifySyncUIEnabled:YES];
+
+  // Close opened settings for proper tear down.
+  [[self class] removeAnyOpenMenusAndInfoBars];
+}
+
+// Checks that a supervised user is signed in and that sync is turned on after
+// the user chooses to turn on sync.
+- (void)testSignInAndTurnOnSyncForSupervisedUser {
+  AppLaunchConfiguration configToSetSupervision =
+      self.appConfigurationForTestCase;
+  configToSetSupervision.features_enabled.push_back(
+      signin::kEnableUnicornAccountSupport);
+
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:configToSetSupervision];
+
+  // Add a fake supervised identity to the device.
+  FakeSystemIdentity* fakeSupervisedIdentity =
+      [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeSupervisedIdentity];
+
+  ios::CapabilitiesDict* capabilities = @{
+    @(kIsSubjectToParentalControlsCapabilityName) :
+        @(static_cast<int>(SystemIdentityCapabilityResult::kTrue))
+  };
+  [SigninEarlGrey setCapabilities:capabilities
+                      forIdentity:fakeSupervisedIdentity];
+
+  // Go to the sign-in & sync screen from the welcome screen.
+  [self verifyWelcomeScreenIsDisplayed];
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
+      performAction:grey_tap()];
+
+  // Sanity check that the sign-in & sync screen is being displayed.
+  [self verifySignInSyncScreenIsDisplayed];
+
+  [self scrollToElementAndAssertVisibility:GetYesImInButton()];
+  [[EarlGrey selectElementWithMatcher:GetYesImInButton()]
+      performAction:grey_tap()];
+
+  // Verify that the user is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeSupervisedIdentity];
 
   // Verify that the sync cell is visible and "On" is displayed.
   [ChromeEarlGreyUI openSettingsMenu];
