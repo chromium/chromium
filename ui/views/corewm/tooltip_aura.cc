@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -313,8 +314,13 @@ void TooltipAura::Update(aura::Window* window,
   tooltip_window_ = window;
 
   auto new_tooltip_view = std::make_unique<TooltipView>();
-  gfx::Point anchor_point =
-      position + window->GetBoundsInScreen().OffsetFromOrigin();
+
+  // Convert `position` to screen coordinates.
+  gfx::Point anchor_point = position;
+  aura::client::ScreenPositionClient* screen_position_client =
+      aura::client::GetScreenPositionClient(window->GetRootWindow());
+  screen_position_client->ConvertPointToScreen(window, &anchor_point);
+
   new_tooltip_view->SetMaxWidth(GetMaxWidth(anchor_point));
   new_tooltip_view->SetText(tooltip_text);
   ui::OwnedWindowAnchor anchor;
