@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
   // 4.c) Navigation: Commit.
   response_c.Send("<html><body> response's body </body></html>");
   response_c.Done();
-  observer_c.WaitForNavigationFinished();
+  ASSERT_TRUE(observer_c.WaitForNavigationFinished());
   EXPECT_EQ(speculative_rfh_c, root->render_manager()->current_frame_host());
   EXPECT_EQ(speculative_rfh_c, rfh_devtools_agent->GetFrameHostForTesting());
 }
