@@ -2570,9 +2570,12 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
     return WebInputEventResult::kHandledSuppressed;
   }
 
-  // Don't handle events once we've started shutting down.
-  if (!GetPage())
+  // Don't handle events once we've started shutting down or when the page is in
+  // bfcache.
+  if (!GetPage() ||
+      GetPage()->GetPageLifecycleState()->is_in_back_forward_cache) {
     return WebInputEventResult::kNotHandled;
+  }
 
   if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl()) {
     auto result = devtools->HandleInputEvent(input_event);
