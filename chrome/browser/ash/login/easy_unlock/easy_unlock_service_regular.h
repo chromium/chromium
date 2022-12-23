@@ -19,10 +19,6 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/prefs/pref_change_registrar.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace proximity_auth {
 class ProximityAuthProfilePrefManager;
 }  // namespace proximity_auth
