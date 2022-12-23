@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -26,8 +25,6 @@ import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckTyp
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,19 +37,9 @@ import java.util.UUID;
  * An address editor. Can be used for either shipping or billing address editing.
  */
 public class AddressEditor extends EditorBase<AutofillAddress> {
-    @IntDef({Purpose.AUTOFILL_ASSISTANT, Purpose.AUTOFILL_SETTINGS})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Purpose {
-        int AUTOFILL_ASSISTANT = 1;
-        int AUTOFILL_SETTINGS = 2;
-    }
-
     private final Handler mHandler = new Handler();
     private final Map<Integer, EditorFieldModel> mAddressFields = new HashMap<>();
     private final Set<CharSequence> mPhoneNumbers = new HashSet<>();
-    @Purpose
-    private final int mPurpose;
-    private final boolean mCheckRequiredFields;
     private final boolean mSaveToDisk;
     private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter;
     private final CountryAwarePhoneNumberValidator mPhoneValidator;
@@ -78,16 +65,12 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
     /**
      * Builds an address editor.
      *
-     * @param purpose    The purpose of this address editor. One of
-     *                   Purpose.AUTOFILL_ASSISTANT or Purpose.AUTOFILL_SETTINGS.
      * @param saveToDisk Whether to save changes to disk after editing.
      */
-    public AddressEditor(@Purpose int purpose, boolean saveToDisk) {
-        mPurpose = purpose;
-        mCheckRequiredFields = mPurpose != Purpose.AUTOFILL_SETTINGS;
+    public AddressEditor(boolean saveToDisk) {
         mSaveToDisk = saveToDisk;
         mPhoneFormatter = new PhoneNumberUtil.CountryAwareFormatTextWatcher();
-        mPhoneValidator = new CountryAwarePhoneNumberValidator(!mCheckRequiredFields);
+        mPhoneValidator = new CountryAwarePhoneNumberValidator(true);
     }
 
     /**
@@ -153,7 +136,7 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
         final AutofillAddress address;
         if (toEdit == null) {
             address = new AutofillAddress(
-                    mContext, new AutofillProfile(), getCompletenessCheckType());
+                    mContext, new AutofillProfile(), CompletenessCheckType.NORMAL);
             editTitle = mContext.getString(R.string.autofill_create_profile);
         } else {
             address = toEdit;
@@ -202,7 +185,7 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
         mPhoneFormatter.setCountryCode(mCountryField.getValue().toString());
 
         // Honorific prefix is present only for autofill settings.
-        if (mPurpose == Purpose.AUTOFILL_SETTINGS && isUIForHonorificPrefixesEnabled()) {
+        if (isUIForHonorificPrefixesEnabled()) {
             if (mHonorificField == null) {
                 mHonorificField = EditorFieldModel.createTextInput();
                 mHonorificField.setLabel(
@@ -242,38 +225,29 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
                     EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME));
         }
 
-        // Email address and phone number are present only for autofill settings.
-        if (mPurpose == Purpose.AUTOFILL_SETTINGS) {
-            // Phone number is present for all countries.
-            if (mPhoneField == null) {
-                String requiredErrorMessage = mCheckRequiredFields
-                        ? mContext.getString(
-                                R.string.pref_edit_dialog_field_required_validation_message)
-                        : null;
-                mPhoneField = EditorFieldModel.createTextInput(
-                        EditorFieldModel.INPUT_TYPE_HINT_PHONE,
-                        mContext.getString(R.string.autofill_profile_editor_phone_number),
-                        mPhoneNumbers, mPhoneFormatter, mPhoneValidator,
-                        null /* valueIconGenerator */, requiredErrorMessage,
-                        mContext.getString(R.string.payments_phone_invalid_validation_message),
-                        EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
-            }
-            // Phone number field is cached, so its value needs to be updated for every new profile
-            // that's being edited.
-            mPhoneField.setValue(mProfile.getPhoneNumber());
-
-            if (mEmailField == null) {
-                mEmailField = EditorFieldModel.createTextInput(
-                        EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
-                        mContext.getString(R.string.autofill_profile_editor_email_address),
-                        null /* suggestions */, null /* formatter */, null /* validator */,
-                        null /* valueIconGenerator */, null /* requiredErrorMessage */,
-                        mContext.getString(R.string.payments_email_invalid_validation_message),
-                        EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
-            }
-            // Retrieve and set the email address field.
-            mEmailField.setValue(mProfile.getEmailAddress());
+        // Phone number is present for all countries.
+        if (mPhoneField == null) {
+            mPhoneField = EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PHONE,
+                    mContext.getString(R.string.autofill_profile_editor_phone_number),
+                    mPhoneNumbers, mPhoneFormatter, mPhoneValidator, null /* valueIconGenerator */,
+                    /* requiredErrorMessage */ null,
+                    mContext.getString(R.string.payments_phone_invalid_validation_message),
+                    EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
         }
+        // Phone number field is cached, so its value needs to be updated for every new profile
+        // that's being edited.
+        mPhoneField.setValue(mProfile.getPhoneNumber());
+
+        if (mEmailField == null) {
+            mEmailField = EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
+                    mContext.getString(R.string.autofill_profile_editor_email_address),
+                    null /* suggestions */, null /* formatter */, null /* validator */,
+                    null /* valueIconGenerator */, null /* requiredErrorMessage */,
+                    mContext.getString(R.string.payments_email_invalid_validation_message),
+                    EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
+        }
+        // Retrieve and set the email address field.
+        mEmailField.setValue(mProfile.getEmailAddress());
 
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT)) {
@@ -292,13 +266,11 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
         // and send it back to the caller.
         mEditor.setDoneCallback(() -> {
             commitChanges(mProfile);
-            if (mCheckRequiredFields) {
-                address.completeAddress(mProfile);
-            } else {
-                // The address cannot be marked "complete" because it has not been checked
-                // for all required fields.
-                address.updateAddress(mProfile);
-            }
+
+            // The address cannot be marked "complete" because it has not been checked
+            // for all required fields.
+            address.updateAddress(mProfile);
+
             doneCallback.onResult(address);
         });
 
@@ -306,11 +278,6 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
         setAddressFieldValuesFromCache();
         addAddressFieldsToEditor(mCountryField.getValue().toString(), mProfile.getLanguageCode());
         mEditorDialog.show(mEditor);
-    }
-
-    public @CompletenessCheckType int getCompletenessCheckType() {
-        return mPurpose == Purpose.AUTOFILL_ASSISTANT ? CompletenessCheckType.IGNORE_PHONE
-                                                      : CompletenessCheckType.NORMAL;
     }
 
     /** Saves the edited profile on disk. */
@@ -438,14 +405,6 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
             field.setLabel(component.label);
             field.setIsFullLine(component.isFullLine || component.id == AddressField.LOCALITY
                     || component.id == AddressField.DEPENDENT_LOCALITY);
-
-            // Libaddressinput formats do not always require the full name (RECIPIENT), but we do.
-            field.setRequiredErrorMessage(mCheckRequiredFields
-                                    && (component.isRequired
-                                            || component.id == AddressField.RECIPIENT)
-                            ? mContext.getString(
-                                    R.string.pref_edit_dialog_field_required_validation_message)
-                            : null);
 
             mEditor.addField(field);
         }

@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorBase;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.payments.AutofillAddress;
+import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
@@ -724,8 +725,8 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
                     profile = findTargetProfile(mProfilesForBillingAddress, eventData.first);
                 }
 
-                final AutofillAddress editAddress = new AutofillAddress(
-                        mContext, profile, mAddressEditor.getCompletenessCheckType());
+                final AutofillAddress editAddress =
+                        new AutofillAddress(mContext, profile, CompletenessCheckType.NORMAL);
                 mAddressEditor.edit(editAddress, new Callback<AutofillAddress>() {
                     @Override
                     public void onResult(AutofillAddress billingAddress) {
