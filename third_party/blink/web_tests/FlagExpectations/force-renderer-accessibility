@@ -19,8 +19,6 @@ virtual/* [ Skip ]
 # Display-locking / content-visibility:
 crbug.com/1380449 external/wpt/css/css-contain/content-visibility/content-visibility-063.html [ Crash ]
 # ax_object_cache_impl.cc#1151 -- IsRelevantSlotElement():
-crbug.com/1380449 external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
-crbug.com/1380449 virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
 
 # Timeouts
 fast/loader/iframe-navigation-stealing-focus.html [ Skip ]
