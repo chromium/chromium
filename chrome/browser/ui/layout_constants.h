@@ -146,12 +146,6 @@ enum LayoutInset {
 };
 
 int GetLayoutConstant(LayoutConstant constant);
-#if BUILDFLAG(IS_MAC)
-// Use this function instead of GetLayoutConstant() for Cocoa browser.
-// This will handle Cocoa specific layout constants. For non Cocoa specific
-// constants, it will call GetLayoutConstant() anyway.
-int GetCocoaLayoutConstant(LayoutConstant constant);
-#endif
 
 gfx::Insets GetLayoutInsets(LayoutInset inset);
 

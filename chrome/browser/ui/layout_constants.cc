@@ -9,25 +9,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 
-#if BUILDFLAG(IS_MAC)
-int GetCocoaLayoutConstant(LayoutConstant constant) {
-  switch (constant) {
-    case BOOKMARK_BAR_HEIGHT:
-      return 28;
-    case BOOKMARK_BAR_NTP_HEIGHT:
-      return 39;
-    case BOOKMARK_BAR_HEIGHT_NO_OVERLAP:
-      return GetCocoaLayoutConstant(BOOKMARK_BAR_HEIGHT) - 2;
-    case BOOKMARK_BAR_NTP_PADDING:
-      return (GetCocoaLayoutConstant(BOOKMARK_BAR_NTP_HEIGHT) -
-              GetCocoaLayoutConstant(BOOKMARK_BAR_HEIGHT)) /
-             2;
-    default:
-      return GetLayoutConstant(constant);
-  }
-}
-#endif
-
 int GetLayoutConstant(LayoutConstant constant) {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (constant) {
