@@ -210,13 +210,13 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
         password_manager::PasswordForm::Store::kAccountStore) {
       auto* image_view =
           parent_->AddChildView(std::make_unique<views::ImageView>());
-      image_view->SetImage(gfx::CreateVectorIcon(
+      image_view->SetImage(ui::ImageModel::FromVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           vector_icons::kGoogleGLogoIcon,
 #else
           vector_icons::kSyncIcon,
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          gfx::kFaviconSize, gfx::kPlaceholderColor));
+          gfx::kPlaceholderColor, gfx::kFaviconSize));
       image_view->SetAccessibleName(l10n_util::GetStringUTF16(
           IDS_MANAGE_PASSWORDS_ACCOUNT_STORE_ICON_DESCRIPTION));
     } else {

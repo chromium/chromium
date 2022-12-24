@@ -276,12 +276,13 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
 }
 
 void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
-  const SkColor icon_color = GetColorProvider()->GetColor(
-      GetMatchSelected() ? kColorOmniboxResultsIconSelected
-                         : kColorOmniboxResultsIcon);
+  const ui::ColorId icon_color_id = GetMatchSelected()
+                                        ? kColorOmniboxResultsIconSelected
+                                        : kColorOmniboxResultsIcon;
   views::SetImageFromVectorIconWithColor(
       remove_suggestion_button_, vector_icons::kCloseRoundedIcon,
-      GetLayoutConstant(LOCATION_BAR_ICON_SIZE), icon_color,
+      GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+      GetColorProvider()->GetColor(icon_color_id),
       /* omnibox buttons are never disabled */
       gfx::kPlaceholderColor);
 
@@ -304,9 +305,9 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   //       be an optimization opportunity here.
   // TODO(dschuyler): determine whether to optimize the color changes.
   suggestion_view_->icon()->SetImage(GetIcon().ToImageSkia());
-  keyword_view_->icon()->SetImage(gfx::CreateVectorIcon(
-      omnibox::kKeywordSearchIcon, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-      icon_color));
+  keyword_view_->icon()->SetImage(ui::ImageModel::FromVectorIcon(
+      omnibox::kKeywordSearchIcon, icon_color_id,
+      GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
 
   // We must reapply colors for all the text fields here. If we don't, we can
   // break theme changes for ZeroSuggest. See https://crbug.com/1095205.

@@ -108,9 +108,8 @@ void LocalCardMigrationErrorDialogView::Init() {
       views::BoxLayout::MainAxisAlignment::kCenter);
   error_view->SetBorder(views::CreateEmptyBorder(kMigrationDialogInsets));
   auto* error_image = new views::ImageView();
-  error_image->SetImage(gfx::CreateVectorIcon(
-      kBrowserToolsErrorIcon,
-      GetColorProvider()->GetColor(ui::kColorAlertHighSeverity)));
+  error_image->SetImage(ui::ImageModel::FromVectorIcon(
+      kBrowserToolsErrorIcon, ui::kColorAlertHighSeverity));
   error_view->AddChildView(error_image);
 
   auto* error_message = new views::Label(

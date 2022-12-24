@@ -98,12 +98,12 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     // different (for example, if the NTP colors are customized).
     const auto* const color_provider = GetColorProvider();
     const bool selected = theme_state_ == OmniboxPartState::SELECTED;
-    SkColor icon_color = color_provider->GetColor(
-        selected ? kColorOmniboxResultsIconSelected : kColorOmniboxResultsIcon);
-    SetImage(
-        views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(*icon_, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-                              icon_color));
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      *icon_,
+                      selected ? kColorOmniboxResultsIconSelected
+                               : kColorOmniboxResultsIcon,
+                      GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
     SetEnabledTextColors(color_provider->GetColor(
         selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
     views::InkDrop::Get(this)->SetBaseColorId(

@@ -55,8 +55,6 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
           views::BubbleBorder::Shadow::STANDARD_SHADOW);
 
   const auto* color_provider = target_->GetColorProvider();
-  const SkColor foreground_color =
-      color_provider->GetColor(kColorFlyingIndicatorForeground);
   const SkColor background_color =
       color_provider->GetColor(kColorFlyingIndicatorBackground);
 
@@ -76,8 +74,8 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
   // Add the link icon.
   auto* const link_image =
       bubble_view->AddChildView(std::make_unique<views::ImageView>());
-  link_image->SetImage(
-      gfx::CreateVectorIcon(kWebIcon, kIconSize, foreground_color));
+  link_image->SetImage(ui::ImageModel::FromVectorIcon(
+      kWebIcon, kColorFlyingIndicatorForeground, kIconSize));
   link_image->SetPreferredSize(gfx::Size(kBubbleSize, kBubbleSize));
 
   // Use the default fill layout because there's only one child view.

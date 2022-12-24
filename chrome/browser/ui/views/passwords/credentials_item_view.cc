@@ -153,7 +153,7 @@ void CredentialsItemView::SetStoreIndicatorIcon(
     store_indicator_icon_view_ =
         AddChildView(std::make_unique<views::ImageView>());
     store_indicator_icon_view_->SetCanProcessEventsWithinSubtree(false);
-    store_indicator_icon_view_->SetImage(gfx::CreateVectorIcon(
+    store_indicator_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleGLogoIcon,
 #else

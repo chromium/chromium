@@ -42,10 +42,10 @@ void MdTextButtonWithDownArrow::OnThemeChanged() {
 }
 
 void MdTextButtonWithDownArrow::SetDropArrowImage() {
-  gfx::ImageSkia drop_arrow_image = gfx::CreateVectorIcon(
+  auto drop_arrow_image = ui::ImageModel::FromVectorIcon(
       kMenuDropArrowIcon,
       color_utils::DeriveDefaultIconColor(label()->GetEnabledColor()));
-  SetImage(Button::STATE_NORMAL, drop_arrow_image);
+  SetImageModel(Button::STATE_NORMAL, drop_arrow_image);
 }
 
 BEGIN_METADATA(MdTextButtonWithDownArrow, views::MdTextButton)

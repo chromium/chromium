@@ -528,6 +528,16 @@ class AppMenu::ZoomView : public AppMenuView {
             menu, menu_model, fullscreen_index),
         menu_model, fullscreen_index,
         menu->browser_->window() && menu->browser_->window()->IsFullscreen());
+    fullscreen_button_->SetImageModel(
+        ImageButton::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kFullscreenIcon,
+                                       ui::kColorMenuItemForeground));
+    auto hovered_fullscreen_image = ui::ImageModel::FromVectorIcon(
+        kFullscreenIcon, ui::kColorMenuItemForegroundSelected);
+    fullscreen_button_->SetImageModel(ImageButton::STATE_HOVERED,
+                                      hovered_fullscreen_image);
+    fullscreen_button_->SetImageModel(ImageButton::STATE_PRESSED,
+                                      hovered_fullscreen_image);
 
     // all buttons on menu should must be a custom button in order for
     // the keyboard navigation to work.
@@ -589,19 +599,6 @@ class AppMenu::ZoomView : public AppMenuView {
     const ui::ColorProvider* color_provider = GetColorProvider();
     zoom_label_->SetEnabledColor(
         color_provider->GetColor(ui::kColorMenuItemForeground));
-
-    fullscreen_button_->SetImage(
-        ImageButton::STATE_NORMAL,
-        gfx::CreateVectorIcon(
-            kFullscreenIcon,
-            color_provider->GetColor(ui::kColorMenuItemForeground)));
-    gfx::ImageSkia hovered_fullscreen_image = gfx::CreateVectorIcon(
-        kFullscreenIcon,
-        color_provider->GetColor(ui::kColorMenuItemForegroundSelected));
-    fullscreen_button_->SetImage(ImageButton::STATE_HOVERED,
-                                 hovered_fullscreen_image);
-    fullscreen_button_->SetImage(ImageButton::STATE_PRESSED,
-                                 hovered_fullscreen_image);
   }
 
  private:

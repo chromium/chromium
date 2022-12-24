@@ -21,7 +21,6 @@ class SidePanelResizeHandle : public ImageView,
   explicit SidePanelResizeHandle(SidePanel* side_panel);
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
 
   // ImageView:
   void AddedToWidget() override;

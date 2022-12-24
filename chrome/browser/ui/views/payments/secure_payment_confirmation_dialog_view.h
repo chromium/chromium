@@ -72,9 +72,6 @@ class SecurePaymentConfirmationDialogView
   bool ShouldShowCloseButton() const override;
   bool Accept() override;
 
-  // views::View:
-  void OnThemeChanged() override;
-
   base::WeakPtr<SecurePaymentConfirmationDialogView> GetWeakPtr();
 
  private:
