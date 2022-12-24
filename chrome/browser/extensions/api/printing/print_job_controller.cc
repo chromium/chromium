@@ -41,8 +41,8 @@ void CreateQueryOnIOThread(std::unique_ptr<printing::PrintSettings> settings,
                            PrinterQueryCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  auto query = std::make_unique<printing::PrinterQuery>(
-      content::GlobalRenderFrameHostId());
+  auto query =
+      printing::PrinterQuery::Create(content::GlobalRenderFrameHostId());
   auto* query_ptr = query.get();
   query_ptr->SetSettingsFromPOD(
       std::move(settings),

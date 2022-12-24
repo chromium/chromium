@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/browser/global_routing_id.h"
 #include "printing/print_settings.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -232,6 +233,8 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   // are blocking and enters a message loop without your consent. There is one
   // worker thread per print job.
   std::unique_ptr<PrintJobWorker> worker_;
+
+  content::GlobalRenderFrameHostId rfh_id_;
 
   // The global PrintJobManager. May be null in testing contexts
   // only. Otherwise guaranteed to outlive this object.

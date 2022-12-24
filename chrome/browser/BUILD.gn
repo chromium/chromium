@@ -6914,6 +6914,8 @@ static_library("browser") {
         "printing/print_backend_service_manager.h",
         "printing/print_job_worker_oop.cc",
         "printing/print_job_worker_oop.h",
+        "printing/printer_query_oop.cc",
+        "printing/printer_query_oop.h",
       ]
       deps += [
         "//chrome/services/printing/public/mojom",

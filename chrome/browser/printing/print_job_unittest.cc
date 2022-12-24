@@ -28,7 +28,14 @@ namespace {
 
 class TestPrintJobWorker : public PrintJobWorker {
  public:
-  TestPrintJobWorker() : PrintJobWorker(content::GlobalRenderFrameHostId()) {}
+  TestPrintJobWorker(
+      std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
+      std::unique_ptr<PrintingContext> printing_context,
+      PrintJob* print_job)
+      : PrintJobWorker(std::move(printing_context_delegate),
+                       std::move(printing_context),
+                       print_job) {}
+  ~TestPrintJobWorker() override = default;
   friend class TestQuery;
 };
 
@@ -48,16 +55,13 @@ class TestQuery : public PrinterQuery {
 
   ~TestQuery() override = default;
 
-  std::unique_ptr<PrintJobWorker> DetachWorker() override {
-    {
-      // Do an actual detach to keep the parent class happy.
-      auto real_worker = PrinterQuery::DetachWorker();
-    }
-
+  std::unique_ptr<PrintJobWorker> TransferContextToNewWorker(
+      PrintJob* print_job) override {
     // We're screwing up here since we're calling worker from the main thread.
     // That's fine for testing. It is actually simulating PrinterQuery behavior.
-    auto worker = std::make_unique<TestPrintJobWorker>();
-    EXPECT_TRUE(worker->Start());
+    auto worker = std::make_unique<TestPrintJobWorker>(
+        std::move(printing_context_delegate_), std::move(printing_context_),
+        print_job);
     worker->printing_context()->UseDefaultSettings();
     SetSettingsForTest(worker->printing_context()->TakeAndResetSettings());
 

@@ -114,8 +114,6 @@ void OnDidGetDefaultPrintSettings(
     // If user hasn't cancelled.
     if (printer_query->cookie() && printer_query->settings().dpi()) {
       queue->QueuePrinterQuery(std::move(printer_query));
-    } else {
-      printer_query->StopWorker();
     }
   }
 }
@@ -158,8 +156,6 @@ void OnDidUpdatePrintSettings(
 
   if (printer_query->cookie() && printer_query->settings().dpi()) {
     queue->QueuePrinterQuery(std::move(printer_query));
-  } else {
-    printer_query->StopWorker();
   }
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -183,8 +179,6 @@ void OnDidScriptedPrint(
 
   if (has_dpi && has_valid_cookie) {
     queue->QueuePrinterQuery(std::move(printer_query));
-  } else {
-    printer_query->StopWorker();
   }
 }
 
@@ -315,7 +309,6 @@ void PrintViewManagerBase::OnPrintSettingsDone(
   }
 
   if (!printer_query->cookie() || !printer_query->settings().dpi()) {
-    printer_query->StopWorker();
     std::move(callback).Run(base::Value("Update settings failed"));
     return;
   }
@@ -1090,7 +1083,6 @@ void PrintViewManagerBase::ReleasePrinterQuery() {
       queue_->PopPrinterQuery(current_cookie);
   if (!printer_query)
     return;
-  printer_query->StopWorker();
 }
 
 void PrintViewManagerBase::CompletePrintNow(content::RenderFrameHost* rfh) {

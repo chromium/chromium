@@ -52,22 +52,13 @@ std::unique_ptr<PrinterQuery> PrintQueriesQueue::PopPrinterQuery(
 
 std::unique_ptr<PrinterQuery> PrintQueriesQueue::CreatePrinterQuery(
     content::GlobalRenderFrameHostId rfh_id) {
-  return std::make_unique<PrinterQuery>(rfh_id);
+  return PrinterQuery::Create(rfh_id);
 }
 
 void PrintQueriesQueue::Shutdown() {
-  PrinterQueries queries_to_stop;
   {
     base::AutoLock lock(lock_);
-    queued_queries_.swap(queries_to_stop);
-  }
-  // Stop all pending queries, requests to generate print preview do not have
-  // corresponding PrintJob, so any pending preview requests are not covered
-  // by PrintJobManager::StopJobs and should be stopped explicitly.
-  for (auto& query : queries_to_stop) {
-    PrinterQuery* const query_ptr = query.get();
-    query_ptr->PostTask(
-        FROM_HERE, base::BindOnce(&PrinterQuery::StopWorker, std::move(query)));
+    queued_queries_.clear();
   }
 }
 

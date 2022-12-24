@@ -103,9 +103,6 @@ class TestPrinterQuery : public PrinterQuery {
   // Should be called before `SetSettings()`.
   void SetPrintableAreaOffsets(int offset_x, int offset_y);
 
-  // Intentional no-op.
-  void StopWorker() override;
-
  private:
   absl::optional<gfx::Point> offsets_;
 #if BUILDFLAG(IS_WIN)
@@ -182,8 +179,6 @@ void TestPrinterQuery::SetPrinterLanguageType(mojom::PrinterLanguageType type) {
 void TestPrinterQuery::SetPrintableAreaOffsets(int offset_x, int offset_y) {
   offsets_ = gfx::Point(offset_x, offset_y);
 }
-
-void TestPrinterQuery::StopWorker() {}
 
 class TestPrintViewManagerForSystemDialogPrint : public PrintViewManager {
  public:

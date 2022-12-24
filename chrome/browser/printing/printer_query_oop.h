@@ -1,0 +1,70 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_PRINTING_PRINTER_QUERY_OOP_H_
+#define CHROME_BROWSER_PRINTING_PRINTER_QUERY_OOP_H_
+
+#include <memory>
+
+#include "base/callback.h"
+#include "base/values.h"
+#include "build/build_config.h"
+#include "chrome/browser/printing/printer_query.h"
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
+#include "printing/mojom/print.mojom.h"
+#include "printing/print_settings.h"
+#include "printing/printing_context.h"
+
+namespace printing {
+
+class PrinterQueryOop : public PrinterQuery {
+ public:
+  explicit PrinterQueryOop(content::GlobalRenderFrameHostId rfh_id);
+  ~PrinterQueryOop() override;
+
+  std::unique_ptr<PrintJobWorker> TransferContextToNewWorker(
+      PrintJob* print_job) override;
+
+ protected:
+  // Local callback wrappers for Print Backend Service mojom call.  Virtual to
+  // support testing.
+  virtual void OnDidUseDefaultSettings(
+      SettingsCallback callback,
+      mojom::PrintSettingsResultPtr print_settings);
+#if BUILDFLAG(IS_WIN)
+  virtual void OnDidAskUserForSettings(
+      SettingsCallback callback,
+      mojom::PrintSettingsResultPtr print_settings);
+#endif
+  void OnDidUpdatePrintSettings(const std::string& device_name,
+                                SettingsCallback callback,
+                                mojom::PrintSettingsResultPtr print_settings);
+
+  void UseDefaultSettings(SettingsCallback callback) override;
+  void GetSettingsWithUI(uint32_t document_page_count,
+                         bool has_selection,
+                         bool is_scripted,
+                         SettingsCallback callback) override;
+  void UpdatePrintSettings(base::Value::Dict new_settings,
+                           SettingsCallback callback) override;
+
+  // Mojo support to send messages from UI thread.
+  void SendUseDefaultSettings(SettingsCallback callback);
+#if BUILDFLAG(IS_WIN)
+  void SendAskUserForSettings(uint32_t document_page_count,
+                              bool has_selection,
+                              bool is_scripted,
+                              SettingsCallback callback);
+#endif
+
+ private:
+  mojom::PrintTargetType print_target_type_ =
+      mojom::PrintTargetType::kDirectToDevice;
+
+  base::WeakPtrFactory<PrinterQueryOop> weak_factory_{this};
+};
+
+}  // namespace printing
+
+#endif  // CHROME_BROWSER_PRINTING_PRINTER_QUERY_OOP_H_

@@ -22,6 +22,7 @@
 #include "chrome/browser/printing/printer_query.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printed_document.h"
 
@@ -99,6 +100,12 @@ PrefService* GetPrefsForWebContents(content::WebContents* web_contents) {
   return context ? Profile::FromBrowserContext(context)->GetPrefs() : nullptr;
 }
 
+content::WebContents* GetWebContents(content::GlobalRenderFrameHostId rfh_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+  return rfh ? content::WebContents::FromRenderFrameHost(rfh) : nullptr;
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
@@ -131,8 +138,9 @@ void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
   DCHECK(!is_job_pending_);
   DCHECK(!is_canceling_);
   DCHECK(!document_);
-  worker_ = query->DetachWorker();
-  worker_->SetPrintJob(this);
+  worker_ = query->TransferContextToNewWorker(this);
+  worker_->Start();
+  rfh_id_ = query->rfh_id();
   std::unique_ptr<PrintSettings> settings = query->ExtractSettings();
 
 #if BUILDFLAG(IS_WIN)
@@ -351,7 +359,7 @@ void PrintJob::StartPdfToEmfConversion(
 
   const PrintSettings& settings = document()->settings();
 
-  PrefService* prefs = GetPrefsForWebContents(worker_->GetWebContents());
+  PrefService* prefs = GetPrefsForWebContents(GetWebContents(rfh_id_));
   bool print_with_reduced_rasterization = PrintWithReducedRasterization(prefs);
 
   using RenderMode = PdfRenderSettings::Mode;
@@ -442,7 +450,7 @@ void PrintJob::StartPdfToPostScriptConversion(
   if (ps_level2) {
     mode = PdfRenderSettings::Mode::POSTSCRIPT_LEVEL2;
   } else {
-    PrefService* prefs = GetPrefsForWebContents(worker_->GetWebContents());
+    PrefService* prefs = GetPrefsForWebContents(GetWebContents(rfh_id_));
     mode = PrintWithPostScriptType42Fonts(prefs)
                ? PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS
                : PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3;

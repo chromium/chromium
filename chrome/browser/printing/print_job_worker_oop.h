@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
@@ -31,7 +30,11 @@ class PrintedDocument;
 // thread.  PrintJob always outlives its worker instance.
 class PrintJobWorkerOop : public PrintJobWorker {
  public:
-  explicit PrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id);
+  PrintJobWorkerOop(
+      std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
+      std::unique_ptr<PrintingContext> printing_context,
+      PrintJob* print_job,
+      mojom::PrintTargetType print_target_type);
   PrintJobWorkerOop(const PrintJobWorkerOop&) = delete;
   PrintJobWorkerOop& operator=(const PrintJobWorkerOop&) = delete;
   ~PrintJobWorkerOop() override;
@@ -41,19 +44,12 @@ class PrintJobWorkerOop : public PrintJobWorker {
 
  protected:
   // For testing.
-  PrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id,
-                    bool simulate_spooling_memory_errors);
+  PrintJobWorkerOop(
+      std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
+      std::unique_ptr<PrintingContext> printing_context,
+      PrintJob* print_job,
+      bool simulate_spooling_memory_errors);
 
-  // Local callback wrappers for Print Backend Service mojom call.  Virtual to
-  // support testing.
-  virtual void OnDidUseDefaultSettings(
-      SettingsCallback callback,
-      mojom::PrintSettingsResultPtr print_settings);
-#if BUILDFLAG(IS_WIN)
-  virtual void OnDidAskUserForSettings(
-      SettingsCallback callback,
-      mojom::PrintSettingsResultPtr print_settings);
-#endif
   virtual void OnDidStartPrinting(mojom::ResultCode result);
 #if BUILDFLAG(IS_WIN)
   virtual void OnDidRenderPrintedPage(uint32_t page_index,
@@ -69,13 +65,6 @@ class PrintJobWorkerOop : public PrintJobWorker {
 #endif
   bool SpoolDocument() override;
   void OnDocumentDone() override;
-  void UseDefaultSettings(SettingsCallback callback) override;
-  void GetSettingsWithUI(uint32_t document_page_count,
-                         bool has_selection,
-                         bool is_scripted,
-                         SettingsCallback callback) override;
-  void SetSettings(base::Value::Dict new_settings,
-                   SettingsCallback callback) override;
   void OnFailure() override;
 
  private:
@@ -89,19 +78,6 @@ class PrintJobWorkerOop : public PrintJobWorker {
   // Initiate failure handling, including notification to the user.
   void NotifyFailure(mojom::ResultCode result);
 
-  // Local callback wrapper for Print Backend Service mojom call.
-  void OnDidUpdatePrintSettings(const std::string& device_name,
-                                SettingsCallback callback,
-                                mojom::PrintSettingsResultPtr print_settings);
-
-  // Mojo support to send messages from UI thread.
-  void SendUseDefaultSettings(SettingsCallback callback);
-#if BUILDFLAG(IS_WIN)
-  void SendAskUserForSettings(uint32_t document_page_count,
-                              bool has_selection,
-                              bool is_scripted,
-                              SettingsCallback callback);
-#endif
   void SendStartPrinting(const std::string& device_name,
                          const std::u16string& document_name);
 #if BUILDFLAG(IS_WIN)

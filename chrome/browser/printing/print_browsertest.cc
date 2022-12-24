@@ -87,6 +87,7 @@
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/printing/print_job_worker_oop.h"
+#include "chrome/browser/printing/printer_query_oop.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
 
@@ -200,8 +201,6 @@ void OnDidUpdatePrintSettings(
 
   if (printer_query->cookie() && printer_query->settings().dpi()) {
     queue->QueuePrinterQuery(std::move(printer_query));
-  } else {
-    printer_query->StopWorker();
   }
 }
 
@@ -2240,7 +2239,7 @@ IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, DocumentExecCommand) {
 #if !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-class TestPrintJobWorker : public PrintJobWorker {
+class TestPrinterQuery : public PrinterQuery {
  public:
   // Callbacks to run for overrides.
   struct PrintCallbacks {
@@ -2248,17 +2247,13 @@ class TestPrintJobWorker : public PrintJobWorker {
     OnGetSettingsWithUICallback did_get_settings_with_ui_callback;
   };
 
-  TestPrintJobWorker(content::GlobalRenderFrameHostId rfh_id,
-                     PrintCallbacks* callbacks)
-      : PrintJobWorker(rfh_id), callbacks_(callbacks) {}
-  TestPrintJobWorker(const TestPrintJobWorker&) = delete;
-  TestPrintJobWorker& operator=(const TestPrintJobWorker&) = delete;
-  ~TestPrintJobWorker() override = default;
+  TestPrinterQuery(content::GlobalRenderFrameHostId rfh_id,
+                   PrintCallbacks* callbacks)
+      : PrinterQuery(rfh_id), callbacks_(callbacks) {}
 
- private:
   void UseDefaultSettings(SettingsCallback callback) override {
     DVLOG(1) << "Observed: invoke use default settings";
-    PrintJobWorker::UseDefaultSettings(std::move(callback));
+    PrinterQuery::UseDefaultSettings(std::move(callback));
     callbacks_->did_use_default_settings_callback.Run();
   }
 
@@ -2267,8 +2262,8 @@ class TestPrintJobWorker : public PrintJobWorker {
                          bool is_scripted,
                          SettingsCallback callback) override {
     DVLOG(1) << "Observed: invoke get settings with UI";
-    PrintJobWorker::GetSettingsWithUI(document_page_count, has_selection,
-                                      is_scripted, std::move(callback));
+    PrinterQuery::GetSettingsWithUI(document_page_count, has_selection,
+                                    is_scripted, std::move(callback));
     callbacks_->did_get_settings_with_ui_callback.Run();
   }
 
@@ -2302,44 +2297,22 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
     OnDidCancelCallback did_cancel_callback;
   };
 
-  TestPrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id,
-                        bool simulate_spooling_memory_errors,
-                        PrintCallbacks* callbacks)
-      : PrintJobWorkerOop(rfh_id, simulate_spooling_memory_errors),
+  TestPrintJobWorkerOop(
+      std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
+      std::unique_ptr<PrintingContext> printing_context,
+      PrintJob* print_job,
+      bool simulate_spooling_memory_errors,
+      TestPrintJobWorkerOop::PrintCallbacks* callbacks)
+      : PrintJobWorkerOop(std::move(printing_context_delegate),
+                          std::move(printing_context),
+                          print_job,
+                          simulate_spooling_memory_errors),
         callbacks_(callbacks) {}
   TestPrintJobWorkerOop(const TestPrintJobWorkerOop&) = delete;
   TestPrintJobWorkerOop& operator=(const TestPrintJobWorkerOop&) = delete;
   ~TestPrintJobWorkerOop() override = default;
 
  private:
-  void OnDidUseDefaultSettings(
-      SettingsCallback callback,
-      mojom::PrintSettingsResultPtr print_settings) override {
-    DVLOG(1) << "Observed: use default settings";
-    mojom::ResultCode result = print_settings->is_result_code()
-                                   ? print_settings->get_result_code()
-                                   : mojom::ResultCode::kSuccess;
-    callbacks_->error_check_callback.Run(result);
-    PrintJobWorkerOop::OnDidUseDefaultSettings(std::move(callback),
-                                               std::move(print_settings));
-    callbacks_->did_use_default_settings_callback.Run(result);
-  }
-
-#if BUILDFLAG(IS_WIN)
-  void OnDidAskUserForSettings(
-      SettingsCallback callback,
-      mojom::PrintSettingsResultPtr print_settings) override {
-    DVLOG(1) << "Observed: ask user for settings";
-    mojom::ResultCode result = print_settings->is_result_code()
-                                   ? print_settings->get_result_code()
-                                   : mojom::ResultCode::kSuccess;
-    callbacks_->error_check_callback.Run(result);
-    PrintJobWorkerOop::OnDidAskUserForSettings(std::move(callback),
-                                               std::move(print_settings));
-    callbacks_->did_ask_user_for_settings_callback.Run(result);
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
   void OnDidStartPrinting(mojom::ResultCode result) override {
     DVLOG(1) << "Observed: start printing of document";
     callbacks_->error_check_callback.Run(result);
@@ -2381,6 +2354,54 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
   }
 
   raw_ptr<PrintCallbacks> callbacks_;
+};
+
+class TestPrinterQueryOop : public PrinterQueryOop {
+ public:
+  TestPrinterQueryOop(content::GlobalRenderFrameHostId rfh_id,
+                      bool simulate_spooling_memory_errors,
+                      TestPrintJobWorkerOop::PrintCallbacks* callbacks)
+      : PrinterQueryOop(rfh_id),
+        simulate_spooling_memory_errors_(simulate_spooling_memory_errors),
+        callbacks_(callbacks) {}
+
+  void OnDidUseDefaultSettings(
+      SettingsCallback callback,
+      mojom::PrintSettingsResultPtr print_settings) override {
+    DVLOG(1) << "Observed: use default settings";
+    mojom::ResultCode result = print_settings->is_result_code()
+                                   ? print_settings->get_result_code()
+                                   : mojom::ResultCode::kSuccess;
+    callbacks_->error_check_callback.Run(result);
+    PrinterQueryOop::OnDidUseDefaultSettings(std::move(callback),
+                                             std::move(print_settings));
+    callbacks_->did_use_default_settings_callback.Run(result);
+  }
+
+#if BUILDFLAG(IS_WIN)
+  void OnDidAskUserForSettings(
+      SettingsCallback callback,
+      mojom::PrintSettingsResultPtr print_settings) override {
+    DVLOG(1) << "Observed: ask user for settings";
+    mojom::ResultCode result = print_settings->is_result_code()
+                                   ? print_settings->get_result_code()
+                                   : mojom::ResultCode::kSuccess;
+    callbacks_->error_check_callback.Run(result);
+    PrinterQueryOop::OnDidAskUserForSettings(std::move(callback),
+                                             std::move(print_settings));
+    callbacks_->did_ask_user_for_settings_callback.Run(result);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  std::unique_ptr<PrintJobWorker> TransferContextToNewWorker(
+      PrintJob* print_job) override {
+    return std::make_unique<TestPrintJobWorkerOop>(
+        std::move(printing_context_delegate_), std::move(printing_context_),
+        print_job, simulate_spooling_memory_errors_, callbacks_);
+  }
+
+  bool simulate_spooling_memory_errors_;
+  raw_ptr<TestPrintJobWorkerOop::PrintCallbacks> callbacks_;
 };
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
@@ -2455,11 +2476,11 @@ class SystemAccessProcessPrintBrowserTestBase
               &SystemAccessProcessPrintBrowserTestBase::OnGetSettingsWithUI,
               base::Unretained(this));
     }
-    test_create_print_job_worker_callback_ = base::BindRepeating(
-        &SystemAccessProcessPrintBrowserTestBase::CreatePrintJobWorker,
+    test_create_printer_query_callback_ = base::BindRepeating(
+        &SystemAccessProcessPrintBrowserTestBase::CreatePrinterQuery,
         base::Unretained(this), UseService());
-    PrinterQuery::SetCreatePrintJobWorkerCallbackForTest(
-        &test_create_print_job_worker_callback_);
+    PrinterQuery::SetCreatePrinterQueryCallbackForTest(
+        &test_create_printer_query_callback_);
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
     PrintBrowserTest::SetUp();
@@ -2478,7 +2499,7 @@ class SystemAccessProcessPrintBrowserTestBase
   void TearDown() override {
     PrintBrowserTest::TearDown();
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-    PrinterQuery::SetCreatePrintJobWorkerCallbackForTest(/*callback=*/nullptr);
+    PrinterQuery::SetCreatePrinterQueryCallbackForTest(/*callback=*/nullptr);
     if (UseService()) {
       // Check that there is never a straggler client registration.
       EXPECT_EQ(
@@ -2685,15 +2706,15 @@ class SystemAccessProcessPrintBrowserTestBase
 
  private:
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(
+  std::unique_ptr<PrinterQuery> CreatePrinterQuery(
       bool use_service,
       content::GlobalRenderFrameHostId rfh_id) {
     if (use_service) {
-      return std::make_unique<TestPrintJobWorkerOop>(
+      return std::make_unique<TestPrinterQueryOop>(
           rfh_id, simulate_spooling_memory_errors_,
           &test_print_job_worker_oop_callbacks_);
     }
-    return std::make_unique<TestPrintJobWorker>(
+    return std::make_unique<TestPrinterQuery>(
         rfh_id, &test_print_job_worker_callbacks_);
   }
 
@@ -2793,9 +2814,9 @@ class SystemAccessProcessPrintBrowserTestBase
 
   base::test::ScopedFeatureList feature_list_;
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  TestPrintJobWorker::PrintCallbacks test_print_job_worker_callbacks_;
+  TestPrinterQuery::PrintCallbacks test_print_job_worker_callbacks_;
   TestPrintJobWorkerOop::PrintCallbacks test_print_job_worker_oop_callbacks_;
-  CreatePrintJobWorkerCallback test_create_print_job_worker_callback_;
+  CreatePrinterQueryCallback test_create_printer_query_callback_;
   bool did_use_default_settings_ = false;
   bool did_get_settings_with_ui_ = false;
   bool print_backend_service_use_detected_ = false;

@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_job.h"
@@ -19,10 +18,8 @@
 #include "printing/metafile.h"
 #include "printing/printed_document.h"
 #include "printing/printing_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "content/public/browser/web_contents.h"
 #include "printing/printed_page_win.h"
 #endif
 
@@ -46,25 +43,26 @@ enum class PrintOopResult {
 
 constexpr char kPrintOopPrintResultHistogramName[] = "Printing.Oop.PrintResult";
 
-mojom::PrintTargetType DeterminePrintTargetType(
-    const base::Value::Dict& job_settings) {
-#if BUILDFLAG(IS_MAC)
-  if (job_settings.contains(kSettingOpenPDFInPreview))
-    return mojom::PrintTargetType::kExternalPreview;
-#endif
-  if (job_settings.FindBool(kSettingShowSystemDialog).value_or(false))
-    return mojom::PrintTargetType::kSystemDialog;
-  return mojom::PrintTargetType::kDirectToDevice;
-}
-
 }  // namespace
 
-PrintJobWorkerOop::PrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id)
-    : PrintJobWorker(rfh_id) {}
+PrintJobWorkerOop::PrintJobWorkerOop(
+    std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
+    std::unique_ptr<PrintingContext> printing_context,
+    PrintJob* print_job,
+    mojom::PrintTargetType print_target_type)
+    : PrintJobWorker(std::move(printing_context_delegate),
+                     std::move(printing_context),
+                     print_job),
+      print_target_type_(print_target_type) {}
 
-PrintJobWorkerOop::PrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id,
-                                     bool simulate_spooling_memory_errors)
-    : PrintJobWorker(rfh_id),
+PrintJobWorkerOop::PrintJobWorkerOop(
+    std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
+    std::unique_ptr<PrintingContext> printing_context,
+    PrintJob* print_job,
+    bool simulate_spooling_memory_errors)
+    : PrintJobWorker(std::move(printing_context_delegate),
+                     std::move(printing_context),
+                     print_job),
       simulate_spooling_memory_errors_(simulate_spooling_memory_errors) {}
 
 PrintJobWorkerOop::~PrintJobWorkerOop() {
@@ -100,54 +98,6 @@ void PrintJobWorkerOop::StartPrinting(PrintedDocument* new_document) {
                                 ui_weak_factory_.GetWeakPtr(), device_name,
                                 document_name));
 }
-
-void PrintJobWorkerOop::OnDidUseDefaultSettings(
-    SettingsCallback callback,
-    mojom::PrintSettingsResultPtr print_settings) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  mojom::ResultCode result;
-  if (print_settings->is_result_code()) {
-    result = print_settings->get_result_code();
-    DCHECK_NE(result, mojom::ResultCode::kSuccess);
-    PRINTER_LOG(ERROR) << "Error trying to use default settings via service: "
-                       << result;
-
-    // TODO(crbug.com/809738)  Fill in support for handling of access-denied
-    // result code.  Blocked on crbug.com/1243873 for Windows.
-  } else {
-    VLOG(1) << "Use default settings from service complete";
-    result = mojom::ResultCode::kSuccess;
-    printing_context()->ApplyPrintSettings(print_settings->get_settings());
-  }
-
-  GetSettingsDone(std::move(callback), result);
-}
-
-#if BUILDFLAG(IS_WIN)
-void PrintJobWorkerOop::OnDidAskUserForSettings(
-    SettingsCallback callback,
-    mojom::PrintSettingsResultPtr print_settings) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  mojom::ResultCode result;
-  if (print_settings->is_result_code()) {
-    result = print_settings->get_result_code();
-    DCHECK_NE(result, mojom::ResultCode::kSuccess);
-    if (result != mojom::ResultCode::kCanceled) {
-      PRINTER_LOG(ERROR) << "Error getting settings from user via service: "
-                         << result;
-    }
-
-    // TODO(crbug.com/809738)  Fill in support for handling of access-denied
-    // result code.  Blocked on crbug.com/1243873 for Windows.
-  } else {
-    VLOG(1) << "Ask user for settings from service complete";
-    result = mojom::ResultCode::kSuccess;
-    printing_context()->ApplyPrintSettings(print_settings->get_settings());
-  }
-
-  GetSettingsDone(std::move(callback), result);
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -323,54 +273,6 @@ void PrintJobWorkerOop::OnDocumentDone() {
   // PrintBackend service.
 }
 
-void PrintJobWorkerOop::UseDefaultSettings(SettingsCallback callback) {
-  SendUseDefaultSettings(std::move(callback));
-}
-
-void PrintJobWorkerOop::GetSettingsWithUI(uint32_t document_page_count,
-                                          bool has_selection,
-                                          bool is_scripted,
-                                          SettingsCallback callback) {
-#if BUILDFLAG(IS_WIN)
-  SendAskUserForSettings(document_page_count, has_selection, is_scripted,
-                         std::move(callback));
-#else
-  // Invoke the browser version of getting settings with the system UI:
-  //   - macOS:  It is impossible to invoke a system dialog UI from a service
-  //       utility and have that dialog be application modal for a window that
-  //       was launched by the browser process.
-  //   - Linux:  TODO(crbug.com/809738)  Determine if Linux Wayland can be made
-  //       to have a system dialog be modal against an application window in the
-  //       browser process.
-  //   - Other platforms don't have a system print UI or do not use OOP
-  //     printing, so this does not matter.
-  PrintJobWorker::GetSettingsWithUI(document_page_count, has_selection,
-                                    is_scripted, std::move(callback));
-#endif
-}
-
-void PrintJobWorkerOop::SetSettings(base::Value::Dict new_settings,
-                                    SettingsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Do not take a const reference, as `new_settings` will be modified below.
-  std::string device_name = *new_settings.FindString(kSettingDeviceName);
-
-  // Save the print target type from the settings, since this will be needed
-  // later when printing is started.
-  print_target_type_ = DeterminePrintTargetType(new_settings);
-
-  VLOG(1) << "Updating print settings via service for " << device_name;
-  PrintBackendServiceManager& service_mgr =
-      PrintBackendServiceManager::GetInstance();
-
-  service_mgr.UpdatePrintSettings(
-      device_name, std::move(new_settings),
-      base::BindOnce(&PrintJobWorkerOop::OnDidUpdatePrintSettings,
-                     ui_weak_factory_.GetWeakPtr(), device_name,
-                     std::move(callback)));
-}
-
 void PrintJobWorkerOop::OnFailure() {
   // Retain a reference to the PrintJob to ensure it doesn't get deleted before
   // the `OnDidCancel()` callback occurs.
@@ -438,78 +340,6 @@ void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
                           base::BindOnce(&PrintJobWorkerOop::OnFailure,
                                          worker_weak_factory_.GetWeakPtr()));
 }
-
-void PrintJobWorkerOop::OnDidUpdatePrintSettings(
-    const std::string& device_name,
-    SettingsCallback callback,
-    mojom::PrintSettingsResultPtr print_settings) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  mojom::ResultCode result;
-  if (print_settings->is_result_code()) {
-    result = print_settings->get_result_code();
-    DCHECK_NE(result, mojom::ResultCode::kSuccess);
-    PRINTER_LOG(ERROR) << "Error updating print settings via service for `"
-                       << device_name << "`: " << result;
-
-    // TODO(crbug.com/809738)  Fill in support for handling of access-denied
-    // result code.
-  } else {
-    VLOG(1) << "Update print settings via service complete for " << device_name;
-    result = mojom::ResultCode::kSuccess;
-    printing_context()->ApplyPrintSettings(print_settings->get_settings());
-  }
-  GetSettingsDone(std::move(callback), result);
-}
-
-void PrintJobWorkerOop::SendUseDefaultSettings(SettingsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(features::kEnableOopPrintDriversJobPrint.Get());
-
-  PrintBackendServiceManager& service_mgr =
-      PrintBackendServiceManager::GetInstance();
-
-  service_mgr.UseDefaultSettings(
-      /*printer_name=*/std::string(),
-      base::BindOnce(&PrintJobWorkerOop::OnDidUseDefaultSettings,
-                     ui_weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-#if BUILDFLAG(IS_WIN)
-void PrintJobWorkerOop::SendAskUserForSettings(uint32_t document_page_count,
-                                               bool has_selection,
-                                               bool is_scripted,
-                                               SettingsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(features::kEnableOopPrintDriversJobPrint.Get());
-
-  if (document_page_count > kMaxPageCount) {
-    GetSettingsDone(std::move(callback), mojom::ResultCode::kFailed);
-    return;
-  }
-
-  // Save the print target type from the settings, since this will be needed
-  // later when printing is started.
-  print_target_type_ = mojom::PrintTargetType::kDirectToDevice;
-
-  content::WebContents* web_contents = GetWebContents();
-
-  // Running a dialog causes an exit to webpage-initiated fullscreen.
-  // http://crbug.com/728276
-  if (web_contents && web_contents->IsFullscreen())
-    web_contents->ExitFullscreen(true);
-
-  gfx::NativeView parent_view =
-      web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
-
-  PrintBackendServiceManager& service_mgr =
-      PrintBackendServiceManager::GetInstance();
-  service_mgr.AskUserForSettings(
-      /*printer_name=*/std::string(), parent_view, document_page_count,
-      has_selection, is_scripted,
-      base::BindOnce(&PrintJobWorkerOop::OnDidAskUserForSettings,
-                     ui_weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
                                           const std::u16string& document_name) {

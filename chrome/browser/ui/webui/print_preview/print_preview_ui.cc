@@ -118,8 +118,6 @@ void StopWorker(int document_cookie) {
       g_browser_process->print_job_manager()->queue();
   std::unique_ptr<PrinterQuery> printer_query =
       queue->PopPrinterQuery(document_cookie);
-  if (printer_query)
-    printer_query->StopWorker();
 }
 
 bool IsValidPageNumber(uint32_t page_number, uint32_t page_count) {

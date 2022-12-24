@@ -337,7 +337,6 @@ class LocalPrinterHandlerDefault;
 class PrintBackendServiceImpl;
 #endif
 class PrintBackendServiceManager;
-class PrintJobWorker;
 class PrinterQuery;
 }  // namespace printing
 namespace rlz_lib {
@@ -610,7 +609,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class printing::PrintBackendServiceImpl;
 #endif
   friend class printing::PrintBackendServiceManager;
-  friend class printing::PrintJobWorker;
+  friend class printing::PrinterQuery;
   friend class remote_cocoa::
       DroppedScreenShotCopierMac;  // https://crbug.com/1148078
   friend class ::WebEngineBrowserMainParts;
@@ -840,7 +839,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class net::
       MultiThreadedProxyResolverScopedAllowJoinOnIO;  // http://crbug.com/69710
   friend class net::NetworkChangeNotifierMac;         // http://crbug.com/125097
-  friend class printing::PrinterQuery;                // http://crbug.com/66082
   friend class proxy_resolver::
       ScopedAllowThreadJoinForProxyResolverV8Tracing;  // http://crbug.com/69710
   friend class remoting::AutoThread;  // https://crbug.com/944316
