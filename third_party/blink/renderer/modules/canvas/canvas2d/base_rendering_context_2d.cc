@@ -204,7 +204,7 @@ void BaseRenderingContext2D::beginLayer() {
     flags.setImageFilter(GetState().ShouldDrawShadows()
                              ? GetState().ShadowAndForegroundImageFilter()
                              : StateGetFilter());
-    canvas->saveLayer(nullptr, &flags);
+    canvas->saveLayer(flags);
 
     // Push to state stack to keep stack size up to date.
     state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
@@ -219,7 +219,7 @@ void BaseRenderingContext2D::beginLayer() {
     extra_flags.setAlpha(globalAlpha() * 255);
     if (GetState().ShouldDrawShadows())
       extra_flags.setImageFilter(StateGetFilter());
-    canvas->saveLayer(nullptr, &extra_flags);
+    canvas->saveLayer(extra_flags);
   } else {
     cc::PaintFlags flags;
     GetState().FillStyle()->ApplyToFlags(flags);
@@ -230,7 +230,7 @@ void BaseRenderingContext2D::beginLayer() {
     flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
         GetState().ShadowAndForegroundImageFilter(), StateGetFilter()));
     flags.setAlpha(globalAlpha() * 255);
-    canvas->saveLayer(nullptr, &flags);
+    canvas->saveLayer(flags);
   }
 
   ValidateStateStack();
@@ -1515,7 +1515,7 @@ void BaseRenderingContext2D::DrawImageInternal(
     layer_flags.setBlendMode(flags->getBlendMode());
     layer_flags.setImageFilter(flags->getImageFilter());
 
-    c->saveLayer(&bounds, &layer_flags);
+    c->saveLayer(bounds, layer_flags);
     c->concat(ctm);
     image_flags.setBlendMode(SkBlendMode::kSrcOver);
     image_flags.setImageFilter(nullptr);

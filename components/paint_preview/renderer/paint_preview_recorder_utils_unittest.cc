@@ -124,8 +124,8 @@ TEST(PaintPreviewRecorderUtilsTest, TestParseLinks) {
   outer_canvas->drawPicture(AddLink(link_4, rect_4));
   outer_canvas->restore();
 
-  outer_canvas->saveLayer(&rect_1, nullptr);
-  outer_canvas->saveLayerAlpha(&rect_1, 8);
+  outer_canvas->saveLayer(rect_1, cc::PaintFlags());
+  outer_canvas->saveLayerAlpha(8);
   outer_canvas->restoreToCount(1);
   auto record = outer_recorder.finishRecordingAsPicture();
 

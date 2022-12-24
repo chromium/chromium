@@ -232,9 +232,9 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
       return false;
 
     // In DrawImageRectOp::RasterWithFlags, the save layer uses the
-    // flags_to_serialize or default(null) flags. At this point in the
+    // flags_to_serialize or default (PaintFlags()) flags. At this point in the
     // serialization, flags_to_serialize is always null as well.
-    SaveLayerOp save_layer_op(&draw_op.src, nullptr);
+    SaveLayerOp save_layer_op(draw_op.src, PaintFlags());
     success = SerializeOpWithFlags(canvas, save_layer_op, params, 255);
     if (!success)
       return false;

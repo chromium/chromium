@@ -223,17 +223,6 @@ unsigned GraphicsContext::SaveCount() const {
 }
 #endif
 
-void GraphicsContext::SaveLayer(const SkRect* bounds,
-                                const cc::PaintFlags* flags) {
-  DCHECK(canvas_);
-  canvas_->saveLayer(bounds, flags);
-}
-
-void GraphicsContext::RestoreLayer() {
-  DCHECK(canvas_);
-  canvas_->restore();
-}
-
 void GraphicsContext::SetInDrawingRecorder(bool val) {
   // Nested drawing recorers are not allowed.
   DCHECK(!val || !in_drawing_recorder_);
@@ -277,23 +266,36 @@ void GraphicsContext::Concat(const SkM44& matrix) {
   canvas_->concat(matrix);
 }
 
-void GraphicsContext::BeginLayer(float opacity,
-                                 SkBlendMode xfermode,
-                                 const gfx::RectF* bounds,
-                                 ColorFilter color_filter,
-                                 sk_sp<PaintFilter> image_filter) {
-  cc::PaintFlags layer_flags;
-  layer_flags.setAlpha(static_cast<unsigned char>(opacity * 255));
-  layer_flags.setBlendMode(xfermode);
-  layer_flags.setColorFilter(WebCoreColorFilterToSkiaColorFilter(color_filter));
-  layer_flags.setImageFilter(std::move(image_filter));
+void GraphicsContext::BeginLayer(float opacity) {
+  DCHECK(canvas_);
+  canvas_->saveLayerAlpha(static_cast<uint8_t>(opacity * 255));
 
-  if (bounds) {
-    SkRect sk_bounds = gfx::RectFToSkRect(*bounds);
-    SaveLayer(&sk_bounds, &layer_flags);
-  } else {
-    SaveLayer(nullptr, &layer_flags);
-  }
+#if DCHECK_IS_ON()
+  ++layer_count_;
+#endif
+}
+
+void GraphicsContext::BeginLayer(SkBlendMode xfermode) {
+  cc::PaintFlags flags;
+  flags.setBlendMode(xfermode);
+  BeginLayer(flags);
+}
+
+void GraphicsContext::BeginLayer(ColorFilter color_filter) {
+  cc::PaintFlags flags;
+  flags.setColorFilter(WebCoreColorFilterToSkiaColorFilter(color_filter));
+  BeginLayer(flags);
+}
+
+void GraphicsContext::BeginLayer(sk_sp<PaintFilter> image_filter) {
+  cc::PaintFlags flags;
+  flags.setImageFilter(std::move(image_filter));
+  BeginLayer(flags);
+}
+
+void GraphicsContext::BeginLayer(const cc::PaintFlags& flags) {
+  DCHECK(canvas_);
+  canvas_->saveLayer(flags);
 
 #if DCHECK_IS_ON()
   ++layer_count_;
@@ -301,7 +303,8 @@ void GraphicsContext::BeginLayer(float opacity,
 }
 
 void GraphicsContext::EndLayer() {
-  RestoreLayer();
+  DCHECK(canvas_);
+  canvas_->restore();
 
 #if DCHECK_IS_ON()
   DCHECK_GT(layer_count_--, 0);

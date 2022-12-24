@@ -71,8 +71,10 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   void flush() override;
 
   int save() override;
-  int saveLayer(const SkRect* bounds, const PaintFlags* flags) override;
-  int saveLayerAlpha(const SkRect* bounds, uint8_t alpha) override;
+  int saveLayer(const PaintFlags& flags) override;
+  int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
+  int saveLayerAlpha(uint8_t alpha) override;
+  int saveLayerAlpha(const SkRect& bounds, uint8_t alpha) override;
 
   void restore() override;
   int getSaveCount() const override;

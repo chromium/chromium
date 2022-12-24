@@ -369,8 +369,7 @@ TEST_F(DiscardableImageMapTest, PaintDestroyedWhileImageIsDrawn) {
   scoped_refptr<DisplayItemList> display_list = new DisplayItemList;
   PaintFlags paint;
   display_list->StartPaint();
-  SkRect visible_sk_rect(gfx::RectToSkRect(visible_rect));
-  display_list->push<SaveLayerOp>(&visible_sk_rect, &paint);
+  display_list->push<SaveLayerOp>(gfx::RectToSkRect(visible_rect), paint);
   display_list->push<DrawRecordOp>(std::move(record));
   display_list->push<RestoreOp>();
   display_list->EndPaintOfUnpaired(visible_rect);
@@ -425,7 +424,7 @@ TEST_F(DiscardableImageMapTest, RestoreSavedTransformedLayers) {
       CreateDiscardablePaintImage(gfx::Size(25, 25));
   display_list->push<TranslateOp>(25.0f, 25.0f);
   display_list->push<DrawImageOp>(discardable_image1, 0.f, 0.f);
-  display_list->push<SaveLayerOp>(nullptr, &paint);
+  display_list->push<SaveLayerOp>(paint);
   display_list->push<TranslateOp>(100.0f, 100.0f);
   display_list->push<DrawImageOp>(discardable_image2, 0.f, 0.f);
   display_list->push<RestoreOp>();
@@ -454,8 +453,8 @@ TEST_F(DiscardableImageMapTest, NullPaintOnSaveLayer) {
 
   scoped_refptr<DisplayItemList> display_list = new DisplayItemList;
   display_list->StartPaint();
-  SkRect visible_sk_rect(gfx::RectToSkRect(visible_rect));
-  display_list->push<SaveLayerOp>(&visible_sk_rect, nullptr);
+  display_list->push<SaveLayerOp>(gfx::RectToSkRect(visible_rect),
+                                  PaintFlags());
   display_list->push<DrawRecordOp>(std::move(record));
   display_list->push<RestoreOp>();
   display_list->EndPaintOfUnpaired(visible_rect);
@@ -911,7 +910,7 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInSaveLayers) {
   gfx::Rect visible_rect(500, 500);
   scoped_refptr<DisplayItemList> display_list = new DisplayItemList();
   display_list->StartPaint();
-  display_list->push<SaveLayerOp>(nullptr, &flags);
+  display_list->push<SaveLayerOp>(flags);
   display_list->push<DrawColorOp>(SkColors::kBlue, SkBlendMode::kSrc);
   display_list->EndPaintOfUnpaired(visible_rect);
   display_list->Finalize();

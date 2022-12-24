@@ -301,9 +301,7 @@ TEST_F(SolidColorAnalyzerTest, SaveLayer) {
   PaintFlags flags;
   SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
-
-  SkRect rect = SkRect::MakeWH(200, 200);
-  canvas_.saveLayer(&rect, &flags);
+  canvas_.saveLayer(SkRect::MakeWH(200, 200), flags);
   EXPECT_FALSE(IsSolidColor());
 }
 

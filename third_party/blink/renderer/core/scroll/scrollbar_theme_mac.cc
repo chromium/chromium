@@ -264,7 +264,6 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
 
   GraphicsContextStateSaver state_saver(context);
   context.Translate(rect.x(), rect.y());
-  gfx::Rect local_rect(rect.size());
 
   if (!scrollbar.Enabled())
     return;
@@ -297,8 +296,7 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
   }
 
   if (opacity != 1.0f) {
-    gfx::RectF float_local_rect(local_rect);
-    context.BeginLayer(opacity, SkBlendMode::kSrcOver, &float_local_rect);
+    context.BeginLayer(opacity);
   }
 
   WebThemeEngine::Part thumb_part =

@@ -821,14 +821,14 @@ void BaseRenderingContext2D::CompositedDraw(
       // Saving the shadow layer before setting the matrix, so the shadow offset
       // does not get modified by the transformation matrix
       shadow_flags.setBlendMode(state.GlobalComposite());
-      c->saveLayer(nullptr, &shadow_flags);
+      c->saveLayer(shadow_flags);
       foreground_flags.setBlendMode(SkBlendMode::kSrcOver);
       c->setMatrix(ctm);
       draw_func(c, &foreground_flags);
     } else {
       DCHECK(IsFullCanvasCompositeMode(state.GlobalComposite()) ||
              BlendModeRequiresCompositedDraw(state.GlobalComposite()));
-      c->saveLayer(nullptr, &composite_flags);
+      c->saveLayer(composite_flags);
       shadow_flags.setBlendMode(SkBlendMode::kSrcOver);
       c->setMatrix(ctm);
       draw_func(c, &shadow_flags);
@@ -837,7 +837,7 @@ void BaseRenderingContext2D::CompositedDraw(
   }
 
   composite_flags.setImageFilter(std::move(canvas_filter));
-  c->saveLayer(nullptr, &composite_flags);
+  c->saveLayer(composite_flags);
   cc::PaintFlags foreground_flags =
       *state.GetFlags(paint_type, kDrawForegroundOnly, image_type);
   foreground_flags.setBlendMode(SkBlendMode::kSrcOver);

@@ -618,7 +618,6 @@ class PaintOpHelper {
         << PaintOpHelper::PaintFilterToString(flags.getImageFilter());
     str << ", drawLooper="
         << PaintOpHelper::SkiaTypeToString(flags.getLooper());
-    str << ", isSimpleOpacity=" << flags.IsSimpleOpacity();
     str << ", supportsFoldingAlpha=" << flags.SupportsFoldingAlpha();
     str << ", isValid=" << flags.IsValid();
     str << ", hasDiscardableImages=" << flags.HasDiscardableImages();

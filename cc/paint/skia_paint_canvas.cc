@@ -73,16 +73,22 @@ int SkiaPaintCanvas::save() {
   return canvas_->save();
 }
 
-int SkiaPaintCanvas::saveLayer(const SkRect* bounds, const PaintFlags* flags) {
-  if (!flags)
-    return canvas_->saveLayer(bounds, nullptr);
-
-  SkPaint paint = flags->ToSkPaint();
-  return canvas_->saveLayer(bounds, &paint);
+int SkiaPaintCanvas::saveLayer(const PaintFlags& flags) {
+  SkPaint paint = flags.ToSkPaint();
+  return canvas_->saveLayer(nullptr, &paint);
 }
 
-int SkiaPaintCanvas::saveLayerAlpha(const SkRect* bounds, uint8_t alpha) {
-  return canvas_->saveLayerAlpha(bounds, alpha);
+int SkiaPaintCanvas::saveLayer(const SkRect& bounds, const PaintFlags& flags) {
+  SkPaint paint = flags.ToSkPaint();
+  return canvas_->saveLayer(&bounds, &paint);
+}
+
+int SkiaPaintCanvas::saveLayerAlpha(uint8_t alpha) {
+  return canvas_->saveLayerAlpha(nullptr, alpha);
+}
+
+int SkiaPaintCanvas::saveLayerAlpha(const SkRect& bounds, uint8_t alpha) {
+  return canvas_->saveLayerAlpha(&bounds, alpha);
 }
 
 void SkiaPaintCanvas::restore() {

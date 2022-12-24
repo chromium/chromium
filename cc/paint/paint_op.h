@@ -909,9 +909,10 @@ class CC_PAINT_EXPORT SaveOp final : public PaintOp {
 class CC_PAINT_EXPORT SaveLayerOp final : public PaintOpWithFlags {
  public:
   static constexpr PaintOpType kType = PaintOpType::SaveLayer;
-  SaveLayerOp(const SkRect* bounds, const PaintFlags* flags)
-      : PaintOpWithFlags(kType, flags ? *flags : PaintFlags()),
-        bounds(bounds ? *bounds : kUnsetRect) {}
+  explicit SaveLayerOp(const PaintFlags& flags)
+      : PaintOpWithFlags(kType, flags), bounds(kUnsetRect) {}
+  SaveLayerOp(const SkRect& bounds, const PaintFlags& flags)
+      : PaintOpWithFlags(kType, flags), bounds(bounds) {}
   SaveLayerOp(const SaveLayerOp&) = default;
   SaveLayerOp& operator=(const SaveLayerOp&) = default;
   static void RasterWithFlags(const SaveLayerOp* op,
@@ -938,8 +939,11 @@ class CC_PAINT_EXPORT SaveLayerAlphaOp final : public PaintOp {
  public:
   static constexpr PaintOpType kType = PaintOpType::SaveLayerAlpha;
   template <class F, class = std::enable_if_t<std::is_same_v<F, float>>>
-  SaveLayerAlphaOp(const SkRect* bounds, F alpha)
-      : PaintOp(kType), bounds(bounds ? *bounds : kUnsetRect), alpha(alpha) {}
+  explicit SaveLayerAlphaOp(F alpha)
+      : PaintOp(kType), bounds(kUnsetRect), alpha(alpha) {}
+  template <class F, class = std::enable_if_t<std::is_same_v<F, float>>>
+  SaveLayerAlphaOp(const SkRect& bounds, F alpha)
+      : PaintOp(kType), bounds(bounds), alpha(alpha) {}
   SaveLayerAlphaOp(const SaveLayerAlphaOp&) = default;
   SaveLayerAlphaOp& operator=(const SaveLayerAlphaOp&) = default;
   static void Raster(const SaveLayerAlphaOp* op,

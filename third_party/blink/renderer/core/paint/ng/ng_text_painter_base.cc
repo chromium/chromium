@@ -89,11 +89,9 @@ void NGTextPainterBase::PaintUnderOrOverLineDecorationShadows(
     DCHECK_GE(blur, 0);
     const auto sigma = BlurRadiusToStdDev(blur);
 
-    context.BeginLayer(
-        1.0f, SkBlendMode::kSrcOver, nullptr, kColorFilterNone,
-        sk_make_sp<DropShadowPaintFilter>(
-            offset.x(), offset.y(), sigma, sigma, color.toSkColor4f(),
-            DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr));
+    context.BeginLayer(sk_make_sp<DropShadowPaintFilter>(
+        offset.x(), offset.y(), sigma, sigma, color.toSkColor4f(),
+        DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr));
 
     PaintUnderOrOverLineDecorations(fragment_paint_info, decoration_offset,
                                     decoration_info, lines_to_paint, flags,

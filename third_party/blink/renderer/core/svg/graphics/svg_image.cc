@@ -611,7 +611,7 @@ void SVGImage::DrawInternal(const DrawInfo& draw_info,
     PaintCanvasAutoRestore ar(canvas, false);
     if (DrawNeedsLayer(flags)) {
       SkRect layer_rect = gfx::RectFToSkRect(dst_rect);
-      canvas->saveLayer(&layer_rect, &flags);
+      canvas->saveLayer(layer_rect, flags);
     }
     // We can only draw the entire frame, clipped to the rect we want. So
     // compute where the top left of the image would be if we were drawing

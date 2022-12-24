@@ -56,7 +56,7 @@ void CrossfadeGeneratedImage::DrawCrossfade(
   cc::PaintFlags layer_flags;
   layer_flags.setBlendMode(flags.getBlendMode());
   PaintCanvasAutoRestore ar(canvas, false);
-  canvas->saveLayer(nullptr, &layer_flags);
+  canvas->saveLayer(layer_flags);
 
   cc::PaintFlags image_flags(flags);
   image_flags.setBlendMode(SkBlendMode::kSrcOver);

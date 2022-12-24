@@ -111,16 +111,15 @@ void Canvas::Save() {
 }
 
 void Canvas::SaveLayerAlpha(uint8_t alpha) {
-  canvas_->saveLayerAlpha(NULL, alpha);
+  canvas_->saveLayerAlpha(alpha);
 }
 
 void Canvas::SaveLayerAlpha(uint8_t alpha, const Rect& layer_bounds) {
-  SkRect bounds(RectToSkRect(layer_bounds));
-  canvas_->saveLayerAlpha(&bounds, alpha);
+  canvas_->saveLayerAlpha(RectToSkRect(layer_bounds), alpha);
 }
 
 void Canvas::SaveLayerWithFlags(const cc::PaintFlags& flags) {
-  canvas_->saveLayer(nullptr /* bounds */, &flags);
+  canvas_->saveLayer(flags);
 }
 
 void Canvas::Restore() {
@@ -319,7 +318,7 @@ void Canvas::DrawImageInt(const ImageSkia& image,
                  SkFloatToScalar(1.0f / bitmap_scale));
   canvas_->translate(SkFloatToScalar(std::round(x * bitmap_scale)),
                      SkFloatToScalar(std::round(y * bitmap_scale)));
-  canvas_->saveLayer(nullptr, &flags);
+  canvas_->saveLayer(flags);
   canvas_->drawPicture(image_rep.GetPaintRecord());
   canvas_->restore();
 }

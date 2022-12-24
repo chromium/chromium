@@ -335,10 +335,11 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
       if (!resource_clipper)
         break;
 
-      if (is_first)
+      if (is_first) {
         context.Save();
-      else
-        context.BeginLayer(1.f, SkBlendMode::kDstIn);
+      } else {
+        context.BeginLayer(SkBlendMode::kDstIn);
+      }
 
       if (resource_clipper->StyleRef().HasClipPath()) {
         // Try to apply nested clip-path as path-based clip.

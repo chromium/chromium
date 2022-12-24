@@ -78,8 +78,7 @@ TEST(PaintOpHelper, DrawDRRectToString) {
       "strokeJoin=kMiter_Join, colorFilter=(nil), "
       "maskFilter=(nil), shader=(nil), hasShader=false, shaderIsOpaque=false, "
       "pathEffect=(nil), imageFilter=(nil), drawLooper=(nil), "
-      "isSimpleOpacity=true, supportsFoldingAlpha=true, isValid=true, "
-      "hasDiscardableImages=false])");
+      "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
 }
 
 TEST(PaintOpHelper, DrawImageToString) {
@@ -93,8 +92,8 @@ TEST(PaintOpHelper, DrawImageToString) {
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
       "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
-      "imageFilter=(nil), drawLooper=(nil), isSimpleOpacity=true, "
-      "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
+      "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
+      "isValid=true, hasDiscardableImages=false])");
 }
 
 TEST(PaintOpHelper, DrawImageRectToString) {
@@ -111,8 +110,8 @@ TEST(PaintOpHelper, DrawImageRectToString) {
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
       "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
-      "imageFilter=(nil), drawLooper=(nil), isSimpleOpacity=true, "
-      "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
+      "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
+      "isValid=true, hasDiscardableImages=false])");
 }
 
 TEST(PaintOpHelper, DrawIRectToString) {
@@ -126,7 +125,7 @@ TEST(PaintOpHelper, DrawIRectToString) {
             "colorFilter=(nil), maskFilter=(nil), "
             "shader=(nil), hasShader=false, shaderIsOpaque=false, "
             "pathEffect=(nil), imageFilter=(nil), drawLooper=(nil), "
-            "isSimpleOpacity=true, supportsFoldingAlpha=true, isValid=true, "
+            "supportsFoldingAlpha=true, isValid=true, "
             "hasDiscardableImages=false])");
 }
 
@@ -141,8 +140,8 @@ TEST(PaintOpHelper, DrawLineToString) {
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
       "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
-      "imageFilter=(nil), drawLooper=(nil), isSimpleOpacity=true, "
-      "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
+      "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
+      "isValid=true, hasDiscardableImages=false])");
 }
 
 TEST(PaintOpHelper, DrawOvalToString) {
@@ -156,8 +155,8 @@ TEST(PaintOpHelper, DrawOvalToString) {
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
       "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
-      "imageFilter=(nil), drawLooper=(nil), isSimpleOpacity=true, "
-      "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
+      "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
+      "isValid=true, hasDiscardableImages=false])");
 }
 
 TEST(PaintOpHelper, DrawPathToString) {
@@ -172,7 +171,7 @@ TEST(PaintOpHelper, DrawPathToString) {
             "colorFilter=(nil), maskFilter=(nil), "
             "shader=(nil), hasShader=false, shaderIsOpaque=false, "
             "pathEffect=(nil), imageFilter=(nil), drawLooper=(nil), "
-            "isSimpleOpacity=true, supportsFoldingAlpha=true, isValid=true, "
+            "supportsFoldingAlpha=true, isValid=true, "
             "hasDiscardableImages=false], use_cache=false)");
 }
 
@@ -194,8 +193,7 @@ TEST(PaintOpHelper, DrawRectToString) {
       "strokeJoin=kMiter_Join, colorFilter=(nil), "
       "maskFilter=(nil), shader=(nil), hasShader=false, shaderIsOpaque=false, "
       "pathEffect=(nil), imageFilter=(nil), drawLooper=(nil), "
-      "isSimpleOpacity=true, supportsFoldingAlpha=true, isValid=true, "
-      "hasDiscardableImages=false])");
+      "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
 }
 
 TEST(PaintOpHelper, DrawRRectToString) {
@@ -210,8 +208,8 @@ TEST(PaintOpHelper, DrawRRectToString) {
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
       "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
-      "imageFilter=(nil), drawLooper=(nil), isSimpleOpacity=true, "
-      "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
+      "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
+      "isValid=true, hasDiscardableImages=false])");
 }
 
 TEST(PaintOpHelper, DrawTextBlobToString) {
@@ -225,8 +223,8 @@ TEST(PaintOpHelper, DrawTextBlobToString) {
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
       "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
-      "imageFilter=(nil), drawLooper=(nil), isSimpleOpacity=true, "
-      "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
+      "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
+      "isValid=true, hasDiscardableImages=false])");
 }
 
 TEST(PaintOpHelper, NoopToString) {
@@ -254,8 +252,7 @@ TEST(PaintOpHelper, SaveToString) {
 }
 
 TEST(PaintOpHelper, SaveLayerToString) {
-  SkRect bounds = SkRect::MakeXYWH(1, 2, 3, 4);
-  SaveLayerOp op(&bounds, nullptr);
+  SaveLayerOp op(SkRect::MakeXYWH(1, 2, 3, 4), PaintFlags());
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(
       str,
@@ -266,13 +263,11 @@ TEST(PaintOpHelper, SaveLayerToString) {
       "strokeJoin=kMiter_Join, colorFilter=(nil), "
       "maskFilter=(nil), shader=(nil), hasShader=false, shaderIsOpaque=false, "
       "pathEffect=(nil), imageFilter=(nil), drawLooper=(nil), "
-      "isSimpleOpacity=true, supportsFoldingAlpha=true, isValid=true, "
-      "hasDiscardableImages=false])");
+      "supportsFoldingAlpha=true, isValid=true, hasDiscardableImages=false])");
 }
 
 TEST(PaintOpHelper, SaveLayerAlphaToString) {
-  SkRect bounds = SkRect::MakeXYWH(1, 2, 3, 4);
-  SaveLayerAlphaOp op(&bounds, 1.0f);
+  SaveLayerAlphaOp op(SkRect::MakeXYWH(1, 2, 3, 4), 1.0f);
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(str,
             "SaveLayerAlphaOp(bounds=[1.000,2.000 3.000x4.000], alpha=255)");

@@ -423,7 +423,7 @@ TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
   display_item_list->push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
-  display_item_list->push<SaveLayerOp>(nullptr, &record_flags);
+  display_item_list->push<SaveLayerOp>(record_flags);
   display_item_list->push<RestoreOp>();
   display_item_list->EndPaintOfUnpaired(gfx::Rect(output_size));
   display_item_list->Finalize();
@@ -1627,7 +1627,7 @@ class OopTextBlobPixelTest
       PaintFlags layer_flags;
       layer_flags.setImageFilter(std::move(filter));
       filter = nullptr;
-      display_item_list->push<SaveLayerOp>(nullptr, &layer_flags);
+      display_item_list->push<SaveLayerOp>(layer_flags);
     }
 
     PushDrawOp(display_item_list, std::move(filter));

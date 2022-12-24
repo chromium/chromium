@@ -44,8 +44,10 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   bool NeedsFlush() const override;
 
   int save() override;
-  int saveLayer(const SkRect* bounds, const PaintFlags* flags) final;
-  int saveLayerAlpha(const SkRect* bounds, uint8_t alpha) override;
+  int saveLayer(const PaintFlags& flags) override;
+  int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
+  int saveLayerAlpha(uint8_t alpha) override;
+  int saveLayerAlpha(const SkRect& bounds, uint8_t alpha) override;
   void restore() override;
   int getSaveCount() const final;
   void restoreToCount(int save_count) override;
@@ -175,7 +177,6 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   };
 
  protected:
-  virtual int saveLayerInternal(const SkRect* bounds, const PaintFlags* flags);
   virtual void clipRRectInternal(const SkRRect& rrect,
                                  SkClipOp op,
                                  bool antialias);
@@ -205,7 +206,10 @@ class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
   ~InspectableRecordPaintCanvas() override;
 
   int save() override;
-  int saveLayerAlpha(const SkRect* bounds, uint8_t alpha) override;
+  int saveLayer(const PaintFlags& flags) override;
+  int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
+  int saveLayerAlpha(uint8_t alpha) override;
+  int saveLayerAlpha(const SkRect& bounds, uint8_t alpha) override;
   void restore() override;
 
   void translate(SkScalar dx, SkScalar dy) override;
@@ -228,7 +232,6 @@ class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
   using RecordPaintCanvas::clipRect;
 
  private:
-  int saveLayerInternal(const SkRect* bounds, const PaintFlags* flags) override;
   void clipRRectInternal(const SkRRect& rrect,
                          SkClipOp op,
                          bool antialias) override;

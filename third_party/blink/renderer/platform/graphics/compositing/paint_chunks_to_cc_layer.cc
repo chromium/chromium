@@ -599,10 +599,10 @@ void ConversionContext<Result>::StartEffect(
       cc::PaintFlags flags;
       flags.setBlendMode(effect.BlendMode());
       flags.setAlpha(alpha);
-      save_layer_id = push<cc::SaveLayerOp>(nullptr, &flags);
+      save_layer_id = push<cc::SaveLayerOp>(flags);
     } else {
-      save_layer_id = push<cc::SaveLayerAlphaOp>(
-          nullptr, static_cast<float>(alpha / 255.0f));
+      save_layer_id =
+          push<cc::SaveLayerAlphaOp>(static_cast<float>(alpha / 255.0f));
     }
   } else {
     // Handle filter effect.
@@ -612,7 +612,7 @@ void ConversionContext<Result>::StartEffect(
     cc::PaintFlags filter_flags;
     filter_flags.setImageFilter(cc::RenderSurfaceFilters::BuildImageFilter(
         effect.Filter().AsCcFilterOperations(), empty));
-    save_layer_id = push<cc::SaveLayerOp>(nullptr, &filter_flags);
+    save_layer_id = push<cc::SaveLayerOp>(filter_flags);
   }
   result_.EndPaintOfPairedBegin();
 

@@ -73,8 +73,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   bool needs_luminance_layer =
       masker->StyleRef().MaskType() == EMaskType::kLuminance;
   if (needs_luminance_layer) {
-    context.BeginLayer(1.0f, SkBlendMode::kSrcOver, nullptr,
-                       kColorFilterLuminanceToAlpha);
+    context.BeginLayer(kColorFilterLuminanceToAlpha);
   }
   context.DrawRecord(std::move(record));
   if (needs_luminance_layer)

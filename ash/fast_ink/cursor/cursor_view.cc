@@ -250,7 +250,7 @@ void CursorView::OnTimerTick() {
       motion_blur_matrix_.mapRect(&blur_rect);
       cc::PaintFlags flags;
       flags.setImageFilter(motion_blur_filter_);
-      sk_canvas->saveLayer(&blur_rect, &flags);
+      sk_canvas->saveLayer(blur_rect, flags);
       sk_canvas->concat(SkM44(motion_blur_matrix_));
       paint.canvas().DrawImageInt(cursor_image_, 0, 0);
       sk_canvas->restore();

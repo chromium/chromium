@@ -459,14 +459,13 @@ class PLATFORM_EXPORT GraphicsContext {
                        const AutoDarkMode& auto_dark_mode,
                        const cc::PaintFlags* flags = nullptr);
 
-  // beginLayer()/endLayer() behave like save()/restore() for CTM and clip
-  // states. Apply SkBlendMode when the layer is composited on the backdrop
-  // (i.e. endLayer()).
-  void BeginLayer(float opacity = 1.0f,
-                  SkBlendMode = SkBlendMode::kSrcOver,
-                  const gfx::RectF* = nullptr,
-                  ColorFilter = kColorFilterNone,
-                  sk_sp<PaintFilter> = nullptr);
+  // BeginLayer()/EndLayer() behave like Save()/Restore() for CTM and clip
+  // states. Apply opacity, blend mode, filter when the layer is composited on
+  // the backdrop (i.e. EndLayer()).
+  void BeginLayer(float opacity = 1.0f);
+  void BeginLayer(SkBlendMode);
+  void BeginLayer(ColorFilter);
+  void BeginLayer(sk_sp<PaintFilter>);
   void EndLayer();
 
   // Instead of being dispatched to the active canvas, draw commands following
@@ -582,8 +581,7 @@ class PLATFORM_EXPORT GraphicsContext {
   template <typename DrawTextFunc>
   void DrawTextPasses(const AutoDarkMode& auto_dark_mode, const DrawTextFunc&);
 
-  void SaveLayer(const SkRect* bounds, const cc::PaintFlags*);
-  void RestoreLayer();
+  void BeginLayer(const cc::PaintFlags&);
 
   // SkCanvas wrappers.
   void ClipRRect(const SkRRect&,
@@ -618,7 +616,7 @@ class PLATFORM_EXPORT GraphicsContext {
   PaintController& paint_controller_;
 
   // Paint states stack. The state controls the appearance of drawn content, so
-  // this stack enables local drawing state changes with save()/restore() calls.
+  // this stack enables local drawing state changes with Save()/Restore() calls.
   // We do not delete from this stack to avoid memory churn.
   Vector<std::unique_ptr<GraphicsContextState>> paint_state_stack_;
 

@@ -1190,7 +1190,7 @@ void BoxPainterBase::PaintFillLayerTextFillBox(
   GraphicsContextStateSaver background_clip_state_saver(context, false);
   background_clip_state_saver.Save();
   context.Clip(mask_rect);
-  context.BeginLayer(1, composite_op);
+  context.BeginLayer(composite_op);
 
   PaintFillLayerBackground(document_, context, info, node_, style_, image,
                            SkBlendMode::kSrcOver, geometry,
@@ -1199,7 +1199,7 @@ void BoxPainterBase::PaintFillLayerTextFillBox(
   // Create the text mask layer and draw the text into the mask. We do this by
   // painting using a special paint phase that signals to InlineTextBoxes that
   // they should just add their contents to the clip.
-  context.BeginLayer(1, SkBlendMode::kDstIn);
+  context.BeginLayer(SkBlendMode::kDstIn);
 
   PaintTextClipMask(paint_info, mask_rect, scrolled_paint_rect.offset,
                     object_has_multiple_boxes);

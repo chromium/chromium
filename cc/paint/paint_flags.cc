@@ -103,27 +103,6 @@ bool PaintFlags::getFillPath(const SkPath& src,
   return skpathutils::FillPathWithPaint(src, paint, dst, cull_rect, res_scale);
 }
 
-bool PaintFlags::IsSimpleOpacity() const {
-  uint32_t color = getColor();
-  if (SK_ColorTRANSPARENT != SkColorSetA(color, SK_AlphaTRANSPARENT))
-    return false;
-  if (getBlendMode() != SkBlendMode::kSrcOver)
-    return false;
-  if (getLooper())
-    return false;
-  if (getPathEffect())
-    return false;
-  if (HasShader())
-    return false;
-  if (getMaskFilter())
-    return false;
-  if (getColorFilter())
-    return false;
-  if (getImageFilter())
-    return false;
-  return true;
-}
-
 bool PaintFlags::SupportsFoldingAlpha() const {
   if (getBlendMode() != SkBlendMode::kSrcOver)
     return false;
