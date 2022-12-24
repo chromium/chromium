@@ -451,9 +451,7 @@ crbug.com/1377822 external/wpt/editing/crashtests/inserthorizontalrule-in-textar
 
 # This test depends on synchronous focus() which does not exist (anymore?).
 crbug.com/1074482 external/wpt/html/interaction/focus/the-autofocus-attribute/update-the-rendering.html [ Failure ]
-crbug.com/1074482 external/wpt/clipboard-apis/feature-policy/clipboard-read/clipboard-read-enabled-by-feature-policy-cross-origin-tentative.https.sub.html [ Failure Pass ]
 crbug.com/1074482 external/wpt/clipboard-apis/feature-policy/clipboard-write/clipboard-write-enabled-by-feature-policy-cross-origin-tentative.https.sub.html [ Failure Pass ]
-crbug.com/1105278 external/wpt/clipboard-apis/feature-policy/clipboard-write/clipboard-write-enabled-on-self-origin-by-feature-policy.tentative.https.sub.html [ Failure Pass ]
 crbug.com/1104125 external/wpt/clipboard-apis/feature-policy/clipboard-read/clipboard-read-enabled-on-self-origin-by-feature-policy.tentative.https.sub.html [ Failure Pass ]
 
 # This test has a bug in it that prevents it from being able to deal with order
@@ -1882,7 +1880,6 @@ crbug.com/1093447 virtual/android/fullscreen/rendering/backdrop-video.html [ Fai
 
 # gpuBenchmarking.pinchBy is busted on desktops for touchscreen pinch
 crbug.com/787615 [ Win ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen.html [ Failure Pass ]
-crbug.com/787615 [ Linux ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen.html [ Failure Pass ]
 
 # gpuBenchmarking.pinchBy is not implemented on Mac for touchscreen pinch
 crbug.com/613672 [ Mac ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen.html [ Crash Failure Pass Timeout ]
@@ -2338,7 +2335,6 @@ crbug.com/723741 virtual/threaded/http/tests/devtools/tracing/idle-callback.js [
 # These need to be updated but appear not to be related to that change.
 crbug.com/626703 http/tests/devtools/indexeddb/database-refresh-view.js [ Failure Pass ]
 
-crbug.com/805463 external/wpt/acid/acid3/numbered-tests.html [ Crash Failure Pass Timeout ]
 
 
 # Failure messages are unstable so we cannot create baselines.
@@ -2997,8 +2993,6 @@ crbug.com/626703 external/wpt/html/rendering/widgets/the-select-element/option-a
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/performance-timeline/tentative/include-frames-from-child-cross-origin-grandchild.sub.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/url/a-element-xhtml.xhtml?exclude=(file|javascript|mailto) [ Crash Failure ]
-crbug.com/626703 [ Mac12 ] external/wpt/url/url-constructor.any.html?include=mailto [ Crash Failure ]
-crbug.com/626703 [ Win10.20h2 ] external/wpt/url/url-constructor.any.html?include=mailto [ Crash Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Crash Failure ]
 crbug.com/626703 [ Mac12-arm64 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/url/a-element-origin.html [ Crash Failure ]
@@ -4266,8 +4260,6 @@ crbug.com/948785 fast/events/pointerevents/pointer-event-consumed-touchstart-in-
 crbug.com/954349 fast/forms/autofocus-in-sandbox-with-allow-scripts.html [ Timeout ]
 
 # Sheriff 2019-05-13
-crbug.com/865432 [ Linux ] external/wpt/workers/modules/dedicated-worker-import-blob-url.any.worker.html [ Pass Timeout ]
-crbug.com/867532 [ Linux ] external/wpt/workers/modules/dedicated-worker-import-data-url.any.worker.html [ Pass Timeout ]
 
 # Sheriff 2020-05-18
 crbug.com/988248 media/track/track-cue-rendering-position-auto.html [ Failure Pass ]
@@ -4411,12 +4403,10 @@ crbug.com/1027434 [ Mac11 ] external/wpt/html/browsers/origin/cross-origin-objec
 crbug.com/1350255 [ Mac12 ] external/wpt/html/browsers/origin/cross-origin-objects/location-properties-smoke-test.html [ Timeout ]
 
 # Sheriff 2019-12-02
-crbug.com/1029528 [ Linux ] http/tests/devtools/network/oopif-content.js [ Failure Pass ]
 
 crbug.com/1031345 media/controls/overlay-play-button-tap-to-hide.html [ Pass Timeout ]
 
 # Temporary SkiaRenderer regressions
-crbug.com/1029941 [ Linux ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 crbug.com/1029941 [ Linux ] transforms/3d/point-mapping/3d-point-mapping-deep.html [ Failure ]
 crbug.com/1029941 [ Linux ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-layer-filter.html [ Failure ]
 crbug.com/1029941 [ Win ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
@@ -4938,7 +4928,6 @@ crbug.com/1180491 [ Linux ] external/wpt/storage-access-api/storageAccess.testdr
 crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface/test-analyser-output.html [ Failure Pass ]
 
 # Sheriff 2021-02-25
-crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-view.js [ Failure Pass ]
 
 # Sheriff 2021-03-08
 crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.html [ Failure Pass ]
@@ -5300,7 +5289,6 @@ crbug.com/1219499 external/wpt/websockets/Create-blocked-port.any.html?wpt_flags
 crbug.com/1220007 [ Linux ] fullscreen/full-screen-iframe-allowed-video.html [ Failure Pass Timeout ]
 
 # Sheriff
-crbug.com/1222097 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/blob.https.html [ Crash Failure Pass Timeout ]
 crbug.com/1222097 external/wpt/uievents/order-of-events/mouse-events/mouseover-out.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2021-06-25
@@ -6302,7 +6290,6 @@ crbug.com/1369642 [ Mac ] external/wpt/encoding/unsupported-labels.window.html [
 crbug.com/1159586 virtual/post-message-first-party-to-third-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/first-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
 crbug.com/1159586 virtual/post-message-first-party-to-third-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/third-party-to-first-party-cross-partition-same-origin.sub.html [ Timeout ]
 crbug.com/1159586 virtual/post-message-third-party-to-first-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/first-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
-crbug.com/1159586 virtual/post-message-third-party-to-first-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/third-party-to-first-party-cross-partition-same-origin.sub.html [ Timeout ]
 crbug.com/1159586 virtual/post-message-third-party-to-third-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/third-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
 
 # Sheriff 2022-10-03
