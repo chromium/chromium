@@ -55,8 +55,7 @@ void PasswordSyncControllerDelegateAndroid::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_service_ = sync_service;
   sync_observation_.Observe(sync_service);
-  is_sync_enabled_ = IsSyncEnabled(IsPasswordSyncEnabled(sync_service));
-  UpdateCredentialManagerSyncStatus(is_sync_enabled_.value());
+  is_sync_enabled_ = IsSyncEnabled(IsPasswordSyncEnabled(sync_service_));
 }
 
 void PasswordSyncControllerDelegateAndroid::OnSyncStarting(
@@ -131,7 +130,20 @@ void PasswordSyncControllerDelegateAndroid::
 
 void PasswordSyncControllerDelegateAndroid::OnStateChanged(
     syncer::SyncService* sync) {
-  UpdateCredentialManagerSyncStatus(IsSyncEnabled(IsPasswordSyncEnabled(sync)));
+  // Notify credential manager about current account on startup or if
+  // password sync setting has changed.
+  if (sync_util::IsPasswordSyncEnabled(sync) &&
+      (!credential_manager_sync_setting_.has_value() ||
+       credential_manager_sync_setting_ == IsSyncEnabled(false))) {
+    bridge_->NotifyCredentialManagerWhenSyncing();
+    credential_manager_sync_setting_ = IsSyncEnabled(true);
+  }
+  if (!sync_util::IsPasswordSyncEnabled(sync) &&
+      (!credential_manager_sync_setting_.has_value() ||
+       credential_manager_sync_setting_ == IsSyncEnabled(true))) {
+    bridge_->NotifyCredentialManagerWhenNotSyncing();
+    credential_manager_sync_setting_ = IsSyncEnabled(false);
+  }
 }
 
 void PasswordSyncControllerDelegateAndroid::OnSyncShutdown(
@@ -158,21 +170,6 @@ void PasswordSyncControllerDelegateAndroid::OnCredentialManagerError(
     base::UmaHistogramSparse(
         BuildCredentialManagerNotificationMetricName("APIErrorCode"),
         api_error_code);
-  }
-}
-
-void PasswordSyncControllerDelegateAndroid::UpdateCredentialManagerSyncStatus(
-    IsSyncEnabled is_enabled) {
-  if (credential_manager_sync_setting_.has_value() &&
-      credential_manager_sync_setting_ == is_enabled) {
-    return;
-  }
-
-  credential_manager_sync_setting_ = is_enabled;
-  if (is_enabled) {
-    bridge_->NotifyCredentialManagerWhenSyncing();
-  } else {
-    bridge_->NotifyCredentialManagerWhenNotSyncing();
   }
 }
 
