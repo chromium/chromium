@@ -2716,6 +2716,7 @@ Manylion ychwanegol:
 <translation id="7815407501681723534">Canfuwyd <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> ar gyfer '<ph name="SEARCH_STRING" />'</translation>
 <translation id="7822320754433038727">Hela a saethu</translation>
 <translation id="782886543891417279">Mae'n bosib y bydd y Wi-Fi rydych yn ei ddefnyddio (<ph name="WIFI_NAME" />) yn gofyn i chi fynd i'w dudalen fewngofnodi.</translation>
+<translation id="7840103971441592723">Wedi dechrau recordio'r sgrîn</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Dim}=1{1 ap (<ph name="EXAMPLE_APP_1" />)}=2{2 ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">Gadael y wefan?</translation>
@@ -2894,6 +2895,7 @@ Manylion ychwanegol:
 <translation id="8282947398454257691">Gwybod dynodwr eich dyfais unigryw</translation>
 <translation id="8284769179630993263">Rheoli eich Pori'n Ddiogel a rhagor yng ngosodiadau Chrome</translation>
 <translation id="8286036467436129157">Mewngofnodi</translation>
+<translation id="8286799286781881307">Gall apiau a awdurdodwyd gan eich gweinyddwr ddal yr holl sgriniau sydd wedi'u hatodi i'ch dyfais. Gall y wybodaeth hon gael ei phrosesu yn lleol neu ei huwchlwytho i weinyddion eich sefydliad.</translation>
 <translation id="8288807391153049143">Dangos tystysgrif</translation>
 <translation id="8289355894181816810">Cysylltwch â'ch gweinyddwr rhwydwaith os nad ydych yn siŵr beth mae hyn yn ei olygu.</translation>
 <translation id="8293206222192510085">Ychwanegu Nod Tudalen</translation>

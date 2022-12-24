@@ -105,6 +105,7 @@
 <translation id="1087965115100412394">সাইটগুলিকে MID ডিভাইস কানেক্ট করার অনুমতি দেয় না</translation>
 <translation id="1088654056000736875">Chrome আপনার কম্পিউটার থেকে ক্ষতিকারক সফ্টওয়্যার সরিয়ে দিচ্ছে…</translation>
 <translation id="1088659085457112967">রিডার মোডে যান</translation>
+<translation id="1089407731410758060">থিম পরিবর্তন করুন</translation>
 <translation id="1090126737595388931">কোনো পৃষ্ঠভূমি অ্যাপ্লিকেশান চলছে না</translation>
 <translation id="1090541560108055381">পেয়ার করার আগে, এই কোডটি দুটি ডিভাইসে একই আছে কিনা ভাল করে দেখে নিন</translation>
 <translation id="1091767800771861448">ছেড়ে যেতে ESCAPE টিপুন (কেবল নন-অফিশিয়াল বিল্ড)৷</translation>
@@ -934,6 +935,7 @@
 <translation id="18260074040409954">যেকোনও ডিভাইসে আপনি সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন। সেগুলি <ph name="EMAIL" />-এর জন্য <ph name="GOOGLE_PASSWORD_MANAGER" />-এ সেভ হয়</translation>
 <translation id="1826192255355608658">আপনার Chrome ব্রাউজারের বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="1826516787628120939">চেক করা হচ্ছে</translation>
+<translation id="1827504459960247692">হটস্পটের নাম</translation>
 <translation id="1828378091493947763">এই ডিভাইসে এই প্লাগ-ইন সমর্থিত নয়</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{সবকটি &amp;খুলুন}=1{বুকমার্ক &amp;খুলুন}one{সবকটি ({COUNT}টি) &amp;খুলুন}other{সবকটি ({COUNT}টি) &amp;খুলুন}}</translation>
 <translation id="1828901632669367785">সিস্টেম ডায়ালগ ব্যবহার করে প্রিন্ট করুন...</translation>
@@ -1244,6 +1246,7 @@
 <translation id="2101225219012730419">ভার্সন:</translation>
 <translation id="2102396546234652240">সাইটগুলিকে আপনার মাইক্রোফোন ব্যবহার করার অনুমতি দেয় না</translation>
 <translation id="2102495993840063010">Android অ্যাপ্লিকেশানগুলি</translation>
+<translation id="2104166991923847969">হটস্পট অটোমেটিক বন্ধ করুন</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> লুকানো আছে</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ফোন নম্বর}one{#টি ফোন নম্বর}other{#টি ফোন নম্বর}}</translation>
 <translation id="211144231511833662">টাইপগুলি মুছে দিন</translation>
@@ -1827,6 +1830,7 @@
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> এ আপনার ডেটা পড়ুন এবং পরিবর্তন করুন</translation>
 <translation id="2618797463720777311">'নিয়ারবাই শেয়ার' ফিচার সেট আপ করুন</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ফাইলটি নিরাপদে ডাউনলোড করা যাচ্ছে না।</translation>
+<translation id="2620245777360407679">ডিভাইস বর্তমানে হটস্পটের সাথে কানেক্ট করা রয়েছে</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="262154978979441594">Google Assistant-এর ভয়েস মডেলকে প্রশিক্ষণ দিন</translation>
 <translation id="26224892172169984">প্রোটোকল পরিচালনার জন্য কোনও সাইটকে মঞ্জুরি দেবেন না</translation>
@@ -7152,6 +7156,7 @@
 <translation id="7614260613810441905">কোনও সাইট আপনার ডিভাইসে থাকা ফাইল বা ফোল্ডার এডিট করতে চাইলে অনুমতি নিতে বলুন (সাজেস্ট করা হয়েছে)</translation>
 <translation id="761530003705945209">Google Drive-এ ব্যাক-আপ নিন। যেকোনও সময় সহজেই ডেটা রিস্টোর করুন অথবা অন্য ডিভাইস ব্যবহার করুন। আপনার ব্যাক-আপে অ্যাপ ডেটা থাকে। আপনার ব্যাক-আপ ডেটা Google-এ আপলোড করা হয় এবং আপনার Google অ্যাকাউন্টের পাসওয়ার্ড ব্যবহার করে সেগুলিকে এনক্রিপ্ট করা হয়।</translation>
 <translation id="7615365294369022248">অ্যাকাউন্ট যোগ করার সময় কোনও সমস্যা হয়েছে</translation>
+<translation id="7615807797520072741">ক্লাসিক Chrome-এ রিসেট করুন</translation>
 <translation id="7616214729753637086">ডিভাইস নথিভুক্ত করা হচ্ছে...</translation>
 <translation id="7617263010641145920">Play Store অ্যাপ চালু করুন</translation>
 <translation id="7617648809369507487">'কম শব্দযুক্ত মেসেজিং' বিকল্প ব্যবহার করুন</translation>
@@ -8459,6 +8464,7 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{অন্য উইন্ডোতে ট্যাব সরিয়ে নিয়ে যান}one{অন্য উইন্ডোতে ট্যাবগুলি সরিয়ে নিয়ে যান}other{অন্য উইন্ডোতে ট্যাবগুলি সরিয়ে নিয়ে যান}}</translation>
 <translation id="8805140816472474147">সিঙ্ক করার জন্য সিঙ্ক সেটিংস নিশ্চিত করুন।</translation>
 <translation id="8806680466228877631">ভুলবশত বন্ধ হয়ে যাওয়া ট্যাব <ph name="SHORTCUT" /> প্রেস করলে আবার খুলে যায়</translation>
+<translation id="8807588541160250261">কোনও ডিভাইস যখন কানেক্ট করা নেই</translation>
 <translation id="8807632654848257479">স্থায়ী</translation>
 <translation id="8808478386290700967">ওয়েব স্টোর</translation>
 <translation id="8808686172382650546">বিড়াল</translation>

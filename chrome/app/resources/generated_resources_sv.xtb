@@ -105,6 +105,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1087965115100412394">Tillåt inte att webbplatser ansluter till MIDI-enheter</translation>
 <translation id="1088654056000736875">Chrome tar bort skadlig programvara från datorn …</translation>
 <translation id="1088659085457112967">Aktivera läsarläge</translation>
+<translation id="1089407731410758060">Byt tema</translation>
 <translation id="1090126737595388931">Inga bakgrundsprogram körs</translation>
 <translation id="1090541560108055381">Kontrollera att samma kod visas på båda enheterna innan du parkopplar</translation>
 <translation id="1091767800771861448">Tryck på Esc om du vill hoppa över (endast versioner som inte är officiella).</translation>
@@ -933,6 +934,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="18260074040409954">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i <ph name="GOOGLE_PASSWORD_MANAGER" /> för <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Synkronisera bokmärken, lösenord, historik med mera i webbläsaren Chrome</translation>
 <translation id="1826516787628120939">Kontrollerar</translation>
+<translation id="1827504459960247692">Namn på surfzon</translation>
 <translation id="1828378091493947763">Enheten har inte stöd för det här pluginprogrammet</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Öppna alla}=1{&amp;Öppna bokmärke}other{&amp;Öppna alla ({COUNT})}}</translation>
 <translation id="1828901632669367785">Skriv ut via systemets dialogruta ...</translation>
@@ -1243,6 +1245,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2101225219012730419">Version:</translation>
 <translation id="2102396546234652240">Tillåt inte att webbplatser använder mikrofonen</translation>
 <translation id="2102495993840063010">Android-appar</translation>
+<translation id="2104166991923847969">Inaktivera surfzon automatiskt</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> har dolts</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# telefonnummer}}</translation>
 <translation id="211144231511833662">Rensa typer</translation>
@@ -1826,6 +1829,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2616366145935564096">Läs och ändra dina uppgifter på <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Konfigurera Närdelning</translation>
 <translation id="2620215283731032047">Det går inte att ladda ned <ph name="FILE_NAME" /> på ett säkert sätt.</translation>
+<translation id="2620245777360407679">Enheter som för närvarande är anslutna till surfzonen</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Träna Google-assistentens röstmodell</translation>
 <translation id="26224892172169984">Tillåt inte att någon webbplats hanterar protokoll</translation>
@@ -2501,6 +2505,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="325238099842880997">Skapa digitala regler för hur barnen får spela, utforska och göra skolarbetet hemifrån</translation>
 <translation id="3253448572569133955">Okänt konto</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{Inga säkerhetsproblem hittades}=1{{COUNT} säkerhetsproblem hittades}other{{COUNT} säkerhetsproblem hittades}}</translation>
+<translation id="3254451942070605467">Laddar ned <ph name="FILE_NAME" />, <ph name="PERCENT_REMAINING" /> % återstår</translation>
 <translation id="3254516606912442756">Funktionen för att automatiskt identifiera tidzon är inaktiverad</translation>
 <translation id="3254715652085014625">Öppna Chrome på Android-telefonen, tryck på Inställningar &gt; Lösenord &gt; Använd telefonen som säkerhetsnyckel och följ anvisningarna som visas.</translation>
 <translation id="3255355328033513170">All data som lagrats av <ph name="SITE_GROUP_NAME" /> och webbplatser under den raderas. Även cookies raderas. Du loggas ut från webbplatserna i fråga, även på öppna flikar.</translation>
@@ -3323,6 +3328,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3987993985790029246">Kopiera länk</translation>
 <translation id="3988996860813292272">Välj tidszon</translation>
 <translation id="399179161741278232">Importerade</translation>
+<translation id="3992008114154328194">Laddar ned <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993887353483242788">Synkronisera <ph name="DEVICE_TYPE" /> så att inställningarna kan användas på alla enheter där du är inloggad på Google-kontot. Detta gäller bland annat appar, inställningar, wifi-lösenord, språk, bakgrund och kortkommandon.</translation>
 <translation id="3994318741694670028">Tyvärr är din dator konfigurerad med ett felaktigt maskinvaru-id. Detta förhindrar att ChromeOS Flex uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara sårbar för angrepp<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Lås upp mobilen och håll den närmare din <ph name="DEVICE_TYPE" />.</translation>
@@ -7144,6 +7150,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7614260613810441905">Fråga när en webbplats vill kunna redigera filer eller mappar på enheten (rekommenderas)</translation>
 <translation id="761530003705945209">Säkerhetskopiera på Google Drive. Återställ data eller byt enkelt enhet när du vill. Säkerhetskopian innehåller appdata. Säkerhetskopiorna krypteras med hjälp av Google-kontots lösenord och laddas upp på Google.</translation>
 <translation id="7615365294369022248">Ett fel uppstod när kontot skulle läggas till</translation>
+<translation id="7615807797520072741">Återställ till klassiska Chrome</translation>
 <translation id="7616214729753637086">Enheten registreras …</translation>
 <translation id="7617263010641145920">Aktivera Play Butik</translation>
 <translation id="7617648809369507487">Få mer diskreta meddelanden</translation>
@@ -8451,6 +8458,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Flytta fliken till ett annat fönster}other{Flytta flikarna till ett annat fönster}}</translation>
 <translation id="8805140816472474147">Bekräfta synkroniseringsinställningarna för att börja synkronisera.</translation>
 <translation id="8806680466228877631">Flikar som stängts av misstag kan öppnas på nytt med <ph name="SHORTCUT" /></translation>
+<translation id="8807588541160250261">När inga enheter är anslutna</translation>
 <translation id="8807632654848257479">Stabil</translation>
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Katt</translation>

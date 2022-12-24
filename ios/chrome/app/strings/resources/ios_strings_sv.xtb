@@ -510,6 +510,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="481968316161811770">Cookies, webbplatsdata</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} och 1 till}other{{domain} och {count} till}}</translation>
 <translation id="4826218269716039351">Blockera cookies från tredje part</translation>
+<translation id="4826588772550366629">kamera och mikrofon</translation>
 <translation id="4826726074642088322">Dela markering</translation>
 <translation id="48274138579728272">Markera som läst</translation>
 <translation id="4833686396768033263">De senaste flikarna är inte tillgängliga</translation>
@@ -562,6 +563,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5190835502935405962">Bokmärkesfältet</translation>
 <translation id="519530786644929958">Nedladdningen misslyckades. Det går inte att försöka igen.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Vill du tillåta att <ph name="SITE_NAME" /> använder din <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Hjälp till att förbättra säkerheten på webben för alla</translation>
 <translation id="5228579091201413441">Aktivera synkronisering</translation>
 <translation id="5232485538978018676">Logga in med ett hanterat konto</translation>

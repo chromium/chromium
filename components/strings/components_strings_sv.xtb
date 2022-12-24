@@ -2716,6 +2716,7 @@ Mer information.
 <translation id="7815407501681723534">Hittade <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> för <ph name="SEARCH_STRING" /></translation>
 <translation id="7822320754433038727">Jakt och skytte</translation>
 <translation id="782886543891417279">wifi-nätverket du använder (<ph name="WIFI_NAME" />) kanske kräver att du besöker dess inloggningssida.</translation>
+<translation id="7840103971441592723">Skärmbild/skärminspelning har startats</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Inga}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7862185352068345852">Vill du lämna webbplatsen?</translation>
@@ -2894,6 +2895,7 @@ Mer information.
 <translation id="8282947398454257691">Veta din unika enhetsidentifierare</translation>
 <translation id="8284769179630993263">Hantera Säker webbsökning med mera i inställningarna för Chrome</translation>
 <translation id="8286036467436129157">Logga in</translation>
+<translation id="8286799286781881307">Appar som har godkänts av administratören kan ta skärmbilder på alla skärmar som är kopplade till enheten. Den här informationen kan behandlas lokalt eller laddas upp till organisationens servrar.</translation>
 <translation id="8288807391153049143">Visa certifikat</translation>
 <translation id="8289355894181816810">Kontakta din nätverksadministratör om du är osäker på vad det här innebär.</translation>
 <translation id="8293206222192510085">Lägg till bokmärke</translation>

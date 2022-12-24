@@ -510,6 +510,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="481968316161811770">Cwcis, Data Gwefan</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ac 1 arall}two{{domain} a {count} arall}few{{domain} a {count} arall}many{{domain} a {count} arall}other{{domain} a {count} arall}}</translation>
 <translation id="4826218269716039351">Rhwystro Trydydd Parti</translation>
+<translation id="4826588772550366629">camera a meicroffon</translation>
 <translation id="4826726074642088322">Rhannu'r Testun a Amlygir</translation>
 <translation id="48274138579728272">Marcio fel wedi'i Ddarllen</translation>
 <translation id="4833686396768033263">Nid yw'r Tabiau Diweddar ar gael</translation>
@@ -562,6 +563,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5190835502935405962">Bar Nodau Tudalen</translation>
 <translation id="519530786644929958">Lawrlwytho wedi methu ac ni ellir rhoi cynni arall arni.</translation>
 <translation id="5197255632782567636">Rhyngrwyd</translation>
+<translation id="5211488077761630279">Caniatáu i "<ph name="SITE_NAME" />" ddefnyddio eich <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Helpwch i Wella Diogelwch ar y We i Bawb</translation>
 <translation id="5228579091201413441">Galluogi cysoni</translation>
 <translation id="5232485538978018676">Mewngofnodwch gyda Chyfrif a Reolir</translation>

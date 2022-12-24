@@ -510,6 +510,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="481968316161811770">Cookie-k, webhelyadatok</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} és további 1}other{{domain} és további {count}}}</translation>
 <translation id="4826218269716039351">Harmadik féltől származó cookie-k letiltása</translation>
+<translation id="4826588772550366629">kamera és mikrofon</translation>
 <translation id="4826726074642088322">Kiemelés megosztása</translation>
 <translation id="48274138579728272">Megjelölés olvasottként</translation>
 <translation id="4833686396768033263">A nemrég megnyitott lapok nem állnak rendelkezésre</translation>
@@ -562,6 +563,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5190835502935405962">Könyvjelzősáv</translation>
 <translation id="519530786644929958">A letöltés meghiúsult, nem lehet újrapróbálni.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Engedélyezi a(z) „<ph name="SITE_NAME" />” számára a(z) <ph name="PERMISSION" /> használatát?</translation>
 <translation id="5219295696240154694">Segítsen nekünk abban, hogy mindenkinek biztonságosabbá tegyük az internetezést</translation>
 <translation id="5228579091201413441">Szinkronizálás bekapcsolása</translation>
 <translation id="5232485538978018676">Bejelentkezés felügyelt fiókkal</translation>

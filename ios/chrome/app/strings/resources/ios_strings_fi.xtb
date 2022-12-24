@@ -510,6 +510,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="481968316161811770">Evästeet, sivuston tiedot</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ja 1 muu}other{{domain} ja {count} muuta}}</translation>
 <translation id="4826218269716039351">Estä kolmannen osapuolen evästeet</translation>
+<translation id="4826588772550366629">kameraasi ja mikrofoniasi</translation>
 <translation id="4826726074642088322">Jaa korostettu</translation>
 <translation id="48274138579728272">Merkitse luetuksi</translation>
 <translation id="4833686396768033263">Viimeaikaiset välilehdet eivät ole saatavilla</translation>
@@ -562,6 +563,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5190835502935405962">Kirjanmerkkipalkki</translation>
 <translation id="519530786644929958">Lataus epäonnistui, eikä sitä voi yrittää uudelleen.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Saako <ph name="SITE_NAME" /> käyttää <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Auta lisäämään verkon turvallisuutta kaikille</translation>
 <translation id="5228579091201413441">Ota synkronointi käyttöön</translation>
 <translation id="5232485538978018676">Kirjaudu sisään hallinnoidulla tilillä</translation>

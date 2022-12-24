@@ -105,6 +105,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1087965115100412394">Ne pas autoriser les sites à se connecter à des appareils MIDI</translation>
 <translation id="1088654056000736875">Chrome supprime des logiciels malveillants de votre ordinateur…</translation>
 <translation id="1088659085457112967">Accéder au mode Lecteur</translation>
+<translation id="1089407731410758060">Changer de thème</translation>
 <translation id="1090126737595388931">Aucune application active en arrière plan</translation>
 <translation id="1090541560108055381">Avant d'associer les appareils, assurez-vous que ce code est le même sur les deux</translation>
 <translation id="1091767800771861448">Appuyez sur ECHAP pour ignorer (versions non officielles uniquement).</translation>
@@ -923,6 +924,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="18260074040409954">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés sur le <ph name="GOOGLE_PASSWORD_MANAGER" /> pour <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Synchroniser entre autres les favoris, les mots de passe et l'historique de votre navigateur Chrome</translation>
 <translation id="1826516787628120939">Vérification en cours…</translation>
+<translation id="1827504459960247692">Nom du point d'accès</translation>
 <translation id="1828378091493947763">Ce plug-in n'est pas compatible avec cet appareil.</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{Tout &amp;ouvrir}=1{&amp;Ouvrir le favori}one{Tout &amp;ouvrir ({COUNT})}other{Tout &amp;ouvrir ({COUNT})}}</translation>
 <translation id="1828901632669367785">Imprimer via la boîte de dialogue système...</translation>
@@ -1232,6 +1234,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2101225219012730419">Version :</translation>
 <translation id="2102396546234652240">Ne pas autoriser les sites à utiliser votre micro</translation>
 <translation id="2102495993840063010">Applications Android</translation>
+<translation id="2104166991923847969">Désactiver le point d'accès automatiquement</translation>
 <translation id="2105809836724866556">Vous avez masqué : <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>
 <translation id="211144231511833662">Effacer les types</translation>
@@ -1812,6 +1815,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2616366145935564096">Accéder aux données du site <ph name="WEBSITE_1" /> et les modifier</translation>
 <translation id="2618797463720777311">Configurer le Partage à proximité</translation>
 <translation id="2620215283731032047">Impossible de télécharger <ph name="FILE_NAME" /> de manière sécurisée.</translation>
+<translation id="2620245777360407679">Appareils actuellement connectés au point d'accès</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="262154978979441594">Entraîner l'empreinte vocale de l'Assistant Google</translation>
 <translation id="26224892172169984">Interdire à tous les sites de gérer les protocoles</translation>
@@ -7134,6 +7138,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7614260613810441905">Vous demander lorsqu'un site souhaite modifier des fichiers ou des dossiers sur votre appareil (recommandé)</translation>
 <translation id="761530003705945209">Sauvegarder dans Google Drive. Restaurez vos données ou changez d'appareil facilement et à tout moment. Les données des applications sont également sauvegardées. Vos sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe de votre compte Google.</translation>
 <translation id="7615365294369022248">Une erreur s'est produite lors de l'ajout d'un compte</translation>
+<translation id="7615807797520072741">Rétablir le thème classique de Chrome</translation>
 <translation id="7616214729753637086">Enregistrement de l'appareil...</translation>
 <translation id="7617263010641145920">Activer le Play Store</translation>
 <translation id="7617648809369507487">Activer les notifications discrètes</translation>
@@ -8442,6 +8447,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Déplacer l'onglet vers une autre fenêtre}one{Déplacer l'onglet vers une autre fenêtre}other{Déplacer les onglets vers une autre fenêtre}}</translation>
 <translation id="8805140816472474147">Confirmez les paramètres de synchronisation pour lancer la synchronisation.</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> permet de rouvrir les onglets fermés involontairement</translation>
+<translation id="8807588541160250261">Lorsqu'il n'y a aucun appareil connecté</translation>
 <translation id="8807632654848257479">Stable</translation>
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Chat</translation>

@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">GGGG</translation>
 <translation id="1013952917065545813">Ovdje se možete vratiti da biste ponovo otvorili kartice koje ste nedavno zatvorili</translation>
 <translation id="1016495303386450659">Stavka je ažurirana</translation>
+<translation id="1035980983510608210">Zatvaranjem svih kartica zatvorit će se i prikvačene kartice.</translation>
 <translation id="1044891598689252897">Web-lokacije će normalno raditi</translation>
 <translation id="1049743911850919806">Anonimno</translation>
 <translation id="105093091697134113">Sljedeći računi koriste zaporke koje su ugrožene zbog povrede podataka treće strane ili unesene na obmanjujuću web-lokaciju. Odmah promijenite te zaporke da biste zaštitili svoje račune.</translation>
@@ -208,6 +209,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2578571896248130439">Pošalji web-stranicu</translation>
 <translation id="2584132361465095047">Dodaj račun…</translation>
 <translation id="2600682495497606169">Izbriši kolačiće web-lokacija</translation>
+<translation id="2609008503159898744">Zatvoriti sve kartice?</translation>
 <translation id="2625189173221582860">Zaporka je kopirana</translation>
 <translation id="2626236249646841566">Provjerite vezu i pokušajte se ponovno prijaviti.</translation>
 <translation id="2637313651144986786">Pretraži kartice...</translation>
@@ -299,6 +301,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3174662312949010067">Spremljene zaporke možete upotrebljavati i na vašim ostalim uređajima.</translation>
 <translation id="3175081911749765310">Web-usluge</translation>
 <translation id="3178650076442119961">Aktivan danas</translation>
+<translation id="3181261441371833039">Zatvori samo uobičajene kartice</translation>
 <translation id="3181825792072797598">Uključi Sinkronizaciju</translation>
 <translation id="3181954750937456830">Sigurno pregledavanje (štiti vas i vaš uređaj od opasnih web-lokacija)</translation>
 <translation id="3184767182050912705">Otključaj pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>

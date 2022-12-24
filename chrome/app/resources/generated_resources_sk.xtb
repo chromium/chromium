@@ -2488,6 +2488,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="325238099842880997">Nastavte základné digitálne pravidlá, ktoré pomôžu deťom doma hrať, skúmať a robiť domáce úlohy</translation>
 <translation id="3253448572569133955">Neznámy účet</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{Neboli nájdené žiadne problémy so zabezpečením}=1{Bol nájdený {COUNT} problém so zabezpečením}few{Boli nájdené {COUNT} problémy so zabezpečením}many{Found {COUNT} security issues}other{Bolo nájdených {COUNT} problémov so zabezpečením}}</translation>
+<translation id="3254451942070605467">Sťahuje sa <ph name="FILE_NAME" />, zostáva <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="3254516606912442756">Automatické zisťovanie časového pásma je deaktivované</translation>
 <translation id="3254715652085014625">Otvorte Chrome v telefóne s Androidom a prejdite do sekcie Nastavenia &gt; Heslá &gt; Používať telefón ako bezpečnostný kľúč. Potom postupujte podľa uvedených pokynov.</translation>
 <translation id="3255355328033513170">Všetky údaje uložené skupinou <ph name="SITE_GROUP_NAME" /> a všetkými webmi v nej budú odstránené. Zahŕňa to aj súbory cookie. Systém vás odhlási z týchto webov (aj otvorených kariet).</translation>
@@ -3310,6 +3311,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3987993985790029246">Kopírovať odkaz</translation>
 <translation id="3988996860813292272">Výber časového pásma</translation>
 <translation id="399179161741278232">Importované</translation>
+<translation id="3992008114154328194">Sťahuje sa <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993887353483242788">Synchronizujte zariadenie <ph name="DEVICE_TYPE" />, aby ste mali svoje predvoľby k dispozícii vo všetkých zariadeniach, keď sa prihlásite do svojho účtu Google. Predvoľby zahŕňajú aplikácie, nastavenia, heslá Wi‑Fi, jazyky, tapetu, klávesové skratky a viac.</translation>
 <translation id="3994318741694670028">Váš počítač je žiaľ nakonfigurovaný pomocou poškodeného identifikátora hardvéru. Systému Chrome OS Flex to bráni aktualizovať sa pomocou najnovších opráv zabezpečenia a váš počítač <ph name="BEGIN_BOLD" />môže byť nedostatočne zabezpečený proti škodlivým útokom<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Ak chcete odomknúť zariadenie <ph name="DEVICE_TYPE" />, odomknite svoj telefón a priblížte ho k nemu.</translation>

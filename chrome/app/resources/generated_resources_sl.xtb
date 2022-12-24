@@ -2504,6 +2504,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="325238099842880997">Nastavite digitalna pravila, s pomočjo katerih se bodo otroci lahko igrali, bodo lahko raziskovali in doma opravili šolske obveznosti.</translation>
 <translation id="3253448572569133955">Neznan račun</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{Najdene ni bilo nobene varnostne težave}=1{Najdena je bila {COUNT} varnostna težava}one{Najdena je bila {COUNT} varnostna težava}two{Najdeni sta bili {COUNT} varnostni težavi}few{Najdene so bile {COUNT} varnostne težave}other{Najdenih je bilo {COUNT} varnostnih težav}}</translation>
+<translation id="3254451942070605467">Prenašanje datoteke <ph name="FILE_NAME" />, še <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="3254516606912442756">Samodejno zaznavanje časovnega pasu je onemogočeno</translation>
 <translation id="3254715652085014625">Odprite Chrome v telefonu Android, pojdite v meni »Nastavitve &gt; Gesla &gt; Uporaba telefona kot varnostnega ključa« in upoštevajte navodila, ki so navedena tam.</translation>
 <translation id="3255355328033513170">Izbrisani bodo vsi podatki, ki jih shrani skupina <ph name="SITE_GROUP_NAME" /> in vsa spletna mesta v njej. To vključuje piškotke. Odjavljeni boste s teh spletnih mest, vključno s tistimi na odprtih zavihkih.</translation>
@@ -3326,6 +3327,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3987993985790029246">Kopiranje povezave</translation>
 <translation id="3988996860813292272">Izbira časovnega pasu</translation>
 <translation id="399179161741278232">Uvoženo</translation>
+<translation id="3992008114154328194">Prenašanje datoteke <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993887353483242788">Sinhronizirajte napravo <ph name="DEVICE_TYPE" />, da bodo nastavitve pripravljene v kateri koli napravi, ko se prijavite z računom Google. Nastavitve vključujejo aplikacije, nastavitve, gesla za Wi-Fi, jezike, zaslonska ozadja, bližnjične tipke in drugo.</translation>
 <translation id="3994318741694670028">Vaš računalnik je konfiguriran s popačenim ID-jem strojne opreme. Zaradi tega ChromeOS Flex ne more namestiti najnovejših varnostnih popravkov in vaš računalnik <ph name="BEGIN_BOLD" />je lahko še bolj izpostavljen zlonamernim napadom<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Odklenite telefon in ga približajte napravi <ph name="DEVICE_TYPE" />, če jo želite odkleniti.</translation>

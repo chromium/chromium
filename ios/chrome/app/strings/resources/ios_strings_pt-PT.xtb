@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Pode voltar aqui para reabrir separadores que tenha fechado recentemente.</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
+<translation id="1035980983510608210">Se fechar todos os separadores, os separadores fixos também são fechados.</translation>
 <translation id="1044891598689252897">Os sites funcionam normalmente.</translation>
 <translation id="1049743911850919806">Navegação anónima</translation>
 <translation id="105093091697134113">As seguintes contas utilizam palavras-passe que foram expostas numa violação de dados de terceiros ou introduzidas num Website fraudulento. Altere estas palavras-passe imediatamente para manter as suas contas seguras.</translation>
@@ -208,6 +209,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2578571896248130439">Envie a página Web</translation>
 <translation id="2584132361465095047">Adicionar conta...</translation>
 <translation id="2600682495497606169">Limpar cookies de sites</translation>
+<translation id="2609008503159898744">Fechar todos os separadores?</translation>
 <translation id="2625189173221582860">Palavra-passe copiada</translation>
 <translation id="2626236249646841566">Verifique a sua ligação e experimente iniciar sessão novamente.</translation>
 <translation id="2637313651144986786">Pesquisar separadores…</translation>
@@ -299,6 +301,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3174662312949010067">Também pode utilizar palavras-passe guardadas nos outros dispositivos.</translation>
 <translation id="3175081911749765310">Serviços Web</translation>
 <translation id="3178650076442119961">Ativo hoje</translation>
+<translation id="3181261441371833039">Fechar apenas separadores normais</translation>
 <translation id="3181825792072797598">Ativar Sincronização</translation>
 <translation id="3181954750937456830">Navegação segura (protege o utilizador e o seu dispositivo contra sites perigosos)</translation>
 <translation id="3184767182050912705">Desbloquear com <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>

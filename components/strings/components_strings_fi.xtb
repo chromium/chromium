@@ -2717,6 +2717,7 @@ Lisätietoja:
 <translation id="7815407501681723534">Haku <ph name="SEARCH_STRING" /> tuotti <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" />.</translation>
 <translation id="7822320754433038727">Metsästys ja ammunta</translation>
 <translation id="782886543891417279">Käyttämäsi Wi-Fi (<ph name="WIFI_NAME" />) saattaa edellyttää kirjautumista.</translation>
+<translation id="7840103971441592723">Näytön tallennus on alkanut</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ei mitään}=1{1 sovellus (<ph name="EXAMPLE_APP_1" />)}=2{2 sovellusta (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# sovellusta (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7862185352068345852">Poistutaanko sivustolta?</translation>
@@ -2895,6 +2896,7 @@ Lisätietoja:
 <translation id="8282947398454257691">Saada selville laitetunnuksesi.</translation>
 <translation id="8284769179630993263">Ylläpidä selaussuojaa ja muita ominaisuuksia Chromen asetuksista</translation>
 <translation id="8286036467436129157">Kirjaudu sisään</translation>
+<translation id="8286799286781881307">Järjestelmänvalvojan hyväksymät sovellukset voivat tallentaa kaikki laitteeseen kytketyt näytöt. Nämä tiedot voidaan käsitellä paikallisesti tai ladata organisaatiosi palvelimille.</translation>
 <translation id="8288807391153049143">Näytä varmenne</translation>
 <translation id="8289355894181816810">Ota yhteyttä verkon ylläpitäjään, jos et tiedä, mitä tämä tarkoittaa.</translation>
 <translation id="8293206222192510085">Lisää kirjanmerkki</translation>

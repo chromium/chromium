@@ -105,6 +105,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1087965115100412394">Peidio â chaniatáu i wefannau gysylltu â dyfeisiau MIDI</translation>
 <translation id="1088654056000736875">Mae Chrome yn cael gwared ar feddalwedd niweidiol o'ch cyfrifiadur…</translation>
 <translation id="1088659085457112967">Dechrau'r Modd Darllenydd</translation>
+<translation id="1089407731410758060">Newid Thema</translation>
 <translation id="1090126737595388931">Dim Apiau Cefndir yn Rhedeg</translation>
 <translation id="1090541560108055381">Cyn paru, sicrhewch fod y cod hwn yr un peth ar y ddwy ddyfais</translation>
 <translation id="1091767800771861448">Pwyswch ESCAPE i hepgor (Datblygiadau answyddogol yn unig).</translation>
@@ -936,6 +937,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="18260074040409954">Gallwch ddefnyddio cyfrineiriau sydd wedi'u cadw ar unrhyw ddyfais. Maent wedi'u cadw i <ph name="GOOGLE_PASSWORD_MANAGER" /> ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Cysoni eich nodau tudalen Chrome, cyfrineiriau, hanes a rhagor</translation>
 <translation id="1826516787628120939">Wrthi'n gwirio</translation>
+<translation id="1827504459960247692">Enw'r poethfan</translation>
 <translation id="1828378091493947763">Ni chefnogir yr ategyn hwn ar y ddyfais hon</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Agor Pob Un}=1{&amp;Agor Nod Tudalen}two{&amp;Agor Pob Un ({COUNT})}few{&amp;Agor Pob Un ({COUNT})}many{&amp;Agor Pob Un ({COUNT})}other{&amp;Agor Pob Un ({COUNT})}}</translation>
 <translation id="1828901632669367785">Argraffu Gan Ddefnyddio Deialog System...</translation>
@@ -1246,6 +1248,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2101225219012730419">Fersiwn:</translation>
 <translation id="2102396546234652240">Peidio â chaniatáu i wefannau ddefnyddio'ch meicroffon</translation>
 <translation id="2102495993840063010">Apiau Android</translation>
+<translation id="2104166991923847969">Diffodd y poethfan yn awtomatig</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> wedi'i guddio</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Rhif ffôn}zero{# rhif ffôn}two{# rif ffôn}few{# rhif ffôn}many{# rhif ffôn}other{# rhif ffôn}}</translation>
 <translation id="211144231511833662">Clirio Mathau</translation>
@@ -1829,6 +1832,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2616366145935564096">Darllen a newid eich data ar <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Gosod Rhannu Gerllaw</translation>
 <translation id="2620215283731032047">Ni ellir lawrlwytho <ph name="FILE_NAME" /> yn ddiogel.</translation>
+<translation id="2620245777360407679">Dyfeisiau sydd wedi'u cysylltu â phoethfan ar hyn o bryd</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Hyfforddi model llais Google Assistant</translation>
 <translation id="26224892172169984">Peidio â gadael i unrhyw wefan drin protocolau</translation>
@@ -7157,6 +7161,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7614260613810441905">Gofyn pan fydd gwefan am olygu ffeiliau neu ffolderi ar eich dyfais (argymhellir)</translation>
 <translation id="761530003705945209">Gwneud copi wrth gefn yn Google Drive. Adfer eich data neu ddyfais newid yn hawdd ar unrhyw adeg. Mae eich copïau wrth gefn yn cynnwys data apiau. Mae eich copïau wrth gefn yn cael eu huwchlwytho i Google a'u hamgryptio gan ddefnyddio cyfrinair eich Cyfrif Google.</translation>
 <translation id="7615365294369022248">Bu gwall wrth ychwanegu cyfrif</translation>
+<translation id="7615807797520072741">Ailosod i Chrome Clasurol</translation>
 <translation id="7616214729753637086">Wrthi'n cofrestru dyfais...</translation>
 <translation id="7617263010641145920">Troi Play Store ymlaen</translation>
 <translation id="7617648809369507487">Defnyddiwch negeseuon tawelach</translation>
@@ -8467,6 +8472,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Symud Tab i Ffenestr Arall}zero{Symud Tabiau i Ffenestr Arall}two{Symud Tabiau i Ffenestr Arall}few{Symud Tabiau i Ffenestr Arall}many{Symud Tabiau i Ffenestr Arall}other{Symud Tabiau i Ffenestr Arall}}</translation>
 <translation id="8805140816472474147">Cadarnhewch y gosodiadau cysoni i ddechrau cysoni.</translation>
 <translation id="8806680466228877631">Gall <ph name="SHORTCUT" /> ailagor tabiau a gafodd eu cau ar ddamwain</translation>
+<translation id="8807588541160250261">Pan nad oes unrhyw ddyfais wedi'i chysylltu</translation>
 <translation id="8807632654848257479">Sefydlog</translation>
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Cath</translation>

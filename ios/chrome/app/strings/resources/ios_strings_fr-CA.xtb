@@ -510,6 +510,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="481968316161811770">Témoins, données de sites</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}other{{domain} et {count} autres}}</translation>
 <translation id="4826218269716039351">Bloquer les témoins tiers</translation>
+<translation id="4826588772550366629">caméra et microphone</translation>
 <translation id="4826726074642088322">Partager le contenu mis en évidence</translation>
 <translation id="48274138579728272">Marquer comme lu</translation>
 <translation id="4833686396768033263">Les onglets récents ne sont pas accessibles</translation>
@@ -562,6 +563,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5190835502935405962">Barre de favoris</translation>
 <translation id="519530786644929958">Le téléchargement a échoué et ne peut pas être réessayé.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Autoriser « <ph name="SITE_NAME" /> » à utiliser votre <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Contribuer à l'amélioration de la sécurité sur le Web pour tous</translation>
 <translation id="5228579091201413441">Activer la synchronisation</translation>
 <translation id="5232485538978018676">Se connecter avec un compte géré</translation>

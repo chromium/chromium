@@ -510,6 +510,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="481968316161811770">Cookies, websitedata</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 mere}one{{domain} og {count} mere}other{{domain} og {count} mere}}</translation>
 <translation id="4826218269716039351">Bloker cookies fra tredjeparter</translation>
+<translation id="4826588772550366629">kameraet og mikrofonen</translation>
 <translation id="4826726074642088322">Del fremhævning</translation>
 <translation id="48274138579728272">Markér som læst</translation>
 <translation id="4833686396768033263">Seneste faner er ikke tilgængelige</translation>
@@ -562,6 +563,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5190835502935405962">Bogmærkelinje</translation>
 <translation id="519530786644929958">Downloaden mislykkedes og kan ikke gentages.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Vil du tillade, at "<ph name="SITE_NAME" />" bruger <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Vær med til at forbedre sikkerheden for alle på nettet</translation>
 <translation id="5228579091201413441">Aktivér synkronisering</translation>
 <translation id="5232485538978018676">Log ind med Managerkonto</translation>

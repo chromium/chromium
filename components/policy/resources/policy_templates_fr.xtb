@@ -33,6 +33,7 @@
       Actuellement, les langues compatibles sont les suivantes : af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk et vi.</translation>
 <translation id="1019101089073227242">Définir le répertoire de données utilisateur</translation>
 <translation id="1020006815010587263">La corbeille est désactivée pour l'utilisateur.</translation>
+<translation id="1021462144002396313">Règles <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">Identifiants d'extension que l'utilisateur ne doit pas être autorisé à installer (ou * pour tous)</translation>
 <translation id="102492767056134033">Définir l'état par défaut du clavier à l'écran sur l'écran de connexion</translation>
 <translation id="102658870205613876">Paramètres des pop-up</translation>
@@ -159,6 +160,7 @@ Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name
       La configuration de la règle <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> n'est effective que si la règle <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> est définie sur "False".</translation>
 <translation id="1147732569915511430">Hachage SHA-256 de l'image de l'avatar.</translation>
 <translation id="1148415065145333943">Désactiver le mode avancé de recharge de la batterie</translation>
+<translation id="1150742937785306405">Autorisez les utilisateurs à activer ou à désactiver le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="1151353063931113432">Autoriser les images sur ces sites</translation>
 <translation id="1151987132434751822">Méthodes d'authentification pour lesquelles les identifiants spécifiés dans la règle peuvent être appliqués. La méthode employée peut être l'une des trois suivantes :
             * basic
@@ -188,6 +190,7 @@ La disponibilité des extensions est toujours contrôlée par d'autres règles.<
 <translation id="1160479894929412407">Autoriser le protocole QUIC</translation>
 <translation id="1160939557934457296">Désactiver l'accès au site lors de l'affichage de la page d'avertissement par le service de navigation sécurisée</translation>
 <translation id="1163080558183062209">Permet de désactiver les types d'imprimantes figurant sur la liste deny</translation>
+<translation id="1163389598183927209">Groupe de règles liées à <ph name="PRIVACY_SANDBOX_NAME" />. Pour en savoir plus sur l'abandon des cookies tiers par <ph name="PRODUCT_NAME" />, consultez la page <ph name="PRIVACY_SANDBOX_URL" />.</translation>
 <translation id="1165923723751466821">Autoriser les connexions au navigateur en mode Invité et au profil</translation>
 <translation id="117059611145966538">Serveurs d'impression externes</translation>
 <translation id="117080706484659953">Autorisez la détection du champ d'application des règles sur <ph name="MAC_OS_NAME" /></translation>
@@ -576,6 +579,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Si cette règle n'est pas définie, la valeur globale par défaut est utilisée pour tous les sites (aucun accès automatique).</translation>
 <translation id="1530812829012954197">Toujours rendre les formats d'URL suivants dans le navigateur hôte</translation>
+<translation id="1542491165152947087">Autorisez les utilisateurs à activer ou désactiver le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="1552418937045050762">Si ce paramètre est activé, les utilisateurs sont autorisés à activer le Partage à proximité, qui leur permet d'envoyer des fichiers aux personnes à proximité et inversement, de recevoir des fichiers de ces personnes.
 
       Si ce paramètre est désactivé, les utilisateurs ne sont pas autorisés à activer le Partage à proximité.
@@ -1253,6 +1257,12 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
       Si la règle est définie sur "true" ou n'est pas définie, l'utilisateur pourra se servir de l'interface de ligne de commande de gestion des machines virtuelles.
       Dans le cas contraire, l'interface de ligne de commande de gestion des machines virtuelles sera entièrement désactivée et masquée.
       </translation>
+<translation id="2194051055390000601">Règle permettant de décider si le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
+
+Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
+Si elle est activée ou qu'elle n'est pas configurée, les utilisateurs pourront activer ou désactiver le paramètre des thèmes publicitaires <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
+
+Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2195032660890227692">Cette règle a été supprimée dans <ph name="PRODUCT_NAME" /> 68 et remplacée par <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Définissez cette règle sur "True" pour afficher le clavier numérique par défaut lors de la saisie du mot de passe sur l'écran de connexion. Les utilisateurs pourront toujours revenir au clavier normal.
 
@@ -1788,6 +1798,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.
 
       Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
+<translation id="2727844239611930002">Autorisez <ph name="PRODUCT_NAME" /> à déterminer si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> doit s'afficher ou non.</translation>
 <translation id="2730200383593984228">Autoriser les utilisateurs non affiliés à utiliser des applis Android</translation>
 <translation id="2730419309754848345">Imprimer le document PDF en tant qu'image par défaut</translation>
 <translation id="2731299561202635374">Cette règle permet de gérer la détection en temps réel des URL dangereuses.
@@ -3529,6 +3540,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
           Si la valeur est définie sur "False" ou si elle n'est pas définie, le fournisseur de contenu n'envoie aucune information.</translation>
 <translation id="435395045087992163">Ne pas verrouiller l'appareil quand il est arrêté provisoirement ou que l'écran est rabattu</translation>
+<translation id="4354792057099570728">Désactivez le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> pour vos utilisateurs.</translation>
 <translation id="4357587374229381015">Indique un nom de paramètre d'URL qui sera utilisé sur la page de connexion de l'IdP SAML pour renseigner automatiquement le champ du nom d'utilisateur.
 
       L'adresse e-mail de l'utilisateur associée au profil <ph name="PRODUCT_OS_NAME" /> sera utilisée comme valeur du paramètre d'URL. Ce paramètre doit donc être désactivé si les utilisateurs doivent utiliser des adresses e-mail différentes avec l'IdP SAML.
@@ -3619,6 +3631,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Bien que la règle elle-même soit compatible avec les plates-formes citées, la fonctionnalité qu'elle active peut n'être disponible que sur un nombre plus restreint de plates-formes. Les fonctionnalités abandonnées de la plate-forme en ligne ne peuvent pas toutes être réactivées. Seules celles qui sont énumérées ci-dessous peuvent l'être pendant une durée limitée, qui varie selon la fonctionnalité. Le format général de la balise de chaîne est [FonctionnalitéAbandonnée]_EffectiveUntil[aaaammjj]. Pour information, vous pouvez découvrir les raisons pour lesquelles des motivations ont été apportées aux fonctionnalités des plates-formes en ligne en consultant la page https://bit.ly/blinkintents.
       </translation>
 <translation id="4443711908766051441">Activer le jeu Easter Egg du dinosaure</translation>
+<translation id="4445728642576791607">Autorisez les utilisateurs à activer ou à désactiver le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="4447668084338250480">Comportement de redirection vers un intranet</translation>
 <translation id="4449469846627734399">Définir la configuration quotidienne de l'alimentation alternée en heures pleines</translation>
 <translation id="4449545651113180484">Faire pivoter l'écran vers la droite de 270 degrés</translation>
@@ -3655,6 +3668,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4483649828988077221">Désactiver les mises à jour automatiques</translation>
 <translation id="4484515651939984695">Définir la durée d'affichage (en secondes) d'un appareil Cast sélectionné via un code d'accès ou un code QR dans la liste des appareils Cast du menu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Configurer l'URL de la page "Nouvel onglet"</translation>
+<translation id="4491607814095953976">Choisissez si le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé</translation>
 <translation id="4492287494009043413">Désactiver les captures d'écran</translation>
 <translation id="4494132853995232608">Dispositif DTC de Wilco</translation>
 <translation id="449423975179525290">Configurer les règles liées à <ph name="PLUGIN_VM_NAME" />.</translation>
@@ -4566,6 +4580,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si vous définissez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
       Si la règle n'est pas définie, l'utilisateur peut choisir l'image de l'avatar qui le représente dans l'écran de connexion.</translation>
+<translation id="5428716437928918274">Contrôles des paramètres de Privacy Sandbox</translation>
 <translation id="5431392643649571773">Lorsque cette règle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> permet d'utiliser le cache amélioré. Si l'utilisateur change de page, celle qui est quittée peut être conservée en l'état (arborescence de documents, script, etc.) dans le cache amélioré. Par exemple, si l'utilisateur retourne sur cette page, celle-ci peut ainsi être restaurée à partir de ce cache et affichée telle qu'elle était avant sa mise en cache.
 
           Toutefois, cette fonctionnalité peut entraîner des dysfonctionnements pour certains sites Web qui ne s'attendent pas à ce que leurs pages soient mises en cache, en particulier ceux qui reposent sur le déclenchement de l'événement "<ph name="UNLOAD_HANDLER_NAME" />" en cas de changement de page. L'événement "<ph name="UNLOAD_HANDLER_NAME" />" ne se déclenche pas si la page concernée est stockée dans le cache amélioré.
@@ -6632,6 +6647,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       </translation>
 <translation id="7459601923199346224">Configure les règles au niveau de l'utilisateur et de l'appareil dans le cadre de la gestion des certificats.</translation>
 <translation id="7459633275230216698">Autoriser l'affichage de boîtes de dialogue de sélection de fichiers</translation>
+<translation id="7462256705280836453">Choisissez si le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé</translation>
 <translation id="7463055558720530430">Autoriser les utilisateurs à mémoriser les mots de passe Kerberos</translation>
 <translation id="7464058117970792805">Activer l'aperçu avant impression</translation>
 <translation id="7464991223784276288">Limiter les cookies des URL correspondantes à la session en cours</translation>
@@ -6839,6 +6855,12 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
       Si cette règle est désactivée, chaque fois que l'utilisateur effectue une action qui devrait entraîner l'ouverture d'une boîte de dialogue de sélection de fichiers (par exemple, pour enregistrer des liens, ou importer des favoris ou des fichiers), un message s'affiche à la place. L'utilisateur est supposé avoir cliqué sur "Annuler" dans la boîte de dialogue de sélection de fichiers.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Autoriser l'utilisation des notifications système</translation>
+<translation id="7643151458117317518">Règle permettant de décider si le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
+
+Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
+Si elle est activée ou qu'elle n'est pas configurée, vos utilisateurs pourront activer ou désactiver le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
+
+Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="7643883929273267746">Limiter les comptes visibles dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Cette règle est une option générale pour toutes les règles définies dans la règle DataLeakPreventionRulesList.
       Si cette règle est définie sur "True", le reporting en temps réel des événements de prévention des fuites de données sera activée.
@@ -7444,6 +7466,16 @@ Ces règles sont strictement réservées à la configuration des instances de
 Il est inutile de configurer manuellement ces paramètres. Vous pouvez télécharger des modèles faciles à utiliser pour Windows, Mac et Linux sur <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 Il est conseillé de configurer les règles sur Windows via GPO, même si la gestion des règles via le registre reste possible pour les instances de Windows associées à un domaine <ph name="MS_AD_NAME" />.</translation>
+<translation id="8261008508574620157">Règle permettant de contrôler si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> est présentée à vos utilisateurs.
+L'invite est un flux qui bloque l'utilisateur pour l'informer des paramètres <ph name="PRIVACY_SANDBOX_NAME" />. Pour en savoir plus sur l'abandon des cookies tiers par Chrome, consultez la page <ph name="PRIVACY_SANDBOX_URL" />.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> n'affiche pas l'invite <ph name="PRIVACY_SANDBOX_NAME" />.
+Si elle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> détermine si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> peut être affichée ou non, et l'affiche si possible.
+
+Si l'une des règles suivantes est définie, cette règle doit être désactivée :
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="8266778278542911985">Si cette règle est définie sur "3", les sites Web peuvent demander à accéder aux ports série. Si elle est définie sur "2", l'accès aux ports série est refusé.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -7472,6 +7504,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle n'est pas configurée, le facteur de scaling par défaut est utilisé.
 
       Remarque : Le facteur de scaling doit être de 100 % ou plus.</translation>
+<translation id="8284621384813278750">Choisissez si le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé</translation>
 <translation id="8285435910062771358">Loupe plein écran activée</translation>
 <translation id="828566872219880247">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à utiliser la génération de clé. Les formats d'URL inclus dans la règle "KeygenBlockedForUrls" dérogent à cette règle.
 
@@ -7661,6 +7694,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       Remarque : Pour les instances <ph name="MS_WIN_NAME" /> qui ne sont pas associées à un domaine <ph name="MS_AD_NAME" /> et les instances <ph name="MAC_OS_NAME" /> qui ne sont pas gérées via MDM ni associées à un domaine via MCX, l'installation d'office est limitée aux applications et aux extensions listées sur le Chrome Web Store.</translation>
 <translation id="8451988835943702790">Utiliser la page "Nouvel onglet" comme page d'accueil</translation>
+<translation id="8453218444172088993">Désactivez le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> pour vos utilisateurs.</translation>
 <translation id="8455529558077979314">Paramètres de l'écran de confidentialité</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Paramètres pour l'URL instantanée utilisant POST</translation>
@@ -7786,6 +7820,12 @@ Le rollback vers <ph name="PRODUCT_OS_NAME" /> 106 ou version antérieure n'est
       Les formats d'URL ne peuvent pas entrer en conflit avec ceux de la règle <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est répertorié dans les deux règles.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
+<translation id="8554750769356971993">Règle permettant de décider si le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
+
+Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
+Si elle est activée ou qu'elle n'est pas configurée, vos utilisateurs pourront activer ou désactiver le paramètre des annonces suggérées par le site <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
+
+Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8559221882677768248">Désactiver Sélectionner pour prononcer sur l'écran de connexion</translation>
 <translation id="8566842294717252664">Masquer le Chrome Web Store sur la page Nouvel onglet et dans le lanceur d'applications</translation>
 <translation id="8571314270766672278">Effectuer un rollback et réinitialiser l'appareil lors du retour à une version antérieure, en conservant l'enregistrement si possible</translation>
@@ -7815,6 +7855,7 @@ Le rollback vers <ph name="PRODUCT_OS_NAME" /> 106 ou version antérieure n'est
           Si cette règle n'est pas configurée, un délai par défaut est utilisé.
 
           La valeur de la règle doit être indiquée en millisecondes.</translation>
+<translation id="859579553230883285">Désactivez le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> pour vos utilisateurs.</translation>
 <translation id="8598786284856179541">Activer les rapports sur les informations liées à la version</translation>
 <translation id="859937827887158048">Ne pas autoriser le téléchargement automatique de mises à jour peer-to-peer</translation>
 <translation id="8603454805657060638">Cette règle permet à l'administrateur de modifier l'adresse MAC (Media Access Control, contrôle d'accès au support) lors de la connexion d'un appareil à la station d'accueil. Lorsqu'une station d'accueil est connectée à certains modèles d'appareils, l'adresse MAC de la station d'accueil définie pour l'appareil est utilisée, par défaut, pour identifier l'appareil sur Ethernet.
@@ -8073,6 +8114,7 @@ Cette règle est un mappage des ID de configuration avec des configurations de V
       Cette règle vise à donner aux entreprises la possibilité de désactiver le bac à sable réseau si la configuration des logiciels tiers qu'elles utilisent interfère avec le bac à sable.</translation>
 <translation id="8840243776706727185">Fonctionnalité NewBaseUrlInheritanceBehavior désactivée</translation>
 <translation id="8842208363354615697">Autoriser l'activation du mode HTTPS uniquement</translation>
+<translation id="8843331294082716286">Ne pas présenter l'invite <ph name="PRIVACY_SANDBOX_NAME" /> aux utilisateurs.</translation>
 <translation id="885147810817138322">Proposer à l'utilisateur des recommandations de contenus multimédias</translation>
 <translation id="8852579753940989645">Activer la règle d'intégrité du code du moteur de rendu</translation>
 <translation id="8854571659927427063">Si cette règle est activée, les favoris enregistrés dans le précédent navigateur par défaut sont importés lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, les favoris ne sont pas importés lors de la première exécution.
@@ -8192,6 +8234,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 <translation id="8955719471735800169">Haut de page</translation>
 <translation id="8956312248048980644">Autorise par défaut le clustering d'agents selon l'origine.</translation>
 <translation id="8970205333161758602">Supprimer l'invite de fermeture de <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="8973579598359969188">Choisissez si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> peut être présentée à vos utilisateurs</translation>
 <translation id="8974588819713914715">Cette règle est obsolète et non compatible (veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> à la place).</translation>
 <translation id="8976248126101463034">Autoriser l'authentification gnubby pour les hôtes d'accès à distance</translation>
 <translation id="8976531594979650914">Utiliser l'imprimante système par défaut</translation>

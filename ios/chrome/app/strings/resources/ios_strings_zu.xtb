@@ -510,6 +510,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="481968316161811770">Amakhukhi, idatha yesayithi</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}, nolunye olungu-1}one{{domain} nabanye abangu-{count}}other{{domain} nabanye abangu-{count}}}</translation>
 <translation id="4826218269716039351">Vimba inkampani yangaphandle</translation>
+<translation id="4826588772550366629">ikhamela nemakrofoni</translation>
 <translation id="4826726074642088322">Yabelana Ngokugqamile</translation>
 <translation id="48274138579728272">Maka njengokufundiwe</translation>
 <translation id="4833686396768033263">Amathebhu wakamuva Awatholakali</translation>
@@ -562,6 +563,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5190835502935405962">Ibha yamabhukhimakhi</translation>
 <translation id="519530786644929958">Ukudawuniloda kuhlulekile futhi akukwazi ukuphinda kuzanywe.</translation>
 <translation id="5197255632782567636">I-inthanethi</translation>
+<translation id="5211488077761630279">Vumela "<ph name="SITE_NAME" />" ukuthi isebenzise i-<ph name="PERMISSION" /> yakho?</translation>
 <translation id="5219295696240154694">Siza Ukuthuthukisa Ukuvikelwa Kuwebhu Kwawo Wonke Umuntu</translation>
 <translation id="5228579091201413441">Nika amandla ukuvumelanisa</translation>
 <translation id="5232485538978018676">Ngena ngemvume nge-akhawunti ephethwe</translation>

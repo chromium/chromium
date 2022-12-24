@@ -510,6 +510,7 @@
 <translation id="481968316161811770">কুকিজ, সাইট ডেটা</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} এবং আরও ১টি}one{{domain} এবং আরও {count}টি}other{{domain} এবং আরও {count}টি}}</translation>
 <translation id="4826218269716039351">থার্ড-পার্টি ব্লক করুন</translation>
+<translation id="4826588772550366629">ক্যামেরা এবং মাইক্রোফোন</translation>
 <translation id="4826726074642088322">হাইলাইট শেয়ার করুন</translation>
 <translation id="48274138579728272">'পড়া হয়েছে' হিসেবে চিহ্নিত করুন</translation>
 <translation id="4833686396768033263">'সাম্প্রতিক ট্যাব' উপলভ্য নেই</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">বুকমার্ক বার</translation>
 <translation id="519530786644929958">ডাউনলোড করা যায়নি এবং আবার চেষ্টা করা যাবে না।</translation>
 <translation id="5197255632782567636">ইন্টারনেট</translation>
+<translation id="5211488077761630279">আপনার <ph name="PERMISSION" /> ব্যবহার করতে "<ph name="SITE_NAME" />"-কে অনুমতি দেবেন?</translation>
 <translation id="5219295696240154694">সকলের জন্য ওয়েবে নিরাপত্তা উন্নত করতে সাহায্য করে</translation>
 <translation id="5228579091201413441">সিঙ্ক সক্ষম করুন</translation>
 <translation id="5232485538978018676">ম্যানেজ করা অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করুন</translation>
