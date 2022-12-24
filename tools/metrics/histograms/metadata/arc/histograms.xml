@@ -1232,8 +1232,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Fixup.Entire.Failures" units="units"
-    expires_after="2023-06-18">
-  <owner>risan@google.com</owner>
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The number of apps that have at least one file or directory that is failed
@@ -1243,8 +1243,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Fixup.{Scale}.Directories" units="units"
-    expires_after="2022-12-04">
-  <owner>risan@google.com</owner>
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The number of directories that are fixed during the {Scale} fixup process
@@ -1257,8 +1257,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Fixup.{Scale}.Duration" units="ms"
-    expires_after="2022-12-04">
-  <owner>risan@google.com</owner>
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The duration of the {Scale} fixup process that is triggered after ARC P to R
