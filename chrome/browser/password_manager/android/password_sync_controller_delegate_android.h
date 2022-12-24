@@ -72,10 +72,6 @@ class PasswordSyncControllerDelegateAndroid
  private:
   using IsSyncEnabled = base::StrongAlias<struct IsSyncEnabledTag, bool>;
 
-  // Notify credential manager about current account on startup or if
-  // password sync setting has changed.
-  void UpdateCredentialManagerSyncStatus(IsSyncEnabled is_enabled);
-
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetWeakPtrToBaseClass();
 
   const std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge_;

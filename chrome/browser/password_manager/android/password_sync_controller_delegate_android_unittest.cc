@@ -45,7 +45,7 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   MockPasswordSyncControllerDelegateBridge* bridge() { return bridge_; }
-  syncer::TestSyncService* sync_service() { return &sync_service_; }
+  syncer::SyncService* sync_service() { return &sync_service_; }
   PasswordSyncControllerDelegateAndroid* sync_controller_delegate() {
     return sync_controller_delegate_.get();
   }
@@ -70,54 +70,15 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
 };
 
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
-       OnSyncStatusEnabledOnStartup) {
-  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing);
-  sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
-  testing::Mock::VerifyAndClearExpectations(bridge());
-
-  // Check that observing the same event again will not trigger another
-  // notification.
-  sync_controller_delegate()->OnStateChanged(sync_service());
-}
-
-TEST_F(PasswordSyncControllerDelegateAndroidTest,
-       OnSyncStatusEnabledWithoutPasswordsOnStartup) {
-  sync_service()->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
-                                                      /*types=*/{});
-
-  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing);
-  sync_controller_delegate()->OnStateChanged(sync_service());
-  testing::Mock::VerifyAndClearExpectations(bridge());
-
-  // Check that observing the same event again will not trigger another
-  // notification.
-  sync_controller_delegate()->OnStateChanged(sync_service());
-}
-
-TEST_F(PasswordSyncControllerDelegateAndroidTest,
-       OnSyncStatusDisabledOnStartup) {
-  sync_service()->SetDisableReasons(
-      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
-
-  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing);
-  sync_controller_delegate()->OnStateChanged(sync_service());
-  testing::Mock::VerifyAndClearExpectations(bridge());
-
-  // Check that observing the same event again will not trigger another
-  // notification.
-  sync_controller_delegate()->OnStateChanged(sync_service());
-}
-
-TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusChangedToEnabledAfterStartup) {
   syncer::TestSyncService sync_service;
 
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing);
   sync_controller_delegate()->OnStateChanged(&sync_service);
-  testing::Mock::VerifyAndClearExpectations(bridge());
 
   // Check that observing the same event again will not trigger another
   // notification.
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing).Times(0);
   sync_controller_delegate()->OnStateChanged(&sync_service);
 }
 
@@ -127,6 +88,7 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
   sync_service.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
                                                    /*types=*/{});
 
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing).Times(0);
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing);
   sync_controller_delegate()->OnStateChanged(&sync_service);
 }
@@ -155,10 +117,10 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing);
   sync_controller_delegate()->OnStateChanged(&sync_service);
-  testing::Mock::VerifyAndClearExpectations(bridge());
 
   // Check that observing the same event again will not trigger another
   // notification.
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing).Times(0);
   sync_controller_delegate()->OnStateChanged(&sync_service);
 }
 
@@ -242,7 +204,6 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        AttachesObserverOnSyncServiceInitialized) {
-  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing);
   sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
   EXPECT_TRUE(sync_service()->HasObserver(sync_controller_delegate()));
 }
