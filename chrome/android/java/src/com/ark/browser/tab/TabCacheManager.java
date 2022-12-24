@@ -10,7 +10,6 @@ import com.ark.browser.tab.core.ITab;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 
 public class TabCacheManager {
 
@@ -31,7 +30,7 @@ public class TabCacheManager {
     }
 
     public Tab findTab(int id) {
-        return tabCache.get(id);
+        return tabCache.get(id, null);
     }
 
     public Tab findTab(TabInfo tabInfo) {
@@ -41,44 +40,56 @@ public class TabCacheManager {
         return findTab(tabInfo.getId());
     }
 
-    private void putTab(@NonNull Tab tab) {
+    public Tab findTab(ITab tab) {
+        if (tab == null) {
+            return null;
+        }
+        return findTab(tab.getId());
+    }
+
+    public void putTab(@NonNull Tab tab) {
         tabCache.put(tab.getId(), tab);
     }
 
-    @UiThread
-    @NonNull
-    public ArkTabImpl createLivePageByType(@NonNull ITab iTab, @TabLaunchType int type) {
-        long start = System.currentTimeMillis();
-
-//        PageInfo pageInfo = PageInfo.from(TabIdManager.getInstance().generateValidId(),
-//                Tab.INVALID_PAGE_ID, iTab.getId(),
-//                index, iTab.getTabInfo().isIncognito());
-
-        ArkTabImpl tab = ArkTabBuilder.createLiveTab(iTab, false)
-                .setLaunchType(type)
-                .build();
-        putTab(tab);
-
-//        tab.loadUrl(params);
-
-        ArkLogger.d(TAG, "createLivePageByType create tab deltaTime=" + (System.currentTimeMillis() - start));
-        return tab;
-    }
-
-    @UiThread
-    @NonNull
-    public Tab createLivePage(@NonNull ITab iTab, IPage page) {
-        long start = System.currentTimeMillis();
-        ArkLogger.e(this, "createLivePage tabInfo=" + iTab.getTabInfo());
-        Tab tab = ArkTabBuilder.createLiveTab(iTab, false)
-                .build();
-
-        putTab(tab);
-        ArkLogger.d(TAG, "createLivePage create tab deltaTime="
-                + (System.currentTimeMillis() - start));
-        return tab;
-    }
-
+//    @UiThread
+//    @NonNull
+//    public ArkTabImpl createLivePageByType(@NonNull ITab iTab, @TabLaunchType int type) {
+//        long start = System.currentTimeMillis();
+//
+////        PageInfo pageInfo = PageInfo.from(TabIdManager.getInstance().generateValidId(),
+////                Tab.INVALID_PAGE_ID, iTab.getId(),
+////                index, iTab.getTabInfo().isIncognito());
+//
+//        ArkTabImpl tab = ArkTabBuilder.createLiveTab(iTab, false)
+//                .setLaunchType(type)
+//                .build();
+//        putTab(tab);
+//
+////        tab.loadUrl(params);
+//
+//        ArkLogger.d(TAG, "createLivePageByType create tab deltaTime=" + (System.currentTimeMillis() - start));
+//        return tab;
+//    }
+//
+//    @UiThread
+//    @NonNull
+//    public ArkTabImpl createLiveTab(@NonNull ITab iTab) {
+//        long start = System.currentTimeMillis();
+//        ArkLogger.e(this, "createLivePage tabInfo=" + iTab.getTabInfo());
+////        ArkTabImpl tab = ArkTabBuilder.createLiveTab(iTab, false)
+////                .build();
+//
+//        ArkTabImpl tab = new ArkTabImpl(iTab);
+//
+//        putTab(tab);
+//
+//        tab.initialize(null);
+//
+//        ArkLogger.d(TAG, "createLivePage create tab deltaTime="
+//                + (System.currentTimeMillis() - start));
+//        return tab;
+//    }
+//
 //    @UiThread
 //    @NonNull
 //    public Tab createFrozenPageFromState(@NonNull ITab iTab,
@@ -92,20 +103,20 @@ public class TabCacheManager {
 //        return tab;
 //    }
 
-    public void removePage(Tab tab) {
+    public void removeTab(Tab tab) {
         tabCache.remove(tab.getId());
         tab.destroy();
     }
 
-    public void removePage(PageInfo pageInfo) {
-        removePage(pageInfo.getId());
+    public void removeTab(PageInfo pageInfo) {
+        removeTab(pageInfo.getId());
     }
 
-    public void removePage(IPage page) {
-        removePage(page.getId());
+    public void removeTab(IPage page) {
+        removeTab(page.getId());
     }
 
-    public void removePage(int id) {
+    public void removeTab(int id) {
         Tab tab = tabCache.get(id);
         if (tab != null) {
             tabCache.remove(id);

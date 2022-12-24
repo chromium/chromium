@@ -254,15 +254,7 @@ public interface ITabGroup {
         ArkTabImpl tab = (ArkTabImpl) TabCacheManager.getInstance().findTab(iTab.getId());
 
         if (tab == null) {
-            tab = (ArkTabImpl) TabCacheManager.getInstance()
-                    .createLivePage(iTab, page);
-//            if (state == null) {
-//                tab = (ArkTabImpl) PageCacheManager.getInstance()
-//                        .createLivePage(iTab, page);
-//            } else {
-//                tab = (ArkTabImpl) PageCacheManager.getInstance()
-//                        .createFrozenPageFromState(iTab, state);
-//            }
+            tab = ArkTabImpl.create(iTab, null);
         }
 
         onIndexChanged(indexOf(iTab));

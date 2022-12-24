@@ -313,9 +313,10 @@ public interface ITab {
             long time = System.currentTimeMillis();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream os = new DataOutputStream(stream);
-            int version = 1;
+            int version = 2;
             os.writeInt(version);
             os.writeInt(getTabInfo().getId());
+            os.writeInt(getTabInfo().getLaunchType());
             os.writeLong(getTabInfo().getCreateTime());
             os.writeBoolean(getTabInfo().isIncognito());
             os.writeBoolean(getTabInfo().isLocked());

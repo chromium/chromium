@@ -1,7 +1,6 @@
 package com.ark.browser.tab.core;
 
 import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
@@ -313,9 +312,8 @@ public class TabGroupImpl implements ITabGroup {
 //        IPage newPage = new PageImpl(pageInfo);
 //        newTab.getPageGroup().getPageInfoList().add(newPage);
 
-
-        ArkTabImpl nativeTab = TabCacheManager.getInstance().createLivePageByType(
-                newTab, type);
+        newTab.getTabInfo().setLaunchType(type);
+        ArkTabImpl nativeTab = ArkTabImpl.create(newTab, currentTab);
 //        nativeTab.loadInNewPage();
 
         for (TabInfoObserver obs : getObservers()) {

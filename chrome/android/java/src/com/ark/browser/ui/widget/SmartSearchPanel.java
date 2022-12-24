@@ -714,8 +714,8 @@ public class SmartSearchPanel extends FrameLayout {
         mFloatTabList.getTabInfoList().add(newTab);
         newTab.selectPage(0);
 
-        ArkTabImpl tab = TabCacheManager.getInstance().createLivePageByType(newTab,
-                TabLaunchType.FROM_CHROME_UI);
+        newTabInfo.setLaunchType(TabLaunchType.FROM_CHROME_UI);
+        ArkTabImpl tab = ArkTabImpl.create(newTab, null);
 
         tab.selectPage(newPage);
 

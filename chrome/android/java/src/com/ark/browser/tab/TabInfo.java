@@ -6,6 +6,7 @@ import com.ark.browser.core.utils.ArkIdManager;
 import com.ark.browser.tab.dao.ArkTabDao;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -21,13 +22,13 @@ public class TabInfo {
 //    protected transient final List<PageInfo> mPageInfoList = new ArrayList<>();
 
 //    @PrimaryKey()
-    protected int tabId;
+    private int tabId;
 
 //    @Column
-    protected long createTime;
+    private long createTime;
 
 //    @Column
-    protected int pageIndex = -1;
+    protected int pageIndex = Tab.INVALID_PAGE_ID;
 
 //    @Column
     protected int currentPageId = Tab.INVALID_PAGE_ID;
@@ -44,7 +45,10 @@ public class TabInfo {
 //    @Column
     protected long accessTime;
 
-    protected int parentId;
+    protected int parentId = Tab.INVALID_TAB_ID;
+
+    @TabLaunchType
+    protected int mLaunchType;
 
     public void setId(int tabId) {
         this.tabId = tabId;
@@ -142,6 +146,14 @@ public class TabInfo {
         this.parentId = parentId;
     }
 
+    public int getLaunchType() {
+        return mLaunchType;
+    }
+
+    public void setLaunchType(@TabLaunchType int launchType) {
+        this.mLaunchType = launchType;
+    }
+
     //    public List<PageInfo> getPageInfoList() {
 //        return mPageInfoList;
 //    }
@@ -182,6 +194,9 @@ public class TabInfo {
         TabInfo newTabInfo = new TabInfo();
         int version = is.readInt();
         newTabInfo.setId(is.readInt());
+        if (version == 2) {
+            newTabInfo.setLaunchType(is.readInt());
+        }
         newTabInfo.setCreateTime(is.readLong());
         newTabInfo.setIncognito(is.readBoolean());
         newTabInfo.setLocked(is.readBoolean());

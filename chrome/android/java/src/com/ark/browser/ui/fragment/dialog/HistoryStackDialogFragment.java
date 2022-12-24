@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabListManager;
-import com.ark.browser.tab.TabSnapshotManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.widget.DialogHeaderLayout;
@@ -202,7 +202,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
         params.width = mThumbnailWidth;
         params.height = mThumbnailHeight;
         ivThumbnail.setLayoutParams(params);
-        TabSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+        PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
 
         holder.setText(R.id.tv_title, pageInfo.getTitle());
         holder.setText(R.id.tv_url, pageInfo.getUrl());
@@ -299,7 +299,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
                 View.MeasureSpec.makeMeasureSpec(startRect.height(), View.MeasureSpec.EXACTLY));
         cardView.layout(startRect.left, startRect.top, startRect.right, startRect.bottom);
 
-        TabSnapshotManager.getInstance().loadSnapshot(mIvPlaceholder, pageInfo);
+        PageSnapshotManager.getInstance().loadSnapshot(mIvPlaceholder, pageInfo);
 
         setDismissAnimDuration(300);
         mAnimator = ValueAnimator.ofFloat(0f, 1f);

@@ -218,7 +218,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setTransitionType(PageTransition.LINK);
         loadUrlParams.setReferrer(referrer);
-        mTab.loadUrl(loadUrlParams);
+        mTab.loadInNewPage(loadUrlParams);
     }
 
     @Override

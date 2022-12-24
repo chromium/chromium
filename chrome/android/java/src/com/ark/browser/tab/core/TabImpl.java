@@ -92,7 +92,7 @@ public class TabImpl implements ITab {
         }
 
         for (IPage pageInfo : temp) {
-            TabCacheManager.getInstance().removePage(pageInfo);
+            TabCacheManager.getInstance().removeTab(pageInfo);
         }
         temp.clear();
     }

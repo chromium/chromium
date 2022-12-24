@@ -78,7 +78,7 @@ public class ArkWebContents {
 
                         @Override
                         public void titleWasSet(String title) {
-                            if (!TextUtils.equals(mPageInfo.getTitle(), title)) {
+                            if (!TextUtils.isEmpty(title) && !TextUtils.equals(mPageInfo.getTitle(), title)) {
                                 mPageInfo.setTitle(title);
                             }
                             super.titleWasSet(title);
@@ -189,7 +189,23 @@ public class ArkWebContents {
     }
 
     public GURL getUrl() {
-        return mWebContents.getVisibleUrl();
+        GURL url = mWebContents.getVisibleUrl();
+        if (!url.isEmpty()) {
+            mPageInfo.setUrl(url.getSpec());
+        }
+        return url;
+    }
+
+    public String getTitle() {
+        String title = mPageInfo.getTitle();
+        if (TextUtils.isEmpty(title)) {
+            title = mWebContents.getTitle();
+        }
+
+        if (TextUtils.isEmpty(title)) {
+            title = getUrl().getSpec();
+        }
+        return title;
     }
 
     public ContentView getContentView() {
@@ -210,93 +226,9 @@ public class ArkWebContents {
         mWebContents.setImportance(mImportance);
     }
 
-//    public boolean loadIfNeeded(ArkTabImpl tab) {
-//        if (mPendingLoadParams != null) {
-//            tab.initWebContents(this, tab.getWindowAndroid());
-//            tab.loadUrl(mPendingLoadParams);
-//            mPendingLoadParams = null;
-//            return true;
-//        }
-//
-//        restoreIfNeeded(tab);
-//        return true;
-//    }
-
     public boolean needsReload() {
         return mWebContents.getNavigationController().needsReload();
     }
-
-//    public void restoreIfNeeded(ArkTabImpl tab) {
-//
-//        try {
-//            TraceEvent.begin("Tab.restoreIfNeeded");
-//            // Restore is needed for a tab that is loaded for the first time. WebContents will
-//            // be restored from a saved state.
-//            if ((tab.isFrozen() && CriticalPersistedTabData.from(tab).getWebContentsState() != null
-//                    && !unfreezeContents(tab.getWindowAndroid()))
-//                    || !needsReload()) {
-//                return;
-//            }
-//
-//            loadIfNecessary();
-//            mIsBeingRestored = true;
-//            ObserverList.RewindableIterator<TabObserver> it = tab.getTabObservers();
-//            while (it.hasNext()) {
-//                TabObserver observer = it.next();
-//                observer.onRestoreStarted(tab);
-//            }
-//        } finally {
-//            TraceEvent.end("Tab.restoreIfNeeded");
-//        }
-//    }
-//
-//    /**
-//     * Restores the WebContents from its saved state.  This should only be called if the tab is
-//     * frozen with a saved TabState, and NOT if it was frozen for a lazy load.
-//     * @return Whether or not the restoration was successful.
-//     */
-//    private boolean unfreezeContents(ArkTabImpl tab) {
-//        boolean restored = true;
-//        try {
-//            TraceEvent.begin("Tab.unfreezeContents");
-//            WebContentsState webContentsState =
-//                    CriticalPersistedTabData.from(tab).getWebContentsState();
-//            assert webContentsState != null;
-//
-//            WebContents webContents = WebContentsStateBridge.restoreContentsFromByteBuffer(
-//                    webContentsState, tab.isHidden());
-//            if (webContents == null) {
-//                // State restore failed, just create a new empty web contents as that is the best
-//                // that can be done at this point. TODO(jcivelli) http://b/5910521 - we should show
-//                // an error page instead of a blank page in that case (and the last loaded URL).
-//                Profile profile =
-//                        IncognitoUtils.getProfileFromWindowAndroid(windowAndroid, isIncognito());
-//                webContents = WebContentsFactory.createWebContents(profile, isHidden());
-//                for (TabObserver observer : mObservers) observer.onRestoreFailed(this);
-//                restored = false;
-//            }
-//
-//            View compositorView = windowAndroid.getCompositorViewHolder();
-//            if (compositorView != null) {
-//                webContents.setSize(compositorView.getWidth(), compositorView.getHeight());
-//            }
-//
-//
-//            CriticalPersistedTabData.from(this).setWebContentsState(null);
-//            initWebContents(new ArkWebContents(webContents), windowAndroid);
-//
-//            if (!restored) {
-//                String url = CriticalPersistedTabData.from(this).getUrl().getSpec().isEmpty()
-//                        ? UrlConstants.NTP_URL
-//                        : CriticalPersistedTabData.from(this).getUrl().getSpec();
-//                loadUrl(new LoadUrlParams(url, PageTransition.GENERATED));
-//            }
-//        } finally {
-//            TraceEvent.end("Tab.unfreezeContents");
-//        }
-//        return restored;
-//    }
-
 
     public void loadIfNecessary() {
         mWebContents.getNavigationController().loadIfNecessary();
@@ -335,6 +267,7 @@ public class ArkWebContents {
 
     @Tab.TabLoadStatus
     public int loadUrlInternal(LoadUrlParams params) {
+        params.setOverrideUserAgent(org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption.TRUE);
         // TODO(https://crbug.com/783819): Don't fix up all URLs. Documentation on
         // FixupURL explicitly says not to use it on URLs coming from untrustworthy
         // sources, like other apps. Once migrations of Java code to GURL are complete
@@ -379,37 +312,6 @@ public class ArkWebContents {
                 ViewAndroidDelegate.createBasicDelegate(/* containerView */ null),
                 /* accessDelegate */ null, /* windowAndroid */ null,
                 WebContents.createDefaultInternalsHolder());
-    }
-
-    private static final SparseArray<ArkWebContents> PAGE_CACHE = new SparseArray<>();
-
-    public static ArkWebContents remove(int id) {
-        ArkWebContents arkWeb = get(id);
-        if (arkWeb != null) {
-            PAGE_CACHE.remove(id);
-            if (arkWeb.isDestroyed()) {
-                arkWeb = null;
-            }
-        }
-        return arkWeb;
-    }
-
-    public static void destroy() {
-        for (int i = 0; i < PAGE_CACHE.size(); i++) {
-            ArkWebContents web = PAGE_CACHE.valueAt(i);
-            if (web != null && !web.isDestroyed()) {
-                web.getWebContents().destroy();
-            }
-        }
-        PAGE_CACHE.clear();
-    }
-
-    public static ArkWebContents get(int id) {
-        return PAGE_CACHE.get(id, null);
-    }
-
-    public static void put(int id, ArkWebContents arkWeb) {
-        PAGE_CACHE.put(id, arkWeb);
     }
 
     public static class Builder {
@@ -488,7 +390,7 @@ public class ArkWebContents {
                 mPageInfo.setUrl(mLoadUrlParams.getUrl());
             }
 
-            ArkWebContents arkWeb = ArkWebContents.get(mPageInfo.pageId);
+            ArkWebContents arkWeb = ArkWebManager.get(mPageInfo.pageId);
             if (arkWeb == null || arkWeb.isDestroyed()) {
                 WebContents webContents = null;
                 if (mTabState != null) {
@@ -507,7 +409,7 @@ public class ArkWebContents {
                 }
 
                 arkWeb = new ArkWebContents(mPageInfo, webContents);
-                ArkWebContents.put(mPageInfo.pageId, arkWeb);
+                ArkWebManager.put(mPageInfo.pageId, arkWeb);
             }
             arkWeb.setPendingLoadParams(mLoadUrlParams);
             return arkWeb;

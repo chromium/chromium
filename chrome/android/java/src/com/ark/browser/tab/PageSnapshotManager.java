@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 
 import com.ark.browser.core.ArkWebContents;
+import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.widget.FitWidthImageView;
 import com.ark.browser.utils.ArkLogger;
@@ -27,10 +28,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * 管理tab快照
+ * 管理web快照
  * @author Z-P-J
  */
-public class TabSnapshotManager {
+public class PageSnapshotManager {
 
     private static final String THUMBNAIL_DIRECTORY_NAME = "thumbnail";
 
@@ -38,7 +39,7 @@ public class TabSnapshotManager {
     private final LruCache<Integer, Bitmap> mBitmapCache;
 
     private static final class Holder {
-        private static final TabSnapshotManager MANAGER = new TabSnapshotManager();
+        private static final PageSnapshotManager MANAGER = new PageSnapshotManager();
     }
 
     private static final class PathHolder {
@@ -46,7 +47,7 @@ public class TabSnapshotManager {
                 THUMBNAIL_DIRECTORY_NAME, Context.MODE_PRIVATE).getPath();
     }
 
-    private TabSnapshotManager() {
+    private PageSnapshotManager() {
         long maxMemory = Runtime.getRuntime().maxMemory() / 6;
         // 89478485
         ArkLogger.d("TabThumbnailManager", "maxMemory=" + maxMemory);
@@ -58,7 +59,7 @@ public class TabSnapshotManager {
         };
     }
 
-    public static TabSnapshotManager getInstance() {
+    public static PageSnapshotManager getInstance() {
         return Holder.MANAGER;
     }
 
@@ -192,7 +193,7 @@ public class TabSnapshotManager {
         public void start() {
             mStart.set(true);
 
-            ArkWebContents arkWeb = ArkWebContents.get(mPageId);
+            ArkWebContents arkWeb = ArkWebManager.get(mPageId);
             if (arkWeb != null && !arkWeb.isDestroyed()) {
                 RenderWidgetHostView renderWidgetHostView = arkWeb.getWebContents().getRenderWidgetHostView();
                 if (renderWidgetHostView == null) {

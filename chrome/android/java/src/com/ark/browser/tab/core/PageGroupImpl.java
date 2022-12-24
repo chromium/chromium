@@ -110,7 +110,7 @@ public class PageGroupImpl implements IPageGroup {
     @Override
     public void destroy() {
         for (IPage page : mPageInfoList) {
-            TabCacheManager.getInstance().removePage(page);
+            TabCacheManager.getInstance().removeTab(page);
         }
         mPageInfoList.clear();
     }

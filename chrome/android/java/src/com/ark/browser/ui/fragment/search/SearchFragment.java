@@ -24,8 +24,8 @@ import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.model.SearchHistory;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabListManager;
-import com.ark.browser.tab.TabSnapshotManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.dialog.SearchEngineSelectDialog;
 import com.ark.browser.ui.fragment.download.DownloadMultiData;
@@ -295,7 +295,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
             if (pageInfo != null) {
                 cardView.setCardBackgroundColor(pageInfo.getThemeColor());
                 tvTitle.setText(pageInfo.getTitle());
-                TabSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
+                PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
             } else {
                 cardView.setCardBackgroundColor(Color.WHITE);
                 tvTitle.setText(null);

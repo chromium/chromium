@@ -4,7 +4,7 @@ import androidx.core.util.AtomicFile;
 
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
-import com.ark.browser.tab.TabSnapshotManager;
+import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -25,8 +25,8 @@ public interface IPage {
     PageInfo getPageInfo();
 
     default void remove() {
-        TabCacheManager.getInstance().removePage(getPageInfo());
-        TabSnapshotManager.getInstance().removeSnapshot(getId());
+        TabCacheManager.getInstance().removeTab(getPageInfo());
+        PageSnapshotManager.getInstance().removeSnapshot(getId());
         ThreadPool.executeIO(this::deletePageInfo);
     }
 
