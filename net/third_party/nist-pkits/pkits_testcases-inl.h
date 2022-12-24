@@ -2047,7 +2047,7 @@ WRAPPED_TYPED_TEST_P(PkitsTest10PolicyMappings,
                                "ValidPolicyMappingTest1EE"};
   const char* const crls[] = {"TrustAnchorRootCRL", "Mapping1to2CACRL"};
   PkitsTestInfo info;
-  info.test_number = "4.10.1";
+  info.test_number = "4.10.1.1";
   info.should_validate = true;
   info.SetInitialPolicySet("NIST-test-policy-1");
 
@@ -2062,7 +2062,7 @@ WRAPPED_TYPED_TEST_P(PkitsTest10PolicyMappings,
                                "ValidPolicyMappingTest1EE"};
   const char* const crls[] = {"TrustAnchorRootCRL", "Mapping1to2CACRL"};
   PkitsTestInfo info;
-  info.test_number = "4.10.1";
+  info.test_number = "4.10.1.2";
   info.should_validate = false;
   info.SetInitialPolicySet("NIST-test-policy-2");
   info.SetUserConstrainedPolicySet("");
@@ -2078,7 +2078,7 @@ WRAPPED_TYPED_TEST_P(PkitsTest10PolicyMappings,
                                "ValidPolicyMappingTest1EE"};
   const char* const crls[] = {"TrustAnchorRootCRL", "Mapping1to2CACRL"};
   PkitsTestInfo info;
-  info.test_number = "4.10.1";
+  info.test_number = "4.10.1.3";
   info.should_validate = false;
   info.SetInitialPolicyMappingInhibit(true);
   info.SetUserConstrainedPolicySet("");
@@ -2347,9 +2347,9 @@ WRAPPED_TYPED_TEST_P(PkitsTest10PolicyMappings,
   this->RunTest(certs, crls, info);
 }
 
-// 4.10.13 Valid Policy Mapping Test13
+// 4.10.13 Valid Policy Mapping Test13 (Subpart 1)
 WRAPPED_TYPED_TEST_P(PkitsTest10PolicyMappings,
-                     Section10ValidPolicyMappingTest13) {
+                     Section10ValidPolicyMappingTest13Subpart1) {
   const char* const certs[] = {"TrustAnchorRootCertificate",
                                "P1anyPolicyMapping1to2CACert",
                                "ValidPolicyMappingTest13EE"};
@@ -2358,6 +2358,39 @@ WRAPPED_TYPED_TEST_P(PkitsTest10PolicyMappings,
   PkitsTestInfo info;
   info.test_number = "4.10.13";
   info.should_validate = true;
+
+  this->RunTest(certs, crls, info);
+}
+
+// 4.10.13 Valid Policy Mapping Test13 (Subpart 2)
+WRAPPED_TYPED_TEST_P(PkitsTest10PolicyMappings,
+                     Section10ValidPolicyMappingTest13Subpart2) {
+  const char* const certs[] = {"TrustAnchorRootCertificate",
+                               "P1anyPolicyMapping1to2CACert",
+                               "ValidPolicyMappingTest13EE"};
+  const char* const crls[] = {"TrustAnchorRootCRL",
+                              "P1anyPolicyMapping1to2CACRL"};
+  PkitsTestInfo info;
+  info.test_number = "4.10.13";
+  info.should_validate = true;
+  info.SetInitialPolicySet("NIST-test-policy-1,NIST-test-policy-2");
+
+  this->RunTest(certs, crls, info);
+}
+
+// 4.10.13 Valid Policy Mapping Test13 (Subpart 3)
+WRAPPED_TYPED_TEST_P(PkitsTest10PolicyMappings,
+                     Section10ValidPolicyMappingTest13Subpart3) {
+  const char* const certs[] = {"TrustAnchorRootCertificate",
+                               "P1anyPolicyMapping1to2CACert",
+                               "ValidPolicyMappingTest13EE"};
+  const char* const crls[] = {"TrustAnchorRootCRL",
+                              "P1anyPolicyMapping1to2CACRL"};
+  PkitsTestInfo info;
+  info.test_number = "4.10.13";
+  info.should_validate = false;
+  info.SetInitialPolicySet("NIST-test-policy-2");
+  info.SetUserConstrainedPolicySet("");
 
   this->RunTest(certs, crls, info);
 }
@@ -2397,7 +2430,9 @@ WRAPPED_REGISTER_TYPED_TEST_SUITE_P(PkitsTest10PolicyMappings,
                                     Section10ValidPolicyMappingTest11,
                                     Section10ValidPolicyMappingTest12Subpart1,
                                     Section10ValidPolicyMappingTest12Subpart2,
-                                    Section10ValidPolicyMappingTest13,
+                                    Section10ValidPolicyMappingTest13Subpart1,
+                                    Section10ValidPolicyMappingTest13Subpart2,
+                                    Section10ValidPolicyMappingTest13Subpart3,
                                     Section10ValidPolicyMappingTest14);
 
 template <typename PkitsTestDelegate>

@@ -439,30 +439,11 @@ class ValidPolicyGraph {
     bool has_any_policy = false;
   };
 
-  // Initializes the ValidPolicyGraph for the given "user_initial_policy_set".
-  //
-  // In RFC 5280, the valid_policy_tree is initialized to a root node at level
-  // 0 of "anyPolicy"; the intersection with the "user_initial_policy_set" is
-  // done at the end (Wrap Up) as described in section 6.1.5 step g.
-  //
-  // Whereas in this implementation, the restriction on policies is added here,
-  // and intersecting during Wrap Up is no longer needed.
-  //
-  // The final "user_constrained_policy_set" obtained will be the same. The
-  // advantages of this approach is simpler code.
-  //
-  // TODO(davidben): It is not quite the same in some edge cases around
-  // anyPolicy. Switch this to match RFC 5280's formulation.
-  void Init(const std::set<der::Input>& user_constained_policy_set) {
+  // Initializes the ValidPolicyGraph.
+  void Init() {
     SetNull();
     StartLevel();
-    for (der::Input policy : user_constained_policy_set) {
-      if (policy == der::Input(kAnyPolicyOid)) {
-        AddAnyPolicyNode();
-      } else {
-        AddNode(policy, {});
-      }
-    }
+    AddAnyPolicyNode();
   }
 
   // In RFC 5280 valid_policy_tree may be set to null. That is represented here
@@ -495,19 +476,24 @@ class ValidPolicyGraph {
   }
 
   // Gets the set of policies (in terms of root authority's policy domain) that
-  // are valid at the bottom level of the policy graph. This is what X.509 calls
+  // are valid at the bottom level of the policy graph, intersected with
+  // |user_initial_policy_set|. This is what X.509 calls
   // "user-constrained-policy-set".
   //
   // This method may only be called once, after the policy graph is constructed.
-  void GetValidRootPolicySet(std::set<der::Input>* policy_set) {
-    policy_set->clear();
+  std::set<der::Input> GetUserConstrainedPolicySet(
+      const std::set<der::Input>& user_initial_policy_set) {
     if (levels_.empty()) {
-      return;
+      return {};
     }
 
+    bool user_has_any_policy =
+        user_initial_policy_set.count(der::Input(kAnyPolicyOid)) != 0;
     if (current_level_.has_any_policy) {
-      *policy_set = {der::Input(kAnyPolicyOid)};
-      return;
+      if (user_has_any_policy) {
+        return {der::Input(kAnyPolicyOid)};
+      }
+      return user_initial_policy_set;
     }
 
     // The root's policy domain is determined by nodes with anyPolicy as a
@@ -516,6 +502,7 @@ class ValidPolicyGraph {
     for (auto& [policy, node] : levels_.back()) {
       node.reachable = true;
     }
+    std::set<der::Input> policy_set;
     for (size_t i = levels_.size() - 1; i < levels_.size(); i--) {
       for (auto& [policy, node] : levels_[i]) {
         if (!node.reachable) {
@@ -523,7 +510,11 @@ class ValidPolicyGraph {
         }
         if (node.parent_policies.empty()) {
           // |node|'s parent is anyPolicy, so this is in the root policy domain.
-          policy_set->insert(policy);
+          // Add it to the set if it is also in user's list.
+          if (user_has_any_policy ||
+              user_initial_policy_set.count(policy) > 0) {
+            policy_set.insert(policy);
+          }
         } else if (i > 0) {
           // Otherwise, continue searching the previous level.
           for (der::Input parent : node.parent_policies) {
@@ -535,6 +526,7 @@ class ValidPolicyGraph {
         }
       }
     }
+    return policy_set;
   }
 
   // Adds a node with policy anyPolicy to the current level.
@@ -667,6 +659,7 @@ class PathVerifier {
   // Procedure". It does processing for the final certificate (the target cert).
   void WrapUp(const ParsedCertificate& cert,
               KeyPurpose required_key_purpose,
+              const std::set<der::Input>& user_initial_policy_set,
               CertErrors* errors);
 
   // Enforces trust anchor constraints compatibile with RFC 5937.
@@ -693,6 +686,8 @@ class PathVerifier {
                                                    CertErrors* errors);
 
   ValidPolicyGraph valid_policy_graph_;
+
+  std::set<der::Input> user_constrained_policy_set_;
 
   // Will contain a NameConstraints for each previous cert in the chain which
   // had nameConstraints. This corresponds to the permitted_subtrees and
@@ -853,8 +848,8 @@ void PathVerifier::VerifyPolicies(const ParsedCertificate& cert,
     //          this step until there are no nodes of depth i-1 or less
     //          without children.
     //
-    // This implementation does this as part of GetValidRootPolicySet(). Only
-    // the current level needs to be pruned to compute the policy graph.
+    // This implementation does this as part of GetUserConstrainedPolicySet().
+    // Only the current level needs to be pruned to compute the policy graph.
   }
 
   //  (e)  If the certificate policies extension is not present, set the
@@ -936,6 +931,8 @@ void PathVerifier::VerifyPolicyMappings(const ParsedCertificate& cert,
   //               i-1 or less without any child nodes, delete that
   //               node.  Repeat this step until there are no nodes of
   //               depth i-1 or less without children.
+  //
+  // Step (ii) is deferred to part of GetUserConstrainedPolicySet().
   if (policy_mapping_ == 0) {
     for (const ParsedPolicyMapping& mapping : cert.policy_mappings()) {
       valid_policy_graph_.DeleteNode(mapping.issuer_domain_policy);
@@ -1178,6 +1175,7 @@ void VerifyTargetCertIsNotCA(const ParsedCertificate& cert,
 
 void PathVerifier::WrapUp(const ParsedCertificate& cert,
                           KeyPurpose required_key_purpose,
+                          const std::set<der::Input>& user_initial_policy_set,
                           CertErrors* errors) {
   // From RFC 5280 section 6.1.5:
   //      (a)  If explicit_policy is not 0, decrement explicit_policy by 1.
@@ -1207,13 +1205,18 @@ void PathVerifier::WrapUp(const ParsedCertificate& cert,
   // directly match the procedures in RFC 5280's section 6.1.
   VerifyNoUnconsumedCriticalExtensions(cert, errors);
 
-  // RFC 5280 section 6.1.5 step g is skipped, as the intersection of valid
-  // policies was computed during previous steps.
+  // This calculates the intersection from RFC 5280 section 6.1.5 step g, as
+  // well as applying the deferred recursive node that were skipped earlier in
+  // the process.
+  user_constrained_policy_set_ =
+      valid_policy_graph_.GetUserConstrainedPolicySet(user_initial_policy_set);
+
+  // From RFC 5280 section 6.1.5 step g:
   //
   //    If either (1) the value of explicit_policy variable is greater than
   //    zero or (2) the valid_policy_tree is not NULL, then path processing
-  //   has succeeded.
-  if (!(explicit_policy_ > 0 || !valid_policy_graph_.IsNull())) {
+  //    has succeeded.
+  if (explicit_policy_ == 0 && user_constrained_policy_set_.empty()) {
     errors->AddError(cert_errors::kNoValidPolicy);
   }
 
@@ -1380,7 +1383,7 @@ void PathVerifier::Run(
   // if n is used in place of n+1).
   const size_t n = certs.size() - 1;
 
-  valid_policy_graph_.Init(user_initial_policy_set);
+  valid_policy_graph_.Init();
 
   // RFC 5280 section section 6.1.2:
   //
@@ -1470,14 +1473,12 @@ void PathVerifier::Run(
     if (!is_target_cert) {
       PrepareForNextCertificate(cert, cert_errors);
     } else {
-      WrapUp(cert, required_key_purpose, cert_errors);
+      WrapUp(cert, required_key_purpose, user_initial_policy_set, cert_errors);
     }
   }
 
   if (user_constrained_policy_set) {
-    // valid_policy_graph_ already contains the intersection of valid policies
-    // with user_initial_policy_set.
-    valid_policy_graph_.GetValidRootPolicySet(user_constrained_policy_set);
+    *user_constrained_policy_set = user_constrained_policy_set_;
   }
 
   // TODO(eroman): RFC 5280 forbids duplicate certificates per section 6.1:

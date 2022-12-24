@@ -70,6 +70,9 @@ WRAPPED_TYPED_TEST_P(%(test_case_name)s, %(sanitized_test_name)s) {
 
   default_info = TestInfo(None)
 
+  if info.include_subpart_in_test_number:
+    test_number = "%s.%d" % (test_number, subpart_number)
+
   output.write('''PkitsTestInfo info;
   info.test_number = "%s";
   info.should_validate = %s;
@@ -245,13 +248,15 @@ class TestInfo(object):
                # In all of the tests that are not related to policy processing,
                # each certificate in the path asserts the certificate policy
                # 2.16.840.1.101.3.2.1.48.1
-               user_constrained_policy_set = [TEST_POLICY_1]):
+               user_constrained_policy_set = [TEST_POLICY_1],
+               include_subpart_in_test_number = False):
     self.should_validate = should_validate
     self.initial_policy_set = initial_policy_set
     self.initial_explicit_policy = initial_explicit_policy
     self.initial_policy_mapping_inhibit = initial_policy_mapping_inhibit
     self.initial_inhibit_any_policy = initial_inhibit_any_policy
     self.user_constrained_policy_set = user_constrained_policy_set
+    self.include_subpart_in_test_number = include_subpart_in_test_number
 
 
 TEST_OVERRIDES = {
@@ -615,20 +620,26 @@ TEST_OVERRIDES = {
   ],
 
   '4.10.1': [ # Valid Policy Mapping Test1
+    # The errors in subparts 2 and 3 vary slightly, so we set
+    # include_subpart_in_test_number.
+
     # 1. default settings, but with initial-policy-set = {NIST-test-policy-1}.
     # The path should validate successfully.
     TestInfo(True, initial_policy_set=[TEST_POLICY_1],
-             user_constrained_policy_set=[TEST_POLICY_1]),
+             user_constrained_policy_set=[TEST_POLICY_1],
+             include_subpart_in_test_number=True),
 
     # 2. default settings, but with initial-policy-set = {NIST-test-policy-2}.
     # The path should not validate successfully.
     TestInfo(False, initial_policy_set=[TEST_POLICY_2],
-             user_constrained_policy_set=[]),
+             user_constrained_policy_set=[],
+             include_subpart_in_test_number=True),
 
     # 3. default settings, but with initial-policy-mapping-inhibit set. The
     # path should not validate successfully.
     TestInfo(False, initial_policy_mapping_inhibit=True,
-             user_constrained_policy_set=[]),
+             user_constrained_policy_set=[],
+             include_subpart_in_test_number=True),
   ],
 
   '4.10.2': [ # Invalid Policy Mapping Test2
@@ -793,6 +804,16 @@ TEST_OVERRIDES = {
     # the path is accepted, the application should display the user notice
     # associated with NIST-testpolicy-1 in the intermediate certificate.
     TestInfo(True, user_constrained_policy_set=[TEST_POLICY_1]),
+
+    # While not explicitly divided into sub-parts, the above describes what
+    # should happen given various values of initial-policy-set. Test some
+    # combinations, as these cover an interesting interaction with anyPolicy.
+    #
+    # These extra tests are a regression test for https://crbug.com/1403258.
+    TestInfo(True, initial_policy_set=[TEST_POLICY_1, TEST_POLICY_2],
+             user_constrained_policy_set=[TEST_POLICY_1]),
+    TestInfo(False, initial_policy_set=[TEST_POLICY_2],
+             user_constrained_policy_set=[]),
   ],
 
   '4.10.14': [ # Valid Policy Mapping Test14
