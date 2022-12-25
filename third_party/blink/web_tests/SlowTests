@@ -744,7 +744,6 @@ crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/get-databases.any.html [ Slow
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbindex_getAll.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbindex_getAllKeys.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/keygenerator-explicit.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/keypath-special-identifiers.htm [ Slow ]
 
 crbug.com/1263580 editing/deleting/delete-many-lines-of-text.html [ Slow ]
