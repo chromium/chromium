@@ -32321,6 +32321,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1051" label="PrivacySandboxAdMeasurementEnabled"/>
   <int value="1052" label="AppStoreRatingEnabled"/>
   <int value="1053" label="KerberosUseCustomPrefilledConfig"/>
+  <int value="1054" label="DeviceHindiInscriptLayoutEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

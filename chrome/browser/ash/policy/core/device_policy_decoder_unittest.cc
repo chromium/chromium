@@ -446,4 +446,19 @@ TEST_F(DevicePolicyDecoderTest, DeviceReportXDREvents) {
                                std::move(device_report_xdr_events_value));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceHindiInscriptLayoutEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceHindiInscriptLayoutEnabled);
+
+  base::Value device_hindi_inscript_layout_enabled_value(true);
+  device_policy.mutable_device_hindi_inscript_layout_enabled()->set_enabled(
+      device_hindi_inscript_layout_enabled_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceHindiInscriptLayoutEnabled,
+      std::move(device_hindi_inscript_layout_enabled_value));
+}
+
 }  // namespace policy

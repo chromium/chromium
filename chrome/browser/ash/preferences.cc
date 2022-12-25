@@ -159,6 +159,8 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kLoginScreenWebUILazyLoading, false);
   registry->RegisterBooleanPref(::prefs::kConsumerAutoUpdateToggle, true);
   registry->RegisterBooleanPref(::prefs::kHindiInscriptLayoutEnabled, false);
+  registry->RegisterBooleanPref(::prefs::kDeviceHindiInscriptLayoutEnabled,
+                                false);
 
   RegisterLocalStatePrefs(registry);
   ash::consolidated_consent_field_trial::RegisterLocalStatePrefs(registry);

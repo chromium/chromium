@@ -441,7 +441,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
       if (engine.engine_id == kHindiInscriptEngineId &&
           !base::FeatureList::IsEnabled(features::kHindiInscriptLayout) &&
           !g_browser_process->local_state()->GetBoolean(
-              prefs::kHindiInscriptLayoutEnabled)) {
+              prefs::kDeviceHindiInscriptLayoutEnabled)) {
         continue;
       }
 

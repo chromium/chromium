@@ -3647,9 +3647,15 @@ const char kSCTAuditingHashdanceReportCount[] =
 const char kConsumerAutoUpdateToggle[] = "settings.consumer_auto_update_toggle";
 
 // A boolean pref that controls whether or not Hindi Inscript keyboard layout
-// is available. Set with the corresponding enterprise policy.
+// is available.
+// This is set by a user policy, but the user policy does not work to
+// control the availability of the Hindi Inscript layout.
+// TODO(jungshik): Deprecate it.
 const char kHindiInscriptLayoutEnabled[] =
     "settings.input.hindi_inscript_layout_enabled";
+// This is set by a device policy and does actually work.
+const char kDeviceHindiInscriptLayoutEnabled[] =
+    "settings.input.device_hindi_inscript_layout_enabled";
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

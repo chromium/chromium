@@ -1436,6 +1436,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
+  if (policy.has_device_hindi_inscript_layout_enabled()) {
+    const em::DeviceHindiInscriptLayoutEnabledProto& container(
+        policy.device_hindi_inscript_layout_enabled());
+    if (container.has_enabled()) {
+      policies->Set(key::kDeviceHindiInscriptLayoutEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
+                    nullptr);
+    }
+  }
+
   if (policy.has_allow_redeem_offers()) {
     const em::AllowRedeemChromeOsRegistrationOffersProto& container(
         policy.allow_redeem_offers());

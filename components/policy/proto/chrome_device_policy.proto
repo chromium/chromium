@@ -113,6 +113,11 @@ message NetworkHostnameProto {
   optional string device_hostname_template = 1;
 }
 
+message DeviceHindiInscriptLayoutEnabledProto {
+  // Determines if Hindi Inscript Layout is available
+  optional bool enabled = 1 [default = false];
+}
+
 message HostnameUserConfigurableProto {
   // Determines if user is allowed to configure the device hostname
   optional bool device_hostname_user_configurable = 1 [default = false];
@@ -1906,4 +1911,6 @@ message ChromeDeviceSettingsProto {
   optional StringPolicyProto device_printing_client_name_template = 137;
   optional DeviceReportXDREventsProto device_report_xdr_events = 138;
   optional KeyboardBacklightColorProto keyboard_backlight_color = 139;
+  optional DeviceHindiInscriptLayoutEnabledProto
+      device_hindi_inscript_layout_enabled = 140;
 }
