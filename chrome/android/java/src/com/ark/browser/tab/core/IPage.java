@@ -2,6 +2,7 @@ package com.ark.browser.tab.core;
 
 import androidx.core.util.AtomicFile;
 
+import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
@@ -25,7 +26,7 @@ public interface IPage {
     PageInfo getPageInfo();
 
     default void remove() {
-        TabCacheManager.getInstance().removeTab(getPageInfo());
+        ArkWebManager.remove(getId());
         PageSnapshotManager.getInstance().removeSnapshot(getId());
         ThreadPool.executeIO(this::deletePageInfo);
     }

@@ -22,6 +22,7 @@ public class UserAgentManager {
         private final Map<String, String> brandVersionMap = new HashMap<>();
         private final Map<String, String> fullBrandVersionMap = new HashMap<>();
 
+        private final String mKey;
         private final String name;
         private final String userAgent;
         private final boolean isMobile;
@@ -34,10 +35,15 @@ public class UserAgentManager {
         private String bitness;
         private boolean wow64 = false;
 
-        public UserAgent(String name, String userAgent, boolean isMobile) {
+        public UserAgent(String key, String name, String userAgent, boolean isMobile) {
+            mKey = key;
             this.name = name;
             this.userAgent = userAgent;
             this.isMobile = isMobile;
+        }
+
+        public String getKey() {
+            return mKey;
         }
 
         public String getName() {
@@ -62,11 +68,11 @@ public class UserAgentManager {
     };
 
     private static final UserAgent[] ARRAY_USER_AGENT = {
-            new UserAgent("安卓UA", ContentUtils.getBrowserUserAgent(), true),
-            new UserAgent("桌面UA", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.230 Safari/537.36 Vivaldi/2.2.1388.37", false),
-            new UserAgent("苹果UA", "Mozilla/5.0 (iPhone 6s; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/604.3.5 (KHTML, like Gecko) Version/11.0 MQQBrowser/8.3.0 Mobile/15B87 Safari/604.1 MttCustomUA/2 QBWebViewType/1 WKType/1", true),
-            new UserAgent("塞班UA", "Mozilla/5.0 (SymbianOS/9.4;Series60/5.0 Nokia5230-1b/21.2 .005; Profile/MIDP-2.1 Config uration/CLDC-1.1 ) AppleWebKit/525 (KHTML, like Gecko) Version/3.0 BrowserNG/7.2.5.2 3gpp-gba", true),
-            new UserAgent("黑莓UA", "Mozilla/5.0 (BlackBerry;U;BlackBerry9800;en) AppleWebKit/534.1+ (KHTML,likeGecko) Version/6.0.0.337 Mobile Safari/534.1+", true)
+            new UserAgent("android", "安卓UA", ContentUtils.getBrowserUserAgent(), true),
+            new UserAgent("desktop", "桌面UA", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.230 Safari/537.36 Vivaldi/2.2.1388.37", false),
+            new UserAgent("iphone", "苹果UA", "Mozilla/5.0 (iPhone 6s; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/604.3.5 (KHTML, like Gecko) Version/11.0 MQQBrowser/8.3.0 Mobile/15B87 Safari/604.1 MttCustomUA/2 QBWebViewType/1 WKType/1", true),
+            new UserAgent("symbian", "塞班UA", "Mozilla/5.0 (SymbianOS/9.4;Series60/5.0 Nokia5230-1b/21.2 .005; Profile/MIDP-2.1 Config uration/CLDC-1.1 ) AppleWebKit/525 (KHTML, like Gecko) Version/3.0 BrowserNG/7.2.5.2 3gpp-gba", true),
+            new UserAgent("blackberry", "黑莓UA", "Mozilla/5.0 (BlackBerry;U;BlackBerry9800;en) AppleWebKit/534.1+ (KHTML,likeGecko) Version/6.0.0.337 Mobile Safari/534.1+", true)
     };
 
     private static final ConcurrentHashMap<String, Integer> HOST_UA_MAPPING = new ConcurrentHashMap<>();

@@ -86,7 +86,7 @@ public interface Tab extends TabLifecycle {
     @NonNull
     Context getContext();
 
-    @NonNull
+    @Nullable
     default Activity getActivity2() {
         Context context = getContext();
         if (context instanceof Activity) {

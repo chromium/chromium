@@ -366,10 +366,10 @@ public class ArkMainFragment extends BaseFragment implements
             };
 
 
-            @Override
-            public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url) {
-                return TabListManager.getInstance().openNewPage(current, type, url);
-            }
+//            @Override
+//            public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url) {
+//                return TabListManager.getInstance().openNewPage(current, type, url);
+//            }
 
             @Override
             public ITabGroup getTabList(Tab current) {

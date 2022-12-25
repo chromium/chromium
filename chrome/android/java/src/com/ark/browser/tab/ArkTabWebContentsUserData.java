@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-package org.chromium.chrome.browser.tab;
+package com.ark.browser.tab;
 
 import androidx.annotation.Nullable;
 
+import com.ark.browser.core.ArkWebContents;
+
 import org.chromium.base.UserData;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -14,16 +14,17 @@ import org.chromium.ui.base.WindowAndroid;
  * UserData for a {@link Tab}. Used for a {@link WebContents} while it stays
  * active for the Tab.
  */
-public abstract class TabWebContentsUserData implements UserData {
-    private WebContents mWebContents;
+public abstract class ArkTabWebContentsUserData implements UserData {
+    private ArkWebContents mWebContents;
 
-    public TabWebContentsUserData(Tab tab) {
+    public ArkTabWebContentsUserData(Tab tab) {
         tab.addObserver(new EmptyTabObserver() {
             @Override
             public void onContentChanged(Tab tab) {
-                if (mWebContents == tab.getWebContents()) return;
+                ArkTabImpl arkTab = (ArkTabImpl) tab;
+                if (mWebContents == arkTab.getArkWeb()) return;
                 if (mWebContents != null) cleanupWebContents(mWebContents);
-                mWebContents = tab.getWebContents();
+                mWebContents = arkTab.getArkWeb();
                 if (mWebContents != null) initWebContents(mWebContents);
             }
 
@@ -45,7 +46,7 @@ public abstract class TabWebContentsUserData implements UserData {
         destroyInternal();
     }
 
-    protected WebContents getWebContents() {
+    protected ArkWebContents getWebContents() {
         return mWebContents;
     }
 
@@ -56,13 +57,13 @@ public abstract class TabWebContentsUserData implements UserData {
 
     /**
      * Called when {@link WebContents} becomes active (swapped in) for a {@link Tab}.
-     * @param arkWeb WebContents object that just became active.
+     * @param webContents WebContents object that just became active.
      */
-    public abstract void initWebContents(WebContents arkWeb);
+    public abstract void initWebContents(ArkWebContents webContents);
 
     /**
      * Called when {@link WebContents} gets swapped out.
-     * @param arkWeb WebContents object that just became inactive.
+     * @param webContents WebContents object that just became inactive.
      */
-    public abstract void cleanupWebContents(WebContents arkWeb);
+    public abstract void cleanupWebContents(ArkWebContents webContents);
 }

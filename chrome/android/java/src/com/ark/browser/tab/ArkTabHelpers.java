@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.media.ui.MediaSessionTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
-import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 
 /**
@@ -45,7 +44,7 @@ public final class ArkTabHelpers {
     }
 
     /**
-     * Initializes {@link TabWebContentsUserData} and WebContents-related objects
+     * Initializes {@link ArkTabWebContentsUserData} and WebContents-related objects
      * when a new WebContents is set to the tab.
      * @param tab {@link Tab} to create helpers for.
      */

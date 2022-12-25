@@ -38,6 +38,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 public class ArkWebContents {
@@ -138,6 +139,10 @@ public class ArkWebContents {
 
     public boolean isFinishLoad() {
         return mFinishLoad;
+    }
+
+    public void setTopLevelNativeWindow(WindowAndroid windowAndroid) {
+        mWebContents.setTopLevelNativeWindow(windowAndroid);
     }
 
     @NonNull

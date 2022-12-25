@@ -1,5 +1,6 @@
 package com.ark.browser.tab.core;
 
+import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.utils.ArkLogger;
 
@@ -24,6 +25,10 @@ public class PageGroupImpl implements IPageGroup {
 //        index = Math.min(index, mPageInfoList.size() - 1);
 //        ArkLogger.d(TAG, "load pageSize=" + mPageInfoList.size() + " index=" + index);
 //    }
+
+    public PageGroupImpl() {
+
+    }
 
     public PageGroupImpl(List<IPage> pages) {
         mPageInfoList.clear();
@@ -103,14 +108,14 @@ public class PageGroupImpl implements IPageGroup {
     }
 
     @Override
-    public List<IPage> getPageInfoList() {
+    public List<IPage> getPageList() {
         return mPageInfoList;
     }
 
     @Override
     public void destroy() {
         for (IPage page : mPageInfoList) {
-            TabCacheManager.getInstance().removeTab(page);
+            ArkWebManager.remove(page.getId());
         }
         mPageInfoList.clear();
     }

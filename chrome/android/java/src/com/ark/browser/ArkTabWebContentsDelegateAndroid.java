@@ -129,6 +129,7 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
     public boolean addNewContents(WebContents sourceWebContents, WebContents webContents,
             int disposition, Rect initialPosition, boolean userGesture) {
 
+        // TODO addNewContents
         Toast.makeText(ContextUtils.getApplicationContext(), "TODO addNewContents", Toast.LENGTH_SHORT).show();
 
         // Grab the URL, which might not be available via the Tab.
@@ -141,17 +142,15 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
 
         LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url.getSpec()));
         params.setHasUserGesture(userGesture);
-        boolean success = ((ArkTabImpl) mTab).openNewPage(params);
+        ((ArkTabImpl) mTab).loadInNewPage(params);
 
 
-        if (success) {
-            if (disposition == org.chromium.ui.mojom.WindowOpenDisposition.NEW_POPUP) {
-                PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
-                auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
-                        PolicyAuditor.AuditEvent.OPEN_POPUP_URL_SUCCESS, url.getSpec(), "");
-            }
+        if (disposition == org.chromium.ui.mojom.WindowOpenDisposition.NEW_POPUP) {
+            PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
+            auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
+                    PolicyAuditor.AuditEvent.OPEN_POPUP_URL_SUCCESS, url.getSpec(), "");
         }
-        return success;
+        return true;
 
 //        assert mWebContentsUrlMapping.containsKey(webContents);
 //
@@ -265,11 +264,6 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
     @Override
     public void handleKeyboardEvent(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
-
-//            if (mTab.getWindowAndroid() == null) {
-//                return;
-//            }
-//            Activity activity = mTab.getWindowAndroid().getActivity().get();
             Activity activity = mTab.getActivity2();
             if (activity == null) {
                 return;
@@ -380,11 +374,6 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
 
     @Override
     public boolean isPictureInPictureEnabled() {
-
-//        if (mTab.getWindowAndroid() == null) {
-//            return false;
-//        }
-//        Activity activity = mTab.getWindowAndroid().getActivity().get();
         Activity activity = mTab.getActivity2();
         if (activity == null) {
             return false;
@@ -395,10 +384,6 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
 
     @Override
     public boolean isNightModeEnabled() {
-//        if (mTab.getWindowAndroid() == null) {
-//            return false;
-//        }
-//        Activity activity = mTab.getWindowAndroid().getActivity().get();
         Activity activity = mTab.getActivity2();
         if (activity == null) {
             return false;

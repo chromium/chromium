@@ -62,6 +62,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/tab/ArkTabViewAndroidDelegate.java",
   "java/src/com/ark/browser/tab/ArkTabViewManagerImpl.java",
   "java/src/com/ark/browser/tab/ArkTabWebContentsObserver.java",
+  "java/src/com/ark/browser/tab/ArkTabWebContentsUserData.java",
   "java/src/com/ark/browser/tab/EmptyTabInfoObserver.java",
   "java/src/com/ark/browser/tab/EmptyTabManagerObserver.java",
   "java/src/com/ark/browser/tab/PageInfo.java",

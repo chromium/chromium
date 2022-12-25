@@ -18,29 +18,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 @Keep
-//@Table(database = PageInfoManager.class)
 public class PageInfo {
 
-//    @PrimaryKey()
     public int pageId;
 
-//    @Column
     public int tabId;
-//    @Column
+
     public int originalIndex;
-//    @Column
+
     public boolean isIncognito;
-//    @Column
+
     public boolean fromMerge;
 
-//    @Column(defaultValue = "-1")
     private int themeColor;
 
-//    @Column
     private String url;
 
-//    @Column
     private String title;
+
+    // TODO
+    private String mUserAgent;
 
     private PageInfo() {
 
@@ -65,6 +62,7 @@ public class PageInfo {
         info.isIncognito = pageInfo.isIncognito;
         info.fromMerge = pageInfo.fromMerge;
         info.themeColor = pageInfo.themeColor;
+        info.mUserAgent = pageInfo.mUserAgent;
         info.url = pageInfo.url;
         info.title = pageInfo.title;
         info.save();
@@ -95,6 +93,9 @@ public class PageInfo {
         info.fromMerge = is.readBoolean();
         info.themeColor = is.readInt();
         info.originalIndex = is.readInt();
+        if (version == 2) {
+            info.mUserAgent = is.readUTF();
+        }
         info.url = is.readUTF();
         info.title = is.readUTF();
         return info;
@@ -192,7 +193,7 @@ public class PageInfo {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream os = new DataOutputStream(stream);
 
-            int version = 1;
+            int version = 2;
             os.writeInt(version);
             os.writeInt(pageId);
             os.writeInt(tabId);
@@ -200,6 +201,7 @@ public class PageInfo {
             os.writeBoolean(fromMerge);
             os.writeInt(themeColor);
             os.writeInt(originalIndex);
+            os.writeUTF(mUserAgent == null ? "" : mUserAgent);
             os.writeUTF(url == null ? "" : url);
             os.writeUTF(title == null ? "" : title);
             os.close();
@@ -226,30 +228,6 @@ public class PageInfo {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
-//        ThreadPool.executeIO(() -> {
-//            PageInfo pageInfo = getPageInfo();
-//            File pagesDir = ArkTabDao.getPagesDir(pageInfo.tabInfoId);
-//            File file = new File(pagesDir, String.valueOf(pageInfo.pageId));
-//            try (DataOutputStream os = new DataOutputStream(
-//                    new BufferedOutputStream(new FileOutputStream(file)))) {
-//                int version = 1;
-//                os.writeInt(version);
-//                os.writeInt(pageInfo.pageId);
-//                os.writeInt(pageInfo.tabInfoId);
-//                os.writeBoolean(pageInfo.isIncognito);
-//                os.writeBoolean(pageInfo.fromMerge);
-//                os.writeInt(pageInfo.getThemeColor());
-//                os.writeInt(pageInfo.originalIndex);
-//                os.writeUTF(pageInfo.getUrl());
-//                os.writeUTF(pageInfo.getTitle());
-//                os.flush();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
     }
 
 }

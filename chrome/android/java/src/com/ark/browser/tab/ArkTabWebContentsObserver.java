@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.core.utils.PolicyAuditor;
 import com.ark.browser.core.utils.PolicyAuditor.AuditEvent;
@@ -18,7 +19,6 @@ import com.ark.browser.utils.ArkLogger;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.metrics.RecordHistogram;
@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
-import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -44,7 +43,7 @@ import org.chromium.url.GURL;
 /**
  * WebContentsObserver used by Tab.
  */
-public class ArkTabWebContentsObserver extends TabWebContentsUserData {
+public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
     // URL didFailLoad error code. Should match the value in net_error_list.h.
     public static final int BLOCKED_BY_ADMINISTRATOR = -22;
 
@@ -108,7 +107,8 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
     }
 
     @Override
-    public void initWebContents(WebContents webContents) {
+    public void initWebContents(ArkWebContents arkWeb) {
+        WebContents webContents = arkWeb.getWebContents();
         mObserver = new Observer(webContents);
 
         // For browser tabs, we want to set accessibility focus to the page when it loads. This
@@ -125,7 +125,7 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
     }
 
     @Override
-    public void cleanupWebContents(WebContents webContents) {
+    public void cleanupWebContents(ArkWebContents arkWeb) {
         if (mObserver != null) {
             mObserver.destroy();
             mObserver = null;

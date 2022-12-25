@@ -300,19 +300,19 @@ public class TabListManager {
         tabList.openNewTab(currentTab, loadUrlParams, type);
     }
 
-    public boolean openNewPage(@NonNull Tab parent, @TabLaunchType int type, String url) {
-        ArkLogger.d("TabListManager", "openNewPage url=" + url + " type=" + type);
-
-        ITabGroup tabList = getTabList(parent.isIncognito());
-        return tabList.openNewPage(parent, type, url);
-    }
-
-    public boolean openNewPage(@NonNull Tab parent, LoadUrlParams params) {
-        ArkLogger.d("TabListManager", "openNewPage params=" + params);
-
-        ITabGroup tabList = getTabList(parent.isIncognito());
-        return tabList.openNewPage(parent, params);
-    }
+//    public boolean openNewPage(@NonNull Tab parent, @TabLaunchType int type, String url) {
+//        ArkLogger.d("TabListManager", "openNewPage url=" + url + " type=" + type);
+//
+//        ITabGroup tabList = getTabList(parent.isIncognito());
+//        return tabList.openNewPage(parent, type, url);
+//    }
+//
+//    public boolean openNewPage(@NonNull Tab parent, LoadUrlParams params) {
+//        ArkLogger.d("TabListManager", "openNewPage params=" + params);
+//
+//        ITabGroup tabList = getTabList(parent.isIncognito());
+//        return tabList.openNewPage(parent, params);
+//    }
 
     public void addObserver(TabManagerObserver observer) {
         ArkLogger.e(TAG, "addObserver hasObserver=" + mObservers.hasObserver(observer));

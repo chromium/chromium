@@ -19,9 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.common.Referrer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -374,17 +372,17 @@ public interface ITabGroup {
 
     public void openNewTab(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type);
 
-    default boolean openNewPage(Tab parent, @TabLaunchType int type, String url) {
-        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url));
-        params.setReferrer(new Referrer(parent.getUrl().toString(), org.chromium.network.mojom.ReferrerPolicy.DEFAULT));
-        return openNewPage(parent, params, type);
-    }
-
-    default boolean openNewPage(Tab parent, LoadUrlParams params) {
-        return openNewPage(parent, params, TabLaunchType.FROM_CHROME_UI);
-    }
-
-    public boolean openNewPage(Tab parent, LoadUrlParams loadUrlParams, @TabLaunchType int type);
+//    default boolean openNewPage(Tab parent, @TabLaunchType int type, String url) {
+//        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url));
+//        params.setReferrer(new Referrer(parent.getUrl().toString(), org.chromium.network.mojom.ReferrerPolicy.DEFAULT));
+//        return openNewPage(parent, params, type);
+//    }
+//
+//    default boolean openNewPage(Tab parent, LoadUrlParams params) {
+//        return openNewPage(parent, params, TabLaunchType.FROM_CHROME_UI);
+//    }
+//
+//    public boolean openNewPage(Tab parent, LoadUrlParams loadUrlParams, @TabLaunchType int type);
 
     public boolean moveToNewTab(IPage page);
 
@@ -424,7 +422,7 @@ public interface ITabGroup {
 
             ArkLogger.d(getClass().getSimpleName(), "closeTabInStack i=" + i);
             if (i >= 0) {
-                IPage pageInfo = manager.getPageGroup().getPageInfoList().remove(i);
+                IPage pageInfo = manager.getPageGroup().getPageList().remove(i);
                 pageInfo.remove();
                 result = true;
             } else {

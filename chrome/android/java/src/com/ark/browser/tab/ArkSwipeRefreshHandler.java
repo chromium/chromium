@@ -13,12 +13,11 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.ui.widget.swiperefresh.SwipeRefreshLayout;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.skin.SkinEngine;
 
-import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
@@ -26,11 +25,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.OverscrollAction;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.WindowAndroid;
@@ -40,7 +36,7 @@ import org.chromium.ui.base.WindowAndroid;
  * compat library's SwipeRefreshLayout effect.
  */
 public class ArkSwipeRefreshHandler
-        extends TabWebContentsUserData implements OverscrollRefreshHandler {
+        extends ArkTabWebContentsUserData implements OverscrollRefreshHandler {
 
     private static final String TAG = "SwipeRefreshHandler";
 
@@ -173,16 +169,16 @@ public class ArkSwipeRefreshHandler
 
     @SuppressLint("NewApi")
     @Override
-    public void initWebContents(WebContents webContents) {
-        webContents.setOverscrollRefreshHandler(this);
+    public void initWebContents(ArkWebContents arkWeb) {
+        arkWeb.getWebContents().setOverscrollRefreshHandler(this);
         mContainerView = mTab.getContentView();
         setEnabled(true);
     }
 
     @SuppressLint("NewApi")
     @Override
-    public void cleanupWebContents(WebContents webContents) {
-        webContents.setOverscrollRefreshHandler(null);
+    public void cleanupWebContents(ArkWebContents arkWeb) {
+        arkWeb.getWebContents().setOverscrollRefreshHandler(null);
         detachSwipeRefreshLayoutIfNecessary();
         mContainerView = null;
         setEnabled(false);

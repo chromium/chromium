@@ -108,10 +108,6 @@ public class TabCacheManager {
         tab.destroy();
     }
 
-    public void removeTab(PageInfo pageInfo) {
-        removeTab(pageInfo.getId());
-    }
-
     public void removeTab(IPage page) {
         removeTab(page.getId());
     }
@@ -121,7 +117,6 @@ public class TabCacheManager {
         if (tab != null) {
             tabCache.remove(id);
             tab.destroy();
-//            ThreadPool.post(tab::remove);
         }
     }
 

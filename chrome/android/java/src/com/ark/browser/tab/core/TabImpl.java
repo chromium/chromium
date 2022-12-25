@@ -1,6 +1,6 @@
 package com.ark.browser.tab.core;
 
-import com.ark.browser.tab.TabCacheManager;
+import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.utils.ArkLogger;
@@ -13,21 +13,15 @@ public class TabImpl implements ITab {
     private static final String TAG = "TabImpl";
 
     private final TabInfo tabInfo;
-    private final IPageGroup mPageGroup;
 
     private transient ITab mFloatingTab;
 
     public TabImpl() {
-        this(TabInfo.create(), new ArrayList<>());
+        this(TabInfo.create());
     }
 
     public TabImpl(TabInfo tabInfo) {
-        this(tabInfo, new ArrayList<>());
-    }
-
-    public TabImpl(TabInfo tabInfo, List<IPage> pages) {
         this.tabInfo = tabInfo;
-        this.mPageGroup = new PageGroupImpl(pages);
     }
 
     @Override
@@ -50,7 +44,7 @@ public class TabImpl implements ITab {
 
     @Override
     public IPageGroup getPageGroup() {
-        return mPageGroup;
+        return tabInfo.getPageGroup();
     }
 
     @Override
@@ -60,7 +54,7 @@ public class TabImpl implements ITab {
             return;
         }
 
-        List<IPage> temp = new ArrayList<>(mPageGroup.getPageInfoList());
+        List<IPage> temp = new ArrayList<>(getPageGroup().getPageList());
         TabInfo mFloatingTabInfo = mFloatingTab.getTabInfo();
 
         tabInfo.setId(mFloatingTabInfo.getId());
@@ -74,8 +68,8 @@ public class TabImpl implements ITab {
 
 //        tabListFolder = mFloatingTab.getTabListFolder();
 
-        mPageGroup.getPageInfoList().clear();
-        mPageGroup.getPageInfoList().addAll(mFloatingTab.getPageGroup().getPageInfoList());
+        getPageGroup().getPageList().clear();
+        getPageGroup().getPageList().addAll(mFloatingTab.getPageGroup().getPageList());
 
         mFloatingTab = null;
 
@@ -91,8 +85,8 @@ public class TabImpl implements ITab {
             TabListManager.getInstance().selectTab(this);
         }
 
-        for (IPage pageInfo : temp) {
-            TabCacheManager.getInstance().removeTab(pageInfo);
+        for (IPage page : temp) {
+            ArkWebManager.remove(page.getId());
         }
         temp.clear();
     }

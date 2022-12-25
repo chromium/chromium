@@ -147,22 +147,17 @@ public class TabGroupImpl implements ITabGroup {
 
                 for (int id : tabIds) {
                     File tabFile = ArkTabDao.getTabFile(id);
-                    List<Integer> pageIds = new ArrayList<>();
-                    TabInfo tabInfo = TabInfo.from(tabFile, pageIds);
-                    ArkLogger.e(TAG, "from tabInfo=" + tabInfo + " pageIds=" + pageIds);
+                    TabInfo tabInfo = TabInfo.from(tabFile);
+                    ArkLogger.e(TAG, "from tabInfo=" + tabInfo);
 
-                    File pagesDir = ArkTabDao.getPagesDir(tabInfo.getId());
-                    List<IPage> pageList = new ArrayList<>();
-                    for (int pageId : pageIds) {
-                        File file = new File(pagesDir, String.valueOf(pageId));
-                        pageList.add(new PageImpl(PageInfo.from(file)));
-                    }
-
+//                    File pagesDir = ArkTabDao.getPagesDir(tabInfo.getId());
 //                    List<IPage> pageList = new ArrayList<>();
-//                    for (PageInfo info : tabInfo.getPageInfoList()) {
-//                        pageList.add(new PageImpl(info));
+//                    for (int pageId : pageIds) {
+//                        File file = new File(pagesDir, String.valueOf(pageId));
+//                        pageList.add(new PageImpl(PageInfo.from(file)));
 //                    }
-                    mTabList.add(new TabImpl(tabInfo, pageList));
+
+                    mTabList.add(new TabImpl(tabInfo));
                 }
 
 
@@ -340,91 +335,32 @@ public class TabGroupImpl implements ITabGroup {
         return page.getId() != pageId;
     }
 
-    @Override
-    public boolean openNewPage(Tab parent, LoadUrlParams params, @TabLaunchType int type) {
-        ArkLogger.d(TAG, "openNewPage params=" + params + " type=" + type);
-
-        int parentId = parent.getId();
-        // The parent tab was already closed.  Do not open child tabs.
-        if (isClosurePending(parentId)) return false;
-
-        // If parent is in the same tab model, place the new tab next to it.
-        ITab iTab = getTabById(parentId);
-        if (iTab == null) {
-            return false;
-        }
-
-//        int index = iTab.indexOfPage(parentId);
-//        ArkLogger.d(TAG, "openNewPage index=" + index);
-//        if (index == ITab.INVALID_TAB_INDEX) {
+//    @Override
+//    public boolean openNewPage(Tab parent, LoadUrlParams params, @TabLaunchType int type) {
+//        ArkLogger.d(TAG, "openNewPage params=" + params + " type=" + type);
+//
+//        int parentId = parent.getId();
+//        // The parent tab was already closed.  Do not open child tabs.
+//        if (isClosurePending(parentId)) return false;
+//
+//        // If parent is in the same tab model, place the new tab next to it.
+//        ITab iTab = getTabById(parentId);
+//        if (iTab == null) {
 //            return false;
 //        }
 //
-//        PageInfo parentPageInfo = iTab.getPageInfoAt(index);
-//        ArkLogger.d(TAG, "openNewPage parentPageInfo=" + parentPageInfo);
-//        if (parentPageInfo == null) {
+//        IPage page = iTab.createPage(parent, params, type);
+//
+//        if (page == null) {
 //            return false;
 //        }
-//
-//        int pageIndex = parentPageInfo.getOriginalIndex() + 1;
-//        Tab tab = PageCacheManager.getInstance().createLivePageByType(
-//                pageIndex, getWindowAndroid(), iTab, type);
-////        PageInfo pageInfo = tab.getPageInfo();
-//
-//        PageInfo pageInfo = PageInfo.from(tab.getId(), parentId, iTab.getId(),
-//                pageIndex, tab.isIncognito());
-//        pageInfo.setUrl(tab.getUrl().toString());
-//        pageInfo.setTitle(tab.getTitle());
-////        pageInfo.save();
-//
-//        IPage page = new PageImpl(pageInfo);
-//        page.savePageInfo();
-//        IPageGroup pageInfoList = iTab.getPageGroup();
-//
-//        pageInfoList.getPageInfoList().add(++index, page);
 //
 //        for (TabInfoObserver obs : mObservers) {
-//            obs.didAddTab(page, TabSelectionType.FROM_NEW);
+//            obs.didAddTab(iTab, TabSelectionType.FROM_NEW);
 //        }
 //
-//
-//        ArkLogger.d(TAG, "openNewPage params=" + params);
-//        tab.loadUrl(params);
-
-        IPage page = iTab.createPage(parent, params, type);
-
-        if (page == null) {
-            return false;
-        }
-
-        for (TabInfoObserver obs : mObservers) {
-            obs.didAddTab(iTab, TabSelectionType.FROM_NEW);
-        }
-
-        return selectTab(iTab, page);
-
-
-//        if (++index < pageInfoList.getCount()) {
-//            List<IPage> pageRemoved = pageInfoList.getPageInfoList()
-//                    .subList(index, pageInfoList.getCount());
-//
-//            List<IPage> tempPages = new ArrayList<>(pageRemoved);
-//            ThreadPool.executeIO(() -> {
-//                long start = System.currentTimeMillis();
-//                ArkLogger.d(TAG, "openNewPage pageRemovedCount=" + tempPages.size());
-//
-//                for (IPage info : tempPages) {
-//                    info.remove();
-//                }
-//
-//                ArkLogger.d(TAG, "openNewPage pageRemoved deltaTime=" + (System.currentTimeMillis() - start));
-//            });
-//            pageRemoved.clear();
-//        }
-//
-//        ArkLogger.d(TAG, "openNewPage end");
-//        return true;
-    }
+//        return selectTab(iTab, page);
+//    }
 
     @Override
     public boolean moveToNewTab(IPage page) {

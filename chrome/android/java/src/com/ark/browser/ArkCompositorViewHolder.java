@@ -1746,18 +1746,18 @@ public class ArkCompositorViewHolder extends FrameLayout
         return mTabContentManager;
     }
 
-    public boolean openNewPage(@NonNull Tab parent, LoadUrlParams params) {
-        ArkLogger.d(TAG, "openNewPage params=" + params);
-        if (mCallback == null) {
-            return false;
-        }
-        ITabGroup tabList = mCallback.getTabList(parent);
-        return tabList.openNewPage(parent, params);
-    }
+//    public boolean openNewPage(@NonNull Tab parent, LoadUrlParams params) {
+//        ArkLogger.d(TAG, "openNewPage params=" + params);
+//        if (mCallback == null) {
+//            return false;
+//        }
+//        ITabGroup tabList = mCallback.getTabList(parent);
+//        return tabList.openNewPage(parent, params);
+//    }
 
     public interface Callback {
 
-        boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url);
+//        boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url);
 
         ITabGroup getTabList(Tab current);
 

@@ -545,13 +545,13 @@ public class SmartSearchPanel extends FrameLayout {
         if (mViewHolder.getWindowAndroid() == null) {
             mViewHolder.setFocusable(false);
             mViewHolder.initCompositor(mNativeWindow, new ArkCompositorViewHolder.Callback() {
-                @Override
-                public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url) {
-                    if (mFloatTabList == null) {
-                        return false;
-                    }
-                    return mFloatTabList.openNewPage(current, type, url);
-                }
+//                @Override
+//                public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url) {
+//                    if (mFloatTabList == null) {
+//                        return false;
+//                    }
+//                    return mFloatTabList.openNewPage(current, type, url);
+//                }
 
                 @Override
                 public ITabGroup getTabList(@NonNull Tab current) {
@@ -663,15 +663,15 @@ public class SmartSearchPanel extends FrameLayout {
             return index;
         }
 
-        IPage page = mFloatTabList.getPageAt(index);
-        ArkLogger.e(TAG, "loadUrl page=" + page);
-        if (page == null) {
+        ITab iTab = mFloatTabList.getTabAt(index);
+        ArkLogger.e(TAG, "loadUrl tab=" + iTab);
+        if (iTab == null) {
             String url = item.getUrl(keyword);
             LoadUrlParams loadUrlParams = new LoadUrlParams(UrlFormatter.fixupUrl(url));
             loadUrlParams.setTransitionType(TabLaunchType.FROM_CHROME_UI);
             index = openNewTab(loadUrlParams);
         } else {
-            Tab tab = TabCacheManager.getInstance().findTab(page.getPageInfo().getTabId());
+            ArkTabImpl tab = (ArkTabImpl) TabCacheManager.getInstance().findTab(iTab);
             ArkLogger.e(TAG, "loadUrl tab=" + tab);
             if (tab != null) {
                 ArkLogger.e(TAG, "loadUrl oldKey=" + item.getKeyword() + " newKey=" + keyword);
@@ -679,7 +679,7 @@ public class SmartSearchPanel extends FrameLayout {
                     String url = item.getUrl(keyword);
                     LoadUrlParams loadUrlParams = new LoadUrlParams(UrlFormatter.fixupUrl(url));
                     loadUrlParams.setTransitionType(TabLaunchType.FROM_CHROME_UI);
-                    mFloatTabList.openNewPage(tab, loadUrlParams);
+                    tab.loadInNewPage(loadUrlParams);
                     return index;
                 }
             }
