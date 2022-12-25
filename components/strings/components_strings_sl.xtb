@@ -2716,6 +2716,7 @@ Dodatne podrobnosti:
 <translation id="7815407501681723534">Za »<ph name="SEARCH_STRING" />« je bilo najdenih toliko <ph name="SEARCH_RESULTS" />: <ph name="NUMBER_OF_RESULTS" />.</translation>
 <translation id="7822320754433038727">Lov in streljanje</translation>
 <translation id="782886543891417279">Omrežje Wi-Fi, ki ga uporabljate (<ph name="WIFI_NAME" />), morda zahteva, da obiščete stran za prijavo.</translation>
+<translation id="7840103971441592723">Začel se je zajem zaslonske slike.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Brez}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}two{# aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacij (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7862185352068345852">Želite zapustiti spletno mesto?</translation>
@@ -2894,6 +2895,7 @@ Dodatne podrobnosti:
 <translation id="8282947398454257691">podatke o edinstvenem identifikatorju naprave</translation>
 <translation id="8284769179630993263">Upravljajte Varno brskanje in drugo v Chromovih nastavitvah.</translation>
 <translation id="8286036467436129157">Prijava</translation>
+<translation id="8286799286781881307">Aplikacije, ki jih je pooblastil skrbnik, lahko zajamejo vsebino vseh zaslonov, priključenih na napravo. Te podatke je mogoče obdelati lokalno ali naložiti v strežnike organizacije.</translation>
 <translation id="8288807391153049143">Prikaz potrdila</translation>
 <translation id="8289355894181816810">Če niste prepričani, kaj to pomeni, se obrnite na skrbnika omrežja.</translation>
 <translation id="8293206222192510085">Dodaj zaznamek</translation>

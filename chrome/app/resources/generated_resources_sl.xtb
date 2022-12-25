@@ -105,6 +105,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1087965115100412394">Spletnim mestom ni dovoljeno povezovanje z napravami MIDI.</translation>
 <translation id="1088654056000736875">Chrome odstranjuje škodljivo programsko opremo iz računalnika …</translation>
 <translation id="1088659085457112967">Vklop načina bralnika</translation>
+<translation id="1089407731410758060">Spremeni temo</translation>
 <translation id="1090126737595388931">Ni aktivnih programov v ozadju</translation>
 <translation id="1090541560108055381">Pred seznanjanjem poskrbite, da je v obeh napravah prikazana ista koda.</translation>
 <translation id="1091767800771861448">Pritisnite Esc, če želite preskočiti (samo neuradne delovne različice).</translation>
@@ -936,6 +937,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="18260074040409954">Shranjena gesla lahko uporabljate v poljubni napravi. Shranijo se v storitev <ph name="GOOGLE_PASSWORD_MANAGER" /> za uporabnika <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Sinhroniziranje zaznamkov, gesel, zgodovine in drugega v Chromu</translation>
 <translation id="1826516787628120939">Preverjanje</translation>
+<translation id="1827504459960247692">Ime dostopne točke</translation>
 <translation id="1828378091493947763">Ta vtičnik ni podprt v tej napravi</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Odpri vse}=1{&amp;Odpri zaznamek}one{&amp;Odpri vse ({COUNT})}two{&amp;Odpri vse ({COUNT})}few{&amp;Odpri vse ({COUNT})}other{&amp;Odpri vse ({COUNT})}}</translation>
 <translation id="1828901632669367785">Tiskanje v sistemskem pogovornem oknu ...</translation>
@@ -1246,6 +1248,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2101225219012730419">Različica:</translation>
 <translation id="2102396546234652240">Spletnim mestom ni dovoljena uporaba mikrofona.</translation>
 <translation id="2102495993840063010">Aplikacije za Android</translation>
+<translation id="2104166991923847969">Samodejni izklop dostopne točke</translation>
 <translation id="2105809836724866556">Modul <ph name="MODULE_TITLE" /> je skrit.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonska številka}one{# telefonska številka}two{# telefonski številki}few{# telefonske številke}other{# telefonskih številk}}</translation>
 <translation id="211144231511833662">Počisti vrste</translation>
@@ -1829,6 +1832,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2616366145935564096">Branje in spreminjanje vaših podatkov na spletnem mestu <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Nastavitev funkcije Deljenje v bližini</translation>
 <translation id="2620215283731032047">Datoteke <ph name="FILE_NAME" /> ni mogoče varno prenesti.</translation>
+<translation id="2620245777360407679">Naprave, ki so trenutno povezane z dostopno točko</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="262154978979441594">Usposabljanje glasovnega modela za Pomočnika Google</translation>
 <translation id="26224892172169984">Ne dovoli nobenemu spletnemu mestu obravnave protokolov</translation>
@@ -7157,6 +7161,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7614260613810441905">Vprašaj, ko želi spletno mesto urediti datoteke ali mape v vaši napravi (priporočeno)</translation>
 <translation id="761530003705945209">Varnostno kopiranje v Google Drive. Kadar koli lahko preprosto obnovite podatke v napravi ali zamenjate napravo z drugo. Varnostne kopije vključujejo podatke aplikacij. Varnostne kopije so naložene v Google in šifrirane z geslom za račun Google.</translation>
 <translation id="7615365294369022248">Pri dodajanju računa je prišlo do napake</translation>
+<translation id="7615807797520072741">Ponastavitev na klasični Chrome</translation>
 <translation id="7616214729753637086">Včlanjevanje naprave ...</translation>
 <translation id="7617263010641145920">Vklop Trgovine Play</translation>
 <translation id="7617648809369507487">Uporabite tišje sporočanje</translation>
@@ -8467,6 +8472,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Premakni zavihek v drugo okno}one{Premakni zavihke v drugo okno}two{Premakni zavihke v drugo okno}few{Premakni zavihke v drugo okno}other{Premakni zavihke v drugo okno}}</translation>
 <translation id="8805140816472474147">Potrdite nastavitve sinhronizacije, če želite začeti sinhronizacijo.</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> lahko odpre pomotoma zaprte zavihke</translation>
+<translation id="8807588541160250261">Kadar ni povezana nobena naprava</translation>
 <translation id="8807632654848257479">Stabilna</translation>
 <translation id="8808478386290700967">Spletna trgovina</translation>
 <translation id="8808686172382650546">Mačka</translation>

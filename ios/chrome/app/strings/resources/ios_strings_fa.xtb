@@ -510,6 +510,7 @@
 <translation id="481968316161811770">کوکی‌ها، داده‌های سایت</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}، و ۱ مورد دیگر}one{{domain} و {count} مورد دیگر}other{{domain} و {count} مورد دیگر}}</translation>
 <translation id="4826218269716039351">مسدود کردن کوکی‌های شخص ثالث</translation>
+<translation id="4826588772550366629">دوربین و میکروفون</translation>
 <translation id="4826726074642088322">هم‌رسانی مورد برجسته</translation>
 <translation id="48274138579728272">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="4833686396768033263">«برگه‌های اخیر» دردسترس نیست</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">نوار نشانک‌ها</translation>
 <translation id="519530786644929958">بارگیری موفق نبود و نمی‌توان آن را دوباره انجام داد.</translation>
 <translation id="5197255632782567636">اینترنت</translation>
+<translation id="5211488077761630279">«<ph name="SITE_NAME" />» مجاز باشد از <ph name="PERMISSION" /> استفاده کند؟</translation>
 <translation id="5219295696240154694">به بهبود امنیت برای همه کاربران وب کمک کنید</translation>
 <translation id="5228579091201413441">فعال کردن همگام‌سازی</translation>
 <translation id="5232485538978018676">ورود به سیستم با «حساب مدیریت‌شده»</translation>
