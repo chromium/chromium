@@ -38,9 +38,10 @@ class OptimizationGuidePushNotificationClient : public PushNotificationClient {
     last_used_browser_state_for_testing_ = chrome_browser_state;
   }
 
- private:
+ protected:
   ChromeBrowserState* GetLastUsedBrowserState();
 
+ private:
   // Allows tests to override the last used ChromeBrowserState returned in
   // GetLastUsedBrowserState().
   ChromeBrowserState* last_used_browser_state_for_testing_ = nullptr;

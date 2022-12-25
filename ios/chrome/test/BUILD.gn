@@ -195,6 +195,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/browser_state:unit_tests",
     "//ios/chrome/browser/browsing_data:unit_tests",
     "//ios/chrome/browser/commerce:unit_tests",
+    "//ios/chrome/browser/commerce/push_notification:unit_tests",
     "//ios/chrome/browser/complex_tasks:unit_tests",
     "//ios/chrome/browser/crash_report:unit_tests",
     "//ios/chrome/browser/crash_report/breadcrumbs:unit_tests",

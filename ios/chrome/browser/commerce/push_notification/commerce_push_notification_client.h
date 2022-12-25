@@ -11,6 +11,8 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
+class CommercePushNotificationClientTest;
+
 class CommercePushNotificationClient
     : public OptimizationGuidePushNotificationClient {
  public:
@@ -23,5 +25,13 @@ class CommercePushNotificationClient
   UIBackgroundFetchResult HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
+
+ private:
+  friend class ::CommercePushNotificationClientTest;
+
+  // Handle the interaction from the user be it tapping the notification or
+  // long pressing and then presing 'Visit Site' or 'Untrack Price'.
+  void HandleNotificationInteraction(NSString* action_identifier,
+                                     NSDictionary* user_info);
 };
 #endif  // IOS_CHROME_BROWSER_COMMERCE_PUSH_NOTIFICATION_COMMERCE_PUSH_NOTIFICATION_CLIENT_H_
