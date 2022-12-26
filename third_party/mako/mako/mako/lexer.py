@@ -272,20 +272,24 @@ class Lexer:
         return self.template
 
     def match_tag_start(self):
-        match = self.match(
-            r"""
+        reg = r"""
             \<%     # opening tag
 
             ([\w\.\:]+)   # keyword
 
-            ((?:\s+\w+|\s*=\s*|".*?"|'.*?')*)  # attrname, = \
+            ((?:\s+\w+|\s*=\s*|"[^"]*?"|'[^']*?'|\s*,\s*)*)  # attrname, = \
                                                #        sign, string expression
+                                               # comma is for backwards compat
+                                               # identified in #366
 
             \s*     # more whitespace
 
             (/)?>   # closing
 
-            """,
+        """
+
+        match = self.match(
+            reg,
             re.I | re.S | re.X,
         )
 
@@ -318,7 +322,7 @@ class Lexer:
         return True
 
     def match_tag_end(self):
-        match = self.match(r"\</%[\t ]*(.+?)[\t ]*>")
+        match = self.match(r"\</%[\t ]*([^\t ]+?)[\t ]*>")
         if match:
             if not len(self.tag):
                 raise exceptions.SyntaxException(
