@@ -149,6 +149,9 @@ V8ScriptValueDeserializer::V8ScriptValueDeserializer(
 }
 
 v8::Local<v8::Value> V8ScriptValueDeserializer::Deserialize() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("V8ScriptValueDeserializer::Deserialize");
+
 #if DCHECK_IS_ON()
   DCHECK(!deserialize_invoked_);
   deserialize_invoked_ = true;

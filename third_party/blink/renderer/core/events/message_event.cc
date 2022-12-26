@@ -328,6 +328,9 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
       break;
 
     case MessageEvent::kDataTypeSerializedScriptValue:
+      // https://linear.app/replay/issue/RUN-885
+      recordreplay::Assert("MessageEvent::data #1 %d", !!data_as_serialized_script_value_);
+
       if (data_as_serialized_script_value_) {
         // The data is put on the V8 GC heap here, and therefore the V8 GC does
         // the accounting from here on. We unregister the registered memory to
