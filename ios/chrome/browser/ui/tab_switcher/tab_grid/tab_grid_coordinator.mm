@@ -655,6 +655,7 @@
     self.pinnedTabsMediator = [[PinnedTabsMediator alloc]
         initWithConsumer:baseViewController.pinnedTabsConsumer];
     self.pinnedTabsMediator.browser = _regularBrowser;
+    self.baseViewController.pinnedTabsDelegate = self.pinnedTabsMediator;
   }
 
   self.incognitoTabsMediator = [[TabGridMediator alloc]

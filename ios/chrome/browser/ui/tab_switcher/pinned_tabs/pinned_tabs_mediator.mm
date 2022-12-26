@@ -6,6 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/scoped_multi_source_observation.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -73,6 +76,20 @@ NSString* GetActivePinnedWebStateId(WebStateList* web_state_list) {
   // WebState cannot be null, so no need to check here.
   web::WebState* web_state = web_state_list->GetWebStateAt(web_state_index);
   return web_state->GetStableIdentifier();
+}
+
+// Returns the index of the pinned tab with `identifier` in `web_state_list`.
+// Returns WebStateList::kInvalidIndex if not found.
+int GetIndexOfPinnedTabWithId(WebStateList* web_state_list,
+                              NSString* identifier) {
+  for (int i = 0; i < web_state_list->GetIndexOfFirstNonPinnedWebState(); i++) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    if ([identifier isEqualToString:web_state->GetStableIdentifier()]) {
+      DCHECK(web_state_list->IsWebStatePinnedAt(i));
+      return i;
+    }
+  }
+  return WebStateList::kInvalidIndex;
 }
 
 }  // namespace
@@ -301,6 +318,34 @@ NSString* GetActivePinnedWebStateId(WebStateList* web_state_list) {
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
   [self.consumer replaceItemID:webState->GetStableIdentifier()
                       withItem:CreateItem(webState)];
+}
+
+#pragma mark - PinnedTabsCommands
+
+- (void)selectItemWithID:(NSString*)itemID {
+  int index = GetIndexOfPinnedTabWithId(self.webStateList, itemID);
+  WebStateList* itemWebStateList = self.webStateList;
+
+  if (index == WebStateList::kInvalidIndex) {
+    return;
+  }
+
+  web::WebState* selectedWebState = itemWebStateList->GetWebStateAt(index);
+
+  base::TimeDelta timeSinceLastActivation =
+      base::Time::Now() - selectedWebState->GetLastActiveTime();
+  base::UmaHistogramCustomTimes(
+      "IOS.TabGrid.TabSelected.TimeSinceLastActivation",
+      timeSinceLastActivation, base::Minutes(1), base::Days(24), 50);
+
+  if (index != itemWebStateList->active_index()) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridMoveToExistingTab"));
+  }
+
+  // TODO(crbug.com/1382015): Record some "pinned tabs" related metrics and
+  // check if "LogPriceDropMetrics" method needs be added.
+  itemWebStateList->ActivateWebStateAt(index);
 }
 
 #pragma mark - Private

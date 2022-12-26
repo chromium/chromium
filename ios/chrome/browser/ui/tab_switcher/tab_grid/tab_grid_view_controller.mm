@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_ui_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
@@ -137,6 +138,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @interface TabGridViewController () <DisabledTabViewControllerDelegate,
                                      GridViewControllerDelegate,
                                      LayoutSwitcher,
+                                     PinnedTabsViewControllerDelegate,
                                      RecentTabsTableViewControllerUIDelegate,
                                      SuggestedActionsDelegate,
                                      UIGestureRecognizerDelegate,
@@ -1518,6 +1520,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)setupPinnedTabsViewController {
   PinnedTabsViewController* pinnedTabsViewController =
       self.pinnedTabsViewController;
+  pinnedTabsViewController.delegate = self;
   [self.view addSubview:pinnedTabsViewController.view];
 
   NSMutableArray* pinnedTabsConstraints =
@@ -2236,6 +2239,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.regularTabsViewController.gridView.transform = CGAffineTransformIdentity;
   self.incognitoTabsViewController.gridView.transform =
       CGAffineTransformIdentity;
+}
+
+#pragma mark - PinnedTabsViewControllerDelegate
+
+- (void)didSelectItemWithID:(NSString*)itemID {
+  [self.pinnedTabsDelegate selectItemWithID:itemID];
+
+  self.activePage = self.currentPage;
+  [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
+                                       focusOmnibox:NO
+                                       closeTabGrid:YES];
 }
 
 #pragma mark - GridViewControllerDelegate

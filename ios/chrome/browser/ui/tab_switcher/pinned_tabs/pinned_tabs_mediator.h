@@ -7,11 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_commands.h"
+
 class Browser;
 @protocol PinnedTabsCollectionConsumer;
 
 // Mediates between model layer and pinned tabs collection UI layer.
-@interface PinnedTabsMediator : NSObject
+@interface PinnedTabsMediator : NSObject <PinnedTabsCommands>
 
 // The source browser.
 @property(nonatomic, assign) Browser* browser;

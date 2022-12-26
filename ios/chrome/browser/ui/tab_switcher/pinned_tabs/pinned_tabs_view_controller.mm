@@ -314,6 +314,23 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return cell;
 }
 
+#pragma mark - UICollectionViewDelegate
+
+- (void)collectionView:(UICollectionView*)collectionView
+    didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+  if (@available(iOS 16, *)) {
+    // This is handled by
+    // `collectionView:performPrimaryActionForItemAtIndexPath:` on iOS 16.
+  } else {
+    [self tappedItemAtIndexPath:indexPath];
+  }
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+    performPrimaryActionForItemAtIndexPath:(NSIndexPath*)indexPath {
+  [self tappedItemAtIndexPath:indexPath];
+}
+
 #pragma mark - UICollectionViewDragDelegate
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -547,6 +564,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                             scrollPosition:UICollectionViewScrollPositionNone];
                }
                completion:nil];
+}
+
+// Tells the delegate that the user tapped the item with identifier
+// corresponding to `indexPath`.
+- (void)tappedItemAtIndexPath:(NSIndexPath*)indexPath {
+  NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
+  DCHECK_LT(index, _items.count);
+
+  NSString* itemID = _items[index].identifier;
+  [self.delegate didSelectItemWithID:itemID];
 }
 
 @end

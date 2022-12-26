@@ -11,12 +11,24 @@
 
 @protocol GridImageDataSource;
 
+// Protocol used to relay relevant user interactions from the
+// PinnedTabsViewController.
+@protocol PinnedTabsViewControllerDelegate
+
+// Tells the delegate that the item with `itemID` was selected.
+- (void)didSelectItemWithID:(NSString*)itemID;
+
+@end
+
 // UICollectionViewController used to display pinned tabs.
 @interface PinnedTabsViewController
     : UICollectionViewController <PinnedTabsCollectionConsumer>
 
 // Data source for images.
 @property(nonatomic, weak) id<GridImageDataSource> imageDataSource;
+
+// Delegate used to to relay relevant user interactions.
+@property(nonatomic, weak) id<PinnedTabsViewControllerDelegate> delegate;
 
 // Updates the view when starting or ending a drag action.
 - (void)dragSessionEnabled:(BOOL)enabled;
