@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -138,6 +139,9 @@ std::string GetLastSurveyCheckTime(const std::string& trigger) {
 
 constexpr char kAnyLastSurveyStartedTimePath[] = "any_last_survey_started_time";
 
+// Survey configs must always be hardcoded here, so that they require review
+// from HaTS owners. Do not move this method out of the anonymous namespace or
+// change its signature to work around this.
 std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   std::vector<HatsService::SurveyConfig> survey_configs;
 
@@ -308,12 +312,11 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       std::vector<std::string>{
           permissions::kPermissionsPostPromptSurveyHadGestureKey},
       std::vector<std::string>{
-          /* String values correspond to known enumerators in
-           * permissions::PermissionPromptDisposition. */
           permissions::kPermissionsPostPromptSurveyPromptDispositionKey,
-          /* String values correspond to known enumerators in
-           * permissions::PermissionPromptDispositionReason. */
-          permissions::kPermissionsPostPromptSurveyPromptDispositionReasonKey});
+          permissions::kPermissionsPostPromptSurveyPromptDispositionReasonKey,
+          permissions::kPermissionsPostPromptSurveyActionKey,
+          permissions::kPermissionsPostPromptSurveyRequestTypeKey,
+          permissions::kPermissionsPostPromptSurveyReleaseChannelKey});
 
   return survey_configs;
 }
@@ -329,12 +332,6 @@ HatsService::SurveyConfig::SurveyConfig(
     : trigger(trigger),
       product_specific_bits_data_fields(product_specific_bits_data_fields),
       product_specific_string_data_fields(product_specific_string_data_fields) {
-  DCHECK_LE(product_specific_bits_data_fields.size() +
-                product_specific_string_data_fields.size(),
-            3u)
-      << "A maximum of 3 survey specific data fields (bits and string data "
-         "together) is supported";
-
   enabled = base::FeatureList::IsEnabled(*feature);
   if (!enabled)
     return;

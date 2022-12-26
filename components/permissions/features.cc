@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/permissions/features.h"
+#include "base/time/time.h"
 
 namespace permissions {
 namespace features {
@@ -150,22 +151,80 @@ const base::FeatureParam<std::string> kPermissionsPostPromptSurveyTriggerId{
     &permissions::features::kPermissionsPostPromptSurvey, "trigger_id", ""};
 
 // Specifies the type of permission request for which the post-prompt HaTS
-// survey is triggered. For any given user, there is a single request type for
-// which they may see a survey. Valid values are the return values of
-// `GetPermissionRequestString`. An invalid or empty value will result in the
-// user not seeing any post-prompt survey.
+// survey is triggered (as long as other filters are also satisfied). Valid
+// values are the return values of `GetPermissionRequestString`. An empty value
+// will result in all request types matching (no filtering on request types).
+// Use caution when configuring multiple values. Each study can only specify one
+// probability value. Some request types have a vastly different number of
+// occurrences then others, which likely makes them a bad match for combining
+// them in the same study.
 const base::FeatureParam<std::string>
     kPermissionsPostPromptSurveyRequestTypeFilter{
         &permissions::features::kPermissionsPostPromptSurvey,
         "request_type_filter", ""};
 
-// Specifies the action for which the post-prompt HaTS survey is triggered. For
-// any given user, there is a single permission action for which they may see a
-// survey, of those listed in RetuPermissionUmaUtil::GetPermissionActionString.
-// An invalid or empty value will result in the user not seeing any post-prompt
-// survey.
+// Specifies the actions for which the post-prompt HaTS survey is triggered (as
+// long as other filters are also satisfied). Multiple values can be configured
+// by providing a comma separated list. Valid values are those listed in
+// PermissionUmaUtil::GetPermissionActionString. An empty value will result in
+// all actions matching (no filtering on actions).
 const base::FeatureParam<std::string> kPermissionsPostPromptSurveyActionFilter{
     &permissions::features::kPermissionsPostPromptSurvey, "action_filter", ""};
+
+// Specifies whether the post-prompt HaTS survey is triggered for permission
+// requests with or without user gesture (as long as other filters are also
+// satisfied). Valid values are 'true' and 'false'. An empty value or
+// 'true,false' will result in all requests matching (no filtering on user
+// gesture).
+const base::FeatureParam<std::string>
+    kPermissionsPostPromptSurveyHadGestureFilter{
+        &permissions::features::kPermissionsPostPromptSurvey,
+        "had_gesture_filter", ""};
+
+// Specifies the prompt disposition(s) for which the post-prompt HaTS
+// survey is triggered (as long as other filters are also satisfied). Multiple
+// values can be configured by providing a comma separated list. Valid values
+// are those listed in PermissionUmaUtil::GetPromptDispositionString. An empty
+// value will result in all prompt dispositions matching (no filtering on prompt
+// dispositions).
+const base::FeatureParam<std::string>
+    kPermissionsPostPromptSurveyPromptDispositionFilter{
+        &permissions::features::kPermissionsPostPromptSurvey,
+        "prompt_disposition_filter", ""};
+
+// Specifies the prompt disposition reason(s) for which the post-prompt HaTS
+// survey is triggered (as long as other filters are also satisfied). Multiple
+// values can be configured by providing a comma separated list. Valid values
+// are those listed in PermissionUmaUtil::GetPromptDispositionReasonString. An
+// empty value will result in all prompt disposition reasons matching (no
+// filtering on prompt disposition reasons).
+const base::FeatureParam<std::string>
+    kPermissionsPostPromptSurveyPromptDispositionReasonFilter{
+        &permissions::features::kPermissionsPostPromptSurvey,
+        "prompt_disposition_reason_filter", ""};
+
+// Specifies the browser channel(s) for which the post-prompt HaTS survey is
+// triggered (as long as other filters are also satisfied). Multiple values can
+// be configured by providing a comma separated list. Valid values are those
+// listed in version_info::GetChannelString. An empty value will result in all
+// channels matching (no filtering on channels within HaTS). This filter allows
+// restriction to specific channels (typically to stable). Inform Finch team
+// when configuring this filter, as it will effectively disable this feature on
+// certain channels.
+const base::FeatureParam<std::string>
+    kPermissionPostPromptSurveyReleaseChannelFilter{
+        &permissions::features::kPermissionsPostPromptSurvey,
+        "release_channel_filter", ""};
+
+// Some prompts stay open for a long time. This parameter allows specifying an
+// upper bound on how long a prompt that has been ignored can have been
+// showing and still trigger a survey if all other filters match. Prompts that
+// have been open longer before being ignored do not trigger a survey anymore.
+const base::FeatureParam<base::TimeDelta>
+    kPermissionPostPromptSurveyIgnoredPromptsMaximumAge{
+        &permissions::features::kPermissionsPostPromptSurvey,
+        "ignored_prompts_maximum_age", base::Minutes(10)};
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace feature_params

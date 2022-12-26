@@ -17,6 +17,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/permissions/features.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
@@ -28,6 +29,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/switches.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/disallow_activation_reason.h"
@@ -897,15 +899,19 @@ void PermissionRequestManager::FinalizeCurrentRequests(
     time_to_decision_for_test_.reset();
   }
 
+  content::BrowserContext* browser_context =
+      web_contents()->GetBrowserContext();
   PermissionUmaUtil::PermissionPromptResolved(
       requests_, web_contents(), permission_action, time_to_decision,
       DetermineCurrentRequestUIDisposition(),
       DetermineCurrentRequestUIDispositionReasonForUMA(),
-      prediction_grant_likelihood_, was_decision_held_back_, did_show_prompt_,
-      did_click_manage_, did_click_learn_more_);
+      prediction_grant_likelihood_, was_decision_held_back_,
+      permission_action == PermissionAction::IGNORED
+          ? absl::make_optional(
+                PermissionsClient::Get()->DetermineIgnoreReason(web_contents()))
+          : absl::nullopt,
+      did_show_prompt_, did_click_manage_, did_click_learn_more_);
 
-  content::BrowserContext* browser_context =
-      web_contents()->GetBrowserContext();
   PermissionDecisionAutoBlocker* autoblocker =
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
           browser_context);
@@ -921,11 +927,16 @@ void PermissionRequestManager::FinalizeCurrentRequests(
     if (request->GetContentSettingsType() == ContentSettingsType::DEFAULT)
       continue;
 
+    auto time_since_shown =
+        current_request_first_display_time_.is_null()
+            ? base::TimeDelta::Max()
+            : base::Time::Now() - current_request_first_display_time_;
     PermissionsClient::Get()->OnPromptResolved(
-        browser_context, request->request_type(), permission_action,
+        request->request_type(), permission_action,
         request->requesting_origin(), DetermineCurrentRequestUIDisposition(),
         DetermineCurrentRequestUIDispositionReasonForUMA(),
-        request->GetGestureType(), quiet_ui_reason);
+        request->GetGestureType(), quiet_ui_reason, time_since_shown,
+        web_contents());
 
     PermissionEmbargoStatus embargo_status =
         PermissionEmbargoStatus::NOT_EMBARGOED;

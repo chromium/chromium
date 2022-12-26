@@ -14,6 +14,7 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
+#include "components/permissions/request_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
@@ -313,6 +314,24 @@ enum class PermissionChangeAction {
   kMaxValue = RESET_FROM_DENIED
 };
 
+// The reason the permission action `PermissionAction::IGNORED` was triggered.
+enum class PermissionIgnoredReason {
+  // Ignore was triggered due to closure of the browser window
+  WINDOW_CLOSED = 0,
+
+  // Ignore was triggered due to closure of the tab
+  TAB_CLOSED = 1,
+
+  // Ignore was triggered due to navigation
+  NAVIGATION = 2,
+
+  // Catches all other cases
+  UNKNOWN = 3,
+
+  // Always keep at the end
+  NUM
+};
+
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
  public:
@@ -382,6 +401,7 @@ class PermissionUmaUtil {
       absl::optional<PermissionPromptDispositionReason> ui_reason,
       absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
       absl::optional<bool> prediction_decision_held_back,
+      absl::optional<permissions::PermissionIgnoredReason> ignored_reason,
       bool did_show_prompt,
       bool did_click_manage,
       bool did_click_learn_more);
@@ -453,6 +473,11 @@ class PermissionUmaUtil {
 
   static bool IsPromptDispositionLoud(
       PermissionPromptDisposition prompt_disposition);
+
+  static void RecordIgnoreReason(
+      const std::vector<PermissionRequest*>& requests,
+      PermissionPromptDisposition prompt_disposition,
+      PermissionIgnoredReason reason);
 
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation

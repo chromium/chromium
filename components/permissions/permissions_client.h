@@ -152,14 +152,15 @@ class PermissionsClient {
   using QuietUiReason = PermissionUiSelector::QuietUiReason;
   // Called for each request type when a permission prompt is resolved.
   virtual void OnPromptResolved(
-      content::BrowserContext* browser_context,
       RequestType request_type,
       PermissionAction action,
       const GURL& origin,
       PermissionPromptDisposition prompt_disposition,
       PermissionPromptDispositionReason prompt_disposition_reason,
       PermissionRequestGestureType gesture_type,
-      absl::optional<QuietUiReason> quiet_ui_reason);
+      absl::optional<QuietUiReason> quiet_ui_reason,
+      base::TimeDelta prompt_display_duration,
+      content::WebContents* web_contents);
 
   // Returns true if user has 3 consecutive notifications permission denies,
   // returns false otherwise.
@@ -200,9 +201,13 @@ class PermissionsClient {
   virtual bool DoURLsMatchNewTabPage(const GURL& requesting_origin,
                                      const GURL& embedding_origin);
 
+  // Determines the reason why a prompt was ignored.
+  virtual permissions::PermissionIgnoredReason DetermineIgnoreReason(
+      content::WebContents* web_contents);
+
 #if BUILDFLAG(IS_ANDROID)
-  // Returns whether the given origin matches the default search engine (DSE)
-  // origin.
+  // Returns whether the given origin matches the default search
+  // engine (DSE) origin.
   virtual bool IsDseOrigin(content::BrowserContext* browser_context,
                            const url::Origin& origin);
 
@@ -211,19 +216,19 @@ class PermissionsClient {
   virtual infobars::InfoBarManager* GetInfoBarManager(
       content::WebContents* web_contents);
 
-  // Allows the embedder to create an info bar to use as the permission prompt.
-  // Might return null based on internal logic (e.g. |type| does not support
-  // infobar permission prompts). The returned infobar is owned by the info bar
-  // manager.
+  // Allows the embedder to create an info bar to use as the
+  // permission prompt. Might return null based on internal logic
+  // (e.g. |type| does not support infobar permission prompts). The
+  // returned infobar is owned by the info bar manager.
   virtual infobars::InfoBar* MaybeCreateInfoBar(
       content::WebContents* web_contents,
       ContentSettingsType type,
       base::WeakPtr<PermissionPromptAndroid> prompt);
 
-  // Allows the embedder to create a message UI to use as the permission prompt.
-  // Returns the pointer to the message UI if the message UI is successfully
-  // created, nullptr otherwise, e.g. if the messages-prompt is not
-  // supported for `type`.
+  // Allows the embedder to create a message UI to use as the
+  // permission prompt. Returns the pointer to the message UI if the
+  // message UI is successfully created, nullptr otherwise, e.g. if
+  // the messages-prompt is not supported for `type`.
   virtual std::unique_ptr<PermissionMessageDelegate> MaybeCreateMessageUI(
       content::WebContents* web_contents,
       ContentSettingsType type,
@@ -231,9 +236,10 @@ class PermissionsClient {
 
   using PermissionsUpdatedCallback = base::OnceCallback<void(bool)>;
 
-  // Prompts the user to accept system permissions for |content_settings_types|,
-  // after they've already been denied. In Chrome, this shows an infobar.
-  // |callback| will be run with |true| for success and |false| otherwise.
+  // Prompts the user to accept system permissions for
+  // |content_settings_types|, after they've already been denied. In
+  // Chrome, this shows an infobar. |callback| will be run with
+  // |true| for success and |false| otherwise.
   virtual void RepromptForAndroidPermissions(
       content::WebContents* web_contents,
       const std::vector<ContentSettingsType>& content_settings_types,
@@ -242,13 +248,14 @@ class PermissionsClient {
       const std::vector<std::string>& optional_permissions,
       PermissionsUpdatedCallback callback);
 
-  // Converts the given chromium |resource_id| (e.g. IDR_INFOBAR_TRANSLATE) to
-  // an Android drawable resource ID. Returns 0 if a mapping wasn't found.
+  // Converts the given chromium |resource_id| (e.g.
+  // IDR_INFOBAR_TRANSLATE) to an Android drawable resource ID.
+  // Returns 0 if a mapping wasn't found.
   virtual int MapToJavaDrawableId(int resource_id);
 #else
   // Creates a permission prompt.
-  // TODO(crbug.com/1025609): Move the desktop permission prompt implementation
-  // into //components/permissions and remove this.
+  // TODO(crbug.com/1025609): Move the desktop permission prompt
+  // implementation into //components/permissions and remove this.
   virtual std::unique_ptr<PermissionPrompt> CreatePrompt(
       content::WebContents* web_contents,
       PermissionPrompt::Delegate* delegate);

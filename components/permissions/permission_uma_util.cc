@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -566,6 +567,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
     absl::optional<PermissionPromptDispositionReason> ui_reason,
     absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
     absl::optional<bool> prediction_decision_held_back,
+    absl::optional<permissions::PermissionIgnoredReason> ignored_reason,
     bool did_show_prompt,
     bool did_click_managed,
     bool did_click_learn_more) {
@@ -578,6 +580,9 @@ void PermissionUmaUtil::PermissionPromptResolved(
       break;
     case PermissionAction::DISMISSED:
     case PermissionAction::IGNORED:
+      RecordIgnoreReason(requests, ui_disposition,
+                         ignored_reason.value_or(
+                             permissions::PermissionIgnoredReason::UNKNOWN));
       break;
     case PermissionAction::GRANTED_ONCE:
       RecordPromptDecided(requests, /*accepted=*/true, /*is_one_time*/ true);
@@ -1111,6 +1116,7 @@ void PermissionUmaUtil::RecordPageInfoPermissionChangeWithin1m(
   }
 }
 
+// static
 std::string PermissionUmaUtil::GetPermissionActionString(
     PermissionAction permission_action) {
   switch (permission_action) {
@@ -1234,6 +1240,23 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
     case PermissionPromptDisposition::NOT_APPLICABLE:
       return false;
   }
+}
+
+// static
+void PermissionUmaUtil::RecordIgnoreReason(
+    const std::vector<PermissionRequest*>& requests,
+    PermissionPromptDisposition prompt_disposition,
+    PermissionIgnoredReason reason) {
+  RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;
+  if (requests.size() == 1) {
+    request_type = GetUmaValueForRequestType(requests[0]->request_type());
+  }
+
+  std::string histogram_name =
+      "Permissions.Prompt." + GetPermissionRequestString(request_type) + "." +
+      GetPromptDispositionString(prompt_disposition) + ".IgnoredReason";
+  base::UmaHistogramEnumeration(histogram_name, reason,
+                                PermissionIgnoredReason::NUM);
 }
 
 }  // namespace permissions

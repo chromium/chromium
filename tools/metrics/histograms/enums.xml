@@ -79677,6 +79677,19 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="4" label="On-Device prediction model"/>
 </enum>
 
+<enum name="PermissionRequestIgnoredReason">
+  <summary>
+    Breaks down reasons for permission requests being categorized as ignored.
+    Reasons captured are 0. window containing the tab with the pending
+    permission request being closed 1. Tab containing the pending permission
+    request being closed 2. Navigation 3. Other: catches all other cases.
+  </summary>
+  <int value="0" label="Window closed"/>
+  <int value="1" label="Tab closed"/>
+  <int value="2" label="Navigation"/>
+  <int value="3" label="Other"/>
+</enum>
+
 <enum name="PermissionRequestType">
   <int value="0" label="PERMISSION_BUBBLE_UNKNOWN"/>
   <int value="1" label="PERMISSION_BUBBLE_MULTIPLE"/>

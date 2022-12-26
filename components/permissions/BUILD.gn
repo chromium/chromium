@@ -194,6 +194,8 @@ source_set("permissions") {
       "bluetooth_scanning_prompt_controller.h",
       "bluetooth_scanning_prompt_desktop.cc",
       "bluetooth_scanning_prompt_desktop.h",
+      "permission_hats_trigger_helper.cc",
+      "permission_hats_trigger_helper.h",
       "permission_prompt_impl.cc",
     ]
   }

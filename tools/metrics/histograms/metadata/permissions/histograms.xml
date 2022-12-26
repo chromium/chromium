@@ -47,6 +47,21 @@ chromium-metrics-reviews@google.com.
   <variant name="WindowPlacement"/>
 </variants>
 
+<variants name="PromptDisposition">
+  <variant name="AnchoredBubble"/>
+  <variant name="CustomModalDialog"/>
+  <variant name="LocationBarLeftChip"/>
+  <variant name="LocationBarLeftChipAutoBubble"/>
+  <variant name="LocationBarLeftQuietAbusiveChip"/>
+  <variant name="LocationBarLeftQuietChip"/>
+  <variant name="LocationBarRightAnimatedIcon"/>
+  <variant name="LocationBarRightStaticIcon"/>
+  <variant name="MessageUI"/>
+  <variant name="MiniInfobar"/>
+  <variant name="ModalDialog"/>
+  <variant name="NoneVisible"/>
+</variants>
+
 <variants name="Top2PermissionTypes">
   <variant name="Geolocation"/>
   <variant name="Notifications"/>
@@ -844,20 +859,7 @@ chromium-metrics-reviews@google.com.
     prompt with disposition of type {Disposition}. Recorded when a permission
     prompt has been resolved.
   </summary>
-  <token key="Disposition">
-    <variant name="AnchoredBubble"/>
-    <variant name="CustomModalDialog"/>
-    <variant name="LocationBarLeftChip"/>
-    <variant name="LocationBarLeftChipAutoBubble"/>
-    <variant name="LocationBarLeftQuietAbusiveChip"/>
-    <variant name="LocationBarLeftQuietChip"/>
-    <variant name="LocationBarRightAnimatedIcon"/>
-    <variant name="LocationBarRightStaticIcon"/>
-    <variant name="MessageUI"/>
-    <variant name="MiniInfobar"/>
-    <variant name="ModalDialog"/>
-    <variant name="NoneVisible"/>
-  </token>
+  <token key="Disposition" variants="PromptDisposition"/>
   <token key="PermissionType">
     <variant name="AR"/>
     <variant name="AudioAndVideoCapture"/>
@@ -901,6 +903,20 @@ chromium-metrics-reviews@google.com.
     <variant name="VideoCapture"/>
     <variant name="VR"/>
   </token>
+</histogram>
+
+<histogram
+    name="Permissions.Prompt.{PermissionType}.{Disposition}.IgnoredReason"
+    enum="PermissionRequestIgnoredReason" expires_after="2023-12-16">
+  <owner>fjacky@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Permission requests are categorized as ignored when the user failed to take
+    action. This metric captures more detailed information on why a permission
+    request was ignored.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="Disposition" variants="PromptDisposition"/>
 </histogram>
 
 <histogram

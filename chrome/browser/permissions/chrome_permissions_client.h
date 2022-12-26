@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
@@ -54,15 +55,31 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   std::vector<std::unique_ptr<permissions::PermissionUiSelector>>
   CreatePermissionUiSelectors(
       content::BrowserContext* browser_context) override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  void TriggerPostPromptHatsSurveyIfEnabled(
+      Profile* profile,
+      permissions::RequestType request_type,
+      permissions::PermissionAction action,
+      permissions::PermissionPromptDisposition prompt_disposition,
+      permissions::PermissionPromptDispositionReason prompt_disposition_reason,
+      permissions::PermissionRequestGestureType gesture_type,
+      base::TimeDelta prompt_display_duration);
+
+  permissions::PermissionIgnoredReason DetermineIgnoreReason(
+      content::WebContents* web_contents) override;
+#endif
+
   void OnPromptResolved(
-      content::BrowserContext* browser_context,
       permissions::RequestType request_type,
       permissions::PermissionAction action,
       const GURL& origin,
       permissions::PermissionPromptDisposition prompt_disposition,
       permissions::PermissionPromptDispositionReason prompt_disposition_reason,
       permissions::PermissionRequestGestureType gesture_type,
-      absl::optional<QuietUiReason> quiet_ui_reason) override;
+      absl::optional<QuietUiReason> quiet_ui_reason,
+      base::TimeDelta prompt_display_duration,
+      content::WebContents* web_contents) override;
   absl::optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
       content::BrowserContext* browser_context) override;
   absl::optional<bool> HasPreviouslyAutoRevokedPermission(

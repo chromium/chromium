@@ -20,10 +20,19 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionsPostPromptSurveyPromptDispositionKey[];
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionsPostPromptSurveyPromptDispositionReasonKey[];
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionsPostPromptSurveyActionKey[];
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionsPostPromptSurveyRequestTypeKey[];
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionsPostPromptSurveyHadGestureKey[];
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const char kPermissionsPostPromptSurveyPromptDispositionReasonKey[];
+extern const char kPermissionsPostPromptSurveyReleaseChannelKey[];
 #endif
 
 }  // namespace permissions
