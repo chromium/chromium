@@ -61,6 +61,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="SegmentationModel">
+  <variant name="AdaptiveToolbar"/>
   <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
   <variant name="ChromeStartAndroidV2"/>

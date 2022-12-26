@@ -89,6 +89,8 @@ std::string GetStringNameForOptimizationTarget(
       return "ClientSidePhishing";
     case proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING:
       return "OmniboxUrlScoring";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR:
+      return "SegmentationAdaptiveToolbar";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

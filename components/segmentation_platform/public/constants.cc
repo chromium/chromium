@@ -80,6 +80,8 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
       return "ContextualPageActionPriceTracking";
     case proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER:
       return "SearchUserSegment";
+    case proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR:
+      return "AdaptiveToolbar";
     case proto::SegmentId::POWER_USER_SEGMENT:
       return "PowerUserSegment";
     case proto::SegmentId::CROSS_DEVICE_USER_SEGMENT:

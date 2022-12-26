@@ -62,6 +62,8 @@ enum SegmentId {
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2 = 22;
   // Target for segmentation: Determine users who frequently search.
   OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER = 23;
+  // Target for segmentation: Adaptive toolbar.
+  OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR = 28;
   // Add new entries to OptimizationTarget proto.
 
   // New entries should start from a 1000 if OptimizationTarget does not
