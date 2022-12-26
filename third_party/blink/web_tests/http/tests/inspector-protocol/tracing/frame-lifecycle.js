@@ -48,8 +48,8 @@
 
   const beginFrame =
       tracingHelper.findEvent('BeginFrame', Phase.INSTANT, hasExpectedFrameSeqId);
-  const compositeLayers =
-      tracingHelper.findEvent('CompositeLayers', Phase.COMPLETE, hasExpectedFrameSeqId);
+  const commit =
+      tracingHelper.findEvent('Commit', Phase.COMPLETE, hasExpectedFrameSeqId);
   const activateLayerTree =
       tracingHelper.findEvent('ActivateLayerTree', Phase.INSTANT, hasExpectedLayerTreeId);
   const needsBeginFrameChanged = tracingHelper.findEvent(
@@ -84,8 +84,8 @@
   testRunner.log('Got Paint event:');
   tracingHelper.logEventShape(paint)
 
-  testRunner.log('Got CompositeLayers event:');
-  tracingHelper.logEventShape(compositeLayers);
+  testRunner.log('Got Commit event:');
+  tracingHelper.logEventShape(commit);
 
   if (screenshots && screenshots.every(s => s.args.snapshot)) {
     testRunner.log('All screenshots have image data.');

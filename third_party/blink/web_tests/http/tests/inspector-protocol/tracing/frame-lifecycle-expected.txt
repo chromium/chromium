@@ -118,7 +118,7 @@ Object: {
 	tid: number
 	ts: number
 }
-Got CompositeLayers event:
+Got Commit event:
 Object: {
 	args: {
 		frameSeqId: number

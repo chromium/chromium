@@ -50,7 +50,7 @@ const char kRequestMainThreadFrame[] = "RequestMainThreadFrame";
 const char kDroppedFrame[] = "DroppedFrame";
 const char kBeginMainThreadFrame[] = "BeginMainThreadFrame";
 const char kDrawFrame[] = "DrawFrame";
-const char kCompositeLayers[] = "CompositeLayers";
+const char kCommit[] = "Commit";
 }  // namespace internal
 
 const char kPaintSetup[] = "PaintSetup";
