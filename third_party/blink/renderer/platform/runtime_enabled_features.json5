@@ -1777,7 +1777,7 @@
     },
     {
       name: "MediaSessionSlides",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "MediaSourceExperimental",
