@@ -127,7 +127,10 @@ void ChromeDevToolsSession::SendProtocolNotification(
   client_channel_->DispatchProtocolMessageToClient(message->Serialize());
 }
 
-void ChromeDevToolsSession::FlushProtocolNotifications() {}
+void ChromeDevToolsSession::FlushProtocolNotifications() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("ChromeDevToolsSession::FlushProtocolNotifications");
+}
 
 void ChromeDevToolsSession::FallThrough(int call_id,
                                         crdtp::span<uint8_t> method,

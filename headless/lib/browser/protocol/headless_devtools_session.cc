@@ -85,7 +85,10 @@ void HeadlessDevToolsSession::SendProtocolNotification(
   client_channel_->DispatchProtocolMessageToClient(message->Serialize());
 }
 
-void HeadlessDevToolsSession::FlushProtocolNotifications() {}
+void HeadlessDevToolsSession::FlushProtocolNotifications() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("HeadlessDevToolsSession::FlushProtocolNotifications");
+}
 
 void HeadlessDevToolsSession::FallThrough(int call_id,
                                           crdtp::span<uint8_t> method,

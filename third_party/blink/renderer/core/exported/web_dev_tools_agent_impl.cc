@@ -493,6 +493,9 @@ String WebDevToolsAgentImpl::NavigationInitiatorInfo(LocalFrame* frame) {
 }
 
 void WebDevToolsAgentImpl::FlushProtocolNotifications() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("WebDevToolsAgentImpl::FlushProtocolNotifications");
+
   agent_->FlushProtocolNotifications();
 }
 
