@@ -28,7 +28,9 @@ NSString* const kPinnedCellIdentifier = @"PinnedCellIdentifier";
 
 // Pinned cell dimensions.
 const CGFloat kPinnedCelldHeight = 36.0f;
-const CGFloat kPinnedCelldWidth = 168.0f;
+const CGFloat kPinnedCellMaxWidth = 168.0f;
+const CGFloat kPinnedCellMinWidth = 90.0f;
+const CGFloat kPinnedCellInteritemSpacing = 8.0f;
 
 // Pinned cell constraints.
 const CGFloat kPinnedCellCornerRadius = 13.0f;

@@ -27,7 +27,9 @@ extern NSString* const kPinnedCellIdentifier;
 
 // Pinned cell dimensions.
 extern const CGFloat kPinnedCelldHeight;
-extern const CGFloat kPinnedCelldWidth;
+extern const CGFloat kPinnedCellMaxWidth;
+extern const CGFloat kPinnedCellMinWidth;
+extern const CGFloat kPinnedCellInteritemSpacing;
 
 // Pinned cell constraints.
 extern const CGFloat kPinnedCellCornerRadius;
