@@ -102,11 +102,14 @@
   UIImage* image = UseSymbols() ? CustomSymbolWithPointSize(
                                       kIncognitoSymbol, kSymbolActionPointSize)
                                 : [UIImage imageNamed:@"open_in_incognito"];
+  ProceduralBlock completionBlock =
+      [self recordMobileWebContextMenuOpenTabActionWithBlock:block];
+
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE)
                          image:image
                           type:MenuActionType::OpenInNewIncognitoTab
-                         block:block];
+                         block:completionBlock];
 }
 
 - (UIAction*)actionToOpenInNewWindowWithURL:(const GURL)URL
