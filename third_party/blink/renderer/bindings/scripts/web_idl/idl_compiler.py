@@ -731,14 +731,19 @@ class IdlCompiler(object):
             assert not new_ir.exposed_constructs
             # Not only [Global] but also [TargetOfExposed] will expose IDL
             # constructs with [Exposed].
-            global_names = (
-                new_ir.extended_attributes.values_of('Global') +
-                new_ir.extended_attributes.values_of('TargetOfExposed'))
-            if not global_names:
+            global_names = new_ir.extended_attributes.values_of('Global')
+            toe_names = new_ir.extended_attributes.values_of('TargetOfExposed')
+            if not (global_names or toe_names):
                 continue
             constructs = set()
             for global_name in global_names:
                 constructs.update(exposed_map.get(global_name, []))
+            if global_names:
+                # If it's a global object, then expose the constructs with the
+                # wildcard exposure ([Exposed=*]).
+                constructs.update(exposed_map.get('*', []))
+            for toe_name in toe_names:
+                constructs.update(exposed_map.get(toe_name, []))
             new_ir.exposed_constructs = list(
                 map(self._ref_to_idl_def_factory.create, sorted(constructs)))
 

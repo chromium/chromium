@@ -260,7 +260,13 @@ def expr_from_exposure(exposure,
     if global_names:
         matched_global_count = 0
         for entry in exposure.global_names_and_features:
-            if entry.global_name not in global_names:
+            if entry.global_name == "*":
+                # [Exposed(GLOBAL_NAME FEATURE_NAME)] is not supported.
+                assert entry.feature is None
+                # Constructs with the wildcard exposure ([Exposed=*]) are
+                # unconditionally exposed.
+                pass
+            elif entry.global_name not in global_names:
                 continue
             matched_global_count += 1
             if entry.feature:
@@ -271,6 +277,12 @@ def expr_from_exposure(exposure,
                 or matched_global_count > 0)
     else:
         for entry in exposure.global_names_and_features:
+            if entry.global_name == "*":
+                # [Exposed(GLOBAL_NAME FEATURE_NAME)] is not supported.
+                assert entry.feature is None
+                # Constructs with the wildcard exposure ([Exposed=*]) are
+                # unconditionally exposed.
+                continue
             try:
                 execution_context_check = GLOBAL_NAME_TO_EXECUTION_CONTEXT_TEST[
                     entry.global_name]
