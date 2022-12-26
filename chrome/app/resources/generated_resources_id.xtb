@@ -105,6 +105,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1087965115100412394">Jangan izinkan situs terhubung ke perangkat MIDI</translation>
 <translation id="1088654056000736875">Chrome menghapus software berbahaya dari komputer Anda ...</translation>
 <translation id="1088659085457112967">Masuk ke Mode Pembaca</translation>
+<translation id="1089407731410758060">Ubah Tema</translation>
 <translation id="1090126737595388931">Tidak Ada Apl Latar Belakang yang Sedang Berjalan</translation>
 <translation id="1090541560108055381">Sebelum menyambungkan, pastikan kode ini sama di kedua perangkat</translation>
 <translation id="1091767800771861448">Tekan ESCAPE untuk melewati (Khusus bentukan tidak resmi).</translation>
@@ -933,6 +934,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="18260074040409954">Anda dapat menggunakan sandi tersimpan di semua perangkat. Sandi disimpan ke <ph name="GOOGLE_PASSWORD_MANAGER" /> untuk <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Sinkronkan bookmark, sandi, histori, dan lainnya di browser Chrome</translation>
 <translation id="1826516787628120939">Memeriksa</translation>
+<translation id="1827504459960247692">Nama hotspot</translation>
 <translation id="1828378091493947763">Plugin tidak didukung di perangkat ini</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Buka Semua}=1{&amp;Buka Bookmark}other{&amp;Buka Semua ({COUNT})}}</translation>
 <translation id="1828901632669367785">Cetak Menggunakan Dialog Sistem...</translation>
@@ -1243,6 +1245,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2101225219012730419">Versi:</translation>
 <translation id="2102396546234652240">Jangan izinkan situs menggunakan mikrofon Anda</translation>
 <translation id="2102495993840063010">Aplikasi Android</translation>
+<translation id="2104166991923847969">Otomatis nonaktifkan hotspot</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> tersembunyi</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Nomor telepon}other{# nomor telepon}}</translation>
 <translation id="211144231511833662">Hapus Jenis</translation>
@@ -1826,6 +1829,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2616366145935564096">Membaca dan mengubah data Anda di <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Menyiapkan Berbagi Langsung</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> tidak dapat didownload dengan aman.</translation>
+<translation id="2620245777360407679">Perangkat yang saat ini terhubung ke hotspot</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="262154978979441594">Latih model suara Asisten Google</translation>
 <translation id="26224892172169984">Jangan izinkan situs apa pun menangani protokol</translation>
@@ -7146,6 +7150,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7614260613810441905">Tanyakan saat situs ingin mengedit file atau folder di perangkat Anda (direkomendasikan)</translation>
 <translation id="761530003705945209">Cadangkan ke Google Drive. Pulihkan data Anda atau beralih perangkat kapan saja dengan mudah. Cadangan Anda mencakup data aplikasi. Cadangan Anda diupload ke Google dan dienkripsi menggunakan sandi Akun Google Anda.</translation>
 <translation id="7615365294369022248">Terjadi error saat menambahkan akun</translation>
+<translation id="7615807797520072741">Reset ke Chrome Klasik</translation>
 <translation id="7616214729753637086">Mendaftarkan perangkat...</translation>
 <translation id="7617263010641145920">Aktifkan Play Store</translation>
 <translation id="7617648809369507487">Gunakan pesan yang lebih tenang</translation>
@@ -8453,6 +8458,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Pindahkan Tab ke Jendela Lain}other{Pindahkan Beberapa Tab ke Jendela Lain}}</translation>
 <translation id="8805140816472474147">Konfirmasi setelan sinkronisasi untuk memulai sinkronisasi.</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> dapat membuka kembali tab yang ditutup secara tidak sengaja</translation>
+<translation id="8807588541160250261">Saat tidak ada perangkat terhubung</translation>
 <translation id="8807632654848257479">Stabil</translation>
 <translation id="8808478386290700967">Toko Web</translation>
 <translation id="8808686172382650546">Kucing</translation>

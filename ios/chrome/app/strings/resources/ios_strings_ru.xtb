@@ -149,7 +149,7 @@
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2080769225927880590">Войдите с действительным аккаунтом</translation>
-<translation id="2090878303988764231">Чтобы указать, какой контент вы хотите видеть, войдите в аккаунт</translation>
+<translation id="2090878303988764231">Войдите в аккаунт, чтобы настроить контент</translation>
 <translation id="2103075008456228677">Открыть history.google.com</translation>
 <translation id="21133533946938348">Закрепить вкладку</translation>
 <translation id="2116625576999540962">Перемещено закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -510,6 +510,7 @@
 <translation id="481968316161811770">Cookie, данные сайтов</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и ещё 1 вкладка}one{{domain} и ещё {count} вкладка}few{{domain} и ещё {count} вкладки}many{{domain} и ещё {count} вкладок}other{{domain} и ещё {count} вкладки}}</translation>
 <translation id="4826218269716039351">Блокировать сторонние файлы cookie</translation>
+<translation id="4826588772550366629">"Камера" и "Микрофон"</translation>
 <translation id="4826726074642088322">Поделиться выделенным</translation>
 <translation id="48274138579728272">Отметить как прочитанное</translation>
 <translation id="4833686396768033263">Недавние вкладки недоступны</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="519530786644929958">Ошибка скачивания. Повтор действия невозможен.</translation>
 <translation id="5197255632782567636">Интернет</translation>
+<translation id="5211488077761630279">Разрешить сайту <ph name="SITE_NAME" /> использовать разрешения <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Помочь сделать интернет безопаснее для всех</translation>
 <translation id="5228579091201413441">Включить синхронизацию</translation>
 <translation id="5232485538978018676">Вход в управляемый аккаунт</translation>

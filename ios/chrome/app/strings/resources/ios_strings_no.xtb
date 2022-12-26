@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
 <translation id="1013952917065545813">Du kan komme tilbake hit for å gjenåpne faner du nylig har lukket</translation>
 <translation id="1016495303386450659">Elementet er oppdatert</translation>
+<translation id="1035980983510608210">Hvis du lukker alle faner, blir også festede faner lukket.</translation>
 <translation id="1044891598689252897">Nettsteder kommer til å fungere som normalt</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="105093091697134113">Disse kontoene bruker passord som har vært avdekket i databrudd hos tredjeparter eller skrevet inn på villedende nettsteder. Endre disse passordene umiddelbart for å beskytte kontoene dine.</translation>
@@ -208,6 +209,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2578571896248130439">Send nettside</translation>
 <translation id="2584132361465095047">Legg til en konto …</translation>
 <translation id="2600682495497606169">Slett informasjonskapsler for nettstedet</translation>
+<translation id="2609008503159898744">Vil du lukke alle faner?</translation>
 <translation id="2625189173221582860">Passordet er kopiert</translation>
 <translation id="2626236249646841566">Kontroller tilkoblingen din, og prøv å logge på igjen.</translation>
 <translation id="2637313651144986786">Søk i faner…</translation>
@@ -299,6 +301,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3174662312949010067">Du kan også bruke lagrede passord på de andre enhetene dine.</translation>
 <translation id="3175081911749765310">Nettjenester</translation>
 <translation id="3178650076442119961">Aktiv i dag</translation>
+<translation id="3181261441371833039">Lukk bare vanlige faner</translation>
 <translation id="3181825792072797598">Slå på synkronisering</translation>
 <translation id="3181954750937456830">Safe Browsing (beskytter deg og enheten din mot farlige nettsteder)</translation>
 <translation id="3184767182050912705">Lås opp med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>

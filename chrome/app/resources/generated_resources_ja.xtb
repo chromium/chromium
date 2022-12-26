@@ -105,6 +105,7 @@
 <translation id="1087965115100412394">サイトに MIDI デバイスへの接続を許可しない</translation>
 <translation id="1088654056000736875">お使いのパソコンから有害なソフトウェアを削除しています...</translation>
 <translation id="1088659085457112967">リーダーモードを開始</translation>
+<translation id="1089407731410758060">テーマを変更</translation>
 <translation id="1090126737595388931">実行中のバックグラウンド アプリはありません</translation>
 <translation id="1090541560108055381">ペア設定を行う前に、両方のデバイスでコードが一致しているか確認してください</translation>
 <translation id="1091767800771861448">Esc キーを押すとスキップできます（非公式のビルドのみ）。</translation>
@@ -921,6 +922,7 @@
 <translation id="18260074040409954">保存したパスワードはどのデバイスでも使用できます。パスワードは、<ph name="EMAIL" /> の <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されます。</translation>
 <translation id="1826192255355608658">Chrome ブラウザのブックマーク、パスワード、履歴、その他の設定を同期します</translation>
 <translation id="1826516787628120939">確認中</translation>
+<translation id="1827504459960247692">アクセス ポイント名</translation>
 <translation id="1828378091493947763">このプラグインはこのデバイスではサポートされていません</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{すべてを開く(&amp;O)}=1{ブックマークを開く(&amp;O)}other{すべて（{COUNT} 個）を開く(&amp;O)}}</translation>
 <translation id="1828901632669367785">システム ダイアログを使用して印刷...</translation>
@@ -1228,6 +1230,7 @@
 <translation id="2101225219012730419">バージョン:</translation>
 <translation id="2102396546234652240">サイトにマイクの使用を許可しない</translation>
 <translation id="2102495993840063010">Android アプリ</translation>
+<translation id="2104166991923847969">アクセス ポイントを自動的にオフにする</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> を非表示にしました</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
 <translation id="211144231511833662">タイプの選択をすべて解除</translation>
@@ -1805,6 +1808,7 @@
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> 上にある自分のデータの読み取りと変更</translation>
 <translation id="2618797463720777311">ニアバイシェアの設定</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> は安全にダウンロードできません。</translation>
+<translation id="2620245777360407679">アクセス ポイントに現在接続中のデバイス</translation>
 <translation id="2620436844016719705">システム</translation>
 <translation id="262154978979441594">Google アシスタントの音声モデルのトレーニング</translation>
 <translation id="26224892172169984">すべてのサイトに対してプロトコルの処理を許可しない</translation>
@@ -7117,6 +7121,7 @@
 <translation id="7614260613810441905">サイトがデバイスのファイルやフォルダを編集しようとしたときに確認する（推奨）</translation>
 <translation id="761530003705945209">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="7615365294369022248">アカウントの追加中にエラーが発生しました</translation>
+<translation id="7615807797520072741">クラシック Chrome にリセット</translation>
 <translation id="7616214729753637086">デバイスを登録しています...</translation>
 <translation id="7617263010641145920">Play ストアをオンにする</translation>
 <translation id="7617648809369507487">静かな方法で通知する</translation>
@@ -8423,6 +8428,7 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{タブを別のウィンドウに移動}other{タブを別のウィンドウに移動}}</translation>
 <translation id="8805140816472474147">同期を開始するには同期設定を確認してください。</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> で、誤って閉じたタブを再度開くことができます</translation>
+<translation id="8807588541160250261">デバイスが接続されていない場合、自動的にオフにします</translation>
 <translation id="8807632654848257479">Stable</translation>
 <translation id="8808478386290700967">ウェブストア</translation>
 <translation id="8808686172382650546">ネコ</translation>

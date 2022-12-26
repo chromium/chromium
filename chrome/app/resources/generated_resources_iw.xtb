@@ -653,6 +653,7 @@
 <translation id="1595492813686795610">‏מתבצע עכשיו שדרוג של Linux</translation>
 <translation id="1596286373007273895">זמין</translation>
 <translation id="1596709061955594992">‏ה-Bluetooth כבוי. צריך להפעיל את ה-Bluetooth כדי להציג את המכשירים הזמינים.</translation>
+<translation id="1596780725094407793">– כולל תת-דומיינים</translation>
 <translation id="1598233202702788831">מנהל המערכת השבית את העדכונים.</translation>
 <translation id="1600857548979126453">להיכנס לניפוי הבאגים העורפי של הדף</translation>
 <translation id="1601560923496285236">החלה</translation>
@@ -2891,6 +2892,7 @@
 <translation id="3617891479562106823">רקעים אינם זמינים. צריך לנסות שוב מאוחר יותר.</translation>
 <translation id="3619115746895587757">קפוצ'ינו</translation>
 <translation id="3620136223548713675">מיקום גאוגרפי</translation>
+<translation id="362023940451053340">‏בחשבון Google שלך, עבור <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">‏עזרה בשיפור התכונות והביצועים של ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{אפליקציה}one{# אפליקציות}two{# אפליקציות}other{# אפליקציות}}</translation>
 <translation id="362333465072914957">‏בהמתנה להנפקת אישור על ידי ה-CA</translation>
@@ -5628,6 +5630,7 @@
 <translation id="6169967265765719844">‏אפשר לנהל את ההרשאות למשחקים ולאפליקציות שהותקנו דרך Steam <ph name="LINK_BEGIN" />בהגדרות של אפליקציית Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">כריך</translation>
 <translation id="6170498031581934115">‏לא ניתן היה להפעיל ניפוי באגים באמצעות ADB. עליך לעבור להגדרות ולנסות שוב.</translation>
+<translation id="6171779718418683144">הצגת השאלה בכל ביקור</translation>
 <translation id="617213288191670920">לא נוספו שפות</translation>
 <translation id="6173623053897475761">יש להקליד שוב את הקוד</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
@@ -6760,6 +6763,7 @@
 <translation id="7235737137505019098">במפתח האבטחה שלך אין מספיק מקום לחשבונות נוספים.</translation>
 <translation id="7235873936132740888">אתרים יכולים לבצע משימות מיוחדות כשלוחצים על קישורים מסוגים מסוימים, כמו יצירת הודעה חדשה בתוכנת האימייל או הוספת אירועים חדשים ליומן הזמין באינטרנט</translation>
 <translation id="7238609589076576185">הוזן סימן דיאקריטי.</translation>
+<translation id="7238665222668706269">‏מנהל הסיסמאות של Google ‏<ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">ההעברה בוטלה על ידי <ph name="DEVICE_NAME" /></translation>
 <translation id="7240339475467890413">להתחבר לנקודה חדשה לשיתוף אינטרנט?</translation>
 <translation id="7241389281993241388">יש להיכנס אל <ph name="TOKEN_NAME" /> כדי לייבא את אישור הלקוח.</translation>
@@ -7500,6 +7504,7 @@
 <translation id="7920363873148656176">ל-<ph name="ORIGIN" /> יש אפשרות להציג את <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">הוספת מילים שיש לדלג עליהן בבדיקות איות</translation>
 <translation id="7921347341284348270">אין לך אפשרות לצפות בהתראות של הטלפון בחשבון המנוהל הזה. כדאי לנסות שוב מחשבון אחר. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">תוסף אחד</translation>
 <translation id="7922935920104868876">‏הצגת פרטים על חסימת קובצי cookie של צדדים שלישיים במצב פרטי</translation>
 <translation id="7923564237306226146">‏השדרוג של Linux הושלם</translation>
 <translation id="7924358170328001543">שגיאה בהעברת היציאה</translation>
@@ -7889,6 +7894,7 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> השבית את סמן העכבר.</translation>
 <translation id="8264024885325823677">ההגדרה הזו מנוהלת על-ידי מנהל המערכת שלך.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" הפעיל מסך מלא.</translation>
+<translation id="8265018477030547118">רק במכשיר הזה</translation>
 <translation id="826511437356419340">‏נכנסת למצב סקירה כללית של חלון. כדי לנווט, יש להחליק על המסך, או להקיש על מקש Tab אם משתמשים במקלדת.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{החלון הפרטי לא ייפתח שוב אחרי ההפעלה מחדש}one{{COUNT} החלונות הפרטיים לא ייפתחו שוב אחרי ההפעלה מחדש}two{{COUNT} החלונות הפרטיים לא ייפתחו שוב אחרי ההפעלה מחדש}other{{COUNT} החלונות הפרטיים לא ייפתחו שוב אחרי ההפעלה מחדש}}</translation>
 <translation id="8266947622852630193">כל שיטות הקלט</translation>
@@ -8296,6 +8302,7 @@
 <translation id="8655295600908251630">ערוץ</translation>
 <translation id="8655972064210167941">הכניסה נכשלה מפני שלא ניתן היה לאמת את הסיסמה. יש לפנות למנהל המערכת או לנסות שוב.</translation>
 <translation id="8657393004602556571">רוצה למחוק את המשוב?</translation>
+<translation id="8657762806752649049">‏בחשבון Google שלך, עבור <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">פתיחת הקישור בחלון &amp;אנונימי</translation>
 <translation id="8662671328352114214">התחברות לרשת <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">נראה שהפעולה נמשכת יותר זמן מהצפוי. יש לך אפשרות לדלג או להמתין עד סיום הפעולה.</translation>

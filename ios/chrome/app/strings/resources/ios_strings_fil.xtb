@@ -510,6 +510,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="481968316161811770">Cookies, Data ng Site</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} at 1 pa}one{{domain} at {count} pa}other{{domain} at {count} pa}}</translation>
 <translation id="4826218269716039351">I-block ang Third-Party</translation>
+<translation id="4826588772550366629">camera at mikropono</translation>
 <translation id="4826726074642088322">Ibahagi ang Naka-highlight</translation>
 <translation id="48274138579728272">Markahan Bilang Nabasa Na</translation>
 <translation id="4833686396768033263">Hindi Available ang Mga Kamakailang Tab</translation>
@@ -562,6 +563,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5190835502935405962">Bar ng Mga Bookmark</translation>
 <translation id="519530786644929958">Hindi na-download at hindi masusubukan ulit.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Payagan ang "<ph name="SITE_NAME" />" na gamitin ang iyong <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Tumulong na Paigtingin ang Seguridad sa Web para sa Lahat</translation>
 <translation id="5228579091201413441">I-enable ang pag-sync</translation>
 <translation id="5232485538978018676">Mag-sign in sa Pinapamahalaang Account</translation>

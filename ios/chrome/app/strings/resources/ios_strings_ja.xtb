@@ -510,6 +510,7 @@
 <translation id="481968316161811770">Cookie、サイトデータ</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} とその他 1 タブ}other{{domain} とその他 {count} タブ}}</translation>
 <translation id="4826218269716039351">サードパーティの Cookie をブロック</translation>
+<translation id="4826588772550366629">カメラとマイク</translation>
 <translation id="4826726074642088322">選択箇所を共有</translation>
 <translation id="48274138579728272">既読にする</translation>
 <translation id="4833686396768033263">最近使ったタブは使用できません</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">ブックマーク バー</translation>
 <translation id="519530786644929958">ダウンロードに失敗し、再試行できません。</translation>
 <translation id="5197255632782567636">インターネット</translation>
+<translation id="5211488077761630279">「<ph name="SITE_NAME" />」に <ph name="PERMISSION" /> の使用を許可しますか？</translation>
 <translation id="5219295696240154694">すべてのユーザーのウェブ上のセキュリティ強化に協力する</translation>
 <translation id="5228579091201413441">同期を有効にする</translation>
 <translation id="5232485538978018676">管理対象アカウントでログインする</translation>

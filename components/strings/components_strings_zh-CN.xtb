@@ -2711,6 +2711,7 @@
 <translation id="7815407501681723534">找到了 <ph name="NUMBER_OF_RESULTS" /> 个与“<ph name="SEARCH_STRING" />”相符的<ph name="SEARCH_RESULTS" /></translation>
 <translation id="7822320754433038727">打猎与射击</translation>
 <translation id="782886543891417279">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问其登录页面。</translation>
+<translation id="7840103971441592723">已开始截屏/录屏</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{无}=1{1 个应用（<ph name="EXAMPLE_APP_1" />）}=2{2 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">离开此网站？</translation>
@@ -2889,6 +2890,7 @@
 <translation id="8282947398454257691">获取您的唯一设备标识符</translation>
 <translation id="8284769179630993263">在 Chrome 设置中管理您的安全浏览设置及其他设置</translation>
 <translation id="8286036467436129157">登录</translation>
+<translation id="8286799286781881307">已获管理员授权的应用可截取/录制与设备连接的所有屏幕。所得信息可在本地处理，也可上传到贵组织的服务器。</translation>
 <translation id="8288807391153049143">显示证书</translation>
 <translation id="8289355894181816810">如果您不确定这是什么意思，请与您的网络管理员联系。</translation>
 <translation id="8293206222192510085">添加书签</translation>

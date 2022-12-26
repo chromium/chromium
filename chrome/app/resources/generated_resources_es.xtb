@@ -105,6 +105,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1087965115100412394">No permitir que los sitios se conecten a dispositivos MIDI</translation>
 <translation id="1088654056000736875">Chrome está quitando el software dañino de tu ordenador...</translation>
 <translation id="1088659085457112967">Activar modo de lectura</translation>
+<translation id="1089407731410758060">Cambiar tema</translation>
 <translation id="1090126737595388931">No se están ejecutando aplicaciones en segundo plano.</translation>
 <translation id="1090541560108055381">Antes de emparejar los dispositivos, comprueba que este código sea el mismo en ambos</translation>
 <translation id="1091767800771861448">Pulsa Esc para omitir este paso (solo para compilaciones no oficiales).</translation>
@@ -922,6 +923,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="18260074040409954">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el <ph name="GOOGLE_PASSWORD_MANAGER" /> para <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Sincroniza tus marcadores, tus contraseñas y tu historial de Chrome, entre otros elementos</translation>
 <translation id="1826516787628120939">Comprobando</translation>
+<translation id="1827504459960247692">Nombre del punto de acceso</translation>
 <translation id="1828378091493947763">Este complemento no se admite en este dispositivo</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Abrir todas}=1{&amp;Abrir marcador}other{&amp;Abrir todas ({COUNT})}}</translation>
 <translation id="1828901632669367785">Imprimir utilizando el cuadro de diálogo del sistema</translation>
@@ -1231,6 +1233,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2101225219012730419">Versión:</translation>
 <translation id="2102396546234652240">No permitir que los sitios usen tu micrófono</translation>
 <translation id="2102495993840063010">Aplicaciones de Android</translation>
+<translation id="2104166991923847969">Desactivar Compartir Internet automáticamente</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> oculto</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
 <translation id="211144231511833662">Borrar tipos</translation>
@@ -1812,6 +1815,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2616366145935564096">Leer y modificar tus datos en <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Configurar Compartir con Nearby</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> no se puede descargar de forma segura.</translation>
+<translation id="2620245777360407679">Dispositivos conectados actualmente al punto de acceso</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="262154978979441594">Preparar modelo de voz del Asistente de Google</translation>
 <translation id="26224892172169984">No permitir que los sitios procesen protocolos</translation>
@@ -7130,6 +7134,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7614260613810441905">Preguntar cuando un sitio web quiera editar archivos o carpetas de tu dispositivo (recomendado)</translation>
 <translation id="761530003705945209">Crea copias de seguridad en Google Drive. Recupera tus datos de forma sencilla o cambia de dispositivo en cualquier momento. La copia de seguridad también incluye datos de las aplicaciones. Tus copias de seguridad se suben a Google y se cifran con la contraseña de tu cuenta de Google.</translation>
 <translation id="7615365294369022248">No se ha podido añadir una cuenta</translation>
+<translation id="7615807797520072741">Restablecer tema clásico de Google</translation>
 <translation id="7616214729753637086">Registrando dispositivo...</translation>
 <translation id="7617263010641145920">Activar Play Store</translation>
 <translation id="7617648809369507487">Usar notificaciones más discretas</translation>
@@ -8437,6 +8442,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Mover pestaña a otra ventana}other{Mover pestañas a otra ventana}}</translation>
 <translation id="8805140816472474147">Confirma los ajustes de sincronización para iniciarla.</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> te permite volver a abrir las pestañas cerradas por error</translation>
+<translation id="8807588541160250261">Cuando no haya ningún dispositivo conectado</translation>
 <translation id="8807632654848257479">Estable</translation>
 <translation id="8808478386290700967">Chrome Web Store</translation>
 <translation id="8808686172382650546">Gato</translation>

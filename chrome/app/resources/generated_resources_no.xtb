@@ -652,6 +652,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1595492813686795610">Linux oppgraderes</translation>
 <translation id="1596286373007273895">Tilgjengelig</translation>
 <translation id="1596709061955594992">Bluetooth er slått av. For å se tilgjengelige enheter, slå på Bluetooth.</translation>
+<translation id="1596780725094407793">– inneholder underdomener</translation>
 <translation id="1598233202702788831">Administratoren din har slått av oppdateringer.</translation>
 <translation id="1600857548979126453">få tilgang til bakdata for sidefeilsøkingsprogrammet</translation>
 <translation id="1601560923496285236">Bruk</translation>
@@ -2889,6 +2890,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3617891479562106823">Bakgrunner er utilgjengelig. Prøv på nytt senere.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolokalisering</translation>
+<translation id="362023940451053340">I Google-kontoen din – <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Bidra til å gjøre funksjonene og ytelsen til ChromeOS bedre</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{en app}other{# apper}}</translation>
 <translation id="362333465072914957">Venter på at sertifiseringsinstansen skal utstede et sertifikat</translation>
@@ -5622,6 +5624,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6169967265765719844">Tillatelser for spill og apper som er installert via Steam, kan administreres i <ph name="LINK_BEGIN" />innstillingene i Steam-appen<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Smørbrød</translation>
 <translation id="6170498031581934115">Kunne ikke slå på ADB-feilsøking. Gå til Innstillinger, og prøv på nytt.</translation>
+<translation id="6171779718418683144">Spør for hvert besøk</translation>
 <translation id="617213288191670920">Ingen språk er lagt til</translation>
 <translation id="6173623053897475761">Skriv inn PIN-koden din igjen</translation>
 <translation id="6175314957787328458">Microsoft domeneguide</translation>
@@ -6750,6 +6753,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7235737137505019098">Sikkerhetsnøkkelen har ikke plass til flere kontoer.</translation>
 <translation id="7235873936132740888">Nettsteder kan håndtere spesialoppgaver når du klikker på visse typer linker, for eksempel å opprette nye meldinger i e-postklienten din eller legge til nye hendelser i nettkalenderen din</translation>
 <translation id="7238609589076576185">Et aksenttegn er satt inn.</translation>
+<translation id="7238665222668706269">Google Passordlagring <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> avbrøt overføringen</translation>
 <translation id="7240339475467890413">Vil du koble til den nye Wifi-sonen?</translation>
 <translation id="7241389281993241388">Logg på <ph name="TOKEN_NAME" /> for å importere klientsertifikat.</translation>
@@ -7492,6 +7496,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan se <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Legg til ord du vil at stavekontrollen skal hoppe over</translation>
 <translation id="7921347341284348270">Du kan ikke se varslene på telefonen din i denne administrerte kontoen. Prøv igjen med en annen konto. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 utvidelse</translation>
 <translation id="7922935920104868876">Vis detaljer om å blokkere informasjonskapsler fra tredjeparter i inkognitomodus</translation>
 <translation id="7923564237306226146">Linux-oppgraderingen er fullført</translation>
 <translation id="7924358170328001543">Feil ved viderekobling av port</translation>
@@ -7879,6 +7884,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> har deaktivert markøren din.</translation>
 <translation id="8264024885325823677">Denne innstillingen administreres av administratoren.</translation>
 <translation id="8264718194193514834"><ph name="EXTENSION_NAME" /> utløste full skjerm.</translation>
+<translation id="8265018477030547118">Bare på denne enheten</translation>
 <translation id="826511437356419340">Du er i modusen for vindusoversikt. Sveip for å navigere, eller trykk på Tab hvis du bruker tastatur.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Inkognitovinduet ditt blir ikke gjenåpnet når du starter nettleseren på nytt}other{De {COUNT} inkognitovinduene dine blir ikke gjenåpnet når du starter nettleseren på nytt}}</translation>
 <translation id="8266947622852630193">Alle inndatametoder</translation>
@@ -8286,6 +8292,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Påloggingen mislyktes fordi passordet ditt ikke kunne bekreftes. Kontakt administratoren din, eller prøv på nytt.</translation>
 <translation id="8657393004602556571">Vil du forkaste tilbakemeldingen?</translation>
+<translation id="8657762806752649049">I Google-kontoen din – <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Åpne linken i inko&amp;gnitovindu</translation>
 <translation id="8662671328352114214">Koble til <ph name="TYPE" />-nettverket</translation>
 <translation id="8662733268723715832">Dette tar lengre tid enn forventet. Du kan hoppe over prosessen eller vente til den er ferdig.</translation>

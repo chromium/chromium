@@ -105,6 +105,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1087965115100412394">No permitir que los sitios se conecten a dispositivos MIDI</translation>
 <translation id="1088654056000736875">Chrome está quitando el software dañino de la computadora…</translation>
 <translation id="1088659085457112967">Ingresar al modo de lectura</translation>
+<translation id="1089407731410758060">Cambiar tema</translation>
 <translation id="1090126737595388931">No se ejecutan aplicaciones de fondo</translation>
 <translation id="1090541560108055381">Verifica que este código sea igual en ambos dispositivos para poder vincularlos</translation>
 <translation id="1091767800771861448">Presiona ESCAPE para omitir (solo compilaciones no oficiales).</translation>
@@ -919,6 +920,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="18260074040409954">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en <ph name="GOOGLE_PASSWORD_MANAGER" /> para <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Sincroniza los favoritos, las contraseñas, el historial y otros elementos de tu navegador Chrome</translation>
 <translation id="1826516787628120939">Comprobando</translation>
+<translation id="1827504459960247692">Nombre del hotspot</translation>
 <translation id="1828378091493947763">Este complemento no es compatible con este dispositivo</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Abrir todo}=1{&amp;Abrir favorito}other{&amp;Abrir todo ({COUNT})}}</translation>
 <translation id="1828901632669367785">Imprimir utilizando el diálogo del sistema…</translation>
@@ -1228,6 +1230,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2101225219012730419">Versión:</translation>
 <translation id="2102396546234652240">No permitir que los sitios usen el micrófono</translation>
 <translation id="2102495993840063010">Apps de Android</translation>
+<translation id="2104166991923847969">Desactivar el hotspot automáticamente</translation>
 <translation id="2105809836724866556">Se ocultó el <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
 <translation id="211144231511833662">Borrar tipos</translation>
@@ -1808,6 +1811,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2616366145935564096">Leer y modificar tus datos en <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Configura Compartir con Nearby</translation>
 <translation id="2620215283731032047">No se puede descargar el archivo <ph name="FILE_NAME" /> de forma segura.</translation>
+<translation id="2620245777360407679">Dispositivos conectados actualmente al hotspot</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="262154978979441594">Entrenar el modelo de voz del Asistente de Google</translation>
 <translation id="26224892172169984">No permitir que los sitios web procesen protocolos</translation>
@@ -7127,6 +7131,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7614260613810441905">Preguntar cuando un sitio quiera editar archivos o carpetas de tu dispositivo (recomendado)</translation>
 <translation id="761530003705945209">Crea una copia de seguridad en Google Drive. Restaura tus datos o cambia de dispositivo en cualquier momento con facilidad. Se incluyen datos de apps. Se suben las copias de seguridad a Google y se encriptan con la contraseña de tu Cuenta de Google.</translation>
 <translation id="7615365294369022248">Se produjo un error al agregar una cuenta</translation>
+<translation id="7615807797520072741">Restablecer la versión clásica de Chrome</translation>
 <translation id="7616214729753637086">Registrando dispositivo…</translation>
 <translation id="7617263010641145920">Activar Play Store</translation>
 <translation id="7617648809369507487">Usar notificaciones más discretas</translation>
@@ -8434,6 +8439,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Mover la pestaña a otra ventana}other{Mover las pestañas a otra ventana}}</translation>
 <translation id="8805140816472474147">Confirma la configuración para comenzar la sincronización.</translation>
 <translation id="8806680466228877631">Con <ph name="SHORTCUT" />, puedes volver a abrir las pestañas que se cerraron por accidente</translation>
+<translation id="8807588541160250261">Cuando no hay dispositivos conectados</translation>
 <translation id="8807632654848257479">Estable</translation>
 <translation id="8808478386290700967">Tienda virtual</translation>
 <translation id="8808686172382650546">Gato</translation>

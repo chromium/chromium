@@ -33,6 +33,7 @@
       拼字檢查功能目前支援的語言如下：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
 <translation id="1019101089073227242">設定使用者資料目錄</translation>
 <translation id="1020006815010587263">這位使用者的垃圾桶已停用。</translation>
+<translation id="1021462144002396313"><ph name="PRIVACY_SANDBOX_NAME" /> 政策</translation>
 <translation id="1022361784792428773">使用者應避免安裝的擴充功能 ID (使用星號 (*) 排除所有擴充功能)</translation>
 <translation id="102492767056134033">設定螢幕小鍵盤在登入畫面中的預設狀態</translation>
 <translation id="102658870205613876">彈出式視窗設定</translation>
@@ -159,6 +160,7 @@
       只有將 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 設為 False，<ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 設定才會生效。</translation>
 <translation id="1147732569915511430">顯示圖片的 SHA-256 雜湊值。</translation>
 <translation id="1148415065145333943">停用進階電池充電模式</translation>
+<translation id="1150742937785306405">允許使用者在裝置上開啟或關閉 <ph name="PRIVACY_SANDBOX_NAME" /> 網站建議廣告設定。</translation>
 <translation id="1151353063931113432">允許這些網站的圖片</translation>
 <translation id="1151987132434751822">能夠套用政策憑證的驗證機制。可設為下列其中一個值：
             * basic
@@ -188,6 +190,7 @@
 <translation id="1160479894929412407">允許 QUIC 通訊協定</translation>
 <translation id="1160939557934457296">停用略過安全瀏覽警告網頁繼續進行</translation>
 <translation id="1163080558183062209">停用拒絕清單上的印表機類型</translation>
+<translation id="1163389598183927209">與 <ph name="PRIVACY_SANDBOX_NAME" /> 相關的一組政策。<ph name="PRODUCT_NAME" /> 致力於淘汰第三方 Cookie，詳情請參閱 <ph name="PRIVACY_SANDBOX_URL" />。</translation>
 <translation id="1165923723751466821">允許透過瀏覽器訪客模式和設定檔登入</translation>
 <translation id="117059611145966538">外部列印伺服器</translation>
 <translation id="117080706484659953">允許 <ph name="MAC_OS_NAME" /> 上的政策範圍偵測</translation>
@@ -570,6 +573,7 @@
 
       如果不設定這項政策，所有網站都將使用全域預設值 (不會自動取得存取權)。</translation>
 <translation id="1530812829012954197">一律在瀏覽器中算繪以下網址模式</translation>
+<translation id="1542491165152947087">允許使用者在裝置上開啟或關閉 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告主題設定。</translation>
 <translation id="1552418937045050762">如果啟用這項設定，使用者將可使用「鄰近分享」功能，與附近的使用者互相傳送檔案。
 
       如果停用這項設定，使用者就無法使用「鄰近分享」功能。
@@ -990,6 +994,7 @@
 
       如果啟用這項政策，且 <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> 和 DownloadRestrictions 政策設為封鎖危險檔案類型，則系統會優先採用 DownloadRestrictions 的禁止下載設定。比方說，如果這項政策設為可從「website1.com」下載「exe」副檔名，且 DownloadRestrictions 設為封鎖惡意下載內容和危險檔案類型，則系統仍會禁止從所有網域下載「exe」副檔名。如果 DownloadRestrictions 未設定為封鎖危險檔案類型，那麼從指定網域下載這項政策設定的檔案類型時，系統就不會顯示檔案類型副檔名下載警告。進一步瞭解 DownloadRestrictions 政策 (https://chromeenterprise.google/policies/?policy=DownloadRestrictions)。</translation>
 <translation id="1954612656043024615">啟用剪貼簿共用功能</translation>
+<translation id="1960059835237529462">允許向使用者顯示 <ph name="IOS_NAME" /> App Store 評分宣傳</translation>
 <translation id="1960416154405676350">啟用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />的區域搜尋功能。</translation>
 <translation id="1961091374249454164">這項政策僅適用於受管理的訪客工作階段。
       你可以透過本政策指定擴充功能 ID 清單，從有限制的受管理訪客工作階段清除程序中排除這些擴充功能 (請見 <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />)。
@@ -1240,6 +1245,12 @@
       如果將這項政策設為 True 或不予設定，使用者將可以使用 VM 管理 CLI。
       否則系統會停用並隱藏 VM 管理 CLI。
       </translation>
+<translation id="2194051055390000601">這項政策控管是否可停用使用者的 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告主題設定。
+
+如果將這項政策設為停用，系統就會停用使用者的廣告主題設定。
+如果將這項政策設為啟用或未設定，使用者將可開啟或關閉裝置上的 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告主題設定。
+
+如要設定這項政策，必須將 <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> 政策設為停用。</translation>
 <translation id="2195032660890227692">這項政策已在 <ph name="PRODUCT_NAME" /> 68 中遭到移除，並已由 <ph name="ARC_BR_POLICY_NAME" /> 取代。</translation>
 <translation id="2197625019569762163">將這項政策設為 True 時，系統預設會在登入畫面顯示數字鍵盤，方便使用者輸入密碼。使用者仍可切換為普通鍵盤。
 
@@ -1775,6 +1786,7 @@
       如要進一步瞭解有效的網站網址模式，請前往 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。你也可以使用萬用字元 (<ph name="WILDCARD_VALUE" />)。這項政策只會根據來源進行比對，因此會忽略網址模式中的路徑。
 
       如果尚未針對某個網站設定這項政策，該網站就會套用 <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> 已設定的政策；如果已針對某個網站設定這項政策，則網站會依照瀏覽器的預設權限設定，使用者可依網站選擇這項權限。</translation>
+<translation id="2727844239611930002">允許 <ph name="PRODUCT_NAME" /> 決定是否要顯示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示。</translation>
 <translation id="2730200383593984228">允許無關聯使用者使用 Android 應用程式</translation>
 <translation id="2730419309754848345">預設以圖片形式列印 PDF</translation>
 <translation id="2731299561202635374">這項政策可控管即時檢查網址以識別不安全網址的功能。
@@ -2263,6 +2275,8 @@
 
       這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
+<translation id="3163167792874598128">如未設定這項政策或設為啟用，系統可能會向使用者顯示 App Store 評分宣傳 (一年最多一次)。
+如果將這項政策設為停用，系統就不會向使用者顯示 App Store 評分宣傳。</translation>
 <translation id="3164531087779621747">列印 PostScript 模式</translation>
 <translation id="3165468162820163252">這項政策可控管登入畫面的 WebUI 部分要一律在啟動時載入，或是只在顯示前才載入。這項政策適用於登入畫面。
 
@@ -2558,6 +2572,11 @@
 <translation id="3412937883532015092">如果將這項政策設為數值，<ph name="PRODUCT_NAME" /> 在開啟替代瀏覽器前會先顯示一則等待訊息，並依據該數值 (以毫秒為單位) 來設定這則訊息要顯示多久的時間。
 
       如果未設定這項政策或設為 0，當使用者前往指定網址時，系統會立即在替代瀏覽器中開啟該網址。</translation>
+<translation id="3413763534078822244">這項政策已淘汰，請改用 <ph name="USER_BOREALIS_ALLOWED_NAME" />。
+
+      這項政策會控管是否可在這部裝置上使用 <ph name="BOREALIS_NAME" />。
+
+      如果將這項政策設為 False，這部裝置的所有使用者都將無法使用 <ph name="BOREALIS_NAME" />。如果將政策設為 True 或未設定，只要其他政策或設定未停用 <ph name="BOREALIS_NAME" />，就能在這部裝置上使用這個容器。</translation>
 <translation id="3415954062311826850">ARC 不支援這項政策。</translation>
 <translation id="34160070798637152">控管裝置通用的網路設定。</translation>
 <translation id="3417130629744653218">允許網站查詢可用的付款方式。</translation>
@@ -3474,6 +3493,7 @@
 
           如果設為 false 或沒有設定，內容提供者將不會傳回任何資訊。</translation>
 <translation id="435395045087992163">在裝置暫停或蓋上機蓋時不要鎖定裝置</translation>
+<translation id="4354792057099570728">停用使用者的 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告評估設定。</translation>
 <translation id="4357587374229381015">指定網址參數名稱，供系統在 SAML IdP 登入頁面上用於自動填入使用者名稱欄位。
 
       系統會使用與 <ph name="PRODUCT_OS_NAME" /> 設定檔相關聯的使用者電子郵件地址做為網址參數值。因此如果使用者要在 SAML IdP 使用其他電子郵件地址，應停用這項設定。
@@ -3511,6 +3531,7 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="4389073105055031853">允許使用者管理所有憑證</translation>
 <translation id="4389091865841123886">使用 TPM 機制設定遠端證明。</translation>
+<translation id="4389113579547582722">允許顯示 App Store 評分宣傳</translation>
 <translation id="4394840953265135019">壓縮物件的下載網址。物件可能採用 gzip、bzip2、lzma 或 zstd 方法進行壓縮，系統會在下載後自動偵測。如果無法自動偵測出壓縮方法，物件可能無法解壓縮。</translation>
 <translation id="439661169333921592">在登入畫面上停用鍵盤焦點醒目顯示功能</translation>
 <translation id="4397045637922200204">停用帳戶救援服務</translation>
@@ -3564,6 +3585,7 @@
       雖然以上平台支援政策本身，但這些平台不一定全部支援透過政策啟用的功能。部分已淘汰的網路平台功能無法重新啟用，只有下方明確列出者可在限定時間內啟用，啟用時限則視功能而異。字串標記的通用格式是 &lt;已淘汰的功能名稱&gt;_EffectiveUntil&lt;yyyymmdd&gt;。如需參考資訊，請前往 https://bit.ly/blinkintents 查看網路平台功能變更的意義。
       </translation>
 <translation id="4443711908766051441">啟用恐龍復活節彩蛋遊戲</translation>
+<translation id="4445728642576791607">允許使用者在裝置上開啟或關閉 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告評估設定。</translation>
 <translation id="4447668084338250480">內部網路重新導向行為</translation>
 <translation id="4449469846627734399">設定日間用電尖峰轉移配置</translation>
 <translation id="4449545651113180484">將畫面以順時針方向旋轉 270 度</translation>
@@ -3599,6 +3621,7 @@
 <translation id="4483649828988077221">停用自動更新</translation>
 <translation id="4484515651939984695">針對透過存取碼或 QR 圖碼選取的投放裝置，指定其在 <ph name="PRODUCT_NAME" /> 選單的投放裝置清單中停留的時間 (以秒為單位)。</translation>
 <translation id="4485425108474077672">設定新分頁網址</translation>
+<translation id="4491607814095953976">選擇是否可停用 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告評估設定</translation>
 <translation id="4492287494009043413">停用螢幕畫面擷取功能</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">設定 <ph name="PLUGIN_VM_NAME" /> 的相關政策。</translation>
@@ -4501,6 +4524,7 @@
       設定這項政策後，使用者即無法變更或覆寫。
 
       如果不設定這項政策，使用者可以選擇登入畫面上代表自己的顯示圖片。</translation>
+<translation id="5428716437928918274">Privacy Sandbox 設定控制選項</translation>
 <translation id="5431392643649571773">啟用 <ph name="PRODUCT_NAME" /> 功能時，系統會允許使用往返快取。當使用者離開頁面時，系統可能會將網頁的目前狀態 (文件樹狀結構、指令碼等等) 保存在往返快取中。如果瀏覽器返回該頁面，系統可能會透過往返快取還原頁面，以快取前的狀態顯示頁面。
 
           這項功能可能會讓某些並未預期會受到此快取的網站無法正常運作，尤其是瀏覽器離開頁面時，需要傳送「<ph name="UNLOAD_HANDLER_NAME" />」事件的網站。如果頁面進入往返快取，系統就不會傳送「<ph name="UNLOAD_HANDLER_NAME" />」事件。
@@ -6534,6 +6558,7 @@
       </translation>
 <translation id="7459601923199346224">控管憑證管理的使用者和裝置政策。</translation>
 <translation id="7459633275230216698">允許顯示檔案選取對話方塊</translation>
+<translation id="7462256705280836453">選擇是否可停用 <ph name="PRIVACY_SANDBOX_NAME" /> 網站建議廣告設定</translation>
 <translation id="7463055558720530430">允許使用者記住 Kerberos 密碼</translation>
 <translation id="7464058117970792805">啟用列印預覽</translation>
 <translation id="7464991223784276288">將來自相符網址的 Cookie 限制在目前的工作階段中</translation>
@@ -6736,6 +6761,12 @@
       如果將這項政策設為停用，只要使用者執行會開啟檔案選取對話方塊的動作 (例如匯入書籤、上傳檔案、儲存連結等)，螢幕上就會改為顯示訊息。系統會視同使用者已按下檔案選取對話方塊上的 [取消]。</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">允許使用系統通知</translation>
+<translation id="7643151458117317518">這項政策控管是否可停用使用者的 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告評估設定。
+
+如果將這項政策設為停用，系統就會停用使用者的廣告評估設定。
+如果將這項政策設為啟用或未設定，使用者將可開啟或關閉裝置上的 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告評估設定。
+
+如要設定這項政策，必須將 <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> 政策設為停用。</translation>
 <translation id="7643883929273267746">限制在 <ph name="PRODUCT_NAME" /> 中顯示的帳戶</translation>
 <translation id="7648664871086956188">這項政策可用來開啟或關閉 DataLeakPreventionRulesList 政策中定義的所有規則。
       如果將這項政策設為 True，系統會開啟資料外洩防護事件的即時回報功能；
@@ -7330,6 +7361,16 @@
 這些設定不需手動配置！你可以在 <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" /> 下載簡單易用的範本，直接在 Windows、Mac 和 Linux 系統中使用。
 
 你仍可在已加入 <ph name="MS_AD_NAME" /> 網域的 Windows 執行個體透過登錄檔佈建政策，但我們建議你在 Windows 透過 GPO 設定政策。</translation>
+<translation id="8261008508574620157">這項政策控管是否向使用者顯示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示。
+這個提示是一個使用者封鎖流程，可以向使用者告知 <ph name="PRIVACY_SANDBOX_NAME" /> 設定。Chrome 致力於淘汰第三方 Cookie，詳情請參閱 <ph name="PRIVACY_SANDBOX_URL" />。
+
+如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 將不會顯示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示。
+如果將這項政策設為啟用或未設定，<ph name="PRODUCT_NAME" /> 將決定是否顯示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示 (系統會在適用的情況下顯示提示)。
+
+如果你設定了下方任一政策，請務必將這項政策設為停用：
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="8266778278542911985">如果將這項政策設為 3，網站將可要求存取序列埠。如果將這項政策設為 2，網站將無法存取序列埠。
 
       如果不設定，網站可要求存取序列埠，但使用者可以變更這項設定。</translation>
@@ -7358,6 +7399,7 @@
       如果不設定這項政策，系統會使用預設的延長比例係數。
 
       注意：延長比例係數必須為 100% 以上的值。</translation>
+<translation id="8284621384813278750">選擇是否可停用 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告主題設定</translation>
 <translation id="8285435910062771358">已啟用全螢幕放大鏡</translation>
 <translation id="828566872219880247">你可以設定網址模式清單，指定可使用金鑰產生功能的網站。如果網址模式符合「KeygenBlockedForUrls」的設定，這項政策會覆寫這類例外狀況。
 
@@ -7543,6 +7585,7 @@
 
       注意：如果是尚未加入 <ph name="MS_AD_NAME" /> 網域的 <ph name="MS_WIN_NAME" /> 執行個體，以及尚未透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的 <ph name="MAC_OS_NAME" /> 執行個體，系統只會針對 Chrome 線上應用程式商店中的應用程式和擴充功能執行強制安裝作業。</translation>
 <translation id="8451988835943702790">將新分頁設為首頁</translation>
+<translation id="8453218444172088993">停用使用者的 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告主題設定。</translation>
 <translation id="8455529558077979314">隱私保護畫面設定</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">使用 POST 的互動智慧搜尋網址參數</translation>
@@ -7667,6 +7710,12 @@
       網址模式不得與 <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> 政策衝突。如果網址同時符合兩項政策，系統不會優先採用任何一項政策。
 
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
+<translation id="8554750769356971993">這項政策控管是否可停用使用者的 <ph name="PRIVACY_SANDBOX_NAME" /> 網站建議廣告設定。
+
+如果將這項政策設為停用，系統就會停用使用者的網站建議廣告設定。
+如果將這項政策設為啟用或未設定，使用者將可開啟或關閉裝置上的 <ph name="PRIVACY_SANDBOX_NAME" /> 網站建議廣告設定。
+
+如要設定這項政策，必須將 <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> 政策設為停用。</translation>
 <translation id="8559221882677768248">在登入畫面上停用隨選朗讀功能</translation>
 <translation id="8566842294717252664">在新分頁和應用程式啟動畫面中隱藏線上應用程式商店</translation>
 <translation id="8571314270766672278">在版本降級時復原和重設裝置，並嘗試保留註冊狀態</translation>
@@ -7696,6 +7745,7 @@
           如果不設定這項政策，系統會使用預設時間長度。
 
           指定政策值時需以毫秒為單位。</translation>
+<translation id="859579553230883285">停用使用者的 <ph name="PRIVACY_SANDBOX_NAME" /> 網站建議廣告設定。</translation>
 <translation id="8598786284856179541">啟用版本資訊報告功能</translation>
 <translation id="859937827887158048">不允許自動點對點下載更新</translation>
 <translation id="8603454805657060638">你可以透過這項政策，讓系統管理員變更將裝置連結至座架時的 MAC (媒體存取權控管) 位址。將座架連結至部分裝置型號時，根據預設，裝置的指定座架 MAC 位址可協助在乙太網路上識別裝置。
@@ -7948,6 +7998,7 @@
       設置這項政策是為了讓企業能彈性停用網路沙箱，避免第三方軟體干擾網路服務沙箱運作。</translation>
 <translation id="8840243776706727185">NewBaseUrlInheritanceBehavior 功能已停用</translation>
 <translation id="8842208363354615697">允許啟用僅限 HTTPS 模式</translation>
+<translation id="8843331294082716286">不要向使用者顯示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示。</translation>
 <translation id="885147810817138322">向使用者顯示媒體推薦內容</translation>
 <translation id="8852579753940989645">啟用轉譯器程式碼完整性功能</translation>
 <translation id="8854571659927427063">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入書籤。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入任何書籤。
@@ -8068,6 +8119,7 @@
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8956312248048980644">在預設情況下，允許使用 origin-keyed 代理程式叢集。</translation>
 <translation id="8970205333161758602">隱藏停止支援 <ph name="PRODUCT_FRAME_NAME" />的提示</translation>
+<translation id="8973579598359969188">選擇是否可向使用者顯示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示</translation>
 <translation id="8974588819713914715">這項政策已淘汰，因此系統不再支援，請改用「<ph name="URL_ALLOWLIST_POLICY_NAME" />」政策。</translation>
 <translation id="8976248126101463034">允許針對遠端存取主機進行 gnubby 驗證機制</translation>
 <translation id="8976531594979650914">使用系統預設印表機做為預設值</translation>
@@ -8292,6 +8344,7 @@
 
       這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。待這項政策移除後，<ph name="PRODUCT_NAME" /> 便一律可以查詢其他 DNS 類型。</translation>
 <translation id="9167719789236691545">禁止在 <ph name="PRODUCT_OS_NAME" />的「檔案」應用程式中使用 Google 雲端硬碟</translation>
+<translation id="9172911925443428317">不允許顯示 App Store 評分宣傳</translation>
 <translation id="9180108183162961002">允許透過瀏覽器訪客模式登入</translation>
 <translation id="9185963199234034321">在登入畫面上啟用高對比模式，並允許使用者暫時停用</translation>
 <translation id="9187743794267626640">停用外部儲存裝置掛載功能</translation>

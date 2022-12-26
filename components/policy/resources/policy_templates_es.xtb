@@ -33,6 +33,7 @@
       Estos son los idiomas que se admiten actualmente: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk y vi.</translation>
 <translation id="1019101089073227242">Establecer directorio de datos de usuarios</translation>
 <translation id="1020006815010587263">La papelera está inhabilitada para el usuario.</translation>
+<translation id="1021462144002396313">Políticas de <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">ID de extensiones que el usuario no debe poder instalar (o * para incluirlas todas)</translation>
 <translation id="102492767056134033">Establecer el estado predeterminado del teclado en pantalla en la pantalla de inicio de sesión</translation>
 <translation id="102658870205613876">Configuración de ventanas emergentes</translation>
@@ -159,6 +160,7 @@ Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph 
       Definir <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efecto si se le asigna el valor "False" a <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" />.</translation>
 <translation id="1147732569915511430">El hash SHA-256 de la imagen de avatar.</translation>
 <translation id="1148415065145333943">Inhabilitar el modo avanzado de carga de la batería</translation>
+<translation id="1150742937785306405">Permitir que los usuarios activen o desactiven la opción de anuncios sugeridos por el sitio de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.</translation>
 <translation id="1151353063931113432">Permitir imágenes en estos sitios</translation>
 <translation id="1151987132434751822">Los esquemas de autenticación en los que se pueden aplicar las credenciales de políticas. Puede ser uno de los siguientes:
             * basic
@@ -188,6 +190,7 @@ La disponibilidad de las extensiones seguirá estando controlada por otras polí
 <translation id="1160479894929412407">Permitir protocolo QUIC</translation>
 <translation id="1160939557934457296">Inhabilitar seguir navegando desde la página de advertencia sobre Navegación segura</translation>
 <translation id="1163080558183062209">Inhabilitar tipos de impresora en la lista de denegación</translation>
+<translation id="1163389598183927209">Un grupo de políticas relacionadas con <ph name="PRIVACY_SANDBOX_NAME" />. Visita <ph name="PRIVACY_SANDBOX_URL" /> para consultar más información sobre las iniciativas de <ph name="PRODUCT_NAME" /> para suprimir las cookies de terceros.</translation>
 <translation id="1165923723751466821">Permitir que se inicie sesión en el navegador con el modo Invitado y con inicios de sesión de perfil</translation>
 <translation id="117059611145966538">Servidores de impresión externos</translation>
 <translation id="117080706484659953">Permitir detección del nivel de las políticas en <ph name="MAC_OS_NAME" /></translation>
@@ -576,6 +579,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si no se establece esta política, se usará el valor predeterminado global para todos los sitios (sin acceso automático).</translation>
 <translation id="1530812829012954197">Mostrar siempre los patrones de URL que se indican a continuación en el navegador del host</translation>
+<translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la opción de temas de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.</translation>
 <translation id="1552418937045050762">Si se habilita esta opción, los usuarios podrán usar Compartir con Nearby, lo que les permitirá enviar y recibir archivos de personas cercanas.
 
       Si se inhabilita esta opción, los usuarios no podrán usar Compartir con Nearby.
@@ -1253,6 +1257,12 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si se asigna el valor "True" a esta política o no se le asigna ningún valor, el usuario podrá usar la interfaz de línea de comandos para gestionar máquinas virtuales.
       De lo contrario, se deshabilitará y ocultará la interfaz de línea de comandos para gestionar máquinas virtuales.
       </translation>
+<translation id="2194051055390000601">Política para controlar si se puede inhabilitar la opción de temas de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> para los usuarios.
+
+Si se inhabilita esta política, la opción de temas de anuncios se desactivará para los usuarios.
+Si se habilita esta política o no se define, los usuarios podrán activar o desactivar la opción de temas de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.
+
+Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2195032660890227692">Esta política se retiró en <ph name="PRODUCT_NAME" /> 68 y se ha sustituido por <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Si se asigna el valor "true" a esta política, se mostrará un teclado numérico por defecto para introducir la contraseña en la pantalla de inicio de sesión. Si quieren, los usuarios pueden cambiar al teclado normal.
 
@@ -1789,6 +1799,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Para obtener información detallada sobre los patrones de URL de sitios válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Los comodines (<ph name="WILDCARD_VALUE" />) están permitidos. Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta del patrón de URL.
 
       Si esta política no se establece para un sitio, se le aplicará la política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" />, si se ha definido. En caso contrario, el permiso se ajustará a los valores predeterminados del navegador y los usuarios podrán elegir este permiso en función del sitio.</translation>
+<translation id="2727844239611930002">Permitir que <ph name="PRODUCT_NAME" /> determine si mostrar el mensaje de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="2730200383593984228">Permitir que los usuarios no afiliados utilicen aplicaciones Android</translation>
 <translation id="2730419309754848345">Imprimir PDF como imagen de forma predeterminada</translation>
 <translation id="2731299561202635374">Esta política controla la comprobación de URLs en tiempo real para identificar URL no seguras.
@@ -3553,6 +3564,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 
           Si está desactivada o no se ha establecido, el proveedor de contenido no devuelve ninguna información.</translation>
 <translation id="435395045087992163">No bloquear el dispositivo al suspenderlo o al cerrar la tapa</translation>
+<translation id="4354792057099570728">Inhabilitar la opción de medición de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> para los usuarios.</translation>
 <translation id="4357587374229381015">Especifica el nombre del parámetro de URL que se usará en la página de inicio de sesión del proveedor de identidades SAML para autocompletar el campo del nombre de usuario.
 
       El correo del usuario asociado a su perfil de <ph name="PRODUCT_OS_NAME" /> se utilizará como valor del parámetro de URL. Por lo tanto, esta opción debe estar inhabilitada si se espera que los usuarios utilicen otros correos con el proveedor de identidades SAML.
@@ -3643,6 +3655,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Aunque la política en sí es compatible con las plataformas anteriores, es posible que la función que habilita no esté disponible en todas ellas. No todas las funciones de Web Platform obsoletas se pueden volver a habilitar. Solo es posible hacerlo con las indicadas específicamente y durante un periodo de tiempo limitado diferente para cada función. El formato general de la etiqueta de cadena será:[NombreDeFunciónObsoleta]_EffectiveUntil[aaaammdd]. Como referencia, puedes consultar los intentos detrás de los cambios de la función Web Platform en la página https://bit.ly/blinkintents.
       </translation>
 <translation id="4443711908766051441">Habilitar juego del huevo de pascua del dinosaurio</translation>
+<translation id="4445728642576791607">Permitir que los usuarios activen o desactiven la opción de medición de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.</translation>
 <translation id="4447668084338250480">Comportamiento de redirección de una intranet</translation>
 <translation id="4449469846627734399">Define la configuración diaria de Peak Shift</translation>
 <translation id="4449545651113180484">Girar la pantalla 270 grados hacia la derecha</translation>
@@ -3679,6 +3692,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="4483649828988077221">Inhabilitar actualización automática</translation>
 <translation id="4484515651939984695">Especifica cuánto tiempo (en segundos) permanece un dispositivo de emisión seleccionado con un código de acceso o un código QR en la lista de dispositivos de emisión del menú de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Configurar la URL de la página Nueva pestaña</translation>
+<translation id="4491607814095953976">Elegir si se puede inhabilitar la opción de medición de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="4492287494009043413">Inhabilitar la realización de capturas de pantalla</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">Configura las políticas relacionadas con <ph name="PLUGIN_VM_NAME" />.</translation>
@@ -4593,6 +4607,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
       Si no se asigna ningún valor, el usuario podrá elegir la imagen del avatar que le representará en la pantalla de inicio de sesión.</translation>
+<translation id="5428716437928918274">Controles de configuración de Privacy Sandbox</translation>
 <translation id="5431392643649571773">Si se habilita, la función <ph name="PRODUCT_NAME" /> permite el uso de la caché de páginas completas. Al salir de una página, es posible que su estado (árbol de documentos, secuencia de comandos, etc.) se almacene en caché de páginas completas. Si el navegador vuelve a visitar esa página, puede restaurarse desde el almacenamiento en caché de páginas completas y mostrarse en el estado en el que estaba al almacenarse en caché la vez anterior.
 
           Es probable que esta función provoque fallos en algunos sitios web que no esperen que se almacenen en caché. Especialmente, los sitios web que dependen de que el evento "<ph name="UNLOAD_HANDLER_NAME" />" se envíe al usuario cuando el navegador salga de la página. El evento "<ph name="UNLOAD_HANDLER_NAME" />" no se enviará si la página se guarda en el almacenamiento en caché en páginas completas.
@@ -6677,6 +6692,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       </translation>
 <translation id="7459601923199346224">Controla las políticas de usuarios y dispositivos para gestionar certificados.</translation>
 <translation id="7459633275230216698">Permitir cuadros de diálogo de selección de archivos</translation>
+<translation id="7462256705280836453">Elegir si se puede inhabilitar la opción de anuncios sugeridos por el sitio de <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="7463055558720530430">Permitir que los usuarios activen la opción de recordar contraseñas de Kerberos</translation>
 <translation id="7464058117970792805">Habilitar vista previa de impresión</translation>
 <translation id="7464991223784276288">Limitar las cookies de las URL coincidentes de la sesión actual</translation>
@@ -6889,6 +6905,12 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si se inhabilita esta política, cuando un usuario ejecute una acción que abra un cuadro de diálogo de selección de archivos (por ejemplo, importar marcadores, subir archivos, guardar enlaces, etc.), aparecerá un mensaje en su lugar. Se asume que el usuario habrá hecho clic en Cancelar en el cuadro de diálogo de selección de archivos.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Permitir que se usen notificaciones del sistema</translation>
+<translation id="7643151458117317518">Política para controlar si se puede inhabilitar la opción de medición de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> para los usuarios.
+
+Si se inhabilita esta política, se desactivará la opción de medición de anuncios para los usuarios.
+Si se habilita esta política o no se define, los usuarios podrán activar o desactivar la opción de medición de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.
+
+Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="7643883929273267746">Restringir cuentas que se muestran en <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Esta política sirve para activar o desactivar todas las reglas definidas en la política DataLeakPreventionRulesList.
       Si se le asigna el valor True, activará los informes en tiempo real de los eventos de prevención de filtración de datos.
@@ -7495,6 +7517,16 @@ Estas políticas están destinadas exclusivamente a la configuración de instanc
 No es necesario configurar estas opciones manualmente. En la página <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />, puedes encontrar plantillas fáciles de utilizar para Windows, Mac y Linux.
 
 Te recomendamos que utilices GPO para configurar la política en Windows, aunque aún se admite la asignación de la política a través del registro para instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" />.</translation>
+<translation id="8261008508574620157">Política para controlar si se muestra el mensaje de <ph name="PRIVACY_SANDBOX_NAME" /> a los usuarios.
+El mensaje es un flujo de bloqueo de usuarios que informa a los usuarios sobre los ajustes de <ph name="PRIVACY_SANDBOX_NAME" />. Visita <ph name="PRIVACY_SANDBOX_URL" /> para consultar más información sobre las iniciativas de Chrome para suprimir las cookies de terceros.
+
+Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> no mostrará el mensaje de <ph name="PRIVACY_SANDBOX_NAME" />.
+Si se habilita esta política o no se define, <ph name="PRODUCT_NAME" /> determinará si se puede mostrar el mensaje de <ph name="PRIVACY_SANDBOX_NAME" /> y, si se puede, lo mostrará.
+
+Se debe deshabilitar esta política si se ha definido alguna de las siguientes políticas:
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="8266778278542911985">Si se asigna el valor 3 a esta política, los sitios web podrán solicitar acceso a los puertos serie. Si se le asigna el valor 2, se denegará el acceso a los puertos serie.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
@@ -7525,6 +7557,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
       Si no se establece esta política, se usará el factor de escala predeterminado.
 
       Nota: El factor de escala debe ser igual o superior a 100 %.</translation>
+<translation id="8284621384813278750">Elegir si se puede inhabilitar la opción de temas de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="8285435910062771358">Lupa de pantalla completa habilitada</translation>
 <translation id="828566872219880247">Permite definir una lista de patrones de URL donde se especifique qué sitios pueden usar la generación de claves. Si un patrón de URL está en KeygenBlockedForUrls, se anularán estas excepciones.
 
@@ -7719,6 +7752,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 
       Nota: Para las instancias de <ph name="MS_WIN_NAME" /> que no estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> y las instancias de <ph name="MAC_OS_NAME" /> que no se gestionen mediante MDM o que no estén vinculadas a un dominio a través de MCX, la instalación forzada se limitará a las aplicaciones y las extensiones disponibles en Chrome Web Store.</translation>
 <translation id="8451988835943702790">Utilizar página Nueva pestaña como página principal</translation>
+<translation id="8453218444172088993">Inhabilitar la opción de temas de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> para los usuarios.</translation>
 <translation id="8455529558077979314">Configuración de la pantalla de privacidad</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parámetros para URL instantánea que utiliza POST</translation>
@@ -7848,6 +7882,12 @@ No se puede restaurar la versión 106 de <ph name="PRODUCT_OS_NAME" /> ni versio
       Los patrones de URL no pueden entrar en conflicto con la política <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
+<translation id="8554750769356971993">Política para controlar si se puede inhabilitar la opción de anuncios sugeridos por el sitio de <ph name="PRIVACY_SANDBOX_NAME" /> para los usuarios.
+
+Si se inhabilita esta política, se desactivará la opción de anuncios sugeridos por el sitio para los usuarios.
+Si se habilita esta política o no se define, los usuarios podrán activar o desactivar la opción de anuncios sugeridos por el sitio de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.
+
+Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8559221882677768248">Inhabilitar Enunciar selección en la pantalla de inicio de sesión</translation>
 <translation id="8566842294717252664">Oculta tienda web en página Nueva pestaña y en menú de aplicaciones</translation>
 <translation id="8571314270766672278">Restaurar y restablecer el dispositivo al cambiar a una versión inferior (intentar conservar el registro)</translation>
@@ -7877,6 +7917,7 @@ No se puede restaurar la versión 106 de <ph name="PRODUCT_OS_NAME" /> ni versio
           Si no se establece esta política, se utiliza un valor de tiempo predeterminado.
 
           El valor de esta política debe especificarse en milisegundos.</translation>
+<translation id="859579553230883285">Inhabilitar la opción de anuncios sugeridos por el sitio de <ph name="PRIVACY_SANDBOX_NAME" /> para los usuarios.</translation>
 <translation id="8598786284856179541">Habilitar informes con datos sobre la versión</translation>
 <translation id="859937827887158048">No permitir las descargas de actualizaciones automáticas punto a punto</translation>
 <translation id="8603454805657060638">Establecer esta política permite que el administrador cambie la dirección MAC (control de acceso al medio) cuando se conecte un dispositivo a la base. Cuando una base está conectada a algunos modelos de dispositivo, se usa de forma predeterminada la dirección MAC designada de la base del dispositivo para identificarlo en Ethernet.
@@ -8135,6 +8176,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       El objetivo de esta política es dar a las empresas la opción de inhabilitar el entorno aislado de la red si usan software de terceros que interfiere en el entorno aislado del servicio de red.</translation>
 <translation id="8840243776706727185">Función NewBaseUrlInheritanceBehavior inhabilitada</translation>
 <translation id="8842208363354615697">Permitir que se habilite el modo solo‑HTTPS</translation>
+<translation id="8843331294082716286">No mostrar el mensaje de <ph name="PRIVACY_SANDBOX_NAME" /> a los usuarios.</translation>
 <translation id="885147810817138322">Mostrar recomendaciones de contenido multimedia al usuario</translation>
 <translation id="8852579753940989645">Habilitar la integridad del código del renderizador</translation>
 <translation id="8854571659927427063">Si se asigna el valor "Habilitada" a esta política, se importarán los marcadores del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará ningún marcador al ejecutarse por primera vez.
@@ -8257,6 +8299,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permite los clústeres de agentes con clave de origen de forma predeterminada.</translation>
 <translation id="8970205333161758602">Eliminar el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="8973579598359969188">Elegir si se puede mostrar el mensaje de <ph name="PRIVACY_SANDBOX_NAME" /> a los usuarios</translation>
 <translation id="8974588819713914715">Esta política está obsoleta y no se admite. Usa la política <ph name="URL_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="8976248126101463034">Permitir la autenticación gnubby para los hosts de acceso remoto</translation>
 <translation id="8976531594979650914">Usar impresora predeterminada del sistema como opción predeterminada</translation>

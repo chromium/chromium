@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">您可回來重新開啟最近關閉的分頁</translation>
 <translation id="1016495303386450659">項目已更新</translation>
+<translation id="1035980983510608210">如果關閉所有分頁，系統也會一併關閉固定分頁。</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="105093091697134113">以下帳戶所用的密碼，曾在第三方資料外洩事件中洩漏或在欺詐網站中輸入。請立即變更這些密碼，以確保帳戶安全。</translation>
@@ -208,6 +209,7 @@
 <translation id="2578571896248130439">傳送網頁</translation>
 <translation id="2584132361465095047">新增帳戶…</translation>
 <translation id="2600682495497606169">清除網站 Cookie</translation>
+<translation id="2609008503159898744">要關閉所有分頁嗎？</translation>
 <translation id="2625189173221582860">已複製密碼</translation>
 <translation id="2626236249646841566">請檢查您的連線，然後再次嘗試登入。</translation>
 <translation id="2637313651144986786">搜尋分頁…</translation>
@@ -299,6 +301,7 @@
 <translation id="3174662312949010067">您亦可在其他裝置上使用已儲存的密碼。</translation>
 <translation id="3175081911749765310">網路服務</translation>
 <translation id="3178650076442119961">今天在線</translation>
+<translation id="3181261441371833039">僅關閉一般分頁</translation>
 <translation id="3181825792072797598">開啟同步處理功能</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護您和裝置免受危險網站攻擊)</translation>
 <translation id="3184767182050912705">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖</translation>

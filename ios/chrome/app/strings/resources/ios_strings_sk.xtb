@@ -510,6 +510,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="481968316161811770">Súbory cookie, údaje webu</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} a 1 ďalšia}few{{domain} a {count} ďalšie}many{{domain} and {count} others}other{{domain} a {count} ďalších}}</translation>
 <translation id="4826218269716039351">Blokovať tretie strany</translation>
+<translation id="4826588772550366629">na prístup ku kamere a mikrofónu</translation>
 <translation id="4826726074642088322">Zdieľať zvýraznený text</translation>
 <translation id="48274138579728272">Označiť ako prečítané</translation>
 <translation id="4833686396768033263">Nedávne karty nie sú k dispozícii</translation>
@@ -562,6 +563,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5190835502935405962">Panel so záložkami</translation>
 <translation id="519530786644929958">Súbor sa nestiahol. Pokus sa nedá zopakovať.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Chcete povoliť webu <ph name="SITE_NAME" /> používať povolenie <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Pomôžte zlepšiť zabezpečenie na internete pre všetkých</translation>
 <translation id="5228579091201413441">Povoliť synchronizáciu</translation>
 <translation id="5232485538978018676">Prihlásenie spravovaným účtom</translation>

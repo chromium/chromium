@@ -651,6 +651,7 @@
 <translation id="1595492813686795610">Linux-г сайжруулж байна</translation>
 <translation id="1596286373007273895">Боломжтой</translation>
 <translation id="1596709061955594992">Bluetooth унтраалттай байна. Боломжтой төхөөрөмжүүдийг харахын тулд Bluetooth-г асаана уу.</translation>
+<translation id="1596780725094407793">- дэд домэйн багтана</translation>
 <translation id="1598233202702788831">Таны админ шинэчлэлтийг идэвхгүй болгосон.</translation>
 <translation id="1600857548979126453">Хуудасны алдаа засах арын дэвсгэр лүү нэвтрэх</translation>
 <translation id="1601560923496285236">Ашиглах</translation>
@@ -2891,6 +2892,7 @@
 <translation id="3617891479562106823">Арын дэвсгэр боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620136223548713675">Геолокаци</translation>
+<translation id="362023940451053340">Таны Google Бүртгэл болох <ph name="ACCOUNT" />-д</translation>
 <translation id="3621807901162200696">ChromeOS-н онцлогууд болон гүйцэтгэлийг сайжруулахад туслах</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 апп}other{# апп}}</translation>
 <translation id="362333465072914957">Цахим гэрчилгээний газраас гэрчилгээ олгохыг хүлээж байна</translation>
@@ -5627,6 +5629,7 @@
 <translation id="6169967265765719844">Steam-р суулгасан тоглоомууд болон аппуудын зөвшөөрлийг <ph name="LINK_BEGIN" />Steam аппын тохиргоо<ph name="LINK_END" /> хэсэгт удирдах боломжтой.</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6170498031581934115">ADB алдаа засахыг идэвхжүүлж чадсангүй Тохиргоо хэсэгт очиж, дахин оролдоно уу.</translation>
+<translation id="6171779718418683144">Зочлох бүрд асуух</translation>
 <translation id="617213288191670920">Нэмсэн хэл байхгүй</translation>
 <translation id="6173623053897475761">ПИН-ээ дахин бичих</translation>
 <translation id="6175314957787328458">Microsoft Домэйн GUID</translation>
@@ -6755,6 +6758,7 @@
 <translation id="7235737137505019098">Таны аюулгүй байдлын түлхүүрт бусад бүртгэлд зориулах хангалттай зай алга байна.</translation>
 <translation id="7235873936132740888">Сайтууд таныг тодорхой төрлийн холбоос дээр дарах үед таны имэйл хэрэглэгчид шинэ мессеж үүсгэх эсвэл таны онлайн календарьд шинэ арга хэмжээ нэмэх зэргээр тусгай ажлуудыг хийх боломжтой.</translation>
 <translation id="7238609589076576185">Өргөлтийн тэмдэг оруулсан.</translation>
+<translation id="7238665222668706269">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> шилжүүлгийг цуцалсан</translation>
 <translation id="7240339475467890413">Шинэ сүлжээний цэгт холбогдох уу?</translation>
 <translation id="7241389281993241388">Хэрэглэгчийн гэрчилгээг оруулах зорилгоор <ph name="TOKEN_NAME" />-д нэвтрэнэ үү.</translation>
@@ -7496,6 +7500,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> нь <ph name="FILENAME" />-г үзэх боломжтой</translation>
 <translation id="7920482456679570420">Зөв бичгийн алдааг нь шалгахгүй байхыг хүсэж буй үгнүүдээ нэмнэ үү</translation>
 <translation id="7921347341284348270">Та энэ тохиргоо хийгдсэн бүртгэл дээр утасныхаа мэдэгдлийг харах боломжгүй. Өөр бүртгэлээр дахин оролдоно уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 өргөтгөл</translation>
 <translation id="7922935920104868876">Нууцлалтай горимд гуравдагч талын күүкиг блоклох талаарх дэлгэрэнгүйг харуулах</translation>
 <translation id="7923564237306226146">Linux-г сайжруулж дууслаа</translation>
 <translation id="7924358170328001543">Порт дамжуулахад алдаа гарлаа</translation>
@@ -7881,6 +7886,7 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> нь таны хулганын заагчийг идэвхгүй болгосон байна.</translation>
 <translation id="8264024885325823677">Энэ тохиргоог таны администратор удирддаг.</translation>
 <translation id="8264718194193514834">" <ph name="EXTENSION_NAME" /> нь дэлгэцийг томосгох үйлдлийг идэвхжүүлсэн байна.</translation>
+<translation id="8265018477030547118">Зөвхөн энэ төхөөрөмжид</translation>
 <translation id="826511437356419340">Цонхны тойм горимд шилжлээ. Шилжихийн тулд шударна уу эсвэл гар ашиглаж байгаа бол Tab дээр дарна уу.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Таныг дахин ачаалсны дараа нууцлалтай цонх тань нээгдэхгүй}other{Таныг дахин ачаалсны дараа {COUNT} нууцлалтай цонх тань нээгдэхгүй}}</translation>
 <translation id="8266947622852630193">Бүх оруулах арга</translation>
@@ -8288,6 +8294,7 @@
 <translation id="8655295600908251630">Суваг</translation>
 <translation id="8655972064210167941">Таны нууц үгийг баталгаажуулж чадаагүй тул нэвтэрч чадсангүй. Та админтайгаа холбогдох, эсвэл дахин оролдох хэрэгтэй.</translation>
 <translation id="8657393004602556571">Та санал хүсэлтээ болихыг хүсэж байна уу?</translation>
+<translation id="8657762806752649049">Таны Google Бүртгэл болох <ph name="ACCOUNT" />-д зориулж</translation>
 <translation id="8661290697478713397">Холбоосыг нууцлалтай цонхонд нээх</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> сүлжээнд нэгдэх</translation>
 <translation id="8662733268723715832">Энэ нь ердийнхөөс удаж байгаа бөгөөд та алгасах эсвэл үүнийг дуусах хүртэл нь хүлээх боломжтой.</translation>

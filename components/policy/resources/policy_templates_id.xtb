@@ -33,6 +33,7 @@
       Bahasa yang didukung saat ini adalah: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="1019101089073227242">Menyetel direktori data pengguna</translation>
 <translation id="1020006815010587263">Sampah dinonaktifkan untuk pengguna.</translation>
+<translation id="1021462144002396313">Kebijakan <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">ID ekstensi yang tidak diizinkan dipasang pengguna (atau * untuk semua)</translation>
 <translation id="102492767056134033">Menyetel status default keyboard di layar di layar masuk</translation>
 <translation id="102658870205613876">Setelan pop-up</translation>
@@ -161,6 +162,7 @@ kebijakan ini tidak melarang screenshot yang diambil dengan aplikasi sistem oper
       Menyetel <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> hanya akan berpengaruh jika <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> disetel ke Salah (False).</translation>
 <translation id="1147732569915511430">Hash SHA-256 gambar avatar.</translation>
 <translation id="1148415065145333943">Nonaktifkan mode pengisian daya baterai lanjutan</translation>
+<translation id="1150742937785306405">Izinkan pengguna mengaktifkan atau menonaktifkan setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.</translation>
 <translation id="1151353063931113432">Izinkan gambar di situs ini</translation>
 <translation id="1151987132434751822">Skema autentikasi tempat kredensial kebijakan dapat diterapkan. Dapat salah satu dari:
             * basic
@@ -192,6 +194,7 @@ Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
 <translation id="1160479894929412407">Izinkan protokol QUIC</translation>
 <translation id="1160939557934457296">Menonaktifkan untuk melanjutkan dari halaman peringatan Safe Browsing</translation>
 <translation id="1163080558183062209">Menonaktifkan jenis printer di daftar tolak</translation>
+<translation id="1163389598183927209">Sekumpulan kebijakan yang terkait dengan <ph name="PRIVACY_SANDBOX_NAME" />. Lihat <ph name="PRIVACY_SANDBOX_URL" /> untuk mengetahui detail upaya <ph name="PRODUCT_NAME" /> menghentikan penggunaan cookie pihak ketiga.</translation>
 <translation id="1165923723751466821">Izinkan login browser tamu dan login profil</translation>
 <translation id="117059611145966538">Server cetak eksternal</translation>
 <translation id="117080706484659953">Mengizinkan deteksi cakupan kebijakan di <ph name="MAC_OS_NAME" /></translation>
@@ -579,6 +582,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Jika kebijakan tidak disetel, nilai default global akan digunakan untuk semua situs (tidak ada akses otomatis).</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
+<translation id="1542491165152947087">Izinkan pengguna mengaktifkan atau menonaktifkan setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.</translation>
 <translation id="1552418937045050762">Jika setelan ini diaktifkan, pengguna akan diizinkan memilih untuk menggunakan Berbagi Langsung yang memungkinkan mereka mengirim dan menerima file dari pengguna terdekat.
 
       Jika setelan ini dinonaktifkan, pengguna tidak diizinkan memilih untuk menggunakan Berbagi Langsung.
@@ -1257,6 +1261,12 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Jika kebijakan ditetapkan ke true atau tidak ditetapkan, pengguna akan dapat menggunakan CLI pengelolaan VM.
       Jika tidak, semua CLI pengelolaan VM akan dinonaktifkan dan disembunyikan.
       </translation>
+<translation id="2194051055390000601">Kebijakan untuk mengontrol apakah setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
+
+Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Topik iklan akan dinonaktifkan untuk pengguna Anda.
+Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
+
+Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> harus disetel ke Nonaktif.</translation>
 <translation id="2195032660890227692">Kebijakan ini dihapus dalam <ph name="PRODUCT_NAME" /> 68 dan digantikan oleh <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Menetapkan kebijakan ke true akan menampilkan keyboard numerik secara default untuk memasukkan sandi pada layar login. Pengguna masih dapat beralih ke keyboard normal.
 
@@ -1792,6 +1802,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Untuk informasi selengkapnya tentang pola URL situs yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan. Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.
 
       Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> berlaku untuk situs tersebut, jika disetel, atau izin akan mengikuti setelan default browser dan memungkinkan pengguna memilih izin ini untuk setiap situs.</translation>
+<translation id="2727844239611930002">Izinkan <ph name="PRODUCT_NAME" /> menentukan apakah akan menampilkan perintah <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="2730200383593984228">Izinkan pengguna yang tidak terafiliasi menggunakan aplikasi Android</translation>
 <translation id="2730419309754848345">Mencetak PDF sebagai Gambar secara Default</translation>
 <translation id="2731299561202635374">Kebijakan ini mengontrol pemeriksaan URL secara real time untuk mengidentifikasi URL yang tidak aman.
@@ -3574,6 +3585,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 
           Jika nilai disetel ke "false" atau tidak disetel, penyedia konten tidak mengembalikan informasi apa pun.</translation>
 <translation id="435395045087992163">Jangan kunci perangkat saat perangkat ditangguhkan atau penutupnya ditutup</translation>
+<translation id="4354792057099570728">Nonaktifkan setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> untuk pengguna Anda.</translation>
 <translation id="4357587374229381015">Menentukan nama parameter URL yang akan digunakan di halaman login IdP SAML untuk mengisi otomatis kolom nama pengguna.
 
       Email pengguna yang dikaitkan dengan profil <ph name="PRODUCT_OS_NAME" />-nya akan digunakan sebagai nilai untuk parameter URL. Oleh karena itu, setelan ini harus dinonaktifkan jika pengguna diperkirakan akan menggunakan email yang berbeda dengan IdP SAML.
@@ -3664,6 +3676,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
       Meski kebijakan ini sendiri didukung pada platform di atas, fitur yang diaktifkan mungkin tersedia pada lebih sedikit platform. Tidak semua fitur Platform Web yang tak digunakan lagi dapat diaktifkan kembali. Hanya yang dicantumkan secara eksplisit di bawah, yang dapat diaktifkan dalam jangka waktu terbatas, yang berbeda-beda per fitur. Format umum untuk tag string adalah [DeprecatedFeatureName]_EffectiveUntil[yyyymmdd]. Sebagai rujukan, Anda dapat menemukan maksud di balik perubahan fitur Platform Web di https://bit.ly/blinkintents.
       </translation>
 <translation id="4443711908766051441">Aktifkan game dinosaurus sebagai fitur tersembunyi</translation>
+<translation id="4445728642576791607">Izinkan pengguna mengaktifkan atau menonaktifkan setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.</translation>
 <translation id="4447668084338250480">Perilaku Pengalihan Intranet</translation>
 <translation id="4449469846627734399">Menetapkan konfigurasi hari pergeseran puncak daya</translation>
 <translation id="4449545651113180484">Putar layar searah jarum jam sebesar 270 derajat</translation>
@@ -3700,6 +3713,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4483649828988077221">Nonaktifkan Update Otomatis</translation>
 <translation id="4484515651939984695">Menentukan durasi (dalam detik) perangkat transmisi yang dipilih dengan kode akses atau kode QR untuk tetap berada dalam daftar perangkat transmisi pada menu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Mengonfigurasi URL halaman Tab Baru</translation>
+<translation id="4491607814095953976">Memilih apakah setelan pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan</translation>
 <translation id="4492287494009043413">Menonaktifkan pengambilan screenshot</translation>
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Konfigurasikan kebijakan terkait <ph name="PLUGIN_VM_NAME" />.</translation>
@@ -4642,6 +4656,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
       Jika kebijakan ini tidak ditetapkan, pengguna dapat memilih gambar avatar yang mewakili dirinya di layar login.</translation>
+<translation id="5428716437928918274">Kontrol setelan Privacy Sandbox</translation>
 <translation id="5431392643649571773">Jika diaktifkan, fitur <ph name="PRODUCT_NAME" /> akan mengizinkan penggunaan back-forward cache. Saat keluar dari halaman, status saat ini (hierarki dokumen, skrip, dll.) mungkin dipertahankan di back-forward cache. Saat browser membuka halaman kembali, halaman mungkin akan dipulihkan dari back-forward cache dan ditampilkan dalam status sebelum di-cache.
 
           Fitur ini dapat menyebabkan masalah untuk beberapa situs yang tidak mendukung proses cache ini. Khususnya, beberapa situs bergantung pada peristiwa "<ph name="UNLOAD_HANDLER_NAME" />" yang dikirimkan saat browser keluar dari halaman. Peristiwa "<ph name="UNLOAD_HANDLER_NAME" />" tidak akan dikirimkan jika halaman masuk ke back-forward cache.
@@ -6731,6 +6746,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       </translation>
 <translation id="7459601923199346224">Mengontrol kebijakan pengguna dan perangkat untuk pengelolaan sertifikat.</translation>
 <translation id="7459633275230216698">Izinkan dialog pemilihan file</translation>
+<translation id="7462256705280836453">Memilih apakah setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan</translation>
 <translation id="7463055558720530430">Izinkan pengguna mengingat sandi Kerberos</translation>
 <translation id="7464058117970792805">Aktifkan pratinjau cetak</translation>
 <translation id="7464991223784276288">Membatasi cookie dari URL yang cocok ke sesi saat ini</translation>
@@ -6942,6 +6958,12 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan disetel ke Nonaktif, pesan akan muncul setiap kali pengguna melakukan tindakan yang memicu dialog pemilihan file, seperti mengimpor bookmark, mengupload file, atau menyimpan link. Pengguna dianggap telah mengklik Batal pada dialog pemilihan file.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Izinkan penggunaan notifikasi sistem</translation>
+<translation id="7643151458117317518">Kebijakan untuk mengontrol apakah setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
+
+Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Pengukuran iklan akan dinonaktifkan untuk pengguna Anda.
+Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
+
+Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> harus disetel ke Nonaktif.</translation>
 <translation id="7643883929273267746">Batasi akun yang terlihat di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Kebijakan ini adalah tombol umum untuk semua aturan yang ditentukan dalam kebijakan DataLeakPreventionRulesList.
       Jika kebijakan ini disetel ke Benar (True), pelaporan real-time peristiwa pencegahan kebocoran data akan diaktifkan.
@@ -7543,6 +7565,16 @@ Kebijakan ini khusus ditujukan untuk mengonfigurasi instance internal <ph name="
 Setelan ini tidak perlu dikonfigurasi secara manual! Template untuk Windows, Mac dan Linux yang mudah digunakan dapat didownload dari <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
 Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GPO, meski menyediakan kebijakan melalui registry tetap didukung untuk instance Windows yang bergabung dalam domain <ph name="MS_AD_NAME" />.</translation>
+<translation id="8261008508574620157">Kebijakan untuk mengontrol apakah pengguna Anda akan melihat perintah <ph name="PRIVACY_SANDBOX_NAME" />.
+Perintah ini adalah alur pemblokiran pengguna yang menginformasikan setelan <ph name="PRIVACY_SANDBOX_NAME" /> kepada pengguna Anda. Lihat <ph name="PRIVACY_SANDBOX_URL" /> untuk mengetahui detail upaya Chrome menghentikan penggunaan cookie pihak ketiga.
+
+Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> tidak akan menampilkan perintah <ph name="PRIVACY_SANDBOX_NAME" />.
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan menentukan apakah perintah <ph name="PRIVACY_SANDBOX_NAME" /> dapat ditampilkan atau tidak, lalu menampilkannya jika memungkinkan.
+
+Kebijakan ini harus disetel ke Nonaktif jika salah satu kebijakan berikut disetel:
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="8266778278542911985">Jika kebijakan disetel ke 3, situs akan dapat meminta akses ke port serial. Jika kebijakan disetel ke 2, akses ke port serial akan ditolak.
 
       Jika tidak disetel, situs akan dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
@@ -7572,6 +7604,7 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
       Jika kebijakan tidak disetel, faktor penskalaan default akan digunakan.
 
       Catatan: Faktor penskalaan harus 100% atau lebih.</translation>
+<translation id="8284621384813278750">Memilih apakah setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan</translation>
 <translation id="8285435910062771358">Lup layar penuh diaktifkan</translation>
 <translation id="828566872219880247">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk menggunakan pembuatan kunci. Jika terdapat di 'KeygenBlockedForUrls', pola URL akan menggantikan pengecualian ini.
 
@@ -7768,6 +7801,7 @@ perangkat akan digunakan selama pengguna login.</translation>
 
       Catatan: Untuk instance <ph name="MS_WIN_NAME" /> yang tidak dihubungkan ke domain <ph name="MS_AD_NAME" /> dan instance <ph name="MAC_OS_NAME" /> yang tidak dikelola melalui MDM atau tidak dihubungkan ke domain melalui MCX, penginstalan otomatis hanya bisa dilakukan untuk aplikasi dan ekstensi yang tercantum di Chrome Web Store.</translation>
 <translation id="8451988835943702790">Gunakan Halaman Tab Baru sebagai beranda</translation>
+<translation id="8453218444172088993">Nonaktifkan setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> untuk pengguna Anda.</translation>
 <translation id="8455529558077979314">Setelan layar privasi</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parameter untuk URL instan yang menggunakan POST</translation>
@@ -7893,6 +7927,12 @@ Rollback ke <ph name="PRODUCT_OS_NAME" /> versi 106 atau yang lebih lama tidak d
       Pola URL tidak boleh bertentangan dengan <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />. Tidak ada kebijakan yang diprioritaskan jika URL cocok dengan keduanya.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
+<translation id="8554750769356971993">Kebijakan untuk mengontrol apakah setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
+
+Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Iklan yang disarankan situs akan dinonaktifkan untuk pengguna Anda.
+Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
+
+Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> harus disetel ke Nonaktif.</translation>
 <translation id="8559221882677768248">Nonaktifkan fitur klik untuk diucapkan di layar login</translation>
 <translation id="8566842294717252664">Menyembunyikan toko web dari Halaman Tab Baru dan peluncur aplikasi</translation>
 <translation id="8571314270766672278">Roll back dan reset perangkat saat downgrade saluran rilis, coba pertahankan pendaftaran</translation>
@@ -7922,6 +7962,7 @@ Rollback ke <ph name="PRODUCT_OS_NAME" /> versi 106 atau yang lebih lama tidak d
           Jika kebijakan ini tidak ditetapkan, durasi waktu default akan digunakan.
 
           Nilai kebijakan harus ditentukan dalam milidetik.</translation>
+<translation id="859579553230883285">Nonaktifkan setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> untuk pengguna Anda.</translation>
 <translation id="8598786284856179541">Aktifkan pelaporan informasi versi</translation>
 <translation id="859937827887158048">Jangan izinkan download update otomatis peer to peer</translation>
 <translation id="8603454805657060638">Menyetel kebijakan memungkinkan administrator mengubah alamat MAC (kontrol akses media) saat menghubungkan perangkat ke dok. Jika dok dihubungkan ke beberapa model perangkat, alamat MAC dok yang ditetapkan untuk perangkat akan membantu mengidentifikasi perangkat di Ethernet secara default.
@@ -8185,6 +8226,7 @@ VM tersebut. Beberapa VM dapat diinstal dari konfigurasi yang sama di perangkat 
       Kebijakan ini dimaksudkan untuk memberikan fleksibilitas kepada perusahaan guna menonaktifkan sandbox jaringan jika perusahaan menggunakan software pihak ketiga yang mengganggu sandbox layanan jaringan.</translation>
 <translation id="8840243776706727185">Fitur NewBaseUrlInheritanceBehavior dinonaktifkan</translation>
 <translation id="8842208363354615697">Mengizinkan pengaktifan Mode Khusus HTTPS</translation>
+<translation id="8843331294082716286">Jangan tampilkan permintaan <ph name="PRIVACY_SANDBOX_NAME" /> kepada pengguna.</translation>
 <translation id="885147810817138322">Tampilkan rekomendasi media kepada pengguna</translation>
 <translation id="8852579753940989645">Mengaktifkan Integritas Kode Perender</translation>
 <translation id="8854571659927427063">Jika kebijakan disetel ke Aktif, bookmark akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada bookmark yang akan diimpor saat pertama kali dijalankan.
@@ -8307,6 +8349,7 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 <translation id="8955719471735800169">Kembali ke atas</translation>
 <translation id="8956312248048980644">Mengizinkan pengelompokan cluster agen dengan kunci asal secara default.</translation>
 <translation id="8970205333161758602">Tindas permintaan penghentian <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="8973579598359969188">Memilih apakah perintah <ph name="PRIVACY_SANDBOX_NAME" /> dapat ditampilkan kepada pengguna Anda</translation>
 <translation id="8974588819713914715">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="URL_ALLOWLIST_POLICY_NAME" />'.</translation>
 <translation id="8976248126101463034">Izinkan autentikasi gnubby untuk host akses jarak jauh</translation>
 <translation id="8976531594979650914">Menggunakan Printer Default Sistem sebagai Default</translation>

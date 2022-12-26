@@ -192,6 +192,7 @@
 <translation id="2421044535038393232">አርትዖቱን ቀጥል</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> ላይ ለ«<ph name="USERNAME" />» የይለፍ ቃል አስቀድመው አስቀምጠዋል</translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
+<translation id="2451654228769116489">ትርን ሰካ</translation>
 <translation id="2461070143328828326">የይለፍ ቃል ቅንብሮች</translation>
 <translation id="2469960372084740698">የጥንቃቄ አሰሳ ይጥፋ?</translation>
 <translation id="2473876017985765807">አስቀድመው ለ<ph name="WEBSITE" /> የይለፍ ቃል አስቀምጠዋል</translation>
@@ -509,6 +510,7 @@
 <translation id="481968316161811770">ኩኪዎች፣ የጣቢያ ውሂብ</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} እና 1 ሌላ}one{{domain} እና {count} ሌሎች}other{{domain} እና {count} ሌሎች}}</translation>
 <translation id="4826218269716039351">ሦስተኛ ወገን አግድ</translation>
+<translation id="4826588772550366629">ካሜራ እና ማይክሮፎን</translation>
 <translation id="4826726074642088322">ማድመቂያ ያጋሩ</translation>
 <translation id="48274138579728272">እንደተነበበ ምልክት አድርግ</translation>
 <translation id="4833686396768033263">የቅርብ ጊዜ ትሮች አይገኙም</translation>
@@ -561,6 +563,7 @@
 <translation id="5190835502935405962">የዕልባቶች አሞሌ</translation>
 <translation id="519530786644929958">ማውረድ አልተሳካም እና እንደገና መሞከር አይቻልም።</translation>
 <translation id="5197255632782567636">በይነመረብ</translation>
+<translation id="5211488077761630279">የእርስዎን <ph name="PERMISSION" /> እንዲጠቀም «<ph name="SITE_NAME" />» ይፈቀድለት?</translation>
 <translation id="5219295696240154694">ድር ላይ ለሁሉም ሰው ደህንነት ለማሻሻል ያግዙ</translation>
 <translation id="5228579091201413441">ማመሳሰልን አንቃ</translation>
 <translation id="5232485538978018676">በሚተዳደር መለያ ይግቡ</translation>
@@ -674,6 +677,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6059830886158432458">የእርስዎን ታሪክ እና እንቅስቃሴ እዚህ ይቆጣጠሩ</translation>
 <translation id="6064824697233747382">የእርስዎ ድርጅት ማስመርን እንዲያጠፉ ይፈልጋል።</translation>
 <translation id="6066301408025741299">ይቅር ለማለት መታ ያድርጉ።</translation>
+<translation id="6071409777669089905">ትርን ንቀል</translation>
 <translation id="60829778314739003">ይቀበሉ እና ይቀጥሉ</translation>
 <translation id="6084848228346514841">ትሮችን ይምረጡ</translation>
 <translation id="6103540626693881831">በመሳሪያ ላይ ምስጠራ</translation>

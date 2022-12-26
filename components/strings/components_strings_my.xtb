@@ -2717,6 +2717,7 @@
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' အတွက် <ph name="SEARCH_RESULTS" /> <ph name="NUMBER_OF_RESULTS" /> ခု တွေ့ထားသည်</translation>
 <translation id="7822320754433038727">အမဲလိုက်ခြင်းနှင့် သေနတ်ပစ်ခြင်း</translation>
 <translation id="782886543891417279">သင်အသုံးပြုနေသော Wi-Fi ( <ph name="WIFI_NAME" /> ) ၏ login စာမျက်နှာသို့ သင်သွားရောက်ကြည့်ရှုရန် လိုမည်။</translation>
+<translation id="7840103971441592723">ဖန်သားပြင် ပုံဖမ်းခြင်း စတင်လိုက်သည်</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{မရှိ}=1{အက်ပ် ၁ ခု (<ph name="EXAMPLE_APP_1" />)}=2{အက်ပ် ၂ ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />)}other{အက်ပ် # ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />၊ <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">ဝဘ်ဆိုက်မှ ထွက်လိုပါသလား။</translation>
@@ -2896,6 +2897,7 @@
 <translation id="8282947398454257691">သင်၏ သီးသန့် စက်ကိရိယာ အမှတ်အသားအား သိရန်</translation>
 <translation id="8284769179630993263">Chrome ဆက်တင်များတွင် သင်၏ ‘လုံခြုံစွာဖွင့်ကြည့်ခြင်း’ ကို စီမံရန်</translation>
 <translation id="8286036467436129157">လက်မှတ်ထိုးဝင်ရန်</translation>
+<translation id="8286799286781881307">သင့်စီမံခန့်ခွဲသူက ခွင့်ပြုထားသော အပလီကေးရှင်းများက သင့်စက်နှင့်တွဲချိတ်ထားသည့် စခရင်အားလုံးကို ဖမ်းယူနိုင်သည်။ ဤအချက်အလက်ကို စက်တွင်းတွင် စီမံလုပ်ဆောင်နိုင်သည် (သို့) သင့်အဖွဲ့အစည်း၏ ဆာဗာများသို့ အပ်လုဒ်လုပ်နိုင်သည်။</translation>
 <translation id="8288807391153049143">အသိအမှတ်ပြုလက်မှတ်ကို ပြရန်</translation>
 <translation id="8289355894181816810">ယင်းဘာကို ဆိုလိုသည်ကို သိရှိရန် သင့် ကွန်ရက် စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="8293206222192510085">စာညှပ် ထည့်ပေးရန်</translation>

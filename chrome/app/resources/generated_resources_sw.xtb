@@ -105,6 +105,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1087965115100412394">Usiruhusu tovuti ziunganishe kwenye vifaa vya MIDI</translation>
 <translation id="1088654056000736875">Chrome inaondoa programu hatari kwenye kompyuta yako...</translation>
 <translation id="1088659085457112967">Washa Hali ya Kisomaji</translation>
+<translation id="1089407731410758060">Badilisha Mandhari</translation>
 <translation id="1090126737595388931">Hakuna Programu zinazoendelea katika Mandharinyuma</translation>
 <translation id="1090541560108055381">Kabla ya kuoanisha, hakikisha kwamba msimbo huu unafanana kwenye vifaa vyote viwili</translation>
 <translation id="1091767800771861448">Bonyeza ESCAPE ili kuruka (Vijenzi visivyo rasmi pekee).</translation>
@@ -930,6 +931,7 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="18260074040409954">Unaweza kutumia manenosiri uliyohifadhi, kwenye kifaa chochote. Yamehifadhiwa kwenye <ph name="GOOGLE_PASSWORD_MANAGER" /> kwa ajili ya <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Sawazisha alamisho, manenosiri, historia na vipengee vyako vingine vya kivinjari cha Chrome</translation>
 <translation id="1826516787628120939">Inakagua</translation>
+<translation id="1827504459960247692">Jina la mtandaopepe</translation>
 <translation id="1828378091493947763">Programu jalizi hii haitumiki kwenye kifaa hiki</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Fungua Zote}=1{&amp;Fungua Alamisho}other{&amp;Fungua Zote ({COUNT})}}</translation>
 <translation id="1828901632669367785">Chapisha kwa Kutumia Kidadisi cha Mfumo...</translation>
@@ -1239,6 +1241,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2101225219012730419">Toleo:</translation>
 <translation id="2102396546234652240">Usiruhusu tovuti zitumie maikrofoni yako</translation>
 <translation id="2102495993840063010">Programu za Android</translation>
+<translation id="2104166991923847969">Zima mtandaopepe kiotomatiki</translation>
 <translation id="2105809836724866556">Umeficha <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Nambari ya simu}other{Nambari # za simu}}</translation>
 <translation id="211144231511833662">Futa Aina</translation>
@@ -1823,6 +1826,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2616366145935564096">Kusoma na kubadilisha data yako kwenye <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Weka mipangilio ya Uhamishaji wa Karibu</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> haiwezi kupakuliwa kwa usalama.</translation>
+<translation id="2620245777360407679">Vifaa vilivyounganishwa kwenye mtandao pepe kwa sasa</translation>
 <translation id="2620436844016719705">Mfumo</translation>
 <translation id="262154978979441594">Ifunze programu ya Mratibu wa Google muundo wa sauti</translation>
 <translation id="26224892172169984">Usiruhusu tovuti yoyote kushughulikia itifaki</translation>
@@ -7141,6 +7145,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7614260613810441905">Uulizwe wakati tovuti inataka kubadilisha faili au folda kwenye kifaa chako (inapendekezwa)</translation>
 <translation id="761530003705945209">Hifadhi nakala kwenye Hifadhi ya Google. Rejesha data au ubadilishe kifaa unachotumia kwa urahisi wakati wowote. Nakala unayohifadhi huwa na data ya programu. Nakala unazohifadhi hupakiwa kwenye Google na kusimbwa kwa njia fiche kwa kutumia nenosiri la Akaunti yako ya Google.</translation>
 <translation id="7615365294369022248">Hitilafu fulani imetokea wakati wa kuweka akaunti</translation>
+<translation id="7615807797520072741">Weka upya mandhari ya Chrome ya Kawaida</translation>
 <translation id="7616214729753637086">Inajumuisha kifaa...</translation>
 <translation id="7617263010641145920">Washa programu ya Duka la Google Play</translation>
 <translation id="7617648809369507487">Tumia hali tulivu ya kupokea ujumbe</translation>
@@ -8449,6 +8454,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Hamishia Kichupo kwenye Dirisha Jingine}other{Hamishia Vichupo kwenye Dirisha Jingine}}</translation>
 <translation id="8805140816472474147">Thibitisha mipangilio ya kuanza usawazishaji.</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> inaweza kufungua upya kimakosa vichupo vilivyofungwa</translation>
+<translation id="8807588541160250261">Wakati hakuna vifaa vilivyounganishwa</translation>
 <translation id="8807632654848257479">Imara</translation>
 <translation id="8808478386290700967">Duka la Wavuti</translation>
 <translation id="8808686172382650546">Paka</translation>

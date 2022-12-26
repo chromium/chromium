@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">אפשר לחזור לפה כדי לפתוח כרטיסיות שסגרת לאחרונה</translation>
 <translation id="1016495303386450659">הפריט עודכן</translation>
+<translation id="1035980983510608210">אם סוגרים את כל הכרטיסיות, גם הכרטיסיות המוצמדות נסגרות.</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="105093091697134113">בחשבונות הבאים נעשה שימוש בסיסמאות שנחשפו בפרצה באבטחת מידע של צד שלישי או שהוזנו באתר מטעה. יש לשנות את הסיסמאות האלה מיד כדי להגן על החשבונות.</translation>
@@ -208,6 +209,7 @@
 <translation id="2578571896248130439">שליחת דף האינטרנט</translation>
 <translation id="2584132361465095047">חשבון חדש…</translation>
 <translation id="2600682495497606169">‏ניקוי קובצי ה-cookie של אתרים</translation>
+<translation id="2609008503159898744">לסגור את כל הכרטיסיות?</translation>
 <translation id="2625189173221582860">הסיסמה הועתקה</translation>
 <translation id="2626236249646841566">עליך לבדוק את החיבור ולנסות להיכנס שוב.</translation>
 <translation id="2637313651144986786">חיפוש בכרטיסיות…</translation>
@@ -299,6 +301,7 @@
 <translation id="3174662312949010067">יש לך גם אפשרות להשתמש בסיסמאות שמורות במכשירים אחרים.</translation>
 <translation id="3175081911749765310">שירותי אינטרנט</translation>
 <translation id="3178650076442119961">פעילות אחרונה: היום</translation>
+<translation id="3181261441371833039">סגירת הכרטיסיות הרגילות בלבד</translation>
 <translation id="3181825792072797598">הפעלת סנכרון</translation>
 <translation id="3181954750937456830">גלישה בטוחה (מגנה עליך ועל המכשיר מפני אתרים מסוכנים)</translation>
 <translation id="3184767182050912705">ביטול נעילה עם <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>

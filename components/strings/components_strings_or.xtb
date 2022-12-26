@@ -2713,6 +2713,7 @@
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' ପାଇଁ <ph name="NUMBER_OF_RESULTS" />ଟି <ph name="SEARCH_RESULTS" /> ମିଳିଲା</translation>
 <translation id="7822320754433038727">ଶିକାର ଏବଂ ସୁଟିଂ</translation>
 <translation id="782886543891417279">ଆପଣ ବ୍ୟବହାର କରୁଥିବା ୱାଇଫାଇ (<ph name="WIFI_NAME" />) ପାଇଁ, ଆପଣଙ୍କୁ ହୁଏତ ଏହାର ଲଗ୍‌ଇନ୍ ପୃଷ୍ଠାକୁ ଯିବାର ଆବଶ୍ୟକତା ଅଛି।</translation>
+<translation id="7840103971441592723">ସ୍କ୍ରିନ କେପଚର ଆରମ୍ଭ କରାଯାଇଛି</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{କିଛିନାହିଁ}=1{1ଟି ଆପ୍ (<ph name="EXAMPLE_APP_1" />)}=2{2ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{#ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">ସାଇଟ୍ ଛାଡ଼ିବେ?</translation>
@@ -2891,6 +2892,7 @@
 <translation id="8282947398454257691">ଆପଣଙ୍କର ଅସାଧାରଣ ଡିଭାଇସ୍‌ ଚିହ୍ନଟକାରୀ</translation>
 <translation id="8284769179630993263">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8286036467436129157">ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
+<translation id="8286799286781881307">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଅନୁମତି ଦିଆଯାଇଥିବା ଆପ୍ଲିକେସନଗୁଡ଼ିକ, ଆପଣଙ୍କ ଡିଭାଇସ ସହ ଆଟାଚ ହୋଇଥିବା ସମସ୍ତ ସ୍କ୍ରିନକୁ କେପଚର କରିପାରିବ। ଏହି ସୂଚନାକୁ ସ୍ଥାନୀୟ ଭାବେ ପ୍ରକ୍ରିୟାନ୍ୱିତ କରାଯାଇପାରିବ କିମ୍ବା ଆପଣଙ୍କ ସଂସ୍ଥାର ସର୍ଭରଗୁଡ଼ିକରେ ଅପଲୋଡ କରାଯାଇପାରିବ।</translation>
 <translation id="8288807391153049143">ସାର୍ଟିଫିକେଟ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="8289355894181816810">ଯଦି ଆପଣ ସୁନିଶ୍ଚିତ ନୁହନ୍ତି ଯେ ଏହାର ଅର୍ଥ କ'ଣ, ତେବେ ଆପଣଙ୍କର ନେଟ୍‍ୱାର୍କ ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ସହିତ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="8293206222192510085">ବୁକ୍‌ମାର୍କ ଯୋଗ କରନ୍ତୁ</translation>

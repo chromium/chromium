@@ -510,6 +510,7 @@
 <translation id="481968316161811770">কুকি, ছাইটৰ ডেটা</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} আৰু অন্য ১ টা}one{{domain} আৰু অন্য {count} টা}other{{domain} আৰু অন্য {count} টা}}</translation>
 <translation id="4826218269716039351">তৃতীয় পক্ষক অৱৰোধ কৰক</translation>
+<translation id="4826588772550366629">কেমেৰা আৰু মাইক্ৰ’ফ’ন</translation>
 <translation id="4826726074642088322">হাইলাইট শ্বেয়াৰ কৰক</translation>
 <translation id="48274138579728272">পঢ়া হৈছে বুলি চিহ্নিত কৰক</translation>
 <translation id="4833686396768033263">শেহতীয়া টেবসমূহ উপলব্ধ নহয়</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">বুকমাৰ্কৰ বাৰ</translation>
 <translation id="519530786644929958">ডাউনল'ড বিফল হ'ল আৰু পুনৰ চেষ্টা কৰিব নোৱাৰি।</translation>
 <translation id="5197255632782567636">ইন্টাৰনেট</translation>
+<translation id="5211488077761630279">"<ph name="SITE_NAME" />"ক আপোনাৰ <ph name="PERMISSION" /> ব্যৱহাৰ কৰাৰ অনুমতি দিবনে?</translation>
 <translation id="5219295696240154694">সকলোৰে বাবে ৱেবত সুৰক্ষা উন্নত কৰাত সহায় কৰক</translation>
 <translation id="5228579091201413441">ছিংক সক্ষম কৰক</translation>
 <translation id="5232485538978018676">পৰিচালিত একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক</translation>

@@ -510,6 +510,7 @@
 <translation id="481968316161811770">ကွတ်ကီးများ၊ ဆိုက်ဒေတာ</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} နှင့် အခြား 1 ခု}other{{domain} နှင့် အခြား {count} ခု}}</translation>
 <translation id="4826218269716039351">ပြင်ပအဖွဲ့အစည်းကို ပိတ်ရန်</translation>
+<translation id="4826588772550366629">ကင်မရာနှင့် မိုက်ခရိုဖုန်း</translation>
 <translation id="4826726074642088322">ရွေးထားသည်ကို မျှဝေရန်</translation>
 <translation id="48274138579728272">ဖတ်ပြီးအဖြစ် မှတ်သားရန်</translation>
 <translation id="4833686396768033263">'လတ်တလောတဘ်များ' ကို မရနိုင်ပါ</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">စာညှပ် ဘား</translation>
 <translation id="519530786644929958">ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်မံမလုပ်နိုင်ပါ။</translation>
 <translation id="5197255632782567636">အင်တာနက်</translation>
+<translation id="5211488077761630279">“<ph name="SITE_NAME" />” ကို သင့် <ph name="PERMISSION" /> သုံးခွင့်ပြုမလား။</translation>
 <translation id="5219295696240154694">လူတိုင်းအတွက်ဝဘ်တွင် လုံခြုံရေးပိုမိုကောင်းမွန်စေရန် ကူညီခြင်း</translation>
 <translation id="5228579091201413441">စင့်က် ဖွင့်ထားရန်</translation>
 <translation id="5232485538978018676">‘စီမံခန့်ခွဲထားသည့်အကောင့်’ နှင့် လက်မှတ်ထိုးဝင်ပါ</translation>

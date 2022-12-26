@@ -510,6 +510,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="481968316161811770">Cookie, Data Situs</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} dan 1 lainnya}other{{domain} dan {count} lainnya}}</translation>
 <translation id="4826218269716039351">Blokir Pihak Ketiga</translation>
+<translation id="4826588772550366629">kamera dan mikrofon</translation>
 <translation id="4826726074642088322">Bagikan Sorotan</translation>
 <translation id="48274138579728272">Tandai sebagai Telah Dibaca</translation>
 <translation id="4833686396768033263">Tab Terbaru Tidak Tersedia</translation>
@@ -562,6 +563,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5190835502935405962">Bilah Bookmark</translation>
 <translation id="519530786644929958">Download gagal dan tidak dapat dicoba lagi.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5211488077761630279">Izinkan "<ph name="SITE_NAME" />" menggunakan <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Bantu Tingkatkan Keamanan di Web untuk Semuanya</translation>
 <translation id="5228579091201413441">Aktifkan sinkronisasi</translation>
 <translation id="5232485538978018676">Login dengan Akun Terkelola</translation>

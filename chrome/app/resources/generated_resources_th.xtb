@@ -652,6 +652,7 @@
 <translation id="1595492813686795610">Linux กำลังอัปเกรด</translation>
 <translation id="1596286373007273895">ใช้งานได้</translation>
 <translation id="1596709061955594992">บลูทูธปิดอยู่ หากต้องการดูอุปกรณ์ที่ใช้ได้ ให้เปิดบลูทูธ</translation>
+<translation id="1596780725094407793">- รวมโดเมนย่อย</translation>
 <translation id="1598233202702788831">ผู้ดูแลระบบปิดใช้การอัปเดต</translation>
 <translation id="1600857548979126453">เข้าถึงแบ็คเอนด์เครื่องซ่อมแซมหน้าเว็บ</translation>
 <translation id="1601560923496285236">นำไปใช้</translation>
@@ -2880,6 +2881,7 @@
 <translation id="3617891479562106823">พื้นหลังไม่พร้อมใช้งาน โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="3619115746895587757">คาปูชิโน</translation>
 <translation id="3620136223548713675">ตำแหน่งทางภูมิศาสตร์</translation>
+<translation id="362023940451053340">ในบัญชี Google ของคุณ สำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 แอป}other{# แอป}}</translation>
 <translation id="362333465072914957">กำลังรอให้ CA ออกใบรับรอง</translation>
@@ -5613,6 +5615,7 @@
 <translation id="6169967265765719844">คุณสามารถจัดการสิทธิ์สำหรับเกมและแอปที่ติดตั้งผ่าน Steam ได้ใน<ph name="LINK_BEGIN" />การตั้งค่าแอป Steam<ph name="LINK_END" /></translation>
 <translation id="6170470584681422115">แซนด์วิช</translation>
 <translation id="6170498031581934115">ปิดใช้การแก้ไขข้อบกพร่อง ADB ไม่ได้ ไปที่การตั้งค่าแล้วลองอีกครั้ง</translation>
+<translation id="6171779718418683144">ถามทุกครั้งที่ไปยังเว็บไซต์</translation>
 <translation id="617213288191670920">ไม่ได้เพิ่มภาษา</translation>
 <translation id="6173623053897475761">พิมพ์ PIN อีกครั้ง</translation>
 <translation id="6175314957787328458">โดเมน GUID ของ Microsoft</translation>
@@ -6741,6 +6744,7 @@
 <translation id="7235737137505019098">คีย์ความปลอดภัยมีพื้นที่ไม่เพียงพอสำหรับบัญชีเพิ่มเติม</translation>
 <translation id="7235873936132740888">เว็บไซต์จะจัดการงานพิเศษต่างๆ ได้เมื่อคุณคลิกลิงก์บางประเภท เช่น สร้างข้อความใหม่ในโปรแกรมรับส่งอีเมลหรือเพิ่มกิจกรรมใหม่ลงในปฏิทินออนไลน์</translation>
 <translation id="7238609589076576185">แทรกเครื่องหมายการเน้นเสียงแล้ว</translation>
+<translation id="7238665222668706269">Google เครื่องมือจัดการรหัสผ่าน <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> ยกเลิกการโอน</translation>
 <translation id="7240339475467890413">เชื่อมต่อกับฮอตสปอตใหม่ใช่ไหม</translation>
 <translation id="7241389281993241388">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /> เพื่อนำเข้าใบรับรองไคลเอ็นต์</translation>
@@ -7483,6 +7487,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ดู "<ph name="FILENAME" />" ได้</translation>
 <translation id="7920482456679570420">เพิ่มคำที่คุณต้องการให้ข้ามการตรวจตัวสะกด</translation>
 <translation id="7921347341284348270">คุณไม่สามารถดูการแจ้งเตือนของโทรศัพท์ในบัญชีที่จัดการบัญชีนี้ได้ โปรดลองอีกครั้งด้วยบัญชีอื่น <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">ส่วนขยาย 1 รายการ</translation>
 <translation id="7922935920104868876">แสดงรายละเอียดเกี่ยวกับการบล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="7923564237306226146">อัปเกรด Linux เรียบร้อยแล้ว</translation>
 <translation id="7924358170328001543">เกิดข้อผิดพลาดในการส่งต่อพอร์ต</translation>
@@ -7870,6 +7875,7 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ได้ปิดใช้งานเคอร์เซอร์เมาส์แล้ว</translation>
 <translation id="8264024885325823677">การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" เรียกใช้หน้าจอแบบเต็ม</translation>
+<translation id="8265018477030547118">เฉพาะในอุปกรณ์นี้</translation>
 <translation id="826511437356419340">เข้าสู่โหมดภาพรวมหน้าต่างแล้ว เลื่อนเพื่อไปยังส่วนต่างๆ หรือกด Tab หากใช้แป้นพิมพ์</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{หน้าต่างที่ไม่ระบุตัวตนจะไม่เปิดหลังจากคลิกเปิดอีกครั้ง}other{หน้าต่างที่ไม่ระบุตัวตน {COUNT} หน้าต่างจะไม่เปิดขึ้นมาใหม่หลังจากคลิกเปิดอีกครั้ง}}</translation>
 <translation id="8266947622852630193">วิธีการป้อนข้อมูลทั้งหมด</translation>
@@ -8277,6 +8283,7 @@
 <translation id="8655295600908251630">ช่องทาง</translation>
 <translation id="8655972064210167941">การลงชื่อเข้าใช้ล้มเหลวเนื่องจากไม่สามารถยืนยันรหัสผ่านได้ โปรดติดต่อผู้ดูแลระบบของคุณหรือลองอีกครั้ง</translation>
 <translation id="8657393004602556571">ต้องการทิ้งความคิดเห็นใช่ไหม</translation>
+<translation id="8657762806752649049">ลงในบัญชี Google ของคุณ สำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">เปิดลิงก์ในหน้าต่าง&amp;ที่ไม่ระบุตัวตน</translation>
 <translation id="8662671328352114214">เข้าร่วมเครือข่าย <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">การดำเนินการนี้ใช้เวลานานกว่าที่คาดไว้ คุณจะข้ามไปก่อนหรือรอให้ดำเนินการเสร็จก็ได้</translation>

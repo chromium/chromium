@@ -510,6 +510,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="481968316161811770">Slapuk., svet. duom.</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ir dar 1}one{{domain} ir dar {count}}few{{domain} ir dar {count}}many{{domain} ir dar {count}}other{{domain} ir dar {count}}}</translation>
 <translation id="4826218269716039351">Blokuoti trečiosios šalies slapukus</translation>
+<translation id="4826588772550366629">fotoaparatas ir mikrofonas</translation>
 <translation id="4826726074642088322">Bendrinti paryškintą tekstą</translation>
 <translation id="48274138579728272">Pažymėti kaip skaitytą</translation>
 <translation id="4833686396768033263">Naujausi skirtukai nepasiekiami</translation>
@@ -562,6 +563,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5190835502935405962">Žymių juosta</translation>
 <translation id="519530786644929958">Nepavyko atsisiųsti. Negalima bandyti iš naujo.</translation>
 <translation id="5197255632782567636">Internetas</translation>
+<translation id="5211488077761630279">Leisti „<ph name="SITE_NAME" />“ naudoti leidimą „<ph name="PERMISSION" />“?</translation>
 <translation id="5219295696240154694">Padėkite pagerinti visų naudotojų saugą žiniatinklyje</translation>
 <translation id="5228579091201413441">Įgalinti sinchronizavimą</translation>
 <translation id="5232485538978018676">Prisijunkite naudodami valdomą paskyrą</translation>

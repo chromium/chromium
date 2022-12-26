@@ -653,6 +653,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1595492813686795610">Linux se upgraduje</translation>
 <translation id="1596286373007273895">Dostupné</translation>
 <translation id="1596709061955594992">Bluetooth je vypnutý. Pokud chcete zobrazit dostupná zařízení, zapněte Bluetooth.</translation>
+<translation id="1596780725094407793">– zahrnuje subdomény</translation>
 <translation id="1598233202702788831">Administrátor aktualizace zakázal.</translation>
 <translation id="1600857548979126453">Získat přístup k ladicímu programu stránky na serveru</translation>
 <translation id="1601560923496285236">Použít</translation>
@@ -2878,6 +2879,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3617891479562106823">Pozadí nejsou k dispozici. Zkuste to znovu později.</translation>
 <translation id="3619115746895587757">Kapučíno</translation>
 <translation id="3620136223548713675">Geolokace</translation>
+<translation id="362023940451053340">Ve vašem účtu Google <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Pomoci vylepšovat funkce a výkon systému ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikace}few{# aplikace}many{# aplikace}other{# aplikací}}</translation>
 <translation id="362333465072914957">Čeká se, než certifikační autorita vydá certifikát</translation>
@@ -5610,6 +5612,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6169967265765719844">Oprávnění pro hry a aplikace nainstalované prostřednictvím služby Steam lze spravovat v <ph name="LINK_BEGIN" />nastavení aplikace Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6170498031581934115">Ladění ADB nebylo možné zapnout. Přejděte do nastavení a zkuste to znovu.</translation>
+<translation id="6171779718418683144">Při každé návštěvě se zeptat</translation>
 <translation id="617213288191670920">Nejsou přidány žádné jazyky</translation>
 <translation id="6173623053897475761">Znovu zadejte PIN</translation>
 <translation id="6175314957787328458">Identifikátor GUID domény Microsoft</translation>
@@ -6742,6 +6745,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7235737137505019098">Na bezpečnostním klíči již není dost místa pro žádné další účty.</translation>
 <translation id="7235873936132740888">Weby mohou provádět speciální úlohy, když kliknete na určité typy odkazů, např. vytvořit novou zprávu v e-mailovém klientu nebo přidat novou událost do online kalendáře.</translation>
 <translation id="7238609589076576185">Byla vložena diakritika.</translation>
+<translation id="7238665222668706269">Správce hesel Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">Zařízení <ph name="DEVICE_NAME" /> přenos zrušilo</translation>
 <translation id="7240339475467890413">Připojit k novému hotspotu?</translation>
 <translation id="7241389281993241388">Chcete-li importovat certifikát klienta, přihlaste se prosím do zařízení <ph name="TOKEN_NAME" />.</translation>
@@ -7483,6 +7487,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7920363873148656176"><ph name="ORIGIN" /> může číst soubor <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Přidat slova, která má kontrola pravopisu přeskakovat</translation>
 <translation id="7921347341284348270">V tomto spravovaném účtu oznámení svého telefonu zobrazit nemůžete. Zkuste to znovu s jiným účtem. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 rozšíření</translation>
 <translation id="7922935920104868876">Zobrazit podrobnosti o blokování souborů cookie třetí strany v anonymním režimu</translation>
 <translation id="7923564237306226146">Upgrade systému Linux byl dokončen.</translation>
 <translation id="7924358170328001543">Při přesměrování portu došlo k chybě</translation>
@@ -7870,6 +7875,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8263744495942430914">Stránka <ph name="FULLSCREEN_ORIGIN" /> deaktivovala váš ukazatel myši.</translation>
 <translation id="8264024885325823677">Toto nastavení spravuje administrátor.</translation>
 <translation id="8264718194193514834">Rozšíření <ph name="EXTENSION_NAME" /> spustilo režim celé obrazovky.</translation>
+<translation id="8265018477030547118">Pouze na tomto zařízení</translation>
 <translation id="826511437356419340">Byl aktivován režim přehledu oken. Můžete mezi nimi přecházet přejetím prstem nebo tabulátorem.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Anonymní okno se po opětovném spuštění neotevře znovu}few{{COUNT} anonymní okna se po opětovném spuštění neotevřou znovu}many{{COUNT} anonymního okna se po opětovném spuštění neotevře znovu}other{{COUNT} anonymních oken se po opětovném spuštění neotevře znovu}}</translation>
 <translation id="8266947622852630193">Všechny metody zadávání</translation>
@@ -8277,6 +8283,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655972064210167941">Přihlášení se nezdařilo, protože nelze ověřit vaše heslo. Kontaktujte administrátora nebo to zkuste znovu.</translation>
 <translation id="8657393004602556571">Chcete zpětnou vazbu zahodit?</translation>
+<translation id="8657762806752649049">Do vašeho účtu Google <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Otevřít odkaz v &amp;anonymním okně</translation>
 <translation id="8662671328352114214">Připojení k síti <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Tato akce trvá déle než obvykle. Můžete ji přeskočit nebo počkat na dokončení.</translation>

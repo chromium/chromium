@@ -105,6 +105,7 @@
 <translation id="1087965115100412394">ছাইটক MIDI ডিভাইচৰ সৈতে সংযোগ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="1088654056000736875">Chromeএ আপোনাৰ কম্পিউটাৰৰ পৰা ক্ষতিকাৰক ছফ্টৱেৰ আঁতৰাই আছে…</translation>
 <translation id="1088659085457112967">ৰীডাৰ ম’ডলৈ যাওক</translation>
+<translation id="1089407731410758060">থীম সলনি কৰক</translation>
 <translation id="1090126737595388931">নেপথ্যত কোনো এপ্ চলি থকা নাই</translation>
 <translation id="1090541560108055381">পেয়াৰ কৰাৰ পূৰ্বে, দুয়োটা ডিভাইচতে এই ক’ডটো একেই হোৱাটো নিশ্চিত কৰক</translation>
 <translation id="1091767800771861448">এৰি যাবলৈ ESCAPE টিপক (কেৱল অনানুষ্ঠানিক বিল্ড)।</translation>
@@ -931,6 +932,7 @@
 <translation id="18260074040409954">আপুনি ছেভ হৈ থকা পাছৱৰ্ড যিকোনো ডিভাইচত ব্যৱহাৰ কৰিব পাৰে। সেইবোৰ <ph name="EMAIL" />ত <ph name="GOOGLE_PASSWORD_MANAGER" /> ছেভ কৰা হয়।</translation>
 <translation id="1826192255355608658">আপোনাৰ Chrome ব্ৰাউজাৰৰ বুকমাৰ্ক, পাছৱৰ্ড, ইতিহাস আৰু বহুতো বস্তু ছিংক কৰক</translation>
 <translation id="1826516787628120939">পৰীক্ষা কৰি থকা হৈছে</translation>
+<translation id="1827504459960247692">হটস্পটৰ নাম</translation>
 <translation id="1828378091493947763">এই প্লাগইনটো এই ডিভাইচটোত সমৰ্থিত নহয়</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{সকলো &amp;খোলক}=1{বুকমাৰ্ক &amp;খোলক}one{সকলো ({COUNT} টা) &amp;খোলক}other{সকলো ({COUNT} টা) &amp;খোলক}}</translation>
 <translation id="1828901632669367785">ছিষ্টেম ডাইল’গ ব্যৱহাৰ কৰি প্ৰিণ্ট কৰক...</translation>
@@ -1241,6 +1243,7 @@
 <translation id="2101225219012730419">সংস্কৰণ:</translation>
 <translation id="2102396546234652240">ছাইটক আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="2102495993840063010">Android এপ্‌</translation>
+<translation id="2104166991923847969">হটস্পট স্বয়ংক্ৰিয়ভাৱে অফ কৰক</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> লুকুওৱা হ’ল</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ফ’ন নম্বৰ}one{# টা ফ’ন নম্বৰ}other{# টা ফ’ন নম্বৰ}}</translation>
 <translation id="211144231511833662">মচাৰ প্ৰকাৰসমূহ</translation>
@@ -1824,6 +1827,7 @@
 <translation id="2616366145935564096">আপোনাৰ ডেটা <ph name="WEBSITE_1" />ত পঢ়ক আৰু সলনি কৰক</translation>
 <translation id="2618797463720777311">Nearby Share কৰাৰ সুবিধাটো ছেট আপ কৰক</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" />ক সুৰক্ষিতভাৱে ডাউনল’ড কৰিব নোৱাৰি।</translation>
+<translation id="2620245777360407679">ডিভাইচসমূহ বৰ্তমান হটস্পটৰ সৈতে সংযুক্ত হৈছে</translation>
 <translation id="2620436844016719705">ছিষ্টেম</translation>
 <translation id="262154978979441594">Google Assistant ভইচ মডেলক প্ৰশিক্ষণ দিয়ক</translation>
 <translation id="26224892172169984">প্ৰট’ক’ল তদাৰক কৰিবলৈ কোনো ছাইটক অনুমতি নিদিব</translation>
@@ -7145,6 +7149,7 @@
 <translation id="7614260613810441905">কোনো ছাইটে আপোনাৰ ডিভাইচত ফাইল অথবা ফ’ল্ডাৰসমূহ সম্পাদনা কৰিবলৈ বিচাৰিলে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="761530003705945209">Google Driveত বেক আপ লওক। আপোনাৰ ডেটা সহজে পুনঃস্থাপন কৰক অথবা যিকোনো সময়তে ডিভাইচ সলনি কৰক। আপোনাৰ বেকআপত এপ্ ডেটাও আছে। আপোনাৰ বেকআপসমূহ Googleত আপল’ড কৰা হয় আৰু আপোনাৰ Google একাউণ্টৰ পাছৱৰ্ড ব্যৱহাৰ কৰি সেইবোৰ এনক্ৰিপ্ট কৰা হয়।</translation>
 <translation id="7615365294369022248">এটা একাউণ্ট যোগ দিওঁতে কিবা সমস্যা হৈছিল</translation>
+<translation id="7615807797520072741">ক্লাছিক Chromeলৈ ৰিছেট কৰক</translation>
 <translation id="7616214729753637086">ডিভাইচ পঞ্জীয়ন কৰি থকা হৈছে...</translation>
 <translation id="7617263010641145920">Play Store অন কৰক</translation>
 <translation id="7617648809369507487">বেছি নীৰৱ বাৰ্তা বিনিময় ব্যৱহাৰ কৰক</translation>
@@ -8452,6 +8457,7 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{টেবটো অন্য এখন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}one{টেবসমূহ অন্য এখন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}other{টেবসমূহ অন্য এখন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}}</translation>
 <translation id="8805140816472474147">ছিংক আৰম্ভ কৰিবলৈ ছিংক ছেটিংসমূহ নিশ্চিত কৰক।</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" />এ দুৰ্ঘটনাক্ৰমে বন্ধ হৈ যোৱা টেব পুনৰ খুলিব পাৰে</translation>
+<translation id="8807588541160250261">যেতিয়া কোনো ডিভাইচ সংযুক্ত হৈ নাথাকে</translation>
 <translation id="8807632654848257479">সুস্থিৰ</translation>
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">মেকুৰী</translation>

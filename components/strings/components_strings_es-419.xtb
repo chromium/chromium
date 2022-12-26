@@ -2717,6 +2717,7 @@ Detalles adicionales:
 <translation id="7815407501681723534">Se encontraron <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> para "<ph name="SEARCH_STRING" />"</translation>
 <translation id="7822320754433038727">Caza y tiro</translation>
 <translation id="782886543891417279">Es posible que la red Wi-Fi que estás usando (<ph name="WIFI_NAME" />) requiera que visites la página de acceso.</translation>
+<translation id="7840103971441592723">Comenzó la captura de pantalla</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ninguna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">¿Deseas abandonar el sitio?</translation>
@@ -2895,6 +2896,7 @@ Detalles adicionales:
 <translation id="8282947398454257691">Conocer tu identificador de dispositivo único</translation>
 <translation id="8284769179630993263">En la configuración de Chrome, administra tu Navegación segura y más</translation>
 <translation id="8286036467436129157">Acceder</translation>
+<translation id="8286799286781881307">Las apps autorizadas por el administrador pueden capturar todas las pantallas del dispositivo. Esta información se puede procesar de forma local o subir a los servidores de tu organización.</translation>
 <translation id="8288807391153049143">Mostrar certificado</translation>
 <translation id="8289355894181816810">Comunícate con el administrador de red si no entiendes bien lo que significa.</translation>
 <translation id="8293206222192510085">Agregar Marcador</translation>

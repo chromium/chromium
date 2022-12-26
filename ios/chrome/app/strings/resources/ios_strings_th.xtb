@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">ปปปป</translation>
 <translation id="1013952917065545813">คุณกลับมาที่นี่เพื่อเปิดแท็บที่เพิ่งปิดไปอีกครั้งได้</translation>
 <translation id="1016495303386450659">อัปเดตรายการแล้ว</translation>
+<translation id="1035980983510608210">การปิดแท็บทั้งหมดจะเป็นการปิดแท็บที่ปักหมุดด้วยเช่นกัน</translation>
 <translation id="1044891598689252897">เว็บไซต์จะทำงานตามปกติ</translation>
 <translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
 <translation id="105093091697134113">บัญชีต่อไปนี้ใช้รหัสผ่านที่ถูกเปิดเผยในการละเมิดข้อมูลของบุคคลที่สามหรือถูกป้อนในเว็บไซต์ที่หลอกลวง เปลี่ยนรหัสผ่านเหล่านี้ทันทีเพื่อรักษาบัญชีให้ปลอดภัย</translation>
@@ -208,6 +209,7 @@
 <translation id="2578571896248130439">ส่งหน้าเว็บ</translation>
 <translation id="2584132361465095047">เพิ่มบัญชี…</translation>
 <translation id="2600682495497606169">ล้างคุกกี้ของเว็บไซต์</translation>
+<translation id="2609008503159898744">ปิดแท็บทั้งหมดใช่ไหม</translation>
 <translation id="2625189173221582860">คัดลอกรหัสผ่านแล้ว</translation>
 <translation id="2626236249646841566">ตรวจสอบการเชื่อมต่อและลองลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="2637313651144986786">ค้นหาในแท็บ...</translation>
@@ -299,6 +301,7 @@
 <translation id="3174662312949010067">คุณยังใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์อื่นๆ ได้ด้วย</translation>
 <translation id="3175081911749765310">บริการทางเว็บ</translation>
 <translation id="3178650076442119961">ใช้งานวันนี้</translation>
+<translation id="3181261441371833039">ปิดแท็บปกติเท่านั้น</translation>
 <translation id="3181825792072797598">เปิดการซิงค์</translation>
 <translation id="3181954750937456830">Google Safe Browsing (ปกป้องคุณและอุปกรณ์จากเว็บไซต์ที่เป็นอันตราย)</translation>
 <translation id="3184767182050912705">ปลดล็อกด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>

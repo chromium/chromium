@@ -105,6 +105,7 @@
 <translation id="1087965115100412394">不允许网站连接到 MIDI 设备</translation>
 <translation id="1088654056000736875">Chrome 正在从您的计算机中移除有害软件…</translation>
 <translation id="1088659085457112967">进入阅读器模式</translation>
+<translation id="1089407731410758060">更改主题</translation>
 <translation id="1090126737595388931">没有任何后台应用在运行</translation>
 <translation id="1090541560108055381">配对之前，请确保在这两部设备上显示的配对码相同</translation>
 <translation id="1091767800771861448">按 ESC 键可跳过更新（仅限非官方版本）。</translation>
@@ -917,6 +918,7 @@
 <translation id="18260074040409954">您可在任意设备上使用已存密码。系统会将密码保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="1826192255355608658">同步您的 Chrome 浏览器书签、密码、历史记录等信息</translation>
 <translation id="1826516787628120939">正在检查</translation>
+<translation id="1827504459960247692">热点名称</translation>
 <translation id="1828378091493947763">该插件在此设备上不受支持</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{打开全部书签(&amp;O)}=1{打开书签(&amp;O)}other{打开全部（{COUNT} 个）书签(&amp;O)}}</translation>
 <translation id="1828901632669367785">使用系统对话框进行打印...</translation>
@@ -1224,6 +1226,7 @@
 <translation id="2101225219012730419">版本：</translation>
 <translation id="2102396546234652240">不允许网站使用您的麦克风</translation>
 <translation id="2102495993840063010">Android 应用</translation>
+<translation id="2104166991923847969">自动关闭热点</translation>
 <translation id="2105809836724866556">已隐藏<ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{电话号码}other{# 个电话号码}}</translation>
 <translation id="211144231511833662">清除类型</translation>
@@ -1803,6 +1806,7 @@
 <translation id="2616366145935564096">读取和更改您在<ph name="WEBSITE_1" />上的数据</translation>
 <translation id="2618797463720777311">设置“附近分享”功能</translation>
 <translation id="2620215283731032047">无法安全地下载“<ph name="FILE_NAME" />”。</translation>
+<translation id="2620245777360407679">目前与热点连接的设备</translation>
 <translation id="2620436844016719705">系统</translation>
 <translation id="262154978979441594">训练 Google 助理语音模型</translation>
 <translation id="26224892172169984">不允许任何网站处理协议</translation>
@@ -7116,6 +7120,7 @@
 <translation id="7614260613810441905">在网站想要修改您设备上的文件或文件夹时先询问您（推荐）</translation>
 <translation id="761530003705945209">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。您的备份内容包含应用数据。您的备份内容将上传到 Google 并使用您的 Google 帐号密码进行加密。</translation>
 <translation id="7615365294369022248">添加帐号时出错</translation>
+<translation id="7615807797520072741">重置为传统版 Chrome</translation>
 <translation id="7616214729753637086">正在注册设备…</translation>
 <translation id="7617263010641145920">开启 Play 商店</translation>
 <translation id="7617648809369507487">使用干扰性更低的提示方式</translation>
@@ -8423,6 +8428,7 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{将标签页移至另一个窗口}other{将标签页移至另一个窗口}}</translation>
 <translation id="8805140816472474147">请确认同步设置以开始同步。</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> 可以重新打开意外关闭的标签页</translation>
+<translation id="8807588541160250261">未连接任何设备时</translation>
 <translation id="8807632654848257479">稳定</translation>
 <translation id="8808478386290700967">Chrome 应用商店</translation>
 <translation id="8808686172382650546">猫</translation>
