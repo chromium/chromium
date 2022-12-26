@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import com.ark.browser.ArkCompositorViewHolder;
 import com.ark.browser.ArkNavigationHandler;
 import com.ark.browser.ArkWindowAndroid;
-import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.event.LoadUrlEvent;
@@ -131,7 +130,7 @@ public class ArkMainFragment extends BaseFragment implements
             @Override
             public void onResult(Void result) {
                 Runnable runnable = () -> {
-                    ITabGroup tabGroup = TabListManager.getInstance().getTabList(false);
+                    ITabGroup tabGroup = TabListManager.getInstance().getTabGroup(false);
                     int count = tabGroup.getCount();
                     ArkLogger.e(TAG, "restore count=" + count);
 
@@ -376,7 +375,7 @@ public class ArkMainFragment extends BaseFragment implements
                 if (current == null) {
                     return TabListManager.getInstance().getCurrentTabList();
                 }
-                return TabListManager.getInstance().getTabList(current.isIncognito());
+                return TabListManager.getInstance().getTabGroup(current.isIncognito());
             }
 
             @Override

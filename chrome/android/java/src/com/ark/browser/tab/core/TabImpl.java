@@ -43,40 +43,34 @@ public class TabImpl implements ITab {
     }
 
     @Override
-    public IPageGroup getPageGroup() {
-        return tabInfo.getPageGroup();
-    }
-
-    @Override
     public void exitFloatingTabInfo() {
         ArkLogger.d(TAG, "exitFloatingTabInfo mFloatingTabInfo=" + mFloatingTab + " this=" + this);
         if (mFloatingTab == null) {
             return;
         }
 
-        List<IPage> temp = new ArrayList<>(getPageGroup().getPageList());
+        List<IPage> temp = new ArrayList<>(getPages());
         TabInfo mFloatingTabInfo = mFloatingTab.getTabInfo();
 
         tabInfo.setId(mFloatingTabInfo.getId());
         tabInfo.setCreateTime(mFloatingTabInfo.getCreateTime());
 
         tabInfo.setPageIndex(mFloatingTabInfo.getPageIndex());
-        tabInfo.setCurrentTabId(mFloatingTabInfo.getCurrentPageId());
+        tabInfo.setCurrentPageId(mFloatingTabInfo.getCurrentPageId());
         tabInfo.setPosition(mFloatingTabInfo.getPosition());
         tabInfo.setLocked(mFloatingTabInfo.isLocked());
         tabInfo.setIncognito(mFloatingTabInfo.isIncognito());
 
 //        tabListFolder = mFloatingTab.getTabListFolder();
 
-        getPageGroup().getPageList().clear();
-        getPageGroup().getPageList().addAll(mFloatingTab.getPageGroup().getPageList());
+        getPages().clear();
+        getPages().addAll(mFloatingTab.getPages());
 
         mFloatingTab = null;
 
-//        getTabInfo().save();
         saveTabInfo();
 
-        ITabGroup tabList = TabListManager.getInstance().getTabList(tabInfo.isIncognito());
+        ITabGroup tabList = TabListManager.getInstance().getTabGroup(tabInfo.isIncognito());
         TabInfo currentTabInfo = tabList.getCurrentTabInfo();
         ArkLogger.d(TAG, "exitFloatingTabInfo currentTabInfo=" + currentTabInfo + " this=" + this);
         if (currentTabInfo != null

@@ -1,5 +1,7 @@
 package com.ark.browser.tab.core;
 
+import androidx.annotation.NonNull;
+
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
@@ -30,24 +32,29 @@ public class TabGroupImpl implements ITabGroup {
 
     private final ObserverList<TabInfoObserver> mObservers;
 
+    private final String mId;
     private final boolean incognito;
 
     protected int index = ITab.INVALID_TAB_INDEX;
 
     private AsyncTask<DataInputStream> mPrefetchTabGroupTask;
 
-    public TabGroupImpl(boolean incognito) {
+    public TabGroupImpl(String id, boolean incognito) {
+        mId = id;
         this.mObservers = new ObserverList<>();
         this.incognito = incognito;
+        File groupFile = ArkTabDao.getGroupFile(id);
+        if (groupFile.exists()) {
+            mPrefetchTabGroupTask = ArkTabDao.fetchGroupFile(groupFile);
+        }
     }
 
-    public TabGroupImpl(boolean incognito, File groupFile) {
-        this.mObservers = new ObserverList<>();
-        this.incognito = incognito;
+    public TabGroupImpl(String id, boolean incognito, File groupFile) {
+        this(id, incognito);
         mPrefetchTabGroupTask = ArkTabDao.fetchGroupFile(groupFile);
     }
 
-//    private void saveGroupFile() {
+    //    private void saveGroupFile() {
 //
 //
 //        try {
@@ -206,8 +213,8 @@ public class TabGroupImpl implements ITabGroup {
     }
 
     @Override
-    public int getId() {
-        return incognito ? 1 : 0;
+    public String getId() {
+        return mId;
     }
 
     @Override
@@ -248,7 +255,6 @@ public class TabGroupImpl implements ITabGroup {
             ArkLogger.d(TAG, "cloneTab index=" + index);
             mTabList.add(index, cloneTab);
             cloneTab.getTabInfo().setPosition(position);
-//            cloneTab.getTabInfo().save();
             cloneTab.saveTabInfo();
 
             saveTabPosition(index, position);
@@ -370,13 +376,12 @@ public class TabGroupImpl implements ITabGroup {
             TabInfo newTabInfo = TabInfo.create();
             ITab newTab = new TabImpl(newTabInfo);
             page.getPageInfo().setTabId(newTabInfo.getId());
-            newTab.getPageGroup().addPage(page);
+            newTab.getPages().add(page);
 
             int index = indexOf(tabInfo) + 1;
             int position = tabInfo.getTabInfo().getPosition() + 1;
             getTabInfoList().add(index, newTab);
             newTabInfo.setPosition(position);
-//            newTabInfo.save();
             newTab.saveTabInfo();
 
             saveTabPosition(index, position);
@@ -422,11 +427,7 @@ public class TabGroupImpl implements ITabGroup {
             return;
         }
         this.index = index;
-//        PrefsHelper.with().applyInt("tab_index", index);
-
-
         saveGroupFile();
-
     }
 
     private static final int MAX_CHANGE_COUNT = 10;
@@ -448,7 +449,7 @@ public class TabGroupImpl implements ITabGroup {
             if (changes.size() > MAX_CHANGE_COUNT) {
                 i = index;
                 pos = pos + 1;
-                changes.clear();
+//                changes.clear();
                 while ((next = getTabAt(++i)) != null && pos >= next.getTabInfo().getPosition()) {
                     changes.add(next);
                     if (changes.size() > MAX_CHANGE_COUNT) {
@@ -470,36 +471,11 @@ public class TabGroupImpl implements ITabGroup {
         saveGroupFile();
 
         ThreadPool.executeIO(() -> {
-
-
             for (ITab tab : changes) {
                 tab.saveTabInfo();
             }
         });
 
-//        ThreadPool.executeIO(() -> {
-//            long t = System.currentTimeMillis();
-//            DatabaseWrapper db = FlowManager.getDatabase(TabInfoManager.class)
-//                    .getWritableDatabase();
-//            try {
-//                db.beginTransaction();
-//                Log.d(TAG, "saveTabPosition beginTransaction");
-//                int j = 0;
-//                for (TabInfo tabInfo : changes) {
-//                    db.execSQL(String.format(
-//                            "update TabInfo set position=%s where tabInfoId='%s'",
-//                            tabInfo.getPosition(), tabInfo.getTabInfoId())
-//                    );
-//                    Log.d(TAG, "saveTabPosition j=" + (j++));
-//                }
-//                db.setTransactionSuccessful();
-//                Log.d(TAG, "saveTabPosition setTransactionSuccessful");
-//            } finally {
-//                db.endTransaction();
-//                Log.d(TAG, "saveTabPosition endTransaction");
-//            }
-//            Log.d(TAG, "saveTabPosition deltaTime=" + (System.currentTimeMillis() - t) + " size=" + changes.size());
-//        });
     }
 
 

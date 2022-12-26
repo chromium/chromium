@@ -23,7 +23,6 @@ import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.tab.core.IPage;
-import com.ark.browser.tab.core.IPageGroup;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.PageImpl;
 import com.ark.browser.tab.dao.ArkTabDao;
@@ -72,7 +71,6 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -271,12 +269,11 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
         IPage page = new PageImpl(pageInfo);
 
-        IPageGroup pageInfoList = mTab.getPageGroup();
-        pageInfoList.getPageList().add(nextIndex, page);
+        mTab.getPages().add(nextIndex, page);
 
-        if (++nextIndex < pageInfoList.getCount()) {
-            List<IPage> pageRemoved = pageInfoList.getPageList()
-                    .subList(nextIndex, pageInfoList.getCount());
+        if (++nextIndex < mTab.getPageSize()) {
+            List<IPage> pageRemoved = mTab.getPages()
+                    .subList(nextIndex, mTab.getPageSize());
 
             List<IPage> tempPages = new ArrayList<>(pageRemoved);
             ThreadPool.postOnUIThread(() -> {

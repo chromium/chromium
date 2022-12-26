@@ -123,7 +123,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
             popThis();
         } else {
             list.clear();
-            list.addAll(mTab.getPageGroup().getPageList());
+            list.addAll(mTab.getPages());
             Collections.reverse(list);
             mSelectPosition = list.size() - mTab.getTabInfo().getIndex() - 1;
         }

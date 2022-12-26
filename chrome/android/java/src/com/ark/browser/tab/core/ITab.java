@@ -1,21 +1,16 @@
 package com.ark.browser.tab.core;
 
-import androidx.core.util.AtomicFile;
-
+import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
-import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.chrome.browser.tab.Tab;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 public interface ITab {
@@ -26,14 +21,23 @@ public interface ITab {
 
     TabInfo getTabInfo();
 
-    IPageGroup getPageGroup();
+    default List<IPage> getPages() {
+        return getTabInfo().getPages();
+    }
 
     default int getPageSize() {
-        return getPageGroup().getCount();
+        return getPages().size();
+    }
+
+    default int getPageIndex() {
+        return getTabInfo().getPageIndex();
     }
 
     default IPage getPageAt(int index) {
-        return getPageGroup().getPageAt(index);
+        if (index < 0 || index >= getPageSize()) {
+            return null;
+        }
+        return getPages().get(index);
     }
 
     default PageInfo getPageInfoAt(int index) {
@@ -45,66 +49,37 @@ public interface ITab {
     }
 
     default PageInfo getCurrentPageInfo() {
-        int pageIndex = getTabInfo().getIndex();
-        return getPageGroup().getPageInfoAt(pageIndex);
+        return getPageInfoAt(getPageIndex());
     }
 
     default PageInfo getPreviousPageInfo() {
-        int pageIndex = getTabInfo().getIndex();
-        return getPageGroup().getPageInfoAt(pageIndex - 1);
+        return getPageInfoAt(getPageIndex() - 1);
     }
 
     default PageInfo getNextPageInfo() {
-        int pageIndex = getTabInfo().getIndex();
-        return getPageGroup().getPageInfoAt(pageIndex + 1);
+        return getPageInfoAt(getPageIndex() + 1);
     }
 
     default IPage getCurrentPage() {
-        int pageIndex = getTabInfo().getIndex();
-        return getPageGroup().getPageAt(pageIndex);
+        return getPageAt(getPageIndex());
     }
 
     default IPage getPreviousPage() {
-        int pageIndex = getTabInfo().getIndex();
-        return getPageGroup().getPageAt(pageIndex - 1);
+        return getPageAt(getPageIndex() - 1);
     }
 
     default IPage getNextPage() {
-        int pageIndex = getTabInfo().getIndex();
-        return getPageGroup().getPageAt(pageIndex + 1);
+        return getPageAt(getPageIndex() + 1);
     }
 
-//    default Tab getCurrentPage() {
+    default int getCurrentPageId() {
+        return getTabInfo().getCurrentPageId();
 //        PageInfo pageInfo = getCurrentPageInfo();
 //        if (pageInfo == null) {
-//            return null;
+//            return Tab.INVALID_PAGE_ID;
+//        } else {
+//            return pageInfo.getId();
 //        }
-//        return PageCacheManager.getInstance().findPage(pageInfo);
-//    }
-//
-//    default Tab getPreviousPage() {
-//        PageInfo pageInfo = getPreviousPageInfo();
-//        if (pageInfo == null) {
-//            return null;
-//        }
-//        return PageCacheManager.getInstance().findPage(pageInfo);
-//    }
-//
-//    default Tab getNextPage() {
-//        PageInfo pageInfo = getNextPageInfo();
-//        if (pageInfo == null) {
-//            return null;
-//        }
-//        return PageCacheManager.getInstance().findPage(pageInfo);
-//    }
-
-    default int getCurrentPageId() {
-        PageInfo pageInfo = getCurrentPageInfo();
-        if (pageInfo == null) {
-            return Tab.INVALID_PAGE_ID;
-        } else {
-            return pageInfo.getId();
-        }
     }
 
     default boolean hasPage(Tab tab) {
@@ -125,25 +100,39 @@ public interface ITab {
     default int indexOfPage(int pageId) {
         int id = getCurrentPageId();
         if (pageId == id) {
-            ArkLogger.d("ITab", "getTabIndexById return index=" + getPageGroup().getIndex());
-            return getTabInfo().getPageIndex();
+            return getPageIndex();
         }
         for (int j = 0; j < getPageSize(); j++) {
-            if (getPageInfoAt(j).getId() == pageId) {
+            if (getPageAt(j).getId() == pageId) {
                 return j;
             }
         }
         return INVALID_TAB_INDEX;
     }
 
+    default int indexOfPage(IPage page) {
+        return indexOfPage(page.getId());
+    }
+
     default PageInfo getPageInfoById(int pageId) {
-        int i = indexOfPage(pageId);
-        return getPageInfoAt(i);
+        IPage page = getPageById(pageId);
+        if (page == null) {
+            return null;
+        }
+        return page.getPageInfo();
     }
 
     default IPage getPageById(int pageId) {
-        int i = indexOfPage(pageId);
-        return getPageAt(i);
+        if (getCurrentPageId() == pageId) {
+            return getCurrentPage();
+        }
+
+        for (IPage page : getPages()) {
+            if (page.getId() == pageId) {
+                return page;
+            }
+        }
+        return null;
     }
 
 
@@ -154,7 +143,7 @@ public interface ITab {
 
         TabInfo newTabInfo = TabInfo.create();
         newTabInfo.setPageIndex(tabInfo.getPageIndex());
-        newTabInfo.setCurrentTabId(Tab.INVALID_PAGE_ID);
+        newTabInfo.setCurrentPageId(Tab.INVALID_PAGE_ID);
         newTabInfo.setLocked(tabInfo.isLocked());
         newTabInfo.setIncognito(tabInfo.isIncognito());
         newTabInfo.setAccessTime(tabInfo.getAccessTime());
@@ -251,55 +240,59 @@ public interface ITab {
 //    }
 
     default void selectPage(int index) {
-        if (index < 0) {
+        IPage page = getPageAt(index);
+        if (page == null) {
             return;
         }
-        IPage page = getPageGroup().getPageAt(index);
-        getTabInfo().setCurrentTabId(page.getId());
+        getTabInfo().setCurrentPageId(page.getId());
         getTabInfo().setPageIndex(index);
-//        getTabInfo().save();
         saveTabInfo();
     }
 
     default void selectPage(IPage page) {
-        if (getTabInfo().getCurrentPageId() == page.getId()) {
+        if (getCurrentPageId() == page.getId()) {
             return;
         }
-        selectPage(getPageGroup().indexOf(page));
+        selectPage(indexOfPage(page.getId()));
     }
 
     default boolean removePage(IPage page) {
-        int i = getPageGroup().indexOf(page);
+        int i = indexOfPage(page);
         PageInfo pre = getPageInfoAt(i - 1);
         PageInfo next = getPageInfoAt(i + 1);
         // 移除当前page，优先显示前一个page
         if (pre != null) {
-            getTabInfo().setCurrentTabId(pre.getId());
+            getTabInfo().setCurrentPageId(pre.getId());
             getTabInfo().setPageIndex(getTabInfo().getPageIndex() - 1);
         } else if (next != null) {
-            getTabInfo().setCurrentTabId(next.getId());
+            getTabInfo().setCurrentPageId(next.getId());
         } else {
             return false;
         }
-//        getTabInfo().save();
         saveTabInfo();
-        getPageGroup().removePage(page);
+        getPages().remove(i);
         page.deletePageInfo();
-//        page.getPageInfo().delete();
         return true;
     }
 
 
     default void destroy() {
         TabCacheManager.getInstance().removeTab(getId());
-        getPageGroup().destroy();
+        for (IPage page : getPages()) {
+            ArkWebManager.remove(page.getId());
+        }
+        getPages().clear();
     }
 
     public void exitFloatingTabInfo();
 
     default void remove() {
-        getPageGroup().remove();
+        for (IPage page : getPages()) {
+            PageSnapshotManager.getInstance().removeSnapshot(page.getPageInfo().getId());
+            page.deletePageInfo();
+        }
         deleteTabInfo();
+        destroy();
     }
 
     default void deleteTabInfo() {
@@ -308,56 +301,7 @@ public interface ITab {
     }
 
     default void saveTabInfo() {
-        try {
-            long time = System.currentTimeMillis();
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            DataOutputStream os = new DataOutputStream(stream);
-            int version = 2;
-            os.writeInt(version);
-            os.writeInt(getTabInfo().getId());
-            os.writeInt(getTabInfo().getLaunchType());
-            os.writeLong(getTabInfo().getCreateTime());
-            os.writeBoolean(getTabInfo().isIncognito());
-            os.writeBoolean(getTabInfo().isLocked());
-            os.writeInt(getTabInfo().getPageIndex());
-            os.writeInt(getTabInfo().getCurrentPageId());
-            os.writeInt(getTabInfo().getPosition());
-            os.writeLong(getTabInfo().getAccessTime());
-            os.writeInt(getPageSize());
-            ArkLogger.e(ITab.this, "saveTabInfo info=" + getTabInfo()
-                    + " pageSize=" + getPageSize());
-            for (IPage page : getPageGroup().getPageList()) {
-                os.writeInt(page.getId());
-            }
-            os.close();
-
-            byte[] bytes = stream.toByteArray();
-
-            ArkLogger.e(ITab.this, "saveTabInfo to byte deltaTime="
-                    + (System.currentTimeMillis() - time));
-
-            ThreadPool.executeIO(new Runnable() {
-                @Override
-                public void run() {
-                    long time = System.currentTimeMillis();
-                    File tabFile = ArkTabDao.getTabFile(getTabInfo().getId());
-                    AtomicFile file = new AtomicFile(tabFile);
-                    FileOutputStream fos = null;
-                    try {
-                        fos = file.startWrite();
-                        fos.write(bytes, 0, bytes.length);
-                        file.finishWrite(fos);
-                    } catch (IOException e) {
-                        if (fos != null) file.failWrite(fos);
-                        ArkLogger.e(this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
-                    }
-                    ArkLogger.e(ITab.this, "saveTabInfo deltaTime="
-                            + (System.currentTimeMillis() - time));
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        getTabInfo().save();
     }
 
 }

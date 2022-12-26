@@ -1,10 +1,9 @@
 package com.ark.browser.tab;
 
-import androidx.annotation.NonNull;
-
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
+import com.ark.browser.tab.core.TabGroupImpl;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -17,17 +16,21 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TabListManager {
 
     private static final String TAG = "TabListManager";
 
+    public static final String GROUP_DEFAULT = "group_default";
+    public static final String GROUP_INCOGNITO = "group_incognito";
+
     private static volatile TabListManager sInstance;
 
     private final ObserverList<TabManagerObserver> mObservers = new ObserverList<>();
-    private final ITabGroup[] tabLists = new ITabGroup[2];
+    private final Map<String, ITabGroup> mTabGroups = new HashMap<>();
     private final TabInfoObserver tabInfoObserver;
     private int currentIndex = 0;
 
@@ -61,10 +64,10 @@ public class TabListManager {
 
     public void onDestroy() {
         this.mObservers.clear();
-        for (ITabGroup tabList : tabLists) {
-            tabList.destroy();
+        for (ITabGroup tabGroup : mTabGroups.values()) {
+            tabGroup.destroy();
         }
-        Arrays.fill(tabLists, null);
+        mTabGroups.clear();
         currentIndex = 0;
         sInstance = null;
     }
@@ -76,68 +79,34 @@ public class TabListManager {
     }
 
     public void restore(Callback<Void> callback) {
+        ITabGroup defaultTabGroup = new TabGroupImpl(GROUP_DEFAULT, false);
+        mTabGroups.put(defaultTabGroup.getId(), defaultTabGroup);
 
-//        tabLists[0] = new TabGroupImpl(nativeWindow, false);
-//        tabLists[1] = new TabGroupImpl(nativeWindow, true);
-//        ThreadPool.execute(() -> {
-//            tabLists[0].init(nativeWindow);
-//            ThreadPool.post(() -> {
-//                tabLists[0].addObserver(tabInfoObserver);
-//                mLoaded = true;
-//                if (callback != null) {
-//                    callback.onResult(null);
-//                }
-//            });
-//        });
-
-
-        tabLists[0] = ArkTabDao.loadTabGroup(false);
-
-        tabLists[1] = ArkTabDao.loadTabGroup(true);
+        ITabGroup incognitoTabGroup = new TabGroupImpl(GROUP_INCOGNITO, true);
+        mTabGroups.put(incognitoTabGroup.getId(), incognitoTabGroup);
 
         ThreadPool.execute(() -> {
-            tabLists[0].init();
+            defaultTabGroup.init();
             ThreadPool.runOnUIThread(() -> {
-                tabLists[0].addObserver(tabInfoObserver);
+                defaultTabGroup.addObserver(tabInfoObserver);
                 mLoaded = true;
                 if (callback != null) {
                     callback.onResult(null);
                 }
-
-//                ThreadPool.postOnUIThread(() -> {
-//
-//                    int count = tabLists[0].getCount();
-//                    ArkLogger.e(TAG, "restore count=" + count);
-//
-//                    if (count > 0) {
-//                        ArkLogger.e(TAG, "restore selectTabAt " + tabLists[0].getIndex());
-//                        tabLists[0].selectTabAt(tabLists[0].getIndex());
-//                    } else {
-//                        ArkLogger.e(TAG, "restore openNewTab");
-//                        LoadUrlParams params = new LoadUrlParams("www.baidu.com", PageTransition.LINK);
-//                        TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
-//                    }
-//                });
-
             });
         });
-
     }
 
-//    public void saveState() {
-//        tabLists[0].saveState();
-//    }
-
-    public ITabGroup getTabList(boolean incognito) {
-        return tabLists[incognito ? 1 : 0];
+    public ITabGroup getTabGroup(boolean incognito) {
+        return mTabGroups.get(incognito ? GROUP_INCOGNITO : GROUP_DEFAULT);
     }
 
-    public List<ITabGroup> getTabLists() {
-        return new ArrayList<>(Arrays.asList(tabLists));
+    public List<ITabGroup> getTabGroups() {
+        return new ArrayList<>(mTabGroups.values());
     }
 
     public ITabGroup getCurrentTabList() {
-        return tabLists[currentIndex];
+        return getTabGroup(isIncognitoSelected());
     }
 
     public boolean goBack() {
@@ -152,7 +121,7 @@ public class TabListManager {
     }
 
     public ITabGroup getTabListByTabId(int tabId) {
-        for (ITabGroup tabList : tabLists) {
+        for (ITabGroup tabList : mTabGroups.values()) {
             if (tabList.getTabById(tabId) != null) {
                 return tabList;
             }
@@ -161,7 +130,7 @@ public class TabListManager {
     }
 
     public ITab getTabById(int tabId) {
-        for (ITabGroup tabList : tabLists) {
+        for (ITabGroup tabList : mTabGroups.values()) {
             ITab info = tabList.getTabById(tabId);
             if (info != null) {
                 return info;
@@ -173,7 +142,7 @@ public class TabListManager {
 
     public PageInfo getPageInfoById(int id) {
         if (id != Tab.INVALID_PAGE_ID) {
-            for (ITabGroup tabList : tabLists) {
+            for (ITabGroup tabList : mTabGroups.values()) {
                 PageInfo pageInfo = tabList.getPageInfoById(id);
                 if (pageInfo != null) {
                     return pageInfo;
@@ -183,7 +152,7 @@ public class TabListManager {
         return null;
     }
 
-    public void selectTabList(boolean incognito) {
+    public void selectTabGroup(boolean incognito) {
         currentIndex = incognito ? 1 : 0;
     }
 
@@ -199,14 +168,14 @@ public class TabListManager {
         if (tab == null) {
             return null;
         }
-        return getTabList(tab.isIncognito()).getTabById(tab.getId());
+        return getTabGroup(tab.isIncognito()).getTabById(tab.getId());
     }
 
     public ITab getTabInfo(PageInfo pageInfo) {
         if (pageInfo == null) {
             return null;
         }
-        return getTabList(pageInfo.isIncognito()).getTabById(pageInfo.getTabId());
+        return getTabGroup(pageInfo.isIncognito()).getTabById(pageInfo.getTabId());
     }
 
     public ITab getCurrentTab() {
@@ -231,7 +200,7 @@ public class TabListManager {
     }
 
     public void selectTab(int position, boolean incognito) {
-        ITabGroup tabList = getTabList(incognito);
+        ITabGroup tabList = getTabGroup(incognito);
         ITab tabInfo = tabList.getTabAt(position);
         selectPageInfo(tabInfo, tabInfo.getCurrentPage());
     }
@@ -253,13 +222,13 @@ public class TabListManager {
     }
 
     private void selectPageInfo(ITab tabInfo, IPage page) {
-        ITabGroup tabList = getTabList(tabInfo.getTabInfo().isIncognito());
+        ITabGroup tabList = getTabGroup(tabInfo.getTabInfo().isIncognito());
         tabList.selectTab(tabInfo, page);
     }
 
     public int getTotalTabCount() {
         int count = 0;
-        for (ITabGroup tabList : getTabLists()) {
+        for (ITabGroup tabList : getTabGroups()) {
             count += tabList.getCount();
         }
         return count;
@@ -274,12 +243,12 @@ public class TabListManager {
     }
 
     public ITab cloneTab(ITab tabInfo) {
-        return getTabList(tabInfo.getTabInfo().isIncognito()).cloneTab(tabInfo);
+        return getTabGroup(tabInfo.getTabInfo().isIncognito()).cloneTab(tabInfo);
     }
 
     public boolean moveToNewTab(PageInfo page) {
         if (page != null) {
-            ITabGroup tabList = getTabList(page.isIncognito());
+            ITabGroup tabList = getTabGroup(page.isIncognito());
             return tabList.moveToNewTab(tabList.getPageById(page.getId()));
         }
         return false;
@@ -295,7 +264,7 @@ public class TabListManager {
 
     public void openNewTab(PageInfo pageInfo, LoadUrlParams loadUrlParams, @TabLaunchType int type,
                            boolean incognito) {
-        ITabGroup tabList = getTabList(incognito);
+        ITabGroup tabList = getTabGroup(incognito);
         ITab currentTab = pageInfo == null ? null : tabList.getTabById(pageInfo.getTabId());
         tabList.openNewTab(currentTab, loadUrlParams, type);
     }

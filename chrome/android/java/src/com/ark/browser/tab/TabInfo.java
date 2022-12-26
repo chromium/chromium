@@ -6,13 +6,12 @@ import androidx.annotation.Keep;
 
 import com.ark.browser.core.utils.ArkIdManager;
 import com.ark.browser.tab.core.IPage;
-import com.ark.browser.tab.core.IPageGroup;
-import com.ark.browser.tab.core.PageGroupImpl;
 import com.ark.browser.tab.core.PageImpl;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 
@@ -22,37 +21,28 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Keep
-//@Table(database = TabInfoManager.class)
 public class TabInfo {
 
-    private static final String TAG = "TabManager";
-
-//    protected transient final List<PageInfo> mPageInfoList = new ArrayList<>();
-
-//    @PrimaryKey()
     private int tabId;
 
-//    @Column
     private long createTime;
 
-//    @Column
     protected int pageIndex = Tab.INVALID_PAGE_ID;
 
-//    @Column
     protected int currentPageId = Tab.INVALID_PAGE_ID;
 
-//    @Column
     protected int position = 0;
 
-//    @Column
     protected boolean isLocked = false;
 
-//    @Column
     public boolean incognito;
 
-//    @Column
     protected long accessTime;
 
     protected int parentId = Tab.INVALID_TAB_ID;
@@ -60,7 +50,7 @@ public class TabInfo {
     @TabLaunchType
     protected int mLaunchType;
 
-    private final IPageGroup mPageGroup = new PageGroupImpl();
+    protected transient final List<IPage> mPages = new ArrayList<>(0);
 
     public void setId(int tabId) {
         this.tabId = tabId;
@@ -115,10 +105,9 @@ public class TabInfo {
 
     public void setIndex(int index) {
         this.pageIndex = index;
-//        save();
     }
 
-    public void setCurrentTabId(int currentPageId) {
+    public void setCurrentPageId(int currentPageId) {
         this.currentPageId = currentPageId;
     }
 
@@ -166,8 +155,8 @@ public class TabInfo {
         this.mLaunchType = launchType;
     }
 
-    public IPageGroup getPageGroup() {
-        return mPageGroup;
+    public List<IPage> getPages() {
+        return mPages;
     }
 
     public static TabInfo create() {
@@ -214,55 +203,20 @@ public class TabInfo {
         newTabInfo.setLocked(is.readBoolean());
 
         newTabInfo.setPageIndex(is.readInt());
-        newTabInfo.setCurrentTabId(is.readInt());
+        newTabInfo.setCurrentPageId(is.readInt());
         newTabInfo.setPosition(is.readInt());
         newTabInfo.setAccessTime(is.readLong());
         int count = is.readInt();
         File pagesDir = ArkTabDao.getPagesDir(newTabInfo.getId());
         for (int i = 0; i < count; i++) {
             int pageId = is.readInt();
-//            newTabInfo.pageIds.add(pageId);
             File file = new File(pagesDir, String.valueOf(pageId));
-//            newTabInfo.mPageInfoCache.put(pageId, PageInfo.from(file));
-
-            newTabInfo.mPageGroup.addPage(new PageImpl(PageInfo.from(file)));
-
+            PageInfo pageInfo = PageInfo.from(file);
+            ArkLogger.e(TabInfo.class, "TabInfo.from pageId=" + pageId + " pageInfo=" + pageInfo);
+            newTabInfo.mPages.add(new PageImpl(pageInfo));
         }
         return newTabInfo;
     }
-
-//    @Override
-//    public void save() {
-//        ThreadPool.executeIO(() -> {
-//            File tabFile = ArkTabDao.getTabFile(tabInfoId);
-//            try (DataOutputStream os = new DataOutputStream(
-//                    new BufferedOutputStream(new FileOutputStream(tabFile)))) {
-//                int version = 1;
-//                os.writeInt(version);
-//                os.writeInt(tabInfoId);
-//                os.writeLong(createTime);
-//                os.writeBoolean(incognito);
-//                os.writeBoolean(isLocked);
-//                os.writeInt(pageIndex);
-//                os.writeInt(currentTabId);
-//                os.writeInt(position);
-//                os.writeLong(accessTime);
-//                os.writeInt(mPageInfoList.size());
-//                for (PageInfo info : mPageInfoList) {
-//                    os.writeInt(info.getPageId());
-//                }
-//                os.flush();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
-//
-//    @Override
-//    public void deleteSync() {
-//        File tabFile = ArkTabDao.getTabFile(tabInfoId);
-//        tabFile.delete();
-//    }
 
     @Override
     public String toString() {
@@ -274,10 +228,12 @@ public class TabInfo {
                 ", position=" + position +
                 ", isLocked=" + isLocked +
                 ", incognito=" + incognito +
+                ", pages=" + mPages +
                 '}';
     }
 
     public void save() {
+        ThreadUtils.checkUiThread();
         try {
             long time = System.currentTimeMillis();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -293,10 +249,10 @@ public class TabInfo {
             os.writeInt(currentPageId);
             os.writeInt(position);
             os.writeLong(accessTime);
-            os.writeInt(mPageGroup.getCount());
+            os.writeInt(mPages.size());
             ArkLogger.e(this, "saveTabInfo info=" + this
-                    + " pageSize=" + mPageGroup.getCount());
-            for (IPage page : mPageGroup.getPageList()) {
+                    + " pageSize=" + mPages.size());
+            for (IPage page : mPages) {
                 os.writeInt(page.getId());
             }
             os.close();

@@ -640,7 +640,7 @@ public class SmartSearchPanel extends FrameLayout {
     private ITabGroup getFloatTabList() {
         if (mFloatTabList == null) {
 
-            mFloatTabList = new TabGroupImpl(false) {
+            mFloatTabList = new TabGroupImpl("group_smart_search", false) {
 
                 @Override
                 public void onIndexChanged(int index) {
@@ -705,19 +705,12 @@ public class SmartSearchPanel extends FrameLayout {
             }
         };
 
-        PageInfo pageInfo = PageInfo.from(newTab.getTabInfo().getId(), newTab.getPageSize(),
-                newTab.getTabInfo().isIncognito());
-        IPage newPage = new PageImpl(pageInfo);
-        newTab.getPageGroup().addPage(newPage);
-//        tab.loadUrl(loadUrlParams);
-
         mFloatTabList.getTabInfoList().add(newTab);
-        newTab.selectPage(0);
 
         newTabInfo.setLaunchType(TabLaunchType.FROM_CHROME_UI);
         ArkTabImpl tab = ArkTabImpl.create(newTab, null);
 
-        tab.selectPage(newPage);
+        tab.loadInNewPage(loadUrlParams);
 
         for (TabInfoObserver obs : mFloatTabList.getObservers()) {
             obs.didAddTab(newTab, TabSelectionType.FROM_USER);

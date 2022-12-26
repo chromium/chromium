@@ -2,6 +2,7 @@ package com.ark.browser.tab.core;
 
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.util.AtomicFile;
 
 import com.ark.browser.tab.ArkTabImpl;
@@ -33,7 +34,8 @@ public interface ITabGroup {
 
     void init();
 
-    int getId();
+    @NonNull
+    String getId();
 
     public boolean isIncognito();
 
@@ -386,7 +388,7 @@ public interface ITabGroup {
 
     public boolean moveToNewTab(IPage page);
 
-    default boolean removePage(Tab tab) {
+    default boolean removeTab(Tab tab) {
         ArkLogger.d(getClass().getSimpleName(), "closeTab tab=" + tab);
         if (tab == null) {
             return false;
@@ -422,8 +424,8 @@ public interface ITabGroup {
 
             ArkLogger.d(getClass().getSimpleName(), "closeTabInStack i=" + i);
             if (i >= 0) {
-                IPage pageInfo = manager.getPageGroup().getPageList().remove(i);
-                pageInfo.remove();
+                IPage page = manager.getPages().remove(i);
+                page.remove();
                 result = true;
             } else {
                 result = false;
@@ -514,12 +516,10 @@ public interface ITabGroup {
 
             byte[] bytes = stream.toByteArray();
 
-            int id = isIncognito() ? 1 : 0;
-
             ThreadPool.executeIO(new Runnable() {
                 @Override
                 public void run() {
-                    File groupFile = new File(ArkTabDao.getGroupsDir(), "group_" + id);
+                    File groupFile = ArkTabDao.getGroupFile(getId());
                     AtomicFile file = new AtomicFile(groupFile);
                     FileOutputStream fos = null;
                     try {
