@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/tos_commands.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
@@ -185,6 +186,8 @@
                                          identity:self.mediator.selectedIdentity
                                  postSignInAction:POST_SIGNIN_ACTION_NONE
                          presentingViewController:self.viewController];
+  authenticationFlow.dispatcher = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock completion = ^() {
     [weakSelf finishPresentingWithSignIn:YES];
