@@ -121,6 +121,7 @@
 <translation id="15373452373711364">ትልቅ የመዳፊት ጠቋሚ</translation>
 <translation id="1546492247443594934">ዴስክ 2</translation>
 <translation id="1546930421365146760">አስተዳዳሪዎ በGoogle አስተዳዳሪ መሥሪያው ውስጥ ይህን መሣሪያ እንዲያዋቅሩት ይጠይቋቸው</translation>
+<translation id="1550406609415860283">መሣሪያዎች ይገኛሉ</translation>
 <translation id="1550523713251050646">ለተጨማሪ አማራጮች ጠቅ ያድርጉ</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="1589090746204042747">በዚህ ክፍለ-ጊዜ ውስጥ ያለው ሁሉንም እንቅስቃሴዎን ይድረሱ</translation>
@@ -462,6 +463,7 @@
 <translation id="3552189655002856821">Wi-Fi ጠፍቷል</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ተያይዟል</translation>
 <translation id="3558768885091059911">የካሜራ እና የማይክሮፎን መዳረሻ ይብራ?</translation>
+<translation id="3560174576767922131">ቪዲዮ ቅረጽ</translation>
 <translation id="3563775809269155755">መገናኛ ነጥብን ያንቁ</translation>
 <translation id="3566240529365775567">አሁን ተከፍቷል</translation>
 <translation id="3571734092741541777">አዋቅር</translation>
@@ -654,6 +656,7 @@
 <translation id="4577274620589681794">ጊዜው አብቅቷል · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ቅድመ-እይታዎችን አሳይ</translation>
 <translation id="4578906031062871102">የቅንብሮች ምናሌ ተከፍቷል</translation>
+<translation id="458210817642223147">GIF ቅረጽ</translation>
 <translation id="4585337515783392668">ወደ ያልታወቀ ተቀባይ cast ማድረግን አስቁም</translation>
 <translation id="4596144739579517758">ጠቆር ያለ ገጽታ ጠፍቷል</translation>
 <translation id="4611292653554630842">ግባ</translation>
@@ -733,6 +736,7 @@
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">ዴስክ 16</translation>
 <translation id="5003993274120026347">ቀጣይ ዓረፍተ ነገር</translation>
+<translation id="5004607513195820459">አውታረ መረብ ይተዳደራል</translation>
 <translation id="5016558321564993266">ምልክት ማድረጊያን ይቀያይሩ። <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">የመሣሪያ ማይክሮፎን መዳረሻ በርቷል</translation>
 <translation id="5030687792513154421">ሰዓት አልቋል</translation>
@@ -1073,6 +1077,7 @@
 <translation id="6901883536534621389">ለማሰስ የእጅ ምልክቶችን ይሞክሩ</translation>
 <translation id="6919251195245069855">የእርስዎን ዘመናዊ ካርድ ለይቶ ማወቅ አልተቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="6931576957638141829">አስቀምጥ ወደ</translation>
+<translation id="6942518653766415536">የመቅዳት ቅርጸት ምናሌ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
 <translation id="6960565108681981554">አልገበረም። የአገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="6961121602502368900">በሥራ መገለጫ ላይ የስልክ ድምጽን ማጥፋት አይገኝም</translation>
