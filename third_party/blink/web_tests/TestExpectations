@@ -2255,7 +2255,6 @@ crbug.com/591500 [ Win10.20h2 ] virtual/threaded/printing/fixed-positioned-but-s
 
 crbug.com/591500 [ Win10.20h2 ] virtual/threaded/printing/list-item-with-empty-first-line.html [ Failure ]
 
-crbug.com/353746 virtual/android/fullscreen/video-specified-size.html [ Failure Pass ]
 
 crbug.com/525296 fast/css/font-load-while-styleresolver-missing.html [ Crash Failure Pass ]
 
@@ -3139,7 +3138,6 @@ crbug.com/626703 [ Linux ] virtual/abort-signal-remove/external/wpt/web-nfc/NDEF
 crbug.com/626703 [ Linux ] virtual/abort-signal-remove/external/wpt/web-nfc/NDEFReader_scan.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/abort-signal-remove/external/wpt/web-nfc/NDEFReader_write.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Timeout ]
-crbug.com/626703 [ Linux ] wpt_internal/battery-status/promise-with-eventlisteners.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/forms/file/file-input-webkitdirectory-key-enter-prevent-keypress.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/storage/quota/partitioned-webkitStorageInfo-persistent-quota-usage-details.tentative.sub.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/vibration/vibration-iframe.html [ Timeout ]
@@ -3897,7 +3895,6 @@ crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-on-accelerate
 crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/image-object-in-canvas.html [ Crash Failure Pass Timeout ]
 
 # We cannot yet launch Canvas2D staying GPU on readback
-crbug.com/1288118 fast/canvas/bug382588.html [ Crash Failure Pass Timeout ]
 
 # Antialiasing error
 crbug.com/845973 virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html [ Failure Pass ]
