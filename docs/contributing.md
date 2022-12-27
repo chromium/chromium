@@ -462,9 +462,6 @@ formats.
     `-r foo@example.com` when running `git cl upload`.
   * A comma-separated list of reviewer email addresses (e.g.
     foo@example.com, bar@example.com).
-* **Tbr:** The same format as the `R` footer, but indicates to the
-  commit queue that it can skip checking that all files in the change
-  have been approved by their respective `OWNERS`.
 * **Cq-Include-Trybots:**
   * A comma-separated list of trybots which should be triggered and
     checked by the CQ in addition to the normal set.

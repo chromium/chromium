@@ -77,12 +77,6 @@ The Chromium CQ supports a variety of options that can change what it checks.
   This should only be used for reverts to green the tree, since it skips try
   bots and might therefore break the tree. You shouldn't use this otherwise.
 
-* `Tbr: <username>`
-
-  [See policy](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/code_reviews.md#TBR-To-Be-Reviewed)
-  of when it's acceptable to use TBR ("To be reviewed"). If a change has a TBR
-  line with a valid reviewer, the CQ will skip checks for LGTMs.
-
 ## FAQ
 
 ### What exactly does the CQ run?
