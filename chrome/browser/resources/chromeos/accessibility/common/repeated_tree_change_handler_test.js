@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE([
-  '../select_to_speak/select_to_speak_e2e_test_base.js',
-]);
+GEN_INCLUDE(['testing/common_e2e_test_base.js']);
 
 /** Test fixture for array_util.js. */
-RepeatedTreeChangeHandlerTest = class extends SelectToSpeakE2ETest {
+AccessibilityExtensionRepeatedTreeChangeHandlerTest =
+    class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await importModule(
@@ -17,8 +16,8 @@ RepeatedTreeChangeHandlerTest = class extends SelectToSpeakE2ETest {
 };
 
 TEST_F(
-    'RepeatedTreeChangeHandlerTest', 'RepeatedTreeChangeHandledOnce',
-    function() {
+    'AccessibilityExtensionRepeatedTreeChangeHandlerTest',
+    'RepeatedTreeChangeHandledOnce', function() {
       this.runWithLoadedDesktop(() => {
         this.handlerCallCount = 0;
         const handler = () => this.handlerCallCount++;
@@ -38,28 +37,31 @@ TEST_F(
       });
     });
 
-TEST_F('RepeatedTreeChangeHandlerTest', 'Predicate', function() {
-  this.runWithLoadedDesktop(() => {
-    this.handlerCallCount = 0;
-    const handler = () => this.handlerCallCount++;
+TEST_F(
+    'AccessibilityExtensionRepeatedTreeChangeHandlerTest', 'Predicate',
+    function() {
+      this.runWithLoadedDesktop(() => {
+        this.handlerCallCount = 0;
+        const handler = () => this.handlerCallCount++;
 
-    const repeatedHandler = new RepeatedTreeChangeHandler(
-        'allTreeChanges', handler, {predicate: c => c.type === 'nodeRemoved'});
+        const repeatedHandler = new RepeatedTreeChangeHandler(
+            'allTreeChanges', handler,
+            {predicate: c => c.type === 'nodeRemoved'});
 
-    // Simulate events being fired.
-    repeatedHandler.onChange_({type: 'nodeAdded'});
-    repeatedHandler.onChange_({type: 'nodeAdded'});
-    repeatedHandler.onChange_({type: 'nodeAdded'});
-    repeatedHandler.onChange_({type: 'nodeRemoved'});
-    repeatedHandler.onChange_({type: 'nodeRemoved'});
-    repeatedHandler.onChange_({type: 'nodeRemoved'});
-    repeatedHandler.onChange_({type: 'nodeRemoved'});
+        // Simulate events being fired.
+        repeatedHandler.onChange_({type: 'nodeAdded'});
+        repeatedHandler.onChange_({type: 'nodeAdded'});
+        repeatedHandler.onChange_({type: 'nodeAdded'});
+        repeatedHandler.onChange_({type: 'nodeRemoved'});
+        repeatedHandler.onChange_({type: 'nodeRemoved'});
+        repeatedHandler.onChange_({type: 'nodeRemoved'});
+        repeatedHandler.onChange_({type: 'nodeRemoved'});
 
-    // Verify that nodes that don't satisfy the predicate aren't added to the
-    // change stack.
-    assertEquals(repeatedHandler.changeStack_.length, 4);
+        // Verify that nodes that don't satisfy the predicate aren't added to
+        // the change stack.
+        assertEquals(repeatedHandler.changeStack_.length, 4);
 
-    // Yield before verifying how many times the handler was called.
-    setTimeout(() => assertEquals(this.handlerCallCount, 1), 0);
-  });
-});
+        // Yield before verifying how many times the handler was called.
+        setTimeout(() => assertEquals(this.handlerCallCount, 1), 0);
+      });
+    });
