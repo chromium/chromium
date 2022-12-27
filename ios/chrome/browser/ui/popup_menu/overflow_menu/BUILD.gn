@@ -65,6 +65,7 @@ source_set("overflow_menu") {
     "//components/profile_metrics",
     "//components/translate/core/browser",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/find_in_page",

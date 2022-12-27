@@ -26,6 +26,7 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
@@ -51,7 +52,6 @@
 #import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
@@ -159,7 +159,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   // Bridge to register for bookmark changes.
-  std::unique_ptr<bookmarks::BookmarkModelBridge> _bookmarkModelBridge;
+  std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridge;
   // Bridge to get notified of the language detection event.
   std::unique_ptr<language::IOSLanguageDetectionTabHelperObserverBridge>
       _iOSLanguageDetectionTabHelperObserverBridge;
@@ -514,7 +514,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   _bookmarkModelBridge.reset();
   if (bookmarkModel) {
     _bookmarkModelBridge =
-        std::make_unique<bookmarks::BookmarkModelBridge>(self, bookmarkModel);
+        std::make_unique<BookmarkModelBridge>(self, bookmarkModel);
   }
 
   if (self.webState && self.popupMenu) {

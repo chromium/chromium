@@ -11,12 +11,12 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_folder_editor_view_controller.h"
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -57,7 +57,7 @@ using bookmarks::BookmarkNode;
     UITableViewDelegate> {
   std::set<const BookmarkNode*> _editedNodes;
   std::vector<const BookmarkNode*> _folders;
-  std::unique_ptr<bookmarks::BookmarkModelBridge> _modelBridge;
+  std::unique_ptr<BookmarkModelBridge> _modelBridge;
 }
 
 // Should the controller setup Cancel and Done buttons instead of a back button.
@@ -133,8 +133,7 @@ using bookmarks::BookmarkNode;
     _selectedFolder = selectedFolder;
 
     // Set up the bookmark model oberver.
-    _modelBridge.reset(
-        new bookmarks::BookmarkModelBridge(self, _bookmarkModel));
+    _modelBridge.reset(new BookmarkModelBridge(self, _bookmarkModel));
   }
   return self;
 }

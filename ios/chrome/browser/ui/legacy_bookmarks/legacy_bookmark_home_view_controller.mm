@@ -18,6 +18,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -53,7 +54,6 @@
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_home_shared_state.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_interaction_controller_delegate.h"
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_utils_ios.h"
@@ -138,7 +138,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                           UITableViewDataSource,
                                           UITableViewDelegate> {
   // Bridge to register for bookmark changes.
-  std::unique_ptr<bookmarks::BookmarkModelBridge> _bridge;
+  std::unique_ptr<BookmarkModelBridge> _bridge;
 
   // The root node, whose child nodes are shown in the bookmark table view.
   const bookmarks::BookmarkNode* _rootNode;
@@ -239,7 +239,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
     _bookmarks = ios::BookmarkModelFactory::GetForBrowserState(_browserState);
 
-    _bridge.reset(new bookmarks::BookmarkModelBridge(self, _bookmarks));
+    _bridge.reset(new BookmarkModelBridge(self, _bookmarks));
   }
   return self;
 }

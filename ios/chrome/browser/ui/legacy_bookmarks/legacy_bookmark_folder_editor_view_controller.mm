@@ -16,6 +16,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -25,7 +26,6 @@
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_folder_view_controller.h"
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -58,7 +58,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     BookmarkFolderViewControllerDelegate,
     BookmarkModelBridgeObserver,
     BookmarkTextFieldItemDelegate> {
-  std::unique_ptr<bookmarks::BookmarkModelBridge> _modelBridge;
+  std::unique_ptr<BookmarkModelBridge> _modelBridge;
 
   // Flag to ignore bookmark model Move notifications when the move is performed
   // by this class.
@@ -152,8 +152,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _bookmarkModel = bookmarkModel;
 
     // Set up the bookmark model oberver.
-    _modelBridge.reset(
-        new bookmarks::BookmarkModelBridge(self, _bookmarkModel));
+    _modelBridge.reset(new BookmarkModelBridge(self, _bookmarkModel));
   }
   return self;
 }

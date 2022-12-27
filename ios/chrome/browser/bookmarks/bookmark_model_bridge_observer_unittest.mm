@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 
 #import <memory>
 
@@ -17,7 +17,7 @@
 
 @interface TestOwner : NSObject {
  @public
-  std::unique_ptr<bookmarks::BookmarkModelBridge> bridge;
+  std::unique_ptr<BookmarkModelBridge> bridge;
 }
 
 @property(nonatomic, strong) TestBookmarkModelBridgeObserver* observer;

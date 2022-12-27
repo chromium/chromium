@@ -98,8 +98,6 @@ source_set("core") {
   sources = [
     "legacy_bookmark_mediator.h",
     "legacy_bookmark_mediator.mm",
-    "legacy_bookmark_model_bridge_observer.h",
-    "legacy_bookmark_model_bridge_observer.mm",
     "legacy_bookmark_path_cache.h",
     "legacy_bookmark_path_cache.mm",
     "legacy_bookmark_utils_ios.h",
@@ -180,7 +178,6 @@ source_set("unit_tests") {
   sources = [
     "legacy_bookmark_edit_view_controller_unittest.mm",
     "legacy_bookmark_home_view_controller_unittest.mm",
-    "legacy_bookmark_model_bridge_observer_unittest.mm",
     "legacy_bookmark_path_cache_unittest.mm",
     "legacy_bookmark_utils_ios_unittest.mm",
   ]

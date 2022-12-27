@@ -17,6 +17,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/url_formatter/url_fixer.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/flags/system_flags.h"
@@ -31,7 +32,6 @@
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_folder_view_controller.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_mediator.h"
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -86,7 +86,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   // Flag to ignore bookmark model changes notifications.
   BOOL _ignoresBookmarkModelChanges;
 
-  std::unique_ptr<bookmarks::BookmarkModelBridge> _modelBridge;
+  std::unique_ptr<BookmarkModelBridge> _modelBridge;
 }
 
 // The bookmark this controller displays or edits.
@@ -200,8 +200,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
     _folder = _bookmark->parent();
 
     // Set up the bookmark model oberver.
-    _modelBridge.reset(
-        new bookmarks::BookmarkModelBridge(self, _bookmarkModel));
+    _modelBridge.reset(new BookmarkModelBridge(self, _bookmarkModel));
   }
   return self;
 }

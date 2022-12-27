@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_LEGACY_BOOKMARKS_LEGACY_BOOKMARK_MODEL_BRIDGE_OBSERVER_H_
-#define IOS_CHROME_BROWSER_UI_LEGACY_BOOKMARKS_LEGACY_BOOKMARK_MODEL_BRIDGE_OBSERVER_H_
+#ifndef IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_MODEL_BRIDGE_OBSERVER_H_
+#define IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_MODEL_BRIDGE_OBSERVER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -35,44 +35,44 @@
 - (void)bookmarkNodeFaviconChanged:(const bookmarks::BookmarkNode*)bookmarkNode;
 @end
 
-namespace bookmarks {
 // A bridge that translates BookmarkModelObserver C++ callbacks into ObjC
 // callbacks.
-class BookmarkModelBridge : public BookmarkModelObserver {
+class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
  public:
   explicit BookmarkModelBridge(id<BookmarkModelBridgeObserver> observer,
-                               BookmarkModel* model);
+                               bookmarks::BookmarkModel* model);
   ~BookmarkModelBridge() override;
 
  private:
-  void BookmarkModelLoaded(BookmarkModel* model, bool ids_reassigned) override;
-  void BookmarkModelBeingDeleted(BookmarkModel* model) override;
-  void BookmarkNodeMoved(BookmarkModel* model,
-                         const BookmarkNode* old_parent,
+  void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
+                           bool ids_reassigned) override;
+  void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
+  void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
+                         const bookmarks::BookmarkNode* old_parent,
                          size_t old_index,
-                         const BookmarkNode* new_parent,
+                         const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
-  void BookmarkNodeAdded(BookmarkModel* model,
-                         const BookmarkNode* parent,
+  void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
+                         const bookmarks::BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override;
-  void BookmarkNodeRemoved(BookmarkModel* model,
-                           const BookmarkNode* parent,
+  void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
+                           const bookmarks::BookmarkNode* parent,
                            size_t old_index,
-                           const BookmarkNode* node,
+                           const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override;
-  void BookmarkNodeChanged(BookmarkModel* model,
-                           const BookmarkNode* node) override;
-  void BookmarkNodeFaviconChanged(BookmarkModel* model,
-                                  const BookmarkNode* node) override;
-  void BookmarkNodeChildrenReordered(BookmarkModel* model,
-                                     const BookmarkNode* node) override;
-  void BookmarkAllUserNodesRemoved(BookmarkModel* model,
+  void BookmarkNodeChanged(bookmarks::BookmarkModel* model,
+                           const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeFaviconChanged(bookmarks::BookmarkModel* model,
+                                  const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeChildrenReordered(
+      bookmarks::BookmarkModel* model,
+      const bookmarks::BookmarkNode* node) override;
+  void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,
                                    const std::set<GURL>& removed_urls) override;
 
   __weak id<BookmarkModelBridgeObserver> observer_;
-  BookmarkModel* model_;  // weak
+  bookmarks::BookmarkModel* model_;  // weak
 };
-}  // namespace bookmarks
 
-#endif  // IOS_CHROME_BROWSER_UI_LEGACY_BOOKMARKS_LEGACY_BOOKMARK_MODEL_BRIDGE_OBSERVER_H_
+#endif  // IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_MODEL_BRIDGE_OBSERVER_H_

@@ -16,6 +16,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/driver/sync_service.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_home_consumer.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_home_shared_state.h"
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_promo_controller.h"
 #import "ios/chrome/browser/ui/legacy_bookmarks/legacy_synced_bookmarks_bridge.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -53,7 +53,7 @@ const int kMaxBookmarksSearchResults = 50;
                                     SigninPresenter,
                                     SyncObserverModelBridge> {
   // Bridge to register for bookmark changes.
-  std::unique_ptr<bookmarks::BookmarkModelBridge> _modelBridge;
+  std::unique_ptr<BookmarkModelBridge> _modelBridge;
 
   // Observer to keep track of the signin and syncing status.
   std::unique_ptr<sync_bookmarks::SyncedBookmarksObserverBridge>
@@ -100,7 +100,7 @@ const int kMaxBookmarksSearchResults = 50;
   DCHECK(self.sharedState);
 
   // Set up observers.
-  _modelBridge = std::make_unique<bookmarks::BookmarkModelBridge>(
+  _modelBridge = std::make_unique<BookmarkModelBridge>(
       self, self.sharedState.bookmarkModel);
   _syncedBookmarksObserver =
       std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
