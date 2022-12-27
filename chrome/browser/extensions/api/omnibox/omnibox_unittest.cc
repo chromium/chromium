@@ -64,10 +64,10 @@ TEST(ExtensionOmniboxTest, DescriptionStylesSimple) {
                                                        .Set("offset", 6)
                                                        .Set("length", 3)
                                                        .BuildDict())
-                                           .BuildList())
+                                           .Build())
                                   .BuildDict())
-                      .BuildList())
-          .BuildList();
+                      .Build())
+          .Build();
 
   ACMatchClassifications styles_expected;
   styles_expected.push_back(ACMatchClassification(0, kNone));
@@ -103,10 +103,10 @@ TEST(ExtensionOmniboxTest, DescriptionStylesSimple) {
                                                        .Set("offset", 1)
                                                        .Set("length", 4)
                                                        .BuildDict())
-                                           .BuildList())
+                                           .Build())
                                   .BuildDict())
-                      .BuildList())
-          .BuildList();
+                      .Build())
+          .Build();
 
   std::unique_ptr<SendSuggestions::Params> swapped_params(
       SendSuggestions::Params::Create(swap_list));
@@ -159,10 +159,10 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine) {
                                                        .Set("offset", 1)
                                                        .Set("length", 2)
                                                        .BuildDict())
-                                           .BuildList())
+                                           .Build())
                                   .BuildDict())
-                      .BuildList())
-          .BuildList();
+                      .Build())
+          .Build();
 
   ACMatchClassifications styles_expected;
   styles_expected.push_back(ACMatchClassification(0, kUrl | kMatch));
@@ -215,10 +215,10 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine) {
                                                        .Set("offset", 1)
                                                        .Set("length", 2)
                                                        .BuildDict())
-                                           .BuildList())
+                                           .Build())
                                   .BuildDict())
-                      .BuildList())
-          .BuildList();
+                      .Build())
+          .Build();
 
   std::unique_ptr<SendSuggestions::Params> moved_params(
       SendSuggestions::Params::Create(moved_list));
@@ -270,10 +270,10 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine2) {
                                                        .Set("offset", 0)
                                                        .Set("length", 3)
                                                        .BuildDict())
-                                           .BuildList())
+                                           .Build())
                                   .BuildDict())
-                      .BuildList())
-          .BuildList();
+                      .Build())
+          .Build();
 
   ACMatchClassifications styles_expected;
   styles_expected.push_back(ACMatchClassification(0, kUrl | kMatch | kDim));
@@ -327,9 +327,9 @@ TEST(ExtensionOmniboxTest, DefaultSuggestResult) {
                                            .Set("offset", 0)
                                            .Set("length", 3)
                                            .BuildDict())
-                               .BuildList())
+                               .Build())
                       .BuildDict())
-          .BuildList();
+          .Build();
 
   std::unique_ptr<SetDefaultSuggestion::Params> params(
       SetDefaultSuggestion::Params::Create(list));

@@ -221,11 +221,10 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
              "script-src 'self' 'unsafe-eval'; object-src 'self'")
         .Set("sandbox",
              DictionaryBuilder()
-                 .Set("pages",
-                      ListBuilder().Append("sandboxed.html").BuildList())
+                 .Set("pages", ListBuilder().Append("sandboxed.html").Build())
                  .BuildDict())
         .Set("web_accessible_resources",
-             ListBuilder().Append("*.html").BuildList());
+             ListBuilder().Append("*.html").Build());
 
     if (has_background_process) {
       manifest.Set("background",

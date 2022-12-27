@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_P(SharedArrayBufferTest, TransferToWorker) {
 
   DictionaryBuilder background_builder;
   background_builder.Set("scripts",
-                         ListBuilder().Append("background.js").BuildList());
+                         ListBuilder().Append("background.js").Build());
 
   if (is_platform_app) {
     builder.Set("app", DictionaryBuilder()

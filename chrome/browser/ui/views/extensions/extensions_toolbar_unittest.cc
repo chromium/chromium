@@ -29,7 +29,7 @@ base::Value::List ToListValue(const std::vector<std::string>& permissions) {
   extensions::ListBuilder builder;
   for (const std::string& permission : permissions)
     builder.Append(permission);
-  return builder.BuildList();
+  return builder.Build();
 }
 
 }  // namespace

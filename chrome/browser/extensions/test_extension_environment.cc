@@ -56,7 +56,7 @@ base::Value::Dict MakePackagedAppManifest() {
                            extensions::DictionaryBuilder()
                                .Set("scripts", extensions::ListBuilder()
                                                    .Append("background.js")
-                                                   .BuildList())
+                                                   .Build())
                                .BuildDict())
                       .BuildDict())
       .BuildDict();

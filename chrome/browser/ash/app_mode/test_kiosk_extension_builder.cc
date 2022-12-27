@@ -47,7 +47,7 @@ scoped_refptr<const extensions::Extension> TestKioskExtensionBuilder::Build()
   base::Value background = base::Value(
       DictionaryBuilder()
           .Set("scripts",
-               base::Value(ListBuilder().Append("background.js").BuildList()))
+               base::Value(ListBuilder().Append("background.js").Build()))
           .BuildDict());
 
   switch (type_) {
@@ -82,7 +82,7 @@ scoped_refptr<const extensions::Extension> TestKioskExtensionBuilder::Build()
           secondary_extension_builder.BuildDict());
     }
     manifest_builder.Set("kiosk_secondary_apps",
-                         secondary_extension_list_builder.BuildList());
+                         secondary_extension_list_builder.Build());
   }
 
   return ExtensionBuilder()

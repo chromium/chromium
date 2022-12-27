@@ -231,7 +231,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
       const std::string& id_input) {
     base::Value::Dict background =
         DictionaryBuilder()
-            .Set("scripts", ListBuilder().Append("background.js").BuildList())
+            .Set("scripts", ListBuilder().Append("background.js").Build())
             .BuildDict();
     base::Value::Dict manifest =
         DictionaryBuilder()

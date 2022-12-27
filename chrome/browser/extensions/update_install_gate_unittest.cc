@@ -62,7 +62,7 @@ scoped_refptr<const Extension> CreateApp(const std::string& extension_id,
                                 DictionaryBuilder()
                                     .Set("scripts", ListBuilder()
                                                         .Append("background.js")
-                                                        .BuildList())
+                                                        .Build())
                                     .BuildDict())
                            .BuildDict())
                   .BuildDict())

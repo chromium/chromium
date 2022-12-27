@@ -320,7 +320,7 @@ class LockScreenAppManagerImplTest
 
     base::Value::Dict background =
         DictionaryBuilder()
-            .Set("scripts", ListBuilder().Append("background.js").BuildList())
+            .Set("scripts", ListBuilder().Append("background.js").Build())
             .BuildDict();
     base::Value::List action_handlers =
         ListBuilder()
@@ -328,7 +328,7 @@ class LockScreenAppManagerImplTest
                         .Set("action", "new_note")
                         .Set("enabled_on_lock_screen", supports_lock_screen)
                         .BuildDict())
-            .BuildList();
+            .Build();
 
     DictionaryBuilder manifest_builder;
     manifest_builder.Set("name", "Note taking app")
@@ -337,7 +337,7 @@ class LockScreenAppManagerImplTest
         .Set("app", DictionaryBuilder()
                         .Set("background", std::move(background))
                         .BuildDict())
-        .Set("permissions", ListBuilder().Append("lockScreen").BuildList())
+        .Set("permissions", ListBuilder().Append("lockScreen").Build())
         .Set("action_handlers", std::move(action_handlers));
 
     base::FilePath extension_path =

@@ -41,7 +41,7 @@ scoped_refptr<const Extension> CreateExtensionImportingModules(
     ListBuilder import_list;
     for (const std::string& import_id : import_ids)
       import_list.Append(DictionaryBuilder().Set("id", import_id).BuildDict());
-    builder.Set("import", import_list.BuildList());
+    builder.Set("import", import_list.Build());
   }
   return ExtensionBuilder()
       .SetManifest(builder.BuildDict())
@@ -59,7 +59,7 @@ scoped_refptr<const Extension> CreateSharedModule(
           .Set("manifest_version", 2)
           .Set("export",
                DictionaryBuilder()
-                   .Set("resources", ListBuilder().Append("foo.js").BuildList())
+                   .Set("resources", ListBuilder().Append("foo.js").Build())
                    .BuildDict())
           .BuildDict();
 
@@ -185,7 +185,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUpdate) {
           .Set("manifest_version", 2)
           .Set("export",
                DictionaryBuilder()
-                   .Set("resources", ListBuilder().Append("foo.js").BuildList())
+                   .Set("resources", ListBuilder().Append("foo.js").Build())
                    .BuildDict())
           .BuildDict();
   scoped_refptr<const Extension> shared_module_2 =
@@ -245,8 +245,8 @@ TEST_F(SharedModuleServiceUnitTest, AllowlistedImports) {
           .Set("export",
                DictionaryBuilder()
                    .Set("allowlist",
-                        ListBuilder().Append(allowlisted_id).BuildList())
-                   .Set("resources", ListBuilder().Append("*").BuildList())
+                        ListBuilder().Append(allowlisted_id).Build())
+                   .Set("resources", ListBuilder().Append("*").Build())
                    .BuildDict())
           .BuildDict();
   scoped_refptr<const Extension> shared_module =

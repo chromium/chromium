@@ -49,7 +49,7 @@ base::Value::List ToValue(const std::vector<T>& vec) {
   ListBuilder builder;
   for (const T& t : vec)
     builder.Append(ToValue(t));
-  return builder.BuildList();
+  return builder.Build();
 }
 
 template <typename T>

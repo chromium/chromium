@@ -2870,11 +2870,10 @@ class GetAuthTokenFunctionDeviceLocalAccountTest
   scoped_refptr<const Extension> CreateTestExtension(const std::string& id) {
     return ExtensionBuilder("Test")
         .SetManifestKey(
-            "oauth2",
-            DictionaryBuilder()
-                .Set("client_id", "clientId")
-                .Set("scopes", ListBuilder().Append("scope1").BuildList())
-                .BuildDict())
+            "oauth2", DictionaryBuilder()
+                          .Set("client_id", "clientId")
+                          .Set("scopes", ListBuilder().Append("scope1").Build())
+                          .BuildDict())
         .SetID(id)
         .Build();
   }

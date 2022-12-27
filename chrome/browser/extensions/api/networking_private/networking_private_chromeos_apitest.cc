@@ -1090,7 +1090,7 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
                       .Set(shill::kTechnologyProperty, "GSM")
                       .Set(shill::kStatusProperty, "available")
                       .BuildDict())
-          .BuildList();
+          .Build();
   SetDeviceProperty(kCellularDevicePath, shill::kFoundNetworksProperty,
                     base::Value(std::move(found_networks)));
   EXPECT_TRUE(RunNetworkingSubtest("selectCellularMobileNetwork")) << message_;

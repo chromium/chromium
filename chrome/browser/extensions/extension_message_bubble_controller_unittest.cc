@@ -270,9 +270,8 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
             .Set("manifest_version", 2)
             .Set("chrome_settings_overrides",
                  DictionaryBuilder()
-                     .Set("startup_pages", ListBuilder()
-                                               .Append("http://www.google.com")
-                                               .BuildList())
+                     .Set("startup_pages",
+                          ListBuilder().Append("http://www.google.com").Build())
                      .BuildDict())
             .BuildDict());
     builder.SetLocation(location);
@@ -317,7 +316,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
             .Set("name", std::string("Extension " + index))
             .Set("version", "1.0")
             .Set("manifest_version", 2)
-            .Set("permissions", ListBuilder().Append("proxy").BuildList())
+            .Set("permissions", ListBuilder().Append("proxy").Build())
             .BuildDict());
 
     builder.SetLocation(location);

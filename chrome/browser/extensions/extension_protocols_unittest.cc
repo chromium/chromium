@@ -116,7 +116,7 @@ scoped_refptr<Extension> CreateWebStoreExtension() {
               "icons",
               DictionaryBuilder().Set("16", "webstore_icon_16.png").BuildDict())
           .Set("web_accessible_resources",
-               ListBuilder().Append("webstore_icon_16.png").BuildList())
+               ListBuilder().Append("webstore_icon_16.png").Build())
           .BuildDict();
 
   base::FilePath path;
@@ -134,7 +134,7 @@ scoped_refptr<Extension> CreateWebStoreExtension() {
 scoped_refptr<const Extension> CreateTestResponseHeaderExtension() {
   return ExtensionBuilder("An extension with web-accessible resources")
       .SetManifestKey("web_accessible_resources",
-                      ListBuilder().Append("test.dat").BuildList())
+                      ListBuilder().Append("test.dat").Build())
       .SetPath(GetTestPath("response_headers"))
       .Build();
 }

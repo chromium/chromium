@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
                                   .Append("one")
                                   .Append("two")
                                   .Append("three")
-                                  .BuildList())
+                                  .Build())
           .Set("dict-policy",
                extensions::DictionaryBuilder()
                    .Set("list", extensions::ListBuilder()
@@ -726,7 +726,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
                                     .Append(extensions::DictionaryBuilder()
                                                 .Set("three", 3)
                                                 .BuildDict())
-                                    .BuildList())
+                                    .Build())
                    .BuildDict())
           .BuildDict();
   SetPolicies(policy);

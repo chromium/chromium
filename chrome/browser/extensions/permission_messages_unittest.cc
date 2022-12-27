@@ -124,7 +124,7 @@ class PermissionMessagesUnittest : public testing::Test {
 // other (the 'history' permission has superset permissions).
 TEST_F(PermissionMessagesUnittest, HistoryHidesTabsMessage) {
   CreateAndInstallExtensionWithPermissions(
-      ListBuilder().Append("tabs").Append("history").BuildList(),
+      ListBuilder().Append("tabs").Append("history").Build(),
       base::Value::List());
 
   ASSERT_EQ(1U, required_permissions().size());
@@ -139,8 +139,8 @@ TEST_F(PermissionMessagesUnittest, HistoryHidesTabsMessage) {
 // permission, only the new coalesced message is displayed.
 TEST_F(PermissionMessagesUnittest, MixedPermissionMessagesCoalesceOnceGranted) {
   CreateAndInstallExtensionWithPermissions(
-      ListBuilder().Append("tabs").BuildList(),
-      ListBuilder().Append("history").BuildList());
+      ListBuilder().Append("tabs").Build(),
+      ListBuilder().Append("history").Build());
 
   ASSERT_EQ(1U, required_permissions().size());
   EXPECT_EQ(
@@ -178,8 +178,8 @@ TEST_F(PermissionMessagesUnittest, MixedPermissionMessagesCoalesceOnceGranted) {
 TEST_F(PermissionMessagesUnittest,
        AntiTest_PromptCanRequestSubsetOfAlreadyGrantedPermissions) {
   CreateAndInstallExtensionWithPermissions(
-      ListBuilder().Append("history").BuildList(),
-      ListBuilder().Append("tabs").BuildList());
+      ListBuilder().Append("history").Build(),
+      ListBuilder().Append("tabs").Build());
 
   ASSERT_EQ(1U, required_permissions().size());
   EXPECT_EQ(
@@ -219,8 +219,8 @@ TEST_F(PermissionMessagesUnittest,
 TEST_F(PermissionMessagesUnittest,
        AntiTest_PromptCanBeEmptyButCausesChangeInPermissions) {
   CreateAndInstallExtensionWithPermissions(
-      ListBuilder().Append("tabs").BuildList(),
-      ListBuilder().Append("sessions").BuildList());
+      ListBuilder().Append("tabs").Build(),
+      ListBuilder().Append("sessions").Build());
 
   ASSERT_EQ(1U, required_permissions().size());
   EXPECT_EQ(

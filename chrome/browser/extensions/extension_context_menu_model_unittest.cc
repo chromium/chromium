@@ -323,8 +323,7 @@ const Extension* ExtensionContextMenuModelTest::AddExtensionWithHostPermission(
   if (action_key)
     manifest.Set(action_key, DictionaryBuilder().BuildDict());
   if (!host_permission.empty())
-    manifest.Set("permissions",
-                 ListBuilder().Append(host_permission).BuildList());
+    manifest.Set("permissions", ListBuilder().Append(host_permission).Build());
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(manifest.BuildDict())

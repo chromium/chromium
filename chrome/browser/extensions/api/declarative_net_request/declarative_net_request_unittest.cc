@@ -266,7 +266,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     base::Value::List ids_to_remove_value =
         ListBuilder()
             .Append(rule_ids_to_remove.begin(), rule_ids_to_remove.end())
-            .BuildList();
+            .Build();
     base::Value::List rules_to_add_value = ToListValue(rules_to_add);
 
     constexpr const char kParams[] = R"(

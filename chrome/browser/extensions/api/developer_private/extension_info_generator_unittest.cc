@@ -273,8 +273,8 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
                                        .Append("*://*.example.com/*")
                                        .Append("*://*.foo.bar/*")
                                        .Append("*://*.chromium.org/*")
-                                       .BuildList())
-          .Set("permissions", ListBuilder().Append("tabs").BuildList())
+                                       .Build())
+          .Set("permissions", ListBuilder().Append("tabs").Build())
           .BuildDict();
   base::Value::Dict manifest_copy = manifest.Clone();
   scoped_refptr<const Extension> extension =
@@ -507,7 +507,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
 // Tests the generation of the runtime host permissions entries.
 TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissions) {
   scoped_refptr<const Extension> all_urls_extension = CreateExtension(
-      "all_urls", ListBuilder().Append(kAllHostsPermission).BuildList(),
+      "all_urls", ListBuilder().Append(kAllHostsPermission).Build(),
       ManifestLocation::kInternal);
 
   std::unique_ptr<developer::ExtensionInfo> info =
@@ -557,7 +557,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissions) {
   // An extension that doesn't request any host permissions should not have
   // runtime access controls.
   scoped_refptr<const Extension> no_urls_extension = CreateExtension(
-      "no urls", ListBuilder().BuildList(), ManifestLocation::kInternal);
+      "no urls", ListBuilder().Build(), ManifestLocation::kInternal);
   info = GenerateExtensionInfo(no_urls_extension->id());
   EXPECT_FALSE(info->permissions.runtime_host_permissions);
 }
@@ -567,9 +567,9 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissions) {
 // manifest.
 TEST_F(ExtensionInfoGeneratorUnitTest,
        RuntimeHostPermissionsBeyondRequestedScope) {
-  scoped_refptr<const Extension> extension = CreateExtension(
-      "extension", ListBuilder().Append("http://*/*").BuildList(),
-      ManifestLocation::kInternal);
+  scoped_refptr<const Extension> extension =
+      CreateExtension("extension", ListBuilder().Append("http://*/*").Build(),
+                      ManifestLocation::kInternal);
 
   std::unique_ptr<developer::ExtensionInfo> info =
       GenerateExtensionInfo(extension->id());
@@ -616,7 +616,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissionsSpecificHosts) {
                       ListBuilder()
                           .Append("https://example.com/*")
                           .Append("https://chromium.org/*")
-                          .BuildList(),
+                          .Build(),
                       ManifestLocation::kInternal);
 
   std::unique_ptr<developer::ExtensionInfo> info =
@@ -652,7 +652,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissionsSpecificHosts) {
 // correctly is treated as having access to all sites.
 TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissionsAllURLs) {
   scoped_refptr<const Extension> all_urls_extension = CreateExtension(
-      "all_urls", ListBuilder().Append(kAllHostsPermission).BuildList(),
+      "all_urls", ListBuilder().Append(kAllHostsPermission).Build(),
       ManifestLocation::kInternal);
 
   // Withholding host permissions should result in the extension being set to
@@ -694,7 +694,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, WithheldUrlsOverlapping) {
                       ListBuilder()
                           .Append("*://example.com/*")
                           .Append("https://chromium.org/*")
-                          .BuildList(),
+                          .Build(),
                       ManifestLocation::kInternal);
   ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.SetWithholdHostPermissions(true);
@@ -831,9 +831,9 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
 // Tests that file:// access checkbox shows up for extensions with activeTab
 // permission. See crbug.com/850643.
 TEST_F(ExtensionInfoGeneratorUnitTest, ActiveTabFileUrls) {
-  scoped_refptr<const Extension> extension = CreateExtension(
-      "activeTab", ListBuilder().Append("activeTab").BuildList(),
-      ManifestLocation::kInternal);
+  scoped_refptr<const Extension> extension =
+      CreateExtension("activeTab", ListBuilder().Append("activeTab").Build(),
+                      ManifestLocation::kInternal);
   std::unique_ptr<developer::ExtensionInfo> info =
       GenerateExtensionInfo(extension->id());
 

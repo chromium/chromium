@@ -91,7 +91,7 @@ class ExtensionSupportsConnectionFromNativeAppTest : public ::testing::Test {
           ScopedTestNativeMessagingHost::
               kSupportsNativeInitiatedConnectionsHostName);
       manifest_builder.Set(manifest_keys::kNativelyConnectable,
-                           natively_connectable_hosts.BuildList());
+                           natively_connectable_hosts.Build());
     }
 
     ListBuilder permissions;
@@ -101,7 +101,7 @@ class ExtensionSupportsConnectionFromNativeAppTest : public ::testing::Test {
     if (native_messaging_permission) {
       permissions.Append("nativeMessaging");
     }
-    manifest_builder.Set(manifest_keys::kPermissions, permissions.BuildList());
+    manifest_builder.Set(manifest_keys::kPermissions, permissions.Build());
 
     base::FilePath path;
     EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));

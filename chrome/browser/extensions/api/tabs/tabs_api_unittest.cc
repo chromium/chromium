@@ -307,7 +307,7 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
                   .Set("name", "Extension with tabs permission")
                   .Set("version", "1.0")
                   .Set("manifest_version", 2)
-                  .Set("permissions", ListBuilder().Append("tabs").BuildList())
+                  .Set("permissions", ListBuilder().Append("tabs").Build())
                   .BuildDict())
           .Build();
   base::Value::List tabs_list_with_permission = RunTabsQueryFunction(
@@ -359,7 +359,7 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
                   .Set("version", "1.0")
                   .Set("manifest_version", 2)
                   .Set("permissions",
-                       ListBuilder().Append("*://www.google.com/*").BuildList())
+                       ListBuilder().Append("*://www.google.com/*").Build())
                   .BuildDict())
           .Build();
 
@@ -410,7 +410,7 @@ TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
       .Set("description", "desc")
       .Set("version", "0.1")
       .Set("manifest_version", 2)
-      .Set("permissions", ListBuilder().Append("tabs").BuildList());
+      .Set("permissions", ListBuilder().Append("tabs").Build());
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(manifest.BuildDict())
@@ -520,9 +520,8 @@ TEST_F(TabsApiUnitTest, TabsUpdateJavaScriptUrlNotAllowed) {
                   .Set("name", "Extension with a host permission")
                   .Set("version", "1.0")
                   .Set("manifest_version", 2)
-                  .Set("permissions", ListBuilder()
-                                          .Append("http://www.example.com/*")
-                                          .BuildList())
+                  .Set("permissions",
+                       ListBuilder().Append("http://www.example.com/*").Build())
                   .BuildDict())
           .Build();
   auto function = base::MakeRefCounted<TabsUpdateFunction>();
