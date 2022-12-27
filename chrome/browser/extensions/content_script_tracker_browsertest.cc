@@ -897,7 +897,8 @@ IN_PROC_BROWSER_TEST_F(
   const Extension* extension = LoadExtension(unpacked_path);  // Step UI.1.3
   ASSERT_TRUE(extension);
   commit_delayer.Wait();                           // Step UI.3b - part1
-  navigation_manager.WaitForNavigationFinished();  // Step UI.3b - part2
+  ASSERT_TRUE(
+      navigation_manager.WaitForNavigationFinished());  // Step UI.3b - part2
   ASSERT_TRUE(listener.WaitUntilSatisfied());      // Step UI.4
 
   // Verify that content script has been injected.

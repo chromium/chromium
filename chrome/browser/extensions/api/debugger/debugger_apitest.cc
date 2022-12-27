@@ -760,8 +760,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest, Debugger) {
   content::TestNavigationManager navigation_manager_iframe(tab, iframe_url);
   tab->GetController().LoadURL(url, content::Referrer(),
                                ui::PAGE_TRANSITION_LINK, std::string());
-  navigation_manager.WaitForNavigationFinished();
-  navigation_manager_iframe.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(navigation_manager_iframe.WaitForNavigationFinished());
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   ASSERT_TRUE(RunExtensionTest("debugger",

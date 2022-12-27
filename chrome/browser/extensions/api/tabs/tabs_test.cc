@@ -2040,7 +2040,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TemporaryAddressSpoof) {
 
   // Wait for the TestNavigationManager-monitored navigation to complete to
   // avoid a race during browser teardown (see crbug.com/882213).
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 

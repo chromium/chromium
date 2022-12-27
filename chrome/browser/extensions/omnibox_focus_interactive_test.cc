@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveFencedFrameTest,
   EXPECT_TRUE(content::ExecuteScript(
       web_contents->GetPrimaryMainFrame(),
       content::JsReplace(kAddFencedFrameScript, fenced_frame_url)));
-  navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation.WaitForNavigationFinished());
 
   // Verify that after the fenced frame navigation, the tab contents stayed
   // focused.
