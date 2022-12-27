@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_profile.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 
@@ -388,5 +389,57 @@ TEST_F(InstalledLoaderUnitTest,
 
   RunHostPermissionsMetricsTest(params);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(InstalledLoaderUnitTest,
+       Browser_ProfileCanUseNonComponentExtensions_RegularProfile) {
+  InstalledLoader loader(service());
+  // testing_profile() defaults to a regular profile.
+  EXPECT_TRUE(loader.ProfileCanUseNonComponentExtensions(testing_profile()));
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       Browser_ProfileCannotUseNonComponentExtensions_NoProfile) {
+  InstalledLoader loader(service());
+  EXPECT_FALSE(loader.ProfileCanUseNonComponentExtensions(nullptr));
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       Browser_ProfileCannotUseNonComponentExtensions_GuestProfile) {
+  testing_profile()->SetGuestSession(true);
+  InstalledLoader loader(service());
+  EXPECT_FALSE(loader.ProfileCanUseNonComponentExtensions(testing_profile()));
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       Browser_ProfileCannotUseNonComponentExtensions_IncognitoProfile) {
+  TestingProfile* incognito_test_profile =
+      TestingProfile::Builder().BuildIncognito(testing_profile());
+  ASSERT_TRUE(incognito_test_profile);
+  InstalledLoader loader(service());
+  EXPECT_FALSE(
+      loader.ProfileCanUseNonComponentExtensions(incognito_test_profile));
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       Browser_ProfileCannotUseNonComponentExtensions_OTRProfile) {
+  TestingProfile* otr_test_profile =
+      TestingProfile::Builder().BuildOffTheRecord(
+          testing_profile(), Profile::OTRProfileID::CreateUniqueForTesting());
+  ASSERT_TRUE(otr_test_profile);
+  InstalledLoader loader(service());
+  EXPECT_FALSE(loader.ProfileCanUseNonComponentExtensions(otr_test_profile));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1383740): Expand to CrOS.
+TEST_F(InstalledLoaderUnitTest,
+       ChromeOS_ProfileCanUseNonComponentExtensions_RegularProfile) {
+  InstalledLoader loader(service());
+  // testing_profile() defaults to a regular profile.
+  EXPECT_FALSE(loader.ProfileCanUseNonComponentExtensions(testing_profile()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions

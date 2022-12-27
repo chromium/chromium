@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
@@ -405,6 +406,21 @@ void InstalledLoader::LoadAllExtensions() {
 
 void InstalledLoader::RecordExtensionsMetricsForTesting() {
   RecordExtensionsMetrics();
+}
+
+// static
+bool InstalledLoader::ProfileCanUseNonComponentExtensions(
+    const Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  return profile->IsRegularProfile();
+#else
+  // TODO(crbug.com/1383740): Expand to CrOS.
+  return false;
+#endif
 }
 
 // TODO(crbug.com/1163038): Separate out Webstore/Offstore metrics.
