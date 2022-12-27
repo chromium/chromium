@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_receiver_sink_optimizer.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -22,7 +21,7 @@ RtcEncodedAudioReceiverSinkOptimizer::PerformInProcessOptimization(
       script_state, std::move(transformer_),
       webrtc::TransformableFrameInterface::Direction::kReceiver);
 
-  std::move(set_underlying_sink_).Run(WrapCrossThreadPersistent(new_sink));
+  std::move(set_underlying_sink_).Run(new_sink);
 
   return new_sink;
 }
