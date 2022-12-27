@@ -306,10 +306,8 @@ void RecordTabGridCloseTabsCount(int count) {
 
   if (_webStateList) {
     _scopedWebStateListObservation->AddObservation(_webStateList);
-    for (int i = 0; i < self.webStateList->count(); i++) {
-      web::WebState* webState = self.webStateList->GetWebStateAt(i);
-      _scopedWebStateObservation->AddObservation(webState);
-    }
+    [self addWebStateObservations];
+
     if (self.webStateList->count() > 0) {
       [self populateConsumerItems];
     }
@@ -431,12 +429,16 @@ void RecordTabGridCloseTabsCount(int count) {
   if (IsPinnedTabsEnabled() && webStateList->IsWebStatePinnedAt(index)) {
     [self.consumer removeItemWithID:webState->GetStableIdentifier()
                      selectedItemID:GetActiveRegularWebStateId(webStateList)];
+
+    _scopedWebStateObservation->RemoveObservation(webState);
   } else {
     ItemListIndex itemListIndex =
         [self itemListIndexFromWebStateListIndex:index];
     [self.consumer insertItem:CreateItem(webState)
                       atIndex:itemListIndex
                selectedItemID:GetActiveRegularWebStateId(webStateList)];
+
+    _scopedWebStateObservation->AddObservation(webState);
   }
 }
 
@@ -447,12 +449,9 @@ void RecordTabGridCloseTabsCount(int count) {
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
   DCHECK_EQ(_webStateList, webStateList);
-  for (int i = 0; i < self.webStateList->count(); i++) {
-    web::WebState* webState = self.webStateList->GetWebStateAt(i);
-    _scopedWebStateObservation->AddObservation(webState);
-  }
-  [self.consumer populateItems:CreateItems(self.webStateList)
-                selectedItemID:GetActiveRegularWebStateId(self.webStateList)];
+
+  [self addWebStateObservations];
+  [self populateConsumerItems];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -1065,6 +1064,16 @@ void RecordTabGridCloseTabsCount(int count) {
 - (void)populateConsumerItems {
   [self.consumer populateItems:CreateItems(self.webStateList)
                 selectedItemID:GetActiveRegularWebStateId(self.webStateList)];
+}
+
+- (void)addWebStateObservations {
+  int firstIndex = IsPinnedTabsEnabled()
+                       ? self.webStateList->GetIndexOfFirstNonPinnedWebState()
+                       : 0;
+  for (int i = firstIndex; i < self.webStateList->count(); i++) {
+    web::WebState* webState = self.webStateList->GetWebStateAt(i);
+    _scopedWebStateObservation->AddObservation(webState);
+  }
 }
 
 // Removes `self.syncedClosedTabsCount` most recent entries from the

@@ -282,9 +282,13 @@ int GetIndexOfPinnedTabWithId(WebStateList* web_state_list,
     [self.consumer insertItem:CreateItem(webState)
                       atIndex:index
                selectedItemID:GetActivePinnedWebStateId(webStateList)];
+
+    _scopedWebStateObservation->AddObservation(webState);
   } else {
     [self.consumer removeItemWithID:webState->GetStableIdentifier()
                      selectedItemID:GetActivePinnedWebStateId(webStateList)];
+
+    _scopedWebStateObservation->RemoveObservation(webState);
   }
 }
 
