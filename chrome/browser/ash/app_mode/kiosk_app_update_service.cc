@@ -54,8 +54,9 @@ void KioskAppUpdateService::Init(const std::string& app_id) {
   if (automatic_reboot_manager_)
     automatic_reboot_manager_->AddObserver(this);
 
-  if (KioskAppManager::Get())
+  if (KioskAppManager::IsInitialized()) {
     KioskAppManager::Get()->AddObserver(this);
+  }
 
   if (automatic_reboot_manager_->reboot_requested())
     OnRebootRequested(automatic_reboot_manager_->reboot_reason());
@@ -83,8 +84,9 @@ void KioskAppUpdateService::Shutdown() {
       extensions::ExtensionSystem::Get(profile_)->extension_service();
   if (service)
     service->RemoveUpdateObserver(this);
-  if (KioskAppManager::Get())
+  if (KioskAppManager::IsInitialized()) {
     KioskAppManager::Get()->RemoveObserver(this);
+  }
   if (automatic_reboot_manager_)
     automatic_reboot_manager_->RemoveObserver(this);
 }

@@ -46,10 +46,6 @@
 #include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#endif
-
 using extensions::mojom::APIPermissionID;
 
 namespace extensions {
@@ -102,13 +98,6 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
     service->AddExtension(another_extension.get());
     service->AddExtension(extension_without_active_tab.get());
     service->AddExtension(extension_with_tab_capture.get());
-  }
-
-  void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::KioskAppManager::Shutdown();
-#endif
-    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   int tab_id() {

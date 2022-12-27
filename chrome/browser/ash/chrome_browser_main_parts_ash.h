@@ -92,6 +92,7 @@ class ShutdownPolicyForwarder;
 class SigninProfileHandler;
 class SystemTokenCertDBInitializer;
 class WebKioskAppManager;
+class KioskAppManager;
 
 namespace cros_healthd::internal {
 class DataCollector;
@@ -213,6 +214,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<LowDiskNotification> low_disk_notification_;
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<WebKioskAppManager> web_kiosk_app_manager_;
+  std::unique_ptr<KioskAppManager> kiosk_app_manager_;
   std::unique_ptr<MultiCaptureNotification> multi_capture_notification_;
 
   std::unique_ptr<ShortcutMappingPrefService> shortcut_mapping_pref_service_;

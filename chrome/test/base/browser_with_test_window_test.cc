@@ -34,7 +34,6 @@
 #include "components/constrained_window/constrained_window_views.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "content/public/browser/context_factory.h"
 #endif
 #endif
@@ -96,6 +95,7 @@ void BrowserWithTestWindowTest::SetUp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::IdleServiceAsh::DisableForTesting();
   manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+  kiosk_app_manager_ = std::make_unique<ash::KioskAppManager>();
 #endif
 
   // Subclasses can provide their own Profile.
@@ -131,6 +131,7 @@ void BrowserWithTestWindowTest::TearDown() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   manager_.reset();
+  kiosk_app_manager_.reset();
 #endif
 
   // Calling DeleteAllTestingProfiles() first can cause issues in some tests, if
@@ -144,11 +145,6 @@ void BrowserWithTestWindowTest::TearDown() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If initialized, the KioskAppManager will register an observer to
-  // CrosSettings and will need to be destroyed before it. Having it destroyed
-  // as part of the teardown will avoid unexpected test failures.
-  ash::KioskAppManager::Shutdown();
-
   ash_test_helper_.TearDown();
   test_views_delegate_.reset();
 #elif defined(TOOLKIT_VIEWS)

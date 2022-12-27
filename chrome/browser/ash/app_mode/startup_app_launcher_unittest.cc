@@ -377,9 +377,11 @@ class StartupAppLauncherNoCreateTest
 
     KioskAppManager::InitializeForTesting(this);
 
-    InitializePrimaryAppState();
-
     extensions::ExtensionServiceTestBase::SetUp();
+
+    // This should be called after KioskAppManager is created in
+    // ExtensionServiceTestBase::SetUp().
+    InitializePrimaryAppState();
 
     InitializeEmptyExtensionService();
     external_apps_loader_handler_ = std::make_unique<TestKioskLoaderVisitor>(
@@ -400,8 +402,6 @@ class StartupAppLauncherNoCreateTest
     external_apps_loader_handler_.reset();
 
     app_launch_tracker_.reset();
-
-    KioskAppManager::Shutdown();
 
     accounts_settings_helper_.reset();
 

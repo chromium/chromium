@@ -122,20 +122,16 @@ class KioskAppManager : public KioskAppManagerBase,
   static const char kKioskDictionaryName[];
   static const char kKeyAutoLoginState[];
 
-  // Gets the KioskAppManager instance, which is created on first call.
+  // Returns the manager instance. Crashes if it is not yet initialized.
   static KioskAppManager* Get();
+
+  static bool IsInitialized();
 
   // Initializes KioskAppManager for testing, injecting the provided overrides.
   // |overrides| can be null, in which case KioskAppManager will use default
   // behavior.
   // Must be called before Get().
   static void InitializeForTesting(Overrides* overrides);
-
-  // Prepares for shutdown and calls CleanUp() if needed.
-  static void Shutdown();
-
-  // Clears the global KioskAppManager.
-  static void ResetForTesting();
 
   // Registers kiosk app entries in local state.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -145,6 +141,11 @@ class KioskAppManager : public KioskAppManagerBase,
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   static bool IsConsumerKioskEnabled();
+
+  KioskAppManager();
+  KioskAppManager(const KioskAppManager&) = delete;
+  KioskAppManager& operator=(const KioskAppManager&) = delete;
+  ~KioskAppManager() override;
 
   // Initiates reading of consumer kiosk mode auto-launch status.
   void GetConsumerKioskAutoLaunchStatus(
@@ -275,15 +276,6 @@ class KioskAppManager : public KioskAppManagerBase,
     kApproved = 2,
     kRejected = 3,
   };
-
-  KioskAppManager();
-  KioskAppManager(const KioskAppManager&) = delete;
-  KioskAppManager& operator=(const KioskAppManager&) = delete;
-  ~KioskAppManager() override;
-
-  // Stop all data loading, remove its dependency on CrosSettings.
-  // Remove ash observers or dependencies.
-  void CleanUp();
 
   // Gets KioskAppData for the given app id.
   const KioskAppData* GetAppData(const std::string& app_id) const;

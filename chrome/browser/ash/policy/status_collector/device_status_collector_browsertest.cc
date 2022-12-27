@@ -914,6 +914,7 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   ~DeviceStatusCollectorTest() override {
     ash::SeneschalClient::Shutdown();
+    kiosk_app_manager_.reset();
     // |testing_profile_| must be destroyed while ConciergeClient is alive.
     testing_profile_.reset();
     ash::ConciergeClient::Shutdown();
@@ -925,7 +926,6 @@ class DeviceStatusCollectorTest : public testing::Test {
     ash::UserDataAuthClient::Shutdown();
     ash::CrasAudioHandler::Shutdown();
     ash::UpdateEngineClient::Shutdown();
-    ash::KioskAppManager::Shutdown();
     ash::cros_healthd::FakeCrosHealthd::Shutdown();
     ash::FakeSpacedClient::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
@@ -1107,13 +1107,15 @@ class DeviceStatusCollectorTest : public testing::Test {
   void MockAutoLaunchKioskAppWithRequiredPlatformVersion(
       const DeviceLocalAccount& auto_launch_app_account,
       const std::string& required_platform_version) {
-    ash::KioskAppManager* manager = ash::KioskAppManager::Get();
-    manager->AddAppForTest(
+    if (!kiosk_app_manager_) {
+      kiosk_app_manager_ = std::make_unique<ash::KioskAppManager>();
+    }
+    kiosk_app_manager_->AddAppForTest(
         auto_launch_app_account.kiosk_app_id,
         AccountId::FromUserEmail(auto_launch_app_account.user_id),
         GURL("http://cws/"),  // Dummy URL to avoid setup ExtensionsClient.
         required_platform_version);
-    manager->SetEnableAutoLaunch(true);
+    kiosk_app_manager_->SetEnableAutoLaunch(true);
 
     std::vector<DeviceLocalAccount> accounts;
     accounts.push_back(auto_launch_app_account);
@@ -1126,7 +1128,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     ASSERT_EQ(required_platform_version,
-              manager->GetAutoLaunchAppRequiredPlatformVersion());
+              kiosk_app_manager_->GetAutoLaunchAppRequiredPlatformVersion());
   }
 
   void MockAutoLaunchArcKioskApp(
@@ -1192,6 +1194,9 @@ class DeviceStatusCollectorTest : public testing::Test {
   std::unique_ptr<ash::ArcKioskAppManager> arc_kiosk_app_manager_;
   // Only set after MockAutoLaunchWebKioskApp was called.
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
+  // Only set after MockAutoLaunchKioskAppWithRequiredPlatformVersion was
+  // called.
+  std::unique_ptr<ash::KioskAppManager> kiosk_app_manager_;
   ash::MockUserManager* const user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   em::DeviceStatusReportRequest device_status_;

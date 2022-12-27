@@ -2524,8 +2524,12 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
   if (!platform_version.IsValid())
     return false;
 
-  const std::string required_platform_version_string =
-      ash::KioskAppManager::Get()->GetAutoLaunchAppRequiredPlatformVersion();
+  std::string required_platform_version_string;
+  // Can be uninitialized in tests.
+  if (ash::KioskAppManager::IsInitialized()) {
+    required_platform_version_string =
+        ash::KioskAppManager::Get()->GetAutoLaunchAppRequiredPlatformVersion();
+  }
   em::OsUpdateStatus* os_update_status = status->mutable_os_update_status();
 
   const update_engine::StatusResult update_engine_status =

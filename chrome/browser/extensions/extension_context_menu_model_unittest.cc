@@ -457,13 +457,6 @@ void ExtensionContextMenuModelTest::TearDown() {
       browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // The ash::KioskAppManager, if initialized, needs to be cleaned up.
-  // TODO(devlin): This should probably go somewhere more central, like
-  // ash::ScopedCrosSettingsTestHelper.
-  ash::KioskAppManager::Shutdown();
-#endif
-
   ExtensionServiceTestBase::TearDown();
 }
 

@@ -207,10 +207,6 @@ void KioskBaseTest::TearDownOnMainThread() {
   KioskLaunchController::SetNetworkTimeoutCallbackForTesting(nullptr);
 
   OobeBaseTest::TearDownOnMainThread();
-
-  // Clean up while main thread still runs.
-  // See http://crbug.com/176659.
-  KioskAppManager::Get()->CleanUp();
 }
 
 void KioskBaseTest::SetUpCommandLine(base::CommandLine* command_line) {

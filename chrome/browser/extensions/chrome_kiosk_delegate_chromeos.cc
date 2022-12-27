@@ -13,6 +13,10 @@ ChromeKioskDelegate::ChromeKioskDelegate() {}
 ChromeKioskDelegate::~ChromeKioskDelegate() {}
 
 bool ChromeKioskDelegate::IsAutoLaunchedKioskApp(const ExtensionId& id) const {
+  if (!ash::KioskAppManager::IsInitialized()) {
+    return false;
+  }
+
   ash::KioskAppManager::App app_info;
   return ash::KioskAppManager::Get()->GetApp(id, &app_info) &&
          app_info.was_auto_launched_with_zero_delay;

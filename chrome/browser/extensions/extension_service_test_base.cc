@@ -53,7 +53,6 @@
 #include "extensions/common/extensions_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/extensions/install_limiter.h"
 #endif
 
@@ -158,9 +157,6 @@ ExtensionServiceTestBase::~ExtensionServiceTestBase() {
   // TODO(1269752): Since we're getting rid of at_exit_manager_, perhaps
   // we don't need this call?
   profile_.reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::KioskAppManager::ResetForTesting();
-#endif
 }
 
 ExtensionServiceTestBase::ExtensionServiceInitParams
@@ -340,6 +336,10 @@ void ExtensionServiceTestBase::SetUp() {
   // return a false negative.
   ExtensionsClient::Get()->InitializeWebStoreUrls(
       base::CommandLine::ForCurrentProcess());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  kiosk_app_manager_ = std::make_unique<ash::KioskAppManager>();
+#endif
 }
 
 void ExtensionServiceTestBase::TearDown() {
@@ -352,6 +352,9 @@ void ExtensionServiceTestBase::TearDown() {
       partition->WaitForDeletionTasksForTesting();
   }
   policy_provider_.Shutdown();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  kiosk_app_manager_.reset();
+#endif
 }
 
 void ExtensionServiceTestBase::SetUpTestCase() {

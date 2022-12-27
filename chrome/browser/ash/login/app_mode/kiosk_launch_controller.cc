@@ -190,7 +190,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
 
   if (kiosk_app_id.type == KioskAppType::kChromeApp) {
     KioskAppManager::App app;
-    CHECK(KioskAppManager::Get());
+    DCHECK(KioskAppManager::IsInitialized());
     CHECK(KioskAppManager::Get()->GetApp(*kiosk_app_id.app_id, &app));
     kiosk_app_id_.account_id = app.account_id;
     if (auto_launch)

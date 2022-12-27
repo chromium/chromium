@@ -111,7 +111,6 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     // finish cleanly).
     // So ensure we let pending extension installations finish.
     WaitForPendingStandaloneExtensionsInstalled();
-    ash::KioskAppManager::Shutdown();
     ExtensionServiceTestBase::TearDown();
   }
 

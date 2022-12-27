@@ -27,6 +27,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #else
@@ -235,6 +236,7 @@ class BrowserWithTestWindowTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;
+  std::unique_ptr<ash::KioskAppManager> kiosk_app_manager_;
 #endif
 
   raw_ptr<TestingProfile> profile_ = nullptr;
