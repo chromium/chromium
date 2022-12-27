@@ -2600,7 +2600,7 @@
   },
   {
     "name": "enable-log-controller-for-diagnostics-app",
-    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
+    "owners": [ "ashleydp", "jimmyxgong", "michaelcheco", "cros-peripherals@google.com" ],
     "expiry_milestone": 120
   },
   {
