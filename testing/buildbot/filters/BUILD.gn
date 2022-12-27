@@ -261,6 +261,7 @@ source_set("gl_tests_filters") {
   testonly = true
 
   data = [
+    "//testing/buildbot/filters/android.arm64_proguard_rel.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator_11.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator_12.gl_tests.filter",
