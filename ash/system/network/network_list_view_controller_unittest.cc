@@ -599,6 +599,17 @@ class NetworkListViewControllerTest : public AshTestBase,
         id, type, connection_state, kSignalStrength);
   }
 
+  bool GetNetworkListItemIsEnabled(NetworkType type, size_t index) {
+    EXPECT_STREQ(network_list()->children().at(index)->GetClassName(),
+                 kNetworkListNetworkItemView);
+
+    NetworkListNetworkItemView* network =
+        static_cast<NetworkListNetworkItemView*>(
+            network_list()->children().at(index));
+
+    return network->GetEnabled();
+  }
+
   void SetBluetoothAdapterState(BluetoothSystemState system_state) {
     bluetooth_config_test_helper()
         ->fake_adapter_state_controller()
@@ -1388,6 +1399,32 @@ TEST_P(NetworkListViewControllerTest, NetworkScanning) {
   EXPECT_EQ(initial_scan_count + 2u, GetScanCount());
   EXPECT_EQ(initial_wifi_count + 1u, GetWifiScanCount());
   EXPECT_EQ(initial_tether_count + 1u, GetTetherScanCount());
+}
+
+TEST_P(NetworkListViewControllerTest, NetworkItemIsEnabled) {
+  AddEuicc();
+  SetupCellular();
+  ASSERT_THAT(GetMobileSubHeader(), NotNull());
+
+  std::vector<NetworkStatePropertiesPtr> networks;
+
+  NetworkStatePropertiesPtr cellular_network =
+      CreateStandaloneNetworkProperties(kCellularName, NetworkType::kCellular,
+                                        ConnectionStateType::kConnected);
+  cellular_network->prohibited_by_policy = false;
+  networks.push_back(std::move(cellular_network));
+  UpdateNetworkList(networks);
+
+  CheckNetworkListItem(NetworkType::kCellular, /*index=*/1u, kCellularName);
+  EXPECT_TRUE(GetNetworkListItemIsEnabled(NetworkType::kCellular, 1u));
+
+  networks.front()->prohibited_by_policy = true;
+  UpdateNetworkList(networks);
+  EXPECT_FALSE(GetNetworkListItemIsEnabled(NetworkType::kCellular, 1u));
+
+  networks.front()->prohibited_by_policy = false;
+  UpdateNetworkList(networks);
+  EXPECT_TRUE(GetNetworkListItemIsEnabled(NetworkType::kCellular, 1u));
 }
 
 }  // namespace ash

@@ -93,20 +93,6 @@ ActivationStateType GetNetworkActivationState(
   return ActivationStateType::kUnknown;
 }
 
-bool IsNetworkInhibited(const NetworkStatePropertiesPtr& network_properties) {
-  if (!NetworkTypeMatchesType(network_properties->type,
-                              NetworkType::kCellular)) {
-    return false;
-  }
-
-  const chromeos::network_config::mojom::DeviceStateProperties*
-      cellular_device =
-          Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
-              NetworkType::kCellular);
-
-  return cellular_device && IsInhibited(cellular_device);
-}
-
 bool IsCellularNetworkSimLocked(
     const NetworkStatePropertiesPtr& network_properties) {
   DCHECK(
@@ -155,31 +141,6 @@ bool IsNetworkConnectable(const NetworkStatePropertiesPtr& network_properties) {
   }
 
   return false;
-}
-
-bool IsNetworkDisabled(const NetworkStatePropertiesPtr& network_properties) {
-  if (!NetworkTypeMatchesType(network_properties->type,
-                              NetworkType::kCellular)) {
-    return false;
-  }
-
-  const CellularStateProperties* cellular =
-      network_properties->type_state->get_cellular().get();
-
-  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
-      cellular->sim_locked) {
-    return true;
-  }
-
-  if (cellular->activation_state == ActivationStateType::kActivating) {
-    return true;
-  }
-
-  if (IsNetworkInhibited(network_properties)) {
-    return true;
-  }
-
-  return network_properties->prohibited_by_policy;
 }
 
 bool IsWifiNetworkSecured(const NetworkStatePropertiesPtr& network_properties) {
