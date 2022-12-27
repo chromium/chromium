@@ -4,7 +4,6 @@ import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.tab.core.TabGroupImpl;
-import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
@@ -140,12 +139,24 @@ public class TabListManager {
     }
 
 
-    public PageInfo getPageInfoById(int id) {
+    public PageInfo findPageInfoById(int id) {
         if (id != Tab.INVALID_PAGE_ID) {
             for (ITabGroup tabList : mTabGroups.values()) {
                 PageInfo pageInfo = tabList.getPageInfoById(id);
                 if (pageInfo != null) {
                     return pageInfo;
+                }
+            }
+        }
+        return null;
+    }
+
+    public IPage findPageById(int pageId) {
+        if (pageId != Tab.INVALID_PAGE_ID) {
+            for (ITabGroup tabList : mTabGroups.values()) {
+                IPage page = tabList.getPageById(pageId);
+                if (page != null) {
+                    return page;
                 }
             }
         }

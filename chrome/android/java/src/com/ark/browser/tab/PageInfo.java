@@ -54,20 +54,20 @@ public class PageInfo {
         return info;
     }
 
-    public static PageInfo from(PageInfo pageInfo) {
-        PageInfo info = new PageInfo();
-        info.pageId = pageInfo.pageId;
-        info.originalIndex = pageInfo.originalIndex;
-        info.tabId = pageInfo.tabId;
-        info.isIncognito = pageInfo.isIncognito;
-        info.fromMerge = pageInfo.fromMerge;
-        info.themeColor = pageInfo.themeColor;
-        info.mUserAgent = pageInfo.mUserAgent;
-        info.url = pageInfo.url;
-        info.title = pageInfo.title;
-        info.save();
-        return info;
-    }
+//    public static PageInfo from(PageInfo pageInfo) {
+//        PageInfo info = new PageInfo();
+//        info.pageId = pageInfo.pageId;
+//        info.originalIndex = pageInfo.originalIndex;
+//        info.tabId = pageInfo.tabId;
+//        info.isIncognito = pageInfo.isIncognito;
+//        info.fromMerge = pageInfo.fromMerge;
+//        info.themeColor = pageInfo.themeColor;
+//        info.mUserAgent = pageInfo.mUserAgent;
+//        info.url = pageInfo.url;
+//        info.title = pageInfo.title;
+//        info.save();
+//        return info;
+//    }
 
 
     public static PageInfo from(File pageFile) throws IOException {

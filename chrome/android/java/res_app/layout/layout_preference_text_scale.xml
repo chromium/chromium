@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="文字大小"
+        android:textColor="?attr/textColorMajor"
+        android:textSize="16dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/seekbar_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/textColorNormal"
+            android:textSize="12sp"
+            android:text="100"
+            android:gravity="end"
+            android:minWidth="40sp" />
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="10dp"
+            android:paddingEnd="5dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <!--    <com.lihang.ShadowLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="10dp"-->
+    <!--        app:hl_shadowBackColor="?attr/backgroundColorCard"-->
+    <!--        app:hl_shadowLimit="8dp"-->
+    <!--        app:hl_cornerRadius="8dp"-->
+    <!--        app:hl_shadowColor="#80cccccc"-->
+    <!--        >-->
+
+    <!--        <TextView-->
+    <!--            android:id="@+id/preview"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="180dp"-->
+    <!--            android:padding="16dp"-->
+    <!--            android:text="@string/font_size_preview_text"-->
+    <!--            android:textColor="?attr/textColorMajor"-->
+    <!--            android:lineSpacingExtra="6dp" />-->
+
+    <!--    </com.lihang.ShadowLayout>-->
+
+    <!--    <android.support.v7.widget.CardView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="8dp"-->
+    <!--        app:cardElevation="1dp"-->
+    <!--        app:cardUseCompatPadding="true"-->
+    <!--        app:cardCornerRadius="8dp"-->
+    <!--        app:cardBackgroundColor="?attr/backgroundColorCard"-->
+    <!--        android:alpha="0.8"-->
+    <!--        >-->
+
+    <!--        -->
+
+    <!--    </android.support.v7.widget.CardView>-->
+
+    <TextView
+        android:id="@+id/preview"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginTop="8dp"
+        android:padding="16dp"
+        android:text="@string/text_font_size_preview"
+        android:textColor="?attr/textColorMajor"
+        android:lineSpacingExtra="6dp"
+        android:background="@drawable/bg_round_accent"
+        />
+
+</LinearLayout>

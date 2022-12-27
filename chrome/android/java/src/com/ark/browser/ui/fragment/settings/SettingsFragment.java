@@ -17,6 +17,8 @@ import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
 import com.ark.browser.ui.fragment.dialog.AboutMeDialog;
 import com.ark.browser.ui.fragment.dialog.SearchEngineSelectDialog;
 import com.ark.browser.ui.fragment.dialog.UserAgentSelectDialog;
+import com.ark.browser.ui.fragment.settings.accessibility.AccessibilityFragment;
+import com.ark.browser.ui.fragment.settings.privacy.PrivacyFragment;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
@@ -168,9 +170,9 @@ public class SettingsFragment extends BaseSwipeBackFragment
         } else if (id == R.id.item_notification) {
             goNotificationSetting();
         } else if (id == R.id.item_privacy) {
-//            _mActivity.start(new PrivacyFragment());
+            _mActivity.start(new PrivacyFragment());
         } else if (id == R.id.item_accessibility) {
-//            _mActivity.start(new AccessibilityFragment());
+            _mActivity.start(new AccessibilityFragment());
         } else if (id == R.id.item_website) {
 //            _mActivity.start(new WebSiteSettingsFragment());
         } else if (id == R.id.item_data_reduction) {

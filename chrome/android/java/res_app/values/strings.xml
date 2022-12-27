@@ -22,4 +22,8 @@
     <string name="text_clipboard_intercept_tip">监听到该网页正在尝试写入粘贴板，是否拦截？</string>
     <string name="text_clipboard_intercept">粘贴板劫持</string>
 
+    <string name="text_settings_privacy">"隐私设置"</string>
+
+    <string name="text_font_size_preview">"拖动该滑块，将文字调整到适合您阅读的大小。点按两次某段落后，显示的文字至少应是这么大。"</string>
+
 </resources>

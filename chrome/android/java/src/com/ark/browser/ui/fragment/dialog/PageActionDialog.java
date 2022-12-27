@@ -44,7 +44,7 @@ public class PageActionDialog extends AttachListDialogFragment<String>
         } else {
             pageId = savedInstanceState.getInt(KEY_ID, Tab.INVALID_PAGE_ID);
         }
-        mPageInfo = TabListManager.getInstance().getPageInfoById(pageId);
+        mPageInfo = TabListManager.getInstance().findPageInfoById(pageId);
         if (mPageInfo == null) {
             popThis();
         }

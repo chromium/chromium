@@ -13,6 +13,7 @@ import com.ark.browser.core.bookmark.BookmarkBridge;
 import com.ark.browser.core.bookmark.BookmarkModel;
 import com.ark.browser.ui.fragment.dialog.CollectionEditorDialog;
 import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
+import com.ark.browser.ui.fragment.dialog.TabActionDialog;
 import com.ark.browser.ui.fragment.dialog.ToolsDialog;
 import com.ark.browser.ui.fragment.search.SearchFragment;
 import com.ark.browser.ui.widget.indicator.CoolIndicator;
@@ -46,7 +47,7 @@ public class BottomController {
 
     private final EmptyTabObserver mTabObserver;
 
-    private Tab mPage;
+    private Tab mTab;
     private boolean mIsIncognito;
     private int mPrimaryColor;
 
@@ -55,7 +56,7 @@ public class BottomController {
     private final BookmarkBridge.BookmarkModelObserver mBookmarksObserver = new BookmarkBridge.BookmarkModelObserver() {
         @Override
         public void bookmarkModelChanged() {
-            updateStarButton(mPage);
+            updateStarButton(mTab);
         }
     };
 
@@ -73,27 +74,24 @@ public class BottomController {
         menuButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-//                TabActionDialog.newInstance().show(v);
+                TabActionDialog.newInstance(mTab.getId()).show(v);
                 return true;
             }
         });
 
         toolButton = view.findViewById(R.id.btn_tools);
         toolButton.setOnClickListener(v -> {
-//            if (mCurrentPageInfo != null) {
-//                ToolsDialog.newInstance(mCurrentPageInfo.getPageId()).show(context);
-//            }
-            ToolsDialog.start(mContext, mPage);
+            ToolsDialog.start(mContext, mTab);
         });
 
         starButton = view.findViewById(R.id.btn_star);
         starButton.setOnClickListener((View.OnClickListener) v -> {
 //            CollectionEditorDialog.newInstance((BookmarkId) null).show(v.getContext());
-            if (mPage == null) {
+            if (mTab == null) {
                 return;
             }
 
-            CollectionEditorDialog.newInstance(mPage).show(v.getContext());
+            CollectionEditorDialog.newInstance(mTab).show(v.getContext());
 
 //            BookmarkId bookmarkId = mBookmarkModel.getUserBookmarkIdForTab(mPage);
 //            if (bookmarkId == null) {
@@ -115,15 +113,15 @@ public class BottomController {
 
         loadingCancel = view.findViewById(R.id.loading_cancel);
         loadingCancel.setOnClickListener(v -> {
-            if (mPage == null) {
+            if (mTab == null) {
                 return;
             }
-            if (mPage.isLoading()) {
+            if (mTab.isLoading()) {
                 loadingCancel.setImageResource(R.drawable.ic_refresh);
-                mPage.stopLoading();
+                mTab.stopLoading();
             } else {
                 loadingCancel.setImageResource(R.drawable.ic_cancel);
-                mPage.reload();
+                mTab.reload();
             }
         });
 
@@ -262,7 +260,7 @@ public class BottomController {
     public void onPageAttached(@NonNull Tab page) {
         ArkLogger.e(TAG, "onPageAttached page=" + page.getId());
         page.addObserver(mTabObserver);
-        mPage = page;
+        mTab = page;
         mIsIncognito = page.isIncognito();
         loadingTitle.setText(page.getTitle());
         int drawableId = page.isLoading() ? R.drawable.ic_cancel : R.drawable.ic_refresh;
@@ -281,8 +279,8 @@ public class BottomController {
     }
 
     public void onDestroy() {
-        if (mPage != null) {
-            mPage.removeObserver(mTabObserver);
+        if (mTab != null) {
+            mTab.removeObserver(mTabObserver);
         }
         if (mBookmarkModel != null) {
             mBookmarkModel.removeObserver(mBookmarksObserver);

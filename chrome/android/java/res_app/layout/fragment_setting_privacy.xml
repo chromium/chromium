@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColorAccent"
+    >
+
+    <include layout="@layout/layout_header"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        >
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="?attr/backgroundColor"
+            app:cardUseCompatPadding="false"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            android:layout_margin="16dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <com.zpj.widget.setting.SwitchSettingItem
+                    android:id="@+id/item_navigation_error"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="导航错误建议"
+                    />
+
+                <com.zpj.widget.setting.SwitchSettingItem
+                    android:id="@+id/item_search_suggestions"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="搜索关键词联想"
+                    />
+
+                <com.zpj.widget.setting.SwitchSettingItem
+                    android:id="@+id/item_safe_browsing_extended_reporting"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="安全事件"
+                    />
+
+                <com.zpj.widget.setting.SwitchSettingItem
+                    android:id="@+id/item_safe_browsing_scout_reporting"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="安全报告"
+                    />
+
+                <com.zpj.widget.setting.SwitchSettingItem
+                    android:id="@+id/item_safe_browsing"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="安全浏览"
+                    />
+
+                <com.zpj.widget.setting.SwitchSettingItem
+                    android:id="@+id/item_network_predictions"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="预加载网页"
+                    />
+
+                <com.zpj.widget.setting.SwitchSettingItem
+                    android:id="@+id/item_usage_and_crash_reports"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="使用情况统计信息和崩溃报告"
+                    app:z_setting_infoText="将使用情况统计信息和崩溃报告自动发送给 Google"
+                    />
+
+                <com.zpj.widget.setting.SwitchSettingItem
+                    android:id="@+id/item_do_not_track"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="不跟踪"
+                    app:z_setting_infoText="如果您启用了“不跟踪”，您的浏览流量中将会包含一项请求。具体影响取决于网站是否会回应该请求以及如何解读该请求。\n例如：某些网站在收到该请求后，可能会向您展示相应的广告（这些广告并不是根据您访问过的其他网站而展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了提供相关内容、广告和推荐内容，以及为了生成报告统计信息。"
+                    />
+
+                <com.zpj.widget.setting.SwitchSettingItem
+                    android:id="@+id/item_contextual_search"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="触摸搜索"
+                    app:z_setting_infoText="无需离开所在页面，即可了解网站上的主题。“触摸搜索”功能会将被触摸的字词及上下文一起发送至 Google 搜索，后者将返回相应的定义、图片、搜索结果及其他详细信息。\n要调整搜索字词，请长按将其选中。要缩小搜索范围，请将面板向上滑动到顶部，然后触摸搜索框。"
+                    />
+
+                <com.zpj.widget.setting.CommonSettingItem
+                    android:id="@+id/item_clear_browsing_data"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="清除浏览数据"
+                    />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </ScrollView>
+
+
+
+</LinearLayout>

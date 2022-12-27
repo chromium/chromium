@@ -109,6 +109,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/dialog/RecyclerPartShadowDialogFragment.java",
   "java/src/com/ark/browser/ui/fragment/dialog/SearchEngineSelectDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ShareDialog.java",
+  "java/src/com/ark/browser/ui/fragment/dialog/TabActionDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ToolsDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/UserAgentSelectDialog.java",
 
@@ -123,6 +124,8 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/search/VerticalTranslateAnimator.java",
 
   "java/src/com/ark/browser/ui/fragment/settings/SettingsFragment.java",
+  "java/src/com/ark/browser/ui/fragment/settings/accessibility/AccessibilityFragment.java",
+  "java/src/com/ark/browser/ui/fragment/settings/privacy/PrivacyFragment.java",
 
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
   "java/src/com/ark/browser/ui/drawable/CircleDrawable.java",
