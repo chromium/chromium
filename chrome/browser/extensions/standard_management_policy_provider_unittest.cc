@@ -151,11 +151,10 @@ TEST_F(StandardManagementPolicyProviderTest, NotRequiredExtension) {
 // Tests the behavior of the ManagementPolicy provider methods for a theme
 // extension with and without a set policy theme.
 TEST_F(StandardManagementPolicyProviderTest, ThemeExtension) {
-  auto extension =
-      ExtensionBuilder("testTheme")
-          .SetLocation(ManifestLocation::kInternal)
-          .SetManifestKey("theme", std::make_unique<base::DictionaryValue>())
-          .Build();
+  auto extension = ExtensionBuilder("testTheme")
+                       .SetLocation(ManifestLocation::kInternal)
+                       .SetManifestKey("theme", base::Value::Dict())
+                       .Build();
   std::u16string error16;
 
   EXPECT_EQ(extension->GetType(), Manifest::TYPE_THEME);

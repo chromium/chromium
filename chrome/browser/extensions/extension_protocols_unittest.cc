@@ -778,9 +778,8 @@ TEST_F(ExtensionProtocolsTest, MimeTypesForKnownFiles) {
         "web_accessible_resources": ["*"]
       })";
   test_dir.WriteManifest(kManifest);
-  std::unique_ptr<base::DictionaryValue> manifest = base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(base::test::ParseJson(kManifest)));
-  ASSERT_TRUE(manifest);
+  base::Value::Dict manifest = base::test::ParseJsonDict(kManifest);
+  ASSERT_FALSE(manifest.empty());
 
   test_dir.WriteFile(FILE_PATH_LITERAL("json_file.json"), "{}");
   test_dir.WriteFile(FILE_PATH_LITERAL("js_file.js"), "function() {}");

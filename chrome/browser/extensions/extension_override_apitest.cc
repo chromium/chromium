@@ -348,12 +348,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldCleanUpDuplicateEntries) {
   // a preferences file without corresponding UnloadExtension() calls. This is
   // the same as the above test, except for that it is testing the case where
   // the file already contains dupes when an extension is loaded.
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   for (size_t i = 0; i < 3; ++i) {
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-    dict->SetStringKey("entry", "http://www.google.com/");
-    dict->SetBoolKey("active", true);
-    list.Append(std::move(*dict));
+    base::Value::Dict dict;
+    dict.Set("entry", "http://www.google.com/");
+    dict.Set("active", true);
+    list.Append(std::move(dict));
   }
 
   {

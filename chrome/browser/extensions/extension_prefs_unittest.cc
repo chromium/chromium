@@ -1085,9 +1085,10 @@ class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
     EXPECT_EQ(kTestValue, str_value);
 
     // TODO(crbug.com/1015619): Remove 2023-05. kPrefStringForIdMapping.
-    auto dictionary = std::make_unique<base::DictionaryValue>();
-    prefs()->UpdateExtensionPref(extension_->id(), kPrefStringForIdMapping,
-                                 std::move(dictionary));
+    base::Value::Dict dictionary;
+    prefs()->UpdateExtensionPref(
+        extension_->id(), kPrefStringForIdMapping,
+        std::make_unique<base::Value>(std::move(dictionary)));
     EXPECT_TRUE(
         prefs()->ReadPrefAsDict(extension_->id(), kPrefStringForIdMapping));
 
