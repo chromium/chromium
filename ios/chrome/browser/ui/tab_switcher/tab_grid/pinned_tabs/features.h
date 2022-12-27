@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_PINNED_TABS_FEATURES_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_PINNED_TABS_FEATURES_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_PINNED_TABS_FEATURES_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_PINNED_TABS_FEATURES_H_
 
 #import "base/feature_list.h"
 
@@ -33,4 +33,4 @@ bool IsPinnedTabsOverflowEnabled();
 // Convenience method for determining the position of Pinned Tabs.
 PinnedTabsPosition GetPinnedTabsPosition();
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_PINNED_TABS_FEATURES_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_PINNED_TABS_FEATURES_H_

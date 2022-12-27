@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_PINNED_TABS_PINNED_TABS_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_PINNED_TABS_PINNED_TABS_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_PINNED_TABS_PINNED_TABS_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_PINNED_TABS_PINNED_TABS_CONSTANTS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -45,4 +45,4 @@ extern const CGFloat kPinnedCellFaviconCornerRadius;
 extern const CGFloat kPinnedCellVerticalLayoutInsets;
 extern const CGFloat kPinnedCellHorizontalLayoutInsets;
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_PINNED_TABS_PINNED_TABS_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_PINNED_TABS_PINNED_TABS_CONSTANTS_H_

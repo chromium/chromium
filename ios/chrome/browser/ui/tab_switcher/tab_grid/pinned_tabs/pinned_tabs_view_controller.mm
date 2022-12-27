@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
 
 #import "base/dcheck_is_on.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/numerics/safe_conversions.h"
-#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/features.h"
-#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_cell.h"
-#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_constants.h"
-#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_cell.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -302,8 +302,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Presumably this is a race condition where an item has been deleted at the
   // same time as the collection is doing layout. The assumption is that there
   // will be another, correct layout shortly after the incorrect one.
-  if (itemIndex >= _items.count)
+  if (itemIndex >= _items.count) {
     itemIndex = _items.count - 1;
+  }
 
   TabSwitcherItem* item = _items[itemIndex];
   PinnedCell* cell = base::mac::ObjCCastStrict<PinnedCell>([collectionView
@@ -484,8 +485,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                     completion:^(UIImage* icon) {
                                       // Only update the icon if the cell is not
                                       // already reused for another item.
-                                      if ([cell hasIdentifier:itemIdentifier])
+                                      if ([cell hasIdentifier:itemIdentifier]) {
                                         cell.faviconView.image = icon;
+                                      }
                                     }];
   }
 }
