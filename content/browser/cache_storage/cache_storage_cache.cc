@@ -1789,9 +1789,6 @@ void CacheStorageCache::Put(blink::mojom::FetchAPIRequestPtr request,
                             ErrorCallback callback) {
   DCHECK(BACKEND_OPEN == backend_state_ || initializing_);
 
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorkerCache.Cache.AllWritesResponseType",
-                            response->response_type);
-
   auto put_context = cache_entry_handler_->CreatePutContext(
       std::move(request), std::move(response), trace_id);
   auto id = scheduler_->CreateId();
@@ -2627,9 +2624,6 @@ void CacheStorageCache::InitGotCacheSizeAndPadding(
                     backend_ && backend_state_ == BACKEND_UNINITIALIZED)
                        ? BACKEND_OPEN
                        : BACKEND_CLOSED;
-
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorkerCache.InitBackendResult",
-                            cache_create_error);
 
   if (cache_observer_)
     cache_observer_->CacheSizeUpdated(this);

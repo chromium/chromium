@@ -1293,15 +1293,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ServiceWorkerCache.Cache.AllWritesResponseType"
-    enum="FetchResponseType" expires_after="M77">
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records the response type to be added in the Cache by all operations that
-    write to the cache.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorkerCache.Cache.Browser.Match.Initialized" units="ms"
     expires_after="2023-05-26">
   <owner>ayui@chromium.org</owner>
@@ -1455,14 +1446,6 @@ chromium-metrics-reviews@google.com.
     Records where the generic kErrorStorage value is triggered within the
     cache_storage code. This histogram was temporarily disabled from late
     10/2021 to early 12/2021.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorkerCache.InitBackendResult"
-    enum="CacheStorageErrorType" expires_after="M81">
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The result of opening the backend in the ServiceWorker Cache API.
   </summary>
 </histogram>
 
