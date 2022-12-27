@@ -45,6 +45,7 @@ public class PrivacyGuideFragment extends Fragment {
         int HISTORY_SYNC = 1;
         int SAFE_BROWSING = 2;
         int COOKIES = 3;
+        int MAX_VALUE = COOKIES;
     }
 
     private BottomSheetController mBottomSheetController;
