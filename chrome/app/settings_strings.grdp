@@ -3826,14 +3826,20 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_NO_SITES_FOUND" desc="Explanation shown when there are no matching search results on All Sites page.">
     No sites found
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_ASK" desc="The label that is used to show the Bluetooth scanning setting is set to ask in site settings.">
-    Ask when a site wants to discover nearby Bluetooth devices
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_DESCRIPTION" desc="Description text on the page controlling whether sites can use Bluetooth scanning.">
+    Sites usually look for Bluetooth devices for features like setting up or syncing a low-energy beacon, a health or fitness tracker, or a smart light bulb
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_ASK_RECOMMENDED" desc="The label that is used to show the Bluetooth scanning setting is set to ask (with the 'recommended' suffix) in site settings.">
-    Ask when a site wants to discover nearby Bluetooth devices (recommended)
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_ASK" desc="The label that is used to show the Bluetooth scanning setting is set to ask in site settings.">
+    Sites can ask to look for Bluetooth devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_BLOCK" desc="The label that is used to show the Bluetooth scanning setting is set to block in site settings.">
-    Do not allow any site to discover nearby Bluetooth devices
+    Don't allow sites to look for Bluetooth devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_ALLOWED_EXCEPTIONS" desc="The label for the section that displayed sites that are always allowed to use bluetooth scanning.">
+    Allowed to look for Bluetooth devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_BLOCKED_EXCEPTIONS" desc="The label for the section that displayed sites that are never allowed to use bluetooth scanning.">
+    Not allowed to look for Bluetooth devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_EXTENSION_ID_DESCRIPTION" desc="Description for an extension using its extension id.">
     ID: <ph name="EXTENSION_ID">$1<ex>mhabknllooicelmdboebjilbohdbihln</ex></ph>
