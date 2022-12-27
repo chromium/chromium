@@ -45,16 +45,8 @@ const char kEndpointResponseSuccess[] =
 class AccessCodeCastSinkServiceBrowserTest
     : public AccessCodeCastIntegrationBrowserTest {};
 
-// TODO(b/242928209): Saved device tests are flaky on linux-rel/Mac/ChromeOS.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PRE_InstantExpiration DISABLED_PRE_InstantExpiration
-#define MAYBE_InstantExpiration DISABLED_InstantExpiration
-#else
-#define MAYBE_PRE_InstantExpiration PRE_InstantExpiration
-#define MAYBE_InstantExpiration InstantExpiration
-#endif
 IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
-                       MAYBE_PRE_InstantExpiration) {
+                       PRE_InstantExpiration) {
 #if BUILDFLAG(IS_WIN)
   // TODO(b/235896651): This test sometimes timesout on win10.
   if (base::win::GetVersion() >= base::win::Version::WIN10)
@@ -119,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
-                       MAYBE_InstantExpiration) {
+                       InstantExpiration) {
 #if BUILDFLAG(IS_WIN)
   // TODO(b/235896651): This test sometimes timesout on win10.
   if (base::win::GetVersion() >= base::win::Version::WIN10)
@@ -143,16 +135,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
                          weak_ptr_factory_.GetWeakPtr()));
 }
 
-// TODO(b/242928209): Saved device tests are flaky on linux-rel/Mac
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PRE_SavedDevice DISABLED_PRE_SavedDevice
-#define MAYBE_SavedDevice DISABLED_SavedDevice
-#else
-#define MAYBE_PRE_SavedDevice PRE_SavedDevice
-#define MAYBE_SavedDevice SavedDevice
-#endif
-IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
-                       MAYBE_PRE_SavedDevice) {
+IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, PRE_SavedDevice) {
 #if BUILDFLAG(IS_WIN)
   // TODO(b/235896651): This test sometimes timesout on win10.
   if (base::win::GetVersion() >= base::win::Version::WIN10)
@@ -209,8 +192,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
       GetPrefUpdater()->GetMediaSinkInternalValueBySinkId("cast:<1234>"));
 }
 
-IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
-                       MAYBE_SavedDevice) {
+IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, SavedDevice) {
 #if BUILDFLAG(IS_WIN)
   // TODO(b/235896651): This test sometimes timesout on win10.
   if (base::win::GetVersion() >= base::win::Version::WIN10)
