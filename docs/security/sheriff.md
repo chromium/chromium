@@ -154,11 +154,7 @@ i like that.")
       access, so this will probably make the issue inaccessible to you.
 * **If the report is asking about why something is or is not on the Safe
   Browsing list:**
-  * Assign it to zbutler@, who will triage it for the Safe Browsing team.
-	* Remove the **Restrict-View-SecurityTeam** label and add the
-  **Restrict-View-Google** label.
-  * Change **Type-Bug-Security** label to **Type-Bug**.
-  * Add the **Security** component.
+  * Close the bug and request the reporter submit the URL to SafeBrowsing.
   * See below for reporting URLs to SafeBrowsing.
 * **If the report is a potentially valid bug but is not a security
   vulnerability:**
@@ -349,8 +345,10 @@ changes.** Severity, milestone, and priority assignment generally require
 explanatory text.
 
 * Report suspected malicious URLs to SafeBrowsing:
-  * Public URL:
-  [https://support.google.com/websearch/contact/safe_browsing](https://support.google.com/websearch/contact/safe_browsing).
+  * Public URLs:
+    * [Report malware](https://safebrowsing.google.com/safebrowsing/report_badware/?hl=en)
+    * [Report phishing](https://safebrowsing.google.com/safebrowsing/report_phish/?hl=en)
+    * [Report incorrect phishing warning](https://safebrowsing.google.com/safebrowsing/report_error/?hl=en)
   * Googlers: see instructions at [go/safebrowsing-escalation](https://goto.google.com/safebrowsing-escalation)
   * Report suspected malicious file attachments to SafeBrowsing and VirusTotal.
 * Make sure the report is properly forwarded when the vulnerability is in an
