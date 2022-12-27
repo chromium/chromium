@@ -289,6 +289,7 @@ VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
 #endif
       {
         profile.min_resolution = min_resolution;
+        profile.is_software_codec = false;
         profile.profile = supported_profile;
         profiles.push_back(profile);
 
@@ -328,6 +329,7 @@ VTVideoEncodeAccelerator::GetSupportedHEVCProfiles() {
     for (const auto& supported_profile : kSupportedProfiles) {
       if (VideoCodecProfileToVideoCodec(supported_profile) ==
           VideoCodec::kHEVC) {
+        profile.is_software_codec = false;
         profile.profile = supported_profile;
         profiles.push_back(profile);
 
