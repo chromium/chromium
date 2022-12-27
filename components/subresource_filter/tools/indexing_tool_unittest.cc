@@ -131,20 +131,16 @@ TEST_F(IndexingToolTest, VersionMetadata) {
   WriteVersionMetadata(version_path, "1.2.3", checksum);
   std::string version_json;
   EXPECT_TRUE(base::ReadFileToString(version_path, &version_json));
-  std::unique_ptr<base::DictionaryValue> json = base::DictionaryValue::From(
-      base::JSONReader::ReadDeprecated(version_json));
+  absl::optional<base::Value> json = base::JSONReader::Read(version_json);
 
-  std::string actual_content =
-      json->FindPath({"subresource_filter", "ruleset_version", "content"})
-          ->GetString();
-  EXPECT_EQ("1.2.3", actual_content);
-  int actual_format =
-      json->FindPath({"subresource_filter", "ruleset_version", "format"})
-          ->GetInt();
+  std::string* actual_content = json->GetDict().FindStringByDottedPath(
+      "subresource_filter.ruleset_version.content");
+  EXPECT_EQ("1.2.3", *actual_content);
+  absl::optional<int> actual_format = json->GetDict().FindIntByDottedPath(
+      "subresource_filter.ruleset_version.format");
   EXPECT_EQ(RulesetIndexer::kIndexedFormatVersion, actual_format);
-  int actual_checksum =
-      json->FindPath({"subresource_filter", "ruleset_version", "checksum"})
-          ->GetInt();
+  absl::optional<int> actual_checksum = json->GetDict().FindIntByDottedPath(
+      "subresource_filter.ruleset_version.checksum");
   EXPECT_EQ(checksum, actual_checksum);
 }
 
