@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -147,15 +148,13 @@ void OnAllowKeyForUsageDone(chromeos::platform_keys::Status status) {
 // |scope| is CertScope::kDevice.
 void MarkKeyAsCorporate(CertScope scope,
                         Profile* profile,
-                        const std::string& public_key_spki_der) {
+                        const std::vector<uint8_t>& public_key_spki_der) {
   CHECK(profile || scope == CertScope::kDevice);
 
-  std::vector<uint8_t> public_key_blob(public_key_spki_der.begin(),
-                                       public_key_spki_der.end());
   GetKeyPermissionsManager(scope, profile)
       ->AllowKeyForUsage(base::BindOnce(&OnAllowKeyForUsageDone),
                          platform_keys::KeyUsage::kCorporate,
-                         std::move(public_key_blob));
+                         public_key_spki_der);
 }
 
 base::TimeDelta GetTryLaterDelayForRequestType(
@@ -182,6 +181,18 @@ std::string ConstructFailureMessage(
             "User is not affiliated. Certificate profile is not applicable.");
   }
   return (failure_message + challenge_result.GetErrorMessage());
+}
+
+// TODO(b/192071491): Remove the use of this function by changing the
+// dependencies.
+std::vector<uint8_t> StrToBytes(base::StringPiece str) {
+  return std::vector<uint8_t>(str.begin(), str.end());
+}
+
+// TODO(b/192071491): Remove the use of this function by changing the
+// dependencies.
+std::string BytesToStr(const std::vector<uint8_t>& blob) {
+  return std::string(blob.begin(), blob.end());
 }
 
 }  // namespace
@@ -290,7 +301,7 @@ const CertProfile& CertProvisioningWorkerImpl::GetCertProfile() const {
   return cert_profile_;
 }
 
-const std::string& CertProvisioningWorkerImpl::GetPublicKey() const {
+const std::vector<uint8_t>& CertProvisioningWorkerImpl::GetPublicKey() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return public_key_;
@@ -437,7 +448,7 @@ void CertProvisioningWorkerImpl::OnGenerateRegularKeyDone(
     return;
   }
 
-  public_key_ = public_key_spki_der;
+  public_key_ = StrToBytes(public_key_spki_der);
   UpdateState(FROM_HERE, CertProvisioningWorkerState::kKeypairGenerated);
   DoStep();
 }
@@ -479,7 +490,7 @@ void CertProvisioningWorkerImpl::OnGenerateKeyForVaDone(
     return;
   }
 
-  public_key_ = result.public_key;
+  public_key_ = StrToBytes(result.public_key);
   UpdateState(FROM_HERE, CertProvisioningWorkerState::kKeypairGenerated);
   DoStep();
 }
@@ -489,7 +500,7 @@ void CertProvisioningWorkerImpl::StartCsr() {
 
   cloud_policy_client_->ClientCertProvisioningStartCsr(
       CertScopeToString(cert_scope_), cert_profile_.profile_id,
-      cert_profile_.policy_version, public_key_,
+      cert_profile_.policy_version, BytesToStr(public_key_),
       base::BindOnce(&CertProvisioningWorkerImpl::OnStartCsrDone,
                      weak_factory_.GetWeakPtr()));
 }
@@ -607,7 +618,7 @@ void CertProvisioningWorkerImpl::MarkKey() {
   MarkKeyAsCorporate(cert_scope_, profile_, public_key_);
 
   platform_keys_service_->SetAttributeForKey(
-      GetPlatformKeysTokenId(cert_scope_), public_key_,
+      GetPlatformKeysTokenId(cert_scope_), BytesToStr(public_key_),
       chromeos::platform_keys::KeyAttributeType::kCertificateProvisioningId,
       cert_profile_.profile_id,
       base::BindOnce(&CertProvisioningWorkerImpl::OnMarkKeyDone,
@@ -642,14 +653,14 @@ void CertProvisioningWorkerImpl::SignCsr() {
   if (hashing_algorithm_ ==
       chromeos::platform_keys::HashAlgorithm::HASH_ALGORITHM_NONE) {
     platform_keys_service_->SignRSAPKCS1Raw(
-        GetPlatformKeysTokenId(cert_scope_), csr_, public_key_,
+        GetPlatformKeysTokenId(cert_scope_), csr_, BytesToStr(public_key_),
         base::BindRepeating(&CertProvisioningWorkerImpl::OnSignCsrDone,
                             weak_factory_.GetWeakPtr(),
                             base::TimeTicks::Now()));
     return;
   }
   platform_keys_service_->SignRSAPKCS1Digest(
-      GetPlatformKeysTokenId(cert_scope_), csr_, public_key_,
+      GetPlatformKeysTokenId(cert_scope_), csr_, BytesToStr(public_key_),
       hashing_algorithm_.value(),
       base::BindRepeating(&CertProvisioningWorkerImpl::OnSignCsrDone,
                           weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
@@ -681,8 +692,8 @@ void CertProvisioningWorkerImpl::FinishCsr() {
 
   cloud_policy_client_->ClientCertProvisioningFinishCsr(
       CertScopeToString(cert_scope_), cert_profile_.profile_id,
-      cert_profile_.policy_version, public_key_, va_challenge_response_,
-      signature_,
+      cert_profile_.policy_version, BytesToStr(public_key_),
+      va_challenge_response_, signature_,
       base::BindOnce(&CertProvisioningWorkerImpl::OnFinishCsrDone,
                      weak_factory_.GetWeakPtr()));
 }
@@ -708,7 +719,7 @@ void CertProvisioningWorkerImpl::DownloadCert() {
 
   cloud_policy_client_->ClientCertProvisioningDownloadCert(
       CertScopeToString(cert_scope_), cert_profile_.profile_id,
-      cert_profile_.policy_version, public_key_,
+      cert_profile_.policy_version, BytesToStr(public_key_),
       base::BindOnce(&CertProvisioningWorkerImpl::OnDownloadCertDone,
                      weak_factory_.GetWeakPtr()));
 }
@@ -740,8 +751,8 @@ void CertProvisioningWorkerImpl::ImportCert(
     return;
   }
 
-  std::string public_key_from_cert =
-      chromeos::platform_keys::GetSubjectPublicKeyInfo(cert);
+  std::vector<uint8_t> public_key_from_cert =
+      chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(cert);
   if (public_key_from_cert != public_key_) {
     failure_message_ =
         "Downloaded certificate does not match the expected key pair";
@@ -921,7 +932,7 @@ void CertProvisioningWorkerImpl::CleanUpAndRunCallback() {
   // Keep conditions mutually exclusive.
   if (!public_key_.empty() && (prev_state_idx >= key_registered_idx)) {
     platform_keys_service_->RemoveKey(
-        GetPlatformKeysTokenId(cert_scope_), public_key_,
+        GetPlatformKeysTokenId(cert_scope_), BytesToStr(public_key_),
         base::BindOnce(&CertProvisioningWorkerImpl::OnRemoveKeyDone,
                        weak_factory_.GetWeakPtr()));
     return;
@@ -1003,7 +1014,8 @@ void CertProvisioningWorkerImpl::InitAfterDeserialization() {
       attestation::TpmChallengeKeySubtleFactory::CreateForPreparedKey(
           GetVaKeyType(cert_scope_),
           /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
-          GetKeyName(cert_profile_.profile_id), public_key_, profile_);
+          GetKeyName(cert_profile_.profile_id), BytesToStr(public_key_),
+          profile_);
 }
 
 void CertProvisioningWorkerImpl::RegisterForInvalidationTopic() {

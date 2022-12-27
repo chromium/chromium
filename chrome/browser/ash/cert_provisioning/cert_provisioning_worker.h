@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_WORKER_H_
 #define CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_WORKER_H_
 
+#include <stddef.h>
+
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -104,7 +108,7 @@ class CertProvisioningWorker {
   // Returns CertProfile that this worker is working on.
   virtual const CertProfile& GetCertProfile() const = 0;
   // Returns public key or an empty string if the key is not created yet.
-  virtual const std::string& GetPublicKey() const = 0;
+  virtual const std::vector<uint8_t>& GetPublicKey() const = 0;
   // Returns current state.
   virtual CertProvisioningWorkerState GetState() const = 0;
   // Returns state that was before the current one. Especially helpful on failed
@@ -139,7 +143,7 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   void Pause() override;
   bool IsWaiting() const override;
   const CertProfile& GetCertProfile() const override;
-  const std::string& GetPublicKey() const override;
+  const std::vector<uint8_t>& GetPublicKey() const override;
   CertProvisioningWorkerState GetState() const override;
   CertProvisioningWorkerState GetPreviousState() const override;
   base::Time GetLastUpdateTime() const override;
@@ -277,7 +281,7 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
 
   // Public key - represented as DER-encoded X.509 SubjectPublicKeyInfo
   // (binary).
-  std::string public_key_;
+  std::vector<uint8_t> public_key_;
   std::string invalidation_topic_;
 
   // These variables may not contain valid values after

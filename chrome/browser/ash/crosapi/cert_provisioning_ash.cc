@@ -24,10 +24,6 @@ namespace crosapi {
 
 namespace {
 
-std::vector<uint8_t> StrToBytes(const std::string& str) {
-  return std::vector<uint8_t>(str.begin(), str.end());
-}
-
 constexpr mojom::CertProvisioningProcessState AshToMojoState(
     CertProvisioningWorkerState state) {
   switch (state) {
@@ -152,7 +148,7 @@ void CertProvisioningAsh::AppendWorkerStatuses(
 
     status->cert_profile_id = id;
     status->cert_profile_name = worker->GetCertProfile().name;
-    status->public_key = StrToBytes(worker->GetPublicKey());
+    status->public_key = worker->GetPublicKey();
     status->last_update_time = worker->GetLastUpdateTime();
     status->state = AshToMojoState(worker->GetState());
     status->did_fail = false;
@@ -172,7 +168,7 @@ void CertProvisioningAsh::AppendWorkerStatuses(
 
     status->cert_profile_id = id;
     status->cert_profile_name = worker.cert_profile_name;
-    status->public_key = StrToBytes(worker.public_key);
+    status->public_key = worker.public_key;
     status->last_update_time = worker.last_update_time;
     status->state = AshToMojoState(worker.state_before_failure);
     status->did_fail = true;

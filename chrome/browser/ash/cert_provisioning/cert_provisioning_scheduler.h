@@ -55,7 +55,7 @@ struct FailedWorkerInfo {
   CertProvisioningWorkerState state_before_failure =
       CertProvisioningWorkerState::kInitState;
   // The DER-encoded X.509 SPKI.
-  std::string public_key;
+  std::vector<uint8_t> public_key;
   // Human-readable certificate profile name (UTF-8).
   std::string cert_profile_name;
   // The time the worker was last updated, i.e. when it transferred to the

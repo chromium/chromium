@@ -1933,7 +1933,7 @@ TEST_F(CertProvisioningWorkerTest, InformationalGetters) {
     EXPECT_EQ(worker.GetPreviousState(),
               CertProvisioningWorkerState::kInitState);
     EXPECT_EQ(worker.GetCertProfile(), cert_profile);
-    EXPECT_EQ(worker.GetPublicKey(), GetPublicKey());
+    EXPECT_EQ(worker.GetPublicKey(), GetPublicKeyBin());
   }
 
   {
@@ -1954,7 +1954,7 @@ TEST_F(CertProvisioningWorkerTest, InformationalGetters) {
     EXPECT_EQ(worker.GetPreviousState(),
               CertProvisioningWorkerState::kKeypairGenerated);
     EXPECT_EQ(worker.GetCertProfile(), cert_profile);
-    EXPECT_EQ(worker.GetPublicKey(), GetPublicKey());
+    EXPECT_EQ(worker.GetPublicKey(), GetPublicKeyBin());
   }
 }
 

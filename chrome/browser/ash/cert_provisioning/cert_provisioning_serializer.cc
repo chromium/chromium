@@ -130,15 +130,13 @@ bool DeserializeCertProfile(const base::Value& parent_value,
   return is_ok;
 }
 
-base::Value SerializePublicKey(const std::string& public_key) {
-  std::string public_key_str;
-  base::Base64Encode(public_key, &public_key_str);
-  return base::Value(std::move(public_key_str));
+base::Value SerializePublicKey(const std::vector<uint8_t>& public_key) {
+  return base::Value(base::Base64Encode(public_key));
 }
 
 bool DeserializePublicKey(const base::Value& parent_value,
                           const char* value_name,
-                          std::string* dst) {
+                          std::vector<uint8_t>* dst) {
   const base::Value* serialized_public_key =
       parent_value.FindKeyOfType(value_name, base::Value::Type::STRING);
 
@@ -146,7 +144,14 @@ bool DeserializePublicKey(const base::Value& parent_value,
     return false;
   }
 
-  return base::Base64Decode(serialized_public_key->GetString(), dst);
+  absl::optional<std::vector<uint8_t>> public_key =
+      base::Base64Decode(serialized_public_key->GetString());
+  if (!public_key) {
+    return false;
+  }
+  *dst = std::move(*public_key);
+
+  return true;
 }
 
 }  // namespace
