@@ -214,7 +214,8 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
     web_contents()->GetController().LoadURL(url, content::Referrer(),
                                             ui::PAGE_TRANSITION_TYPED,
                                             /*extra_headers=*/std::string());
-    navigation.WaitForNavigationFinished();
+    // We ignore the return value because we're going to return success/failure.
+    (void)navigation.WaitForNavigationFinished();
     return navigation.was_successful();
   }
 
@@ -297,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest, ErrorRecovery) {
   // a successful navigation.
   content::TestNavigationManager navigation(web_contents(), GetTestUrl());
   ForceScheduledAutoReloadNow();
-  navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation.WaitForNavigationFinished());
   EXPECT_TRUE(navigation.was_successful());
 
   // No new auto-reload scheduled.
@@ -322,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest, ReloadDelayBackoff) {
   {
     content::TestNavigationManager navigation(web_contents(), GetTestUrl());
     ForceScheduledAutoReloadNow();
-    navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation.WaitForNavigationFinished());
     EXPECT_FALSE(navigation.was_committed());
     EXPECT_EQ(GetDelayForReloadCount(1), GetCurrentAutoReloadDelay());
   }
@@ -332,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest, ReloadDelayBackoff) {
   {
     content::TestNavigationManager navigation(web_contents(), GetTestUrl());
     ForceScheduledAutoReloadNow();
-    navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation.WaitForNavigationFinished());
     EXPECT_FALSE(navigation.was_committed());
     EXPECT_EQ(GetDelayForReloadCount(2), GetCurrentAutoReloadDelay());
     interceptor.reset();
@@ -343,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest, ReloadDelayBackoff) {
   {
     content::TestNavigationManager navigation(web_contents(), GetTestUrl());
     ForceScheduledAutoReloadNow();
-    navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation.WaitForNavigationFinished());
     EXPECT_TRUE(navigation.was_successful());
   }
 }
@@ -367,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     NetErrorUrlInterceptor interceptor(GetTestUrl(), net::ERR_ACCESS_DENIED);
     content::TestNavigationManager navigation(web_contents(), GetTestUrl());
     ForceScheduledAutoReloadNow();
-    navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation.WaitForNavigationFinished());
     EXPECT_TRUE(navigation.was_committed());
     EXPECT_FALSE(navigation.was_successful());
     EXPECT_EQ(GetDelayForReloadCount(0), GetCurrentAutoReloadDelay());
@@ -619,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     interceptor.reset();
     SimulateNetworkGoingOnline(popup);
     ForceScheduledAutoReloadNow(popup);
-    navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation.WaitForNavigationFinished());
     EXPECT_TRUE(navigation.was_successful());
     EXPECT_TRUE(navigation.was_committed());
     content::RenderFrameHost* popup_rfh = popup->GetPrimaryMainFrame();
@@ -679,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     interceptor.reset();
     SimulateNetworkGoingOnline(popup);
     ForceScheduledAutoReloadNow(popup);
-    navigation_observer.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
     if (base::FeatureList::IsEnabled(
             features::kBrowserSideDownloadPolicySandbox)) {
       EXPECT_FALSE(handle_observer.is_download());
