@@ -167,7 +167,7 @@ bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled() {
 
 BASE_FEATURE(kExperimentalAccessibilitySelectToSpeakVoiceSwitching,
              "ExperimentalAccessibilitySelectToSpeakVoiceSwitching",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled() {
   return base::FeatureList::IsEnabled(
@@ -203,7 +203,7 @@ bool IsAccessibilitySelectToSpeakPrefsMigrationEnabled() {
 
 BASE_FEATURE(kAccessibilitySelectToSpeakContextMenuOption,
              "AccessibilitySelectToSpeakContextMenuOption",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAccessibilitySelectToSpeakContextMenuOptionEnabled() {
   return base::FeatureList::IsEnabled(
@@ -212,7 +212,7 @@ bool IsAccessibilitySelectToSpeakContextMenuOptionEnabled() {
 
 BASE_FEATURE(kAccessibilitySelectToSpeakHoverTextImprovements,
              "AccessibilitySelectToSpeakHoverTextImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAccessibilitySelectToSpeakHoverTextImprovementsEnabled() {
   return base::FeatureList::IsEnabled(
