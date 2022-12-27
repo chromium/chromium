@@ -1133,7 +1133,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MainFrameHasNoStore) {
   response.Done();
   EXPECT_TRUE(navigation_manager.WaitForResponse());
   navigation_manager.ResumeNavigation();
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   NavigateToUntrackedUrl();
 
   auto entries =
