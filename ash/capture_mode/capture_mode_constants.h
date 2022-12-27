@@ -100,6 +100,10 @@ constexpr int kKeyWidgetDistanceFromBottom = 24;
 constexpr base::TimeDelta kDelayToHideKeyComboDuration =
     base::Milliseconds(1500);
 
+// The radius of the highlight layer generated on mouse or touch event when the
+// demo tools feature is enabled.
+constexpr int kHighlightLayerRadius = 36;
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_

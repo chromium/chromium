@@ -5,11 +5,9 @@
 #ifndef ASH_CAPTURE_MODE_POINTER_HIGHLIGHT_LAYER_H_
 #define ASH_CAPTURE_MODE_POINTER_HIGHLIGHT_LAYER_H_
 
-#include "ui/aura/window.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/paint_context.h"
-#include "ui/events/event.h"
 
 namespace gfx {
 class PointF;
@@ -31,6 +29,9 @@ class PointerHighlightLayer : public ui::LayerOwner, public ui::LayerDelegate {
   PointerHighlightLayer(const PointerHighlightLayer&) = delete;
   PointerHighlightLayer& operator=(const PointerHighlightLayer&) = delete;
   ~PointerHighlightLayer() override;
+
+  // Sets bounds of the layer() centered with `event_location_in_window`.
+  void CenterAroundPoint(const gfx::PointF& event_location_in_window);
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;

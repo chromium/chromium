@@ -524,4 +524,11 @@ bool IsEventTargetedOnWidget(const ui::LocatedEvent& event,
   return widget && widget->GetNativeWindow()->Contains(target);
 }
 
+gfx::Rect CalculateHighlightLayerBounds(const gfx::PointF& center_point,
+                                        int highlight_layer_radius) {
+  return gfx::Rect(center_point.x() - highlight_layer_radius,
+                   center_point.y() - highlight_layer_radius,
+                   highlight_layer_radius * 2, highlight_layer_radius * 2);
+}
+
 }  // namespace ash::capture_mode_util

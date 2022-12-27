@@ -17,23 +17,28 @@
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/key_combo_view.h"
 #include "ash/capture_mode/pointer_highlight_layer.h"
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
-#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/timer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/pointer_details.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -147,6 +152,37 @@ class CaptureModeDemoToolsTest : public AshTestBase {
         ->window_tree_host_manager()
         ->input_method()
         ->SetFocusedTextInputClient(nullptr);
+  }
+
+  void DragTouchAndVerifyHighlight(const ui::PointerId& touch_id,
+                                   const gfx::Point& touch_point,
+                                   const gfx::Vector2d& drag_offset) {
+    auto* event_generator = GetEventGenerator();
+    event_generator->PressTouchId(touch_id, touch_point);
+    CaptureModeDemoToolsTestApi demo_tools_test_api(
+        GetCaptureModeDemoToolsController());
+    const auto& touch_highlight_map =
+        demo_tools_test_api.GetTouchIdToHighlightLayerMap();
+    const auto iter =
+        touch_highlight_map.find(static_cast<ui::PointerId>(touch_id));
+    ASSERT_TRUE(iter != touch_highlight_map.end());
+    const auto* touch_highlight = iter->second.get();
+    auto original_touch_highlight_bounds = touch_highlight->layer()->bounds();
+    auto* recording_watcher =
+        CaptureModeController::Get()->video_recording_watcher_for_testing();
+    wm::ConvertRectToScreen(recording_watcher->window_being_recorded(),
+                            &original_touch_highlight_bounds);
+    event_generator->MoveTouchBy(drag_offset.x(), drag_offset.y());
+    gfx::PointF updated_event_location{
+        event_generator->current_screen_location()};
+    const auto expected_touch_highlight_layer_bounds =
+        capture_mode_util::CalculateHighlightLayerBounds(
+            updated_event_location, capture_mode::kHighlightLayerRadius);
+    auto actual_touch_highlight_layer_bounds = original_touch_highlight_bounds;
+    actual_touch_highlight_layer_bounds.Offset(drag_offset.x(),
+                                               drag_offset.y());
+    EXPECT_EQ(expected_touch_highlight_layer_bounds,
+              actual_touch_highlight_layer_bounds);
   }
 
  private:
@@ -545,6 +581,7 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources, MouseHighlightTest) {
   StartDemoToolsEnabledVideoRecordingWithParam();
   auto* demo_tools_controller = GetCaptureModeDemoToolsController();
   EXPECT_TRUE(demo_tools_controller);
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
 
   gfx::Rect confined_bounds_in_screen =
       GetDemoToolsConfinedBoundsInScreenCoordinates();
@@ -552,13 +589,12 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources, MouseHighlightTest) {
   event_generator->MoveMouseTo(confined_bounds_in_screen.CenterPoint());
   event_generator->PressLeftButton();
   event_generator->ReleaseLeftButton();
-  EXPECT_FALSE(
-      demo_tools_controller->mouse_highlight_layers_for_testing().empty());
-  EXPECT_EQ(demo_tools_controller->mouse_highlight_layers_for_testing().size(),
-            1u);
+  const MouseHighlightLayers& highlight_layers =
+      demo_tools_test_api.GetMouseHighlightLayers();
+  EXPECT_FALSE(highlight_layers.empty());
+  EXPECT_EQ(highlight_layers.size(), 1u);
   WaitForMouseHighlightAnimationCompleted();
-  EXPECT_TRUE(
-      demo_tools_controller->mouse_highlight_layers_for_testing().empty());
+  EXPECT_TRUE(highlight_layers.empty());
 }
 
 // Tests that multiple mouse highlight layers will be visible on consecutive
@@ -575,12 +611,13 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources,
   auto* window_being_recorded = recording_watcher->window_being_recorded();
   auto* demo_tools_controller = GetCaptureModeDemoToolsController();
   EXPECT_TRUE(demo_tools_controller);
+  CaptureModeDemoToolsTestApi demo_tools_test_api =
+      CaptureModeDemoToolsTestApi(demo_tools_controller);
 
   gfx::Rect inner_rect = GetDemoToolsConfinedBoundsInScreenCoordinates();
   inner_rect.Inset(5);
 
-  auto& layers_vector =
-      demo_tools_controller->mouse_highlight_layers_for_testing();
+  const auto& layers_vector = demo_tools_test_api.GetMouseHighlightLayers();
   auto* event_generator = GetEventGenerator();
 
   for (auto point : {inner_rect.CenterPoint(), inner_rect.origin(),
@@ -619,6 +656,90 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources, DeviceScaleFactorTest) {
     EXPECT_EQ(dsf, window()->GetHost()->device_scale_factor());
     VerifyKeyComboWidgetPosition();
   }
+}
+
+// Tests that the touch highlight layer will be created on touch
+// down and removed on touch up. It also tests that the bounds of the touch
+// highlight layer will be updated correctly on the touch drag event.
+TEST_P(CaptureModeDemoToolsTestWithAllSources, TouchHighlightTest) {
+  StartDemoToolsEnabledVideoRecordingWithParam();
+  auto* demo_tools_controller = GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+
+  const gfx::Rect confined_bounds_in_screen =
+      GetDemoToolsConfinedBoundsInScreenCoordinates();
+  auto* event_generator = GetEventGenerator();
+
+  const auto& touch_highlight_map =
+      demo_tools_test_api.GetTouchIdToHighlightLayerMap();
+
+  const auto center_point = confined_bounds_in_screen.CenterPoint();
+  event_generator->PressTouchId(0, center_point);
+  EXPECT_FALSE(touch_highlight_map.empty());
+  event_generator->ReleaseTouchId(0);
+  EXPECT_TRUE(touch_highlight_map.empty());
+
+  const gfx::Vector2d drag_offset =
+      gfx::Vector2d(confined_bounds_in_screen.width() / 4,
+                    confined_bounds_in_screen.height() / 4);
+  DragTouchAndVerifyHighlight(/*touch_id=*/0, /*touch_point=*/center_point,
+                              drag_offset);
+}
+
+// Tests the behaviors when multiple touches are performed.
+// 1. The corresponding touch highlight will be generated on touch down;
+// 2. The number of touch highlights kept in the demo tools controller is the
+// same as the number of touch down events;
+// 3. The bounds of the touch highlights will be updated correctly when dragging
+// multiple touch events simultaneously;
+// 4. The corresponding touch highlight will be removed on touch up. The
+// number of touch highlights kept in the demo tools controller will become zero
+// when all touches are released or cancelled.
+TEST_P(CaptureModeDemoToolsTestWithAllSources, MutiTouchHighlightTest) {
+  StartDemoToolsEnabledVideoRecordingWithParam();
+  auto* demo_tools_controller = GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+
+  const auto& touch_highlight_map =
+      demo_tools_test_api.GetTouchIdToHighlightLayerMap();
+  EXPECT_TRUE(touch_highlight_map.empty());
+
+  gfx::Rect inner_rect = GetDemoToolsConfinedBoundsInScreenCoordinates();
+  inner_rect.Inset(20);
+
+  struct {
+    int touch_id;
+    gfx::Point touch_point;
+    gfx::Vector2d drag_offset;
+  } kTestCases[] = {
+      {/*touch_id=*/1, inner_rect.CenterPoint(), gfx::Vector2d(15, 25)},
+      {/*touch_id=*/0, inner_rect.origin(), gfx::Vector2d(10, -20)},
+      {/*touch_id=*/2, inner_rect.bottom_right(), gfx::Vector2d(-30, -20)}};
+
+  // Iterate through the kTestCases and perform the touch down. The
+  // corresponding touch highlight will be generated. Drag these touch events
+  // and check if the bounds of the corresponding touch highlight are updated
+  // correctly.
+  for (const auto& test_case : kTestCases) {
+    DragTouchAndVerifyHighlight(test_case.touch_id, test_case.touch_point,
+                                test_case.drag_offset);
+  }
+
+  EXPECT_EQ(touch_highlight_map.size(), 3u);
+
+  // Release the touch event one by one and the corresponding touch highlight
+  // layer will be removed. The number of highlight layers kept in the demo
+  // tools controller will become zero when all touches are released or
+  // cancelled.
+  for (const auto& test_case : kTestCases) {
+    GetEventGenerator()->ReleaseTouchId(test_case.touch_id);
+    EXPECT_FALSE(touch_highlight_map.contains(
+        static_cast<ui::PointerId>(test_case.touch_id)));
+  }
+
+  EXPECT_TRUE(touch_highlight_map.empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

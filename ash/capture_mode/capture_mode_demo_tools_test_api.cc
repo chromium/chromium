@@ -76,4 +76,16 @@ void CaptureModeDemoToolsTestApi::SetOnMouseHighlightAnimationEndedCallback(
       std::move(callback);
 }
 
+const MouseHighlightLayers&
+CaptureModeDemoToolsTestApi::GetMouseHighlightLayers() const {
+  DCHECK(demo_tools_controller_);
+  return demo_tools_controller_->mouse_highlight_layers_;
+}
+
+const TouchHighlightLayersMap&
+CaptureModeDemoToolsTestApi::GetTouchIdToHighlightLayerMap() const {
+  DCHECK(demo_tools_controller_);
+  return demo_tools_controller_->touch_pointer_id_to_highlight_layer_map_;
+}
+
 }  // namespace ash

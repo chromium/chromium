@@ -127,6 +127,7 @@ class ASH_EXPORT VideoRecordingWatcher
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnTouchEvent(ui::TouchEvent* event) override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;

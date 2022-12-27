@@ -21,6 +21,7 @@ class Window;
 }  // namespace aura
 
 namespace gfx {
+class PointF;
 class Rect;
 class Transform;
 }  // namespace gfx
@@ -201,6 +202,12 @@ ui::ColorProvider* GetColorProviderForNativeTheme();
 // if it no longer exists, in this case this function returns false.
 bool IsEventTargetedOnWidget(const ui::LocatedEvent& event,
                              views::Widget* widget);
+
+// Calculates the highlight layer bounds based on `center_point` which is in the
+// coordinates of the window being recorded.
+ASH_EXPORT gfx::Rect CalculateHighlightLayerBounds(
+    const gfx::PointF& center_point,
+    int highlight_layer_radius);
 
 }  // namespace capture_mode_util
 

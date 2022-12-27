@@ -7,9 +7,11 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/timer/timer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/pointer_details.h"
 
 namespace views {
 class ImageView;
@@ -20,6 +22,13 @@ namespace ash {
 
 class CaptureModeDemoToolsController;
 class KeyComboView;
+class PointerHighlightLayer;
+
+using MouseHighlightLayers =
+    std::vector<std::unique_ptr<PointerHighlightLayer>>;
+
+using TouchHighlightLayersMap =
+    base::flat_map<ui::PointerId, std::unique_ptr<PointerHighlightLayer>>;
 
 class CaptureModeDemoToolsTestApi {
  public:
@@ -58,6 +67,10 @@ class CaptureModeDemoToolsTestApi {
   // Sets a callback that will be triggered once the mouse highlight animation
   // ends.
   void SetOnMouseHighlightAnimationEndedCallback(base::OnceClosure callback);
+
+  const MouseHighlightLayers& GetMouseHighlightLayers() const;
+
+  const TouchHighlightLayersMap& GetTouchIdToHighlightLayerMap() const;
 
  private:
   CaptureModeDemoToolsController* const demo_tools_controller_;
