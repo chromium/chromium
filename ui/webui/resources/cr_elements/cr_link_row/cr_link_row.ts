@@ -85,7 +85,7 @@ export class CrLinkRowElement extends PolymerElement {
 
       roleDescription: String,
 
-      ariaDescription: String,
+      buttonAriaDescription: String,
 
       hideLabelWrapper_: {
         type: Boolean,
@@ -103,7 +103,7 @@ export class CrLinkRowElement extends PolymerElement {
   external: boolean;
   usingSlottedLabel: boolean;
   roleDescription: string;
-  ariaDescription: string;
+  buttonAriaDescription: string;
   private hideLabelWrapper_: boolean;
 
   override focus() {

@@ -42,7 +42,7 @@
     display: flex;
   }
 
-  #ariaDescription {
+  #buttonAriaDescription {
     clip: rect(0,0,0,0);
     display: block;
     position: fixed;
@@ -63,11 +63,11 @@
   </div>
 </div>
 <slot></slot>
-<div id="ariaDescription" aria-hidden="true">
-  [[ariaDescription]]
+<div id="buttonAriaDescription" aria-hidden="true">
+  [[buttonAriaDescription]]
 </div>
 <cr-icon-button id="icon" iron-icon="[[getIcon_(external)]]" role="link"
     part="icon" aria-roledescription$="[[roleDescription]]"
-    aria-describedby="ariaDescription"
+    aria-describedby="buttonAriaDescription"
     aria-labelledby="label subLabel" disabled="[[disabled]]">
 </cr-icon-button>
