@@ -256,9 +256,17 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchImeFilteredKeyPressEvent(
   // - there's no composing text, and no updated.
   // If the condition meets, that means IME did not consume the key event
   // conceptually, so continue to dispatch KeyEvent without overwriting by 229.
-  ui::EventDispatchDetails details = NeedInsertChar(result_text_)
-                                         ? DispatchKeyEventPostIME(event)
-                                         : SendFakeProcessKeyEvent(event);
+  // But in some chinese IME framework such as fcitx + GTK,
+  // if the condition meets and last event is 13(VKEY_RETURN), that means IME
+  // consume the key event conceptually(want to insert the only one character).
+  // So in this condition, should to dispatch KeyEvent with overwriting by 229.
+  ui::EventDispatchDetails details;
+  if (event->key_code() == VKEY_RETURN)
+    details = SendFakeProcessKeyEvent(event);
+  else {
+    details = NeedInsertChar(result_text_) ? DispatchKeyEventPostIME(event)
+                                           : SendFakeProcessKeyEvent(event);
+  }
   if (details.dispatcher_destroyed)
     return details;
   // If the KEYDOWN is stopped propagation (e.g. triggered an accelerator),
