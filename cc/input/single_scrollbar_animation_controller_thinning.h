@@ -48,12 +48,17 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   }
 
   bool captured() const { return captured_; }
+  gfx::PointF device_viewport_last_pointer_location() const {
+    return device_viewport_last_pointer_location_;
+  }
 
   bool Animate(base::TimeTicks now);
   void StartAnimation();
   void StopAnimation();
 
   void UpdateThumbThicknessScale();
+
+  void DidScrollUpdate();
 
   void DidMouseDown();
   void DidMouseUp();
@@ -79,6 +84,7 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   enum class AnimationChange { NONE, INCREASE, DECREASE };
   float ThumbThicknessScaleAt(float progress) const;
   float ThumbThicknessScaleByMouseDistanceToScrollbar() const;
+  void CalculateThicknessShouldChange(const gfx::PointF& device_viewport_point);
 
   float AdjustScale(float new_value,
                     float current_value,
@@ -105,6 +111,11 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   AnimationChange thickness_change_;
 
   base::TimeDelta thinning_duration_;
+
+  // Save last known pointer location in the device viewport for use in
+  // DidScrollUpdate() to check the pointers proximity to the thumb in case of a
+  // scroll.
+  gfx::PointF device_viewport_last_pointer_location_{-1, -1};
 };
 
 }  // namespace cc

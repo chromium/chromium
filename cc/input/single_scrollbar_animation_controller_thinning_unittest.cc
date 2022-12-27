@@ -11,6 +11,7 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 using ::testing::_;
 using ::testing::Bool;
@@ -72,7 +73,7 @@ class SingleScrollbarAnimationControllerThinningTest
     const bool kIsLeftSideVerticalScrollbar = false;
 
     scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
-        ScrollbarOrientation::HORIZONTAL, kThumbThickness, kTrackStart,
+        ScrollbarOrientation::VERTICAL, kThumbThickness, kTrackStart,
         kIsLeftSideVerticalScrollbar);
 
     scrollbar_layer_->SetBounds(gfx::Size(kThumbThickness, kTrackLength));
@@ -88,7 +89,7 @@ class SingleScrollbarAnimationControllerThinningTest
     UpdateActiveTreeDrawProperties();
 
     scrollbar_controller_ = SingleScrollbarAnimationControllerThinning::Create(
-        scroll_layer->element_id(), ScrollbarOrientation::HORIZONTAL, &client_,
+        scroll_layer->element_id(), ScrollbarOrientation::VERTICAL, &client_,
         kThinningDuration);
     mouse_move_distance_to_trigger_fade_in_ =
         scrollbar_controller_->MouseMoveDistanceToTriggerFadeIn();
@@ -454,6 +455,84 @@ TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
   // trigger the transition to the minimal mode.
   scrollbar_controller_->DidMouseMove(NearScrollbar(kThumbThickness + 1, 75));
   scrollbar_controller_->Animate(time);
+  time += kThinningDuration;
+  scrollbar_controller_->Animate(time);
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  scrollbar_layer_->thumb_thickness_scale_factor());
+}
+
+// Test that the last pointer location variable is set on DidMouseMove calls and
+// mouse position variables are correctly updated in DidScrollUpdate() calls.
+TEST_P(SingleScrollbarAnimationControllerThinningTest,
+       HoverTrackAndMoveThumbUnderPointer) {
+  EXPECT_POINTF_EQ(
+      gfx::PointF(-1, -1),
+      scrollbar_controller_->device_viewport_last_pointer_location());
+
+  // Move mouse on top of the scrollbar track but not the thumb, and verify
+  // that all variables are correctly set.
+  gfx::PointF near_scrollbar = NearScrollbar(0, 90);
+  scrollbar_controller_->DidMouseMove(near_scrollbar);
+  EXPECT_POINTF_EQ(
+      near_scrollbar,
+      scrollbar_controller_->device_viewport_last_pointer_location());
+  EXPECT_FALSE(scrollbar_controller_->mouse_is_near_scrollbar_thumb());
+  EXPECT_FALSE(scrollbar_controller_->mouse_is_over_scrollbar_thumb());
+  EXPECT_TRUE(scrollbar_controller_->mouse_is_near_scrollbar_track());
+  scrollbar_controller_->DidMouseDown();
+  EXPECT_FALSE(scrollbar_controller_->captured());
+
+  // Move the thumb to the end of the track so that the pointer is located over
+  // it.
+  EXPECT_TRUE(scrollbar_layer_->SetCurrentPos(100));
+  scrollbar_controller_->DidScrollUpdate();
+  EXPECT_TRUE(scrollbar_controller_->mouse_is_near_scrollbar_thumb());
+  EXPECT_TRUE(scrollbar_controller_->mouse_is_over_scrollbar_thumb());
+  EXPECT_TRUE(scrollbar_controller_->mouse_is_near_scrollbar_track());
+
+  // Clicking now should capture the thumb.
+  scrollbar_controller_->DidMouseDown();
+  EXPECT_TRUE(scrollbar_controller_->captured());
+}
+
+// Test that DidScrollUpdate correctly queues thinning animations when the thumb
+// moves under the pointer and when it moves away from it.
+TEST_P(SingleScrollbarAnimationControllerThinningTest,
+       DidScrollUpdateQueuesAnimations) {
+  // Fluent scrollbars queue animations based on proximity to the track, not the
+  // thumb, which get queued on DidMouseMove(). For Fluent Scrollbars
+  // DidScrollUpdate() only updates the mouse location variables, behavior that
+  // is tested in HoverTrackAndMoveThumbUnderPointer.
+  if (client_.IsFluentScrollbar())
+    return;
+
+  base::TimeTicks time;
+  time += base::Seconds(1);
+
+  // Move mouse on top of the scrollbar track but not the thumb. No animation
+  // should be queued.
+  scrollbar_controller_->DidMouseMove(NearScrollbar(0, 90));
+  EXPECT_FALSE(scrollbar_controller_->Animate(time));
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  scrollbar_layer_->thumb_thickness_scale_factor());
+
+  // Move the thumb to the end of the track so that the pointer is located over
+  // it.
+  EXPECT_TRUE(scrollbar_layer_->SetCurrentPos(100));
+  scrollbar_controller_->DidScrollUpdate();
+  EXPECT_TRUE(scrollbar_controller_->Animate(time));
+
+  // The thumb should animate and become thick.
+  time += kThinningDuration;
+  scrollbar_controller_->Animate(time);
+  EXPECT_FLOAT_EQ(1.0f, scrollbar_layer_->thumb_thickness_scale_factor());
+
+  // Move the layer's thumb to its starting position.
+  EXPECT_TRUE(scrollbar_layer_->SetCurrentPos(0));
+  scrollbar_controller_->DidScrollUpdate();
+  scrollbar_controller_->Animate(time);
+
+  // The thumb should become thin as the mouse is no longer on top of it.
   time += kThinningDuration;
   scrollbar_controller_->Animate(time);
   EXPECT_FLOAT_EQ(kIdleThicknessScale,

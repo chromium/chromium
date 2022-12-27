@@ -190,6 +190,10 @@ void ScrollbarAnimationController::RunAnimationFrame(float progress) {
 
 void ScrollbarAnimationController::DidScrollUpdate() {
   UpdateScrollbarState();
+  if (need_thinning_animation_) {
+    vertical_controller_->DidScrollUpdate();
+    horizontal_controller_->DidScrollUpdate();
+  }
 }
 
 void ScrollbarAnimationController::UpdateScrollbarState() {

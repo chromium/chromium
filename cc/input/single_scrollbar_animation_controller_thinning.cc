@@ -127,6 +127,13 @@ void SingleScrollbarAnimationControllerThinning::StopAnimation() {
   is_animating_ = false;
 }
 
+void SingleScrollbarAnimationControllerThinning::DidScrollUpdate() {
+  if (captured_ || !mouse_is_near_scrollbar_track_)
+    return;
+
+  CalculateThicknessShouldChange(device_viewport_last_pointer_location_);
+}
+
 void SingleScrollbarAnimationControllerThinning::DidMouseDown() {
   if (!mouse_is_over_scrollbar_thumb_)
     return;
@@ -174,6 +181,12 @@ void SingleScrollbarAnimationControllerThinning::DidMouseLeave() {
 }
 
 void SingleScrollbarAnimationControllerThinning::DidMouseMove(
+    const gfx::PointF& device_viewport_point) {
+  CalculateThicknessShouldChange(device_viewport_point);
+  device_viewport_last_pointer_location_ = device_viewport_point;
+}
+
+void SingleScrollbarAnimationControllerThinning::CalculateThicknessShouldChange(
     const gfx::PointF& device_viewport_point) {
   ScrollbarLayerImplBase* scrollbar = GetScrollbar();
 
