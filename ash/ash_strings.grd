@@ -1278,6 +1278,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_LABEL" desc="The label text shown under do not disturb button in system tray bubble. [CHAR_LIMIT=14]">
         Notifications
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_DO_NOT_DISTURB" desc="The label text shown in the Do not disturb feature tile in quick settings bubble. [CHAR_LIMIT=14]">
+        Do not disturb
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP" desc="The tooltip text of the button that toggles Do-not-disturb state for notifications">
         Toggle Do not disturb. <ph name="STATE_TEXT">$1<ex>Do not disturb is on.</ex></ph>
       </message>

@@ -654,26 +654,28 @@ void UnifiedSystemTrayController::InitFeaturePods() {
 
 void UnifiedSystemTrayController::InitFeatureTiles() {
   // TODO(b/252871301): Create each feature's tile.
-  auto accessibility_controller =
-      std::make_unique<AccessibilityFeaturePodController>(this);
-  auto bluetooth_controller =
-      std::make_unique<BluetoothFeaturePodController>(this);
-  auto screen_capture_controller =
-      std::make_unique<CaptureModeFeaturePodController>(this);
-  auto cast_controller = std::make_unique<CastFeaturePodController>(this);
-  auto vpn_controller = std::make_unique<VPNFeaturePodController>(this);
-
   std::vector<std::unique_ptr<FeatureTile>> tiles;
-  tiles.push_back(bluetooth_controller->CreateTile());
-  tiles.push_back(screen_capture_controller->CreateTile());
 
-  // Placeholder tile.
-  tiles.push_back(
-      std::make_unique<FeatureTile>(FeatureTile::TileType::kCompact));
+  auto create_tile =
+      [](std::unique_ptr<FeaturePodControllerBase> controller,
+         std::vector<std::unique_ptr<FeaturePodControllerBase>>& controllers,
+         std::vector<std::unique_ptr<FeatureTile>>& tiles) {
+        tiles.push_back(controller->CreateTile());
+        controllers.push_back(std::move(controller));
+      };
 
-  tiles.push_back(accessibility_controller->CreateTile());
-  tiles.push_back(cast_controller->CreateTile());
-  tiles.push_back(vpn_controller->CreateTile());
+  create_tile(std::make_unique<BluetoothFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
+  create_tile(std::make_unique<CaptureModeFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
+  create_tile(std::make_unique<QuietModeFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
+  create_tile(std::make_unique<AccessibilityFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
+  create_tile(std::make_unique<CastFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
+  create_tile(std::make_unique<VPNFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
 
   // More placeholder tiles.
   while (tiles.size() < 10) {
@@ -681,13 +683,6 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   }
 
   quick_settings_view_->AddTiles(std::move(tiles));
-
-  // Transfer ownership of controllers to this.
-  feature_pod_controllers_.push_back(std::move(accessibility_controller));
-  feature_pod_controllers_.push_back(std::move(bluetooth_controller));
-  feature_pod_controllers_.push_back(std::move(cast_controller));
-  feature_pod_controllers_.push_back(std::move(screen_capture_controller));
-  feature_pod_controllers_.push_back(std::move(vpn_controller));
 }
 
 void UnifiedSystemTrayController::AddFeaturePodItem(

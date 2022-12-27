@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/metrics/histogram_macros.h"
@@ -68,6 +69,34 @@ FeaturePodButton* QuietModeFeaturePodController::CreateButton() {
   return button_;
 }
 
+std::unique_ptr<FeatureTile> QuietModeFeaturePodController::CreateTile() {
+  DCHECK(features::IsQsRevampEnabled());
+  // TODO(b/263423627): Tile should be compact if applicable.
+  auto tile = std::make_unique<FeatureTile>(
+      base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*is_togglable=*/true, FeatureTile::TileType::kPrimary);
+  tile_ = tile.get();
+
+  auto* session_controller = Shell::Get()->session_controller();
+  const bool visible = session_controller->ShouldShowNotificationTray() &&
+                       !session_controller->IsScreenLocked();
+  tile_->SetVisible(visible);
+  if (visible) {
+    TrackVisibilityUMA();
+  }
+
+  // TODO(b/263416361): Update vector icon to its newer version.
+  tile_->SetVectorIcon(kUnifiedMenuDoNotDisturbIcon);
+  tile_->SetLabel(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DO_NOT_DISTURB));
+  tile_->SetSubLabelVisibility(false);
+  tile_->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP,
+      GetQuietModeStateTooltip()));
+  return tile;
+}
+
 QsFeatureCatalogName QuietModeFeaturePodController::GetCatalogName() {
   return QsFeatureCatalogName::kQuietMode;
 }
@@ -99,6 +128,14 @@ void QuietModeFeaturePodController::OnLabelPressed() {
 }
 
 void QuietModeFeaturePodController::OnQuietModeChanged(bool in_quiet_mode) {
+  if (features::IsQsRevampEnabled()) {
+    tile_->SetToggled(in_quiet_mode);
+    tile_->SetTooltipText(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP,
+        GetQuietModeStateTooltip()));
+    return;
+  }
+
   button_->SetToggled(in_quiet_mode);
   button_->SetIconTooltip(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP,

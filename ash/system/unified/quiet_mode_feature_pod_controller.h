@@ -11,6 +11,7 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/notifier_settings_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center_observer.h"
 
@@ -37,6 +38,7 @@ class ASH_EXPORT QuietModeFeaturePodController
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  std::unique_ptr<FeatureTile> CreateTile() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
@@ -55,9 +57,13 @@ class ASH_EXPORT QuietModeFeaturePodController
 
   UnifiedSystemTrayController* const tray_controller_;
 
+  // Owned by the views hierarchy.
   FeaturePodButton* button_ = nullptr;
+  FeatureTile* tile_ = nullptr;
 
   absl::optional<int> last_disabled_count_;
+
+  base::WeakPtrFactory<QuietModeFeaturePodController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

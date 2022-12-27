@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -19,7 +20,7 @@ namespace ash {
 // Tests manually control their session state.
 class QuietModeFeaturePodControllerTest
     : public NoSessionAshTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   QuietModeFeaturePodControllerTest() = default;
 
@@ -31,28 +32,42 @@ class QuietModeFeaturePodControllerTest
   ~QuietModeFeaturePodControllerTest() override = default;
 
   void SetUp() override {
+    auto enabled_features = std::vector<base::test::FeatureRef>();
     if (IsOsSettingsAppBadgingToggleEnabled()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kOsSettingsAppBadgingToggle},
-          /*disabled_features=*/{});
+      enabled_features.push_back(features::kOsSettingsAppBadgingToggle);
     }
+    if (IsQsRevampEnabled()) {
+      enabled_features.push_back(features::kQsRevamp);
+      enabled_features.push_back(features::kQsRevampWip);
+    }
+    feature_list_.InitWithFeatures(enabled_features, /*disabled_features*/ {});
     NoSessionAshTestBase::SetUp();
 
     GetPrimaryUnifiedSystemTray()->ShowBubble();
   }
 
   void TearDown() override {
-    button_.reset();
+    if (IsQsRevampEnabled()) {
+      tile_.reset();
+    } else {
+      button_.reset();
+    }
     controller_.reset();
     NoSessionAshTestBase::TearDown();
   }
 
-  bool IsOsSettingsAppBadgingToggleEnabled() { return GetParam(); }
+  bool IsOsSettingsAppBadgingToggleEnabled() { return std::get<0>(GetParam()); }
+
+  bool IsQsRevampEnabled() { return std::get<1>(GetParam()); }
 
   void SetUpButton() {
     controller_ =
         std::make_unique<QuietModeFeaturePodController>(tray_controller());
-    button_.reset(controller_->CreateButton());
+    if (IsQsRevampEnabled()) {
+      tile_ = controller_->CreateTile();
+    } else {
+      button_.reset(controller_->CreateButton());
+    }
   }
 
   UnifiedSystemTrayController* tray_controller() {
@@ -65,30 +80,37 @@ class QuietModeFeaturePodControllerTest
 
   void PressLabel() { controller_->OnLabelPressed(); }
 
+  bool IsButtonVisible() {
+    return IsQsRevampEnabled() ? tile_->GetVisible() : button_->GetVisible();
+  }
+
   FeaturePodButton* button() { return button_.get(); }
 
  private:
   std::unique_ptr<QuietModeFeaturePodController> controller_;
   std::unique_ptr<FeaturePodButton> button_;
+  std::unique_ptr<FeatureTile> tile_;
 
   base::test::ScopedFeatureList feature_list_;
 };
 INSTANTIATE_TEST_SUITE_P(
     All,
     QuietModeFeaturePodControllerTest,
-    testing::Bool() /* IsOsSettingsAppBadgingToggleEnabled() */);
+    testing::Combine(
+        testing::Bool() /* IsOsSettingsAppBadgingToggleEnabled() */,
+        testing::Bool() /* IsQsRevampEnabled */));
 
 TEST_P(QuietModeFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {
   SetUpButton();
   // If not logged in, it should not be visible.
-  EXPECT_FALSE(button()->GetVisible());
+  EXPECT_FALSE(IsButtonVisible());
 }
 
 TEST_P(QuietModeFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
   CreateUserSessions(1);
   SetUpButton();
   // If logged in, it should be visible.
-  EXPECT_TRUE(button()->GetVisible());
+  EXPECT_TRUE(IsButtonVisible());
 }
 
 TEST_P(QuietModeFeaturePodControllerTest, ButtonVisibilityLocked) {
@@ -96,10 +118,15 @@ TEST_P(QuietModeFeaturePodControllerTest, ButtonVisibilityLocked) {
   BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOCK_SCREEN);
   SetUpButton();
   // If locked, it should not be visible.
-  EXPECT_FALSE(button()->GetVisible());
+  EXPECT_FALSE(IsButtonVisible());
 }
 
 TEST_P(QuietModeFeaturePodControllerTest, IconUMATracking) {
+  // TODO(b/263505103): Implement Feature Tile metrics.
+  if (IsQsRevampEnabled()) {
+    return;
+  }
+
   CreateUserSessions(1);
   SetUpButton();
   message_center::MessageCenter::Get()->SetQuietMode(false);
@@ -147,6 +174,11 @@ TEST_P(QuietModeFeaturePodControllerTest, IconUMATracking) {
 }
 
 TEST_P(QuietModeFeaturePodControllerTest, LabelUMATracking) {
+  // Qs Revamp Feature Tile does not have a detailed view.
+  if (IsQsRevampEnabled()) {
+    return;
+  }
+
   CreateUserSessions(1);
   SetUpButton();
 

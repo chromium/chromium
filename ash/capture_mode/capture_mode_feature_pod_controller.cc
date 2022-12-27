@@ -48,14 +48,16 @@ FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
 
 std::unique_ptr<FeatureTile> CaptureModeFeaturePodController::CreateTile() {
   DCHECK(features::IsQsRevampEnabled());
+  // TODO(b/263423627): Tile should be compact if applicable.
   auto feature_tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()),
-      /*is_togglable=*/false, FeatureTile::TileType::kCompact);
+      /*is_togglable=*/false, FeatureTile::TileType::kPrimary);
   feature_tile->SetVectorIcon(kCaptureModeIcon);
   const auto label_text =
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL);
   feature_tile->SetLabel(label_text);
+  feature_tile->SetSubLabelVisibility(false);
   feature_tile->SetTooltipText(label_text);
   return feature_tile;
 }
