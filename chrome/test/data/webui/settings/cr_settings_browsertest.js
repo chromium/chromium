@@ -955,7 +955,8 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
   mocha.run()
 });
 
-[['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
+[['AllSites', 'all_sites_tests.js'],
+ ['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
  [
    'SettingsCategoryDefaultRadioGroup',
    'settings_category_default_radio_group_tests.js',
@@ -1017,11 +1018,6 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
 GEN('#if !((BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_MAC))');
 [['SecurityPage', 'security_page_test.js'],
 ].forEach(test => registerTest(...test));
-GEN('#endif');
-
-// Timeout on Linux dbg bots: https://crbug.com/1311163
-GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
-[['AllSites', 'all_sites_tests.js']].forEach(test => registerTest(...test));
 GEN('#endif');
 
 // Timeout on Linux dbg bots: https://crbug.com/1394737
