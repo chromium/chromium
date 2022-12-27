@@ -581,9 +581,6 @@ const char kForceShowCursor[] = "force-show-cursor";
 // being on a non-stable release channel with feedback enabled.
 const char kForceShowReleaseTrack[] = "force-show-release-track";
 
-// Force system compositor mode when set.
-const char kForceSystemCompositorMode[] = "force-system-compositor-mode";
-
 // If set, tablet-like power button behavior (i.e. tapping the button turns the
 // screen off) is used even if the device is in laptop mode.
 const char kForceTabletPowerButton[] = "force-tablet-power-button";

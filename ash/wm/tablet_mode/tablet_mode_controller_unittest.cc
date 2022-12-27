@@ -66,6 +66,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/message_center/message_center.h"
+#include "ui/ozone/public/ozone_switches.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_util.h"
@@ -1787,7 +1788,7 @@ class TabletModeControllerOnDeviceTest : public TabletModeControllerTest {
   void SetUp() override {
     // We need to simulate the real on-device behavior for some tests.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kForceSystemCompositorMode);
+        ::switches::kEnableRunningAsSystemCompositor);
     TabletModeControllerTest::SetUp();
     // PowerManagerClient callback is a posted task.
     base::RunLoop().RunUntilIdle();

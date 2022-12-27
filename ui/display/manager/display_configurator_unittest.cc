@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -20,6 +19,7 @@
 #include "ui/display/manager/test/test_native_display_delegate.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
+#include "ui/ozone/public/ozone_switches.h"
 
 namespace display {
 namespace test {
@@ -244,7 +244,7 @@ class DisplayConfiguratorTest : public testing::Test {
 
     // Force system compositor mode to simulate on-device configurator behavior.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ash::switches::kForceSystemCompositorMode);
+        ::switches::kEnableRunningAsSystemCompositor);
 
     native_display_delegate_ = new TestNativeDisplayDelegate(log_.get());
     configurator_.SetDelegateForTesting(

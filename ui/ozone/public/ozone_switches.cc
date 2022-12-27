@@ -33,6 +33,11 @@ const char kDisableExplicitDmaFences[] = "disable-explicit-dma-fences";
 const char kDisableRunningAsSystemCompositor[] =
     "disable-running-as-system-compositor";
 
+// Enable running as system compositor when set.
+// TODO(https://crbug.com/1403348): Consider removing the flag.
+const char kEnableRunningAsSystemCompositor[] =
+    "enable-running-as-system-compositor";
+
 // Disable buffer bandwidth compression
 const char kDisableBufferBWCompression[] = "disable-buffer-bw-compression";
 

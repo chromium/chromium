@@ -161,7 +161,6 @@ component("ozone_base") {
   visibility += [
     # Everyone should depend on //ui/ozone instead except a handful of
     # things that would otherwise create a cycle.
-    "//chromeos/ash/components/system",
     "//ui/base/ime/ash/*",
     "//ui/events/ozone/*",
     "//ui/ozone/common/*",
@@ -243,7 +242,9 @@ source_set("ozone_switches") {
 
   visibility += [
     "//chrome/test:browser_tests_runner",
+    "//chromeos/ash/components/system",
     "//media/mojo/services",
+    "//ui/display:display_unittests",
   ]
 }
 

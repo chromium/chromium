@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/system/devicemode.h"
 
-#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -19,7 +18,7 @@ bool IsRunningAsSystemCompositor() {
   static bool is_running_on_chrome_os = base::SysInfo::IsRunningOnChromeOS();
   return is_running_on_chrome_os ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
-             ash::switches::kForceSystemCompositorMode);
+             ::switches::kEnableRunningAsSystemCompositor);
 }
 
 }  // namespace chromeos

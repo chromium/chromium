@@ -278,8 +278,8 @@ test("display_unittests") {
     ]
     deps += [
       ":display_manager_test_api",
-      "//ash/constants",
       "//ui/display/manager",
+      "//ui/ozone:ozone_switches",
     ]
   }
 }
