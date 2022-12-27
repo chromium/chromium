@@ -115,6 +115,22 @@ void DesktopEnvironmentOptions::set_clipboard_size(
   clipboard_size_ = std::move(clipboard_size);
 }
 
+bool DesktopEnvironmentOptions::capture_video_on_dedicated_thread() const {
+  // TODO(joedow): Determine whether we can migrate additional platforms to
+  // using the DesktopCaptureWrapper instead of the DesktopCaptureProxy. Then
+  // clean up DesktopCapturerProxy::Core::CreateCapturer().
+#if BUILDFLAG(IS_LINUX) && !defined(REMOTING_USE_WAYLAND)
+  return capture_video_on_dedicated_thread_;
+#else
+  return false;
+#endif
+}
+
+void DesktopEnvironmentOptions::set_capture_video_on_dedicated_thread(
+    bool use_dedicated_thread) {
+  capture_video_on_dedicated_thread_ = use_dedicated_thread;
+}
+
 void DesktopEnvironmentOptions::ApplySessionOptions(
     const SessionOptions& options) {
   // This field is for test purpose. Usually it should not be set to false.
@@ -122,6 +138,11 @@ void DesktopEnvironmentOptions::ApplySessionOptions(
       options.GetBool("Detect-Updated-Region");
   if (detect_updated_region.has_value()) {
     desktop_capture_options_.set_detect_updated_region(*detect_updated_region);
+  }
+  absl::optional<bool> capture_video_on_dedicated_thread =
+      options.GetBool("Capture-Video-On-Dedicated-Thread");
+  if (capture_video_on_dedicated_thread.has_value()) {
+    set_capture_video_on_dedicated_thread(*capture_video_on_dedicated_thread);
   }
 #if defined(WEBRTC_USE_PIPEWIRE)
   desktop_capture_options_.set_allow_pipewire(true);

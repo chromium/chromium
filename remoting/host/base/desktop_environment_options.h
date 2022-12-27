@@ -56,6 +56,9 @@ class DesktopEnvironmentOptions final {
   const webrtc::DesktopCaptureOptions* desktop_capture_options() const;
   webrtc::DesktopCaptureOptions* desktop_capture_options();
 
+  bool capture_video_on_dedicated_thread() const;
+  void set_capture_video_on_dedicated_thread(bool use_dedicated_thread);
+
   // Reads configurations from a SessionOptions instance.
   void ApplySessionOptions(const SessionOptions& options);
 
@@ -91,6 +94,9 @@ class DesktopEnvironmentOptions final {
   // transferred using ClipboardEvents. A value of 0 will effectively disable
   // clipboard sharing.
   absl::optional<size_t> clipboard_size_;
+
+  // True if the video capturer should be run on a dedicated thread.
+  bool capture_video_on_dedicated_thread_ = false;
 
   // The DesktopCaptureOptions to initialize DesktopCapturer.
   webrtc::DesktopCaptureOptions desktop_capture_options_;

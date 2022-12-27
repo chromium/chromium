@@ -30,6 +30,8 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
+#include "base/logging.h"
+
 #if BUILDFLAG(IS_WIN)
 #include "remoting/host/win/evaluate_d3d.h"
 #endif
@@ -192,8 +194,6 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
   // thread on Windows, the cursor shape won't be captured when in GDI mode.
   capture_task_runner = video_capture_task_runner_;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_LINUX)
-  auto desktop_capturer =
-      std::make_unique<DesktopCapturerProxy>(std::move(capture_task_runner));
 
 #if defined(REMOTING_USE_X11)
   // Workaround for http://crbug.com/1361502: Run each capturer (and
@@ -204,12 +204,22 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
   desktop_capture_options().x_display()->IgnoreXServerGrabs();
 #endif  // REMOTING_USE_X11
 
-  desktop_capturer->CreateCapturer(desktop_capture_options());
+  std::unique_ptr<DesktopCapturer> desktop_capturer;
+  if (options_.capture_video_on_dedicated_thread()) {
+    auto desktop_capturer_wrapper = std::make_unique<DesktopCapturerWrapper>();
+    desktop_capturer_wrapper->CreateCapturer(desktop_capture_options());
+    desktop_capturer = std::move(desktop_capturer_wrapper);
+  } else {
+    auto desktop_capturer_proxy =
+        std::make_unique<DesktopCapturerProxy>(std::move(capture_task_runner));
+    desktop_capturer_proxy->CreateCapturer(desktop_capture_options());
+    desktop_capturer = std::move(desktop_capturer_proxy);
+  }
 
 #if BUILDFLAG(IS_APPLE)
   // Mac includes the mouse cursor in the captured image in curtain mode.
   if (options_.enable_curtaining())
-    return std::move(desktop_capturer);
+    return desktop_capturer;
 #endif
   return std::make_unique<DesktopAndCursorConditionalComposer>(
       std::move(desktop_capturer));
