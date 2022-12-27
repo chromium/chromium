@@ -6492,17 +6492,38 @@ ScriptPromise Document::hasPrivateToken(ScriptState* script_state,
               return;
             }
 
-            if (result->status ==
-                network::mojom::blink::TrustTokenOperationStatus::kOk) {
-              resolver->Resolve(result->has_trust_tokens);
-            } else {
-              ScriptState* state = resolver->GetScriptState();
-              ScriptState::Scope scope(state);
-              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                  state->GetIsolate(), DOMExceptionCode::kOperationError,
-                  "Failed to retrieve hasPrivateToken response. (Would "
-                  "associating the given issuer with this top-level origin "
-                  "have exceeded its number-of-issuers limit?)"));
+            switch (result->status) {
+              case network::mojom::blink::TrustTokenOperationStatus::kOk: {
+                resolver->Resolve(result->has_trust_tokens);
+                break;
+              }
+              case network::mojom::blink::TrustTokenOperationStatus::
+                  kInvalidArgument: {
+                ScriptState* state = resolver->GetScriptState();
+                ScriptState::Scope scope(state);
+                resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                    state->GetIsolate(), DOMExceptionCode::kOperationError,
+                    "Failed to retrieve hasPrivateToken response. Issuer "
+                    "configuration is missing or unsuitable."));
+                break;
+              }
+              case network::mojom::blink::TrustTokenOperationStatus::
+                  kResourceExhausted: {
+                ScriptState* state = resolver->GetScriptState();
+                ScriptState::Scope scope(state);
+                resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                    state->GetIsolate(), DOMExceptionCode::kOperationError,
+                    "Failed to retrieve hasPrivateToken response. Exceeded the "
+                    "number-of-issuers limit."));
+                break;
+              }
+              default: {
+                ScriptState* state = resolver->GetScriptState();
+                ScriptState::Scope scope(state);
+                resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                    state->GetIsolate(), DOMExceptionCode::kOperationError,
+                    "Failed to retrieve hasPrivateToken response."));
+              }
             }
 
             document->data_->pending_trust_token_query_resolvers_.erase(
@@ -6595,17 +6616,28 @@ ScriptPromise Document::hasRedemptionRecord(ScriptState* script_state,
               return;
             }
 
-            if (result->status ==
-                network::mojom::blink::TrustTokenOperationStatus::kOk) {
-              resolver->Resolve(result->has_redemption_record);
-            } else {
-              ScriptState* state = resolver->GetScriptState();
-              ScriptState::Scope scope(state);
-              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                  state->GetIsolate(), DOMExceptionCode::kOperationError,
-                  "Failed to retrieve hasRedemptionRecord response. (Would "
-                  "associating the given issuer with this top-level origin "
-                  "have exceeded its number-of-issuers limit?)"));
+            switch (result->status) {
+              case network::mojom::blink::TrustTokenOperationStatus::kOk: {
+                resolver->Resolve(result->has_redemption_record);
+                break;
+              }
+              case network::mojom::blink::TrustTokenOperationStatus::
+                  kInvalidArgument: {
+                ScriptState* state = resolver->GetScriptState();
+                ScriptState::Scope scope(state);
+                resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                    state->GetIsolate(), DOMExceptionCode::kOperationError,
+                    "Failed to retrieve hasRedemptionRecord response. Issuer "
+                    "configuration is missing or unsuitable."));
+                break;
+              }
+              default: {
+                ScriptState* state = resolver->GetScriptState();
+                ScriptState::Scope scope(state);
+                resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                    state->GetIsolate(), DOMExceptionCode::kOperationError,
+                    "Failed to retrieve hasRedemptionRecord response."));
+              }
             }
 
             document->data_->pending_trust_token_query_resolvers_.erase(
