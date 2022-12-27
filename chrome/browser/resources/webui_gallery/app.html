@@ -5,14 +5,19 @@
   }
 
   #sidebar {
-    border-inline-end: 1px solid black;
+    border-inline-end: 1px solid var(--cr-separator-color);
     box-sizing: border-box;
     overflow: auto;
+    padding-block-end: 12px;
+    padding-inline-end: 12px;
     width: 256px;
   }
 
-  a {
-    text-decoration: none;
+  h1 {
+    color: var(--cr-primary-text-color);
+    font-size: 170%;
+    font-weight: 500;
+    padding-inline-start: 24px;
   }
 
   iframe {
@@ -26,6 +31,7 @@
   }
 </style>
 <div id="sidebar">
+  <h1>WebUI Gallery</h1>
   <cr-menu-selector id="selector" selectable="a" selected-attribute="selected">
     <template is="dom-repeat" items="[[demos]]">
       <a role="menuitem" href="[[item.path]]"

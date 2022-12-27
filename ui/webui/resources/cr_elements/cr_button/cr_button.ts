@@ -5,7 +5,8 @@
 /**
  * @fileoverview 'cr-button' is a button which displays slotted elements. It can
  * be interacted with like a normal button using click as well as space and
- * enter to effectively click the button and fire a 'click' event.
+ * enter to effectively click the button and fire a 'click' event. It can also
+ * style an icon inside of the button with the [has-icon] attribute.
  */
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../cr_hidden_style.css.js';

@@ -2,14 +2,28 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+@import '//resources/css/md_colors.css';
 @import '//resources/css/text_defaults_md.css';
 
+html {
+  --google-grey-200: rgb(232, 234, 237);
+  --google-grey-900: rgb(32, 33, 36);
+}
+
 body {
-  box-sizing: border-box;
-  height: 100%;
-  margin: 0;
-  padding: 16px;
-  width: 100%;
+ box-sizing: border-box;
+ color: var(--google-grey-900);
+ height: 100%;
+ margin: 0;
+ padding: 16px;
+ width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: var(--md-background-color);
+    color: var(--google-grey-200);
+  }
 }
 
 h1 {
