@@ -151,16 +151,16 @@ class CustomTabToolbarAnimationDelegate {
      * @param securityIconResource  The updated resource to be assigned to the security status icon.
      * When this is null, the icon is animated to the left and faded out.
      */
-    void updateSecurityButton(@DrawableRes int securityIconResource) {
-        if (mUseRotationTransition) {
+    void updateSecurityButton(@DrawableRes int securityIconResource, boolean animate) {
+        if (mUseRotationTransition && animate) {
             mBrandingAnimationDelegate.updateDrawableResource(securityIconResource);
         } else {
             boolean isActualResourceChange = true;
             if (ToolbarFeatures.shouldSuppressCaptures()) {
                 isActualResourceChange = securityIconResource != mSecurityIconRes;
             }
-            mSecurityButtonAnimationDelegate.updateSecurityButton(securityIconResource,
-                    /*animate=*/true, isActualResourceChange);
+            mSecurityButtonAnimationDelegate.updateSecurityButton(
+                    securityIconResource, animate, isActualResourceChange);
         }
         mSecurityIconRes = securityIconResource;
     }

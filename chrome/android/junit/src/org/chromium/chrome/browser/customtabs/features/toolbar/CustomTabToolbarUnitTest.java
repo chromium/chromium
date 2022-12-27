@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -238,6 +239,17 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testToolbarBrandingDelegateImpl_EmptyToBranding() {
+        mLocationBar.setIconTransitionEnabled(true);
+        doTestToolbarBrandingDelegateImpl_EmptyToBranding(true);
+    }
+
+    @Test
+    public void testToolbarBrandingDelegateImpl_EmptyToBranding_DisableTransition() {
+        mLocationBar.setIconTransitionEnabled(false);
+        doTestToolbarBrandingDelegateImpl_EmptyToBranding(false);
+    }
+
+    private void doTestToolbarBrandingDelegateImpl_EmptyToBranding(boolean animateIconTransition) {
         ChromeFeatureList.sCctBrandTransparency.setForTesting(true);
 
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
@@ -252,6 +264,7 @@ public class CustomTabToolbarUnitTest {
 
         mLocationBar.showBrandingLocationBar();
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
+        verify(mAnimationDelegate).updateSecurityButton(anyInt(), eq(animateIconTransition));
 
         // Attempt to update title and URL to show Title only - should be ignored during branding.
         reset(mLocationBarModel);
