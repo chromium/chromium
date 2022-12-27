@@ -95,10 +95,9 @@ public class SiteSettings extends SiteSettingsPreferenceFragment
                         browserContextHandle, contentType);
             }
 
-            if (prefCategory != Type.THIRD_PARTY_COOKIES) {
-                p.setTitle(
-                        ContentSettingsResources.getTitle(contentType, getSiteSettingsDelegate()));
-            }
+            p.setTitle(ContentSettingsResources.getTitleForCategory(
+                    prefCategory, getSiteSettingsDelegate()));
+
             p.setOnPreferenceClickListener(this);
 
             if ((Type.CAMERA == prefCategory || Type.MICROPHONE == prefCategory

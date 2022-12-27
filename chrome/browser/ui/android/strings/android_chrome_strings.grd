@@ -818,7 +818,7 @@ CHAR_LIMIT guidelines:
         Security
       </message>
       <message name="IDS_AD_PRIVACY_LINK_ROW_LABEL" translateable="false" desc="Label for the ad privacy row.">
-        Donec semper
+        Privacy sandbox row
       </message>
       <message name="IDS_AD_PRIVACY_LINK_ROW_SUB_LABEL" translateable="false" desc="Sublabel for the ad privacy row.">
         Fusce purus nibh, dictum sit amet mi in, fringilla ullamcorper tortor
@@ -1218,10 +1218,10 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 
       <!-- Privacy Sandbox v4 - Ad Privacy Page -->
       <message name="IDS_AD_PRIVACY_PAGE_TITLE" translateable="false" desc="Title for the Ad Privacy preferences page.">
-        Donec semper
+        Privacy sandbox title
       </message>
       <message name="IDS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_LABEL" translateable="false" desc="Title for topics preference.">
-        Mauris interdum lectus vitae lacinia
+        Topics row
       </message>
       <message name="IDS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for topics preference when enabled.">
         Enabled Nulla eros tortor, placerat blandit dictum a, interdum id metus
@@ -1230,7 +1230,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
         Disabled Nulla eros tortor, placerat blandit dictum a, interdum id metus
       </message>
       <message name="IDS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_LABEL" translateable="false" desc="Title for the fledge preference.">
-        Aenean erat leo
+        Fledge row
       </message>
       <message name="IDS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for the fledge preference when enabled.">
         Enabled Duis scelerisque a mi eget ultricies
@@ -1239,7 +1239,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
         Disabled Duis scelerisque a mi eget ultricies
       </message>
       <message name="IDS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_LABEL" translateable="false" desc="Title for the ad measurement preference.">
-        Vestibulum augue erat
+        Measurement row
       </message>
       <message name="IDS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Description for the ad measurement preference when enabled.">
         Enabled Vivamus id lacus et lacus porttitor vulputate. Sed semper egestas orci vel maximus.
@@ -1250,7 +1250,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 
       <!-- Privacy Sandbox v4 - Topics Page -->
       <message name="IDS_SETTINGS_TOPICS_PAGE_TITLE" translateable="false" desc="Title for the Topics preferences page.">
-        Mauris interdum lectus vitae lacinia
+        Topics title
       </message>
       <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL" translateable="false" desc="Title for the Topics toggle.">
         Nunc gravida condimentum consectetur
@@ -1285,7 +1285,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       </message>
       <!-- TODO(http://b/254412601): Format links.-->
       <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER" translateable="false" desc="Footer for the Topics preference page.">
-        Quisque eu auctor purus, id tempus nulla. Pellentesque porta orci purus. Donec dictum, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>justo nec ultricies semper<ph name="END_LINK_1">&lt;/link1&gt;</ph>, <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>eros mauris varius nibh<ph name="END_LINK_2">&lt;/link2&gt;</ph>, sit amet molestie quam arcu id urna. Donec vulputate dui ut lorem egestas, ac sollicitudin metus fermentum.
+        Fledge footer. Quisque eu auctor purus, id tempus nulla. Pellentesque porta orci purus. Donec dictum, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>fledge settings<ph name="END_LINK_1">&lt;/link1&gt;</ph>, <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cookie settings<ph name="END_LINK_2">&lt;/link2&gt;</ph>, sit amet molestie quam arcu id urna. Donec vulputate dui ut lorem egestas, ac sollicitudin metus fermentum.
       </message>
       <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING" translateable="false" desc="">
         Vivamus nibh turpis
@@ -1302,7 +1302,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 
       <!-- Privacy Sandbox v4 - Fledge Page -->
       <message name="IDS_SETTINGS_FLEDGE_PAGE_TITLE" translateable="false" desc="Title for the Fledge preferences page.">
-        Aenean erat leo
+        Fledge title
       </message>
       <message name="IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_LABEL" translateable="false" desc="Title for the Fledge toggle.">
         Nunc aliquam consequat felis non tincidunt
@@ -1330,7 +1330,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       </message>
       <!-- TODO(http://b/254412044): Format links.-->
       <message name="IDS_SETTINGS_FLEDGE_PAGE_FOOTER" translateable="false" desc="">
-        Pellentesque sollicitudin purus sit amet felis fringilla blandit. Donec a eleifend ligula, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>et fringilla nunc<ph name="END_LINK_1">&lt;/link1&gt;</ph>. Vivamus sit amet <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cursus quam<ph name="END_LINK_2">&lt;/link2&gt;</ph>. Etiam ultricies rutrum orci, eget accumsan purus mattis in.
+        Fledge footer. Pellentesque sollicitudin purus sit amet felis fringilla blandit. Donec a eleifend ligula, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>topics settings<ph name="END_LINK_1">&lt;/link1&gt;</ph>. Vivamus sit amet <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cookie settings<ph name="END_LINK_2">&lt;/link2&gt;</ph>. Etiam ultricies rutrum orci, eget accumsan purus mattis in.
       </message>
       <message name="IDS_SETTINGS_FLEDGE_ALL_SITES_SUB_PAGE_TITLE" translateable="false" desc="">
         All sites
@@ -1359,7 +1359,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 
       <!-- Privacy Sandbox v4 - Ad Measurement Page -->
       <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE" translateable="false" desc="Title for the Ad Measurement preferences page.">
-        Vestibulum augue
+        Measurement title
       </message>
       <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TOGGLE_LABEL" translateable="false" desc="Title for the Ad Measurement toggle.">
         Vestibulum augue erat

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUiFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckFragmentView;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditUiFactory;
@@ -75,6 +77,7 @@ import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.PaddedDividerItemDecoration;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -453,9 +456,16 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             imageFragment.setDelegate(ImageDescriptionsController.getInstance().getDelegate());
         }
         if (fragment instanceof PrivacySandboxSettingsBaseFragment) {
-            ((PrivacySandboxSettingsBaseFragment) fragment)
-                    .setCustomTabIntentHelper(
-                            LaunchIntentDispatcher::createCustomTabActivityIntent);
+            PrivacySandboxSettingsBaseFragment sandboxFragment =
+                    (PrivacySandboxSettingsBaseFragment) fragment;
+            sandboxFragment.setCustomTabIntentHelper(
+                    LaunchIntentDispatcher::createCustomTabActivityIntent);
+            sandboxFragment.setCookieSettingsIntentHelper((Context context) -> {
+                assert ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+                    : "PrivacySandboxSettings4 is disabled";
+                SiteSettingsHelper.showCategorySettings(
+                        context, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+            });
         }
         if (fragment instanceof AdMeasurementFragment) {
             // Unlike HistoryManagerUtils, which opens History in a tab on Tablets, this always

@@ -83,10 +83,26 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
                 getResources().getString(R.string.settings_topics_page_current_topics_description),
                 new SpanApplier.SpanInfo("<link>", "</link>",
                         new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
+
+        mTopicsPageFooterPreference.setSummary(SpanApplier.applySpans(
+                getResources().getString(R.string.settings_topics_page_footer),
+                new SpanApplier.SpanInfo("<link1>", "</link1>",
+                        new NoUnderlineClickableSpan(
+                                getContext(), this::onFledgeSettingsLinkClicked)),
+                new SpanApplier.SpanInfo("<link2>", "</link2>",
+                        new NoUnderlineClickableSpan(getContext(), this::onCookieSettingsLink))));
     }
 
     private void onLearnMoreClicked(View view) {
         launchSettingsActivity(TopicsLearnMoreFragment.class);
+    }
+
+    private void onFledgeSettingsLinkClicked(View view) {
+        launchSettingsActivity(FledgeFragmentV4.class);
+    }
+
+    private void onCookieSettingsLink(View view) {
+        launchCookieSettings();
     }
 
     @Override

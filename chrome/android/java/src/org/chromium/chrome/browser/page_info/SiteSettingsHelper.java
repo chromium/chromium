@@ -51,10 +51,10 @@ public class SiteSettingsHelper {
         extras.putString(SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(category));
         extras.putString(SingleCategorySettings.EXTRA_TITLE,
-                context.getResources().getString(ContentSettingsResources.getTitle(
-                        SiteSettingsCategory.contentSettingsType(category),
-                        new ChromeSiteSettingsDelegate(
-                                context, Profile.getLastUsedRegularProfile()))));
+                context.getResources().getString(
+                        ContentSettingsResources.getTitleForCategory(category,
+                                new ChromeSiteSettingsDelegate(
+                                        context, Profile.getLastUsedRegularProfile()))));
         Intent preferencesIntent = settingsLauncher.createSettingsActivityIntent(
                 context, SingleCategorySettings.class.getName(), extras);
         launchIntent(context, preferencesIntent);

@@ -49,8 +49,8 @@ public class SiteSettingsTestUtils {
             Context context = InstrumentationRegistry.getInstrumentation().getContext();
             var delegate =
                     new ChromeSiteSettingsDelegate(context, Profile.getLastUsedRegularProfile());
-            return context.getResources().getString(ContentSettingsResources.getTitle(
-                    SiteSettingsCategory.contentSettingsType(type), delegate));
+            return context.getResources().getString(
+                    ContentSettingsResources.getTitleForCategory(type, delegate));
         });
         fragmentArgs.putString(SingleCategorySettings.EXTRA_TITLE, title);
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();

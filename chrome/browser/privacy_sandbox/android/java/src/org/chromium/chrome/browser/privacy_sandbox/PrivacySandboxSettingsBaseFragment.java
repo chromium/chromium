@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -44,6 +45,7 @@ public abstract class PrivacySandboxSettingsBaseFragment
     private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
     private SettingsLauncher mSettingsLauncher;
     private SnackbarManager mSnackbarManager;
+    private Callback<Context> mCookieSettingsLauncher;
 
     /**
      * Launches the right version of PrivacySandboxSettings depending on feature flags.
@@ -149,5 +151,15 @@ public abstract class PrivacySandboxSettingsBaseFragment
     @Override
     public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
         mSettingsLauncher = settingsLauncher;
+    }
+
+    protected void launchCookieSettings() {
+        if (mCookieSettingsLauncher != null) {
+            mCookieSettingsLauncher.onResult(getContext());
+        }
+    }
+
+    public void setCookieSettingsIntentHelper(Callback<Context> cookieSettingsLauncher) {
+        mCookieSettingsLauncher = cookieSettingsLauncher;
     }
 }

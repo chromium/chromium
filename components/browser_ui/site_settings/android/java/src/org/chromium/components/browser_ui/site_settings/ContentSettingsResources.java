@@ -397,9 +397,22 @@ public class ContentSettingsResources {
 
     /**
      * Returns the resource id of the title (short version), shown on the Site Settings page
+     * and in the global toggle at the top of a Website Settings page for a category.
+     */
+    public static int getTitleForCategory(
+            @SiteSettingsCategory.Type int type, SiteSettingsDelegate delegate) {
+        if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+            return R.string.third_party_cookies_page_title;
+        }
+        return getTitle(SiteSettingsCategory.contentSettingsType(type), delegate);
+    }
+
+    /**
+     * Returns the resource id of the title (short version), shown on the Site Settings page
      * and in the global toggle at the top of a Website Settings page for a content type.
      */
-    public static int getTitle(int contentType, SiteSettingsDelegate delegate) {
+    public static int getTitle(
+            @ContentSettingsType int contentType, SiteSettingsDelegate delegate) {
         return getResourceItem(contentType, delegate).getTitle();
     }
 

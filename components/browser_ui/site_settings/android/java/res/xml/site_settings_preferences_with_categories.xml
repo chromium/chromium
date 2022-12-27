@@ -92,7 +92,6 @@ Also add new settings to site_settings_preferences.xml!
     <!-- Third party cookies -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="third_party_cookies"
-        android:title="@string/third_party_cookies_page_title"
         android:icon="@drawable/permission_cookie"
         app:iconTint="@macro/default_icon_color"
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
