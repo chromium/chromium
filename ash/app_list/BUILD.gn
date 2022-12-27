@@ -14,8 +14,6 @@ source_set("app_list") {
     "app_list_bubble_event_filter.h",
     "app_list_bubble_presenter.cc",
     "app_list_bubble_presenter.h",
-    "app_list_color_provider_impl.cc",
-    "app_list_color_provider_impl.h",
     "app_list_controller_impl.cc",
     "app_list_controller_impl.h",
     "app_list_event_targeter.cc",

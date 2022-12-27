@@ -1483,10 +1483,6 @@ bool AppListControllerImpl::IsInTabletMode() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
 
-AppListColorProviderImpl* AppListControllerImpl::GetColorProvider() {
-  return &color_provider_;
-}
-
 void AppListControllerImpl::RecordAppLaunched(
     AppListLaunchedFrom launched_from) {
   RecordAppListAppLaunched(launched_from, GetAppListViewState(), IsTabletMode(),

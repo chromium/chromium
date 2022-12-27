@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -42,9 +41,6 @@ class ZeroStateFileProviderTest : public testing::Test {
   ~ZeroStateFileProviderTest() override = default;
 
   void SetUp() override {
-    app_list_color_provider_ =
-        std::make_unique<ash::TestAppListColorProvider>();
-
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(testing_profile_manager_->SetUp());
@@ -66,8 +62,6 @@ class ZeroStateFileProviderTest : public testing::Test {
 
     Wait();
   }
-
-  void TearDown() override { app_list_color_provider_.reset(); }
 
   base::FilePath Path(const std::string& filename) {
     return profile_->GetPath().AppendASCII(filename);
@@ -113,7 +107,6 @@ class ZeroStateFileProviderTest : public testing::Test {
 
   TestSearchController search_controller_;
   ZeroStateFileProvider* provider_ = nullptr;
-  std::unique_ptr<ash::TestAppListColorProvider> app_list_color_provider_;
 };
 
 TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {

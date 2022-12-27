@@ -40,7 +40,6 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
-#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/run_loop.h"
@@ -493,8 +492,6 @@ class AppListViewTest : public views::ViewsTestBase {
   // Sets animation durations to zero.
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 
-  TestAppListColorProvider app_list_color_provider_;  // Needed by AppListView.
-
   // Needed by AppsContainerView::ContinueContainer.
   AshColorProvider ash_color_provider_;
 
@@ -852,7 +849,6 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  TestAppListColorProvider app_list_color_provider_;  // Needed by AppListView.
   AshColorProvider ash_color_provider_;
   AppListView* view_ = nullptr;          // Owned by native widget.
 

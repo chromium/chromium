@@ -353,8 +353,8 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
                             false /*animate*/);
   }
 
-  notification_indicator_ = AddChildView(
-      std::make_unique<DotIndicator>(item->GetNotificationBadgeColor(this)));
+  notification_indicator_ =
+      AddChildView(std::make_unique<DotIndicator>(gfx::kPlaceholderColor));
   notification_indicator_->SetVisible(item->has_notification_badge());
 
   title_ = AddChildView(std::move(title));
@@ -1026,8 +1026,10 @@ void AppListItemView::OnThemeChanged() {
   views::Button::OnThemeChanged();
   if (item_weak_) {
     item_weak_->RequestFolderIconUpdate();
-    notification_indicator_->SetColor(
-        item_weak_->GetNotificationBadgeColor(this));
+    SkColor notification_indicator_color =
+        is_folder_ ? GetColorProvider()->GetColor(cros_tokens::kIconColorBlue)
+                   : item_weak_->GetNotificationBadgeColor();
+    notification_indicator_->SetColor(notification_indicator_color);
   }
   SchedulePaint();
 }
@@ -1286,8 +1288,7 @@ void AppListItemView::ItemBadgeVisibilityChanged() {
 }
 
 void AppListItemView::ItemBadgeColorChanged() {
-  notification_indicator_->SetColor(
-      item_weak_->GetNotificationBadgeColor(this));
+  notification_indicator_->SetColor(item_weak_->GetNotificationBadgeColor());
 }
 
 void AppListItemView::ItemIsNewInstallChanged() {

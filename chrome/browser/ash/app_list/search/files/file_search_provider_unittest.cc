@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -43,8 +42,6 @@ class FileSearchProviderTest : public testing::Test {
  protected:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    app_list_color_provider_ =
-        std::make_unique<ash::TestAppListColorProvider>();
     search_controller_ = std::make_unique<TestSearchController>();
     provider_ = std::make_unique<FileSearchProvider>(profile_.get());
 
@@ -81,7 +78,6 @@ class FileSearchProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<Profile> profile_;
-  std::unique_ptr<ash::TestAppListColorProvider> app_list_color_provider_;
   std::unique_ptr<TestSearchController> search_controller_;
   std::unique_ptr<FileSearchProvider> provider_;
   base::ScopedTempDir scoped_temp_dir_;

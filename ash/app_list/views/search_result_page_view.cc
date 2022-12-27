@@ -14,7 +14,6 @@
 #include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_id.h"

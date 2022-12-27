@@ -9,7 +9,6 @@
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/search_result_image_view.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ui/accessibility/ax_node_data.h"

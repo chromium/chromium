@@ -16,7 +16,6 @@
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -280,9 +279,8 @@ class SearchResultListViewTest : public views::test::WidgetTest,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestAppListColorProvider color_provider_;  // Needed by AppListView.
-  AshColorProvider
-      ash_color_provider_;  // Needed by SearchResultInlineIconView.
+  // Needed by SearchResultInlineIconView.
+  AshColorProvider ash_color_provider_;
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultListView> default_view_;
   std::unique_ptr<SearchResultListView> answer_card_view_;

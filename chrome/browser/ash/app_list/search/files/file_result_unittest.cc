@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,7 +41,6 @@ class FileResultTest : public testing::Test {
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
-  ash::TestAppListColorProvider app_list_color_provider_;
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<Profile> profile_;

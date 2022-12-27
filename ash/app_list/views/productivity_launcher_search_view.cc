@@ -20,7 +20,6 @@
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"

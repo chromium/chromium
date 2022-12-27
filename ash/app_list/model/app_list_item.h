@@ -58,7 +58,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // and UI would be updated since it also observe ItemIconChanged.
   void SetIconVersion(int icon_version);
 
-  SkColor GetNotificationBadgeColor(views::View* view) const;
+  SkColor GetNotificationBadgeColor() const;
   void SetNotificationBadgeColor(const SkColor color);
 
   const std::string& GetDisplayName() const {

@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -87,8 +87,7 @@ class PageSwitcherButton : public IconButton {
   // Returns the information of how to paint selected/normal button.
   PaintButtonInfo BuildPaintButtonInfo() {
     PaintButtonInfo info;
-    info.color =
-        AppListColorProvider::Get()->GetPageSwitcherButtonColor(GetWidget());
+    info.color = GetColorProvider()->GetColor(kColorAshButtonIconColor);
     if (selected_) {
       info.style = cc::PaintFlags::kFill_Style;
       info.radius = SkIntToScalar(kSelectedButtonRadius);

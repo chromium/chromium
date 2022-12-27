@@ -18,9 +18,10 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/ghost_image_view.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -148,14 +149,16 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::Layer,
 
     // Draw a solid rounded rect as the background.
     cc::PaintFlags flags;
-    auto* color_provider = AppListColorProvider::Get();
-    const views::Widget* app_list_widget = paged_apps_grid_view_->GetWidget();
-    SkColor fill_color =
-        is_active_page_
-            ? color_provider->GetGridBackgroundCardActiveColor(app_list_widget)
-            : color_provider->GetGridBackgroundCardInactiveColor(
-                  app_list_widget);
-    flags.setColor(fill_color);
+    if (is_active_page_) {
+      const auto base_color_and_opacity =
+          ColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+      flags.setColor(SkColorSetA(base_color_and_opacity.first,
+                                 base_color_and_opacity.second * 255));
+    } else {
+      flags.setColor(
+          paged_apps_grid_view_->GetWidget()->GetColorProvider()->GetColor(
+              kColorAshControlBackgroundColorInactive));
+    }
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawRoundRect(card_size, kBackgroundCardCornerRadius, flags);
 

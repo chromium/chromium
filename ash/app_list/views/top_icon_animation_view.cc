@@ -9,7 +9,6 @@
 
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/style/ash_color_id.h"
 #include "base/task/single_thread_task_runner.h"

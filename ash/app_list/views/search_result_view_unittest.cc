@@ -5,7 +5,6 @@
 #include "ash/app_list/views/search_result_view.h"
 
 #include "ash/app_list/model/search/test_search_result.h"
-#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -131,7 +130,6 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
 
  private:
   int result_id = 0;
-  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   std::unique_ptr<SearchResultView> answer_card_view_;
   std::unique_ptr<SearchResultView> search_result_view_;
   views::Widget* widget_;
