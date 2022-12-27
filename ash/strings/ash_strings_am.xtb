@@ -129,6 +129,7 @@
 <translation id="1611993646327628135">አብራ</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
 <translation id="1632985212731562677">የመዳረሻ መቀየሪያ በቅንብሮች &gt; ተደራሽነት ውስጥ ሊሰናከል ይችላል።</translation>
+<translation id="163517899691012366">አትረብሽ በሚበራበት ጊዜ ማሳወቂያዎች ድምጸ-ከል ተደርገዋል።</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> መሣሪያዎች</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
 <translation id="1654477262762802994">የድምጽ መጠይቅ ይጀምሩ</translation>
@@ -377,6 +378,7 @@
 <translation id="3047761520276763270">ይህን ለማለት ይሞክሩ፦</translation>
 <translation id="3051189971848907985">መገለጫውን እንደገና በመሰየም ላይ። ጥቂት ደቂቃዎችን ይጠብቁ።</translation>
 <translation id="3055162170959710888">ይህን መሣሪያ ዛሬ ለ<ph name="USED_TIME" /> ተጠቅመውበታል</translation>
+<translation id="3062298103034426069">አይደገፍም</translation>
 <translation id="3068711042108640621">መደርደሪያ በስተግራ</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ምናሌ ዘርጋ</translation>
@@ -411,6 +413,7 @@
 <translation id="3249513730522716925">መስኮት <ph name="WINDOW_TITLE" /> ከዴስክ <ph name="ACTIVE_DESK" /> ወደ ዴስክ <ph name="TARGET_DESK" /> ይወሰዳል</translation>
 <translation id="3252573918265662711">አዋቅር</translation>
 <translation id="3255483164551725916">ምን ማድረግ ይችላሉ?</translation>
+<translation id="3260969790895726815">ንግግር የሚሰናዳው በአካባቢ ሲሆን በቃል ማስጻፍ ከመስመር ውጭ ይሰራል ነገር ግን አንዳንድ የድምጽ ትዕዛዞች አይሰሩም።</translation>
 <translation id="3269597722229482060">የቀኝ ጠቅታ</translation>
 <translation id="3289544412142055976">የሊኑክስ መተግበሪያዎች በአሁኑ ጊዜ አይደገፉም</translation>
 <translation id="3289674678944039601">በአስማሚ በኩል በመሙላት ላይ</translation>
@@ -796,9 +799,11 @@
 <translation id="5331975486040154427">USB-C መሣሪያ (የግራ ጎን ኋላ ወደብ)</translation>
 <translation id="533282197239610265">የCast መሣሪያዎችን አሳይ</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ቀኝ)</translation>
+<translation id="5351427059191534258">የካሜራ መዳረሻ ይጥፋ?</translation>
 <translation id="5352250171825660495">ጠቆር ያለ ገጽታ በርቷል</translation>
 <translation id="5356963482258194581">ጠቆር ያለ እና ነጣ ያለ ገጽታ ይቀያይሩ። በዴስክቶፕ ላይ የቀኝ ጠቅታ ያድርጉ ከዚያም ልጣፍ እና ቅጥን ይምረጡ።</translation>
 <translation id="536019650977002321">አስተዳዳሪዎ የኦዲዮ መቅዳትን አይፈቅድም። ለተጨማሪ መረጃ አስተዳዳሪዎን ያነጋግሩ።</translation>
+<translation id="5361524080961918551"><ph name="LANGUAGE" /> የንግግር ፋይሎች በከፊል ወርደዋል</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ወደዚህ ትር ይሂዱ</translation>
 <translation id="5377367976106153749">የካሜራ መዳረሻ ይብራ?</translation>
 <translation id="5379115545237091094">በጣም ብዙ ሙከራዎች</translation>
@@ -909,6 +914,7 @@
 <translation id="5980301590375426705">ከእንግዳ ውጣ</translation>
 <translation id="598407983968395253">ቅንብር ደንብን ተጠቀም</translation>
 <translation id="598882571027504733">ዝማኔውን ለማግኘት፣ ከተያያዘው የቁልፍ ሰሌዳ ጋር የእርስዎን Chromebook ዳግም ያስጀምሩ።</translation>
+<translation id="6002179289567220515">1 ካሜራን ለማጥፋት አካላዊ መቀያየሪያን ተጠቅመዋል። እንዲሁም ለሁሉም ካሜራዎች መዳረሻን ማጥፋት ይችላሉ።</translation>
 <translation id="6012623610530968780">ገጽ <ph name="SELECTED_PAGE" /> ከ<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">ከመስታወት ሁነታ በመውጣት ላይ</translation>
 <translation id="602001110135236999">ወደ ግራ ይሸብልሉ</translation>
@@ -949,9 +955,11 @@
 <translation id="619279033188484792">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይመልከቱ</translation>
 <translation id="619335566042889110">አሁን ሙሉ ኃይል ይሙሉ</translation>
 <translation id="6193431488227440296">ገንቢ</translation>
+<translation id="6200515304866777730">በመተግበሪያ አይደገፍም</translation>
 <translation id="6210042900243040400">ከዚህ ቀደም በ<ph name="EMAIL" /> ላይ ከተቀመጠ <ph name="NAME" /> ጋር ይገናኙ</translation>
 <translation id="6220928844947387476">አሁን እራስዎን እና ማያ ገጽዎን በተመሳሳይ ጊዜ መቅረጽ ይችላሉ</translation>
 <translation id="622484624075952240">ታች</translation>
+<translation id="623116199192908855">ከእርስዎ Chromebook ማያ ገጽዎን cast ያድርጉ</translation>
 <translation id="6231419273573514727">የተቀጥላዎች አፈጻጸም የተገደበ ሊሆን ይችላል።</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> አሁን ላይ የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -993,8 +1001,10 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> ከቀነገደቡ በፊት እንዲያዘምኑት ይፈልግብዎታል።</translation>
 <translation id="649452524636452238">የዘመናዊ ካርድ ፒን</translation>
 <translation id="6495400115277918834">ሥዕል-ላይ-ሥዕል ተጀምሯል፣ ለማተኮር Alt+Shift+V</translation>
+<translation id="6497418457565568043">አትረብሽ በርቷል</translation>
 <translation id="6500896621837555595">አዘምን</translation>
 <translation id="6501401484702599040">ማያ ገጹን ወደ <ph name="RECEIVER_NAME" /> Cast በማድረግ ላይ</translation>
+<translation id="6508923215158854599">የእርስዎ Chromebook ከእርስዎ Chromecast መሣሪያ ጋር ተመሳሳይ የሆነ የWi-Fi አውታረ መረብ ላይ እንደሆነ ያረጋግጡ።</translation>
 <translation id="6515727200518652613">ካሜራ ጠፍቷል፣ ዳግም ለማገናኘት በመሞከር ላይ።</translation>
 <translation id="6520517963145875092">ለመቅረጽ መስኮት ይምረጡ</translation>
 <translation id="652139407789908527">በዚህ ዝማኔ ጊዜ የእርስዎ ማያ ገጽ ከተለመደው ረዘም ላለ ጊዜ (እስከ አንድ ደቂቃ ድረስ) ባዶ ይሆናል። ዝማኔው በሂደት ላይ ሳለ እባክዎ የኃይል አዝራሩን አይጫኑት።</translation>
