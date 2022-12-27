@@ -1105,8 +1105,8 @@ class EnterpriseReportingPrivateEnqueueRecordFunctionTest
   }
 
   ::reporting::Record GetTestRecord() const {
-    base::Value data{base::Value::Type::DICTIONARY};
-    data.SetKey("TEST_KEY", base::Value("TEST_VALUE"));
+    base::Value::Dict data;
+    data.Set("TEST_KEY", base::Value("TEST_VALUE"));
     std::string serialized_data;
     DCHECK(base::JSONWriter::Write(data, &serialized_data));
 

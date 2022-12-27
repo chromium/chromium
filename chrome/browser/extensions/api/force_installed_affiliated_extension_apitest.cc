@@ -112,7 +112,7 @@ ForceInstalledAffiliatedExtensionApiTest::ForceInstallExtension(
 void ForceInstalledAffiliatedExtensionApiTest::TestExtension(
     Browser* browser,
     const GURL& page_url,
-    const base::Value& custom_arg_value) {
+    const base::Value::Dict& custom_arg_value) {
   DCHECK(page_url.is_valid()) << "page_url must be valid";
 
   std::string custom_arg;

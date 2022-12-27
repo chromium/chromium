@@ -34,20 +34,18 @@ constexpr char kExtensionPath[] =
 constexpr char kExtensionPemPath[] =
     "extensions/api_test/enterprise_device_attributes.pem";
 
-base::Value BuildCustomArg(const std::string& expected_directory_device_id,
-                           const std::string& expected_serial_number,
-                           const std::string& expected_asset_id,
-                           const std::string& expected_annotated_location,
-                           const std::string& expected_hostname) {
-  base::Value custom_arg(base::Value::Type::DICTIONARY);
-  custom_arg.SetKey("expectedDirectoryDeviceId",
-                    base::Value(expected_directory_device_id));
-  custom_arg.SetKey("expectedSerialNumber",
-                    base::Value(expected_serial_number));
-  custom_arg.SetKey("expectedAssetId", base::Value(expected_asset_id));
-  custom_arg.SetKey("expectedAnnotatedLocation",
-                    base::Value(expected_annotated_location));
-  custom_arg.SetKey("expectedHostname", base::Value(expected_hostname));
+base::Value::Dict BuildCustomArg(
+    const std::string& expected_directory_device_id,
+    const std::string& expected_serial_number,
+    const std::string& expected_asset_id,
+    const std::string& expected_annotated_location,
+    const std::string& expected_hostname) {
+  base::Value::Dict custom_arg;
+  custom_arg.Set("expectedDirectoryDeviceId", expected_directory_device_id);
+  custom_arg.Set("expectedSerialNumber", expected_serial_number);
+  custom_arg.Set("expectedAssetId", expected_asset_id);
+  custom_arg.Set("expectedAnnotatedLocation", expected_annotated_location);
+  custom_arg.Set("expectedHostname", expected_hostname);
   return custom_arg;
 }
 

@@ -612,10 +612,10 @@ void WebrtcLoggingPrivateGetLogsDirectoryFunction::FireCallback(
     const std::string& filesystem_id,
     const std::string& base_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetStringKey("fileSystemId", filesystem_id);
-  dict->SetStringKey("baseName", base_name);
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
+  base::Value::Dict dict;
+  dict.Set("fileSystemId", filesystem_id);
+  dict.Set("baseName", base_name);
+  Respond(OneArgument(base::Value(std::move(dict))));
 }
 
 void WebrtcLoggingPrivateGetLogsDirectoryFunction::FireErrorCallback(

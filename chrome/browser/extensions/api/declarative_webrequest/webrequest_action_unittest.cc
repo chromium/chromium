@@ -34,7 +34,6 @@
 namespace helpers = extension_web_request_api_helpers;
 namespace keys = extensions::declarative_webrequest_constants;
 
-using base::DictionaryValue;
 using extension_test_util::LoadManifestUnchecked;
 using helpers::EventResponseDeltas;
 using testing::HasSubstr;
@@ -177,26 +176,26 @@ TEST(WebRequestActionTest, CreateAction) {
   EXPECT_FALSE(result.get());
 
   // Test missing instanceType element.
-  base::DictionaryValue input;
+  base::Value::Dict input;
   error.clear();
-  result =
-      WebRequestAction::Create(nullptr, nullptr, input, &error, &bad_message);
+  result = WebRequestAction::Create(
+      nullptr, nullptr, base::Value(input.Clone()), &error, &bad_message);
   EXPECT_TRUE(bad_message);
   EXPECT_FALSE(result.get());
 
   // Test wrong instanceType element.
-  input.SetStringKey(keys::kInstanceTypeKey, kUnknownActionType);
+  input.Set(keys::kInstanceTypeKey, kUnknownActionType);
   error.clear();
-  result =
-      WebRequestAction::Create(nullptr, nullptr, input, &error, &bad_message);
+  result = WebRequestAction::Create(
+      nullptr, nullptr, base::Value(input.Clone()), &error, &bad_message);
   EXPECT_NE("", error);
   EXPECT_FALSE(result.get());
 
   // Test success
-  input.SetStringKey(keys::kInstanceTypeKey, keys::kCancelRequestType);
+  input.Set(keys::kInstanceTypeKey, keys::kCancelRequestType);
   error.clear();
-  result =
-      WebRequestAction::Create(nullptr, nullptr, input, &error, &bad_message);
+  result = WebRequestAction::Create(
+      nullptr, nullptr, base::Value(input.Clone()), &error, &bad_message);
   EXPECT_EQ("", error);
   EXPECT_FALSE(bad_message);
   ASSERT_TRUE(result.get());
@@ -220,14 +219,14 @@ TEST(WebRequestActionTest, CreateActionSet) {
   EXPECT_TRUE(result->actions().empty());
   EXPECT_EQ(std::numeric_limits<int>::min(), result->GetMinimumPriority());
 
-  base::DictionaryValue correct_action;
-  correct_action.SetStringKey(keys::kInstanceTypeKey, keys::kIgnoreRulesType);
-  correct_action.SetIntKey(keys::kLowerPriorityThanKey, 10);
-  base::DictionaryValue incorrect_action;
-  incorrect_action.SetStringKey(keys::kInstanceTypeKey, kUnknownActionType);
+  base::Value::Dict correct_action;
+  correct_action.Set(keys::kInstanceTypeKey, keys::kIgnoreRulesType);
+  correct_action.Set(keys::kLowerPriorityThanKey, 10);
+  base::Value::Dict incorrect_action;
+  incorrect_action.Set(keys::kInstanceTypeKey, kUnknownActionType);
 
   // Test success.
-  input.push_back(correct_action.Clone());
+  input.emplace_back(std::move(correct_action));
   error.clear();
   result = WebRequestActionSet::Create(nullptr, nullptr, input, &error,
                                        &bad_message);
@@ -240,7 +239,7 @@ TEST(WebRequestActionTest, CreateActionSet) {
   EXPECT_EQ(10, result->GetMinimumPriority());
 
   // Test failure.
-  input.push_back(incorrect_action.Clone());
+  input.emplace_back(std::move(incorrect_action));
   error.clear();
   result = WebRequestActionSet::Create(nullptr, nullptr, input, &error,
                                        &bad_message);

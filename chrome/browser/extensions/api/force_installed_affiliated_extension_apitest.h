@@ -53,7 +53,7 @@ class ForceInstalledAffiliatedExtensionApiTest
   // test pass/fail notification.
   void TestExtension(Browser* browser,
                      const GURL& page_url,
-                     const base::Value& custom_arg_value);
+                     const base::Value::Dict& custom_arg_value);
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   ash::ScopedStubInstallAttributes test_install_attributes_;

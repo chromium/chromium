@@ -230,8 +230,8 @@ void PrefChanged(Profile* profile, const std::string& pref_name) {
     return;
   }
   base::Value::List args;
-  base::Value prefs(base::Value::Type::DICTIONARY);
-  prefs.SetKey(pref_name, profile->GetPrefs()->GetValue(pref_name).Clone());
+  base::Value::Dict prefs;
+  prefs.Set(pref_name, profile->GetPrefs()->GetValue(pref_name).Clone());
   args.Append(std::move(prefs));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TERMINAL_PRIVATE_ON_PREF_CHANGED,
@@ -733,22 +733,19 @@ TerminalPrivateOpenSettingsSubpageFunction::Run() {
 TerminalPrivateGetOSInfoFunction::~TerminalPrivateGetOSInfoFunction() = default;
 
 ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
-  base::DictionaryValue info;
-  info.SetBoolKey("alternative_emulator",
-                  base::FeatureList::IsEnabled(
-                      ash::features::kTerminalAlternativeEmulator));
-  info.SetBoolKey("multi_profile", base::FeatureList::IsEnabled(
-                                       ash::features::kTerminalMultiProfile));
-  info.SetBoolKey("sftp",
-                  base::FeatureList::IsEnabled(ash::features::kTerminalSftp));
-  info.SetBoolKey("tast",
-                  extensions::ExtensionRegistry::Get(browser_context())
-                      ->enabled_extensions()
-                      .Contains(extension_misc::kGuestModeTestExtensionId));
-  info.SetBoolKey(
-      "tmux_integration",
-      base::FeatureList::IsEnabled(ash::features::kTerminalTmuxIntegration));
-  return RespondNow(OneArgument(std::move(info)));
+  base::Value::Dict info;
+  info.Set("alternative_emulator",
+           base::FeatureList::IsEnabled(
+               ash::features::kTerminalAlternativeEmulator));
+  info.Set("multi_profile",
+           base::FeatureList::IsEnabled(ash::features::kTerminalMultiProfile));
+  info.Set("sftp", base::FeatureList::IsEnabled(ash::features::kTerminalSftp));
+  info.Set("tast", extensions::ExtensionRegistry::Get(browser_context())
+                       ->enabled_extensions()
+                       .Contains(extension_misc::kGuestModeTestExtensionId));
+  info.Set("tmux_integration", base::FeatureList::IsEnabled(
+                                   ash::features::kTerminalTmuxIntegration));
+  return RespondNow(OneArgument(base::Value(std::move(info))));
 }
 
 TerminalPrivateGetPrefsFunction::~TerminalPrivateGetPrefsFunction() = default;

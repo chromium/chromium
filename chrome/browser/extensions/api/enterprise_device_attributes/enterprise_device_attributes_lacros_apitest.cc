@@ -38,20 +38,18 @@ constexpr char kExtensionPath[] =
 constexpr char kExtensionPemPath[] =
     "extensions/api_test/enterprise_device_attributes.pem";
 
-base::Value BuildCustomArg(const std::string& expected_directory_device_id,
-                           const std::string& expected_serial_number,
-                           const std::string& expected_asset_id,
-                           const std::string& expected_annotated_location,
-                           const std::string& expected_hostname) {
-  base::Value custom_arg(base::Value::Type::DICTIONARY);
-  custom_arg.SetKey("expectedDirectoryDeviceId",
-                    base::Value(expected_directory_device_id));
-  custom_arg.SetKey("expectedSerialNumber",
-                    base::Value(expected_serial_number));
-  custom_arg.SetKey("expectedAssetId", base::Value(expected_asset_id));
-  custom_arg.SetKey("expectedAnnotatedLocation",
-                    base::Value(expected_annotated_location));
-  custom_arg.SetKey("expectedHostname", base::Value(expected_hostname));
+base::Value::Dict BuildCustomArg(
+    const std::string& expected_directory_device_id,
+    const std::string& expected_serial_number,
+    const std::string& expected_asset_id,
+    const std::string& expected_annotated_location,
+    const std::string& expected_hostname) {
+  base::Value::Dict custom_arg;
+  custom_arg.Set("expectedDirectoryDeviceId", expected_directory_device_id);
+  custom_arg.Set("expectedSerialNumber", expected_serial_number);
+  custom_arg.Set("expectedAssetId", expected_asset_id);
+  custom_arg.Set("expectedAnnotatedLocation", expected_annotated_location);
+  custom_arg.Set("expectedHostname", expected_hostname);
   return custom_arg;
 }
 
@@ -145,7 +143,7 @@ class EnterpriseDeviceAttributesTest
 
   void TestExtension(Browser* browser,
                      const GURL& page_url,
-                     const base::Value& custom_arg_value) {
+                     base::Value::Dict custom_arg_value) {
     DCHECK(page_url.is_valid()) << "page_url must be valid";
 
     std::string custom_arg;
@@ -187,10 +185,10 @@ IN_PROC_BROWSER_TEST_P(EnterpriseDeviceAttributesTest, Success) {
   std::string expected_annotated_location =
       is_affiliated ? kAnnotatedLocation : "";
   std::string expected_hostname = is_affiliated ? kHostname : "";
-  TestExtension(CreateBrowser(profile()), test_url,
-                BuildCustomArg(expected_directory_device_id,
-                               expected_serial_number, expected_asset_id,
-                               expected_annotated_location, expected_hostname));
+  base::Value::Dict custom_arg = BuildCustomArg(
+      expected_directory_device_id, expected_serial_number, expected_asset_id,
+      expected_annotated_location, expected_hostname);
+  TestExtension(CreateBrowser(profile()), test_url, std::move(custom_arg));
 }
 
 // Both cases of affiliated and non-affiliated users are tested.

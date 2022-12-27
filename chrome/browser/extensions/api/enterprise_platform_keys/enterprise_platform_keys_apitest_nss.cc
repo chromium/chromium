@@ -190,9 +190,9 @@ void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,
 
 // Builds the tests configuration dictionary and serializes it.
 std::string BuildCustomArg(bool user_session_test, bool system_token_enabled) {
-  base::Value custom_arg_value(base::Value::Type::DICTIONARY);
-  custom_arg_value.SetBoolKey(kIsUserSessionTestConfig, user_session_test);
-  custom_arg_value.SetBoolKey(kSystemTokenEnabledConfig, system_token_enabled);
+  base::Value::Dict custom_arg_value;
+  custom_arg_value.Set(kIsUserSessionTestConfig, user_session_test);
+  custom_arg_value.Set(kSystemTokenEnabledConfig, system_token_enabled);
 
   std::string custom_arg;
   if (!base::JSONWriter::Write(custom_arg_value, &custom_arg)) {
