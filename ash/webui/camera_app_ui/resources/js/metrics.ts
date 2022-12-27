@@ -126,6 +126,7 @@ enum MetricDimension {
   DOC_FIX_TYPE = 33,
   RESOLUTION_LEVEL = 34,
   ASPECT_RATIO_SET = 35,
+  DOC_PAGE_COUNT = 36,
 }
 
 /**
@@ -553,6 +554,7 @@ export function sendDocScanResultEvent(
     action: DocScanResultActionType,
     fixType: DocScanFixType,
     fixCount: number,
+    pageCount: number,
     ): void {
   sendEvent(
       {
@@ -562,6 +564,7 @@ export function sendDocScanResultEvent(
       },
       new Map([
         [MetricDimension.DOC_FIX_TYPE, fixType],
+        [MetricDimension.DOC_PAGE_COUNT, pageCount],
       ]));
 }
 

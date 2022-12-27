@@ -563,7 +563,8 @@ export class DocumentReview extends View {
     if (isRotationUpdated) {
       fixType |= DocScanFixType.ROTATION;
     }
-    return sendDocScanResultEvent(action, fixType, this.fixCount);
+    return sendDocScanResultEvent(
+        action, fixType, this.fixCount, this.pages.length);
   }
 
   private updateDeleteButtonLabels() {
