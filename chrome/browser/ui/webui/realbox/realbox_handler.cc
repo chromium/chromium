@@ -802,16 +802,22 @@ void RealboxHandler::ExecuteAction(uint8_t line,
 
 void RealboxHandler::OnResultChanged(AutocompleteController* controller,
                                      bool default_match_changed) {
-  // Ignore updates if the controller does not belong to the realbox.
-  if (!autocomplete_controller_ ||
-      autocomplete_controller_.get() != controller) {
-    return;
-  }
-
   if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("ResultChanged")) {
     metrics_reporter_->Mark("ResultChanged");
   }
 
+  // Update the omnibox if the controller does not belong to the realbox.
+  if (controller != autocomplete_controller_.get()) {
+    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
+      page_->OmniboxAutocompleteResultChanged(CreateAutocompleteResult(
+          controller->input().text(), controller->result(),
+          BookmarkModelFactory::GetForBrowserContext(profile_),
+          profile_->GetPrefs()));
+    }
+    return;
+  }
+
+  // Update the realbox only if the controller belongs to the realbox.
   page_->AutocompleteResultChanged(CreateAutocompleteResult(
       autocomplete_controller_->input().text(),
       autocomplete_controller_->result(),

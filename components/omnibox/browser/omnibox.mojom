@@ -144,4 +144,6 @@ interface PageHandler {
 interface Page {
   // Updates the NTP realbox with the autocomplete results.
   AutocompleteResultChanged(AutocompleteResult result);
+  // Updates the WebUI omnibox with the autocomplete results.
+  OmniboxAutocompleteResultChanged(AutocompleteResult result);
 };

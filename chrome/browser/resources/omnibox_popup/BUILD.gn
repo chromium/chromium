@@ -10,5 +10,5 @@ build_webui("build") {
   non_web_component_files = [ "omnibox_popup.ts" ]
 
   ts_composite = true
-  ts_deps = []
+  ts_deps = [ "//ui/webui/resources/cr_components/omnibox:build_ts" ]
 }

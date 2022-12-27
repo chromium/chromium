@@ -148,6 +148,8 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
 class RealboxSearchBrowserTestPage : public omnibox::mojom::Page {
  public:
   // omnibox::mojom::Page
+  void OmniboxAutocompleteResultChanged(
+      omnibox::mojom::AutocompleteResultPtr result) override {}
   void AutocompleteResultChanged(
       omnibox::mojom::AutocompleteResultPtr result) override {}
   mojo::PendingRemote<omnibox::mojom::Page> GetRemotePage() {

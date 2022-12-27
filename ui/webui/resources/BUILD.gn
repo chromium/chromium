@@ -52,6 +52,7 @@ generate_grd("build_grd") {
       "cr_components/customize_themes:build_grdp",
       "cr_components/help_bubble:build_grdp",
       "cr_components/most_visited:build_grdp",
+      "cr_components/omnibox:build_grdp",
       "js/browser_command:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
@@ -61,6 +62,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/customize_themes/resources.grdp",
       "$target_gen_dir/cr_components/help_bubble/resources.grdp",
       "$target_gen_dir/cr_components/most_visited/resources.grdp",
+      "$target_gen_dir/cr_components/omnibox/resources.grdp",
       "$target_gen_dir/js/browser_command/resources.grdp",
     ]
 
