@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, BeforeUnloadCommitDuringPending) {
 
   // After the pending navigation commits and the new title arrives, there
   // should be another row with the new URL and title.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   std::u16string title3 = web_contents->GetTitle();
   EXPECT_NE(title1, title3);
