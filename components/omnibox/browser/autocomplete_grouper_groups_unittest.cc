@@ -54,21 +54,24 @@ TEST(AutocompleteGrouperGroupsTest, Group) {
 
 TEST(AutocompleteGrouperGroupsTest, DefaultGroup) {
   DefaultGroup group{};
+  // Can't be added because `allowed_to_be_default` is false.
   AutocompleteMatch non_default_match{};
   non_default_match.suggestion_group_id = omnibox::GROUP_STARTER_PACK;
+  // Can't be added because `GROUP_DOCUMENT` is not allowed.
+  AutocompleteMatch default_match_doc{};
+  default_match_doc.suggestion_group_id = omnibox::GROUP_DOCUMENT;
+  default_match_doc.allowed_to_be_default_match = true;
+  // Can be added.
   AutocompleteMatch default_match_search{};
   default_match_search.suggestion_group_id = omnibox::GROUP_SEARCH;
   default_match_search.allowed_to_be_default_match = true;
-  AutocompleteMatch default_match_nav{};
-  default_match_nav.suggestion_group_id = omnibox::GROUP_OTHER_NAVS;
-  default_match_nav.allowed_to_be_default_match = true;
 
   EXPECT_FALSE(group.CanAdd(non_default_match));
   EXPECT_TRUE(group.CanAdd(default_match_search));
-  EXPECT_TRUE(group.CanAdd(default_match_nav));
+  EXPECT_FALSE(group.CanAdd(default_match_doc));
 
   group.Add(default_match_search);
   EXPECT_FALSE(group.CanAdd(non_default_match));
   EXPECT_FALSE(group.CanAdd(default_match_search));
-  EXPECT_FALSE(group.CanAdd(default_match_nav));
+  EXPECT_FALSE(group.CanAdd(default_match_doc));
 }
