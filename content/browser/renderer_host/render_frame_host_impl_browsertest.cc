@@ -3569,11 +3569,14 @@ class RenderFrameHostImplNoStrictSiteIsolationOnAndroidBrowserTest
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplNoStrictSiteIsolationOnAndroidBrowserTest,
     ComputeIsolationInfoForNavigationPartyContextExceedMaxSize) {
+  // This sequence skips a4.com because it's HSTS preloaded. Using a4.com would
+  // cause a timeout since the embedded test server isn't HTTPS capable.
+  // TODO(crbug.com/1403108): Use a sustainable solution for preloaded domains.
   GURL url = embedded_test_server()->GetURL(
       "a.com",
-      "/cross_site_iframe_factory.html?a(a1(a2(a3(a4(a5(a6(a7(a8(a9(a10(a11("
+      "/cross_site_iframe_factory.html?a(a1(a2(a3(a5(a6(a7(a8(a9(a10(a11("
       "a12(a13(a14(a15(a16(a17(a18(a19("
-      "a20(a21(a2))))))))))))))))))))))");
+      "a20(a21(a22(a2))))))))))))))))))))))");
   static_assert(net::IsolationInfo::kPartyContextMaxSize == 20,
                 "kPartyContextMaxSize should have value 20.");
 

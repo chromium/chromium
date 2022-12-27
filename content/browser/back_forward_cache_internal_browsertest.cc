@@ -3614,7 +3614,9 @@ IN_PROC_BROWSER_TEST_F(
 
   for (size_t i = 0; i <= kBackForwardCacheSize * 2; ++i) {
     SCOPED_TRACE(i);
-    GURL url(embedded_test_server()->GetURL(base::StringPrintf("a%zu.com", i),
+    // Note: do NOT use .com domains here because a4.com is on the HSTS preload
+    // list, which will cause our test requests to timeout.
+    GURL url(embedded_test_server()->GetURL(base::StringPrintf("a%zu.test", i),
                                             "/title1.html"));
     ASSERT_TRUE(NavigateToURL(shell(), url));
     rfhs.emplace_back(current_frame_host());
@@ -3653,17 +3655,22 @@ IN_PROC_BROWSER_TEST_F(
 // Test that the cache responds to processes switching from background to
 // foreground. We set things up so that we have
 // Cached sites:
-//   a0.com
-//   a1.com
-//   a2.com
-//   a3.com
-// and the active page is a4.com. Then set the process for a[1-3] to
+//   a0.test
+//   a1.test
+//   a2.test
+//   a3.test
+// and the active page is a4.test. Then set the process for a[1-3] to
 // foregrounded so that there are 3 entries whose processes are foregrounded.
 // BFCache should evict the eldest (a1) leaving a0 because despite being older,
 // it is backgrounded. Setting the priority directly is not ideal but there is
 // no reliable way to cause the processes to go into the foreground just by
 // navigating because proactive browsing instance swap makes it impossible to
-// reliably create a new a1.com renderer in the same process as the old a1.com.
+// reliably create a new a1.test renderer in the same process as the old
+// a1.test.
+//
+// Note that we do NOT use .com domains because a4.com is on the HSTS preload
+// list.  Since our test server doesn't use HTTPS, using a4.com results in the
+// test timing out.
 IN_PROC_BROWSER_TEST_F(
     BackgroundForegroundProcessLimitBackForwardCacheBrowserTest,
     ChangeToForeground) {
@@ -3674,7 +3681,7 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate through a[0-3].com.
   for (size_t i = 0; i < kBackForwardCacheSize; ++i) {
     SCOPED_TRACE(i);
-    GURL url(embedded_test_server()->GetURL(base::StringPrintf("a%zu.com", i),
+    GURL url(embedded_test_server()->GetURL(base::StringPrintf("a%zu.test", i),
                                             "/title1.html"));
     ASSERT_TRUE(NavigateToURL(shell(), url));
     rfhs.emplace_back(current_frame_host());
@@ -3688,7 +3695,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to a page which causes the processes for a[1-3] to be
   // foregrounded.
-  GURL url(embedded_test_server()->GetURL("a4.com", "/title1.html"));
+  GURL url(embedded_test_server()->GetURL("a4.test", "/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
   // Assert that we really have set up the situation we want where the processes

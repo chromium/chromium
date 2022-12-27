@@ -184912,7 +184912,7 @@
     { "name": "9417k.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "95.ar", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "960303.xyz", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    //{ "name": "a4.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
+    { "name": "a4.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "a632079.me", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "aamlive.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "ab-uk.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
