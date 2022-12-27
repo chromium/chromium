@@ -6,12 +6,12 @@
 
 #import "base/test/metrics/user_action_tester.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/bookmark_ios_unittest.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_ios_unittest.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 

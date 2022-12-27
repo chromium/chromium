@@ -6,7 +6,7 @@
 
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_ios_unittest.h"
+#import "ios/chrome/browser/bookmarks/bookmark_ios_unittest.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

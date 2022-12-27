@@ -10,7 +10,7 @@
 
 #import "base/test/metrics/user_action_tester.h"
 #import "components/bookmarks/browser/bookmark_model.h"
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_ios_unittest.h"
+#import "ios/chrome/browser/bookmarks/bookmark_ios_unittest.h"
 #import "testing/platform_test.h"
 
 namespace {

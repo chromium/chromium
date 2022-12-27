@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_ios_unittest.h"
+#import "ios/chrome/browser/bookmarks/bookmark_ios_unittest.h"
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"

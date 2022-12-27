@@ -58,3 +58,25 @@ source_set("bookmarks_utils") {
     "//ios/chrome/browser/prefs:pref_names",
   ]
 }
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "bookmark_ios_unittest.h",
+    "bookmark_ios_unittest.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/signin:test_support",
+    "//ios/web/public/test",
+  ]
+}

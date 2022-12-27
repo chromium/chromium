@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_LEGACY_BOOKMARKS_LEGACY_BOOKMARK_IOS_UNITTEST_H_
-#define IOS_CHROME_BROWSER_UI_LEGACY_BOOKMARKS_LEGACY_BOOKMARK_IOS_UNITTEST_H_
+#ifndef IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_IOS_UNITTEST_H_
+#define IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_IOS_UNITTEST_H_
 
 #import <Foundation/Foundation.h>
 #include <memory>
@@ -44,4 +44,4 @@ class BookmarkIOSUnitTest : public PlatformTest {
   bookmarks::ManagedBookmarkService* managed_bookmark_service_;
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_LEGACY_BOOKMARKS_LEGACY_BOOKMARK_IOS_UNITTEST_H_
+#endif  // IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_IOS_UNITTEST_H_

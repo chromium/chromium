@@ -7,7 +7,7 @@
 #import <memory>
 
 #import "components/bookmarks/browser/bookmark_model.h"
-#import "ios/chrome/browser/ui/legacy_bookmarks/legacy_bookmark_ios_unittest.h"
+#import "ios/chrome/browser/bookmarks/bookmark_ios_unittest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

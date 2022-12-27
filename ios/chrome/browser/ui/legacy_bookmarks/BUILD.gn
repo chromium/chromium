@@ -174,29 +174,6 @@ source_set("bookmarks_ui") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "legacy_bookmark_ios_unittest.h",
-    "legacy_bookmark_ios_unittest.mm",
-  ]
-  deps = [
-    ":legacy_bookmarks",
-    "//base",
-    "//components/bookmarks/browser",
-    "//components/bookmarks/test",
-    "//ios/chrome/browser/bookmarks",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/main:test_support",
-    "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/signin:test_support",
-    "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser/signin:test_support",
-    "//ios/web/public/test",
-  ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -211,13 +188,13 @@ source_set("unit_tests") {
     ":bookmarks_ui",
     ":core",
     ":legacy_bookmarks",
-    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main:public",
