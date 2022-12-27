@@ -79,11 +79,12 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
   auto* document = dom_window->document();
   DCHECK(document);
 
+  auto promise = resolver->Promise();
   PictureInPictureControllerImpl::From(*document)
       .CreateDocumentPictureInPictureWindow(script_state, *dom_window, options,
                                             resolver, exception_state);
 
-  return resolver->Promise();
+  return promise;
 }
 
 DOMWindow* DocumentPictureInPicture::window(ScriptState* script_state) const {

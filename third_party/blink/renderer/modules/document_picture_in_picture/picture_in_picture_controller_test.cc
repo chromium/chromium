@@ -83,6 +83,10 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
 
   // Create the DocumentPictureInPictureOptions.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 "DocumentPictureInPicture", "requestWindow");
+
   v8::Local<v8::Object> v8_object = v8::Object::New(v8_scope.GetIsolate());
   v8_object
       ->Set(v8_scope.GetContext(), V8String(v8_scope.GetIsolate(), "width"),
@@ -101,16 +105,14 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
   }
   DocumentPictureInPictureOptions* options =
       DocumentPictureInPictureOptions::Create(resolver->Promise().GetIsolate(),
-                                              v8_object,
-                                              v8_scope.GetExceptionState());
+                                              v8_object, exception_state);
 
   // Set a base URL for the opener window.
   document.SetBaseURLOverride(opener_url);
   EXPECT_EQ(opener_url.GetString(), document.BaseURL().GetString());
 
   controller.CreateDocumentPictureInPictureWindow(
-      script_state, *document.domWindow(), options, resolver,
-      v8_scope.GetExceptionState());
+      script_state, *document.domWindow(), options, resolver, exception_state);
 
   return controller.documentPictureInPictureWindow();
 }
