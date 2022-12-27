@@ -2286,10 +2286,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MAYBE_PdfAccessibilityInIframe) {
   WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
 
-  WebContents* guest_contents = GetOnlyGuestContents(contents);
-  ASSERT_TRUE(guest_contents);
-
-  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
@@ -2304,23 +2301,21 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityInOOPIF) {
   WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
 
-  WebContents* guest_contents = GetOnlyGuestContents(contents);
-  ASSERT_TRUE(guest_contents);
-
-  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityWordBoundaries) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
 
-  WaitForAccessibilityTreeToContainNodeWithName(guest_contents,
+  WebContents* contents = GetActiveWebContents();
+  WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
-  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
 
   bool found = false;
   for (auto& node : ax_tree.nodes) {
@@ -2450,11 +2445,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityContextMenuAction) {
 // when accessibility is enabled.  (http://crbug.com/668724)
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityTextRunCrash) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf_private/accessibility_crash_2.pdf"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
 
-  WaitForAccessibilityTreeToContainNodeWithName(guest_contents, "Page 1");
+  WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
+                                                "Page 1");
 }
 #endif
 
