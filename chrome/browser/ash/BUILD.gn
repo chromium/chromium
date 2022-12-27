@@ -1755,6 +1755,8 @@ source_set("ash") {
     "login/screens/lacros_data_migration_screen.h",
     "login/screens/local_state_error_screen.cc",
     "login/screens/local_state_error_screen.h",
+    "login/screens/locale_switch_notification.cc",
+    "login/screens/locale_switch_notification.h",
     "login/screens/locale_switch_screen.cc",
     "login/screens/locale_switch_screen.h",
     "login/screens/management_transition_screen.cc",

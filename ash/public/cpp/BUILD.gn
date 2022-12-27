@@ -204,6 +204,7 @@ component("cpp") {
     "message_center/arc_notification_manager_delegate.h",
     "message_center/arc_notifications_host_initializer.cc",
     "message_center/arc_notifications_host_initializer.h",
+    "message_center/oobe_notification_constants.h",
     "message_center_ash.cc",
     "message_center_ash.h",
     "metrics_util.cc",

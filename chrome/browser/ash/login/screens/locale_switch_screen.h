@@ -30,6 +30,7 @@ class LocaleSwitchScreen : public BaseScreen,
     NO_SWITCH_NEEDED,
     SWITCH_SUCCEDED,
     SWITCH_FAILED,
+    SWITCH_DELEGATED,
     NOT_APPLICABLE
   };
 
@@ -55,6 +56,8 @@ class LocaleSwitchScreen : public BaseScreen,
 
   void SwitchLocale(std::string locale);
   void OnLanguageChangedCallback(
+      const locale_util::LanguageSwitchResult& result);
+  void OnLanguageChangedNotificationCallback(
       const locale_util::LanguageSwitchResult& result);
 
   void ResetState();

@@ -6319,6 +6319,20 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Switch themes at sunrise and sunset
   </message>
 
+  <!-- Strings for the locale switch notification inside the OOBE. -->
+  <message name="IDS_LOCALE_SWITCH_NOTIFICATION_TITLE" desc="Title of the notification that is displayed at the bottom-right corner of the screen.">
+    Switch device language?
+  </message>
+  <message name="IDS_LOCALE_SWITCH_NOTIFICATION_TEXT" desc="Message that proposes users to change their locale inside a notification that is displayed at the bottom-right corner of the screen.">
+    You can use your preferred Google Account language (<ph name="NEW_LOCALE_FROM_GAIA">$1<ex>Spanish (Latin America)</ex></ph>)
+  </message>
+  <message name="IDS_LOCALE_SWITCH_NOTIFICATION_CONFIRM_BUTTON_LABEL" desc="Label of a button that user will use to accept the locale sync. Displayed inside a notification at the bottom-right corner of the screen.">
+    Switch
+  </message>
+  <message name="IDS_LOCALE_SWITCH_NOTIFICATION_CANCEL_BUTTON_LABEL" desc="Label of a button that user will use to cancel the locale sync. Displayed inside a notification at the bottom-right corner of the screen.">
+    Don't switch
+  </message>
+
   <!-- CHOOBE Screen -->
   <!-- TODO(b/258503542): Remove translateable tags when strings are finalized. -->
   <message name="IDS_OOBE_CHOOBE_TITLE" desc="Title of the CHOOBE screen." translateable="false">

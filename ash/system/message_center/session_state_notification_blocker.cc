@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/session_state_notification_blocker.h"
 
+#include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
@@ -57,6 +58,30 @@ bool CalculateShouldShowPopup() {
                                     active_user_session->user_info.account_id);
 }
 
+bool IsAllowedDuringOOBE(std::string_view notification_id) {
+  static const std::string_view kAllowedSystemNotificationIDs[] = {
+      BatteryNotification::kNotificationId};
+  static const std::string_view kAllowedProfileBoundNotificationIDs[] = {
+      kOOBELocaleSwitchNotificationId};
+
+  for (const auto& id : kAllowedSystemNotificationIDs) {
+    if (notification_id == id) {
+      return true;
+    }
+  }
+
+  // Check here not for a full name equivalence, but for a substring existence
+  // because profile-bound notifications have a profile-specific prefix added
+  // to them.
+  for (const auto& id : kAllowedProfileBoundNotificationIDs) {
+    if (notification_id.find(id) != std::string::npos) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 SessionStateNotificationBlocker::SessionStateNotificationBlocker(
@@ -104,8 +129,9 @@ bool SessionStateNotificationBlocker::ShouldShowNotification(
     return false;
   }
 
-  if (notification.id() == BatteryNotification::kNotificationId)
+  if (IsAllowedDuringOOBE(notification.id())) {
     return true;
+  }
 
   return should_show_notification_;
 }
@@ -116,8 +142,9 @@ bool SessionStateNotificationBlocker::ShouldShowNotificationAsPopup(
       Shell::Get()->session_controller();
 
   // Never show notifications in kiosk mode.
-  if (session_controller->IsRunningInAppMode())
+  if (session_controller->IsRunningInAppMode()) {
     return false;
+  }
 
   // Do not show non system notifications for `kLoginNotificationsDelay`
   // duration.
@@ -127,8 +154,9 @@ bool SessionStateNotificationBlocker::ShouldShowNotificationAsPopup(
     return false;
   }
 
-  if (notification.id() == BatteryNotification::kNotificationId)
+  if (IsAllowedDuringOOBE(notification.id())) {
     return true;
+  }
 
   return should_show_popup_;
 }

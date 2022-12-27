@@ -137,6 +137,9 @@ class WizardContext {
 
   // True when gesture navigation screen was shown during the OOBE.
   bool is_gesture_navigation_screen_was_shown = false;
+
+  // True when user is inside the "Add Person" flow.
+  bool is_add_person_flow = false;
 };
 
 // Returns |true| if this is an OOBE flow after enterprise enrollment.

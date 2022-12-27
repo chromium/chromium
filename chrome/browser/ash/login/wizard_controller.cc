@@ -404,6 +404,8 @@ WizardController::WizardController(WizardContext* wizard_context)
       wizard_context_(wizard_context) {
   wizard_context_->skip_post_login_screens_for_tests =
       switches::ShouldSkipOobePostLogin();
+  wizard_context_->is_add_person_flow =
+      StartupUtils::IsOobeCompleted() && StartupUtils::IsDeviceOwned();
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   if (accessibility_manager) {
     // accessibility_manager could be null in Tests.

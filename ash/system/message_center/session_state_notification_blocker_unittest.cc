@@ -5,9 +5,11 @@
 #include "ash/system/message_center/session_state_notification_blocker.h"
 
 #include <memory>
+#include <unordered_map>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/power/battery_notification.h"
@@ -108,6 +110,17 @@ class SessionStateNotificationBlockerTest
     return blocker_->ShouldShowNotification(notification);
   }
 
+  bool ShouldShowOOBEAllowedNotification(const std::string& notification_id) {
+    return blocker_->ShouldShowNotification(
+        CreateDummyNotification(notification_id));
+  }
+
+  bool ShouldShowOOBEAllowedNotificationAsPopup(
+      const std::string& notification_id) {
+    return blocker_->ShouldShowNotificationAsPopup(
+        CreateDummyNotification(notification_id));
+  }
+
   void SetLockedState(bool locked) {
     GetSessionControllerClient()->SetSessionState(
         locked ? SessionState::LOCKED : SessionState::ACTIVE);
@@ -118,6 +131,19 @@ class SessionStateNotificationBlockerTest
     return notifier_id.id == kNotifierSystemPriority
                ? BatteryNotification::kNotificationId
                : "chromeos-id";
+  }
+
+  message_center::Notification CreateDummyNotification(
+      const std::string& notification_id) {
+    message_center::NotifierId notifier_id(
+        message_center::NotifierType::SYSTEM_COMPONENT, notification_id,
+        NotificationCatalogName::kTestCatalogName);
+    message_center::Notification notification(
+        message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+        u"chromeos-title", u"chromeos-message", ui::ImageModel(),
+        u"chromeos-source", GURL(), notifier_id,
+        message_center::RichNotificationData(), nullptr);
+    return notification;
   }
 
   int state_changed_count_ = 0;
@@ -294,6 +320,28 @@ TEST_P(SessionStateNotificationBlockerTest, DoNotDisturbNotification) {
   // Unlock.
   SetLockedState(false);
   EXPECT_TRUE(ShouldShowDoNotDisturbNotification());
+}
+
+TEST_P(SessionStateNotificationBlockerTest, NotificationAllowedDuringOOBE) {
+  const std::unordered_map<std::string, /*expected_notification_allowed=*/bool>
+      kTestCases = {
+          {BatteryNotification::kNotificationId, true},
+          {kOOBELocaleSwitchNotificationId, true},
+          {"new-fancy-notification", false},
+      };
+  const SessionState kOOBEStates[] = {SessionState::OOBE,
+                                      SessionState::LOGIN_PRIMARY,
+                                      SessionState::LOGIN_SECONDARY};
+
+  for (const auto& state : kOOBEStates) {
+    GetSessionControllerClient()->SetSessionState(state);
+    for (const auto& test_case : kTestCases) {
+      EXPECT_EQ(ShouldShowOOBEAllowedNotification(test_case.first),
+                test_case.second);
+      EXPECT_EQ(ShouldShowOOBEAllowedNotificationAsPopup(test_case.first),
+                test_case.second);
+    }
+  }
 }
 
 }  // namespace
