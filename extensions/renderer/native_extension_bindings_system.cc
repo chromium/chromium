@@ -9,10 +9,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/timer/elapsed_timer.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/constants.h"
@@ -740,7 +738,6 @@ v8::Local<v8::Object> NativeExtensionBindingsSystem::GetAPIHelper(
   CHECK(
       gin::Converter<std::string>::FromV8(isolate, api_name, &api_name_string));
 
-  base::ElapsedTimer timer;
   v8::Local<v8::Object> root_binding = CreateFullBinding(
       context, script_context, &data->bindings_system->api_system_,
       FeatureProvider::GetAPIFeatures(), api_name_string);
@@ -752,9 +749,6 @@ v8::Local<v8::Object> NativeExtensionBindingsSystem::GetAPIHelper(
   if (!success.IsJust() || !success.FromJust())
     return v8::Local<v8::Object>();
 
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.Bindings.NativeBindingCreationTime",
-                              timer.Elapsed().InMicroseconds(), 1, 10000000,
-                              50);
   return root_binding;
 }
 

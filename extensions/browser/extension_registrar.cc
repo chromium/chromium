@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
@@ -68,10 +67,6 @@ void ExtensionRegistrar::AddExtension(
     // Other than for unpacked extensions, we should not be downgrading.
     if (!Manifest::IsUnpackedLocation(extension->location()) &&
         version_compare_result < 0) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Extensions.AttemptedToDowngradeVersionLocation",
-          extension->location());
-
       // TODO(https://crbug.com/810799): It would be awfully nice to CHECK this,
       // but that's caused problems. There are apparently times when this
       // happens that we aren't accounting for. We should track those down and

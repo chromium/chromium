@@ -836,9 +836,6 @@ bool ExtensionService::UninstallExtension(
   extension_prefs_->OnExtensionUninstalled(
       extension->id(), extension->location(), external_uninstall);
 
-  // Track the uninstallation.
-  UMA_HISTOGRAM_ENUMERATION("Extensions.ExtensionUninstalled", 1, 2);
-
   return true;
 }
 
@@ -1560,18 +1557,11 @@ void ExtensionService::CheckPermissionsIncrease(const Extension* extension,
 
   // If the extension is disabled due to a permissions increase, but does in
   // fact have all permissions, remove that disable reason.
-  // TODO(devlin): This was added to fix crbug.com/616474, but it's unclear
-  // if this behavior should stay forever.
-  if (disable_reasons & disable_reason::DISABLE_PERMISSIONS_INCREASE) {
-    bool reset_permissions_increase = false;
-    if (!is_privilege_increase) {
-      reset_permissions_increase = true;
-      disable_reasons &= ~disable_reason::DISABLE_PERMISSIONS_INCREASE;
-      extension_prefs_->RemoveDisableReason(
-          extension->id(), disable_reason::DISABLE_PERMISSIONS_INCREASE);
-    }
-    UMA_HISTOGRAM_BOOLEAN("Extensions.ResetPermissionsIncrease",
-                          reset_permissions_increase);
+  if (disable_reasons & disable_reason::DISABLE_PERMISSIONS_INCREASE &&
+      !is_privilege_increase) {
+    disable_reasons &= ~disable_reason::DISABLE_PERMISSIONS_INCREASE;
+    extension_prefs_->RemoveDisableReason(
+        extension->id(), disable_reason::DISABLE_PERMISSIONS_INCREASE);
   }
 
   // Extension has changed permissions significantly. Disable it. A

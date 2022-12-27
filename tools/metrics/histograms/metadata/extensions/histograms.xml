@@ -216,6 +216,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.AttemptedToDowngradeVersionLocation"
     enum="ExtensionLocation" expires_after="2022-11-18">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -302,6 +305,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.Bindings.NativeBindingCreationTime"
     units="microseconds" expires_after="2023-01-22">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1236,6 +1242,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ExtensionUninstalled" units="units"
     expires_after="2022-05-01">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>An extension has been uninstalled.</summary>
@@ -2766,6 +2775,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ResetPermissionsIncrease" enum="Boolean"
     expires_after="2022-12-01">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
