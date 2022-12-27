@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_item.h"
 
 #import "url/gurl.h"
 
@@ -10,7 +10,7 @@
 #error "This file requires ARC support."
 #endif
 
-@implementation GridItem
+@implementation TabItem
 
 - (instancetype)initWithTitle:(NSString*)title url:(GURL)URL {
   if ((self = [super init])) {

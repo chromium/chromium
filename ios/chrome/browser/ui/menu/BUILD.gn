@@ -61,7 +61,7 @@ source_set("menu") {
   ]
 }
 
-source_set("context_menu_delegate") {
+source_set("tab_context_menu_delegate") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [ "tab_context_menu_delegate.h" ]

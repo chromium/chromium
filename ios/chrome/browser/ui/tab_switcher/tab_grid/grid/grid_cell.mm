@@ -321,10 +321,6 @@ void PositionView(UIView* view, CGPoint point) {
   _snapshot = snapshot;
 }
 
-- (BOOL)hasIdentifier:(NSString*)identifier {
-  return [self.itemIdentifier isEqualToString:identifier];
-}
-
 - (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice {
   [self.priceCardView setPriceDrop:price previousPrice:previousPrice];
   // Only append PriceCardView accessibility text if it doesn't already exist in

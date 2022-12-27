@@ -53,15 +53,15 @@
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_context_menu_helper.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_handler.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_coordinator.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
@@ -145,10 +145,9 @@
 
 // Helper objects to be provided to the TabGridViewController to create
 // the context menu configuration.
+@property(nonatomic, strong) TabContextMenuHelper* regularTabContextMenuHelper;
 @property(nonatomic, strong)
-    GridContextMenuHelper* regularTabsGridContextMenuHelper;
-@property(nonatomic, strong)
-    GridContextMenuHelper* incognitoTabsGridContextMenuHelper;
+    TabContextMenuHelper* incognitoTabContextMenuHelper;
 
 @property(weak, nonatomic, readonly) UIWindow* window;
 
@@ -685,18 +684,18 @@
   self.baseViewController.remoteTabsViewController.menuProvider =
       self.recentTabsContextMenuHelper;
 
-  self.regularTabsGridContextMenuHelper =
-      [[GridContextMenuHelper alloc] initWithBrowser:self.regularBrowser
-                                   actionsDataSource:self.regularTabsMediator
-                              tabContextMenuDelegate:self];
+  self.regularTabContextMenuHelper =
+      [[TabContextMenuHelper alloc] initWithBrowser:self.regularBrowser
+                                  actionsDataSource:self.regularTabsMediator
+                             tabContextMenuDelegate:self];
   self.baseViewController.regularTabsContextMenuProvider =
-      self.regularTabsGridContextMenuHelper;
-  self.incognitoTabsGridContextMenuHelper =
-      [[GridContextMenuHelper alloc] initWithBrowser:self.incognitoBrowser
-                                   actionsDataSource:self.incognitoTabsMediator
-                              tabContextMenuDelegate:self];
+      self.regularTabContextMenuHelper;
+  self.incognitoTabContextMenuHelper =
+      [[TabContextMenuHelper alloc] initWithBrowser:self.incognitoBrowser
+                                  actionsDataSource:self.incognitoTabsMediator
+                             tabContextMenuDelegate:self];
   self.baseViewController.incognitoTabsContextMenuProvider =
-      self.incognitoTabsGridContextMenuHelper;
+      self.incognitoTabContextMenuHelper;
 
   // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on
   // ChromeBrowserState so that we don't need to expose the view controller.
@@ -777,8 +776,8 @@
   // setting the handler to nil.
   self.baseViewController.handler = nil;
   self.recentTabsContextMenuHelper = nil;
-  self.regularTabsGridContextMenuHelper = nil;
-  self.incognitoTabsGridContextMenuHelper = nil;
+  self.regularTabContextMenuHelper = nil;
+  self.incognitoTabContextMenuHelper = nil;
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   [self.dispatcher stopDispatchingForProtocol:@protocol(ApplicationCommands)];

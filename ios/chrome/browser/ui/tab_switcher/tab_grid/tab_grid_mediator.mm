@@ -47,8 +47,8 @@
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
@@ -739,7 +739,7 @@ void RecordTabGridCloseTabsCount(int count) {
 
   NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
   for (NSString* itemIdentifier in items) {
-    GridItem* item = [self gridItemForCellIdentifier:itemIdentifier];
+    TabItem* item = [self tabItemForCellIdentifier:itemIdentifier];
     URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
                                                     title:item.title];
     [URLs addObject:URL];
@@ -1030,22 +1030,21 @@ void RecordTabGridCloseTabsCount(int count) {
   [self.appearanceCache removeAllObjects];
 }
 
-#pragma mark - GridMenuActionsDataSource
+#pragma mark - TabMenuActionsDataSource
 
-- (GridItem*)gridItemForCellIdentifier:(NSString*)identifier {
+- (TabItem*)tabItemForCellIdentifier:(NSString*)identifier {
   web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
 
   if (!webState) {
     return nil;
   }
 
-  GridItem* item =
-      [[GridItem alloc] initWithTitle:tab_util::GetTabTitle(webState)
-                                  url:webState->GetVisibleURL()];
+  TabItem* item = [[TabItem alloc] initWithTitle:tab_util::GetTabTitle(webState)
+                                             url:webState->GetVisibleURL()];
   return item;
 }
 
-- (BOOL)isGridItemBookmarked:(GridItem*)item {
+- (BOOL)isTabItemBookmarked:(TabItem*)item {
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(self.browserState);
   return item && bookmarkModel &&
@@ -1130,7 +1129,7 @@ void RecordTabGridCloseTabsCount(int count) {
 - (NSArray<URLWithTitle*>*)urlsWithTitleFromItemIDs:(NSArray<NSString*>*)items {
   NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
   for (NSString* itemIdentifier in items) {
-    GridItem* item = [self gridItemForCellIdentifier:itemIdentifier];
+    TabItem* item = [self tabItemForCellIdentifier:itemIdentifier];
     URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
                                                     title:item.title];
     [URLs addObject:URL];
