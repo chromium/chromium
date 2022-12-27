@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
+import 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 import 'chrome://resources/cr_components/history_clusters/clusters.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
+import {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -43,6 +45,15 @@ export class HistoryClustersAppElement extends PolymerElement {
   //============================================================================
 
   query: string;
+
+  //============================================================================
+  // Event Handlers
+  //============================================================================
+
+  private onContextMenu_(event: MouseEvent) {
+    BrowserProxyImpl.getInstance().handler.showContextMenuForSearchbox(
+        this.query, {x: event.clientX, y: event.clientY});
+  }
 
   //============================================================================
   // Overridden methods

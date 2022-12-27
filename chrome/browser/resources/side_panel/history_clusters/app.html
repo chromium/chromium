@@ -13,7 +13,8 @@
 </style>
 <cr-toolbar-search-field id="searchbox" on-search-changed="onSearchChanged_"
                          label="$i18n{historyClustersSearchPrompt}"
-                         clear-label="$i18n{clearSearch}">
+                         clear-label="$i18n{clearSearch}"
+                         on-contextmenu="onContextMenu_">
 </cr-toolbar-search-field>
 <history-clusters id="history-clusters"
     query="[[query]]"

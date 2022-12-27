@@ -76,6 +76,15 @@
   <message name="IDS_HISTORY_CLUSTERS_SEARCH_PROMPT" desc="A placeholder for the search bar in the side panel.">
     Search Journeys
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_CUT" desc="Label of the item in drop-down menu that allows the user to cut the searchbox query">
+    Cut
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_COPY" desc="Label of the item in drop-down menu that allows the user to copy the searchbox query">
+    Copy
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_PASTE" desc="Label of the item in drop-down menu that allows the user to paste into the searchbox">
+    Paste
+  </message>
   <message name="IDS_HISTORY_CLUSTERS_COPY_LINK" desc="Label of the item in drop-down menu that allows the user to copy a link.">
     Copy Link Address
   </message>

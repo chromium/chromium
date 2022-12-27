@@ -27,6 +27,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -78,6 +79,12 @@ class HistoryClustersSidePanelContextMenu
     AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
                         IDS_HISTORY_CLUSTERS_COPY_LINK);
   }
+  HistoryClustersSidePanelContextMenu(Browser* browser, std::string query)
+      : ui::SimpleMenuModel(this), browser_(browser), query_(query) {
+    AddItemWithStringId(IDC_CUT, IDS_HISTORY_CLUSTERS_CUT);
+    AddItemWithStringId(IDC_COPY, IDS_HISTORY_CLUSTERS_COPY);
+    AddItemWithStringId(IDC_PASTE, IDS_HISTORY_CLUSTERS_PASTE);
+  }
   ~HistoryClustersSidePanelContextMenu() override = default;
 
   void ExecuteCommand(int command_id, int event_flags) override {
@@ -110,6 +117,12 @@ class HistoryClustersSidePanelContextMenu
         scw.WriteText(base::UTF8ToUTF16(url_.spec()));
         break;
       }
+      case IDC_CUT:
+      case IDC_COPY:
+      case IDC_PASTE: {
+        chrome::CutCopyPaste(browser_, command_id);
+        break;
+      }
       default:
         NOTREACHED();
         break;
@@ -118,6 +131,7 @@ class HistoryClustersSidePanelContextMenu
 
  private:
   const raw_ptr<Browser> browser_;
+  std::string query_;
   GURL url_;
 };
 
@@ -612,6 +626,17 @@ void HistoryClustersHandler::RecordToggledVisibility(bool visible) {
   HistoryClustersMetricsLogger::GetOrCreateForPage(
       web_contents_->GetPrimaryPage())
       ->RecordToggledVisibility(visible);
+}
+
+void HistoryClustersHandler::ShowContextMenuForSearchbox(
+    const std::string& query,
+    const gfx::Point& point) {
+  Browser* browser = chrome::FindLastActive();
+  if (history_clusters_side_panel_embedder_) {
+    history_clusters_side_panel_embedder_->ShowContextMenu(
+        point,
+        std::make_unique<HistoryClustersSidePanelContextMenu>(browser, query));
+  }
 }
 
 void HistoryClustersHandler::ShowContextMenuForURL(const GURL& url,

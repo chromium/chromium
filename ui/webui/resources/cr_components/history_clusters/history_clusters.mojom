@@ -180,6 +180,9 @@ interface PageHandler {
   // The ClustersBrowserProxy singleton calls this when it's first initialized.
   SetPage(pending_remote<Page> page);
 
+  // Shows a context menu for the searchbox.
+  ShowContextMenuForSearchbox(string query, gfx.mojom.Point point);
+
   // Shows a context menu for a history cluster item.
   ShowContextMenuForURL(url.mojom.Url url, gfx.mojom.Point point);
 
