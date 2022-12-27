@@ -15,3 +15,18 @@ source_set("credential_provider_promo") {
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
   ]
 }
+
+source_set("credential_provider_promo_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "credential_provider_promo_constants.h",
+    "credential_provider_promo_consumer.h",
+    "credential_provider_promo_view_controller.h",
+    "credential_provider_promo_view_controller.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
+}
