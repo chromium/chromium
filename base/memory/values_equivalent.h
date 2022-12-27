@@ -5,6 +5,7 @@
 #ifndef BASE_MEMORY_VALUES_EQUIVALENT_H_
 #define BASE_MEMORY_VALUES_EQUIVALENT_H_
 
+#include <functional>
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
@@ -14,14 +15,16 @@ namespace base {
 // Compares two pointers for equality, returns the dereferenced value comparison
 // if both are non-null.
 // Behaves like std::optional<T>::operator==(const std::optional<T>&) but for
-// pointers.
-template <typename T>
-bool ValuesEquivalent(const T* a, const T* b) {
+// pointers, with an optional predicate.
+// If `p` is specified, `p(const T& x, const T& y)` should return whether `x`
+// and `y` are equal. It's called with `(*a, *b)` when `a != b && a && b`.
+template <typename T, typename Predicate = std::equal_to<>>
+bool ValuesEquivalent(const T* a, const T* b, Predicate p = {}) {
   if (a == b)
     return true;
   if (!a || !b)
     return false;
-  return *a == *b;
+  return p(*a, *b);
 }
 
 // Specialize for smart pointers like std::unique_ptr and base::scoped_refptr
@@ -34,10 +37,11 @@ bool ValuesEquivalent(const T* a, const T* b) {
 //     }
 //   };
 template <typename T,
+          typename Predicate = std::equal_to<>,
           std::enable_if_t<
               std::is_pointer_v<decltype(std::declval<T>().get())>>* = nullptr>
-bool ValuesEquivalent(const T& x, const T& y) {
-  return ValuesEquivalent(x.get(), y.get());
+bool ValuesEquivalent(const T& x, const T& y, Predicate p = {}) {
+  return ValuesEquivalent(x.get(), y.get(), std::move(p));
 }
 
 // Specialize for smart pointers like blink::Persistent and blink::Member that
@@ -53,10 +57,11 @@ bool ValuesEquivalent(const T& x, const T& y) {
 //   };
 //   }  // namespace blink
 template <typename T,
+          typename Predicate = std::equal_to<>,
           std::enable_if_t<
               std::is_pointer_v<decltype(std::declval<T>().Get())>>* = nullptr>
-bool ValuesEquivalent(const T& x, const T& y) {
-  return ValuesEquivalent(x.Get(), y.Get());
+bool ValuesEquivalent(const T& x, const T& y, Predicate p = {}) {
+  return ValuesEquivalent(x.Get(), y.Get(), std::move(p));
 }
 
 }  // namespace base

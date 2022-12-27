@@ -95,4 +95,22 @@ TEST(ValuesEquivalentTest, BypassEqualsOperator) {
   EXPECT_FALSE(ValuesEquivalent(&a, &b));
 }
 
+TEST(ValuesEquavalentTest, Predicate) {
+  auto is_same_or_next = [](int a, int b) { return a == b || a == b + 1; };
+  int x = 1;
+  int y = 2;
+  int z = 3;
+
+  EXPECT_TRUE(ValuesEquivalent(&x, &x, is_same_or_next));
+  EXPECT_FALSE(ValuesEquivalent(&x, &y, is_same_or_next));
+  EXPECT_FALSE(ValuesEquivalent(&x, &z, is_same_or_next));
+  EXPECT_TRUE(ValuesEquivalent(&y, &x, is_same_or_next));
+  EXPECT_FALSE(ValuesEquivalent(&y, &z, is_same_or_next));
+  EXPECT_FALSE(ValuesEquivalent(&z, &x, is_same_or_next));
+  EXPECT_TRUE(ValuesEquivalent(&z, &y, is_same_or_next));
+  EXPECT_TRUE(ValuesEquivalent<int>(nullptr, nullptr, is_same_or_next));
+  EXPECT_FALSE(ValuesEquivalent<int>(&x, nullptr, is_same_or_next));
+  EXPECT_FALSE(ValuesEquivalent<int>(nullptr, &x, is_same_or_next));
+}
+
 }  // namespace base
