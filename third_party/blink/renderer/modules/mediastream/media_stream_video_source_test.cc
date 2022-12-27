@@ -100,10 +100,11 @@ class MediaStreamVideoSourceTest : public testing::Test {
                        absl::optional<bool>(), false, 0.0);
   }
 
-  WebMediaStreamTrack CreateTrackAndStartSource(int width,
-                                                int height,
-                                                double frame_rate,
-                                                bool detect_rotation = false) {
+  WebMediaStreamTrack CreateTrackAndStartSource(
+      int width,
+      int height,
+      absl::optional<double> frame_rate,
+      bool detect_rotation = false) {
     WebMediaStreamTrack track = CreateTrack(
         "123", VideoTrackAdapterSettings(gfx::Size(width, height), frame_rate),
         absl::optional<bool>(), false, 0.0);
@@ -318,7 +319,8 @@ TEST_F(MediaStreamVideoSourceTest, SourceChangeFrameSize) {
   // Expect the source to start capture with the supported resolution.
   // Disable frame-rate adjustment in spec-compliant mode to ensure no frames
   // are dropped.
-  WebMediaStreamTrack track = CreateTrackAndStartSource(800, 700, 0.0);
+  WebMediaStreamTrack track =
+      CreateTrackAndStartSource(800, 700, absl::nullopt);
 
   MockMediaStreamVideoSink sink;
   sink.ConnectToTrack(track);
@@ -352,7 +354,8 @@ TEST_F(MediaStreamVideoSourceTest, RotatedSourceDetectionDisabled) {
   // Expect the source to start capture with the supported resolution.
   // Disable frame-rate adjustment in spec-compliant mode to ensure no frames
   // are dropped.
-  WebMediaStreamTrack track = CreateTrackAndStartSource(1280, 720, 0.0, true);
+  WebMediaStreamTrack track =
+      CreateTrackAndStartSource(1280, 720, absl::nullopt, true);
 
   MockMediaStreamVideoSink sink;
   sink.ConnectToTrack(track);
@@ -380,7 +383,8 @@ TEST_F(MediaStreamVideoSourceTest, RotatedSourceDetectionEnabled) {
   // Expect the source to start capture with the supported resolution.
   // Disable frame-rate adjustment in spec-compliant mode to ensure no frames
   // are dropped.
-  WebMediaStreamTrack track = CreateTrackAndStartSource(1280, 720, 0.0, true);
+  WebMediaStreamTrack track =
+      CreateTrackAndStartSource(1280, 720, absl::nullopt, true);
 
   MockMediaStreamVideoSink sink;
   sink.ConnectToTrack(track);

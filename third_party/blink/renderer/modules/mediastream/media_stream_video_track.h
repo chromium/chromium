@@ -141,7 +141,9 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
 
   // Setting information about the track size.
   // Called from MediaStreamVideoSource at track initialization.
-  void SetTargetSizeAndFrameRate(int width, int height, double frame_rate) {
+  void SetTargetSizeAndFrameRate(int width,
+                                 int height,
+                                 absl::optional<double> frame_rate) {
     width_ = width;
     height_ = height;
     frame_rate_ = frame_rate;
@@ -240,7 +242,7 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   // Remembering our desired video size and frame rate.
   int width_ = 0;
   int height_ = 0;
-  double frame_rate_ = 0.0;
+  absl::optional<double> frame_rate_;
   absl::optional<double> computed_frame_rate_;
   media::VideoCaptureFormat computed_source_format_;
   base::RepeatingTimer refresh_timer_;

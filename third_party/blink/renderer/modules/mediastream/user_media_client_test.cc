@@ -1066,8 +1066,7 @@ TEST_P(UserMediaClientTest, DefaultConstraintsPropagate) {
       1.0 / static_cast<double>(blink::MediaStreamVideoSource::kDefaultHeight));
   EXPECT_EQ(track_settings.max_aspect_ratio(),
             static_cast<double>(blink::MediaStreamVideoSource::kDefaultWidth));
-  // 0.0 is the default max_frame_rate and it indicates no frame-rate adjustment
-  EXPECT_EQ(track_settings.max_frame_rate(), 0.0);
+  EXPECT_EQ(track_settings.max_frame_rate(), absl::nullopt);
 }
 
 TEST_P(UserMediaClientTest, DefaultTabCapturePropagate) {
@@ -1119,8 +1118,7 @@ TEST_P(UserMediaClientTest, DefaultTabCapturePropagate) {
   EXPECT_EQ(track_settings.min_aspect_ratio(),
             1.0 / blink::kMaxScreenCastDimension);
   EXPECT_EQ(track_settings.max_aspect_ratio(), blink::kMaxScreenCastDimension);
-  // 0.0 is the default max_frame_rate and it indicates no frame-rate adjustment
-  EXPECT_EQ(track_settings.max_frame_rate(), 0.0);
+  EXPECT_EQ(track_settings.max_frame_rate(), absl::nullopt);
 }
 
 TEST_P(UserMediaClientTest, DefaultDesktopCapturePropagate) {
@@ -1173,8 +1171,7 @@ TEST_P(UserMediaClientTest, DefaultDesktopCapturePropagate) {
   EXPECT_EQ(track_settings.min_aspect_ratio(),
             1.0 / blink::kMaxScreenCastDimension);
   EXPECT_EQ(track_settings.max_aspect_ratio(), blink::kMaxScreenCastDimension);
-  // 0.0 is the default max_frame_rate and it indicates no frame-rate adjustment
-  EXPECT_EQ(track_settings.max_frame_rate(), 0.0);
+  EXPECT_EQ(track_settings.max_frame_rate(), absl::nullopt);
 }
 
 TEST_P(UserMediaClientTest, NonDefaultAudioConstraintsPropagate) {

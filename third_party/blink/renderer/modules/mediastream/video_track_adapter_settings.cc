@@ -16,18 +16,18 @@ VideoTrackAdapterSettings::VideoTrackAdapterSettings()
     : VideoTrackAdapterSettings(absl::nullopt,
                                 0.0,
                                 std::numeric_limits<double>::max(),
-                                0.0) {}
+                                absl::nullopt) {}
 
 VideoTrackAdapterSettings::VideoTrackAdapterSettings(
     const gfx::Size& target_size,
-    double max_frame_rate)
+    absl::optional<double> max_frame_rate)
     : VideoTrackAdapterSettings(target_size, 0.0, HUGE_VAL, max_frame_rate) {}
 
 VideoTrackAdapterSettings::VideoTrackAdapterSettings(
     absl::optional<gfx::Size> target_size,
     double min_aspect_ratio,
     double max_aspect_ratio,
-    double max_frame_rate)
+    absl::optional<double> max_frame_rate)
     : target_size_(std::move(target_size)),
       min_aspect_ratio_(min_aspect_ratio),
       max_aspect_ratio_(max_aspect_ratio),
@@ -38,8 +38,8 @@ VideoTrackAdapterSettings::VideoTrackAdapterSettings(
   DCHECK_GE(min_aspect_ratio_, 0.0);
   DCHECK(!std::isnan(max_aspect_ratio_));
   DCHECK_GE(max_aspect_ratio_, min_aspect_ratio_);
-  DCHECK(!std::isnan(max_frame_rate_));
-  DCHECK_GE(max_frame_rate_, 0.0);
+  DCHECK(!max_frame_rate_ || !std::isnan(*max_frame_rate_));
+  DCHECK(!max_frame_rate_ || *max_frame_rate_ >= 0.0);
 }
 
 VideoTrackAdapterSettings::VideoTrackAdapterSettings(

@@ -44,7 +44,7 @@ void CheckTrackAdapterSettingsEqualsResolution(
 
 void CheckTrackAdapterSettingsEqualsFrameRate(
     const VideoCaptureSettings& settings,
-    double value = 0.0) {
+    absl::optional<double> value = absl::nullopt) {
   EXPECT_EQ(value, settings.track_adapter_settings().max_frame_rate());
 }
 
@@ -2640,7 +2640,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   // Height gets adjusted as well to maintain the aspect ratio.
   EXPECT_EQ(result.track_adapter_settings().target_height(), 479);
   // Using native frame rate because the advanced set is ignored.
-  EXPECT_EQ(result.track_adapter_settings().max_frame_rate(), 0.0);
+  EXPECT_EQ(result.track_adapter_settings().max_frame_rate(), absl::nullopt);
 
   // The low-res device at 640x480@30Hz is the
   EXPECT_EQ(result.device_id(), low_res_device_->device_id.Utf8());

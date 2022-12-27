@@ -648,26 +648,32 @@ TEST_F(MediaStreamVideoTrackTest, DeliversConstraintsToKnownSinks) {
   InitializeSource();
   WebMediaStreamTrack track = CreateTrack();
   MockMediaStreamVideoSink sink1;
-  EXPECT_CALL(sink1, OnVideoConstraintsChanged(Eq(absl::nullopt), Optional(0)));
+  EXPECT_CALL(sink1,
+              OnVideoConstraintsChanged(Eq(absl::nullopt), Eq(absl::nullopt)));
   sink1.ConnectToTrack(track);
   MockMediaStreamVideoSink sink2;
-  EXPECT_CALL(sink2, OnVideoConstraintsChanged(Eq(absl::nullopt), Optional(0)));
+  EXPECT_CALL(sink2,
+              OnVideoConstraintsChanged(Eq(absl::nullopt), Eq(absl::nullopt)));
   sink2.ConnectToTrack(track);
   MediaStreamVideoTrack* const native_track =
       MediaStreamVideoTrack::From(track);
   Mock::VerifyAndClearExpectations(&sink1);
   Mock::VerifyAndClearExpectations(&sink2);
 
-  EXPECT_CALL(sink1, OnVideoConstraintsChanged(Eq(absl::nullopt), Optional(0)));
-  EXPECT_CALL(sink2, OnVideoConstraintsChanged(Eq(absl::nullopt), Optional(0)));
+  EXPECT_CALL(sink1,
+              OnVideoConstraintsChanged(Eq(absl::nullopt), Eq(absl::nullopt)));
+  EXPECT_CALL(sink2,
+              OnVideoConstraintsChanged(Eq(absl::nullopt), Eq(absl::nullopt)));
   native_track->SetTrackAdapterSettings(VideoTrackAdapterSettings());
   native_track->NotifyConstraintsConfigurationComplete();
   Mock::VerifyAndClearExpectations(&sink1);
   Mock::VerifyAndClearExpectations(&sink2);
 
   native_track->SetMinimumFrameRate(200);
-  EXPECT_CALL(sink1, OnVideoConstraintsChanged(Optional(200.0), Optional(0)));
-  EXPECT_CALL(sink2, OnVideoConstraintsChanged(Optional(200.0), Optional(0)));
+  EXPECT_CALL(sink1,
+              OnVideoConstraintsChanged(Optional(200.0), Eq(absl::nullopt)));
+  EXPECT_CALL(sink2,
+              OnVideoConstraintsChanged(Optional(200.0), Eq(absl::nullopt)));
   native_track->SetTrackAdapterSettings(VideoTrackAdapterSettings());
   native_track->NotifyConstraintsConfigurationComplete();
   Mock::VerifyAndClearExpectations(&sink1);

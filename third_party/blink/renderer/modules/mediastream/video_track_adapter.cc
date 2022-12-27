@@ -264,6 +264,8 @@ VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
       frame_rate_(MediaStreamVideoSource::kDefaultFrameRate),
       last_time_stamp_(base::TimeDelta::Max()),
       keep_frame_counter_(0.0) {
+  DVLOG(1) << __func__ << " max_framerate "
+           << settings.max_frame_rate().value_or(-1);
   DCHECK(renderer_task_runner_.get());
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
   CHECK_NE(0, settings_.max_aspect_ratio());
@@ -271,7 +273,8 @@ VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
   absl::optional<double> max_fps_override =
       Platform::Current()->GetWebRtcMaxCaptureFrameRate();
   if (max_fps_override) {
-    DVLOG(1) << "Overriding max frame rate.  Was=" << settings_.max_frame_rate()
+    DVLOG(1) << "Overriding max frame rate.  Was="
+             << settings_.max_frame_rate().value_or(-1)
              << ", Now=" << *max_fps_override;
     settings_.set_max_frame_rate(*max_fps_override);
   }
@@ -482,7 +485,7 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
 
   // Do not drop frames if max frame rate hasn't been specified.
-  if (settings_.max_frame_rate() == 0.0f) {
+  if (!settings_.max_frame_rate().has_value()) {
     last_time_stamp_ = frame.timestamp();
     return false;
   }
@@ -521,12 +524,13 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
   DVLOG(3) << " delta_ms " << delta_ms << " frame_rate_ " << frame_rate_;
 
   // Prefer to not drop frames.
-  if (settings_.max_frame_rate() + 0.5f > frame_rate_)
+  if (*settings_.max_frame_rate() + 0.5f > frame_rate_) {
     return false;  // Keep this frame.
+  }
 
   // The input frame rate is higher than requested.
   // Decide if we should keep this frame or drop it.
-  keep_frame_counter_ += settings_.max_frame_rate() / frame_rate_;
+  keep_frame_counter_ += *settings_.max_frame_rate() / frame_rate_;
   if (keep_frame_counter_ >= 1) {
     keep_frame_counter_ -= 1;
     // Keep the frame.

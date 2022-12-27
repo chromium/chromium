@@ -894,16 +894,16 @@ void MediaStreamVideoTrack::GetSettings(
     settings.aspect_ratio = static_cast<double>(width_) / height_;
   }
 
-  // 0.0 means the track is using the source's frame rate.
-  if (frame_rate_ != 0.0) {
-    settings.frame_rate = frame_rate_;
+  if (frame_rate_.has_value()) {
+    settings.frame_rate = *frame_rate_;
   }
 
   absl::optional<media::VideoCaptureFormat> format =
       source_->GetCurrentFormat();
   if (format) {
-    if (frame_rate_ == 0.0)
+    if (!frame_rate_.has_value()) {
       settings.frame_rate = format->frame_rate;
+    }
   } else {
     // Format is only set for local tracks. For other tracks, use the frame rate
     // reported through settings callback SetSizeAndComputedFrameRate().

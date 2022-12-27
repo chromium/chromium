@@ -240,16 +240,18 @@ VideoTrackAdapterSettings SelectVideoTrackAdapterSettings(
       std::min(resolution_set.max_aspect_ratio(),
                static_cast<double>(resolution_set.max_width()) /
                    static_cast<double>(resolution_set.min_height()));
-  // VideoTrackAdapter uses a frame rate of 0.0 to disable frame-rate
+  // VideoTrackAdapter uses an unset frame rate to disable frame-rate
   // adjustment.
-  double track_max_frame_rate = frame_rate_set.Max().value_or(0.0);
+  absl::optional<double> track_max_frame_rate = frame_rate_set.Max();
   if (basic_constraint_set.frame_rate.HasIdeal()) {
     track_max_frame_rate = std::max(basic_constraint_set.frame_rate.Ideal(),
                                     kMinDeviceCaptureFrameRate);
-    if (frame_rate_set.Min() && track_max_frame_rate < *frame_rate_set.Min())
+    if (frame_rate_set.Min() && *track_max_frame_rate < *frame_rate_set.Min()) {
       track_max_frame_rate = *frame_rate_set.Min();
-    if (frame_rate_set.Max() && track_max_frame_rate > *frame_rate_set.Max())
+    }
+    if (frame_rate_set.Max() && *track_max_frame_rate > *frame_rate_set.Max()) {
       track_max_frame_rate = *frame_rate_set.Max();
+    }
   }
 
   return VideoTrackAdapterSettings(target_resolution, track_min_aspect_ratio,

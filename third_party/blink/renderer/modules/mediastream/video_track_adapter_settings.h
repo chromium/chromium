@@ -22,14 +22,14 @@ class MODULES_EXPORT VideoTrackAdapterSettings {
   // Creates a VideoTrackAdapterSettings with a given target resolution and
   // and frame rate, and without any constraints on the resolution.
   VideoTrackAdapterSettings(const gfx::Size& target_size,
-                            double max_frame_rate);
+                            absl::optional<double> max_frame_rate);
   // Creates a VideoTrackAdapterSettings with the specified resolution, frame
   // rate and resolution constraints. If |target_size| is null, it means that
   // no video processing is desired.
   VideoTrackAdapterSettings(absl::optional<gfx::Size> target_size,
                             double min_aspect_ratio,
                             double max_aspect_ratio,
-                            double max_frame_rate);
+                            absl::optional<double> max_frame_rate);
   VideoTrackAdapterSettings(const VideoTrackAdapterSettings& other);
   VideoTrackAdapterSettings& operator=(const VideoTrackAdapterSettings& other);
   bool operator==(const VideoTrackAdapterSettings& other) const;
@@ -45,7 +45,7 @@ class MODULES_EXPORT VideoTrackAdapterSettings {
   }
   double min_aspect_ratio() const { return min_aspect_ratio_; }
   double max_aspect_ratio() const { return max_aspect_ratio_; }
-  double max_frame_rate() const { return max_frame_rate_; }
+  absl::optional<double> max_frame_rate() const { return max_frame_rate_; }
   void set_max_frame_rate(double max_frame_rate) {
     max_frame_rate_ = max_frame_rate;
   }
@@ -54,10 +54,7 @@ class MODULES_EXPORT VideoTrackAdapterSettings {
   absl::optional<gfx::Size> target_size_;
   double min_aspect_ratio_;
   double max_aspect_ratio_;
-  // A |max_frame_rate| of zero is used to signal that no frame-rate
-  // adjustment is necessary.
-  // TODO(guidou): Change this to absl::optional. https://crbug.com/734528
-  double max_frame_rate_;
+  absl::optional<double> max_frame_rate_;
 };
 
 }  // namespace blink
