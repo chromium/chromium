@@ -30,16 +30,21 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
+namespace ui {
+class ColorChangeHandler;
+}  // namespace ui
+
 namespace ash::settings {
 
 namespace mojom {
 class SearchHandler;
-}
+}  // namespace mojom
 
 class OSSettingsUI;
 
@@ -145,6 +150,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<auth::mojom::RecoveryFactorEditor> receiver);
 
+  // Binds to the Jelly dynamic color Mojo
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
  private:
   base::TimeTicks time_when_opened_;
 
@@ -153,6 +163,9 @@ class OSSettingsUI : public ui::MojoWebUIController {
   std::unique_ptr<mojom::UserActionRecorder> user_action_recorder_;
   std::unique_ptr<AppManagementPageHandlerFactory>
       app_management_page_handler_factory_;
+
+  // This handler notifies the WebUI when the color provider changes.
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

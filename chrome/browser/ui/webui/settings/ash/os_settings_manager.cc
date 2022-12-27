@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/app_notification_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
@@ -62,6 +63,7 @@ OsSettingsManager::~OsSettingsManager() = default;
 void OsSettingsManager::AddLoadTimeData(content::WebUIDataSource* html_source) {
   for (const auto& section : sections_->sections())
     section->AddLoadTimeData(html_source);
+  html_source->AddBoolean("isJellyEnabled", features::IsJellyEnabled());
   html_source->UseStringsJs();
 }
 
