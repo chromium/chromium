@@ -94,13 +94,6 @@ export class OutputInterface {
   formatPrecedingBullet_(data) {}
 
   /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatTextContent_(data, token, options) {}
-
-  /**
    * @param {!AutomationNode} node
    * @param {!AutomationNode} prevNode
    * @param {!outputTypes.OutputEventType} type

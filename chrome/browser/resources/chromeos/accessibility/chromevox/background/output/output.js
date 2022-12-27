@@ -11,7 +11,6 @@ import {constants} from '../../../common/constants.js';
 import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {LocalStorage} from '../../../common/local_storage.js';
-import {AutomationTreeWalker} from '../../../common/tree_walker.js';
 import {Earcon} from '../../common/abstract_earcons.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {EventSourceType} from '../../common/event_source_type.js';
@@ -669,48 +668,6 @@ export class Output {
   format_(params) {
     const formatter = new OutputFormatter(this, params);
     new OutputFormatParser(formatter).parse(params.outputFormat);
-  }
-
-  /** @override */
-  formatTextContent_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    if (node.name && token === 'nameOrTextContent') {
-      formatLog.writeToken(token);
-      this.format_({
-        node,
-        outputFormat: '$name',
-        outputBuffer: buff,
-        outputFormatLogger: formatLog,
-      });
-      return;
-    }
-
-    if (!node.firstChild) {
-      return;
-    }
-
-    const root = node;
-    const walker = new AutomationTreeWalker(node, Dir.FORWARD, {
-      visit: AutomationPredicate.leafOrStaticText,
-      leaf: n => {
-        // The root might be a leaf itself, but we still want to descend
-        // into it.
-        return n !== root && AutomationPredicate.leafOrStaticText(n);
-      },
-      root: r => r === root,
-    });
-    const outputStrings = [];
-    while (walker.next().node) {
-      if (walker.node.name) {
-        outputStrings.push(walker.node.name.trim());
-      }
-    }
-    const finalOutput = outputStrings.join(' ');
-    this.append_(buff, finalOutput, options);
-    formatLog.writeTokenWithValue(token, finalOutput);
   }
 
   /** @override */
