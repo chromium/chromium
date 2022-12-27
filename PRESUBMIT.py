@@ -4841,14 +4841,20 @@ def CheckForTooLargeFiles(input_api, output_api):
     # to set the limit too low, but the upper limit for "normal" large
     # files seems to be 1-2 MB, with a handful around 5-8 MB, so
     # anything over 20 MB is exceptional.
-    TOO_LARGE_FILE_SIZE_LIMIT = 20 * 1024 * 1024  # 10 MB
+    TOO_LARGE_FILE_SIZE_LIMIT = 20 * 1024 * 1024
+    # Special exemption for a file that is slightly over the limit.
+    SPECIAL_FILE_SIZE_LIMIT = 25 * 1024 * 1024
+    SPECIAL_FILE_NAME = 'transport_security_state_static.json'
 
     too_large_files = []
     for f in input_api.AffectedFiles():
         # Check both added and modified files (but not deleted files).
         if f.Action() in ('A', 'M'):
             size = input_api.os_path.getsize(f.AbsoluteLocalPath())
-            if size > TOO_LARGE_FILE_SIZE_LIMIT:
+            limit = (SPECIAL_FILE_SIZE_LIMIT if
+                f.AbsoluteLocalPath().endswith(SPECIAL_FILE_NAME) else
+                TOO_LARGE_FILE_SIZE_LIMIT)
+            if size > limit:
                 too_large_files.append("%s: %d bytes" % (f.LocalPath(), size))
 
     if too_large_files:
