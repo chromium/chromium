@@ -3127,6 +3127,13 @@ TEST_F(CookieMonsterTest, SetAllCookies) {
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       false,
       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))));
+  // Expired cookie, should not be stored.
+  list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
+      "expired", "foobar", https_www_foo_.url().host(), "/",
+      base::Time::Now() - base::Days(1), base::Time::Now() - base::Days(2),
+      base::Time(), base::Time(), /*secure=*/true, /*httponly=*/false,
+      CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
+      /*same_party=*/false));
 
   // SetAllCookies must not flush.
   ASSERT_EQ(0, store->flush_count());
