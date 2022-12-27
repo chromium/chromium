@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Isolated.ProcessOverhead"
-    units="ms" expires_after="2023-04-23">
+    units="ms" expires_after="2023-06-25">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Reusable.ProcessOverhead"
-    units="ms" expires_after="2023-04-23">
+    units="ms" expires_after="2023-06-25">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.SettingEnabledAtStartup"
-    enum="BooleanEnabled" expires_after="2023-04-23">
+    enum="BooleanEnabled" expires_after="2023-06-25">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -395,7 +395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SafetyTips.SafetyTipShown" enum="SafetyTipStatus"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -987,7 +987,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed"
-    units="ms" expires_after="2023-04-23">
+    units="ms" expires_after="2023-06-25">
   <owner>jessemckenna@google.com</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>

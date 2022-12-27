@@ -2639,7 +2639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.NewTabPageOverrides" units="units"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>

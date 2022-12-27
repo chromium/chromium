@@ -727,7 +727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AmbientLightOnResume" units="lux"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>bkersten@chromium.org</owner>
   <owner>slangley@chromium.org</owner>
   <summary>
@@ -1043,7 +1043,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2023-04-23">
+<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2023-06-25">
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

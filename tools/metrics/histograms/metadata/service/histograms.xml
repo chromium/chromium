@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.DiskCache.InitResult" units="units"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>bashi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <summary>
@@ -665,7 +665,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady"
-    units="ms" expires_after="2023-04-23">
+    units="ms" expires_after="2023-06-25">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -680,7 +680,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2"
-    units="ms" expires_after="2023-04-23">
+    units="ms" expires_after="2023-06-25">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

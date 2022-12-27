@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AppListSortDiscoveryDurationAfterActivation"
-    units="ms" expires_after="2023-04-23">
+    units="ms" expires_after="2023-06-25">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -724,7 +724,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
-    enum="OsSettingsProviderError" expires_after="2023-02-24">
+    enum="OsSettingsProviderError" expires_after="2023-06-25">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -1024,7 +1024,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SortDiscoveryDurationAfterEducationNudge"
-    units="ms" expires_after="2023-04-30">
+    units="ms" expires_after="2023-06-25">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -1399,7 +1399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListCreationTime" units="ms"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>tbarzic@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <summary>
@@ -1442,7 +1442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Apps.AppListFolderNameLength" units="characters"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -2562,7 +2562,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Apps.PaginationTransition.DragScroll.PresentationTime" units="ms"
-    expires_after="2023-04-16">
+    expires_after="2023-06-25">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 

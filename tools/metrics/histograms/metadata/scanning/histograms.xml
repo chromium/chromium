@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumDetectedScannersAtLogin" units="scanners"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>gavinwill@chromium.org</owner>
   <owner>masonwilde@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumScanSettingChanges" units="changes"
-    expires_after="2023-04-16">
+    expires_after="2023-06-25">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanCompleteAction" enum="ScanCompleteAction"
-    expires_after="2023-04-16">
+    expires_after="2023-06-25">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobFailureReason" enum="ScanJobFailureReason"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the reason a scan job failed.</summary>
@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSuccessful" enum="Boolean"
-    expires_after="2023-04-16">
+    expires_after="2023-06-25">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

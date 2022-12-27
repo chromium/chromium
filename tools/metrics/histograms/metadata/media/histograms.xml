@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.DetectedMissingCallbacks"
-    enum="BooleanMissingCallbacks" expires_after="2023-04-23">
+    enum="BooleanMissingCallbacks" expires_after="2023-06-25">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -383,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Glitches2" units="glitches"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -1660,7 +1660,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Controls.PlaybackSpeed"
-    enum="MediaControlsPlaybackSpeed" expires_after="2023-04-23">
+    enum="MediaControlsPlaybackSpeed" expires_after="2023-06-25">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3220,7 +3220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaFoundation.VideoColorSpace.PrimaryID"
-    enum="VideoColorSpace.PrimaryID" expires_after="2023-04-23">
+    enum="VideoColorSpace.PrimaryID" expires_after="2023-06-25">
   <owner>dalecurtis@chromium.org</owner>
   <owner>macrabil@microsoft.com</owner>
   <owner>media-dev@chromium.org</owner>
@@ -3700,7 +3700,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.Count" units="count"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3733,7 +3733,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Notification.UserAction" enum="MediaSessionAction"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -4804,7 +4804,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Video.Roughness" units="ms" expires_after="2023-04-23">
+<histogram name="Media.Video.Roughness" units="ms" expires_after="2023-06-25">
   <owner>eugene@chromium.org</owner>
   <owner>videostack-eng@chromium.org</owner>
   <summary>
@@ -5815,7 +5815,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Discovery.ConnectedDevicesCount"
-    units="devices" expires_after="2023-04-23">
+    units="devices" expires_after="2023-06-25">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6013,7 +6013,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Failure.Native"
-    enum="MirroringServiceErrorType" expires_after="2023-04-23">
+    enum="MirroringServiceErrorType" expires_after="2023-06-25">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6024,7 +6024,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Success" enum="MirrorType"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

@@ -642,7 +642,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.Behavior" enum="SyncConsentBehavior"
-    expires_after="2023-04-24">
+    expires_after="2023-06-25">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.SyncEnabled" enum="BooleanEnabled"
-    expires_after="2023-04-24">
+    expires_after="2023-06-25">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -798,7 +798,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.WelcomeScreen.A11yUserActions"
-    enum="WelcomeScreenA11yUserAction" expires_after="2023-04-16">
+    enum="WelcomeScreenA11yUserAction" expires_after="2023-06-25">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

@@ -1718,7 +1718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRecovery" enum="EnterpriseEnrollmentType"
-    expires_after="2023-04-01">
+    expires_after="2023-06-25">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2700,7 +2700,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserSession.Logins"
-    enum="EnterpriseUserSessionLogins" expires_after="2023-04-24">
+    enum="EnterpriseUserSessionLogins" expires_after="2023-06-25">
   <owner>xiyuan@chromium.org</owner>
   <owner>sduraisamy@chromium.org</owner>
   <summary>Tracks the sign-in events on an enrolled device.</summary>

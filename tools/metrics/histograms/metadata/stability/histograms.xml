@@ -328,7 +328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

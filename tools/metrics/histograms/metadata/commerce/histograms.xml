@@ -149,7 +149,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Heuristics.CheckoutURLGeneralPatternSource"
-    enum="CommerceHeuristicsDataSource" expires_after="2023-04-23">
+    enum="CommerceHeuristicsDataSource" expires_after="2023-06-25">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -177,7 +177,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Heuristics.PartnerMerchantPatternSource"
-    enum="CommerceHeuristicsDataSource" expires_after="2023-04-23">
+    enum="CommerceHeuristicsDataSource" expires_after="2023-06-25">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -207,7 +207,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Heuristics.SkipProductPatternSource"
-    enum="CommerceHeuristicsDataSource" expires_after="2023-04-23">
+    enum="CommerceHeuristicsDataSource" expires_after="2023-06-25">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -302,7 +302,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
-    expires_after="2023-04-25">
+    expires_after="2023-06-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -314,7 +314,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelCreated" enum="Boolean"
-    expires_after="2023-04-25">
+    expires_after="2023-06-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -326,7 +326,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.SystemNotificationEnabled" enum="Boolean"
-    expires_after="2023-04-25">
+    expires_after="2023-06-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -493,7 +493,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.SignIn.AccountWaaStatus"
-    enum="AccountWaaStatusForCommerce" expires_after="2023-04-25">
+    enum="AccountWaaStatusForCommerce" expires_after="2023-06-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -519,7 +519,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Subscriptions.TrackResult"
-    enum="ShoppingSubscriptionsRequestStatus" expires_after="2023-04-25">
+    enum="ShoppingSubscriptionsRequestStatus" expires_after="2023-06-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -731,7 +731,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.PageInfo.IsStoreInfoVisible"
-    enum="BooleanVisible" expires_after="2023-04-25">
+    enum="BooleanVisible" expires_after="2023-06-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>

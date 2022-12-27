@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintCache.HintType.Loaded"
-    enum="HintCacheStoreEntryType" expires_after="2023-04-16">
+    enum="HintCacheStoreEntryType" expires_after="2023-06-25">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -748,7 +748,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageStatus"
     enum="OptimizationGuidePageContentAnnotationsStorageStatus"
-    expires_after="2023-06-18">
+    expires_after="2023-06-25">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -877,7 +877,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageEntitiesModelHandler.CreatedSuccessfully"
-    enum="BooleanSuccess" expires_after="2023-03-26">
+    enum="BooleanSuccess" expires_after="2023-06-25">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -889,7 +889,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.PageEntitiesModelHandler.CreationStatus"
     enum="OptimizationGuideEntityAnnotatorCreationStatus"
-    expires_after="2023-03-26">
+    expires_after="2023-06-25">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1192,7 +1192,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.NetErrorCode"
-    enum="NetErrorCodes" expires_after="2023-06-18">
+    enum="NetErrorCodes" expires_after="2023-06-25">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1222,7 +1222,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status"
-    enum="HttpResponseCode" expires_after="2023-06-18">
+    enum="HttpResponseCode" expires_after="2023-06-25">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

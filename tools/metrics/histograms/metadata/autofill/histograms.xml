@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.AddressesDeletedForDisuse" units="addresses"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -910,7 +910,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.CardUnmaskAuthenticationSelectionDialog.Shown2"
-    units="challenge_options" expires_after="2023-04-16">
+    units="challenge_options" expires_after="2023-06-25">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>siashah@chromium.org</owner>
@@ -3926,7 +3926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SuggestionAccepted.OffTheRecord" units="units"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -4098,7 +4098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanResult"
-    enum="AutofillGetRealPanResult" expires_after="2023-06-18">
+    enum="AutofillGetRealPanResult" expires_after="2023-06-25">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -4639,7 +4639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.WebOTP.PhonePlusWebOTPPlusOTC"
-    enum="PhoneCollectionState" expires_after="2023-04-23">
+    enum="PhoneCollectionState" expires_after="2023-06-25">
   <owner>yigu@chromium.org</owner>
   <owner>madjivp@chromium.org</owner>
   <owner>web-identity@google.com</owner>

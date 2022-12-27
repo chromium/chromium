@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.SystemFallback.FCP" units="ms"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>

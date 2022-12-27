@@ -1794,7 +1794,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.WriteValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2023-04-25">
+    enum="WebBluetoothGATTOperationOutcome" expires_after="2023-06-25">
   <owner>cmumford@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1816,7 +1816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.ConnectGATT.Outcome"
-    enum="WebBluetoothConnectGATTOutcome" expires_after="2023-04-25">
+    enum="WebBluetoothConnectGATTOutcome" expires_after="2023-06-25">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1827,7 +1827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.GetCharacteristic.Characteristic"
-    enum="GATTCharacteristicHash" expires_after="2023-04-25">
+    enum="GATTCharacteristicHash" expires_after="2023-06-25">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1871,7 +1871,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrength" units="dBm"
-    expires_after="2023-04-25">
+    expires_after="2023-06-25">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1894,7 +1894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.RequestDevice.UnionOfServices.Services"
-    enum="GATTServiceHash" expires_after="2023-04-25">
+    enum="GATTServiceHash" expires_after="2023-06-25">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

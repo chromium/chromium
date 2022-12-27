@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Accessibility.WindowCount" enum="ArcAccessibilityFeature"
-    expires_after="2023-04-10">
+    expires_after="2023-06-25">
   <owner>sahok@chromium.org</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
@@ -1370,7 +1370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.InputOverlay.FeatureState" enum="BooleanEnabled"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>cuicuiruan@google.com</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -1383,7 +1383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.InputOverlay.MappingHintState" enum="BooleanEnabled"
-    expires_after="2023-04-15">
+    expires_after="2023-06-25">
   <owner>cuicuiruan@google.com</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -2073,7 +2073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.SdkVersionUpgradeType" enum="ArcSdkVersionUpgradeType"
-    expires_after="2023-04-24">
+    expires_after="2023-06-25">
   <owner>niwa@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>

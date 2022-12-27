@@ -1677,7 +1677,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.PassiveListeners" enum="EventResultType"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>dtapuska@chromium.org</owner>
   <summary>
     The result of handling of MouseWheel, TouchStart, TouchMove, TouchEnd events

@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FileBrowser.HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin"
-    units="ms" expires_after="2023-04-16">
+    units="ms" expires_after="2023-06-25">
   <owner>dmblack@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>

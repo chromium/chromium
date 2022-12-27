@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TypedNavigationUpgradeThrottle.Event"
-    enum="TypedNavigationUpgradeThrottleEvent" expires_after="2023-04-23">
+    enum="TypedNavigationUpgradeThrottleEvent" expires_after="2023-06-25">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>

@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ChromeOS.HatsStatus" enum="HatsStatus"
-    expires_after="2023-04-16">
+    expires_after="2023-06-25">
   <owner>aalsum@chromium.org</owner>
   <owner>cros-telemetry@google.com</owner>
   <summary>
@@ -448,7 +448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.IOJankyIntervalsPerMinute"
-    units="janks" expires_after="2023-04-23">
+    units="janks" expires_after="2023-06-25">
   <owner>gab@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>

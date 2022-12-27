@@ -987,7 +987,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.MainFrameProfileType2" enum="BrowserProfileType"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -1723,7 +1723,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Prerender.Experimental.CancellationPercentageByExcessiveMemoryUsage.SpeculationRule"
-    units="%" expires_after="2023-04-23">
+    units="%" expires_after="2023-06-25">
   <owner>asamidoi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

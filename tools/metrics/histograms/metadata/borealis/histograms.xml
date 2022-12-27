@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.InodeRatioAtStartup" units="KiB"
-    expires_after="2023-04-01">
+    expires_after="2023-06-25">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.Startup.Result"
-    enum="BorealisSyncDiskSizeResult" expires_after="2023-04-16">
+    enum="BorealisSyncDiskSizeResult" expires_after="2023-06-25">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.fsckResult" enum="BorealisStartupFsckResult"
-    expires_after="2023-04-01">
+    expires_after="2023-06-25">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>

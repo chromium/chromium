@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.LaunchType" enum="KioskLaunchType"
-    expires_after="2023-04-24">
+    expires_after="2023-06-25">
   <owner>xiyuan@chromium.org</owner>
   <owner>aghuie@chromium.org</owner>
   <summary>
@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionDuration.Normal" units="ms"
-    expires_after="2023-04-20">
+    expires_after="2023-06-25">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>

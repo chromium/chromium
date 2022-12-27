@@ -971,7 +971,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.LinkToText.ShouldOfferResult"
-    enum="LinkToTextShouldOfferResult" expires_after="2023-04-16">
+    enum="LinkToTextShouldOfferResult" expires_after="2023-06-25">
   <owner>tmartino@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
@@ -1343,7 +1343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PageLoad.DefaultModeMobile" enum="Boolean"
-    expires_after="2023-04-16">
+    expires_after="2023-06-25">
   <owner>gambard@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -1808,7 +1808,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SiriShortcuts.Count" units="shortcuts"
-    expires_after="2023-04-16">
+    expires_after="2023-06-25">
   <owner>gujen@google.com</owner>
   <owner>ios-google-eng-ios@google.com</owner>
   <summary>

@@ -680,7 +680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.AdditionalDnsQueryTypesEnabled"
-    enum="BooleanEnabled" expires_after="2023-04-23">
+    enum="BooleanEnabled" expires_after="2023-06-25">
   <owner>ericorth@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -835,7 +835,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.Windows.Compatibility"
-    enum="DNS.WindowsCompatibility" expires_after="2023-04-23">
+    enum="DNS.WindowsCompatibility" expires_after="2023-06-25">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -886,7 +886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsTask.AdditionalHttps.Unsolicited"
-    enum="UnsolicitedHttpsRecordStatus" expires_after="2023-04-23">
+    enum="UnsolicitedHttpsRecordStatus" expires_after="2023-06-25">
   <owner>awillia@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -931,7 +931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsTransaction.AttemptType" enum="DNS.AttemptType"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1627,7 +1627,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ErrorPageCounts" enum="NetErrorPageEvents"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>edwardjung@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1759,7 +1759,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.MainJobWaitTimeWithAvailableSpdySession"
-    units="ms" expires_after="2023-04-26">
+    units="ms" expires_after="2023-06-25">
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -1769,7 +1769,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.MainJobWaitTimeWithoutAvailableSpdySession"
-    units="ms" expires_after="2023-04-26">
+    units="ms" expires_after="2023-06-25">
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -1972,7 +1972,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpTimeToFirstByte.TLS13.Google" units="ms"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>davidben@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>

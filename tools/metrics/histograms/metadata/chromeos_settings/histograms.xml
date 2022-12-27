@@ -111,7 +111,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.TouchpadSpeedValue"
-    enum="TouchpadSensitivity" expires_after="2023-04-17">
+    enum="TouchpadSensitivity" expires_after="2023-06-25">
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
@@ -122,7 +122,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Inputs.ShortcutReminderDismissed"
-    enum="SettingsInputsShortcutReminderState" expires_after="2023-04-23">
+    enum="SettingsInputsShortcutReminderState" expires_after="2023-06-25">
   <owner>mlcui@google.com</owner>
   <owner>cros-borders@google.com</owner>
   <summary>
@@ -332,7 +332,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultPersonalizationSelected"
-    enum="PersonalizationSearchConceptId" expires_after="2023-04-17">
+    enum="PersonalizationSearchConceptId" expires_after="2023-06-25">
   <owner>cowmoo@google.com</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
@@ -423,7 +423,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Wifi.Hidden" enum="BooleanToggled"
-    expires_after="2023-04-16">
+    expires_after="2023-06-25">
   <owner>jonmann@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>

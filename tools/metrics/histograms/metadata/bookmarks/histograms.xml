@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.AddedPerProfileType" enum="BrowserProfileType"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -284,7 +284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Count.OnProfileLoad3" units="bookmarks"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>supertri@chromium.org</owner>
   <owner>isherman@chromium.org</owner>
   <owner>aidanday@google.com</owner>
@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.EditTitleSource" enum="BookmarkEditSource"
-    expires_after="2023-04-21">
+    expires_after="2023-06-25">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -720,7 +720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>ianwen@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>Logs a UI location from which a bookmark is launched.</summary>
@@ -796,7 +796,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.OpenBookmarkType" enum="BookmarkType"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>wychen@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
@@ -806,7 +806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Opened.TimeSinceAdded" units="days"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -816,7 +816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Opened.TimeSinceLastUsed" units="days"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -827,7 +827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ReadingList.NumberOfItems" units="items"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>shaktisahu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
@@ -838,7 +838,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ReadingList.NumberOfReadItems" units="items"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>shaktisahu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
@@ -899,7 +899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.FileSizeAtStartup2" units="KB"
-    expires_after="2023-04-21">
+    expires_after="2023-06-25">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -914,7 +914,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.TimeSinceLastScheduledSave" units="ms"
-    expires_after="2023-04-21">
+    expires_after="2023-06-25">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -943,7 +943,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.TimeToLoadAtStartup2" units="ms"
-    expires_after="2023-04-21">
+    expires_after="2023-06-25">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
