@@ -7,8 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom.h"
+#include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace power_bookmarks {
 class PowerBookmarkService;
@@ -17,10 +19,13 @@ class PowerBookmarkService;
 class UserNotesSidePanelUI;
 class Profile;
 
-class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler {
+class UserNotesPageHandler
+    : public side_panel::mojom::UserNotesPageHandler,
+      public power_bookmarks::PowerBookmarkService::Observer {
  public:
   explicit UserNotesPageHandler(
       mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandler> receiver,
+      mojo::PendingRemote<side_panel::mojom::UserNotesPage> page,
       Profile* profile,
       UserNotesSidePanelUI* user_notes_ui);
   UserNotesPageHandler(const UserNotesPageHandler&) = delete;
@@ -45,7 +50,11 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler {
   void SetCurrentTabUrlForTesting(GURL url) { current_tab_url_ = url; }
 
  private:
+  // power_bookmarks::PowerBookmarkService::Observer:
+  void OnPowersChanged() override;
+
   mojo::Receiver<side_panel::mojom::UserNotesPageHandler> receiver_;
+  mojo::Remote<side_panel::mojom::UserNotesPage> page_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<power_bookmarks::PowerBookmarkService> service_;
   raw_ptr<UserNotesSidePanelUI> user_notes_ui_ = nullptr;

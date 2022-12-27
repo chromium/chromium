@@ -9,7 +9,6 @@
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_side_panel_ui.h"
-#include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/power_bookmarks/core/powers/power.h"
 #include "components/power_bookmarks/core/powers/power_overview.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
@@ -87,14 +86,20 @@ std::unique_ptr<power_bookmarks::Power> MakePower(const std::string& guid,
 
 UserNotesPageHandler::UserNotesPageHandler(
     mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandler> receiver,
+    mojo::PendingRemote<side_panel::mojom::UserNotesPage> page,
     Profile* profile,
     UserNotesSidePanelUI* user_notes_ui)
     : receiver_(this, std::move(receiver)),
+      page_(std::move(page)),
       profile_(profile),
       service_(PowerBookmarkServiceFactory::GetForBrowserContext(profile_)),
-      user_notes_ui_(user_notes_ui) {}
+      user_notes_ui_(user_notes_ui) {
+  service_->AddObserver(this);
+}
 
-UserNotesPageHandler::~UserNotesPageHandler() = default;
+UserNotesPageHandler::~UserNotesPageHandler() {
+  service_->RemoveObserver(this);
+}
 
 void UserNotesPageHandler::ShowUI() {
   auto embedder = user_notes_ui_->embedder();
@@ -174,4 +179,8 @@ void UserNotesPageHandler::DeleteNotesForUrl(
       base::BindOnce([](DeleteNotesForUrlCallback callback,
                         bool success) { std::move(callback).Run(success); },
                      std::move(callback)));
+}
+
+void UserNotesPageHandler::OnPowersChanged() {
+  page_->NotesChanged();
 }

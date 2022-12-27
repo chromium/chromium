@@ -13,16 +13,34 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 
 class TestUserNotesPageHandler : public UserNotesPageHandler {
  public:
-  explicit TestUserNotesPageHandler(Profile* profile)
+  explicit TestUserNotesPageHandler(
+      mojo::PendingRemote<side_panel::mojom::UserNotesPage> page,
+      Profile* profile)
       : UserNotesPageHandler(
             mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandler>(),
+            std::move(page),
             profile,
             nullptr) {}
+};
+
+class MockUserNotesPage : public side_panel::mojom::UserNotesPage {
+ public:
+  MockUserNotesPage() = default;
+  ~MockUserNotesPage() override = default;
+
+  mojo::PendingRemote<side_panel::mojom::UserNotesPage> BindAndGetRemote() {
+    DCHECK(!receiver_.is_bound());
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+  mojo::Receiver<side_panel::mojom::UserNotesPage> receiver_{this};
+
+  MOCK_METHOD0(NotesChanged, void());
 };
 
 struct Note {
@@ -35,7 +53,8 @@ class UserNotesPageHandlerTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     features_.InitAndEnableFeature(power_bookmarks::kPowerBookmarkBackend);
     BrowserWithTestWindowTest::SetUp();
-    handler_ = std::make_unique<TestUserNotesPageHandler>(profile());
+    handler_ = std::make_unique<TestUserNotesPageHandler>(
+        page_.BindAndGetRemote(), profile());
 
     GURL url1(u"https://url1");
     GURL url2(u"https://url2");
@@ -61,12 +80,16 @@ class UserNotesPageHandlerTest : public BrowserWithTestWindowTest {
 
   TestUserNotesPageHandler* handler() { return handler_.get(); }
 
+ protected:
+  MockUserNotesPage page_;
+
  private:
   std::unique_ptr<TestUserNotesPageHandler> handler_;
   base::test::ScopedFeatureList features_;
 };
 
 TEST_F(UserNotesPageHandlerTest, GetNotes) {
+  EXPECT_CALL(page_, NotesChanged()).Times(1);
   side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
   handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
   auto notes = waiter.GetNotesForCurrentTab();
@@ -79,6 +102,7 @@ TEST_F(UserNotesPageHandlerTest, GetNotes) {
 }
 
 TEST_F(UserNotesPageHandlerTest, GetNoteOverviews) {
+  EXPECT_CALL(page_, NotesChanged()).Times(1);
   side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
   handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
   auto note_overviews = waiter.GetNoteOverviews("");
@@ -86,6 +110,7 @@ TEST_F(UserNotesPageHandlerTest, GetNoteOverviews) {
 }
 
 TEST_F(UserNotesPageHandlerTest, CreateAndDeleteNote) {
+  EXPECT_CALL(page_, NotesChanged()).Times(3);
   side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
   handler()->SetCurrentTabUrlForTesting(GURL(u"https://url5"));
   ASSERT_TRUE(waiter.NewNoteFinished("note5"));
@@ -101,6 +126,7 @@ TEST_F(UserNotesPageHandlerTest, CreateAndDeleteNote) {
 }
 
 TEST_F(UserNotesPageHandlerTest, UpdateNote) {
+  EXPECT_CALL(page_, NotesChanged()).Times(3);
   side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
   handler()->SetCurrentTabUrlForTesting(GURL(u"https://url5"));
   ASSERT_TRUE(waiter.NewNoteFinished("note5"));
@@ -119,6 +145,7 @@ TEST_F(UserNotesPageHandlerTest, UpdateNote) {
 }
 
 TEST_F(UserNotesPageHandlerTest, DeleteNotesForUrl) {
+  EXPECT_CALL(page_, NotesChanged()).Times(2);
   side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
   ASSERT_TRUE(waiter.DeleteNotesForUrl(GURL(u"https://url1")));
 

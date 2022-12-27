@@ -1017,7 +1017,8 @@ void PopulateChromeWebUIFrameBinders(
 
   if (user_notes::IsUserNotesEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
-        side_panel::mojom::UserNotesPageHandler, UserNotesSidePanelUI>(map);
+        side_panel::mojom::UserNotesPageHandlerFactory, UserNotesSidePanelUI>(
+        map);
   }
 
   if (features::IsReadAnythingEnabled()) {

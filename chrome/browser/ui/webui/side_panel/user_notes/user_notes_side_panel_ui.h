@@ -13,19 +13,29 @@
 
 class UserNotesPageHandler;
 
-class UserNotesSidePanelUI : public ui::MojoBubbleWebUIController {
+class UserNotesSidePanelUI
+    : public ui::MojoBubbleWebUIController,
+      public side_panel::mojom::UserNotesPageHandlerFactory {
  public:
   explicit UserNotesSidePanelUI(content::WebUI* web_ui);
   UserNotesSidePanelUI(const UserNotesSidePanelUI&) = delete;
   UserNotesSidePanelUI& operator=(const UserNotesSidePanelUI&) = delete;
   ~UserNotesSidePanelUI() override;
 
-  // Instantiates the implementor of the mojom::PageHandler mojo
-  // interface passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandler> receiver);
+      mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandlerFactory>
+          factory);
 
  private:
+  // user_notes::mojom::UserNotesPageHandlerFactory
+  void CreatePageHandler(
+      mojo::PendingRemote<side_panel::mojom::UserNotesPage> page,
+      mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandler> receiver)
+      override;
+
+  mojo::Receiver<side_panel::mojom::UserNotesPageHandlerFactory>
+      page_factory_receiver_{this};
+
   std::unique_ptr<UserNotesPageHandler> user_notes_page_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
