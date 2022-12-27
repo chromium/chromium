@@ -10,12 +10,12 @@
 
 #import "base/test/metrics/user_action_tester.h"
 #import "components/bookmarks/browser/bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/bookmark_ios_unittest.h"
+#import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 #import "testing/platform_test.h"
 
 namespace {
 
-using BookmarkEditViewControllerTest = BookmarkIOSUnitTest;
+using BookmarkEditViewControllerTest = BookmarkIOSUnitTestSupport;
 
 // Checks that the view controller can become the first responder. This is
 // needed to correctly register key commands.

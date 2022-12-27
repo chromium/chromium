@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bookmarks/bookmark_ios_unittest.h"
+#import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
@@ -21,10 +21,10 @@
 
 using bookmarks::BookmarkNode;
 
-BookmarkIOSUnitTest::BookmarkIOSUnitTest() {}
-BookmarkIOSUnitTest::~BookmarkIOSUnitTest() {}
+BookmarkIOSUnitTestSupport::BookmarkIOSUnitTestSupport() {}
+BookmarkIOSUnitTestSupport::~BookmarkIOSUnitTestSupport() {}
 
-void BookmarkIOSUnitTest::SetUp() {
+void BookmarkIOSUnitTestSupport::SetUp() {
   // Get a BookmarkModel from the test ChromeBrowserState.
   TestChromeBrowserState::Builder test_cbs_builder;
   test_cbs_builder.AddTestingFactory(
@@ -45,22 +45,24 @@ void BookmarkIOSUnitTest::SetUp() {
   browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 }
 
-const BookmarkNode* BookmarkIOSUnitTest::AddBookmark(const BookmarkNode* parent,
-                                                     NSString* title) {
+const BookmarkNode* BookmarkIOSUnitTestSupport::AddBookmark(
+    const BookmarkNode* parent,
+    NSString* title) {
   std::u16string c_title = base::SysNSStringToUTF16(title);
   GURL url(base::SysNSStringToUTF16(@"http://example.com/bookmark") + c_title);
   return bookmark_model_->AddURL(parent, parent->children().size(), c_title,
                                  url);
 }
 
-const BookmarkNode* BookmarkIOSUnitTest::AddFolder(const BookmarkNode* parent,
-                                                   NSString* title) {
+const BookmarkNode* BookmarkIOSUnitTestSupport::AddFolder(
+    const BookmarkNode* parent,
+    NSString* title) {
   std::u16string c_title = base::SysNSStringToUTF16(title);
   return bookmark_model_->AddFolder(parent, parent->children().size(), c_title);
 }
 
-void BookmarkIOSUnitTest::ChangeTitle(NSString* title,
-                                      const BookmarkNode* node) {
+void BookmarkIOSUnitTestSupport::ChangeTitle(NSString* title,
+                                             const BookmarkNode* node) {
   std::u16string c_title = base::SysNSStringToUTF16(title);
   bookmark_model_->SetTitle(node, c_title,
                             bookmarks::metrics::BookmarkEditSource::kUser);

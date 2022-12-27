@@ -9,7 +9,7 @@
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/bookmarks/bookmark_ios_unittest.h"
+#import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
@@ -29,12 +29,12 @@ NSString* const kTestTitle = @"Test Title";
 }  // namespace
 
 // Test fixture for covering the BookmarkActivity class.
-class BookmarkActivityTest : public BookmarkIOSUnitTest {
+class BookmarkActivityTest : public BookmarkIOSUnitTestSupport {
  protected:
   BookmarkActivityTest() {}
 
   void SetUp() override {
-    BookmarkIOSUnitTest::SetUp();
+    BookmarkIOSUnitTestSupport::SetUp();
 
     mocked_handler_ = OCMProtocolMock(@protocol(BookmarksCommands));
 

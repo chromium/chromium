@@ -14,7 +14,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
-#import "ios/chrome/browser/bookmarks/bookmark_ios_unittest.h"
+#import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -59,7 +59,7 @@ using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 // Test fixture for testing SharingCoordinator.
-class SharingCoordinatorTest : public BookmarkIOSUnitTest {
+class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
  protected:
   SharingCoordinatorTest()
       : base_view_controller_([[UIViewController alloc] init]),
@@ -70,7 +70,7 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTest {
   }
 
   void SetUp() override {
-    BookmarkIOSUnitTest::SetUp();
+    BookmarkIOSUnitTestSupport::SetUp();
     snackbar_handler_ = OCMStrictProtocolMock(@protocol(SnackbarCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:snackbar_handler_

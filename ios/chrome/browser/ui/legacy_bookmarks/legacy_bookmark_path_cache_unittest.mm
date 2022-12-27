@@ -6,7 +6,7 @@
 
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/bookmarks/bookmark_ios_unittest.h"
+#import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -19,10 +19,10 @@ using bookmarks::BookmarkNode;
 
 namespace {
 
-class BookmarkPathCacheTest : public BookmarkIOSUnitTest {
+class BookmarkPathCacheTest : public BookmarkIOSUnitTestSupport {
  protected:
   void SetUp() override {
-    BookmarkIOSUnitTest::SetUp();
+    BookmarkIOSUnitTestSupport::SetUp();
     [BookmarkPathCache registerBrowserStatePrefs:prefs_.registry()];
   }
 
