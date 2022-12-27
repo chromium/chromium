@@ -13,8 +13,6 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "extensions/browser/api/api_resource_manager.h"
-#include "extensions/browser/api/device_permissions_prompt.h"
-#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/common/api/hid.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/device/public/cpp/hid/hid_device_filter.h"
@@ -93,53 +91,6 @@ ExtensionFunction::ResponseAction HidGetDevicesFunction::Run() {
 
 void HidGetDevicesFunction::OnEnumerationComplete(base::Value::List devices) {
   Respond(OneArgument(base::Value(std::move(devices))));
-}
-
-HidGetUserSelectedDevicesFunction::HidGetUserSelectedDevicesFunction() =
-    default;
-
-HidGetUserSelectedDevicesFunction::~HidGetUserSelectedDevicesFunction() =
-    default;
-
-ExtensionFunction::ResponseAction HidGetUserSelectedDevicesFunction::Run() {
-  std::unique_ptr<api::hid::GetUserSelectedDevices::Params> parameters =
-      hid::GetUserSelectedDevices::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!web_contents || !user_gesture()) {
-    return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
-  }
-
-  bool multiple = false;
-  std::vector<HidDeviceFilter> filters;
-  if (parameters->options) {
-    multiple = parameters->options->multiple && *parameters->options->multiple;
-    if (parameters->options->filters) {
-      const auto& api_filters = *parameters->options->filters;
-      filters.resize(api_filters.size());
-      for (size_t i = 0; i < api_filters.size(); ++i) {
-        ConvertHidDeviceFilter(api_filters[i], &filters[i]);
-      }
-    }
-  }
-
-  prompt_ =
-      ExtensionsAPIClient::Get()->CreateDevicePermissionsPrompt(web_contents);
-  CHECK(prompt_);
-  prompt_->AskForHidDevices(
-      extension(), browser_context(), multiple, filters,
-      base::BindOnce(&HidGetUserSelectedDevicesFunction::OnDevicesChosen,
-                     this));
-  return RespondLater();
-}
-
-void HidGetUserSelectedDevicesFunction::OnDevicesChosen(
-    std::vector<device::mojom::HidDeviceInfoPtr> devices) {
-  HidDeviceManager* device_manager = HidDeviceManager::Get(browser_context());
-  CHECK(device_manager);
-  Respond(OneArgument(
-      base::Value(device_manager->GetApiDevicesFromList(std::move(devices)))));
 }
 
 HidConnectFunction::HidConnectFunction() : connection_manager_(nullptr) {

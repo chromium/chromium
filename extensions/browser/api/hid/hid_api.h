@@ -21,8 +21,6 @@
 
 namespace extensions {
 
-class DevicePermissionsPrompt;
-
 class HidGetDevicesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("hid.getDevices", HID_GETDEVICES)
@@ -39,29 +37,6 @@ class HidGetDevicesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   void OnEnumerationComplete(base::Value::List devices);
-};
-
-class HidGetUserSelectedDevicesFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("hid.getUserSelectedDevices",
-                             HID_GETUSERSELECTEDDEVICES)
-
-  HidGetUserSelectedDevicesFunction();
-
-  HidGetUserSelectedDevicesFunction(const HidGetUserSelectedDevicesFunction&) =
-      delete;
-  HidGetUserSelectedDevicesFunction& operator=(
-      const HidGetUserSelectedDevicesFunction&) = delete;
-
- private:
-  ~HidGetUserSelectedDevicesFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
-  void OnDevicesChosen(std::vector<device::mojom::HidDeviceInfoPtr> devices);
-
-  std::unique_ptr<DevicePermissionsPrompt> prompt_;
 };
 
 class HidConnectFunction : public ExtensionFunction {

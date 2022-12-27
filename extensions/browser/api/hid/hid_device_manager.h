@@ -64,11 +64,6 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
                      const std::vector<device::HidDeviceFilter>& filters,
                      GetApiDevicesCallback callback);
 
-  // Converts a list of device::mojom::HidDeviceInfo objects into a value that
-  // can be returned through the API.
-  base::Value::List GetApiDevicesFromList(
-      std::vector<device::mojom::HidDeviceInfoPtr> devices);
-
   const device::mojom::HidDeviceInfo* GetDeviceInfo(int resource_id);
 
   void Connect(const std::string& device_guid, ConnectCallback callback);

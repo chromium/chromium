@@ -252,23 +252,6 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceRemoved) {
   EXPECT_EQ("success", result_listener.message());
 }
 
-IN_PROC_BROWSER_TEST_F(HidApiTest, GetUserSelectedDevices) {
-  ExtensionTestMessageListener open_listener("opened_device");
-
-  TestExtensionsAPIClient test_api_client;
-  ASSERT_TRUE(LoadApp("api_test/hid/get_user_selected_devices"));
-  ASSERT_TRUE(open_listener.WaitUntilSatisfied());
-
-  ExtensionTestMessageListener remove_listener("removed");
-  GetFakeHidManager()->RemoveDevice(kTestDeviceGuids[0]);
-  ASSERT_TRUE(remove_listener.WaitUntilSatisfied());
-
-  ExtensionTestMessageListener add_listener("added");
-  AddDevice(kTestDeviceGuids[0], kTestPhysicalDeviceIds[0], kTestVendorId,
-            kTestProductId, true, "A");
-  ASSERT_TRUE(add_listener.WaitUntilSatisfied());
-}
-
 namespace {
 
 device::mojom::HidDeviceInfoPtr CreateDeviceWithOneCollection(

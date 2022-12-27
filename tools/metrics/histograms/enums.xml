@@ -34802,7 +34802,7 @@ Called by update_extension_histograms.py.-->
   <int value="1054" label="SERIAL_CLEARBREAK"/>
   <int value="1055" label="DELETED_EXTENSIONVIEWINTERNAL_LOADSRC"/>
   <int value="1056" label="DELETED_EXTENSIONVIEWINTERNAL_PARSESRC"/>
-  <int value="1057" label="HID_GETUSERSELECTEDDEVICES"/>
+  <int value="1057" label="DELETED_HID_GETUSERSELECTEDDEVICES"/>
   <int value="1058"
       label="FILESYSTEMPROVIDERINTERNAL_GETACTIONSREQUESTEDSUCCESS"/>
   <int value="1059"

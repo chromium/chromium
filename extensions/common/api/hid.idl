@@ -68,14 +68,6 @@ namespace hid {
     DeviceFilter[]? filters;
   };
 
-  dictionary DevicePromptOptions {
-    // Allow the user to select multiple devices.
-    boolean? multiple;
-    // Filter the list of devices presented to the user. If multiple filters
-    // are provided devices matching any filter will be displayed.
-    DeviceFilter[]? filters;
-  };
-
   callback GetDevicesCallback = void (HidDeviceInfo[] devices);
   callback ConnectCallback = void (HidConnectInfo connection);
   callback DisconnectCallback = void ();
@@ -95,17 +87,6 @@ namespace hid {
     // |options|: The properties to search for on target devices.
     static void getDevices(GetDevicesOptions options,
                            GetDevicesCallback callback);
-
-    // Presents a device picker to the user and returns $(ref:HidDeviceInfo)
-    // objects for the devices selected.
-    // If the user cancels the picker devices will be empty. A user gesture
-    // is required for the dialog to display. Without a user gesture, the
-    // callback will run as though the user cancelled. If multiple filters are
-    // provided devices matching any filter will be displayed.
-    // |options|: Configuration of the device picker dialog box.
-    // |callback|: Invoked with a list of chosen $(ref:Device)s.
-    static void getUserSelectedDevices(optional DevicePromptOptions options,
-                                       GetDevicesCallback callback);
 
     // Open a connection to an HID device for communication.
     // |deviceId|: The $(ref:HidDeviceInfo.deviceId) of the device to open.

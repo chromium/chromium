@@ -260,11 +260,6 @@
     "dependencies": ["permission:hid"],
     "contexts": ["blessed_extension"]
   },
-  "hid.getUserSelectedDevices": {
-    "contexts": ["blessed_extension"],
-    "channel": "dev",
-    "dependencies": ["permission:hid"]
-  },
   "i18n": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app",

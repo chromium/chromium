@@ -147,22 +147,6 @@ void HidDeviceManager::GetApiDevices(
   }
 }
 
-base::Value::List HidDeviceManager::GetApiDevicesFromList(
-    std::vector<device::mojom::HidDeviceInfoPtr> devices) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  base::Value::List device_list;
-  for (const auto& device : devices) {
-    const auto device_entry = resource_ids_.find(device->guid);
-    DCHECK(device_entry != resource_ids_.end());
-
-    hid::HidDeviceInfo device_info;
-    device_info.device_id = device_entry->second;
-    PopulateHidDeviceInfo(&device_info, *device);
-    device_list.Append(device_info.ToValue());
-  }
-  return device_list;
-}
-
 const device::mojom::HidDeviceInfo* HidDeviceManager::GetDeviceInfo(
     int resource_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
