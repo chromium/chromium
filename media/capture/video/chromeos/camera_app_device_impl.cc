@@ -90,12 +90,11 @@ CameraAppDeviceImpl::~CameraAppDeviceImpl() {
 
 void CameraAppDeviceImpl::BindReceiver(
     mojo::PendingReceiver<cros::mojom::CameraAppDevice> receiver) {
+  mojo_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   receivers_.Add(this, std::move(receiver));
   receivers_.set_disconnect_handler(
       base::BindRepeating(&CameraAppDeviceImpl::OnMojoConnectionError,
                           weak_ptr_factory_for_mojo_.GetWeakPtr()));
-  mojo_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
-
   document_scanner_service_ = ash::DocumentScannerServiceClient::Create();
 }
 
