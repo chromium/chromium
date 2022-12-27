@@ -430,7 +430,7 @@ suite('PrivacyGuidePromo', () => {
         page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePromo')!;
     privacyGuidePromo.shadowRoot!.querySelector<HTMLElement>(
                                      '#startButton')!.click();
-    flush();
+    await flushTasks();
 
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideEntryExitHistogram');
