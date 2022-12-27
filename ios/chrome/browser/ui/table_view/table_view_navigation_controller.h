@@ -24,10 +24,6 @@
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-// The ChromeTableViewController owned by this ViewController.
-@property(nonatomic, readonly, weak)
-    ChromeTableViewController* tableViewController;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_TABLE_VIEW_NAVIGATION_CONTROLLER_H_

@@ -14,16 +14,11 @@
 #endif
 
 @implementation TableViewNavigationController
-@synthesize tableViewController = _tableViewController;
 
 #pragma mark - Public Interface
 
 - (instancetype)initWithTable:(ChromeTableViewController*)table {
-  self = [super initWithRootViewController:table];
-  if (self) {
-    _tableViewController = table;
-  }
-  return self;
+  return [super initWithRootViewController:table];
 }
 
 #pragma mark - View Lifecycle
