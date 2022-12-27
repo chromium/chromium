@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LoadFamilyTime" units="ms"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
