@@ -39,8 +39,11 @@ export class ItemNavigatorInterface {
    */
   exitIfInGroup(node) {}
 
-  /** @abstract */
-  exitKeyboard() {}
+  /**
+   * @return {!Promise}
+   * @abstract
+   */
+  async exitKeyboard() {}
 
   /**
    * Forces the current node to be |node|.
@@ -86,9 +89,10 @@ export class ItemNavigatorInterface {
    * @param {!SAChildNode} startingNode The first node in the sequence. If we
    *     loop back to this node, stop trying to move, as there are no other
    *     nodes we can move to.
+   * @return {!Promise}
    * @abstract
    */
-  tryMoving(node, getNext, startingNode) {}
+  async tryMoving(node, getNext, startingNode) {}
 
   /**
    * Moves to the Switch Access focus up the group stack closest to the ancestor

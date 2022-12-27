@@ -60,8 +60,8 @@ export class KeyboardNode extends BasicNode {
       // TODO(crbug/1130773): move this code to another location, if possible
       KeyboardNode.resetting = true;
       KeyboardRootNode.ignoreNextExit_ = true;
-      Navigator.byItem.exitKeyboard();
-      Navigator.byItem.enterKeyboard();
+      Navigator.byItem.exitKeyboard().then(
+          () => Navigator.byItem.enterKeyboard());
     }
 
     return false;

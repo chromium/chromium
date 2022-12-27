@@ -30,12 +30,11 @@ import {SAConstants} from './switch_access_constants.js';
 import {SwitchAccessPredicate} from './switch_access_predicate.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const EventType = chrome.automation.EventType;
 
 /** This class handles navigation amongst the elements onscreen. */
 export class ItemScanManager extends ItemNavigatorInterface {
-  /**
-   * @param {!AutomationNode} desktop
-   */
+  /** @param {!AutomationNode} desktop */
   constructor(desktop) {
     super();
 
@@ -107,7 +106,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
   }
 
   /** @override */
-  exitKeyboard() {
+  async exitKeyboard() {
     this.ignoreFocusInKeyboard_ = false;
     const isKeyboard = data => data.group instanceof KeyboardRootNode;
     // If we are not in the keyboard, do nothing.
@@ -124,15 +123,15 @@ export class ItemScanManager extends ItemNavigatorInterface {
       this.exitGroup_();
     }
 
-    chrome.automation.getFocus(focus => {
-      // First, try to move back to the focused node.
-      if (focus) {
-        this.moveTo_(focus);
-      } else {
-        // Otherwise, move to anything that's valid based on the above history.
-        this.moveToValidNode();
-      }
-    });
+    const focus =
+        await new Promise(resolve => chrome.automation.getFocus(resolve));
+    // First, try to move back to the focused node.
+    if (focus) {
+      this.moveTo_(focus);
+    } else {
+      // Otherwise, move to anything that's valid based on the above history.
+      this.moveToValidNode();
+    }
   }
 
   /** @override */
@@ -186,7 +185,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
   }
 
   /** @override */
-  tryMoving(node, getNext, startingNode) {
+  async tryMoving(node, getNext, startingNode) {
     if (node === startingNode) {
       // This should only happen if the desktop contains exactly one interesting
       // child and all other children are windows which are occluded.
@@ -214,15 +213,16 @@ export class ItemScanManager extends ItemNavigatorInterface {
     // Check if the top center is visible as a proxy for occlusion. It's
     // possible that other parts of the window are occluded, but in Chrome we
     // can't drag windows off the top of the screen.
-    this.desktop_.hitTestWithReply(center.x, location.top, hitNode => {
-      if (AutomationUtil.isDescendantOf(hitNode, node.automationNode)) {
-        this.setNode_(node);
-      } else if (node.isValidAndVisible()) {
-        this.tryMoving(getNext(node), getNext, startingNode);
-      } else {
-        this.moveToValidNode();
-      }
-    });
+    const hitNode = await new Promise(
+        resolve =>
+            this.desktop_.hitTestWithReply(center.x, location.top, resolve));
+    if (AutomationUtil.isDescendantOf(hitNode, node.automationNode)) {
+      this.setNode_(node);
+    } else if (node.isValidAndVisible()) {
+      this.tryMoving(getNext(node), getNext, startingNode);
+    } else {
+      this.moveToValidNode();
+    }
   }
 
   /** @override */
@@ -259,9 +259,8 @@ export class ItemScanManager extends ItemNavigatorInterface {
   restart() {
     const point = Navigator.byPoint.currentPoint;
     SwitchAccess.mode = SAConstants.Mode.ITEM_SCAN;
-    this.desktop_.hitTestWithReply(point.x, point.y, node => {
-      this.moveTo_(node);
-    });
+    this.desktop_.hitTestWithReply(
+        point.x, point.y, node => this.moveTo_(node));
   }
 
   /** @override */
@@ -400,23 +399,20 @@ export class ItemScanManager extends ItemNavigatorInterface {
     });
 
     new RepeatedEventHandler(
-        this.desktop_, chrome.automation.EventType.FOCUS,
-        event => this.onFocusChange_(event));
+        this.desktop_, EventType.FOCUS, event => this.onFocusChange_(event));
 
     // ARC++ fires SCROLL_POSITION_CHANGED.
     new RepeatedEventHandler(
-        this.desktop_, chrome.automation.EventType.SCROLL_POSITION_CHANGED,
+        this.desktop_, EventType.SCROLL_POSITION_CHANGED,
         () => this.onScrollChange_());
 
     // Web and Views use AXEventGenerator, which fires
     // separate horizontal and vertical events.
     new RepeatedEventHandler(
-        this.desktop_,
-        chrome.automation.EventType.SCROLL_HORIZONTAL_POSITION_CHANGED,
+        this.desktop_, EventType.SCROLL_HORIZONTAL_POSITION_CHANGED,
         () => this.onScrollChange_());
     new RepeatedEventHandler(
-        this.desktop_,
-        chrome.automation.EventType.SCROLL_VERTICAL_POSITION_CHANGED,
+        this.desktop_, EventType.SCROLL_VERTICAL_POSITION_CHANGED,
         () => this.onScrollChange_());
 
     new RepeatedTreeChangeHandler(
@@ -429,11 +425,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
 
     // The status tray fires a SHOW event when it opens.
     new EventHandler(
-        this.desktop_,
-        [
-          chrome.automation.EventType.MENU_START,
-          chrome.automation.EventType.SHOW,
-        ],
+        this.desktop_, [EventType.MENU_START, EventType.SHOW],
         event => this.onModalDialog_(event))
         .start();
   }
@@ -471,7 +463,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
   }
 
   /**
-   * Restores the most proximal state from the history.
+   * Restores the most proximal state that is still valid from the history.
    * @private
    */
   restoreFromHistory_() {
@@ -491,11 +483,10 @@ export class ItemScanManager extends ItemNavigatorInterface {
 
     // |data.focus| may not be a child of |data.group| anymore since
     // |data.group| updates when retrieving the history record. So |data.focus|
-    // should not be used as the preferred focus node.
-    const groupChildren = data.group.children;
-    var focusTarget = null;
-    for (var index = 0; index < groupChildren.length; ++index) {
-      const child = groupChildren[index];
+    // should not be used as the preferred focus node. Instead, we should find
+    // the equivalent node in the group's children.
+    let focusTarget = null;
+    for (const child of data.group.children) {
       if (child.isEquivalentTo(data.focus)) {
         focusTarget = child;
         break;
