@@ -42,16 +42,6 @@ constexpr std::array<MetadataWriter::UMAFeature, 2> kShoppingUserUMAFeatures = {
     MetadataWriter::UMAFeature::FromUserAction(
         "Autofill_PolledCreditCardSuggestions",
         7)};
-
-std::unique_ptr<ModelProvider> GetShoppingUserDefaultModel() {
-  if (!base::GetFieldTrialParamByFeatureAsBool(
-          features::kShoppingUserSegmentFeature, kDefaultModelEnabledParam,
-          true)) {
-    return nullptr;
-  }
-  return std::make_unique<ShoppingUserModel>();
-}
-
 }  // namespace
 
 // static
@@ -64,17 +54,11 @@ std::unique_ptr<Config> ShoppingUserModel::GetConfig() {
   config->segmentation_uma_name = kShoppingUserUmaName;
   config->AddSegmentId(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER,
-      GetShoppingUserDefaultModel());
+      std::make_unique<ShoppingUserModel>());
   config->segment_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kShoppingUserSegmentFeature,
-          kVariationsParamNameSegmentSelectionTTLDays,
-          kShoppingUserDefaultSelectionTTLDays));
+      base::Days(kShoppingUserDefaultSelectionTTLDays);
   config->unknown_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kShoppingUserSegmentFeature,
-          kVariationsParamNameUnknownSelectionTTLDays,
-          kShoppingUserDefaultUnknownSelectionTTLDays));
+      base::Days(kShoppingUserDefaultUnknownSelectionTTLDays);
   config->is_boolean_segment = true;
   return config;
 }
