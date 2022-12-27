@@ -254,6 +254,10 @@ void RecordTabGridCloseTabsCount(int count) {
   std::unique_ptr<
       base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>>
       _scopedWebStateObservation;
+
+  // ItemID of the dragged tab. Used to check if the dropped tab is from the
+  // same Chrome window.
+  NSString* _dragItemID;
 }
 
 - (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer {
@@ -866,8 +870,13 @@ void RecordTabGridCloseTabsCount(int count) {
 #pragma mark - TabCollectionDragDropHandler
 
 - (UIDragItem*)dragItemForItemWithID:(NSString*)itemID {
+  _dragItemID = itemID;
   web::WebState* webState = GetWebStateWithId(self.browserState, itemID);
   return CreateTabDragItem(webState);
+}
+
+- (void)dragSessionDidEnd {
+  _dragItemID = nil;
 }
 
 - (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session {
@@ -878,9 +887,11 @@ void RecordTabGridCloseTabsCount(int count) {
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
-    // If the tab has been removed, cancel the drop operation.
-    if (GetIndexOfTabWithId(self.webStateList, tabInfo.tabID) ==
-        WebStateList::kInvalidIndex) {
+    // If the dropped tab is from the same Chrome window and has been removed,
+    // cancel the drop operation.
+    if (_dragItemID == tabInfo.tabID &&
+        GetIndexOfTabWithId(self.webStateList, tabInfo.tabID) ==
+            WebStateList::kInvalidIndex) {
       return UIDropOperationCancel;
     }
     if (self.browserState->IsOffTheRecord() && tabInfo.incognito) {
