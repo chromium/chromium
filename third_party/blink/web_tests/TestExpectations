@@ -2959,7 +2959,6 @@ crbug.com/958381 external/wpt/css/CSS2/tables/table-anonymous-objects-202.xht [ 
 crbug.com/958381 external/wpt/css/CSS2/tables/table-anonymous-objects-203.xht [ Crash Failure Pass Timeout ]
 crbug.com/958381 external/wpt/css/CSS2/tables/table-anonymous-objects-204.xht [ Crash Failure Pass Timeout ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/anonymous-table-box-width-001.xht [ Failure ]
-crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-196.xht [ Failure ]
 
 # Custom-elements
 crbug.com/1351482 external/wpt/custom-elements/form-associated/ElementInternals-target-element-is-held-strongly.html [ Timeout ]
@@ -3136,7 +3135,6 @@ crbug.com/626703 [ Linux ] external/wpt/webxr/xrWebGLLayer_viewports.https.html 
 crbug.com/626703 [ Linux ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/abort-signal-remove/external/wpt/web-nfc/NDEFReader_make-read-only.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/abort-signal-remove/external/wpt/web-nfc/NDEFReader_scan.https.html [ Timeout ]
-crbug.com/626703 [ Linux ] virtual/abort-signal-remove/external/wpt/web-nfc/NDEFReader_write.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/forms/file/file-input-webkitdirectory-key-enter-prevent-keypress.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/storage/quota/partitioned-webkitStorageInfo-persistent-quota-usage-details.tentative.sub.html [ Timeout ]
@@ -4386,7 +4384,6 @@ crbug.com/1025123 external/wpt/longtask-timing/longtask-in-sibling-iframe-crosso
 crbug.com/977033 http/tests/priorities/resource-load-priorities-media-preload.html [ Timeout ]
 
 # Sheriff 2019-11-26
-crbug.com/1028684 http/tests/inspector-protocol/animation/animation-release.js [ Failure Pass ]
 
 # Sheriff 2019-11-29
 crbug.com/1019079 fast/canvas/OffscreenCanvas-placeholder-createImageBitmap.html [ Failure Pass ]
@@ -4695,7 +4692,6 @@ crbug.com/1105274 http/tests/devtools/tracing/timeline-js/timeline-js-line-level
 crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
 
 # Sheriff 2020-07-20
-crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Failure Pass ]
 crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass ]
 crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
 
@@ -5037,7 +5033,6 @@ crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects
 crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
 
 # Fix to unblock wpt-importer
-crbug.com/1209223 [ Mac ] external/wpt/url/a-element.html [ Pass Timeout ]
 crbug.com/1209223 external/wpt/url/url-constructor.any.worker.html [ Pass Timeout ]
 
 # Sheriff 2021-05-17
@@ -5752,7 +5747,6 @@ crbug.com/1288264 [ Win ] http/tests/security/aboutBlank/xss-DENIED-navigate-ope
 
 # Flakiness of WIP MediaStreamTrack on workers.
 crbug.com/1290767 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-pipes-data-in-worker.https.html [ Crash Pass ]
-crbug.com/1291850 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-in-service-worker.https.html [ Crash Pass ]
 
 # Temporarily disable tests to land branded types related changes.
 crbug.com/1253323 http/tests/devtools/sources/debugger/navigator-view.js [ Crash Failure Pass Timeout ]
@@ -6315,7 +6309,6 @@ crbug.com/1370307 external/wpt/encoding-detection/zh-GBK-late.tentative.html [ F
 
 # Disable top flakes trigger step failure on builders
 crbug.com/1371157 [ Debug Linux ] external/wpt/accessibility/crashtests/delayed-ignored-change.html [ Timeout ]
-crbug.com/1371125 [ Mac10.14 ] external/wpt/webxr/ar-module/xrSession_interactionMode.https.html [ Timeout ]
 crbug.com/1377004 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Timeout ]
 crbug.com/1194961 [ Debug Linux ] fast/events/touch/gesture/touch-gesture-fling-with-page-scale.html [ Failure Pass ]
 crbug.com/1380069 [ Mac10.15 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
