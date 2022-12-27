@@ -14,6 +14,10 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -22,11 +26,35 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Contains the logic for the TouchToFillCreditCard component. It sets the state of the model and
  * reacts to events like clicks.
  */
 class TouchToFillCreditCardMediator {
+    /**
+     * The final outcome that closes the Touch To Fill sheet.
+     *
+     * Entries should not be renumbered and numeric values should never be reused. Needs to stay
+     * in sync with TouchToFill.CreditCard.Outcome in enums.xml.
+     */
+    @IntDef({TouchToFillCreditCardOutcome.CREDIT_CARD, TouchToFillCreditCardOutcome.VIRTUAL_CARD,
+            TouchToFillCreditCardOutcome.MANAGE_PAYMENTS,
+            TouchToFillCreditCardOutcome.SCAN_NEW_CARD, TouchToFillCreditCardOutcome.DISMISS})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface TouchToFillCreditCardOutcome {
+        int CREDIT_CARD = 0;
+        int VIRTUAL_CARD = 1;
+        int MANAGE_PAYMENTS = 2;
+        int SCAN_NEW_CARD = 3;
+        int DISMISS = 4;
+        int MAX_VALUE = DISMISS;
+    }
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_OUTCOME_HISTOGRAM = "Autofill.TouchToFill.CreditCard.Outcome";
+
     // TODO(crbug/1383487): Remove the Context from the Mediator.
     private Context mContext;
     private TouchToFillCreditCardComponent.Delegate mDelegate;
@@ -71,18 +99,32 @@ class TouchToFillCreditCardMediator {
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
         mModel.set(VISIBLE, false);
         mDelegate.onDismissed();
+        if (reason == StateChangeReason.SWIPE) {
+            RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
+                    TouchToFillCreditCardOutcome.DISMISS,
+                    TouchToFillCreditCardOutcome.MAX_VALUE + 1);
+        }
     }
 
     public void scanCreditCard() {
         mDelegate.scanCreditCard();
+        RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
+                TouchToFillCreditCardOutcome.SCAN_NEW_CARD,
+                TouchToFillCreditCardOutcome.MAX_VALUE + 1);
     }
 
     public void showCreditCardSettings() {
         mDelegate.showCreditCardSettings();
+        RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
+                TouchToFillCreditCardOutcome.MANAGE_PAYMENTS,
+                TouchToFillCreditCardOutcome.MAX_VALUE + 1);
     }
 
     public void onSelectedCreditCard(String uniqueId) {
         mDelegate.suggestionSelected(uniqueId);
+        RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
+                TouchToFillCreditCardOutcome.CREDIT_CARD,
+                TouchToFillCreditCardOutcome.MAX_VALUE + 1);
     }
 
     private PropertyModel createCardModel(CreditCard card) {

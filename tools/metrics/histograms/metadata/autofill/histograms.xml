@@ -4013,6 +4013,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.TouchToFill.CreditCard.Outcome"
+    enum="TouchToFill.CreditCard.Outcome" expires_after="2023-06-01">
+  <owner>atsvirhckova@google.com</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the outcome with which the bottom sheet was closed: credit card
+    selected, virtual card selected, go to payment settings, scan new credit
+    card or dismissed with no action. The metric is recorded right after user
+    has done the action: the credit card selection or some other option (which
+    always leads to the bottom sheet being closed) or swiped the sheet to close
+    it. See the TouchToFillCreditCardMediator.java for details.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.TranslatedPageLanguage" enum="LanguageName"
     expires_after="2023-12-12">
   <owner>koerber@google.com</owner>
