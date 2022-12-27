@@ -543,6 +543,11 @@ crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/f
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/framebufferblit/conversion_31.html [ Failure ]
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/instancedrendering.html [ Failure ]
 
+# Mac ASAN
+crbug.com/1403824 [ mac asan passthrough ] deqp/functional/gles3/vertexarrays/multiple_attributes.stride.html [ RetryOnFailure ]
+crbug.com/1403824 [ mac asan passthrough ] deqp/functional/gles3/vertexarrays/single_attribute.first.html [ RetryOnFailure ]
+crbug.com/1403824 [ mac asan passthrough ] deqp/functional/gles3/vertexarrays/single_attribute.usage.stream_copy.html [ RetryOnFailure ]
+crbug.com/1403830 [ mac asan passthrough ] deqp/data/gles3/shaders/declarations.html [ RetryOnFailure ]
 
 ####################
 # Linux failures   #
