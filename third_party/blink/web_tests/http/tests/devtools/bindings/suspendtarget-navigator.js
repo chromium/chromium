@@ -14,9 +14,13 @@
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 
   TestRunner.markStep('attachFramesAndWaitForSourceMaps');
+  await BindingsTestRunner.attachFrame('frame1', './resources/sourcemap-frame.html', '_test_create-iframe1.js'),
   await Promise.all([
-    BindingsTestRunner.attachFrame('frame1', './resources/sourcemap-frame.html', '_test_create-iframe1.js'),
-    BindingsTestRunner.attachFrame('frame2', './resources/sourcemap-frame.html', '_test_create-iframe2.js'),
+    BindingsTestRunner.waitForSourceMap('sourcemap-script.js.map'),
+    BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map'),
+  ]);
+  await BindingsTestRunner.attachFrame('frame2', './resources/sourcemap-frame.html', '_test_create-iframe2.js'),
+  await Promise.all([
     BindingsTestRunner.waitForSourceMap('sourcemap-script.js.map'),
     BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map'),
   ]);
@@ -33,8 +37,9 @@
 
   TestRunner.markStep('Resuming targets.');
   await Promise.all([
-    SDK.targetManager.resumeAllTargets(), BindingsTestRunner.waitForSourceMap('sourcemap-script.js.map'),
-    BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map')
+    SDK.targetManager.resumeAllTargets(),
+    BindingsTestRunner.waitForSourceMap('sourcemap-script.js.map'),
+    BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map'),
   ]);
 
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
