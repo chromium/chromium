@@ -1951,6 +1951,7 @@ crbug.com/1172023 external/wpt/html/rendering/non-replaced-elements/tables/table
 crbug.com/1172023 external/wpt/html/rendering/non-replaced-elements/tables/table-border-3q.html [ Failure ]
 crbug.com/962936 external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
 crbug.com/962936 external/wpt/html/rendering/widgets/button-layout/inline-level.html [ Failure ]
+crbug.com/1403735 external/wpt/html/rendering/widgets/the-select-element/option-add-label-quirks.html [ Failure ]
 crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1i.html [ Failure ]
 crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1j.html [ Failure ]
 crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1k.html [ Failure ]
@@ -2986,8 +2987,6 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Win10.20h2 ] external/wpt/web-animations/idlharness.window.html [ Crash Failure ]
-crbug.com/626703 external/wpt/html/rendering/widgets/the-select-element/option-add-label-quirks.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/performance-timeline/tentative/include-frames-from-child-cross-origin-grandchild.sub.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/url/a-element-xhtml.xhtml?exclude=(file|javascript|mailto) [ Crash Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Crash Failure ]
@@ -6336,6 +6335,7 @@ crbug.com/1395412 [ Mac10.15 ] virtual/partitioned-cookies/http/tests/inspector-
 crbug.com/1395409 [ Mac ] inspector-protocol/overlay/overlay-viewport.js [ Failure ]
 crbug.com/1395409 [ Win ] inspector-protocol/overlay/overlay-viewport.js [ Failure ]
 crbug.com/1396422 [ Mac11-arm64 ] inspector-protocol/css/css-get-media-queries.js [ Failure ]
+crbug.com/1403736 [ Mac11-arm64 ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.tentative.html [ Timeout ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
