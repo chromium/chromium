@@ -195,4 +195,16 @@ void RemoveFederatedSiteSettingsData(
       pattern_predicate);
 }
 
+int GetUniqueHostCount(
+    const browsing_data::LocalSharedObjectsContainer& local_shared_objects,
+    const BrowsingDataModel& browsing_data_model) {
+  std::set<std::string> unique_hosts = local_shared_objects.GetHosts();
+
+  for (auto entry : browsing_data_model) {
+    unique_hosts.insert(entry.primary_host.get());
+  }
+
+  return unique_hosts.size();
+}
+
 }  // namespace browsing_data

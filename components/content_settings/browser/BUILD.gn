@@ -45,6 +45,7 @@ source_set("unit_tests") {
     ":browser",
     ":test_support",
     "//base",
+    "//components/browsing_data/content:content",
     "//components/content_settings/core/browser",
     "//components/security_state/core",
     "//components/services/storage/public/cpp",

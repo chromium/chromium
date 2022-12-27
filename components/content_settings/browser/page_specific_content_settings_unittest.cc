@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -587,6 +588,44 @@ TEST_F(PageSpecificContentSettingsTest,
       ContentSettingsType::CLIPBOARD_READ_WRITE));
   EXPECT_FALSE(content_settings->IsContentAllowed(
       ContentSettingsType::CLIPBOARD_READ_WRITE));
+}
+
+TEST_F(PageSpecificContentSettingsTest, AllowedSitesCountedFromBothModels) {
+  // Populate containers with hosts.
+  bool blocked_by_policy = false;
+  auto googleURL = GURL("http://google.com");
+  auto exampleURL = GURL("https://example.com");
+  auto cookie1 = net::CanonicalCookie::Create(
+      googleURL, "k1=v", base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
+  auto cookie2 = net::CanonicalCookie::Create(
+      exampleURL, "k2=v", base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
+  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
+                                 {content::CookieAccessDetails::Type::kRead,
+                                  googleURL,
+                                  googleURL,
+                                  {*cookie1},
+                                  blocked_by_policy});
+  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
+                                 {content::CookieAccessDetails::Type::kRead,
+                                  exampleURL,
+                                  exampleURL,
+                                  {*cookie2},
+                                  blocked_by_policy});
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  auto* allowed_browsing_data_model = pscs->allowed_browsing_data_model();
+  allowed_browsing_data_model->AddBrowsingData(
+      url::Origin::Create(exampleURL),
+      BrowsingDataModel::StorageType::kTrustTokens, /*storage_size=*/0);
+
+  // Verify the size is counted without duplication of hosts.
+  EXPECT_EQ(
+      2, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
+                                           *allowed_browsing_data_model));
 }
 
 class PageSpecificContentSettingsWithPrerenderTest

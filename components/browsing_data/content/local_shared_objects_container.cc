@@ -122,6 +122,16 @@ size_t LocalSharedObjectsContainer::GetHostCount() const {
   return hosts.size();
 }
 
+std::set<std::string> LocalSharedObjectsContainer::GetHosts() const {
+  auto origins = GetObjectCountPerOriginMap();
+  std::set<std::string> hosts;
+  for (auto host : origins) {
+    hosts.insert(host.first.host());
+  }
+
+  return hosts;
+}
+
 std::map<url::Origin, int>
 LocalSharedObjectsContainer::GetObjectCountPerOriginMap() const {
   std::map<url::Origin, int> origins;

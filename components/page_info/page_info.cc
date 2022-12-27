@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/browser_ui/util/android/url_constants.h"
+#include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
@@ -1483,7 +1484,9 @@ int PageInfo::GetSitesWithAllowedCookiesAccessCount() {
   auto* settings = GetPageSpecificContentSettings();
   if (!settings)
     return 0;
-  return settings->allowed_local_shared_objects().GetHostCount();
+  return browsing_data::GetUniqueHostCount(
+      settings->allowed_local_shared_objects(),
+      *(settings->allowed_browsing_data_model()));
 }
 
 int PageInfo::GetThirdPartySitesWithBlockedCookiesAccessCount(

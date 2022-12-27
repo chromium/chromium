@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 #include "base/memory/ref_counted.h"
 #include "components/browsing_data/content/cookie_helper.h"
@@ -59,6 +60,9 @@ class LocalSharedObjectsContainer {
 
   // Returns the number of unique sites in the container.
   size_t GetHostCount() const;
+
+  // Returns the set of unique hosts in the container.
+  std::set<std::string> GetHosts() const;
 
   // Returns the number of unique sites for the given |registrable_domain|.
   size_t GetHostCountForDomain(const GURL& registrable_domain) const;
