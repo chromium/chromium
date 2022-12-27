@@ -3155,6 +3155,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Extensions.WebRequest.BeforeRequestDeclarativeNetRequestEvaluationTimeInMicroseconds"
+    units="microseconds" expires_after="2023-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>src/extensions/OWNERS</owner>
+  <summary>
+    The total amount of time taken to evaluate declarativeNetRequest rules in
+    the onBeforeRequest stage, measured in microseconds. Recorded once per
+    request if and only if at least one declarativeNetRequest rule is present.
+    This is only emitted for users with high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.WebRequest.BeforeRequestListenerEvaluationTime.{HandlerTypes}"
     units="ms" expires_after="2023-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -3164,6 +3177,25 @@ chromium-metrics-reviews@google.com.
     dispatched to webRequest listeners and when all responses are received and
     handled for an onBeforeRequest event. Emitted when there are {HandlerTypes}
     for the request. Recorded once per request if the request completes.
+  </summary>
+  <token key="HandlerTypes">
+    <variant name="WebRequestAndDeclarativeNetRequest"
+        summary="both webRequest listeners and declarativeNetRequest rules"/>
+    <variant name="WebRequestOnly" summary="only webRequest listeners"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Extensions.WebRequest.BeforeRequestListenerEvaluationTimeInMicroseconds.{HandlerTypes}"
+    units="microseconds" expires_after="2023-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>src/extensions/OWNERS</owner>
+  <summary>
+    The total amount of time, measured in milliseconds, between when an event is
+    dispatched to webRequest listeners and when all responses are received and
+    handled for an onBeforeRequest event. Emitted when there are {HandlerTypes}
+    for the request. Recorded once per request if the request completes. This is
+    only emitted for users with high resolution clocks.
   </summary>
   <token key="HandlerTypes">
     <variant name="WebRequestAndDeclarativeNetRequest"

@@ -108,6 +108,8 @@ void ExtensionWebRequestTimeTracker::AnalyzeLogRequest(
     UMA_HISTOGRAM_PERCENTAGE("Extensions.NetworkDelayPercentage", percentage);
   }
 
+  constexpr int kBucketCount = 50;
+
   // Record the time spent in listeners in onBeforeRequest. Only do this if
   // we have a time for both the dispatch and completion time (we may not,
   // if the request were canceled).
@@ -125,11 +127,23 @@ void ExtensionWebRequestTimeTracker::AnalyzeLogRequest(
           "Extensions.WebRequest.BeforeRequestListenerEvaluationTime."
           "WebRequestOnly",
           listener_time);
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Extensions.WebRequest."
+          "BeforeRequestListenerEvaluationTimeInMicroseconds"
+          "WebRequestOnly",
+          listener_time, base::Microseconds(1), base::Seconds(30),
+          kBucketCount);
     } else {  // Both webRequest and DNR handlers.
       UMA_HISTOGRAM_TIMES(
           "Extensions.WebRequest.BeforeRequestListenerEvaluationTime."
           "WebRequestAndDeclarativeNetRequest",
           listener_time);
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Extensions.WebRequest."
+          "BeforeRequestListenerEvaluationTimeInMicroseconds"
+          "WebRequestAndDeclarativeNetRequest",
+          listener_time, base::Microseconds(1), base::Seconds(30),
+          kBucketCount);
     }
   }
 
@@ -139,14 +153,21 @@ void ExtensionWebRequestTimeTracker::AnalyzeLogRequest(
     // start time. (The inverse is not true, since we only log completion time
     // if there was at least one relevant action.)
     DCHECK(!log.before_request_dnr_start_time.is_null());
+
+    base::TimeDelta elapsed_time = log.before_request_dnr_completion_time -
+                                   log.before_request_dnr_start_time;
+
     // DeclarativeNetRequest handlers also aren't really affected by webRequest
     // listeners, so no need to split up the time depending on whether there
     // were webRequest listeners.
     UMA_HISTOGRAM_TIMES(
         "Extensions.WebRequest."
         "BeforeRequestDeclarativeNetRequestEvaluationTime",
-        log.before_request_dnr_completion_time -
-            log.before_request_dnr_start_time);
+        elapsed_time);
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.WebRequest."
+        "BeforeRequestDeclarativeNetRequestEvaluationTimeInMicroseconds",
+        elapsed_time, base::Microseconds(1), base::Seconds(30), kBucketCount);
   }
 }
 
