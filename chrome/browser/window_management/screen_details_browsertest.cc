@@ -95,8 +95,7 @@ IN_PROC_BROWSER_TEST_P(ScreenDetailsFullscreenScreenSizeTest, FullscreenSize) {
   )JS";
   ASSERT_TRUE(EvalJs(tab, kEnterFullscreenScript).ExtractBool());
   ASSERT_TRUE(tab->IsFullscreen());
-  DevToolsWindow* dev_tools_window =
-      DevToolsWindowTesting::OpenDevToolsWindowSync(tab, true);
+  DevToolsWindowTesting::OpenDevToolsWindowSync(tab, true);
   ASSERT_TRUE(tab->IsFullscreen());
   if (FullscreenScreenSizeMatchesDisplayEnabled()) {
     // `window.screen` dimensions match the display size.
@@ -108,9 +107,7 @@ IN_PROC_BROWSER_TEST_P(ScreenDetailsFullscreenScreenSizeTest, FullscreenSize) {
   EXPECT_NE(display_size, EvalJs(tab, "`${innerWidth}x${innerHeight}`"));
   EXPECT_EQ(display_size, EvalJs(tab, kGetCurrentScreenSizeScript));
 
-  // Check dimensions again after closing dev tools and exiting fullscreen.
-  // Wait for a window `resize` event to propagate from the browser process.
-  DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
+  // Check dimensions again after exiting fullscreen and getting a `resize`.
   constexpr char kExitFullscreenAndResizeScript[] = R"JS(
     Promise.all([ document.exitFullscreen(),
                   new Promise(r => { window.onresize = r; })
