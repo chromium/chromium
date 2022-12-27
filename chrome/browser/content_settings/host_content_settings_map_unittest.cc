@@ -1902,10 +1902,6 @@ TEST_F(HostContentSettingsMapTest, MixedScopeSettings) {
   // It can be replaced with any other type if required.
   const ContentSettingsType persistent_type =
       ContentSettingsType::STORAGE_ACCESS;
-  EXPECT_EQ(content_settings::ContentSettingsInfo::PERSISTENT,
-            content_settings::ContentSettingsRegistry::GetInstance()
-                ->Get(persistent_type)
-                ->storage_behavior());
 
   const GURL example_url1("https://example.com");
   const GURL example_url2("https://other_site.example");
@@ -1964,10 +1960,6 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithSessionModel) {
   // It can be replaced with any other type if required.
   const ContentSettingsType persistent_type =
       ContentSettingsType::STORAGE_ACCESS;
-  EXPECT_EQ(content_settings::ContentSettingsInfo::PERSISTENT,
-            content_settings::ContentSettingsRegistry::GetInstance()
-                ->Get(persistent_type)
-                ->storage_behavior());
 
   const GURL example_url1("https://example.com");
   const GURL example_url2("https://other_site.example");
@@ -2035,10 +2027,6 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
   // It can be replaced with any other type if required.
   const ContentSettingsType persistent_type =
       ContentSettingsType::STORAGE_ACCESS;
-  EXPECT_EQ(content_settings::ContentSettingsInfo::PERSISTENT,
-            content_settings::ContentSettingsRegistry::GetInstance()
-                ->Get(persistent_type)
-                ->storage_behavior());
 
   const GURL example_url1("https://example.com");
   const GURL example_url2("https://other_site.example");

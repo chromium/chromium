@@ -143,24 +143,15 @@ PrefProvider::PrefProvider(PrefService* prefs,
 
   pref_change_registrar_.Init(prefs_);
 
-  ContentSettingsRegistry* content_settings =
-      ContentSettingsRegistry::GetInstance();
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings) {
-    const ContentSettingsInfo* content_type_info =
-        content_settings->Get(info->type());
-    // If it's not a content setting, or it's persistent, handle it in this
-    // class.
-    if (!content_type_info || content_type_info->storage_behavior() ==
-                                  ContentSettingsInfo::PERSISTENT) {
-      content_settings_prefs_.insert(std::make_pair(
-          info->type(), std::make_unique<ContentSettingsPref>(
-                            info->type(), prefs_, &pref_change_registrar_,
-                            info->pref_name(), off_the_record_, restore_session,
-                            base::BindRepeating(&PrefProvider::Notify,
-                                                base::Unretained(this)))));
-    }
+    content_settings_prefs_.insert(std::make_pair(
+        info->type(), std::make_unique<ContentSettingsPref>(
+                          info->type(), prefs_, &pref_change_registrar_,
+                          info->pref_name(), off_the_record_, restore_session,
+                          base::BindRepeating(&PrefProvider::Notify,
+                                              base::Unretained(this)))));
   }
 
   size_t num_exceptions = 0;
