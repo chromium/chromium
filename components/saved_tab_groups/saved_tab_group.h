@@ -88,7 +88,10 @@ class SavedTabGroup {
   SavedTabGroup& AddTab(size_t index, SavedTabGroupTab tab);
   // Removes the tab denoted by `tab_id` from `saved_tabs_`. This function will
   // remove the last tab: crbug/1371959.
-  SavedTabGroup& RemoveTab(const base::GUID& saved_tab_guid);
+  SavedTabGroup& RemoveTab(const base::GUID& tab_id);
+  // Updates the tab with with `tab_id` tab.guid() with a value of `tab`. If
+  // there is no tab, this function will CHECK.
+  SavedTabGroup& UpdateTab(SavedTabGroupTab tab);
   // Replaces that tab denoted by `tab_id` with value of `tab` unless the
   // replacement tab already exists. In this case we CHECK.
   SavedTabGroup& ReplaceTabAt(const base::GUID& saved_tab_guid,

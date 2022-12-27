@@ -141,9 +141,20 @@ SavedTabGroup& SavedTabGroup::RemoveTab(const base::GUID& saved_tab_guid) {
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::ReplaceTabAt(const base::GUID& saved_tab_guid,
+SavedTabGroup& SavedTabGroup::UpdateTab(SavedTabGroupTab tab) {
+  absl::optional<size_t> index = GetIndexOfTab(tab.saved_tab_guid());
+  CHECK(index.has_value());
+  CHECK_GE(index.value(), 0u);
+  CHECK_LT(index.value(), saved_tabs_.size());
+  saved_tabs_.erase(saved_tabs_.begin() + index.value());
+  saved_tabs_.insert(saved_tabs_.begin() + index.value(), std::move(tab));
+  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  return *this;
+}
+
+SavedTabGroup& SavedTabGroup::ReplaceTabAt(const base::GUID& tab_id,
                                            SavedTabGroupTab tab) {
-  absl::optional<size_t> index = GetIndexOfTab(saved_tab_guid);
+  absl::optional<size_t> index = GetIndexOfTab(tab_id);
   CHECK(index.has_value());
   CHECK_GE(index.value(), 0u);
   CHECK_LT(index.value(), saved_tabs_.size());

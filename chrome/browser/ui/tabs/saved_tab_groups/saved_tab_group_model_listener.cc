@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -16,6 +17,36 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
+
+SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
+    content::WebContents* web_contents,
+    base::Token token,
+    SavedTabGroupModel* model)
+    : token_(token), web_contents_(web_contents), model_(model) {
+  Observe(web_contents_);
+}
+
+void SavedTabGroupWebContentsListener::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  ui::PageTransition page_transition = navigation_handle->GetPageTransition();
+  if (!ui::IsValidPageTransitionType(page_transition) ||
+      ui::PageTransitionIsRedirect(page_transition) ||
+      !ui::PageTransitionIsMainFrame(page_transition)) {
+    return;
+  }
+
+  SavedTabGroup* group = model_->GetGroupContainingTab(token_);
+  if (!group) {
+    return;
+  }
+
+  SavedTabGroupTab* tab = group->GetTab(token_);
+  tab->SetTitle(web_contents_->GetTitle());
+  tab->SetURL(web_contents_->GetURL());
+  tab->SetFavicon(favicon::TabFaviconFromWebContents(web_contents_));
+  model_->UpdateTabInGroup(group->saved_guid(), *tab);
+}
 
 // TODO(crbug/1376259): Update SavedTabGroupModel state with any groups that
 // should be in the SavedTabGroupModel.
@@ -40,9 +71,11 @@ bool SavedTabGroupBrowserListener::ContainsTabGroup(
 base::Token SavedTabGroupBrowserListener::TrackWebContents(
     content::WebContents* web_contents) {
   if (web_contents_to_tab_id_map_.count(web_contents) == 0) {
-    web_contents_to_tab_id_map_[web_contents] = base::Token::CreateRandom();
+    web_contents_to_tab_id_map_.try_emplace(
+        web_contents, web_contents, base::Token::CreateRandom(), model_);
   }
-  return web_contents_to_tab_id_map_[web_contents];
+
+  return web_contents_to_tab_id_map_.at(web_contents).token();
 }
 
 void SavedTabGroupBrowserListener::OnTabGroupChanged(
@@ -85,7 +118,7 @@ void SavedTabGroupBrowserListener::TabGroupedStateChanged(
   // If the webcontents is already saved then its moving saved groups.
   if (web_contents_to_tab_id_map_.count(contents) > 0) {
     // Remove the tab from it's old group.
-    base::Token local_tab_id = web_contents_to_tab_id_map_[contents];
+    base::Token local_tab_id = web_contents_to_tab_id_map_.at(contents).token();
     SavedTabGroup* old_group = model_->GetGroupContainingTab(local_tab_id);
 
     // If the tab is tracked by has no old local group, then it is being created
@@ -138,7 +171,7 @@ void SavedTabGroupBrowserListener::TabGroupedStateChanged(
                         relative_index_of_tab_in_group);
 
   // save the contents in the mapping
-  web_contents_to_tab_id_map_[contents] = std::move(token);
+  web_contents_to_tab_id_map_.try_emplace(contents, contents, token, model_);
 }
 
 SavedTabGroupModelListener::SavedTabGroupModelListener() = default;

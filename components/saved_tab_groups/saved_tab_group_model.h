@@ -95,9 +95,12 @@ class SavedTabGroupModel {
                      SavedTabGroupTab tab,
                      int index);
 
-  // Removes saved tab `tab_id` in the specified group denoted by
-  // `group_id` if it exists. We delete the group instead if the last tab is
-  // removed from it.
+  // Calls the UpdateTab method on a group found by group id in the model.
+  // Calls the observer function SavedTabGroupUpdatedLocally.
+  void UpdateTabInGroup(const base::GUID& group_id, SavedTabGroupTab tab);
+
+  // Removes a saved tab from `index` in the specified group denoted by
+  // `group_id` if it exists.
   void RemoveTabFromGroup(const base::GUID& group_id, const base::GUID& tab_id);
 
   // Replaces a saved tab `tab_id` in the specified group denoted by

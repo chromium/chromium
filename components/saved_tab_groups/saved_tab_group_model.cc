@@ -234,6 +234,17 @@ void SavedTabGroupModel::AddTabToGroup(const base::GUID& group_id,
     observer.SavedTabGroupUpdatedLocally(group_id, tab_id);
 }
 
+void SavedTabGroupModel::UpdateTabInGroup(const base::GUID& group_id,
+                                          SavedTabGroupTab tab) {
+  absl::optional<int> group_index = GetIndexOf(group_id);
+  CHECK(group_index.has_value());
+  saved_tab_groups_[group_index.value()].UpdateTab(tab);
+
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedLocally(group_id);
+  }
+}
+
 void SavedTabGroupModel::RemoveTabFromGroup(const base::GUID& group_id,
                                             const base::GUID& tab_id) {
   if (!Contains(group_id))

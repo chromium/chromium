@@ -10,11 +10,32 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 
 class SavedTabGroupModel;
 class TabStripModel;
 class Profile;
+
+class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
+ public:
+  SavedTabGroupWebContentsListener(content::WebContents* web_contents,
+                                   base::Token token,
+                                   SavedTabGroupModel* model);
+
+  // content::WebContentsObserver
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+  base::Token token() { return token_; }
+  content::WebContents* web_contents() { return web_contents_; }
+
+ private:
+  base::Token token_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<SavedTabGroupModel> model_;
+};
 
 // Manages the listening state for each individual tabstrip.
 class SavedTabGroupBrowserListener : public TabStripModelObserver {
@@ -36,7 +57,7 @@ class SavedTabGroupBrowserListener : public TabStripModelObserver {
   SavedTabGroupModel* saved_tab_group_model() { return model_; }
 
  private:
-  std::unordered_map<content::WebContents*, base::Token>
+  std::unordered_map<content::WebContents*, SavedTabGroupWebContentsListener>
       web_contents_to_tab_id_map_;
   raw_ptr<Browser> browser_;
   raw_ptr<SavedTabGroupModel> model_;
