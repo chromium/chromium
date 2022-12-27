@@ -598,6 +598,7 @@ size_t NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
     network_view->UpdateViewForNetwork(network);
     network_detailed_network_view()->network_list()->ReorderChildView(
         network_view, index);
+    network_view->SetEnabled(!IsNetworkDisabled(network));
 
     // Only emit ethernet metric each time we show Ethernet section
     // for the first time. We use |has_reordered_a_network| to determine

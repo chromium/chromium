@@ -46,6 +46,16 @@ ASH_EXPORT void RecordNetworkTypeToggled(
 ASH_EXPORT absl::optional<std::u16string> GetPortalStateSubtext(
     const chromeos::network_config::mojom::PortalState& portal_state);
 
+// Returns true if current network row is disabled.
+ASH_EXPORT bool IsNetworkDisabled(
+    const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
+        network_properties);
+
+// Returns true if current network is a cellular network and is inhibited.
+ASH_EXPORT bool IsNetworkInhibited(
+    const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
+        network_properties);
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_UTILS_H_
