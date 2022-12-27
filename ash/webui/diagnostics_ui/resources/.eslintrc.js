@@ -5,6 +5,7 @@
 // Disable clang-format because it produces odd formatting.
 // clang-format off
 module.exports = {
+    'ignorePatterns': ['**/*.js'],
     'parserOptions': {
       'project': ['./tsconfig_base.json'],
     },
