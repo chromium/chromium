@@ -61,6 +61,9 @@ api::wm_desks_private::SavedDesk GetSavedDeskFromCrosApiSavedDesk(
 std::string GetStringError(crosapi::mojom::DeskCrosApiError result) {
   switch (result) {
     case crosapi::mojom::DeskCrosApiError::kStorageError:
+    // TODO(aprilzhou): Deprecate this enum and map it to kUnknownError after
+    // M114.
+    case crosapi::mojom::DeskCrosApiError::kDeprecatedStorageError:
       return "StorageError";
     case crosapi::mojom::DeskCrosApiError::kNoCurrentUserError:
       return "NoCurrentUserError";

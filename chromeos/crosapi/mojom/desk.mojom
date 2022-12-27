@@ -9,8 +9,10 @@ import "mojo/public/mojom/base/values.mojom";
 // Represents error code from ash desk feature implementation.
 [Stable, Extensible]
 enum DeskCrosApiError {
-  // Storage error.
-  kStorageError = 0,
+  // Deprecated. No do use for actual error since it's mapped to default
+  // value-0 by mistake. Treat it as unknown error. For storage error use
+  // kStorageError.
+  kDeprecatedStorageError = 0,
   // Therer is no active profile.
   kNoCurrentUserError,
   // Either the profile is not valid or there is not an active proflile.
@@ -25,6 +27,8 @@ enum DeskCrosApiError {
   kDesksCountCheckFailedError,
   // Unknown error.
   [Default]kUnknownError,
+  // Storage error.
+  [MinVersion=3]kStorageError,
 };
 
 [Stable, Extensible]
