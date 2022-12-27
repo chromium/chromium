@@ -46,6 +46,8 @@ const char kToolbarMenuActionsHistogram[] =
     "Mobile.ContextMenu.Toolbar.Actions";
 const char kOmniboxMostVisitedEntryActionsHistogram[] =
     "Mobile.ContextMenu.OmniboxMostVisitedEntry.Actions";
+const char kPinnedTabsEntryActionsHistogram[] =
+    "Mobile.ContextMenu.PinnedTabsEntry.Actions";
 }  // namespace
 
 void RecordMenuShown(MenuScenarioHistogram scenario) {
@@ -87,5 +89,7 @@ const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
       return kToolbarMenuActionsHistogram;
     case MenuScenarioHistogram::kOmniboxMostVisitedEntry:
       return kOmniboxMostVisitedEntryActionsHistogram;
+    case MenuScenarioHistogram::kPinnedTabsEntry:
+      return kPinnedTabsEntryActionsHistogram;
   }
 }

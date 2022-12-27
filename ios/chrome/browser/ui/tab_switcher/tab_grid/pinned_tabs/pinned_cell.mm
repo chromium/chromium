@@ -62,10 +62,6 @@ NSString* const kDefaultFaviconImage = @"default_world_favicon";
   return params;
 }
 
-- (BOOL)hasIdentifier:(NSString*)identifier {
-  return [self.itemIdentifier isEqualToString:identifier];
-}
-
 #pragma mark - Private
 
 // Sets up the `_faviconContainerView` view.

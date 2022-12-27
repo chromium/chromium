@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_collection_consumer.h"
 
 @protocol GridImageDataSource;
+@protocol TabContextMenuProvider;
 
 // Protocol used to relay relevant user interactions from the
 // PinnedTabsViewController.
@@ -29,6 +30,9 @@
 
 // Delegate used to to relay relevant user interactions.
 @property(nonatomic, weak) id<PinnedTabsViewControllerDelegate> delegate;
+
+// Provides context menus.
+@property(nonatomic, weak) id<TabContextMenuProvider> menuProvider;
 
 // Updates the view when starting or ending a drag action.
 - (void)dragSessionEnabled:(BOOL)enabled;

@@ -672,6 +672,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _regularTabsContextMenuProvider = provider;
 
   self.regularTabsViewController.menuProvider = provider;
+  if (IsPinnedTabsEnabled()) {
+    self.pinnedTabsViewController.menuProvider = provider;
+  }
 }
 
 - (void)setIncognitoTabsContextMenuProvider:

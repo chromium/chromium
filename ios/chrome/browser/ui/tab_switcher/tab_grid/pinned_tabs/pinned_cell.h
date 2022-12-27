@@ -7,21 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
-// A cell for the pinned tabs view. Contains an icon, title, snapshot.
-@interface PinnedCell : UICollectionViewCell
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_cell.h"
 
-// Unique identifier for the cell's contents. This is used to ensure that
-// updates in an asynchronous callback are only made if the item is the same.
-@property(nonatomic, copy) NSString* itemIdentifier;
+// A cell for the pinned tabs view. Contains an icon, title, snapshot.
+@interface PinnedCell : TabCell
+
 // View for displaying the favicon.
 @property(nonatomic, strong) UIImageView* faviconView;
 // Title is displayed by this label.
 @property(nonatomic, strong) UILabel* titleLabel;
-
-// Checks if cell has a specific identifier.
-- (BOOL)hasIdentifier:(NSString*)identifier;
-
-@property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
 
 @end
 
