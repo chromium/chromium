@@ -34,6 +34,55 @@
     Off
   </message>
 
+    <!-- Privacy Sandbox v4 - Consent EEA. -->
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_TITLE" translateable="false" desc="Privacy Sandbox dialog consent EEA: title." formatter_data="android_java">
+    Lorem ipsum Consent
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_1" translateable="false" desc="Privacy Sandbox dialog consent EEA: First section of the body, above the image." formatter_data="android_java">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pretium pulvinar metus non mollis. Quisque placerat eget nisl sit amet facilisis.
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_2" translateable="false" desc="Privacy Sandbox dialog consent EEA: Second section of the body, above the image." formatter_data="android_java">
+    Nulla in tortor a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit. Integer et libero id metus egestas consequat non a ipsum.
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_3" translateable="false" desc="Privacy Sandbox dialog consent EEA: Third section of the body, below the image, exclues the expand text." formatter_data="android_java">
+    Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu, elementum ut venenatis ornare, consequat ac turpis.
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_EXPAND_LABEL" translateable="false" desc="Privacy Sandbox dialog consent EEA: Text user clicks to expand the collapsed section." formatter_data="android_java">
+    Vestibulum orci risus, consectetur
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_4" translateable="false" desc="Privacy Sandbox dialog consent EEA: Fourth section of the body, below the collapsed section." formatter_data="android_java">
+    Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu, elementum ut venenatis ornare, consequat ac turpis.
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_SAVING_LABEL" translateable="false" desc="Privacy Sandbox dialog consent EEA: Saving text." formatter_data="android_java">
+    Consectetur
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_ACCEPT_BUTTON" translateable="false" desc="Privacy Sandbox dialog consent EEA: Consent Yes button." formatter_data="android_java">
+    Quisque
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DECLINE_BUTTON" translateable="false" desc="Privacy Sandbox dialog consent EEA: Consent No button." formatter_data="android_java">
+    Lorem
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_HEADING" translateable="false" desc="Privacy Sandbox dialog consent EEA: Header inside expand in consent." formatter_data="android_java">
+    Esed purus vestibulum velit convalli
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_1" translateable="false" desc="Privacy Sandbox dialog consent EEA: First bullet point in expand in consent." formatter_data="android_java">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Nulla in tortor:<ph name="END_BOLD">&lt;/b&gt;</ph> a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit.
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2" translateable="false" desc="Privacy Sandbox dialog consent EEA: Second bullet point in expand in consent." formatter_data="android_java">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Consectetur adipiscing elit:<ph name="END_BOLD">&lt;/b&gt;</ph> Duis pretium pulvinar metus non mollis
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3" translateable="false" desc="Privacy Sandbox dialog consent EEA: Third bullet point in expand in consent." formatter_data="android_java">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Sed purus vestibulum: <ph name="END_BOLD">&lt;/b&gt;</ph> velit convallis suscipit. Aenean aliquam ut velit eget dapibus. Vestibulum orci risus, consectetur non odio vulputate, mattis dignissim purus. Cras id tempor mi.
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK" translateable="false" desc="Privacy Sandbox dialog consent EEA: Non-interactable link out 'Learn more with Google's etc ect'" formatter_data="android_java">
+    Esed purus vestibulum velit convalli
+  </message>
+
+  <!-- Privacy Sandbox v4 - Shared dialog strings. -->
+  <message name="IDS_PRIVACY_SANDBOX_M1_DIALOG_MORE_BUTTON" translateable="false" desc="Privacy Sandbox dialog more button: Clicking on it makes the dialog scrolling to the bottom to show all the content." formatter_data="android_java">
+    More
+  </message>
+
   <!-- Topics API Taxonomy -->
   <!-- These entries have been script generated to ensure consistent mappings. If you are editing these directly, you are likely doing something wrong -->
   <message name="IDS_PRIVACY_SANDBOX_TOPICS_INVALID_TOPIC" desc="Shown when an unknown Topic has been provided by the categorization service. This is indicative of an error state that is not expected to occur">
