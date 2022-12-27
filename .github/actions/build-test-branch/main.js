@@ -73,7 +73,7 @@ function platformTasks(platform) {
         // https://linear.app/replay/issue/RUN-885
         env: {
           //RECORD_REPLAY_JS_ASSERTS: "1",
-          RECORD_REPLAY_DISABLE_FEATURES: "use-baseline-jit,use-optimizing-jit",
+          RECORD_REPLAY_DISABLE_FEATURES: "use-baseline-jit,use-optimizing-jit,use-parse-cache",
         },
       },
       platform,
