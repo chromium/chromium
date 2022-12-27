@@ -14,7 +14,6 @@
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_ui.h"
 #include "ash/system/holding_space/holding_space_util.h"
@@ -22,6 +21,7 @@
 #include "base/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -64,6 +64,9 @@ class Header : public views::Button {
     // Chevron.
     chevron_ = AddChildView(std::make_unique<views::ImageView>());
     chevron_->SetFlipCanvasOnPaintForRTLUI(true);
+    chevron_->SetImage(ui::ImageModel::FromVectorIcon(
+        kChevronRightSmallIcon, kColorAshIconColorPrimary,
+        kHoldingSpaceSectionChevronIconSize));
 
     // Focus ring.
     // Though the entirety of the header is focusable and behaves as a single
@@ -85,18 +88,6 @@ class Header : public views::Button {
   }
 
  private:
-  // views::Button:
-  void OnThemeChanged() override {
-    views::Button::OnThemeChanged();
-    AshColorProvider* const ash_color_provider = AshColorProvider::Get();
-
-    // Chevron.
-    chevron_->SetImage(gfx::CreateVectorIcon(
-        kChevronRightSmallIcon, kHoldingSpaceSectionChevronIconSize,
-        ash_color_provider->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  }
-
   void OnPressed() {
     holding_space_metrics::RecordDownloadsAction(
         holding_space_metrics::DownloadsAction::kClick);

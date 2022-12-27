@@ -126,6 +126,8 @@ VIEW_BUILDER_OVERLOAD_METHOD(SetImage,
 VIEW_BUILDER_OVERLOAD_METHOD(SetImage,
                              Button::ButtonState,
                              const gfx::ImageSkia&)
+VIEW_BUILDER_METHOD(SetImageModel, Button::ButtonState, const ui::ImageModel&)
+
 END_VIEW_BUILDER
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -205,6 +207,9 @@ VIEW_BUILDER_PROPERTY(bool, Toggled)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<Background>, ToggledBackground)
 VIEW_BUILDER_PROPERTY(std::u16string, ToggledTooltipText)
 VIEW_BUILDER_PROPERTY(std::u16string, ToggledAccessibleName)
+VIEW_BUILDER_METHOD(SetToggledImageModel,
+                    Button::ButtonState,
+                    const ui::ImageModel&)
 END_VIEW_BUILDER
 
 }  // namespace views

@@ -18,7 +18,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_ui.h"
@@ -120,17 +119,6 @@ class FilesAppChip : public views::Button {
 
   void OnThemeChanged() override {
     views::Button::OnThemeChanged();
-    AshColorProvider* const ash_color_provider = AshColorProvider::Get();
-
-    // Background.
-    SetBackground(views::CreateRoundedRectBackground(
-        ash_color_provider->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::
-                kControlBackgroundColorInactive),
-        kFilesAppChipHeight / 2));
-
-    // Focus ring.
-    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
     // Ink drop.
     StyleUtil::ConfigureInkDropAttributes(
@@ -146,7 +134,7 @@ class FilesAppChip : public views::Button {
     // Ink drop.
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  kFilesAppChipHeight / 2);
+                                                  kFilesAppChipHeight / 2.f);
 
     // Layout.
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -166,6 +154,13 @@ class FilesAppChip : public views::Button {
     label->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_HOLDING_SPACE_PINNED_FILES_APP_CHIP_TEXT));
     layout->SetFlexForView(label, 1);
+
+    // Focus ring.
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+
+    // Background.
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        kColorAshControlBackgroundColorInactive, kFilesAppChipHeight / 2.f));
   }
 };
 

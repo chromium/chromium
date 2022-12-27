@@ -10,13 +10,14 @@
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_progress_indicator_util.h"
@@ -26,6 +27,7 @@
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
@@ -230,14 +232,6 @@ views::Builder<views::ImageButton> CreateSecondaryActionBuilder() {
   return secondary_action;
 }
 
-// TODO(crbug.com/1202796): Create ash colors.
-// Returns the theme color to use for text in multiselect.
-SkColor GetMultiSelectTextColor() {
-  return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-             ? gfx::kGoogleBlue100
-             : gfx::kGoogleBlue800;
-}
-
 }  // namespace
 
 // HoldingSpaceItemChipView ----------------------------------------------------
@@ -287,17 +281,29 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
                       .SetID(kHoldingSpaceItemSecondaryActionContainerId)
                       .SetUseDefaultFillLayout(true)
                       .SetVisible(false)
-                      .AddChild(CreateSecondaryActionBuilder()
-                                    .CopyAddressTo(&secondary_action_pause_)
-                                    .SetID(kHoldingSpaceItemPauseButtonId)
-                                    .SetCallback(secondary_action_callback)
-                                    .SetVisible(false))
-                      .AddChild(CreateSecondaryActionBuilder()
-                                    .CopyAddressTo(&secondary_action_resume_)
-                                    .SetID(kHoldingSpaceItemResumeButtonId)
-                                    .SetCallback(secondary_action_callback)
-                                    .SetFlipCanvasOnPaintForRTLUI(false)
-                                    .SetVisible(false))))
+                      .AddChild(
+                          CreateSecondaryActionBuilder()
+                              .CopyAddressTo(&secondary_action_pause_)
+                              .SetID(kHoldingSpaceItemPauseButtonId)
+                              .SetCallback(secondary_action_callback)
+                              .SetVisible(false)
+                              .SetImageModel(
+                                  views::Button::STATE_NORMAL,
+                                  ui::ImageModel::FromVectorIcon(
+                                      kPauseIcon, kColorAshButtonIconColor,
+                                      kSecondaryActionIconSize)))
+                      .AddChild(
+                          CreateSecondaryActionBuilder()
+                              .CopyAddressTo(&secondary_action_resume_)
+                              .SetID(kHoldingSpaceItemResumeButtonId)
+                              .SetCallback(secondary_action_callback)
+                              .SetFlipCanvasOnPaintForRTLUI(false)
+                              .SetVisible(false)
+                              .SetImageModel(
+                                  views::Button::STATE_NORMAL,
+                                  ui::ImageModel::FromVectorIcon(
+                                      kResumeIcon, kColorAshButtonIconColor,
+                                      kSecondaryActionIconSize)))))
       .AddChild(
           views::Builder<views::View>()
               .SetUseDefaultFillLayout(true)
@@ -433,18 +439,6 @@ void HoldingSpaceItemChipView::OnThemeChanged() {
 
   UpdateImage();
   UpdateLabels();
-
-  // Pause.
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
-  secondary_action_pause_->SetImage(
-      views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(kPauseIcon, kSecondaryActionIconSize, icon_color));
-
-  // Resume.
-  secondary_action_resume_->SetImage(
-      views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(kResumeIcon, kSecondaryActionIconSize, icon_color));
 }
 
 void HoldingSpaceItemChipView::OnPaintLabelMask(views::Label* label,
@@ -596,25 +590,20 @@ void HoldingSpaceItemChipView::UpdateLabels() {
   // Primary.
   const std::u16string last_primary_text = primary_label_->GetText();
   primary_label_->SetText(item()->GetText());
-  primary_label_->SetEnabledColor(
-      selected() && multiselect
-          ? GetMultiSelectTextColor()
-          : AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kTextColorPrimary));
+  primary_label_->SetEnabledColorId(selected() && multiselect
+                                        ? kColorAshMultiSelectTextColor
+                                        : kColorAshTextColorPrimary);
 
   // Secondary.
   const std::u16string last_secondary_text = secondary_label_->GetText();
   secondary_label_->SetText(
       item()->secondary_text().value_or(base::EmptyString16()));
-  if (GetWidget()) {
-    secondary_label_->SetEnabledColor(
-        selected() && multiselect ? GetMultiSelectTextColor()
-        : item()->secondary_text_color_id()
-            ? GetColorProvider()->GetColor(
-                  item()->secondary_text_color_id().value())
-            : AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kTextColorSecondary));
-  }
+
+  secondary_label_->SetEnabledColorId(
+      selected() && multiselect ? kColorAshMultiSelectTextColor
+      : item()->secondary_text_color_id()
+          ? item()->secondary_text_color_id().value()
+          : kColorAshTextColorSecondary);
   secondary_label_->SetVisible(!secondary_label_->GetText().empty());
 
   // Tooltip.

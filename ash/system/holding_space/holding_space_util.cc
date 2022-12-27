@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -44,26 +45,23 @@ class CallbackPathGenerator : public views::HighlightPathGenerator {
   Callback callback_;
 };
 
-// CirclePainter ---------------------------------------------------------------
+// CircleBackground ------------------------------------------------------------
 
-class CirclePainter : public views::Painter {
+class CircleBackground : public views::Background {
  public:
-  CirclePainter(SkColor color, size_t fixed_size)
-      : color_(color), fixed_size_(fixed_size) {}
+  CircleBackground(ui::ColorId color_id, size_t fixed_size)
+      : color_id_(color_id), fixed_size_(fixed_size) {}
 
-  CirclePainter(SkColor color, const gfx::InsetsF& insets)
-      : color_(color), insets_(insets) {}
+  CircleBackground(ui::ColorId color_id, const gfx::InsetsF& insets)
+      : color_id_(color_id), insets_(insets) {}
 
-  CirclePainter(const CirclePainter&) = delete;
-  CirclePainter& operator=(const CirclePainter&) = delete;
-  ~CirclePainter() override = default;
+  CircleBackground(const CircleBackground&) = delete;
+  CircleBackground& operator=(const CircleBackground&) = delete;
+  ~CircleBackground() override = default;
 
- private:
-  // views::Painter:
-  gfx::Size GetMinimumSize() const override { return gfx::Size(); }
-
-  void Paint(gfx::Canvas* canvas, const gfx::Size& size) override {
-    gfx::RectF bounds{gfx::SizeF(size)};
+  // views::Background:
+  void Paint(gfx::Canvas* canvas, views::View* view) const override {
+    gfx::RectF bounds(view->GetLocalBounds());
 
     if (insets_.has_value())
       bounds.Inset(insets_.value());
@@ -75,12 +73,18 @@ class CirclePainter : public views::Painter {
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(color_);
+    flags.setColor(get_color());
 
     canvas->DrawCircle(bounds.CenterPoint(), radius, flags);
   }
 
-  const SkColor color_;
+  void OnViewThemeChanged(views::View* view) override {
+    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
+    view->SchedulePaint();
+  }
+
+ private:
+  const ui::ColorId color_id_;
   const absl::optional<size_t> fixed_size_;
   const absl::optional<gfx::InsetsF> insets_;
 };
@@ -144,17 +148,15 @@ void AnimateOut(views::View* view,
             observer);
 }
 
-std::unique_ptr<views::Background> CreateCircleBackground(SkColor color,
+std::unique_ptr<views::Background> CreateCircleBackground(ui::ColorId color_id,
                                                           size_t fixed_size) {
-  return views::CreateBackgroundFromPainter(
-      std::make_unique<CirclePainter>(color, fixed_size));
+  return std::make_unique<CircleBackground>(color_id, fixed_size);
 }
 
 std::unique_ptr<views::Background> CreateCircleBackground(
-    SkColor color,
+    ui::ColorId color_id,
     const gfx::InsetsF& insets) {
-  return views::CreateBackgroundFromPainter(
-      std::make_unique<CirclePainter>(color, insets));
+  return std::make_unique<CircleBackground>(color_id, insets);
 }
 
 std::unique_ptr<views::HighlightPathGenerator> CreateHighlightPathGenerator(

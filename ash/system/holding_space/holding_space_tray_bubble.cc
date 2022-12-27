@@ -360,8 +360,7 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
         bounds().width() - kHoldingSpaceChildBubblePadding.width();
 
     // Cache `color` which is consistent across separators.
-    SkColor color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kSeparatorColor);
+    SkColor color = GetColorProvider()->GetColor(kColorAshSeparatorColor);
 
     // Iterate over all children, drawing separators between visible siblings.
     const views::View* last_visible_child = nullptr;

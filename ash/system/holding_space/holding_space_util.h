@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -39,12 +39,12 @@ void AnimateOut(views::View* view,
                 ui::LayerAnimationObserver* observer);
 
 // Creates a circular background of the specified `color` and `fixed_size`.
-std::unique_ptr<views::Background> CreateCircleBackground(SkColor color,
+std::unique_ptr<views::Background> CreateCircleBackground(ui::ColorId color_id,
                                                           size_t fixed_size);
 
 // Creates a circular background of the specified `color` and optional `insets`.
 std::unique_ptr<views::Background> CreateCircleBackground(
-    SkColor color,
+    ui::ColorId color_id,
     const gfx::InsetsF& insets = gfx::InsetsF());
 
 // Creates a highlight path generator that determines paths based on logic

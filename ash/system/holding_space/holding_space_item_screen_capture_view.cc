@@ -8,18 +8,17 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -59,12 +58,17 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
             .SetMainAxisAlignment(MainAxisAlignment::kCenter)
             .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
             .SetFocusBehavior(views::View::FocusBehavior::NEVER)
-            .AddChild(views::Builder<views::ImageView>()
-                          .CopyAddressTo(&play_icon_)
-                          .SetID(kHoldingSpaceScreenCapturePlayIconId)
-                          .SetPreferredSize(kPlayIconSize)
-                          .SetImageSize(gfx::Size(kHoldingSpaceIconSize,
-                                                  kHoldingSpaceIconSize))));
+            .AddChild(
+                views::Builder<views::ImageView>()
+                    .SetID(kHoldingSpaceScreenCapturePlayIconId)
+                    .SetPreferredSize(kPlayIconSize)
+                    .SetImageSize(
+                        gfx::Size(kHoldingSpaceIconSize, kHoldingSpaceIconSize))
+                    .SetImage(ui::ImageModel::FromVectorIcon(
+                        vector_icons::kPlayArrowIcon, kColorAshButtonIconColor,
+                        kHoldingSpaceIconSize))
+                    .SetBackground(holding_space_util::CreateCircleBackground(
+                        kColorAshShieldAndBase80))));
   }
 
   std::move(builder)
@@ -79,10 +83,15 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
                   views::FlexSpecification(
                       views::MinimumFlexSizeRule::kScaleToZero,
                       views::MaximumFlexSizeRule::kUnbounded)))
-              .AddChild(CreatePrimaryActionBuilder(kPrimaryActionSize)))
+              .AddChild(
+                  CreatePrimaryActionBuilder(kPrimaryActionSize)
+                      .SetBackground(holding_space_util::CreateCircleBackground(
+                          kColorAshShieldAndBase80))))
       .AddChild(views::Builder<views::View>()
-                    .CopyAddressTo(&border_)
-                    .SetCanProcessEventsWithinSubtree(false))
+                    .SetCanProcessEventsWithinSubtree(false)
+                    .SetBorder(views::CreateThemedRoundedRectBorder(
+                        kBorderThickness, kHoldingSpaceCornerRadius,
+                        kColorAshSeparatorColor)))
       .BuildChildren();
 
   // Subscribe to be notified of changes to `item`'s image.
@@ -118,32 +127,7 @@ void HoldingSpaceItemScreenCaptureView::OnHoldingSpaceItemUpdated(
 void HoldingSpaceItemScreenCaptureView::OnThemeChanged() {
   HoldingSpaceItemView::OnThemeChanged();
 
-  // Border.
-  border_->SetBorder(views::CreateRoundedRectBorder(
-      kBorderThickness, kHoldingSpaceCornerRadius,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kSeparatorColor)));
-
-  // Image.
   UpdateImage();
-
-  // Primary action.
-  primary_action_container()->SetBackground(
-      holding_space_util::CreateCircleBackground(
-          AshColorProvider::Get()->GetBaseLayerColor(
-              AshColorProvider::BaseLayerType::kTransparent80)));
-
-  if (!play_icon_)
-    return;
-
-  // Play icon.
-  play_icon_->SetBackground(holding_space_util::CreateCircleBackground(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80)));
-  play_icon_->SetImage(gfx::CreateVectorIcon(
-      vector_icons::kPlayArrowIcon, kHoldingSpaceIconSize,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonIconColor)));
 }
 
 void HoldingSpaceItemScreenCaptureView::UpdateImage() {

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -14,7 +13,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_progress_indicator_util.h"
@@ -23,6 +22,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/paint_recorder.h"
@@ -674,8 +674,8 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
   // due to pixel rounding. Failure to do so could result in paint artifacts.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kOpaque));
+  flags.setColor(
+      container_->GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque));
   flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
   canvas->DrawCircle(
       gfx::PointF(contents_bounds.CenterPoint()),

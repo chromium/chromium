@@ -12,7 +12,7 @@
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
@@ -146,6 +146,10 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
   GetViewAccessibility().OverrideDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
+  // Background.
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorAshControlBackgroundColorInactive, kHoldingSpaceCornerRadius));
+
   // Layer.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -262,49 +266,10 @@ void HoldingSpaceItemView::OnMouseReleased(const ui::MouseEvent& event) {
 
 void HoldingSpaceItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  AshColorProvider* const ash_color_provider = AshColorProvider::Get();
-
-  // Background.
-  SetBackground(views::CreateRoundedRectBackground(
-      ash_color_provider->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
-      kHoldingSpaceCornerRadius));
-
-  // Checkmark.
-  checkmark_->SetBackground(holding_space_util::CreateCircleBackground(
-      ash_color_provider->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor),
-      kCheckmarkBackgroundSize));
-  checkmark_->SetImage(gfx::CreateVectorIcon(
-      kCheckIcon, kHoldingSpaceIconSize,
-      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-          ? gfx::kGoogleGrey900
-          : SK_ColorWHITE));
 
   // Focused/selected layers.
   InvalidateLayer(focused_layer_owner_->layer());
   InvalidateLayer(selected_layer_owner_->layer());
-
-  if (!primary_action_container_)
-    return;
-
-  // Cancel.
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
-  primary_action_cancel_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kCancelIcon, icon_color,
-                                     kHoldingSpaceIconSize));
-
-  // Pin.
-  const ui::ImageModel unpinned_icon = ui::ImageModel::FromVectorIcon(
-      views::kUnpinIcon, icon_color, kHoldingSpaceIconSize);
-  const ui::ImageModel pinned_icon = ui::ImageModel::FromVectorIcon(
-      views::kPinIcon, icon_color, kHoldingSpaceIconSize);
-  primary_action_pin_->SetImageModel(views::Button::STATE_NORMAL,
-                                     unpinned_icon);
-  primary_action_pin_->SetToggledImageModel(views::Button::STATE_NORMAL,
-                                            pinned_icon);
 }
 
 void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
@@ -363,7 +328,11 @@ HoldingSpaceItemView::CreateCheckmarkBuilder() {
   auto checkmark = views::Builder<views::ImageView>();
   checkmark.CopyAddressTo(&checkmark_)
       .SetID(kHoldingSpaceItemCheckmarkId)
-      .SetVisible(selected());
+      .SetVisible(selected())
+      .SetBackground(holding_space_util::CreateCircleBackground(
+          ui::kColorAshFocusRing, kCheckmarkBackgroundSize))
+      .SetImage(ui::ImageModel::FromVectorIcon(
+          kCheckIcon, kColorAshCheckmarkIconColor, kHoldingSpaceIconSize));
   return checkmark;
 }
 
@@ -392,6 +361,10 @@ views::Builder<views::View> HoldingSpaceItemView::CreatePrimaryActionBuilder(
                   &HoldingSpaceItemView::OnPrimaryActionPressed,
                   base::Unretained(this)))
               .SetFocusBehavior(views::View::FocusBehavior::NEVER)
+              .SetImageModel(views::Button::STATE_NORMAL,
+                             ui::ImageModel::FromVectorIcon(
+                                 kCancelIcon, kColorAshButtonIconColor,
+                                 kHoldingSpaceIconSize))
               .SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER)
               .SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE)
               .SetPreferredSize(preferred_size)
@@ -404,6 +377,15 @@ views::Builder<views::View> HoldingSpaceItemView::CreatePrimaryActionBuilder(
                   &HoldingSpaceItemView::OnPrimaryActionPressed,
                   base::Unretained(this)))
               .SetFocusBehavior(views::View::FocusBehavior::NEVER)
+              .SetImageModel(views::Button::STATE_NORMAL,
+                             ui::ImageModel::FromVectorIcon(
+                                 views::kUnpinIcon, kColorAshButtonIconColor,
+                                 kHoldingSpaceIconSize))
+              .SetToggledImageModel(
+                  views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(views::kPinIcon,
+                                                 kColorAshButtonIconColor,
+                                                 kHoldingSpaceIconSize))
               .SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER)
               .SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE)
               .SetPreferredSize(preferred_size)
@@ -425,8 +407,7 @@ void HoldingSpaceItemView::OnPaintFocus(gfx::Canvas* canvas, gfx::Size size) {
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  flags.setColor(GetColorProvider()->GetColor(ui::kColorAshFocusRing));
   flags.setStrokeWidth(views::FocusRing::kDefaultHaloThickness);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
 
@@ -440,8 +421,7 @@ void HoldingSpaceItemView::OnPaintSelect(gfx::Canvas* canvas, gfx::Size size) {
     return;
 
   const SkColor color =
-      SkColorSetA(AshColorProvider::Get()->GetControlsLayerColor(
-                      AshColorProvider::ControlsLayerType::kFocusRingColor),
+      SkColorSetA(GetColorProvider()->GetColor(ui::kColorAshFocusRing),
                   kHoldingSpaceSelectedOverlayOpacity * 0xFF);
 
   cc::PaintFlags flags;

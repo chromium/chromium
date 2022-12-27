@@ -457,6 +457,18 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[kColorAshIconColorBlocked] = {gfx::kGoogleGrey100};
 
   mixer[kColorAshEcheIconColorStreaming] = {ui::ColorTransform(SK_ColorGREEN)};
+
+  mixer[kColorAshMultiSelectTextColor] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleBlue100)
+                     : ui::ColorTransform(gfx::kGoogleBlue800);
+
+  mixer[kColorAshCheckmarkIconColor] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey900)
+                     : ui::ColorTransform(SK_ColorWHITE);
+
+  mixer[kColorAshDragImageOverflowBadgeTextColor] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey900)
+                     : ui::ColorTransform(gfx::kGoogleGrey200);
 }
 
 }  // namespace ash

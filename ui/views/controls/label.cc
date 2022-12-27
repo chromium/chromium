@@ -170,8 +170,9 @@ void Label::ApplyBaselineTextStyle() {
 
 void Label::SetTextStyleRange(int style, const gfx::Range& range) {
   if (style == text_style_ || !range.IsValid() || range.is_empty() ||
-      !gfx::Range(0, GetText().size()).Contains(range))
+      !gfx::Range(0, GetText().size()).Contains(range)) {
     return;
+  }
 
   const auto details = style::GetFontDetails(text_context_, style);
   // This function is not prepared to handle style requests that vary by
@@ -210,6 +211,10 @@ void Label::SetEnabledColor(SkColor color) {
   requested_enabled_color_ = color;
   RecalculateColors();
   OnPropertyChanged(&requested_enabled_color_, kPropertyEffectsPaint);
+}
+
+absl::optional<ui::ColorId> Label::GetEnabledColorId() const {
+  return enabled_color_id_;
 }
 
 void Label::SetEnabledColorId(absl::optional<ui::ColorId> enabled_color_id) {
@@ -303,8 +308,9 @@ bool Label::GetSkipSubpixelRenderingOpacityCheck() const {
 void Label::SetSkipSubpixelRenderingOpacityCheck(
     bool skip_subpixel_rendering_opacity_check) {
   if (skip_subpixel_rendering_opacity_check_ ==
-      skip_subpixel_rendering_opacity_check)
+      skip_subpixel_rendering_opacity_check) {
     return;
+  }
   skip_subpixel_rendering_opacity_check_ =
       skip_subpixel_rendering_opacity_check;
   OnPropertyChanged(&skip_subpixel_rendering_opacity_check_,
@@ -690,8 +696,9 @@ int Label::GetHeightForWidth(int w) const {
 
 View* Label::GetTooltipHandlerForPoint(const gfx::Point& point) {
   if (!handles_tooltips_ ||
-      (tooltip_text_.empty() && !ShouldShowDefaultTooltip()))
+      (tooltip_text_.empty() && !ShouldShowDefaultTooltip())) {
     return nullptr;
+  }
 
   return HitTestPoint(point) ? this : nullptr;
 }
@@ -788,8 +795,9 @@ void Label::PaintText(gfx::Canvas* canvas) {
   // cases), refactoring parents to use background() or by fixing
   // subpixel-rendering issues that the DCHECK detects.
   if (!display_text_ || display_text_->subpixel_rendering_suppressed() ||
-      skip_subpixel_rendering_opacity_check_)
+      skip_subpixel_rendering_opacity_check_) {
     return;
+  }
 
   // Ensure that, if we're using subpixel rendering, we're painted to an opaque
   // region. Subpixel rendering will sample from the r,g,b color channels of the

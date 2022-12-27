@@ -15,7 +15,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_ui.h"
 #include "ash/system/holding_space/holding_space_util.h"
@@ -96,6 +95,9 @@ class Header : public views::Button {
     holding_space_prefs::AddSuggestionsExpandedChangedCallback(
         pref_change_registrar_.get(),
         base::BindRepeating(&Header::UpdateState, base::Unretained(this)));
+
+    // Initialize state.
+    UpdateState();
   }
 
  private:
@@ -108,11 +110,6 @@ class Header : public views::Button {
     node_data->AddState(holding_space_prefs::IsSuggestionsExpanded(prefs)
                             ? ax::mojom::State::kExpanded
                             : ax::mojom::State::kCollapsed);
-  }
-
-  void OnThemeChanged() override {
-    views::Button::OnThemeChanged();
-    UpdateState();
   }
 
   void OnPressed() {
@@ -128,13 +125,11 @@ class Header : public views::Button {
   void UpdateState() {
     // Chevron.
     auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-    chevron_->SetImage(gfx::CreateVectorIcon(
+    chevron_->SetImage(ui::ImageModel::FromVectorIcon(
         holding_space_prefs::IsSuggestionsExpanded(prefs)
             ? kChevronUpSmallIcon
             : kChevronDownSmallIcon,
-        kHoldingSpaceSectionChevronIconSize,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorSecondary)));
+        kColorAshIconColorSecondary, kHoldingSpaceSectionChevronIconSize));
 
     // Accessibility.
     NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged,

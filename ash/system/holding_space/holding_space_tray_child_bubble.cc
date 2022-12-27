@@ -10,7 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
@@ -196,6 +196,17 @@ void HoldingSpaceTrayChildBubble::Init() {
     sections_.push_back(AddChildView(std::move(section)));
     sections_.back()->Init();
   }
+
+  // When refresh is enabled, backgrounds and borders are implemented in the
+  // top-level bubble rather than per child bubble.
+  if (features::IsHoldingSpaceRefreshEnabled()) {
+    return;
+  }
+
+  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kBubbleCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/false));
 }
 
 void HoldingSpaceTrayChildBubble::Reset() {
@@ -358,28 +369,6 @@ void HoldingSpaceTrayChildBubble::OnGestureEvent(ui::GestureEvent* event) {
 bool HoldingSpaceTrayChildBubble::OnMousePressed(const ui::MouseEvent& event) {
   delegate_->OnHoldingSpaceTrayChildBubbleMousePressed(event);
   return true;
-}
-
-void HoldingSpaceTrayChildBubble::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  // When refresh is enabled, backgrounds and borders are implemented in the
-  // top-level bubble rather than per child bubble.
-  if (features::IsHoldingSpaceRefreshEnabled())
-    return;
-
-  if (!features::IsDarkLightModeEnabled()) {
-    layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80));
-    return;
-  }
-
-  SetBackground(
-      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80)));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kBubbleCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
 }
 
 void HoldingSpaceTrayChildBubble::MaybeAnimateIn() {
