@@ -95,6 +95,8 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":test_support",
+    "//components/history/core/test",
+    "//components/omnibox/browser:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/search_engines",
     "//components/ukm:test_support",
