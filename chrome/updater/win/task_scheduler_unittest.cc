@@ -69,7 +69,8 @@ class TaskSchedulerTests : public ::testing::Test {
   void SetUp() override {
     task_scheduler_ = TaskScheduler::CreateInstance(GetTestScope());
     EXPECT_TRUE(IsServiceRunning(SERVICE_SCHEDULE));
-    ASSERT_FALSE(test::IsProcessRunning(kTestProcessExecutableName));
+    ASSERT_FALSE(test::IsProcessRunning(kTestProcessExecutableName))
+        << test::PrintProcesses(kTestProcessExecutableName);
   }
 
   void TearDown() override {

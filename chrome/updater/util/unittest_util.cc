@@ -34,6 +34,7 @@
 #include <shlobj.h>
 
 #include "base/win/windows_version.h"
+#include "chrome/test/base/process_inspector_win.h"
 #include "chrome/updater/util/win_util.h"
 #endif
 
@@ -344,6 +345,46 @@ void StopProcmonLogging(const base::FilePath& pml_file) {
   // deleted.
   if (!base::CopyFile(pml_file, pml_file.ReplaceExtension(L".PML.BAK")))
     LOG(ERROR) << __func__ << ": failed to backup pml file";
+}
+
+base::FilePath::StringType PrintProcesses(
+    const base::FilePath::StringType& executable_name) {
+  class ExeNameProcessFilter : public base::ProcessFilter {
+   public:
+    explicit ExeNameProcessFilter(
+        const base::FilePath::StringType& executable_name)
+        : executable_name_(executable_name) {}
+
+    bool Includes(const base::ProcessEntry& entry) const override {
+      return base::EqualsCaseInsensitiveASCII(entry.exe_file(),
+                                              executable_name_);
+    }
+
+   private:
+    const base::FilePath::StringType executable_name_;
+  };
+
+  base::FilePath::StringType message(FILE_PATH_LITERAL("Found processes:"));
+  const base::FilePath::StringType demarcation(72, FILE_PATH_LITERAL('='));
+  message += demarcation;
+
+  ExeNameProcessFilter exe_name_filter(executable_name);
+  base::ProcessIterator process_iterator(&exe_name_filter);
+  const base::ProcessIterator::ProcessEntries& process_entries =
+      process_iterator.Snapshot();
+  for (const base::ProcessEntry& entry : process_entries) {
+    message += base::StrCat(
+        {entry.exe_file(), FILE_PATH_LITERAL(", cmdline="),
+         [](base::ProcessId pid) {
+           std::unique_ptr<ProcessInspector> process_inspector =
+               ProcessInspector::Create(base::Process::OpenWithAccess(
+                   pid, PROCESS_ALL_ACCESS | PROCESS_VM_READ));
+           return process_inspector ? process_inspector->command_line()
+                                    : FILE_PATH_LITERAL("n/a");
+         }(entry.pid())});
+  }
+
+  return message + demarcation;
 }
 
 #endif  // BUILDFLAG(IS_WIN)

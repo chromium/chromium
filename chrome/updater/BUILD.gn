@@ -709,6 +709,9 @@ if (is_win || is_mac || is_linux) {
 
     if (is_win) {
       sources += [
+        # TODO(crbug.com/1402743) - eliminate the dependency on //chrome/test.
+        "//chrome/test/base/process_inspector_win.cc",
+        "//chrome/test/base/process_inspector_win.h",
         "activity_impl_win_unittest.cc",
         "app/server/win/com_classes_legacy_unittest.cc",
         "auto_run_on_os_upgrade_task_unittest.cc",

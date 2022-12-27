@@ -84,6 +84,10 @@ base::FilePath StartProcmonLogging();
 // `C:\\tools\\Procmon.exe`, and `pml_file` needs to be a valid path to a
 // procmon PML file returned from `StartProcmonLogging`.
 void StopProcmonLogging(const base::FilePath& pml_file);
+
+// Returns a log string of processes matching `executable_name`.
+base::FilePath::StringType PrintProcesses(
+    const base::FilePath::StringType& executable_name);
 #endif
 
 }  // namespace updater::test
