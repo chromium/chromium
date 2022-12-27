@@ -7,6 +7,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -33,6 +36,14 @@ void VideoConferenceTrayControllerImpl::SetMicrophoneMuted(bool muted) {
   if (!pref_service)
     return;
   pref_service->SetBoolean(prefs::kUserMicrophoneAllowed, !muted);
+}
+
+void VideoConferenceTrayControllerImpl::GetMediaApps(
+    base::OnceCallback<void(MediaApps)> ui_callback) {
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->video_conference_manager_ash()
+      ->GetMediaApps(std::move(ui_callback));
 }
 
 }  // namespace ash

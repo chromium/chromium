@@ -6,7 +6,7 @@
 
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
-#include "ash/system/video_conference/bubble/return_to_app_button.h"
+#include "ash/system/video_conference/bubble/return_to_app_panel.h"
 #include "ash/system/video_conference/bubble/set_value_effects_view.h"
 #include "ash/system/video_conference/bubble/toggle_effects_view.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
@@ -37,10 +37,10 @@ BubbleView::BubbleView(const InitParams& init_params,
   layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
-  // `ReturnToAppButton` resides in the top-level layout and isn't part of the
+  // `ReturnToAppPanel` resides in the top-level layout and isn't part of the
   // scrollable area (that can't be added until the `BubbleView` officially has
   // a parent waidget).
-  AddChildView(std::make_unique<ReturnToAppButton>());
+  AddChildView(std::make_unique<ReturnToAppPanel>());
 }
 
 void BubbleView::AddedToWidget() {

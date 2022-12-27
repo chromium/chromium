@@ -31,11 +31,19 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   // VideoConferenceTrayController:
   void SetCameraMuted(bool muted) override;
   void SetMicrophoneMuted(bool muted) override;
+  void GetMediaApps(base::OnceCallback<void(MediaApps)> ui_callback) override;
+
+  // Adds or clears media app(s) in `media_apps_`.
+  void AddMediaApp(crosapi::mojom::VideoConferenceMediaAppInfoPtr media_app);
+  void ClearMediaApps();
 
   bool camera_muted() { return camera_muted_; }
   bool microphone_muted() { return microphone_muted_; }
 
  private:
+  // A vector containing all currently running media apps. Used for testing.
+  MediaApps media_apps_;
+
   // Indicates whether camera/microphone is muted.
   bool camera_muted_ = false;
   bool microphone_muted_ = false;

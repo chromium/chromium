@@ -15,6 +15,8 @@
 
 namespace ash {
 
+using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
+
 // Controller that will act as a "bridge" between VC apps management and the VC
 // UI layers. The singleton instance is constructed immediately before and
 // destructed immediately after the UI, so any code that keeps a reference to
@@ -68,6 +70,11 @@ class ASH_EXPORT VideoConferenceTrayController
 
   // Sets the state for microphone mute. Virtual for testing/mocking.
   virtual void SetMicrophoneMuted(bool muted) = 0;
+
+  // Returns asynchronously a vector of media apps that will be displayed in the
+  // "Return to app" panel of the bubble. Virtual for testing/mocking.
+  virtual void GetMediaApps(
+      base::OnceCallback<void(MediaApps)> ui_callback) = 0;
 
   // Updates the tray UI with the given `VideoConferenceMediaState`.
   void UpdateWithMediaState(VideoConferenceMediaState state);
