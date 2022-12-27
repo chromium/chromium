@@ -28,15 +28,24 @@ build_webui("build") {
     "theme_snapshot.ts",
   ]
 
-  non_web_component_files = [ "customize_chrome_api_proxy.ts" ]
+  non_web_component_files = [
+    "chrome_cart_proxy.ts",
+    "customize_chrome_api_proxy.ts",
+  ]
 
   html_files = []
   foreach(f, web_component_files) {
     html_files += [ string_replace(f, ".ts", ".html") ]
   }
 
-  mojo_files_deps = [ "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings_js__generator" ]
-  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom-webui.js" ]
+  mojo_files_deps = [
+    "//chrome/browser/cart:mojo_bindings_ts__generator",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings_js__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/cart/chrome_cart.mojom-webui.ts",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom-webui.js",
+  ]
 
   ts_composite = true
   ts_deps = [

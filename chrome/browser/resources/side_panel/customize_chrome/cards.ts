@@ -6,10 +6,12 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import './strings.m.js';
 
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cards.html.js';
+import {ChromeCartProxy} from './chrome_cart_proxy.js';
 import {CustomizeChromePageHandlerInterface, ModuleSettings} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
@@ -36,7 +38,24 @@ export class CardsElement extends PolymerElement {
 
       /** Whether the modules are managed by admin policies or not. */
       managedByPolicy_: Boolean,
+
+      // Discount checkbox is a workaround for crbug.com/1199465 and will be
+      // removed after module customization is better defined. Please avoid
+      // using similar pattern for other features.
+      discountCheckbox_: {
+        type: Boolean,
+        value: false,
+      },
+
+      discountCheckboxEligible_: {
+        type: Boolean,
+        value: false,
+      },
     };
+  }
+
+  static get observers() {
+    return ['modulesChanged_(modules_.*)'];
   }
 
   private modules_: ModuleSettings[];
@@ -44,8 +63,8 @@ export class CardsElement extends PolymerElement {
   private managedByPolicy_: boolean;
   private pageHandler_: CustomizeChromePageHandlerInterface;
   private setModulesSettingsListenerId_: number|null = null;
-
-  // TODO:(crbug.com/1401492): Add chrome cart discount consent support.
+  private discountCheckbox_: boolean;
+  private discountCheckboxEligible_: boolean;
 
   constructor() {
     super();
@@ -72,6 +91,19 @@ export class CardsElement extends PolymerElement {
         this.setModulesSettingsListenerId_!);
   }
 
+  private modulesChanged_() {
+    if (this.modules_.some(module => module.id === 'chrome_cart')) {
+      ChromeCartProxy.getHandler().getDiscountToggleVisible().then(
+          ({toggleVisible}) => {
+            this.discountCheckboxEligible_ = toggleVisible;
+          });
+
+      ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
+        this.discountCheckbox_ = enabled;
+      });
+    }
+  }
+
   private onShowChange_(e: CustomEvent<boolean>) {
     this.show_ = e.detail;
     this.pageHandler_.setModulesVisible(this.show_);
@@ -83,6 +115,17 @@ export class CardsElement extends PolymerElement {
     this.pageHandler_.setModuleDisabled(id, !checked);
 
     // TODO(crbug.com/1384258): Add metrics.
+  }
+
+  private showDiscountCheckbox_(
+      id: string, checked: boolean, eligible: boolean): boolean {
+    return id === 'chrome_cart' && checked && eligible;
+  }
+
+  private onDiscountCheckboxChange_() {
+    if (this.discountCheckboxEligible_) {
+      ChromeCartProxy.getHandler().setDiscountEnabled(this.discountCheckbox_);
+    }
   }
 }
 

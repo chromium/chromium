@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
@@ -61,6 +62,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"showShortcutsToggle", IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL},
       // Card strings.
       {"showCardsToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_CARDS_LABEL},
+      {"modulesCartDiscountConsentAccept",
+       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_ACCEPT},
       // Required by <managed-dialog>.
       {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
       {"close", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
@@ -86,6 +89,13 @@ void CustomizeChromeUI::BindInterface(
     page_factory_receiver_.reset();
   }
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void CustomizeChromeUI::BindInterface(
+    mojo::PendingReceiver<chrome_cart::mojom::CartHandler>
+        pending_page_handler) {
+  cart_handler_ = std::make_unique<CartHandler>(std::move(pending_page_handler),
+                                                profile_, web_contents_);
 }
 
 void CustomizeChromeUI::CreatePageHandler(

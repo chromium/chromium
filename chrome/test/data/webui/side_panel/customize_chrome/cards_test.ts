@@ -6,14 +6,18 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/cards.js';
 
 import {CardsElement} from 'chrome://customize-chrome-side-panel.top-chrome/cards.js';
+import {CartHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/chrome_cart.mojom-webui.js';
+import {ChromeCartProxy} from 'chrome://customize-chrome-side-panel.top-chrome/chrome_cart_proxy.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote, ModuleSettings} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, installMock} from './test_support.js';
 
@@ -34,8 +38,8 @@ suite('CardsTest', () => {
   });
 
   async function setupTest(
-      modules: ModuleSettings[], modulesVisible: boolean,
-      modulesManaged: boolean) {
+      modules: ModuleSettings[], modulesManaged: boolean,
+      modulesVisible: boolean) {
     callbackRouterRemote.setModulesSettings(
         modules, modulesManaged, modulesVisible);
 
@@ -82,7 +86,8 @@ suite('CardsTest', () => {
                 {id: 'bar', name: 'bar name', enabled: true},
                 {id: 'baz', name: 'baz name', enabled: false},
               ],
-              visible, false);
+              /*modulesManaged=*/ false,
+              /*modulesVisible=*/ visible);
 
           // Assert.
           assertEquals(visible, getToggleElement().checked);
@@ -108,8 +113,8 @@ suite('CardsTest', () => {
             {id: 'foo', name: 'foo name', enabled: true},
             {id: 'bar', name: 'bar name', enabled: false},
           ],
-          /*modulesVisible=*/ visible,
-          /*modulesManaged=*/ false);
+          /*modulesManaged=*/ false,
+          /*modulesVisible=*/ visible);
 
       assertEquals(visible, getCollapseElement().opened);
       getToggleElement().click();
@@ -133,8 +138,8 @@ suite('CardsTest', () => {
                 {id: 'foo', name: 'foo name', enabled: true},
                 {id: 'bar', name: 'bar name', enabled: false},
               ],
-              /*modulesVisible=*/ visible,
-              /*modulesManaged=*/ true);
+              /*modulesManaged=*/ true,
+              /*modulesVisible=*/ visible);
 
           const policyIndicator =
               customizeCards.shadowRoot!.querySelector('cr-policy-indicator');
@@ -149,6 +154,116 @@ suite('CardsTest', () => {
           assertCardCheckedStatus(cards, 'foo name', true);
           assertCardCheckedStatus(cards, 'bar name', false);
         });
+  });
+
+  suite('Chrome Cart', () => {
+    let cartHandler: TestBrowserProxy<CartHandlerRemote>;
+
+    suiteSetup(() => {
+      cartHandler = installMock(CartHandlerRemote, ChromeCartProxy.setHandler);
+    });
+
+    [true, false].forEach(visible => {
+      test(`Discount option ${(visible ? '' : 'not ')} visible`, async () => {
+        // Arrange.
+        cartHandler.setResultFor(
+            'getDiscountToggleVisible',
+            Promise.resolve({toggleVisible: visible}));
+        cartHandler.setResultFor(
+            'getDiscountEnabled', Promise.resolve({enabled: false}));
+        await setupTest(
+            [
+              {id: 'chrome_cart', name: 'Chrome Cart', enabled: true},
+            ],
+            /*modulesManaged=*/ false,
+            /*modulesVisible=*/ visible);
+
+        // Assert.
+        assertEquals(visible, getToggleElement().checked);
+        const cards = getCardsMap();
+        assertCardCheckedStatus(cards, 'Chrome Cart', true);
+        if (visible) {
+          assertCardCheckedStatus(
+              cards, loadTimeData.getString('modulesCartDiscountConsentAccept'),
+              false);
+        }
+        const cardOptions =
+            customizeCards.shadowRoot!.querySelectorAll('.card-option-name');
+        assertEquals(visible ? 1 : 0, cardOptions.length);
+      });
+    });
+
+    test(`discount checkbox sets discount status`, async () => {
+      // Arrange.
+      cartHandler.setResultFor(
+          'getDiscountToggleVisible', Promise.resolve({toggleVisible: true}));
+      cartHandler.setResultFor(
+          'getDiscountEnabled', Promise.resolve({enabled: true}));
+
+      await setupTest(
+          [
+            {id: 'chrome_cart', name: 'Chrome Cart', enabled: true},
+          ],
+          /*modulesManaged=*/ false,
+          /*modulesVisible=*/ true);
+
+      // Act.
+      const cartCardOptionName =
+          customizeCards.shadowRoot!.querySelector('.card-option-name')!;
+      const discountCheckbox: CrCheckboxElement =
+          cartCardOptionName.nextElementSibling! as CrCheckboxElement;
+      discountCheckbox.click();
+
+      // Assert.
+      assertEquals(1, cartHandler.getCallCount('setDiscountEnabled'));
+      assertDeepEquals(false, cartHandler.getArgs('setDiscountEnabled')[0]);
+    });
+
+    test(`Unchecking cart card hides discount option`, async () => {
+      // Arrange.
+      cartHandler.setResultFor(
+          'getDiscountToggleVisible', Promise.resolve({toggleVisible: true}));
+      cartHandler.setResultFor(
+          'getDiscountEnabled', Promise.resolve({enabled: true}));
+
+      await setupTest(
+          [
+            {id: 'chrome_cart', name: 'Chrome Cart', enabled: true},
+            {id: 'bar', name: 'bar name', enabled: false},
+          ],
+          /*modulesManaged=*/ false,
+          /*modulesVisible=*/ true);
+
+      assertTrue(getToggleElement().checked);
+      assertTrue(getCollapseElement().opened);
+      let cards = getCardsMap();
+      assertCardCheckedStatus(cards, 'Chrome Cart', true);
+      assertCardCheckedStatus(
+          cards, loadTimeData.getString('modulesCartDiscountConsentAccept'),
+          true);
+      assertCardCheckedStatus(cards, 'bar name', false);
+
+      const cartCardCheckbox =
+          cards.get('Chrome Cart')!.querySelector('cr-checkbox')!;
+      cartCardCheckbox.click();
+      await handler.whenCalled('setModuleDisabled');
+      callbackRouterRemote.setModulesSettings(
+          [
+            {id: 'chrome_cart', name: 'Chrome Cart', enabled: false},
+            {id: 'bar', name: 'bar name', enabled: false},
+          ],
+          false, true);
+      await callbackRouterRemote.$.flushForTesting();
+      await waitAfterNextRender(customizeCards);
+
+      const cartCardOptionName =
+          customizeCards.shadowRoot!.querySelector('.card-option-name')!;
+      assertFalse(isVisible(cartCardOptionName));
+
+      cards = getCardsMap();
+      assertCardCheckedStatus(cards, 'Chrome Cart', false);
+      assertCardCheckedStatus(cards, 'bar name', false);
+    });
   });
 
   // TODO(crbug.com/1384258): Add metric related tests.

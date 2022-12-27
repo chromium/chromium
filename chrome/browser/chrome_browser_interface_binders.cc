@@ -967,7 +967,11 @@ void PopulateChromeWebUIFrameBinders(
       map);
 #endif  // !defined(OFFICIAL_BUILD)
 
-  if (IsCartModuleEnabled()) {
+  if (IsCartModuleEnabled() && customize_chrome::IsSidePanelEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<chrome_cart::mojom::CartHandler,
+                                           NewTabPageUI, CustomizeChromeUI>(
+        map);
+  } else if (IsCartModuleEnabled()) {
     RegisterWebUIControllerInterfaceBinder<chrome_cart::mojom::CartHandler,
                                            NewTabPageUI>(map);
   }

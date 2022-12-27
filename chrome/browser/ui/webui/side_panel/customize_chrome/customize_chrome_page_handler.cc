@@ -65,6 +65,13 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       prefs::kNtpDisabledModules,
       base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
                           base::Unretained(this)));
+  if (IsCartModuleEnabled()) {
+    pref_change_registrar_.Add(
+        prefs::kCartDiscountEnabled,
+        base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
+                            base::Unretained(this)));
+  }
+
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
 }

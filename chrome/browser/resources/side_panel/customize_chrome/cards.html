@@ -33,6 +33,10 @@
     width: 16px;
   }
 
+  .card-option-name {
+    margin-inline-start: 40px;
+  }
+
   iron-collapse {
     --iron-collapse-transition-duration: 300ms;
     width: 100%;
@@ -71,6 +75,18 @@
             title="[[item.name]]" on-change="onCardStatusChange_">
         </cr-checkbox>
       </div>
+      <template is="dom-if"
+          if="[[showDiscountCheckbox_(item.id, item.enabled, discountCheckboxEligible_)]]">
+        <div class="card">
+          <div class="card-option-name">$i18n{modulesCartDiscountConsentAccept}</div>
+          <cr-checkbox class="card-checkbox"
+              checked="{{discountCheckbox_}}"
+              disabled="[[managedByPolicy_]]"
+              title="$i18n{modulesCartDiscountConsentAccept}"
+              on-change="onDiscountCheckboxChange_">
+          </cr-checkbox>
+        </div>
+      </template>
     </template>
   </iron-collapse>
 </div>
