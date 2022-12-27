@@ -225,7 +225,8 @@ public final class AuthenticatorImpl implements Authenticator {
     @Override
     public void isConditionalMediationAvailable(
             final IsConditionalMediationAvailable_Response callback) {
-        if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION) {
+        if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             callback.call(false);
             return;
         }
