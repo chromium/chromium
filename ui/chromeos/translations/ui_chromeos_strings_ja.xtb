@@ -679,6 +679,7 @@
 <translation id="6607272825297743757">ファイル情報</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Parallels Desktop と共有されています</translation>
 <translation id="6629518321609546825">4 桁以上の数字を入力してください</translation>
+<translation id="6639661343369899134"><ph name="SHARED_DRIVE_NAME" /> に十分な空き容量がないため、ファイルをアップロードできません。</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6650726141019353908">ピンクの蝶</translation>
 <translation id="6657585470893396449">パスワード</translation>

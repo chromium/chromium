@@ -1043,7 +1043,7 @@
 <translation id="8737620822084008350">{count,plural, =1{يتوفّر ملف شخصي واحد ({count}) محفوظ أعلى لوحة المفاتيح.}zero{يتوفّر {count} ملف شخصي محفوظ أعلى لوحة المفاتيح.}two{يتوفّر ملفّان شخصيَان ({count}) محفوظان أعلى لوحة المفاتيح.}few{تتوفّر {count} ملفات شخصية محفوظة أعلى لوحة المفاتيح.}many{يتوفّر {count} ملفًا شخصيًا محفوظًا أعلى لوحة المفاتيح.}other{يتوفّر {count} ملف شخصي محفوظ أعلى لوحة المفاتيح.}}</translation>
 <translation id="8741995161408053644">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" /> history.google.com <ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">ستظهر لك علامات التبويب هنا</translation>
-<translation id="8756969031206844760">هل تريد تحديث كلمة المرور؟</translation>
+<translation id="8756969031206844760">هل تريد تعديل كلمة المرور؟</translation>
 <translation id="8763613688786959833">الانتقال إلى علامة التبويب الأخيرة</translation>
 <translation id="8764015330924122850">إلغاء متابعة <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">‏عنوان URL غير صالح</translation>

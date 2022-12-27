@@ -510,6 +510,7 @@
 <translation id="481968316161811770">குக்கீகள், தளத் தரவு</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}, மேலும் 1 தாவல்}other{{domain}, மேலும் {count} தாவல்கள்}}</translation>
 <translation id="4826218269716039351">மூன்றாம் தரப்புக் குக்கீகளைத் தடு</translation>
+<translation id="4826588772550366629">கேமராவையும் மைக்ரோஃபோனையும்</translation>
 <translation id="4826726074642088322">ஹைலைட் செய்தவற்றைப் பகிர்</translation>
 <translation id="48274138579728272">படித்ததாகக் குறி</translation>
 <translation id="4833686396768033263">சமீபத்திய தாவல்களைப் பார்க்க முடியாது</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">புக்மார்க் பட்டி</translation>
 <translation id="519530786644929958">பதிவிறக்க முடியவில்லை, இதை மீண்டும் முயல முடியாது.</translation>
 <translation id="5197255632782567636">இணையம்</translation>
+<translation id="5211488077761630279">உங்கள் <ph name="PERMISSION" /> பயன்படுத்த "<ph name="SITE_NAME" />" தளத்தை அனுமதிக்கவா?</translation>
 <translation id="5219295696240154694">இணையத்தில் உள்ள அனைவரின் பாதுகாப்பையும் மேம்படுத்த உதவுங்கள்</translation>
 <translation id="5228579091201413441">ஒத்திசைவை இயக்கு</translation>
 <translation id="5232485538978018676">நிர்வகிக்கப்படும் கணக்கு மூலம் உள்நுழைதல்</translation>

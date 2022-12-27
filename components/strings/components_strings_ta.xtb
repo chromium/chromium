@@ -2711,6 +2711,7 @@
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />'க்கு <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> உள்ளன</translation>
 <translation id="7822320754433038727">வேட்டையாடுதல் &amp; சுடுதல்</translation>
 <translation id="782886543891417279">நீங்கள் பயன்படுத்திக் கொண்டிருக்கும் (<ph name="WIFI_NAME" />) வைஃபை, அதன் உள்நுழைவுப் பக்கத்தை நீங்கள் பார்க்கக் கோரலாம்.</translation>
+<translation id="7840103971441592723">ஸ்கிரீன் கேப்சர் தொடங்கியது</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{எதுவுமில்லை}=1{1 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />)}=2{2 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">தளத்திலிருந்து வெளியேறவா?</translation>
@@ -2889,6 +2890,7 @@
 <translation id="8282947398454257691">உங்கள் தனிப்பட்ட சாதன அடையாளங்காட்டியை அறியும்</translation>
 <translation id="8284769179630993263">Chrome அமைப்புகளில் பாதுகாப்பு உலாவலையும் மேலும் பலவற்றையும் நிர்வகியுங்கள்</translation>
 <translation id="8286036467436129157">உள்நுழை</translation>
+<translation id="8286799286781881307">உங்கள் சாதனத்தில் இணைப்பட்டுள்ள திரைகள் அனைத்தையும் உங்கள் நிர்வாகி அங்கீகரித்துள்ள ஆப்ஸ் படமெடுக்கும். இந்தத் தகவலைச் சாதனத்திற்குள்ளேயே செயலாக்கலாம் அல்லது உங்கள் நிறுவனத்தின் சேவையகங்களில் பதிவேற்றலாம்.</translation>
 <translation id="8288807391153049143">சான்றிதழைக் காட்டும்</translation>
 <translation id="8289355894181816810">இதன் பொருள் உங்களுக்குத் தெரியவில்லையெனில் உங்கள் நெட்வொர்க் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="8293206222192510085">புக்மார்க்கைச் சேர்</translation>

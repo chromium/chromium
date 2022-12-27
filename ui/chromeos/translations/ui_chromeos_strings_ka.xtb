@@ -678,6 +678,7 @@
 <translation id="6607272825297743757">ფაილის ინფორმაცია</translation>
 <translation id="6609332149380188670">Parallels Desktop-თან გაზიარებულია <ph name="NUMBER_OF_ITEMS" /> საქაღალდე</translation>
 <translation id="6629518321609546825">შეიყვანეთ მინიმუმ 4 ციფრი</translation>
+<translation id="6639661343369899134">ფაილების ატვირთვა შეუძლებელია, რადგან <ph name="SHARED_DRIVE_NAME" />-ს არ აქვს საკმარისი მეხსიერება.</translation>
 <translation id="6643016212128521049">გასუფთავება</translation>
 <translation id="6650726141019353908">ვარდისფერი პეპელა</translation>
 <translation id="6657585470893396449">პაროლი</translation>

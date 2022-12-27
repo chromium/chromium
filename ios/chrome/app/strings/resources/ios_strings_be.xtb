@@ -510,6 +510,7 @@
 <translation id="481968316161811770">Файлы cookie, даныя сайта</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} і яшчэ 1}one{{domain} і яшчэ {count}}few{{domain} і яшчэ {count}}many{{domain} і яшчэ {count}}other{{domain} і яшчэ {count}}}</translation>
 <translation id="4826218269716039351">Староннія файлы cookie блакіруюцца</translation>
+<translation id="4826588772550366629">камеру і мікрафон</translation>
 <translation id="4826726074642088322">Абагуліць вылучанае змесціва</translation>
 <translation id="48274138579728272">Пазначыць як прачытанае</translation>
 <translation id="4833686396768033263">Нядаўнія ўкладкі недаступныя</translation>
@@ -562,6 +563,7 @@
 <translation id="5190835502935405962">Панэль закладак</translation>
 <translation id="519530786644929958">Збой спампоўвання. Паўтарыць спробу нельга.</translation>
 <translation id="5197255632782567636">Інтэрнэт</translation>
+<translation id="5211488077761630279">Дазволіць сайту <ph name="SITE_NAME" /> выкарыстоўваць <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Дапамажыце павысіць бяспеку ў інтэрнэце для кожнага</translation>
 <translation id="5228579091201413441">Уключыць сінхранізацыю</translation>
 <translation id="5232485538978018676">Уваход праз уліковы запіс пад кіраваннем</translation>

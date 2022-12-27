@@ -509,6 +509,7 @@
 <translation id="481968316161811770">कुकी, साइट डेटा</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} और 1 अन्य}one{{domain} और {count} अन्य}other{{domain} और {count} अन्य}}</translation>
 <translation id="4826218269716039351">तीसरे पक्ष की कुकी ब्लॉक करें</translation>
+<translation id="4826588772550366629">कैमरा और माइक्रोफ़ोन</translation>
 <translation id="4826726074642088322">हाइलाइट किया गया टेक्स्ट शेयर करें</translation>
 <translation id="48274138579728272">'पढ़ा गया' का निशान लगाएं</translation>
 <translation id="4833686396768033263">हाल ही में खोले गए टैब उपलब्ध नहीं हैं</translation>
@@ -561,6 +562,7 @@
 <translation id="5190835502935405962">बुकमार्क बार</translation>
 <translation id="519530786644929958">डाउनलोड नहीं की जा सकी. दोबारा कोशिश नहीं की जा सकती.</translation>
 <translation id="5197255632782567636">इंटरनेट</translation>
+<translation id="5211488077761630279">क्या आपको "<ph name="SITE_NAME" />" को <ph name="PERMISSION" /> का इस्तेमाल करने की अनुमति देनी है?</translation>
 <translation id="5219295696240154694">वेब को सभी के लिए ज़्यादा सुरक्षित बनाने में मदद करें</translation>
 <translation id="5228579091201413441">सिंक चालू करें</translation>
 <translation id="5232485538978018676">मैनेज किए जा रहे खाते से साइन इन करें</translation>

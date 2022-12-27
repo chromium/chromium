@@ -679,6 +679,7 @@
 <translation id="6607272825297743757">Informações do arquivo</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> pastas compartilhadas com o Parallels Desktop</translation>
 <translation id="6629518321609546825">Digite pelo menos quatro números</translation>
+<translation id="6639661343369899134">Não é possível fazer upload dos arquivos porque o drive <ph name="SHARED_DRIVE_NAME" /> não tem espaço de armazenamento suficiente.</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6650726141019353908">Borboleta rosa</translation>
 <translation id="6657585470893396449">Senha</translation>
