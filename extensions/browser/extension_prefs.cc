@@ -45,6 +45,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/manifest_handlers/app_display_info.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "extensions/common/url_pattern.h"
@@ -1371,8 +1372,8 @@ void ExtensionPrefs::OnExtensionInstalled(
                              ruleset_install_prefs, extension_dict.get());
 
   FinishExtensionInfoPrefs(extension->id(), install_time,
-                           extension->RequiresSortOrdinal(), page_ordinal,
-                           extension_dict.get());
+                           AppDisplayInfo::RequiresSortOrdinal(*extension),
+                           page_ordinal, extension_dict.get());
 }
 
 void ExtensionPrefs::OnExtensionUninstalled(const std::string& extension_id,
@@ -1552,7 +1553,7 @@ void ExtensionPrefs::SetDelayedInstallInfo(
   // Add transient data that is needed by FinishDelayedInstallInfo(), but
   // should not be in the final extension prefs. All entries here should have
   // a corresponding Remove() call in FinishDelayedInstallInfo().
-  if (extension->RequiresSortOrdinal()) {
+  if (AppDisplayInfo::RequiresSortOrdinal(*extension)) {
     extension_dict->SetString(kPrefSuggestedPageOrdinal,
                               page_ordinal.IsValid()
                                   ? page_ordinal.ToInternalValue()

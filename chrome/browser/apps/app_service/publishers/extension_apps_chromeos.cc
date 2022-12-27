@@ -80,6 +80,7 @@
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/manifest_handlers/app_display_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -301,7 +302,7 @@ void ExtensionAppsChromeOs::GetMenuModel(
     AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
   }
 
-  if (extension->ShouldDisplayInAppLauncher()) {
+  if (extensions::AppDisplayInfo::ShouldDisplayInAppLauncher(*extension)) {
     AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
                    menu_items);
   }

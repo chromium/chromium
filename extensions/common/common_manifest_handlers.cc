@@ -15,6 +15,7 @@
 #include "extensions/common/api/printer_provider/usb_printer_manifest_handler.h"
 #include "extensions/common/api/sockets/sockets_manifest_handler.h"
 #include "extensions/common/manifest_handler.h"
+#include "extensions/common/manifest_handlers/app_display_info.h"
 #include "extensions/common/manifest_handlers/automation.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
@@ -55,6 +56,7 @@ void RegisterCommonManifestHandlers() {
   registry->RegisterHandler(std::make_unique<ActionHandlersHandler>());
 #endif
   registry->RegisterHandler(std::make_unique<AutomationHandler>());
+  registry->RegisterHandler(std::make_unique<AppDisplayManifestHandler>());
   registry->RegisterHandler(std::make_unique<BackgroundManifestHandler>());
   registry->RegisterHandler(std::make_unique<BluetoothManifestHandler>());
   registry->RegisterHandler(std::make_unique<CommandsHandler>());

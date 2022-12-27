@@ -437,20 +437,6 @@ bool Extension::OverlapsWithOrigin(const GURL& origin) const {
   return web_extent().OverlapsWith(origin_only_pattern_list);
 }
 
-bool Extension::RequiresSortOrdinal() const {
-  return is_app() && (display_in_launcher_ || display_in_new_tab_page_);
-}
-
-bool Extension::ShouldDisplayInAppLauncher() const {
-  // Only apps should be displayed in the launcher.
-  return is_app() && display_in_launcher_;
-}
-
-bool Extension::ShouldDisplayInNewTabPage() const {
-  // Only apps should be displayed on the NTP.
-  return is_app() && display_in_new_tab_page_;
-}
-
 bool Extension::ShouldExposeViaManagementAPI() const {
   // Hide component extensions because they are only extensions as an
   // implementation detail of Chrome.
@@ -576,8 +562,6 @@ Extension::Extension(const base::FilePath& path,
       converted_from_user_script_(false),
       manifest_(manifest.release()),
       finished_parsing_manifest_(false),
-      display_in_launcher_(true),
-      display_in_new_tab_page_(true),
       wants_file_access_(false),
       creation_flags_(0) {
   DCHECK(path.empty() || path.IsAbsolute());
@@ -687,24 +671,6 @@ bool Extension::LoadAppFeatures(std::u16string* error) {
   if (!LoadExtent(keys::kWebURLs, &extent_,
                   errors::kInvalidWebURLs, errors::kInvalidWebURL, error)) {
     return false;
-  }
-  if (const base::Value* temp = manifest_->FindKey(keys::kDisplayInLauncher)) {
-    if (!temp->is_bool()) {
-      *error = errors::kInvalidDisplayInLauncher;
-      return false;
-    }
-    display_in_launcher_ = temp->GetBool();
-  }
-  if (const base::Value* temp =
-          manifest_->FindKey(keys::kDisplayInNewTabPage)) {
-    if (!temp->is_bool()) {
-      *error = errors::kInvalidDisplayInNewTabPage;
-      return false;
-    }
-    display_in_new_tab_page_ = temp->GetBool();
-  } else {
-    // Inherit default from display_in_launcher property.
-    display_in_new_tab_page_ = display_in_launcher_;
   }
   return true;
 }

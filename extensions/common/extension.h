@@ -227,19 +227,9 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Returns true if this extension or app includes areas within |origin|.
   bool OverlapsWithOrigin(const GURL& origin) const;
 
-  // Returns true if the extension requires a valid ordinal for sorting, e.g.,
-  // for displaying in a launcher or new tab page.
-  bool RequiresSortOrdinal() const;
-
   // TODO(devlin): The core Extension class shouldn't be responsible for these
-  // ShouldDisplay/ShouldExpose style functions; it doesn't know about the NTP,
-  // Management API, etc.
-
-  // Returns true if the extension should be displayed in the app launcher.
-  bool ShouldDisplayInAppLauncher() const;
-
-  // Returns true if the extension should be displayed in the browser NTP.
-  bool ShouldDisplayInNewTabPage() const;
+  // ShouldExpose-style functions; it doesn't know about the Management API,
+  // etc.
 
   // Returns true if the extension should be exposed via the chrome.management
   // API.
@@ -461,12 +451,6 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // initialization happens from the same thread (this can happen when certain
   // parts of the initialization process need information from previous parts).
   base::ThreadChecker thread_checker_;
-
-  // Should this app be shown in the app launcher.
-  bool display_in_launcher_;
-
-  // Should this app be shown in the browser New Tab Page.
-  bool display_in_new_tab_page_;
 
   // Whether the extension has host permissions or user script patterns that
   // imply access to file:/// scheme URLs (the user may not have actually

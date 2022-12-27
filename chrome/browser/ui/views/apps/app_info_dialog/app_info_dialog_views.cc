@@ -34,6 +34,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/manifest_handlers/app_display_info.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -84,7 +85,7 @@ bool CanShowAppInfoDialog(Profile* profile, const std::string& extension_id) {
   }
 
   // App Management only displays apps that are displayed in the launcher.
-  if (!extension->ShouldDisplayInAppLauncher()) {
+  if (!extensions::AppDisplayInfo::ShouldDisplayInAppLauncher(*extension)) {
     return false;
   }
 #endif

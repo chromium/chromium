@@ -27,6 +27,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/app_display_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/extensions/default_app_order.h"
@@ -749,11 +750,12 @@ size_t ChromeAppSorting::CountItemsVisibleOnNtp(
 void ChromeAppSorting::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  if (!extension->RequiresSortOrdinal()) {
+  if (!AppDisplayInfo::RequiresSortOrdinal(*extension)) {
     return;
   }
 
-  SetExtensionVisible(extension->id(), extension->ShouldDisplayInNewTabPage());
+  SetExtensionVisible(extension->id(),
+                      AppDisplayInfo::ShouldDisplayInNewTabPage(*extension));
   EnsureValidOrdinals(extension->id(), syncer::StringOrdinal());
 }
 

@@ -35,6 +35,7 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/manifest_handlers/app_display_info.h"
 
 namespace {
 
@@ -314,7 +315,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->show_in_launcher = show;
     app->show_in_shelf = show;
     app->show_in_search = show;
-    app->show_in_management = extension->ShouldDisplayInAppLauncher();
+    app->show_in_management =
+        extensions::AppDisplayInfo::ShouldDisplayInAppLauncher(*extension);
     app->handles_intents = which_type_.IsExtensions() || show;
 
     if (which_type_.IsChromeApps()) {

@@ -15,6 +15,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/image_util.h"
+#include "extensions/common/manifest_handlers/app_display_info.h"
 
 namespace extensions {
 
@@ -39,14 +40,14 @@ bool ShouldDisplayInAppLauncher(const Extension* extension,
 
 bool CanDisplayInAppLauncher(const Extension* extension,
                              content::BrowserContext* context) {
-  return extension->ShouldDisplayInAppLauncher() &&
+  return AppDisplayInfo::ShouldDisplayInAppLauncher(*extension) &&
          !IsBlockedByPolicy(extension, context);
 }
 
 bool ShouldDisplayInNewTabPage(const Extension* extension,
                                content::BrowserContext* context) {
-  return extension->ShouldDisplayInNewTabPage() &&
-      !IsBlockedByPolicy(extension, context);
+  return AppDisplayInfo::ShouldDisplayInNewTabPage(*extension) &&
+         !IsBlockedByPolicy(extension, context);
 }
 
 std::u16string GetEnabledExtensionNameForUrl(const GURL& url,
