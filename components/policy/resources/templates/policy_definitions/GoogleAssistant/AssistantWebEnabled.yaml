@@ -24,7 +24,6 @@ items:
 - caption: Allow the user to decide
   value: null
 owners:
-- file://components/autofill_assistant/OWNERS
 - brunobraga@google.com
 - jkeitel@google.com
 schema:
