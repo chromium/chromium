@@ -1341,6 +1341,17 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Use resource from cache"/>
 </enum>
 
+<enum name="ActivateDeskByIndex">
+  <int value="0" label="kDesk1"/>
+  <int value="1" label="kDesk2"/>
+  <int value="2" label="kDesk3"/>
+  <int value="3" label="kDesk4"/>
+  <int value="4" label="kDesk5"/>
+  <int value="5" label="kDesk6"/>
+  <int value="6" label="kDesk7"/>
+  <int value="7" label="kDesk8"/>
+</enum>
+
 <enum name="ActivationList">
   <int value="0" label="No match"/>
   <int value="1" label="Social Eng Ads Interstitial"/>

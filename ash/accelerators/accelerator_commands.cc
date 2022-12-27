@@ -102,6 +102,8 @@ const char kAccessibilityScreenMagnifierShortcut[] =
 const char kAccessibilityDockedMagnifierShortcut[] =
     "Accessibility.Shortcuts.CrosDockedMagnifier";
 const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
+const char kAccelRotation[] = "Ash.Accelerators.Rotation.Usage";
+const char kAccelActivateDesk[] = "Ash.Accelerators.ActivateDesk";
 
 namespace accelerators {
 
@@ -129,11 +131,30 @@ enum class RotationAcceleratorAction {
   kMaxValue = kAlreadyAcceptedDialog,
 };
 
+// Record which desk is activated.
+enum class ActivateDeskAcceleratorAction {
+  kDesk1 = 0,
+  kDesk2 = 1,
+  kDesk3 = 2,
+  kDesk4 = 3,
+  kDesk5 = 4,
+  kDesk6 = 5,
+  kDesk7 = 6,
+  kDesk8 = 7,
+  kMaxValue = kDesk8,
+};
+
 void RecordRotationAcceleratorAction(const RotationAcceleratorAction& action) {
-  UMA_HISTOGRAM_ENUMERATION("Ash.Accelerators.Rotation.Usage", action);
+  UMA_HISTOGRAM_ENUMERATION(kAccelRotation, action);
 }
 
-void RecordWindowSnapAcceleratorAction(WindowSnapAcceleratorAction action) {
+void RecordActivateDeskByIndexAcceleratorAction(
+    const ActivateDeskAcceleratorAction& action) {
+  UMA_HISTOGRAM_ENUMERATION(kAccelActivateDesk, action);
+}
+
+void RecordWindowSnapAcceleratorAction(
+    const WindowSnapAcceleratorAction& action) {
   UMA_HISTOGRAM_ENUMERATION(kAccelWindowSnap, action);
 }
 
@@ -535,6 +556,9 @@ void ActivateDeskAtIndex(AcceleratorAction action) {
 
   const auto& desks = desks_controller->desks();
   if (target_index < desks.size()) {
+    // Record which desk users switch to.
+    RecordActivateDeskByIndexAcceleratorAction(
+        static_cast<ActivateDeskAcceleratorAction>(target_index));
     desks_controller->ActivateDesk(
         desks[target_index].get(),
         DesksSwitchSource::kIndexedDeskSwitchShortcut);

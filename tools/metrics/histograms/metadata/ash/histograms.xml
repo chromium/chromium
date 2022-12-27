@@ -86,6 +86,17 @@ chromium-metrics-reviews@google.com.
   <variant name=".TabletMode.WithOverview" summary=""/>
 </variants>
 
+<histogram name="Ash.Accelerators.ActivateDeskByIndex"
+    enum="ActivateDeskByIndex" expires_after="2023-12-21">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record which desk the user switches to. Fires when the user switches desk to
+    a specific index using a keyboard shortcut.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Accelerators.Deprecated.ShowImeMenuBubble"
     enum="DeprecatedAcceleratorUsage" expires_after="M77">
   <owner>afakhry@chromium.org</owner>
