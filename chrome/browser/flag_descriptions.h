@@ -195,11 +195,6 @@ extern const char kAutofillAlwaysReturnCloudTokenizedCardDescription[];
 extern const char kAutofillAutoTriggerManualFallbackForCardsName[];
 extern const char kAutofillAutoTriggerManualFallbackForCardsDescription[];
 
-extern const char
-    kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseName[];
-extern const char
-    kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseDescription[];
-
 extern const char kAutofillEnableFIDOProgressDialogName[];
 extern const char kAutofillEnableFIDOProgressDialogDescription[];
 

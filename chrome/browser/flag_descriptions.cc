@@ -327,17 +327,6 @@ const char kAutofillAutoTriggerManualFallbackForCardsDescription[] =
     "When enabled, manual fallback will be auto-triggered on form interaction "
     "in the case where autofill failed to fill a credit card form accurately.";
 
-const char kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseName[] =
-    "Enable parsing of the GetDetailsForEnrollResponseDetails in the "
-    "UploadCardResponseDetails";
-const char
-    kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseDescription[] =
-        "When enabled, the GetDetailsForEnrollResponseDetails in the "
-        "UploadCardResponseDetails will be parsed, which will allow the "
-        "Virtual Card Enrollment flow to skip making a new GetDetailsForEnroll "
-        "request. This is an optimization to improve the latency of the "
-        "Virtual Card Enrollment flow.";
-
 const char kAutofillEnableFIDOProgressDialogName[] =
     "Show FIDO progress dialog on Android";
 const char kAutofillEnableFIDOProgressDialogDescription[] =

@@ -152,11 +152,8 @@ void UploadCardRequest::ParseResponse(const base::Value& response) {
       }
     }
 
-    if (base::FeatureList::IsEnabled(
-            features::
-                kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse) &&
-        upload_card_response_details_.virtual_card_enrollment_state ==
-            CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
+    if (upload_card_response_details_.virtual_card_enrollment_state ==
+        CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
       const auto* virtual_card_enrollment_data =
           virtual_card_metadata->FindKeyOfType("virtual_card_enrollment_data",
                                                base::Value::Type::DICTIONARY);
