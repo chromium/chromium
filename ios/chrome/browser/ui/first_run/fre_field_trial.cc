@@ -97,13 +97,6 @@ void AssociateFieldTrialParamsForNewMobileIdentityConsistency(
 
 namespace fre_field_trial {
 
-NewDefaultBrowserPromoFRE GetFREDefaultBrowserScreenPromoFRE() {
-  if (base::FeatureList::IsEnabled(kEnableFREDefaultBrowserPromoScreen)) {
-    return NewDefaultBrowserPromoFRE::kShortDelay;
-  }
-  return NewDefaultBrowserPromoFRE::kDisabled;
-}
-
 NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE() {
   if (base::FeatureList::IsEnabled(signin::kNewMobileIdentityConsistencyFRE)) {
     return kkNewMobileIdentityConsistencyFREParam.Get();

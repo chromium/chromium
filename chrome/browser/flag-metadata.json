@@ -2327,11 +2327,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "enable-fre-default-browser-screen-testing",
-    "owners": [ "alionadangla", "gambard" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-fullscreen-api",
     "owners": [ "ajuma", "joemerramos" ],
     "expiry_milestone": 113

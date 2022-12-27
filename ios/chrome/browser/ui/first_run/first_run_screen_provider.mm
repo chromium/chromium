@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/screen/screen_provider+protected.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,12 +37,7 @@
       [screens addObject:@(kSignInAndSync)];
       break;
   }
-
-  if (fre_field_trial::GetFREDefaultBrowserScreenPromoFRE() !=
-      NewDefaultBrowserPromoFRE::kDisabled) {
-    [screens addObject:@(kDefaultBrowserPromo)];
-  }
-
+  [screens addObject:@(kDefaultBrowserPromo)];
   [screens addObject:@(kStepsCompleted)];
   return [super initWithScreens:screens];
 }

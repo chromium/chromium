@@ -51,10 +51,6 @@ enum class NewMobileIdentityConsistencyFRE {
 
 namespace fre_field_trial {
 
-// Returns the FRE default browser promo setup according to the feature flag and
-// experiment. See NewDefaultBrowserPromoFRE.
-NewDefaultBrowserPromoFRE GetFREDefaultBrowserScreenPromoFRE();
-
 // Returns the FRE to display according to the feature flag and experiment.
 // See NewMobileIdentityConsistencyFRE.
 NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE();

@@ -75,6 +75,18 @@ GREYElementInteraction* ElementInteractionWithGreyMatcher(
       onElementWithMatcher:scrollViewMatcher];
 }
 
+// Dismiss default browser promo.
+void DismissDefaultBrowserPromo() {
+  id<GREYMatcher> buttonMatcher = grey_allOf(
+      grey_ancestor(grey_accessibilityID(
+          first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
+      nil);
+  [[[EarlGrey selectElementWithMatcher:buttonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+}
+
 }  // namespace
 
 // Test first run with UMA dialog MICe FRE. Those tests are only related to the
@@ -95,8 +107,6 @@ GREYElementInteraction* ElementInteractionWithGreyMatcher(
   AppLaunchConfiguration config;
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kSignInAtStartup);
-  // Disable default browser promo.
-  config.features_disabled.push_back(kEnableFREDefaultBrowserPromoScreen);
   // Show the First Run UI at startup.
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
@@ -304,6 +314,7 @@ GREYElementInteraction* ElementInteractionWithGreyMatcher(
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }
@@ -330,6 +341,7 @@ GREYElementInteraction* ElementInteractionWithGreyMatcher(
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }

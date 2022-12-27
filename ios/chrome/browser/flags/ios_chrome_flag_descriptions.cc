@@ -270,12 +270,6 @@ const char kEnableDiscoverFeedDiscoFeedEndpointName[] =
 const char kEnableDiscoverFeedDiscoFeedEndpointDescription[] =
     "Enable using the discofeed endpoint for the discover feed.";
 
-const char kEnableFREDefaultBrowserPromoScreenName[] =
-    "Enable FRE default browser screen";
-const char kEnableFREDefaultBrowserPromoScreenDescription[] =
-    "Display the FRE default browser screen and other default browser promo "
-    "depending on experiment.";
-
 const char kEnableFeedAblationName[] = "Enables Feed Ablation";
 const char kEnableFeedAblationDescription[] =
     "If Enabled the Feed will be removed from the NTP";

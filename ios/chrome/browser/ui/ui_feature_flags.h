@@ -33,11 +33,6 @@ BASE_DECLARE_FEATURE(kTestFeature);
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 
-// Feature flag for testing the 'default browser' screen in FRE and different
-// experiments to suggest the users to update the default browser in the
-// Settings.app.
-BASE_DECLARE_FEATURE(kEnableFREDefaultBrowserPromoScreen);
-
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished. Flag to modernize the tabstrip without disturbing the existing one.
 BASE_DECLARE_FEATURE(kModernTabStrip);

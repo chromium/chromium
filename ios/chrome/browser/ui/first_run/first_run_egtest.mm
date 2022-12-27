@@ -89,6 +89,15 @@ id<GREYMatcher> GetNoThanksButton() {
       grey_sufficientlyVisible(), nil);
 }
 
+// Dismiss default browser promo.
+void DismissDefaultBrowserPromo() {
+  id<GREYMatcher> buttonMatcher = grey_allOf(
+      grey_ancestor(grey_accessibilityID(
+          first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
+      GetNoThanksButton(), nil);
+  [[EarlGrey selectElementWithMatcher:buttonMatcher] performAction:grey_tap()];
+}
+
 // Returns a constraint where the element is below the reference.
 GREYLayoutConstraint* BelowConstraint() {
   return [GREYLayoutConstraint
@@ -126,8 +135,6 @@ GREYLayoutConstraint* BelowConstraint() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
-  config.features_disabled.push_back(kEnableFREDefaultBrowserPromoScreen);
-
   // Show the First Run UI at startup.
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
@@ -139,11 +146,6 @@ GREYLayoutConstraint* BelowConstraint() {
 }
 
 #pragma mark - Helpers
-
-// Remove when default browser screen will be fully enabled
-- (BOOL)isDefaultBrowserTestDisabled {
-  return YES;
-}
 
 // Checks that the welcome screen is displayed.
 - (void)verifyWelcomeScreenIsDisplayed {
@@ -177,28 +179,6 @@ GREYLayoutConstraint* BelowConstraint() {
           grey_accessibilityID(
               first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
-}
-
-// Checks that none of any FRE's screen is displayed.
-- (void)verifyFREIsDismissed {
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunWelcomeScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_nil()];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kSigninSyncScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_nil()];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(
-              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_nil()];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Scrolls down to `elementMatcher` in the scrollable content of the first run
@@ -407,6 +387,7 @@ GREYLayoutConstraint* BelowConstraint() {
   [self scrollToElementAndAssertVisibility:GetNoThanksButton()];
   [[EarlGrey selectElementWithMatcher:GetNoThanksButton()]
       performAction:grey_tap()];
+  DismissDefaultBrowserPromo();
 
   // Add account for the identity switcher to be shown.
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -422,12 +403,7 @@ GREYLayoutConstraint* BelowConstraint() {
 }
 
 // Checks that the default browser screen is displayed correctly.
-// TODO(crbug.com/1282248): Re-enable this test.
-- (void)DISABLED_testDefaultBrowserScreenUI {
-  if ([self isDefaultBrowserTestDisabled]) {
-    return;
-  }
-
+- (void)testDefaultBrowserScreenUI {
   // Go to the default browser screen.
   [self verifyWelcomeScreenIsDisplayed];
   [self scrollToElementAndAssertVisibility:GetAcceptButton()];
@@ -558,7 +534,7 @@ GREYLayoutConstraint* BelowConstraint() {
   [self scrollToElementAndAssertVisibility:GetAcceptButton()];
   [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
       performAction:grey_tap()];
-  [self verifyFREIsDismissed];
+  [self verifyDefaultBrowserScreenIsDisplayed];
 }
 
 // Checks that when opening the app no accounts are here and the primary button
@@ -650,6 +626,7 @@ GREYLayoutConstraint* BelowConstraint() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   // Verify that the sync cell is visible and "On" is displayed.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 
@@ -698,6 +675,7 @@ GREYLayoutConstraint* BelowConstraint() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeSupervisedIdentity];
 
   // Verify that the sync cell is visible and "On" is displayed.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 
@@ -722,7 +700,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
   // Verify that the user is not signed in.
   [SigninEarlGrey verifySignedOut];
-
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Because the user is not signed in, the sync cell is not be visible.
@@ -768,6 +746,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
   // Verify that the browser isn't signed in by validating that there isn't a
   // sync cell visible in settings.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIIsHidden];
 
@@ -828,6 +807,7 @@ GREYLayoutConstraint* BelowConstraint() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   // Verify that the sync cell is visible and "Off" is displayed.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:NO];
 
@@ -877,6 +857,7 @@ GREYLayoutConstraint* BelowConstraint() {
   GREYAssertTrue([FirstRunAppInterface isSyncFirstSetupComplete],
                  @"Sync should start when turning on sync in FRE.");
 
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySyncUIEnabled:YES];
@@ -949,6 +930,7 @@ GREYLayoutConstraint* BelowConstraint() {
   GREYAssertTrue([FirstRunAppInterface isSyncFirstSetupComplete],
                  @"Sync should start when turning on sync in FRE.");
 
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
@@ -1011,6 +993,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
   // Verify that the browser isn't signed in by validating that there isn't a
   // sync cell visible in settings.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIIsHidden];
 
@@ -1038,7 +1021,7 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   // The Sync screen should not be displayed, so the NTP should be visible.
-  [self verifyFREIsDismissed];
+  [self verifyDefaultBrowserScreenIsDisplayed];
 }
 
 @end

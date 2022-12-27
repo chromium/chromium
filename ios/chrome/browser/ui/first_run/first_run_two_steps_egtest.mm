@@ -85,6 +85,18 @@ id<GREYMatcher> GetSyncSettings() {
                     grey_ancestor(disclaimer), nil);
 }
 
+// Dismiss default browser promo.
+void DismissDefaultBrowserPromo() {
+  id<GREYMatcher> buttonMatcher = grey_allOf(
+      grey_ancestor(grey_accessibilityID(
+          first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
+      nil);
+  [[[EarlGrey selectElementWithMatcher:buttonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+}
+
 }  // namespace
 
 // Test first run stages
@@ -135,8 +147,6 @@ id<GREYMatcher> GetSyncSettings() {
       std::string(signin::kNewMobileIdentityConsistencyFRE.name) +
       ".Test:" + std::string(kNewMobileIdentityConsistencyFREParam) + "/" +
       kNewMobileIdentityConsistencyFREParamTwoSteps);
-  // Disable default browser promo.
-  config.features_disabled.push_back(kEnableFREDefaultBrowserPromoScreen);
   // Show the First Run UI at startup.
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
@@ -355,6 +365,7 @@ id<GREYMatcher> GetSyncSettings() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }
@@ -386,6 +397,7 @@ id<GREYMatcher> GetSyncSettings() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }
@@ -417,6 +429,7 @@ id<GREYMatcher> GetSyncSettings() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is off.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:NO];
 }
@@ -477,6 +490,7 @@ id<GREYMatcher> GetSyncSettings() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::ManageSyncSettingsButton()];
@@ -538,6 +552,7 @@ id<GREYMatcher> GetSyncSettings() {
                        kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Check sync is on.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }
@@ -594,6 +609,7 @@ id<GREYMatcher> GetSyncSettings() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
   // Close settings.
@@ -630,6 +646,7 @@ id<GREYMatcher> GetSyncSettings() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:NO];
   // Close settings.
@@ -660,6 +677,7 @@ id<GREYMatcher> GetSyncSettings() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:NO];
 }
@@ -716,6 +734,7 @@ id<GREYMatcher> GetSyncSettings() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }
@@ -824,6 +843,7 @@ id<GREYMatcher> GetSyncSettings() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeSupervisedIdentity];
   // Check sync is on.
+  DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }

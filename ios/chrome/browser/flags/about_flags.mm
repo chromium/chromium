@@ -402,23 +402,6 @@ const FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
 };
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 
-const FeatureEntry::FeatureParam kFREDefaultBrowserPromoDefaultDelay[] = {
-    {kFREDefaultBrowserPromoParam, kFREDefaultBrowserPromoDefaultDelayParam}};
-const FeatureEntry::FeatureParam kFREDefaultBrowserPromoFirstRunOnly[] = {
-    {kFREDefaultBrowserPromoParam, kFREDefaultBrowserPromoFirstRunOnlyParam}};
-const FeatureEntry::FeatureParam kFREDefaultBrowserPromoShortDelay[] = {
-    {kFREDefaultBrowserPromoParam, kFREDefaultBrowserPromoShortDelayParam}};
-const FeatureEntry::FeatureVariation kFREDefaultBrowserPromoVariations[] = {
-    {"Wait 14 days after FRE default browser promo",
-     kFREDefaultBrowserPromoDefaultDelay,
-     std::size(kFREDefaultBrowserPromoDefaultDelay), nullptr},
-    {"FRE default browser promo only", kFREDefaultBrowserPromoFirstRunOnly,
-     std::size(kFREDefaultBrowserPromoFirstRunOnly), nullptr},
-    {"Wait 3 days after FRE default browser promo",
-     kFREDefaultBrowserPromoShortDelay,
-     std::size(kFREDefaultBrowserPromoShortDelay), nullptr},
-};
-
 const FeatureEntry::FeatureParam kTrendingQueriesEnableAllUsers[] = {
     {kTrendingQueriesHideShortcutsParam, "false"}};
 const FeatureEntry::FeatureParam kTrendingQueriesEnableAllUsersHideShortcuts[] =
@@ -852,13 +835,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableDiscoverFeedTopSyncPromo,
                                     kDiscoverFeedTopSyncPromoVariations,
                                     "EnableDiscoverFeedTopSyncPromo")},
-    {"enable-fre-default-browser-screen-testing",
-     flag_descriptions::kEnableFREDefaultBrowserPromoScreenName,
-     flag_descriptions::kEnableFREDefaultBrowserPromoScreenDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFREDefaultBrowserPromoScreen,
-                                    kFREDefaultBrowserPromoVariations,
-                                    kIOSMICeAndDefaultBrowserTrialName)},
     {"shared-highlighting-amp",
      flag_descriptions::kIOSSharedHighlightingAmpName,
      flag_descriptions::kIOSSharedHighlightingAmpDescription, flags_ui::kOsIos,
