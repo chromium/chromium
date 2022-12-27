@@ -20,11 +20,6 @@
 
 namespace blink {
 
-class ExceptionState;
-class ScriptPromise;
-class ScriptPromiseResolver;
-class ScriptState;
-
 class MODULES_EXPORT PressureObserverManager final
     : public GarbageCollected<PressureObserverManager>,
       public ExecutionContextLifecycleStateObserver,
@@ -41,10 +36,7 @@ class MODULES_EXPORT PressureObserverManager final
   PressureObserverManager(const PressureObserverManager&) = delete;
   PressureObserverManager& operator=(const PressureObserverManager&) = delete;
 
-  ScriptPromise AddObserver(V8PressureSource,
-                            blink::PressureObserver*,
-                            ScriptState*,
-                            ExceptionState&);
+  void AddObserver(V8PressureSource, blink::PressureObserver*);
   void RemoveObserver(V8PressureSource, blink::PressureObserver*);
   void RemoveObserverFromAllSources(blink::PressureObserver*);
 
@@ -59,6 +51,13 @@ class MODULES_EXPORT PressureObserverManager final
   void Trace(Visitor*) const override;
 
  private:
+  // kUninitialized: receiver_ is not bound and
+  // pressure_service_->BindObserver() must be called.
+  // kInitializing: pressure_service_->BindObserver() has been called,
+  // but DidBindObserver() has not been called yet.
+  // kInitialized: DidBindObserver() was invoked and succeeded.
+  enum class State { kUninitialized, kInitializing, kInitialized };
+
   void EnsureServiceConnection();
 
   // Verifies if the data should be delivered according to privacy status.
@@ -70,14 +69,7 @@ class MODULES_EXPORT PressureObserverManager final
   // Called when `receiver_` is disconnected.
   void Reset();
 
-  bool IsRegistering(V8PressureSource, blink::PressureObserver*) const;
-
-  bool IsRegistered(V8PressureSource, blink::PressureObserver*) const;
-
-  void DidBindObserver(V8PressureSource,
-                       blink::PressureObserver*,
-                       ScriptPromiseResolver*,
-                       mojom::blink::PressureStatus);
+  void DidBindObserver(V8PressureSource, mojom::blink::PressureStatus);
 
   constexpr static size_t kPressureSourceSize = V8PressureSource::kEnumSize;
 
@@ -88,11 +80,9 @@ class MODULES_EXPORT PressureObserverManager final
   HeapMojoReceiver<mojom::blink::PressureObserver, PressureObserverManager>
       receiver_;
 
-  HeapHashSet<Member<blink::PressureObserver>>
-      registering_observers_[kPressureSourceSize];
+  State state_ = State::kUninitialized;
 
-  HeapHashSet<Member<blink::PressureObserver>>
-      registered_observers_[kPressureSourceSize];
+  HeapHashSet<Member<blink::PressureObserver>> observers_[kPressureSourceSize];
 };
 
 }  // namespace blink

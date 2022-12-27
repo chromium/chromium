@@ -13,9 +13,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_update_callback.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -33,6 +36,7 @@ class PressureObserverManager;
 class PressureObserverOptions;
 class PressureRecord;
 class ScriptPromise;
+class ScriptPromiseResolver;
 class ScriptState;
 
 class PressureObserver final : public ScriptWrappable {
@@ -50,7 +54,7 @@ class PressureObserver final : public ScriptWrappable {
 
   // PressureObserver IDL implementation.
   ScriptPromise observe(ScriptState*, V8PressureSource, ExceptionState&);
-  void unobserve(V8PressureSource source);
+  void unobserve(V8PressureSource);
   void disconnect();
   HeapVector<Member<PressureRecord>> takeRecords();
   static Vector<V8PressureSource> supportedSources();
@@ -67,6 +71,9 @@ class PressureObserver final : public ScriptWrappable {
                 V8PressureState::Enum,
                 const Vector<V8PressureFactor>&,
                 DOMHighResTimeStamp);
+  void OnBindingSucceeded(V8PressureSource);
+  void OnBindingFailed(V8PressureSource, DOMExceptionCode);
+  void OnConnectionError();
 
  private:
   // Verifies if the latest update was at least longer than the sample period.
@@ -76,6 +83,12 @@ class PressureObserver final : public ScriptWrappable {
   bool HasChangeInData(V8PressureSource::Enum,
                        V8PressureState::Enum,
                        const Vector<V8PressureFactor>&) const;
+
+  // Resolve/reject pending resolvers.
+  void ResolvePendingResolvers(V8PressureSource);
+  void RejectPendingResolvers(V8PressureSource,
+                              DOMExceptionCode,
+                              const String&);
 
   // Scheduled method to invoke callback.
   void ReportToCallback(ExecutionContext*);
@@ -89,6 +102,9 @@ class PressureObserver final : public ScriptWrappable {
   // Requested sample rate from the user.
   // https://wicg.github.io/compute-pressure/#dfn-samplerate
   double sample_rate_;
+
+  HeapHashSet<Member<ScriptPromiseResolver>>
+      pending_resolvers_[V8PressureSource::kEnumSize];
 
   // The last valid record received from the observer manager.
   // Stored to avoid sending updates whenever the new record is the same.

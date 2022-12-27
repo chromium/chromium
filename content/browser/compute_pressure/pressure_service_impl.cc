@@ -50,6 +50,12 @@ void PressureServiceImpl::BindReceiver(
     return;
   }
   receiver_.Bind(std::move(receiver));
+  // base::Unretained is safe because Mojo guarantees the callback will not
+  // be called after `observers_` is deallocated, and `observers_` is owned by
+  // this class.
+  receiver_.set_disconnect_handler(
+      base::BindRepeating(&PressureServiceImpl::OnServiceReceiverDisconnected,
+                          base::Unretained(this)));
 }
 
 void PressureServiceImpl::BindObserver(
@@ -117,6 +123,15 @@ void PressureServiceImpl::OnObserverRemoteDisconnected() {
 void PressureServiceImpl::OnManagerRemoteDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  observer_.reset();
+  client_.reset();
+  remote_.reset();
+}
+
+void PressureServiceImpl::OnServiceReceiverDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  receiver_.reset();
   observer_.reset();
   client_.reset();
   remote_.reset();

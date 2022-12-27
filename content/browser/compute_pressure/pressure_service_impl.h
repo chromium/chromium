@@ -57,6 +57,8 @@ class CONTENT_EXPORT PressureServiceImpl
 
   void OnManagerRemoteDisconnected();
 
+  void OnServiceReceiverDisconnected();
+
   void DidBindObserver(BindObserverCallback callback, bool success);
 
   // Resets the state used to dispatch updates to observer.
