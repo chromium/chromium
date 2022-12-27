@@ -5597,7 +5597,7 @@
     "owners": [
       "//content/browser/private_aggregation/OWNERS"
     ],
-    "expiry_milestone": 111
+    "expiry_milestone": 117
   },
   {
     "name": "private-network-access-preflight-short-timeout",
