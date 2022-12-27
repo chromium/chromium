@@ -254,6 +254,7 @@ public class ActivityTabStartupMetricsTracker {
 
         if (mHistogramSuffix == ActivityType.TABBED && isTrackedPage
                 && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
+            mFirstCommitTimeMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
             RecordHistogram.recordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed", mFirstCommitTimeMs);
         }

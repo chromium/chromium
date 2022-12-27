@@ -307,6 +307,9 @@ public class StartupLoadingMetricsTest {
         // The metric based on early foreground notification should be recorded.
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting(FIRST_COMMIT_HISTOGRAM2));
+        // The startup time is not zero.
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramValueCountForTesting(FIRST_COMMIT_HISTOGRAM2, 0));
 
         // The metric for the first navigation commit having occurred pre-foregrounding should also
         // not have been recorded at this point, as there hasn't yet been a notification that the
