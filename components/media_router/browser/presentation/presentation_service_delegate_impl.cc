@@ -212,7 +212,11 @@ bool PresentationFrame::HasScreenAvailabilityListenerForTest(
 }
 
 void PresentationFrame::Reset() {
-  for (const auto& pid_route : presentation_id_to_route_) {
+  // Create a copy here to avoid `pid_route` being invalidated while iterating.
+  // `router->DetachRoute()` might cause a Presentation route to be terminated
+  // and removed from `presentation_id_to_route_`.
+  auto presentation_id_to_route_copy(presentation_id_to_route_);
+  for (const auto& pid_route : presentation_id_to_route_copy) {
     if (pid_route.second.is_local_presentation()) {
       auto* local_presentation_manager =
           LocalPresentationManagerFactory::GetOrCreateForWebContents(
