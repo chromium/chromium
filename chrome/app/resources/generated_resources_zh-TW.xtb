@@ -2730,7 +2730,7 @@
 <translation id="3507888235492474624">重新掃描藍牙裝置</translation>
 <translation id="3508492320654304609">無法刪除你的登入資料</translation>
 <translation id="3508920295779105875">選擇另一個資料夾...</translation>
-<translation id="3509379002674019679">建立、儲存及管理密碼，讓你輕鬆登入網站和應用程式。</translation>
+<translation id="3509379002674019679">建立、儲存及管理密碼，輕鬆登入網站和應用程式。</translation>
 <translation id="3511200754045804813">重新掃描</translation>
 <translation id="3511307672085573050">複製連結網址(&amp;E)</translation>
 <translation id="351152300840026870">固定寬度字型</translation>
@@ -4066,7 +4066,7 @@
 <translation id="4780321648949301421">另存網頁...</translation>
 <translation id="4781443161433589743">你啟用了 Chrome 最強大的安全防護功能</translation>
 <translation id="4781584184731045253">清除資料和權限</translation>
-<translation id="4782861709165039462">裝置硬體切換按鈕已停用所有的麥克風</translation>
+<translation id="4782861709165039462">裝置硬體切換鈕已停用所有的麥克風</translation>
 <translation id="4785719467058219317">你目前使用的安全金鑰並未在這個網站註冊</translation>
 <translation id="4785914069240823137">取消裁剪</translation>
 <translation id="4788092183367008521">請檢查你的網路連線，然後再試一次。</translation>
@@ -4364,7 +4364,7 @@
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />、<ph name="FILE2" />}other{<ph name="FILE1" />、<ph name="FILE2" /> 和另外 # 個檔案}}</translation>
 <translation id="5074318175948309511">你可能需要重新載入這個網頁，新設定才會生效。</translation>
 <translation id="5074761966806028321">仍需要權限才能完成設定</translation>
-<translation id="5075563999073408211">透過一或多個切換按鈕控制自己的裝置。切換按鈕可能是鍵盤按鍵、遊戲手把按鈕或專用裝置。</translation>
+<translation id="5075563999073408211">透過一或多個切換鈕控制自己的裝置。切換鈕可能是鍵盤按鍵、遊戲手把按鈕或專用裝置。</translation>
 <translation id="5075910247684008552">系統預設會封鎖安全網站上的不安全內容</translation>
 <translation id="5078638979202084724">將所有分頁加入書籤</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
@@ -5844,7 +5844,7 @@
 <translation id="648927581764831596">沒有可用的裝置</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="6491376743066338510">授權失敗</translation>
-<translation id="6492396476180293140">內部相機已透過硬體切換按鈕停用</translation>
+<translation id="6492396476180293140">內部相機已透過硬體切換鈕停用</translation>
 <translation id="6494327278868541139">顯示強化防護功能詳細資料</translation>
 <translation id="6494445798847293442">這不是憑證授權單位</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{這項資料含有敏感內容或危險內容}=1{這個檔案含有敏感內容或危險內容}other{這些檔案含有敏感內容或危險內容}}</translation>
