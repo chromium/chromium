@@ -318,7 +318,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     window->SetProperty(aura::client::kAppType,
                         static_cast<int>(ash::AppType::LACROS));
     window->SetProperty(app_restore::kLacrosWindowId,
-                        std::string(kLacrosWindowId));
+                        std::string(lacros_window_id));
     window->SetProperty(app_restore::kWindowIdKey, restore_session_id);
     window->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
     return window;
