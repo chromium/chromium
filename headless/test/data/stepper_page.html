@@ -1,0 +1,13 @@
+<html>
+  <body>
+  <div id="box"></div>
+  <script>
+    let timer_count = 0;
+    function callback() {
+      document.getElementById('box').textContent = timer_count++;
+      window.setTimeout(callback, 1000);
+    }
+    callback();
+  </script>
+</body>
+</html>

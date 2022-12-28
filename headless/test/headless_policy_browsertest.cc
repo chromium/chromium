@@ -23,6 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "headless/lib/browser/policy/headless_mode_policy.h"
 #include "headless/public/headless_browser.h"
+#include "headless/test/capture_std_stream.h"
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
 #include "net/base/host_port_pair.h"
@@ -116,85 +117,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithUrlBlockPolicy, BlockUrl) {
   EXPECT_EQ(error, net::ERR_BLOCKED_BY_ADMINISTRATOR);
 }
 
-namespace {
-
-class CaptureStdErr {
- public:
-  CaptureStdErr() {
-#if BUILDFLAG(IS_WIN)
-    CHECK_EQ(_pipe(pipes_, 4096, O_BINARY), 0);
-#else
-    CHECK_EQ(pipe(pipes_), 0);
-#endif
-    stderr_ = dup(fileno(stderr));
-    CHECK_NE(stderr_, -1);
-  }
-
-  ~CaptureStdErr() {
-    StopCapture();
-    close(pipes_[kReadPipe]);
-    close(pipes_[kWritePipe]);
-    close(stderr_);
-  }
-
-  void StartCapture() {
-    if (capturing_)
-      return;
-
-    fflush(stderr);
-    CHECK_NE(dup2(pipes_[kWritePipe], fileno(stderr)), -1);
-
-    capturing_ = true;
-  }
-
-  void StopCapture() {
-    if (!capturing_)
-      return;
-
-    char eop = kPipeEnd;
-    CHECK_NE(write(pipes_[kWritePipe], &eop, sizeof(eop)), -1);
-
-    fflush(stderr);
-    CHECK_NE(dup2(stderr_, fileno(stderr)), -1);
-
-    capturing_ = false;
-  }
-
-  std::string ReadCapturedData() {
-    CHECK(!capturing_);
-
-    std::string captured_data;
-    for (;;) {
-      constexpr size_t kChunkSize = 256;
-      char buffer[kChunkSize];
-      int bytes_read = read(pipes_[kReadPipe], buffer, kChunkSize);
-      CHECK_NE(bytes_read, -1);
-      captured_data.append(buffer, bytes_read);
-      if (captured_data.rfind(kPipeEnd) != std::string::npos)
-        break;
-    }
-    return captured_data;
-  }
-
-  std::vector<std::string> ReadCapturedLines() {
-    return base::SplitString(ReadCapturedData(), "\n", base::TRIM_WHITESPACE,
-                             base::SPLIT_WANT_NONEMPTY);
-  }
-
- private:
-  enum { kReadPipe, kWritePipe };
-
-  static constexpr char kPipeEnd = '\xff';
-
-  base::ScopedAllowBlockingForTesting allow_blocking_calls_;
-
-  bool capturing_ = false;
-  int pipes_[2] = {-1, -1};
-  int stderr_ = -1;
-};
-
-}  // namespace
-
 class HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy
     : public HeadlessBrowserTestWithPolicy<HeadlessBrowserTest>,
       public testing::WithParamInterface<bool> {
@@ -239,8 +161,12 @@ IN_PROC_BROWSER_TEST_P(HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy,
   base::PlatformThread::Sleep(TestTimeouts::action_timeout());
   capture_stderr_.StopCapture();
 
+  std::vector<std::string> captured_lines =
+      base::SplitString(capture_stderr_.TakeCapturedData(), "\n",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
   enum { kUnknown, kDisallowed, kListening } remote_debugging_state = kUnknown;
-  for (const std::string& line : capture_stderr_.ReadCapturedLines()) {
+  for (const std::string& line : captured_lines) {
     LOG(INFO) << "stderr: " << line;
     if (base::MatchPattern(line, "DevTools remote debugging is disallowed *")) {
       EXPECT_EQ(remote_debugging_state, kUnknown);

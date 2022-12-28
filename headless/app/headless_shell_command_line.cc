@@ -6,8 +6,8 @@
 
 #include <cstdio>
 
-#include "base/bind.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
@@ -20,13 +20,19 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
 
+#if defined(HEADLESS_ENABLE_COMMANDS)
+#include "headless/app/headless_command_switches.h"
+#endif
+
 namespace headless {
 
 namespace {
+
 // By default listen to incoming DevTools connections on localhost.
 const char kLocalHost[] = "localhost";
 
 bool ValidateCommandLineSwitches(const base::CommandLine& command_line) {
+#if defined(HEADLESS_ENABLE_COMMANDS)
   if (command_line.HasSwitch(switches::kRemoteDebuggingPort) ||
       command_line.HasSwitch(switches::kRemoteDebuggingPipe)) {
     static const char* kIncompatibleSwitches[] = {
@@ -47,6 +53,7 @@ bool ValidateCommandLineSwitches(const base::CommandLine& command_line) {
       }
     }
   }
+#endif  // defined(HEADLESS_ENABLE_COMMANDS)
 
   return true;
 }

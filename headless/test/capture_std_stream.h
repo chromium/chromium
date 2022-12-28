@@ -1,0 +1,48 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef HEADLESS_TEST_CAPTURE_STD_STREAM_H_
+#define HEADLESS_TEST_CAPTURE_STD_STREAM_H_
+
+#include <cstdio>
+#include <string>
+
+#include "base/threading/thread_restrictions.h"
+
+namespace headless {
+
+// A class to capture data sent to a standard stream.
+class CaptureStdStream {
+ public:
+  explicit CaptureStdStream(FILE* stream);
+  ~CaptureStdStream();
+
+  void StartCapture();
+  void StopCapture();
+
+  std::string TakeCapturedData();
+
+ private:
+  FILE* stream_;
+
+  int fileno_ = -1;
+  int pipes_[2] = {-1, -1};
+  bool capturing_ = false;
+
+  base::ScopedAllowBlockingForTesting allow_blocking_calls_;
+};
+
+class CaptureStdOut : public CaptureStdStream {
+ public:
+  CaptureStdOut() : CaptureStdStream(stdout) {}
+};
+
+class CaptureStdErr : public CaptureStdStream {
+ public:
+  CaptureStdErr() : CaptureStdStream(stderr) {}
+};
+
+}  // namespace headless
+
+#endif  // HEADLESS_TEST_CAPTURE_STD_STREAM_H_

@@ -70,6 +70,11 @@ void SimpleDevToolsProtocolClient::AttachToWebContents(
   AttachClient(DevToolsAgentHost::GetOrCreateFor(web_contents));
 }
 
+std::string SimpleDevToolsProtocolClient::GetTargetId() {
+  DCHECK(agent_host_);
+  return agent_host_->GetId();
+}
+
 std::unique_ptr<SimpleDevToolsProtocolClient>
 SimpleDevToolsProtocolClient::CreateSession(const std::string& session_id) {
   auto client = std::make_unique<SimpleDevToolsProtocolClient>(session_id);

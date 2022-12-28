@@ -9,6 +9,7 @@ import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//headless/headless.gni")
 import("//pdf/features.gni")
 import("//ui/base/ui_features.gni")
 import("chrome_repack_locales.gni")
@@ -461,6 +462,11 @@ template("chrome_extra_paks") {
       deps += [
         "//chrome/browser/resources/chromeos/chromebox_for_meetings:resources",
       ]
+    }
+
+    if (headless_enable_commands && !is_android) {
+      sources += [ "$root_gen_dir/headless/headless_command_resources.pak" ]
+      deps += [ "//headless:headless_command_resources" ]
     }
   }
 }
