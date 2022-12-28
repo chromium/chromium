@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(PDFIFrameNavigationThrottleBrowserTest,
   // frame, we expect the navigation to be deferred during WillStartRequest
   // until the prerender is activated.
   {
-    pdf_navigation.WaitForFirstYieldAfterDidStartNavigation();
+    ASSERT_TRUE(pdf_navigation.WaitForFirstYieldAfterDidStartNavigation());
     EXPECT_FALSE(pdf_navigation.GetNavigationHandle()->HasCommitted());
     EXPECT_TRUE(pdf_navigation.GetNavigationHandle()->IsDeferredForTesting());
   }
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(PDFIFrameNavigationThrottleBrowserTest,
   // finish. The initial PDF navigation should be cancelled by the throttle and
   // fallback content loaded in its place.
   {
-    pdf_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(pdf_navigation.WaitForNavigationFinished());
     EXPECT_TRUE(pdf_navigation.was_committed());
     EXPECT_TRUE(pdf_navigation.was_successful());
 
