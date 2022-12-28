@@ -33,11 +33,13 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       left_fade_(cc::UIResourceLayer::Create()),
       right_fade_(cc::UIResourceLayer::Create()),
       model_selector_button_(cc::UIResourceLayer::Create()),
+      model_selector_button_background_(cc::UIResourceLayer::Create()),
       write_index_(0),
       content_tree_(nullptr) {
   new_tab_button_->SetIsDrawable(true);
   new_tab_button_background_->SetIsDrawable(true);
   model_selector_button_->SetIsDrawable(true);
+  model_selector_button_background_->SetIsDrawable(true);
   left_fade_->SetIsDrawable(true);
   right_fade_->SetIsDrawable(true);
   scrim_layer_->SetIsDrawable(true);
@@ -60,6 +62,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(left_fade_);
   tab_strip_layer_->AddChild(right_fade_);
   tab_strip_layer_->AddChild(model_selector_button_);
+  tab_strip_layer_->AddChild(model_selector_button_background_);
+  model_selector_button_background_->AddChild(model_selector_button_);
   if (tab_strip_improvements_enabled) {
     if (tab_strip_redesign_enabled) {
       tab_strip_layer_->AddChild(new_tab_button_background_);
@@ -186,6 +190,7 @@ void TabStripSceneLayer::UpdateNewTabButton(
       resource_manager->GetStaticResourceWithTint(resource_id, tint);
 
   new_tab_button_->SetUIResourceId(button_resource->ui_resource()->id());
+
   // The touch target for the new tab button is skewed towards the end of the
   // strip. This ensures that the view itself is correctly aligned without
   // adjusting the touch target.
@@ -244,6 +249,56 @@ void TabStripSceneLayer::UpdateModelSelectorButton(
   float top_offset = (height - button_resource->size().height()) / 2;
   model_selector_button_->SetPosition(
       gfx::PointF(x + left_offset, y + top_offset));
+  model_selector_button_->SetBounds(button_resource->size());
+  model_selector_button_->SetHideLayerAndSubtree(!visible);
+  model_selector_button_->SetOpacity(button_alpha);
+}
+
+void TabStripSceneLayer::UpdateModelSelectorButtonBackground(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jobj,
+    jint resource_id,
+    jint bg_resource_id,
+    jfloat x,
+    jfloat y,
+    jfloat width,
+    jfloat height,
+    jboolean incognito,
+    jboolean visible,
+    jint tint,
+    jint background_tint,
+    jfloat button_alpha,
+    const JavaParamRef<jobject>& jresource_manager) {
+  ui::ResourceManager* resource_manager =
+      ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
+  ui::Resource* button_resource;
+
+  // Set Tab Strip Redesign model selector button background
+  button_resource =
+      resource_manager->GetStaticResourceWithTint(resource_id, tint);
+
+  ui::Resource* button_background_resource =
+      resource_manager->GetStaticResourceWithTint(bg_resource_id,
+                                                  background_tint, true);
+
+  model_selector_button_->SetUIResourceId(button_resource->ui_resource()->id());
+  model_selector_button_background_->SetUIResourceId(
+      button_background_resource->ui_resource()->id());
+
+  float background_left_offset = (button_background_resource->size().width() -
+                                  button_resource->size().width()) /
+                                 2;
+  float background_top_offset = (button_background_resource->size().height() -
+                                 button_resource->size().height()) /
+                                2;
+  model_selector_button_background_->SetPosition(gfx::PointF(x, y));
+
+  model_selector_button_background_->SetBounds(
+      button_background_resource->size());
+  model_selector_button_background_->SetHideLayerAndSubtree(!visible);
+  model_selector_button_background_->SetOpacity(button_alpha);
+  model_selector_button_->SetPosition(
+      gfx::PointF(background_left_offset, background_top_offset));
   model_selector_button_->SetBounds(button_resource->size());
   model_selector_button_->SetHideLayerAndSubtree(!visible);
   model_selector_button_->SetOpacity(button_alpha);

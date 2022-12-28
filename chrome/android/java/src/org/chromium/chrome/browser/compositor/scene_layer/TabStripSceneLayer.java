@@ -131,8 +131,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         TintedCompositorButton newTabButton = layoutHelper.getNewTabButton();
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
-        boolean newTabButtonVisible = newTabButton.isVisible();
         boolean modelSelectorButtonVisible = modelSelectorButton.isVisible();
+        boolean newTabButtonVisible = newTabButton.isVisible();
         TabStripSceneLayerJni.get().updateNewTabButton(mNativePtr, TabStripSceneLayer.this,
                 newTabButton.getResourceId(), newTabButton.getBackgroundResourceId(),
                 newTabButton.getX() * mDpToPx, newTabButton.getY() * mDpToPx,
@@ -140,11 +140,25 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 newTabButton.getTint(), newTabButton.getBackgroundTint(), newTabButton.getOpacity(),
                 resourceManager);
 
-        TabStripSceneLayerJni.get().updateModelSelectorButton(mNativePtr, TabStripSceneLayer.this,
-                modelSelectorButton.getResourceId(), modelSelectorButton.getX() * mDpToPx,
-                modelSelectorButton.getY() * mDpToPx, modelSelectorButton.getWidth() * mDpToPx,
-                modelSelectorButton.getHeight() * mDpToPx, modelSelectorButton.isIncognito(),
-                modelSelectorButtonVisible, modelSelectorButton.getOpacity(), resourceManager);
+        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            TabStripSceneLayerJni.get().updateModelSelectorButton(mNativePtr,
+                    TabStripSceneLayer.this, modelSelectorButton.getResourceId(),
+                    modelSelectorButton.getX() * mDpToPx, modelSelectorButton.getY() * mDpToPx,
+                    modelSelectorButton.getWidth() * mDpToPx,
+                    modelSelectorButton.getHeight() * mDpToPx, modelSelectorButton.isIncognito(),
+                    modelSelectorButtonVisible, modelSelectorButton.getOpacity(), resourceManager);
+        } else {
+            TabStripSceneLayerJni.get().updateModelSelectorButtonBackground(mNativePtr,
+                    TabStripSceneLayer.this, modelSelectorButton.getResourceId(),
+                    ((TintedCompositorButton) modelSelectorButton).getBackgroundResourceId(),
+                    modelSelectorButton.getX() * mDpToPx, modelSelectorButton.getY() * mDpToPx,
+                    modelSelectorButton.getWidth() * mDpToPx,
+                    modelSelectorButton.getHeight() * mDpToPx, modelSelectorButton.isIncognito(),
+                    modelSelectorButtonVisible,
+                    ((TintedCompositorButton) modelSelectorButton).getTint(),
+                    ((TintedCompositorButton) modelSelectorButton).getBackgroundTint(),
+                    modelSelectorButton.getOpacity(), resourceManager);
+        }
 
         boolean tabStripImprovementsEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
         boolean showLeftTabStripFade = ChromeFeatureList.sTabStripRedesign.isEnabled()
@@ -223,6 +237,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         void updateModelSelectorButton(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
                 int resourceId, float x, float y, float width, float height, boolean incognito,
                 boolean visible, float buttonAlpha, ResourceManager resourceManager);
+        void updateModelSelectorButtonBackground(long nativeTabStripSceneLayer,
+                TabStripSceneLayer caller, int resourceId, int backgroundResourceId, float x,
+                float y, float width, float height, boolean incognito, boolean visible, int tint,
+                int backgroundTint, float buttonAlpha, ResourceManager resourceManager);
         void updateTabStripLeftFade(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
                 int resourceId, float opacity, ResourceManager resourceManager,
                 @ColorInt int leftFadeColor);

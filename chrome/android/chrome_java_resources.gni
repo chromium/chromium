@@ -394,6 +394,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_forward_arrow_black_24dp.xml",
   "java/res/drawable/ic_google_services_48dp.xml",
   "java/res/drawable/ic_image_descriptions.xml",
+  "java/res/drawable/ic_incognito.xml",
   "java/res/drawable/ic_incognito_cct_24dp.xml",
   "java/res/drawable/ic_incognito_reauth_promo_icon.xml",
   "java/res/drawable/ic_new_tab_button.xml",

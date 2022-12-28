@@ -17,14 +17,14 @@ import androidx.appcompat.content.res.AppCompatResources;
 public class TintedCompositorButton extends CompositorButton {
     private Context mContext;
 
-    private @ColorRes int mDefaultTintResource;
-    private @ColorRes int mPressedTintResource;
-    private @ColorRes int mIncognitoTintResource;
-    private @ColorRes int mIncognitoPressedTintResource;
     private @ColorInt int mBackgroundDefaultTint;
     private @ColorInt int mBackgroundPressedTint;
     private @ColorInt int mBackgroundIncognitoTint;
     private @ColorInt int mBackgroundIncognitoPressedTint;
+    private @ColorInt int mDefaultTint;
+    private @ColorInt int mPressedTint;
+    private @ColorInt int mIncognitoTint;
+    private @ColorInt int mIncognitoPressedTint;
 
     public TintedCompositorButton(
             Context context, float width, float height, CompositorOnClickHandler clickHandler) {
@@ -87,10 +87,28 @@ public class TintedCompositorButton extends CompositorButton {
      */
     public void setTintResources(@ColorRes int defaultTint, @ColorRes int pressedTint,
             @ColorRes int incognitoTint, @ColorRes int incognitoPressedTint) {
-        mDefaultTintResource = defaultTint;
-        mPressedTintResource = pressedTint;
-        mIncognitoTintResource = incognitoTint;
-        mIncognitoPressedTintResource = incognitoPressedTint;
+        setTint(AppCompatResources.getColorStateList(mContext, defaultTint).getDefaultColor(),
+                AppCompatResources.getColorStateList(mContext, pressedTint).getDefaultColor(),
+                AppCompatResources.getColorStateList(mContext, incognitoTint).getDefaultColor(),
+                AppCompatResources.getColorStateList(mContext, incognitoPressedTint)
+                        .getDefaultColor());
+    }
+
+    /**
+     * @return The tint (color value, NOT the resource Id) depending on the state of the button and
+     *         the tab (incognito or not).
+     * A set of Android resources to supply to the compositor.
+     * @param defaultTint           The default tint.
+     * @param pressedTint           The pressed tint.
+     * @param incognitoTint         The incognito tint.
+     * @param incognitoPressedTint  The incognito pressed tint.
+     */
+    public void setTint(@ColorInt int defaultTint, @ColorInt int pressedTint,
+            @ColorInt int incognitoTint, @ColorInt int incognitoPressedTint) {
+        mDefaultTint = defaultTint;
+        mPressedTint = pressedTint;
+        mIncognitoTint = incognitoTint;
+        mIncognitoPressedTint = incognitoPressedTint;
     }
 
     /**
@@ -114,11 +132,11 @@ public class TintedCompositorButton extends CompositorButton {
      *         and the tab (incognito or not).
      */
     public @ColorInt int getTint() {
-        int tint = isIncognito() ? mIncognitoTintResource : mDefaultTintResource;
+        int tint = isIncognito() ? mIncognitoTint : mDefaultTint;
         if (isPressed()) {
-            tint = isIncognito() ? mIncognitoPressedTintResource : mPressedTintResource;
+            tint = isIncognito() ? mIncognitoPressedTint : mPressedTint;
         }
-        return AppCompatResources.getColorStateList(mContext, tint).getDefaultColor();
+        return tint;
     }
 
     /**

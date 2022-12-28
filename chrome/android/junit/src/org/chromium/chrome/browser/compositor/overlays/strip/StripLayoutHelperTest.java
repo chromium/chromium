@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +69,8 @@ import java.util.List;
 @Features.EnableFeatures({ChromeFeatureList.TAB_STRIP_IMPROVEMENTS,
         ChromeFeatureList.TAB_STRIP_REDESIGN, ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
         ChromeFeatureList.TAB_GROUPS_FOR_TABLETS})
-@Config(manifest = Config.NONE, qualifiers = "sw600dp")
+@Config(manifest = Config.NONE, qualifiers = "sw600dp", shadows = {ShadowAppCompatResources.class})
+
 public class StripLayoutHelperTest {
     // clang-format on
     @Rule

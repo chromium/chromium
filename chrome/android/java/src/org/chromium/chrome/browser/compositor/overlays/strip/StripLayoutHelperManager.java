@@ -75,6 +75,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private static final float MODEL_SELECTOR_BUTTON_PADDING_DP = 12.f;
     private static final float MODEL_SELECTOR_BUTTON_WIDTH_DP = 24.f;
     private static final float MODEL_SELECTOR_BUTTON_HEIGHT_DP = 24.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP = 0.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_FOLIO = 36.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_FOLIO = 36.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_DETACHED = 38.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_DETACHED = 38.f;
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
 
     // External influences
@@ -93,7 +98,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private float mWidth;  // in dp units
     private final float mHeight;  // in dp units
     private int mOrientation;
-    private final CompositorButton mModelSelectorButton;
+    private CompositorButton mModelSelectorButton;
 
     private Context mContext;
     private final StripScrim mStripScrim;
@@ -105,6 +110,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private TabStripEventHandler mTabStripEventHandler;
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
 
+    private float mModelSelectorWidth;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver =
@@ -269,15 +275,49 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 handleModelSelectorButtonClick();
             }
         };
-        mModelSelectorButton = new CompositorButton(context, MODEL_SELECTOR_BUTTON_WIDTH_DP,
-                MODEL_SELECTOR_BUTTON_HEIGHT_DP, selectorClickHandler);
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+                createFolioModelSelectorButtion(context, selectorClickHandler);
+            } else {
+                createDetachedModelSelectorButtion(context, selectorClickHandler);
+            }
+
+            // Model selector button icon color
+            int iconDefaultColor =
+                    context.getResources().getColor(R.color.model_selector_button_icon_color);
+            int iconIncognitoColor =
+                    context.getResources().getColor(R.color.default_icon_color_secondary_light);
+
+            // Model selector button background color.
+            // Default bg color is surface inverse.
+            int backgroundDefaultColor =
+                    context.getResources().getColor(R.color.model_selector_button_bg_color);
+
+            // Incognito bg color is surface 1 baseline for folio, surface 2 baseline for detached.
+            int backgroundIncognitoColor = TabUiFeatureUtilities.isTabStripFolioEnabled()
+                    ? context.getResources().getColor(R.color.default_bg_color_dark_elev_1_baseline)
+                    : context.getResources().getColor(
+                            R.color.default_bg_color_dark_elev_2_baseline);
+
+            ((TintedCompositorButton) mModelSelectorButton)
+                    .setTint(iconDefaultColor, iconDefaultColor, iconIncognitoColor,
+                            iconIncognitoColor);
+            ((TintedCompositorButton) mModelSelectorButton)
+                    .setBackgroundTint(backgroundDefaultColor, backgroundDefaultColor,
+                            backgroundIncognitoColor, backgroundIncognitoColor);
+            mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
+        } else {
+            mModelSelectorButton = new CompositorButton(context, MODEL_SELECTOR_BUTTON_WIDTH_DP,
+                    MODEL_SELECTOR_BUTTON_HEIGHT_DP, selectorClickHandler);
+            mModelSelectorButton.setResources(R.drawable.btn_tabstrip_switch_normal,
+                    R.drawable.btn_tabstrip_switch_normal, R.drawable.location_bar_incognito_badge,
+                    R.drawable.location_bar_incognito_badge);
+            mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_Y_OFFSET_DP);
+            mModelSelectorWidth = MODEL_SELECTOR_BUTTON_WIDTH_DP;
+        }
         mModelSelectorButton.setIncognito(false);
         mModelSelectorButton.setVisible(false);
         // Pressed resources are the same as the unpressed resources.
-        mModelSelectorButton.setResources(R.drawable.btn_tabstrip_switch_normal,
-                R.drawable.btn_tabstrip_switch_normal, R.drawable.location_bar_incognito_badge,
-                R.drawable.location_bar_incognito_badge);
-        mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_Y_OFFSET_DP);
         mModelSelectorButton.setClickSlop(MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP);
 
         Resources res = context.getResources();
@@ -296,6 +336,32 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 new StripLayoutHelper(context, updateHost, renderHost, true, mModelSelectorButton);
 
         onContextChanged(context);
+    }
+
+    private void createFolioModelSelectorButtion(
+            Context context, CompositorOnClickHandler selectorClickHandler) {
+        mModelSelectorButton =
+                new TintedCompositorButton(context, MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_FOLIO,
+                        MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_FOLIO, selectorClickHandler,
+                        R.drawable.ic_incognito);
+
+        // Tab strip redesign folio enabled bg size 36 * 36.
+        ((TintedCompositorButton) mModelSelectorButton)
+                .setBackgroundResourceId(R.drawable.bg_circle_new_tab_button_folio);
+        mModelSelectorWidth = MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_FOLIO;
+    }
+
+    private void createDetachedModelSelectorButtion(
+            Context context, CompositorOnClickHandler selectorClickHandler) {
+        mModelSelectorButton = new TintedCompositorButton(context,
+                MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_DETACHED,
+                MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_DETACHED, selectorClickHandler,
+                R.drawable.ic_incognito);
+
+        // Tab strip redesign folio enabled bg size 38 * 38.
+        ((TintedCompositorButton) mModelSelectorButton)
+                .setBackgroundResourceId(R.drawable.bg_circle_new_tab_button_detached);
+        mModelSelectorWidth = MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_DETACHED;
     }
 
     /**
@@ -392,7 +458,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         }
         if (!LocalizationUtils.isLayoutRtl()) {
             mModelSelectorButton.setX(
-                    mWidth - MODEL_SELECTOR_BUTTON_WIDTH_DP - MODEL_SELECTOR_BUTTON_PADDING_DP);
+                    mWidth - mModelSelectorWidth - MODEL_SELECTOR_BUTTON_PADDING_DP);
         } else {
             mModelSelectorButton.setX(MODEL_SELECTOR_BUTTON_PADDING_DP);
         }
@@ -424,7 +490,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     private float getModelSelectorButtonWidthWithPadding() {
-        return MODEL_SELECTOR_BUTTON_WIDTH_DP + (MODEL_SELECTOR_BUTTON_PADDING_DP * 2);
+        return mModelSelectorWidth + (MODEL_SELECTOR_BUTTON_PADDING_DP * 2);
     }
 
     public TintedCompositorButton getNewTabButton() {
