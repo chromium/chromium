@@ -158,7 +158,7 @@
   </iron-collapse>
   <div id="related-searches" hidden="[[!cluster.relatedSearches.length]]"
       role="list" aria-label$="[[i18n('relatedSearchesHeader')]]"
-      on-related-search-clicked="onRelatedSearchClicked_">
+      on-related-search-clicked="onRelatedSearchClicked_" on-mousedown="clearSelection_">
     <template is="dom-repeat" items="[[relatedSearches_]]">
       <search-query search-query="[[item]]" index="[[index]]" role="listitem">
       </search-query>

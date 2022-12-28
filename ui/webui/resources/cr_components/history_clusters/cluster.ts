@@ -186,6 +186,16 @@ class HistoryClusterElement extends HistoryClusterElementBase {
         ClusterAction.kRelatedSearchClicked, this.index);
   }
 
+  /* Clears selection on non alt mouse clicks. Need to wait for browser to
+   *  update the DOM fully. */
+  private clearSelection_(event: MouseEvent) {
+    this.onBrowserIdle_().then(() => {
+      if (window.getSelection() && !event.altKey) {
+        window.getSelection()?.empty();
+      }
+    });
+  }
+
   private onVisitClicked_(event: CustomEvent<URLVisit>) {
     MetricsProxyImpl.getInstance().recordClusterAction(
         ClusterAction.kVisitClicked, this.index);
@@ -264,6 +274,17 @@ class HistoryClusterElement extends HistoryClusterElementBase {
   //============================================================================
   // Helper methods
   //============================================================================
+
+  /**
+   * Returns a promise that resolves when the browser is idle.
+   */
+  private onBrowserIdle_(): Promise<void> {
+    return new Promise(resolve => {
+      window.requestIdleCallback(() => {
+        resolve();
+      });
+    });
+  }
 
   /**
    * Called with the original remove params when the last accepted request to
