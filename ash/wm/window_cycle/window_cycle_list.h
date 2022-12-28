@@ -44,6 +44,8 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   const WindowCycleView* cycle_view() const { return cycle_view_; }
 
+  bool same_app_only() const { return same_app_only_; }
+
   // Returns the |target_window_| from |cycle_view_|.
   aura::Window* GetTargetWindow();
 

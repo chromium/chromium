@@ -224,15 +224,17 @@ void WindowCycleController::StartCycling(bool same_app_only) {
   window_cycle_list_ =
       std::make_unique<WindowCycleList>(window_list, same_app_only);
   event_filter_ = std::make_unique<WindowCycleEventFilter>();
-  base::RecordAction(base::UserMetricsAction("WindowCycleController_Cycle"));
-  base::UmaHistogramCounts100(kAltTabItemsHistogramName, window_list.size());
-  if (IsInteractiveAltTabModeAllowed()) {
-    // When alt-tab interactive mode is available, report the initial alt-tab
-    // mode which indicates the user's preferred mode.
-    base::UmaHistogramEnumeration(kAltTabInitialModeHistogramName,
-                                  IsAltTabPerActiveDesk()
-                                      ? AltTabMode::kCurrentDesk
-                                      : AltTabMode::kAllDesks);
+  if (!same_app_only) {
+    base::RecordAction(base::UserMetricsAction("WindowCycleController_Cycle"));
+    base::UmaHistogramCounts100(kAltTabItemsHistogramName, window_list.size());
+    if (IsInteractiveAltTabModeAllowed()) {
+      // When alt-tab interactive mode is available, report the initial alt-tab
+      // mode which indicates the user's preferred mode.
+      base::UmaHistogramEnumeration(kAltTabInitialModeHistogramName,
+                                    IsAltTabPerActiveDesk()
+                                        ? AltTabMode::kCurrentDesk
+                                        : AltTabMode::kAllDesks);
+    }
   }
 
   desks_observation_.Observe(DesksController::Get());
@@ -326,10 +328,12 @@ void WindowCycleController::OnModeChanged(bool per_desk,
   prefs->SetBoolean(prefs::kAltTabPerDesk, per_desk);
 
   // Report the alt-tab mode the user switches to and the source of switch.
-  base::UmaHistogramEnumeration(
-      kAltTabSwitchModeHistogramName,
-      per_desk ? AltTabMode::kCurrentDesk : AltTabMode::kAllDesks);
-  base::UmaHistogramEnumeration(kAltTabModeSwitchSourceHistogramName, source);
+  if (!window_cycle_list_->same_app_only()) {
+    base::UmaHistogramEnumeration(
+        kAltTabSwitchModeHistogramName,
+        per_desk ? AltTabMode::kCurrentDesk : AltTabMode::kAllDesks);
+    base::UmaHistogramEnumeration(kAltTabModeSwitchSourceHistogramName, source);
+  }
 
   // Announce the new mode and the updated window selection via ChromeVox.
   aura::Window* target_window = window_cycle_list_->GetTargetWindow();
@@ -420,6 +424,7 @@ void WindowCycleController::StopCycling() {
   event_filter_.reset();
 
   desks_observation_.Reset();
+  const bool was_same_app_only = window_cycle_list_->same_app_only();
   window_cycle_list_.reset();
 
   // We can't use the MRU window list here to get the active window, since
@@ -429,7 +434,7 @@ void WindowCycleController::StopCycling() {
   aura::Window* active_window_after_window_cycle =
       window_util::GetActiveWindow();
 
-  if (active_window_after_window_cycle != nullptr &&
+  if (!was_same_app_only && active_window_after_window_cycle != nullptr &&
       active_window_before_window_cycle_ != active_window_after_window_cycle) {
     Shell::Get()->metrics()->task_switch_metrics_recorder().OnTaskSwitch(
         TaskSwitchSource::WINDOW_CYCLE_CONTROLLER);
