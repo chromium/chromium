@@ -53,7 +53,7 @@ enum UserSessionType {
 
 // The type of the CRD session. This enum is used in:
 //   * the response payload of `FETCH_CRD_AVAILABILITY_INFO`.
-//   * the request payload of `DEVICE_START_CRD_SESSION `.
+//   * the request payload of `DEVICE_START_CRD_SESSION`.
 enum CrdSessionType {
   CRD_SESSION_TYPE_UNKNOWN = 0;
   // A session where the admin has exclusive control of the remote machine.
@@ -3997,7 +3997,15 @@ message CertProvAuthorizeRequest {
 
 // "Dynamic" flow: Upload the result of a `ProofOfPossessionChallenge`.
 message CertProvUploadProofOfPossessionRequest {
-  // The signature generated using the private key.
+  // A client-generated cryptographic signature proving the possession of the
+  // client's private key.
+  // The signing key is the client-owned private key corresponding to
+  // `ClientCertificateProvisioningRequest.public_key`.
+  // The signed data has been previously delivered by the server in
+  // `CertProvProofOfPossessionInstruction.data_to_sign`.
+  // The hashing and signing algorithms have been previously delivered by the
+  // server in the `hashing_algorithm` and `signing_algorithm` fields of
+  // `CertProvProofOfPossessionInstruction`.
   optional bytes signature = 2;
 }
 
