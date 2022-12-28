@@ -13,8 +13,8 @@
 ../../../third_party/catapult/devil/devil/utils/__init__.py
 ../../../third_party/catapult/devil/devil/utils/cmd_helper.py
 ../../../third_party/jinja2/__init__.py
-../../../third_party/jinja2/_compat.py
 ../../../third_party/jinja2/_identifier.py
+../../../third_party/jinja2/async_utils.py
 ../../../third_party/jinja2/bccache.py
 ../../../third_party/jinja2/compiler.py
 ../../../third_party/jinja2/defaults.py
