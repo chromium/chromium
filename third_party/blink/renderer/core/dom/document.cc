@@ -8607,6 +8607,8 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(pending_link_header_preloads_);
   visitor->Trace(event_node_path_cache_);
   visitor->Trace(event_node_path_cache_key_list_);
+  visitor->Trace(latest_cached_event_node_);
+  visitor->Trace(latest_cached_event_node_path_);
   Supplementable<Document>::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);
@@ -9003,6 +9005,21 @@ static bool EventNodePathCachingEnabled() {
 
 const EventPath::NodePath& Document::GetOrCalculateEventNodePath(Node& node) {
   DCHECK(EventNodePathCachingEnabled());
+  wtf_size_t max_entries = MaxEventNodePathCachedEntriesValue();
+  if (max_entries == 1) {
+    if (event_node_path_dom_tree_version_ == dom_tree_version_ &&
+        latest_cached_event_node_ == &node) {
+      return *latest_cached_event_node_path_;
+    } else {
+      EventPath::NodePath node_path = EventPath::CalculateNodePath(node);
+      event_node_path_dom_tree_version_ = dom_tree_version_;
+      latest_cached_event_node_ = &node;
+      latest_cached_event_node_path_ =
+          MakeGarbageCollected<EventPath::NodePath>(std::move(node_path));
+      return *latest_cached_event_node_path_;
+    }
+  }
+
   if (event_node_path_dom_tree_version_ != dom_tree_version_) {
     if (!event_node_path_cache_.empty()) {
       event_node_path_cache_.clear();
@@ -9028,7 +9045,6 @@ const EventPath::NodePath& Document::GetOrCalculateEventNodePath(Node& node) {
   event_node_path_cache_key_list_.PrependOrMoveToFirst(&node);
 
   // Prune oldest cached node if size is bigger than max.
-  wtf_size_t max_entries = MaxEventNodePathCachedEntriesValue();
   if (event_node_path_cache_key_list_.size() > max_entries) {
     DCHECK_EQ(event_node_path_cache_key_list_.size(), max_entries + 1);
     event_node_path_cache_.erase(event_node_path_cache_key_list_.back());

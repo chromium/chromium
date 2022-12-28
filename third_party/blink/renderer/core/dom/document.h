@@ -2488,6 +2488,10 @@ class CORE_EXPORT Document : public ContainerNode,
   using EventNodePathCacheKeyList = HeapLinkedHashSet<Member<Node>>;
   EventNodePathCache event_node_path_cache_;
   EventNodePathCacheKeyList event_node_path_cache_key_list_;
+  // If we only want to cache one event path, we can avoid using the heap hash
+  // map and hash set.
+  Member<Node> latest_cached_event_node_;
+  Member<EventPath::NodePath> latest_cached_event_node_path_;
 
 #if DCHECK_IS_ON()
   unsigned slot_assignment_recalc_forbidden_recursion_depth_ = 0;
