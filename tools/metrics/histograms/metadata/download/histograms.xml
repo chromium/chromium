@@ -106,6 +106,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Bubble.LoadAndSetIconLatency" units="ms"
+    expires_after="2023-06-21">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Measures the time (in ms) taken to load and set the file icon for a download
+    on the download bubble. Recorded each time an icon is loaded and set, which
+    can happen upon adding or updating a download bubble row, or changing the
+    device scale factor.
+  </summary>
+</histogram>
+
 <histogram name="Download.Bubble.PartialToFullViewLatency" units="ms"
     expires_after="2023-06-25">
   <owner>drubery@chromium.org</owner>

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -126,9 +127,14 @@ class DownloadBubbleRowView : public views::View,
 
   // Called when icon has been loaded by IconManager::LoadIcon.
   // |use_over_last_override| controls whether icon should be set if
-  // the current icon is an override_icon.
-  void SetIconFromImage(bool use_over_last_override, gfx::Image icon);
-  void SetIconFromImageModel(bool use_over_last_override, ui::ImageModel icon);
+  // the current icon is an override_icon. |load_start_time| is the time when
+  // the calling LoadIcon() started, and is recorded for metrics.
+  void SetIconFromImage(bool use_over_last_override,
+                        base::Time load_start_time,
+                        gfx::Image icon);
+  void SetIconFromImageModel(bool use_over_last_override,
+                             base::Time load_start_time,
+                             const ui::ImageModel& icon);
 
   void OnCancelButtonPressed();
   void OnDiscardButtonPressed();
