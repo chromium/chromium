@@ -2886,6 +2886,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3617891479562106823">Pozadine nisu dostupne. Pokušajte ponovo kasnije.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolociranje</translation>
+<translation id="362023940451053340">Na Google računu, za <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Pomozite poboljšati značajke i izvedbu Chrome OS-a</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikaciju}one{# aplikaciju}few{# aplikacije}other{# aplikacija}}</translation>
 <translation id="362333465072914957">Čeka se da tijelo za izdavanje certifikata izda certifikat</translation>
@@ -6754,6 +6755,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7235737137505019098">Na sigurnosnom ključu nema dovoljno prostora za izradu novih računa.</translation>
 <translation id="7235873936132740888">Web-lokacije mogu izvršavati posebne zadatke kad kliknete određene vrste veza, na primjer mogu sastaviti novu poruku u vašem klijentu e-pošte ili dodati nove događaje vašem online kalendaru</translation>
 <translation id="7238609589076576185">Umetnuta je naglasna oznaka.</translation>
+<translation id="7238665222668706269">Google upravitelj zaporki <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">Uređaj <ph name="DEVICE_NAME" /> otkazao je prijenos</translation>
 <translation id="7240339475467890413">Želite li se povezati s novom žarišnom točkom?</translation>
 <translation id="7241389281993241388">Prijavite se na uređaj <ph name="TOKEN_NAME" /> kako biste uvezli certifikat klijenta.</translation>
@@ -7886,6 +7888,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8263744495942430914">Stranica <ph name="FULLSCREEN_ORIGIN" /> onemogućila je pokazivač miša.</translation>
 <translation id="8264024885325823677">Tom postavkom upravlja vaš administrator.</translation>
 <translation id="8264718194193514834">Proširenje <ph name="EXTENSION_NAME" /> pokrenulo je prikaz na cijelom zaslonu.</translation>
+<translation id="8265018477030547118">Samo na ovom uređaju</translation>
 <translation id="826511437356419340">Otvoren je način pregleda u prozoru. Da biste se kretali, prijeđite prstom ili, ako koristite tipkovnicu, pritisnite tabulator.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Anonimni se prozor neće ponovno otvoriti nakon ponovnog pokretanja}one{Vaš {COUNT} anonimni prozor neće se ponovno otvoriti nakon ponovnog pokretanja}few{Vaša {COUNT} anonimna prozora neće se ponovno otvoriti nakon ponovnog pokretanja}other{Vaših {COUNT} anonimnih prozora neće se ponovno otvoriti nakon ponovnog pokretanja}}</translation>
 <translation id="8266947622852630193">Svi načini unosa</translation>
@@ -8294,6 +8297,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Prijava nije uspjela jer zaporka nije potvrđena. Obratite se administratoru ili pokušajte ponovo.</translation>
 <translation id="8657393004602556571">Želite li odbaciti povratne informacije?</translation>
+<translation id="8657762806752649049">Na vaš Google račun, za <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Otvori vezu u anoni&amp;mnom prozoru</translation>
 <translation id="8662671328352114214">Pridruži se mreži <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Ovo traje neuobičajeno dugo, možete preskočiti ili pričekati da završi.</translation>

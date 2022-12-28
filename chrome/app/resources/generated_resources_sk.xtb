@@ -2885,6 +2885,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3617891479562106823">Pozadia nie sú k dispozícii. Skúste to neskôr.</translation>
 <translation id="3619115746895587757">Kapučíno</translation>
 <translation id="3620136223548713675">Geolokácia</translation>
+<translation id="362023940451053340">Vo vašom účte Google (<ph name="ACCOUNT" />)</translation>
 <translation id="3621807901162200696">Pomáhať zlepšovať funkcie a výkonnosť systému Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikáciu}few{# aplikácie}many{# apps}other{# aplikácií}}</translation>
 <translation id="362333465072914957">Čaká sa, kým certifikačná autorita vydá certifikát</translation>
@@ -6756,6 +6757,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7235737137505019098">Bezpečnostný kľúč nemá dostatok miesta na ďalšie účty.</translation>
 <translation id="7235873936132740888">Keď kliknete na určité typy odkazov, umožníte webom vykonávať špeciálne úlohy, napríklad vytvoriť novú správu v e‑mailovom klientovi alebo pridať novú udalosť do online kalendára</translation>
 <translation id="7238609589076576185">Bolo vložené diakritické znamienko.</translation>
+<translation id="7238665222668706269">Správca hesiel Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">Zariadenie <ph name="DEVICE_NAME" /> prenos zrušilo</translation>
 <translation id="7240339475467890413">Pripojiť k novému hotspotu?</translation>
 <translation id="7241389281993241388">Ak chcete importovať certifikát klienta, prihláste sa do <ph name="TOKEN_NAME" />.</translation>
@@ -7888,6 +7890,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8263744495942430914">Stránka <ph name="FULLSCREEN_ORIGIN" /> zakázala kurzor myši.</translation>
 <translation id="8264024885325823677">Toto nastavenie ovláda váš správca.</translation>
 <translation id="8264718194193514834">Rozšírenie <ph name="EXTENSION_NAME" /> spustilo režim celej obrazovky.</translation>
+<translation id="8265018477030547118">Iba v tomto zariadení</translation>
 <translation id="826511437356419340">Vstúpili ste do režimu prehľadu okien. Prechádzajte potiahnutím alebo ak používate klávesnicu, stlačte kláves Tab.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Po opätovnom spustení sa okno inkognito neotvorí}few{Po opätovnom spustení sa {COUNT} okná inkognito neotvoria}many{Your {COUNT} Incognito windows won't reopen after you relaunch}other{Po opätovnom spustení sa {COUNT} okien inkognito neotvorí}}</translation>
 <translation id="8266947622852630193">Všetky metódy vstupu</translation>
@@ -8296,6 +8299,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655972064210167941">Prihlásenie zlyhalo, pretože sa heslo nepodarilo overiť. Kontaktujte svojho správcu alebo to skúste znova.</translation>
 <translation id="8657393004602556571">Chcete spätnú väzbu zahodiť?</translation>
+<translation id="8657762806752649049">Do vášho účtu Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8661290697478713397">Otvoriť odkaz v okne inko&amp;gnito</translation>
 <translation id="8662671328352114214">Pridanie sa k sieti <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Trvá to dlhšie, ako sa očakávalo. Môžete preskočiť alebo čakať na dokončenie.</translation>

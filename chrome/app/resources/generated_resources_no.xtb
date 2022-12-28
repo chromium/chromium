@@ -2892,6 +2892,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3617891479562106823">Bakgrunner er utilgjengelig. Prøv på nytt senere.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolokalisering</translation>
+<translation id="362023940451053340">I Google-kontoen din – <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Bidra til å gjøre funksjonene og ytelsen til ChromeOS bedre</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{en app}other{# apper}}</translation>
 <translation id="362333465072914957">Venter på at sertifiseringsinstansen skal utstede et sertifikat</translation>
@@ -6756,6 +6757,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7235737137505019098">Sikkerhetsnøkkelen har ikke plass til flere kontoer.</translation>
 <translation id="7235873936132740888">Nettsteder kan håndtere spesialoppgaver når du klikker på visse typer linker, for eksempel å opprette nye meldinger i e-postklienten din eller legge til nye hendelser i nettkalenderen din</translation>
 <translation id="7238609589076576185">Et aksenttegn er satt inn.</translation>
+<translation id="7238665222668706269">Google Passordlagring <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> avbrøt overføringen</translation>
 <translation id="7240339475467890413">Vil du koble til den nye Wifi-sonen?</translation>
 <translation id="7241389281993241388">Logg på <ph name="TOKEN_NAME" /> for å importere klientsertifikat.</translation>
@@ -7888,6 +7890,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> har deaktivert markøren din.</translation>
 <translation id="8264024885325823677">Denne innstillingen administreres av administratoren.</translation>
 <translation id="8264718194193514834"><ph name="EXTENSION_NAME" /> utløste full skjerm.</translation>
+<translation id="8265018477030547118">Bare på denne enheten</translation>
 <translation id="826511437356419340">Du er i modusen for vindusoversikt. Sveip for å navigere, eller trykk på Tab hvis du bruker tastatur.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Inkognitovinduet ditt blir ikke gjenåpnet når du starter nettleseren på nytt}other{De {COUNT} inkognitovinduene dine blir ikke gjenåpnet når du starter nettleseren på nytt}}</translation>
 <translation id="8266947622852630193">Alle inndatametoder</translation>
@@ -8296,6 +8299,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Påloggingen mislyktes fordi passordet ditt ikke kunne bekreftes. Kontakt administratoren din, eller prøv på nytt.</translation>
 <translation id="8657393004602556571">Vil du forkaste tilbakemeldingen?</translation>
+<translation id="8657762806752649049">I Google-kontoen din – <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Åpne linken i inko&amp;gnitovindu</translation>
 <translation id="8662671328352114214">Koble til <ph name="TYPE" />-nettverket</translation>
 <translation id="8662733268723715832">Dette tar lengre tid enn forventet. Du kan hoppe over prosessen eller vente til den er ferdig.</translation>

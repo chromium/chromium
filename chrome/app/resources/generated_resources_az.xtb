@@ -2882,6 +2882,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3617891479562106823">Arxa fonlar əlçatan deyil. Sonra yenidən cəhd edin.</translation>
 <translation id="3619115746895587757">Kappuçino</translation>
 <translation id="3620136223548713675">Coğrafi məkan</translation>
+<translation id="362023940451053340"><ph name="ACCOUNT" /> üçün Google Hesabınızda</translation>
 <translation id="3621807901162200696">ChromeOS funksiyalarını və performansı təkmilləşdirməyə yardım edin</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{tətbiq}other{# tətbiq}}</translation>
 <translation id="362333465072914957">Sertifikat Təşkilatının sertifikat verməsi gözlənilir</translation>
@@ -6745,6 +6746,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7235737137505019098">Daha çox hesab əlavə etmək üçün güvənlik açarında kifayət qədər boş yer yoxdur.</translation>
 <translation id="7235873936132740888">E-poçt klientinizdə yeni bir mesaj yaratmaq və ya onlayn təqviminizə yeni hadisələr əlavə etmək kimi müəyyən növ keçidlərə toxunduğunuzda saytlar xüsusi tapşırıqları yerinə yetirə bilər.</translation>
 <translation id="7238609589076576185">Vurğu işarəsi daxil edilib.</translation>
+<translation id="7238665222668706269">Google Parol Meneceri <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> ötürməni ləğv etdi</translation>
 <translation id="7240339475467890413">Yeni hotspota qoşulsun?</translation>
 <translation id="7241389281993241388">Klient sertifikatını import etmək üçün <ph name="TOKEN_NAME" /> üzərinə daxil olun.</translation>
@@ -7876,6 +7878,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> maus kursorunuzu deaktiv etdi.</translation>
 <translation id="8264024885325823677">Bu ayar inzibatçınız tərəfindən idarə edilir.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" tam ekranı təhrik etdi.</translation>
+<translation id="8265018477030547118">Yalnız bu cihazda</translation>
 <translation id="826511437356419340">Pəncərə icmalı rejiminə daxil olundu. Naviqasiya üçün sürüşdürün və ya klaviatura istifadə edirsinizsə tabı basın.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Anonim pəncərəniz yenidən başladıldıqdan sonra açılmayacaq}other{{COUNT} Anonim pəncərəniz yenidən başladıldıqdan sonra yenidən açılmayacaq}}</translation>
 <translation id="8266947622852630193">Bütün daxiletmə metodları</translation>
@@ -8284,6 +8287,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Sign-sizin parol təsdiq edilə bilməz, çünki uğursuz oldu. Sizin administratoru ilə əlaqə və ya yenidən cəhd edin.</translation>
 <translation id="8657393004602556571">Rəydən imtina etmək istəyirsiniz?</translation>
+<translation id="8657762806752649049"><ph name="ACCOUNT" /> üçün Google Hesabınıza</translation>
 <translation id="8661290697478713397">Linki gizli pəncərədə açın</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> şəbəkəsinə qoşulun</translation>
 <translation id="8662733268723715832">Bu, gözləniləndən daha uzun çəkir, keçə və ya tamamlanana qədər gözləyə bilərsiniz.</translation>

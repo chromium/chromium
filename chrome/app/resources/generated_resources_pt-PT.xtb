@@ -2884,6 +2884,7 @@ Pretende pará-lo?</translation>
 <translation id="3617891479562106823">Os fundos não estão disponíveis. Tente mais tarde.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolocalização</translation>
+<translation id="362023940451053340">Na sua Conta Google, para <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Ajudar a melhorar as funcionalidades e o desempenho do ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{uma app}other{# apps}}</translation>
 <translation id="362333465072914957">A aguardar que a CA emita um certificado</translation>
@@ -6752,6 +6753,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7235737137505019098">A sua chave de segurança não tem espaço suficiente para mais contas.</translation>
 <translation id="7235873936132740888">Os sites podem processar tarefas especiais quando clicar em determinados tipos de links, como criar uma nova mensagem no cliente de email ou adicionar novos eventos ao calendário online.</translation>
 <translation id="7238609589076576185">Marca de destaque inserida.</translation>
+<translation id="7238665222668706269">Gestor de Palavras-passe da Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> cancelou a transferência</translation>
 <translation id="7240339475467890413">Pretende ligar à nova zona Wi-Fi?</translation>
 <translation id="7241389281993241388">Inicie sessão no <ph name="TOKEN_NAME" /> para importar o certificado de cliente.</translation>
@@ -7884,6 +7886,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> desativou o cursor do rato.</translation>
 <translation id="8264024885325823677">Esta definição é gerida pelo seu administrador.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ativou o ecrã inteiro.</translation>
+<translation id="8265018477030547118">Apenas neste dispositivo</translation>
 <translation id="826511437356419340">Entrou no modo de vista geral de janelas. Deslize rapidamente para navegar ou prima Tab se estiver a utilizar um teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Não é possível abrir a sua janela de navegação anónima após o reinício}other{Não é possível abrir as suas {COUNT} janelas de navegação anónima após o reinício}}</translation>
 <translation id="8266947622852630193">Todos os métodos de introdução</translation>
@@ -8292,6 +8295,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">O início de sessão falhou porque não foi possível validar a sua palavra-passe. Contacte o gestor ou tente novamente.</translation>
 <translation id="8657393004602556571">Pretende rejeitar o feedback?</translation>
+<translation id="8657762806752649049">Na sua Conta Google, para <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Abrir Link numa Janela de Nave&amp;gação Anónima</translation>
 <translation id="8662671328352114214">Ligar à rede <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Este processo está a demorar mais tempo do que o previsto. Pode ignorar ou aguardar que seja concluído.</translation>

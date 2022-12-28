@@ -2900,6 +2900,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3617891479562106823">Os planos de fundo estão indisponíveis. Tente novamente mais tarde.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolocalização</translation>
+<translation id="362023940451053340">Na sua Conta do Google (<ph name="ACCOUNT" />)</translation>
 <translation id="3621807901162200696">Ajudar a melhorar os recursos e o desempenho do ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{um app}one{# app}other{# apps}}</translation>
 <translation id="362333465072914957">Esperando um certificado CA</translation>
@@ -6771,6 +6772,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7235737137505019098">Sua chave de segurança não tem espaço suficiente para mais contas.</translation>
 <translation id="7235873936132740888">Quando você clica em tipos específicos de links, os sites podem realizar tarefas especiais, como criar uma nova mensagem no seu cliente de e-mail ou adicionar novos eventos à sua agenda on-line</translation>
 <translation id="7238609589076576185">Acento inserido.</translation>
+<translation id="7238665222668706269">Gerenciador de senhas do Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> cancelou a transferência</translation>
 <translation id="7240339475467890413">Conectar a um novo ponto de acesso?</translation>
 <translation id="7241389281993241388">Faça login no <ph name="TOKEN_NAME" /> para importar o certificado do cliente.</translation>
@@ -7903,6 +7905,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> desativou o cursor do mouse.</translation>
 <translation id="8264024885325823677">Essas configurações são gerenciadas pelo administrador.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ativou a tela cheia.</translation>
+<translation id="8265018477030547118">Somente neste dispositivo</translation>
 <translation id="826511437356419340">Iniciado modo de visão geral da janela. Deslize para navegar ou pressione Tab se estiver usando um teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Sua janela anônima não será aberta novamente após a reinicialização}one{Sua {COUNT} janela anônima não será aberta novamente após a reinicialização}other{Suas {COUNT} janelas anônimas não serão abertas novamente após a reinicialização}}</translation>
 <translation id="8266947622852630193">Todos os métodos de entrada</translation>
@@ -8311,6 +8314,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">O login falhou porque não foi possível confirmar sua senha. Entre em contato com o administrador ou tente novamente.</translation>
 <translation id="8657393004602556571">Quer descartar o feedback?</translation>
+<translation id="8657762806752649049">Na sua Conta do Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8661290697478713397">Abrir link na janela &amp;anônima</translation>
 <translation id="8662671328352114214">Entrar na rede <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Isso está demorando mais do que o esperado. Você pode pular ou esperar a conclusão.</translation>

@@ -2882,6 +2882,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3617891479562106823">Pozadine nisu dostupne. Probajte ponovo kasnije.</translation>
 <translation id="3619115746895587757">Kapučino</translation>
 <translation id="3620136223548713675">Geolociranje</translation>
+<translation id="362023940451053340">Na Google nalogu, za <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Pomozite nam da poboljšamo funkcije i učinak Chrome OS-a</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikacija}one{# aplikacija}few{# aplikacije}other{# aplikacija}}</translation>
 <translation id="362333465072914957">Čeka se da CA izda sertifikat</translation>
@@ -6753,6 +6754,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7235737137505019098">Na bezbednosnom ključu nema dovoljno prostora za još naloga.</translation>
 <translation id="7235873936132740888">Sajtovi mogu da obavljaju posebne zadatke kada kliknete na određeni tip linkova. Na primer, mogu da sastave novu poruku u imejl klijentu ili da dodaju nove događaje u onlajn kalendar</translation>
 <translation id="7238609589076576185">Umetnuta je oznaka za akcenat.</translation>
+<translation id="7238665222668706269">Google menadžer lozinki <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">Uređaj <ph name="DEVICE_NAME" /> je otkazao prenos</translation>
 <translation id="7240339475467890413">Želite li da se povežete na novi hotspot?</translation>
 <translation id="7241389281993241388">Prijavite se na <ph name="TOKEN_NAME" /> da biste uvezli sertifikat klijenta.</translation>
@@ -7885,6 +7887,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> je onemogućio kursor.</translation>
 <translation id="8264024885325823677">Ovim podešavanjem upravlja administrator.</translation>
 <translation id="8264718194193514834">Dodatak „<ph name="EXTENSION_NAME" />“ je aktivirao režim celog ekrana.</translation>
+<translation id="8265018477030547118">Samo na ovom uređaju</translation>
 <translation id="826511437356419340">Ušli ste u režim pregleda prozora. Prevucite da biste se kretali ili pritisnite Tab ako koristite tastaturu.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Prozor bez arhiviranja se neće otvoriti kada ponovo pokrenete}one{{COUNT} prozor bez arhiviranja se neće otvoriti kada ponovo pokrenete}few{{COUNT} prozora bez arhiviranja se neće otvoriti kada ponovo pokrenete}other{{COUNT} prozora bez arhiviranja se neće otvoriti kada ponovo pokrenete}}</translation>
 <translation id="8266947622852630193">Sve metode unosa</translation>
@@ -8293,6 +8296,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Prijavljivanje nije uspelo jer nismo uspeli da verifikujemo lozinku. Kontaktirajte administratora ili pokušajte ponovo.</translation>
 <translation id="8657393004602556571">Želite da odbacite povratne informacije?</translation>
+<translation id="8657762806752649049">Na Google nalogu, za <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Otvori link u prozoru za pre&amp;gledanje bez arhiviranja</translation>
 <translation id="8662671328352114214">Pridružite se <ph name="TYPE" /> mreži</translation>
 <translation id="8662733268723715832">Ovo traje duže od očekivanog, pa možete da preskočite ili da sačekate dok ne bude gotovo.</translation>

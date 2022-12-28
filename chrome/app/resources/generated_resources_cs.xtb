@@ -2885,6 +2885,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3617891479562106823">Pozadí nejsou k dispozici. Zkuste to znovu později.</translation>
 <translation id="3619115746895587757">Kapučíno</translation>
 <translation id="3620136223548713675">Geolokace</translation>
+<translation id="362023940451053340">Ve vašem účtu Google <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Pomoci vylepšovat funkce a výkon systému ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikace}few{# aplikace}many{# aplikace}other{# aplikací}}</translation>
 <translation id="362333465072914957">Čeká se, než certifikační autorita vydá certifikát</translation>
@@ -6752,6 +6753,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7235737137505019098">Na bezpečnostním klíči již není dost místa pro žádné další účty.</translation>
 <translation id="7235873936132740888">Weby mohou provádět speciální úlohy, když kliknete na určité typy odkazů, např. vytvořit novou zprávu v e-mailovém klientu nebo přidat novou událost do online kalendáře.</translation>
 <translation id="7238609589076576185">Byla vložena diakritika.</translation>
+<translation id="7238665222668706269">Správce hesel Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">Zařízení <ph name="DEVICE_NAME" /> přenos zrušilo</translation>
 <translation id="7240339475467890413">Připojit k novému hotspotu?</translation>
 <translation id="7241389281993241388">Chcete-li importovat certifikát klienta, přihlaste se prosím do zařízení <ph name="TOKEN_NAME" />.</translation>
@@ -7884,6 +7886,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8263744495942430914">Stránka <ph name="FULLSCREEN_ORIGIN" /> deaktivovala váš ukazatel myši.</translation>
 <translation id="8264024885325823677">Toto nastavení spravuje administrátor.</translation>
 <translation id="8264718194193514834">Rozšíření <ph name="EXTENSION_NAME" /> spustilo režim celé obrazovky.</translation>
+<translation id="8265018477030547118">Pouze na tomto zařízení</translation>
 <translation id="826511437356419340">Byl aktivován režim přehledu oken. Můžete mezi nimi přecházet přejetím prstem nebo tabulátorem.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Anonymní okno se po opětovném spuštění neotevře znovu}few{{COUNT} anonymní okna se po opětovném spuštění neotevřou znovu}many{{COUNT} anonymního okna se po opětovném spuštění neotevře znovu}other{{COUNT} anonymních oken se po opětovném spuštění neotevře znovu}}</translation>
 <translation id="8266947622852630193">Všechny metody zadávání</translation>
@@ -8292,6 +8295,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655972064210167941">Přihlášení se nezdařilo, protože nelze ověřit vaše heslo. Kontaktujte administrátora nebo to zkuste znovu.</translation>
 <translation id="8657393004602556571">Chcete zpětnou vazbu zahodit?</translation>
+<translation id="8657762806752649049">Do vašeho účtu Google <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Otevřít odkaz v &amp;anonymním okně</translation>
 <translation id="8662671328352114214">Připojení k síti <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Tato akce trvá déle než obvykle. Můžete ji přeskočit nebo počkat na dokončení.</translation>

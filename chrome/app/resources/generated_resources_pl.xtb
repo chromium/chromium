@@ -2870,6 +2870,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3617891479562106823">Tła są niedostępne. Spróbuj ponownie później.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolokalizacja</translation>
+<translation id="362023940451053340">Na Twoim koncie Google, dla: <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Pomóż w ulepszaniu funkcji i działania Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikację}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
 <translation id="362333465072914957">Czekam na wygenerowanie certyfikatu CA</translation>
@@ -6738,6 +6739,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7235737137505019098">Na Twoim kluczu bezpieczeństwa nie ma wystarczającej ilości miejsca na kolejne konta.</translation>
 <translation id="7235873936132740888">Gdy klikniesz określone typy linków, witryny będą mogły obsługiwać specjalne zadania, takie jak tworzenie nowej wiadomości w kliencie poczty e-mail lub dodawanie nowych wydarzeń do kalendarza online</translation>
 <translation id="7238609589076576185">Wstawiono znak akcentu.</translation>
+<translation id="7238665222668706269">Menedżer haseł Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">Urządzenie <ph name="DEVICE_NAME" /> anulowało przesyłanie</translation>
 <translation id="7240339475467890413">Połączyć z nowym hotspotem?</translation>
 <translation id="7241389281993241388">Zaloguj się do urządzenia <ph name="TOKEN_NAME" />, aby zaimportować certyfikat klienta.</translation>
@@ -7870,6 +7872,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8263744495942430914">Witryna <ph name="FULLSCREEN_ORIGIN" /> wyłączyła kursor myszy.</translation>
 <translation id="8264024885325823677">Tym ustawieniem zarządza Twój administrator.</translation>
 <translation id="8264718194193514834">Rozszerzenie <ph name="EXTENSION_NAME" /> uruchomiło tryb pełnoekranowy.</translation>
+<translation id="8265018477030547118">Tylko na tym urządzeniu</translation>
 <translation id="826511437356419340">Jesteś w trybie przeglądu okien. Aby przechodzić między nimi, przesuwaj je palcem lub naciskaj Tab (jeśli używasz klawiatury).</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Okno incognito nie otworzy się po ponownym uruchomieniu przeglądarki}few{{COUNT} okna incognito nie otworzą się po ponownym uruchomieniu przeglądarki}many{{COUNT} okien incognito nie otworzy się po ponownym uruchomieniu przeglądarki}other{{COUNT} okna incognito nie otworzy się po ponownym uruchomieniu przeglądarki}}</translation>
 <translation id="8266947622852630193">Wszystkie metody wprowadzania</translation>
@@ -8278,6 +8281,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8655295600908251630">Kanał</translation>
 <translation id="8655972064210167941">Nie udało się zalogować, bo nie można zweryfikować hasła. Skontaktuj się z administratorem lub spróbuj ponownie.</translation>
 <translation id="8657393004602556571">Rezygnujesz z przesłania opinii?</translation>
+<translation id="8657762806752649049">Na Twoim koncie Google, dla: <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Otwórz link w oknie inco&amp;gnito</translation>
 <translation id="8662671328352114214">Połącz z siecią <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Aktualizacja trwa dłużej niż powinna. Możesz ją pominąć lub poczekać, aż się zakończy.</translation>

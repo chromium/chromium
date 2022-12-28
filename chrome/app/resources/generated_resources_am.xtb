@@ -2892,6 +2892,7 @@
 <translation id="3617891479562106823">ዳራዎች አይገኙም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="3619115746895587757">ካፑቺኖ</translation>
 <translation id="3620136223548713675">ጂዮ አካባቢ</translation>
+<translation id="362023940451053340">በእርስዎ የGoogle መለያ ውስጥ፣ ለ<ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">የChromeO ባህሪያት እና አፈጻጸም እንዲሻሻል ያግዙ</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{አንድ መተግበሪያ}one{# መተግበሪያዎች}other{# መተግበሪያዎች}}</translation>
 <translation id="362333465072914957">የእውቅና ማረጋገጫን ለመስጠት CAን በመጠበቅ ላይ</translation>
@@ -6759,6 +6760,7 @@
 <translation id="7235737137505019098">የእርስዎ ደህንነት ቁልፍ ለማናቸውም ተጨማሪ መለያዎች በቂ ቦታ የለውም።</translation>
 <translation id="7235873936132740888">እንደ በኢሜይል ደንበኛዎ ውስጥ አዲስ መልዕክት መፍጠር ወይም አዲስ ክስተቶችን ወደ የእርስዎ የመስመር ላይ ቀን መቁጠሪያ ማከል ባሉ የተወሰኑ የአገናኝ አይነቶች ላይ ጠቅ ሲያደርጉ ጣቢያዎች ልዩ ተግባሮችን ማስተናገድ ይችላሉ።</translation>
 <translation id="7238609589076576185">የአጽንዖት ምልክት ገብቷል።</translation>
+<translation id="7238665222668706269">Google የይለፍ ቃል አስተዳዳሪ <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> ዝውውሩን ሰርዞታል</translation>
 <translation id="7240339475467890413">ከአዲስ መገናኛ ነጥብ ጋር ይገናኝ?</translation>
 <translation id="7241389281993241388">የደንበኛ እውቅና ማረጋገጫውን ለማስመጣት እባክዎ ወደ <ph name="TOKEN_NAME" /> ይግቡ።</translation>
@@ -7896,6 +7898,7 @@ nil</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> የመዳፊት ጠቋሚዎን አሰናክሏል።</translation>
 <translation id="8264024885325823677">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="8264718194193514834">«<ph name="EXTENSION_NAME" />» ሙሉ ማያ ገጽን አስነስቷል።</translation>
+<translation id="8265018477030547118">በዚህ መሣሪያ ላይ ብቻ</translation>
 <translation id="826511437356419340">የአጠቃላይ እይታ ሁኔታ መስኮት ገብቷል። ለመዳሰስ በጣት ይጥረጉ፣ ወይም ቁልፍ ሰሌዳ የሚጠቀሙ ከሆነ tab ይጫኑ።</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{ዳግም ካስጀመሩ በኋላ የእርስዎ ማንነት የማያሳውቅ መስኮት አይከፈትም።}one{ዳግም ካስጀመሩ በኋላ የእርስዎ {COUNT} ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}other{ዳግም ካስጀመሩ በኋላ የእርስዎ {COUNT} ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}}</translation>
 <translation id="8266947622852630193">ሁሉም የግብዓት ዘዴዎች</translation>
@@ -8304,6 +8307,7 @@ nil</translation>
 <translation id="8655295600908251630">ሰርጥ</translation>
 <translation id="8655972064210167941">የእርስዎ የይለፍ ቃል ትክክለኛነቱ ሊረጋገጥ ስላልቻለ መግባት አልተሳካም። እባክዎ የእርስዎን አስተዳዳሪ ያነጋግሩ ወይም እንደገና ይሞክሩ።</translation>
 <translation id="8657393004602556571">ግብረመልሱን ማስወገድ ይፈልጋሉ?</translation>
+<translation id="8657762806752649049">ወደ እርስዎ Google መለያ፣ ለ<ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">አገናኙን ማን&amp;ነትን በማያሳውቅ መስኮት ክፈት</translation>
 <translation id="8662671328352114214">የ<ph name="TYPE" /> አውታረ መረብን ይቀላቀሉ</translation>
 <translation id="8662733268723715832">ይህ ከተጠበቀው በላይ ጊዜ እየወሰደ ነው፣ መዝለል ወይም እስኪያልቅ ድረስ መጠበቅ ይችላሉ።</translation>

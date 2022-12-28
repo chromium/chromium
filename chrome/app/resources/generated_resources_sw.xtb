@@ -2895,6 +2895,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3617891479562106823">Mandhari hayapatikani. Jaribu tena baadaye.</translation>
 <translation id="3619115746895587757">Kapuchino</translation>
 <translation id="3620136223548713675">Kutambulisha mahali</translation>
+<translation id="362023940451053340">Katika Akaunti yako ya Google, ya <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Tusaidie kuboresha utendaji na vipengele vya Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{programu}other{Programu #}}</translation>
 <translation id="362333465072914957">Inasubiri CA itoe cheti</translation>
@@ -6761,6 +6762,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7235737137505019098">Ufunguo wako wa usalama hauna nafasi ya kutosha ili kutumia akaunti nyingine zozote.</translation>
 <translation id="7235873936132740888">Tovuti zinaweza kushughulikia majukumu maalum ukibofya aina fulani za viungo, kama vile kutunga ujumbe mpya katika programu yako ya barua pepe au kuongeza matukio mapya kwenye kalenda yako ya mtandaoni</translation>
 <translation id="7238609589076576185">Alama ya jinsi herufi inavyotamkwa imewekwa.</translation>
+<translation id="7238665222668706269">Kidhibiti cha Manenosiri cha Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> imeghairi uhamishaji</translation>
 <translation id="7240339475467890413">Ungependa kuunganishwa kwenye mtandaopepe mpya?</translation>
 <translation id="7241389281993241388">Tafadhali ingia kwenye <ph name="TOKEN_NAME" /> ili kuleta cheti cha mteja.</translation>
@@ -7894,6 +7896,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> imelemaza kiteuzi chako cha kipanya.</translation>
 <translation id="8264024885325823677">Mipangilio hii inadhibitiwa na msimamizi wako.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ilianzisha skrini nzima.</translation>
+<translation id="8265018477030547118">Kwenye kifaa hiki pekee</translation>
 <translation id="826511437356419340">Umeweka hali ya muhtasari wa dirisha Telezesha kidole ili usogeze au bonyeza kichupo ikiwa unatumia kibodi.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Ukifungua tena, dirisha lako fiche halitafunguliwa upya}other{Ukifungua tena, madirisha fiche yako {COUNT} hayatafunguliwa upya}}</translation>
 <translation id="8266947622852630193">Mbinu zote za kuingiza data</translation>
@@ -8302,6 +8305,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8655295600908251630">Kituo</translation>
 <translation id="8655972064210167941">Haikufaulu kuingia katika akaunti kwa sababu nenosiri lako halikuthibitishwa. Tafadhali wasiliana na msimamizi wako au jaribu tena.</translation>
 <translation id="8657393004602556571">Ungependa kuondoa maoni?</translation>
+<translation id="8657762806752649049">Kwenye Akaunti yako ya Google, ya <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Fungua Kiungo katika Dirisha &amp;Fiche</translation>
 <translation id="8662671328352114214">Jiunge na mtandao wa <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Hatua hii inachukua muda mrefu zaidi ya ilivyotarajiwa, unaweza kuiruka au kusubiri hadi ikamilike.</translation>

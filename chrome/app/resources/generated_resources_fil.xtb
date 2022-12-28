@@ -2899,6 +2899,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3617891479562106823">Hindi available ang mga background. Subukang muli sa ibang pagkakataon.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolocation</translation>
+<translation id="362023940451053340">Sa iyong Google Account, para sa <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Tumulong na pahusayin ang mga feature at performance ng ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{isang app}one{# app}other{# na app}}</translation>
 <translation id="362333465072914957">Hinihintay ang CA na magbigay ng certificate</translation>
@@ -6769,6 +6770,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7235737137505019098">Walang sapat na espasyo para sa higit pang account ang iyong security key.</translation>
 <translation id="7235873936132740888">Mapapangasiwaan ng mga site ang mga espesyal na gawain kapag nag-click ka sa ilang partikular na uri ng mga link, tulad ng paggawa ng bagong mensahe sa iyong email client o pagdaragdag ng mga bagong event sa online na kalendaryo mo</translation>
 <translation id="7238609589076576185">Inilagay ang accent mark.</translation>
+<translation id="7238665222668706269">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">Kinansela ng <ph name="DEVICE_NAME" /> ang paglilipat</translation>
 <translation id="7240339475467890413">Kumonekta sa bagong hotspot?</translation>
 <translation id="7241389281993241388">Mangyaring mag-sign in sa <ph name="TOKEN_NAME" /> upang i-import ang certificate ng client.</translation>
@@ -7901,6 +7903,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8263744495942430914">Hindi pinagana ng <ph name="FULLSCREEN_ORIGIN" /> ang cursor ng iyong mouse.</translation>
 <translation id="8264024885325823677">Pinapamahalaan ng iyong administrator ang setting na ito.</translation>
 <translation id="8264718194193514834">Nag-trigger ang "<ph name="EXTENSION_NAME" />" ng full screen.</translation>
+<translation id="8265018477030547118">Sa device lang na ito</translation>
 <translation id="826511437356419340">Pumasok sa overview mode ng window. Mag-swipe para mag-navigate, o pindutin ang tab kung gumagamit ng keyboard.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Hindi bubukas ang iyong Incognito window pagkatapos mong maglunsad ulit}one{Hindi bubukas ang iyong {COUNT} Incognito window pagkatapos mong maglunsad ulit}other{Hindi bubukas ang iyong {COUNT} na Incognito window pagkatapos mong maglunsad ulit}}</translation>
 <translation id="8266947622852630193">Lahat ng pamamaraan ng pag-input</translation>
@@ -8310,6 +8313,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8655295600908251630">Channel</translation>
 <translation id="8655972064210167941">Hindi nakapag-sign in dahil hindi ma-verify ang iyong password. Mangyaring makipag-ugnayan sa iyong administrator o subukang muli.</translation>
 <translation id="8657393004602556571">Gusto mo bang i-discard ang feedback?</translation>
+<translation id="8657762806752649049">Sa iyong Google Account, para sa <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Buksan ang link sa Inco&amp;gnito Window</translation>
 <translation id="8662671328352114214">Sumali sa <ph name="TYPE" /> network</translation>
 <translation id="8662733268723715832">Mas matagal ito kaysa sa inaasahan, puwede mong laktawan o hintayin hanggang sa matapos ito.</translation>

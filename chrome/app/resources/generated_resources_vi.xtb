@@ -2898,6 +2898,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3617891479562106823">Không có nền. Hãy thử lại sau.</translation>
 <translation id="3619115746895587757">Cà phê cappuccino</translation>
 <translation id="3620136223548713675">Vị trí địa lý</translation>
+<translation id="362023940451053340">Vào Tài khoản Google của bạn, cho <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Giúp cải thiện hiệu suất và các tính năng của ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{một ứng dụng}other{# ứng dụng}}</translation>
 <translation id="362333465072914957">Đang đợi tổ chức phát hành chứng chỉ (CA) cấp chứng chỉ</translation>
@@ -6766,6 +6767,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7235737137505019098">Khóa bảo mật của bạn không có đủ dung lượng cho bất kỳ tài khoản nào khác nữa.</translation>
 <translation id="7235873936132740888">Các trang web có thể xử lý những thao tác đặc biệt khi bạn nhấp vào một số loại đường liên kết, như tạo một thư mới trong ứng dụng email hoặc thêm sự kiện mới vào lịch trực tuyến của bạn</translation>
 <translation id="7238609589076576185">Đã chèn dấu phụ.</translation>
+<translation id="7238665222668706269">Trình quản lý mật khẩu của Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> đã hủy quá trình truyền</translation>
 <translation id="7240339475467890413">Kết nối với điểm phát sóng mới?</translation>
 <translation id="7241389281993241388">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để nhập chứng chỉ ứng dụng khách.</translation>
@@ -7898,6 +7900,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> đã tắt con trỏ chuột của bạn.</translation>
 <translation id="8264024885325823677">Quản trị viên của bạn quản lý tùy chọn cài đặt này.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" đã kích hoạt chế độ toàn màn hình.</translation>
+<translation id="8265018477030547118">Chỉ trên thiết bị này</translation>
 <translation id="826511437356419340">Đã vào chế độ tổng quan về cửa sổ. Vuốt để di chuyển hoặc nhấn vào phím Thẻ nếu dùng bàn phím.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Cửa sổ ẩn danh của bạn sẽ không mở sau khi bạn chạy lại}other{{COUNT} cửa sổ ẩn danh của bạn sẽ không mở lại sau khi bạn chạy lại}}</translation>
 <translation id="8266947622852630193">Tất cả phương thức nhập</translation>
@@ -8306,6 +8309,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8655295600908251630">Kênh</translation>
 <translation id="8655972064210167941">Đăng nhập không thành công vì không thể xác minh mật khẩu của bạn. Vui lòng liên hệ với quản trị viên của bạn hoặc thử lại.</translation>
 <translation id="8657393004602556571">Bạn có muốn loại bỏ ý kiến phản hồi này không?</translation>
+<translation id="8657762806752649049">Vào Tài khoản Google của bạn, cho <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Mở Liên kết bằn&amp;g Cửa sổ Ẩn danh</translation>
 <translation id="8662671328352114214">Kết nối mạng <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Quá trình này mất nhiều thời gian hơn dự kiến, bạn có thể bỏ qua hoặc đợi cho đến khi hoàn tất.</translation>

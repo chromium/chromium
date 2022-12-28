@@ -2880,6 +2880,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3617891479562106823">Hintergründe sind nicht verfügbar. Bitte versuche es später noch einmal.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Standortbestimmung</translation>
+<translation id="362023940451053340">Im Google-Konto für <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Helfen, die Funktionen und die Leistung von Chrome OS zu verbessern</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{eine App}other{# Apps}}</translation>
 <translation id="362333465072914957">Es wird darauf gewartet, dass die Zertifizierungsstelle ein Zertifikat ausstellt</translation>
@@ -6744,6 +6745,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7235737137505019098">Auf deinem Sicherheitsschlüssel ist nicht genügend Platz für weitere Konten.</translation>
 <translation id="7235873936132740888">Websites können spezielle Aufgaben durchführen, wenn du auf bestimmte Arten von Links klickst – sie können z. B. eine neue Nachricht in deinem E-Mail-Client erstellen oder deinem Onlinekalender neue Termine hinzufügen</translation>
 <translation id="7238609589076576185">Akzent eingefügt.</translation>
+<translation id="7238665222668706269">Google Passwortmanager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> hat die Zahlung abgebrochen</translation>
 <translation id="7240339475467890413">Mit neuem Hotspot verbinden?</translation>
 <translation id="7241389281993241388">Melde dich in <ph name="TOKEN_NAME" /> an, um das Clientzertifikat zu importieren.</translation>
@@ -7876,6 +7878,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> hat deinen Cursor deaktiviert.</translation>
 <translation id="8264024885325823677">Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" hat den Vollbildmodus ausgelöst.</translation>
+<translation id="8265018477030547118">Nur auf diesem Gerät</translation>
 <translation id="826511437356419340">Du befindest dich jetzt im Modus "Fensterübersicht". Um zwischen Fenstern zu wechseln, kannst du wischen oder auf der Tastatur die Tabulatortaste drücken.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Dein Inkognitofenster wird nach dem Neustart nicht wieder geöffnet}other{Deine {COUNT} Inkognitofenster werden nach dem Neustart nicht wieder geöffnet}}</translation>
 <translation id="8266947622852630193">Alle Eingabemethoden</translation>
@@ -8284,6 +8287,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Du konntest nicht angemeldet werden, weil dein Passwort nicht bestätigt werden konnte. Bitte wende dich an deinen Administrator oder versuche es noch einmal.</translation>
 <translation id="8657393004602556571">Möchtest du das Feedback verwerfen?</translation>
+<translation id="8657762806752649049">Zum Google-Konto für <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Link in Inko&amp;gnito-Fenster öffnen</translation>
 <translation id="8662671328352114214">Mit <ph name="TYPE" /> verbinden</translation>
 <translation id="8662733268723715832">Dieser Vorgang dauert länger als erwartet. Du kannst ihn entweder überspringen oder warten, bis er abgeschlossen ist.</translation>

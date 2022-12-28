@@ -897,7 +897,7 @@
 <translation id="3268451620468152448">Вкладки</translation>
 <translation id="3270156322180235608">Авиапутешествия</translation>
 <translation id="3270847123878663523">&amp;Отменить изменение порядка</translation>
-<translation id="3271648667212143903">Сайт <ph name="ORIGIN" /> запрашивает подключение</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> запрашивает разрешение на подключение</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратор не рекомендует открывать этот файл в месте назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="3282085321714087552">Ваша организация (<ph name="ENROLLMENT_DOMAIN" />) отправила на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>

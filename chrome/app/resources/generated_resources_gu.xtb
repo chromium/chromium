@@ -2881,6 +2881,7 @@
 <translation id="3617891479562106823">બૅકગ્રાઉન્ડ અનુપલબ્ધ છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="3619115746895587757">કૅપુચિનો</translation>
 <translation id="3620136223548713675">ભૌગોલિક સ્થાન</translation>
+<translation id="362023940451053340"><ph name="ACCOUNT" />નો, તમારા Google એકાઉન્ટમાં</translation>
 <translation id="3621807901162200696">ChromeOSની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{એક ઍપ}one{# ઍપ}other{# ઍપ}}</translation>
 <translation id="362333465072914957">CA પ્રમાણપત્ર જારી કરે તેની રાહ જોઈ રહ્યાં છીએ</translation>
@@ -6752,6 +6753,7 @@ USB ડિવાઇસ</translation>
 <translation id="7235737137505019098">તમારા સુરક્ષા કોડમાં હવે વધુ એકાઉન્ટ માટે પર્યાપ્ત સ્પેસ ખાલી નથી.</translation>
 <translation id="7235873936132740888">જ્યારે તમે ચોક્કસ પ્રકારની લિંક પર ક્લિક કરો ત્યારે સાઇટ વિશિષ્ટ કાર્યો હૅન્ડલ કરી શકે છે, જેમકે તમારા ઇમેઇલ ક્લાયન્ટમાં નવો મેસેજ બનાવવો અથવા તમારા ઑનલાઇન કૅલેન્ડરમાં નવી ઇવેન્ટ ઉમેરવી</translation>
 <translation id="7238609589076576185">ઉચ્ચારણ ચિહ્ન શામેલ કર્યું.</translation>
+<translation id="7238665222668706269">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> દ્વારા ટ્રાન્સફર રદ કરવામાં આવ્યું</translation>
 <translation id="7240339475467890413">નવા હોટસ્પોટથી કનેક્ટ કરીએ?</translation>
 <translation id="7241389281993241388">ક્લાયંટ પ્રમાણપત્ર આયાત કરવા માટે કૃપા કરીને <ph name="TOKEN_NAME" /> પર સાઇન ઇન કરો.</translation>
@@ -7878,6 +7880,7 @@ USB ડિવાઇસ</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> એ તમારા માઉસ કર્સરને અક્ષમ કર્યું છે.</translation>
 <translation id="8264024885325823677">આ સેટિંગને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="8264718194193514834"><ph name="EXTENSION_NAME" /> એ પૂર્ણ સ્ક્રીનને ટ્રિગર કરેલી છે.</translation>
+<translation id="8265018477030547118">માત્ર આ જ ડિવાઇસ પર</translation>
 <translation id="826511437356419340">વિંડો ઓવરવ્યૂ મોડમાં દાખલ થયા. નૅવિગેટ કરવા માટે સ્વાઇપ કરો અથવા જો કીબોર્ડનો ઉપયોગ કરી રહ્યાં હો, તો Tab કી દબાવો.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{તમે ફરીથી લૉન્ચ કરો તે પછી તમારી છૂપી વિન્ડો ખુલશે નહીં}one{તમે ફરીથી લૉન્ચ કરો તે પછી તમારી {COUNT} છૂપી વિન્ડો ખુલશે નહીં}other{તમે ફરીથી લૉન્ચ કરો તે પછી તમારી {COUNT} છૂપી વિન્ડો ખુલશે નહીં}}</translation>
 <translation id="8266947622852630193">તમામ ઇનપુટ પદ્ધતિઓ</translation>
@@ -8286,6 +8289,7 @@ USB ડિવાઇસ</translation>
 <translation id="8655295600908251630">ચેનલ</translation>
 <translation id="8655972064210167941">સાઇન-ઇન નિષ્ફળ થયું કારણ કે તમારો પાસવર્ડ ચકાસી શકાયો નથી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો અથવા ફરી પ્રયાસ કરો.</translation>
 <translation id="8657393004602556571">શું તમે પ્રતિસાદ કાઢી નાખવા માંગો છો?</translation>
+<translation id="8657762806752649049"><ph name="ACCOUNT" />નો, તમારા Google એકાઉન્ટમાં</translation>
 <translation id="8661290697478713397">છુ&amp;પી વિંડોમાં લિંક ખોલો</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> નેટવર્કમાં જોડાઓ</translation>
 <translation id="8662733268723715832">આમાં અપેક્ષા કરતાં વધારે સમય લાગી રહ્યો છે, તમે છોડી શકો અથવા પૂરું ન થાય ત્યાં સુધી રાહ જોઈ શકો છો.</translation>

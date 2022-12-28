@@ -2885,6 +2885,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3617891479562106823">Fon rasmlari mavjud emas. Keyinroq qaytadan urining.</translation>
 <translation id="3619115746895587757">Kappuchino</translation>
 <translation id="3620136223548713675">Geolokatsiya</translation>
+<translation id="362023940451053340">Google hisobingizda (<ph name="ACCOUNT" />)</translation>
 <translation id="3621807901162200696">ChromeOS funksiyalari va unumdorligini yaxshilashga yordam bering</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ilova}other{# ta ilova}}</translation>
 <translation id="362333465072914957">Sertikatlash markazi sertifikatni tasdiqlashi kutilmoqda</translation>
@@ -6753,6 +6754,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7235737137505019098">Elektron kalitda boshqa hisoblar uchun yetarli joy qolmadi.</translation>
 <translation id="7235873936132740888">Saytlar turli xil havolalar bosilganda email mijoz dasturida yangi xabar yuborish yoki taqvimga yangi tadbir kiritish kabi maxsus vazifalarni bajarishi mumkin.</translation>
 <translation id="7238609589076576185">Urgʻu belgisi joylandi.</translation>
+<translation id="7238665222668706269">Google Parollar menejeri <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> uzatmani bekor qildi</translation>
 <translation id="7240339475467890413">Yangi hotspotga ulanilsinmi?</translation>
 <translation id="7241389281993241388">Mijoz sertifikatini import qilish uchun, <ph name="TOKEN_NAME" />’ga kiring.</translation>
@@ -7883,6 +7885,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> sichqon kursorini yashirib qo‘ydi.</translation>
 <translation id="8264024885325823677">Bu sozlama administrator tomonidan boshqariladi.</translation>
 <translation id="8264718194193514834">“<ph name="EXTENSION_NAME" />” kengaytmasi kiosk rejimida ishga tushdi.</translation>
+<translation id="8265018477030547118">Faqat shu qurilmada</translation>
 <translation id="826511437356419340">Umumiy nazar rejimi yoqildi. Orqaga yoki oldinga oʻtkazish uchun suring yoki klaviatura bor boʻlsa, tab tugmasini bosing</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Brauzer qayta ishga tushirilganda Inkognito oynasi qayta ochilmaydi}other{Brauzer qayta ishga tushirilganda {COUNT} ta Inkognito oynasi qayta ochilmaydi}}</translation>
 <translation id="8266947622852630193">Barcha matn kiritish usullari</translation>
@@ -8291,6 +8294,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Hisobingizga kirish amalga oshmadi, chunki parolni tekshirib bo‘lmadi. Qaytadan urinib ko‘ring.</translation>
 <translation id="8657393004602556571">Fikr-mulohaza yuborish bekor qilinsinmi?</translation>
+<translation id="8657762806752649049">Google hisobingizga (<ph name="ACCOUNT" />)</translation>
 <translation id="8661290697478713397">Havolani &amp;inkognito rejimida ochish</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> tarmoqqa ulanish</translation>
 <translation id="8662733268723715832">Bu odatdagidan koʻproq vaqt oladi, keyinga qoldiring yoki tugashini kuting.</translation>

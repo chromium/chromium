@@ -2893,6 +2893,7 @@
 <translation id="3617891479562106823">बैकग्राउंड उपलब्ध नहीं हैं. बाद में फिर से कोशिश करें.</translation>
 <translation id="3619115746895587757">कैपुचिनो</translation>
 <translation id="3620136223548713675">भौगोलिक स्थान</translation>
+<translation id="362023940451053340"><ph name="ACCOUNT" /> के लिए, आपके Google खाते में</translation>
 <translation id="3621807901162200696">ChromeOS की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद करें</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{एक ऐप्लिकेशन}one{# ऐप्लिकेशन}other{# ऐप्लिकेशन}}</translation>
 <translation id="362333465072914957">प्रमाणपत्र जारी करने के लिए सीए का इंतज़ार</translation>
@@ -6751,6 +6752,7 @@
 <translation id="7235737137505019098">आपकी सुरक्षा कुंजी में और खाते जोड़ने के लिए खाली जगह नहीं है.</translation>
 <translation id="7235873936132740888">जब आप कुछ खास तरह के लिंक पर क्लिक करते हैं, तो साइटें खास तरह के टास्क हैंडल कर सकती हैं. जैसे, आपके ईमेल क्लाइंट में नया मैसेज बनाना या आपके ऑनलाइन कैलेंडर में नए इवेंट जोड़ना</translation>
 <translation id="7238609589076576185">उच्चारण चिह्न डाला गया.</translation>
+<translation id="7238665222668706269">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> ने ट्रांसफ़र रद्द कर दिया</translation>
 <translation id="7240339475467890413">नए हॉटस्पॉट से कनेक्ट करें?</translation>
 <translation id="7241389281993241388">क्लाइंट प्रमाणपत्र लेकर आने के लिए, कृपया <ph name="TOKEN_NAME" /> में साइन इन करें.</translation>
@@ -7881,6 +7883,7 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ने आपका माउस कर्सर अक्षम कर दिया है.</translation>
 <translation id="8264024885325823677">इस सेटिंग को आपका एडमिन मैनेज करता है.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ने पूरी स्क्रीन ट्रिगर की है.</translation>
+<translation id="8265018477030547118">सिर्फ़ इस डिवाइस पर</translation>
 <translation id="826511437356419340">विंडो की खास जानकारी वाले मोड पर पहुंच गए. एक जगह से दूसरी जगह जाने के लिए स्वाइप करें या tab बटन दबाएं (अगर कीबाेर्ड का इस्तेमाल कर रहे हैं).</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{ब्राउज़र को फिर से लॉन्च करने पर, आपकी गुप्त विंडो नहीं खुलेगी}one{ब्राउज़र को फिर से लॉन्च करने पर, आपकी {COUNT} गुप्त विंडो नहीं खुलेगी}other{ब्राउज़र को फिर से लॉन्च करने पर, आपकी {COUNT} गुप्त विंडो नहीं खुलेंगी}}</translation>
 <translation id="8266947622852630193">इनपुट के सभी तरीके</translation>
@@ -8288,6 +8291,7 @@
 <translation id="8655295600908251630">चैनल</translation>
 <translation id="8655972064210167941">साइन इन नहीं हो पाया क्योंकि आपके पासवर्ड की पुष्टि नहीं की जा सकी. कृपया अपने एडमिन से संपर्क करें या फिर से कोशिश करें.</translation>
 <translation id="8657393004602556571">क्या आप फ़ीडबैक (सुझाव, शिकायत या राय) को खारिज करना चाहते हैं?</translation>
+<translation id="8657762806752649049"><ph name="ACCOUNT" /> के लिए, आपके Google खाते में</translation>
 <translation id="8661290697478713397">लिंक को गुप्त&amp; विंडो में खोलें</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्क में शामिल हों</translation>
 <translation id="8662733268723715832">इसमें उम्मीद से ज़्यादा समय लग रहा है. आप चाहें, तो इसे स्किप कर दें या फिर इसके पूरा होने का इंतज़ार करें.</translation>

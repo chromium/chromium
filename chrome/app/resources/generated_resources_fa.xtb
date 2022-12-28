@@ -2895,6 +2895,7 @@
 <translation id="3617891479562106823">پس‌زمینه‌ها دردسترس نیست. بعداً دوباره امتحان کنید.</translation>
 <translation id="3619115746895587757">کاپوچینو</translation>
 <translation id="3620136223548713675">موقعیت جغرافیایی</translation>
+<translation id="362023940451053340">‏در «حساب Google» شما، برای <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">‏کمک به بهبود ویژگی‌ها و عملکرد ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{یک برنامه}one{# برنامه}other{# برنامه}}</translation>
 <translation id="362333465072914957">‏درانتظار CA برای صدور گواهینامه</translation>
@@ -6765,6 +6766,7 @@
 <translation id="7235737137505019098">کلید امنیتی‌تان فضای آزاد کافی برای حساب دیگری ندارد.</translation>
 <translation id="7235873936132740888">وقتی روی انواع خاصی از پیوند‌ها (مثلاً ایجاد پیام جدید در کارخواه ایمیل یا افزودن رویداد‌های جدید در تقویم آنلاین) کلیک می‌کنید، سایت‌ها می‌توانند کارهای ویژه‌ای را انجام دهند.</translation>
 <translation id="7238609589076576185">نشانه تکیه درج شد.</translation>
+<translation id="7238665222668706269">‏«مدیر گذرواژه Google» <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> انتقال را لغو کرد</translation>
 <translation id="7240339475467890413">به نقطه اتصال جدید متصل شود؟</translation>
 <translation id="7241389281993241388">لطفاً جهت ورود به مجوز سرویس گیرنده، به <ph name="TOKEN_NAME" /> وارد شوید.</translation>
@@ -7896,6 +7898,7 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> مکان‌نمای ماوس شما را غیرفعال کرد.</translation>
 <translation id="8264024885325823677">این تنظیم را سرپرست شما مدیریت می‌کند.</translation>
 <translation id="8264718194193514834">«<ph name="EXTENSION_NAME" />» حالت تمام صفحه را فعال کرد.</translation>
+<translation id="8265018477030547118">فقط در این دستگاه</translation>
 <translation id="826511437356419340">وارد حالت نمای کلی پنجره شدید. برای پیمایش تند روی صفحه بکشید، یا اگر از صفحه‌کلید استفاده می‌کنید، کلید جهش را فشار دهید.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{پنجره ناشناس بعد‌از راه‌اندازی مجدد باز نخواهد شد}one{{COUNT} پنجره ناشناس شما بعد‌از راه‌اندازی مجدد دوباره باز نخواهد شد}other{{COUNT} پنجره ناشناس شما بعد‌از راه‌اندازی مجدد دوباره باز نخواهد شد}}</translation>
 <translation id="8266947622852630193">همه روش‌های ورودی</translation>
@@ -8304,6 +8307,7 @@
 <translation id="8655295600908251630">کانال</translation>
 <translation id="8655972064210167941">ورود به سیستم ناموفق بود زیرا گذرواژه شما تأیید نشد. لطفاً با سرپرستتان تماس بگیرید یا دوباره امتحان کنید.</translation>
 <translation id="8657393004602556571">می‌خواهید از بازخورد صرف‌نظر کنید؟</translation>
+<translation id="8657762806752649049">‏در «حساب Google» شما، برای <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">باز کردن پیوند در پنجره حالت &amp;ناشناس</translation>
 <translation id="8662671328352114214">پیوستن به شبکه <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">این کار بیش‌از حد انتظار طول کشیده است، می‌توانید این مرحله را رد کنید یا منتظر بمانید تا تمام شود.</translation>

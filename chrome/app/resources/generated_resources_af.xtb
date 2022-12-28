@@ -2898,6 +2898,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3617891479562106823">Agtergronde is nie beskikbaar nie. Probeer later weer.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geoligging</translation>
+<translation id="362023940451053340">In jou Google-rekening, vir <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Help om Chrome-bedryfstelsel se kenmerke en werkverrigting beter te maak</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{'n program}other{# programme}}</translation>
 <translation id="362333465072914957">Wag vir die CA om 'n sertifikaat uit te reik</translation>
@@ -6767,6 +6768,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7235737137505019098">Jou sekuriteitsleutel het nie genoeg berging vir nog rekeninge nie.</translation>
 <translation id="7235873936132740888">Werwe kan spesiale take hanteer wanneer jy op sekere soorte skakels klik, soos om 'n nuwe boodskap in jou e-poskliënt te skep of nuwe geleenthede op jou aanlyn kalender by te voeg</translation>
 <translation id="7238609589076576185">Aksentmerk is ingevoeg.</translation>
+<translation id="7238665222668706269">Google Wagwoordbestuurder <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> het die oordrag gekanselleer</translation>
 <translation id="7240339475467890413">Koppel aan nuwe warmkol?</translation>
 <translation id="7241389281993241388">Meld asseblief by <ph name="TOKEN_NAME" /> aan om die kliëntsertifikaat in te voer.</translation>
@@ -7898,6 +7900,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> het jou muismerker gedeaktiveer.</translation>
 <translation id="8264024885325823677">Jou administrateur bestuur hierdie instelling.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" het volskerm veroorsaak.</translation>
+<translation id="8265018477030547118">Net op hierdie toestel</translation>
 <translation id="826511437356419340">Het in vensteroorsigmodus ingegaan. Swiep om te navigeer of druk Tab as jy 'n sleutelbord gebruik.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Jou Incognito-venster sal nie oopmaak nadat jy herbegin het nie}other{Jou {COUNT} Incognito-vensters sal nie oopmaak nadat jy herbegin het nie}}</translation>
 <translation id="8266947622852630193">Alle invoermetodes</translation>
@@ -8306,6 +8309,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8655295600908251630">Kanaal</translation>
 <translation id="8655972064210167941">Kon nie aanmeld nie omdat jou wagwoord nie geverifieer kon word nie. Kontak jou administrateur of probeer weer.</translation>
 <translation id="8657393004602556571">Wil jy die terugvoer weggooi?</translation>
+<translation id="8657762806752649049">In jou Google-rekening, vir <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Maak skakel in incognito-venster oop</translation>
 <translation id="8662671328352114214">Sluit by <ph name="TYPE" />-netwerk aan</translation>
 <translation id="8662733268723715832">Dit neem langer as verwag. Jy kan dit oorslaan of wag totdat dit klaar is.</translation>

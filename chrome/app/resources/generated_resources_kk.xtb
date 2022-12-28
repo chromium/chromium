@@ -2880,6 +2880,7 @@
 <translation id="3617891479562106823">Фондар жоқ. Кейінірек қайталап көріңіз.</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620136223548713675">Геолокация</translation>
+<translation id="362023940451053340">Google аккаунтыңызда <ph name="ACCOUNT" /> үшін</translation>
 <translation id="3621807901162200696">ChromeOS функциялары мен өнімділігін жақсартуға көмектесу</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{қолданба}other{# қолданба}}</translation>
 <translation id="362333465072914957">Сертификат шығуы үшін CA күтілуде</translation>
@@ -6744,6 +6745,7 @@
 <translation id="7235737137505019098">Басқа аккаунттар үшін қауіпсіздік кілтіндегі орын жеткіліксіз.</translation>
 <translation id="7235873936132740888">Белгілі бір сілтемелерге (мысалы, электрондық пошта клиентінде жаңа хабар жасау немесе онлайн күнтізбеге жаңа іс-шаралар қосу) басқан кезде, сайттар арнайы тапсырмаларды орындайды.</translation>
 <translation id="7238609589076576185">Диакритикалық таңба енгізілді.</translation>
+<translation id="7238665222668706269">Google Құпия сөз менеджері <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> құрылғысы аударуды тоқтатты</translation>
 <translation id="7240339475467890413">Жаңа хотспотқа қосылу керек пе?</translation>
 <translation id="7241389281993241388">Клиент сертификатын импорттау үшін <ph name="TOKEN_NAME" /> жүйсіне кіріңіз.</translation>
@@ -7875,6 +7877,7 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> тінтуір курсорын өшірді.</translation>
 <translation id="8264024885325823677">Бұл параметрді әкімшіңіз басқарады.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" толық экранды іске қосты.</translation>
+<translation id="8265018477030547118">Тек осы құрылғыда</translation>
 <translation id="826511437356419340">Терезе шолу режимі қосылды. Өту үшін сырғытыңыз. Пернетақтаны пайдаланып жатсаңыз, Tab түймесін басыңыз.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Қайта іске қосылғанда инкогнито терезесі қайта ашылмайды.}other{Қайта іске қосылғанда {COUNT} инкогнито терезесі қайта ашылмайды.}}</translation>
 <translation id="8266947622852630193">Барлық енгізу әдістері</translation>
@@ -8283,6 +8286,7 @@
 <translation id="8655295600908251630">Арна</translation>
 <translation id="8655972064210167941">Кірілмеді, себебі құпия сөзіңіз расталмады. Әкімшіңізге хабарласыңыз немесе әрекетті қайталаңыз.</translation>
 <translation id="8657393004602556571">Пікірді жою керек пе?</translation>
+<translation id="8657762806752649049">Google аккаунтыңызда <ph name="ACCOUNT" /> үшін</translation>
 <translation id="8661290697478713397">Сілтемені Инко&amp;гнито терезесінде ашу</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> желісіне қосылу</translation>
 <translation id="8662733268723715832">Бұл әдеттегіден ұзақ уақыт алады. Оны өткізіп жіберуге немесе соңына дейін күтуге болады.</translation>

@@ -2899,6 +2899,7 @@
 <translation id="3617891479562106823">배경을 사용할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="3619115746895587757">카푸치노</translation>
 <translation id="3620136223548713675">위치정보</translation>
+<translation id="362023940451053340">내 Google 계정(<ph name="ACCOUNT" />)에 업데이트</translation>
 <translation id="3621807901162200696">ChromeOS의 기능 및 성능 개선에 참여</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{앱 1개}other{앱 #개}}</translation>
 <translation id="362333465072914957">CA에서 인증서를 발급할 때까지 기다리는 중</translation>
@@ -6765,6 +6766,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7235737137505019098">보안 키에 계정을 추가할 공간이 충분하지 않습니다.</translation>
 <translation id="7235873936132740888">사이트는 사용자가 특정 유형의 링크를 클릭할 때 이메일 클라이언트에서 새 메일을 작성하거나 온라인 캘린더에 새 일정을 추가하는 등 특정 작업을 처리할 수 있습니다.</translation>
 <translation id="7238609589076576185">발음 구별 부호가 삽입되었습니다.</translation>
+<translation id="7238665222668706269">Google 비밀번호 관리자 <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" />에서 전송을 취소함</translation>
 <translation id="7240339475467890413">새 핫스팟에 연결하시겠습니까?</translation>
 <translation id="7241389281993241388"><ph name="TOKEN_NAME" />에 로그인하여 클라이언트 인증서를 가져오세요.</translation>
@@ -7898,6 +7900,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />에서 마우스 커서를 사용 중지했습니다.</translation>
 <translation id="8264024885325823677">관리자가 관리하는 설정입니다.</translation>
 <translation id="8264718194193514834"><ph name="EXTENSION_NAME" />에서 전체 화면을 실행합니다.</translation>
+<translation id="8265018477030547118">이 기기에서만</translation>
 <translation id="826511437356419340">창 개요 모드를 시작했습니다. 이동하려면 스와이프하거나 키보드를 사용하는 경우에는 Tab 키를 누르세요.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{다시 실행한 후 시크릿 창이 열리지 않습니다.}other{다시 실행한 후 시크릿 창 {COUNT}개가 다시 열리지 않습니다.}}</translation>
 <translation id="8266947622852630193">모든 입력 방법</translation>
@@ -8306,6 +8309,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8655295600908251630">채널</translation>
 <translation id="8655972064210167941">비밀번호를 확인할 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
 <translation id="8657393004602556571">의견을 삭제하시겠습니까?</translation>
+<translation id="8657762806752649049">내 Google 계정(<ph name="ACCOUNT" />)에 저장</translation>
 <translation id="8661290697478713397">시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> 네트워크에 연결</translation>
 <translation id="8662733268723715832">예상보다 많은 시간이 걸리고 있습니다. 계속 기다리거나 건너뛸 수 있습니다.</translation>

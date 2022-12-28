@@ -2898,6 +2898,7 @@
 <translation id="3617891479562106823">無法自訂背景，請稍候再試。</translation>
 <translation id="3619115746895587757">泡沫咖啡</translation>
 <translation id="3620136223548713675">地理位置</translation>
+<translation id="362023940451053340">更新 Google 帳戶 (<ph name="ACCOUNT" />) 的密碼</translation>
 <translation id="3621807901162200696">協助改善 Chrome OS 的功能和效能</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 個應用程式}other{# 個應用程式}}</translation>
 <translation id="362333465072914957">正在等待 CA 發出憑證</translation>
@@ -6764,6 +6765,7 @@
 <translation id="7235737137505019098">安全密鑰的空間不足，無法建立帳戶。</translation>
 <translation id="7235873936132740888">網站可在您點擊特定類型的連結時處理特殊工作，例如在電子郵件用戶端建立新郵件，或在線上日曆中新增活動</translation>
 <translation id="7238609589076576185">插入咗重音符號。</translation>
+<translation id="7238665222668706269">Google 密碼管理工具 <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> 已取消傳送</translation>
 <translation id="7240339475467890413">要連線至新熱點嗎？</translation>
 <translation id="7241389281993241388">請登入 <ph name="TOKEN_NAME" /> 以匯入用戶端憑證。</translation>
@@ -7896,6 +7898,7 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> 已停用滑鼠游標。</translation>
 <translation id="8264024885325823677">此設定由管理員管理。</translation>
 <translation id="8264718194193514834">「<ph name="EXTENSION_NAME" />」啟用了全螢幕。</translation>
+<translation id="8265018477030547118">只儲存在此裝置上</translation>
 <translation id="826511437356419340">進入咗視窗概覽模式。掃一下就可以瀏覽。如果你用鍵盤，㩒一下 Tab 鍵就可以瀏覽。</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{您的無痕式視窗將不會在重新啟動後開啟}other{您的 {COUNT} 個無痕式視窗將不會在重新啟動後開啟}}</translation>
 <translation id="8266947622852630193">所有輸入方法</translation>
@@ -8304,6 +8307,7 @@
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655972064210167941">系統無法驗證您的密碼，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
 <translation id="8657393004602556571">您要捨棄這則意見嗎？</translation>
+<translation id="8657762806752649049">儲存至 Google 帳戶 (<ph name="ACCOUNT" />)</translation>
 <translation id="8661290697478713397">在無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="8662671328352114214">加入 <ph name="TYPE" /> 網絡</translation>
 <translation id="8662733268723715832">操作需時比預期長，您可以選擇略過或繼續等待。</translation>

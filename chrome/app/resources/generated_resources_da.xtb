@@ -2899,6 +2899,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3617891479562106823">Baggrunde er utilgængelige. Prøv igen senere.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geoplacering</translation>
+<translation id="362023940451053340">På din Google-konto for <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Vær med til at forbedre funktioner og ydeevne i ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{en app}one{# app}other{# apps}}</translation>
 <translation id="362333465072914957">Venter på, at certifikatautoriteten udsteder et certifikat</translation>
@@ -6769,6 +6770,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7235737137505019098">Din sikkerhedsnøgle har ikke nok plads til flere konti.</translation>
 <translation id="7235873936132740888">Websites kan foretage særlige opgaver, når du klikker på bestemte typer links. Disse handlinger omfatter f.eks. at oprette nye meddelelser i din mailklient eller tilføje nye begivenheder til din onlinekalender</translation>
 <translation id="7238609589076576185">Accenttegn er indsat.</translation>
+<translation id="7238665222668706269">Google Adgangskodeadministrator <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> annullerede overførslen</translation>
 <translation id="7240339475467890413">Vil du oprette forbindelse til et nyt hotspot?</translation>
 <translation id="7241389281993241388">Log ind på <ph name="TOKEN_NAME" /> for at importere klientcertifikatet.</translation>
@@ -7900,6 +7902,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> har deaktiveret din musemarkør.</translation>
 <translation id="8264024885325823677">Denne indstilling administreres af din administrator.</translation>
 <translation id="8264718194193514834"><ph name="EXTENSION_NAME" /> har aktiveret fuld skærm.</translation>
+<translation id="8265018477030547118">Kun på denne enhed</translation>
 <translation id="826511437356419340">Tilstanden for vinduesoversigt blev åbnet. Stryg for at navigere, eller tryk på Tab-tasten, hvis du bruger et tastatur.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Dit inkognitovindue åbnes ikke igen, når du har genstartet}one{Du har {COUNT} åbent inkognitovindue. Dette åbnes ikke igen, når du har genstartet}other{Du har {COUNT} åbne inkognitovinduer. Disse åbnes ikke igen, når du har genstartet}}</translation>
 <translation id="8266947622852630193">Alle indtastningsmetoder</translation>
@@ -8308,6 +8311,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Login mislykkedes, da din adgangskode ikke kunne bekræftes. Kontakt din administrator, eller prøv igen.</translation>
 <translation id="8657393004602556571">Vil du slette denne feedback?</translation>
+<translation id="8657762806752649049">På din Google-konto for <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Åbn link i inko&amp;gnitovindue</translation>
 <translation id="8662671328352114214">Opret forbindelse til <ph name="TYPE" />-netværk</translation>
 <translation id="8662733268723715832">Dette tager længere tid end forventet. Du kan springe opdateringen over eller vente, indtil den er gennemført.</translation>

@@ -2883,6 +2883,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3617891479562106823">Gli sfondi non sono disponibili. Riprova più tardi.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolocalizzazione</translation>
+<translation id="362023940451053340">Nel tuo Account Google, per <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Contribuisci a migliorare le funzionalità e le prestazioni di ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{un'app}other{# app}}</translation>
 <translation id="362333465072914957">In attesa dell'emissione del certificato da parte della CA</translation>
@@ -6747,6 +6748,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7235737137505019098">Sul token di sicurezza non c'è spazio a sufficienza per altri account.</translation>
 <translation id="7235873936132740888">I siti possono gestire attività speciali quando fai clic su determinati tipi di link, ad esempio la creazione di un nuovo messaggio nel tuo client di posta o l'aggiunta di nuovi eventi al tuo calendario online</translation>
 <translation id="7238609589076576185">Segno di accento inserito.</translation>
+<translation id="7238665222668706269">Gestore delle password di Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> ha annullato il trasferimento</translation>
 <translation id="7240339475467890413">Eseguire la connessione al nuovo hotspot?</translation>
 <translation id="7241389281993241388">Accedi a <ph name="TOKEN_NAME" /> per importare il certificato client.</translation>
@@ -7879,6 +7881,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ha disattivato il puntatore del mouse.</translation>
 <translation id="8264024885325823677">Questa impostazione è gestita dall'amministratore.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ha attivato lo schermo intero.</translation>
+<translation id="8265018477030547118">Solo su questo dispositivo</translation>
 <translation id="826511437356419340">Modalità panoramica finestre attivata. Scorri per spostarti oppure premi Tab se usi una tastiera.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{La finestra di navigazione in incognito non verrà aperta dopo il riavvio}other{Le {COUNT} finestre di navigazione in incognito non verranno riaperte dopo il riavvio}}</translation>
 <translation id="8266947622852630193">Tutti i metodi di immissione</translation>
@@ -8287,6 +8290,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8655295600908251630">Canale</translation>
 <translation id="8655972064210167941">Accesso non riuscito perché non è stato possibile verificare la password. Contatta l'amministratore o riprova.</translation>
 <translation id="8657393004602556571">Vuoi ignorare il feedback?</translation>
+<translation id="8657762806752649049">Nel tuo Account Google, per <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Apri link in finestra di navigazione in inco&amp;gnito</translation>
 <translation id="8662671328352114214">Aggiungi la rete <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">L'operazione sta richiedendo più tempo del previsto. Puoi saltarla o attendere fino al completamento.</translation>

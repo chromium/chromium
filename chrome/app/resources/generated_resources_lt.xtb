@@ -2901,6 +2901,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3617891479562106823">Fonai nepasiekiami. Vėliau bandykite dar kartą.</translation>
 <translation id="3619115746895587757">Kapučino kava</translation>
 <translation id="3620136223548713675">Geografinės vietovės nustatymas</translation>
+<translation id="362023940451053340">„Google“ paskyroje <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Padėti tobulinti „Chrome“ OS funkcijas ir našumą</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{programą}one{# programą}few{# programas}many{# programos}other{# programų}}</translation>
 <translation id="362333465072914957">Laukiama, kol sertifikavimo institucija išduos sertifikatą</translation>
@@ -6776,6 +6777,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7235737137505019098">Saugos rakte nepakanka vietos jokioms kitoms paskyroms.</translation>
 <translation id="7235873936132740888">„Google“ svetainės gali atlikti specialias užduotis, kai spustelite konkrečių tipų nuorodas, pvz., sukurti naują pranešimą el. pašto programoje ar pridėti naujų įvykių interneto kalendoriuje</translation>
 <translation id="7238609589076576185">Kirčio ženklas įterptas.</translation>
+<translation id="7238665222668706269">„Google“ slaptažodžių tvarkyklė <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">„<ph name="DEVICE_NAME" />“ atšaukė perkėlimą</translation>
 <translation id="7240339475467890413">Prisijungti prie naujo viešosios interneto prieigos taško?</translation>
 <translation id="7241389281993241388">Jei norite importuoti programos sertifikatą, prisijunkite prie „<ph name="TOKEN_NAME" />“.</translation>
@@ -7908,6 +7910,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> neleidžia pelės žymeklio.</translation>
 <translation id="8264024885325823677">Šį nustatymą tvarko jūsų administratorius.</translation>
 <translation id="8264718194193514834">„<ph name="EXTENSION_NAME" />“ suaktyvintas viso ekrano režimu.</translation>
+<translation id="8265018477030547118">Tik šiame įrenginyje</translation>
 <translation id="826511437356419340">Įjungtas langų apžvalgos režimas. Norėdami naršyti perbraukite arba paspauskite tabuliavimo klavišą, jei naudojate klaviatūrą.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Paleidus iš naujo inkognito langas nebus rodomas}one{Paleidus iš naujo {COUNT} inkognito langas nebus rodomas}few{Paleidus iš naujo {COUNT} inkognito langai nebus rodomi}many{Paleidus iš naujo {COUNT} inkognito lango nebus rodoma}other{Paleidus iš naujo {COUNT} inkognito langų nebus rodoma}}</translation>
 <translation id="8266947622852630193">Visi įvesties metodai</translation>
@@ -8316,6 +8319,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8655295600908251630">Kanalas</translation>
 <translation id="8655972064210167941">Nepavyko prisijungti, nes negalima patvirtinti slaptažodžio. Susisiekite su administratoriumi arba bandykite dar kartą.</translation>
 <translation id="8657393004602556571">Ar norite atmesti atsiliepimą?</translation>
+<translation id="8657762806752649049">„Google“ paskyroje <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Atidaryti nuorodą inko&amp;gnito lange</translation>
 <translation id="8662671328352114214">Prisijungimas prie „<ph name="TYPE" />“ tinklo</translation>
 <translation id="8662733268723715832">Tai trunka ilgiau, nei tikėtasi. Galite praleisti arba palaukti, kol bus baigta.</translation>

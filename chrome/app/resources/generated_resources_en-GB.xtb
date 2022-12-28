@@ -2898,6 +2898,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3617891479562106823">Backgrounds are unavailable. Try again later.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolocation</translation>
+<translation id="362023940451053340">In your Google Account, for <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Help improve Chrome OS features and performance</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{an app}other{# apps}}</translation>
 <translation id="362333465072914957">Waiting for the CA to issue a certificate</translation>
@@ -6766,6 +6767,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7235737137505019098">Your security key does not have enough space for any more accounts.</translation>
 <translation id="7235873936132740888">Sites can handle special tasks when you click on certain types of links, like creating a new message in your email client or adding new events to your online calendar</translation>
 <translation id="7238609589076576185">Accent mark inserted.</translation>
+<translation id="7238665222668706269">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> cancelled the transfer</translation>
 <translation id="7240339475467890413">Connect to new hotspot?</translation>
 <translation id="7241389281993241388">Please sign in to <ph name="TOKEN_NAME" /> to import the client certificate.</translation>
@@ -7898,6 +7900,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> has disabled your mouse cursor.</translation>
 <translation id="8264024885325823677">This setting is managed by your administrator.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" triggered full screen.</translation>
+<translation id="8265018477030547118">Only on this device</translation>
 <translation id="826511437356419340">Entered window overview mode. Swipe to navigate, or press tab if using a keyboard.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Your incognito window won't open after you relaunch}other{Your {COUNT} incognito windows won't reopen after you relaunch}}</translation>
 <translation id="8266947622852630193">All input methods</translation>
@@ -8306,6 +8309,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8655295600908251630">Channel</translation>
 <translation id="8655972064210167941">Sign-in failed because your password could not be verified. Please contact your administrator or try again.</translation>
 <translation id="8657393004602556571">Do you want to discard the feedback?</translation>
+<translation id="8657762806752649049">To your Google Account, for <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Open Link in Inco&amp;gnito Window</translation>
 <translation id="8662671328352114214">Join <ph name="TYPE" /> network</translation>
 <translation id="8662733268723715832">This is taking longer than expected; you can skip or wait until it's done.</translation>

@@ -2876,6 +2876,7 @@
 <translation id="3617891479562106823">背景を利用できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="3619115746895587757">カプチーノ</translation>
 <translation id="3620136223548713675">位置情報</translation>
+<translation id="362023940451053340">保存先: Google アカウント（<ph name="ACCOUNT" />）</translation>
 <translation id="3621807901162200696">Chrome OS の機能とパフォーマンスの改善に協力する</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
 <translation id="362333465072914957">CA による証明書の発行を待機しています</translation>
@@ -6738,6 +6739,7 @@
 <translation id="7235737137505019098">セキュリティ キーに空き容量がないため、これ以上アカウントを追加できません。</translation>
 <translation id="7235873936132740888">特定の種類のリンクをクリックしたときに、メール クライアントで新しいメールを作成したり、オンライン カレンダーに新しい予定を追加したりといったタスクをサイトで処理できるようにします</translation>
 <translation id="7238609589076576185">アクセント記号を挿入しました。</translation>
+<translation id="7238665222668706269">保存先: Google パスワード マネージャー<ph name="SEPARATOR" /><ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> で転送がキャンセルされました</translation>
 <translation id="7240339475467890413">新しいアクセス ポイントに接続しますか？</translation>
 <translation id="7241389281993241388">クライアント証明書をインポートするには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
@@ -7868,6 +7870,7 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> でマウスカーソルが無効になりました。</translation>
 <translation id="8264024885325823677">この設定は管理者によって管理されています。</translation>
 <translation id="8264718194193514834">「<ph name="EXTENSION_NAME" />」によって全画面表示になりました。</translation>
+<translation id="8265018477030547118">保存先: このデバイスのみ</translation>
 <translation id="826511437356419340">ウィンドウ概観モードに切り替わりました。移動するにはスワイプするか、キーボードの場合は Tab キーを押してください。</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{シークレット ウィンドウは、再起動後は自動的には開きません}other{現在開いている {COUNT} 個のシークレット ウィンドウは、再起動後は自動的には開きません}}</translation>
 <translation id="8266947622852630193">すべての入力方法</translation>
@@ -8276,6 +8279,7 @@
 <translation id="8655295600908251630">チャンネル</translation>
 <translation id="8655972064210167941">パスワードを確認できなかったためログインできませんでした。管理者に問い合わせるか、もう一度お試しください。</translation>
 <translation id="8657393004602556571">フィードバックを破棄してもよろしいですか？</translation>
+<translation id="8657762806752649049">保存先: Google アカウント（<ph name="ACCOUNT" />）</translation>
 <translation id="8661290697478713397">シークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ネットワークへの接続</translation>
 <translation id="8662733268723715832">予想以上に時間がかかっています。スキップするか、終わるまでお待ちください。</translation>

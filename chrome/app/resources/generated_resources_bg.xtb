@@ -2894,6 +2894,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3617891479562106823">Фоновете не са налице. Опитайте отново по-късно.</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620136223548713675">Геолокация</translation>
+<translation id="362023940451053340">В профила ви в Google за <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Помощ за подобряването на функциите и ефективността на Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{приложение}other{# приложения}}</translation>
 <translation id="362333465072914957">Изчаква се издаването на сертификат от сертифициращия орган</translation>
@@ -6764,6 +6765,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7235737137505019098">В ключа ви за сигурност няма достатъчно място за повече профили.</translation>
 <translation id="7235873936132740888">Когато кликвате върху определени типове връзки, сайтовете могат да изпълняват специални задачи, като например да създадат ново съобщение в програмата ви за електронна поща или да добавят ново събитие към онлайн календара ви</translation>
 <translation id="7238609589076576185">Вмъкнат бе диакритичен знак.</translation>
+<translation id="7238665222668706269">Google Мениджър на пароли <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">Прехвърлянето бе анулирано от <ph name="DEVICE_NAME" /></translation>
 <translation id="7240339475467890413">Да се установи ли връзка с новата точка за достъп?</translation>
 <translation id="7241389281993241388">Моля, влезте в(ъв) <ph name="TOKEN_NAME" />, за да импортирате сертификата за клиентската програма.</translation>
@@ -7896,6 +7898,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> деактивира курсора на мишката ви.</translation>
 <translation id="8264024885325823677">Тази настройка се управлява от администратора ви.</translation>
 <translation id="8264718194193514834"><ph name="EXTENSION_NAME" /> задейства цял екран.</translation>
+<translation id="8265018477030547118">Само на това устройство</translation>
 <translation id="826511437356419340">Влязохте в режим на общ преглед на прозорците. Навигирайте с прекарване на пръст или натиснете клавиша Tab, ако използвате клавиатура.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Прозорецът ви в режим „инкогнито“ няма да бъде отворен след рестартиране}other{Вашите {COUNT} прозореца в режим „инкогнито“ няма да бъдат отворени след рестартиране}}</translation>
 <translation id="8266947622852630193">Всички методи на въвеждане</translation>
@@ -8304,6 +8307,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Влизането не бе успешно, тъй като паролата ви не можа да се потвърди. Моля, свържете се с администратора си или опитайте отново.</translation>
 <translation id="8657393004602556571">Искате ли да отхвърлите отзивите?</translation>
+<translation id="8657762806752649049">В профила ви в Google за <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Отваряне на връзката в прозорец при използване на функ&amp;цията „инкогнито“</translation>
 <translation id="8662671328352114214">Присъединяване към <ph name="TYPE" /> мрежа</translation>
 <translation id="8662733268723715832">Процесът отнема по-дълго от очакваното. Можете да го пропуснете или да изчакате да завърши.</translation>

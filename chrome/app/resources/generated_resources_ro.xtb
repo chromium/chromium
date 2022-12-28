@@ -2884,6 +2884,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3617891479562106823">Fundalurile nu sunt disponibile. Încearcă din nou mai târziu.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Localizarea geografică</translation>
+<translation id="362023940451053340">În Contul Google, pentru <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Contribuie la îmbunătățirea funcțiilor și a performanței sistemului de operare Chrome</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{o aplicație}few{# aplicații}other{# de aplicații}}</translation>
 <translation id="362333465072914957">Se așteaptă emiterea unui certificat de către CA</translation>
@@ -6753,6 +6754,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7235737137505019098">Cheia ta de securitate nu are suficient spațiu pentru mai mult conturi.</translation>
 <translation id="7235873936132740888">Site-urile pot realiza activități speciale când dai clic pe anumite tipuri de linkuri, cum ar fi crearea unui mesaj nou în clientul de e-mail sau adăugarea de evenimente noi în calendarul tău online</translation>
 <translation id="7238609589076576185">A fost inserat semnul diacritic pentru accent.</translation>
+<translation id="7238665222668706269">Manager de parole Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> a anulat transferul</translation>
 <translation id="7240339475467890413">Te conectezi la noul hotspot?</translation>
 <translation id="7241389281993241388">Conectează-te la <ph name="TOKEN_NAME" /> pentru a importa certificatul client.</translation>
@@ -7885,6 +7887,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> a dezactivat cursorul mouse-ului.</translation>
 <translation id="8264024885325823677">Această setare este gestionată de administrator.</translation>
 <translation id="8264718194193514834">„<ph name="EXTENSION_NAME" />” a activat modul Ecran complet.</translation>
+<translation id="8265018477030547118">Numai pe acest dispozitiv</translation>
 <translation id="826511437356419340">S-a trecut în modul de prezentare a ferestrei. Glisează pentru a naviga sau apasă tasta Tab dacă folosești tastatura.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Fereastra incognito nu se va deschide după relansare}few{{COUNT} ferestre incognito nu se vor deschide după relansare}other{{COUNT} de ferestre incognito nu se vor deschide după relansare}}</translation>
 <translation id="8266947622852630193">Toate metodele de introducere a textului</translation>
@@ -8293,6 +8296,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">Nu s-a conectat, deoarece parola nu a putut fi confirmată. Contactează administratorul sau încearcă din nou.</translation>
 <translation id="8657393004602556571">Renunți la feedback?</translation>
+<translation id="8657762806752649049">În Contul Google, pentru <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Deschide linkul într-o fereastră inco&amp;gnito</translation>
 <translation id="8662671328352114214">Conectează-te la rețeaua <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Acțiunea durează mai mult decât s-a estimat. Poți să o omiți sau să aștepți până când se finalizează.</translation>

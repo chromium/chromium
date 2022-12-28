@@ -2883,6 +2883,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3617891479562106823">Achtergronden zijn niet beschikbaar. Probeer het later opnieuw.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolocatie</translation>
+<translation id="362023940451053340">In je Google-account, voor <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Help de functies en prestaties van Chrome OS te verbeteren</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{een app}other{# apps}}</translation>
 <translation id="362333465072914957">Wachten tot de certificeringsinstantie (CA) een certificaat uitgeeft</translation>
@@ -6743,6 +6744,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7235737137505019098">Je beveiligingssleutel heeft niet voldoende ruimte voor meer accounts.</translation>
 <translation id="7235873936132740888">Sites kunnen speciale taken uitvoeren als je op bepaalde typen links klikt, zoals een bericht maken in je e-mailclient of nieuwe afspraken toevoegen aan je online agenda</translation>
 <translation id="7238609589076576185">Accentteken geplaatst.</translation>
+<translation id="7238665222668706269">Google Wachtwoordmanager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> heeft de overdracht geannuleerd</translation>
 <translation id="7240339475467890413">Verbinding maken met nieuwe hotspot?</translation>
 <translation id="7241389281993241388">Log in bij <ph name="TOKEN_NAME" /> om het klantcertificaat te importeren.</translation>
@@ -7873,6 +7875,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> heeft je muisaanwijzer uitgezet.</translation>
 <translation id="8264024885325823677">Deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="8264718194193514834">'<ph name="EXTENSION_NAME" />' heeft het volledige scherm geactiveerd.</translation>
+<translation id="8265018477030547118">Alleen op dit apparaat</translation>
 <translation id="826511437356419340">Modus voor vensteroverzicht staat aan. Swipe om te navigeren of druk op Tab op een toetsenbord.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Je incognitovenster wordt niet opnieuw geopend na de herstart}other{Je {COUNT} incognitovensters worden niet opnieuw geopend na de herstart}}</translation>
 <translation id="8266947622852630193">Alle invoermethoden</translation>
@@ -8281,6 +8284,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8655295600908251630">Kanaal</translation>
 <translation id="8655972064210167941">Het inloggen is mislukt omdat je wachtwoord niet kan worden geverifieerd. Neem contact op met je beheerder of probeer het opnieuw.</translation>
 <translation id="8657393004602556571">Wil je de feedback verwijderen?</translation>
+<translation id="8657762806752649049">In je Google-account, voor <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Link openen in inco&amp;gnitovenster</translation>
 <translation id="8662671328352114214">Deelnemen aan <ph name="TYPE" />-netwerk</translation>
 <translation id="8662733268723715832">Dit duurt langer dan verwacht. Je kunt dit overslaan of wachten tot het klaar is.</translation>
