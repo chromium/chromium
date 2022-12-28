@@ -171,17 +171,21 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> file_task_runner) {
   // AutoThreadTaskRunner is a TaskRunner with the special property that it will
-  // continue to process tasks until no references remain, at least. The
-  // QuitClosure we usually pass does the simple thing of stopping the
-  // underlying TaskRunner. Since we are re-using browser's threads, we cannot
-  // stop them explicitly. Therefore, base::DoNothing is passed in as the quit
-  // closure.
+  // continue to process tasks until no references remain. We usually provide a
+  // QuitClosure which is run when the AutoThreadTaskRunner instance is
+  // destroyed, however on ChromeOS we are running on threads provided by the
+  // browser (meaning we don't own them or their lifetime) so we should not be
+  // stopping them when a remote session terminates.
+  // Providing any sort of callback (even base::DoNothing) will cause a crash if
+  // ash-chrome is shutting down when the AutoThreadTaskRunner is being
+  // destroyed. A real-world example is starting a CRD session and then signing
+  // out, see b/260395047 for more details.
   scoped_refptr<AutoThreadTaskRunner> io_auto_task_runner =
-      new AutoThreadTaskRunner(io_task_runner, base::DoNothing());
+      new AutoThreadTaskRunner(io_task_runner);
   scoped_refptr<AutoThreadTaskRunner> file_auto_task_runner =
-      new AutoThreadTaskRunner(file_task_runner, base::DoNothing());
+      new AutoThreadTaskRunner(file_task_runner);
   scoped_refptr<AutoThreadTaskRunner> ui_auto_task_runner =
-      new AutoThreadTaskRunner(ui_task_runner, base::DoNothing());
+      new AutoThreadTaskRunner(ui_task_runner);
 
   // Use browser's file thread as the joiner as it is the only browser-thread
   // that allows blocking I/O, which is required by thread joining.
