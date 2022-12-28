@@ -209,7 +209,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mLoadingView.hideLoadingUI();
 
         // Don't crossfade if the new logo is the same as the old one.
-        if (mLogo != null && mLogo.sameAs(logo)) return;
+        if (mLogo == logo) return;
 
         mNewLogo = logo;
         mNewLogoMatrix = new Matrix();
