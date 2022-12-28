@@ -767,7 +767,6 @@ source_set("presence_types") {
     "src/presence/presence_zone.h",
     "src/presence/scan_request.h",
     "src/presence/scan_request_builder.h",
-    "src/presence/status.h",
   ]
   public_deps = [
     ":connections_credential_proto",
