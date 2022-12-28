@@ -14,7 +14,6 @@ import './privacy_guide_fragment_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
@@ -40,11 +39,6 @@ export class PrivacyGuideMsbbFragmentElement extends
       prefs: {
         type: Object,
         notify: true,
-      },
-
-      enablePrivacyGuide2_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('privacyGuide2Enabled'),
       },
     };
   }

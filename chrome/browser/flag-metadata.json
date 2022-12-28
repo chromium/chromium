@@ -5572,14 +5572,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "privacy-guide-2",
-    "owners": [
-      "rainhard",
-      "msramek",
-      "chrome-friendly-settings@google.com"],
-    "expiry_milestone": 108
-  },
-  {
     "name": "privacy-guide-android",
     "owners": [
       "andzaytsev",

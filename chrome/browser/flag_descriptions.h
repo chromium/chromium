@@ -1367,9 +1367,6 @@ extern const char kEnableOmniboxSearchPrefetchDescription[];
 extern const char kEnableOmniboxClientSearchPrefetchName[];
 extern const char kEnableOmniboxClientSearchPrefetchDescription[];
 
-extern const char kPrivacyGuide2Name[];
-extern const char kPrivacyGuide2Description[];
-
 extern const char kPrivacyGuideAndroidName[];
 extern const char kPrivacyGuideAndroidDescription[];
 

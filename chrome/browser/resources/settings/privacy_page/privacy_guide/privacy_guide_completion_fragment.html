@@ -144,43 +144,26 @@
     width: calc(100% - 48px);  /* 48px = 2x :host horizontal padding */
   }
 </style>
-<template is="dom-if" if="[[enablePrivacyGuide2_]]">
-  <div class="header-phase2">
-    <div id="picture-container">
-      <div class="picture-shapes-container">
-        <div id="circle" class="picture-shape"></div>
-        <div id="pill" class="picture-shape"></div>
-        <div id="square" class="picture-shape"></div>
-        <div id="triangle" class="picture-shape"></div>
-      </div>
-
-      <picture>
-        <source
-            srcset="./images/privacy_guide/completion_banner_dark_v2.svg"
-            media="(prefers-color-scheme: dark)">
-        <img alt="" src="./images/privacy_guide/completion_banner_v2.svg">
-      </picture>
+<div class="header-phase2">
+  <div id="picture-container">
+    <div class="picture-shapes-container">
+      <div id="circle" class="picture-shape"></div>
+      <div id="pill" class="picture-shape"></div>
+      <div id="square" class="picture-shape"></div>
+      <div id="triangle" class="picture-shape"></div>
     </div>
-    <div class="headline" tabindex="-1">
-      $i18n{privacyGuideCompletionCardHeader}
-    </div>
-    <div class="cr-secondary-text">[[subheader_]]</div>
-  </div>
-</template>
-<template is="dom-if" if="[[!enablePrivacyGuide2_]]">
-  <div class="headline-container">
     <picture>
       <source
-          srcset="./images/privacy_guide/completion_banner_dark.svg"
+          srcset="./images/privacy_guide/completion_banner_dark_v2.svg"
           media="(prefers-color-scheme: dark)">
-      <img alt="" src="./images/privacy_guide/completion_banner.svg">
+      <img alt="" src="./images/privacy_guide/completion_banner_v2.svg">
     </picture>
-    <div class="headline" tabindex="-1">
-      $i18n{privacyGuideCompletionCardHeader}
-    </div>
-    <div class="cr-secondary-text">[[subheader_]]</div>
   </div>
-</template>
+  <div class="headline" tabindex="-1">
+    $i18n{privacyGuideCompletionCardHeader}
+  </div>
+  <div class="cr-secondary-text">[[subheader_]]</div>
+</div>
 <template is="dom-if" if="[[shouldShowPrivacySandbox_]]">
   <privacy-guide-completion-link-row id="privacySandboxRow"
       label="$i18n{privacyGuideCompletionCardPrivacySandboxLabel}"

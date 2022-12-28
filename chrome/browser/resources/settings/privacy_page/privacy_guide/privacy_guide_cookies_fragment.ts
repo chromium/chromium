@@ -15,7 +15,6 @@ import '../../privacy_page/collapse_radio_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
@@ -50,11 +49,6 @@ export class PrivacyGuideCookiesFragmentElement extends
       cookiePrimarySettingEnum_: {
         type: Object,
         value: CookiePrimarySetting,
-      },
-
-      enablePrivacyGuide2_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('privacyGuide2Enabled'),
       },
     };
   }

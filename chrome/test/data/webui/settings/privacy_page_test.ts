@@ -419,53 +419,7 @@ suite('PrivacyGuideRowTests', function() {
     assertEquals(routes.PRIVACY_GUIDE, Router.getInstance().getCurrentRoute());
 
     // Ensure the privacy guide dialog is shown.
-    assertFalse(
-        !!page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePage'));
     assertTrue(
-        !!page.shadowRoot!.querySelector<HTMLElement>('#privacyGuideDialog'));
-  });
-});
-
-// TODO(1215630): Remove once #privacy-guide-2 has been rolled out.
-suite('PrivacyGuide2Disabled', function() {
-  let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let metricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      privacyGuide2Enabled: false,
-    });
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  });
-
-  test('privacyGuideRowClick', async function() {
-    page.shadowRoot!.querySelector<HTMLElement>(
-                        '#privacyGuideLinkRow')!.click();
-
-    const result = await metricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideEntryExitHistogram');
-    assertEquals(PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY, result);
-
-    // Ensure the correct route has been navigated to.
-    assertEquals(routes.PRIVACY_GUIDE, Router.getInstance().getCurrentRoute());
-
-    // Ensure the privacy guide page is shown.
-    assertTrue(
-        !!page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePage'));
-    assertFalse(
         !!page.shadowRoot!.querySelector<HTMLElement>('#privacyGuideDialog'));
   });
 });

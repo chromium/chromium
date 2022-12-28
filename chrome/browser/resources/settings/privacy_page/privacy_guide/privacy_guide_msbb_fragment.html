@@ -1,26 +1,13 @@
 <style include="privacy-guide-fragment-shared"></style>
-<template is="dom-if" if="[[enablePrivacyGuide2_]]">
-  <div class="header-phase2" focus-element tabindex="-1">
-    <picture>
-      <source
-          srcset="./images/privacy_guide/msbb_graphic_dark_v2.svg"
-          media="(prefers-color-scheme: dark)">
-      <img alt="" src="./images/privacy_guide/msbb_graphic_v2.svg">
-    </picture>
-    <h2 class="header-label-phase2">$i18n{privacyGuideMsbbCardHeader}</h2>
-  </div>
-</template>
-<template is="dom-if" if="[[!enablePrivacyGuide2_]]">
-  <div class="header" focus-element tabindex="-1">
-    <picture>
-      <source
-          srcset="./images/privacy_guide/msbb_graphic_dark.svg"
-          media="(prefers-color-scheme: dark)">
-      <img alt="" src="./images/privacy_guide/msbb_graphic.svg">
-    </picture>
-    <h2 class="header-label">$i18n{privacyGuideMsbbCardHeader}</h2>
-  </div>
-</template>
+<div class="header-phase2" focus-element tabindex="-1">
+  <picture>
+    <source
+        srcset="./images/privacy_guide/msbb_graphic_dark_v2.svg"
+        media="(prefers-color-scheme: dark)">
+    <img alt="" src="./images/privacy_guide/msbb_graphic_v2.svg">
+  </picture>
+  <h2 class="header-label-phase2">$i18n{privacyGuideMsbbCardHeader}</h2>
+</div>
 <div class="fragment-content">
   <div class="embedded-setting-wrapper">
     <settings-toggle-button id="urlCollectionToggle"

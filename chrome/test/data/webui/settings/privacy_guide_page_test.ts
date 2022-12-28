@@ -24,14 +24,6 @@ import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
  */
 const PRIVACY_GUIDE_STEPS = 4;
 
-const SETTINGS_FRAGMENT_NAMES = [
-  'privacy-guide-msbb-fragment',
-  'privacy-guide-history-sync-fragment',
-  'privacy-guide-safe-browsing-fragment',
-  'privacy-guide-cookies-fragment',
-  'privacy-guide-clear-on-exit-fragment',
-];
-
 function setupPrivacyRouteForTest() {
   // Simulates the route of the user entering the privacy guide from the S&P
   // settings. This is necessary as tests seem to by default define the
@@ -96,15 +88,6 @@ function setupSync({
   event.syncAllDataTypes = syncAllDataTypes;
   event.typedUrlsSynced = typedUrlsSynced;
   webUIListenerCallback('sync-prefs-changed', event);
-}
-
-/**
- * Returns a new promise that resolves after a window 'popstate' event.
- */
-function whenPopState(causeEvent: () => void): Promise<void> {
-  const promise = eventToPromise('popstate', window);
-  causeEvent();
-  return promise;
 }
 
 // Set the cookies setting for the privacy guide.
@@ -1628,58 +1611,6 @@ suite('CompletionFragmentPrivacySandboxRestricted', function() {
   });
 });
 
-// TODO(1215630): Remove once #privacy-guide-2 has been rolled out.
-suite('CompletionFragmentPrivacyGuide2Disabled', function() {
-  let page: PrivacyGuideCompletionFragmentElement;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      privacyGuide2Enabled: false,
-    });
-  });
-
-  setup(function() {
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('privacy-guide-completion-fragment');
-    document.body.appendChild(page);
-
-    setupPrivacyRouteForTest();
-    // The user navigates to the completion step.
-    return navigateToStep(PrivacyGuideStep.COMPLETION);
-  });
-
-  teardown(function() {
-    page.remove();
-    // The browser instance is shared among the tests, hence the route needs to
-    // be reset between tests.
-    Router.getInstance().navigateTo(routes.BASIC);
-  });
-
-  test('backToSettingsNavigation', function() {
-    return whenPopState(async function() {
-             page.shadowRoot!.querySelector<HTMLElement>(
-                                 '#leaveButton')!.click();
-
-             const result = await testMetricsBrowserProxy.whenCalled(
-                 'recordPrivacyGuideNextNavigationHistogram');
-             assertEquals(
-                 PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON, result);
-
-             const actionResult =
-                 await testMetricsBrowserProxy.whenCalled('recordAction');
-             assertEquals(
-                 actionResult, 'Settings.PrivacyGuide.NextClickCompletion');
-           })
-        .then(function() {
-          assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
-        });
-  });
-});
-
 suite('PrivacyGuideDialog', function() {
   let page: SettingsPrivacyGuideDialogElement;
 
@@ -1712,47 +1643,5 @@ suite('PrivacyGuideDialog', function() {
             new CustomEvent('close', {bubbles: true, composed: true}));
 
     assertFalse(page.$.dialog.open);
-  });
-});
-
-// TODO(1215630): Remove once #privacy-guide-2 has been rolled out.
-suite('CardHeaderTestsPrivacyGuide2Enabled', function() {
-  test('phase2HeadersVisible', function() {
-    for (const fragmentName of SETTINGS_FRAGMENT_NAMES) {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      const page = document.createElement(fragmentName);
-      document.body.appendChild(page);
-      flush();
-
-      assertFalse(
-          isChildVisible(page, '.header'), fragmentName + ' phase1 header');
-      assertTrue(
-          isChildVisible(page, '.header-phase2'),
-          fragmentName + ' phase2 header');
-    }
-  });
-});
-
-// TODO(1215630): Remove once #privacy-guide-2 has been rolled out.
-suite('CardHeaderTestsPrivacyGuide2Disabled', function() {
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      privacyGuide2Enabled: false,
-    });
-  });
-
-  test('phase1HeadersVisible', function() {
-    for (const fragmentName of SETTINGS_FRAGMENT_NAMES) {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      const page = document.createElement(fragmentName);
-      document.body.appendChild(page);
-      flush();
-
-      assertTrue(
-          isChildVisible(page, '.header'), fragmentName + ' phase1 header');
-      assertFalse(
-          isChildVisible(page, '.header-phase2'),
-          fragmentName + ' phase2 header');
-    }
   });
 });

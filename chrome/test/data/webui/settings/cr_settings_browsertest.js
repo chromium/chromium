@@ -543,7 +543,6 @@ var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {
   get featureListInternal() {
     return {
       enabled: [
-        'features::kPrivacyGuide2',
         'privacy_sandbox::kPrivacySandboxSettings4',
       ],
     };
@@ -579,10 +578,6 @@ TEST_F('CrSettingsPrivacyPageTest', 'PrivacySandbox4Enabled', function() {
 
 TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuideRowTests', function() {
   runMochaSuite('PrivacyGuideRowTests');
-});
-
-TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuide2Disabled', function() {
-  runMochaSuite('PrivacyGuide2Disabled');
 });
 
 TEST_F('CrSettingsPrivacyPageTest', 'NotificationPermissionReview', function() {
@@ -651,15 +646,6 @@ var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/privacy_guide_page_test.js';
   }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'features::kPrivacyGuide2',
-      ],
-    };
-  }
 };
 
 TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuidePageTests', function() {
@@ -725,27 +711,9 @@ TEST_F(
       runMochaSuite('CompletionFragmentPrivacySandboxRestricted');
     });
 
-TEST_F(
-    'CrSettingsPrivacyGuidePageTest',
-    'CompletionFragmentPrivacyGuide2DisabledTests', function() {
-      runMochaSuite('CompletionFragmentPrivacyGuide2Disabled');
-    });
-
 TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuideDialogTests', function() {
   runMochaSuite('PrivacyGuideDialog');
 });
-
-TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'CardHeaderTestsPrivacyGuide2Enabled',
-    function() {
-      runMochaSuite('CardHeaderTestsPrivacyGuide2Enabled');
-    });
-
-TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'CardHeaderTestsPrivacyGuide2Disabled',
-    function() {
-      runMochaSuite('CardHeaderTestsPrivacyGuide2Disabled');
-    });
 
 var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   /** @override */

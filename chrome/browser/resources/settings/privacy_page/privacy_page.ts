@@ -165,11 +165,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('showPrivacyGuide'),
       },
 
-      enablePrivacyGuidePage_: {
-        type: Boolean,
-        computed: 'computeEnablePrivacyGuidePage_(showPrivacyGuideEntryPoint_)',
-      },
-
       showNotificationPermissionsReview_: {
         type: Boolean,
         value: false,
@@ -288,7 +283,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableQuietNotificationPromptsSetting_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private showPrivacyGuideEntryPoint_: boolean;
-  private enablePrivacyGuidePage_: boolean;
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
   private isPrivacySandboxSettings4_: boolean;
@@ -346,8 +340,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         Router.getInstance().getCurrentRoute() === routes.CLEAR_BROWSER_DATA;
     this.showPrivacyGuideDialog_ =
         Router.getInstance().getCurrentRoute() === routes.PRIVACY_GUIDE &&
-        this.showPrivacyGuideEntryPoint_ &&
-        loadTimeData.getBoolean('privacyGuide2Enabled');
+        this.showPrivacyGuideEntryPoint_;
   }
 
   /**
@@ -468,11 +461,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.showNotificationPermissionsReview_ =
         this.safetyCheckNotificationPermissionsEnabled_ &&
         permissions.length > 0;
-  }
-
-  private computeEnablePrivacyGuidePage_() {
-    return this.showPrivacyGuideEntryPoint_ &&
-        !loadTimeData.getBoolean('privacyGuide2Enabled');
   }
 
   private interactedWithPage_() {

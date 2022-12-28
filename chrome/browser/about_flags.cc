@@ -8101,10 +8101,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::wm::features::kPartialSplit)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"privacy-guide-2", flag_descriptions::kPrivacyGuide2Name,
-     flag_descriptions::kPrivacyGuide2Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kPrivacyGuide2)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"privacy-guide-android", flag_descriptions::kPrivacyGuideAndroidName,
      flag_descriptions::kPrivacyGuideAndroidDescription, kOsAndroid,

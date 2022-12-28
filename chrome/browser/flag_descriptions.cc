@@ -2440,10 +2440,6 @@ const char kEnableOmniboxClientSearchPrefetchDescription[] =
     "Search Engine that the client thinks are likely to be navigated. Requires "
     "chrome://flags/#omnibox-search-prefetch";
 
-const char kPrivacyGuide2Name[] = "Privacy Guide V2";
-const char kPrivacyGuide2Description[] =
-    "Enables UI updates for Privacy Guide.";
-
 const char kPrivacyGuideAndroidName[] = "Privacy Guide on Android";
 const char kPrivacyGuideAndroidDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "
