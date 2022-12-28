@@ -29,24 +29,27 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -58,12 +61,18 @@ import java.util.ArrayList;
 /**
  * Unit tests {@link ShareSheetBottomSheetContent}.
  */
+@Batch(Batch.UNIT_TESTS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public final class ShareSheetBottomSheetContentTest {
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
+    @Rule
+    public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+
+    @Mock
+    private Profile mProfile;
     @Mock
     private ShareSheetLinkToggleCoordinator mShareSheetLinkToggleCoordinator;
     @Mock
@@ -102,6 +111,7 @@ public final class ShareSheetBottomSheetContentTest {
                 .when(mFeatureEngagementTracker)
                 .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(mFeatureEngagementTracker);
+        Profile.setLastUsedProfileForTesting(mProfile);
 
         mShareSheetBottomSheetContent = new ShareSheetBottomSheetContent(mActivity,
                 new MockLargeIconBridge(), null, mShareParams, mFeatureEngagementTracker);
@@ -270,8 +280,11 @@ public final class ShareSheetBottomSheetContentTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Fails on official builders: https://crbug.com/1281875")
-    public void createRecyclerViews_toggleOff_showsIph() {
+    @Features.EnableFeatures({ChromeFeatureList.ENABLE_IPH})
+    @Features.DisableFeatures(
+            {ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, ChromeFeatureList.SNOOZABLE_IPH})
+    public void
+    createRecyclerViews_toggleOff_showsIph() {
         String fileContentType = "image/gif";
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
@@ -282,8 +295,6 @@ public final class ShareSheetBottomSheetContentTest {
                         mFeatureEngagementTracker);
         when(mShareSheetLinkToggleCoordinator.shouldShowToggle()).thenReturn(true);
         when(mShareSheetLinkToggleCoordinator.shouldEnableToggleByDefault()).thenReturn(false);
-        when(mFeatureEngagementTracker.shouldTriggerHelpUIWithSnooze(any()))
-                .thenReturn(new TriggerDetails(true, false));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -296,8 +307,7 @@ public final class ShareSheetBottomSheetContentTest {
                 shareSheetBottomSheetContent.getContentView().findViewById(R.id.link_toggle_view);
         assertEquals(View.VISIBLE, toggleView.getVisibility());
         verify(mFeatureEngagementTracker)
-                .shouldTriggerHelpUIWithSnooze(
-                        FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE);
+                .shouldTriggerHelpUI(FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE);
     }
 
     @Test
