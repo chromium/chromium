@@ -124,12 +124,15 @@ void NewTabButton::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &NewTabButton::FrameColorsChanged, base::Unretained(this)));
-  // Set the initial state correctly.
-  FrameColorsChanged();
 }
 
 void NewTabButton::RemovedFromWidget() {
   paint_as_active_subscription_ = {};
+}
+
+void NewTabButton::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  FrameColorsChanged();
 }
 
 #if BUILDFLAG(IS_WIN)

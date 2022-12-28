@@ -313,8 +313,6 @@ void TabStripScrollContainer::AddedToWidget() {
       GetWidget()->RegisterPaintAsActiveChangedCallback(
           base::BindRepeating(&TabStripScrollContainer::FrameColorsChanged,
                               base::Unretained(this)));
-  // Set the initial state correctly.
-  FrameColorsChanged();
 }
 
 void TabStripScrollContainer::RemovedFromWidget() {

@@ -688,8 +688,6 @@ void Tab::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &Tab::UpdateForegroundColors, base::Unretained(this)));
-  // Set the initial state correctly
-  UpdateForegroundColors();
 }
 
 void Tab::RemovedFromWidget() {

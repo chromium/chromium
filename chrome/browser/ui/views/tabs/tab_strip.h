@@ -395,6 +395,7 @@ class TabStrip : public views::View,
   void OnMouseExited(const ui::MouseEvent& event) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  void OnThemeChanged() override;
 
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
