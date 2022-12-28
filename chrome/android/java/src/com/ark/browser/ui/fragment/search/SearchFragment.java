@@ -513,6 +513,11 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
     }
 
     @Override
+    public void onRemoveComplete() {
+
+    }
+
+    @Override
     public void hasOtherFormsOfBrowsingData(boolean hasOtherForms) {
 
     }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<View
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/view_shadow_bottom"
+    android:layout_width="match_parent"
+    android:layout_height="8dp"
+    android:background="?attr/backgroundShadowBottom">
+    <!--    ?attr/backgroundShadowBottom-->
+    <!--    dividerHorizontal-->
+
+</View>

@@ -126,20 +126,20 @@ public class BookmarkMultiData extends BaseHeaderMultiData<BookmarkId> {
 
         if (bookmarkItem.isFolder()) {
             holder.setText(R.id.tv_desc, "");
-            holder.setImageResource(R.id.favicon, R.drawable.icon_list_folder);
+            holder.setImageResource(R.id.iv_icon, R.drawable.icon_list_folder);
         } else {
             Uri uri = Uri.parse(url);
             holder.setText(R.id.tv_desc, KeywordUtil.hightlight(Color.RED, uri.getHost(), keyword));
             mLargeIconBridge.getLargeIconForUrl(bookmarkItem.getUrl(), mMinIconSize,
                     (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
                         if (icon == null) {
-                            holder.setImageBitmap(R.id.favicon, mIconGenerator.generateIconForUrl(bookmarkItem.getUrl()));
+                            holder.setImageBitmap(R.id.iv_icon, mIconGenerator.generateIconForUrl(bookmarkItem.getUrl()));
                         } else {
                             RoundedBitmapDrawable roundedIcon = RoundedBitmapDrawableFactory.create(
                                     holder.getContext().getResources(),
                                     Bitmap.createScaledBitmap(icon, mDisplayedIconSize, mDisplayedIconSize, false));
                             roundedIcon.setCornerRadius(mCornerRadius);
-                            holder.setImageDrawable(R.id.favicon, roundedIcon);
+                            holder.setImageDrawable(R.id.iv_icon, roundedIcon);
                         }
                     });
         }

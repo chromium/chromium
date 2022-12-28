@@ -196,6 +196,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/drawable/bg_round_accent.xml",
     "//chrome/android/java/res_app/drawable/bg_round_search.xml",
     "//chrome/android/java/res_app/drawable/bg_round_search_inset.xml",
+    "//chrome/android/java/res_app/drawable/bg_search_collections.xml",
     "//chrome/android/java/res_app/drawable/bg_search_round.xml",
     "//chrome/android/java/res_app/drawable/grey_shape2.xml",
     "//chrome/android/java/res_app/drawable/grey_shape_select.xml",
@@ -211,6 +212,9 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/main.xml",
     "//chrome/android/java/res_app/layout/activity_browser.xml",
 
+    "//chrome/android/java/res_app/layout/fragment_collections.xml",
+    "//chrome/android/java/res_app/layout/fragment_collections_bookmark.xml",
+    "//chrome/android/java/res_app/layout/fragment_collections_child.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_about_me.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_bookmark_folder_select.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_clipboard_intercept.xml",
@@ -233,6 +237,7 @@ android_resources("chrome_app_java_resources") {
 
     "//chrome/android/java/res_app/layout/item_checkbox.xml",
     "//chrome/android/java/res_app/layout/item_collection.xml",
+    "//chrome/android/java/res_app/layout/item_collection_bottom_bar.xml",
     "//chrome/android/java/res_app/layout/item_download.xml",
     "//chrome/android/java/res_app/layout/item_download_filter.xml",
     "//chrome/android/java/res_app/layout/item_flow.xml",
@@ -242,6 +247,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/item_search.xml",
     "//chrome/android/java/res_app/layout/item_tab_card.xml",
     "//chrome/android/java/res_app/layout/item_text.xml",
+    "//chrome/android/java/res_app/layout/layout_collections_search_bar.xml",
     "//chrome/android/java/res_app/layout/layout_controller.xml",
     "//chrome/android/java/res_app/layout/layout_dialog_header.xml",
     "//chrome/android/java/res_app/layout/layout_header.xml",
@@ -249,9 +255,13 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/layout_icon_node.xml",
     "//chrome/android/java/res_app/layout/layout_menu.xml",
     "//chrome/android/java/res_app/layout/layout_preference_text_scale.xml",
+    "//chrome/android/java/res_app/layout/layout_shadow_bottom.xml",
     "//chrome/android/java/res_app/layout/layout_smart_search.xml",
     "//chrome/android/java/res_app/layout/layout_title_text.xml",
     "//chrome/android/java/res_app/layout/menu_action_mode.xml",
+    "//chrome/android/java/res_app/layout/password_entry_editor_copyable_row.xml",
+    "//chrome/android/java/res_app/layout/password_entry_editor_interactive.xml",
+    "//chrome/android/java/res_app/layout/password_entry_exception.xml",
 
 
 

@@ -3,26 +3,32 @@ package com.ark.browser.event;
 import com.ark.browser.tab.PageInfo;
 import com.zpj.bus.ZBus;
 
+import org.chromium.content_public.browser.LoadUrlParams;
+
 public class LoadUrlEvent {
 
-    private final String url;
+    private final LoadUrlParams loadUrlParams;
     private final boolean isNewTab;
     private final boolean incognito;
     private final PageInfo pageInfo;
 
-    private LoadUrlEvent(String url, boolean isNewTab, boolean incognito) {
-        this(null, url, isNewTab, incognito);
+    private LoadUrlEvent(LoadUrlParams params, boolean isNewTab, boolean incognito) {
+        this(null, params, isNewTab, incognito);
     }
 
-    private LoadUrlEvent(PageInfo pageInfo, String url, boolean isNewTab, boolean incognito) {
-        this.url = url;
+    private LoadUrlEvent(PageInfo pageInfo, LoadUrlParams params, boolean isNewTab, boolean incognito) {
+        loadUrlParams = params;
         this.isNewTab = isNewTab;
         this.incognito = incognito;
         this.pageInfo = pageInfo;
     }
 
-    public String getUrl() {
-        return url;
+//    public String getUrl() {
+//        return loadUrlParams.getUrl();
+//    }
+
+    public LoadUrlParams getLoadUrlParams() {
+        return loadUrlParams;
     }
 
     public boolean isNewTab() {
@@ -50,7 +56,15 @@ public class LoadUrlEvent {
     }
 
     public static void post(String url, boolean isNewTab, boolean incognito) {
-        new LoadUrlEvent(url, isNewTab, incognito).post();
+        post(new LoadUrlParams(url), isNewTab, incognito);
+    }
+
+    public static void post(LoadUrlParams loadUrlParams, boolean isNewTab) {
+        post(loadUrlParams, isNewTab, false);
+    }
+
+    public static void post(LoadUrlParams loadUrlParams, boolean isNewTab, boolean incognito) {
+        new LoadUrlEvent(loadUrlParams, isNewTab, incognito).post();
     }
 
     public static void post(PageInfo pageInfo, boolean isNewTab, boolean incognito) {
@@ -61,7 +75,7 @@ public class LoadUrlEvent {
     }
 
     public static void post(PageInfo pageInfo, String url, boolean isNewTab, boolean incognito) {
-        new LoadUrlEvent(pageInfo, url, isNewTab, incognito).post();
+        new LoadUrlEvent(pageInfo, new LoadUrlParams(url), isNewTab, incognito).post();
     }
 
 }

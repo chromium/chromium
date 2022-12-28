@@ -51,7 +51,7 @@ public class BookmarkModel extends BookmarkBridge {
      * Add an observer that listens to delete events that go through the bookmark model.
      * @param observer The observer to add.
      */
-    void addDeleteObserver(BookmarkDeleteObserver observer) {
+    public void addDeleteObserver(BookmarkDeleteObserver observer) {
         mDeleteObservers.addObserver(observer);
     }
 

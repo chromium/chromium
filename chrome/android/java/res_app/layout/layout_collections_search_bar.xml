@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="36dp"
+    android:background="@drawable/bg_search_collections"
+    >
+
+    <ImageView
+        android:id="@+id/iv_left"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_search_v2"
+        android:tint="?attr/textColorNormal"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="8dp"
+        />
+
+    <AutoCompleteTextView
+        android:id="@+id/tv_edit"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:minHeight="36dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:selectAllOnFocus="true"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:hint="@string/toolbar_search_hint"
+        android:textColor="?attr/textColorNormal"
+        android:textColorHint="?attr/textColorMinor"
+        android:textSize="14sp"
+        android:background="@android:color/transparent"
+        />
+
+    <ImageView
+        android:id="@+id/iv_right"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_cancel"
+        android:tint="?attr/textColorNormal"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="8dp"
+        />
+
+</LinearLayout>

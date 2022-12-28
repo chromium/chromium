@@ -437,13 +437,11 @@ public class ArkMainFragment extends BaseFragment implements
             popChild();
         }
         if (event.isNewTab() || getActivityTab() == null) {
-            loadUrlInNewTab(event.getPageInfo(), event.getUrl(), event.isIncognito());
+            loadUrlInNewTab(event.getPageInfo(), event.getLoadUrlParams(), event.isIncognito());
             return;
         }
 
-        String url = event.getUrl();
-
-        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        LoadUrlParams loadUrlParams = event.getLoadUrlParams();
         loadUrlParams.setTransitionType(PageTransition.GENERATED);
         if (getActivityTab() != null) {
             loadUrl(loadUrlParams);

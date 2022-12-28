@@ -18,6 +18,20 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
  */
 public final class PasswordUIView {
 
+    public interface Observer {
+        /**
+         * Called when passwords list is updated.
+         * @param count Number of entries in the password list.
+         */
+        void passwordListAvailable(int count);
+
+        /**
+         * Called when password exceptions list is updated.
+         * @param count Number of entries in the password exception list.
+         */
+        void passwordExceptionListAvailable(int count);
+    }
+
     @CalledByNative
     private static SavedPasswordEntry createSavedPasswordEntry(
             String url, String name, String password) {
@@ -27,18 +41,30 @@ public final class PasswordUIView {
     // Pointer to native implementation, set to 0 in destroy().
     private long mNativePasswordUIViewAndroid;
 
+    private Observer mObserver;
+
     public PasswordUIView() {
         mNativePasswordUIViewAndroid = PasswordUIViewJni.get().init(PasswordUIView.this);
+    }
+
+    public void setObserver(Observer observer) {
+        mObserver = observer;
     }
 
     @CalledByNative
     private void passwordListAvailable(int count) {
         // TODO
+        if (mObserver != null) {
+            mObserver.passwordListAvailable(count);
+        }
     }
 
     @CalledByNative
     private void passwordExceptionListAvailable(int count) {
         // TODO
+        if (mObserver != null) {
+            mObserver.passwordExceptionListAvailable(count);
+        }
     }
 
 
@@ -111,6 +137,7 @@ public final class PasswordUIView {
      * Destroy the native object.
      */
     public void destroy() {
+        mObserver = null;
         if (mNativePasswordUIViewAndroid != 0) {
             PasswordUIViewJni.get().destroy(mNativePasswordUIViewAndroid, PasswordUIView.this);
             mNativePasswordUIViewAndroid = 0;

@@ -12,6 +12,7 @@ import com.ark.browser.tab.TabListManager;
 import com.ark.browser.ui.dialog.BookmarkManagerDialog;
 import com.ark.browser.ui.dialog.DownloadManagerDialog;
 import com.ark.browser.ui.dialog.HistoryManagerDialog;
+import com.ark.browser.ui.fragment.collection.CollectionFragment;
 import com.ark.browser.ui.fragment.download.DownloadFragment;
 import com.ark.browser.ui.fragment.settings.SettingsFragment;
 import com.ark.browser.ui.widget.DrawableTintTextView;
@@ -139,11 +140,11 @@ public class MainMenuDialog extends OverDragBottomDialogFragment<MainMenuDialog>
         } else if (R.id.tv_skin == id) {
 //            ADBlockUpdater.UpdateADBlock(context, true);
         } else if (R.id.tv_history == id) {
-//            CollectionFragment2.start(context, 1);
-            HistoryManagerDialog.show((ArkBrowserActivity) context);
+            start(CollectionFragment.newInstance(1));
+//            HistoryManagerDialog.show((ArkBrowserActivity) context);
         } else if (R.id.tv_collection == id) {
-//            CollectionFragment2.start(context, 0);
-            BookmarkManagerDialog.show((ArkBrowserActivity) context);
+            start(CollectionFragment.newInstance(0));
+//            BookmarkManagerDialog.show((ArkBrowserActivity) context);
         } else if (R.id.tv_download == id) {
             start(DownloadFragment.newInstance(true));
         } else if (R.id.tv_manager == id) {

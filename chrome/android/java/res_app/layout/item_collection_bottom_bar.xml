@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="48dp">
+
+    <LinearLayout
+        android:id="@+id/bottom_bar_default"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/btn_cloud"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="云同步"
+            android:gravity="center_vertical"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingStart="16dp"
+            android:drawableStart="@drawable/ic_sync_on_48dp"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <TextView
+            android:id="@+id/btn_new_folder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="新建文件夹"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="?attr/textColorMajor"
+
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/btn_edit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="编辑"
+            android:gravity="end|center_vertical"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingEnd="16dp"
+            android:textColor="?attr/textColorMajor"
+            android:drawableEnd="@drawable/ic_edit_24dp"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_bar_edit"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        >
+
+        <TextView
+            android:id="@+id/btn_select_all"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="全选"
+            android:gravity="center_vertical"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingStart="20dp"
+            android:textColor="?attr/textColorMajor"
+            />
+
+        <TextView
+            android:id="@+id/btn_move"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="移动"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="?attr/textColorMajor"
+            />
+
+        <TextView
+            android:id="@+id/btn_delete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="删除"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="?attr/textColorMajor"
+            />
+
+        <TextView
+            android:id="@+id/btn_complete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="完成"
+            android:gravity="end|center_vertical"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingEnd="20dp"
+            android:textColor="?attr/textColorMajor"
+            />
+
+    </LinearLayout>
+
+</FrameLayout>

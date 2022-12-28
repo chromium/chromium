@@ -173,6 +173,10 @@ public final class ReauthenticationManager {
                 < VALID_REAUTHENTICATION_TIME_INTERVAL_MILLIS;
     }
 
+    public static boolean authenticationStillValid() {
+        return authenticationStillValid(ReauthScope.ONE_AT_A_TIME);
+    }
+
     /**
      * Checks whether the user set up screen lock so that it can be used for reauthentication. Can
      * be overridden in tests.

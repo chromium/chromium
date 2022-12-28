@@ -9,6 +9,7 @@
     <string name="text_add">添加</string>
     <string name="text_edit">编辑</string>
     <string name="text_save">保存</string>
+    <string name="text_delete">删除</string>
 
     <string name="text_download">下载</string>
 
@@ -25,5 +26,26 @@
     <string name="text_settings_privacy">"隐私设置"</string>
 
     <string name="text_font_size_preview">"拖动该滑块，将文字调整到适合您阅读的大小。点按两次某段落后，显示的文字至少应是这么大。"</string>
+
+    <string name="text_delete_with_count">删除(%1$d)</string>
+
+<!--    <string name="manage_passwords_text">"通过 &lt;link&gt;passwords.google.com&lt;/link&gt; 查看和管理已保存的密码"</string>-->
+    <string name="password_entry_editor_title">"保存的密码"</string>
+    <string name="password_entry_editor_site_title">"网站"</string>
+    <string name="password_entry_editor_username_title">"用户名"</string>
+    <string name="password_entry_editor_password">"密码"</string>
+    <string name="password_entry_editor_copy_stored_site">"复制网址"</string>
+    <string name="password_entry_editor_copy_stored_username">"复制用户名"</string>
+    <string name="password_entry_editor_copy_stored_password">"复制密码"</string>
+    <string name="password_entry_editor_view_stored_password">"显示密码"</string>
+    <string name="password_entry_editor_delete_stored_password_action_title">"删除密码"</string>
+    <string name="password_entry_editor_hide_stored_password">"隐藏密码"</string>
+    <string name="password_entry_editor_delete_stored_password">"删除存储的密码"</string>
+    <string name="password_entry_editor_username_copied_into_clipboard">"已复制用户名"</string>
+    <string name="password_entry_editor_site_copied_into_clipboard">"已复制网站"</string>
+    <string name="password_entry_editor_password_copied_into_clipboard">"已复制密码"</string>
+    <string name="password_entry_editor_set_lock_screen">"要想在此处查看或复制您的密码，请在此设备上设置屏幕锁定。"</string>
+<!--    <string name="password_export_set_lock_screen">"需在“设置”部分中开启屏幕锁定功能，才能从此设备中导出您的密码"</string>-->
+<!--    <string name="password_generation_popup_content_description">"目前显示的是密码生成弹出式窗口"</string>-->
 
 </resources>

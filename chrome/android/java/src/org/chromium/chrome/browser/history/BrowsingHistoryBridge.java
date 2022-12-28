@@ -101,6 +101,9 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     public void onRemoveComplete() {
         mRemovingItems = false;
         if (mHasPendingRemoveRequest) removeItems();
+        if (mObserver != null) {
+            mObserver.onRemoveComplete();
+        }
     }
 
     @CalledByNative

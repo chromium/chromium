@@ -34,6 +34,8 @@ public interface HistoryProvider {
          */
         void onHistoryDeleted();
 
+        void onRemoveComplete();
+
         /**
          * Called after querying history to indicate whether other forms of browsing history were
          * found.
