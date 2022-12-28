@@ -268,14 +268,6 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
-                       LaunchConsumerIsNotTriggeredWithNoFiles) {
-  InstallFileHandlingPWA();
-  // The URL used is the normal start URL.
-  LaunchWithFiles(app_id(), GetSecureAppURL(), {});
-  VerifyPwaDidReceiveFileLaunchParams(false);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsCanReceiveFileLaunchParams) {
   InstallFileHandlingPWA();
   base::FilePath test_file_path = CreateTestFileWithExtension("txt");
