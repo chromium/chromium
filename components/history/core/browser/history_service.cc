@@ -330,6 +330,7 @@ base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentClusters(
     size_t max_clusters,
     size_t max_visits_soft_cap,
     base::OnceCallback<void(std::vector<Cluster>)> callback,
+    bool include_keywords_and_duplicates,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -337,8 +338,7 @@ base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentClusters(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::GetMostRecentClusters, history_backend_,
                      inclusive_min_time, exclusive_max_time, max_clusters,
-                     max_visits_soft_cap,
-                     /*include_keywords_and_duplicates=*/true),
+                     max_visits_soft_cap, include_keywords_and_duplicates),
       std::move(callback));
 }
 

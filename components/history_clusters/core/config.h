@@ -353,6 +353,10 @@ struct Config {
 
   // The `kHistoryClustersNavigationContextClustering` feature and child params.
 
+  // Whether to use the new clustering path that does context clustering at
+  // navigation and embellishes clusters for display at UI time.
+  bool use_navigation_context_clusters = false;
+
   // The duration between context clustering clean up passes.
   base::TimeDelta context_clustering_clean_up_duration = base::Minutes(10);
 

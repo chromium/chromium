@@ -615,6 +615,7 @@ class HistoryService : public KeyedService {
       size_t max_clusters,
       size_t max_visits_soft_cap,
       base::OnceCallback<void(std::vector<Cluster>)> callback,
+      bool include_keywords_and_duplicates,
       base::CancelableTaskTracker* tracker);
 
   // Observers -----------------------------------------------------------------

@@ -60,8 +60,10 @@ class TestClusteringBackend : public ClusteringBackend {
 
   void GetClustersForUI(ClustersCallback callback,
                         std::vector<history::Cluster> clusters) override {
-    // TODO(b/259466296): Implement this when we incorporate the new method into
-    // `QueryClusters()`.
+    callback_ = std::move(callback);
+    last_clustered_clusters_ = clusters;
+
+    std::move(wait_for_get_clusters_closure_).Run();
   }
 
   void FulfillCallback(const std::vector<history::Cluster>& clusters) {
@@ -70,6 +72,10 @@ class TestClusteringBackend : public ClusteringBackend {
 
   const std::vector<history::AnnotatedVisit>& LastClusteredVisits() const {
     return last_clustered_visits_;
+  }
+
+  const std::vector<history::Cluster>& LastClusteredClusters() const {
+    return last_clustered_clusters_;
   }
 
   // Fetches a scored visit by an ID. `visit_id` must be valid. This is a
@@ -98,6 +104,7 @@ class TestClusteringBackend : public ClusteringBackend {
 
   ClustersCallback callback_;
   std::vector<history::AnnotatedVisit> last_clustered_visits_;
+  std::vector<history::Cluster> last_clustered_clusters_;
 };
 
 class HistoryClustersServiceTestBase : public testing::Test {
@@ -273,10 +280,12 @@ class HistoryClustersServiceTestBase : public testing::Test {
             }),
         HistoryClustersServiceTaskGetMostRecentClusters::Source::kWebUi);
 
-    // If we expect a clustering call, expect a request and return no clusters.
+    // If we expect a clustering call, expect a request and return mirrored
+    // clusters.
     if (expect_clustering_backend_call) {
       test_clustering_backend_->WaitForGetClustersCall();
-      test_clustering_backend_->FulfillCallback({});
+      test_clustering_backend_->FulfillCallback(
+          test_clustering_backend_->LastClusteredClusters());
     }
 
     // Wait for all the async stuff to complete.
@@ -556,6 +565,50 @@ TEST_P(HistoryClustersServiceTest,
   {
     const auto [clusters, visits] =
         NextQueryClusters(continuation_params, false);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_TRUE(continuation_params.exhausted_all_visits);
+  }
+}
+
+TEST_P(HistoryClustersServiceTest,
+       QueryClusters_PersistedClusters_UseNavigationContextClusters) {
+  // Test the case where there are persisted clusters but no unclustered visits.
+
+  Config config;
+  config.persist_clusters_in_history_db = true;
+  config.use_navigation_context_clusters = true;
+  SetConfigForTesting(config);
+
+  // 2 persisted clusters on the same day.
+  AddCompleteVisit(1, base::Time::Now() - base::Minutes(1));
+  AddCompleteVisit(2, base::Time::Now() - base::Hours(1));
+  AddCluster({1});
+  AddCluster({2});
+
+  // Another cluster with a gap. Should still be clustered with the others.
+  AddCompleteVisit(3, DaysAgo(1));
+  AddCluster({3});
+
+  QueryClustersContinuationParams continuation_params = {};
+  continuation_params.continuation_time = base::Time::Now();
+
+  {
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, true);
+    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1, 2, 3));
+    EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(1));
+    EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(2));
+    EXPECT_THAT(GetVisitIds(clusters[2].visits), testing::ElementsAre(3));
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  // The last query should set `exhausted_all_visits`.
+  {
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, true);
     EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);

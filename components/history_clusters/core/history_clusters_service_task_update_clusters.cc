@@ -31,6 +31,9 @@ HistoryClustersServiceTaskUpdateClusters::
       backend_(backend),
       history_service_(history_service),
       callback_(std::move(callback)) {
+  DCHECK(weak_history_clusters_service_);
+  DCHECK(history_service_);
+  DCHECK(backend_);
   Start();
 }
 

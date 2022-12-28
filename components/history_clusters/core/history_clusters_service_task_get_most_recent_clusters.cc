@@ -209,7 +209,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
         base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
                            OnGotMostRecentPersistedClusters,
                        weak_ptr_factory_.GetWeakPtr()),
-        &task_tracker_);
+        /*include_keywords_and_duplicates=*/true, &task_tracker_);
   } else {
     OnGotMostRecentPersistedClusters({});
   }

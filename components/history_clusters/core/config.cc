@@ -371,6 +371,9 @@ Config::Config() {
 
   // The `kHistoryClustersNavigationContextClustering` feature and child params.
   {
+    use_navigation_context_clusters = base::FeatureList::IsEnabled(
+        internal::kHistoryClustersNavigationContextClustering);
+
     context_clustering_clean_up_duration =
         base::Minutes(GetFieldTrialParamByFeatureAsInt(
             internal::kHistoryClustersNavigationContextClustering,
