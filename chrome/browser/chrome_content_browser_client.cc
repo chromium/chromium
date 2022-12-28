@@ -214,6 +214,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/lens/buildflags.h"
 #include "components/live_caption/caption_util.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 #include "components/media_router/browser/presentation/receiver_presentation_service_delegate_impl.h"
@@ -530,7 +531,7 @@
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #endif
 
-#if defined(TOOLKIT_VIEWS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/ui/lens/lens_side_panel_navigation_helper.h"
 #include "components/lens/lens_features.h"
 #endif
@@ -5054,10 +5055,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   }
 #endif
 
-// Only include Lens on Chrome branded Desktop clients. TOOLKIT_VIEWS is used
-// for rendering UI on Windows, Mac, Linux, and ChromeOS. Therefore, if
-// TOOLKIT_VIEWS is defined, we are on one of those platforms.
-#if defined(TOOLKIT_VIEWS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (lens::features::IsLensSidePanelEnabled()) {
     MaybeAddThrottle(
         lens::LensSidePanelNavigationHelper::MaybeCreateThrottleFor(handle),

@@ -247,7 +247,7 @@
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #endif
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #include "chrome/grit/theme_resources.h"
@@ -1792,7 +1792,7 @@ void RenderViewContextMenu::AppendPageItems() {
   menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   AppendLiveCaptionItem();
   AppendMediaRouterItem();
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (IsRegionSearchEnabled()) {
     AppendRegionSearchItem();
   }
@@ -3277,7 +3277,7 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
 }
 
 bool RenderViewContextMenu::IsRegionSearchEnabled() const {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   // TODO(nguyenbryan): Refactor to use lens_region_search_helper.cc after PDF
   // support is cleaned up.
   if (!GetBrowser())
@@ -3305,7 +3305,7 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
              ->GetBoolean(prefs::kLensRegionSearchEnabled);
 #else
   return false;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 }
 
 bool RenderViewContextMenu::IsAddANoteEnabled() const {

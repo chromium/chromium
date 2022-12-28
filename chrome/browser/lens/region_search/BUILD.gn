@@ -23,6 +23,7 @@ static_library("region_search") {
     "//chrome/browser/ui",
     "//chrome/common:constants",
     "//components/lens",
+    "//components/lens:buildflags",
     "//components/lens:lens_mojo",
     "//components/prefs",
     "//components/search_engines:search_engines",

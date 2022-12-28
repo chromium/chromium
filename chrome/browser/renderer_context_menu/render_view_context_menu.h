@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/lens/buildflags.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -33,7 +34,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/vector2d.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #endif
 
@@ -129,7 +130,7 @@ class RenderViewContextMenu
       base::OnceCallback<void(content::RenderFrameHost*,
                               blink::mojom::PluginActionType)> cb);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   lens::LensRegionSearchController* GetLensRegionSearchControllerForTesting() {
     return lens_region_search_controller_.get();
   }
@@ -437,7 +438,7 @@ class RenderViewContextMenu
   // executed from a given render frame.
   ExecutePluginActionCallback execute_plugin_action_callback_;
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   // Controller for Lens Region Search feature. This controller will be
   // destroyed as soon as the RenderViewContextMenu object is destroyed. The
   // RenderViewContextMenu is reset every time it is shown, but persists between

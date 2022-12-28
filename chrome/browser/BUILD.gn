@@ -18,6 +18,7 @@ import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/feed/features.gni")
+import("//components/lens/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
@@ -4631,10 +4632,6 @@ static_library("browser") {
       sources += [ "task_manager/sampling/shared_sampler_stub.cc" ]
     }
 
-    if (is_chrome_branded) {
-      deps += [ "//chrome/browser/lens/region_search" ]
-    }
-
     if (!is_official_build) {
       deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
     }
@@ -7827,6 +7824,10 @@ static_library("browser") {
       "exo_parts.cc",
       "exo_parts.h",
     ]
+  }
+
+  if (enable_lens_desktop_google_branded_features) {
+    deps += [ "//chrome/browser/lens/region_search" ]
   }
 
   if (use_cups) {

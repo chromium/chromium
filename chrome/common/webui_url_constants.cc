@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
+#include "components/lens/buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
@@ -629,7 +630,7 @@ const char kCleanupSubPage[] = "cleanup";
 const char kChromeUICastFeedbackHost[] = "cast-feedback";
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 const char kChromeUILensURL[] = "chrome://lens/";
 const char kChromeUILensUntrustedURL[] = "chrome-untrusted://lens/";
 const char kChromeUILensHost[] = "lens";

@@ -15,6 +15,7 @@ source_set("configs") {
   ]
 
   deps = [
+    "//components/lens:buildflags",
     "//content/public/browser",
     "//printing/buildflags:buildflags",
     "//skia",

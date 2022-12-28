@@ -26,6 +26,7 @@ import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/feed/features.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
+import("//components/lens/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
@@ -1363,6 +1364,7 @@ if (!is_android) {
       "//components/language/core/browser",
       "//components/language/core/common",
       "//components/lens",
+      "//components/lens:buildflags",
       "//components/live_caption",
       "//components/live_caption:constants",
       "//components/lookalikes/core",
@@ -2375,10 +2377,6 @@ if (!is_android) {
       "interaction/webcontents_interaction_test_util_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
-
-    if (is_chrome_branded) {
-      sources += [ "../browser/ui/views/side_panel/lens/lens_side_panel_coordinator_browsertest.cc" ]
-    }
 
     if (is_chrome_for_testing_branded) {
       sources += [ "../browser/chrome_for_testing/chrome_for_testing_info_bar_browsertest.cc" ]
@@ -4646,6 +4644,10 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
       ]
+    }
+
+    if (is_chrome_branded) {
+      sources += [ "../browser/ui/views/side_panel/lens/lens_side_panel_coordinator_browsertest.cc" ]
     }
 
     if (is_fuchsia) {
@@ -7243,6 +7245,7 @@ test("unit_tests") {
       "//components/enterprise:test_support",
       "//components/feature_engagement/test:test_support",
       "//components/global_media_controls:test_support",
+      "//components/lens:buildflags",
       "//components/media_message_center:test_support",
       "//components/media_router/common:test_support",
       "//components/permissions:test_support",
@@ -9103,7 +9106,7 @@ test("unit_tests") {
         [ "../common/media/component_widevine_cdm_hint_file_linux_unittest.cc" ]
   }
 
-  if (is_chrome_branded && !is_android) {
+  if (enable_lens_desktop_google_branded_features) {
     sources += [
       "../browser/ui/views/lens/lens_region_search_controller_unittest.cc",
       "../browser/ui/views/lens/lens_side_panel_navigation_helper_unittest.cc",

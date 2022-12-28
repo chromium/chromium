@@ -5,10 +5,10 @@
 #include "chrome/browser/lens/region_search/lens_region_search_helper.h"
 
 #include "base/feature_list.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
+#include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -24,7 +24,7 @@ bool IsRegionSearchEnabled(Browser* browser,
                            Profile* profile,
                            TemplateURLService* service,
                            const GURL& url) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (!browser)
     return false;
   if (!service)
@@ -46,7 +46,7 @@ bool IsRegionSearchEnabled(Browser* browser,
          profile->GetPrefs()->GetBoolean(prefs::kLensRegionSearchEnabled);
 #else
   return false;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 }
 
 bool IsInProgressiveWebApp(Browser* browser) {

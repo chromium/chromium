@@ -57,6 +57,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
+#include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
@@ -944,11 +945,11 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
 #endif
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
       ExecLensRegionSearch(browser_);
       break;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
@@ -1218,7 +1219,7 @@ void BrowserCommandController::InitCommandState() {
                                           true);
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (base::FeatureList::IsEnabled(
           lens::features::kEnableRegionSearchKeyboardShortcut)) {
     command_updater_.UpdateCommandEnabled(

@@ -199,6 +199,7 @@ static_library("common_lib") {
     "//components/flags_ui:switches",
     "//components/gcm_driver/common",
     "//components/history_clusters/history_clusters_internals/webui",
+    "//components/lens:buildflags",
     "//components/metrics",
     "//components/metrics:net",
     "//components/nacl/common:buildflags",
