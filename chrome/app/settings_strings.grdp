@@ -1891,6 +1891,9 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the current Topics list when the Topics list is empty in the Topics preferences page.">
     Curabitur sagittis sapien ut turpis interdum, vitae porttitor sem pretium. Vestibulum sem mauris, ultrices ac massa sit amet, sodales aliquet est.
   </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC" translateable="false" desc="String on the button to block a topic in the Topics preferences page.">
+    Pellent
+  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING" translateable="false" desc="Section title for the blocked topics list in the Topics preferences page.">
     Integer faucibus metus
   </message>
@@ -1899,6 +1902,9 @@
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the blocked topics list when there are no blocked topics in the Topics preferences page.">
     Donec commodo sem non augue blandit, ullamcorper aliquam enim fermentum
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC" translateable="false" desc="String on the button to re-allow a topic in the Topics preferences page.">
+    Aenean
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING" translateable="false" desc="Heading on 'Learn more' dialog in the Topics preferences page.">
     Suspendisse sit amet consectetur sapien

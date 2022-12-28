@@ -9,8 +9,10 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
+import './privacy_sandbox_interest_item.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
@@ -138,6 +140,13 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
       // dialog was opened.
       this.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')?.focus();
     });
+  }
+
+  private onInterestChanged_(e: CustomEvent<PrivacySandboxInterest>) {
+    const interest = e.detail;
+    assert(!interest.site);
+    // TODO(b/254412706): Implement the logic required to correctly move or
+    // remove entries as the user block and unblocks them.
   }
 }
 

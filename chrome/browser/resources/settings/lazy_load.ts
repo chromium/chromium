@@ -22,6 +22,7 @@ import './privacy_page/privacy_guide/privacy_guide_msbb_fragment.js';
 import './privacy_page/privacy_guide/privacy_guide_page.js';
 import './privacy_page/privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 import './privacy_page/privacy_sandbox/privacy_sandbox_fledge_subpage.js';
+import './privacy_page/privacy_sandbox/privacy_sandbox_interest_item.js';
 import './privacy_page/privacy_sandbox/privacy_sandbox_page.js';
 import './privacy_page/privacy_sandbox/privacy_sandbox_topics_subpage.js';
 import './privacy_page/security_keys_subpage.js';
@@ -171,6 +172,7 @@ export {SettingsPrivacyGuidePageElement} from './privacy_page/privacy_guide/priv
 export {PrivacyGuideWelcomeFragmentElement} from './privacy_page/privacy_guide/privacy_guide_welcome_fragment.js';
 export {SettingsPrivacySandboxAdMeasurementSubpageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 export {SettingsPrivacySandboxFledgeSubpageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_fledge_subpage.js';
+export {PrivacySandboxInterestItemElement} from './privacy_page/privacy_sandbox/privacy_sandbox_interest_item.js';
 export {SettingsPrivacySandboxPageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_page.js';
 export {SettingsPrivacySandboxTopicsSubpageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_topics_subpage.js';
 export {SettingsSecureDnsElement} from './privacy_page/secure_dns.js';

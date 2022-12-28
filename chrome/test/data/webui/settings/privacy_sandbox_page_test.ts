@@ -260,6 +260,30 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
         loadTimeData.getString('topicsPageBlockedTopicsDescription'),
         blockedTopicsDescription.innerText);
   });
+
+  test('topicsList', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    await flushTasks();
+    // Check for current topics.
+    const currentTopicsSection =
+        page.shadowRoot!.querySelector<HTMLElement>('#currentTopicsSection')!;
+    const currentTopics = currentTopicsSection.querySelector('dom-repeat');
+    assertTrue(!!currentTopics);
+    assertEquals(1, currentTopics.items!.length);
+    assertFalse(isVisible(
+        currentTopicsSection.querySelector('#currentTopicsDescriptionEmpty')));
+    assertEquals('test-topic-1', currentTopics.items![0].topic!.displayString);
+
+    // Check for blocked topics.
+    page.shadowRoot!.querySelector<HTMLElement>('#blockedTopicsRow')!.click();
+    await flushTasks();
+    const blockedTopicsList =
+        page.shadowRoot!.querySelector('#blockedTopicsList')!;
+    const blockedTopics = blockedTopicsList.querySelector('dom-repeat');
+    assertTrue(!!blockedTopics);
+    assertEquals(1, blockedTopics.items!.length);
+    assertEquals('test-topic-2', blockedTopics.items![0].topic!.displayString);
+  });
 });
 
 suite('PrivacySandboxFledgeSubpageTests', function() {

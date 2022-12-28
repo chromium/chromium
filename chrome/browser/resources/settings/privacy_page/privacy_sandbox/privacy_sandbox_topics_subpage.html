@@ -43,6 +43,10 @@
     padding-block-start: 16px;
   }
 
+  #blockedTopicsList {
+    padding: 0 var(--cr-section-padding);
+  }
+
   #dialog p {
     margin: 0;
     padding-block-end: 16px;
@@ -74,7 +78,11 @@
             $i18n{topicsPageCurrentTopicsDescriptionLearnMore}
           </button>
         </div>
-        <!-- TODO(b/254412594): Add Topics list. -->
+        <template is="dom-repeat" items="[[topicsList_]]">
+          <privacy-sandbox-interest-item interest="[[item]]"
+              on-interest-changed="onInterestChanged_">
+          </privacy-sandbox-interest-item>
+        </template>
         <div id="currentTopicsDescriptionEmpty"
             class="no-topics cr-secondary-text"
             hidden="[[!isTopicsListEmpty_(topicsList_.length)]]">
@@ -97,7 +105,13 @@
       class="cr-row continuation cr-secondary-text">
     [[computeBlockedTopicsDescription_(blockedTopicsList_.length)]]
   </div>
-  <!-- TODO(b/254412594): Add blocked topics list. -->
+  <div id="blockedTopicsList">
+    <template is="dom-repeat" items="[[blockedTopicsList_]]">
+      <privacy-sandbox-interest-item interest="[[item]]"
+          on-interest-changed="onInterestChanged_">
+      </privacy-sandbox-interest-item>
+    </template>
+  </div>
 </iron-collapse>
 
 <template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>

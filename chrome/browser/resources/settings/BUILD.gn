@@ -171,6 +171,7 @@ build_webui("build") {
     "privacy_page/privacy_page.ts",
     "privacy_page/privacy_sandbox/privacy_sandbox_ad_measurement_subpage.ts",
     "privacy_page/privacy_sandbox/privacy_sandbox_fledge_subpage.ts",
+    "privacy_page/privacy_sandbox/privacy_sandbox_interest_item.ts",
     "privacy_page/privacy_sandbox/privacy_sandbox_page.ts",
     "privacy_page/privacy_sandbox/privacy_sandbox_topics_subpage.ts",
     "privacy_page/secure_dns.ts",
