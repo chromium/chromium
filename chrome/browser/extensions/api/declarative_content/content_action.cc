@@ -405,11 +405,6 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   }
 
   gfx::ImageSkia icon;
-  // TODO(crbug.com/1187011): When removing base::DictionaryValue from
-  // ParseIconFromCanvasDictionary, |canvas_set| should be changed to
-  // base::Value::Dict and checking for base::Value::Type::DICTIONARY should be
-  // removed. This is a temporary solution to prevent content_action base::Value
-  // migration from expanding across too many locations.
   const base::Value::Dict* canvas_set = dict->FindDict("imageData");
   if (canvas_set &&
       ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon) !=

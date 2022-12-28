@@ -656,7 +656,6 @@ class DeclarativeNetRequestBrowserTest
         break;
     }
 
-    // A cast is necessary from ListValue to Value, else this fails to compile.
     const std::string script =
         content::JsReplace(base::StringPrintf(kScript, function_name),
                            base::Value(rules_to_add_builder.Build()),
