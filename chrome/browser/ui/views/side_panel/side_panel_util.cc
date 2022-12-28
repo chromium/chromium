@@ -76,7 +76,8 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) &&
       history_clusters_service &&
       history_clusters_service->IsJourneysEnabled() &&
-      !browser->profile()->IsIncognitoProfile()) {
+      !browser->profile()->IsIncognitoProfile() &&
+      !browser->profile()->IsGuestSession()) {
     auto* history_clusters_side_panel_coordinator =
         HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser);
     if (browser->profile()->GetPrefs()->GetBoolean(

@@ -112,7 +112,8 @@ void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
     if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) &&
         history_clusters_service &&
         history_clusters_service->IsJourneysEnabled() &&
-        !browser->profile()->IsIncognitoProfile()) {
+        !browser->profile()->IsIncognitoProfile() &&
+        !browser->profile()->IsGuestSession()) {
       HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
           ->CreateAndRegisterEntry(global_registry);
     }
