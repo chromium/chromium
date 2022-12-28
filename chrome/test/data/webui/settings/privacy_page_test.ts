@@ -5,7 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement, CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SettingsPrefsElement, SettingsPrivacyPageElement, StatusAction, SyncStatus, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -231,6 +231,22 @@ suite(`PrivacySandbox4Disabled`, function() {
         'Settings.PrivacySandbox.OpenedFromSettingsParent',
         await metricsBrowserProxy.whenCalled('recordAction'));
   });
+
+  test('cookiesSubpageAttributes', async function() {
+    // The subpage is only in the DOM if the corresponding route is open.
+    page.$.cookiesLinkRow.click();
+    await flushTasks();
+
+    const cookiesSubpage =
+        page.shadowRoot!.querySelector<PolymerElement>('#cookies');
+    assertTrue(!!cookiesSubpage);
+    assertEquals(
+        page.i18n('cookiePageTitle'),
+        cookiesSubpage.getAttribute('page-title'));
+    const associatedControl = cookiesSubpage.get('associatedControl');
+    assertTrue(!!associatedControl);
+    assertEquals('cookiesLinkRow', associatedControl.id);
+  });
 });
 
 suite(`PrivacySandbox4Enabled`, function() {
@@ -302,6 +318,22 @@ suite(`PrivacySandbox4Enabled`, function() {
     await flushTasks();
     assertEquals(
         routes.PRIVACY_SANDBOX, Router.getInstance().getCurrentRoute());
+  });
+
+  test('cookiesSubpageAttributes', async function() {
+    // The subpage is only in the DOM if the corresponding route is open.
+    page.$.cookiesLinkRow.click();
+    await flushTasks();
+
+    const cookiesSubpage =
+        page.shadowRoot!.querySelector<PolymerElement>('#cookies');
+    assertTrue(!!cookiesSubpage);
+    assertEquals(
+        page.i18n('privacyPageTitle'),
+        cookiesSubpage.getAttribute('page-title'));
+    const associatedControl = cookiesSubpage.get('associatedControl');
+    assertTrue(!!associatedControl);
+    assertEquals('cookiesLinkRow', associatedControl.id);
   });
 });
 
