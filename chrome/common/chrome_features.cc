@@ -1086,6 +1086,11 @@ BASE_FEATURE(kTreatUnsafeDownloadsAsActive,
              "TreatUnsafeDownloadsAsActive",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Block downloads delivered over insecure transports (i.e. not over HTTPS).
+BASE_FEATURE(kBlockInsecureDownloads,
+             "BlockInsecureDownloads",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TrustSafetySentimentSurvey
 #if !BUILDFLAG(IS_ANDROID)
 // Enables surveying of users of Trust & Safety features with HaTS.

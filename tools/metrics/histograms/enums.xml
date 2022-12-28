@@ -59067,6 +59067,7 @@ from previous Chrome versions.
   <int value="-1027941917" label="SnoopingProtection:enabled"/>
   <int value="-1027254093" label="LockScreenNotifications:disabled"/>
   <int value="-1027124889" label="NtlmV2Enabled:enabled"/>
+  <int value="-1026466717" label="BlockInsecureDownloads:enabled"/>
   <int value="-1026192558" label="OopRasterizationDDL:enabled"/>
   <int value="-1025125875" label="AssistantTimersV2:disabled"/>
   <int value="-1024731815" label="MessagesForAndroidNearOomReduction:enabled"/>
@@ -62112,6 +62113,7 @@ from previous Chrome versions.
   <int value="760542355" label="ServiceWorkerScriptFullCodeCache:enabled"/>
   <int value="761770770"
       label="OverrideLanguagePrefsForHrefTranslate:disabled"/>
+  <int value="761815665" label="BlockInsecureDownloads:disabled"/>
   <int value="762030626" label="ViewTransition:disabled"/>
   <int value="762324154" label="ZeroSuggestPrefetchingOnWeb:disabled"/>
   <int value="762700519" label="enable-checker-imaging"/>

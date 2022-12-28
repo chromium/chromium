@@ -7632,6 +7632,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIncognitoNtpRevampDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kIncognitoNtpRevamp)},
 
+    {"block-insecure-downloads", flag_descriptions::kBlockInsecureDownloadsName,
+     flag_descriptions::kBlockInsecureDownloadsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kBlockInsecureDownloads)},
+
     {"check-offline-capability", flag_descriptions::kCheckOfflineCapabilityName,
      flag_descriptions::kCheckOfflineCapabilityDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kCheckOfflineCapability,

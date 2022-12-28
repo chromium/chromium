@@ -85,6 +85,12 @@ const char kAttributionReportingDebugModeDescription[] =
     "reporting delays and noise. Only works if the Attribution Reporting API "
     "is already enabled.";
 
+const char kBlockInsecureDownloadsName[] = "Block insecure downloads";
+const char kBlockInsecureDownloadsDescription[] =
+    "Enables insecure download blocking. This shows a 'blocked' message if the "
+    "user attempts to download a file over an insecure transport (e.g. HTTP) "
+    "either directly or via an insecure redirect.";
+
 const char kBrokerFileOperationsOnDiskCacheInNetworkServiceName[] =
     "Broker file operations on disk cache in the Network Service";
 const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[] =

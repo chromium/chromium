@@ -638,6 +638,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "block-insecure-downloads",
+    "owners": [ "jdeblasio", "trusty-transport@chromium.org" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "block-insecure-private-network-requests",
     "owners": [ "titouan", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 111
