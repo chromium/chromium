@@ -826,7 +826,7 @@ std::any x = 5;
 
 **Notes:**
 *** promo
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/KEa-0AOGRNY/m/IV_S3_pvAAAJ)
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/00cpZ07nye4)
 
 Banned since workaround for lack of RTTI isn't compatible with the component
 build ([Bug](https://crbug.com/1096380)). Also see `absl::any`.
