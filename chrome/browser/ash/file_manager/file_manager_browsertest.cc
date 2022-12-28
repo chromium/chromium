@@ -430,6 +430,14 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
           .WillOnce(testing::Return(components));
       return true;
     }
+    if (name == "setBlockedPluginVM") {
+      policy::DlpRulesManager::AggregatedComponents components;
+      components[policy::DlpRulesManager::Level::kBlock].insert(
+          policy::DlpRulesManager::Component::kPluginVm);
+      EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents)
+          .WillOnce(testing::Return(components));
+      return true;
+    }
     if (name == "setIsRestrictedByAnyRuleRestrictions") {
       EXPECT_CALL(*mock_rules_manager_,
                   IsRestrictedByAnyRule(
@@ -1389,9 +1397,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dlpShowManagedIcon").EnableDlp(),
         TestCase("dlpContextMenuRestrictionDetails").EnableDlp(),
         TestCase("saveAsDlpRestrictedDirectory").EnableDlp(),
-        TestCase("saveAsDlpRestrictedMountableDirectory").EnableDlp(),
+        TestCase("saveAsDlpRestrictedCrostini").EnableDlp(),
         TestCase("saveAsNonDlpRestricted").EnableDlp(),
         TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp(),
+        TestCase("saveAsDlpRestrictedVm").EnableDlp(),
         TestCase("openDlpRestrictedFile").EnableDlp()));
 
 #define FILE_TRANSFER_TEST_CASE(name) \

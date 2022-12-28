@@ -192,9 +192,7 @@ testcase.saveAsDlpRestrictedDirectory = async () => {
     await remoteCall.waitForElement(dialog, disabledOkButton);
 
     // Click the close button to dismiss the dialog.
-    await remoteCall.waitForElement(dialog, cancelButton);
-    const event = [cancelButton, 'click'];
-    await remoteCall.callRemoteTestUtil('fakeEvent', dialog, event);
+    await remoteCall.waitAndClickElement(dialog, [cancelButton]);
   };
 
   chrome.test.assertEq(
@@ -204,12 +202,94 @@ testcase.saveAsDlpRestrictedDirectory = async () => {
 };
 
 /**
- * Tests the save dialogs properly show DLP blocked volumes/directories, before
- * and after they are mounted. If a volume is blocked by DLP, it should be
- * marked as disabled in the navigation list both before and after mounting, but
- * in the file list it will only be disabled after mounting.
+ * Tests the save dialogs properly show DLP blocked guest OS volumes, before
+ * and after being mounted: it should be marked as disabled in the navigation
+ * list both before and after mounting, but in the file list it will only be
+ * disabled after mounting.
  */
-testcase.saveAsDlpRestrictedMountableDirectory = async () => {
+testcase.saveAsDlpRestrictedVm = async () => {
+  // Setup the restrictions.
+  await sendTestMessage({name: 'setBlockedPluginVM'});
+
+  const okButton = '.button-panel button.ok:enabled';
+  const disabledOkButton = '.button-panel button.ok:disabled';
+  const cancelButton = '.button-panel button.cancel';
+
+  const guestName = 'JennyAnyDots';
+  const guestId = await sendTestMessage({
+    name: 'registerMountableGuest',
+    displayName: guestName,
+    canMount: true,
+    vmType: 'bruschetta',
+  });
+
+  const closer = async (dialog) => {
+    // Select My Files folder and wait for file list.
+    await navigateWithDirectoryTree(dialog, '/My files');
+    const downloadsRow = ['Downloads', '--', 'Folder'];
+    const playFilesRow = ['Play files', '--', 'Folder'];
+    const linuxFilesRow = ['Linux files', '--', 'Folder'];
+    const guestFilesRow = [guestName, '--', 'Folder'];
+    await remoteCall.waitForFiles(
+        dialog, [downloadsRow, playFilesRow, linuxFilesRow, guestFilesRow],
+        {ignoreFileSize: true, ignoreLastModifiedTime: true});
+
+    const directory = `.directory:not([disabled])[file-name="${guestName}"]`;
+    const disabledDirectory = `.directory[disabled][file-name="${guestName}"]`;
+    const disabledFakeTreeItem = '#directory-tree .tree-item[disabled] ' +
+        '[root-type-icon=bruschetta]';
+    const disabledRealTreeItem = `#directory-tree .tree-item[disabled] ` +
+        `[volume-type-icon=bruschetta]`;
+
+    // Before mounting, the guest should be disabled in the navigation list, but
+    // not in the file list.
+    await remoteCall.waitForElementsCount(dialog, [disabledFakeTreeItem], 1);
+    await remoteCall.waitForElementsCount(dialog, [directory], 1);
+
+    // Mount the guest by selecting it in the file list.
+    await remoteCall.waitUntilSelected(dialog, guestName);
+    await remoteCall.waitAndClickElement(dialog, [okButton]);
+
+    // Verify that the guest is mounted and disabled, now both in the navigation
+    // and the file list, as well as that the OK button is disabled while we're
+    // still in the guest directory.
+    await remoteCall.waitUntilCurrentDirectoryIsChanged(
+        dialog, `/My files/${guestName}`);
+    await remoteCall.waitForElement(dialog, disabledOkButton);
+    await navigateWithDirectoryTree(dialog, '/My files');
+    await remoteCall.waitForElementsCount(dialog, [disabledRealTreeItem], 1);
+    await remoteCall.waitForElementsCount(dialog, [disabledDirectory], 1);
+    await remoteCall.waitUntilSelected(dialog, guestName);
+    await remoteCall.waitForElement(dialog, disabledOkButton);
+
+    // Unmount the volume.
+    await sendTestMessage({
+      name: 'unmountGuest',
+      guestId: guestId,
+    });
+
+    // Verify that volume is replaced by the fake and is still disabled.
+    await remoteCall.waitForElementsCount(dialog, [disabledFakeTreeItem], 1);
+    await remoteCall.waitForElementsCount(
+        dialog, [`#directory-tree [volume-type-icon=bruschetta]`], 0);
+
+    // Click the close button to dismiss the dialog.
+    await remoteCall.waitAndClickElement(dialog, [cancelButton]);
+  };
+
+  chrome.test.assertEq(
+      undefined,
+      await openAndWaitForClosingDialog(
+          {type: 'saveFile'}, 'downloads', [], closer));
+};
+
+/**
+ * Tests the save dialogs properly show DLP blocked Linux files, before
+ * and after being mounted: it should be marked as disabled in the navigation
+ * list both before and after mounting, but in the file list it will only be
+ * disabled after mounting.
+ */
+testcase.saveAsDlpRestrictedCrostini = async () => {
   // Setup the restrictions.
   await sendTestMessage({name: 'setBlockedCrostini'});
 
@@ -235,44 +315,34 @@ testcase.saveAsDlpRestrictedMountableDirectory = async () => {
         dialog, [downloadsRow, playFilesRow, linuxFilesRow],
         {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
-    const linuxFilesInFileList =
-        '.directory:not([disabled])[file-name="Linux files"]';
-    const disabledLinuxFilesInFileList =
-        '.directory[disabled][file-name="Linux files"]';
-    const disabledFakeLinuxTreeItem = '#directory-tree .tree-item[disabled] ' +
+    const directory = '.directory:not([disabled])[file-name="Linux files"]';
+    const disabledDirectory = '.directory[disabled][file-name="Linux files"]';
+    const disabledFakeTreeItem = '#directory-tree .tree-item[disabled] ' +
         '.icon[root-type-icon="crostini"]';
-    const disabledRealLinuxTreeItem = '#directory-tree .tree-item[disabled] ' +
+    const disabledLinuxTreeItem = '#directory-tree .tree-item[disabled] ' +
         '.icon[volume-type-icon="crostini"]';
-    // Before Crostini is mounted, Linux files should be disabled in the
-    // navigation list, but not in the file list.
-    await remoteCall.waitForElementsCount(dialog, [linuxFilesInFileList], 1);
-    await remoteCall.waitForElementsCount(
-        dialog, [disabledFakeLinuxTreeItem], 1);
+    // Before mounting, Linux files should be disabled in the navigation list,
+    // but not in the file list.
+    await remoteCall.waitForElementsCount(dialog, [directory], 1);
+    await remoteCall.waitForElementsCount(dialog, [disabledFakeTreeItem], 1);
 
-    // Select Linux files from the file list and mount Crostini. We cannot
-    // select/mount it from the navigation list since it's already disabled
-    // there.
+    // Mount Crostini by selecting it in the file list. We cannot select/mount
+    // it from the navigation list since it's already disabled there.
     await remoteCall.waitUntilSelected(dialog, 'Linux files');
-    await remoteCall.waitForElement(dialog, okButton);
-    await remoteCall.callRemoteTestUtil(
-        'fakeEvent', dialog, [okButton, 'click']);
+    await remoteCall.waitAndClickElement(dialog, [okButton]);
     // Verify that Crostini is mounted and disabled, now both in the navigation
     // and the file list, as well as that the OK button is disabled while we're
     // still in the Linux files directory.
     await remoteCall.waitUntilCurrentDirectoryIsChanged(dialog, '/Linux files');
     await remoteCall.waitForElement(dialog, disabledOkButton);
     await navigateWithDirectoryTree(dialog, '/My files');
-    await remoteCall.waitForElementsCount(
-        dialog, [disabledRealLinuxTreeItem], 1);
-    await remoteCall.waitForElementsCount(
-        dialog, [disabledLinuxFilesInFileList], 1);
+    await remoteCall.waitForElementsCount(dialog, [disabledLinuxTreeItem], 1);
+    await remoteCall.waitForElementsCount(dialog, [disabledDirectory], 1);
     await remoteCall.waitUntilSelected(dialog, 'Linux files');
     await remoteCall.waitForElement(dialog, disabledOkButton);
 
     // Click the close button to dismiss the dialog.
-    await remoteCall.waitForElement(dialog, cancelButton);
-    const event = [cancelButton, 'click'];
-    await remoteCall.callRemoteTestUtil('fakeEvent', dialog, event);
+    await remoteCall.waitAndClickElement(dialog, [cancelButton]);
   };
 
   chrome.test.assertEq(
@@ -300,8 +370,7 @@ testcase.saveAsNonDlpRestricted = async () => {
         dialog, '/My files/Play files');
 
     // Click the close button to dismiss the dialog.
-    const event = [cancelButton, 'click'];
-    await remoteCall.callRemoteTestUtil('fakeEvent', dialog, event);
+    await remoteCall.waitAndClickElement(dialog, [cancelButton]);
   };
 
   // Open a save dialog in Play Files.
@@ -333,8 +402,7 @@ testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
         dialog, '/My files/Downloads');
 
     // Click the close button to dismiss the dialog.
-    const event = [cancelButton, 'click'];
-    await remoteCall.callRemoteTestUtil('fakeEvent', dialog, event);
+    await remoteCall.waitAndClickElement(dialog, [cancelButton]);
   };
 
   // Try to open a save dialog in Play Files. Since ARC is blocked by DLP, the
@@ -396,9 +464,7 @@ testcase.openDlpRestrictedFile = async () => {
     await remoteCall.waitForElement(dialog, disabledOkButton);
 
     // Click the close button to dismiss the dialog.
-    await remoteCall.waitForElement(dialog, cancelButton);
-    const event = [cancelButton, 'click'];
-    await remoteCall.callRemoteTestUtil('fakeEvent', dialog, event);
+    await remoteCall.waitAndClickElement(dialog, [cancelButton]);
   };
 
   chrome.test.assertEq(

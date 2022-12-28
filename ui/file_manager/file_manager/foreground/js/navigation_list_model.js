@@ -707,7 +707,8 @@ export class NavigationListModel extends EventTarget {
       for (const volume of guestOsVolumes) {
         if (myFilesEntry.findIndexByVolumeInfo(volume.volumeInfo) === -1) {
           const volumeEntry = new VolumeEntry(volume.volumeInfo);
-          volumeEntry.disabled = this.volumeManager_.isDisabled(volume.type);
+          volumeEntry.disabled = this.volumeManager_.isDisabled(
+              VolumeManagerCommon.VolumeType.GUEST_OS);
           myFilesEntry.addEntry(volumeEntry);
         }
       }
