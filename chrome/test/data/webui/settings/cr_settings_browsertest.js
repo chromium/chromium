@@ -941,23 +941,6 @@ var CrSettingsMenuTest = class extends CrSettingsBrowserTest {
   }
 };
 
-// Separate class to allow running of individual suites, as the combination of
-// all suites is too large, leading to flakes on some bots.
-var CrSettingsAllSitesTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/all_sites_tests.js';
-  }
-}
-
-TEST_F('CrSettingsAllSitesTest', 'AllSites_EnableFirstPartySets', function() {
-  runMochaSuite('AllSites_EnableFirstPartySets');
-});
-
-TEST_F('CrSettingsAllSitesTest', 'AllSites_DisableFirstPartySets', function() {
-  runMochaSuite('AllSites_DisableFirstPartySets');
-});
-
 TEST_F('CrSettingsMenuTest', 'All', function() {
   mocha.run()
 });
@@ -1018,13 +1001,6 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  ['ToggleButton', 'settings_toggle_button_tests.js'],
  ['ZoomLevels', 'zoom_levels_tests.js'],
 ].forEach(test => registerTest(...test));
-
-// Timeout on Linux dbg bots: https://crbug.com/1133412
-// Fails on Mac bots: https://crbug.com/1222886
-GEN('#if !((BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_MAC))');
-[['SecurityPage', 'security_page_test.js'],
-].forEach(test => registerTest(...test));
-GEN('#endif');
 
 // Timeout on Linux dbg bots: https://crbug.com/1394737
 GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
@@ -1090,4 +1066,40 @@ function registerTest(testName, module, caseName) {
   };
 
   TEST_F(className, caseName || 'All', () => mocha.run());
+}
+
+// Some tests files are too large to run as a single "All" test (e.g. as above),
+// and flake on some bots. Each test suite can instead be run as an individual
+// test fixture, allowing more time to complete.
+[[
+  'SecurityPage',
+  'security_page_test.js',
+  [
+    'SecurityPage',
+    'SecurityPage_FlagsDisabled',
+    'SecurityPage_SafeBrowsing',
+  ],
+],
+ [
+   'AllSites',
+   'all_sites_tests.js',
+   [
+     'AllSites_EnableFirstPartySets',
+     'AllSites_DisableFirstPartySets',
+   ],
+ ],
+].forEach(test => registerTestSuites(...test));
+
+function registerTestSuites(testName, module, suites) {
+  const className = `CrSettings${testName}Test`;
+  this[className] = class extends CrSettingsBrowserTest {
+    /** @override */
+    get browsePreload() {
+      return `chrome://settings/test_loader.html?module=settings/${module}`;
+    }
+  };
+
+  suites.forEach((suite) => {
+    TEST_F(className, suite, () => runMochaSuite(suite));
+  })
 }
