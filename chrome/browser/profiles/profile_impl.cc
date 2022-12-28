@@ -827,6 +827,8 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
       return;
   }
 
+  NotifyProfileInitializationComplete();
+
   SharingServiceFactory::GetForBrowserContext(this);
 
   HttpsFirstModeServiceFactory::GetForProfile(this);

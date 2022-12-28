@@ -518,6 +518,13 @@ void Profile::NotifyOffTheRecordProfileCreated(Profile* off_the_record) {
     observer.OnOffTheRecordProfileCreated(off_the_record);
 }
 
+void Profile::NotifyProfileInitializationComplete() {
+  DCHECK(!IsOffTheRecord());
+  for (auto& observer : observers_) {
+    observer.OnProfileInitializationComplete(this);
+  }
+}
+
 Profile* Profile::GetPrimaryOTRProfile(bool create_if_needed) {
   return GetOffTheRecordProfile(OTRProfileID::PrimaryID(), create_if_needed);
 }

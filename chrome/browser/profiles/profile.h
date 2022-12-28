@@ -506,6 +506,7 @@ class Profile : public content::BrowserContext {
                                              bool incognito_pref_store);
 
   void NotifyOffTheRecordProfileCreated(Profile* off_the_record);
+  void NotifyProfileInitializationComplete();
 
   // Returns whether the user has signed in this profile to an account.
   virtual bool IsSignedIn() = 0;

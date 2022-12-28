@@ -14,14 +14,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace extensions {
@@ -54,12 +52,10 @@ LanguageSettingsPrivateDelegate::LanguageSettingsPrivateDelegate(
 
   // SpellcheckService cannot be created until Profile::DoFinalInit() has been
   // called. http://crbug.com/171406
-  notification_registrar_.Add(this,
-      chrome::NOTIFICATION_PROFILE_ADDED,
-      content::Source<Profile>(Profile::FromBrowserContext(context_)));
-
-  pref_change_registrar_.Init(Profile::FromBrowserContext(context_)->
-      GetPrefs());
+  // TODO(crbug.com/1038437): Investigate if this is still required.
+  Profile* profile = Profile::FromBrowserContext(context_);
+  profile_observation_.Observe(profile);
+  pref_change_registrar_.Init(profile->GetPrefs());
 
   StartOrStopListeningForSpellcheckChanges();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -71,7 +67,6 @@ LanguageSettingsPrivateDelegate::~LanguageSettingsPrivateDelegate() {
   DCHECK(!listening_spellcheck_);
   DCHECK(!listening_input_method_);
   pref_change_registrar_.RemoveAll();
-  notification_registrar_.RemoveAll();
 }
 
 LanguageSettingsPrivateDelegate* LanguageSettingsPrivateDelegate::Create(
@@ -120,6 +115,8 @@ void LanguageSettingsPrivateDelegate::Shutdown() {
     listening_input_method_ = false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  profile_observation_.Reset();
 }
 
 void LanguageSettingsPrivateDelegate::OnListenerAdded(
@@ -152,10 +149,10 @@ void LanguageSettingsPrivateDelegate::OnListenerRemoved(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void LanguageSettingsPrivateDelegate::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
+void LanguageSettingsPrivateDelegate::OnProfileInitializationComplete(
+    Profile* profile) {
+  DCHECK(profile_observation_.IsObservingSource(profile));
+  profile_observation_.Reset();
   profile_added_ = true;
   StartOrStopListeningForSpellcheckChanges();
 }

@@ -27,6 +27,13 @@ class ProfileObserver : public base::CheckedObserver {
   //   3. OTR profile (if any) goes through shutdown in same sequence
   //   4. KeyedServices are shut down for |profile|
   virtual void OnProfileWillBeDestroyed(Profile* profile) {}
+
+  // The observed profile has now finished being initialized. This is called
+  // after notifying any delegate that profile initialization is completed, and
+  // thus assuming the profile is valid, will be triggered after
+  // ProfileManagerObserver::OnProfileAdded, and is not called for off the
+  // record profiles.
+  virtual void OnProfileInitializationComplete(Profile* profile) {}
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_OBSERVER_H_

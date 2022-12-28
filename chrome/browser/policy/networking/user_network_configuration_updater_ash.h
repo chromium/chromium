@@ -11,9 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "net/cert/scoped_nss_types.h"
 
 class Profile;
@@ -49,7 +49,7 @@ class PolicyService;
 // trust of certificates.
 class UserNetworkConfigurationUpdaterAsh
     : public UserNetworkConfigurationUpdater,
-      public content::NotificationObserver {
+      public ProfileObserver {
  public:
   UserNetworkConfigurationUpdaterAsh(
       const UserNetworkConfigurationUpdaterAsh&) = delete;
@@ -57,6 +57,7 @@ class UserNetworkConfigurationUpdaterAsh
       const UserNetworkConfigurationUpdaterAsh&) = delete;
 
   ~UserNetworkConfigurationUpdaterAsh() override;
+  void Shutdown() override;
 
   // Creates an updater that applies the ONC user policy from |policy_service|
   // for user |user| once the policy service is completely initialized and on
@@ -96,11 +97,8 @@ class UserNetworkConfigurationUpdaterAsh
   void ApplyNetworkPolicy(base::Value::List network_configs_onc,
                           base::Value::Dict global_network_config) override;
 
-  // content::NotificationObserver implementation. Observes the profile to which
-  // |this| belongs to for PROFILE_ADDED notification.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ProfileObserver implementation
+  void OnProfileInitializationComplete(Profile* profile) override;
 
   // Creates onc::CertImporter with |database| and passes it to
   // |SetClientCertificateImporter|.
@@ -122,7 +120,7 @@ class UserNetworkConfigurationUpdaterAsh
   // certificates. Set by |SetClientCertificateImporter|.
   std::unique_ptr<ash::onc::CertificateImporter> client_certificate_importer_;
 
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::WeakPtrFactory<UserNetworkConfigurationUpdaterAsh> weak_factory_{this};
 };

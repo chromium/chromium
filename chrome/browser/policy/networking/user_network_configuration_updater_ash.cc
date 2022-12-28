@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +26,6 @@
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_source.h"
 
 namespace policy {
 
@@ -52,6 +50,11 @@ UserNetworkConfigurationUpdaterAsh::~UserNetworkConfigurationUpdaterAsh() {
   if (ash::NetworkCertLoader::IsInitialized()) {
     ash::NetworkCertLoader::Get()->SetUserPolicyCertificateProvider(nullptr);
   }
+}
+
+void UserNetworkConfigurationUpdaterAsh::Shutdown() {
+  profile_observation_.Reset();
+  UserNetworkConfigurationUpdater::Shutdown();
 }
 
 // static
@@ -115,10 +118,10 @@ UserNetworkConfigurationUpdaterAsh::UserNetworkConfigurationUpdaterAsh(
   // The updater is created with |client_certificate_importer_| unset and is
   // responsible for creating it. This requires |GetNSSCertDatabaseForProfile|
   // call, which is not safe before the profile initialization is finalized.
-  // Thus, listen for PROFILE_ADDED notification, on which |cert_importer_|
-  // creation should start. https://crbug.com/171406
-  registrar_.Add(this, chrome::NOTIFICATION_PROFILE_ADDED,
-                 content::Source<Profile>(profile));
+  // Thus, listen for OnProfileInitializationComplete notification, on which
+  // |cert_importer_| creation should start. https://crbug.com/171406
+  // TODO(crbug.com/1038437): Investigate if this is still required.
+  profile_observation_.Observe(profile);
 
   // Make sure that the |NetworkCertLoader| which makes certificates available
   // to the chromeos network code gets policy-pushed certificates from the
@@ -167,13 +170,10 @@ void UserNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
       base::Value(std::move(global_network_config)));
 }
 
-void UserNetworkConfigurationUpdaterAsh::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(type, chrome::NOTIFICATION_PROFILE_ADDED);
-  Profile* profile = content::Source<Profile>(source).ptr();
-
+void UserNetworkConfigurationUpdaterAsh::OnProfileInitializationComplete(
+    Profile* profile) {
+  DCHECK(profile_observation_.IsObservingSource(profile));
+  profile_observation_.Reset();
   // Note: This unsafely grabs a persistent reference to the `NssService`'s
   // `NSSCertDatabase`, which may be invalidated once `profile` is shut down.
   // TODO(https://crbug.com/1186373): Provide better lifetime guarantees and
