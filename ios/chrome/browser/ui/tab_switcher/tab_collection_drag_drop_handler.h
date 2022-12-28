@@ -18,6 +18,9 @@
 // conforming to this protocol.
 - (UIDragItem*)dragItemForItemWithID:(NSString*)itemID;
 
+// Tells the receiver that the drag session did end.
+- (void)dragSessionDidEnd;
+
 // Returns a value which represents how a drag activity should be resolved when
 // the user drops a drag item. `session` contains pertinent information
 // including the drag item.

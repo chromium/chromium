@@ -777,6 +777,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                : DragDropTabs::kDragEndAtSameIndex;
   base::UmaHistogramEnumeration(kUmaDragDropTabs, dragEvent);
 
+  [self.dragDropHandler dragSessionDidEnd];
   [self.delegate gridViewControllerDragSessionDidEnd:self];
 }
 
