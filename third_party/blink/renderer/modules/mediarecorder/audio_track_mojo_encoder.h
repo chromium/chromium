@@ -58,12 +58,7 @@ class AudioTrackMojoEncoder : public AudioTrackEncoder {
   void EncodeAudio(std::unique_ptr<media::AudioBus> input_bus,
                    base::TimeTicks capture_time) override;
 
-  // Must be called on `encoder_thread_` before destructing this class.
-  void Shutdown() override;
-
  private:
-  ~AudioTrackMojoEncoder() override;
-
   // Run when the platform encoder finishes initializing, will flush
   // `input_queue_`.
   void OnInitializeDone(media::EncoderStatus status);

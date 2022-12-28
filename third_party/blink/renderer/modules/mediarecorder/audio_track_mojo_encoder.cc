@@ -44,12 +44,9 @@ AudioTrackMojoEncoder::AudioTrackMojoEncoder(
   codec_ = codec;
 }
 
-AudioTrackMojoEncoder::~AudioTrackMojoEncoder() = default;
-
 void AudioTrackMojoEncoder::OnSetFormat(
     const media::AudioParameters& input_params) {
   DVLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_THREAD(encoder_thread_checker_);
   if (input_params_.Equals(input_params) && current_status_.is_ok())
     return;
 
@@ -104,7 +101,6 @@ void AudioTrackMojoEncoder::EncodeAudio(
     std::unique_ptr<media::AudioBus> input_bus,
     base::TimeTicks capture_time) {
   DVLOG(3) << __func__ << ", #frames " << input_bus->frames();
-  DCHECK_CALLED_ON_VALID_THREAD(encoder_thread_checker_);
   DCHECK_EQ(input_bus->channels(), input_params_.channels());
   DCHECK(!capture_time.is_null());
 
@@ -127,16 +123,7 @@ void AudioTrackMojoEncoder::EncodeAudio(
   mojo_encoder_->Encode(std::move(input_bus), capture_time, std::move(done_cb));
 }
 
-void AudioTrackMojoEncoder::Shutdown() {
-  DCHECK_CALLED_ON_VALID_THREAD(encoder_thread_checker_);
-  // `MojoAudioEncoder` must be destructed on the same sequence it was
-  // constructed on.
-  mojo_encoder_ = nullptr;
-}
-
 void AudioTrackMojoEncoder::OnInitializeDone(media::EncoderStatus status) {
-  DCHECK_CALLED_ON_VALID_THREAD(encoder_thread_checker_);
-
   // Don't override `current_status_` with `kOk` if we hit an error previously.
   if (status.is_ok() && !current_status_.is_ok() &&
       current_status_ !=
@@ -158,8 +145,6 @@ void AudioTrackMojoEncoder::OnInitializeDone(media::EncoderStatus status) {
 }
 
 void AudioTrackMojoEncoder::OnEncodeDone(media::EncoderStatus status) {
-  DCHECK_CALLED_ON_VALID_THREAD(encoder_thread_checker_);
-
   // Don't override `current_status_` with `kOk` if we hit an error previously.
   if (status.is_ok() && !current_status_.is_ok())
     return;
@@ -172,8 +157,6 @@ void AudioTrackMojoEncoder::OnEncodeDone(media::EncoderStatus status) {
 void AudioTrackMojoEncoder::OnEncodeOutput(
     media::EncodedAudioBuffer encoded_buffer,
     absl::optional<media::AudioEncoder::CodecDescription> codec_desc) {
-  DCHECK_CALLED_ON_VALID_THREAD(encoder_thread_checker_);
-
   if (!current_status_.is_ok()) {
     LogError("Refusing to output when in error state: ", current_status_);
     return;

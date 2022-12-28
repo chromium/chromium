@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
+#include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 
 namespace media {
 class AudioBus;
@@ -78,7 +79,7 @@ class MODULES_EXPORT AudioTrackRecorder
  private:
   // Creates an audio encoder from |codec|. Returns nullptr if the codec is
   // invalid.
-  static scoped_refptr<AudioTrackEncoder> CreateAudioEncoder(
+  static std::unique_ptr<AudioTrackEncoder> CreateAudioEncoder(
       CodecId codec,
       OnEncodedAudioCB on_encoded_audio_cb,
       uint32_t bits_per_second,
@@ -86,25 +87,19 @@ class MODULES_EXPORT AudioTrackRecorder
 
   void ConnectToTrack();
   void DisconnectFromTrack();
-  void ShutdownEncoder();
 
   void Prefinalize();
 
   // We need to hold on to the Blink track to remove ourselves on destruction.
   Persistent<MediaStreamComponent> track_;
 
-  // Thin wrapper around the chosen encoder.
-  // |encoder_| should be initialized before |encoder_thread_| such that
-  // |encoder_thread_| is destructed first. This, combined with all
-  // AudioTrackEncoder work (aside from construction and destruction) happening
-  // on |encoder_thread_|, should allow us to be sure that all AudioTrackEncoder
-  // work is done by the time we destroy it on ATR's thread.
-  const scoped_refptr<AudioTrackEncoder> encoder_;
-
   // The thread on which |encoder_| works.
   std::unique_ptr<NonMainThread> encoder_thread_;
+  scoped_refptr<base::SingleThreadTaskRunner> encoder_task_runner_{
+      encoder_thread_->GetTaskRunner()};
 
-  scoped_refptr<base::SingleThreadTaskRunner> encoder_task_runner_;
+  // Thin wrapper around the chosen encoder.
+  WTF::SequenceBound<std::unique_ptr<AudioTrackEncoder>> encoder_;
 
   // Number of frames per chunked buffer passed to the encoder.
   int frames_per_chunk_ = 0;
