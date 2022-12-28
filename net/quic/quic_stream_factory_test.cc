@@ -1727,8 +1727,9 @@ TEST_P(QuicStreamFactoryTest, PoolingWithServerMigration) {
   if (version_.UsesHttp3()) {
     SetIetfConnectionMigrationFlagsAndConnectionOptions();
     config.SetIPv4AlternateServerAddressToSend(
-        ToQuicSocketAddress(alt_address), kNewCID,
-        quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
+        ToQuicSocketAddress(alt_address));
+    config.SetPreferredAddressConnectionIdAndTokenToSend(
+        kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
   } else {
     config.SetIPv4AlternateServerAddressToSend(
         ToQuicSocketAddress(alt_address));
@@ -11330,8 +11331,9 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationIPv4ToIPv4) {
   if (version_.UsesHttp3()) {
     SetIetfConnectionMigrationFlagsAndConnectionOptions();
     config.SetIPv4AlternateServerAddressToSend(
-        ToQuicSocketAddress(alt_address), kNewCID,
-        quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
+        ToQuicSocketAddress(alt_address));
+    config.SetPreferredAddressConnectionIdAndTokenToSend(
+        kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
   } else {
     config.SetIPv4AlternateServerAddressToSend(
         ToQuicSocketAddress(alt_address));
@@ -11350,8 +11352,9 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationIPv6ToIPv6) {
   if (version_.UsesHttp3()) {
     SetIetfConnectionMigrationFlagsAndConnectionOptions();
     config.SetIPv6AlternateServerAddressToSend(
-        ToQuicSocketAddress(alt_address), kNewCID,
-        quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
+        ToQuicSocketAddress(alt_address));
+    config.SetPreferredAddressConnectionIdAndTokenToSend(
+        kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
   } else {
     config.SetIPv6AlternateServerAddressToSend(
         ToQuicSocketAddress(alt_address));
