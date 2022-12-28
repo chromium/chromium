@@ -11,7 +11,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable.MinidumpUploadStatus;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.File;
 
@@ -82,8 +81,10 @@ public class MinidumpUploadJobImpl implements MinidumpUploadJob {
 
         private void invokeCallback(boolean reschedule) {
             mIsActive = false;
-            PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
-                    () -> mUploadsFinishedCallback.uploadsFinished(reschedule));
+            // No point in posting to UI thread since job scheduler's onStopJob() is not called on
+            // the UI thread.
+            // https://crbug.com/1401509
+            mUploadsFinishedCallback.uploadsFinished(reschedule);
         }
 
         @Override
