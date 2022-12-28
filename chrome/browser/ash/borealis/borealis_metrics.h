@@ -9,17 +9,6 @@
 
 namespace borealis {
 
-extern const char kBorealisDiskClientGetDiskInfoResultHistogram[];
-extern const char kBorealisDiskClientRequestSpaceResultHistogram[];
-extern const char kBorealisDiskClientReleaseSpaceResultHistogram[];
-extern const char kBorealisDiskClientSpaceRequestedHistogram[];
-extern const char kBorealisDiskClientSpaceReleasedHistogram[];
-extern const char kBorealisDiskClientAvailableSpaceAtRequestHistogram[];
-extern const char kBorealisDiskClientNumRequestsPerSessionHistogram[];
-extern const char kBorealisDiskStartupAvailableSpaceHistogram[];
-extern const char kBorealisDiskStartupExpandableSpaceHistogram[];
-extern const char kBorealisDiskStartupResultHistogram[];
-extern const char kBorealisDiskStartupTotalSpaceHistogram[];
 extern const char kBorealisInstallNumAttemptsHistogram[];
 extern const char kBorealisInstallResultHistogram[];
 extern const char kBorealisInstallOverallTimeHistogram[];
@@ -145,23 +134,6 @@ void RecordBorealisStartupOverallTimeHistogram(base::TimeDelta startup_time);
 void RecordBorealisShutdownNumAttemptsHistogram();
 void RecordBorealisShutdownResultHistogram(
     BorealisShutdownResult shutdown_result);
-void RecordBorealisDiskClientGetDiskInfoResultHistogram(
-    BorealisGetDiskInfoResult get_disk_info_result);
-void RecordBorealisDiskClientRequestSpaceResultHistogram(
-    BorealisResizeDiskResult resize_disk_result);
-void RecordBorealisDiskClientReleaseSpaceResultHistogram(
-    BorealisResizeDiskResult resize_disk_result);
-void RecordBorealisDiskClientSpaceRequestedHistogram(uint64_t bytes_requested);
-void RecordBorealisDiskClientSpaceReleasedHistogram(uint64_t bytes_released);
-void RecordBorealisDiskClientAvailableSpaceAtRequestHistogram(
-    uint64_t available_bytes);
-void RecordBorealisDiskClientNumRequestsPerSessionHistogram(int num_requests);
-void RecordBorealisDiskStartupAvailableSpaceHistogram(uint64_t available_bytes);
-void RecordBorealisDiskStartupExpandableSpaceHistogram(
-    uint64_t expandable_bytes);
-void RecordBorealisDiskStartupTotalSpaceHistogram(uint64_t total_bytes);
-void RecordBorealisDiskStartupResultHistogram(
-    BorealisSyncDiskSizeResult disk_result);
 
 }  // namespace borealis
 

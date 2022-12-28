@@ -22,87 +22,8 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Borealis.Disk.Client.AvailableSpaceAtRequest" units="MB"
-    expires_after="2023-02-01">
-  <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    Amount of space, in MB, that is available on the Borealis VM disk when a
-    client requests for more space. This is recorded each time a client makes a
-    valid RequestSpace request.
-  </summary>
-</histogram>
-
-<histogram name="Borealis.Disk.Client.GetDiskInfoResult"
-    enum="BorealisGetDiskInfoResult" expires_after="2023-02-01">
-  <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    The results of a &quot;GetDiskInfo&quot; request from a client, which will
-    either be a success or an error. This is recorded each time a client makes a
-    GetDiskInfo request.
-  </summary>
-</histogram>
-
-<histogram name="Borealis.Disk.Client.NumRequestsPerSesssion" units="requests"
-    expires_after="2023-04-09">
-  <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    The number of requests made by a client within a session of Borealis. This
-    counts each time a client makes a disk related request (GetDiskInfo,
-    RequestSpace and ReleaseSpace) and is emitted when Borealis is shutdown.
-  </summary>
-</histogram>
-
-<histogram name="Borealis.Disk.Client.ReleaseSpaceResult"
-    enum="BorealisResizeDiskResult" expires_after="2023-02-01">
-  <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    The results of a &quot;ReleaseSpace&quot; request from a client, which will
-    either be a success or an error. This is recorded each time a client makes a
-    ReleaseSpace request.
-  </summary>
-</histogram>
-
-<histogram name="Borealis.Disk.Client.RequestSpaceResult"
-    enum="BorealisResizeDiskResult" expires_after="2023-02-01">
-  <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    The results of a &quot;RequestSpace&quot; request from a client, which will
-    either be a success or an error. This is recorded each time a client makes a
-    RequestSpace request.
-  </summary>
-</histogram>
-
-<histogram name="Borealis.Disk.Client.SpaceReleased" units="MB"
-    expires_after="2023-02-01">
-  <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    Amount of space, in MB, that is freed by the client (via a
-    &quot;ReleaseSpace&quot; request). This is recorded each time a client makes
-    a ReleaseSpace request. This is not necessarily the amount of space that the
-    host frees, it is just the amount that the client signals as free.
-  </summary>
-</histogram>
-
-<histogram name="Borealis.Disk.Client.SpaceRequested" units="MB"
-    expires_after="2023-04-09">
-  <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    Amount of space, in MB, that is requested by the client (via a
-    &quot;RequestSpace&quot; request). This is recorded each time a client makes
-    a RequestSpace request. This is not necessarily the amount of space granted
-    by the client, it is just the amount that the client has requested.
-  </summary>
-</histogram>
-
 <histogram name="Borealis.Disk.HighestDirtyPagesDaily" units="KiB"
-    expires_after="2023-04-01">
+    expires_after="2023-10-01">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -112,46 +33,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.InodeRatioAtStartup" units="KiB"
-    expires_after="2023-06-25">
+    expires_after="2023-10-01">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
     The amount of bytes used per an inode, on average, in Borealis. This is
     recorded once during each startup, when maitred emits disk related metrics.
   </summary>
-</histogram>
-
-<histogram name="Borealis.Disk.Startup.Result"
-    enum="BorealisSyncDiskSizeResult" expires_after="2023-06-25">
-  <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    The results of the disk sync process that is run when Borealis is launched.
-    This relays if the disk needed to be resized, if it was done successfully or
-    what error it faced. This is recorded each time the Borealis VM is launched,
-    if the disk management feature is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Borealis.Disk.Startup.{TypeOfSpace}Space" units="MB"
-    expires_after="2023-02-01">
-  <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    {TypeOfSpace} This is recorded each time the Borealis VM is launched, if the
-    disk management feature is enabled.
-  </summary>
-  <token key="TypeOfSpace">
-    <variant name="Available"
-        summary="Amount of available space, in MB, that Borealis has on its
-                 VM disk when it starts up."/>
-    <variant name="Expandable"
-        summary="Amount of space, in MB, that Borealis can expand its VM disk
-                 by."/>
-    <variant name="Total"
-        summary="Total amount of disk space, in MB, that Borealis has on its
-                 VM disk when it starts up."/>
-  </token>
 </histogram>
 
 <histogram name="Borealis.Disk.StatefulReadsDaily" units="KiB"
@@ -183,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.VMUsageToTotalSpacePercentageAtStartup"
-    units="%" expires_after="2023-04-01">
+    units="%" expires_after="2023-10-01">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -194,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.VMUsageToTotalUsagePercentageAtStartup"
-    units="%" expires_after="2023-04-01">
+    units="%" expires_after="2023-10-01">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -267,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Install.Retries" units="retries"
-    expires_after="2023-04-09">
+    expires_after="2023-10-09">
   <owner>hollingum@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -300,7 +188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.fsckResult" enum="BorealisStartupFsckResult"
-    expires_after="2023-06-25">
+    expires_after="2023-10-01">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -310,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.fsckTime" units="ms"
-    expires_after="2023-04-01">
+    expires_after="2023-10-01">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>

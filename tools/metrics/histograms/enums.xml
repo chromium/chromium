@@ -13332,14 +13332,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Zip has AES"/>
 </enum>
 
-<enum name="BorealisGetDiskInfoResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="A GetDiskInfo request is already in progress"/>
-  <int value="2" label="Failed to get the expandable space of the disk"/>
-  <int value="3" label="Concierge failed"/>
-  <int value="4" label="Request was invalid"/>
-</enum>
-
 <enum name="BorealisInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="User cancelled installation"/>
@@ -13355,26 +13347,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="9" label="DLC faced an unknown error"/>
   <int value="10" label="Device is offline"/>
   <int value="11" label="DLC couldn't find an image at the correct version"/>
-</enum>
-
-<enum name="BorealisResizeDiskResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="A resize request is already in progress"/>
-  <int value="2" label="Failed to get information about the disk"/>
-  <int value="3" label="Disk type is invalid and cannot be handled"/>
-  <int value="4"
-      label="There is not enough free space on the host to expand the disk"/>
-  <int value="5"
-      label="Shrinking the disk would not leave enough available space in the
-             VM"/>
-  <int value="6"
-      label="Shrinking the disk would make the disk size smaller than the
-             minimum"/>
-  <int value="7" label="Concierge failed to resize the disk"/>
-  <int value="8" label="Failed to get updated information about the disk"/>
-  <int value="9" label="Request was invalid"/>
-  <int value="10" label="The bytes specified are too large for an int64"/>
-  <int value="11" label="Failed to resize the disk by the amount specified"/>
 </enum>
 
 <enum name="BorealisStartupFsckResult">

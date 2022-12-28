@@ -26,19 +26,6 @@
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 
 namespace borealis {
-namespace {
-
-// Helper function for recording RequestSpace and ReleaseSpace result metrics.
-void EmitResizeDiskMetric(bool is_expanding,
-                          borealis::BorealisResizeDiskResult result) {
-  if (is_expanding) {
-    borealis::RecordBorealisDiskClientRequestSpaceResultHistogram(result);
-  } else {
-    borealis::RecordBorealisDiskClientReleaseSpaceResultHistogram(result);
-  }
-}
-
-}  // namespace
 
 struct Nothing {};
 
@@ -95,8 +82,6 @@ BorealisDiskManagerImpl::BorealisDiskManagerImpl(const BorealisContext* context)
 }
 
 BorealisDiskManagerImpl::~BorealisDiskManagerImpl() {
-  if (base::FeatureList::IsEnabled(ash::features::kBorealisDiskManagement))
-    RecordBorealisDiskClientNumRequestsPerSessionHistogram(request_count_);
   service_->DiskManagerDispatcher().RemoveDiskManagerDelegate(this);
 }
 
@@ -281,8 +266,6 @@ class BorealisDiskManagerImpl::ResizeDisk
     ConvertToFixedIfNeeded();
     if (space_delta_ > 0) {
       if (client_request_) {
-        RecordBorealisDiskClientAvailableSpaceAtRequestHistogram(
-            original_disk_info_.available_space);
         // Regenerate the buffer, if needed, by tacking it onto the existing
         // request.
         space_delta_ += MissingBufferBytes(original_disk_info_.available_space);
@@ -442,10 +425,6 @@ class BorealisDiskManagerImpl::SyncDisk
       return;
     }
     const BorealisDiskInfo& disk_info = *disk_info_or_error.Value();
-    RecordBorealisDiskStartupAvailableSpaceHistogram(disk_info.available_space);
-    RecordBorealisDiskStartupExpandableSpaceHistogram(
-        disk_info.expandable_space);
-    RecordBorealisDiskStartupTotalSpaceHistogram(disk_info.disk_size);
     if (IsDiskSizeWithinBounds(disk_info)) {
       Succeed(std::make_unique<BorealisSyncDiskSizeResult>(
           BorealisSyncDiskSizeResult::kNoActionNeeded));
@@ -555,8 +534,6 @@ void BorealisDiskManagerImpl::BuildGetDiskInfoResponse(
              Described<BorealisGetDiskInfoResult>> disk_info_or_error) {
   build_disk_info_transition_.reset();
   if (!disk_info_or_error) {
-    RecordBorealisDiskClientGetDiskInfoResultHistogram(
-        disk_info_or_error.Error().error());
     std::move(callback).Run(
         Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>::
             Unexpected(Described<BorealisGetDiskInfoResult>(
@@ -590,8 +567,6 @@ void BorealisDiskManagerImpl::BuildGetDiskInfoResponse(
     response.expandable_bytes = 0;
     response.disk_size = 0;
   }
-  RecordBorealisDiskClientGetDiskInfoResultHistogram(
-      BorealisGetDiskInfoResult::kSuccess);
   std::move(callback).Run(
       Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>(
           response));
@@ -602,10 +577,7 @@ void BorealisDiskManagerImpl::RequestSpaceDelta(
     base::OnceCallback<void(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback) {
   DCHECK(target_delta != 0);
-  bool expanding = target_delta > 0;
   if (resize_disk_transition_) {
-    EmitResizeDiskMetric(expanding,
-                         BorealisResizeDiskResult::kAlreadyInProgress);
     std::move(callback).Run(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
             Described<BorealisResizeDiskResult>(
@@ -636,7 +608,6 @@ void BorealisDiskManagerImpl::OnRequestSpaceDelta(
   bool expanding = target_delta > 0;
   resize_disk_transition_.reset();
   if (!disk_info_or_error) {
-    EmitResizeDiskMetric(expanding, disk_info_or_error.Error().error());
     std::move(callback).Run(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
             std::move(disk_info_or_error.Error())));
@@ -649,8 +620,6 @@ void BorealisDiskManagerImpl::OnRequestSpaceDelta(
     delta -=
         MissingBufferBytes(disk_info_or_error.Value()->first.available_space);
     if (delta < target_delta) {
-      EmitResizeDiskMetric(expanding,
-                           BorealisResizeDiskResult::kFailedToFulfillRequest);
       std::move(callback).Run(
           Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
               Described<BorealisResizeDiskResult>(
@@ -665,13 +634,10 @@ void BorealisDiskManagerImpl::OnRequestSpaceDelta(
       if (!disk_info_or_error.Value()->first.has_fixed_size &&
           disk_info_or_error.Value()->second.has_fixed_size) {
         // We succeeded in trying to convert the disk to a fixed size.
-        EmitResizeDiskMetric(expanding, BorealisResizeDiskResult::kSuccess);
         std::move(callback).Run(
             Expected<uint64_t, Described<BorealisResizeDiskResult>>(0));
         return;
       }
-      EmitResizeDiskMetric(expanding,
-                           BorealisResizeDiskResult::kFailedToFulfillRequest);
       std::move(callback).Run(
           Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
               Described<BorealisResizeDiskResult>(
@@ -680,7 +646,6 @@ void BorealisDiskManagerImpl::OnRequestSpaceDelta(
       return;
     }
   }
-  EmitResizeDiskMetric(expanding, BorealisResizeDiskResult::kSuccess);
   std::move(callback).Run(
       Expected<uint64_t, Described<BorealisResizeDiskResult>>(abs(delta)));
 }
@@ -698,10 +663,7 @@ void BorealisDiskManagerImpl::RequestSpace(
     return;
   }
   request_count_++;
-  RecordBorealisDiskClientSpaceRequestedHistogram(bytes_requested);
   if (bytes_requested == 0) {
-    EmitResizeDiskMetric(
-        /*is_expanding=*/true, BorealisResizeDiskResult::kInvalidRequest);
     std::move(callback).Run(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
             Described<BorealisResizeDiskResult>(
@@ -725,10 +687,7 @@ void BorealisDiskManagerImpl::ReleaseSpace(
     return;
   }
   request_count_++;
-  RecordBorealisDiskClientSpaceReleasedHistogram(bytes_to_release);
   if (bytes_to_release == 0) {
-    EmitResizeDiskMetric(
-        /*is_expanding=*/false, BorealisResizeDiskResult::kInvalidRequest);
     std::move(callback).Run(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
             Described<BorealisResizeDiskResult>(
@@ -737,8 +696,6 @@ void BorealisDiskManagerImpl::ReleaseSpace(
     return;
   }
   if (bytes_to_release > std::numeric_limits<int64_t>::max()) {
-    EmitResizeDiskMetric(
-        /*is_expanding=*/false, BorealisResizeDiskResult::kOverflowError);
     std::move(callback).Run(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
             Described<BorealisResizeDiskResult>(
@@ -760,8 +717,6 @@ void BorealisDiskManagerImpl::SyncDiskSize(
     return;
   }
   if (sync_disk_transition_) {
-    RecordBorealisDiskStartupResultHistogram(
-        BorealisSyncDiskSizeResult::kAlreadyInProgress);
     std::move(callback).Run(
         Expected<BorealisSyncDiskSizeResult,
                  Described<BorealisSyncDiskSizeResult>>::
@@ -786,13 +741,11 @@ void BorealisDiskManagerImpl::OnSyncDiskSize(
              Described<BorealisSyncDiskSizeResult>> result) {
   sync_disk_transition_.reset();
   if (!result) {
-    RecordBorealisDiskStartupResultHistogram(result.Error().error());
     std::move(callback).Run(Expected<BorealisSyncDiskSizeResult,
                                      Described<BorealisSyncDiskSizeResult>>::
                                 Unexpected(std::move(result.Error())));
     return;
   }
-  RecordBorealisDiskStartupResultHistogram(*result.Value());
   std::move(callback).Run(
       Expected<BorealisSyncDiskSizeResult,
                Described<BorealisSyncDiskSizeResult>>(*result.Value()));
