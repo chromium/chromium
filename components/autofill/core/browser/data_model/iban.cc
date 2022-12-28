@@ -20,8 +20,7 @@ constexpr char16_t kEllipsisOneDot[] = u"\u2022";
 constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
 
 IBAN::IBAN(const std::string& guid)
-    : AutofillDataModel(guid, /*origin=*/std::string()),
-      record_type_(LOCAL_IBAN) {}
+    : AutofillDataModel(guid, /*origin=*/std::string()) {}
 
 IBAN::IBAN() : IBAN(base::GenerateGUID()) {}
 
@@ -35,15 +34,13 @@ IBAN& IBAN::operator=(const IBAN& iban) = default;
 
 AutofillMetadata IBAN::GetMetadata() const {
   AutofillMetadata metadata = AutofillDataModel::GetMetadata();
-  metadata.id = (record_type_ == LOCAL_IBAN ? guid() : server_id_);
+  metadata.id = guid();
   return metadata;
 }
 
 bool IBAN::SetMetadata(const AutofillMetadata& metadata) {
   // Make sure the ids match.
-  return ((metadata.id !=
-           (record_type_ == LOCAL_IBAN ? guid() : server_id_))) &&
-         AutofillDataModel::SetMetadata(metadata);
+  return metadata.id != guid() && AutofillDataModel::SetMetadata(metadata);
 }
 
 bool IBAN::IsDeletable() const {
@@ -94,8 +91,7 @@ int IBAN::Compare(const IBAN& iban) const {
 }
 
 bool IBAN::operator==(const IBAN& iban) const {
-  return guid() == iban.guid() && record_type() == iban.record_type() &&
-         Compare(iban) == 0;
+  return guid() == iban.guid() && Compare(iban) == 0;
 }
 
 bool IBAN::operator!=(const IBAN& iban) const {

@@ -14,19 +14,9 @@
 namespace autofill {
 
 // A form group that stores IBAN information.
+// Note: Only local IBAN is supported for now.
 class IBAN : public AutofillDataModel {
  public:
-  enum RecordType {
-    // A new IBAN which is extracted from the form.
-    NEW_IBAN,
-    // An IBAN stored and editable locally.
-    // Note: We only have local IBAN for now.
-    LOCAL_IBAN,
-    // An IBAN synced down from the server. These are read-only locally.
-    // Note: Server IBAN is not supported for now.
-    SERVER_IBAN,
-  };
-
   explicit IBAN(const std::string& guid);
 
   IBAN();
@@ -49,10 +39,6 @@ class IBAN : public AutofillDataModel {
                                         VerificationStatus status) override;
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
 
-  // How this IBAN is stored.
-  RecordType record_type() const { return record_type_; }
-  void set_record_type(RecordType type) { record_type_ = type; }
-
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;
 
@@ -64,7 +50,7 @@ class IBAN : public AutofillDataModel {
   // the IBANs themselves.
   int Compare(const IBAN& iban) const;
 
-  // Equality operators compare GUIDs, origins, |record_type_|, |value_|,
+  // Equality operators compare GUIDs, origins, |value_|,
   // |nickname_| and the |server_id_|.
   bool operator==(const IBAN& iban) const;
   bool operator!=(const IBAN& iban) const;
@@ -104,10 +90,6 @@ class IBAN : public AutofillDataModel {
   // This is the ID assigned by the server to uniquely identify this IBAN.
   // Note: server_id is empty for now as only local IBAN is supported.
   std::string server_id_;
-
-  // Type of how IBAN is stored, either local or server.
-  // Note: IBAN will only be stored locally for now.
-  RecordType record_type_;
 
   // The IBAN's value, i.e., the actual bank account number.
   std::u16string value_;

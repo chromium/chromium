@@ -3302,8 +3302,6 @@ TEST_P(FormDataImporterTest,
       /*payment_methods_autofill_enabled=*/true);
   if (base::FeatureList::IsEnabled(features::kAutofillFillIbanFields)) {
     ASSERT_TRUE(extracted_data.iban_import_candidate);
-    ASSERT_TRUE(extracted_data.iban_import_candidate->record_type() ==
-                IBAN::NEW_IBAN);
   } else {
     ASSERT_FALSE(extracted_data.iban_import_candidate);
   }
@@ -3331,13 +3329,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
-  if (base::FeatureList::IsEnabled(features::kAutofillFillIbanFields)) {
-    ASSERT_TRUE(extracted_data.iban_import_candidate);
-    ASSERT_TRUE(extracted_data.iban_import_candidate->record_type() ==
-                IBAN::LOCAL_IBAN);
-  } else {
-    ASSERT_FALSE(extracted_data.iban_import_candidate);
-  }
+  ASSERT_FALSE(extracted_data.iban_import_candidate);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -4452,7 +4444,6 @@ TEST_P(FormDataImporterTest, FormAssociator) {
 TEST_P(FormDataImporterTest,
        ProcessIBANImportCandidate_ShouldOfferLocalSave_NewIBAN) {
   IBAN iban_import_candidate = test::GetIBAN();
-  iban_import_candidate.set_record_type(IBAN::NEW_IBAN);
 
   EXPECT_EQ(
       base::FeatureList::IsEnabled(features::kAutofillFillIbanFields),

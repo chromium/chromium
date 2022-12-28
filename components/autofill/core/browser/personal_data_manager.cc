@@ -825,7 +825,6 @@ std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
 }
 
 std::string PersonalDataManager::UpdateIBAN(const IBAN& iban) {
-  DCHECK_EQ(IBAN::LOCAL_IBAN, iban.record_type());
   if (is_off_the_record_)
     return std::string();
 

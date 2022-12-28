@@ -328,9 +328,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
   if (!extracted_form_data.credit_card_import_candidate &&
       !extracted_form_data.extracted_upi_id &&
       num_complete_address_profiles == 0 &&
-      (!extracted_form_data.iban_import_candidate ||
-       extracted_form_data.iban_import_candidate->record_type() !=
-           IBAN::NEW_IBAN)) {
+      !extracted_form_data.iban_import_candidate) {
     personal_data_manager_->MarkObserversInsufficientFormDataForImport();
   }
   return extracted_form_data;
@@ -812,12 +810,7 @@ bool FormDataImporter::ProcessIBANImportCandidate(
   if (!iban_save_manager_)
     return false;
 
-  if (iban_import_candidate.record_type() == IBAN::NEW_IBAN) {
-    return iban_save_manager_->AttemptToOfferIBANLocalSave(
-        iban_import_candidate);
-  }
-
-  return false;
+  return iban_save_manager_->AttemptToOfferIBANLocalSave(iban_import_candidate);
 }
 
 absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(
@@ -927,14 +920,12 @@ absl::optional<IBAN> FormDataImporter::ExtractIBAN(const FormStructure& form) {
         return iban->value() == candidate_iban.value();
       });
 
-  // TODO(crbug.com/1349109): Return nullopt if it is not `NEW_IBAN`.
   if (found_existing_local_iban) {
-    // Don't offer to update existing local IBANs. Users can go to the payment
-    // methods settings page to update local IBANs if desired.
-    candidate_iban.set_record_type(IBAN::LOCAL_IBAN);
-  } else {
-    candidate_iban.set_record_type(IBAN::NEW_IBAN);
+    return absl::nullopt;
   }
+
+  // Only offer to save new IBAN. Users can go to the payment methods settings
+  // page to update existing IBANs if desired.
   return candidate_iban;
 }
 
