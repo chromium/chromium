@@ -29,7 +29,7 @@ class FakeCrosNetworkConfig
   void GetNetworkState(const std::string& guid,
                        GetNetworkStateCallback callback) override {}
 
-  // Calls `callback` with network states from `active_networks_`.
+  // Calls `callback` with network states from `visible_networks_`.
   void GetNetworkStateList(
       chromeos::network_config::mojom::NetworkFilterPtr filter,
       GetNetworkStateListCallback callback) override;
@@ -115,14 +115,14 @@ class FakeCrosNetworkConfig
   // `global_policy_` for all observers in `observers_`.
   void SetGlobalPolicy(bool allow_only_policy_cellular_networks);
 
-  // Sets the connection state for the network in `active_networks_` with the
+  // Sets the connection state for the network in `visible_networks_` with the
   // specified guid and calls `OnActiveNetworksChanged` for all observers in
   // `observers_`.
   void SetNetworkState(const std::string& guid,
                        chromeos::network_config::mojom::ConnectionStateType
                            connection_state_type);
 
-  // Adds `network` to `active_networks_` and an enabled device for the network
+  // Adds `network` to `visible_networks_` and an enabled device for the network
   // type to `device_properties_` and then calls `OnDeviceStateListChanged` and
   // `OnActiveNetworksChanged` for all observers in `observers_`.
   void AddNetworkAndDevice(
@@ -154,8 +154,17 @@ class FakeCrosNetworkConfig
       chromeos::network_config::mojom::DeviceStatePropertiesPtr
           device_properties);
 
+  // Returns a filtered list of `visible_networks_` according to `network_type`
+  // and `filter_type`.
   std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
-      active_networks_;
+  GetFilteredNetworkList(
+      chromeos::network_config::mojom::NetworkType network_type,
+      chromeos::network_config::mojom::FilterType filter_type);
+
+  // Currently, FakeCrosNetworkConfig only represents visible networks, stored
+  // here.
+  std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+      visible_networks_;
   std::vector<chromeos::network_config::mojom::DeviceStatePropertiesPtr>
       device_properties_;
   std::map<std::string, chromeos::network_config::mojom::ManagedPropertiesPtr>

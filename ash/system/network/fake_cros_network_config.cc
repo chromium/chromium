@@ -14,6 +14,7 @@ namespace {
 using ::chromeos::network_config::mojom::ConnectionStateType;
 using ::chromeos::network_config::mojom::DeviceStatePropertiesPtr;
 using ::chromeos::network_config::mojom::DeviceStateType;
+using ::chromeos::network_config::mojom::FilterType;
 using ::chromeos::network_config::mojom::GlobalPolicyPtr;
 using ::chromeos::network_config::mojom::InhibitReason;
 using ::chromeos::network_config::mojom::ManagedPropertiesPtr;
@@ -37,18 +38,8 @@ void FakeCrosNetworkConfig::AddObserver(
 void FakeCrosNetworkConfig::GetNetworkStateList(
     chromeos::network_config::mojom::NetworkFilterPtr filter,
     GetNetworkStateListCallback callback) {
-  if (filter->network_type == NetworkType::kAll) {
-    std::move(callback).Run(mojo::Clone(active_networks_));
-    return;
-  }
-
-  std::vector<NetworkStatePropertiesPtr> result;
-  for (const auto& network : active_networks_) {
-    if (network->type == filter->network_type) {
-      result.push_back(network.Clone());
-    }
-  }
-  std::move(callback).Run(std::move(result));
+  std::move(callback).Run(
+      GetFilteredNetworkList(filter->network_type, filter->filter));
 }
 
 void FakeCrosNetworkConfig::GetDeviceStateList(
@@ -108,14 +99,15 @@ void FakeCrosNetworkConfig::SetGlobalPolicy(
 void FakeCrosNetworkConfig::SetNetworkState(
     const std::string& guid,
     ConnectionStateType connection_state_type) {
-  for (auto& network : active_networks_) {
+  for (auto& network : visible_networks_) {
     if (network->guid == guid) {
       network->connection_state = connection_state_type;
       break;
     }
   }
   for (auto& observer : observers_) {
-    observer->OnActiveNetworksChanged(mojo::Clone(active_networks_));
+    observer->OnActiveNetworksChanged(
+        GetFilteredNetworkList(NetworkType::kAll, FilterType::kActive));
   }
   base::RunLoop().RunUntilIdle();
 }
@@ -127,12 +119,13 @@ void FakeCrosNetworkConfig::AddNetworkAndDevice(
   device_properties->type = network->type;
   device_properties->device_state = DeviceStateType::kEnabled;
 
-  active_networks_.push_back(std::move(network));
+  visible_networks_.push_back(std::move(network));
   AddOrReplaceDevice(std::move(device_properties));
 
   for (auto& observer : observers_) {
     observer->OnDeviceStateListChanged();
-    observer->OnActiveNetworksChanged(mojo::Clone(active_networks_));
+    observer->OnActiveNetworksChanged(
+        GetFilteredNetworkList(NetworkType::kAll, FilterType::kActive));
   }
   base::RunLoop().RunUntilIdle();
 }
@@ -144,7 +137,7 @@ void FakeCrosNetworkConfig::AddManagedProperties(
 }
 
 void FakeCrosNetworkConfig::ClearNetworksAndDevices() {
-  active_networks_.clear();
+  visible_networks_.clear();
   device_properties_.clear();
   for (auto& observer : observers_) {
     observer->OnDeviceStateListChanged();
@@ -175,6 +168,23 @@ void FakeCrosNetworkConfig::AddOrReplaceDevice(
     device_properties_.insert(device_properties_.begin(),
                               std::move(device_properties));
   }
+}
+
+std::vector<NetworkStatePropertiesPtr>
+FakeCrosNetworkConfig::GetFilteredNetworkList(NetworkType network_type,
+                                              FilterType filter_type) {
+  std::vector<NetworkStatePropertiesPtr> result;
+  for (const auto& network : visible_networks_) {
+    if (network_type != NetworkType::kAll && network_type != network->type) {
+      continue;
+    }
+    if (filter_type == FilterType::kActive &&
+        network->connection_state == ConnectionStateType::kNotConnected) {
+      continue;
+    }
+    result.push_back(network.Clone());
+  }
+  return result;
 }
 
 }  // namespace ash
