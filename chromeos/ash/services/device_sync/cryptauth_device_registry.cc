@@ -69,7 +69,7 @@ base::Value CryptAuthDeviceRegistry::AsReadableDictionary() const {
        instance_id_to_device_map_) {
     std::string key = id_device_pair.second.device_name +
                       " (ID: " + id_device_pair.second.instance_id() + ")";
-    dict.SetKey(key, id_device_pair.second.AsReadableDictionary());
+    dict.SetKey(key, base::Value(id_device_pair.second.AsReadableDictionary()));
   }
 
   return dict;

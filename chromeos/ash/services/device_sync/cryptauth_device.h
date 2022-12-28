@@ -25,7 +25,7 @@ class CryptAuthDevice {
  public:
   // Returns null if |dict| cannot be converted into a CryptAuthDevice.
   static absl::optional<CryptAuthDevice> FromDictionary(
-      const base::Value& dict);
+      const base::Value::Dict& dict);
 
   // |instance_id|: The Instance ID, used as a unique device identifier. Cannot
   //                be empty.
@@ -57,11 +57,11 @@ class CryptAuthDevice {
   //         <|better_together_device_metadata_| serialized and base64 encoded>,
   //     "feature_states": <|feature_states_| as dictionary>
   //   }
-  base::Value AsDictionary() const;
+  base::Value::Dict AsDictionary() const;
 
   // Converts the device to a human-readable dictionary.
   // Note: We remove |last_update_time_| which can be misleading in the logs.
-  base::Value AsReadableDictionary() const;
+  base::Value::Dict AsReadableDictionary() const;
 
   bool operator==(const CryptAuthDevice& other) const;
   bool operator!=(const CryptAuthDevice& other) const;

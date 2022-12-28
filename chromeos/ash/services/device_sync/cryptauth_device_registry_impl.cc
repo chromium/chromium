@@ -57,7 +57,7 @@ CryptAuthDeviceRegistryImpl::CryptAuthDeviceRegistryImpl(
     absl::optional<std::string> instance_id =
         util::DecodeFromString(id_device_pair.first);
     absl::optional<CryptAuthDevice> device =
-        CryptAuthDevice::FromDictionary(id_device_pair.second);
+        CryptAuthDevice::FromDictionary(id_device_pair.second.GetDict());
     if (!instance_id || !device || *instance_id != device->instance_id()) {
       PA_LOG(ERROR) << "Error retrieving device with Instance ID "
                     << id_device_pair.first << " from preferences.";
@@ -81,7 +81,7 @@ base::Value CryptAuthDeviceRegistryImpl::AsDictionary() const {
   for (const std::pair<std::string, CryptAuthDevice>& id_device_pair :
        instance_id_to_device_map()) {
     dict.SetKey(util::EncodeAsString(id_device_pair.first),
-                id_device_pair.second.AsDictionary());
+                base::Value(id_device_pair.second.AsDictionary()));
   }
 
   return dict;
