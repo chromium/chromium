@@ -397,29 +397,6 @@ export class OncMojo {
   }
 
   /**
-   * @param {string} value
-   * @return {!VpnType}
-   */
-  static getVpnTypeFromString(value) {
-    switch (value) {
-      case 'IKEv2':
-        return VpnType.kIKEv2;
-      case 'L2TP-IPsec':
-        return VpnType.kL2TPIPsec;
-      case 'OpenVPN':
-        return VpnType.kOpenVPN;
-      case 'WireGuard':
-        return VpnType.kWireGuard;
-      case 'ThirdPartyVPN':
-        return VpnType.kExtension;
-      case 'ARCVPN':
-        return VpnType.kArc;
-    }
-    assertNotReached('Unexpected value: ' + value);
-    return VpnType.kOpenVPN;
-  }
-
-  /**
    * This infers the type from |key|, casts |value| (which should be a number)
    * to the corresponding enum type, and converts it to a string. If |key| is
    * known, then |value| is expected to match an enum value. Otherwise |value|
