@@ -75,6 +75,7 @@ class MockTouchToFillDelegateImpl : public autofill::TouchToFillDelegate {
   MOCK_METHOD(void, OnCreditCardScanned, (const CreditCard& card), (override));
   MOCK_METHOD(void, ShowCreditCardSettings, (), (override));
   MOCK_METHOD(void, SuggestionSelected, (std::string unique_id), (override));
+  MOCK_METHOD(void, OnDismissed, (), (override));
 
  private:
   MockContentAutofillDriver driver_;
@@ -127,4 +128,12 @@ TEST_F(TouchToFillCreditCardControllerTest, ShowCreditCardSettingsIsCalled) {
                                mock_delegate_.GetWeakPointer(), credit_cards_);
   EXPECT_CALL(mock_delegate_, ShowCreditCardSettings);
   credit_card_controller_.ShowCreditCardSettings(nullptr);
+}
+
+TEST_F(TouchToFillCreditCardControllerTest, OnDismissedIsCalled) {
+  credit_card_controller_.Show(std::move(mock_view_),
+                               mock_delegate_.GetWeakPointer(), credit_cards_);
+
+  EXPECT_CALL(mock_delegate_, OnDismissed);
+  credit_card_controller_.OnDismissed(nullptr);
 }

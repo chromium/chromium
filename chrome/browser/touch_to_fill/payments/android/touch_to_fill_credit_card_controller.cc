@@ -53,6 +53,9 @@ void TouchToFillCreditCardController::SetShouldSuppressKeyboard(bool suppress) {
 
 void TouchToFillCreditCardController::OnDismissed(JNIEnv* env) {
   SetShouldSuppressKeyboard(/*suppress=*/false);
+  if (delegate_) {
+    delegate_->OnDismissed();
+  }
   view_.reset();
   delegate_.reset();
   java_object_.Reset();

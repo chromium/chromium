@@ -56,10 +56,11 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   void OnCreditCardScanned(const CreditCard& card) override;
   void ShowCreditCardSettings() override;
   void SuggestionSelected(std::string unique_id) override;
+  void OnDismissed() override;
 
- private:
   base::WeakPtr<TouchToFillDelegateImpl> GetWeakPtr();
 
+ private:
   enum class TouchToFillState {
     kShouldShow,
     kIsShowing,

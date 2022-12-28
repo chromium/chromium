@@ -83,7 +83,6 @@ bool TouchToFillDelegateImpl::IsShowingTouchToFill() {
 void TouchToFillDelegateImpl::HideTouchToFill() {
   if (IsShowingTouchToFill()) {
     manager_->client()->HideTouchToFillCreditCard();
-    ttf_credit_card_state_ = TouchToFillState::kWasShown;
   }
 }
 
@@ -126,6 +125,12 @@ void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {
   CreditCard* card = pdm->GetCreditCardByGUID(unique_id);
   manager_->FillOrPreviewCreditCardForm(mojom::RendererFormDataAction::kFill,
                                         query_form_, query_field_, card);
+}
+
+void TouchToFillDelegateImpl::OnDismissed() {
+  if (IsShowingTouchToFill()) {
+    ttf_credit_card_state_ = TouchToFillState::kWasShown;
+  }
 }
 
 base::WeakPtr<TouchToFillDelegateImpl> TouchToFillDelegateImpl::GetWeakPtr() {
