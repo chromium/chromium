@@ -759,6 +759,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private final Runnable[] mAfterBrandingRunnables = new Runnable[TOTAL_POST_BRANDING_KEYS];
         private boolean mCurrentlyShowingBranding;
         private boolean mBrandingStarted;
+        private boolean mAnimateIconTransition = true;
         private CallbackController mCallbackController = new CallbackController();
         // Cached the state before branding start so we can reset to the state when its done.
         private @Nullable Integer mPreBandingState;
@@ -844,6 +845,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             -> mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(
                                     token),
                     MIN_URL_BAR_VISIBLE_TIME_POST_BRANDING_MS);
+        }
+
+        @Override
+        public void setIconTransitionEnabled(boolean enabled) {
+            mAnimateIconTransition = enabled;
         }
 
         private void cacheRegularState() {
@@ -1068,7 +1074,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             ColorStateList colorStateList = AppCompatResources.getColorStateList(
                     getContext(), mLocationBarDataProvider.getSecurityIconColorStateList());
             ApiCompatibilityUtils.setImageTintList(mSecurityButton, colorStateList);
-            mAnimDelegate.updateSecurityButton(R.drawable.chromelogo16);
+            mAnimDelegate.updateSecurityButton(R.drawable.chromelogo16, mAnimateIconTransition);
 
             mUrlBar.setText(R.string.twa_running_in_chrome);
         }
@@ -1099,7 +1105,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         getContext(), mLocationBarDataProvider.getSecurityIconColorStateList());
                 ApiCompatibilityUtils.setImageTintList(mSecurityButton, colorStateList);
             }
-            mAnimDelegate.updateSecurityButton(securityIconResource);
+            mAnimDelegate.updateSecurityButton(securityIconResource, mAnimateIconTransition);
 
             int contentDescriptionId =
                     mLocationBarDataProvider.getSecurityIconContentDescriptionResourceId();

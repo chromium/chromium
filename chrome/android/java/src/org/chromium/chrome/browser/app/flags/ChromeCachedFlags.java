@@ -147,6 +147,7 @@ public class ChromeCachedFlags {
                         add(BrandingController.BRANDING_CADENCE_MS);
                         add(BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS);
                         add(BrandingController.USE_TEMPORARY_STORAGE);
+                        add(BrandingController.ANIMATE_TOOLBAR_ICON_TRANSITION);
                         add(ChimeFeatures.ALWAYS_REGISTER);
                         add(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT);
