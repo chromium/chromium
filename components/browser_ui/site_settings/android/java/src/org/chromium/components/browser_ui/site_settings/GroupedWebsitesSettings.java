@@ -4,11 +4,13 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -31,6 +33,8 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
     public static final String PREF_RELATED_SITES = "related_sites";
     public static final String PREF_SITES_IN_GROUP = "sites_in_group";
     public static final String PREF_RESET_GROUP = "reset_group_button";
+
+    private final SiteDataCleaner mSiteDataCleaner = new SiteDataCleaner();
 
     private WebsiteGroup mSiteGroup;
 
@@ -114,8 +118,26 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         return true;
     }
 
-    private void resetGroup() {
-        // TODO(crbug.com/1342991): Implement the deletion and UI logic for handling it.
+    private final Runnable mDataClearedCallback = () -> {
+        Activity activity = getActivity();
+        if (activity == null || activity.isFinishing()) {
+            return;
+        }
+        // TODO(crbug.com/1342991): This always navigates the user back to the "All sites" page
+        // regardless of whether there are any non-resettable permissions left in the sites within
+        // the group. Consider calculating those and refreshing the screen in place for a slightly
+        // smoother user experience. However, due to the complexity involved in refreshing the
+        // already fetched data and a very marginal benefit, it may not be worth it.
+        getActivity().finish();
+    };
+
+    @VisibleForTesting
+    public void resetGroup() {
+        if (getActivity() == null) return;
+        mSiteDataCleaner.resetPermissions(
+                getSiteSettingsDelegate().getBrowserContextHandle(), mSiteGroup);
+        mSiteDataCleaner.clearData(getSiteSettingsDelegate().getBrowserContextHandle(), mSiteGroup,
+                mDataClearedCallback);
     }
 
     private void setUpClearDataPreference() {

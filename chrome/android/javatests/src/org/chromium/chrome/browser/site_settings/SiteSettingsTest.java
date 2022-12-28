@@ -103,6 +103,7 @@ import org.chromium.components.browser_ui.site_settings.ContentSettingsResources
 import org.chromium.components.browser_ui.site_settings.FPSCookieSettings;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
+import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
 import org.chromium.components.browser_ui.site_settings.R;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
@@ -114,6 +115,7 @@ import org.chromium.components.browser_ui.site_settings.TriStateCookieSettingsPr
 import org.chromium.components.browser_ui.site_settings.TriStateSiteSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
+import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -138,6 +140,7 @@ import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -739,6 +742,50 @@ public class SiteSettingsTest {
         Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
+    /** Tests clearing cookies for a group of websites. */
+    @Test
+    @SmallTest
+    @Feature({"Preferencds"})
+    public void testClearCookiesGroup() throws Exception {
+        final String url1 = mPermissionRule.getURLWithHostName(
+                "one.example.com", "/chrome/test/data/android/cookie.html");
+        final String url2 = mPermissionRule.getURLWithHostName(
+                "two.example.com", "/chrome/test/data/android/cookie.html");
+        final String url3 = mPermissionRule.getURLWithHostName(
+                "foo.com", "/chrome/test/data/android/cookie.html");
+
+        mPermissionRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".one.example.com\")");
+        Assert.assertEquals("\"Foo=Bar; Foo=Bar\"",
+                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        mPermissionRule.loadUrl(url2);
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".two.example.com\")");
+        Assert.assertEquals("\"Foo=Bar; Foo=Bar\"",
+                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        mPermissionRule.loadUrl(url3);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".foo.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        resetGroup(Arrays.asList(WebsiteAddress.create(url1), WebsiteAddress.create(url2)));
+
+        // 1 and 2 got cleared; 3 stays intact.
+        mPermissionRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.loadUrl(url2);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.loadUrl(url3);
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+    }
+
     /**
      * Set cookies for domains and check that they are removed when a site is cleared.
      */
@@ -1149,6 +1196,23 @@ public class SiteSettingsTest {
             SingleWebsiteSettings websitePreferences =
                     (SingleWebsiteSettings) settingsActivity.getMainFragment();
             websitePreferences.resetSite();
+        });
+        settingsActivity.finish();
+    }
+
+    private void resetGroup(List<WebsiteAddress> addresses) {
+        List<Website> sites = new ArrayList<>();
+        for (WebsiteAddress address : addresses) {
+            Website website = new Website(address, address);
+            sites.add(website);
+        }
+        WebsiteGroup group = new WebsiteGroup(addresses.get(0).getDomainAndRegistry(), sites);
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startGroupedWebsitesPreferences(group);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            GroupedWebsitesSettings websitePreferences =
+                    (GroupedWebsitesSettings) settingsActivity.getMainFragment();
+            websitePreferences.resetGroup();
         });
         settingsActivity.finish();
     }

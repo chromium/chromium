@@ -17,11 +17,13 @@ import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
+import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.Website;
+import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -67,6 +69,17 @@ public class SiteSettingsTestUtils {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent = settingsLauncher.createSettingsActivityIntent(
                 InstrumentationRegistry.getTargetContext(), SingleWebsiteSettings.class.getName(),
+                fragmentArgs);
+        return (SettingsActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
+                intent);
+    }
+
+    public static SettingsActivity startGroupedWebsitesPreferences(WebsiteGroup group) {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putSerializable(GroupedWebsitesSettings.EXTRA_GROUP, group);
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        Intent intent = settingsLauncher.createSettingsActivityIntent(
+                InstrumentationRegistry.getTargetContext(), GroupedWebsitesSettings.class.getName(),
                 fragmentArgs);
         return (SettingsActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
                 intent);
