@@ -504,7 +504,10 @@ void DevToolsSession::SendProtocolNotification(
   // |this| may be deleted at this point.
 }
 
-void DevToolsSession::FlushProtocolNotifications() {}
+void DevToolsSession::FlushProtocolNotifications() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("DevToolsSession::FlushProtocolNotifications ALTERNATE");
+}
 
 // The following methods handle responses or notifications coming from the
 // renderer (blink) to the client. It is important that these messages not be
