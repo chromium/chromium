@@ -13319,7 +13319,11 @@ void RenderFrameHostImpl::
     // If the origin doesn't match, we would do a DumpWithoutCrashing above.
     // So, don't do a DumpWithoutCrashing unless there's another param that
     // doesn't match.
+    // Note: This is temporarily disabled on Android as there has been a recent
+    // spike of reports on Android WebView.
+#if !BUILDFLAG(IS_ANDROID)
     base::debug::DumpWithoutCrashing();
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 }
 
