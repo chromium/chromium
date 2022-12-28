@@ -11,6 +11,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 
+#include "base/record_replay.h"
+
 namespace base {
 namespace {
 
@@ -23,15 +25,22 @@ class BarrierInfo {
  private:
   AtomicRefCount num_callbacks_left_;
   OnceClosure done_closure_;
+  int record_replay_ordered_lock_;
 };
 
 BarrierInfo::BarrierInfo(size_t num_callbacks, OnceClosure done_closure)
     : num_callbacks_left_(checked_cast<int>(num_callbacks)),
-      done_closure_(std::move(done_closure)) {}
+      done_closure_(std::move(done_closure)),
+      record_replay_ordered_lock_(recordreplay::CreateOrderedLock("BarrierInfo")) {}
 
 void BarrierInfo::Run() {
   DCHECK(!num_callbacks_left_.IsZero());
-  if (!num_callbacks_left_.Decrement())
+  bool done;
+  {
+    recordreplay::AutoOrderedLock ordered(record_replay_ordered_lock_);
+    done = !num_callbacks_left_.Decrement();
+  }
+  if (done)
     std::move(done_closure_).Run();
 }
 
