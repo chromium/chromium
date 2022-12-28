@@ -28,6 +28,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/css/css_color_value.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
@@ -1174,6 +1175,25 @@ Response InspectorCSSAgent::getStyleSheetText(const String& style_sheet_id,
   return Response::Success();
 }
 
+CSSStyleSheet* InspectorCSSAgent::getStyleSheet(const String& style_sheet_id) {
+  InspectorStyleSheetBase* inspector_style_sheet = nullptr;
+  Response response =
+      AssertStyleSheetForId(style_sheet_id, inspector_style_sheet);
+  if (response.IsSuccess()) {
+    if (!inspector_style_sheet->IsInlineStyle()) {
+      auto* targetSheet =
+          static_cast<InspectorStyleSheet*>(inspector_style_sheet);
+      return targetSheet->PageStyleSheet();
+    }
+  } else {
+    recordreplay::Print(
+      "[RuntimeError] InspectorCSSAgent::getStyleSheet failed (style_sheet_id: %s, Code: %d): %s",
+      style_sheet_id.Utf8().c_str(), response.Code(), response.Message().c_str()
+    );
+  }
+  return nullptr;
+}
+
 Response InspectorCSSAgent::collectClassNames(
     const String& style_sheet_id,
     std::unique_ptr<protocol::Array<String>>* class_names) {
@@ -1920,9 +1940,10 @@ Response InspectorCSSAgent::AssertEnabled() {
 Response InspectorCSSAgent::AssertInspectorStyleSheetForId(
     const String& style_sheet_id,
     InspectorStyleSheet*& result) {
-  Response response = AssertEnabled();
-  if (!response.IsSuccess())
-    return response;
+  // [recordreplay] allow this to work without being enabled?
+  // Response response = AssertEnabled();
+  // if (!response.IsSuccess())
+  //   return response;
   IdToInspectorStyleSheet::iterator it =
       id_to_inspector_style_sheet_.find(style_sheet_id);
   if (it == id_to_inspector_style_sheet_.end())

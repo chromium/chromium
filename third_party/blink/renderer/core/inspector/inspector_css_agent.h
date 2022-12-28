@@ -162,6 +162,12 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::Array<String>>* class_names) override;
   protocol::Response getStyleSheetText(const String& style_sheet_id,
                                        String* text) override;
+
+  /**
+   * [recordreplay] Use this to get access to the native StyleSheet object.
+   */
+  CSSStyleSheet* getStyleSheet(const String& style_sheet_id);
+
   protocol::Response setStyleSheetText(
       const String& style_sheet_id,
       const String& text,
