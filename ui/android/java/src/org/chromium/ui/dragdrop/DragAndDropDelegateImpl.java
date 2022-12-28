@@ -185,6 +185,15 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         return false;
     }
 
+    /**
+     * Builds the clipData from the dragged data based on the data's type, it will return null when
+     * the input DropData cannot be converted into ClipData (e.g. dragged item is image and there's
+     * no content provider to handle it)
+     *
+     * @param dropData The data to be dropped.
+     * @return ClipData based on the dropData type.
+     */
+    @Nullable
     protected ClipData buildClipData(DropDataAndroid dropData) {
         @DragTargetType
         int type = getDragTargetType(dropData);
@@ -193,7 +202,10 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 return ClipData.newPlainText(null, dropData.text);
             case DragTargetType.IMAGE:
                 Uri cachedUri = DropDataProviderUtils.cacheImageData(dropData);
-
+                // If there's no content provider we shouldn't start the drag.
+                if (cachedUri == null) {
+                    return null;
+                }
                 ClipData clipData = ClipData.newUri(
                         ContextUtils.getApplicationContext().getContentResolver(), null, cachedUri);
                 // Add image link URL to the ClipData if present. Since the ClipData MIME types for

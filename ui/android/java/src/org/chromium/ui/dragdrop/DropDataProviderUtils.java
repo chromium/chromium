@@ -11,6 +11,8 @@ import static org.chromium.ui.dragdrop.DropDataProviderImpl.SET_INTERVAL_METHOD_
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ContextUtils;
 
 /**
@@ -54,6 +56,7 @@ public class DropDataProviderUtils {
      * Wraps the call to cache in the provider and returns the cached Uri or null if it failed to
      * call the content provider.
      */
+    @Nullable
     static Uri cacheImageData(DropDataAndroid dropData) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(DropDataProviderImpl.BYTES_PARAM, dropData.imageContent);
