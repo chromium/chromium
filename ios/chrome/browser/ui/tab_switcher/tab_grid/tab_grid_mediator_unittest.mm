@@ -120,9 +120,9 @@ std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
 }
 
 - (void)insertItem:(TabSwitcherItem*)item
-           atIndex:(ItemListIndex)index
+           atIndex:(NSUInteger)index
     selectedItemID:(NSString*)selectedItemID {
-  [self.items insertObject:item.identifier atIndex:index.value];
+  [self.items insertObject:item.identifier atIndex:index];
   self.selectedItemID = selectedItemID;
 }
 
@@ -141,9 +141,9 @@ std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
   self.items[index] = item.identifier;
 }
 
-- (void)moveItemWithID:(NSString*)itemID toIndex:(ItemListIndex)toIndex {
+- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex {
   [self.items removeObject:itemID];
-  [self.items insertObject:itemID atIndex:toIndex.value];
+  [self.items insertObject:itemID atIndex:toIndex];
 }
 
 - (void)dismissModals {
@@ -540,7 +540,7 @@ TEST_F(TabGridMediatorTest, AddNewItemAtEndCommand) {
 // Checks that the consumer has added an item with the correct identifier.
 TEST_F(TabGridMediatorTest, InsertNewItemCommand) {
   // Previously there were 3 items and the selected index was 1.
-  [mediator_ insertNewItemAtIndex:ItemListIndex{0}];
+  [mediator_ insertNewItemAtIndex:0];
   EXPECT_EQ(4, browser_->GetWebStateList()->count());
   EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
   web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(0);
@@ -566,7 +566,7 @@ TEST_F(TabGridMediatorTest, InsertNewItemWithNoBrowserCommand) {
   mediator_.browser = nullptr;
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   ASSERT_EQ(1, browser_->GetWebStateList()->active_index());
-  [mediator_ insertNewItemAtIndex:ItemListIndex{0}];
+  [mediator_ insertNewItemAtIndex:0];
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
 }
@@ -584,7 +584,7 @@ TEST_F(TabGridMediatorTest, MoveItemCommand) {
   NSString* pre_move_selected_id =
       pre_move_ids[browser_->GetWebStateList()->active_index()];
   // Items start ordered [A, B, C].
-  [mediator_ moveItemWithID:consumer_.items[0] toIndex:ItemListIndex{2}];
+  [mediator_ moveItemWithID:consumer_.items[0] toIndex:2];
   // Items should now be ordered [B, C, A] -- the pre-move identifiers should
   // still be in this order.
   // Item count hasn't changed.

@@ -119,7 +119,7 @@ TEST_F(GridViewControllerTest, InsertItem) {
   // an itemCount of 2.
   [view_controller_
           insertItem:[[TabSwitcherItem alloc] initWithIdentifier:@"NEW-ITEM"]
-             atIndex:ItemListIndex{2}
+             atIndex:2
       selectedItemID:@"NEW-ITEM"];
   EXPECT_EQ(3U, view_controller_.items.count);
   EXPECT_EQ(2U, view_controller_.selectedIndex);
@@ -195,7 +195,7 @@ TEST_F(GridViewControllerTest, ReplaceItemNotFound) {
 TEST_F(GridViewControllerTest, MoveSelectedItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ moveItemWithID:@"A" toIndex:ItemListIndex{1}];
+  [view_controller_ moveItemWithID:@"A" toIndex:1];
   EXPECT_NSEQ(@"A", view_controller_.items[1].identifier);
   EXPECT_EQ(1U, view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
@@ -205,7 +205,7 @@ TEST_F(GridViewControllerTest, MoveSelectedItem) {
 TEST_F(GridViewControllerTest, MoveUnselectedItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ moveItemWithID:@"B" toIndex:ItemListIndex{0}];
+  [view_controller_ moveItemWithID:@"B" toIndex:0];
   EXPECT_NSEQ(@"A", view_controller_.items[1].identifier);
   EXPECT_EQ(1U, view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
@@ -231,9 +231,7 @@ TEST_F(GridViewControllerTest, ReplaceScrolledOffScreenCell) {
         [NSString stringWithFormat:@"%d", base::checked_cast<int>(items.count)];
     TabSwitcherItem* item =
         [[TabSwitcherItem alloc] initWithIdentifier:uniqueID];
-    [view_controller_ insertItem:item
-                         atIndex:ItemListIndex{0}
-                  selectedItemID:@"A"];
+    [view_controller_ insertItem:item atIndex:0 selectedItemID:@"A"];
     // Spin the runloop to make sure that the visible cells are updated.
     base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
     visibleCellsCount = view_controller_.collectionView.visibleCells.count;
