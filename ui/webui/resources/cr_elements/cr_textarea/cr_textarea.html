@@ -9,7 +9,9 @@
   }
 
   :host([autogrow][has-max-height]) #input-container {
+    box-sizing: content-box;
     max-height: var(--cr-textarea-autogrow-max-height);
+    min-height: 1lh;
   }
 
   :host([invalid]) #underline {
