@@ -379,12 +379,14 @@ export class OncMojo {
    */
   static getVpnTypeString(value) {
     switch (value) {
+      case VpnType.kIKEv2:
+        return 'IKEv2';
       case VpnType.kL2TPIPsec:
         return 'L2TP-IPsec';
       case VpnType.kOpenVPN:
         return 'OpenVPN';
       case VpnType.kWireGuard:
-        return 'WireGuardVPN';
+        return 'WireGuard';
       case VpnType.kExtension:
         return 'ThirdPartyVPN';
       case VpnType.kArc:
@@ -400,10 +402,14 @@ export class OncMojo {
    */
   static getVpnTypeFromString(value) {
     switch (value) {
+      case 'IKEv2':
+        return VpnType.kIKEv2;
       case 'L2TP-IPsec':
         return VpnType.kL2TPIPsec;
       case 'OpenVPN':
         return VpnType.kOpenVPN;
+      case 'WireGuard':
+        return VpnType.kWireGuard;
       case 'ThirdPartyVPN':
         return VpnType.kExtension;
       case 'ARCVPN':
