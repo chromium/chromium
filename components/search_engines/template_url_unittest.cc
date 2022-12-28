@@ -2044,7 +2044,7 @@ TEST_F(TemplateURLTest, KeepSearchTermsInURL) {
   data.search_intent_params = {"gs_ssp", "si"};
   TemplateURL turl(data);
 
-  TemplateURLRef::SearchTermsArgs search_terms_args(u"foo");
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"FOO");
   search_terms_args.session_token = "SESSIONTOKEN";
 
   {
@@ -2052,19 +2052,21 @@ TEST_F(TemplateURLTest, KeepSearchTermsInURL) {
     search_terms_args.additional_query_params = "gs_ssp=GS_SSP";
     std::string original_search_url = turl.url_ref().ReplaceSearchTerms(
         search_terms_args, search_terms_data_);
-    EXPECT_EQ("http://bar/search?gs_ssp=GS_SSP&q=foo&psi=SESSIONTOKEN&xssi=t",
+    EXPECT_EQ("http://bar/search?gs_ssp=GS_SSP&q=FOO&psi=SESSIONTOKEN&xssi=t",
               original_search_url);
 
     GURL canonical_search_url;
     EXPECT_TRUE(turl.KeepSearchTermsInURL(
         GURL(original_search_url), search_terms_data_,
-        /*keep_search_intent_params=*/true, &canonical_search_url));
+        /*keep_search_intent_params=*/true, /*normalize_search_terms=*/true,
+        &canonical_search_url));
     EXPECT_EQ("http://bar/search?gs_ssp=GS_SSP&q=foo&xssi=t",
               canonical_search_url);
 
     EXPECT_TRUE(turl.KeepSearchTermsInURL(
         GURL(original_search_url), search_terms_data_,
-        /*keep_search_intent_params=*/false, &canonical_search_url));
+        /*keep_search_intent_params=*/false, /*normalize_search_terms=*/true,
+        &canonical_search_url));
     EXPECT_EQ("http://bar/search?q=foo&xssi=t", canonical_search_url);
   }
   {
@@ -2072,18 +2074,20 @@ TEST_F(TemplateURLTest, KeepSearchTermsInURL) {
     search_terms_args.additional_query_params = "gs_ssp=";
     std::string original_search_url = turl.url_ref().ReplaceSearchTerms(
         search_terms_args, search_terms_data_);
-    EXPECT_EQ("http://bar/search?gs_ssp=&q=foo&psi=SESSIONTOKEN&xssi=t",
+    EXPECT_EQ("http://bar/search?gs_ssp=&q=FOO&psi=SESSIONTOKEN&xssi=t",
               original_search_url);
 
     GURL canonical_search_url;
     EXPECT_TRUE(turl.KeepSearchTermsInURL(
         GURL(original_search_url), search_terms_data_,
-        /*keep_search_intent_params=*/true, &canonical_search_url));
+        /*keep_search_intent_params=*/true, /*normalize_search_terms=*/true,
+        &canonical_search_url));
     EXPECT_EQ("http://bar/search?gs_ssp=&q=foo&xssi=t", canonical_search_url);
 
     EXPECT_TRUE(turl.KeepSearchTermsInURL(
         GURL(original_search_url), search_terms_data_,
-        /*keep_search_intent_params=*/false, &canonical_search_url));
+        /*keep_search_intent_params=*/false, /*normalize_search_terms=*/true,
+        &canonical_search_url));
     EXPECT_EQ("http://bar/search?q=foo&xssi=t", canonical_search_url);
   }
   {
@@ -2092,19 +2096,21 @@ TEST_F(TemplateURLTest, KeepSearchTermsInURL) {
     std::string original_search_url = turl.url_ref().ReplaceSearchTerms(
         search_terms_args, search_terms_data_);
     EXPECT_EQ(
-        "http://bar/search?wiz=baz&gs_ssp=GS_SSP&q=foo&psi=SESSIONTOKEN&xssi=t",
+        "http://bar/search?wiz=baz&gs_ssp=GS_SSP&q=FOO&psi=SESSIONTOKEN&xssi=t",
         original_search_url);
 
     GURL canonical_search_url;
     EXPECT_TRUE(turl.KeepSearchTermsInURL(
         GURL(original_search_url), search_terms_data_,
-        /*keep_search_intent_params=*/true, &canonical_search_url));
+        /*keep_search_intent_params=*/true, /*normalize_search_terms=*/true,
+        &canonical_search_url));
     EXPECT_EQ("http://bar/search?gs_ssp=GS_SSP&q=foo&xssi=t",
               canonical_search_url);
 
     EXPECT_TRUE(turl.KeepSearchTermsInURL(
         GURL(original_search_url), search_terms_data_,
-        /*keep_search_intent_params=*/false, &canonical_search_url));
+        /*keep_search_intent_params=*/false, /*normalize_search_terms=*/true,
+        &canonical_search_url));
     EXPECT_EQ("http://bar/search?q=foo&xssi=t", canonical_search_url);
   }
   {
@@ -2113,19 +2119,21 @@ TEST_F(TemplateURLTest, KeepSearchTermsInURL) {
     std::string original_search_url = turl.url_ref().ReplaceSearchTerms(
         search_terms_args, search_terms_data_);
     EXPECT_EQ(
-        "http://bar/search?si=SI&gs_ssp=GS_SSP&q=foo&psi=SESSIONTOKEN&xssi=t",
+        "http://bar/search?si=SI&gs_ssp=GS_SSP&q=FOO&psi=SESSIONTOKEN&xssi=t",
         original_search_url);
 
     GURL canonical_search_url;
     EXPECT_TRUE(turl.KeepSearchTermsInURL(
         GURL(original_search_url), search_terms_data_,
-        /*keep_search_intent_params=*/true, &canonical_search_url));
+        /*keep_search_intent_params=*/true, /*normalize_search_terms=*/true,
+        &canonical_search_url));
     EXPECT_EQ("http://bar/search?si=SI&gs_ssp=GS_SSP&q=foo&xssi=t",
               canonical_search_url);
 
     EXPECT_TRUE(turl.KeepSearchTermsInURL(
         GURL(original_search_url), search_terms_data_,
-        /*keep_search_intent_params=*/false, &canonical_search_url));
+        /*keep_search_intent_params=*/false, /*normalize_search_terms=*/true,
+        &canonical_search_url));
     EXPECT_EQ("http://bar/search?q=foo&xssi=t", canonical_search_url);
   }
 }

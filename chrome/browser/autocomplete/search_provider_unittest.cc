@@ -1036,10 +1036,17 @@ TEST_F(SearchProviderTest, InlineMixedCaseMatches) {
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(u"f", &wyt_match));
   ASSERT_EQ(2u, provider_->matches().size());
   AutocompleteMatch term_match;
-  EXPECT_TRUE(FindMatchWithDestination(term_url, &term_match));
+  if (base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions)) {
+    EXPECT_TRUE(FindMatchWithDestination(
+        GURL(base::ToLowerASCII(term_url.spec())), &term_match));
+    EXPECT_EQ(u"foo", term_match.fill_into_edit);
+    EXPECT_EQ(u"oo", term_match.inline_autocompletion);
+  } else {
+    EXPECT_TRUE(FindMatchWithDestination(term_url, &term_match));
+    EXPECT_EQ(u"FOO", term_match.fill_into_edit);
+    EXPECT_EQ(u"OO", term_match.inline_autocompletion);
+  }
   EXPECT_GT(term_match.relevance, wyt_match.relevance);
-  EXPECT_EQ(u"FOO", term_match.fill_into_edit);
-  EXPECT_EQ(u"OO", term_match.inline_autocompletion);
   EXPECT_TRUE(term_match.allowed_to_be_default_match);
   // Make sure the case doesn't affect the highlighting.
   // (SearchProvider intentionally marks the new text as MATCH; that's why

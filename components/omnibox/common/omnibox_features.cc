@@ -208,6 +208,17 @@ BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
              "LocalHistoryZeroSuggestBeyondNTP",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, SearchProvider uses `normalized_term` instead of `term` from the
+// `keyword_search_terms` table. `normalized_term` is the original search term
+// in lower case with extra whitespace characters collapsed. To ensure
+// suggestions from SearchProvider continue to get deduped with those from
+// ShortcutsProvider, AutocompleteMatch::GURLToStrippedGURL uses the normalized
+// term to build the destination URLs so they are identical despite case
+// mismatches in the terms.
+BASE_FEATURE(kNormalizeSearchSuggestions,
+             "NormalizeSearchSuggestions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Mainly used to enable sending INTERACTION_CLOBBER focus type for zero-prefix
 // requests with an empty input on Web/SRP on Mobile. Enabled by default on
 // Desktop because it is also used by Desktop in the cross-platform code in the

@@ -274,7 +274,9 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
 
     const GURL stripped_destination_url(AutocompleteMatch::GURLToStrippedGURL(
         shortcut.match_core.destination_url, input, template_url_service,
-        shortcut.match_core.keyword, /*keep_search_intent_params=*/false));
+        shortcut.match_core.keyword,
+        /*keep_search_intent_params=*/false, /*normalize_search_terms=*/
+        base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions)));
     shortcuts_by_url[stripped_destination_url].push_back(&shortcut);
   }
 
@@ -340,8 +342,9 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
         int relevance = max_relevance;
         if (max_relevance > 1)
           --max_relevance;
-        auto match = ShortcutToACMatch(*shortcut_match.shortcut, relevance,
-                                       input, fixed_up_input, term_string);
+        auto match = ShortcutToACMatch(
+            *shortcut_match.shortcut, shortcut_match.stripped_destination_url,
+            relevance, input, fixed_up_input, term_string);
         if (populate_scoring_signals) {
           PopulateScoringSignals(shortcut_match, &match);
         }
@@ -350,9 +353,9 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
   base::ranges::transform(
       history_cluster_shortcut_matches, std::back_inserter(matches_),
       [&](const auto& shortcut_match) {
-        auto match = ShortcutToACMatch(*shortcut_match.shortcut,
-                                       shortcut_match.relevance, input,
-                                       fixed_up_input, term_string);
+        auto match = ShortcutToACMatch(
+            *shortcut_match.shortcut, shortcut_match.stripped_destination_url,
+            shortcut_match.relevance, input, fixed_up_input, term_string);
     // Guard this as `HistoryClusterProvider` doesn't exist on iOS.
     // Though this code will never run on iOS regardless.
 #if !BUILDFLAG(IS_IOS)
@@ -403,6 +406,7 @@ ShortcutMatch ShortcutsProvider::CreateScoredShortcutMatch(
 
 AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
     const ShortcutsDatabase::Shortcut& shortcut,
+    const GURL& stripped_destination_url,
     int relevance,
     const AutocompleteInput& input,
     const std::u16string& fixed_up_input_text,
@@ -420,6 +424,8 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   match.fill_into_edit = shortcut.match_core.fill_into_edit;
   match.destination_url = shortcut.match_core.destination_url;
   DCHECK(match.destination_url.is_valid());
+  match.stripped_destination_url = stripped_destination_url;
+  DCHECK(match.stripped_destination_url.is_valid());
   match.document_type = shortcut.match_core.document_type;
   match.contents = shortcut.match_core.contents;
   match.contents_class = AutocompleteMatch::ClassificationsFromString(

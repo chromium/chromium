@@ -1012,7 +1012,8 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
       // |matches_cache_|.
       match.stripped_destination_url = AutocompleteMatch::GURLToStrippedGURL(
           GURL(*original_url), input_, client_->GetTemplateURLService(),
-          std::u16string(), /*keep_search_intent_params=*/false);
+          std::u16string(), /*keep_search_intent_params=*/false,
+          /*normalize_search_terms=*/false);
     }
 
     match.contents =

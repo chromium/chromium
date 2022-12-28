@@ -53,6 +53,7 @@ BASE_DECLARE_FEATURE(kFocusTriggersContextualWebZeroSuggest);
 BASE_DECLARE_FEATURE(kFocusTriggersSRPZeroSuggest);
 BASE_DECLARE_FEATURE(kKeepSecondaryZeroSuggest);
 BASE_DECLARE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP);
+BASE_DECLARE_FEATURE(kNormalizeSearchSuggestions);
 BASE_DECLARE_FEATURE(kOmniboxOnClobberFocusTypeOnContent);
 BASE_DECLARE_FEATURE(kZeroSuggestInMemoryCaching);
 BASE_DECLARE_FEATURE(kZeroSuggestOnNTPForSignedOutUsers);

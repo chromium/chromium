@@ -88,13 +88,14 @@ class ShortcutsProvider : public AutocompleteProvider,
       const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts,
       int max_relevance);
 
-  // Returns an AutocompleteMatch corresponding to |shortcut|. Assigns it
-  // |relevance| score in the process, and highlights the description and
-  // contents against |input|, which should be the lower-cased version of
-  // the user's input. |input| and |fixed_up_input_text| are used to decide
-  // what can be inlined.
+  // Returns an AutocompleteMatch corresponding to `shortcut`. Assigns it
+  // `stripped_destination_url` and `relevance` in the process, and highlights
+  // the description and contents against `input`, which should be the
+  // normalized version of the user's input. `input` and `fixed_up_input_text`
+  // are used to decide what can be inlined.
   AutocompleteMatch ShortcutToACMatch(
       const ShortcutsDatabase::Shortcut& shortcut,
+      const GURL& stripped_destination_url,
       int relevance,
       const AutocompleteInput& input,
       const std::u16string& fixed_up_input_text,
