@@ -104,10 +104,7 @@ bool ImageFrameGenerator::DecodeAndScale(
     SegmentReader* data,
     bool all_data_received,
     wtf_size_t index,
-    const SkImageInfo& info,
-    void* pixels,
-    size_t row_bytes,
-    ImageDecoder::AlphaOption alpha_option,
+    const SkPixmap& pixmap,
     cc::PaintImage::GeneratorClientId client_id) {
   {
     base::AutoLock lock(generator_lock_);
@@ -121,14 +118,8 @@ bool ImageFrameGenerator::DecodeAndScale(
 
   // This implementation does not support arbitrary scaling so check the
   // requested size.
-  SkISize scaled_size = SkISize::Make(info.width(), info.height());
+  const SkISize scaled_size = pixmap.dimensions();
   CHECK(GetSupportedDecodeSize(scaled_size) == scaled_size);
-
-  ImageDecoder::HighBitDepthDecodingOption high_bit_depth_decoding_option =
-      ImageDecoder::kDefaultBitDepth;
-  if (info.colorType() == kRGBA_F16_SkColorType) {
-    high_bit_depth_decoding_option = ImageDecoder::kHighBitDepthToHalfFloat;
-  }
 
   wtf_size_t frame_count = 0u;
   bool has_alpha = true;
@@ -142,10 +133,9 @@ bool ImageFrameGenerator::DecodeAndScale(
   {
     // Lock the mutex, so only one thread can use the decoder at once.
     ClientAutoLock lock(this, client_id);
-    ImageDecoderWrapper decoder_wrapper(
-        this, data, scaled_size, alpha_option, decoder_color_behavior_,
-        high_bit_depth_decoding_option, index, info, pixels, row_bytes,
-        all_data_received, client_id);
+    ImageDecoderWrapper decoder_wrapper(this, data, pixmap,
+                                        decoder_color_behavior_, index,
+                                        all_data_received, client_id);
     current_decode_succeeded = decoder_wrapper.Decode(
         image_decoder_factory_.get(), &frame_count, &has_alpha);
     decode_failed = decoder_wrapper.decode_failed();

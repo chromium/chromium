@@ -185,11 +185,12 @@ bool DecodingImageGenerator::GetPixels(const SkImageInfo& dst_info,
 
   const bool needs_color_xform = !ApproximatelyEqualSkColorSpaces(
       decode_color_space, target_info.refColorSpace());
-  ImageDecoder::AlphaOption alpha_option = ImageDecoder::kAlphaPremultiplied;
   if (needs_color_xform && !decode_info.isOpaque()) {
-    alpha_option = ImageDecoder::kAlphaNotPremultiplied;
     decode_info = decode_info.makeAlphaType(kUnpremul_SkAlphaType);
+  } else {
+    DCHECK(decode_info.alphaType() != kUnpremul_SkAlphaType);
   }
+  SkPixmap decode_pixmap(decode_info, memory, adjusted_row_bytes);
 
   bool decoded = false;
   {
@@ -199,7 +200,7 @@ bool DecodingImageGenerator::GetPixels(const SkImageInfo& dst_info,
     ScopedSegmentReaderDataLocker lock_data(data_.get());
     decoded = frame_generator_->DecodeAndScale(
         data_.get(), all_data_received_, static_cast<wtf_size_t>(frame_index),
-        decode_info, memory, adjusted_row_bytes, alpha_option, client_id);
+        decode_pixmap, client_id);
   }
 
   if (decoded && needs_color_xform) {

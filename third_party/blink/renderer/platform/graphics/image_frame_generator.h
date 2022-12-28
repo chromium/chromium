@@ -85,10 +85,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   bool DecodeAndScale(SegmentReader*,
                       bool all_data_received,
                       wtf_size_t index,
-                      const SkImageInfo&,
-                      void* pixels,
-                      size_t row_bytes,
-                      ImageDecoder::AlphaOption,
+                      const SkPixmap&,
                       cc::PaintImage::GeneratorClientId);
 
   // Decodes YUV components directly into the provided memory planes. Must not
