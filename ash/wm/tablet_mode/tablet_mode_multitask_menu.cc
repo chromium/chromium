@@ -171,10 +171,14 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   menu_view_->layer()->SetTransform(initial_transform);
   menu_view_->shadow()->SetContentBounds(gfx::Rect(menu_size));
 
-  widget_observation_.Observe(widget_.get());
+  // Showing the widget can change native focus (which would result in an
+  // immediate closing of the menu). Only start observing after shown.
+  views::WidgetFocusManager::GetInstance()->AddFocusChangeListener(this);
 }
 
-TabletModeMultitaskMenu::~TabletModeMultitaskMenu() = default;
+TabletModeMultitaskMenu::~TabletModeMultitaskMenu() {
+  views::WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(this);
+}
 
 void TabletModeMultitaskMenu::Animate(bool show) {
   ui::Layer* view_layer = menu_view_->layer();
@@ -265,12 +269,10 @@ void TabletModeMultitaskMenu::OnWindowDestroying(aura::Window* window) {
   Reset();
 }
 
-void TabletModeMultitaskMenu::OnWidgetActivationChanged(views::Widget* widget,
-                                                        bool active) {
-  // `widget` gets deactivated when the window state changes.
-  DCHECK(widget_observation_.IsObservingSource(widget));
-  if (!active) {
-    // Will destroy `this` at the end of animation.
+void TabletModeMultitaskMenu::OnNativeFocusChanged(
+    gfx::NativeView focused_now) {
+  if (widget_->GetNativeView() != focused_now) {
+    // Destroys `this` at the end of animation.
     AnimateFadeOut();
   }
 }

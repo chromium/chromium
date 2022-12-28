@@ -10,8 +10,8 @@
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/display/display_observer.h"
+#include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/widget/unique_widget_ptr.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace chromeos {
 class MultitaskMenuView;
@@ -24,9 +24,10 @@ class TabletModeMultitaskMenuView;
 
 // Creates and maintains the multitask menu. Responsible for showing,
 // hiding, and animating the menu.
-class ASH_EXPORT TabletModeMultitaskMenu : public aura::WindowObserver,
-                                           public views::WidgetObserver,
-                                           public display::DisplayObserver {
+class ASH_EXPORT TabletModeMultitaskMenu
+    : public aura::WindowObserver,
+      public views::WidgetFocusChangeListener,
+      public display::DisplayObserver {
  public:
   TabletModeMultitaskMenu(TabletModeMultitaskMenuEventHandler* event_handler,
                           aura::Window* window);
@@ -61,8 +62,8 @@ class ASH_EXPORT TabletModeMultitaskMenu : public aura::WindowObserver,
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  // views::WidgetObserver:
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  // views::WidgetFocusChangeListener:
+  void OnNativeFocusChanged(gfx::NativeView focused_now) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -90,9 +91,6 @@ class ASH_EXPORT TabletModeMultitaskMenu : public aura::WindowObserver,
   // Window observer for `window_`.
   base::ScopedObservation<aura::Window, aura::WindowObserver> observed_window_{
       this};
-
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
 
   display::ScopedOptionalDisplayObserver display_observer_{this};
 
