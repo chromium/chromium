@@ -1,8 +1,0 @@
-{
-  "name": "Synthesize an action shortcut if commands manifest key is missing",
-  "version": "1.0",
-  "manifest_version": 3,
-  "action": {
-    "default_title": "Test"
-  }
-}

@@ -1,8 +1,0 @@
-{
-  "name": "A simple browser action that defines no extension command (one should be generated)",
-  "version": "1.0",
-  "manifest_version": 2,
-  "browser_action": {
-    "default_title": "Make this page red"
-  }
-}

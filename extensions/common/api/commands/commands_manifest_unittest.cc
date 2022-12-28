@@ -26,8 +26,26 @@ constexpr int kControlKey = ui::EF_CONTROL_DOWN;
 #endif
 
 TEST_F(CommandsManifestTest, CommandManifestParseCommandsBrowserAction) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - Browser Action",
+           "manifest_version": 2,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+F",
+               "description": "desc"
+             },
+             "_execute_browser_action": {
+               "suggested_key": "Alt+Shift+F",
+               "description": "browser action"
+             }
+           },
+           "browser_action" : {}
+         })";
+
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("command_simple_browser_action.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
   const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
@@ -56,8 +74,26 @@ TEST_F(CommandsManifestTest, CommandManifestParseCommandsBrowserAction) {
 }
 
 TEST_F(CommandsManifestTest, CommandManifestParseCommandsPageAction) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - page Action",
+           "manifest_version": 2,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+F",
+               "description": "desc"
+             },
+             "_execute_page_action": {
+               "suggested_key": "Ctrl+F",
+               "description": ""
+             }
+           },
+           "page_action" : {}
+         })";
+
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("command_simple_page_action.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
   const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
@@ -82,8 +118,26 @@ TEST_F(CommandsManifestTest, CommandManifestParseCommandsPageAction) {
 }
 
 TEST_F(CommandsManifestTest, CommandManifestParseCommandsAction) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - Action",
+           "manifest_version": 3,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+F",
+               "description": "desc"
+             },
+             "_execute_action": {
+               "suggested_key": "Ctrl+G",
+               "description": ""
+             }
+           },
+           "action" : {}
+         })";
+
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("command_simple_action.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
   const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
@@ -110,8 +164,22 @@ TEST_F(CommandsManifestTest, CommandManifestParseCommandsAction) {
 // default action command for the action type for MV2.
 TEST_F(CommandsManifestTest,
        CommandManifestParseCommandsOnlyCustomCommandGetsDefault_MV2) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - Only Custom Commands",
+           "manifest_version": 2,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+F",
+               "description": "desc"
+             }
+           },
+           "browser_action" : {}
+         })";
+
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("command_simple_only_custom_command.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
   const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
@@ -137,8 +205,22 @@ TEST_F(CommandsManifestTest,
 // default action command for the action type for MV3.
 TEST_F(CommandsManifestTest,
        CommandManifestParseCommandsOnlyCustomCommandGetsDefault_MV3) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - Only Custom Commands - MV3",
+           "manifest_version": 3,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+F",
+               "description": "desc"
+             }
+           },
+           "action" : {}
+         })";
+
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("command_simple_only_custom_command_v3.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
   const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
@@ -163,8 +245,30 @@ TEST_F(CommandsManifestTest,
 // warning for the incorrect command. See https://crbug.com/1353210.
 TEST_F(CommandsManifestTest,
        CommandManifestIgnoreInvalidActionCommandsAndInstallWarning_MV2) {
-  scoped_refptr<Extension> extension = LoadAndExpectSuccess(
-      "command_multiple_action_commands_install_warning.json");
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - Multiple Action Commands",
+           "manifest_version": 2,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+F",
+               "description": "desc"
+             },
+             "_execute_browser_action": {
+               "suggested_key": "Alt+Shift+F",
+               "description": "browser action"
+             },
+             "_execute_page_action": {
+               "suggested_key": "Ctrl+F",
+               "description": ""
+             }
+           },
+           "browser_action" : {}
+         })";
+
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
   const Command* browser_action =
@@ -189,8 +293,30 @@ TEST_F(CommandsManifestTest,
 // for the incorrect command. See https://crbug.com/1353210.
 TEST_F(CommandsManifestTest,
        CommandManifestIgnoreInvalidActionCommandsAndInstallWarning_MV3) {
-  scoped_refptr<Extension> extension = LoadAndExpectSuccess(
-      "command_multiple_action_commands_install_warning_v3.json");
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - Multiple Action Commands - MV3",
+           "manifest_version": 3,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+F",
+               "description": "desc"
+             },
+             "_execute_action": {
+               "suggested_key": "Alt+Shift+F",
+               "description": "browser action"
+             },
+             "_execute_page_action": {
+               "suggested_key": "Ctrl+F",
+               "description": ""
+             }
+           },
+           "action" : {}
+         })";
+
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
   const Command* action = CommandsInfo::GetActionCommand(extension.get());
@@ -213,8 +339,30 @@ TEST_F(CommandsManifestTest,
 // a warning and set a default (for MV2). See https://crbug.com/1353210.
 TEST_F(CommandsManifestTest,
        CommandManifestAllInvalidActionCommandsInstallWarning_MV2) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - Multiple Action Commands But None Correct",
+           "manifest_version": 2,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+F",
+               "description": "desc"
+             },
+             "_execute_action": {
+               "suggested_key": "Alt+Shift+F",
+               "description": "browser action"
+             },
+             "_execute_page_action": {
+               "suggested_key": "Ctrl+F",
+               "description": ""
+             }
+           },
+           "browser_action" : {}
+         })";
+
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("command_action_incorrect_install_warnings.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
   const Command* browser_action =
@@ -235,8 +383,30 @@ TEST_F(CommandsManifestTest,
 // a warning and set a default (for MV3). See https://crbug.com/1353210.
 TEST_F(CommandsManifestTest,
        CommandManifestAllInvalidActionCommandsInstallWarning_MV3) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Multiple Action Commands But None Correct - MV3",
+           "manifest_version": 3,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+F",
+               "description": "desc"
+             },
+             "_execute_browser_action": {
+               "suggested_key": "Alt+Shift+F",
+               "description": "browser action"
+             },
+             "_execute_page_action": {
+               "suggested_key": "Ctrl+F",
+               "description": ""
+             }
+           },
+           "action" : {}
+         })";
+
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("command_action_incorrect_install_warnings_v3.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
   const Command* action = CommandsInfo::GetActionCommand(extension.get());
@@ -252,28 +422,116 @@ TEST_F(CommandsManifestTest,
 }
 
 TEST_F(CommandsManifestTest, CommandManifestShortcutsTooMany) {
-  LoadAndExpectError("command_too_many.json",
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - too many commands with shortcuts",
+           "manifest_version": 2,
+           "version": "2",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+A",
+               "description": "feature1"
+             },
+             "feature2": {
+               "suggested_key": "Ctrl+B",
+               "description": "feature2"
+             },
+             "feature3": {
+               "suggested_key": "Ctrl+C",
+               "description": "feature3"
+             },
+             "feature4": {
+               "suggested_key": "Ctrl+D",
+               "description": "feature4"
+             },
+             "feature5": {
+               "suggested_key": "Ctrl+E",
+               "description": "feature5"
+             }
+           }
+         })";
+  LoadAndExpectError(ManifestData::FromJSON(kManifest),
                      errors::kInvalidKeyBindingTooMany);
 }
 
 TEST_F(CommandsManifestTest, CommandManifestManyButWithinBounds) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - many commands, but not too many shortcuts",
+           "manifest_version": 2,
+           "version": "2",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+A",
+               "description": "feature1"
+             },
+             "feature2": {
+               "suggested_key": "Ctrl+B",
+               "description": "feature2"
+             },
+             "feature3": {
+               "suggested_key": "Ctrl+C",
+               "description": "feature3"
+             },
+             "feature4": {
+               "suggested_key": "Ctrl+D",
+               "description": "feature4"
+             },
+             "feature5": {
+               "description": "feature5"
+             }
+           }
+         })";
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("command_many_but_shortcuts_under_limit.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
 }
 
 TEST_F(CommandsManifestTest, CommandManifestAllowNumbers) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - Numbers should be allowed",
+           "manifest_version": 2,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+1",
+               "description": "feature1"
+             }
+           }
+         })";
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("command_allow_numbers.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
 }
 
 TEST_F(CommandsManifestTest, CommandManifestRejectJustShift) {
-  LoadAndExpectError("command_reject_just_shift.json",
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Command test - Shift on its own is not a valid modifier",
+           "manifest_version": 2,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Shift+A",
+               "description": "feature1"
+             }
+           }
+         })";
+  LoadAndExpectError(ManifestData::FromJSON(kManifest),
                      errors::kInvalidKeyBinding);
 }
 
 TEST_F(CommandsManifestTest, BrowserActionSynthesizesCommand) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "A simple browser action that defines no extension command",
+           "version": "1.0",
+           "manifest_version": 2,
+           "browser_action": {
+             "default_title": "Make this page red"
+           }
+         })";
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("browser_action_synthesizes_command.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   // An extension with a browser action but no extension command specified
   // should get a command assigned to it.
   const extensions::Command* command =
@@ -285,8 +543,17 @@ TEST_F(CommandsManifestTest, BrowserActionSynthesizesCommand) {
 // An extension with an action but no extension command specified should get a
 // command assigned to it.
 TEST_F(CommandsManifestTest, ActionSynthesizesCommand) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Synthesize action shortcut if commands key is missing",
+           "version": "1.0",
+           "manifest_version": 3,
+           "action": {
+             "default_title": "Test"
+           }
+         })";
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("action_synthesizes_command.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   const Command* command = CommandsInfo::GetActionCommand(extension.get());
   ASSERT_TRUE(command);
   EXPECT_EQ(ui::VKEY_UNKNOWN, command->accelerator().key_code());
@@ -295,19 +562,111 @@ TEST_F(CommandsManifestTest, ActionSynthesizesCommand) {
 // This test makes sure that the "commands" feature and the "commands.global"
 // property load properly.
 TEST_F(CommandsManifestTest, LoadsOnStable) {
+  static constexpr char kManifest1[] =
+      R"({
+           "name": "Command test - Extension with Command",
+           "manifest_version": 2,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+0",
+               "description": "desc"
+             }
+           }
+         })";
   scoped_refptr<Extension> extension1 =
-      LoadAndExpectSuccess("command_ext.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest1));
+
+  static constexpr char kManifest2[] =
+      R"({
+           "name": "Command test - App with Command",
+           "manifest_version": 2,
+           "version": "1",
+           "app": {
+             "background": { "scripts": ["background.js"] }
+           },
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+0",
+               "description": "desc"
+             }
+           }
+         })";
   scoped_refptr<Extension> extension2 =
-      LoadAndExpectSuccess("command_app.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest2));
+
+  static constexpr char kManifest3[] =
+      R"({
+           "name": "Command test - Extension with Command that is global",
+           "manifest_version": 2,
+           "version": "1",
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+0",
+               "description": "desc",
+               "global": true
+             }
+           }
+         })";
   scoped_refptr<Extension> extension3 =
-      LoadAndExpectSuccess("command_ext_global.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest3));
+
+  static constexpr char kManifest4[] =
+      R"({
+           "name": "Command test - App with Command that is global",
+           "manifest_version": 2,
+           "version": "1",
+           "app": {
+             "background": { "scripts": ["background.js"] }
+           },
+           "commands": {
+             "feature1": {
+               "suggested_key": "Ctrl+Shift+0",
+               "description": "desc",
+               "global": true
+             }
+           }
+         })";
   scoped_refptr<Extension> extension4 =
-      LoadAndExpectSuccess("command_app_global.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest4));
 }
 
 TEST_F(CommandsManifestTest, CommandManifestShouldNotCountMediaKeys) {
+  // Media keys shouldn't count towards the max of four shortcuts per extension.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "mediaKeys",
+           "manifest_version": 2,
+           "version": "1",
+           "commands": {
+             "MediaNextTrack": {
+               "suggested_key": "MediaNextTrack",
+               "description": "MediaNextTrack"
+             },
+             "MediaPlayPause": {
+               "suggested_key": "MediaPlayPause",
+               "description": "MediaPlayPause"
+             },
+             "MediaPrevTrack": {
+               "suggested_key": "MediaPrevTrack",
+               "description": "MediaPrevTrack"
+             },
+             "MediaStop": {
+               "suggested_key": "MediaStop",
+               "description": "MediaStop"
+             },
+             "feature1": {
+               "suggested_key": "Ctrl+A",
+               "description": "feature1"
+             },
+             "feature2": {
+               "suggested_key": "Ctrl+B",
+               "description": "feature2"
+             }
+           }
+         })";
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("command_should_not_count_media_keys.json");
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
 }
 
 }  // namespace extensions
