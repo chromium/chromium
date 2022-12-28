@@ -4,3 +4,4 @@ tedchoc@chromium.org
 twellington@chromium.org
 
 per-file TabSwitcher*=file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS
+per-file adaptive_*=file://chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/adaptive/OWNERS
