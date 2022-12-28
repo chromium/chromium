@@ -878,6 +878,15 @@ void OsIntegrationManager::ExecuteAllSubManagerConfigurations(
     const AppId& app_id,
     std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
     base::OnceClosure callback) {
+  if (g_suppress_os_hooks_for_testing_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&OsIntegrationManager::WriteStateToDB,
+                       weak_ptr_factory_.GetWeakPtr(), app_id,
+                       std::move(desired_states), std::move(callback)));
+    return;
+  }
+
   // This can never be a use-case where we execute OS integration registration/
   // unregistration but do not update the WebAppOsIntegrationState proto in the
   // web_app DB.
