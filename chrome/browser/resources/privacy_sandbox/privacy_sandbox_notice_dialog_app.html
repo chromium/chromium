@@ -54,16 +54,23 @@
         </div>
       </div>
     </privacy-sandbox-dialog-learn-more>
-    <div class="section cr-secondary-text">
+    <div class="section cr-secondary-text" id="lastTextElement">
       $i18n{m1NoticeRowDescription4}
     </div>
+    <div class="buttons-container">
+      <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
+        $i18n{m1NoticeRowSettingsButton}
+      </cr-button>
+      <cr-button id="ackButton" on-click="onNoticeAcknowledge">
+        $i18n{m1NoticeRowAckButton}
+      </cr-button>
+    </div>
   </div>
-  <div class="buttons-container">
-    <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
-      $i18n{m1NoticeRowSettingsButton}
-    </cr-button>
-    <cr-button id="ackButton" on-click="onNoticeAcknowledge">
-      $i18n{m1NoticeRowAckButton}
+  <div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
+    <cr-button id="moreButton" on-click="onMoreClicked"
+        class="action-button" aria-hidden="true" tabindex="-1">
+      $i18n{m1DialogMoreButton}
+      <iron-icon icon="cr:expand-more"></iron-icon>
     </cr-button>
   </div>
 </div>

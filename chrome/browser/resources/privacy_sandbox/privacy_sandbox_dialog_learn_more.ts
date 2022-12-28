@@ -41,8 +41,6 @@ export class PrivacySandboxDialogLearnMoreElement extends PolymerElement {
     if (expanded) {
       this.scrollIntoCollapseElement_(this.$.collapse);
     }
-    // TODO(crbug.com/1378703): Hide scrollbar if it will be hidden when section
-    // is collapsed to avoid visual glitch.
   }
 
   private scrollIntoCollapseElement_(element: HTMLElement) {

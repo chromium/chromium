@@ -41,11 +41,12 @@ export class PrivacySandboxNoticeDialogAppElement extends
   override ready() {
     super.ready();
 
-    this.resizeAndShowNativeDialog()
-        .then(() => this.updateScrollableContents())
-        .then(
-            () => this.promptActionOccurred(
-                PrivacySandboxPromptAction.NOTICE_SHOWN));
+    this.resizeAndShowNativeDialog().then(() => {
+      this.updateScrollableContents();
+      this.maybeShowMoreButton().then(
+          () => this.promptActionOccurred(
+              PrivacySandboxPromptAction.NOTICE_SHOWN));
+    });
   }
 }
 

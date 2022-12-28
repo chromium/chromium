@@ -17,6 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './privacy_sandbox_combined_dialog_app.html.js';
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
+import {PrivacySandboxDialogMixinInterface} from './privacy_sandbox_dialog_mixin';
 import {PrivacySandboxDialogResizeMixin} from './privacy_sandbox_dialog_resize_mixin.js';
 
 export enum PrivacySandboxCombinedDialogStep {
@@ -30,6 +31,9 @@ export interface PrivacySandboxCombinedDialogAppElement {
     viewManager: CrViewManagerElement,
   };
 }
+
+type PrivacySandboxStepElement =
+    CrScrollableMixinInterface&PrivacySandboxDialogMixinInterface;
 
 const PrivacySandboxCombinedDialogAppElementBase =
     PrivacySandboxDialogResizeMixin(PolymerElement);
@@ -85,12 +89,12 @@ export class PrivacySandboxCombinedDialogAppElement extends
     const savingDurationMs = this.animationsEnabled_ ? 1500 : 0;
     this.navigateToStep_(PrivacySandboxCombinedDialogStep.SAVING)
         .then(() => new Promise(r => setTimeout(r, savingDurationMs)))
-        .then(
-            () => this.navigateToStep_(PrivacySandboxCombinedDialogStep.NOTICE))
-        .then(() => this.updateScrollableContentsCurrentStep_())
-        .then(
-            () => this.promptActionOccurred(
-                PrivacySandboxPromptAction.NOTICE_SHOWN));
+        .then(() => {
+          this.navigateToStep_(PrivacySandboxCombinedDialogStep.NOTICE);
+          this.updateScrollableContentsCurrentStep_().then(
+              () => this.promptActionOccurred(
+                  PrivacySandboxPromptAction.NOTICE_SHOWN));
+        });
   }
 
   private navigateToStep_(step: PrivacySandboxCombinedDialogStep):
@@ -107,17 +111,19 @@ export class PrivacySandboxCombinedDialogAppElement extends
     PrivacySandboxDialogBrowserProxy.getInstance().promptActionOccurred(action);
   }
 
-  private updateScrollableContentsCurrentStep_() {
+  private updateScrollableContentsCurrentStep_(): Promise<void> {
     // After the dialog was resized and filled content, trigger
-    // `updateScrollableContents()` for the current step (consent or notice).
-    this.getStepElement_(this.step_)!.updateScrollableContents();
+    // `updateScrollableContents()` and `maybeShowMoreButton` for the current
+    // step (consent or notice).
+    const stepElement = this.getStepElement_(this.step_);
+    stepElement.updateScrollableContents();
+    return stepElement.maybeShowMoreButton();
   }
 
   private getStepElement_(step: PrivacySandboxCombinedDialogStep):
-      CrScrollableMixinInterface|null {
-    return this.shadowRoot!.querySelector(`#${step}`) as
-        CrScrollableMixinInterface |
-        null;
+      PrivacySandboxStepElement {
+    return this.shadowRoot!.querySelector(`#${step}`)! as unknown as
+        PrivacySandboxStepElement;
   }
 }
 

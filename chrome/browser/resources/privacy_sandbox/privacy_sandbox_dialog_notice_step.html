@@ -2,6 +2,8 @@
   /* Center the content */
   .content-area {
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   .content-wrapper {
     margin: auto;
@@ -38,16 +40,23 @@
         <li>$i18nRaw{m1NoticeEeaLearnMoreBullet3}</li>
       </ul>
     </privacy-sandbox-dialog-learn-more>
-    <div class="section cr-secondary-text">
+    <div class="section cr-secondary-text" id="lastTextElement">
       $i18n{m1NoticeEeaDescription2}
     </div>
   </div>
+  <div class="buttons-container">
+    <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
+      $i18n{m1NoticeEeaSettingsButton}
+    </cr-button>
+    <cr-button id="ackButton" on-click="onNoticeAcknowledge">
+      $i18n{m1NoticeEeaAckButton}
+    </cr-button>
+  </div>
 </div>
-<div class="buttons-container">
-  <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
-    $i18n{m1NoticeEeaSettingsButton}
-  </cr-button>
-  <cr-button id="ackButton" on-click="onNoticeAcknowledge">
-    $i18n{m1NoticeEeaAckButton}
+<div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
+  <cr-button id="moreButton" on-click="onMoreClicked"
+      class="action-button" aria-hidden="true" tabindex="-1">
+    $i18n{m1DialogMoreButton}
+    <iron-icon icon="cr:expand-more"></iron-icon>
   </cr-button>
 </div>

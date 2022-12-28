@@ -9,11 +9,16 @@ import 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
 import {PrivacySandboxCombinedDialogAppElement, PrivacySandboxCombinedDialogStep} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
 import {PrivacySandboxDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_app.js';
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_browser_proxy.js';
+import {PrivacySandboxDialogConsentStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_consent_step';
+import {PrivacySandboxDialogMixin} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_mixin.js';
+import {PrivacySandboxDialogNoticeStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_notice_step';
 import {PrivacySandboxNoticeDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
@@ -35,6 +40,41 @@ class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
   showDialog() {
     this.methodCalled('showDialog');
   }
+}
+
+function isChildInParentBounds(
+    viewport: HTMLElement, targetSelector: string): boolean {
+  const target = viewport.shadowRoot!.querySelector(targetSelector);
+  assertTrue(
+      !!target, `target element ${targetSelector} not found in the viewport`);
+  const targetBounds = target!.getBoundingClientRect();
+  const viewportBounds = viewport.getBoundingClientRect();
+  return targetBounds.top >= 0 && targetBounds.left >= 0 &&
+      targetBounds.top < viewportBounds.height &&
+      targetBounds.bottom <= viewportBounds.height &&
+      targetBounds.left < viewportBounds.width &&
+      targetBounds.right <= viewportBounds.width;
+}
+
+// Wait until there hasn't been a scroll event for 100ms. It is sufficient
+// for tests but shouldn't be used in production.
+async function waitForScrollToFinish(scrollable: HTMLElement) {
+  await new Promise(resolve => {
+    let timeout: number;
+    scrollable.addEventListener('scroll', () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(resolve, 100);
+    });
+  });
+}
+
+function doesElemenHaveScrollbar(element: HTMLElement) {
+  return element.clientHeight < element.scrollHeight;
+}
+
+function isAllContentVisible(element: HTMLElement) {
+  const lastBottomMargin = 8;
+  return element.clientHeight >= element.scrollHeight - lastBottomMargin;
 }
 
 suite('PrivacySandboxDialogConsent', function() {
@@ -101,7 +141,7 @@ suite('PrivacySandboxDialogConsent', function() {
     const collapseElement = page.shadowRoot!.querySelector('iron-collapse');
     const contentArea: HTMLElement|null =
         page.shadowRoot!.querySelector('#contentArea');
-    let hasScrollbar = contentArea!.offsetHeight < contentArea!.scrollHeight;
+    let hasScrollbar = doesElemenHaveScrollbar(contentArea!);
     assertFalse(collapseElement!.opened);
     assertEquals(contentArea!.classList.contains('can-scroll'), hasScrollbar);
 
@@ -125,7 +165,7 @@ suite('PrivacySandboxDialogConsent', function() {
     testClickButton('#expandSection cr-expand-button');
     const [closedAction] =
         await browserProxy.whenCalled('promptActionOccurred');
-    hasScrollbar = contentArea!.offsetHeight < contentArea!.scrollHeight;
+    hasScrollbar = doesElemenHaveScrollbar(contentArea!);
     assertEquals(
         closedAction, PrivacySandboxPromptAction.CONSENT_MORE_INFO_CLOSED);
     assertFalse(collapseElement!.opened);
@@ -211,6 +251,8 @@ suite('PrivacySandboxDialogCombined', function() {
       buttonSelector: string, element: HTMLElement|null = page) {
     const actionButton =
         element!.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+    assertTrue(
+        !!actionButton, `the button isn\'t found, selector: ${buttonSelector}`);
     actionButton.click();
   }
 
@@ -220,8 +262,9 @@ suite('PrivacySandboxDialogCombined', function() {
     browserProxy.reset();
   }
 
-  function getActiveStep(): HTMLElement|null {
-    return page.shadowRoot!.querySelector('.active');
+  function getActiveStep(): PrivacySandboxDialogConsentStepElement|
+      PrivacySandboxDialogNoticeStepElement {
+    return page.shadowRoot!.querySelector('.active')!;
   }
 
   setup(async function() {
@@ -237,10 +280,68 @@ suite('PrivacySandboxDialogCombined', function() {
     await browserProxy.whenCalled('showDialog');
   });
 
+  test('moreButton', async function() {
+    await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
+    const consentStep = getActiveStep()!;
+    assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.CONSENT);
+    await flushTasks();
+
+    const scrollable: HTMLElement =
+        consentStep.shadowRoot!.querySelector('[scrollable]')!;
+    // Turn-off scroll animations.
+    scrollable.style.scrollBehavior = 'auto';
+    const allContentVisible = isAllContentVisible(scrollable);
+
+    assertEquals(
+        isChildVisible(consentStep, '#moreButton'), !allContentVisible,
+        `more button should only be visible when some of the dialog content \
+        wasn't visible`);
+
+    assertEquals(
+        isChildVisible(consentStep, '#confirmButton'), true,
+        `confirm button should never be hidden`);
+    assertEquals(
+        isChildInParentBounds(consentStep, '#confirmButton'), allContentVisible,
+        allContentVisible ?
+            'confirm button should visible if all content dialog is visible' :
+            `confirm button should not be visible if some of the dialog
+            content isn't visible from the start`);
+
+    assertEquals(
+        isChildVisible(consentStep, '#declineButton'), true,
+        `decline button should never be hidden`);
+    assertEquals(
+        isChildInParentBounds(consentStep, '#declineButton'), allContentVisible,
+        allContentVisible ?
+            'decline button should visible if all content dialog is visible' :
+            `decline button should not be visible if some of the dialog
+            content isn't visible from the start`);
+
+    if (allContentVisible) {
+      return;
+    }
+    const moreButton: HTMLElement =
+        consentStep.shadowRoot!.querySelector('#moreButton')!;
+    moreButton.click();
+    await consentStep.whenWasScrolledToBottomForTest();
+
+    // After scrolling down, the "More" button is hidden and dialog button are
+    // visible in the parent bounds.
+    assertEquals(
+        isChildVisible(consentStep, '#moreButton'), false,
+        'more button should not be visible anymore');
+    assertEquals(
+        isChildInParentBounds(consentStep, '#confirmButton'), true,
+        'confirm button should be visible after scrolling to the bottom');
+    assertEquals(
+        isChildInParentBounds(consentStep, '#declineButton'), true,
+        'decline button should be visible after scrolling to the bottom');
+  });
+
   test('acceptConsentAndAckNotice', async function() {
     // Verify that dialog starts with consent step.
     await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
-    const consentStep: HTMLElement|null = getActiveStep();
+    const consentStep = getActiveStep()!;
     assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.CONSENT);
 
     // Accept the consent step.
@@ -252,7 +353,7 @@ suite('PrivacySandboxDialogCombined', function() {
 
     // After saving step has ended (with a delay), the notice is shown.
     await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
-    const noticeStep: HTMLElement|null = getActiveStep();
+    const noticeStep = getActiveStep()!;
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Acknowledge the notice.
@@ -263,7 +364,7 @@ suite('PrivacySandboxDialogCombined', function() {
   test('acceptConsentAndOpenSettings', async function() {
     // Verify that dialog starts with consent step.
     await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
-    const consentStep: HTMLElement|null = getActiveStep();
+    const consentStep = getActiveStep()!;
     assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
 
     // Accept the consent step.
@@ -275,7 +376,7 @@ suite('PrivacySandboxDialogCombined', function() {
 
     // After saving step has ended (with a delay), the notice is shown.
     await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
-    const noticeStep: HTMLElement|null = getActiveStep();
+    const noticeStep = getActiveStep()!;
     assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Click 'Open settings' button.
@@ -286,7 +387,7 @@ suite('PrivacySandboxDialogCombined', function() {
   test('declineConsentAndAckNotice', async function() {
     // Verify that dialog starts with consent step.
     await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
-    const consentStep: HTMLElement|null = getActiveStep();
+    const consentStep = getActiveStep()!;
     assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
 
     // Decline the consent step.
@@ -298,7 +399,7 @@ suite('PrivacySandboxDialogCombined', function() {
 
     // After saving step has ended (with a delay), the notice is shown.
     await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
-    const noticeStep: HTMLElement|null = getActiveStep();
+    const noticeStep = getActiveStep()!;
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Acknowledge the notice.
@@ -309,7 +410,7 @@ suite('PrivacySandboxDialogCombined', function() {
   test('declineConsentAndOpenSettings', async function() {
     // Verify that dialog starts with consent step.
     await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
-    const consentStep: HTMLElement|null = getActiveStep();
+    const consentStep = getActiveStep()!;
     assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
 
     // Decline the consent step.
@@ -321,7 +422,7 @@ suite('PrivacySandboxDialogCombined', function() {
 
     // After saving step has ended (with a delay), the notice is shown.
     await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
-    const noticeStep: HTMLElement|null = getActiveStep();
+    const noticeStep = getActiveStep()!;
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Click 'Open settings' button.
@@ -331,7 +432,7 @@ suite('PrivacySandboxDialogCombined', function() {
 
   test('learnMoreClicked', async function() {
     await verifyActionOccured(PrivacySandboxPromptAction.CONSENT_SHOWN);
-    const consentStep: HTMLElement|null = getActiveStep();
+    const consentStep = getActiveStep()!;
     assertEquals(consentStep!.id, PrivacySandboxCombinedDialogStep.CONSENT);
     // TODO(crbug.com/1378703): Test scrolling behaviour.
     // The collapse section is closed.
@@ -365,6 +466,8 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
       buttonSelector: string, element: HTMLElement|null = page) {
     const actionButton =
         element!.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+    assertTrue(
+        !!actionButton, `the button isn\'t found, selector: ${buttonSelector}`);
     actionButton.click();
   }
 
@@ -374,8 +477,8 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
     browserProxy.reset();
   }
 
-  function getActiveStep(): HTMLElement|null {
-    return page.shadowRoot!.querySelector('.active');
+  function getActiveStep(): PrivacySandboxDialogNoticeStepElement {
+    return page.shadowRoot!.querySelector('.active')!;
   }
 
   setup(async function() {
@@ -392,10 +495,68 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
     await browserProxy.whenCalled('showDialog');
   });
 
+  test('moreButton', async function() {
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    const noticeStep = getActiveStep();
+    assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
+    await flushTasks();
+
+    const scrollable: HTMLElement =
+        noticeStep.shadowRoot!.querySelector('[scrollable]')!;
+    // Turn-off scroll animations.
+    scrollable.style.scrollBehavior = 'auto';
+    const allContentVisible = isAllContentVisible(scrollable);
+
+    assertEquals(
+        isChildVisible(noticeStep, '#moreButton'), !allContentVisible,
+        `more button should only be visible when some of the dialog content
+        wasn't visible`);
+
+    assertEquals(
+        isChildVisible(noticeStep, '#ackButton'), true,
+        `ack button should never be hidden`);
+    assertEquals(
+        isChildInParentBounds(noticeStep, '#ackButton'), allContentVisible,
+        allContentVisible ?
+            'ack button should visible if all content dialog is visible' :
+            `ack button should not be visible if some of the dialog content
+            isn't visible from the start`);
+
+    assertEquals(
+        isChildVisible(noticeStep, '#settingsButton'), true,
+        `settings button should never be hidden`);
+    assertEquals(
+        isChildInParentBounds(noticeStep, '#settingsButton'), allContentVisible,
+        allContentVisible ?
+            'settings button should visible if all content dialog is visible' :
+            `settings button should not be visible if some of the dialog \
+            content isn't visible from the start`);
+
+    if (allContentVisible) {
+      return;
+    }
+    const moreButton: HTMLElement =
+        noticeStep.shadowRoot!.querySelector('#moreButton')!;
+    moreButton.click();
+    await noticeStep.whenWasScrolledToBottomForTest();
+
+    // After scrolling down, the "More" button is hidden and dialog button are
+    // visible in the parent bounds.
+    assertEquals(
+        isChildVisible(noticeStep, '#moreButton'), false,
+        'more button should not be visible anymore');
+    assertEquals(
+        isChildInParentBounds(noticeStep, '#ackButton'), true,
+        'ack button should be visible after scrolling to the bottom');
+    assertEquals(
+        isChildInParentBounds(noticeStep, '#settingsButton'), true,
+        'settings button should be visible after scrolling to the bottom');
+  });
+
   test('ackClicked', async function() {
     // Verify that dialog starts with notice step.
     await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
-    const noticeStep: HTMLElement|null = getActiveStep();
+    const noticeStep = getActiveStep();
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Acknowledge the notice.
@@ -406,7 +567,7 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
   test('settingsClicked', async function() {
     // Verify that dialog starts with notice step.
     await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
-    const noticeStep: HTMLElement|null = getActiveStep();
+    const noticeStep = getActiveStep();
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
 
     // Acknowledge the notice.
@@ -416,7 +577,7 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
 
   test('learnMoreClicked', async function() {
     await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
-    const noticeStep: HTMLElement|null = getActiveStep();
+    const noticeStep = getActiveStep();
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
     // TODO(crbug.com/1378703): Test scrolling behaviour.
     // The collapse section is closed.
@@ -450,6 +611,8 @@ suite('PrivacySandboxDialogNoticeROW', function() {
       buttonSelector: string, element: HTMLElement|null = page) {
     const actionButton =
         element!.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+    assertTrue(
+        !!actionButton, `the button isn\'t found, selector: ${buttonSelector}`);
     actionButton.click();
   }
 
@@ -469,6 +632,63 @@ suite('PrivacySandboxDialogNoticeROW', function() {
 
     await browserProxy.whenCalled('resizeDialog');
     await browserProxy.whenCalled('showDialog');
+  });
+
+  test('moreButton', async function() {
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await flushTasks();
+
+    const scrollable: HTMLElement =
+        page.shadowRoot!.querySelector('[scrollable]')!;
+    // Turn-off scroll animations.
+    scrollable.style.scrollBehavior = 'auto';
+    const allContentVisible = isAllContentVisible(scrollable);
+
+    assertEquals(
+        isChildVisible(page, '#moreButton'), !allContentVisible,
+        `more button should only be visible when some of the dialog content
+        wasn't visible`);
+
+    assertEquals(
+        isChildVisible(page, '#ackButton'), true,
+        `ack button should never be hidden`);
+    assertEquals(
+        isChildInParentBounds(page, '#ackButton'), allContentVisible,
+        allContentVisible ?
+            'ack button should visible if all content dialog is visible' :
+            `ack button should not be visible if some of the dialog content \
+            isn't visible from the start`);
+
+    assertEquals(
+        isChildVisible(page, '#settingsButton'), true,
+        `settings button should never be hidden`);
+    assertEquals(
+        isChildInParentBounds(page, '#settingsButton'), allContentVisible,
+        allContentVisible ?
+            'settings button should visible if all content dialog is visible' :
+            `settings button should not be visible if some of the dialog \
+            content isn't visible from the start`);
+
+
+    if (allContentVisible) {
+      return;
+    }
+    const moreButton: HTMLElement =
+        page.shadowRoot!.querySelector('#moreButton')!;
+    moreButton.click();
+    await page.whenWasScrolledToBottomForTest();
+
+    // After scrolling down, the "More" button is hidden and dialog button are
+    // visible in the parent bounds.
+    assertEquals(
+        isChildVisible(page, '#moreButton'), false,
+        'more button should not be visible anymore');
+    assertEquals(
+        isChildInParentBounds(page, '#ackButton'), true,
+        'ack button should be visible after scrolling to the bottom');
+    assertEquals(
+        isChildInParentBounds(page, '#settingsButton'), true,
+        'settings button should be visible after scrolling to the bottom');
   });
 
   test('ackClicked', async function() {
@@ -506,5 +726,183 @@ suite('PrivacySandboxDialogNoticeROW', function() {
     await verifyActionOccured(
         PrivacySandboxPromptAction.NOTICE_MORE_INFO_CLOSED);
     assertFalse(collapseElement!.opened);
+  });
+});
+
+suite('PrivacySandboxDialogMixin', function() {
+  const TestElementBase = PrivacySandboxDialogMixin(PolymerElement);
+
+  // Create a test element to have more control over size of the element and
+  // test edge cases for 'more' button logic.
+  class TestElement extends TestElementBase {
+    static get is() {
+      return 'test-element';
+    }
+
+    static get template() {
+      return html`
+        <style>
+          #container {
+            width: 500px;
+            height: 614px;
+            position: relative;
+            border: 1px solid red;
+          }
+          .content-area {
+            bottom: 64px;
+            position: absolute;
+            background: green;
+            overflow-y: overlay;
+            top: 0;
+            width: 100%;
+          }
+          .buttons-container {
+            height: 64px;
+            position: fixed;
+            box-sizing: border-box;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            background: yellow;
+          }
+          .more-content-available .buttons-container {
+            position: static;
+          }
+          .more-content-available.content-area {
+            bottom: 0;
+          }
+
+          .section {
+            height: 100px;
+            margin: 10px 0px;
+            background: blue;
+          }
+          .section.big {
+            height: 200px;
+          }
+          #showMoreOverlay {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 64px;
+          }
+        </style>
+        <div id="container">
+          <div id="textContent" class="content-area" scrollable>
+            <div class="section">Text paragraph 1</div>
+            <div class="section big">Text paragraph 2</div>
+            <div class="section">Text paragraph 3</div>
+            <div id="lastTextElement"  class="section">Text paragraph 4</div>
+            <div class="buttons-container">
+              Button container
+            </div>
+          </div>
+          <div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
+            <button id="moreButton" on-click="onMoreClicked">More</button>
+          </div>
+        </div>
+      `;
+    }
+  }
+  customElements.define(TestElement.is, TestElement);
+
+  let testElement: TestElement;
+  let container: HTMLElement;
+  let scrollable: HTMLElement;
+  let moreButton: HTMLElement;
+  let fullContainerHeight: number;
+
+  const LAST_BOTTOM_MARGIN = 10;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testElement = document.createElement('test-element') as TestElement;
+    document.body.appendChild(testElement);
+    container = testElement.shadowRoot!.querySelector('#container')!;
+    scrollable = testElement.shadowRoot!.querySelector('[scrollable]')!;
+    moreButton = testElement.shadowRoot!.querySelector('#moreButton')!;
+
+    const buttons: HTMLElement =
+        testElement.shadowRoot!.querySelector('.buttons-container')!;
+    fullContainerHeight = scrollable.scrollHeight + buttons.clientHeight;
+  });
+
+  test('content not scrollable', async function() {
+    container.style.height = `${fullContainerHeight}px`;
+    assertFalse(
+        doesElemenHaveScrollbar(scrollable),
+        'content should not have a scrollbar');
+
+    await testElement.maybeShowMoreButton();
+    assertTrue(
+        testElement.wasScrolledToBottom, 'last text element should be visible');
+  });
+
+  test('only bottom margin of the last element not shown', async function() {
+    container.style.height = `${fullContainerHeight - LAST_BOTTOM_MARGIN}px`;
+    flush();
+    assertTrue(
+        doesElemenHaveScrollbar(scrollable), 'content should have a scrollbar');
+
+    await testElement.maybeShowMoreButton();
+    assertTrue(
+        testElement.wasScrolledToBottom, 'last text element should be visible');
+  });
+
+  test('1px of the last text element not shown', async function() {
+    container.style.height =
+        `${fullContainerHeight - LAST_BOTTOM_MARGIN - 1}px`;
+    assertTrue(
+        doesElemenHaveScrollbar(scrollable), 'content should have a scrollbar');
+
+    await testElement.maybeShowMoreButton();
+    assertFalse(
+        testElement.wasScrolledToBottom, 'last text element wasn\'t shown');
+
+    moreButton.click();
+    await testElement.whenWasScrolledToBottomForTest();
+    assertTrue(
+        testElement.wasScrolledToBottom,
+        'last text element was shown after scrolling to the bottom');
+  });
+
+  test('last element not shown', async function() {
+    container.style.height = `${fullContainerHeight - 100}px`;
+    assertTrue(
+        doesElemenHaveScrollbar(scrollable), 'content should have a scrollbar');
+
+    await testElement.maybeShowMoreButton();
+    assertFalse(
+        testElement.wasScrolledToBottom, 'last text element wasn\'t shown');
+
+    moreButton.click();
+    await testElement.whenWasScrolledToBottomForTest();
+    assertTrue(
+        testElement.wasScrolledToBottom,
+        'last text element was shown after scrolling to the bottom');
+  });
+
+  test('requires more than one "more" button click', async function() {
+    const containerHeight = fullContainerHeight / 2 - 50;
+    container.style.height = `${containerHeight}px`;
+    assertTrue(
+        doesElemenHaveScrollbar(scrollable), 'content should have a scrollbar');
+
+    await testElement.maybeShowMoreButton();
+    assertFalse(
+        testElement.wasScrolledToBottom, 'last text element wasn\'t shown');
+
+    moreButton.click();
+    await waitForScrollToFinish(scrollable);
+    assertEquals(containerHeight, scrollable.scrollTop);
+    assertFalse(
+        testElement.wasScrolledToBottom, 'last text element wasn\'t yet shown');
+
+    moreButton.click();
+    await testElement.whenWasScrolledToBottomForTest();
+    assertTrue(
+        testElement.wasScrolledToBottom,
+        'last text element was shown after scrolling to the bottom');
   });
 });
