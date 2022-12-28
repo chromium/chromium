@@ -1559,7 +1559,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // TODO(crbug.com/1289326) Test is flaky on Linux CFI
-#if BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1403890) Test is also flaky on Linux (dbg)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CreateSignedInEnterpriseProfileSettings \
   DISABLED_CreateSignedInEnterpriseProfileSettings
 #else
