@@ -944,7 +944,8 @@ void InjectNTP(Browser* browser) {
     [self.sceneState
         addAgent:[[PromosManagerSceneAgent alloc]
                      initWithCommandDispatcher:mainCommandDispatcher]];
-  if (IsAppStoreRatingEnabled()) {
+  if (IsAppStoreRatingEnabled() &&
+      prefService->GetBoolean(prefs::kAppStoreRatingPolicyEnabled)) {
     [self.sceneState
         addAgent:[[AppStoreRatingSceneAgent alloc]
                      initWithPromosManager:GetApplicationContext()
