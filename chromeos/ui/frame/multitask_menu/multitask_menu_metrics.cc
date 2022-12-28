@@ -12,14 +12,29 @@ namespace chromeos {
 constexpr char kEntryTypeHistogramNamePrefix[] =
     "Ash.Float.MultitaskMenuEntryType";
 
+constexpr char kActionTypeHistogramNamePrefix[] =
+    "Ash.Float.MultitaskMenuActionType";
+
+std::string GetHistogramNameSuffix() {
+  return TabletState::Get()->InTabletMode() ? ".TabletMode" : ".ClamshellMode";
+}
+
 std::string GetEntryTypeHistogramName() {
   return std::string(kEntryTypeHistogramNamePrefix)
-      .append(TabletState::Get()->InTabletMode() ? ".TabletMode"
-                                                 : ".ClamshellMode");
+      .append(GetHistogramNameSuffix());
+}
+
+std::string GetActionTypeHistogramName() {
+  return std::string(kActionTypeHistogramNamePrefix)
+      .append(GetHistogramNameSuffix());
 }
 
 void RecordMultitaskMenuEntryType(MultitaskMenuEntryType entry_type) {
   base::UmaHistogramEnumeration(GetEntryTypeHistogramName(), entry_type);
+}
+
+void RecordMultitaskMenuActionType(MultitaskMenuActionType action_type) {
+  base::UmaHistogramEnumeration(GetActionTypeHistogramName(), action_type);
 }
 
 }  // namespace chromeos

@@ -132,6 +132,7 @@ MultitaskMenuView::~MultitaskMenuView() = default;
 void MultitaskMenuView::SplitButtonPressed(SnapDirection direction) {
   SnapController::Get()->CommitSnap(window_, direction, kDefaultSnapRatio);
   on_any_button_pressed_.Run();
+  RecordMultitaskMenuActionType(MultitaskMenuActionType::kHalfSplitButton);
 }
 
 void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
@@ -144,17 +145,20 @@ void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
   base::RecordAction(base::UserMetricsAction(
       direction == SnapDirection::kPrimary ? kPartialSplitTwoThirdsUserAction
                                            : kPartialSplitOneThirdUserAction));
+  RecordMultitaskMenuActionType(MultitaskMenuActionType::kPartialSplitButton);
 }
 
 void MultitaskMenuView::FullScreenButtonPressed() {
   auto* widget = views::Widget::GetWidgetForNativeWindow(window_);
   widget->SetFullscreen(!widget->IsFullscreen());
   on_any_button_pressed_.Run();
+  RecordMultitaskMenuActionType(MultitaskMenuActionType::kFullscreenButton);
 }
 
 void MultitaskMenuView::FloatButtonPressed() {
   FloatControllerBase::Get()->ToggleFloat(window_);
   on_any_button_pressed_.Run();
+  RecordMultitaskMenuActionType(MultitaskMenuActionType::kFloatButton);
 }
 
 BEGIN_METADATA(MultitaskMenuView, View)

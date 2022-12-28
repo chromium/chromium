@@ -705,6 +705,7 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
 
 // Test Float Button Functionality.
 TEST_F(MultitaskMenuTest, TestMultitaskMenuFloatFunctionality) {
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(window_state()->IsNormalStateType());
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
@@ -714,10 +715,14 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFloatFunctionality) {
                               ->float_button_for_testing()));
   generator->ClickLeftButton();
   EXPECT_TRUE(window_state()->IsFloated());
+  histogram_tester.ExpectBucketCount(
+      chromeos::GetActionTypeHistogramName(),
+      chromeos::MultitaskMenuActionType::kFloatButton, 1);
 }
 
 // Test Half Button Functionality.
 TEST_F(MultitaskMenuTest, TestMultitaskMenuHalfFunctionality) {
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(window_state()->IsNormalStateType());
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
@@ -728,6 +733,9 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuHalfFunctionality) {
                              .left_center());
   generator->ClickLeftButton();
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  histogram_tester.ExpectBucketCount(
+      chromeos::GetActionTypeHistogramName(),
+      chromeos::MultitaskMenuActionType::kHalfSplitButton, 1);
 }
 
 // Tests that clicking the left side of the half button works as intended for
@@ -777,6 +785,7 @@ TEST_F(MultitaskMenuTest, HalfButtonSecondaryLayout) {
 
 // Test Partial Split Button Functionality.
 TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(window_state()->IsNormalStateType());
   ui::test::EventGenerator* generator = GetEventGenerator();
   const gfx::Rect work_area_bounds_in_screen =
@@ -805,6 +814,9 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   EXPECT_EQ(user_action_tester.GetActionCount(
                 chromeos::kPartialSplitTwoThirdsUserAction),
             1);
+  histogram_tester.ExpectBucketCount(
+      chromeos::GetActionTypeHistogramName(),
+      chromeos::MultitaskMenuActionType::kPartialSplitButton, 1);
 
   // Snap to secondary with 0.33f screen ratio.
   ShowMultitaskMenu();
@@ -823,10 +835,14 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   EXPECT_EQ(user_action_tester.GetActionCount(
                 chromeos::kPartialSplitOneThirdUserAction),
             1);
+  histogram_tester.ExpectBucketCount(
+      chromeos::GetActionTypeHistogramName(),
+      chromeos::MultitaskMenuActionType::kPartialSplitButton, 2);
 }
 
 // Test Full Button Functionality.
 TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(window_state()->IsNormalStateType());
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
@@ -836,6 +852,9 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
                               ->full_button_for_testing()));
   generator->ClickLeftButton();
   EXPECT_TRUE(window_state()->IsFullscreen());
+  histogram_tester.ExpectBucketCount(
+      chromeos::GetActionTypeHistogramName(),
+      chromeos::MultitaskMenuActionType::kFullscreenButton, 1);
 }
 
 TEST_F(MultitaskMenuTest, MultitaskMenuClosesOnTabletMode) {

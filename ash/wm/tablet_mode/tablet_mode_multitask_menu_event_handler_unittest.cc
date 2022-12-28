@@ -438,35 +438,36 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HalfButtonFunctionality) {
   // half.
   UpdateDisplay("1600x1000");
   auto window = CreateTestWindow();
-
   ShowMultitaskMenu(*window);
+  base::HistogramTester histogram_tester;
 
   // Press the primary half split button.
   auto* half_button =
       GetMultitaskMenuView(GetMultitaskMenu())->half_button_for_testing();
   GetEventGenerator()->GestureTapAt(
       half_button->GetBoundsInScreen().left_center());
+  histogram_tester.ExpectBucketCount(
+      chromeos::GetActionTypeHistogramName(),
+      chromeos::MultitaskMenuActionType::kHalfSplitButton, 1);
 
   // Verify that the window has been snapped in half.
   ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             WindowState::Get(window.get())->GetStateType());
-  const gfx::Rect work_area_bounds_in_screen =
+  const gfx::Rect work_area_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-  auto* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
   const gfx::Rect divider_bounds =
-      split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
-          /*is_dragging*/ false);
-  ASSERT_NEAR(work_area_bounds_in_screen.width() / 2,
+      SplitViewController::Get(Shell::GetPrimaryRootWindow())
+          ->split_view_divider()
+          ->GetDividerBoundsInScreen(
+              /*is_dragging*/ false);
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f,
               window->GetBoundsInScreen().width(), divider_bounds.width());
 
   // Verify that the multitask menu has been closed.
   ASSERT_FALSE(GetMultitaskMenu());
 
-  // Scroll down again.
+  // Verify that the multitask menu is centered on the new window size.
   ShowMultitaskMenu(*window);
-
-  // Verify that the multitask menu has been centered on the new window size.
   auto* multitask_menu = GetMultitaskMenu();
   ASSERT_TRUE(multitask_menu);
   EXPECT_EQ(window->GetBoundsInScreen().CenterPoint().x(),
@@ -478,6 +479,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HalfButtonFunctionality) {
 
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialButtonFunctionality) {
   auto window = CreateTestWindow();
+  base::HistogramTester histogram_tester;
 
   // Test that primary button snaps to 0.67f screen ratio.
   ShowMultitaskMenu(*window);
@@ -487,18 +489,19 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialButtonFunctionality) {
                                         .left_center());
   ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             WindowState::Get(window.get())->GetStateType());
-  const gfx::Rect work_area_bounds_in_screen =
+  const gfx::Rect work_area_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-  auto* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
   const gfx::Rect divider_bounds =
-      split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
-          /*is_dragging*/ false);
-  ASSERT_NEAR(work_area_bounds_in_screen.width() * 0.67,
-              window->bounds().width(), divider_bounds.width());
-
-  // Test that the multitask menu has been closed.
+      SplitViewController::Get(Shell::GetPrimaryRootWindow())
+          ->split_view_divider()
+          ->GetDividerBoundsInScreen(
+              /*is_dragging*/ false);
+  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window->bounds().width(),
+              divider_bounds.width());
   ASSERT_FALSE(GetMultitaskMenu());
+  histogram_tester.ExpectBucketCount(
+      chromeos::GetActionTypeHistogramName(),
+      chromeos::MultitaskMenuActionType::kPartialSplitButton, 1);
 
   // Test that secondary button snaps to 0.33f screen ratio.
   ShowMultitaskMenu(*window);
@@ -507,12 +510,16 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialButtonFunctionality) {
                                ->GetBoundsInScreen());
   gfx::Point secondary_center(
       gfx::Point(partial_bounds.x() + partial_bounds.width() * 0.67f,
-                 partial_bounds.y() + partial_bounds.y() / 2));
+                 partial_bounds.y() + partial_bounds.y() * 0.5f));
   GetEventGenerator()->GestureTapAt(secondary_center);
   ASSERT_EQ(chromeos::WindowStateType::kSecondarySnapped,
             WindowState::Get(window.get())->GetStateType());
-  ASSERT_NEAR(work_area_bounds_in_screen.width() * 0.33,
-              window->bounds().width(), divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.33f, window->bounds().width(),
+              divider_bounds.width());
+  ASSERT_FALSE(GetMultitaskMenu());
+  histogram_tester.ExpectBucketCount(
+      chromeos::GetActionTypeHistogramName(),
+      chromeos::MultitaskMenuActionType::kPartialSplitButton, 2);
 }
 
 // Tests that tap outside the menu will close the menu.
