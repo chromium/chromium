@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS @property determines the registration when uncontested
+PASS CSS.registerProperty wins over @property
+PASS @property later in document order wins
+PASS @property later in stylesheet wins
+PASS CSS.registerProperty determines the registration when uncontested
+PASS @property registrations are cleared when rule removed
+FAIL Computed value becomes token sequence when @property is removed assert_equals: expected "calc(1px + 1px)" but got " calc(1px + 1px)"
+FAIL Inherited status is reflected in computed styles when @property is removed assert_equals: expected "10px" but got " 10px"
+PASS Invalid @property rule (missing syntax) does not overwrite previous valid rule
+PASS Invalid @property rule (missing inherits descriptor) does not overwrite previous valid rule
+PASS Invalid @property rule (missing initial-value) does not overwrite previous valid rule
+PASS Previous invalid rule does not prevent valid rule from causing registration
+PASS Unknown descriptors are ignored and do not invalidate rule
+Harness: the test ran to completion.
+

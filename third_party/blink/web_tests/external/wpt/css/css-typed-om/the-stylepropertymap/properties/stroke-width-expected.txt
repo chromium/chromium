@@ -9,7 +9,7 @@ PASS Can set 'stroke-width' to a length: -3.14em
 PASS Can set 'stroke-width' to a length: 3.14cm
 PASS Can set 'stroke-width' to a length: calc(0px + 0em)
 PASS Can set 'stroke-width' to a percent: 0%
-PASS Can set 'stroke-width' to a percent: -3.14%
+FAIL Can set 'stroke-width' to a percent: -3.14% assert_approx_equals: expected 0 +/- 0.000001 but got -3.140000104904175
 PASS Can set 'stroke-width' to a percent: 3.14%
 PASS Can set 'stroke-width' to a percent: calc(0% + 0%)
 FAIL Can set 'stroke-width' to a number: 0 Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
