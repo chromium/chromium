@@ -42,13 +42,13 @@ public class OriginVerificationScheduler {
     }
 
     @VisibleForTesting
-    public Set<Origin> addPendingOriginForTesting() {
+    public Set<Origin> getPendingOriginsForTesting() {
         return mPendingOrigins;
     }
 
     // Use this function only for testing.
     @VisibleForTesting
-    public void addPendingOrigin(Origin origin) {
+    public void addPendingOriginForTesting(Origin origin) {
         mPendingOrigins.add(origin);
     }
 
