@@ -308,11 +308,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '88cfd0d3c0e5ac63944d677d91c334d91aa7df07',
+  'v8_revision': 'refs/heads/chromium/5505',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '35d2fc302ebcf128c6a67809c95a4425521fcc14',
+  'angle_revision': 'refs/heads/chromium/5505',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -320,7 +320,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': '355229b748b7843e23dcfb24d80f7bc16b159f33',
+  'pdfium_revision': 'refs/heads/chromium/5505',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -419,7 +419,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'd25fc2f5145160c73ac50fc2406b2d97ff3c002f',
+  'dawn_revision': 'refs/heads/chromium/5505',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -776,7 +776,7 @@ deps = {
 
   'src/clank': {
     'url': 'https://chrome-internal.googlesource.com/clank/internal/apps.git' + '@' +
-    '3f66b91dba539f584ebdaa1c69c00ead2e9ef225',
+    'refs/heads/chromium/5505',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1216,7 +1216,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': 'https://chrome-internal.googlesource.com/devtools/devtools-internal.git' + '@' + 'cc8d1d888185d05656f6c6cc3d6e385d5c433973',
+      'url': 'https://chrome-internal.googlesource.com/devtools/devtools-internal.git' + '@' + 'refs/heads/chromium/5505',
     'condition': 'checkout_src_internal',
   },
 
@@ -1707,7 +1707,7 @@ deps = {
   },
 
   'src/third_party/requests/src': {
-      'url': Var('chromium_git') + '/external/github.com/kennethreitz/requests.git' + '@' + 'refs/tags/v2.23.0',
+      'url': Var('chromium_git') + '/external/github.com/kennethreitz/requests.git' + '@' + 'c7e0fc087ceeadb8b4c84a0953a422c474093d6d',
       'condition': 'checkout_android',
   },
 
@@ -1790,7 +1790,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@70e74a2f82ab78c71851abb4b0f2117e8ee3cc01',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@refs/heads/chromium/5505',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'ebe84bec02c041d28f902da0214bf442743fc907',
@@ -1830,7 +1830,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '6a7030e24f882e023c6dbbb47a206d7105e9a9db',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '9d0986c5406de8c63741c1ce49d14385eacf9b07',
+    Var('webrtc_git') + '/src.git' + '@' + 'refs/branch-heads/5505',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -1900,7 +1900,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@51946ff330045003e3f0017e1499f10f741ea2c6',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@refs/heads/chromium/5505',
     'condition': 'checkout_src_internal',
   },
 
