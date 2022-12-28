@@ -2258,10 +2258,11 @@ void BrowserView::UpdateIsIsolatedWebApp() {
           web_contents->GetPrimaryMainFrame()->GetBrowserContext(), url);
 }
 
-void BrowserView::ToggleWindowControlsOverlayEnabled() {
+void BrowserView::ToggleWindowControlsOverlayEnabled(base::OnceClosure done) {
   browser()->app_controller()->ToggleWindowControlsOverlayEnabled(
       base::BindOnce(&BrowserView::UpdateWindowControlsOverlayEnabled,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr())
+          .Then(std::move(done)));
 }
 
 bool BrowserView::IsBorderlessModeEnabled() const {
