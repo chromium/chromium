@@ -10,4 +10,11 @@ interface NetworkSiminfoElement extends LegacyElementMixin, HTMLElement {
   getUnlockButton(): CrButtonElement|null;
   getSimLockToggle(): CrToggleElement|null;
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'network-siminfo': NetworkSiminfoElement;
+  }
+}
+
 export {NetworkSiminfoElement};

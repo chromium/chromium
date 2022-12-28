@@ -6,4 +6,11 @@ import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/le
 interface NetworkApnListElement extends LegacyElementMixin, HTMLElement {
   getApnSelect(): HTMLSelectElement|null;
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'network-apnlist': NetworkApnListElement;
+  }
+}
+
 export {NetworkApnListElement};

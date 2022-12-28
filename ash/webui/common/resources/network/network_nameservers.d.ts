@@ -6,4 +6,11 @@ import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/le
 interface NetworkNameserversElement extends LegacyElementMixin, HTMLElement {
   getNameserverRadioButtons(): HTMLElement|null;
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'network-nameservers': NetworkNameserversElement;
+  }
+}
+
 export {NetworkNameserversElement};

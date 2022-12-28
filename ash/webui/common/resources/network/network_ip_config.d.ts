@@ -8,4 +8,11 @@ import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/le
 interface NetworkIpConfigElement extends LegacyElementMixin, HTMLElement {
   getAutoConfigIpToggle(): CrToggleElement|null;
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'network-ip-config': NetworkIpConfigElement;
+  }
+}
+
 export {NetworkIpConfigElement};
