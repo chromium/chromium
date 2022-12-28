@@ -298,29 +298,29 @@ uint8_t XuCameraService::CtrlThroughQuery(const base::ScopedFD& file_descriptor,
                                           std::vector<uint8_t>& data,
                                           const uint8_t& request) {
   VLOG(4) << __func__ << " request - " << static_cast<unsigned int>(request);
+  uint8_t data_len;
+  uint8_t error_code = 0;
   if (UVC_SET_CUR == request) {
-    uint8_t error_code =
+    error_code =
         QueryXuControl(file_descriptor, query->unit_id, query->selector,
                        data.data(), request, data.size());
     return error_code;
+  } else if (UVC_GET_INFO == request) {
+    data_len = 1;
+  } else {
+    data.clear();
+    data.resize(2);
+    error_code = GetLength(data.data(), file_descriptor, query->unit_id,
+                           query->selector);
+    if (error_code != 0 || UVC_GET_LEN == request) {
+      return error_code;
+    }
+    // Use the queried data as data length for GetCtrl.
+    // UVC_GET_LEN return values is always returned as little-endian 16-bit
+    // integer by the device.
+    data_len = le16toh(data[0] | (data[1] << 8));
   }
 
-  data.clear();
-  data.resize(2);
-  uint8_t error_code =
-      QueryXuControl(file_descriptor, query->unit_id, query->selector,
-                     data.data(), UVC_GET_LEN, sizeof(uint16_t));
-
-  VLOG(4) << __func__ << "query length error_code: "
-          << static_cast<unsigned int>(error_code);
-  if (error_code != 0 || UVC_GET_LEN == request) {
-    return error_code;
-  }
-
-  // Use the queried data as data length for GetCtrl.
-  // UVC_GET_LEN return values is always returned as little-endian 16-bit
-  // integer by the device.
-  uint16_t data_len = le16toh(data[0] | (data[1] << 8));
   data.clear();
   data.resize(data_len);
 
@@ -416,4 +416,18 @@ void XuCameraService::CopyFromData(T* value, std::vector<uint8_t>& data) {
     shiftBit += 8;
   }
 }
+
+uint8_t XuCameraService::GetLength(uint8_t* data,
+                                   const base::ScopedFD& file_descriptor,
+                                   const uint8_t& unit_id,
+                                   const uint8_t& selector) {
+  // UVC_GET_LEN is always size of 2
+  uint8_t error_code =
+      QueryXuControl(file_descriptor, unit_id, selector, data, UVC_GET_LEN, 2);
+  VLOG_IF(4, (error_code != 0))
+      << __func__
+      << "query length error_code: " << static_cast<unsigned int>(error_code);
+  return error_code;
+}
+
 }  // namespace ash::cfm
