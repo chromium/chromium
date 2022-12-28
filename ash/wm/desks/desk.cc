@@ -245,6 +245,41 @@ class DeskContainerObserver : public aura::WindowObserver {
 };
 
 // -----------------------------------------------------------------------------
+// Desk::ScopedContentUpdateNotificationDisabler:
+
+Desk::ScopedContentUpdateNotificationDisabler::
+    ScopedContentUpdateNotificationDisabler(
+        const std::vector<std::unique_ptr<Desk>>& desks,
+        bool notify_when_destroyed)
+    : notify_when_destroyed_(notify_when_destroyed) {
+  DCHECK(!desks.empty());
+
+  for (auto& desk : desks) {
+    desks_.push_back(desk.get());
+    desks_.back()->SuspendContentUpdateNotification();
+  }
+}
+
+Desk::ScopedContentUpdateNotificationDisabler::
+    ScopedContentUpdateNotificationDisabler(const std::vector<Desk*>& desks,
+                                            bool notify_when_destroyed)
+    : notify_when_destroyed_(notify_when_destroyed) {
+  DCHECK(!desks.empty());
+
+  for (auto* desk : desks) {
+    desks_.push_back(desk);
+    desks_.back()->SuspendContentUpdateNotification();
+  }
+}
+
+Desk::ScopedContentUpdateNotificationDisabler::
+    ~ScopedContentUpdateNotificationDisabler() {
+  for (auto* desk : desks_) {
+    desk->ResumeContentUpdateNotification(notify_when_destroyed_);
+  }
+}
+
+// -----------------------------------------------------------------------------
 // Desk:
 
 Desk::Desk(int associated_container_id, bool desk_being_restored)
@@ -411,10 +446,6 @@ void Desk::WillRemoveWindowFromDesk(aura::Window* window) {
   }
 }
 
-base::AutoReset<bool> Desk::GetScopedNotifyContentChangedDisabler() {
-  return base::AutoReset<bool>(&should_notify_content_changed_, false);
-}
-
 bool Desk::ContainsAppWindows() const {
   return !GetAllAppWindows().empty();
 }
@@ -559,90 +590,82 @@ void Desk::Deactivate(bool update_window_activation) {
 void Desk::MoveNonAppOverviewWindowsToDesk(Desk* target_desk) {
   DCHECK(Shell::Get()->overview_controller()->InOverviewSession());
 
-  {
-    // Wait until the end to allow notifying the observers of either desk.
-    auto this_desk_throttled = GetScopedNotifyContentChangedDisabler();
-    auto target_desk_throttled =
-        target_desk->GetScopedNotifyContentChangedDisabler();
+  // Wait until the end to allow notifying the observers of either desk.
+  auto this_desk_throttled = ScopedContentUpdateNotificationDisabler(
+      /*desks=*/{this}, /*notify_when_destroyed=*/false);
+  auto target_desk_throttled = ScopedContentUpdateNotificationDisabler(
+      /*desks=*/{target_desk}, /*notify_when_destroyed=*/true);
 
-    // Create a `aura::WindowTracker` to hold `windows_`'s windows so that we do
-    // not edit `windows_` in place.
-    aura::WindowTracker window_tracker(windows_);
+  // Create a `aura::WindowTracker` to hold `windows_`'s windows so that we do
+  // not edit `windows_` in place.
+  aura::WindowTracker window_tracker(windows_);
 
-    // Move only the non-app overview windows.
-    while (!window_tracker.windows().empty()) {
-      auto* window = window_tracker.Pop();
-      if (IsOverviewUiWindow(window))
-        MoveWindowToDeskInternal(window, target_desk, window->GetRootWindow());
+  // Move only the non-app overview windows.
+  while (!window_tracker.windows().empty()) {
+    auto* window = window_tracker.Pop();
+    if (IsOverviewUiWindow(window)) {
+      MoveWindowToDeskInternal(window, target_desk, window->GetRootWindow());
     }
   }
-
-  target_desk->NotifyContentChanged();
 }
 
 void Desk::MoveWindowsToDesk(Desk* target_desk) {
   DCHECK(target_desk);
 
-  {
-    ScopedWindowPositionerDisabler window_positioner_disabler;
+  ScopedWindowPositionerDisabler window_positioner_disabler;
 
-    // Throttle notifying the observers, while we move those windows and notify
-    // them only once when done.
-    auto this_desk_throttled = GetScopedNotifyContentChangedDisabler();
-    auto target_desk_throttled =
-        target_desk->GetScopedNotifyContentChangedDisabler();
+  // Throttle notifying the observers, while we move those windows and notify
+  // them only once when done.
+  auto this_and_target_desk_throttled = ScopedContentUpdateNotificationDisabler(
+      /*desks=*/{this, target_desk}, /*notify_when_destroyed=*/true);
 
-    // There are 2 cases in moving floated window during desk removal.
-    // Case 1: If there's no floated window on the "moved-to" desk, then the
-    // floated window on the current desk should remain floated. Case 2: If
-    // there's a floating window on the "moved-to" desk too, unfloat the one on
-    // the closed desk and retain the one on the "moved-to" desk.
-    // Special Note:
-    // Because of Case 2, below operation needs to be done before calling
-    // `MoveWindowToDeskInternal` on `windows_to_move`. We want to re-parent
-    // floated window back to desk container before the removal, so all windows
-    // under the to-be-removed desk's container can be collected in
-    // `windows_to_move` to move to target desk.
-    if (chromeos::wm::features::IsFloatWindowEnabled()) {
-      Shell::Get()->float_controller()->OnMovingAllWindowsOutToDesk(
-          this, target_desk);
-    }
+  // There are 2 cases in moving floated window during desk removal.
+  // Case 1: If there's no floated window on the "moved-to" desk, then the
+  // floated window on the current desk should remain floated. Case 2: If
+  // there's a floating window on the "moved-to" desk too, unfloat the one on
+  // the closed desk and retain the one on the "moved-to" desk.
+  // Special Note:
+  // Because of Case 2, below operation needs to be done before calling
+  // `MoveWindowToDeskInternal` on `windows_to_move`. We want to re-parent
+  // floated window back to desk container before the removal, so all windows
+  // under the to-be-removed desk's container can be collected in
+  // `windows_to_move` to move to target desk.
+  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    Shell::Get()->float_controller()->OnMovingAllWindowsOutToDesk(this,
+                                                                  target_desk);
+  }
 
-    // Moving windows will change the hierarchy and hence |windows_|, and has to
-    // be done without changing the relative z-order. So we make a copy of all
-    // the top-level windows on all the containers of this desk, such that
-    // windows in each container are copied from top-most (z-order) to
-    // bottom-most.
-    // Note that moving windows out of the container and restacking them
-    // differently may trigger events that lead to destroying a window on the
-    // list. For example moving the top-most window which has a backdrop will
-    // cause the backdrop to be destroyed. Therefore observe such events using
-    // an |aura::WindowTracker|.
-    aura::WindowTracker windows_to_move;
-    for (aura::Window* root : Shell::GetAllRootWindows()) {
-      const aura::Window* container = GetDeskContainerForRoot(root);
-      for (auto* window : base::Reversed(container->children()))
-        windows_to_move.Add(window);
-    }
-
-    auto* mru_tracker = Shell::Get()->mru_window_tracker();
-    while (!windows_to_move.windows().empty()) {
-      auto* window = windows_to_move.Pop();
-      if (!CanMoveWindowOutOfDeskContainer(window))
-        continue;
-
-      // Note that windows that belong to the same container in
-      // |windows_to_move| are sorted from top-most to bottom-most, hence
-      // calling |StackChildAtBottom()| on each in this order will maintain that
-      // same order in the |target_desk|'s container.
-      MoveWindowToDeskInternal(window, target_desk, window->GetRootWindow());
-      window->parent()->StackChildAtBottom(window);
-      mru_tracker->OnWindowMovedOutFromRemovingDesk(window);
+  // Moving windows will change the hierarchy and hence `windows_`, and has to
+  // be done without changing the relative z-order. So we make a copy of all the
+  // top-level windows on all the containers of this desk, such that windows in
+  // each container are copied from top-most (z-order) to bottom-most. Note that
+  // moving windows out of the container and restacking them differently may
+  // trigger events that lead to destroying a window on the list. For example
+  // moving the top-most window which has a backdrop will cause the backdrop to
+  // be destroyed. Therefore observe such events using an `aura::WindowTracker`.
+  aura::WindowTracker windows_to_move;
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
+    const aura::Window* container = GetDeskContainerForRoot(root);
+    for (auto* window : base::Reversed(container->children())) {
+      windows_to_move.Add(window);
     }
   }
 
-  NotifyContentChanged();
-  target_desk->NotifyContentChanged();
+  auto* mru_tracker = Shell::Get()->mru_window_tracker();
+  while (!windows_to_move.windows().empty()) {
+    auto* window = windows_to_move.Pop();
+    if (!CanMoveWindowOutOfDeskContainer(window)) {
+      continue;
+    }
+
+    // Note that windows that belong to the same container in `windows_to_move`
+    // are sorted from top-most to bottom-most, hence calling
+    // `StackChildAtBottom()` on each in this order will maintain that same
+    // order in the target_desk's container.
+    MoveWindowToDeskInternal(window, target_desk, window->GetRootWindow());
+    window->parent()->StackChildAtBottom(window);
+    mru_tracker->OnWindowMovedOutFromRemovingDesk(window);
+  }
 }
 
 void Desk::MoveWindowToDesk(aura::Window* window,
@@ -655,41 +678,35 @@ void Desk::MoveWindowToDesk(aura::Window* window,
   DCHECK(base::Contains(windows_, window));
   DCHECK(this != target_desk);
 
-  {
-    ScopedWindowPositionerDisabler window_positioner_disabler;
+  ScopedWindowPositionerDisabler window_positioner_disabler;
 
-    // Throttling here is necessary even though we're attempting to move a
-    // single window. This is because that window might exist in a transient
-    // window tree, which will result in actually moving multiple windows if the
-    // transient children used to be on the same container.
-    // See `wm::TransientWindowManager::OnWindowHierarchyChanged()`.
-    auto this_desk_throttled = GetScopedNotifyContentChangedDisabler();
-    auto target_desk_throttled =
-        target_desk->GetScopedNotifyContentChangedDisabler();
+  // Throttling here is necessary even though we're attempting to move a
+  // single window. This is because that window might exist in a transient
+  // window tree, which will result in actually moving multiple windows if the
+  // transient children used to be on the same container.
+  // See `wm::TransientWindowManager::OnWindowHierarchyChanged()`.
+  auto this_and_target_desk_throttled = ScopedContentUpdateNotificationDisabler(
+      /*desks=*/{this, target_desk}, /*notify_when_destroyed=*/true);
 
-    // Always move the root of the transient window tree. We should never move a
-    // transient child and leave its parent behind. Moving the transient
-    // descendants that exist on the same desk container will be taken care of
-    //  by `wm::TransientWindowManager::OnWindowHierarchyChanged()`.
-    aura::Window* transient_root = ::wm::GetTransientRoot(window);
-    MoveWindowToDeskInternal(transient_root, target_desk, target_root);
+  // Always move the root of the transient window tree. We should never move a
+  // transient child and leave its parent behind. Moving the transient
+  // descendants that exist on the same desk container will be taken care of by
+  // `wm::TransientWindowManager::OnWindowHierarchyChanged()`.
+  aura::Window* transient_root = ::wm::GetTransientRoot(window);
+  MoveWindowToDeskInternal(transient_root, target_desk, target_root);
 
-    if (!desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
-      FixWindowStackingAccordingToGlobalMru(transient_root);
-    }
-
-    // Unminimize the window so that it shows up in the mini_view after it had
-    // been dragged and moved to another desk. Don't unminimize if the window is
-    // visible on all desks since it's being moved during desk activation.
-    auto* window_state = WindowState::Get(transient_root);
-    if (unminimize && window_state->IsMinimized() &&
-        !desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
-      window_state->Unminimize();
-    }
+  if (!desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+    FixWindowStackingAccordingToGlobalMru(transient_root);
   }
 
-  NotifyContentChanged();
-  target_desk->NotifyContentChanged();
+  // Unminimize the window so that it shows up in the mini_view after it had
+  // been dragged and moved to another desk. Don't unminimize if the window is
+  // visible on all desks since it's being moved during desk activation.
+  auto* window_state = WindowState::Get(transient_root);
+  if (unminimize && window_state->IsMinimized() &&
+      !desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+    window_state->Unminimize();
+  }
 }
 
 aura::Window* Desk::GetDeskContainerForRoot(aura::Window* root) const {
@@ -699,13 +716,15 @@ aura::Window* Desk::GetDeskContainerForRoot(aura::Window* root) const {
 }
 
 void Desk::NotifyContentChanged() {
-  if (!should_notify_content_changed_)
+  if (ContentUpdateNotificationSuspended()) {
     return;
+  }
 
   // Updating the backdrops below may lead to the removal or creation of
   // backdrop windows in this desk, which can cause us to recurse back here.
   // Disable this.
-  auto disable_recursion = GetScopedNotifyContentChangedDisabler();
+  auto disable_recursion = ScopedContentUpdateNotificationDisabler(
+      /*desks=*/{this}, /*notify_when_destroyed=*/false);
 
   // The availability and visibility of backdrops of all containers associated
   // with this desk will be updated *before* notifying observer, so that the
@@ -878,6 +897,10 @@ void Desk::RemoveAllDeskWindow(aura::Window* window) {
     --it->order;
 }
 
+bool Desk::ContentUpdateNotificationSuspended() const {
+  return content_update_notification_suspend_count_ != 0;
+}
+
 void Desk::MoveWindowToDeskInternal(aura::Window* window,
                                     Desk* target_desk,
                                     aura::Window* target_root) {
@@ -930,6 +953,20 @@ void Desk::MaybeIncrementWeeklyActiveDesks() {
     return;
   interacted_with_this_week_ = true;
   ++g_weekly_active_desks;
+}
+
+void Desk::SuspendContentUpdateNotification() {
+  ++content_update_notification_suspend_count_;
+}
+
+void Desk::ResumeContentUpdateNotification(bool notify_when_fully_resumed) {
+  --content_update_notification_suspend_count_;
+  DCHECK_GE(content_update_notification_suspend_count_, 0);
+
+  if (!content_update_notification_suspend_count_ &&
+      notify_when_fully_resumed) {
+    NotifyContentChanged();
+  }
 }
 
 }  // namespace ash

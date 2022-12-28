@@ -677,12 +677,11 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   // If we are switching users, we don't want to notify desks of content changes
   // until the user switch animation has shown the new user's windows.
   const bool is_user_switch = source == DesksSwitchSource::kUserSwitch;
-  std::vector<base::AutoReset<bool>> desks_scoped_notify_disablers;
+  absl::optional<Desk::ScopedContentUpdateNotificationDisabler>
+      desks_scoped_notify_disabler;
   if (is_user_switch) {
-    for (const auto& desk_to_notify : desks_) {
-      desks_scoped_notify_disablers.push_back(
-          desk_to_notify->GetScopedNotifyContentChangedDisabler());
-    }
+    desks_scoped_notify_disabler.emplace(/*desks=*/desks_,
+                                         /*notify_when_destroyed=*/false);
   }
 
   OverviewController* overview_controller = Shell::Get()->overview_controller();
@@ -694,10 +693,9 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
       // switching to a new user, otherwise the multi user switch animation will
       // animate the same windows that overview watches to determine if the
       // overview shutdown animation is complete. See https://crbug.com/1001586.
-      const bool immediate_exit = source == DesksSwitchSource::kUserSwitch;
       overview_controller->EndOverview(
           OverviewEndAction::kDeskActivation,
-          immediate_exit ? OverviewEnterExitType::kImmediateExit
+          is_user_switch ? OverviewEnterExitType::kImmediateExit
                          : OverviewEnterExitType::kNormal);
     }
     return;
@@ -1664,7 +1662,9 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   // No need to spend time refreshing the mini_views of the removed desk.
   auto removed_desk_mini_views_pauser =
-      removed_desk->GetScopedNotifyContentChangedDisabler();
+      Desk::ScopedContentUpdateNotificationDisabler(
+          /*desks=*/{removed_desk},
+          /*notify_when_destroyed=*/false);
 
   // - If the active desk is the one being removed, activate the desk to its
   //   left, if no desk to the left, activate one on the right.
@@ -1689,7 +1689,9 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     // The target desk, which is about to become active, will have its
     // mini_views refreshed at the end.
     auto target_desk_mini_view_pauser =
-        target_desk->GetScopedNotifyContentChangedDisabler();
+        Desk::ScopedContentUpdateNotificationDisabler(
+            /*desks=*/{target_desk},
+            /*notify_when_destroyed=*/false);
 
     // Exit split view if active, before activating the new desk. We will
     // restore the split view state of the newly activated desk at the end.
@@ -1738,7 +1740,9 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   } else if (close_type == DeskCloseType::kCombineDesks) {
     // We will refresh the mini_views of the active desk only once at the end.
     auto active_desk_mini_view_pauser =
-        active_desk_->GetScopedNotifyContentChangedDisabler();
+        Desk::ScopedContentUpdateNotificationDisabler(
+            /*desks=*/{active_desk_},
+            /*notify_when_destroyed=*/false);
 
     removed_desk->MoveWindowsToDesk(active_desk_);
 
@@ -1756,7 +1760,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   // It's OK now to refresh the mini_views of *only* the active desk, and only
   // if windows from the removed desk moved to it.
-  DCHECK(active_desk_->should_notify_content_changed());
+  DCHECK(!active_desk_->ContentUpdateNotificationSuspended());
   if (!removed_desk_windows.empty())
     active_desk_->NotifyContentChanged();
 
@@ -1876,7 +1880,8 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
   // Content changed notifications for this desk should be disabled when
   // we are destroying the windows.
   auto throttle_desk_notifications =
-      removed_desk->GetScopedNotifyContentChangedDisabler();
+      Desk::ScopedContentUpdateNotificationDisabler(
+          /*desks=*/{removed_desk}, /*notify_when_destroyed=*/false);
 
   std::vector<aura::Window*> app_windows = removed_desk->GetAllAppWindows();
 

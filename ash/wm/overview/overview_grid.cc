@@ -768,10 +768,17 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
 }
 
 void OverviewGrid::RemoveAllItemsForSavedDeskLaunch() {
-  for (auto& item : window_list_) {
-    item->RevertHideForSavedDeskLibrary(/*animate=*/false);
-    item->RestoreWindow(/*reset_transform=*/true,
-                        /*was_saved_desk_library_showing=*/true);
+  {
+    // Wait until the end to notify content changes for all desks.
+    Desk::ScopedContentUpdateNotificationDisabler desks_scoped_notify_disabler(
+        /*desks=*/DesksController::Get()->desks(),
+        /*notify_when_destroyed=*/true);
+
+    for (auto& item : window_list_) {
+      item->RevertHideForSavedDeskLibrary(/*animate=*/false);
+      item->RestoreWindow(/*reset_transform=*/true,
+                          /*was_saved_desk_library_showing=*/true);
+    }
   }
   window_list_.clear();
   num_incognito_windows_ = 0;
@@ -1746,8 +1753,16 @@ void OverviewGrid::ShowSavedDeskLibrary() {
     saved_desk_library_widget_->SetBounds(library_bounds);
   }
 
-  for (auto& overview_mode_item : window_list_)
-    overview_mode_item->HideForSavedDeskLibrary(/*animate=*/true);
+  {
+    // Wait until the end to notify content changes for all desks.
+    Desk::ScopedContentUpdateNotificationDisabler desks_scoped_notify_disabler(
+        /*desks=*/DesksController::Get()->desks(),
+        /*notify_when_destroyed=*/true);
+
+    for (auto& overview_mode_item : window_list_) {
+      overview_mode_item->HideForSavedDeskLibrary(/*animate=*/true);
+    }
+  }
 
   // There may be an existing animation in progress triggered by
   // `HideSavedDeskLibrary()` below, which animates a widget to 0.f before
@@ -1780,6 +1795,11 @@ void OverviewGrid::HideSavedDeskLibrary(bool exit_overview) {
                                    grid_layer->GetTargetOpacity() == 0.f;
   if (already_hiding_grid)
     return;
+
+  // Wait until the end to notify content changes for all desks.
+  Desk::ScopedContentUpdateNotificationDisabler desks_scoped_notify_disabler(
+      /*desks=*/DesksController::Get()->desks(),
+      /*notify_when_destroyed=*/true);
 
   if (exit_overview && overview_session_->enter_exit_overview_type() ==
                            OverviewEnterExitType::kImmediateExit) {
