@@ -353,6 +353,10 @@ void DismissDefaultBrowserPromo() {
                        kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Accept sync.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
                    scrollViewIdentifier:
@@ -385,6 +389,10 @@ void DismissDefaultBrowserPromo() {
                        kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Accept sync.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
                    scrollViewIdentifier:
@@ -478,6 +486,10 @@ void DismissDefaultBrowserPromo() {
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
                   @"Sync shouldn't start when discarding advanced settings.");
   // Accept sync.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
                    scrollViewIdentifier:
@@ -546,6 +558,10 @@ void DismissDefaultBrowserPromo() {
                  chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
   // Accept sync.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
                    scrollViewIdentifier:
@@ -597,6 +613,10 @@ void DismissDefaultBrowserPromo() {
                        kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Accept sync.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
                    scrollViewIdentifier:
@@ -722,6 +742,10 @@ void DismissDefaultBrowserPromo() {
                  chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
   // Accept sync.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
                    scrollViewIdentifier:
@@ -783,6 +807,10 @@ void DismissDefaultBrowserPromo() {
                        kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Accept sync.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
                    scrollViewIdentifier:
@@ -831,6 +859,10 @@ void DismissDefaultBrowserPromo() {
                        kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Accept sync.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
                    scrollViewIdentifier:
