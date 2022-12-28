@@ -522,7 +522,13 @@ class DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<FakeDlpController> dlp_controller_;
 };
 
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, ProceedOnWarn) {
+// TODO(crbug.com/1230617): Disable test on ASAN/LSAN builds.
+#if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER)
+#define MAYBE_ProceedOnWarn DISABLED_ProceedOnWarn
+#else
+#define MAYBE_ProceedOnWarn ProceedOnWarn
+#endif
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -609,7 +615,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, ProceedOnWarn) {
 }
 
 // TODO(crbug.com/1395711): The test is flaky. Re-enable it.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1230617): Disable test on ASAN/LSAN builds.
+#if BUILDFLAG(IS_LINUX) || defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER)
 #define MAYBE_CancelWarn DISABLED_CancelWarn
 #else
 #define MAYBE_CancelWarn CancelWarn
