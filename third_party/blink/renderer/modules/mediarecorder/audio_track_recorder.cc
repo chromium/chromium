@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -17,7 +18,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
-#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
@@ -63,10 +63,10 @@ AudioTrackRecorder::AudioTrackRecorder(
     base::OnceClosure on_track_source_ended_cb,
     uint32_t bits_per_second,
     BitrateMode bitrate_mode,
-    std::unique_ptr<NonMainThread> encoder_thread)
+    scoped_refptr<base::SequencedTaskRunner> encoder_task_runner)
     : TrackRecorder(std::move(on_track_source_ended_cb)),
       track_(track),
-      encoder_thread_(std::move(encoder_thread)),
+      encoder_task_runner_(std::move(encoder_task_runner)),
       encoder_(encoder_task_runner_,
                CreateAudioEncoder(codec,
                                   std::move(on_encoded_audio_cb),
