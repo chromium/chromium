@@ -940,12 +940,28 @@ var CrSettingsMenuTest = class extends CrSettingsBrowserTest {
   }
 };
 
+// Separate class to allow running of individual suites, as the combination of
+// all suites is too large, leading to flakes on some bots.
+var CrSettingsAllSitesTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/all_sites_tests.js';
+  }
+}
+
+TEST_F('CrSettingsAllSitesTest', 'AllSites_EnableFirstPartySets', function() {
+  runMochaSuite('AllSites_EnableFirstPartySets');
+});
+
+TEST_F('CrSettingsAllSitesTest', 'AllSites_DisableFirstPartySets', function() {
+  runMochaSuite('AllSites_DisableFirstPartySets');
+});
+
 TEST_F('CrSettingsMenuTest', 'All', function() {
   mocha.run()
 });
 
-[['AllSites', 'all_sites_tests.js'],
- ['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
+[['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
  [
    'SettingsCategoryDefaultRadioGroup',
    'settings_category_default_radio_group_tests.js',
