@@ -205,10 +205,6 @@ TEST_P(HybridSpellCheckTest, ShouldUseBrowserSpellCheckOnlyWhenNeeded) {
 }
 
 void HybridSpellCheckTest::RunShouldUseBrowserSpellCheckOnlyWhenNeededTest() {
-  if (!spellcheck::WindowsVersionSupportsSpellchecker()) {
-    return;
-  }
-
   const auto& test_case = GetParam();
 
   FakeTextCheckingResult completion;
@@ -584,10 +580,6 @@ INSTANTIATE_TEST_SUITE_P(
                      4)})}));
 
 TEST_P(CombineSpellCheckResultsTest, ShouldCorrectlyCombineHybridResults) {
-  if (!spellcheck::WindowsVersionSupportsSpellchecker()) {
-    return;
-  }
-
   const auto& test_case = GetParam();
   base::test::ScopedFeatureList local_features;
   local_features.InitAndEnableFeature(spellcheck::kWinUseBrowserSpellChecker);

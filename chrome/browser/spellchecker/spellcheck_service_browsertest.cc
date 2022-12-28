@@ -707,9 +707,6 @@ class SpellcheckServiceWindowsHybridBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTest,
                        WindowsHybridSpellcheck) {
-  if (!spellcheck::WindowsVersionSupportsSpellchecker())
-    return;
-
   // This test specifically covers the case where spellcheck delayed
   // initialization is not enabled, so return early if it is. Other tests
   // cover the case where delayed initialization is enabled.
@@ -833,9 +830,6 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
 
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
                        WindowsHybridSpellcheckDelayInit) {
-  if (!spellcheck::WindowsVersionSupportsSpellchecker())
-    return;
-
   ASSERT_TRUE(spellcheck::UseBrowserSpellChecker());
 
   // Note that the base class forces dictionary sync to not be performed, and

@@ -26,7 +26,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "components/services/quarantine/common.h"
 #include "components/services/quarantine/common_win.h"
 #include "url/gurl.h"
@@ -201,18 +200,16 @@ QuarantineFileResult SetInternetZoneIdentifierDirectly(
   static const char kHostUrlFormat[] = "HostUrl=%s\r\n";
 
   std::string identifier = "[ZoneTransfer]\r\nZoneId=3\r\n";
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    // Match what the InvokeAttachmentServices() function will output, including
-    // the order of the values.
-    if (IsValidUrlForAttachmentServices(referrer_url)) {
-      identifier.append(
-          base::StringPrintf(kReferrerUrlFormat, referrer_url.spec().c_str()));
-    }
-    identifier.append(base::StringPrintf(
-        kHostUrlFormat, IsValidUrlForAttachmentServices(source_url)
-                            ? source_url.spec().c_str()
-                            : "about:internet"));
+  // Match what the InvokeAttachmentServices() function will output, including
+  // the order of the values.
+  if (IsValidUrlForAttachmentServices(referrer_url)) {
+    identifier.append(
+        base::StringPrintf(kReferrerUrlFormat, referrer_url.spec().c_str()));
   }
+  identifier.append(base::StringPrintf(
+      kHostUrlFormat, IsValidUrlForAttachmentServices(source_url)
+                          ? source_url.spec().c_str()
+                          : "about:internet"));
 
   // Don't include trailing null in data written.
   DWORD written = 0;

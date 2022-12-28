@@ -230,9 +230,6 @@ void SpellcheckServiceHybridUnitTestBase::RunGetDictionariesTest(
     const std::string accept_languages,
     const std::vector<std::string> spellcheck_dictionaries,
     const std::vector<SpellcheckService::Dictionary> expected_dictionaries) {
-  if (!spellcheck::WindowsVersionSupportsSpellchecker())
-    return;
-
   prefs()->SetString(language::prefs::kAcceptLanguages, accept_languages);
   base::Value::List spellcheck_dictionaries_list;
   for (std::string dict : spellcheck_dictionaries) {
@@ -260,9 +257,6 @@ void SpellcheckServiceHybridUnitTestBase::RunDictionaryMappingTest(
     const std::string expected_tag_passed_to_spellcheck,
     const std::string expected_accept_language_generic,
     const std::string expected_tag_passed_to_spellcheck_generic) {
-  if (!spellcheck::WindowsVersionSupportsSpellchecker())
-    return;
-
   InitializeSpellcheckService({full_tag});
 
   std::string supported_dictionary;

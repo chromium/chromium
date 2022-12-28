@@ -43,8 +43,6 @@ BASE_DECLARE_FEATURE(kWinDelaySpellcheckServiceInit);
 // suggestions on demand when the context menu is brought up with a misspelled
 // word selected.
 BASE_DECLARE_FEATURE(kWinRetrieveSuggestionsOnlyOnDemand);
-
-bool WindowsVersionSupportsSpellchecker();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

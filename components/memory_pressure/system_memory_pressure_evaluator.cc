@@ -4,6 +4,9 @@
 
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -13,7 +16,6 @@
 #elif BUILDFLAG(IS_MAC)
 #include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
 #elif BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator_win.h"
 #endif
 
@@ -42,8 +44,7 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
           monitor->CreateVoter());
   // Also subscribe to the OS signals if they're available and the feature is
   // enabled.
-  if (base::FeatureList::IsEnabled(kUseWinOSMemoryPressureSignals) &&
-      base::win::GetVersion() >= base::win::Version::WIN8_1) {
+  if (base::FeatureList::IsEnabled(kUseWinOSMemoryPressureSignals)) {
     evaluator->CreateOSSignalPressureEvaluator(monitor->CreateVoter());
   }
   return evaluator;

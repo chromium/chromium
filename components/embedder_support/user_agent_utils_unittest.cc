@@ -4,6 +4,8 @@
 
 #include "components/embedder_support/user_agent_utils.h"
 
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -42,7 +44,6 @@
 #include "base/win/hstring_reference.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/scoped_winrt_initializer.h"
-#include "base/win/windows_version.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace embedder_support {
@@ -318,22 +319,6 @@ void VerifyWinPlatformVersion(std::string version) {
                              << " to not be supported.";
 }
 
-void VerifyLegacyWinPlatformVersion(const std::string& version) {
-  switch (base::win::GetVersion()) {
-    case base::win::Version::WIN7:
-      EXPECT_EQ("0.1.0", version);
-      break;
-    case base::win::Version::WIN8:
-      EXPECT_EQ("0.2.0", version);
-      break;
-    case base::win::Version::WIN8_1:
-      EXPECT_EQ("0.3.0", version);
-      break;
-    default:
-      EXPECT_EQ("0.0.0", version);
-      break;
-  }
-}
 #endif  // BUILDFLAG(IS_WIN)
 
 bool ContainsBrandVersion(const blink::UserAgentBrandList& brand_list,
@@ -682,19 +667,11 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
       {});
   {
 #if BUILDFLAG(IS_WIN)
-    if (base::win::GetVersion() < base::win::Version::WIN10) {
-      EXPECT_NE(base::StringPrintf(
-                    kDesktop, version_info::GetMajorVersionNumber().c_str()),
-                GetUserAgent());
-      EXPECT_NE("Windows NT 10.0; Win64; x64",
-                GetUserAgentPlatformOsCpu(GetUserAgent()));
-    } else {
-      EXPECT_EQ(base::StringPrintf(
-                    kDesktop, version_info::GetMajorVersionNumber().c_str()),
-                GetUserAgent());
-      EXPECT_EQ("Windows NT 10.0; Win64; x64",
-                GetUserAgentPlatformOsCpu(GetUserAgent()));
-    }
+    EXPECT_EQ(base::StringPrintf(kDesktop,
+                                 version_info::GetMajorVersionNumber().c_str()),
+              GetUserAgent());
+    EXPECT_EQ("Windows NT 10.0; Win64; x64",
+              GetUserAgentPlatformOsCpu(GetUserAgent()));
 #else
     EXPECT_EQ(base::StringPrintf(kDesktop,
                                  version_info::GetMajorVersionNumber().c_str()),
@@ -892,11 +869,7 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
                                     product_brand_full_version));
 
 #if BUILDFLAG(IS_WIN)
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    VerifyLegacyWinPlatformVersion(metadata.platform_version);
-  } else {
-    VerifyWinPlatformVersion(metadata.platform_version);
-  }
+  VerifyWinPlatformVersion(metadata.platform_version);
 #else
   int32_t major, minor, bugfix = 0;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);

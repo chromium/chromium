@@ -36,11 +36,6 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
     Reset(false);
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-    // Windows versions that don't support platform
-    // spellchecker fallback to Hunspell.
-    if (!spellcheck::WindowsVersionSupportsSpellchecker())
-      return;
-
     base::Value::List dictionary;
     dictionary.Append("en-US");
     menu()->GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
@@ -120,11 +115,9 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
     if (params.misspelled_word.empty())
       callback_received_ = true;
 
-    if (spellcheck::WindowsVersionSupportsSpellchecker()) {
-      observer_->RegisterSuggestionsCompleteCallbackForTesting(
-          base::BindOnce(&SpellingMenuObserverTest::OnSuggestionsComplete,
-                         base::Unretained(this)));
-    }
+    observer_->RegisterSuggestionsCompleteCallbackForTesting(
+        base::BindOnce(&SpellingMenuObserverTest::OnSuggestionsComplete,
+                       base::Unretained(this)));
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
     observer_->InitMenu(params);
@@ -134,8 +127,7 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
     observer_->OnContextMenuShown(params, gfx::Rect());
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-    if (spellcheck::WindowsVersionSupportsSpellchecker())
-      RunUntilCallbackReceived();
+    RunUntilCallbackReceived();
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   }
 
@@ -225,10 +217,6 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, InitMenuWithMisspelledWord) {
 // by both Hunspell and Windows platform combines their suggestions.
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
                        WinInitMenuWithMisspelledWordCombined) {
-  // Test invalid for Windows versions that don't support platform spellchecker.
-  if (!spellcheck::WindowsVersionSupportsSpellchecker())
-    return;
-
   InitMenu("mispelled", "misspelling");
   EXPECT_EQ(6U, menu()->GetMenuSize());
 
@@ -275,10 +263,6 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 // single suggestion.
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
                        WinInitMenuWithMisspelledWordNoDuplicateSuggestions) {
-  // Test invalid for Windows versions that don't support platform spellchecker.
-  if (!spellcheck::WindowsVersionSupportsSpellchecker())
-    return;
-
   InitMenu("mispelled", "misspelled");
   EXPECT_EQ(5U, menu()->GetMenuSize());
 
@@ -319,10 +303,6 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 // 3 suggestions.
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
                        WinInitMenuWithMisspelledWordMaxSuggestions) {
-  // Test invalid for Windows versions that don't support platform spellchecker.
-  if (!spellcheck::WindowsVersionSupportsSpellchecker())
-    return;
-
   InitMenu("wtree", "wee");
   EXPECT_EQ(7U, menu()->GetMenuSize());
 

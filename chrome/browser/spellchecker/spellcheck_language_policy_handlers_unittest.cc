@@ -106,9 +106,6 @@ TEST_P(SpellcheckLanguagePolicyHandlersTest, ApplyPolicySettings) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   base::test::ScopedFeatureList feature_list;
   if (GetParam().windows_spellchecker_enabled) {
-    if (!spellcheck::WindowsVersionSupportsSpellchecker())
-      return;
-
     // Force Windows native spellchecking to be enabled.
     feature_list.InitAndEnableFeature(spellcheck::kWinUseBrowserSpellChecker);
   } else {

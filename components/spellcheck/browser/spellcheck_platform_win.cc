@@ -162,10 +162,8 @@ void RecordChromeLocalesStats(PlatformSpellChecker* spell_checker_instance,
   if (!spell_checker_instance) {
     return;
   }
-  if (spellcheck::WindowsVersionSupportsSpellchecker()) {
-    static_cast<WindowsSpellChecker*>(spell_checker_instance)
-        ->RecordChromeLocalesStats(std::move(chrome_locales), metrics);
-  }
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
+      ->RecordChromeLocalesStats(std::move(chrome_locales), metrics);
 }
 
 void RecordSpellcheckLocalesStats(
@@ -175,10 +173,8 @@ void RecordSpellcheckLocalesStats(
   if (!spell_checker_instance) {
     return;
   }
-  if (spellcheck::WindowsVersionSupportsSpellchecker()) {
-    static_cast<WindowsSpellChecker*>(spell_checker_instance)
-        ->RecordSpellcheckLocalesStats(std::move(spellcheck_locales), metrics);
-  }
+  static_cast<WindowsSpellChecker*>(spell_checker_instance)
+      ->RecordSpellcheckLocalesStats(std::move(spellcheck_locales), metrics);
 }
 
 }  // namespace spellcheck_platform

@@ -12,7 +12,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/windows_version.h"
 #include "components/services/quarantine/common.h"
 #include "components/services/quarantine/common_win.h"
 #include "components/services/quarantine/test_support.h"
@@ -79,11 +78,7 @@ bool ZoneIdentifierPresentForFile(const base::FilePath& path,
 bool IsFileQuarantined(const base::FilePath& file,
                        const GURL& source_url,
                        const GURL& referrer_url) {
-  if (base::win::GetVersion() >= base::win::Version::WIN10)
-    return ZoneIdentifierPresentForFile(file, source_url, referrer_url);
-  else
-    return ZoneIdentifierPresentForFile(file, GURL::EmptyGURL(),
-                                        GURL::EmptyGURL());
+  return ZoneIdentifierPresentForFile(file, source_url, referrer_url);
 }
 
 }  // namespace quarantine

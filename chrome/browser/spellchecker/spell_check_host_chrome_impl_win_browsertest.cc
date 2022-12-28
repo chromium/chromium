@@ -110,10 +110,6 @@ IN_PROC_BROWSER_TEST_F(SpellCheckHostChromeImplWinBrowserTest,
 }
 
 void SpellCheckHostChromeImplWinBrowserTest::RunSpellCheckReturnMessageTest() {
-  if (!spellcheck::WindowsVersionSupportsSpellchecker()) {
-    return;
-  }
-
   spellcheck_platform::SetLanguage(
       platform_spell_checker_, "en-US",
       base::BindOnce(&SpellCheckHostChromeImplWinBrowserTest::

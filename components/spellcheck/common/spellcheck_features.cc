@@ -8,10 +8,6 @@
 #include "build/build_config.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace spellcheck {
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
@@ -20,8 +16,7 @@ bool UseBrowserSpellChecker() {
 #if !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   return false;
 #elif BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(spellcheck::kWinUseBrowserSpellChecker) &&
-         WindowsVersionSupportsSpellchecker();
+  return base::FeatureList::IsEnabled(spellcheck::kWinUseBrowserSpellChecker);
 #else
   return true;
 #endif
@@ -40,10 +35,6 @@ BASE_FEATURE(kWinRetrieveSuggestionsOnlyOnDemand,
              "WinRetrieveSuggestionsOnlyOnDemand",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool WindowsVersionSupportsSpellchecker() {
-  return base::win::GetVersion() > base::win::Version::WIN7 &&
-         base::win::GetVersion() < base::win::Version::WIN_LAST;
-}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

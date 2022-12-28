@@ -131,8 +131,7 @@ class WindowsSpellCheckerTest : public testing::Test {
 
 void WindowsSpellCheckerTest::RunRequestTextCheckTest(
     const RequestTextCheckTestCase& test_case) {
-  ASSERT_EQ(set_language_result_,
-            spellcheck::WindowsVersionSupportsSpellchecker());
+  ASSERT_TRUE(set_language_result_);
 
   const std::u16string word(base::ASCIIToUTF16(test_case.text_to_check));
 
@@ -142,13 +141,6 @@ void WindowsSpellCheckerTest::RunRequestTextCheckTest(
       base::BindOnce(&WindowsSpellCheckerTest::TextCheckCompletionCallback,
                      base::Unretained(this)));
   RunUntilResultReceived();
-
-  if (!spellcheck::WindowsVersionSupportsSpellchecker()) {
-    // On Windows versions that don't support platform spellchecking, the
-    // returned vector of results should be empty.
-    ASSERT_TRUE(spell_check_results_.empty());
-    return;
-  }
 
   ASSERT_EQ(1u, spell_check_results_.size())
       << "RequestTextCheck: Wrong number of results";
@@ -224,13 +216,6 @@ TEST_F(WindowsSpellCheckerTest, RetrieveSpellcheckLanguages) {
 
   RunUntilResultReceived();
 
-  if (!spellcheck::WindowsVersionSupportsSpellchecker()) {
-    // On Windows versions that don't support platform spellchecking, the
-    // returned vector of results should be empty.
-    ASSERT_TRUE(spellcheck_languages_.empty());
-    return;
-  }
-
   ASSERT_LE(1u, spellcheck_languages_.size());
   ASSERT_TRUE(base::Contains(spellcheck_languages_, "en-US"));
 }
@@ -258,8 +243,7 @@ TEST_F(WindowsSpellCheckerTest, RetrieveSpellcheckLanguagesFakeDictionaries) {
 }
 
 TEST_F(WindowsSpellCheckerTest, GetPerLanguageSuggestions) {
-  ASSERT_EQ(set_language_result_,
-            spellcheck::WindowsVersionSupportsSpellchecker());
+  ASSERT_TRUE(set_language_result_);
 
   win_spell_checker_->GetPerLanguageSuggestions(
       u"tihs",
@@ -267,13 +251,6 @@ TEST_F(WindowsSpellCheckerTest, GetPerLanguageSuggestions) {
           &WindowsSpellCheckerTest::PerLanguageSuggestionsCompletionCallback,
           base::Unretained(this)));
   RunUntilResultReceived();
-
-  if (!spellcheck::WindowsVersionSupportsSpellchecker()) {
-    // On Windows versions that don't support platform spellchecking, the
-    // returned vector of results should be empty.
-    ASSERT_TRUE(per_language_suggestions_.empty());
-    return;
-  }
 
   ASSERT_EQ(per_language_suggestions_.size(), 1u);
   ASSERT_GT(per_language_suggestions_[0].size(), 0u);

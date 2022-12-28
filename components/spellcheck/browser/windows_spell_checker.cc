@@ -159,8 +159,7 @@ void BackgroundHelper::CreateSpellCheckerFactory() {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
 
-  if (!spellcheck::WindowsVersionSupportsSpellchecker() ||
-      FAILED(::CoCreateInstance(__uuidof(::SpellCheckerFactory), nullptr,
+  if (FAILED(::CoCreateInstance(__uuidof(::SpellCheckerFactory), nullptr,
                                 (CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER),
                                 IID_PPV_ARGS(&spell_checker_factory_)))) {
     spell_checker_factory_ = nullptr;
