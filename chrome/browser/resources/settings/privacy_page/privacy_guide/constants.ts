@@ -9,7 +9,6 @@
 export enum PrivacyGuideStep {
   WELCOME = 'welcome',
   MSBB = 'msbb',
-  CLEAR_ON_EXIT = 'clearOnExit',
   HISTORY_SYNC = 'historySync',
   SAFE_BROWSING = 'safeBrowsing',
   COOKIES = 'cookies',

@@ -138,7 +138,6 @@ interface AssertCardComponentsVisibleParams {
   isWelcomeFragmentVisibleExpected?: boolean;
   isCompletionFragmentVisibleExpected?: boolean;
   isMsbbFragmentVisibleExpected?: boolean;
-  isClearOnExitFragmentVisibleExpected?: boolean;
   isHistorySyncFragmentVisibleExpected?: boolean;
   isSafeBrowsingFragmentVisibleExpected?: boolean;
   isCookiesFragmentVisibleExpected?: boolean;
@@ -151,7 +150,6 @@ function assertCardComponentsVisible({
   isWelcomeFragmentVisibleExpected,
   isCompletionFragmentVisibleExpected,
   isMsbbFragmentVisibleExpected,
-  isClearOnExitFragmentVisibleExpected,
   isHistorySyncFragmentVisibleExpected,
   isSafeBrowsingFragmentVisibleExpected,
   isCookiesFragmentVisibleExpected,
@@ -176,9 +174,6 @@ function assertCardComponentsVisible({
   assertEquals(
       !!isMsbbFragmentVisibleExpected,
       isChildVisible(page, '#' + PrivacyGuideStep.MSBB));
-  assertEquals(
-      !!isClearOnExitFragmentVisibleExpected,
-      isChildVisible(page, '#' + PrivacyGuideStep.CLEAR_ON_EXIT));
   assertEquals(
       !!isHistorySyncFragmentVisibleExpected,
       isChildVisible(page, '#' + PrivacyGuideStep.HISTORY_SYNC));

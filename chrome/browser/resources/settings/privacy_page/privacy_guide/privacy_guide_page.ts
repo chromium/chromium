@@ -12,7 +12,6 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import './privacy_guide_clear_on_exit_fragment.js';
 import './privacy_guide_completion_fragment.js';
 import './privacy_guide_cookies_fragment.js';
 import './privacy_guide_history_sync_fragment.js';
@@ -22,9 +21,9 @@ import './privacy_guide_welcome_fragment.js';
 import './step_indicator.js';
 
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
@@ -212,7 +211,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       [
         PrivacyGuideStep.MSBB,
         {
-          nextStep: PrivacyGuideStep.CLEAR_ON_EXIT,
+          nextStep: PrivacyGuideStep.HISTORY_SYNC,
           previousStep: PrivacyGuideStep.WELCOME,
           onForwardNavigation: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
@@ -228,19 +227,10 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         },
       ],
       [
-        PrivacyGuideStep.CLEAR_ON_EXIT,
-        {
-          nextStep: PrivacyGuideStep.HISTORY_SYNC,
-          previousStep: PrivacyGuideStep.MSBB,
-          // TODO(crbug/1215630): Enable the CoE step when it's ready.
-          isAvailable: () => false,
-        },
-      ],
-      [
         PrivacyGuideStep.HISTORY_SYNC,
         {
           nextStep: PrivacyGuideStep.SAFE_BROWSING,
-          previousStep: PrivacyGuideStep.CLEAR_ON_EXIT,
+          previousStep: PrivacyGuideStep.MSBB,
           onForwardNavigation: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON);
