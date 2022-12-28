@@ -575,7 +575,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
                         -> false,
                 /*logoClickedCallback=*/null,
                 /*isRefactorEnabled=*/false, /*shouldFetchDoodle=*/false, shouldCreateLogoInToolbar,
-                mFinishedShowingCallback);
+                mFinishedShowingCallback, /*ToolbarColorObserverManager=*/null);
 
         mMediator.onLogoViewReady(mLogoView);
         mMediator.initLogoWithNative();

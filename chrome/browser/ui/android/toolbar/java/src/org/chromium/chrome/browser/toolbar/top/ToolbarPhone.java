@@ -2722,8 +2722,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     /**
      * Returns the toolbar's background color.
      */
-    @VisibleForTesting
-    public int getToolbarBackgroundColorForTesting(Activity activity) {
+    public int getToolbarBackgroundColor() {
         return mToolbarBackground.getColor();
     }
 

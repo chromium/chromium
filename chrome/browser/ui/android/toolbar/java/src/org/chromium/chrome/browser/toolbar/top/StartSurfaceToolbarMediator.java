@@ -27,9 +27,11 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
 import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -38,6 +40,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.logo.LogoView;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -48,6 +51,7 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlphaInOverviewObserver;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -94,8 +98,9 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private boolean mIsNativeInitializedForLogo;
     private LogoCoordinator mLogoCoordinator;
 
-    private Animator mAlphaAnimator;
+    private ObjectAnimator mAlphaAnimator;
     private Callback<Boolean> mFinishedTransitionCallback;
+    private @Nullable ToolbarAlphaInOverviewObserver mToolbarAlphaInOverviewObserver;
 
     StartSurfaceToolbarMediator(Context context, PropertyModel model,
             Callback<IPHCommandBuilder> showIdentityIPHCallback,
@@ -107,7 +112,8 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
             BooleanSupplier isIncognitoModeEnabledSupplier,
             Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled,
             boolean shouldFetchDoodle, boolean shouldCreateLogoInToolbar,
-            Callback<Boolean> finishedTransitionCallback) {
+            Callback<Boolean> finishedTransitionCallback,
+            ToolbarAlphaInOverviewObserver toolbarAlphaInOverviewObserver) {
         mPropertyModel = model;
         mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
         mShowIdentityIPHCallback = showIdentityIPHCallback;
@@ -125,6 +131,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         mShouldCreateLogoInToolbar = shouldCreateLogoInToolbar;
         mIsRefactorEnabled = isRefactorEnabled;
         mFinishedTransitionCallback = finishedTransitionCallback;
+        mToolbarAlphaInOverviewObserver = toolbarAlphaInOverviewObserver;
         mContext = context;
 
         mShouldShowTabSwitcherButtonOnHomepage = shouldShowTabSwitcherButtonOnHomepage;
@@ -169,6 +176,9 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
+        }
+        if (mToolbarAlphaInOverviewObserver != null) {
+            mToolbarAlphaInOverviewObserver = null;
         }
         mIdentityDiscController.removeObserver(this);
     }
@@ -372,6 +382,17 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
                 finishAlphaAnimator(shouldShowStartSurfaceToolbar);
             }
         });
+        // Notify the observer that the toolbar alpha value is changed and pass the rendering
+        // toolbar alpha value to the observer.
+        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
+            mAlphaAnimator.addUpdateListener(animation -> {
+                Object alphaValue = animation.getAnimatedValue();
+                if (mToolbarAlphaInOverviewObserver != null && alphaValue instanceof Float) {
+                    mToolbarAlphaInOverviewObserver.onToolbarAlphaInOverviewChanged(
+                            (Float) alphaValue);
+                }
+            });
+        }
         mAlphaAnimator.start();
     }
 

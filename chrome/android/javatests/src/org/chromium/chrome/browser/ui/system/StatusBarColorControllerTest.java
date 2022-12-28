@@ -389,8 +389,7 @@ public class StatusBarColorControllerTest {
                 "ToolbarLayout should be of type ToolbarPhone to get and check toolbar background.",
                 toolbar instanceof ToolbarPhone);
 
-        final int toolbarColor =
-                ((ToolbarPhone) toolbar).getToolbarBackgroundColorForTesting(activity);
+        final int toolbarColor = ((ToolbarPhone) toolbar).getToolbarBackgroundColor();
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(activity.getWindow().getStatusBarColor(), Matchers.is(toolbarColor));
         }, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, CriteriaHelper.DEFAULT_POLLING_INTERVAL);

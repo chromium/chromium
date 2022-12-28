@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
+import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlphaInOverviewObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -66,6 +68,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     private boolean mShouldShowNewTabVariation;
 
     private ObjectAnimator mVisiblityAnimator;
+    private @Nullable ToolbarAlphaInOverviewObserver mToolbarAlphaInOverviewObserver;
 
     private boolean mIsGridTabSwitcherEnabled;
     private boolean mIsFullscreenToolbar;
@@ -94,11 +97,13 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     }
 
     void initialize(boolean isGridTabSwitcherEnabled, boolean isFullscreenToolbar,
-            boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier) {
+            boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier,
+            ToolbarColorObserverManager toolbarColorObserverManager) {
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         mIsFullscreenToolbar = isFullscreenToolbar;
         mShowZoomingAnimation = isGridTabSwitcherEnabled && isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
+        mToolbarAlphaInOverviewObserver = toolbarColorObserverManager;
 
         mNewTabImageButton.setGridTabSwitcherEnabled(isGridTabSwitcherEnabled);
         mNewTabImageButton.setStartSurfaceEnabled(false);
@@ -134,6 +139,9 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         if (mIncognitoToggleTabLayout != null) {
             mIncognitoToggleTabLayout.destroy();
             mIncognitoToggleTabLayout = null;
+        }
+        if (mToolbarAlphaInOverviewObserver != null) {
+            mToolbarAlphaInOverviewObserver = null;
         }
     }
 
@@ -187,7 +195,17 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
                 mVisiblityAnimator = null;
             }
         });
-
+        // Notify the observer that the toolbar alpha value is changed and pass the rendering
+        // toolbar alpha value to the observer.
+        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
+            mVisiblityAnimator.addUpdateListener(animation -> {
+                Object alphaValue = animation.getAnimatedValue();
+                if (mToolbarAlphaInOverviewObserver != null && alphaValue instanceof Float) {
+                    mToolbarAlphaInOverviewObserver.onToolbarAlphaInOverviewChanged(
+                            (Float) alphaValue);
+                }
+            });
+        }
         mVisiblityAnimator.start();
 
         if (DeviceClassManager.enableAccessibilityLayout(getContext())) mVisiblityAnimator.end();
