@@ -369,6 +369,21 @@ class FeatureCompilerTest(unittest.TestCase):
                                 'No default parent found for bookmarks'):
       c._CompileFeature('bookmarks.export', { "allowlist": ["asdf"] })
 
+  def testComplexFeatureWithSinglePropertyBlock(self):
+    compiler = self._createTestFeatureCompiler('APIFeature')
+
+    error = ('Error parsing feature "feature_alpha": A complex feature '
+             'definition is only needed when there are multiple objects '
+             'specifying different groups of properties for feature '
+             'availability. You can reduce it down to a single object on the '
+             'feature key instead of a list.')
+    with self.assertRaisesRegex(AssertionError, error):
+      compiler._CompileFeature('feature_alpha',
+        [{
+          'contexts': ['blessed_extension'],
+          'channel': 'stable',
+        }])
+
   def testRealIdsDisallowedInAllowlist(self):
     fake_id = 'a' * 32;
     f = self._parseFeature({'allowlist': [fake_id],

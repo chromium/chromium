@@ -836,6 +836,13 @@ class FeatureCompiler(object):
 
     # Handle complex features, which are lists of simple features.
     if type(feature_value) is list:
+      assert len(feature_value) > 1, (
+          'Error parsing feature "%s": A complex feature ' % feature_name +
+          'definition is only needed when there are multiple objects ' +
+          'specifying different groups of properties for feature ' +
+          'availability. You can reduce it down to a single object on the ' +
+          'feature key instead of a list.')
+
       feature = ComplexFeature(feature_name)
 
       # This doesn't handle nested complex features. I think that's probably for
