@@ -61172,6 +61172,8 @@ from previous Chrome versions.
   <int value="224019823" label="CompositeAfterPaint:enabled"/>
   <int value="224065816" label="SuppressToolbarCaptures:enabled"/>
   <int value="224221928" label="AutocorrectByDefault:disabled"/>
+  <int value="224381468"
+      label="AddEduAccountFromAccountSettingsForSupervisedUsers:enabled"/>
   <int value="225610933" label="SystemLatinPhysicalTyping:enabled"/>
   <int value="226590039" label="OverviewButton:disabled"/>
   <int value="228107154"
@@ -63620,6 +63622,8 @@ from previous Chrome versions.
   <int value="1673427566" label="ChromeHomeExpandButton:disabled"/>
   <int value="1673776797"
       label="ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes:disabled"/>
+  <int value="1674803174"
+      label="AddEduAccountFromAccountSettingsForSupervisedUsers:disabled"/>
   <int value="1675848452" label="BluetoothQualityReport:disabled"/>
   <int value="1677167062" label="AutomaticPasswordGeneration:enabled"/>
   <int value="1677258310" label="DragAppsInTabletMode:disabled"/>

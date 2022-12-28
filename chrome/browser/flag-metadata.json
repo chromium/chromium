@@ -69,6 +69,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "add-edu-account-for-supervised-users",
+    "owners": [
+      "mlbipin",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "add-to-homescreen-iph",
     "owners": [ "shaktisahu" ],
     "expiry_milestone": 100

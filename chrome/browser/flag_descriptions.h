@@ -60,6 +60,10 @@ extern const char kPdfUseSkiaRendererDescription[];
 extern const char kAccountIdMigrationName[];
 extern const char kAccountIdMigrationDescription[];
 
+extern const char kAddEduAccountFromAccountSettingsForSupervisedUsersName[];
+extern const char
+    kAddEduAccountFromAccountSettingsForSupervisedUsersDescription[];
+
 extern const char kAlignWakeUpsName[];
 extern const char kAlignWakeUpsDescription[];
 

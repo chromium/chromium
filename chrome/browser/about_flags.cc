@@ -4136,6 +4136,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"cormorant", flag_descriptions::kCormorantName,
      flag_descriptions::kCormorantDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(share::kCormorant)},
+    {"add-edu-account-for-supervised-users",
+     flag_descriptions::kAddEduAccountFromAccountSettingsForSupervisedUsersName,
+     flag_descriptions::
+         kAddEduAccountFromAccountSettingsForSupervisedUsersDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kAddEduAccountFromAccountSettingsForSupervisedUsers)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-automatic-snooze", flag_descriptions::kEnableAutomaticSnoozeName,
      flag_descriptions::kEnableAutomaticSnoozeDescription, kOsAll,
