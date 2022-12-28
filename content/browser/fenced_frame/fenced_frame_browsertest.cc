@@ -1271,6 +1271,8 @@ class FencedFrameWithSiteIsolationDisabledBrowserTest
     } else {
       disabled_features.push_back(features::kIsolateFencedFrames);
     }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ~FencedFrameWithSiteIsolationDisabledBrowserTest() override = default;
