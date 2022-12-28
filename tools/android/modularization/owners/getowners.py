@@ -17,7 +17,7 @@ import multiprocessing
 import os
 import re
 import time
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import owners_data
 import owners_dir_metadata
@@ -50,6 +50,13 @@ def main():
                           action='store_true',
                           help='Run git log with --follow to account for file '
                           'renames. Slightly more accurate but 9x slower.')
+  arg_parser.add_argument('--no-cache',
+                          action='store_true',
+                          help='Avoids using the default cache dir.')
+  arg_parser.add_argument('--cache-dir',
+                          help='Defaults to git-dir/out/getowners_cache. Or if '
+                          'a specific directory is passed then use that as the '
+                          'cache dir.')
   arg_parser.add_argument('-v',
                           '--verbose',
                           action='store_true',
@@ -67,6 +74,15 @@ def main():
   # Guarantee path does not end with '/'
   chromium_root = os.path.normpath(chromium_root)
 
+  if arguments.no_cache:
+    arguments.cache_dir = None
+  else:
+    if arguments.cache_dir is None:
+      arguments.cache_dir = os.path.join(chromium_root, 'out',
+                                         'getowners_cache')
+    logging.info(f'Using cache dir: {arguments.cache_dir}')
+    os.makedirs(arguments.cache_dir, exist_ok=True)
+
   logging.info(f'Finding android folders under {chromium_root}')
   paths_to_search = owners_input.get_android_folders(chromium_root,
                                                      arguments.limit_to_dir)
@@ -79,7 +95,8 @@ def main():
   with multiprocessing.Pool() as p:
     data = p.map(
         functools.partial(_process_requested_path, chromium_root,
-                          all_dir_metadata, arguments.follow), paths_to_search)
+                          all_dir_metadata, arguments.follow,
+                          arguments.cache_dir), paths_to_search)
 
   logging.info(f'Writing data out to {arguments.output}')
   owners_exporter.to_json_file(data, arguments.output)
@@ -88,21 +105,22 @@ def main():
 
 def _process_requested_path(
     chromium_root: str, all_dir_metadata: Dict, follow: bool,
-    requested_path: owners_data.RequestedPath
+    cache_dir: Optional[str], requested_path: owners_data.RequestedPath
 ) -> Tuple[owners_data.RequestedPath, owners_data.PathData]:
   '''Gets the necessary information from the git repository.'''
-  logging.debug(f'Starting {requested_path}')
+  start_time = time.time()
   owners_file = _find_owners_file(chromium_root, requested_path.path)
   owners = _build_owners_info(chromium_root, owners_file)
-  git_data = _fetch_git_data(chromium_root, follow, requested_path)
+  git_data = _fetch_git_data(chromium_root, follow, cache_dir, requested_path)
   dir_metadata = owners_dir_metadata.build_dir_metadata(all_dir_metadata,
                                                         requested_path)
   path_data = owners_data.PathData(owners, git_data, dir_metadata)
-  logging.debug(f'Finished {requested_path}')
+  elapsed_time = time.time() - start_time
+  logging.debug(f'Finished ({elapsed_time:4.1f}s) {requested_path}')
   return (requested_path, path_data)
 
 
-def _fetch_git_data(chromium_root: str, follow: bool,
+def _fetch_git_data(chromium_root: str, follow: bool, cache_dir: Optional[str],
                     requested_path: owners_data.RequestedPath
                     ) -> owners_data.GitData:
   '''Fetches git data for a given directory for the last 182 days.
@@ -119,7 +137,11 @@ def _fetch_git_data(chromium_root: str, follow: bool,
 
   ignored_authors = ('autoroll', 'roller')
 
-  git_log = owners_git.get_log(chromium_root, requested_path.path, 182, follow)
+  start_time = time.time()
+  git_log = owners_git.get_log(chromium_root, requested_path.path, 182, follow,
+                               cache_dir)
+  elapsed_time = time.time() - start_time
+  logging.debug(f'git log ({elapsed_time:4.1f}s) {requested_path}')
   git_data = owners_data.GitData()
 
   for commit_msg in git_log.split(line_delimiter):

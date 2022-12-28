@@ -58,9 +58,32 @@ def _build_ls_files_command(subdirectory: Optional[str]) -> List[str]:
     return ['git', 'ls-files']
 
 
-def get_log(git_src: str, subdirectory: str, trailing_days: int,
-            follow: bool) -> str:
+def _get_last_commit_in_dir(git_src: str, subdirectory: str,
+                            trailing_days: int):
+  '''Returns the last commit hash for a given directory.'''
+  return run_command([
+      'git', 'log', '-1', f'--since=\"{trailing_days} days ago\"',
+      '--pretty=format:%H', '--', subdirectory
+  ],
+                     cwd=git_src)
+
+
+def get_log(git_src: str, subdirectory: str, trailing_days: int, follow: bool,
+            cache_dir: Optional[str]) -> str:
   '''Gets the git log for a given directory.'''
+  if cache_dir is not None:
+    key = subdirectory.replace(os.sep, '_')
+    cache_file_name = os.path.join(cache_dir, key)
+    cache_log_file_name = cache_file_name + '.log'
+    last_commit = _get_last_commit_in_dir(git_src, subdirectory, trailing_days)
+    if os.path.exists(cache_file_name):
+      with open(cache_file_name) as f:
+        cached_commit = f.read().strip()
+      # Cache hit.
+      if cached_commit == last_commit and os.path.exists(cache_log_file_name):
+        with open(cache_log_file_name) as f:
+          return f.read()
+
   cmd = [
       'git',
       'log',
@@ -72,7 +95,16 @@ def get_log(git_src: str, subdirectory: str, trailing_days: int,
       '--',
       subdirectory,
   ])
-  return run_command(cmd, cwd=git_src)
+  git_log_output = run_command(cmd, cwd=git_src)
+
+  # No cache hit, need to update cache.
+  if cache_dir is not None:
+    with open(cache_file_name, 'w') as f:
+      f.write(last_commit)
+    with open(cache_log_file_name, 'w') as f:
+      f.write(git_log_output)
+
+  return git_log_output
 
 
 def run_command(command: List[str], cwd: str) -> str:
