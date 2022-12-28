@@ -370,15 +370,13 @@ views::View* SidePanelCoordinator::GetContentView() const {
 
 SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
     const SidePanelEntry::Key& entry_key) {
-  if (auto* entry = global_registry_->GetEntryForKey(entry_key)) {
-    return entry;
-  }
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
     if (auto* entry = contextual_registry->GetEntryForKey(entry_key)) {
       return entry;
     }
   }
-  return nullptr;
+
+  return global_registry_->GetEntryForKey(entry_key);
 }
 
 void SidePanelCoordinator::InitializeSidePanel() {

@@ -919,6 +919,10 @@ TEST_F(SidePanelCoordinatorTest,
 }
 
 TEST_F(SidePanelCoordinatorTest, ShouldNotRecreateTheSameEntry) {
+  // Switch to a tab without a contextual entry for lens, so that Show() shows
+  // the global entry.
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+
   int count = 0;
   global_registry_->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kLens, u"lens",
@@ -993,6 +997,43 @@ TEST_F(SidePanelCoordinatorTest, ComboboxAdditionsDoNotChangeSelection) {
                 ->GetKeyAt(selected_index.value())
                 .id(),
             later_sorted_entry);
+}
+
+// Test that Show() shows the contextual extension entry if available for the
+// current tab. Otherwise it shows the global extension entry. Note: only
+// extensions will be able to have their entries exist in both the global and
+// contextual registries.
+TEST_F(SidePanelCoordinatorTest, ShowGlobalAndContextualExtensionEntries) {
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
+                                    "extension_id");
+  int global_count = 0;
+  int contextual_count = 0;
+  auto increment_count = [](int* count) {
+    (*count)++;
+    return std::make_unique<views::View>();
+  };
+
+  global_registry_->Register(std::make_unique<SidePanelEntry>(
+      extension_key, u"extension",
+      ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
+      base::BindRepeating(increment_count, &global_count)));
+
+  contextual_registries_[0]->Register(std::make_unique<SidePanelEntry>(
+      extension_key, u"extension",
+      ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
+      base::BindRepeating(increment_count, &contextual_count)));
+
+  coordinator_->Show(extension_key);
+  ASSERT_EQ(1, contextual_count);
+  ASSERT_EQ(0, global_count);
+
+  // Switch to a tab that does not have an extension entry registered for its
+  // contextual registry.
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
+  coordinator_->Show(extension_key);
+  ASSERT_EQ(1, contextual_count);
+  ASSERT_EQ(1, global_count);
 }
 
 // Test that the SidePanelCoordinator behaves and updates corrected when dealing

@@ -98,6 +98,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
                            PopulateUserNoteSidePanel);
 
   views::View* GetContentView() const;
+
+  // Returns the corresponding entry for `entry_key` or a nullptr if this key is
+  // not registered in the currently observed registries. This looks through the
+  // active contextual registry first, then the global registry.
   SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key);
 
   void SetSidePanelButtonTooltipText(std::u16string tooltip_text);
