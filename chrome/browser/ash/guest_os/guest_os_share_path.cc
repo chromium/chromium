@@ -308,7 +308,7 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
     // Allow Android files and subdirs.
     allowed_path = true;
     request.set_storage_location(
-        base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData)
+        arc::IsArcVmEnabled()
             ? vm_tools::seneschal::SharePathRequest::PLAY_FILES_GUEST_OS
             : vm_tools::seneschal::SharePathRequest::PLAY_FILES);
   } else if (removable_media.AppendRelativePath(path, &relative_path)) {

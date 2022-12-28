@@ -1157,6 +1157,10 @@ TEST_F(ArcSessionManagerTest, GetVmInfo_InitialValue) {
 
 // Tests that |vm_info| is updated with that from VmStartedSignal.
 TEST_F(ArcSessionManagerTest, GetVmInfo_WithVmStarted) {
+  // Profile needs to be set in order to register ArcMountProvider.
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+
   vm_tools::concierge::VmStartedSignal vm_signal;
   vm_signal.set_name(kArcVmName);
   vm_signal.mutable_vm_info()->set_seneschal_server_handle(1000UL);
@@ -1179,6 +1183,10 @@ TEST_F(ArcSessionManagerTest, GetVmInfo_WithVmStopped) {
 
 // Tests that |vm_info| is reset to absl::nullopt after VM starts and stops.
 TEST_F(ArcSessionManagerTest, GetVmInfo_WithVmStarted_ThenStopped) {
+  // Profile needs to be set in order to register ArcMountProvider.
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+
   vm_tools::concierge::VmStartedSignal start_signal;
   start_signal.set_name(kArcVmName);
   start_signal.mutable_vm_info()->set_seneschal_server_handle(1000UL);

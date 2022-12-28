@@ -1082,8 +1082,9 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
 
 TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertToContentUrls_AndroidFiles_GuestOs) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      arc::kEnableVirtioBlkForData};
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--enable-arcvm"});
+  EXPECT_TRUE(arc::IsArcVmEnabled());
   base::RunLoop run_loop;
   ConvertToContentUrls(
       ProfileManager::GetPrimaryUserProfile(),
@@ -1104,8 +1105,9 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
 
 TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertToContentUrls_InvalidAndroidFiles_GuestOs) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      arc::kEnableVirtioBlkForData};
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--enable-arcvm"});
+  EXPECT_TRUE(arc::IsArcVmEnabled());
   base::RunLoop run_loop;
   ConvertToContentUrls(
       ProfileManager::GetPrimaryUserProfile(),

@@ -155,8 +155,8 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableVirtioBlkForData() {
-    options.enable_virtio_blk_for_data = true;
+  TestCase& EnableArcVm() {
+    options.enable_arc_vm = true;
     return *this;
   }
 
@@ -1157,7 +1157,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewDrive"),
         TestCase("openQuickViewSmbfs"),
         TestCase("openQuickViewAndroid"),
-        TestCase("openQuickViewAndroidGuestOs").EnableVirtioBlkForData(),
+        TestCase("openQuickViewAndroidGuestOs").EnableArcVm(),
         TestCase("openQuickViewDocumentsProvider")
             .EnableGenericDocumentsProvider(),
         TestCase("openQuickViewCrostini"),
@@ -1913,10 +1913,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GuestOs, /* guest_os.js */
     FilesAppBrowserTest,
-    ::testing::Values(
-        TestCase("fakesListed"),
-        TestCase("listUpdatedWhenGuestsChanged"),
-        TestCase("mountGuestSuccess"),
-        TestCase("mountAndroidVolumeSuccess").EnableVirtioBlkForData()));
+    ::testing::Values(TestCase("fakesListed"),
+                      TestCase("listUpdatedWhenGuestsChanged"),
+                      TestCase("mountGuestSuccess"),
+                      TestCase("mountAndroidVolumeSuccess").EnableArcVm()));
 
 }  // namespace file_manager

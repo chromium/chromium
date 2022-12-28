@@ -118,8 +118,8 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test should run with the Upload Office to Cloud feature.
     bool enable_upload_office_to_cloud = false;
 
-    // Whether test should run Android with the virtio-blk for /data.
-    bool enable_virtio_blk_for_data = false;
+    // Whether test should run with ARCVM enabled.
+    bool enable_arc_vm = false;
 
     // Whether test should run with the DriveFsMirroring flag.
     bool enable_mirrorsync = false;

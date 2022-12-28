@@ -693,7 +693,7 @@ export class NavigationListModel extends EventTarget {
 
       // For each volume, add any which aren't already in the list.
       let guestOsVolumes = getVolumes(VolumeManagerCommon.VolumeType.GUEST_OS);
-      if (util.isArcVirtioBlkForDataEnabled()) {
+      if (util.isArcVmEnabled()) {
         // Remove GuestOs Android placeholder, similar to what we did for
         // GuestOs placeholders. This should be readded if needed.
         myFilesEntry.removeAllByRootType(

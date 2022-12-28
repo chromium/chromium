@@ -355,10 +355,12 @@ base::FilePath GetAndroidFilesPath() {
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   base::FilePath path;
-  if (mount_points->GetRegisteredPath(mount_point_name, &path))
+  if (mount_points->GetRegisteredPath(mount_point_name, &path)) {
     return path;
-  if (base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData))
+  }
+  if (arc::IsArcVmEnabled()) {
     return base::FilePath(file_manager::util::kGuestOsAndroidFilesPath);
+  }
   return base::FilePath(file_manager::util::kAndroidFilesPath);
 }
 

@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
@@ -1095,8 +1096,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("HIDE_SPACE_INFO", ash::DemoSession::IsDeviceInDemoMode());
   dict->Set("ARC_USB_STORAGE_UI_ENABLED",
             base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature));
-  dict->Set("ARC_ENABLE_VIRTIO_BLK_FOR_DATA",
-            base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData));
+  dict->Set("ARC_VM_ENABLED", arc::IsArcVmEnabled());
   dict->Set("FILES_SEARCH_V2",
             base::FeatureList::IsEnabled(ash::features::kFilesSearchV2));
   dict->Set("FILES_TRASH_ENABLED",

@@ -940,14 +940,12 @@ void ArcSessionManager::OnVmStarted(
   if (vm_signal.name() == kArcVmName) {
     vm_info_ = vm_signal.vm_info();
 
-    if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData)) {
-      arcvm_mount_provider_id_ =
-          absl::optional<guest_os::GuestOsMountProviderRegistry::Id>(
-              guest_os::GuestOsService::GetForProfile(profile())
-                  ->MountProviderRegistry()
-                  ->Register(std::make_unique<ArcMountProvider>(
-                      profile(), vm_info_->cid())));
-    }
+    arcvm_mount_provider_id_ =
+        absl::optional<guest_os::GuestOsMountProviderRegistry::Id>(
+            guest_os::GuestOsService::GetForProfile(profile())
+                ->MountProviderRegistry()
+                ->Register(std::make_unique<ArcMountProvider>(
+                    profile(), vm_info_->cid())));
   }
 }
 
