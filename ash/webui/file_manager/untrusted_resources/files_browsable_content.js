@@ -8,6 +8,11 @@
 let type;
 
 /**
+ * @type {string} The content URL of the source file to preview.
+ */
+let contentUrl = '';
+
+/**
  * <style> element for (non-PDF) browsable content.
  */
 const style = document.createElement('style');
@@ -61,9 +66,11 @@ window.addEventListener('message', event => {
     return;
   }
 
-  const contentsIframe = document.querySelector('#content');
+  // Release Object URLs generated with URL.createObjectURL.
+  URL.revokeObjectURL(contentUrl);
+  contentUrl = '';
+
   const {browsable, subtype, sourceContent} = event.data;
-  let contentUrl;
   switch (sourceContent.dataType) {
     case 'url':
       contentUrl = sourceContent.data;
@@ -71,15 +78,20 @@ window.addEventListener('message', event => {
     case 'blob':
       contentUrl = URL.createObjectURL(sourceContent.data);
       break;
-    default:
-      contentUrl = 'about:blank';
   }
-  if (browsable && subtype === 'PDF') {
-    contentUrl += '#view=FitH';
+
+  let sourceUrl = contentUrl;
+  if (sourceUrl && browsable && subtype === 'PDF') {
+    sourceUrl += '#view=FitH';
   }
 
   type = subtype;
-  contentUrl = contentUrl || 'about:blank';
-  console.log('Setting iframe.src to: ' + contentUrl);
-  contentsIframe.src = contentUrl;
+  if (!sourceUrl) {
+    sourceUrl = 'about:blank';
+    type = '';
+  }
+
+  const contentsIframe = document.querySelector('#content');
+  console.log('Setting iframe.src to:', sourceUrl);
+  contentsIframe.src = sourceUrl;
 });
