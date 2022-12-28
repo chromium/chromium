@@ -56,6 +56,7 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -373,7 +374,7 @@ public class MainSettings extends PreferenceFragmentCompat
                     new SpanInfo("<new>", "</new>", new SuperscriptSpan(),
                             new RelativeSizeSpan(0.75f),
                             new ForegroundColorSpan(
-                                    context.getColor(R.color.default_text_color_blue_baseline))));
+                                    SemanticColorUtils.getDefaultTextColorAccent1(context))));
         } else {
             // Remove the "NEW" text and the trailing whitespace.
             return (CharSequence) (SpanApplier
