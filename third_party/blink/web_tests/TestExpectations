@@ -6906,3 +6906,6 @@ crbug.com/1399780 external/wpt/content-security-policy/embedded-enforcement/subs
 
 # TODO(crbug.com/1403318): Re-enable this test
 virtual/scalefactor200/external/wpt/element-timing/image-src-change.html [ Failure Skip ]
+
+# TODO(crbug.com/1403877): Deflake this test.
+virtual/portals/http/tests/devtools/portals/portals-elements-nesting.js [ Failure Pass ]
