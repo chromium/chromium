@@ -662,8 +662,8 @@ Value TraceConfig::ToValue() const {
 
     if (memory_dump_config_.heap_profiler_options.breakdown_threshold_bytes !=
         MemoryDumpConfig::HeapProfiler::kDefaultBreakdownThresholdBytes) {
-      Value options(Value::Type::DICTIONARY);
-      options.SetIntKey(
+      Value::Dict options;
+      options.Set(
           kBreakdownThresholdBytes,
           base::checked_cast<int>(memory_dump_config_.heap_profiler_options
                                       .breakdown_threshold_bytes));

@@ -83,7 +83,7 @@ bool IsCategoryEnabled(const char* name) {
 
 class TraceEventTestFixture : public testing::Test {
  public:
-  TraceEventTestFixture() : trace_parsed_(Value::Type::LIST) {}
+  TraceEventTestFixture() = default;
 
   void OnTraceDataCollected(
       WaitableEvent* flush_complete_event,
@@ -101,7 +101,7 @@ class TraceEventTestFixture : public testing::Test {
   bool FindNonMatchingValue(const char* key,
                             const char* value);
   void Clear() {
-    trace_parsed_ = Value(Value::Type::LIST);
+    trace_parsed_ = Value::List();
     json_output_.json_output.clear();
   }
 
@@ -183,7 +183,7 @@ class TraceEventTestFixture : public testing::Test {
   }
 
   raw_ptr<char> old_thread_name_;
-  Value trace_parsed_;
+  Value::List trace_parsed_;
   TraceResultBuffer trace_buffer_;
   TraceResultBuffer::SimpleOutput json_output_;
   size_t num_flush_callbacks_;
@@ -219,10 +219,9 @@ void TraceEventTestFixture::OnTraceDataCollected(
   Value::List& root_list = root->GetList();
 
   // Move items into our aggregate collection
-  Value::List& trace_parsed_list = trace_parsed_.GetList();
-  trace_parsed_list.reserve(trace_parsed_list.size() + root_list.size());
+  trace_parsed_.reserve(trace_parsed_.size() + root_list.size());
   for (auto& value : root_list)
-    trace_parsed_list.Append(std::move(value));
+    trace_parsed_.Append(std::move(value));
 
   if (!has_more_events)
     flush_complete_event->Signal();
@@ -268,7 +267,7 @@ static bool IsAllKeyValueInDict(const JsonKeyValue* key_values,
 const Value* TraceEventTestFixture::FindMatchingTraceEntry(
     const JsonKeyValue* key_values) {
   // Scan all items
-  for (const Value& value : trace_parsed_.GetList()) {
+  for (const Value& value : trace_parsed_) {
     if (!value.is_dict())
       continue;
 
@@ -279,7 +278,7 @@ const Value* TraceEventTestFixture::FindMatchingTraceEntry(
 }
 
 void TraceEventTestFixture::DropTracedMetadataRecords() {
-  trace_parsed_.GetList().EraseIf([](const Value& value) {
+  trace_parsed_.EraseIf([](const Value& value) {
     if (!value.is_dict())
       return false;
     const std::string* ph = value.GetDict().FindString("ph");
@@ -340,11 +339,11 @@ bool IsStringInDict(const char* string_to_match, const Value* dict) {
   return false;
 }
 
-const Value* FindTraceEntry(const Value& trace_parsed,
+const Value* FindTraceEntry(const Value::List& trace_parsed,
                             const char* string_to_match,
                             const Value* match_after_this_item = nullptr) {
   // Scan all items
-  for (const Value& value : trace_parsed.GetList()) {
+  for (const Value& value : trace_parsed) {
     if (match_after_this_item) {
       if (&value == match_after_this_item)
         match_after_this_item = nullptr;
@@ -360,10 +359,10 @@ const Value* FindTraceEntry(const Value& trace_parsed,
 }
 
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-std::vector<const Value*> FindTraceEntries(const Value& trace_parsed,
+std::vector<const Value*> FindTraceEntries(const Value::List& trace_parsed,
                                            const char* string_to_match) {
   std::vector<const Value*> hits;
-  for (const Value& value : trace_parsed.GetList()) {
+  for (const Value& value : trace_parsed) {
     if (!value.is_dict())
       continue;
 
@@ -477,7 +476,7 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
     task_complete_event->Signal();
 }
 
-void ValidateAllTraceMacrosCreatedData(const Value& trace_parsed) {
+void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
   const Value* item = nullptr;
 
 #define EXPECT_FIND_(string) \
@@ -768,12 +767,12 @@ void TraceManyInstantEvents(int thread_id, int num_events,
     task_complete_event->Signal();
 }
 
-void ValidateInstantEventPresentOnEveryThread(const Value& trace_parsed,
+void ValidateInstantEventPresentOnEveryThread(const Value::List& trace_parsed,
                                               int num_threads,
                                               int num_events) {
   std::map<int, std::map<int, bool>> results;
 
-  for (const Value& value : trace_parsed.GetList()) {
+  for (const Value& value : trace_parsed) {
     if (!value.is_dict())
       continue;
 
@@ -831,7 +830,7 @@ TEST_F(TraceEventTestFixture, DataDiscarded) {
 
   CancelTrace();
 
-  EXPECT_TRUE(trace_parsed_.GetList().empty());
+  EXPECT_TRUE(trace_parsed_.empty());
 }
 
 class MockEnabledStateChangedObserver :
@@ -1125,7 +1124,7 @@ TEST_F(TraceEventTestFixture, Categories) {
   TRACE_EVENT_INSTANT0("cat2", "name", TRACE_EVENT_SCOPE_THREAD);
   EndTraceAndFlush();
   DropTracedMetadataRecords();
-  EXPECT_TRUE(trace_parsed_.GetList().empty());
+  EXPECT_TRUE(trace_parsed_.empty());
 
   // Include existent category -> only events of that category
   Clear();
@@ -1476,7 +1475,7 @@ TEST_F(TraceEventTestFixture, DisabledCategories) {
   EndTraceAndFlush();
   {
     const Value* item = nullptr;
-    Value& trace_parsed = trace_parsed_;
+    Value::List& trace_parsed = trace_parsed_;
     EXPECT_NOT_FIND_("disabled-by-default-cc");
     EXPECT_FIND_("test_included");
   }
@@ -1491,7 +1490,7 @@ TEST_F(TraceEventTestFixture, DisabledCategories) {
 
   {
     const Value* item = nullptr;
-    Value& trace_parsed = trace_parsed_;
+    Value::List& trace_parsed = trace_parsed_;
     EXPECT_FIND_("disabled-by-default-cc");
     EXPECT_FIND_("test_other_included");
   }
@@ -1508,7 +1507,7 @@ TEST_F(TraceEventTestFixture, DisabledCategories) {
 
   {
     const Value* item = nullptr;
-    Value& trace_parsed = trace_parsed_;
+    Value::List& trace_parsed = trace_parsed_;
     EXPECT_FIND_("test,disabled-by-default-cc,test_other_included");
     EXPECT_FIND_("test_other_included,disabled-by-default-cc");
   }
@@ -2079,8 +2078,8 @@ TEST_F(TraceEventTestFixture, TraceBufferVectorReportFull) {
   // Test that buffer_limit_reached_timestamp's value is between the timestamp
   // of the last trace event and current time.
   DropTracedMetadataRecords();
-  ASSERT_TRUE(!trace_parsed_.GetList().empty());
-  const Value& last_trace_event = trace_parsed_.GetList().back();
+  ASSERT_TRUE(!trace_parsed_.empty());
+  const Value& last_trace_event = trace_parsed_.back();
   EXPECT_TRUE(last_trace_event.is_dict());
   absl::optional<double> maybe_last_trace_event_timestamp =
       last_trace_event.FindDoubleKey("ts");
@@ -2455,7 +2454,7 @@ TEST_F(TraceEventTestFixture, TimeOffset) {
   double end_time = static_cast<double>(
       (TimeTicks::Now() - time_offset).ToInternalValue());
   double last_timestamp = 0;
-  for (const Value& item : trace_parsed_.GetList()) {
+  for (const Value& item : trace_parsed_) {
     EXPECT_TRUE(item.is_dict());
     absl::optional<double> timestamp = item.FindDoubleKey("ts");
     EXPECT_TRUE(timestamp.has_value());

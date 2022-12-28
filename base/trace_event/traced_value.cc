@@ -328,7 +328,7 @@ class PickleWriter final : public TracedValue::Writer {
   }
 
   std::unique_ptr<base::Value> ToBaseValue() const {
-    base::Value root(base::Value::Type::DICTIONARY);
+    base::Value root(base::Value::Type::DICT);
     Value* cur_dict = &root;
     Value* cur_list = nullptr;
     std::vector<Value*> stack;
@@ -339,15 +339,13 @@ class PickleWriter final : public TracedValue::Writer {
       DCHECK((cur_dict && !cur_list) || (cur_list && !cur_dict));
       switch (*type) {
         case kTypeStartDict: {
-          base::Value new_dict(base::Value::Type::DICTIONARY);
           if (cur_dict) {
             stack.push_back(cur_dict);
-            cur_dict =
-                cur_dict->GetDict().Set(ReadKeyName(it), std::move(new_dict));
+            cur_dict = cur_dict->GetDict().Set(ReadKeyName(it),
+                                               Value(Value::Type::DICT));
           } else {
-            cur_list->GetList().Append(std::move(new_dict));
-            // |new_dict| is invalidated at this point, so |cur_dict| needs to
-            // be reset.
+            cur_list->GetList().Append(Value(Value::Type::DICT));
+            // Update |cur_dict| to point to the newly added dictionary.
             cur_dict = &cur_list->GetList().back();
             stack.push_back(cur_list);
             cur_list = nullptr;
@@ -367,7 +365,7 @@ class PickleWriter final : public TracedValue::Writer {
         } break;
 
         case kTypeStartArray: {
-          base::Value new_list(base::Value::Type::LIST);
+          Value::List new_list;
           if (cur_dict) {
             stack.push_back(cur_dict);
             cur_list =
