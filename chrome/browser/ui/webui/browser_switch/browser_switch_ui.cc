@@ -66,12 +66,12 @@ bool IsLastTab(const Profile* profile) {
 //   "sitelist": ["example.com", ...],
 //   "greylist": ["example.net", ...]
 // }
-base::Value RuleSetToDict(const browser_switcher::RuleSet& ruleset) {
-  base::Value sitelist(base::Value::Type::LIST);
+base::Value::Dict RuleSetToDict(const browser_switcher::RuleSet& ruleset) {
+  base::Value::List sitelist;
   for (const auto& rule : ruleset.sitelist)
     sitelist.Append(rule->ToString());
 
-  base::Value greylist(base::Value::Type::LIST);
+  base::Value::List greylist;
   for (const auto& rule : ruleset.greylist)
     greylist.Append(rule->ToString());
 
@@ -79,7 +79,7 @@ base::Value RuleSetToDict(const browser_switcher::RuleSet& ruleset) {
   dict.Set("sitelist", std::move(sitelist));
   dict.Set("greylist", std::move(greylist));
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 browser_switcher::BrowserSwitcherService* GetBrowserSwitcherService(
