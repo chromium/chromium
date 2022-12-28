@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom-forward.h"
@@ -43,15 +44,19 @@ class WebAppDataRetriever : content::WebContentsObserver {
   // Returns nullptr for WebAppInstallInfo if error.
   using GetWebAppInstallInfoCallback =
       base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)>;
-  // |is_installable| represents installability check result.
-  // If |is_installable| then |valid_manifest_for_web_app| is true.
+  // |error_code| is the result of the installability check.
+  // |webapps::InstallableStatusCode::NO_ERROR_DETECTED| equates to positive
+  // installability. All other values correspond to negative installability and
+  // first specific error encountered.
+  // If |error_code| is |webapps::InstallableStatusCode::NO_ERROR_DETECTED| then
+  // |valid_manifest_for_web_app| must be true.
   // If manifest is present then it is non-empty.
   // |manifest_url| is empty if manifest is empty.
   using CheckInstallabilityCallback =
       base::OnceCallback<void(blink::mojom::ManifestPtr opt_manifest,
                               const GURL& manifest_url,
                               bool valid_manifest_for_web_app,
-                              bool is_installable)>;
+                              webapps::InstallableStatusCode)>;
 
   using GetIconsCallback = WebAppIconDownloader::WebAppIconDownloaderCallback;
 
@@ -97,13 +102,15 @@ class WebAppDataRetriever : content::WebContentsObserver {
                          IconsMap icons_map,
                          DownloadedIconsHttpResults icons_http_results);
 
-  void CallCallbackOnError();
+  void CallCallbackOnError(
+      absl::optional<webapps::InstallableStatusCode> error_code);
   bool ShouldStopRetrieval() const;
 
   std::unique_ptr<WebAppInstallInfo> fallback_install_info_;
   GetWebAppInstallInfoCallback get_web_app_info_callback_;
 
   CheckInstallabilityCallback check_installability_callback_;
+
   GetIconsCallback get_icons_callback_;
 
   std::unique_ptr<WebAppIconDownloader> icon_downloader_;

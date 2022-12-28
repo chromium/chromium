@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
@@ -52,8 +53,9 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
       web_contents->GetController().GetLastCommittedEntry();
   if (entry->IsInitialEntry()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
-                                  weak_ptr_factory_.GetWeakPtr()));
+        FROM_HERE,
+        base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
+                       weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
     return;
   }
 
@@ -75,9 +77,9 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
   // Set the error handler so that we can run |get_web_app_info_callback_| if
   // the WebContents or the RenderFrameHost are destroyed and the connection
   // to ChromeRenderFrame is lost.
-  metadata_agent.set_disconnect_handler(
-      base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
-                     weak_ptr_factory_.GetWeakPtr()));
+  metadata_agent.set_disconnect_handler(base::BindOnce(
+      &WebAppDataRetriever::CallCallbackOnError, weak_ptr_factory_.GetWeakPtr(),
+      webapps::InstallableStatusCode::RENDERER_CANCELLED));
   // Bind the InterfacePtr into the callback so that it's kept alive
   // until there's either a connection error or a response.
   auto* web_page_metadata_proxy = metadata_agent.get();
@@ -149,13 +151,15 @@ void WebAppDataRetriever::WebContentsDestroyed() {
 
   // Avoid initiating new work during web contents destruction.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
-                                weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     webapps::InstallableStatusCode::RENDERER_CANCELLED));
 }
 
 void WebAppDataRetriever::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
-  CallCallbackOnError();
+  CallCallbackOnError(webapps::InstallableStatusCode::RENDERER_CANCELLED);
 }
 
 void WebAppDataRetriever::OnGetWebPageMetadata(
@@ -204,6 +208,7 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
 
   const bool is_installable = data.NoBlockingErrors();
   DCHECK(!is_installable || data.valid_manifest);
+
   blink::mojom::ManifestPtr opt_manifest;
   if (!blink::IsEmptyManifest(*data.manifest))
     opt_manifest = data.manifest->Clone();
@@ -211,7 +216,7 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
   DCHECK(!check_installability_callback_.is_null());
   std::move(check_installability_callback_)
       .Run(std::move(opt_manifest), *data.manifest_url, data.valid_manifest,
-           is_installable);
+           data.FirstNoBlockingError());
 }
 
 void WebAppDataRetriever::OnIconsDownloaded(
@@ -229,7 +234,8 @@ void WebAppDataRetriever::OnIconsDownloaded(
       .Run(result, std::move(icons_map), std::move(icons_http_results));
 }
 
-void WebAppDataRetriever::CallCallbackOnError() {
+void WebAppDataRetriever::CallCallbackOnError(
+    absl::optional<webapps::InstallableStatusCode> error_code) {
   Observe(nullptr);
   DCHECK(ShouldStopRetrieval());
   icon_downloader_.reset();
@@ -243,7 +249,9 @@ void WebAppDataRetriever::CallCallbackOnError() {
     std::move(check_installability_callback_)
         .Run(/*manifest=*/nullptr, /*manifest_url=*/GURL(),
              /*valid_manifest_for_web_app=*/false,
-             /*is_installable=*/false);
+             /*error_code=*/
+             error_code.value_or(
+                 webapps::InstallableStatusCode::NO_ERROR_DETECTED));
   } else if (get_icons_callback_) {
     std::move(get_icons_callback_)
         .Run(IconsDownloadedResult::kPrimaryPageChanged, IconsMap{},

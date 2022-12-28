@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -422,10 +423,10 @@ class ManifestUpdateDataFetchCommandTest : public WebAppTest {
   }
 
   std::unique_ptr<FakeDataRetriever> GetFakeDataRetriever(
-      bool is_installable,
+      webapps::InstallableStatusCode error_code,
       const WebAppInstallInfo& info) {
     auto data_retriever = std::make_unique<FakeDataRetriever>();
-    data_retriever->SetManifest(GetManifestFromInfo(info), is_installable);
+    data_retriever->SetManifest(GetManifestFromInfo(info), error_code);
     return data_retriever;
   }
 
@@ -463,7 +464,8 @@ TEST_F(ManifestUpdateDataFetchCommandTest, VerifySuccessfulNameUpdate) {
 
   ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
       app_url(), app_id,
-      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+      GetFakeDataRetriever(webapps::InstallableStatusCode::NO_ERROR_DETECTED,
+                           new_info));
 
   EXPECT_FALSE(result.update_result.has_value());
   EXPECT_EQ(result.install_info.value().title, u"New Name");
@@ -487,7 +489,8 @@ TEST_F(ManifestUpdateDataFetchCommandTest, VerifySuccessfulScopeUpdate) {
 
   ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
       app_url(), app_id,
-      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+      GetFakeDataRetriever(webapps::InstallableStatusCode::NO_ERROR_DETECTED,
+                           new_info));
 
   EXPECT_FALSE(result.update_result.has_value());
   EXPECT_EQ(result.install_info.value().scope,
@@ -512,7 +515,8 @@ TEST_F(ManifestUpdateDataFetchCommandTest, VerifySuccessfulDisplayModeUpdate) {
 
   ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
       app_url(), app_id,
-      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+      GetFakeDataRetriever(webapps::InstallableStatusCode::NO_ERROR_DETECTED,
+                           new_info));
 
   EXPECT_FALSE(result.update_result.has_value());
   EXPECT_EQ(result.install_info.value().display_mode, DisplayMode::kMinimalUi);
@@ -536,7 +540,8 @@ TEST_F(ManifestUpdateDataFetchCommandTest, MultiDataUpdate) {
 
   ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
       app_url(), app_id,
-      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+      GetFakeDataRetriever(webapps::InstallableStatusCode::NO_ERROR_DETECTED,
+                           new_info));
 
   EXPECT_FALSE(result.update_result.has_value());
   EXPECT_EQ(result.install_info.value().display_mode, DisplayMode::kMinimalUi);
@@ -563,7 +568,8 @@ TEST_F(ManifestUpdateDataFetchCommandTest, NoAppUpdateNeeded) {
 
   ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
       app_url(), app_id,
-      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+      GetFakeDataRetriever(webapps::InstallableStatusCode::NO_ERROR_DETECTED,
+                           new_info));
 
   EXPECT_TRUE(result.update_result.has_value());
   EXPECT_EQ(result.update_result.value(), ManifestUpdateResult::kAppUpToDate);
@@ -587,7 +593,8 @@ TEST_F(ManifestUpdateDataFetchCommandTest, AppNotEligible) {
 
   ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
       app_url(), app_id,
-      GetFakeDataRetriever(/*is_installable=*/false, new_info));
+      GetFakeDataRetriever(webapps::InstallableStatusCode::NO_MANIFEST,
+                           new_info));
 
   EXPECT_TRUE(result.update_result.has_value());
   EXPECT_EQ(result.update_result.value(),
@@ -613,7 +620,8 @@ TEST_F(ManifestUpdateDataFetchCommandTest, AppIdMismatch) {
 
   ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
       app_url(), app_id,
-      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+      GetFakeDataRetriever(webapps::InstallableStatusCode::NO_ERROR_DETECTED,
+                           new_info));
 
   EXPECT_TRUE(result.update_result.has_value());
   EXPECT_EQ(result.update_result.value(), ManifestUpdateResult::kAppIdMismatch);
@@ -644,7 +652,8 @@ TEST_F(ManifestUpdateDataFetchCommandTest, IconReadFromDiskFailed) {
 
   ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
       app_url(), app_id,
-      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+      GetFakeDataRetriever(webapps::InstallableStatusCode::NO_ERROR_DETECTED,
+                           new_info));
 
   EXPECT_TRUE(result.update_result.has_value());
   EXPECT_EQ(result.update_result.value(),
@@ -671,7 +680,8 @@ TEST_F(ManifestUpdateDataFetchCommandTest, DoNotAcceptAppUpdateDialog) {
 
   ManifestUpdateDataFetchResult result = RunCommandAndGetResult(
       app_url(), app_id,
-      GetFakeDataRetriever(/*is_installable=*/true, new_info));
+      GetFakeDataRetriever(webapps::InstallableStatusCode::NO_ERROR_DETECTED,
+                           new_info));
 
   EXPECT_TRUE(result.update_result.has_value());
   EXPECT_EQ(result.update_result.value(), ManifestUpdateResult::kAppUpToDate);

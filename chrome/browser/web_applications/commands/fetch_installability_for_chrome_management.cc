@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -129,13 +130,13 @@ void FetchInstallabilityForChromeManagement::OnWebAppInstallabilityChecked(
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
     bool valid_manifest_for_web_app,
-    bool is_installable) {
+    webapps::InstallableStatusCode error_code) {
   if (IsWebContentsDestroyed()) {
     error_log_.Append(base::Value("Web contents destroyed"));
     Abort(InstallableCheckResult::kNotInstallable);
     return;
   }
-  if (!is_installable) {
+  if (error_code != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
     DCHECK(callback_);
     SignalCompletionAndSelfDestruct(
         CommandResult::kSuccess,

@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
@@ -72,7 +73,7 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock> {
   void OnDidPerformInstallableCheck(blink::mojom::ManifestPtr opt_manifest,
                                     const GURL& manifest_url,
                                     bool valid_manifest_for_web_app,
-                                    bool is_installable);
+                                    webapps::InstallableStatusCode error_code);
 
   // Either dispatches an asynchronous check for whether this installation
   // should be stopped and an intent to the Play Store should be made, or

@@ -31,6 +31,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -449,7 +450,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
     bool valid_manifest_for_web_app,
-    bool is_installable) {
+    webapps::InstallableStatusCode error_code) {
   if (ShouldStopInstall())
     return;
 

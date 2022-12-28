@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -39,7 +40,7 @@ void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
     absl::optional<webapps::InstallableParams> params) {
   completion_callback_ =
       base::BindOnce(std::move(callback), manifest_.Clone(), manifest_url_,
-                     /*valid_manifest_for_web_app=*/true, is_installable_);
+                     /*valid_manifest_for_web_app=*/true, error_code_);
   ScheduleCompletionCallback();
 }
 
@@ -71,10 +72,10 @@ void FakeDataRetriever::SetEmptyRendererWebAppInstallInfo() {
 }
 
 void FakeDataRetriever::SetManifest(blink::mojom::ManifestPtr manifest,
-                                    bool is_installable,
+                                    webapps::InstallableStatusCode error_code,
                                     GURL manifest_url) {
   manifest_ = std::move(manifest);
-  is_installable_ = is_installable;
+  error_code_ = error_code;
   manifest_url_ = std::move(manifest_url);
 }
 
@@ -112,7 +113,8 @@ void FakeDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
   manifest->display = DisplayMode::kStandalone;
   manifest->short_name = u"Manifest Name";
 
-  SetManifest(std::move(manifest), /*is_installable=*/true);
+  SetManifest(std::move(manifest),
+              /*error_code=*/webapps::InstallableStatusCode::NO_ERROR_DETECTED);
 
   SetIcons(IconsMap{});
 }

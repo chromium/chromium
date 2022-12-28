@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom-shared.h"
 #include "url/gurl.h"
@@ -85,7 +86,7 @@ class SubAppInstallCommand
       blink::mojom::ManifestPtr opt_manifest,
       const GURL& manifest_url,
       bool valid_manifest_for_web_app,
-      bool is_installable);
+      webapps::InstallableStatusCode error_code);
   void OnIconsRetrievedShowDialog(
       const UnhashedAppId& unhashed_app_id,
       std::unique_ptr<WebAppInstallInfo> web_app_info,

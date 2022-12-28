@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -65,7 +66,7 @@ class FetchInstallabilityForChromeManagement
   void OnWebAppInstallabilityChecked(blink::mojom::ManifestPtr opt_manifest,
                                      const GURL& manifest_url,
                                      bool valid_manifest_for_web_app,
-                                     bool is_installable);
+                                     webapps::InstallableStatusCode error_code);
   void OnAppLockGranted(std::unique_ptr<AppLock> app_lock);
 
   void Abort(InstallableCheckResult result);

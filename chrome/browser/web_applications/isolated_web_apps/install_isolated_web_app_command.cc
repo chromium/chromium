@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -231,18 +232,19 @@ void InstallIsolatedWebAppCommand::OnCheckInstallabilityAndRetrieveManifest(
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
     bool valid_manifest_for_web_app,
-    bool is_installable) {
+    webapps::InstallableStatusCode error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!is_installable) {
-    ReportFailure("App is not installable.");
+  if (error_code != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
+    ReportFailure(base::StrCat({"App is not installable: ",
+                                webapps::GetErrorMessage(error_code), "."}));
     return;
   }
 
   // See |WebAppDataRetriever::CheckInstallabilityCallback| documentation for
   // details.
   DCHECK(valid_manifest_for_web_app)
-      << "must be true when |is_installable| is true.";
+      << "must be true when no error is detected.";
 
   if (!opt_manifest) {
     ReportFailure("Manifest is null.");

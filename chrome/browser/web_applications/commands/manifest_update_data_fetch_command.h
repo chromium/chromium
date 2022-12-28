@@ -19,12 +19,9 @@
 #include "chrome/browser/web_applications/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
-
-namespace webapps {
-enum class InstallResultCode;
-}  // namespace webapps
 
 namespace content {
 class WebContents;
@@ -161,7 +158,7 @@ class ManifestUpdateDataFetchCommand : public WebAppCommandTemplate<AppLock> {
   void OnDidGetInstallableData(blink::mojom::ManifestPtr opt_manifest,
                                const GURL& manifest_url,
                                bool valid_manifest_for_web_app,
-                               bool is_installable);
+                               webapps::InstallableStatusCode error_code);
   void LoadAndCheckIconContents();
   void OnIconsDownloaded(IconsDownloadedResult result,
                          IconsMap icons_map,

@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -117,7 +118,8 @@ TEST_F(FetchInstallabilityForChromeManagementTest, NotInstallable) {
   // Url loading succeeds, but manifest fetch says not installable.
   url_loader->SetNextLoadUrlResult(kWebAppUrl,
                                    WebAppUrlLoaderResult::kUrlLoaded);
-  data_retriever->SetManifest(blink::mojom::ManifestPtr(), false);
+  data_retriever->SetManifest(blink::mojom::ManifestPtr(),
+                              webapps::InstallableStatusCode::MANIFEST_EMPTY);
 
   FetchResult result =
       ScheduleCommandAndWait(kWebAppUrl, web_contents()->GetWeakPtr(),
@@ -133,7 +135,8 @@ TEST_F(FetchInstallabilityForChromeManagementTest, Installable) {
   // Url loading succeeds and manifest loads. No apps installed yet, so succeed!
   url_loader->SetNextLoadUrlResult(kWebAppUrl,
                                    WebAppUrlLoaderResult::kUrlLoaded);
-  data_retriever->SetManifest(CreateManifest(), true);
+  data_retriever->SetManifest(
+      CreateManifest(), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
 
   FetchResult result =
       ScheduleCommandAndWait(kWebAppUrl, web_contents()->GetWeakPtr(),
@@ -149,7 +152,8 @@ TEST_F(FetchInstallabilityForChromeManagementTest, AlreadyInstalled) {
   // Url loading succeeds and manifest loads. No apps installed yet, so succeed!
   url_loader->SetNextLoadUrlResult(kWebAppUrl,
                                    WebAppUrlLoaderResult::kUrlLoaded);
-  data_retriever->SetManifest(CreateManifest(), true);
+  data_retriever->SetManifest(
+      CreateManifest(), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
 
   test::InstallWebApp(profile(), CreateWebAppInfo());
 

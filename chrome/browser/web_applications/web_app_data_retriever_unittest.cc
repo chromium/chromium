@@ -12,11 +12,13 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/webapps/browser/installable/fake_installable_manager.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
@@ -309,11 +311,13 @@ TEST_F(WebAppDataRetrieverTest,
       web_contents(), /*bypass_service_worker_check=*/false,
       base::BindLambdaForTesting(
           [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
-              bool valid_manifest_for_web_app, bool is_installable) {
+              bool valid_manifest_for_web_app,
+              webapps::InstallableStatusCode error_code) {
             EXPECT_FALSE(opt_manifest);
             EXPECT_EQ(manifest_url, GURL());
             EXPECT_FALSE(valid_manifest_for_web_app);
-            EXPECT_FALSE(is_installable);
+            EXPECT_EQ(error_code,
+                      webapps::InstallableStatusCode::RENDERER_CANCELLED);
             run_loop.Quit();
           }));
   DeleteContents();
@@ -394,8 +398,10 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
       web_contents(), /*bypass_service_worker_check=*/false,
       base::BindLambdaForTesting(
           [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
-              bool valid_manifest_for_web_app, bool is_installable) {
-            EXPECT_TRUE(is_installable);
+              bool valid_manifest_for_web_app,
+              webapps::InstallableStatusCode error_code) {
+            EXPECT_EQ(error_code,
+                      webapps::InstallableStatusCode::NO_ERROR_DETECTED);
 
             EXPECT_EQ(manifest_short_name, opt_manifest->short_name);
             EXPECT_EQ(manifest_name, opt_manifest->name);
@@ -431,8 +437,9 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
       web_contents(), /*bypass_service_worker_check=*/false,
       base::BindLambdaForTesting(
           [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
-              bool valid_manifest_for_web_app, bool is_installable) {
-            EXPECT_FALSE(is_installable);
+              bool valid_manifest_for_web_app,
+              webapps::InstallableStatusCode error_code) {
+            EXPECT_EQ(error_code, webapps::InstallableStatusCode::NO_MANIFEST);
             EXPECT_FALSE(valid_manifest_for_web_app);
             EXPECT_EQ(manifest_url, GURL());
             callback_called = true;

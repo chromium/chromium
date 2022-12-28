@@ -32,6 +32,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_status_code.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -377,8 +378,8 @@ TEST_F(ExternallyManagedInstallCommandTest,
         IconsDownloadedResult::kCompleted);
     new_data_retriever->SetDownloadedIconsHttpResults(std::move(http_results));
     new_data_retriever->SetIcons(std::move(icons_map));
-    new_data_retriever->SetManifest(std::move(manifest),
-                                    /*is_installable=*/true);
+    new_data_retriever->SetManifest(
+        std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
     new_data_retriever->SetEmptyRendererWebAppInstallInfo();
 
     ExternalInstallOptions new_install_options(
@@ -425,8 +426,8 @@ TEST_F(ExternallyManagedInstallCommandTest,
     data_retriever->SetIconsDownloadedResult(IconsDownloadedResult::kCompleted);
     data_retriever->SetDownloadedIconsHttpResults(std::move(http_results));
     data_retriever->SetIcons(std::move(icons_map));
-    data_retriever->SetManifest(std::move(manifest),
-                                /*is_installable=*/true);
+    data_retriever->SetManifest(
+        std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
     ExternalInstallOptions install_options(
@@ -465,8 +466,9 @@ TEST_F(ExternallyManagedInstallCommandTest,
     new_data_retriever->SetDownloadedIconsHttpResults(
         std::move(new_http_results));
     new_data_retriever->SetIcons(std::move(new_icons_map));
-    new_data_retriever->SetManifest(std::move(new_manifest),
-                                    /*is_installable=*/true);
+    new_data_retriever->SetManifest(
+        std::move(new_manifest),
+        webapps::InstallableStatusCode::NO_ERROR_DETECTED);
     new_data_retriever->SetEmptyRendererWebAppInstallInfo();
 
     ExternalInstallOptions new_install_options(
@@ -513,8 +515,8 @@ TEST_F(ExternallyManagedInstallCommandTest,
     data_retriever->SetIconsDownloadedResult(IconsDownloadedResult::kCompleted);
     data_retriever->SetDownloadedIconsHttpResults(std::move(http_results));
     data_retriever->SetIcons(std::move(icons_map));
-    data_retriever->SetManifest(std::move(manifest),
-                                /*is_installable=*/true);
+    data_retriever->SetManifest(
+        std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
     ExternalInstallOptions install_options(
@@ -554,8 +556,9 @@ TEST_F(ExternallyManagedInstallCommandTest,
     new_data_retriever->SetDownloadedIconsHttpResults(
         std::move(new_http_results));
     new_data_retriever->SetIcons(std::move(new_icons_map));
-    new_data_retriever->SetManifest(std::move(new_manifest),
-                                    /*is_installable=*/true);
+    new_data_retriever->SetManifest(
+        std::move(new_manifest),
+        webapps::InstallableStatusCode::NO_ERROR_DETECTED);
     new_data_retriever->SetEmptyRendererWebAppInstallInfo();
 
     ExternalInstallOptions new_install_options(

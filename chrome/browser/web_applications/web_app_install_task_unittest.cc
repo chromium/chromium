@@ -55,6 +55,7 @@
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -194,7 +195,8 @@ class WebAppInstallTaskTest : public WebAppTest {
     auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = url;
     manifest->short_name = u"Manifest Name";
-    data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
+    data_retriever_->SetManifest(
+        std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
 
     data_retriever_->SetIcons(IconsMap{});
   }
@@ -385,7 +387,8 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
     manifest->scope = scope;
     manifest->short_name = base::ASCIIToUTF16(manifest_name);
 
-    data_retriever().SetManifest(std::move(manifest), /*is_installable=*/true);
+    data_retriever().SetManifest(
+        std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
   }
 
   base::RunLoop run_loop;
@@ -441,7 +444,8 @@ TEST_F(WebAppInstallTaskTest, ForceReinstall) {
     manifest->scope = url;
     manifest->short_name = u"Manifest Name2";
 
-    data_retriever().SetManifest(std::move(manifest), /*is_installable=*/true);
+    data_retriever().SetManifest(
+        std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
   }
 
   base::RunLoop run_loop;
@@ -576,7 +580,8 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
     manifest->theme_color = manifest_theme_color;
     manifest->display = display_mode;
 
-    data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
+    data_retriever_->SetManifest(
+        std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
   }
 
   base::RunLoop run_loop;
@@ -882,7 +887,8 @@ TEST_F(WebAppInstallTaskTest, StorageIsolationFlagSaved) {
 
   InitializeInstallTaskAndRetriever(
       webapps::WebappInstallSource::MENU_BROWSER_TAB);
-  data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
+  data_retriever_->SetManifest(
+      std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
   data_retriever_->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
   base::RunLoop run_loop;
@@ -1009,8 +1015,9 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
       shortcut_item.icons.push_back(std::move(icon));
       manifest->shortcuts.push_back(std::move(shortcut_item));
 
-      data_retriever_->SetManifest(std::move(manifest),
-                                   /*is_installable=*/true);
+      data_retriever_->SetManifest(
+          std::move(manifest),
+          webapps::InstallableStatusCode::NO_ERROR_DETECTED);
     }
 
     base::RunLoop run_loop;
@@ -1276,7 +1283,8 @@ class WebAppInstallTaskTestWithFileHandlers : public WebAppInstallTaskTest {
       blink::mojom::ManifestPtr manifest,
       webapps::WebappInstallSource surface) {
     InitializeInstallTaskAndRetriever(surface);
-    data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
+    data_retriever_->SetManifest(
+        std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
 
     base::RunLoop run_loop;
     bool callback_called = false;

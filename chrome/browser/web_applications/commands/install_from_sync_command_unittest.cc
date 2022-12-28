@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/http/http_status_code.h"
@@ -255,8 +256,9 @@ TEST_F(InstallFromSyncTest, SuccessWithManifest) {
   EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
                                    testing::_, true,
                                    base::test::IsNotNullCallback(), testing::_))
-      .WillOnce(base::test::RunOnceCallback<2>(CreateManifest(true),
-                                               kWebAppManifestUrl, true, true));
+      .WillOnce(base::test::RunOnceCallback<2>(
+          CreateManifest(true), kWebAppManifestUrl, true,
+          webapps::InstallableStatusCode::NO_ERROR_DETECTED));
 
   ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/true,
                  IconFetchSource::kManifest);
@@ -296,8 +298,9 @@ TEST_F(InstallFromSyncTest, SuccessWithoutManifest) {
   EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
                                    testing::_, true,
                                    base::test::IsNotNullCallback(), testing::_))
-      .WillOnce(base::test::RunOnceCallback<2>(nullptr, kWebAppManifestUrl,
-                                               true, true));
+      .WillOnce(base::test::RunOnceCallback<2>(
+          nullptr, kWebAppManifestUrl, true,
+          webapps::InstallableStatusCode::NO_ERROR_DETECTED));
 
   ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/false,
                  IconFetchSource::kDocument);
@@ -337,8 +340,9 @@ TEST_F(InstallFromSyncTest, SuccessManifestNoIcons) {
   EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
                                    testing::_, true,
                                    base::test::IsNotNullCallback(), testing::_))
-      .WillOnce(base::test::RunOnceCallback<2>(CreateManifest(/*icons=*/false),
-                                               kWebAppManifestUrl, true, true));
+      .WillOnce(base::test::RunOnceCallback<2>(
+          CreateManifest(/*icons=*/false), kWebAppManifestUrl, true,
+          webapps::InstallableStatusCode::NO_ERROR_DETECTED));
 
   ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/false,
                  IconFetchSource::kDocument);
@@ -451,8 +455,9 @@ TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
   EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
                                    testing::_, true,
                                    base::test::IsNotNullCallback(), testing::_))
-      .WillOnce(base::test::RunOnceCallback<2>(std::move(manifest),
-                                               kWebAppManifestUrl, true, true));
+      .WillOnce(base::test::RunOnceCallback<2>(
+          std::move(manifest), kWebAppManifestUrl, true,
+          webapps::InstallableStatusCode::NO_ERROR_DETECTED));
 
   ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/true,
                  IconFetchSource::kDocument);
@@ -505,7 +510,8 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
         CheckInstallabilityAndRetrieveManifest(
             testing::_, true, base::test::IsNotNullCallback(), testing::_))
         .WillOnce(base::test::RunOnceCallback<2>(
-            CreateManifest(true, kWebAppUrl), kWebAppManifestUrl, true, true));
+            CreateManifest(true, kWebAppUrl), kWebAppManifestUrl, true,
+            webapps::InstallableStatusCode::NO_ERROR_DETECTED));
 
     ExpectGetIcons(data_retriever1.get(), /*skip_page_favicons=*/true,
                    IconFetchSource::kManifest);
@@ -525,7 +531,7 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
             testing::_, true, base::test::IsNotNullCallback(), testing::_))
         .WillOnce(base::test::RunOnceCallback<2>(
             CreateManifest(true, kOtherWebAppUrl), kWebAppManifestUrl, true,
-            true));
+            webapps::InstallableStatusCode::NO_ERROR_DETECTED));
 
     ExpectGetIcons(data_retriever2.get(), /*skip_page_favicons=*/true,
                    IconFetchSource::kManifest);

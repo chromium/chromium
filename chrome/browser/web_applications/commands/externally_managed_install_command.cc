@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/features.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -139,7 +140,7 @@ void ExternallyManagedInstallCommand::OnDidPerformInstallableCheck(
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
     bool valid_manifest_for_web_app,
-    bool is_installable) {
+    webapps::InstallableStatusCode error_code) {
   if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
     Abort(webapps::InstallResultCode::kWebContentsDestroyed);
     return;

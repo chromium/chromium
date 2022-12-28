@@ -48,6 +48,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/test/test_utils.h"
@@ -370,8 +371,8 @@ class ExternallyManagedAppInstallTaskTest
       data_retriever_->SetRendererWebAppInstallInfo(
           std::make_unique<WebAppInstallInfo>());
 
-    data_retriever_->SetManifest(std::move(manifest),
-                                 /*is_installable=*/true);
+    data_retriever_->SetManifest(
+        std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
 
     data_retriever_->SetIcons(IconsMap{});
 

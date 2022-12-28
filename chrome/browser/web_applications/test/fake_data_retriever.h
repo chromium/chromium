@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
@@ -48,7 +49,7 @@ class FakeDataRetriever : public WebAppDataRetriever {
   void SetEmptyRendererWebAppInstallInfo();
   // Set arguments to respond on |CheckInstallabilityAndRetrieveManifest|.
   void SetManifest(blink::mojom::ManifestPtr manifest,
-                   bool is_installable,
+                   webapps::InstallableStatusCode error_code,
                    GURL manifest_url = GURL());
   // Set icons to respond on |GetIcons|.
   void SetIcons(IconsMap icons_map);
@@ -82,7 +83,8 @@ class FakeDataRetriever : public WebAppDataRetriever {
 
   blink::mojom::ManifestPtr manifest_;
   GURL manifest_url_;
-  bool is_installable_ = false;
+  webapps::InstallableStatusCode error_code_ =
+      webapps::InstallableStatusCode::NO_MANIFEST;
 
   IconsMap icons_map_;
   GetIconsDelegate get_icons_delegate_;

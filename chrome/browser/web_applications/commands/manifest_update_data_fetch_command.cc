@@ -39,6 +39,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "content/public/browser/web_contents.h"
 #include "manifest_update_data_fetch_command.h"
 #include "third_party/blink/public/common/features.h"
@@ -242,14 +243,14 @@ void ManifestUpdateDataFetchCommand::OnDidGetInstallableData(
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
     bool valid_manifest_for_web_app,
-    bool is_installable) {
+    webapps::InstallableStatusCode error_code) {
   if (IsWebContentsDestroyed()) {
     CompleteCommand(ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
   DCHECK_EQ(stage_, ManifestUpdateStage::kPendingInstallableData);
 
-  if (!is_installable) {
+  if (error_code != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
     CompleteCommand(ManifestUpdateResult::kAppNotEligible);
     return;
   }

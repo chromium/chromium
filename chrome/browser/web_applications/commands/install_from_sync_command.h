@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -90,7 +91,7 @@ class InstallFromSyncCommand
   void OnDidPerformInstallableCheck(blink::mojom::ManifestPtr opt_manifest,
                                     const GURL& manifest_url,
                                     bool valid_manifest_for_web_app,
-                                    bool is_installable);
+                                    webapps::InstallableStatusCode error_code);
 
   enum class FinalizeMode { kNormalWebAppInfo, kFallbackWebAppInfo };
 

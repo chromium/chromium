@@ -45,6 +45,7 @@
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -121,7 +122,8 @@ GURL CreateDefaultManifestURL(const GURL& application_url) {
 
 auto ReturnManifest(const blink::mojom::ManifestPtr& manifest,
                     const GURL& manifest_url,
-                    bool is_installable = true) {
+                    webapps::InstallableStatusCode error_code =
+                        webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
   constexpr int kCallbackArgumentIndex = 2;
 
   return DoAll(
@@ -132,8 +134,7 @@ auto ReturnManifest(const blink::mojom::ManifestPtr& manifest,
       RunOnceCallback<kCallbackArgumentIndex>(
           /*manifest=*/manifest.Clone(),
           /*manifest_url=*/manifest_url,
-          /*valid_manifest_for_web_app=*/true,
-          /*is_installable=*/is_installable));
+          /*valid_manifest_for_web_app=*/true, error_code));
 }
 
 std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
@@ -488,7 +489,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
       .WillByDefault(
           ReturnManifest(blink::mojom::Manifest::New(),
                          GURL{"http://test-url-example.com/manifest.json"},
-                         /*is_installable=*/false));
+                         webapps::InstallableStatusCode::NO_MANIFEST));
 
   EXPECT_THAT(ExecuteCommand(
                   Parameters{
@@ -1043,7 +1044,7 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
       .WillByDefault(
           ReturnManifest(blink::mojom::Manifest::New(),
                          GURL{"http://test-url-example.com/manifest.json"},
-                         /*is_installable=*/false));
+                         webapps::InstallableStatusCode::NO_MANIFEST));
 
   base::HistogramTester histogram_tester;
 
@@ -1069,7 +1070,7 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
       .WillByDefault(ReturnManifest(
           /*manifest=*/nullptr,
           CreateDefaultManifestURL(url_info.origin().GetURL()),
-          /*is_installable=*/false));
+          webapps::InstallableStatusCode::NO_MANIFEST));
 
   base::HistogramTester histogram_tester;
 

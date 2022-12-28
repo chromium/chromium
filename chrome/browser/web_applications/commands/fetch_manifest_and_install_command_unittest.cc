@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_status_code.h"
@@ -153,7 +154,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 
     data_retriever->SetManifest(
         opt_manifest ? std::move(opt_manifest) : CreateValidManifest(),
-        /*is_installable=*/true);
+        webapps::InstallableStatusCode::NO_ERROR_DETECTED);
     data_retriever->SetEmptyRendererWebAppInstallInfo();
     return data_retriever;
   }
@@ -164,7 +165,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 
     data_retriever->SetManifest(
         opt_manifest ? std::move(opt_manifest) : CreateValidManifest(),
-        /*is_installable=*/true);
+        webapps::InstallableStatusCode::NO_ERROR_DETECTED);
     data_retriever->SetEmptyRendererWebAppInstallInfo();
     return data_retriever;
   }
