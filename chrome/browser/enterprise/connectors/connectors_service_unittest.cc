@@ -38,42 +38,6 @@ namespace {
 
 constexpr char kEmptySettingsPref[] = "[]";
 
-constexpr char kNormalCloudAnalysisSettingsPref[] = R"([
-  {
-    "service_provider": "google",
-    "enable": [
-      {"url_list": ["*"], "tags": ["dlp", "malware"]}
-    ],
-    "disable": [
-      {"url_list": ["no.dlp.com", "no.dlp.or.malware.ca"], "tags": ["dlp"]},
-      {"url_list": ["no.malware.com", "no.dlp.or.malware.ca"],
-           "tags": ["malware"]}
-    ],
-    "block_until_verdict": 1,
-    "block_password_protected": true,
-    "block_large_files": true,
-    "block_unsupported_file_types": true
-  }
-])";
-
-constexpr char kNormalLocalAnalysisSettingsPref[] = R"([
-  {
-    "service_provider": "local_user_agent",
-    "enable": [
-      {"url_list": ["*"], "tags": ["dlp", "malware"]}
-    ],
-    "disable": [
-      {"url_list": ["no.dlp.com", "no.dlp.or.malware.ca"], "tags": ["dlp"]},
-      {"url_list": ["no.malware.com", "no.dlp.or.malware.ca"],
-           "tags": ["malware"]}
-    ],
-    "block_until_verdict": 1,
-    "block_password_protected": true,
-    "block_large_files": true,
-    "block_unsupported_file_types": true
-  }
-])";
-
 constexpr char kWildcardAnalysisSettingsPref[] = R"([
   {
     "service_provider": "google",
@@ -89,10 +53,6 @@ constexpr char kNormalReportingSettingsPref[] = R"([
   }
 ])";
 
-constexpr char kDlpAndMalwareUrl[] = "https://foo.com";
-constexpr char kOnlyDlpUrl[] = "https://no.malware.com";
-constexpr char kOnlyMalwareUrl[] = "https://no.dlp.com";
-constexpr char kNoTagsUrl[] = "https://no.dlp.or.malware.ca";
 constexpr char kCustomMessage[] = "Custom Admin Message";
 constexpr char kCustomUrl[] = "https://learn.more.com";
 constexpr char kDlpTag[] = "dlp";
@@ -155,130 +115,6 @@ class ConnectorsServiceTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
 };
 
-class ConnectorsServiceAnalysisNoFeatureTest
-    : public ConnectorsServiceTest,
-      public testing::WithParamInterface<
-          std::tuple<const char*, AnalysisConnector>> {
- public:
-  ConnectorsServiceAnalysisNoFeatureTest() {
-    scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
-  }
-
-  std::string pref_value() { return std::get<0>(GetParam()); }
-  AnalysisConnector connector() { return std::get<1>(GetParam()); }
-};
-
-TEST_P(ConnectorsServiceAnalysisNoFeatureTest, AnalysisConnectors) {
-  profile_->GetPrefs()->Set(ConnectorPref(connector()),
-                            *base::JSONReader::Read(pref_value()));
-  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
-  for (const char* url :
-       {kDlpAndMalwareUrl, kOnlyDlpUrl, kOnlyMalwareUrl, kNoTagsUrl}) {
-    // Only absl::nullopt should be returned when the feature is disabled,
-    // regardless of what Connector or URL is used.
-    auto settings = service->GetAnalysisSettings(GURL(url), connector());
-    ASSERT_FALSE(settings.has_value());
-  }
-
-  // No cached settings imply the connector value was never read.
-  ASSERT_TRUE(service->ConnectorsManagerForTesting()
-                  ->GetAnalysisConnectorsSettingsForTesting()
-                  .empty());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ConnectorsServiceAnalysisNoFeatureTest,
-    testing::Combine(testing::Values(kNormalCloudAnalysisSettingsPref,
-                                     kNormalLocalAnalysisSettingsPref),
-                     testing::Values(FILE_ATTACHED,
-                                     FILE_DOWNLOADED,
-                                     BULK_DATA_ENTRY,
-                                     PRINT)));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-constexpr char kNormalSourceDestinationCloudAnalysisSettingsPref[] = R"([
-  {
-    "service_provider": "google",
-    "enable": [
-      {
-        "source_destination_list": [
-          {
-            "sources": [
-              {"file_system_type": "ANY"}
-            ],
-            "destinations": [
-              {"file_system_type": "ANY"}
-            ]
-          }
-        ],
-        "tags": ["dlp", "malware"]
-      }
-    ],
-    "block_until_verdict": 1,
-    "block_password_protected": true,
-    "block_large_files": true,
-    "block_unsupported_file_types": true
-  }
-])";
-
-constexpr char kNormalSourceDestinationLocalAnalysisSettingsPref[] = R"([
-  {
-    "service_provider": "local_user_agent",
-    "enable": [
-      {
-        "source_destination_list": [
-          {
-            "sources": [
-              {"file_system_type": "ANY"}
-            ],
-            "destinations": [
-              {"file_system_type": "ANY"}
-            ]
-          }
-        ],
-        "tags": ["dlp", "malware"]
-      }
-    ],
-    "block_until_verdict": 1,
-    "block_password_protected": true,
-    "block_large_files": true,
-    "block_unsupported_file_types": true
-  }
-])";
-
-using ConnectorsServiceAnalysisSourceDestinationNoFeatureTest =
-    ConnectorsServiceAnalysisNoFeatureTest;
-TEST_P(ConnectorsServiceAnalysisSourceDestinationNoFeatureTest,
-       AnalysisConnectors) {
-  profile_->GetPrefs()->Set(ConnectorPref(connector()),
-                            *base::JSONReader::Read(pref_value()));
-  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
-
-  // Only absl::nullopt should be returned when the feature is disabled.
-  storage::FileSystemURL source;
-  storage::FileSystemURL destination;
-  auto settings =
-      service->GetAnalysisSettings(source, destination, connector());
-  ASSERT_FALSE(settings.has_value());
-
-  // No cached settings imply the connector value was never read.
-  ASSERT_TRUE(service->ConnectorsManagerForTesting()
-                  ->GetAnalysisConnectorsSettingsForTesting()
-                  .empty());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ConnectorsServiceAnalysisSourceDestinationNoFeatureTest,
-    testing::Combine(
-        testing::Values(kNormalSourceDestinationCloudAnalysisSettingsPref,
-                        kNormalSourceDestinationLocalAnalysisSettingsPref),
-        testing::Values(FILE_TRANSFER)));
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Test to make sure that HasExtraUiToDisplay returns the right value to
 // show the extra UI from opt in features like custom message, URL and bypass
 // on Download.
@@ -324,20 +160,10 @@ INSTANTIATE_TEST_SUITE_P(
 //   int: policy value.  0: don't set, 1: set to normal, 2: set to empty.
 class ConnectorsServiceReportingFeatureTest
     : public ConnectorsServiceTest,
-      public testing::WithParamInterface<
-          std::tuple<ReportingConnector, bool, int>> {
+      public testing::WithParamInterface<std::tuple<ReportingConnector, int>> {
  public:
-  ConnectorsServiceReportingFeatureTest() {
-    if (enable_feature_flag()) {
-      scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
-    }
-  }
-
   ReportingConnector connector() const { return std::get<0>(GetParam()); }
-  bool enable_feature_flag() const { return std::get<1>(GetParam()); }
-  int policy_value() const { return std::get<2>(GetParam()); }
+  int policy_value() const { return std::get<1>(GetParam()); }
 
   const char* pref() const { return ConnectorPref(connector()); }
 
@@ -354,9 +180,7 @@ class ConnectorsServiceReportingFeatureTest
     return nullptr;
   }
 
-  bool reporting_enabled() const {
-    return enable_feature_flag() && policy_value() == 1;
-  }
+  bool reporting_enabled() const { return policy_value() == 1; }
 
   void ValidateSettings(const ReportingSettings& settings) {
     // For now, the URL is the same for both legacy and new policies, so
@@ -380,7 +204,7 @@ TEST_P(ConnectorsServiceReportingFeatureTest, Test) {
   if (settings.has_value())
     ValidateSettings(settings.value());
 
-  EXPECT_EQ(enable_feature_flag() && policy_value() == 1,
+  EXPECT_EQ(policy_value() == 1,
             !ConnectorsServiceFactory::GetForBrowserContext(profile_)
                  ->ConnectorsManagerForTesting()
                  ->GetReportingConnectorsSettingsForTesting()
@@ -391,7 +215,6 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     ConnectorsServiceReportingFeatureTest,
     testing::Combine(testing::Values(ReportingConnector::SECURITY_EVENT),
-                     testing::Bool(),
                      testing::ValuesIn({0, 1, 2})));
 
 TEST_F(ConnectorsServiceTest, RealtimeURLCheck) {
@@ -478,10 +301,6 @@ INSTANTIATE_TEST_SUITE_P(,
 
 class ConnectorsServiceProfileTypeBrowserTest : public testing::Test {
  public:
-  ConnectorsServiceProfileTypeBrowserTest() {
-    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
-  }
-
  protected:
   TestingProfile* regular_profile() {
     return profile_testing_helper_.regular_profile();

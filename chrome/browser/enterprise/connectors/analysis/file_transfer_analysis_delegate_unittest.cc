@@ -244,16 +244,6 @@ class BaseTest : public testing::Test {
     profile_manager_.DeleteAllTestingProfiles();
   }
 
-  void EnableFeatures() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
-  }
-
-  void DisableFeatures() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
-  }
-
   storage::FileSystemURL PathToFileSystemURL(base::FilePath path) {
     return storage::FileSystemURL::CreateForTest(
         kTestStorageKey, storage::kFileSystemTypeLocal, path);
@@ -314,18 +304,14 @@ enum PrefState {
   DLP_MALWARE_PREF,
 };
 
-using TestingTuple = std::tuple</*Feature enabled*/ bool,
-                                /*Token valid*/ bool,
+using TestingTuple = std::tuple</*Token valid*/ bool,
                                 /*Pref State*/ PrefState,
                                 /*Enable unrelated Pref*/ bool>;
 
 static auto testingTupleToString = [](const auto& info) {
   // Can use info.param here to generate the test suffix
   std::string name;
-  auto [feature_enabled, token_valid, pref_state, unrelated_pref] = info.param;
-  if (!feature_enabled) {
-    name += "NoFeature";
-  }
+  auto [token_valid, pref_state, unrelated_pref] = info.param;
   if (!token_valid) {
     name += "TokenInvalid";
   }
@@ -358,16 +344,14 @@ class FileTransferAnalysisDelegateIsEnabledTest
     : public BaseTest,
       public ::testing::WithParamInterface<TestingTuple> {
  protected:
-  bool GetFeatureEnabled() { return std::get<0>(GetParam()); }
-  bool GetTokenValid() { return std::get<1>(GetParam()); }
-  PrefState GetPrefState() { return std::get<2>(GetParam()); }
-  bool GetUnrelatedPrefEnabled() { return std::get<3>(GetParam()); }
+  bool GetTokenValid() { return std::get<0>(GetParam()); }
+  PrefState GetPrefState() { return std::get<1>(GetParam()); }
+  bool GetUnrelatedPrefEnabled() { return std::get<2>(GetParam()); }
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          FileTransferAnalysisDelegateIsEnabledTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Values(NO_PREF,
                                                           NOTHING_ENABLED_PREF,
                                                           DLP_PREF,
@@ -377,11 +361,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          testingTupleToString);
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledTest, Enabled) {
-  if (GetFeatureEnabled()) {
-    EnableFeatures();
-  } else {
-    DisableFeatures();
-  }
   ScopedSetDMToken scoped_dm_token(
       GetTokenValid() ? policy::DMToken::CreateValidTokenForTesting(kDmToken)
                       : policy::DMToken::CreateInvalidTokenForTesting());
@@ -414,7 +393,7 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledTest, Enabled) {
   auto settings = FileTransferAnalysisDelegate::IsEnabledVec(
       profile(), {GetEmptyTestSrcUrl()}, GetEmptyTestDestUrl());
 
-  if (!GetFeatureEnabled() || !GetTokenValid() || GetPrefState() == NO_PREF ||
+  if (!GetTokenValid() || GetPrefState() == NO_PREF ||
       GetPrefState() == NOTHING_ENABLED_PREF) {
     EXPECT_TRUE(settings.empty());
   } else {
@@ -434,7 +413,6 @@ using FileTransferAnalysisDelegateIsEnabledTestSameFileSystem = BaseTest;
 // Test for FileSystemURL that's not registered with a volume.
 TEST_F(FileTransferAnalysisDelegateIsEnabledTestSameFileSystem,
        DlpMalwareDisabledForSameFileSystem) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_TRANSFER,
@@ -454,7 +432,6 @@ using FileTransferAnalysisDelegateIsEnabledTestMultiple = BaseTest;
 
 // Test using multiple source urls.
 TEST_F(FileTransferAnalysisDelegateIsEnabledTestMultiple, Test) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
@@ -514,7 +491,6 @@ class FileTransferAnalysisDelegateIsEnabledParamTest
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
        DlpAndMalwareDisabledForSameVolume) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
@@ -535,7 +511,6 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
        DlpDisabledByPatternInSource) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
@@ -592,7 +567,6 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
        DlpDisabledByPatternInDestination) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
@@ -649,7 +623,6 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
        MalwareEnabledWithPatternInSource) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
@@ -690,7 +663,6 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
        MalwareEnabledWithPatternsInDestination) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
@@ -741,7 +713,6 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
   void SetUp() override {
     BaseTest::SetUp();
 
-    EnableFeatures();
     safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_TRANSFER,
                                         kBlockingScansForDlpAndMalware);
 

@@ -31,10 +31,7 @@ class BaseTest : public testing::Test {
     profile_ = profile_manager_.CreateTestingProfile("test-user");
   }
 
-  void EnableFeatures() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
-  }
+  void EnableFeatures() { scoped_feature_list_.Reset(); }
 
   Profile* profile() { return profile_; }
 

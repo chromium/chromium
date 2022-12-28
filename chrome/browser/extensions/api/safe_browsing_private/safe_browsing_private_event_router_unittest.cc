@@ -1435,24 +1435,12 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestUnscannedFileEnabled) {
 //   bool: whether the server has authorized this browser instance.
 class SafeBrowsingIsRealtimeReportingEnabledTest
     : public SafeBrowsingPrivateEventRouterTestBase,
-      public testing::WithParamInterface<
-          testing::tuple<bool, bool, bool, bool>> {
+      public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
  public:
   SafeBrowsingIsRealtimeReportingEnabledTest()
-      : is_feature_flag_enabled_(testing::get<0>(GetParam())),
-        is_manageable_(testing::get<1>(GetParam())),
-        is_policy_enabled_(testing::get<2>(GetParam())),
-        is_authorized_(testing::get<3>(GetParam())) {
-    if (is_feature_flag_enabled_) {
-      scoped_feature_list_.InitWithFeatures(
-          {enterprise_connectors::kEnterpriseConnectorsEnabled},
-          {enterprise_connectors::kSafeBrowsingRealtimeReporting});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {enterprise_connectors::kEnterpriseConnectorsEnabled,
-               enterprise_connectors::kSafeBrowsingRealtimeReporting});
-    }
-
+      : is_manageable_(testing::get<0>(GetParam())),
+        is_policy_enabled_(testing::get<1>(GetParam())),
+        is_authorized_(testing::get<2>(GetParam())) {
     // In chrome branded desktop builds, the browser is always manageable.
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
     if (is_manageable_) {
@@ -1488,13 +1476,8 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
 #endif
   }
 
-  bool should_init() {
-    return is_feature_flag_enabled_;
-  }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  const bool is_feature_flag_enabled_;
   const bool is_manageable_;
   const bool is_policy_enabled_;
   const bool is_authorized_;
@@ -1509,13 +1492,12 @@ TEST_P(SafeBrowsingIsRealtimeReportingEnabledTest, CheckRealtimeReport) {
   // In production, the router won't actually be authorized unless it was
   // initialized.  The second argument to SetUpRouters() takes this into
   // account.
-  SetUpRouters(should_init() && is_authorized_, is_policy_enabled_);
+  SetUpRouters(is_authorized_, is_policy_enabled_);
   SafeBrowsingEventObserver event_observer(
       api::safe_browsing_private::OnPolicySpecifiedPasswordChanged::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-  bool should_report =
-      is_feature_flag_enabled_ && is_policy_enabled_ && is_authorized_;
+  bool should_report = is_policy_enabled_ && is_authorized_;
 
   if (should_report) {
     EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(1);
@@ -1542,7 +1524,6 @@ TEST_P(SafeBrowsingIsRealtimeReportingEnabledTest, CheckRealtimeReport) {
 INSTANTIATE_TEST_SUITE_P(All,
                          SafeBrowsingIsRealtimeReportingEnabledTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
 

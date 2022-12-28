@@ -140,10 +140,6 @@ absl::optional<std::string> GetDeviceDMToken() {
 #endif
 }  // namespace
 
-BASE_FEATURE(kEnterpriseConnectorsEnabled,
-             "EnterpriseConnectorsEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnterpriseConnectorsEnabledOnMGS,
              "EnterpriseConnectorsEnabledOnMGS",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -504,9 +500,6 @@ policy::PolicyScope ConnectorsService::GetPolicyScope(
 }
 
 bool ConnectorsService::ConnectorsEnabled() const {
-  if (!base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled))
-    return false;
-
   if (profiles::IsPublicSession() &&
       !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
     return false;
@@ -589,12 +582,9 @@ ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
 KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   bool observe_prefs =
-      base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled);
-
-  if (profiles::IsPublicSession()) {
-    observe_prefs &=
-        base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS);
-  }
+      profiles::IsPublicSession()
+          ? base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)
+          : true;
 
   return new ConnectorsService(
       context, std::make_unique<ConnectorsManager>(

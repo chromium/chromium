@@ -121,16 +121,6 @@ class BaseTest : public testing::Test {
     profile_ = profile_manager_.CreateTestingProfile("test-user");
   }
 
-  void EnableFeatures() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
-  }
-
-  void DisableFeatures() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
-  }
-
   [[nodiscard]] std::vector<base::FilePath> CreateFilesForTest(
       const std::vector<base::FilePath::StringType>& file_names,
       const std::string& content = "content") {
@@ -299,7 +289,6 @@ class FilesRequestHandlerTest : public BaseTest {
   void SetUp() override {
     BaseTest::SetUp();
 
-    EnableFeatures();
     safe_browsing::SetAnalysisConnector(profile_->GetPrefs(),
                                         AnalysisConnector::FILE_ATTACHED,
                                         kBlockingScansForDlpAndMalware);

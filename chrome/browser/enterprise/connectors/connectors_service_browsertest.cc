@@ -157,10 +157,6 @@ class ConnectorsServiceProfileBrowserTest
           browser_dm_token_storage_.get());
 #endif
     }
-
-    // Set the required features for the per-profile feature to work.
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
   }
 
   void SetUpOnMainThread() override {

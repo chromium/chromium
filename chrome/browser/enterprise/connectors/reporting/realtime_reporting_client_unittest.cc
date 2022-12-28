@@ -8,20 +8,18 @@
 #include <string>
 #include <utility>
 
-#include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/test_event_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,16 +44,6 @@
 using ::testing::Mock;
 
 namespace enterprise_connectors {
-
-namespace {
-
-constexpr char kConnectorsPrefValue[] = R"([
-  {
-    "service_provider": "google"
-  }
-])";
-
-}  // namespace
 
 std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
     content::BrowserContext* context) {
@@ -99,48 +87,43 @@ class RealtimeReportingClientTestBase : public testing::Test {
 // as expected.  The parameter for these tests is a tuple of bools:
 //
 //   bool: whether the feature flag is enabled.
-//   bool: whether the browser is manageable.
-//   bool: whether the policy is enabled.
+//   bool: whether the session is public or not.
 class RealtimeReportingClientIsRealtimeReportingEnabledTest
     : public RealtimeReportingClientTestBase,
-      public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
  public:
   RealtimeReportingClientIsRealtimeReportingEnabledTest()
       : is_feature_flag_enabled_(testing::get<0>(GetParam())),
-        is_manageable_(testing::get<1>(GetParam())),
-        is_policy_enabled_(testing::get<2>(GetParam())) {
+        is_public_session_(testing::get<1>(GetParam())) {
     if (is_feature_flag_enabled_) {
       scoped_feature_list_.InitWithFeatures(
-          {enterprise_connectors::kEnterpriseConnectorsEnabled},
-          {enterprise_connectors::kSafeBrowsingRealtimeReporting});
+          {enterprise_connectors::kEnterpriseConnectorsEnabledOnMGS}, {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {}, {enterprise_connectors::kEnterpriseConnectorsEnabled,
-               enterprise_connectors::kSafeBrowsingRealtimeReporting});
+          {}, {enterprise_connectors::kEnterpriseConnectorsEnabledOnMGS});
     }
 
     // In chrome branded desktop builds, the browser is always manageable.
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
-    if (is_manageable_) {
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          switches::kEnableChromeBrowserCloudManagement);
-    }
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableChromeBrowserCloudManagement);
 #endif
   }
 
   void SetUp() override {
     RealtimeReportingClientTestBase::SetUp();
-    if (is_policy_enabled_) {
-      profile_->GetPrefs()->Set(enterprise_connectors::kOnSecurityEventPref,
-                                *base::JSONReader::Read(kConnectorsPrefValue));
-    }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     const AccountId account_id(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
-    const user_manager::User* user = user_manager->AddUserWithAffiliation(
-        account_id, /*is_affiliated=*/is_manageable_);
+    const user_manager::User* user;
+    if (is_public_session_) {
+      user = user_manager->AddPublicAccountUser(account_id);
+    } else {
+      user = user_manager->AddUserWithAffiliation(account_id,
+                                                  /*is_affiliated=*/true);
+    }
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                                  profile_);
     user_manager->UserLoggedIn(account_id, user->username_hash(),
@@ -154,13 +137,14 @@ class RealtimeReportingClientIsRealtimeReportingEnabledTest
 #endif
   }
 
-  bool should_init() { return is_feature_flag_enabled_; }
+  bool should_init() {
+    return is_feature_flag_enabled_ || !profiles::IsPublicSession();
+  }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   const bool is_feature_flag_enabled_;
-  const bool is_manageable_;
-  const bool is_policy_enabled_;
+  const bool is_public_session_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
  private:
@@ -176,8 +160,6 @@ TEST_P(RealtimeReportingClientIsRealtimeReportingEnabledTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          RealtimeReportingClientIsRealtimeReportingEnabledTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace enterprise_connectors

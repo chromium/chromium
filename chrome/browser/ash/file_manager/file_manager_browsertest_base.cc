@@ -1978,12 +1978,8 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   }
 
   if (options.enable_file_transfer_connector) {
-    enabled_features.push_back(
-        enterprise_connectors::kEnterpriseConnectorsEnabled);
     enabled_features.push_back(features::kFileTransferEnterpriseConnector);
   } else {
-    disabled_features.push_back(
-        enterprise_connectors::kEnterpriseConnectorsEnabled);
     disabled_features.push_back(features::kFileTransferEnterpriseConnector);
   }
 

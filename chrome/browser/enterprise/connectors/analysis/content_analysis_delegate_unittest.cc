@@ -140,16 +140,6 @@ class BaseTest : public testing::Test {
     ContentAnalysisDelegate::DisableUIForTesting();
   }
 
-  void EnableFeatures() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
-  }
-
-  void DisableFeatures() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
-  }
-
   void ScanUpload(content::WebContents* web_contents,
                   ContentAnalysisDelegate::Data data,
                   ContentAnalysisDelegate::CompletionCallback callback) {
@@ -213,20 +203,7 @@ class BaseTest : public testing::Test {
 
 using ContentAnalysisDelegateIsEnabledTest = BaseTest;
 
-TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeatureNoDMTokenNoPref) {
-  DisableFeatures();
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateInvalidTokenForTesting());
-
-  ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
-                                                  FILE_ATTACHED));
-  EXPECT_FALSE(data.settings.tags.count("dlp"));
-  EXPECT_FALSE(data.settings.tags.count("malware"));
-}
-
 TEST_F(ContentAnalysisDelegateIsEnabledTest, NoDMTokenNoPref) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateInvalidTokenForTesting());
 
@@ -238,51 +215,10 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoDMTokenNoPref) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, NoDMToken) {
-  EnableFeatures();
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                       kBlockingScansForDlpAndMalware);
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateInvalidTokenForTesting());
-
-  ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
-                                                  FILE_ATTACHED));
-  EXPECT_FALSE(data.settings.tags.count("dlp"));
-  EXPECT_FALSE(data.settings.tags.count("malware"));
-}
-
-TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeatureNoPref) {
-  DisableFeatures();
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateValidTokenForTesting(kDmToken));
-
-  ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
-                                                  FILE_ATTACHED));
-  EXPECT_FALSE(data.settings.tags.count("dlp"));
-  EXPECT_FALSE(data.settings.tags.count("malware"));
-}
-
-TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeatureNoDMToken) {
-  DisableFeatures();
-  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
-                                      kBlockingScansForDlpAndMalware);
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateInvalidTokenForTesting());
-
-  ContentAnalysisDelegate::Data data;
-  EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
-                                                  FILE_ATTACHED));
-  EXPECT_FALSE(data.settings.tags.count("dlp"));
-  EXPECT_FALSE(data.settings.tags.count("malware"));
-}
-
-TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeature) {
-  DisableFeatures();
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
-                                      kBlockingScansForDlpAndMalware);
 
   ContentAnalysisDelegate::Data data;
   EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(), &data,
@@ -292,7 +228,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoFeature) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpNoPref) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
@@ -304,7 +239,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpNoPref) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpNoPref2) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
@@ -318,7 +252,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpNoPref2) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpNoPref3) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_DOWNLOADED,
@@ -332,7 +265,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpNoPref3) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabled) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
@@ -346,7 +278,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabled) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabled2) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
@@ -362,7 +293,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabled2) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabledWithUrl) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
@@ -380,7 +310,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpEnabledWithUrl) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpDisabledByList) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
@@ -410,7 +339,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpDisabledByList) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpDisabledByListWithPatterns) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
@@ -461,7 +389,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, DlpDisabledByListWithPatterns) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
 
@@ -473,7 +400,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref2) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
@@ -487,7 +413,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref2) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref3) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_DOWNLOADED,
@@ -501,7 +426,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareNoPref3) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareEnabled) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
@@ -526,7 +450,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareEnabled) {
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, NoScanInIncognito) {
   GURL url(kTestUrl);
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
@@ -550,7 +473,6 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoScanInIncognito) {
 }
 
 TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareEnabledWithPatterns) {
-  EnableFeatures();
   ScopedSetDMToken scoped_dm_token(
       policy::DMToken::CreateValidTokenForTesting(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
@@ -634,7 +556,6 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
   void SetUp() override {
     BaseTest::SetUp();
 
-    EnableFeatures();
     safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                         kBlockingScansForDlpAndMalware);
     safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), BULK_DATA_ENTRY,
@@ -1393,7 +1314,6 @@ class ContentAnalysisDelegateResultHandlingTest
 
   void SetUp() override {
     BaseTest::SetUp();
-    EnableFeatures();
     safe_browsing::SetAnalysisConnector(
         profile_->GetPrefs(), FILE_ATTACHED,
         is_cloud() ? kBlockingScansForDlpAndMalware

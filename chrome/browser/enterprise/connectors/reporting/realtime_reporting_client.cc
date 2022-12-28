@@ -68,10 +68,6 @@ bool IsClientValid(const std::string& dm_token,
 
 namespace enterprise_connectors {
 
-BASE_FEATURE(kSafeBrowsingRealtimeReporting,
-             "SafeBrowsingRealtimeReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 RealtimeReportingClient::RealtimeReportingClient(
     content::BrowserContext* context)
     : context_(context) {
@@ -100,13 +96,6 @@ std::string RealtimeReportingClient::GetBaseName(const std::string& filename) {
 
 // static
 bool RealtimeReportingClient::ShouldInitRealtimeReportingClient() {
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingRealtimeReporting) &&
-      !base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseConnectorsEnabled)) {
-    DVLOG(2) << "Safe browsing real-time reporting is not enabled.";
-    return false;
-  }
-
   if (profiles::IsPublicSession() &&
       !base::FeatureList::IsEnabled(
           enterprise_connectors::kEnterpriseConnectorsEnabledOnMGS)) {
@@ -248,8 +237,7 @@ RealtimeReportingClient::InitBrowserReportingClient(
 
   // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
   // the uploaded reports, do the following:
-  //     client->add_connector_url_params(base::FeatureList::IsEnabled(
-  //        enterprise_connectors::kEnterpriseConnectorsEnabled));
+  //     client->add_connector_url_params(true);
   if (!client->is_registered()) {
     client->SetupRegistration(
         dm_token, client_id,
@@ -278,8 +266,7 @@ RealtimeReportingClient::InitProfileReportingClient(
 
   // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
   // the uploaded reports, do the following:
-  //     client->add_connector_url_params(base::FeatureList::IsEnabled(
-  //        enterprise_connectors::kEnterpriseConnectorsEnabled));
+  //     client->add_connector_url_params(true);
 
   client->SetupRegistration(dm_token,
                             policy_manager->core()->client()->client_id(),

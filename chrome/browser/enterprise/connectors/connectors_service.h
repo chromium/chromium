@@ -31,10 +31,6 @@ class FileSystemURL;
 namespace enterprise_connectors {
 
 // Controls whether the Enterprise Connectors policies should be read by
-// ConnectorsManager.
-BASE_DECLARE_FEATURE(kEnterpriseConnectorsEnabled);
-
-// Controls whether the Enterprise Connectors policies should be read by
 // ConnectorsManager in Managed Guest Sessions.
 BASE_DECLARE_FEATURE(kEnterpriseConnectorsEnabledOnMGS);
 
@@ -45,8 +41,7 @@ class ConnectorsService : public KeyedService {
                     std::unique_ptr<ConnectorsManager> manager);
   ~ConnectorsService() override;
 
-  // Accessors that check kEnterpriseConnectorsEnabled is enabled, and then call
-  // the corresponding method in ConnectorsManager.
+  // Accessors that call the corresponding method in ConnectorsManager.
   absl::optional<ReportingSettings> GetReportingSettings(
       ReportingConnector connector);
   absl::optional<AnalysisSettings> GetAnalysisSettings(
@@ -144,9 +139,8 @@ class ConnectorsService : public KeyedService {
   // Returns the policy::PolicyScope stored in the given |scope_pref|.
   policy::PolicyScope GetPolicyScope(const char* scope_pref) const;
 
-  // Returns whether Connectors are enabled at all. This can be false if:
-  // - The kEnterpriseConnectorsEnabled feature is disabled
-  // - The profile is incognito
+  // Returns whether Connectors are enabled at all. This can be false if the
+  // profile is incognito
   bool ConnectorsEnabled() const;
 
   // Obtain a ClientMetadata instance corresponding to the current

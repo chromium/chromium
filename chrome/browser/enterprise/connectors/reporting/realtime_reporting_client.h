@@ -47,11 +47,6 @@ class User;
 
 namespace enterprise_connectors {
 
-// Feature that controls whether real-time reports are sent.
-// TODO(https://crbug.com/1368417): Rename this to not include "safe browsing"
-// in the name as it is not actually safe browsing-related.
-BASE_DECLARE_FEATURE(kSafeBrowsingRealtimeReporting);
-
 // An event router that observes Safe Browsing events and notifies listeners.
 // The router also uploads events to the chrome reporting server side API if
 // the kRealtimeReportingFeature feature is enabled.

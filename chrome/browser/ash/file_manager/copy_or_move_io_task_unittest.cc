@@ -487,9 +487,7 @@ class CopyOrMoveIOTaskWithScansTest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {enterprise_connectors::kEnterpriseConnectorsEnabled,
-         features::kFileTransferEnterpriseConnector},
-        {});
+        {features::kFileTransferEnterpriseConnector}, {});
 
     // Set a device management token. It is required to enable scanning.
     // Without it, FileTransferAnalysisDelegate::IsEnabled() always

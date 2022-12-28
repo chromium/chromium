@@ -646,14 +646,6 @@ class ConnectorsManagerAnalysisConnectorsTest
       public testing::WithParamInterface<
           std::tuple<AnalysisConnector, const char*>> {
  public:
-  explicit ConnectorsManagerAnalysisConnectorsTest(bool enable = true) {
-    if (enable) {
-      scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
-    }
-  }
-
   AnalysisConnector connector() const { return std::get<0>(GetParam()); }
 
   const char* pref_value() const { return std::get<1>(GetParam()); }
@@ -741,13 +733,7 @@ class ConnectorsManagerAnalysisConnectorsSourceDestinationTest
       public testing::WithParamInterface<
           std::tuple<AnalysisConnector, const char*>> {
  public:
-  explicit ConnectorsManagerAnalysisConnectorsSourceDestinationTest(
-      bool enable = true) {
-    if (enable) {
-      scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({}, {kEnterpriseConnectorsEnabled});
-    }
+  ConnectorsManagerAnalysisConnectorsSourceDestinationTest() {
     source_destination_testing_helper_ =
         std::make_unique<SourceDestinationTestingHelper>(profile_,
                                                          kVolumeInfos);
@@ -837,10 +823,6 @@ class ConnectorsManagerReportingTest
     : public ConnectorsManagerTest,
       public testing::WithParamInterface<ReportingConnector> {
  public:
-  ConnectorsManagerReportingTest() {
-    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
-  }
-
   ReportingConnector connector() const { return GetParam(); }
 
   const char* pref() const { return ConnectorPref(connector()); }

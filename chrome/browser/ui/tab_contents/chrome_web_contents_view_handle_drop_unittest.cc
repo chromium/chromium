@@ -38,8 +38,6 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
   ChromeWebContentsViewDelegateHandleOnPerformDrop() {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
-    scoped_feature_list_.InitWithFeatures(
-        {enterprise_connectors::kEnterpriseConnectorsEnabled}, {});
   }
 
   void RunUntilDone() { run_loop_->Run(); }

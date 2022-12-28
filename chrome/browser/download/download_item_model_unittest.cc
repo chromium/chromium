@@ -138,10 +138,6 @@ class DownloadItemModelTest : public testing::Test {
       : model_(&item_),
         testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if !BUILDFLAG(IS_ANDROID)
-    scoped_feature_list_.InitWithFeatures(
-        {}, {enterprise_connectors::kEnterpriseConnectorsEnabled});
-#endif
   }
 
   ~DownloadItemModelTest() override {}
