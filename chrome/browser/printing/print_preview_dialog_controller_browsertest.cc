@@ -145,8 +145,14 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
 
 // Test to verify that when a initiator navigates, we can create a new preview
 // dialog for the new tab contents.
+// TODO(crbug.com/1403898): Test is flaky on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NavigateFromInitiatorTab DISABLED_NavigateFromInitiatorTab
+#else
+#define MAYBE_NavigateFromInitiatorTab NavigateFromInitiatorTab
+#endif
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
-                       NavigateFromInitiatorTab) {
+                       MAYBE_NavigateFromInitiatorTab) {
   // Print for the first time.
   PrintPreview();
 
@@ -180,8 +186,14 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 
 // Test to verify that after reloading the initiator, it creates a new print
 // preview dialog.
+// TODO(crbug.com/1403898): Test is flaky on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ReloadInitiatorTab DISABLED_ReloadInitiatorTab
+#else
+#define MAYBE_ReloadInitiatorTab ReloadInitiatorTab
+#endif
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
-                       ReloadInitiatorTab) {
+                       MAYBE_ReloadInitiatorTab) {
   // Print for the first time.
   PrintPreview();
 
