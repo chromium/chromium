@@ -347,6 +347,36 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ScrollDownGestures) {
   ASSERT_FALSE(GetMultitaskMenu());
 }
 
+// Tests that scroll up closes the menu as expected.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, ScrollUpGestures) {
+  auto window = CreateTestWindow();
+  const int center_x = window->bounds().CenterPoint().x();
+  const int center_y = window->bounds().CenterPoint().y();
+
+  // Scroll up with no menu open. Verify no change.
+  GenerateScroll(center_x, kMenuDragPoint, 8);
+  ASSERT_FALSE(GetMultitaskMenu());
+
+  ShowMultitaskMenu(*window);
+  ASSERT_TRUE(GetMultitaskMenu());
+
+  // Scroll down again. Verify that we still show the menu.
+  GenerateScroll(center_x, 1, kMenuDragPoint);
+  ASSERT_TRUE(GetMultitaskMenu());
+
+  // Scroll up at a point outside the menu and above the shelf. Verify that we
+  // close the menu.
+  GenerateScroll(center_x, center_y, center_y - kMenuDragPoint);
+  EXPECT_FALSE(GetMultitaskMenu());
+
+  ShowMultitaskMenu(*window);
+  ASSERT_TRUE(GetMultitaskMenu());
+
+  // Scroll up on the menu. Verify that we close the menu.
+  GenerateScroll(center_x, kMenuDragPoint, 8);
+  EXPECT_FALSE(GetMultitaskMenu());
+}
+
 // Tests that fast swipes/flings show the menu as expected.
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeFlingGestures) {
   auto window = CreateTestWindow();
@@ -365,26 +395,6 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeFlingGestures) {
   // open the menu.
   GenerateFling(window->bounds().CenterPoint().x(), 1, kMenuDragPoint);
   EXPECT_TRUE(GetMultitaskMenu());
-}
-
-// Tests that scroll up closes the menu as expected.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, ScrollUpGestures) {
-  auto window = CreateTestWindow();
-
-  // Scroll up with no menu open. Verify no change.
-  GenerateScroll(window->bounds().CenterPoint().x(), kMenuDragPoint, 8);
-  ASSERT_FALSE(GetMultitaskMenu());
-
-  ShowMultitaskMenu(*window);
-  ASSERT_TRUE(GetMultitaskMenu());
-
-  // Scroll down again. Verify that we still show the menu.
-  GenerateScroll(window->bounds().CenterPoint().x(), 1, kMenuDragPoint);
-  ASSERT_TRUE(GetMultitaskMenu());
-
-  // Scroll up on the menu. Verify that we close the menu.
-  GenerateScroll(window->bounds().CenterPoint().x(), kMenuDragPoint, 8);
-  EXPECT_FALSE(GetMultitaskMenu());
 }
 
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {

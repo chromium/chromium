@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -123,17 +124,32 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
       event->SetHandled();
       break;
     case ui::ET_GESTURE_SCROLL_BEGIN:
-      if (std::fabs(details.scroll_y_hint()) <=
+      if (std::fabs(details.scroll_y_hint()) <
           std::fabs(details.scroll_x_hint())) {
         return;
       }
-      MaybeCreateMultitaskMenu(active_window);
-      multitask_menu_->BeginDrag(window_location.y());
-      event->SetHandled();
+      if (!multitask_menu_ && details.scroll_y_hint() > 0) {
+        MaybeCreateMultitaskMenu(active_window);
+        multitask_menu_->BeginDrag(window_location.y(), /*show=*/true);
+        event->SetHandled();
+      } else if (multitask_menu_ && details.scroll_y_hint() < 0) {
+        multitask_menu_->BeginDrag(window_location.y(), /*show=*/false);
+        event->SetHandled();
+      }
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
-      if (multitask_menu_) {
-        multitask_menu_->UpdateDrag(window_location.y());
+      // While the menu is open and we are scrolling down, we mark
+      // `SetHandled()` even if the event goes out of menu bounds to keep the
+      // menu open. If we are scrolling up, we only handle events inside the
+      // menu to avoid consuming them before `OnWidgetActivationChanged()`.
+      if (multitask_menu_ && details.scroll_y() > 0) {
+        multitask_menu_->UpdateDrag(window_location.y(), /*show=*/true);
+        event->SetHandled();
+      } else if (multitask_menu_ && details.scroll_y() < 0 &&
+                 gfx::RectF(
+                     multitask_menu_->widget()->GetWindowBoundsInScreen())
+                     .Contains(screen_location)) {
+        multitask_menu_->UpdateDrag(window_location.y(), /*show=*/false);
         event->SetHandled();
       }
       break;

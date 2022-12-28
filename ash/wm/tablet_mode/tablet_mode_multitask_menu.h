@@ -49,9 +49,10 @@ class ASH_EXPORT TabletModeMultitaskMenu : public aura::WindowObserver,
   void AnimateFadeOut();
 
   // Actions called by the event handler, where `initial_y` and `current_y` are
-  // in `window_`'s coordinates.
-  void BeginDrag(float initial_y);
-  void UpdateDrag(float current_y);
+  // in `window_`'s coordinates. If `show` is true, we are dragging down to show
+  // the menu, else we are dragging up to hide the menu.
+  void BeginDrag(float initial_y, bool show);
+  void UpdateDrag(float current_y, bool show);
   void EndDrag();
 
   // Calls the event handler to destroy `this`.
@@ -82,6 +83,9 @@ class ASH_EXPORT TabletModeMultitaskMenu : public aura::WindowObserver,
 
   // The contents view of the above widget.
   raw_ptr<TabletModeMultitaskMenuView> menu_view_ = nullptr;
+
+  // Initial y location in `window_` coordinates. Only relevant for drags.
+  float initial_y_;
 
   // Window observer for `window_`.
   base::ScopedObservation<aura::Window, aura::WindowObserver> observed_window_{
