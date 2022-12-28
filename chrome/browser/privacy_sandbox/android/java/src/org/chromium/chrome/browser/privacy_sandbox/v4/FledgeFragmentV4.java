@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -47,6 +48,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     private static final String EMPTY_FLEDGE_PREFERENCE = "fledge_empty";
     private static final String DISABLED_FLEDGE_PREFERENCE = "fledge_disabled";
     private static final String ALL_SITES_PREFERENCE = "fledge_all_sites";
+    private static final String FOOTER_PREFERENCE = "fledge_page_footer";
 
     private ChromeSwitchPreference mFledgeTogglePreference;
     private PreferenceCategory mCurrentSitesCategory;
@@ -54,6 +56,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     private TextMessagePreference mDisabledFledgePreference;
     private ChromeBasePreference mAllSitesPreference;
     private LargeIconBridge mLargeIconBridge;
+    private ClickableSpansTextMessagePreference mFooterPreference;
 
     static boolean isFledgePrefEnabled() {
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
@@ -81,6 +84,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mEmptyFledgePreference = findPreference(EMPTY_FLEDGE_PREFERENCE);
         mDisabledFledgePreference = findPreference(DISABLED_FLEDGE_PREFERENCE);
         mAllSitesPreference = findPreference(ALL_SITES_PREFERENCE);
+        mFooterPreference = findPreference(FOOTER_PREFERENCE);
 
         mFledgeTogglePreference.setChecked(isFledgePrefEnabled());
         mFledgeTogglePreference.setOnPreferenceChangeListener(this);
@@ -90,10 +94,26 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
                 getResources().getString(R.string.settings_fledge_page_current_sites_description),
                 new SpanApplier.SpanInfo("<link>", "</link>",
                         new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
+
+        mFooterPreference.setSummary(SpanApplier.applySpans(
+                getResources().getString(R.string.settings_fledge_page_footer),
+                new SpanApplier.SpanInfo("<link1>", "</link1>",
+                        new NoUnderlineClickableSpan(
+                                getContext(), this::onFledgeSettingsLinkClicked)),
+                new SpanApplier.SpanInfo("<link2>", "</link2>",
+                        new NoUnderlineClickableSpan(getContext(), this::onCookieSettingsLink))));
     }
 
     private void onLearnMoreClicked(View view) {
         launchSettingsActivity(FledgeLearnMoreFragment.class);
+    }
+
+    private void onFledgeSettingsLinkClicked(View view) {
+        launchSettingsActivity(TopicsFragmentV4.class);
+    }
+
+    private void onCookieSettingsLink(View view) {
+        launchCookieSettings();
     }
 
     @Override

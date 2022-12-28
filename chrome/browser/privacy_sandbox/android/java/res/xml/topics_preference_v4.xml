@@ -37,7 +37,7 @@ found in the LICENSE file.
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.v4.TopicsBlockedFragmentV4"
         app:userAction="Settings.PrivacySandbox.Topics.BlockedTopicsOpened" />
 
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
+    <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
         android:key="topics_page_footer"
         android:summary="@string/settings_topics_page_footer"
         app:allowDividerBelow="false" />

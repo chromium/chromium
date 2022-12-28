@@ -478,4 +478,28 @@ public final class FledgeFragmentV4Test {
         assertFalse(isFledgePrefEnabled());
         onView(getFledgeToggleMatcher()).check(matches(not(isChecked())));
     }
+
+    @Test
+    @SmallTest
+    public void testFooterTopicsLink() throws IOException {
+        setFledgePrefEnabled(true);
+        startFledgeSettings();
+        // Open a Topics settings activity.
+        onView(withText(containsString("topics settings"))).perform(clickOnClickableSpan(0));
+        onView(withText(R.string.settings_topics_page_title)).check(matches(isDisplayed()));
+        // Close the additional activity by navigating back.
+        pressBack();
+    }
+
+    @Test
+    @SmallTest
+    public void testFooterCookieSettingsLink() throws IOException {
+        setFledgePrefEnabled(true);
+        startFledgeSettings();
+        // Open a CookieSettings activity.
+        onView(withText(containsString("cookie settings"))).perform(clickOnClickableSpan(1));
+        onView(withText(R.string.third_party_cookies_page_title)).check(matches(isDisplayed()));
+        // Close the additional activity by navigating back.
+        pressBack();
+    }
 }

@@ -22,8 +22,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -46,7 +46,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     private PreferenceCategoryWithClickableSummary mCurrentTopicsCategory;
     private PreferenceCategoryWithClickableSummary mEmptyTopicsPreference;
     private PreferenceCategoryWithClickableSummary mDisabledTopicsPreference;
-    private TextMessagePreference mTopicsPageFooterPreference;
+    private ClickableSpansTextMessagePreference mTopicsPageFooterPreference;
 
     static boolean isTopicsPrefEnabled() {
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());

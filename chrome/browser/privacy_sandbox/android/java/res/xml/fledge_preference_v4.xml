@@ -23,22 +23,19 @@ found in the LICENSE file.
         android:key="fledge_disabled"
         android:layout="@layout/centered_image_preference"
         android:summary="@string/settings_fledge_page_current_sites_description_disabled"
-        android:icon="@drawable/ic_motion_photos_off_24dp"
-        app:isPreferenceVisible="false" />
+        android:icon="@drawable/ic_motion_photos_off_24dp" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="fledge_empty"
         android:layout="@layout/centered_image_preference"
         android:summary="@string/settings_fledge_page_current_sites_description_empty"
-        android:icon="@drawable/ic_hourglass_empty_24dp"
-        app:isPreferenceVisible="false" />
+        android:icon="@drawable/ic_hourglass_empty_24dp" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="fledge_all_sites"
         android:title="@string/settings_fledge_page_see_all_sites_label"
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.v4.FledgeAllSitesFragmentV4"
-        app:userAction="Settings.PrivacySandbox.Fledge.AllSitesOpened"
-        app:isPreferenceVisible="false" />
+        app:userAction="Settings.PrivacySandbox.Fledge.AllSitesOpened"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="fledge_blocked_sites"
@@ -46,9 +43,8 @@ found in the LICENSE file.
         android:title="@string/settings_fledge_page_blocked_sites_heading"
         app:userAction="Settings.PrivacySandbox.Fledge.BlockedSitesOpened" />
 
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
+    <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
         android:key="fledge_page_footer"
-        android:summary="@string/settings_fledge_page_footer"
-        app:allowDividerBelow="false" />
+        android:summary="@string/settings_fledge_page_footer"/>
 
 </PreferenceScreen>
