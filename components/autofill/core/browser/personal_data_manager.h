@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/autofill_profile_update_strike_database.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -421,6 +422,9 @@ class PersonalDataManager : public KeyedService,
   // when Chrome is restarted.
   virtual const std::string& GetCountryCodeForExperimentGroup() const;
 
+  // Returns all virtual card usage data linked to the credit card.
+  virtual std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
+
   // De-dupe credit card to suggest. Full server cards are preferred over their
   // local duplicates, and local cards are preferred over their masked server
   // card duplicate.
@@ -650,6 +654,9 @@ class PersonalDataManager : public KeyedService,
   // Loads the autofill offer data from the web database.
   virtual void LoadAutofillOffers();
 
+  // Loads the virtual card usage data from the web database
+  virtual void LoadVirtualCardUsageData();
+
   // Cancels a pending query to the local web database.  |handle| is a pointer
   // to the query handle.
   void CancelPendingLocalQuery(WebDataServiceBase::Handle* handle);
@@ -737,6 +744,11 @@ class PersonalDataManager : public KeyedService,
   // The customized card art images for the URL.
   std::map<GURL, std::unique_ptr<gfx::Image>> credit_card_art_images_;
 
+  // Virtual card usage data, which contains information regarding usages of a
+  // virtual card related to a specific merchant website.
+  std::vector<std::unique_ptr<VirtualCardUsageData>>
+      autofill_virtual_card_usage_data_;
+
   // When the manager makes a request from WebDataServiceBase, the database
   // is queried on another sequence, we record the query handle until we
   // get called back.  We store handles for both profile and credit card queries
@@ -752,6 +764,7 @@ class PersonalDataManager : public KeyedService,
   WebDataServiceBase::Handle pending_customer_data_query_ = 0;
   WebDataServiceBase::Handle pending_upi_ids_query_ = 0;
   WebDataServiceBase::Handle pending_offer_data_query_ = 0;
+  WebDataServiceBase::Handle pending_virtual_card_usage_data_query_ = 0;
 
   // The observers.
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;

@@ -41,6 +41,8 @@ typedef enum {
                                  //     PaymentsCustomerData>>
   AUTOFILL_OFFER_DATA,           // WDResult<std::vector<std::unique_ptr<
                                  //     AutofillOfferData>>>
+  AUTOFILL_VIRTUAL_CARD_USAGE_DATA,  // WDResult<std::vector<std::unique_ptr<
+                                     //     VirtualCardUsageData>>>
   AUTOFILL_UPI_RESULT,           // WDResult<std::string>
 #if !BUILDFLAG(IS_IOS)           //
   PAYMENT_WEB_APP_MANIFEST,      // WDResult<std::vector<

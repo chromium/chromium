@@ -41,6 +41,7 @@ struct CreditCardCloudTokenData;
 struct FormFieldData;
 class IBAN;
 struct PaymentsCustomerData;
+struct VirtualCardUsageData;
 
 // This class manages the various Autofill tables within the SQLite database
 // passed to the constructor. It expects the following schemas:
@@ -700,6 +701,14 @@ class AutofillTable : public WebDatabaseTable,
       const std::vector<AutofillOfferData>& autofill_offer_data);
   bool GetAutofillOffers(
       std::vector<std::unique_ptr<AutofillOfferData>>* autofill_offer_data);
+
+  // |virtual_card_usage_data| must include all existing virtual card usage
+  // data, since table will be completely overwritten.
+  void SetVirtualCardUsageData(
+      const std::vector<VirtualCardUsageData>& virtual_card_usage_data);
+  bool GetVirtualCardUsageData(
+      std::vector<std::unique_ptr<VirtualCardUsageData>>*
+          virtual_card_usage_data);
 
   // Adds |upi_id| to the saved UPI IDs.
   bool InsertUpiId(const std::string& upi_id);

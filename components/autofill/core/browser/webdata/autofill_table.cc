@@ -25,11 +25,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -55,6 +57,7 @@
 #include "sql/transaction.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -2584,6 +2587,63 @@ bool AutofillTable::GetAutofillOffers(
               display_strings, promo_code));
       autofill_offer_data->emplace_back(std::move(data));
     }
+  }
+
+  return s.Succeeded();
+}
+void AutofillTable::SetVirtualCardUsageData(
+    const std::vector<VirtualCardUsageData>& virtual_card_usage_data) {
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin()) {
+    return;
+  }
+
+  // Delete old table.
+  Delete(db_, kVirtualCardUsageDataTable);
+
+  // Insert new values.
+  sql::Statement insert_data;
+  InsertBuilder(db_, insert_data, kVirtualCardUsageDataTable,
+                {kId, kInstrumentId, kMerchantDomain, kLastFour});
+
+  for (const VirtualCardUsageData& data : virtual_card_usage_data) {
+    // usage_data_id should be consistent with the sync server logic.
+    std::string usage_data_id = base::JoinString(
+        {"VirtualCardUsageData",
+         base::NumberToString(data.instrument_id.value()),
+         data.merchant_app_package, data.merchant_origin.Serialize()},
+        "|");
+    insert_data.BindString(0, usage_data_id);
+    insert_data.BindInt64(1, data.instrument_id.value());
+    insert_data.BindString(2, data.merchant_origin.Serialize());
+    insert_data.BindString(3, data.virtual_card_last_four);
+    insert_data.Run();
+    insert_data.Reset(true);
+  }
+  transaction.Commit();
+}
+
+bool AutofillTable::GetVirtualCardUsageData(
+    std::vector<std::unique_ptr<VirtualCardUsageData>>*
+        virtual_card_usage_data) {
+  virtual_card_usage_data->clear();
+
+  sql::Statement s;
+  SelectBuilder(db_, s, kVirtualCardUsageDataTable,
+                {kId, kInstrumentId, kMerchantDomain, kLastFour});
+
+  while (s.Step()) {
+    int index = 1;  // UsageDataId is unused.
+    int64_t instrument_id = s.ColumnInt64(index++);
+    std::string merchant_domain = s.ColumnString(index++);
+    std::string last_four = s.ColumnString(index++);
+
+    auto data = std::make_unique<VirtualCardUsageData>();
+    data->instrument_id = VirtualCardUsageData::InstrumentId(instrument_id);
+    data->virtual_card_last_four = last_four;
+    data->merchant_origin = url::Origin::Create(GURL(merchant_domain));
+
+    virtual_card_usage_data->push_back(std::move(data));
   }
 
   return s.Succeeded();

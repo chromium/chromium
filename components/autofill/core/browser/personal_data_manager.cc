@@ -430,7 +430,8 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
          pending_creditcards_query_ || pending_server_creditcards_query_ ||
          pending_server_creditcard_cloud_token_data_query_ ||
          pending_ibans_query_ || pending_customer_data_query_ ||
-         pending_upi_ids_query_ || pending_offer_data_query_);
+         pending_upi_ids_query_ || pending_offer_data_query_ ||
+         pending_virtual_card_usage_data_query_);
 
   if (!result) {
     // Error from the web database.
@@ -454,6 +455,9 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
       pending_upi_ids_query_ = 0;
     else if (h == pending_offer_data_query_)
       pending_offer_data_query_ = 0;
+    else if (h == pending_virtual_card_usage_data_query_) {
+      pending_virtual_card_usage_data_query_ = 0;
+    }
   } else {
     switch (result->GetType()) {
       case AUTOFILL_PROFILES_RESULT:
@@ -523,6 +527,14 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
             << "received autofill offer data from invalid request.";
         ReceiveLoadedDbValues(h, result.get(), &pending_offer_data_query_,
                               &autofill_offer_data_);
+        break;
+      case AUTOFILL_VIRTUAL_CARD_USAGE_DATA:
+        DCHECK_EQ(h, pending_virtual_card_usage_data_query_)
+            << "received autofill virtual card usage data from invalid "
+               "request.";
+        ReceiveLoadedDbValues(h, result.get(),
+                              &pending_virtual_card_usage_data_query_,
+                              &autofill_virtual_card_usage_data_);
         break;
       default:
         NOTREACHED();
@@ -1291,6 +1303,20 @@ gfx::Image* PersonalDataManager::GetCachedCardArtImageForUrl(
   return nullptr;
 }
 
+std::vector<VirtualCardUsageData*>
+PersonalDataManager::GetVirtualCardUsageData() const {
+  if (!IsAutofillWalletImportEnabled() || !IsAutofillCreditCardEnabled()) {
+    return {};
+  }
+
+  std::vector<VirtualCardUsageData*> result;
+  result.reserve(autofill_virtual_card_usage_data_.size());
+  for (const auto& data : autofill_virtual_card_usage_data_) {
+    result.push_back(data.get());
+  }
+  return result;
+}
+
 void PersonalDataManager::Refresh() {
   LoadProfiles();
   LoadCreditCards();
@@ -1299,6 +1325,7 @@ void PersonalDataManager::Refresh() {
   LoadPaymentsCustomerData();
   LoadUpiIds();
   LoadAutofillOffers();
+  LoadVirtualCardUsageData();
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
@@ -1886,6 +1913,17 @@ void PersonalDataManager::LoadAutofillOffers() {
       database_helper_->GetServerDatabase()->GetAutofillOffers(this);
 }
 
+void PersonalDataManager::LoadVirtualCardUsageData() {
+  if (!database_helper_->GetServerDatabase()) {
+    return;
+  }
+
+  CancelPendingServerQuery(&pending_virtual_card_usage_data_query_);
+
+  pending_virtual_card_usage_data_query_ =
+      database_helper_->GetServerDatabase()->GetVirtualCardUsageData(this);
+}
+
 void PersonalDataManager::CancelPendingLocalQuery(
     WebDataServiceBase::Handle* handle) {
   if (*handle) {
@@ -1916,6 +1954,7 @@ void PersonalDataManager::CancelPendingServerQueries() {
   CancelPendingServerQuery(&pending_customer_data_query_);
   CancelPendingServerQuery(&pending_server_creditcard_cloud_token_data_query_);
   CancelPendingServerQuery(&pending_offer_data_query_);
+  CancelPendingServerQuery(&pending_virtual_card_usage_data_query_);
 }
 
 void PersonalDataManager::LoadPaymentsCustomerData() {
@@ -2432,7 +2471,8 @@ bool PersonalDataManager::HasPendingQueries() {
          pending_server_creditcards_query_ != 0 ||
          pending_server_creditcard_cloud_token_data_query_ != 0 ||
          pending_customer_data_query_ != 0 || pending_upi_ids_query_ != 0 ||
-         pending_offer_data_query_ != 0;
+         pending_offer_data_query_ != 0 ||
+         pending_virtual_card_usage_data_query_ != 0;
 }
 
 bool PersonalDataManager::IsSyncEnabledFor(syncer::ModelType model_type) {

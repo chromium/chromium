@@ -317,6 +317,16 @@ WebDataServiceBase::Handle AutofillWebDataService::GetAutofillOffers(
       consumer);
 }
 
+WebDataServiceBase::Handle AutofillWebDataService::GetVirtualCardUsageData(
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &AutofillWebDataBackendImpl::GetAutofillVirtualCardUsageData,
+          autofill_backend_),
+      consumer);
+}
+
 void AutofillWebDataService::ClearAllServerData() {
   wdbs_->ScheduleDBTask(
       FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::ClearAllServerData,

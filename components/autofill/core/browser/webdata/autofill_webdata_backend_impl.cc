@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -652,6 +653,17 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillOffers(
   return std::make_unique<
       WDResult<std::vector<std::unique_ptr<AutofillOfferData>>>>(
       AUTOFILL_OFFER_DATA, std::move(offers));
+}
+
+std::unique_ptr<WDTypedResult>
+AutofillWebDataBackendImpl::GetAutofillVirtualCardUsageData(WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<std::unique_ptr<VirtualCardUsageData>> virtual_card_usage_data;
+  AutofillTable::FromWebDatabase(db)->GetVirtualCardUsageData(
+      &virtual_card_usage_data);
+  return std::make_unique<
+      WDResult<std::vector<std::unique_ptr<VirtualCardUsageData>>>>(
+      AUTOFILL_VIRTUAL_CARD_USAGE_DATA, std::move(virtual_card_usage_data));
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(

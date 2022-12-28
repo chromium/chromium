@@ -221,6 +221,10 @@ class AutofillWebDataBackendImpl
   // Returns Credit Card Offers Data from the database.
   std::unique_ptr<WDTypedResult> GetAutofillOffers(WebDatabase* db);
 
+  // Returns Virtual Card Usage Data from the database.
+  std::unique_ptr<WDTypedResult> GetAutofillVirtualCardUsageData(
+      WebDatabase* db);
+
   WebDatabase::State ClearAllServerData(WebDatabase* db);
   WebDatabase::State ClearAllLocalData(WebDatabase* db);
 
