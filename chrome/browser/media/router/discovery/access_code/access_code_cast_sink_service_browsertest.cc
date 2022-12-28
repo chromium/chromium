@@ -4,9 +4,6 @@
 
 #include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
@@ -47,12 +44,6 @@ class AccessCodeCastSinkServiceBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
                        PRE_InstantExpiration) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(b/235896651): This test sometimes timesout on win10.
-  if (base::win::GetVersion() >= base::win::Version::WIN10)
-    GTEST_SKIP() << "This test is flaky on win10";
-#endif
-
   // This pre test adds a device successfully to the browser. The next test
   // then ensures the devices was not saved when the browsertest starts up
   // again.
@@ -112,11 +103,6 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
                        InstantExpiration) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(b/235896651): This test sometimes timesout on win10.
-  if (base::win::GetVersion() >= base::win::Version::WIN10)
-    GTEST_SKIP() << "This test is flaky on win10";
-#endif
   // This test is run after an instant expiration device was successfully
   // added to the browser. Upon restart it should not exists in prefs nor should
   // it be added to the media router.
@@ -136,11 +122,6 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, PRE_SavedDevice) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(b/235896651): This test sometimes timesout on win10.
-  if (base::win::GetVersion() >= base::win::Version::WIN10)
-    GTEST_SKIP() << "This test is flaky on win10";
-#endif
   // This pre test adds a device successfully to the browser. The next test then
   // ensures the devices was saved when the browsertest starts up again.
 
@@ -193,12 +174,6 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, PRE_SavedDevice) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, SavedDevice) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(b/235896651): This test sometimes timesout on win10.
-  if (base::win::GetVersion() >= base::win::Version::WIN10)
-    GTEST_SKIP() << "This test is flaky on win10";
-#endif
-
   // This test is run after a saved device was successfully added to the
   // browser. Upon restart it should exists in prefs && it should be added
   // to the media router.
