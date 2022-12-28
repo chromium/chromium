@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Puoi tornare più tardi per riaprire le schede che hai chiuso di recente</translation>
 <translation id="1016495303386450659">Elemento aggiornato</translation>
+<translation id="1035980983510608210">Se chiudi tutte le schede, verranno chiuse anche le schede bloccate.</translation>
 <translation id="1044891598689252897">I siti funzioneranno normalmente</translation>
 <translation id="1049743911850919806">In incognito</translation>
 <translation id="105093091697134113">Gli account elencati di seguito usano password che sono state compromesse nell'ambito di una violazione dei dati di terze parti oppure inserite su un sito web ingannevole. Cambia subito queste password per mantenere protetti i tuoi account.</translation>
@@ -208,6 +209,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2578571896248130439">Invia pagina web</translation>
 <translation id="2584132361465095047">Aggiungi account…</translation>
 <translation id="2600682495497606169">Cancella cookie del sito</translation>
+<translation id="2609008503159898744">Chiudere tutte le schede?</translation>
 <translation id="2625189173221582860">Password copiata</translation>
 <translation id="2626236249646841566">Controlla la connessione e riprova ad accedere.</translation>
 <translation id="2637313651144986786">Cerca tra le schede…</translation>
@@ -299,6 +301,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3174662312949010067">Puoi usare le password salvate anche sugli altri tuoi dispositivi.</translation>
 <translation id="3175081911749765310">Servizi web</translation>
 <translation id="3178650076442119961">Attivo oggi</translation>
+<translation id="3181261441371833039">Chiudi solo le schede normali</translation>
 <translation id="3181825792072797598">Attiva la funzione Sincronizzazione</translation>
 <translation id="3181954750937456830">Navigazione sicura (protegge te e il tuo dispositivo da siti pericolosi)</translation>
 <translation id="3184767182050912705">Sblocca con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>

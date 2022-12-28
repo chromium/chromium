@@ -1167,6 +1167,7 @@
 <translation id="3927932062596804919">Татгалзах</translation>
 <translation id="393316646445601645">Интернэт, телеком</translation>
 <translation id="3939773374150895049">Карт баталгаажуулалтын кодын оронд WebAuthn-г ашиглах уу?</translation>
+<translation id="3943857333388298514">Хуулан буулгах</translation>
 <translation id="3946209740501886391">Энэ сайтаас үргэлж асуух</translation>
 <translation id="3947595700203588284">MIDI төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
 <translation id="3949571496842715403">Энэ серверийн аюулгүй байдлын сертификат Субъектийн Хувилбар Нэрийг тодорхойлдоггүй тул энэ нь  <ph name="DOMAIN" /> болохоо баталж чадсангүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтод саад учруулснаас шалтгаалж болно.</translation>
@@ -2313,6 +2314,7 @@
 <translation id="6890531741535756070">Та <ph name="PROVIDER_ORIGIN" />-г ашигладаг вебсайтууд дээр <ph name="DEVICE_LABEL" />-р баталгаажуулахаар сонгосон. Энэ үйлчилгээ үзүүлэгч таны төлбөрийн хэрэгслийн талаарх мэдээллийг хадгалсан байж болзошгүй бөгөөд та үүнийг <ph name="BEGIN_LINK" />устгуулах хүсэлт тавих<ph name="END_LINK" /> боломжтой.</translation>
 <translation id="6891596781022320156">Энэ журмын түвшинг дэмжээгүй байна.</translation>
 <translation id="6895330447102777224">Таны картыг баталгаажуулсан байна</translation>
+<translation id="6896758677409633944">Хуулах</translation>
 <translation id="6897140037006041989">Хэрэглэгчийн төлөөлөгч</translation>
 <translation id="6898699227549475383">Байгууллага (O)</translation>
 <translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" /> оронтой кодыг оруулна уу</translation>
@@ -2680,6 +2682,7 @@
 <translation id="7716375162095500223">Хараахан байршуулаагүй эсвэл үл хэрэгсээгүй</translation>
 <translation id="7716424297397655342">Энэ сайтыг нөөцөөс ачаалах боломжгүй</translation>
 <translation id="7723047071702270851">Картыг засах</translation>
+<translation id="7724603315864178912">Хайчлах</translation>
 <translation id="7734285854693414638">Google Маягтад шинэ маягт шуурхай үүсгээрэй</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> хэл дээрх хуудсыг байнга орчуулна</translation>
 <translation id="7736959720849233795">Холбоосны хаягийг хуулах</translation>

@@ -679,6 +679,7 @@
 <translation id="6607272825297743757">معلومات الملف</translation>
 <translation id="6609332149380188670">‏تمّت مشاركة <ph name="NUMBER_OF_ITEMS" /> مجلد مع نظام Parallels Desktop.</translation>
 <translation id="6629518321609546825">يُرجى إدخال 4 أرقام على الأقل.</translation>
+<translation id="6639661343369899134">لا يمكن تحميل الملفات بسبب عدم توفُّر مساحة تخزين كافية في "<ph name="SHARED_DRIVE_NAME" />".</translation>
 <translation id="6643016212128521049">محو</translation>
 <translation id="6650726141019353908">فراشة وردية</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>

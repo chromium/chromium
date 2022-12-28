@@ -1166,6 +1166,7 @@
 <translation id="3927932062596804919">Refuser</translation>
 <translation id="393316646445601645">Internet et télécommunications</translation>
 <translation id="3939773374150895049">Utiliser WebAuthn au lieu du code CVC?</translation>
+<translation id="3943857333388298514">Coller</translation>
 <translation id="3946209740501886391">Toujours demander sur ce site</translation>
 <translation id="3947595700203588284">Les sites peuvent demander à se connecter à des appareils MIDI</translation>
 <translation id="3949571496842715403">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'indique pas d'extension SAN (Subject Alternative Names). Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.</translation>
@@ -2313,6 +2314,7 @@
 <translation id="6890531741535756070">Vous avez choisi de vérifier avec <ph name="DEVICE_LABEL" /> sur les sites Web qui utilisent <ph name="PROVIDER_ORIGIN" />. Ce fournisseur peut avoir stocké des informations sur votre mode de paiement, dont vous pouvez <ph name="BEGIN_LINK" />demander la suppression<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Le niveau de politique n'est pas pris en charge.</translation>
 <translation id="6895330447102777224">Votre carte est confirmée</translation>
+<translation id="6896758677409633944">Copier</translation>
 <translation id="6897140037006041989">Agent utilisateur</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6899000063526916106">Entrez le code à <ph name="NUMBER_OF_DIGITS" /> chiffres</translation>
@@ -2680,6 +2682,7 @@ Détails supplémentaires :
 <translation id="7716375162095500223">Pas encore téléversé, ou ignoré</translation>
 <translation id="7716424297397655342">Ce site ne peut pas être chargé à partir du cache</translation>
 <translation id="7723047071702270851">Modifier la carte</translation>
+<translation id="7724603315864178912">Couper</translation>
 <translation id="7734285854693414638">Créer rapidement un formulaire dans Google Formulaires</translation>
 <translation id="773466115871691567">Toujours traduire les pages en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Copier l'adresse du lien</translation>

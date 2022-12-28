@@ -515,11 +515,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       </translation>
 <translation id="1484190167468437592">Mono sesi devre dışı bırak</translation>
 <translation id="1486021504508098388">Arka ışık bilgilerini raporla</translation>
-<translation id="1486469502848499602">Manuel olarak oluşturulan yeni kayıtlar için önerilen <ph name="KRB5_CONFIG" /> yapılandırmasını değiştirir.
-
-      Politika ayarlanırsa değeri, önerilen yapılandırma olarak uygulanır ve kimlik doğrulama iletişim kutusunun "Gelişmiş" bölümünde gösterilir.
-
-      Bu politika ayarlanmazsa onun yerine önerilen <ph name="PRODUCT_OS_NAME" /> yapılandırması uygulanır. Bu ayarın, kimlik doğrulama iletişim kutusunun "Gelişmiş" bölümünde de gösterildiğini unutmayın.</translation>
 <translation id="1487722536912664411">Kullanıcıların <ph name="PRODUCT_NAME" /> kullanmasına izin ver</translation>
 <translation id="1487916040416013623">Politikanın ayarlanması, entegre kimlik doğrulama için hangi sunuculara izin verileceğini belirtir. Entegre kimlik doğrulaması yalnızca <ph name="PRODUCT_NAME" /> bir proxy veya söz konusu izin verilenler listesindeki bir sunucudan kimlik doğrulaması daveti aldığında etkinleşir.
 
@@ -6164,7 +6159,6 @@ olarak bu tür istekleri engelleme davranışı geçerli olur.</translation>
       Bu politika yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> ve <ph name="LACROS_NAME" />, misafir profillerinin başlatılmasına izin vermez.
 
       Not: Bu politika yapılandırılmazsa veya doğru değerine ayarlanırsa ancak <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> yanlış değerine ayarlanırsa <ph name="LACROS_NAME" />, misafir profillerinin başlatılmasına izin vermez.</translation>
-<translation id="6920640961852058581">Kerberos kayıtları için varsayılan yapılandırmayı değiştirir</translation>
 <translation id="692096803256767290">OS'yi hedef sürüme geri al</translation>
 <translation id="6921544339867564740">Cihazların ChromeOS'te sanal makineler çalıştırmasına izin ver</translation>
 <translation id="6922884955650325312"><ph name="FLASH_PLUGIN_NAME" /> eklentisini engelle</translation>

@@ -1444,7 +1444,6 @@
 <translation id="2285109769884538519">{COUNT,plural, =0{Άνοιγμα όλων σε &amp;νέα ομάδα καρτελών}=1{Άνοιγμα σε &amp;νέα ομάδα καρτελών}other{Άνοιγμα και των ({COUNT}) σε &amp;νέα ομάδα καρτελών}}</translation>
 <translation id="2285942871162473373">Δεν ήταν δυνατή η αναγνώριση του δακτυλικού σας αποτυπώματος. Επανάληψη.</translation>
 <translation id="2287944065963043964">Οθόνη σύνδεσης</translation>
-<translation id="2289270750774289114">Να γίνεται ερώτηση όταν ένας ιστότοπος επιθυμεί να εντοπίσει κοντινές συσκευες Bluetooth (συνιστάται)</translation>
 <translation id="2290615375132886363">Κουμπιά πλοήγησης tablet</translation>
 <translation id="2291452790265535215">Δοκιμάστε να χρησιμοποιήσετε το πλαϊνό πλαίσιο για σελιδοδείκτες, διαδρομές και άλλα.</translation>
 <translation id="229182044471402145">Δεν βρέθηκε αντιστοιχία γραμματοσειρών.</translation>
@@ -3018,7 +3017,6 @@
 <translation id="3727473233247516571">Υποπλαίσιο αποθηκευμένο στην κρυφή μνήμη πίσω-εμπρός: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3728188878314831180">Αντικατοπτρισμός ειδοποιήσεων από το τηλέφωνό σας</translation>
 <translation id="3728681439294129328">Διαμόρφωση διεύθυνσης δικτύου</translation>
-<translation id="3729303374699765035">Να γίνεται ερώτηση όταν ένας ιστότοπος επιθυμεί να εντοπίσει κοντινές συσκευες Bluetooth</translation>
 <translation id="3729506734996624908">Επιτρεπόμενοι ιστότοποι</translation>
 <translation id="3730076362938942381">Εφαρμογή γραφής με γραφίδα</translation>
 <translation id="3732078975418297900">Σφάλμα στη γραμμή <ph name="ERROR_LINE" /></translation>
@@ -5266,7 +5264,6 @@
 <translation id="583673505367439042">Οι ιστότοποι μπορούν να ζητούν να επεξεργαστούν αρχεία και φακέλους στη συσκευή σας</translation>
 <translation id="5836999627049108525">Γλώσσα από την οποία θα γίνει η μετάφραση</translation>
 <translation id="583756221537636748">Θήκη</translation>
-<translation id="5840658767386246331">Αναζήτηση με το Google</translation>
 <translation id="5840680448799937675">Θα γίνεται πάντα κοινοποίηση των αρχείων εκτός σύνδεσης.</translation>
 <translation id="5841270259333717135">Διαμόρφωση ethernet</translation>
 <translation id="5842497610951477805">Ενεργοποίηση Bluetooth</translation>
@@ -8493,7 +8490,6 @@
 <translation id="8827125715368568315">Αποκλείστηκε η άδεια <ph name="PERMISSION" /> και <ph name="COUNT" /> ακόμη άδειες</translation>
 <translation id="8827289157496676362">Καρφίτσωμα επέκτασης</translation>
 <translation id="8827752199525959199">Περισσότερες ενέργειες, κωδικός πρόσβασης για τον χρήστη <ph name="USERNAME" /> στον τομέα <ph name="DOMAIN" /></translation>
-<translation id="882854468542856424">Να μην επιτρέπεται σε κανέναν ιστότοπο ο εντοπισμός κοντινών συσκευών Bluetooth</translation>
 <translation id="8828933418460119530">Όνομα DNS</translation>
 <translation id="883062543841130884">Αντικαταστάσεις</translation>
 <translation id="8830779999439981481">Επανεκκίνηση για την εφαρμογή των ενημερώσεων</translation>

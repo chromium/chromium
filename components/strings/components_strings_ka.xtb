@@ -1166,6 +1166,7 @@
 <translation id="3927932062596804919">უარყოფა</translation>
 <translation id="393316646445601645">ინტერნეტი და ტელეკომუნიკაცია</translation>
 <translation id="3939773374150895049">გსურთ გამოიყენოთ WebAuthn ნაცვლად CVC-ისა?</translation>
+<translation id="3943857333388298514">ჩასმა</translation>
 <translation id="3946209740501886391">ყოველთვის შეკითხვა ამ საიტზე</translation>
 <translation id="3947595700203588284">შეუძლია MIDI-მოწყობილობებთან დაკავშირების თხოვნა</translation>
 <translation id="3949571496842715403">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატი არ განსაზღვრავს სუბიექტის დამატებით სახელებს. ამის მიზეზი შეიძლება იყოს არასწორი კონფიგურაცია ან თავდამსხმელის მიერ თქვენი კავშირის ხელში ჩაგდება.</translation>
@@ -2313,6 +2314,7 @@
 <translation id="6890531741535756070">თქვენ აირჩიეთ <ph name="DEVICE_LABEL" /> დადასტურებისთვის იმ ვებსაიტებზე, რომლებზეც <ph name="PROVIDER_ORIGIN" /> გამოიყენება. ამ პროვაიდერს შეიძლებოდა შეენახა ინფორმაცია თქვენი გადახდის მეთოდის შესახებ. სურვილისამებრ, შეგიძლიათ <ph name="BEGIN_LINK" />მისი წაშლის მოთხოვნა<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">წესის დონე არ არის მხარდაჭერილი.</translation>
 <translation id="6895330447102777224">თქვენი ბარათი დადასტურდა</translation>
+<translation id="6896758677409633944">კოპირება</translation>
 <translation id="6897140037006041989">მომხმარებლის აგენტი</translation>
 <translation id="6898699227549475383">ორგანიზაცია (O)</translation>
 <translation id="6899000063526916106">შეიყვანეთ <ph name="NUMBER_OF_DIGITS" />-ციფრიანი კოდი</translation>
@@ -2680,6 +2682,7 @@
 <translation id="7716375162095500223">ჯერ აუტვირთავი ან იგნორირებულია</translation>
 <translation id="7716424297397655342">ამ საიტის ქეშიდან ჩატვირთვა ვერ ხერხდება</translation>
 <translation id="7723047071702270851">ბარათის რედაქტირება</translation>
+<translation id="7724603315864178912">ამოჭრა</translation>
 <translation id="7734285854693414638">Google Forms-ში ახალი ფორმის სწრაფად შექმნა</translation>
 <translation id="773466115871691567">ყოველთვის ითარგმნოს <ph name="SOURCE_LANGUAGE" /> გვერდები</translation>
 <translation id="7736959720849233795">ბმულის მისამართის კოპირება</translation>

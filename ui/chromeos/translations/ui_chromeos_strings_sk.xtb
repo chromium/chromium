@@ -679,6 +679,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6607272825297743757">Informácie o súbore</translation>
 <translation id="6609332149380188670">Aplikáciou Parallels Desktop zdieľate tento počet priečinkov: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Zadajte aspoň štyri čísla</translation>
+<translation id="6639661343369899134">Súbory sa nedajú nahrať, pretože na disku <ph name="SHARED_DRIVE_NAME" /> nie je dostatok priestoru.</translation>
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6650726141019353908">Ružový motýľ</translation>
 <translation id="6657585470893396449">Heslo</translation>

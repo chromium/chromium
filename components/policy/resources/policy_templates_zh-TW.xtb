@@ -508,11 +508,6 @@
       </translation>
 <translation id="1484190167468437592">停用單聲道音訊模式</translation>
 <translation id="1486021504508098388">回報背光資訊</translation>
-<translation id="1486469502848499602">變更手動建立新票證的 <ph name="KRB5_CONFIG" /> 建議設定。
-
-      如果你設定了這項政策，系統就以建議設定的形式來套用政策值，並顯示在驗證對話方塊的「進階設定」部分中。
-
-      如果未設定這項政策，系統會改用建議的 <ph name="PRODUCT_OS_NAME" /> 設定。請注意，這項設定也會顯示在驗證對話方塊的「進階設定」部分中。</translation>
 <translation id="1487722536912664411">允許使用者使用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1487916040416013623">你可以透過這項政策指定允許整合驗證的伺服器。只有當 Proxy 或這份許可清單中的伺服器傳送驗證要求給 <ph name="PRODUCT_NAME" /> 時，系統才會啟用整合驗證。
 
@@ -6043,7 +6038,6 @@
       如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將不允許啟用訪客設定檔。
 
       但請注意，如果不設定這項政策或將其設為 True，但將 <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> 設為 False，<ph name="LACROS_NAME" /> 將不允許啟用訪客設定檔。</translation>
-<translation id="6920640961852058581">變更 Kerberos 票證的預設設定</translation>
 <translation id="692096803256767290">將 OS 復原至目標版本</translation>
 <translation id="6921544339867564740">允許裝置在 Chrome OS 上執行虛擬機器</translation>
 <translation id="6922884955650325312">封鎖 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>

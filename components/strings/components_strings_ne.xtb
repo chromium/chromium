@@ -1163,6 +1163,7 @@
 <translation id="3927932062596804919">अस्वीकार गर्नुहोस्</translation>
 <translation id="393316646445601645">इन्टरनेट तथा टेलिकम</translation>
 <translation id="3939773374150895049">CVC को सट्टामा WebAuthn प्रयोग गर्ने हो?</translation>
+<translation id="3943857333388298514">टाँस्नुहोस्</translation>
 <translation id="3946209740501886391">यस साइटमा सधैं सोध्नुहोस्</translation>
 <translation id="3947595700203588284">MIDI डिभाइसहरूमा कनेक्ट हुने अनुमति माग्न सक्छ</translation>
 <translation id="3949571496842715403">यस सर्भरले यो <ph name="DOMAIN" /> हो भन्ने प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रले Subject Alternative Names को उल्लेख गर्दैन। यो कुनै त्रुटिपूर्ण कन्फिगुरेसन वा कुनै आक्रमणकारीले तपाईंको जडानलाई अवरोध गरेकोले हुनसक्छ।</translation>
@@ -2310,6 +2311,7 @@
 <translation id="6890531741535756070">तपाईंले <ph name="PROVIDER_ORIGIN" /> प्रयोग गर्ने वेबसाइटहरूमा <ph name="DEVICE_LABEL" /> मार्फत पुष्टि गर्ने विकल्प छनौट गर्नुभएको थियो। यो प्रदायकले तपाईंको भुक्तानी विधिसम्बन्धी जानकारी भण्डारण गरेको हुन सक्छ, तपाईं सो जानकारी <ph name="BEGIN_LINK" />मेटाइदिन अनुरोध गर्न<ph name="END_LINK" /> सक्नुहुन्छ।</translation>
 <translation id="6891596781022320156">नीति तह समर्थित छैन।</translation>
 <translation id="6895330447102777224">तपाईंको कार्डको पुष्टि भयो</translation>
+<translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6897140037006041989">प्रयोगकर्ता एजेन्ट</translation>
 <translation id="6898699227549475383">संगठन (सं)</translation>
 <translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" /> अङ्कको कोड हाल्नुहोस्</translation>
@@ -2677,6 +2679,7 @@
 <translation id="7716375162095500223">हालसम्म पनि अपलोड गरिएको छैन वा बेवास्ता गरिएको छ</translation>
 <translation id="7716424297397655342">यो साइट क्यासबाट लोड गर्न सकिँदैन</translation>
 <translation id="7723047071702270851">कार्ड सम्पादन गर्नुहोस्</translation>
+<translation id="7724603315864178912">काट्नुहोस्</translation>
 <translation id="7734285854693414638">Google Forms प्रयोग गरी तुरुन्तै नयाँ फाराम बनाउनुहोस्</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> मा रहेका पृष्ठहरूलाई सधैँ अनुवाद गर्नुहोस्‌</translation>
 <translation id="7736959720849233795">यो लिंक कपी गर्नुहोस्</translation>

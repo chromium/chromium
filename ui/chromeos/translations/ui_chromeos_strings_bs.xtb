@@ -679,7 +679,7 @@
 <translation id="6607272825297743757">Informacije o fajlu</translation>
 <translation id="6609332149380188670">Broj foldera koji su podijeljeni pomoću aplikacije Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Unesite najmanje 4 broja</translation>
-<translation id="6639661343369899134">Datoteke se ne mogu prenijeti jer na disku <ph name="SHARED_DRIVE_NAME" /> nema dovoljno prostora za pohranu.</translation>
+<translation id="6639661343369899134">Nije moguće ažurirati fajlove jer na disku <ph name="SHARED_DRIVE_NAME" /> nema dovoljno prostora za pohranu.</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6650726141019353908">Ružičasti leptir</translation>
 <translation id="6657585470893396449">Lozinka</translation>

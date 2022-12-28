@@ -514,11 +514,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       </translation>
 <translation id="1484190167468437592">Tắt chế độ đơn âm</translation>
 <translation id="1486021504508098388">Báo cáo thông tin về đèn nền</translation>
-<translation id="1486469502848499602">Thay đổi cấu hình đề xuất <ph name="KRB5_CONFIG" /> cho các phiếu yêu cầu hỗ trợ được tạo theo cách thủ công.
-
-      Nếu bạn đặt chính sách này, thì giá trị của chính sách sẽ được áp dụng làm cấu hình đề xuất và hiển thị trong phần "Nâng cao" của hộp thoại xác thực.
-
-      Nếu bạn chưa đặt chính sách này, thì cấu hình <ph name="PRODUCT_OS_NAME" /> được đề xuất sẽ được áp dụng. Lưu ý rằng cấu hình này cũng hiển thị trong phần "Nâng cao" của hộp thoại xác thực.</translation>
 <translation id="1487722536912664411">Cho phép người dùng sử dụng <ph name="PRODUCT_NAME" /></translation>
 <translation id="1487916040416013623">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định máy chủ nào sẽ được phép dùng cho quy trình xác thực tích hợp. Tính năng xác thực tích hợp chỉ bật khi <ph name="PRODUCT_NAME" /> nhận được thử thách xác thực từ một proxy hoặc từ một máy chủ có trong danh sách cho phép này.
 
@@ -6159,7 +6154,6 @@ tức là chặn những yêu cầu này, sẽ được áp dụng.</translation
       Nếu bạn tắt chính sách này, <ph name="PRODUCT_NAME" /> và <ph name="LACROS_NAME" /> sẽ không cho phép khởi động hồ sơ khách.
 
       Lưu ý: Nếu bạn bật hoặc không thiết lập chính này nhưng lại tắt <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" />, thì <ph name="LACROS_NAME" /> sẽ không cho phép khởi động hồ sơ khách.</translation>
-<translation id="6920640961852058581">Thay đổi cấu hình mặc định của phiếu yêu cầu hỗ trợ Kerberos</translation>
 <translation id="692096803256767290">Khôi phục hệ điều hành về phiên bản đích</translation>
 <translation id="6921544339867564740">Cho phép các thiết bị chạy máy ảo trên ChromeOS</translation>
 <translation id="6922884955650325312">Chặn plugin <ph name="FLASH_PLUGIN_NAME" /></translation>

@@ -514,11 +514,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       </translation>
 <translation id="1484190167468437592">Desativar áudio mono</translation>
 <translation id="1486021504508098388">Enviar informações sobre as luzes de fundo</translation>
-<translation id="1486469502848499602">Muda a configuração <ph name="KRB5_CONFIG" /> sugerida para os novos tíquetes criados manualmente.
-
-      Se a política for definida, o valor dela vai ser aplicado como a configuração sugerida e mostrado na seção "Avançado" da caixa de diálogo de autenticação.
-
-      Se ela for deixada sem definição, a configuração recomendada do <ph name="PRODUCT_OS_NAME" /> vai ser aplicada. Essa informação também aparece na seção "Avançado" da caixa de diálogo de autenticação.</translation>
 <translation id="1487722536912664411">Permitir que os usuários utilizem o <ph name="PRODUCT_NAME" /></translation>
 <translation id="1487916040416013623">Definir a política especifica quais servidores devem ter permissão para a autenticação integrada, que só é ativada quando o <ph name="PRODUCT_NAME" /> recebe um desafio de autenticação de um proxy ou de um servidor nessa lista permitida.
 
@@ -6220,7 +6215,6 @@ bloqueio dessas solicitações será aplicado.</translation>
       Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> não vão permitir que perfis de visitantes sejam iniciados.
 
       Observação: se ela for definida como verdadeira ou for deixada sem definição, mas a <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> for definida como falsa, o <ph name="LACROS_NAME" /> não vai permitir que perfis de visitantes sejam iniciados.</translation>
-<translation id="6920640961852058581">Muda a configuração padrão dos tíquetes do Kerberos</translation>
 <translation id="692096803256767290">Reverter o SO para a versão de destino</translation>
 <translation id="6921544339867564740">Permite que os dispositivos executem máquinas virtuais no ChromeOS</translation>
 <translation id="6922884955650325312">Bloquear o plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>

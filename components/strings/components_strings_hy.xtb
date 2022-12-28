@@ -1166,6 +1166,7 @@
 <translation id="3927932062596804919">Մերժել</translation>
 <translation id="393316646445601645">Ինտերնետ և հեռահաղորդակցություն</translation>
 <translation id="3939773374150895049">Օգտագործե՞լ WebAuthn՝ CVC-ի փոխարեն</translation>
+<translation id="3943857333388298514">Տեղադրել</translation>
 <translation id="3946209740501886391">Միշտ հարցնել այս կայքում</translation>
 <translation id="3947595700203588284">Կարող է հայցել MIDI սարքերին միանալու թույլտվություն</translation>
 <translation id="3949571496842715403">Այս սերվերը չկարողացավ ապացուցել, որ այն իրոք ներկայացնում է <ph name="DOMAIN" /> տիրույթը: Դրա անվտանգության վկայագիրը չի ներառում թեմայի այլընտրանքային անուններ։ Պատճառը կարող է լինել ինչպես սերվերի սխալ կազմաձևումը, այնպես էլ ձեր և սերվերի միջև կապուղու վրա հաքերային հարձակումն և գաղտնալսումը:</translation>
@@ -2314,6 +2315,7 @@
 <translation id="6890531741535756070">Դուք ընտրել եք, որ կայքերում, որոնք օգտագործում են <ph name="DEVICE_LABEL" />, հաստատումը կատարվի <ph name="PROVIDER_ORIGIN" />-ի միջոցով։ Հնարավոր է՝ այս մատակարարը տեղեկություններ է պահել ձեր վճարման եղանակի մասին։ Դուք կարող եք այդ տեղեկությունների <ph name="BEGIN_LINK" />ջնջման հայտ ուղարկել<ph name="END_LINK" />։</translation>
 <translation id="6891596781022320156">Կանոնի մակարդակը չի աջակցվում:</translation>
 <translation id="6895330447102777224">Ձեր քարտը հաստատված է</translation>
+<translation id="6896758677409633944">Պատճենել</translation>
 <translation id="6897140037006041989">Օգտատիրոջ գործակալ</translation>
 <translation id="6898699227549475383">Կազմակերպություն (O)</translation>
 <translation id="6899000063526916106">Մուտքագրեք <ph name="NUMBER_OF_DIGITS" /> թվանշանից բաղկացած կոդը</translation>
@@ -2681,6 +2683,7 @@
 <translation id="7716375162095500223">Անտեսվել է կամ դեռ չի վերբեռնվել</translation>
 <translation id="7716424297397655342">Այս կայքը չի կարող բեռնվել հիշապահեստից</translation>
 <translation id="7723047071702270851">Փոփոխեք քարտի տվյալները</translation>
+<translation id="7724603315864178912">Կտրել</translation>
 <translation id="7734285854693414638">Արագ ստեղծել ձև Google Ձևաթղթերում</translation>
 <translation id="773466115871691567">Միշտ թարգմանել <ph name="SOURCE_LANGUAGE" /> էջերը</translation>
 <translation id="7736959720849233795">Պատճենել հղման հասցեն</translation>

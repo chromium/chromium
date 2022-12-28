@@ -514,11 +514,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       </translation>
 <translation id="1484190167468437592">Monogeluid uitzetten</translation>
 <translation id="1486021504508098388">Informatie over schermverlichting melden</translation>
-<translation id="1486469502848499602">Hiermee wordt de voorgestelde <ph name="KRB5_CONFIG" />-configuratie voor de nieuwe handmatig gemaakte tickets gewijzigd.
-
-      Als je het beleid instelt, wordt de waarde toegepast als voorgestelde configuratie en getoond in het gedeelte Geavanceerd van het dialoogvenster voor verificatie.
-
-      Als je dit beleid niet instelt, wordt de aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie toegepast. Deze staat ook in het gedeelte Geavanceerd van het dialoogvenster voor verificatie.</translation>
 <translation id="1487722536912664411">Toestaan dat gebruikers <ph name="PRODUCT_NAME" /> gebruiken</translation>
 <translation id="1487916040416013623">Als je het beleid instelt, geef je aan welke servers op de toelatingslijst voor geïntegreerde verificatie moeten worden gezet. Geïntegreerde verificatie is alleen aangezet als <ph name="PRODUCT_NAME" /> een verificatie-uitdaging ontvangt van een proxy of een server die op deze toelatingslijst staat.
 
@@ -6083,7 +6078,6 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
       Als dit beleid is ingesteld op False, staan <ph name="PRODUCT_NAME" /> en <ph name="LACROS_NAME" /> niet toe dat er gastprofielen worden gestart.
 
       Opmerking: Als dit beleid niet is ingesteld of is ingesteld op True en <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> is ingesteld op False, staat <ph name="LACROS_NAME" /> niet toe dat er gastprofielen worden gestart.</translation>
-<translation id="6920640961852058581">Standaardconfiguratie voor Kerberos-tickets wijzigen</translation>
 <translation id="692096803256767290">De doelversie van het OS herstellen</translation>
 <translation id="6921544339867564740">Apparaten toestaan virtuele machines uit te voeren op Chrome OS</translation>
 <translation id="6922884955650325312">De <ph name="FLASH_PLUGIN_NAME" />-plug-in blokkeren</translation>
