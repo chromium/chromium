@@ -85,12 +85,12 @@ bool UsbDevicePermissionData::Check(
 }
 
 std::unique_ptr<base::Value> UsbDevicePermissionData::ToValue() const {
-  base::DictionaryValue* result = new base::DictionaryValue();
-  result->SetIntKey(kVendorIdKey, vendor_id_);
-  result->SetIntKey(kProductIdKey, product_id_);
-  result->SetIntKey(kInterfaceIdKey, interface_id_);
-  result->SetIntKey(kInterfaceClassKey, interface_class_);
-  return std::unique_ptr<base::Value>(result);
+  base::Value::Dict result;
+  result.Set(kVendorIdKey, vendor_id_);
+  result.Set(kProductIdKey, product_id_);
+  result.Set(kInterfaceIdKey, interface_id_);
+  result.Set(kInterfaceClassKey, interface_class_);
+  return std::make_unique<base::Value>(std::move(result));
 }
 
 bool UsbDevicePermissionData::FromValue(const base::Value* value) {

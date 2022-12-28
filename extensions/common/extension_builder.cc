@@ -64,7 +64,7 @@ struct ExtensionBuilder::ManifestData {
 
     if (action) {
       const char* action_key = ActionInfo::GetManifestKeyForActionType(*action);
-      manifest.Set(action_key, std::make_unique<base::DictionaryValue>());
+      manifest.Set(action_key, base::Value(base::Value::Dict()));
     }
 
     if (background_context) {
@@ -237,16 +237,10 @@ ExtensionBuilder& ExtensionBuilder::SetLocation(
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::SetManifest(
-    std::unique_ptr<base::DictionaryValue> manifest) {
-  CHECK(!manifest_data_);
-  manifest_value_ = std::move(*manifest).TakeDict();
-  return *this;
-}
-
 ExtensionBuilder& ExtensionBuilder::SetManifest(base::Value::Dict manifest) {
-  return SetManifest(base::DictionaryValue::From(
-      std::make_unique<base::Value>(std::move(manifest))));
+  CHECK(!manifest_data_);
+  manifest_value_ = std::move(manifest);
+  return *this;
 }
 
 ExtensionBuilder& ExtensionBuilder::MergeManifest(base::Value::Dict to_merge) {
@@ -256,11 +250,6 @@ ExtensionBuilder& ExtensionBuilder::MergeManifest(base::Value::Dict to_merge) {
     manifest_value_->Merge(std::move(to_merge));
   }
   return *this;
-}
-
-ExtensionBuilder& ExtensionBuilder::MergeManifest(
-    std::unique_ptr<base::DictionaryValue> manifest) {
-  return MergeManifest(std::move(*manifest).TakeDict());
 }
 
 ExtensionBuilder& ExtensionBuilder::AddFlags(int init_from_value_flags) {
