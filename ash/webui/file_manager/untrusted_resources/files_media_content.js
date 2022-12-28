@@ -18,14 +18,12 @@ window.onload = () => {
   let loadId = 0;
 
   window.addEventListener('message', event => {
-    if (event.origin !== FILES_APP_SWA_ORIGIN &&
-        event.origin !== LEGACY_FILES_APP_ORIGIN) {
+    if (event.origin !== FILES_APP_SWA_ORIGIN) {
       console.error('Unknown origin: ' + event.origin);
       return;
     }
 
     const currentLoadId = ++loadId;
-
     function isValidLoad() {
       return currentLoadId === loadId;
     }
@@ -41,7 +39,6 @@ window.onload = () => {
     const data = event.data;
 
     const sourceContent = data.sourceContent;
-
     switch (sourceContent.dataType) {
       case 'url':
         contentUrl = /** @type {string} */ (sourceContent.data);
