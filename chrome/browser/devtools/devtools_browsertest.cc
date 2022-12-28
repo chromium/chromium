@@ -1115,7 +1115,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
   ASSERT_TRUE(content::ExecuteScript(web_frame_rfh, about_blank_javascript));
 
-  web_about_blank_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(web_about_blank_manager.WaitForNavigationFinished());
   // After navigation, the frame may change.
   web_frame_rfh = ChildFrameAt(panel_frame_rfh, 2);
 
@@ -1137,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
   ASSERT_TRUE(content::ExecuteScript(web_frame_rfh, renavigation_javascript));
 
-  renavigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(renavigation_manager.WaitForNavigationFinished());
 
   // The old RFH is no longer valid after the renavigation, so we must get the
   // new one.
@@ -1176,7 +1176,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   // This is a bit of a hack to switch to the sidebar pane in the elements panel
   // that the Iframe has been added to.
   SwitchToPanel(window_, "iframe_pane");
-  web_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(web_manager.WaitForNavigationFinished());
 
   std::vector<RenderFrameHost*> rfhs =
       CollectAllRenderFrameHosts(main_web_contents());
@@ -1321,7 +1321,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   content::TestNavigationManager non_devtools_manager(
       main_web_contents(), non_dt_extension_test_url);
   SwitchToExtensionPanel(window_, devtools_extension, "iframe_panel");
-  non_devtools_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(non_devtools_manager.WaitForNavigationFinished());
 
   std::vector<RenderFrameHost*> rfhs =
       CollectAllRenderFrameHosts(main_web_contents());
@@ -1393,7 +1393,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   content::TestNavigationManager extension_b_manager(main_web_contents(),
                                                      extension_b_page_url);
   SwitchToExtensionPanel(window_, devtools_a_extension, "iframe_panel");
-  extension_b_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(extension_b_manager.WaitForNavigationFinished());
 
   std::vector<RenderFrameHost*> rfhs =
       CollectAllRenderFrameHosts(main_web_contents());
@@ -1474,7 +1474,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, DevToolsExtensionInItself) {
   content::TestNavigationManager test_page_manager(main_web_contents(),
                                                    extension_test_url);
   SwitchToExtensionPanel(window_, extension, "iframe_panel");
-  test_page_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(test_page_manager.WaitForNavigationFinished());
 
   std::vector<RenderFrameHost*> rfhs =
       CollectAllRenderFrameHosts(main_web_contents());
@@ -1536,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_DevtoolsInDevTools) {
 
   content::TestNavigationManager manager(main_web_contents(), devtools_url);
   ASSERT_TRUE(content::ExecuteScript(main_devtools_rfh, javascript));
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   std::vector<RenderFrameHost*> rfhs =
       CollectAllRenderFrameHosts(main_web_contents());
@@ -2745,8 +2745,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, InspectElement) {
   tab->GetController().LoadURL(url, content::Referrer(),
                                ui::PAGE_TRANSITION_LINK, std::string());
 
-  navigation_manager.WaitForNavigationFinished();
-  navigation_manager_iframe.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(navigation_manager_iframe.WaitForNavigationFinished());
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   std::vector<RenderFrameHost*> frames =
@@ -2898,8 +2898,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest,
   tab->GetController().LoadURL(url, content::Referrer(),
                                ui::PAGE_TRANSITION_LINK, std::string());
 
-  navigation_manager.WaitForNavigationFinished();
-  navigation_manager_iframe.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(navigation_manager_iframe.WaitForNavigationFinished());
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   for (auto* frame : CollectAllRenderFrameHosts(GetInspectedTab())) {
