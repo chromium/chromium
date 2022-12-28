@@ -9,9 +9,11 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/message_center/message_center_types.h"
@@ -80,10 +82,15 @@ void MessagePopupCollection::Update() {
 
   if (state_ != State::IDLE) {
     // If not in IDLE state, start animation.
-    animation_->SetDuration(state_ == State::MOVE_DOWN ||
-                                    state_ == State::MOVE_UP_FOR_INVERSE
-                                ? kMoveDownDuration
-                                : kFadeInFadeOutDuration);
+    base::TimeDelta animation_duration;
+    if (state_ == State::MOVE_DOWN || state_ == State::MOVE_UP_FOR_INVERSE) {
+      animation_duration = kMoveDownDuration;
+    } else {
+      animation_duration = kFadeInFadeOutDuration;
+    }
+    animation_->SetDuration(
+        animation_duration *
+        ui::ScopedAnimationDurationScaleMode::duration_multiplier());
     animation_->Start();
     AnimationStarted();
     UpdateByAnimation();

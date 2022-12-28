@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
@@ -548,14 +549,17 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordPopupUserJourneyTime) {
       NotificationCatalogName::kFullRestore;
   auto notification = CreateNotificationWithCatalogName(catalog_name);
 
-  // Add notification to message center.
+  // Add notification to message center. Use the normal duration for adding the
+  // notification so that the recorded popup duration is expected.
   auto* message_center = message_center::MessageCenter::Get();
+  absl::optional<ui::ScopedAnimationDurationScaleMode> mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   message_center->AddNotification(
       std::make_unique<message_center::Notification>(*notification));
 
   // Wait for notification popup to time out.
-  base::TimeDelta popup_timeout_duration = base::Seconds(7);
-  task_environment()->FastForwardBy(popup_timeout_duration);
+  constexpr base::TimeDelta kPopupTimeOutDuration(base::Seconds(7));
+  task_environment()->FastForwardBy(kPopupTimeOutDuration);
 
   // Expect user journey time metric to record the popup duration due to timeout
   // (value is between 6 and 7 seconds).
@@ -564,6 +568,7 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordPopupUserJourneyTime) {
   EXPECT_TRUE(buckets[0].min >= 6000 && buckets[0].min <= 7000);
   histograms.ExpectBucketCount(kSystemNotificationPopupDismissedWithin7s,
                                catalog_name, 1);
+  mode.reset();
   message_center->RemoveNotification(notification->id(), /*by_user=*/true);
 
   // Dismiss popup within 1s.
@@ -571,7 +576,7 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordPopupUserJourneyTime) {
   message_center->AddNotification(
       std::make_unique<message_center::Notification>(*notification));
   message_center->RemoveNotification(notification->id(), /*by_user=*/true);
-  task_environment()->FastForwardBy(popup_timeout_duration);
+  task_environment()->FastForwardBy(kPopupTimeOutDuration);
   histograms.ExpectBucketCount(kSystemNotificationPopupDismissedWithin1s,
                                catalog_name, 1);
 
@@ -580,9 +585,9 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordPopupUserJourneyTime) {
   notification->set_never_timeout(true);
   message_center->AddNotification(
       std::make_unique<message_center::Notification>(*notification));
-  task_environment()->FastForwardBy(popup_timeout_duration + base::Seconds(1));
+  task_environment()->FastForwardBy(kPopupTimeOutDuration + base::Seconds(1));
   message_center->RemoveNotification(notification->id(), /*by_user=*/true);
-  task_environment()->FastForwardBy(popup_timeout_duration);
+  task_environment()->FastForwardBy(kPopupTimeOutDuration);
   histograms.ExpectBucketCount(kSystemNotificationPopupDismissedAfter7s,
                                catalog_name, 1);
 }
