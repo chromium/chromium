@@ -550,7 +550,6 @@ URLLoader::URLLoader(
       allow_http1_for_streaming_upload_(
           request.request_body &&
           request.request_body->AllowHTTP1ForStreamingUpload()),
-      third_party_cookies_enabled_(third_party_cookies_enabled),
       accept_ch_frame_observer_(std::move(accept_ch_frame_observer)) {
   TRACE_EVENT("loading", "URLLoader::URLLoader",
               perfetto::Flow::FromPointer(this));
@@ -677,7 +676,9 @@ URLLoader::URLLoader(
 
   if (cache_transparency_settings_ &&
       cache_transparency_settings_->cache_transparency_enabled() &&
-      ThirdPartyCookiesEnabled()) {
+      third_party_cookies_enabled &&
+      !(options_ & (mojom::kURLLoadOptionBlockThirdPartyCookies |
+                    mojom::kURLLoadOptionBlockAllCookies))) {
     auto checksum =
         cache_transparency_settings_->GetChecksumForURL(request.url);
     if (checksum.has_value()) {
@@ -2661,12 +2662,6 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
 
   // [spec]: 5. Return false.
   return false;
-}
-
-bool URLLoader::ThirdPartyCookiesEnabled() const {
-  return third_party_cookies_enabled_ &&
-         !(options_ & (mojom::kURLLoadOptionBlockThirdPartyCookies |
-                       mojom::kURLLoadOptionBlockAllCookies));
 }
 
 }  // namespace network
