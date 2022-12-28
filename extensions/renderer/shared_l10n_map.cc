@@ -4,7 +4,6 @@
 
 #include "extensions/renderer/shared_l10n_map.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "extensions/common/extension_messages.h"
 #include "ipc/ipc_sender.h"
@@ -75,11 +74,8 @@ const SharedL10nMap::L10nMessagesMap* SharedL10nMap::GetMapForExtension(
   // A sync call to load message catalogs for current extension.
   // TODO(devlin): Wait, what?! A synchronous call to the browser to perform
   // potentially blocking work reading files from disk? That's Bad.
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER("Extensions.SyncGetMessageBundle");
-    message_sender->Send(
-        new ExtensionHostMsg_GetMessageBundle(extension_id, &l10n_messages));
-  }
+  message_sender->Send(
+      new ExtensionHostMsg_GetMessageBundle(extension_id, &l10n_messages));
 
   return &l10n_messages;
 }

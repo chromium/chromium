@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,8 +40,6 @@ class UserScriptListener::Throttle
     should_defer_ = false;
     // Only resume the request if |this| has deferred it.
     if (did_defer_) {
-      UMA_HISTOGRAM_TIMES("Extensions.ThrottledNetworkRequestDelay",
-                          timer_->Elapsed());
       Resume();
     }
   }
@@ -53,7 +49,6 @@ class UserScriptListener::Throttle
     // Only defer requests if Resume has not yet been called.
     if (should_defer_) {
       did_defer_ = true;
-      timer_ = std::make_unique<base::ElapsedTimer>();
       return DEFER;
     }
     return PROCEED;
@@ -66,7 +61,6 @@ class UserScriptListener::Throttle
  private:
   bool should_defer_ = true;
   bool did_defer_ = false;
-  std::unique_ptr<base::ElapsedTimer> timer_;
 };
 
 struct UserScriptListener::ProfileData {

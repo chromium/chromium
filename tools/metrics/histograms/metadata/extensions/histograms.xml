@@ -1812,6 +1812,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.Functions.FailedTotalExecutionTime{IsKiosk}"
     units="ms" expires_after="2022-08-21">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2608,6 +2611,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.Messaging.MessageSize" units="bytes"
     expires_after="2022-11-18">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3033,6 +3039,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.SyncGetMessageBundle" units="ms"
     expires_after="2022-09-11">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3043,6 +3052,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ThrottledNetworkRequestDelay" units="ms"
     expires_after="2022-06-01">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

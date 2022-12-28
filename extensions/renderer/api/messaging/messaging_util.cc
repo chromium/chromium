@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
@@ -58,14 +57,6 @@ std::unique_ptr<Message> MessageFromJSONString(v8::Isolate* isolate,
   }
 
   size_t message_length = message.length();
-
-  // Max bucket at 512 MB - anything over that, and we don't care.
-  static constexpr int kMaxUmaLength = 1024 * 1024 * 512;
-  static constexpr int kMinUmaLength = 1;
-  static constexpr int kBucketCount = 50;
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.Messaging.MessageSize",
-                              message_length, kMinUmaLength, kMaxUmaLength,
-                              kBucketCount);
 
   // IPC messages will fail at > 128 MB. Restrict extension messages to 64 MB.
   // A 64 MB JSON-ifiable object is scary enough as is.
