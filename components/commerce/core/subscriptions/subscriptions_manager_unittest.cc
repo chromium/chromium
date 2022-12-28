@@ -16,6 +16,7 @@
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
+#include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
 #include "components/commerce/core/subscriptions/subscriptions_storage.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -210,7 +211,8 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
   }
 };
 
-class SubscriptionsManagerTest : public testing::Test {
+class SubscriptionsManagerTest : public testing::Test,
+                                 public commerce::SubscriptionsObserver {
  public:
   SubscriptionsManagerTest()
       : mock_server_proxy_(std::make_unique<MockSubscriptionsServerProxy>()),
@@ -241,6 +243,24 @@ class SubscriptionsManagerTest : public testing::Test {
     account_checker_.SetAnonymizedUrlDataCollectionEnabled(msbb_enabled);
   }
 
+  void OnSubscribe(const std::vector<CommerceSubscription>& subscriptions,
+                   bool succeeded) override {
+    ASSERT_EQ(1, (int)subscriptions.size());
+    ASSERT_EQ("333", subscriptions[0].id);
+    ASSERT_EQ(true, succeeded);
+    on_subscribe_run_loop_.Quit();
+  }
+
+  void OnUnsubscribe(const std::vector<CommerceSubscription>& subscriptions,
+                     bool succeeded) override {
+    ASSERT_EQ(1, (int)subscriptions.size());
+    ASSERT_EQ("333", subscriptions[0].id);
+    ASSERT_EQ(true, succeeded);
+    on_unsubscribe_run_loop_.Quit();
+  }
+
+  void AddObserver() { subscriptions_manager_->AddObserver(this); }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -250,6 +270,8 @@ class SubscriptionsManagerTest : public testing::Test {
   std::unique_ptr<MockSubscriptionsStorage> mock_storage_;
   std::unique_ptr<SubscriptionsManager> subscriptions_manager_;
   base::HistogramTester histogram_tester;
+  base::RunLoop on_subscribe_run_loop_;
+  base::RunLoop on_unsubscribe_run_loop_;
 };
 
 TEST_F(SubscriptionsManagerTest, TestSyncSucceeded) {
@@ -842,6 +864,41 @@ TEST_F(SubscriptionsManagerTest, TestIsSubscribed) {
           },
           &run_loop));
   run_loop.Run();
+}
+
+TEST_F(SubscriptionsManagerTest, TestSubscriptionsObserver) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_server_proxy_->MockManageResponses(true);
+  mock_storage_->MockGetResponses("222");
+  mock_storage_->MockUpdateResponses(true);
+
+  CreateManagerAndVerify(true);
+  AddObserver();
+
+  base::RunLoop subscribe_run_loop;
+  subscriptions_manager_->Subscribe(
+      BuildSubscriptions("333"),
+      base::BindOnce(
+          [](base::RunLoop* subscribe_run_loop, bool succeeded) {
+            ASSERT_EQ(true, succeeded);
+            subscribe_run_loop->Quit();
+          },
+          &subscribe_run_loop));
+  subscribe_run_loop.Run();
+  on_subscribe_run_loop_.Run();
+
+  base::RunLoop unsubscribe_run_loop;
+  subscriptions_manager_->Unsubscribe(
+      BuildSubscriptions("333"),
+      base::BindOnce(
+          [](base::RunLoop* unsubscribe_run_loop, bool succeeded) {
+            ASSERT_EQ(true, succeeded);
+            unsubscribe_run_loop->Quit();
+          },
+          &unsubscribe_run_loop));
+  unsubscribe_run_loop.Run();
+  on_unsubscribe_run_loop_.Run();
 }
 
 }  // namespace commerce

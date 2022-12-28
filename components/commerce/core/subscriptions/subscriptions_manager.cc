@@ -7,6 +7,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
 #include "components/commerce/core/subscriptions/subscriptions_storage.h"
 #include "components/session_proto_db/session_proto_storage.h"
@@ -51,6 +52,7 @@ SubscriptionsManager::SubscriptionsManager(
     : server_proxy_(std::move(server_proxy)),
       storage_(std::move(storage)),
       account_checker_(account_checker),
+      observers_(base::ObserverListPolicy::EXISTING_ONLY),
       weak_ptr_factory_(this) {
 // Avoid duplicate server calls on android. Remove this after we integrate
 // android implementation to shopping service.
@@ -86,50 +88,68 @@ SubscriptionsManager::Request::~Request() = default;
 void SubscriptionsManager::Subscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
+  CHECK(subscriptions->size() > 0);
+
   // If there is a coming subscribe request but the last sync with the server
   // failed, we should re-try the sync, or this request will fail directly.
   if (!last_sync_succeeded_ && !HasRequestRunning()) {
     SyncSubscriptions();
   }
   SubscriptionType type = (*subscriptions)[0].type;
+  // Make a copy of subscriptions to notify observers later.
+  std::vector<CommerceSubscription> notified_subscriptions = *subscriptions;
   pending_requests_.emplace(
       type, AsyncOperation::kSubscribe, std::move(subscriptions),
       base::BindOnce(
           [](base::WeakPtr<SubscriptionsManager> manager,
+             std::vector<CommerceSubscription> notified_subscriptions,
              base::OnceCallback<void(bool)> callback,
              SubscriptionsRequestStatus result) {
             base::UmaHistogramEnumeration(kTrackResultHistogramName, result);
-            std::move(callback).Run(
-                result == SubscriptionsRequestStatus::kSuccess ||
-                result == SubscriptionsRequestStatus::kNoOp);
+            bool succeeded = result == SubscriptionsRequestStatus::kSuccess ||
+                             result == SubscriptionsRequestStatus::kNoOp;
+            for (SubscriptionsObserver& observer : manager->observers_) {
+              observer.OnSubscribe(notified_subscriptions, succeeded);
+            }
+            std::move(callback).Run(succeeded);
             manager->OnRequestCompletion();
           },
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(notified_subscriptions),
+          std::move(callback)));
   CheckAndProcessRequest();
 }
 
 void SubscriptionsManager::Unsubscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
+  CHECK(subscriptions->size() > 0);
+
   // If there is a coming unsubscribe request but the last sync with the server
   // failed, we should re-try the sync, or this request will fail directly.
   if (!last_sync_succeeded_ && !HasRequestRunning()) {
     SyncSubscriptions();
   }
   SubscriptionType type = (*subscriptions)[0].type;
+  // Make a copy of subscriptions to notify observers later.
+  std::vector<CommerceSubscription> notified_subscriptions = *subscriptions;
   pending_requests_.emplace(
       type, AsyncOperation::kUnsubscribe, std::move(subscriptions),
       base::BindOnce(
           [](base::WeakPtr<SubscriptionsManager> manager,
+             std::vector<CommerceSubscription> notified_subscriptions,
              base::OnceCallback<void(bool)> callback,
              SubscriptionsRequestStatus result) {
             base::UmaHistogramEnumeration(kUntrackResultHistogramName, result);
-            std::move(callback).Run(
-                result == SubscriptionsRequestStatus::kSuccess ||
-                result == SubscriptionsRequestStatus::kNoOp);
+            bool succeeded = result == SubscriptionsRequestStatus::kSuccess ||
+                             result == SubscriptionsRequestStatus::kNoOp;
+            for (SubscriptionsObserver& observer : manager->observers_) {
+              observer.OnUnsubscribe(notified_subscriptions, succeeded);
+            }
+            std::move(callback).Run(succeeded);
             manager->OnRequestCompletion();
           },
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(notified_subscriptions),
+          std::move(callback)));
   CheckAndProcessRequest();
 }
 
@@ -330,6 +350,14 @@ bool SubscriptionsManager::HasRequestRunning() {
     }
   }
   return has_request_running_;
+}
+
+void SubscriptionsManager::AddObserver(SubscriptionsObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SubscriptionsManager::RemoveObserver(SubscriptionsObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 bool SubscriptionsManager::GetLastSyncSucceededForTesting() {

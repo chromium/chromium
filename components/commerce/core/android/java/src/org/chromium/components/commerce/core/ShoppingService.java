@@ -6,11 +6,15 @@ package org.chromium.components.commerce.core;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /** A central hub for accessing shopping and product information. */
@@ -88,6 +92,9 @@ public class ShoppingService {
     /** A pointer to the native side of the object. */
     private long mNativeShoppingServiceAndroid;
 
+    private final ObserverList<SubscriptionsObserver> mSubscriptionsObservers =
+            new ObserverList<>();
+
     /** Private constructor to ensure construction only happens by native. */
     private ShoppingService(long nativePtr) {
         mNativeShoppingServiceAndroid = nativePtr;
@@ -151,9 +158,36 @@ public class ShoppingService {
         ShoppingServiceJni.get().scheduleSavedProductUpdate(mNativeShoppingServiceAndroid, this);
     }
 
+    /** Create new subscriptions in batch. */
+    public void subscribe(CommerceSubscription sub, Callback<Boolean> callback) {
+        if (mNativeShoppingServiceAndroid == 0) return;
+
+        assert sub.userSeenOffer != null;
+        ShoppingServiceJni.get().subscribe(mNativeShoppingServiceAndroid, this, sub.type,
+                sub.idType, sub.managementType, sub.id, sub.userSeenOffer.offerId,
+                sub.userSeenOffer.userSeenPrice, sub.userSeenOffer.countryCode, callback);
+    }
+
+    /** Delete existing subscriptions in batch. */
+    public void unsubscribe(CommerceSubscription sub, Callback<Boolean> callback) {
+        if (mNativeShoppingServiceAndroid == 0) return;
+
+        ShoppingServiceJni.get().unsubscribe(mNativeShoppingServiceAndroid, this, sub.type,
+                sub.idType, sub.managementType, sub.id, callback);
+    }
+
+    public void addSubscriptionsObserver(SubscriptionsObserver observer) {
+        mSubscriptionsObservers.addObserver(observer);
+    }
+
+    public void removeSubscriptionsObserver(SubscriptionsObserver observer) {
+        mSubscriptionsObservers.removeObserver(observer);
+    }
+
     @CalledByNative
     private void destroy() {
         mNativeShoppingServiceAndroid = 0;
+        mSubscriptionsObservers.clear();
     }
 
     @CalledByNative
@@ -195,6 +229,31 @@ public class ShoppingService {
         callback.onResult(url, info);
     }
 
+    @CalledByNative
+    private List<CommerceSubscription> createSubscriptionAndAddToList(
+            List<CommerceSubscription> subs, int type, int idType, int managementType, String id) {
+        if (subs == null) {
+            subs = new ArrayList<>();
+        }
+        CommerceSubscription sub = new CommerceSubscription(type, idType, id, managementType, null);
+        subs.add(sub);
+        return subs;
+    }
+
+    @CalledByNative
+    private void onSubscribe(List<CommerceSubscription> subs, boolean succeeded) {
+        for (SubscriptionsObserver o : mSubscriptionsObservers) {
+            o.onSubscribe(subs, succeeded);
+        }
+    }
+
+    @CalledByNative
+    private void onUnsubscribe(List<CommerceSubscription> subs, boolean succeeded) {
+        for (SubscriptionsObserver o : mSubscriptionsObservers) {
+            o.onUnsubscribe(subs, succeeded);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void getProductInfoForUrl(long nativeShoppingServiceAndroid, ShoppingService caller,
@@ -205,5 +264,10 @@ public class ShoppingService {
                 GURL url, MerchantInfoCallback callback);
         void fetchPriceEmailPref(long nativeShoppingServiceAndroid, ShoppingService caller);
         void scheduleSavedProductUpdate(long nativeShoppingServiceAndroid, ShoppingService caller);
+        void subscribe(long nativeShoppingServiceAndroid, ShoppingService caller, int type,
+                int idType, int managementType, String id, String seenOfferId, long seenPrice,
+                String seenCountry, Callback<Boolean> callback);
+        void unsubscribe(long nativeShoppingServiceAndroid, ShoppingService caller, int type,
+                int idType, int managementType, String id, Callback<Boolean> callback);
     }
 }

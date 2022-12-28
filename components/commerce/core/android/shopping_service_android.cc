@@ -4,13 +4,18 @@
 
 #include "components/commerce/core/android/shopping_service_android.h"
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "components/commerce/core/shopping_service_jni_headers/ShoppingService_jni.h"
+#include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
+using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::RunBooleanCallbackAndroid;
 using base::android::ScopedJavaLocalRef;
 
 namespace commerce {
@@ -19,6 +24,7 @@ ShoppingServiceAndroid::ShoppingServiceAndroid(ShoppingService* service)
     : shopping_service_(service), weak_ptr_factory_(this) {
   java_ref_.Reset(Java_ShoppingService_create(
       base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this)));
+  scoped_subscriptions_observer_.Observe(shopping_service_);
 }
 
 ShoppingServiceAndroid::~ShoppingServiceAndroid() {
@@ -137,6 +143,92 @@ void ShoppingServiceAndroid::ScheduleSavedProductUpdate(
   CHECK(shopping_service_);
 
   shopping_service_->ScheduleSavedProductUpdate();
+}
+
+void ShoppingServiceAndroid::Subscribe(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint j_type,
+    jint j_id_type,
+    jint j_management_type,
+    const JavaParamRef<jstring>& j_id,
+    const JavaParamRef<jstring>& j_seen_offer_id,
+    jlong j_seen_price,
+    const JavaParamRef<jstring>& j_seen_country,
+    const JavaParamRef<jobject>& j_callback) {
+  std::string id = ConvertJavaStringToUTF8(j_id);
+  std::string seen_offer_id = ConvertJavaStringToUTF8(j_seen_offer_id);
+  std::string seen_country = ConvertJavaStringToUTF8(j_seen_country);
+  CHECK(!id.empty());
+
+  auto user_seen_offer = absl::make_optional<UserSeenOffer>(
+      seen_offer_id, j_seen_price, seen_country);
+  CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
+                           id, ManagementType(j_management_type),
+                           kUnknownSubscriptionTimestamp,
+                           std::move(user_seen_offer));
+  std::unique_ptr<std::vector<CommerceSubscription>> subs =
+      std::make_unique<std::vector<CommerceSubscription>>();
+  subs->push_back(std::move(sub));
+
+  auto callback = base::BindOnce(&RunBooleanCallbackAndroid,
+                                 ScopedJavaGlobalRef<jobject>(j_callback));
+
+  shopping_service_->Subscribe(std::move(subs), std::move(callback));
+}
+
+void ShoppingServiceAndroid::Unsubscribe(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint j_type,
+    jint j_id_type,
+    jint j_management_type,
+    const JavaParamRef<jstring>& j_id,
+    const JavaParamRef<jobject>& j_callback) {
+  std::string id = ConvertJavaStringToUTF8(j_id);
+  CHECK(!id.empty());
+
+  CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
+                           id, ManagementType(j_management_type),
+                           kUnknownSubscriptionTimestamp, absl::nullopt);
+  std::unique_ptr<std::vector<CommerceSubscription>> subs =
+      std::make_unique<std::vector<CommerceSubscription>>();
+  subs->push_back(std::move(sub));
+
+  auto callback = base::BindOnce(&RunBooleanCallbackAndroid,
+                                 ScopedJavaGlobalRef<jobject>(j_callback));
+
+  shopping_service_->Unsubscribe(std::move(subs), std::move(callback));
+}
+
+void ShoppingServiceAndroid::OnSubscribe(
+    const std::vector<CommerceSubscription>& subscriptions,
+    bool succeeded) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ShoppingService_onSubscribe(
+      env, java_ref_, ConvertSubscriptionsToJavaList(subscriptions), succeeded);
+}
+
+void ShoppingServiceAndroid::OnUnsubscribe(
+    const std::vector<CommerceSubscription>& subscriptions,
+    bool succeeded) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ShoppingService_onUnsubscribe(
+      env, java_ref_, ConvertSubscriptionsToJavaList(subscriptions), succeeded);
+}
+
+ScopedJavaLocalRef<jobject>
+ShoppingServiceAndroid::ConvertSubscriptionsToJavaList(
+    const std::vector<CommerceSubscription>& subscriptions) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_subs = nullptr;
+  for (const auto& sub : subscriptions) {
+    j_subs = Java_ShoppingService_createSubscriptionAndAddToList(
+        env, java_ref_, j_subs, static_cast<int>(sub.type),
+        static_cast<int>(sub.id_type), static_cast<int>(sub.management_type),
+        ConvertUTF8ToJavaString(env, sub.id));
+  }
+  return j_subs;
 }
 
 }  // namespace commerce

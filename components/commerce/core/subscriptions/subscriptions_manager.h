@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/commerce/core/account_checker.h"
@@ -26,6 +27,7 @@ class SharedURLLoaderFactory;
 
 namespace commerce {
 
+class SubscriptionsObserver;
 class SubscriptionsServerProxy;
 class SubscriptionsStorage;
 enum class SubscriptionType;
@@ -101,6 +103,9 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   // Check if a |subscription| exists in the local database.
   void IsSubscribed(CommerceSubscription subscription,
                     base::OnceCallback<void(bool)> callback);
+
+  void AddObserver(SubscriptionsObserver* observer);
+  void RemoveObserver(SubscriptionsObserver* observer);
 
   // For tests only, return last_sync_succeeded_.
   bool GetLastSyncSucceededForTesting();
@@ -204,6 +209,8 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   std::unique_ptr<SubscriptionsStorage> storage_;
 
   raw_ptr<AccountChecker> account_checker_;
+
+  base::ObserverList<SubscriptionsObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<SubscriptionsManager> weak_ptr_factory_;
 };

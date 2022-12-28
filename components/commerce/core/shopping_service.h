@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/commerce/core/account_checker.h"
@@ -95,6 +96,7 @@ class BookmarkUpdateManager;
 class ShoppingPowerBookmarkDataProvider;
 class ShoppingBookmarkModelObserver;
 class SubscriptionsManager;
+class SubscriptionsObserver;
 class WebWrapper;
 struct CommerceSubscription;
 
@@ -213,6 +215,11 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   virtual void Unsubscribe(
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback);
+
+  // Methods to register or remove SubscriptionsObserver, which will be notified
+  // when a (un)subscribe request has finished.
+  void AddSubscriptionsObserver(SubscriptionsObserver* observer);
+  void RemoveSubscriptionsObserver(SubscriptionsObserver* observer);
 
   // Fetch users' pref from server on whether to receive price tracking emails.
   void FetchPriceEmailPref();
@@ -405,5 +412,22 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 };
 
 }  // namespace commerce
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<commerce::ShoppingService,
+                               commerce::SubscriptionsObserver> {
+  static void AddObserver(commerce::ShoppingService* source,
+                          commerce::SubscriptionsObserver* observer) {
+    source->AddSubscriptionsObserver(observer);
+  }
+  static void RemoveObserver(commerce::ShoppingService* source,
+                             commerce::SubscriptionsObserver* observer) {
+    source->RemoveSubscriptionsObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_COMMERCE_CORE_SHOPPING_SERVICE_H_

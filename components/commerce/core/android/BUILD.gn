@@ -6,13 +6,23 @@ import("//build/config/android/rules.gni")
 
 android_library("core_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  sources =
-      [ "java/src/org/chromium/components/commerce/core/ShoppingService.java" ]
+  sources = [
+    "java/src/org/chromium/components/commerce/core/CommerceSubscription.java",
+    "java/src/org/chromium/components/commerce/core/ShoppingService.java",
+    "java/src/org/chromium/components/commerce/core/SubscriptionsObserver.java",
+  ]
 
   deps = [
+    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
   ]
+  srcjar_deps = [ ":java_enum_srcjar" ]
+}
+
+java_cpp_enum("java_enum_srcjar") {
+  sources =
+      [ "//components/commerce/core/subscriptions/commerce_subscription.h" ]
 }

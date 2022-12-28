@@ -8,6 +8,7 @@ source_set("subscriptions") {
     "commerce_subscription.h",
     "subscriptions_manager.cc",
     "subscriptions_manager.h",
+    "subscriptions_observer.h",
     "subscriptions_server_proxy.cc",
     "subscriptions_server_proxy.h",
     "subscriptions_storage.cc",

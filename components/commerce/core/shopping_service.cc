@@ -30,6 +30,7 @@
 #include "components/commerce/core/shopping_power_bookmark_data_provider.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
+#include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "components/commerce/core/web_wrapper.h"
 #include "components/grit/components_resources.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -690,6 +691,20 @@ void ShoppingService::Unsubscribe(
                                         std::move(callback));
   } else {
     std::move(callback).Run(false);
+  }
+}
+
+void ShoppingService::AddSubscriptionsObserver(
+    SubscriptionsObserver* observer) {
+  if (subscriptions_manager_) {
+    subscriptions_manager_->AddObserver(observer);
+  }
+}
+
+void ShoppingService::RemoveSubscriptionsObserver(
+    SubscriptionsObserver* observer) {
+  if (subscriptions_manager_) {
+    subscriptions_manager_->RemoveObserver(observer);
   }
 }
 

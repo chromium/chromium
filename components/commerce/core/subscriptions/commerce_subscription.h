@@ -22,6 +22,8 @@
 namespace commerce {
 
 // The type of subscription.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.commerce.core
 enum class SubscriptionType {
   // Unspecified type.
   kTypeUnspecified = 0,
@@ -30,6 +32,8 @@ enum class SubscriptionType {
 };
 
 // The type of subscription identifier.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.commerce.core
 enum class IdentifierType {
   // Unspecified identifier type.
   kIdentifierTypeUnspecified = 0,
@@ -40,6 +44,8 @@ enum class IdentifierType {
 };
 
 // The type of subscription management.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.commerce.core
 enum class ManagementType {
   // Unspecified management type.
   kTypeUnspecified = 0,
