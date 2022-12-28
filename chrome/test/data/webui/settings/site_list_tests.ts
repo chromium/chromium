@@ -11,7 +11,7 @@ import {AddSiteDialogElement, CookiesExceptionType, ContentSetting, ContentSetti
 import {CrSettingsPrefs, loadTimeData, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs, SiteSettingsPref} from './test_util.js';
@@ -620,6 +620,7 @@ suite('SiteList', function() {
       category: ContentSettingsTypes, subtype: ContentSetting,
       prefs: SiteSettingsPref) {
     browserProxy.setPrefs(prefs);
+    testElement.cookiesExceptionType = CookiesExceptionType.COMBINED;
     testElement.categorySubtype = subtype;
     testElement.category = category;
   }
@@ -983,64 +984,52 @@ suite('SiteList', function() {
         });
   });
 
-  test('Block list open when Allow list is empty', function() {
+  test('Block list open when Allow list is empty', async function() {
     // Prefs: One item in Block list, nothing in Allow list.
     const contentType = ContentSettingsTypes.GEOLOCATION;
     setUpCategory(contentType, ContentSetting.BLOCK, prefsOneDisabled);
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(actualContentType) {
-          assertEquals(contentType, actualContentType);
-          return waitBeforeNextRender(testElement);
-        })
-        .then(function() {
-          assertFalse(testElement.$.category.hidden);
-          assertNotEquals(0, testElement.$.listContainer.offsetHeight);
-        });
+    const actualContentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(contentType, actualContentType);
+    await flushTasks();
+
+    assertFalse(testElement.$.category.hidden);
+    assertNotEquals(0, testElement.$.listContainer.offsetHeight);
   });
 
-  test('Block list open when Allow list is not empty', function() {
+  test('Block list open when Allow list is not empty', async function() {
     // Prefs: Items in both Block and Allow list.
     const contentType = ContentSettingsTypes.GEOLOCATION;
     setUpCategory(contentType, ContentSetting.BLOCK, prefsGeolocation);
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(actualContentType) {
-          assertEquals(contentType, actualContentType);
-          return waitBeforeNextRender(testElement);
-        })
-        .then(function() {
-          assertFalse(testElement.$.category.hidden);
-          assertNotEquals(0, testElement.$.listContainer.offsetHeight);
-        });
+    const actualContentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(contentType, actualContentType);
+    await flushTasks();
+
+    assertFalse(testElement.$.category.hidden);
+    assertNotEquals(0, testElement.$.listContainer.offsetHeight);
   });
 
-  test('Allow list is always open (Block list empty)', function() {
+  test('Allow list is always open (Block list empty)', async function() {
     // Prefs: One item in Allow list, nothing in Block list.
     const contentType = ContentSettingsTypes.GEOLOCATION;
     setUpCategory(contentType, ContentSetting.ALLOW, prefsOneEnabled);
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(actualContentType) {
-          assertEquals(contentType, actualContentType);
-          return waitBeforeNextRender(testElement);
-        })
-        .then(function() {
-          assertFalse(testElement.$.category.hidden);
-          assertNotEquals(0, testElement.$.listContainer.offsetHeight);
-        });
+    const actualContentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(contentType, actualContentType);
+    await flushTasks();
+
+    assertFalse(testElement.$.category.hidden);
+    assertNotEquals(0, testElement.$.listContainer.offsetHeight);
   });
 
-  test('Allow list is always open (Block list non-empty)', function() {
+  test('Allow list is always open (Block list non-empty)', async function() {
     // Prefs: Items in both Block and Allow list.
     const contentType = ContentSettingsTypes.GEOLOCATION;
     setUpCategory(contentType, ContentSetting.ALLOW, prefsGeolocation);
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(actualContentType) {
-          assertEquals(contentType, actualContentType);
-          return waitBeforeNextRender(testElement);
-        })
-        .then(function() {
-          assertFalse(testElement.$.category.hidden);
-          assertNotEquals(0, testElement.$.listContainer.offsetHeight);
-        });
+    const actualContentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(contentType, actualContentType);
+    await flushTasks();
+
+    assertFalse(testElement.$.category.hidden);
+    assertNotEquals(0, testElement.$.listContainer.offsetHeight);
   });
 
   test('Block list not hidden when empty', function() {

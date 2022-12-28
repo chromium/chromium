@@ -379,9 +379,7 @@ var CrSettingsSiteListTest = class extends CrSettingsBrowserTest {
   }
 };
 
-// Copied from Polymer 2 test:
-// TODO(crbug.com/929455): flaky, fix.
-TEST_F('CrSettingsSiteListTest', 'DISABLED_SiteList', function() {
+TEST_F('CrSettingsSiteListTest', 'SiteList', function() {
   runMochaSuite('SiteList');
 });
 
