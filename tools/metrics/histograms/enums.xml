@@ -92719,7 +92719,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
 <enum name="ShoppingSubscriptionsRequestStatus">
   <summary>The different statuses of a shopping subscriptions request.</summary>
-  <int value="0" label="Succeeded"/>
+  <int value="0" label="Successfully added or removed on server"/>
   <int value="1" label="Server failed to parse the request"/>
   <int value="2"
       label="Server successfully parsed the request, but failed afterwards"/>
@@ -92731,6 +92731,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="The request was lost somewhere unknown and never came back. This
              is used for monitoring purpose only and should never happen if
              the subscriptions work correctly."/>
+  <int value="7"
+      label="No action taken because the product is already tracked/untracked
+             on the server."/>
 </enum>
 
 <enum name="ShortcutsCreationResult">

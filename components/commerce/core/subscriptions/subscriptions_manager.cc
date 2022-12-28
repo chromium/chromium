@@ -22,11 +22,11 @@ const int kDefaultTimeoutMs = 10000;
 const char kTimeoutParam[] = "subscriptions_request_timeout";
 constexpr base::FeatureParam<int> kTimeoutMs{&commerce::kShoppingList,
                                              kTimeoutParam, kDefaultTimeoutMs};
+}  // namespace
 
 const char kTrackResultHistogramName[] = "Commerce.Subscriptions.TrackResult";
 const char kUntrackResultHistogramName[] =
     "Commerce.Subscriptions.UntrackResult";
-}  // namespace
 
 SubscriptionsManager::SubscriptionsManager(
     signin::IdentityManager* identity_manager,
@@ -99,8 +99,9 @@ void SubscriptionsManager::Subscribe(
              base::OnceCallback<void(bool)> callback,
              SubscriptionsRequestStatus result) {
             base::UmaHistogramEnumeration(kTrackResultHistogramName, result);
-            std::move(callback).Run(result ==
-                                    SubscriptionsRequestStatus::kSuccess);
+            std::move(callback).Run(
+                result == SubscriptionsRequestStatus::kSuccess ||
+                result == SubscriptionsRequestStatus::kNoOp);
             manager->OnRequestCompletion();
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -123,8 +124,9 @@ void SubscriptionsManager::Unsubscribe(
              base::OnceCallback<void(bool)> callback,
              SubscriptionsRequestStatus result) {
             base::UmaHistogramEnumeration(kUntrackResultHistogramName, result);
-            std::move(callback).Run(result ==
-                                    SubscriptionsRequestStatus::kSuccess);
+            std::move(callback).Run(
+                result == SubscriptionsRequestStatus::kSuccess ||
+                result == SubscriptionsRequestStatus::kNoOp);
             manager->OnRequestCompletion();
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -202,9 +204,8 @@ void SubscriptionsManager::ProcessSubscribeRequest(Request request) {
                  unique_subscriptions) {
             if (unique_subscriptions->size() == 0) {
               base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                  FROM_HERE,
-                  base::BindOnce(std::move(callback),
-                                 SubscriptionsRequestStatus::kSuccess));
+                  FROM_HERE, base::BindOnce(std::move(callback),
+                                            SubscriptionsRequestStatus::kNoOp));
               return;
             }
             manager->server_proxy_->Create(
@@ -232,9 +233,8 @@ void SubscriptionsManager::ProcessUnsubscribeRequest(Request request) {
                  unique_subscriptions) {
             if (unique_subscriptions->size() == 0) {
               base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                  FROM_HERE,
-                  base::BindOnce(std::move(callback),
-                                 SubscriptionsRequestStatus::kSuccess));
+                  FROM_HERE, base::BindOnce(std::move(callback),
+                                            SubscriptionsRequestStatus::kNoOp));
               return;
             }
             manager->server_proxy_->Delete(

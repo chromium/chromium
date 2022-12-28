@@ -31,9 +31,13 @@ class SubscriptionsStorage;
 enum class SubscriptionType;
 struct CommerceSubscription;
 
+extern const char kTrackResultHistogramName[];
+extern const char kUntrackResultHistogramName[];
+
 // Possible result status of a product (un)tracking request. This enum needs to
 // match the values in enums.xml.
 enum class SubscriptionsRequestStatus {
+  // Subscriptions successfully added or removed on server.
   kSuccess = 0,
   // Server failed to parse the request.
   kServerParseError = 1,
@@ -49,9 +53,12 @@ enum class SubscriptionsRequestStatus {
   // for monitoring purpose only and should never happen if the subscriptions
   // work correctly.
   kLost = 6,
+  // No action taken because the product is already tracked/untracked on the
+  // server.
+  kNoOp = 7,
 
   // This enum must be last and is only used for histograms.
-  kMaxValue = kLost
+  kMaxValue = kNoOp
 };
 
 using SubscriptionsRequestCallback =
