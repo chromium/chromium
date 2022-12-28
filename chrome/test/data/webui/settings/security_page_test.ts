@@ -356,9 +356,7 @@ suite('SecurityPage_SafeBrowsing', function() {
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
     await flushTasks();
 
-    assertEquals(
-        null,
-        page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog'));
+    assertFalse(isChildVisible(page, 'settings-disable-safebrowsing-dialog'));
 
     assertFalse(page.$.safeBrowsingEnhanced.checked);
     assertFalse(page.$.safeBrowsingStandard.checked);
@@ -386,9 +384,7 @@ suite('SecurityPage_SafeBrowsing', function() {
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
     await flushTasks();
 
-    assertEquals(
-        null,
-        page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog'));
+    assertFalse(isChildVisible(page, 'settings-disable-safebrowsing-dialog'));
 
     assertTrue(page.$.safeBrowsingEnhanced.checked);
     assertFalse(page.$.safeBrowsingStandard.checked);
@@ -416,9 +412,7 @@ suite('SecurityPage_SafeBrowsing', function() {
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
     await flushTasks();
 
-    assertEquals(
-        null,
-        page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog'));
+    assertFalse(isChildVisible(page, 'settings-disable-safebrowsing-dialog'));
 
     assertFalse(page.$.safeBrowsingEnhanced.checked);
     assertTrue(page.$.safeBrowsingStandard.checked);
