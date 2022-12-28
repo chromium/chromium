@@ -216,7 +216,7 @@ def main():
     """Stand-alone function for flashing a device."""
     parser = argparse.ArgumentParser()
     register_device_args(parser)
-    register_update_args(parser)
+    register_update_args(parser, default_os_check='update', default_pave=False)
     args = parser.parse_args()
     update(args.system_image_dir, args.os_check, args.target_id,
            args.serial_num, args.pave)
