@@ -1,0 +1,18 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("editor") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "bookmarks_editor_coordinator.h",
+    "bookmarks_editor_coordinator.mm",
+    "bookmarks_editor_coordinator_delegate.h",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/bookmarks/folder_chooser",
+    "//ios/chrome/browser/ui/bookmarks/folder_editor",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//url",
+  ]
+}

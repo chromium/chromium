@@ -1,0 +1,16 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("folder_chooser") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "bookmarks_folder_chooser_coordinator.h",
+    "bookmarks_folder_chooser_coordinator.mm",
+    "bookmarks_folder_chooser_coordinator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+  ]
+}
