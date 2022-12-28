@@ -80,7 +80,7 @@ class StateStore {
     // The store corresponding to this transaction.
     raw_ptr<StateStore> store_;
 
-    // A ScopedUserPrefUpdate through which changes to the incidents_sent
+    // A ScopedDictPrefUpdate through which changes to the incidents_sent
     // preference are made.
     std::unique_ptr<ScopedDictPrefUpdate> pref_update_;
   };
