@@ -4,15 +4,20 @@
 
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 
+#import "base/base_paths.h"
 #import "base/command_line.h"
 #import "base/containers/contains.h"
+#import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/ios/ios_util.h"
 #import "base/json/json_string_value_serializer.h"
 #import "base/mac/foundation_util.h"
+#import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -117,6 +122,8 @@ NSString* SerializedValue(const base::Value* value) {
   serializer.Serialize(*result);
   return base::SysUTF8ToNSString(serialized_value);
 }
+
+constexpr base::TimeDelta kWaitOnSyncProfileWriteTimeout = base::Seconds(10);
 }
 
 @implementation JavaScriptExecutionResult
@@ -973,6 +980,28 @@ NSString* SerializedValue(const base::Value* value) {
 + (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase {
   chrome_test_util::AddBookmarkWithSyncPassphrase(
       base::SysNSStringToUTF8(syncPassphrase));
+}
+
++ (bool)waitOnLoopbackPersistentFile {
+  base::FilePath appDataDirPath;
+  DCHECK(base::PathService::Get(base::DIR_APP_DATA, &appDataDirPath));
+  base::FilePath syncProfilePath =
+      appDataDirPath.AppendASCII("FakeSyncServer/profile.pb");
+
+  __block BOOL hasFile = NO;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(^{
+        hasFile = base::test::ios::WaitUntilConditionOrTimeout(
+            kWaitOnSyncProfileWriteTimeout, ^{
+              return base::PathExists(syncProfilePath);
+            });
+      }));
+
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      kWaitOnSyncProfileWriteTimeout + base::Seconds(1), ^{
+        return hasFile;
+      });
 }
 
 #pragma mark - JavaScript Utilities (EG2)

@@ -461,6 +461,9 @@
 // passphrase to start.
 + (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase;
 
+// Waits on the Sync Loopback Server persistent profile file to be written.
++ (bool)waitOnLoopbackPersistentFile;
+
 #pragma mark - JavaScript Utilities (EG2)
 
 // Executes JavaScript through the WebState's WebFrame and waits for either the
