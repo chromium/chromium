@@ -60,6 +60,20 @@ testcase.transferShowDlpToast = async () => {
  * detail list and a tooltip is displayed when hovering over that icon.
  */
 testcase.dlpShowManagedIcon = async () => {
+  // Add entries to Downloads and setup the fake source URLs.
+  await addEntries(['local'], BASIC_LOCAL_ENTRY_SET);
+  await sendTestMessage({
+    name: 'setGetFilesSourcesMock',
+    fileNames: BASIC_LOCAL_ENTRY_SET.map(e => e.nameText),
+    sourceUrls: [
+      'https://blocked.com',
+      'https://allowed.com',
+      'https://blocked.com',
+      'https://warned.com',
+      'https://not-set.com',
+    ],
+  });
+
   // Setup the restrictions.
   await sendTestMessage({name: 'setIsRestrictedByAnyRuleRestrictions'});
 
@@ -90,10 +104,17 @@ testcase.dlpShowManagedIcon = async () => {
  * menu item appears and is enabled.
  */
 testcase.dlpContextMenuRestrictionDetails = async () => {
+  // Add entries to Downloads and setup the fake source URLs.
+  const entry = ENTRIES.hello;
+  await addEntries(['local'], [entry]);
+  await sendTestMessage({
+    name: 'setGetFilesSourcesMock',
+    fileNames: [entry.nameText],
+    sourceUrls: ['https://blocked.com'],
+  });
+
   // Setup the restrictions.
   await sendTestMessage({name: 'setIsRestrictedByAnyRuleBlocked'});
-
-  const entry = ENTRIES.hello;
 
   // Open Files app.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
@@ -331,20 +352,25 @@ testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
  * disabled.
  */
 testcase.openDlpRestrictedFile = async () => {
+  // Add entries to Downloads and setup the fake source URLs.
+  await addEntries(['local'], BASIC_LOCAL_ENTRY_SET);
+  await sendTestMessage({
+    name: 'setGetFilesSourcesMock',
+    fileNames: BASIC_LOCAL_ENTRY_SET.map(e => e.nameText),
+    sourceUrls: [
+      'https://blocked.com',
+      'https://allowed.com',
+      'https://blocked.com',
+      'https://warned.com',
+      'https://not-set.com',
+    ],
+  });
+
   // Setup the restrictions.
   await sendTestMessage({name: 'setIsRestrictedByAnyRuleRestrictions'});
   await sendTestMessage({name: 'setIsRestrictedDestinationRestriction'});
 
-  // TODO(b/263079195): Add mix of dirs and files when mocking is improved.
-  // Add entries to Downloads.
-  const entries = [
-    ENTRIES.hello,     /** blocked */
-    ENTRIES.world,     /** not blocked */
-    ENTRIES.beautiful, /** not blocked */
-    ENTRIES.desktop,   /** blocked */
-  ];
-  await addEntries(['local'], entries);
-
+  const okButton = '.button-panel button.ok:enabled';
   const disabledOkButton = '.button-panel button.ok:disabled';
   const cancelButton = '.button-panel button.cancel';
 
@@ -352,15 +378,21 @@ testcase.openDlpRestrictedFile = async () => {
     // Wait for the file list to appear.
     await remoteCall.waitForElement(dialog, '#file-list');
     // Wait for the DLP managed icon to be shown - this means that metadata has
-    // been fetched and we can check the disabled status as well.
+    // been fetched, including the disabled status. Three are managed, but only
+    // two disabled.
     await remoteCall.waitForElementsCount(
-        dialog, ['#file-list .dlp-managed-icon'], 2);
+        dialog, ['#file-list .dlp-managed-icon'], 3);
 
     await remoteCall.waitForElementsCount(
         dialog, ['#file-list .file[disabled]'], 2);
 
+    // Verify that the button is enabled when a non-blocked (warning level) file
+    // is selected.
+    await remoteCall.waitUntilSelected(dialog, ENTRIES.beautiful.nameText);
+    await remoteCall.waitForElement(dialog, okButton);
+
     // Verify that the button is disabled when a blocked file is selected.
-    await remoteCall.waitUntilSelected(dialog, entries[3].nameText);
+    await remoteCall.waitUntilSelected(dialog, ENTRIES.hello.nameText);
     await remoteCall.waitForElement(dialog, disabledOkButton);
 
     // Click the close button to dismiss the dialog.
@@ -372,5 +404,5 @@ testcase.openDlpRestrictedFile = async () => {
   chrome.test.assertEq(
       undefined,
       await openAndWaitForClosingDialog(
-          {type: 'openFile'}, 'downloads', entries, closer));
+          {type: 'openFile'}, 'downloads', BASIC_LOCAL_ENTRY_SET, closer));
 };
