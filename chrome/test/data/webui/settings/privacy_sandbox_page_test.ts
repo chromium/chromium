@@ -261,7 +261,7 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
         blockedTopicsDescription.innerText);
   });
 
-  test('topicsList', async function() {
+  test('blockAndAllowTopics', async function() {
     page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
     await flushTasks();
     // Check for current topics.
@@ -279,10 +279,61 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     await flushTasks();
     const blockedTopicsList =
         page.shadowRoot!.querySelector('#blockedTopicsList')!;
-    const blockedTopics = blockedTopicsList.querySelector('dom-repeat');
+    let blockedTopics = blockedTopicsList.querySelector('dom-repeat');
     assertTrue(!!blockedTopics);
+    const blockedTopicsDescription =
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#blockedTopicsDescription')!;
+    assertTrue(isVisible(blockedTopicsDescription));
+    assertEquals(
+        loadTimeData.getString('topicsPageBlockedTopicsDescription'),
+        blockedTopicsDescription.innerText);
     assertEquals(1, blockedTopics.items!.length);
     assertEquals('test-topic-2', blockedTopics.items![0].topic!.displayString);
+
+    // Block topic.
+    const item =
+        currentTopicsSection.querySelector('privacy-sandbox-interest-item')!;
+    item.shadowRoot!.querySelector('cr-button')!.click();
+    // TODO(b/263853353): Test for recorded metric for blocked topic.
+    await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
+
+    // Assert the topic is no longer visible.
+    assertEquals(
+        0, currentTopicsSection.querySelector('dom-repeat')!.items!.length);
+    assertTrue(isVisible(
+        currentTopicsSection.querySelector('#currentTopicsDescriptionEmpty')));
+
+    // Assert the topic was moved to blocked topics section.
+    blockedTopics = blockedTopicsList.querySelector('dom-repeat')!;
+    assertEquals(2, blockedTopics.items!.length);
+    assertEquals('test-topic-1', blockedTopics.items![0].topic!.displayString);
+    assertEquals('test-topic-2', blockedTopics.items![1].topic!.displayString);
+
+    // Allow first blocked topic.
+    let blockedItems =
+        blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
+    assertEquals(2, blockedItems.length);
+    blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
+    await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
+    // TODO(b/263853353): Test for recorded metric for allowed topic.
+
+    // Allow second blocked topic.
+    blockedItems =
+        blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
+    assertEquals(1, blockedItems.length);
+    assertEquals('test-topic-2', blockedTopics.items![0].topic!.displayString);
+    blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
+    await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
+    // TODO(b/263853353): Test for recorded metric for allowed topic.
+
+    // Assert all blocked topics are gone.
+    assertEquals(
+        0, blockedTopicsList.querySelector('dom-repeat')!.items!.length);
+    assertTrue(isVisible(blockedTopicsDescription));
+    assertEquals(
+        loadTimeData.getString('topicsPageBlockedTopicsDescriptionEmpty'),
+        blockedTopicsDescription.innerText);
   });
 });
 

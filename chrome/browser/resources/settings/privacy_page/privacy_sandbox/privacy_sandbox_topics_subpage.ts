@@ -145,8 +145,27 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   private onInterestChanged_(e: CustomEvent<PrivacySandboxInterest>) {
     const interest = e.detail;
     assert(!interest.site);
-    // TODO(b/254412706): Implement the logic required to correctly move or
-    // remove entries as the user block and unblocks them.
+    if (interest.removed) {
+      this.blockedTopicsList_.splice(
+          this.blockedTopicsList_.indexOf(interest), 1);
+    } else {
+      this.topicsList_.splice(this.topicsList_.indexOf(interest), 1);
+      // Move the blocked topic to the blocked section.
+      this.blockedTopicsList_.push({topic: interest.topic, removed: true});
+      this.blockedTopicsList_.sort(
+          (first, second) =>
+              first.topic!.displayString < second.topic!.displayString ? -1 :
+                                                                         1);
+    }
+    // This causes the lists to be fully re-rendered, in order to reflect the
+    /// interest changes.
+    this.topicsList_ = this.topicsList_.slice();
+    this.blockedTopicsList_ = this.blockedTopicsList_.slice();
+    // If the interest was previously removed, set it to allowed, and vice
+    // versa.
+    this.privacySandboxBrowserProxy_.setTopicAllowed(
+        interest.topic!, /*allowed=*/ interest.removed);
+    // TODO(b/263853353): Record metrics for changed topics.
   }
 }
 
