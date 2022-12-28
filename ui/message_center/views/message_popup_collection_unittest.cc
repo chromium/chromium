@@ -4,6 +4,7 @@
 
 #include "ui/message_center/views/message_popup_collection.h"
 
+#include "build/build_config.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -444,7 +445,13 @@ TEST_F(MessagePopupCollectionTest, UpdateContents) {
   EXPECT_TRUE(GetPopup(id)->updated());
 }
 
-TEST_F(MessagePopupCollectionTest, UpdateContentsCausesPopupClose) {
+// TODO(crbug.com/1403996): Flaky on win-asan bots.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_UpdateContentsCausesPopupClose DISABLED_UpdateContentsCausesPopupClose
+#else
+#define MAYBE_UpdateContentsCausesPopupClose UpdateContentsCausesPopupClose
+#endif
+TEST_F(MessagePopupCollectionTest, MAYBE_UpdateContentsCausesPopupClose) {
   std::string id = AddNotification();
   AnimateToEnd();
   RunPendingMessages();
