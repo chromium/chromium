@@ -14,6 +14,7 @@ import org.chromium.components.browser_ui.webshare.ShareServiceImpl;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.services.service_manager.InterfaceFactory;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.webshare.mojom.ShareService;
 
 /**
@@ -22,10 +23,12 @@ import org.chromium.webshare.mojom.ShareService;
 public class ShareServiceImplementationFactory implements InterfaceFactory<ShareService> {
     private final WebContents mWebContents;
     private Supplier<ShareDelegate> mShareDelegateSupplier;
+    private WindowAndroid mWindowAndroid;
 
     public ShareServiceImplementationFactory(WebContents webContents) {
         mWebContents = webContents;
-        mShareDelegateSupplier = ShareDelegateSupplier.from(webContents.getTopLevelNativeWindow());
+        mWindowAndroid = mWebContents.getTopLevelNativeWindow();
+        mShareDelegateSupplier = ShareDelegateSupplier.from(mWindowAndroid);
         assert mShareDelegateSupplier != null;
     }
 
@@ -34,16 +37,32 @@ public class ShareServiceImplementationFactory implements InterfaceFactory<Share
         ShareServiceImpl.WebShareDelegate delegate = new ShareServiceImpl.WebShareDelegate() {
             @Override
             public boolean canShare() {
-                return mShareDelegateSupplier.get() != null
+                return getShareDelegate() != null
                         && mWebContents.getMainFrame().isFeatureEnabled(
                                 PermissionsPolicyFeature.WEB_SHARE);
             }
 
             @Override
             public void share(ShareParams params) {
-                assert mShareDelegateSupplier.get() != null;
-                mShareDelegateSupplier.get().share(
+                getShareDelegate().share(
                         params, new ChromeShareExtras.Builder().build(), ShareOrigin.WEBSHARE_API);
+            }
+
+            /**
+             * Returns the current {@link ShareDelegate}, and updates it when the {@link
+             * WindowAndroid} has changed.
+             *
+             * <p>The {@link WindowAndroid} changes when the theme changes, which necessitates
+             * getting a new ShareDelegate. See https://crbug.com/1322778.
+             */
+            private ShareDelegate getShareDelegate() {
+                if (mWindowAndroid.equals(mWebContents.getTopLevelNativeWindow())) {
+                    return mShareDelegateSupplier.get();
+                }
+                mWindowAndroid = mWebContents.getTopLevelNativeWindow();
+                mShareDelegateSupplier = ShareDelegateSupplier.from(mWindowAndroid);
+                assert mShareDelegateSupplier != null;
+                return mShareDelegateSupplier.get();
             }
         };
 
