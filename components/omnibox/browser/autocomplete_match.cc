@@ -232,7 +232,6 @@ AutocompleteMatch::AutocompleteMatch(AutocompleteProvider* provider,
     : provider(provider),
       relevance(relevance),
       deletable(deletable),
-      transition(ui::PAGE_TRANSITION_TYPED),
       type(type) {}
 
 AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
@@ -619,54 +618,6 @@ bool AutocompleteMatch::BetterDuplicateByIterator(
 }
 
 // static
-void AutocompleteMatch::ClassifyMatchInString(
-    const std::u16string& find_text,
-    const std::u16string& text,
-    int style,
-    ACMatchClassifications* classification) {
-  ClassifyLocationInString(text.find(find_text), find_text.length(),
-                           text.length(), style, classification);
-}
-
-// static
-void AutocompleteMatch::ClassifyLocationInString(
-    size_t match_location,
-    size_t match_length,
-    size_t overall_length,
-    int style,
-    ACMatchClassifications* classification) {
-  classification->clear();
-
-  // Don't classify anything about an empty string
-  // (AutocompleteMatch::Validate() checks this).
-  if (overall_length == 0)
-    return;
-
-  // Mark pre-match portion of string (if any).
-  if (match_location != 0) {
-    classification->push_back(ACMatchClassification(0, style));
-  }
-
-  // Mark matching portion of string.
-  if (match_location == std::u16string::npos) {
-    // No match, above classification will suffice for whole string.
-    return;
-  }
-  // Classifying an empty match makes no sense and will lead to validation
-  // errors later.
-  DCHECK_GT(match_length, 0U);
-  classification->push_back(ACMatchClassification(
-      match_location,
-      (style | ACMatchClassification::MATCH) & ~ACMatchClassification::DIM));
-
-  // Mark post-match portion of string (if any).
-  const size_t after_match(match_location + match_length);
-  if (after_match < overall_length) {
-    classification->push_back(ACMatchClassification(after_match, style));
-  }
-}
-
-// static
 AutocompleteMatch::ACMatchClassifications
 AutocompleteMatch::MergeClassifications(
     const ACMatchClassifications& classifications1,
@@ -746,16 +697,6 @@ void AutocompleteMatch::AddLastClassificationIfNecessary(
            (offset > classifications->back().offset));
     classifications->push_back(ACMatchClassification(offset, style));
   }
-}
-
-// static
-bool AutocompleteMatch::HasMatchStyle(
-    const ACMatchClassifications& classifications) {
-  for (const auto& it : classifications) {
-    if (it.style & AutocompleteMatch::ACMatchClassification::MATCH)
-      return true;
-  }
-  return false;
 }
 
 // static

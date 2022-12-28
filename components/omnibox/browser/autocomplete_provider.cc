@@ -5,13 +5,8 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 
 #include <algorithm>
-#include <set>
 #include <string>
 
-#include "base/feature_list.h"
-#include "base/i18n/case_conversion.h"
-#include "base/logging.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -23,8 +18,6 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/browser/scored_history_match.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/url_formatter/url_fixer.h"
 #include "url/gurl.h"
 

@@ -284,25 +284,6 @@ struct AutocompleteMatch {
       const std::vector<AutocompleteMatch>::const_iterator it1,
       const std::vector<AutocompleteMatch>::const_iterator it2);
 
-  // Helper functions for classes creating matches:
-  // Fills in the classifications for |text|, using |style| as the base style
-  // and marking the first instance of |find_text| as a match.  (This match
-  // will also not be dimmed, if |style| has DIM set.)
-  static void ClassifyMatchInString(const std::u16string& find_text,
-                                    const std::u16string& text,
-                                    int style,
-                                    ACMatchClassifications* classifications);
-
-  // Similar to ClassifyMatchInString(), but for cases where the range to mark
-  // as matching is already known (avoids calling find()).  This can be helpful
-  // when find() would be misleading (e.g. you want to mark the second match in
-  // a string instead of the first).
-  static void ClassifyLocationInString(size_t match_location,
-                                       size_t match_length,
-                                       size_t overall_length,
-                                       int style,
-                                       ACMatchClassifications* classifications);
-
   // Returns a new vector of classifications containing the merged contents of
   // |classifications1| and |classifications2|.
   static ACMatchClassifications MergeClassifications(
@@ -323,9 +304,6 @@ struct AutocompleteMatch {
       ACMatchClassifications* classifications,
       size_t offset,
       int style);
-
-  // Returns true if at least one style in |classifications| is of type MATCH.
-  static bool HasMatchStyle(const ACMatchClassifications& classifications);
 
   // Removes invalid characters from |text|. Should be called on strings coming
   // from external sources (such as extensions) before assigning to |contents|
