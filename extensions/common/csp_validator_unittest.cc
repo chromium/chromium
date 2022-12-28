@@ -626,9 +626,6 @@ TEST(ExtensionCSPValidator, DoesCSPDisallowRemoteCode) {
       {"script-src; worker-src 'self'; default-src 'self'; script-src "
        "google.com",
        ""},
-      // "object-src" falls back to "default-src".
-      {"script-src; worker-src 'self'; default-src google.com",
-       insecure_value_error("object-src", "google.com")},
       // "worker-src" falls back to "script-src".
       {"script-src 'self'; object-src 'none'; default-src google.com", ""},
       {"script-src 'unsafe-eval'; worker-src; default-src;",

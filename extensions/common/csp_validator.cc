@@ -688,12 +688,14 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
   // "script-src" fallbacks to "default-src".
   fallback_if_necessary(&script_src_mapping, default_src_mapping);
 
-  // "object-src" fallbacks to "default-src".
-  fallback_if_necessary(&object_src_mapping, default_src_mapping);
-
   // "worker-src" fallbacks to "script-src", which might itself fallback to
   // "default-src".
   fallback_if_necessary(&worker_src_mapping, script_src_mapping);
+
+  // Note: Even though "object-src" will fall back to default-src in the CSP
+  // enforcement, we don't fall back to it here. This allows developers to
+  // specify a default-src with a remote target without needing to separately
+  // specify an object-src.
 
   auto is_secure_directive = [manifest_key](const DirectiveMapping& mapping,
                                             std::u16string* error) {

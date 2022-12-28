@@ -201,6 +201,14 @@ TEST_F(CSPInfoUnitTest, ObjectSrcRequirements) {
       {kManifestV3Template,
        ("script-src 'self'; object-src 'self'; frame-src 'self'; "
         "default-src https://google.com")},
+      // Even though the object-src in the example below is effectively
+      // https://google.com (because it falls back to the default-src), we
+      // still allow it so that developers don't need to explicitly specify an
+      // object-src just because they specified a default-src. The minimum CSP
+      // (which includes `object-src 'self'`) still kicks in and prevents any
+      // insecure use.
+      {kManifestV3Template,
+       "script-src 'self'; default-src https://google.com"},
 
       // In Manifest V2, object-src must be specified (if it's omitted, we add
       // it; see `warning_testcases` below).
@@ -237,9 +245,6 @@ TEST_F(CSPInfoUnitTest, ObjectSrcRequirements) {
       // If an object-src *is* specified, it must be secure and must not allow
       // remotely-hosted code (in MV3).
       {kManifestV3Template, "script-src 'self'; object-src https://google.com",
-       "*Insecure CSP value \"https://google.com\" in directive 'object-src'."},
-      // This includes if object-src is implicitly specified via default-src.
-      {kManifestV3Template, "script-src 'self'; default-src https://google.com",
        "*Insecure CSP value \"https://google.com\" in directive 'object-src'."},
   };
 
