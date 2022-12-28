@@ -207,10 +207,7 @@ crbug.com/881555 external/wpt/css/css-position/sticky/position-sticky-fixed-ance
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
 crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]
-crbug.com/1124352 media/picture-in-picture/picture-in-picture-interstitial.html [ Crash Pass ]
-crbug.com/1124352 external/wpt/picture-in-picture/css-selector.html [ Crash Pass ]
 crbug.com/1124352 external/wpt/picture-in-picture/exit-picture-in-picture.html [ Crash Pass ]
-crbug.com/1124352 external/wpt/picture-in-picture/picture-in-picture-element.html [ Crash Pass ]
 crbug.com/1124352 external/wpt/picture-in-picture/shadow-dom.html [ Crash Pass ]
 
 # These fail due to subtle anti-aliasing differences cause by the fact that
@@ -5033,7 +5030,6 @@ crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects
 crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
 
 # Fix to unblock wpt-importer
-crbug.com/1209223 external/wpt/url/url-constructor.any.worker.html [ Pass Timeout ]
 
 # Sheriff 2021-05-17
 crbug.com/1210199 http/tests/devtools/elements/elements-panel-restore-selection-when-node-comes-later.js [ Failure Pass ]
@@ -6172,7 +6168,6 @@ virtual/fractional-scroll-offsets/fast/scrolling/scrollbars/touch-scrolling-on-r
 [ Mac ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Pass ]
 [ Mac ] virtual/fractional-scroll-offsets/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Pass ]
 virtual/percent-based-scrolling/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure Pass ]
-virtual/main-threaded-percent-based-scrolling/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure Pass ]
 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure Pass ]
 virtual/fractional-scroll-offsets/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure Pass ]
 
