@@ -8,7 +8,6 @@
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -46,13 +45,19 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
 }
 
 ExtensionSidePanelCoordinator::~ExtensionSidePanelCoordinator() {
-  SidePanelRegistry* global_registry = GetGlobalSidePanelRegistry(browser_);
-  if (!global_registry) {
-    return;
+  if (auto* global_registry = GetGlobalSidePanelRegistry(browser_)) {
+    global_registry->Deregister(
+        SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_->id()));
   }
+}
 
-  global_registry->Deregister(
-      SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_->id()));
+void ExtensionSidePanelCoordinator::OnViewDestroying() {
+  // When the extension's view inside the side panel is destroyed, reset
+  // the ExtensionViewHost so it cannot try to notify a view that no longer
+  // exists when its event listeners are triggered. Otherwise, a use after free
+  // could occur as documented in crbug.com/1403168.
+  host_.reset();
+  scoped_view_observation_.Reset();
 }
 
 void ExtensionSidePanelCoordinator::CreateAndRegisterEntry(
@@ -80,6 +85,7 @@ std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView(
   auto extension_view = std::make_unique<ExtensionViewViews>(host_.get());
   extension_view->SetVisible(true);
 
+  scoped_view_observation_.Observe(extension_view.get());
   return extension_view;
 }
 

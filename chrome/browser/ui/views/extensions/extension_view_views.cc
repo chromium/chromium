@@ -30,8 +30,13 @@ ExtensionViewViews::ExtensionViewViews(extensions::ExtensionViewHost* host)
 }
 
 ExtensionViewViews::~ExtensionViewViews() {
-  if (parent())
+  if (parent()) {
     parent()->RemoveChildView(this);
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnViewDestroying();
+  }
 }
 
 void ExtensionViewViews::Init() {
@@ -87,6 +92,14 @@ void ExtensionViewViews::SetContainer(
 
 ExtensionViewViews::Container* ExtensionViewViews::GetContainer() const {
   return container_;
+}
+
+void ExtensionViewViews::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ExtensionViewViews::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 gfx::NativeView ExtensionViewViews::GetNativeView() {

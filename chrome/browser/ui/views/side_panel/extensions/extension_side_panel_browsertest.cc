@@ -132,6 +132,27 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, MultipleBrowsers) {
   EXPECT_TRUE(second_global_registry->GetEntryForKey(extension_key));
 }
 
+// Test that if the side panel is closed while the extension's side panel view
+// is still loading, there will not be a crash. Regression for
+// crbug.com/1403168.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SidePanelQuicklyClosed) {
+  // Load an extension and verify that its SidePanelEntry is registered.
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(extension);
+  SidePanelEntry::Key extension_key =
+      SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id());
+
+  EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key));
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Quickly open the side panel showing the extension's side panel entry then
+  // close it. The test should not cause any crashes after it is complete.
+  side_panel_coordinator()->Show(extension_key);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  side_panel_coordinator()->Close();
+}
+
 class ExtensionSidePanelDisabledBrowserTest : public ExtensionBrowserTest {
  public:
   ExtensionSidePanelDisabledBrowserTest() {
