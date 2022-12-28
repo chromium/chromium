@@ -14,8 +14,10 @@
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/wm/features.h"
@@ -157,12 +159,16 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, GestureEventGeneration) {
   TestEventHandler event_handler = TestEventHandler();
   auto window = CreateTestWindow();
+  base::HistogramTester histogram_tester;
 
   // Verify that scroll can open and close the menu.
   GenerateScroll(window->bounds().CenterPoint().x(), /*start_y=*/1,
                  /*end_y=*/kMenuDragPoint);
   ASSERT_TRUE(event_handler.is_scroll());
   ASSERT_TRUE(GetMultitaskMenu());
+  histogram_tester.ExpectBucketCount(
+      chromeos::GetEntryTypeHistogramName(),
+      chromeos::MultitaskMenuEntryType::kGestureScroll, 1);
 
   GenerateScroll(window->bounds().CenterPoint().x(),
                  /*start_y=*/kMenuDragPoint,
@@ -175,6 +181,9 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, GestureEventGeneration) {
                 /*end_y=*/kMenuDragPoint);
   ASSERT_TRUE(event_handler.is_swipe());
   ASSERT_TRUE(GetMultitaskMenu());
+  histogram_tester.ExpectBucketCount(
+      chromeos::GetEntryTypeHistogramName(),
+      chromeos::MultitaskMenuEntryType::kGestureFling, 1);
 
   GenerateSwipe(window->bounds().CenterPoint().x(),
                 /*start_y=*/kMenuDragPoint,
@@ -187,11 +196,18 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, GestureEventGeneration) {
                 /*end_y=*/kMenuDragPoint);
   ASSERT_TRUE(event_handler.is_fling());
   ASSERT_TRUE(GetMultitaskMenu());
+  histogram_tester.ExpectBucketCount(
+      chromeos::GetEntryTypeHistogramName(),
+      chromeos::MultitaskMenuEntryType::kGestureFling, 2);
 
   GenerateFling(window->bounds().CenterPoint().x(),
                 /*start_y=*/kMenuDragPoint,
                 /*end_y=*/8);
   ASSERT_FALSE(GetMultitaskMenu());
+
+  // Check total counts for each histogram to ensure calls aren't counted in
+  // multiple buckets and that scroll up events weren't counted.
+  histogram_tester.ExpectTotalCount(chromeos::GetEntryTypeHistogramName(), 3);
 }
 
 // Tests that a scroll down gesture from the top center activates the

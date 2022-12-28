@@ -16,7 +16,9 @@ enum class MultitaskMenuEntryType {
   kFrameSizeButtonHover = 0,
   kFrameSizeButtonLongPress = 1,
   kFrameSizeButtonLongTouch = 2,
-  kMaxValue = kFrameSizeButtonLongTouch,
+  kGestureFling = 3,
+  kGestureScroll = 4,
+  kMaxValue = kGestureScroll,
 };
 
 // Used to record when the user partial splits to one third.

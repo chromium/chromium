@@ -68812,6 +68812,8 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Frame size button hover"/>
   <int value="1" label="Frame size button long press"/>
   <int value="2" label="Frame size button long touch"/>
+  <int value="3" label="Gesture fling"/>
+  <int value="4" label="Gesture scroll"/>
 </enum>
 
 <enum name="MultitouchEvent">

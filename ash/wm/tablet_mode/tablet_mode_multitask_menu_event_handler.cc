@@ -10,6 +10,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -116,13 +117,6 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
 
   const ui::GestureEventDetails details = event->details();
   switch (event->type()) {
-    case ui::ET_GESTURE_SWIPE:
-      if (!details.swipe_up() && !details.swipe_down())
-        return;
-      MaybeCreateMultitaskMenu(active_window);
-      multitask_menu_->Animate(/*show=*/details.swipe_down());
-      event->SetHandled();
-      break;
     case ui::ET_GESTURE_SCROLL_BEGIN:
       if (std::fabs(details.scroll_y_hint()) <
           std::fabs(details.scroll_x_hint())) {
@@ -153,14 +147,29 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
         event->SetHandled();
       }
       break;
-    case ui::ET_SCROLL_FLING_CANCEL:
-    case ui::ET_SCROLL_FLING_START:
     case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_GESTURE_END:
       if (multitask_menu_) {
         multitask_menu_->EndDrag();
+        if (multitask_menu_) {
+          // If `multitask_menu_` wasn't destroyed, it was dragged to show.
+          RecordMultitaskMenuEntryType(
+              chromeos::MultitaskMenuEntryType::kGestureScroll);
+        }
         event->SetHandled();
       }
+      break;
+    case ui::ET_SCROLL_FLING_START:
+      // Normally ET_GESTURE_SCROLL_BEGIN will fire first and have already
+      // created the multitask menu, however occasionally ET_SCROLL_FLING_START
+      // may fire first (https://crbug.com/821237).
+      MaybeCreateMultitaskMenu(active_window);
+      multitask_menu_->Animate(details.velocity_y() > 0);
+      if (multitask_menu_) {
+        // If `multitask_menu_` wasn't destroyed, it was animated to show.
+        RecordMultitaskMenuEntryType(
+            chromeos::MultitaskMenuEntryType::kGestureFling);
+      }
+      event->SetHandled();
       break;
     default:
       break;
