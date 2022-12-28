@@ -138,7 +138,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1122913801042512795">Detail login akun Anda sudah tidak berlaku. Harap logout lalu login lagi.</translation>
 <translation id="1122960773616686544">Nama bookmark</translation>
 <translation id="1124772482545689468">Pengguna</translation>
-<translation id="1125550662859510761">Sepertinya <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Asli)</translation>
+<translation id="1125550662859510761">Terlihat seperti <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
 <translation id="1126809382673880764">Tidak melindungi Anda terhadap situs, download, dan ekstensi berbahaya. Anda akan tetap mendapatkan perlindungan Safe Browsing, jika tersedia, di layanan Google lainnya, seperti Gmail dan Penelusuran.</translation>
 <translation id="1128090040635299943">Linux sedang dikonfigurasi. Konfigurasi memerlukan waktu beberapa menit.</translation>
 <translation id="1128591060186966949">Edit mesin telusur</translation>
@@ -2023,7 +2023,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="280518252911523675">Jika Anda melanjutkan tanpa memasukkan sandi lama, data lokal Anda akan dihapus. Anda harus login dengan Akun Google Anda untuk menyiapkan pengguna ini lagi.</translation>
 <translation id="2805539617243680210">Anda sudah siap.</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
-<translation id="2805756323405976993">Apl</translation>
+<translation id="2805756323405976993">Aplikasi</translation>
 <translation id="2805760958323556153">Nilai kebijakan ExtensionInstallForcelist tidak valid. Harap hubungi administrator Anda.</translation>
 <translation id="2805770823691782631">Detail tambahan</translation>
 <translation id="2806372837663997957">Perangkat yang Anda coba ajak berbagi tidak menerima</translation>
@@ -2064,7 +2064,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2842013086666334835">Login ke "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Untuk menyelesaikan penyiapan Linux, update ChromeOS lalu coba lagi.</translation>
 <translation id="2844169650293029770">Perangkat USB-C (port depan sebelah kiri)</translation>
-<translation id="2844809857160214557">Lihat dan kelola pekerjaan cetak</translation>
+<translation id="2844809857160214557">Lihat dan kelola tugas pencetakan</translation>
 <translation id="2845382757467349449">Selalu Tampilkan Bilah Bookmark</translation>
 <translation id="284581348330507117">Buat sandi yang unik</translation>
 <translation id="284805635805850872">Hapus software berbahaya?</translation>
@@ -2207,7 +2207,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2967926928600500959">URL yang sesuai dengan aturan ini akan dipaksa dibuka di browser tertentu.</translation>
 <translation id="2972266986002580503">Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="2972581237482394796">&amp;Ulang</translation>
-<translation id="2973324205039581528">Nonaktifkan Notifikasi Situs</translation>
+<translation id="2973324205039581528">Bisukan Audio Situs</translation>
 <translation id="2973537811036309675">Panel Samping</translation>
 <translation id="2975761176769946178">URL wajib diisi</translation>
 <translation id="2976557544729462544">Beberapa perangkat mengharuskan Anda menonaktifkan perlindungan akses data agar dapat berfungsi dengan benar atau dalam performa penuh.</translation>
@@ -2430,7 +2430,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3200061262156232574">Di keranjang belanja Anda</translation>
 <translation id="3201422919974259695">Perangkat USB yang tersedia akan ditampilkan di sini.</translation>
 <translation id="3202131003361292969">Jalur</translation>
-<translation id="3202173864863109533">Audio tab ini dinonaktifkan.</translation>
+<translation id="3202173864863109533">Audio tab ini dibisukan.</translation>
 <translation id="3204648577100496185">Data yang terkait dengan aplikasi ini dapat dihapus dari perangkat ini</translation>
 <translation id="3208321278970793882">Aplikasi</translation>
 <translation id="3208584281581115441">Periksa sekarang</translation>
@@ -2669,7 +2669,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3442674350323953953">Izinkan Google menggunakan data hardware Anda untuk membantu meningkatkan <ph name="DEVICE_OS" />. Jika Anda menolak, data ini tetap dikirimkan ke Google untuk menentukan update yang tepat, tetapi tidak disimpan ataupun digunakan.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> akan dapat melihat <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Jawaban cepat Asisten Google</translation>
-<translation id="3445288400492335833"><ph name="MINUTES" /> mnt</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> menit</translation>
 <translation id="344537926140058498">Organisasi Anda memblokir file ini karena file berisi konten sensitif atau berbahaya. Minta pemiliknya untuk memperbaiki.</translation>
 <translation id="3445925074670675829">Perangkat USB-C</translation>
 <translation id="3446274660183028131">Luncurkan Parallels Desktop untuk menginstal Windows.</translation>
@@ -2769,7 +2769,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3528498924003805721">Target pintasan</translation>
 <translation id="3532273508346491126">Pengelolaan sinkronisasi</translation>
 <translation id="3532521178906420528">Membuat koneksi jaringan ...</translation>
-<translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Audio dinonaktifkan</translation>
+<translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Audio dibisukan</translation>
 <translation id="3536492240554502321">Rotasi hue</translation>
 <translation id="3537881477201137177">Ini dapat diubah nanti di Setelan</translation>
 <translation id="3538066758857505094">Error saat meng-uninstal Linux. Coba lagi.</translation>
@@ -2889,7 +2889,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3650952250015018111">Izinkan "<ph name="APP_NAME" />" untuk mengakses:</translation>
 <translation id="3651488188562686558">Putuskan sambungan Wi-Fi</translation>
 <translation id="3652817283076144888">Memulai</translation>
-<translation id="3653160965917900914">Berbagi file jaringan</translation>
+<translation id="3653160965917900914">Berbagi file dalam jaringan</translation>
 <translation id="3653999333232393305">Terus izinkan <ph name="HOST" /> mengakses mikrofon Anda</translation>
 <translation id="3654045516529121250">Baca setelan aksesibilitas Anda</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Memiliki akses permanen ke satu file.}other{Memiliki akses permanen ke # file.}}</translation>
@@ -4049,7 +4049,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4742334355511750246">Tidak diizinkan menampilkan gambar</translation>
 <translation id="4742970037960872810">Hapus sorotan</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Pelajari cara mengupdate aplikasi<ph name="END_LINK" /></translation>
-<translation id="4744981231093950366">{NUM_TABS,plural, =1{Aktifkan notifikasi situs}other{Aktifkan notifikasi beberapa situs}}</translation>
+<translation id="4744981231093950366">{NUM_TABS,plural, =1{Bunyikan audio situs}other{Bunyikan audio situs}}</translation>
 <translation id="474609389162964566">Akses Asisten Anda dengan “Ok Google”</translation>
 <translation id="4746351372139058112">Pesan</translation>
 <translation id="4748783296226936791">Situs biasanya terhubung ke perangkat HID untuk fitur yang menggunakan keyboard yang tidak biasa, pengontrol game, dan perangkat lainnya</translation>
@@ -4166,7 +4166,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4858792381671956233">Kamu telah meminta izin kepada orang tua untuk mengunjungi situs ini</translation>
 <translation id="4858913220355269194">Ronaldo</translation>
 <translation id="4862642413395066333">Tanggapan OCSP Penandatanganan</translation>
-<translation id="4863769717153320198">Sepertinya <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Default)</translation>
+<translation id="4863769717153320198">Terlihat seperti <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Default)</translation>
 <translation id="486459320933704969">Orang tua atau wali harus menyatakan bahwa kamu boleh membuka situs ini</translation>
 <translation id="4864805589453749318">Pilih orang tua yang memberikan izin untuk menambahkan akun sekolah.</translation>
 <translation id="486635084936119914">Buka jenis file tertentu secara otomatis setelah didownload</translation>
@@ -4291,7 +4291,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4972129977812092092">Edit printer</translation>
 <translation id="4972164225939028131">Sandi salah</translation>
 <translation id="4972737347717125191">Situs dapat meminta untuk menggunakan perangkat dan data virtual reality</translation>
-<translation id="4973325300212422370">{NUM_TABS,plural, =1{Nonaktifkan notifikasi situs}other{Nonaktifkan notifikasi beberapa situs}}</translation>
+<translation id="4973325300212422370">{NUM_TABS,plural, =1{Bisukan audio situs}other{Bisukan audio situs}}</translation>
 <translation id="497403230787583386">Pemeriksaan keamanan selesai. Dokumen Anda akan dicetak.</translation>
 <translation id="4975543297921324897">Font monospace</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
@@ -7395,7 +7395,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="79312157130859720"><ph name="APP_NAME" /> membagikan layar dan audio Anda.</translation>
 <translation id="793293630927785390">Dialog Jaringan Wi-Fi Baru</translation>
 <translation id="7932969338829957666">Folder bersama tersedia pada Linux di <ph name="BASE_DIR" />.</translation>
-<translation id="7933314993013528982">{NUM_TABS,plural, =1{Aktifkan Notifikasi Situs}other{Aktifkan Notifikasi Beberapa Situs}}</translation>
+<translation id="7933314993013528982">{NUM_TABS,plural, =1{Bunyikan Audio Situs}other{Bunyikan Audio Situs}}</translation>
 <translation id="7933518760693751884">Guna menyimpan halaman untuk dibaca nanti, klik ikon Bookmark</translation>
 <translation id="7933634003144813719">Kelola folder yang dibagikan</translation>
 <translation id="793531125873261495">Error saat mendownload mesin virtual. Coba lagi.</translation>
@@ -7506,7 +7506,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - Izin diminta, tekan ⌘ + Option + Panah atas untuk merespons</translation>
 <translation id="8030169304546394654">Diputuskan</translation>
 <translation id="8030852056903932865">Setuju</translation>
-<translation id="8032244173881942855">Tidak dapat mentransmisi tab.</translation>
+<translation id="8032244173881942855">Tidak dapat mentransmisikan tab.</translation>
 <translation id="8032569120109842252">Mengikuti</translation>
 <translation id="8033023935541439900">Menu tanda aksen dibuka. Tekan panah kiri atau kanan untuk memilih dan enter untuk menyisipkan.</translation>
 <translation id="8033827949643255796">dipilih</translation>
@@ -7876,7 +7876,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8369028061188107403">Tindakan ini akan menghapus <ph name="TOTAL_USAGE" /> data yang disimpan oleh situs yang ditampilkan dan aplikasi yang terinstal di dalamnya</translation>
 <translation id="8370294614544004647">Tidur saat laptop ditutup</translation>
 <translation id="8371695176452482769">Bicaralah sekarang</translation>
-<translation id="8371925839118813971">{NUM_TABS,plural, =1{Nonaktifkan Notifikasi Situs}other{Nonaktifkan Notifikasi Beberapa Situs}}</translation>
+<translation id="8371925839118813971">{NUM_TABS,plural, =1{Bisukan Audio Situs}other{Bisukan Audio Situs}}</translation>
 <translation id="8373652277231415614">Direktori bersama Crostini</translation>
 <translation id="8374243500935816406">Jangan izinkan situs mengelola jendela di semua layar</translation>
 <translation id="8376137163494131156">Beri tahu kami yang terjadi pada Google Cast.</translation>
