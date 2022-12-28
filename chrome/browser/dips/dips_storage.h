@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_database.h"
 #include "chrome/browser/dips/dips_state.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 class GURL;
@@ -44,6 +45,22 @@ class DIPSStorage {
   // Record that |url| redirected the user and whether it was |stateful|,
   // meaning that |url| wrote to storage while redirecting.
   void RecordBounce(const GURL& url, base::Time time, bool stateful);
+
+  // Storage querying Methods --------------------------------------------------
+  // Returns all sites that did a bounce that aren't protected from DIPS.
+  std::vector<std::string> GetSitesThatBounced() const;
+
+  // Returns all sites that did a stateful bounce that aren't protected from
+  // DIPS.
+  std::vector<std::string> GetSitesThatBouncedWithState() const;
+
+  // Returns all sites which use storage that aren't protected from DIPS.
+  std::vector<std::string> GetSitesThatUsedStorage() const;
+
+  // Queries the DIPS database for sites whose state DIPS should clear.
+  // If DIPS deletion isn't enabled, this just logs UMA about how many sites
+  // would've been cleared by DIPS.
+  void DeleteDIPSEligibleState(DIPSCookieMode mode);
 
   // Utility Methods -----------------------------------------------------------
 

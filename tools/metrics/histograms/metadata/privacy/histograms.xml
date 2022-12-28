@@ -224,6 +224,29 @@ reviewer.
   <token key="DIPSRedirectType" variants="DIPSRedirectType"/>
 </histogram>
 
+<histogram name="Privacy.DIPS.ClearedSitesCount{DIPSCookieMode}" units="sites"
+    expires_after="2023-05-31">
+  <owner>bcl@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    The number of sites that may have had their storage cleared by DIPS.
+
+    If DIPS deletion is on, this is the number of sites that have had storage
+    cleared by DIPS. Otherwise, this number is the sites that would've had their
+    storage cleared if the DIPS deletion feature was on.
+
+    This is recorded every time the DIPS timer is fired, which is determined by
+    the `timer_delay` parameter of the DIPS feature.
+
+    This is only logged for site-data clearing that occurs as a result of DIPS.
+    If a site contributes to this count then it has performed a potential
+    tracking action (e.g. writing to storage, bouncing the user, or both)
+    without the user interacting with that site before, or soon after, the
+    action.
+  </summary>
+  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
+</histogram>
+
 <histogram name="Privacy.DIPS.DatabaseEntryCount" units="entries"
     expires_after="2023-05-30">
   <owner>bcl@chromium.org</owner>
@@ -283,6 +306,19 @@ reviewer.
     Note that Guest and other OTR profiles (e.g. Incognito) will always startup
     with empty databases, so that may explain why some database files are very
     small.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.DIPS.DeletionLatency" units="ms"
+    expires_after="2023-05-31">
+  <owner>bcl@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    The amount of time it takes to complete the DIPS deletion process.
+
+    This is recorded each time after the DIPS timer fires and triggers deletion
+    of DIPS-eligible sites. This metric will be the result of |time when DIPS
+    deletion completed - time when DIPS deletion begins|.
   </summary>
 </histogram>
 

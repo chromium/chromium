@@ -12,9 +12,9 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "sql/init_status.h"
 #include "url/gurl.h"
 
 namespace {
@@ -188,6 +188,50 @@ void DIPSStorage::RecordBounce(const GURL& url,
   if (stateful) {
     state.update_stateful_bounce_time(time);
   }
+}
+
+std::vector<std::string> DIPSStorage::GetSitesThatBounced() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+  return db_->GetSitesThatBounced();
+}
+
+std::vector<std::string> DIPSStorage::GetSitesThatBouncedWithState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+  return db_->GetSitesThatBouncedWithState();
+}
+
+std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+  return db_->GetSitesThatUsedStorage();
+}
+
+void DIPSStorage::DeleteDIPSEligibleState(DIPSCookieMode mode) {
+  std::vector<std::string> sites_to_clear;
+  switch (dips::kTriggeringAction.Get()) {
+    case DIPSTriggeringAction::kStorage: {
+      sites_to_clear = GetSitesThatUsedStorage();
+      break;
+    }
+    case DIPSTriggeringAction::kBounce: {
+      sites_to_clear = GetSitesThatBounced();
+      break;
+    }
+    case DIPSTriggeringAction::kStatefulBounce: {
+      sites_to_clear = GetSitesThatBouncedWithState();
+      break;
+    }
+  }
+
+  base::UmaHistogramCounts1000(base::StrCat({"Privacy.DIPS.ClearedSitesCount",
+                                             GetHistogramSuffix(mode)}),
+                               sites_to_clear.size());
+
+  // Perform clearing of sites.
+  // TODO: Actually clear the site-data for `sites_to_clear` here as well.
+  RemoveRows(sites_to_clear);
 }
 
 /* static */

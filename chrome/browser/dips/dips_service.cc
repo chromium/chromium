@@ -14,12 +14,12 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/time/time_delta_from_string.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -93,10 +93,10 @@ DIPSService::DIPSService(content::BrowserContext* context)
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
       repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))) {
+  DCHECK(base::FeatureList::IsEnabled(dips::kFeature));
   absl::optional<base::FilePath> path;
 
-  if (base::FeatureList::IsEnabled(dips::kFeature) &&
-      dips::kPersistedDatabaseEnabled.Get() &&
+  if (dips::kPersistedDatabaseEnabled.Get() &&
       !browser_context_->IsOffTheRecord()) {
     path = browser_context_->GetPath().Append(kDIPSFilename);
   }
@@ -111,18 +111,11 @@ DIPSService::DIPSService(content::BrowserContext* context)
 std::unique_ptr<signin::PersistentRepeatingTimer> DIPSService::CreateTimer(
     Profile* profile) {
   DCHECK(profile);
-  absl::optional<base::TimeDelta> delay = base::TimeDeltaFromString(
-      base::GetFieldTrialParamValueByFeature(dips::kFeature, "timer_delay"));
-  if (!delay.has_value())
-    return nullptr;
-
-  // TODO(crbug.com/1375302):
-  // - Add RepeatingCallback to trigger logging of UKM when this timer fires.
-  // --- Add grace period for this, making it also configurable via a Finch
-  // --- parameter.
+  // base::Unretained(this) is safe here since the timer that is created has the
+  // same lifetime as this service.
   return std::make_unique<signin::PersistentRepeatingTimer>(
-      profile->GetPrefs(), prefs::kDIPSTimerLastUpdate, delay.value(),
-      base::DoNothing());
+      profile->GetPrefs(), prefs::kDIPSTimerLastUpdate, dips::kTimerDelay.Get(),
+      base::BindRepeating(&DIPSService::OnTimerFired, base::Unretained(this)));
 }
 
 DIPSService::~DIPSService() = default;
@@ -261,4 +254,16 @@ void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
       ClassifyRedirect(redirect.access_type, redirect.has_interaction.value());
   UmaHistogramBounceCategory(category, chain.cookie_mode.value(),
                              redirect.redirect_type);
+}
+
+void DIPSService::OnTimerFired() {
+  base::Time start = base::Time::Now();
+  storage_.AsyncCall(&DIPSStorage::DeleteDIPSEligibleState)
+      .WithArgs(GetCookieMode())
+      .Then(base::BindOnce(
+          [](base::Time deletion_start) {
+            base::UmaHistogramLongTimes100("Privacy.DIPS.DeletionLatency",
+                                           base::Time::Now() - deletion_start);
+          },
+          start));
 }
