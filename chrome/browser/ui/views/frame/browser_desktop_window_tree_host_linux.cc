@@ -242,8 +242,11 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
       for (SkRegion::Iterator i(region); !i.done(); i.next())
         opaque_region.push_back(gfx::SkIRectToRect(i.rect()));
     } else {
+      gfx::Rect widget_size_px =
+          gfx::ScaleToEnclosingRect(gfx::Rect(widget_size), scale);
+
       // Set the entire window as opaque.
-      opaque_region.push_back({{}, widget_size});
+      opaque_region.push_back(widget_size_px);
     }
     window->SetOpaqueRegion(&opaque_region);
   }
