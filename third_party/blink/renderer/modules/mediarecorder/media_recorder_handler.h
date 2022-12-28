@@ -47,13 +47,9 @@ struct WebMediaConfiguration;
 class MODULES_EXPORT MediaRecorderHandler final
     : public GarbageCollected<MediaRecorderHandler> {
  public:
-  explicit MediaRecorderHandler(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
+  MediaRecorderHandler() = default;
   MediaRecorderHandler(const MediaRecorderHandler&) = delete;
   MediaRecorderHandler& operator=(const MediaRecorderHandler&) = delete;
-
-  ~MediaRecorderHandler();
 
   // MediaRecorder API isTypeSupported(), which boils down to
   // CanSupportMimeType() [1] "If true is returned from this method, it only
@@ -141,10 +137,12 @@ class MODULES_EXPORT MediaRecorderHandler final
   uint32_t audio_bits_per_second_{0};
 
   // Video Codec and profile, VP8 is used by default.
-  VideoTrackRecorder::CodecProfile video_codec_profile_;
+  VideoTrackRecorder::CodecProfile video_codec_profile_{
+      VideoTrackRecorder::CodecId::kLast};
 
   // Audio Codec, OPUS is used by default.
-  AudioTrackRecorder::CodecId audio_codec_id_;
+  AudioTrackRecorder::CodecId audio_codec_id_{
+      AudioTrackRecorder::CodecId::kLast};
 
   // Audio bitrate mode (constant, variable, etc.), VBR is used by default.
   AudioTrackRecorder::BitrateMode audio_bitrate_mode_;
@@ -165,15 +163,13 @@ class MODULES_EXPORT MediaRecorderHandler final
   HeapVector<Member<MediaStreamComponent>> video_tracks_;
   HeapVector<Member<MediaStreamComponent>> audio_tracks_;
 
-  Member<MediaRecorder> recorder_;
+  Member<MediaRecorder> recorder_ = nullptr;
 
   Vector<std::unique_ptr<VideoTrackRecorder>> video_recorders_;
   Vector<std::unique_ptr<AudioTrackRecorder>> audio_recorders_;
 
   // Worker class doing the actual muxing work.
   std::unique_ptr<media::Muxer> muxer_;
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 }  // namespace blink

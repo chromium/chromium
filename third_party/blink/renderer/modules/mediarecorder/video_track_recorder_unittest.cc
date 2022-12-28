@@ -163,8 +163,7 @@ class VideoTrackRecorderTest
         ConvertToBaseOnceCallback(CrossThreadBindOnce(
             &VideoTrackRecorderTest::OnSourceReadyStateEnded,
             CrossThreadUnretained(this))),
-        0u /* bits_per_second */,
-        scheduler::GetSingleThreadTaskRunnerForTesting());
+        0u /* bits_per_second */);
   }
 
   MOCK_METHOD0(OnSourceReadyStateEnded, void());
@@ -598,8 +597,7 @@ class VideoTrackRecorderPassthroughTest
         ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
             &VideoTrackRecorderPassthroughTest::OnEncodedVideo,
             CrossThreadUnretained(this))),
-        ConvertToBaseOnceCallback(CrossThreadBindOnce([] {})),
-        scheduler::GetSingleThreadTaskRunnerForTesting());
+        ConvertToBaseOnceCallback(CrossThreadBindOnce([] {})));
   }
 
   MOCK_METHOD5(OnEncodedVideo,

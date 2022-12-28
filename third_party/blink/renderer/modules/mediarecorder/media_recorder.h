@@ -101,7 +101,7 @@ class MODULES_EXPORT MediaRecorder
   uint32_t audio_bits_per_second_{0};
   uint32_t video_bits_per_second_{0};
 
-  State state_;
+  State state_ = State::kInactive;
   bool first_write_received_ = false;
   std::unique_ptr<BlobData> blob_data_;
   Member<MediaRecorderHandler> recorder_handler_;

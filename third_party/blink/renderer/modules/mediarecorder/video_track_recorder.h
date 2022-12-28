@@ -255,14 +255,11 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
                                        size_t height,
                                        double framerate = 0.0);
 
-  // TODO(crbug.com/956045): Remove unused `main_task_runner` parameter.
-  VideoTrackRecorderImpl(
-      CodecProfile codec,
-      MediaStreamComponent* track,
-      OnEncodedVideoCB on_encoded_video_cb,
-      base::OnceClosure on_track_source_ended_cb,
-      uint32_t bits_per_second,
-      scoped_refptr<base::SequencedTaskRunner> main_task_runner);
+  VideoTrackRecorderImpl(CodecProfile codec,
+                         MediaStreamComponent* track,
+                         OnEncodedVideoCB on_encoded_video_cb,
+                         base::OnceClosure on_track_source_ended_cb,
+                         uint32_t bits_per_second);
 
   VideoTrackRecorderImpl(const VideoTrackRecorderImpl&) = delete;
   VideoTrackRecorderImpl& operator=(const VideoTrackRecorderImpl&) = delete;
@@ -322,11 +319,9 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
 class MODULES_EXPORT VideoTrackRecorderPassthrough : public VideoTrackRecorder {
  public:
   // TODO(crbug.com/956045): Remove unused `main_task_runner` parameter.
-  VideoTrackRecorderPassthrough(
-      MediaStreamComponent* track,
-      OnEncodedVideoCB on_encoded_video_cb,
-      base::OnceClosure on_track_source_ended_cb,
-      scoped_refptr<base::SequencedTaskRunner> main_task_runner);
+  VideoTrackRecorderPassthrough(MediaStreamComponent* track,
+                                OnEncodedVideoCB on_encoded_video_cb,
+                                base::OnceClosure on_track_source_ended_cb);
 
   VideoTrackRecorderPassthrough(const VideoTrackRecorderPassthrough&) = delete;
   VideoTrackRecorderPassthrough& operator=(

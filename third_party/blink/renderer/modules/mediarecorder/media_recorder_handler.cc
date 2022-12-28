@@ -145,15 +145,6 @@ AudioTrackRecorder::CodecId AudioStringToCodecId(const String& codecs) {
 
 }  // anonymous namespace
 
-MediaRecorderHandler::MediaRecorderHandler(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : video_codec_profile_(VideoTrackRecorder::CodecId::kLast),
-      audio_codec_id_(AudioTrackRecorder::CodecId::kLast),
-      recorder_(nullptr),
-      task_runner_(std::move(task_runner)) {}
-
-MediaRecorderHandler::~MediaRecorderHandler() = default;
-
 bool MediaRecorderHandler::CanSupportMimeType(const String& type,
                                               const String& web_codecs) {
   DCHECK(IsMainThread());
@@ -321,7 +312,7 @@ bool MediaRecorderHandler::Start(int timeslice) {
       video_recorders_.emplace_back(
           std::make_unique<VideoTrackRecorderPassthrough>(
               video_tracks_[0], std::move(on_passthrough_video_cb),
-              std::move(on_track_source_changed_cb), task_runner_));
+              std::move(on_track_source_changed_cb)));
     } else {
       const VideoTrackRecorder::OnEncodedVideoCB on_encoded_video_cb =
           media::BindToCurrentLoop(WTF::BindRepeating(
@@ -329,7 +320,7 @@ bool MediaRecorderHandler::Start(int timeslice) {
       video_recorders_.emplace_back(std::make_unique<VideoTrackRecorderImpl>(
           video_codec_profile_, video_tracks_[0],
           std::move(on_encoded_video_cb), std::move(on_track_source_changed_cb),
-          video_bits_per_second_, task_runner_));
+          video_bits_per_second_));
     }
   }
 

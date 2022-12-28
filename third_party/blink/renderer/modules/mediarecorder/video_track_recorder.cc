@@ -611,8 +611,7 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
     MediaStreamComponent* track,
     OnEncodedVideoCB on_encoded_video_cb,
     base::OnceClosure on_track_source_ended_cb,
-    uint32_t bits_per_second,
-    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
+    uint32_t bits_per_second)
     : VideoTrackRecorder(std::move(on_track_source_ended_cb)),
       track_(track),
       should_pause_encoder_on_initialization_(false) {
@@ -812,8 +811,7 @@ void VideoTrackRecorderImpl::DisconnectFromTrack() {
 VideoTrackRecorderPassthrough::VideoTrackRecorderPassthrough(
     MediaStreamComponent* track,
     OnEncodedVideoCB on_encoded_video_cb,
-    base::OnceClosure on_track_source_ended_cb,
-    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
+    base::OnceClosure on_track_source_ended_cb)
     : VideoTrackRecorder(std::move(on_track_source_ended_cb)),
       track_(track),
       state_(KeyFrameState::kWaitingForKeyFrame),
