@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -329,7 +330,9 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
   void ToggleWindowControlsOverlayEnabledAndWait() {
     auto* web_contents = browser_view_->GetActiveWebContents();
     web_app_frame_toolbar_helper_.SetupGeometryChangeCallback(web_contents);
-    browser_view_->ToggleWindowControlsOverlayEnabled();
+    base::test::TestFuture<void> future;
+    browser_view_->ToggleWindowControlsOverlayEnabled(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
     std::ignore = title_watcher.WaitAndGetTitle();
   }

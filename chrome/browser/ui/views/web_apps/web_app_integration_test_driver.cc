@@ -24,6 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1127,7 +1128,9 @@ void WebAppIntegrationTestDriver::EnableWindowControlsOverlay(Site site) {
   content::TitleWatcher title_watcher(
       app_view->GetActiveWebContents(),
       GetSiteConfiguration(site).wco_not_enabled_title + u": WCO Enabled");
-  app_view->ToggleWindowControlsOverlayEnabled();
+  base::test::TestFuture<void> future;
+  app_view->ToggleWindowControlsOverlayEnabled(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
   std::ignore = title_watcher.WaitAndGetTitle();
   ASSERT_TRUE(app_view->IsWindowControlsOverlayEnabled());
   AfterStateChangeAction();
@@ -1143,7 +1146,9 @@ void WebAppIntegrationTestDriver::DisableWindowControlsOverlay(Site site) {
   content::TitleWatcher title_watcher(
       app_view->GetActiveWebContents(),
       GetSiteConfiguration(site).wco_not_enabled_title);
-  app_view->ToggleWindowControlsOverlayEnabled();
+  base::test::TestFuture<void> future;
+  app_view->ToggleWindowControlsOverlayEnabled(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
   std::ignore = title_watcher.WaitAndGetTitle();
   ASSERT_FALSE(app_view->IsWindowControlsOverlayEnabled());
   AfterStateChangeAction();

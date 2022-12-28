@@ -677,7 +677,9 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
       BrowserView* browser_view) {
     helper()->SetupGeometryChangeCallback(web_contents);
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
-    browser_view->ToggleWindowControlsOverlayEnabled();
+    base::test::TestFuture<void> future;
+    browser_view->ToggleWindowControlsOverlayEnabled(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
     std::ignore = title_watcher.WaitAndGetTitle();
   }
 
