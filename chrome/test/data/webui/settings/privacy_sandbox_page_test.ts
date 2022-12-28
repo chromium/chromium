@@ -233,7 +233,7 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
 
   // TODO(crbug.com/1378703): Add test for empty blocked topics list description
   // when `getTopicsState()` returns an empty list.
-  test('blockedTopicsDescriptionNotEmpty', async function() {
+  test('blockedTopicsNotEmpty', async function() {
     page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
     const blockedTopicsRow =
         page.shadowRoot!.querySelector<HTMLElement>('#blockedTopicsRow')!;
@@ -244,13 +244,20 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     blockedTopicsRow.click();
     await flushTasks();
 
+    // Check that blocked topics are shown even when toggle is disabled.
     blockedTopicsDescription = page.shadowRoot!.querySelector<HTMLElement>(
         '#blockedTopicsDescription')!;
     assertTrue(isVisible(blockedTopicsDescription));
     assertEquals(
         loadTimeData.getString('topicsPageBlockedTopicsDescription'),
         blockedTopicsDescription.innerText);
+    const blockedTopicsList =
+        page.shadowRoot!.querySelector('#blockedTopicsList')!;
+    let blockedTopics = blockedTopicsList.querySelector('dom-repeat');
+    assertTrue(!!blockedTopics);
+    assertEquals(1, blockedTopics.items!.length);
 
+    // Check that blocked topics are shown when toggle is enabled.
     page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
     await flushTasks();
     blockedTopicsDescription = page.shadowRoot!.querySelector<HTMLElement>(
@@ -259,6 +266,9 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertEquals(
         loadTimeData.getString('topicsPageBlockedTopicsDescription'),
         blockedTopicsDescription.innerText);
+    blockedTopics = blockedTopicsList.querySelector('dom-repeat');
+    assertTrue(!!blockedTopics);
+    assertEquals(1, blockedTopics.items!.length);
   });
 
   test('blockAndAllowTopics', async function() {
