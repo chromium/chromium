@@ -1547,8 +1547,6 @@ source_set("ash") {
     "login/easy_unlock/easy_unlock_service_factory.h",
     "login/easy_unlock/easy_unlock_service_regular.cc",
     "login/easy_unlock/easy_unlock_service_regular.h",
-    "login/easy_unlock/easy_unlock_service_signin.cc",
-    "login/easy_unlock/easy_unlock_service_signin.h",
     "login/easy_unlock/easy_unlock_tpm_key_manager.cc",
     "login/easy_unlock/easy_unlock_tpm_key_manager.h",
     "login/easy_unlock/easy_unlock_tpm_key_manager_factory.cc",

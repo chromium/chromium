@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_regular.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_signin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -40,12 +39,16 @@ void ChromeProximityAuthClient::FinalizeUnlock(bool success) {
     service->FinalizeUnlock(success);
 }
 
+// TODO(b/227674947): Remove this method now that sign in with Smart Lock is
+// deprecated
 void ChromeProximityAuthClient::FinalizeSignin(const std::string& secret) {
   EasyUnlockService* service = EasyUnlockService::Get(profile_);
   if (service)
     service->FinalizeSignin(secret);
 }
 
+// TODO(b/227674947): Remove this method now that sign in with Smart Lock is
+// deprecated
 void ChromeProximityAuthClient::GetChallengeForUserAndDevice(
     const std::string& user_email,
     const std::string& remote_public_key,
@@ -57,11 +60,6 @@ void ChromeProximityAuthClient::GetChallengeForUserAndDevice(
     std::move(callback).Run(/*challenge=*/std::string());
     return;
   }
-
-  static_cast<EasyUnlockServiceSignin*>(easy_unlock_service)
-      ->WrapChallengeForUserAndDevice(AccountId::FromUserEmail(user_email),
-                                      remote_public_key, channel_binding_data,
-                                      std::move(callback));
 }
 
 proximity_auth::ProximityAuthPrefManager*
