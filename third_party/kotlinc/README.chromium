@@ -1,0 +1,23 @@
+Name: Kotlin Compiler
+Short Name: kotlinc
+URL: https://github.com/JetBrains/kotlin/releases
+Version: v1.7.21
+License: Various
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Kotlin Compiler compiles .kt files into .class files.
+License information available at current/license/README.md.
+
+How to update:
+1. Find the latest version by following the link in:
+   https://kotlinlang.org/docs/command-line.html#install-the-compiler
+2. Update 3pp/fetch.py
+3. Upload and land the CL.
+4. Wait for the 3pp packager (https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager)
+   to create the new instance at https://chrome-infra-packages.appspot.com/p/chromium/third_party/kotlinc/+/
+5. Update instance ID in //DEPS
+
+Local Modifications:
+None

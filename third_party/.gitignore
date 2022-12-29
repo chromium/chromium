@@ -141,6 +141,7 @@
 /jsr-305/src
 /junit/src
 /khronos_glcts
+/kotlinc/current
 /leveldatabase/src
 /leveldb
 /libFuzzer/src
