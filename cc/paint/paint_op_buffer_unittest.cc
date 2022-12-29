@@ -3305,6 +3305,37 @@ TEST_P(PaintFilterSerializationTest, Basic) {
   }
 }
 
+TEST(PaintOpBufferTest, RecordPaintFilterDeserializationInvalidPaintOp) {
+  float rect_size = 0x8.765432p1;
+  PaintOpBuffer buffer;
+  buffer.push<ClipRectOp>(SkRect::MakeWH(rect_size, rect_size),
+                          SkClipOp::kDifference, true);
+  auto filter = sk_make_sp<RecordPaintFilter>(buffer.ReleaseAsRecord(),
+                                              SkRect::MakeWH(100, 100));
+
+  TestOptionsProvider options_provider;
+  std::vector<uint8_t> memory(kDefaultBufferSize);
+  PaintOpWriter writer(memory.data(), memory.size(),
+                       options_provider.serialize_options(), false);
+  writer.Write(filter.get(), SkM44());
+  ASSERT_GT(writer.size(), sizeof(float));
+
+  // Replace the first occurrence of rect_size with NaN to make the ClipRectOp
+  // invalid.
+  for (size_t i = 0; i < writer.size(); i += sizeof(float)) {
+    float* f = reinterpret_cast<float*>(memory.data() + i);
+    if (*f == rect_size) {
+      *f = std::numeric_limits<float>::quiet_NaN();
+      break;
+    }
+  }
+  sk_sp<PaintFilter> deserialized_filter;
+  PaintOpReader reader(memory.data(), writer.size(),
+                       options_provider.deserialize_options(), false);
+  reader.Read(&deserialized_filter);
+  EXPECT_FALSE(deserialized_filter);
+}
+
 TEST(PaintOpBufferTest, PaintRecordShaderSerialization) {
   auto memory = AllocateDefaultBuffer();
   PaintOpBuffer shader_buffer;

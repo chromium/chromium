@@ -1384,12 +1384,13 @@ size_t PaintOpReader::Read(absl::optional<PaintRecord>* record) {
   if (!valid_)
     return 0;
 
-  *record = PaintOpBuffer::MakeFromMemory(memory_, size_bytes, *options_)
-                ->ReleaseAsRecord();
-  if (!*record) {
+  sk_sp<PaintOpBuffer> buffer =
+      PaintOpBuffer::MakeFromMemory(memory_, size_bytes, *options_);
+  if (!buffer) {
     SetInvalid(DeserializationError::kPaintOpBufferMakeFromMemoryFailure);
     return 0;
   }
+  *record = buffer->ReleaseAsRecord();
   DidRead(size_bytes);
   return size_bytes;
 }
