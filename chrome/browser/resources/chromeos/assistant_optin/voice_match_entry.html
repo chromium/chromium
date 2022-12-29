@@ -4,94 +4,78 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="oobe-common-styles assistant-common-styles">
+  #container {
+    align-items: center;
+    height: 56px;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+  .icon {
+    min-width: 48px;
+  }
 
-<link rel="import" href="../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../components/common_styles/oobe_common_styles.css.js">
+  .dot {
+    background-color: var(--cros-icon-color-secondary);
+    border-radius: 50%;
+    height: 8px;
+    margin-left: 8px;
+    width: 8px;
+  }
 
-<link rel="import" href="./assistant_common_styles.html">
+  #active-icon {
+    height: 24px;
+    width: 24px;
+  }
 
-<dom-module id="voice-match-entry">
-  <template>
-    <style include="oobe-common-styles assistant-common-styles">
-      #container {
-        align-items: center;
-        height: 56px;
-      }
+  #completed-icon {
+    color: var(--cros-icon-color-blue);
+  }
 
-      .icon {
-        min-width: 48px;
-      }
+  #default-icon[active],
+  #default-icon[completed],
+  #active-icon,
+  #completed-icon {
+    display: none;
+  }
 
-      .dot {
-        background-color: var(--cros-icon-color-secondary);
-        border-radius: 50%;
-        height: 8px;
-        margin-left: 8px;
-        width: 8px;
-      }
+  #active-icon[active],
+  #completed-icon[completed] {
+    display: block;
+  }
 
-      #active-icon {
-        height: 24px;
-        width: 24px;
-      }
+  #entry-text {
+    font-size: 15px;
+  }
 
-      #completed-icon {
-        color: var(--cros-icon-color-blue);
-      }
+  #active-text {
+    color: var(--cros-text-color-primary);
+  }
 
-      #default-icon[active],
-      #default-icon[completed],
-      #active-icon,
-      #completed-icon {
-        display: none;
-      }
+  #active-text,
+  #completed-text {
+    display: none;
+  }
 
-      #active-icon[active],
-      #completed-icon[completed] {
-        display: block;
-      }
-
-      #entry-text {
-        font-size: 15px;
-      }
-
-      #active-text {
-        color: var(--cros-text-color-primary);
-      }
-
-      #active-text,
-      #completed-text {
-        display: none;
-      }
-
-      #active-text[active],
-      #completed-text[completed] {
-        display: block;
-      }
-    </style>
-    <div class="flex layout horizontal center" id="container">
-      <div class="icon">
-        <div id="default-icon" class="dot" active$="[[active]]"
-            completed$="[[completed]]"></div>
-        <paper-spinner-lite id="active-icon" active$="[[active]]">
-        </paper-spinner-lite>
-        <iron-icon id="completed-icon" icon="cr:check"
-            completed$="[[completed]]"></iron-icon>
-      </div>
-      <div id="entry-text" class="content">
-        <div id="active-text" active$="[[active]]">
-          <slot name="entry-content"></slot>
-        </div>
-        <div id="completed-text" completed$="[[completed]]">
-          [[i18nDynamic(locale, 'assistantVoiceMatchComplete')]]
-        </div>
-      </div>
+  #active-text[active],
+  #completed-text[completed] {
+    display: block;
+  }
+</style>
+<div class="flex layout horizontal center" id="container">
+  <div class="icon">
+    <div id="default-icon" class="dot" active$="[[active]]"
+        completed$="[[completed]]"></div>
+    <paper-spinner-lite id="active-icon" active$="[[active]]">
+    </paper-spinner-lite>
+    <iron-icon id="completed-icon" icon="cr:check"
+        completed$="[[completed]]"></iron-icon>
+  </div>
+  <div id="entry-text" class="content">
+    <div id="active-text" active$="[[active]]">
+      <slot name="entry-content"></slot>
     </div>
-  </template>
-  <script src="voice_match_entry.js"></script>
-</dom-module>
+    <div id="completed-text" completed$="[[completed]]">
+      [[i18nDynamic(locale, 'assistantVoiceMatchComplete')]]
+    </div>
+  </div>
+</div>

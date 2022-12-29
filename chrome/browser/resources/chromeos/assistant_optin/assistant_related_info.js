@@ -16,8 +16,8 @@ import '../components/buttons/oobe_next_button.js';
 import '../components/buttons/oobe_text_button.js';
 import '../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../components/dialogs/oobe_adaptive_dialog.js';
-import './assistant_common_styles.m.js';
-import './assistant_icon.m.js';
+import './assistant_common_styles.css.js';
+import './assistant_icons.html.js';
 import './setting_zippy.js';
 
 import {afterNextRender, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -25,8 +25,8 @@ import {afterNextRender, html, mixinBehaviors, Polymer, PolymerElement} from '//
 import {OobeDialogHostBehavior} from '../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../components/behaviors/oobe_i18n_behavior.js';
 
-import {BrowserProxyImpl} from './browser_proxy.m.js';
-import {AssistantNativeIconType, webviewStripLinksContentScript} from './utils.m.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
+import {AssistantNativeIconType, webviewStripLinksContentScript} from './utils.js';
 
 
 /**

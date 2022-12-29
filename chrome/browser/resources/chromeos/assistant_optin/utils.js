@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /* Script used to strip anchor links from webview */
-/* #export */ const webviewStripLinksContentScript = {
+export const webviewStripLinksContentScript = {
   name: 'stripLinks',
   matches: ['<all_urls>'],
   js: {
@@ -16,7 +16,7 @@
 /**
  * Sanitizer which filters the html snippet with a set of whitelisted tags.
  */
-/* #export */ class HtmlSanitizer {
+export class HtmlSanitizer {
   constructor() {
     // initialize set of whitelisted tags.
     this.allowedTags = new Set(['b', 'i', 'br', 'p', 'a', 'ul', 'li', 'div']);
@@ -76,7 +76,7 @@
  * Must be in sync with the corresponding c++ enum
  * @enum {number}
  */
-/* #export */ const AssistantNativeIconType = {
+export const AssistantNativeIconType = {
   NONE: 0,
 
   // Web & App Activity.

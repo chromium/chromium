@@ -10,7 +10,7 @@
 // #import {loadTimeData} from '../i18n_setup.js';
 // #import {Oobe} from '../cr_ui.js'
 // #import {$} from 'chrome://resources/ash/common/util.js';
-// #import {AssistantNativeIconType} from '../../assistant_optin/utils.m.js';
+// #import {AssistantNativeIconType} from '../../assistant_optin/utils.js';
 
 // #import {MessageType, ProblemType} from 'chrome://resources/ash/common/quick_unlock/setup_pin_keyboard.js';
 

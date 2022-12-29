@@ -6,14 +6,14 @@ import './assistant_optin_flow.js';
 
 import {$} from 'chrome://resources/ash/common/util.js';
 
-import {BrowserProxyImpl} from './browser_proxy.m.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 
 class InSessionAssistantScreen {
     /**
      * Starts the assistant opt-in flow.
      */
     static show() {
-      var url = new URL(document.URL);
+      const url = new URL(document.URL);
       $('assistant-optin-flow-card').onBeforeShow();
       $('assistant-optin-flow-card')
           .onShow(
