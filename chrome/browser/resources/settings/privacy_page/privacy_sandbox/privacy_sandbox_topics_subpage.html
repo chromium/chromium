@@ -47,6 +47,11 @@
     padding: 0 var(--cr-section-padding);
   }
 
+  #footer {
+    padding-block-end: 16px;
+    padding-block-start: 16px;
+  }
+
   #dialog p {
     margin: 0;
     padding-block-end: 16px;
@@ -113,6 +118,10 @@
     </template>
   </div>
 </iron-collapse>
+<!-- TODO(b/254412650): Add links to footer. -->
+<div id="footer" class="cr-row cr-secondary-text">
+  $i18n{topicsPageFooter}
+</div>
 
 <template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
   <cr-dialog id="dialog" on-close="onCloseDialog_" show-on-attach>

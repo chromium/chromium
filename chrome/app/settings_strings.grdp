@@ -1906,6 +1906,9 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC" translateable="false" desc="String on the button to re-allow a topic in the Topics preferences page.">
     Aenean
   </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER" translateable="false" desc="Footer with more information at the bottom of the Topics preferences page.">
+    Quisque eu auctor purus, id tempus nulla. Pellentesque porta orci purus. Donec dictum, justo nec ultricies semper, eros mauris varius nibh, sit amet molestie quam arcu id urna. Donec vulputate dui ut lorem egestas, ac sollicitudin metus fermentum.
+  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING" translateable="false" desc="Heading on 'Learn more' dialog in the Topics preferences page.">
     Suspendisse sit amet consectetur sapien
   </message>
