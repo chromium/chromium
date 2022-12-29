@@ -61,6 +61,7 @@
 #include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -121,7 +122,7 @@ namespace {
 
 // Ensures that - if we have not popped up an infobar to prompt the user to e.g.
 // reload the current page - that the content pane of the browser is refocused.
-void AppInfoDialogClosedCallback(content::WebContents* web_contents,
+void AppInfoDialogClosedCallback(SessionID session_id,
                                  views::Widget::ClosedReason closed_reason,
                                  bool reload_prompt) {
   if (reload_prompt)
@@ -134,10 +135,10 @@ void AppInfoDialogClosedCallback(content::WebContents* web_contents,
     return;
   }
 
-  // Ensure that the web contents handle we have is still valid. It's possible
-  // (though unlikely) that either the browser or web contents has been pulled
+  // Ensure that the session id we have is still valid. It's possible
+  // (though unlikely) that either the browser or session has been pulled
   // out from underneath us.
-  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* const browser = chrome::FindBrowserWithID(session_id);
   if (!browser)
     return;
 
@@ -926,7 +927,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
         ShowPageInfoDialog(
             web_contents,
             base::BindOnce(&AppInfoDialogClosedCallback,
-                           base::UnsafeDanglingUntriaged(web_contents)),
+                           sessions::SessionTabHelper::IdForWindowContainingTab(
+                               web_contents)),
             bubble_anchor_util::kAppMenuButton);
       }
       break;
