@@ -251,9 +251,6 @@ void VerifyTheNotificationUI() {
   // can be turned on when the browser is restarted.
   [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
 
-  GREYAssertTrue([ChromeEarlGreyAppInterface waitOnLoopbackPersistentFile],
-                 @"The Sync Loopback Server profile file wasn't saved.");
-
   // Restart the browser while keeping Sync ON by preserving the identity of the
   // managed account.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
@@ -300,8 +297,6 @@ void VerifyTheNotificationUI() {
   [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
 
   [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
-  GREYAssertTrue([ChromeEarlGreyAppInterface waitOnLoopbackPersistentFile],
-                 @"The Sync Loopback Server profile file wasn't saved.");
 
   // Restart the browser while keeping Sync ON by preserving the identity of the
   // managed account.
