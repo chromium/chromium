@@ -554,13 +554,13 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::StringListPolicyProto& container(
         policy.device_web_based_attestation_allowed_urls());
 
-    base::Value urls(base::Value::Type::LIST);
+    base::Value::List urls;
     for (const std::string& entry : container.value().entries()) {
       urls.Append(entry);
     }
 
     new_values_cache->SetValue(kDeviceWebBasedAttestationAllowedUrls,
-                               std::move(urls));
+                               base::Value(std::move(urls)));
   }
 
   if (policy.has_kiosk_crx_manifest_update_url_ignored()) {
@@ -1077,22 +1077,24 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
 
   // Use Blocklist policy if present, otherwise Blacklist version.  // nocheck
   if (policy.has_device_printers_blocklist()) {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     const em::DevicePrintersBlocklistProto& proto(
         policy.device_printers_blocklist());
     for (const auto& id : proto.blocklist())
       list.Append(id);
-    new_values_cache->SetValue(kDevicePrintersBlocklist, std::move(list));
+    new_values_cache->SetValue(kDevicePrintersBlocklist,
+                               base::Value(std::move(list)));
   }
 
   // Use Allowlist policy if present, otherwise Whitelist version.  // nocheck
   if (policy.has_device_printers_allowlist()) {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     const em::DevicePrintersAllowlistProto& proto(
         policy.device_printers_allowlist());
     for (const auto& id : proto.allowlist())
       list.Append(id);
-    new_values_cache->SetValue(kDevicePrintersAllowlist, std::move(list));
+    new_values_cache->SetValue(kDevicePrintersAllowlist,
+                               base::Value(std::move(list)));
   }
 
   if (policy.has_device_reboot_on_user_signout()) {
@@ -1185,13 +1187,13 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
 
   if (policy.has_device_allowed_bluetooth_services()) {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     const em::DeviceAllowedBluetoothServicesProto& container(
         policy.device_allowed_bluetooth_services());
     for (const auto& service_uuid : container.allowlist())
       list.Append(service_uuid);
     new_values_cache->SetValue(kDeviceAllowedBluetoothServices,
-                               std::move(list));
+                               base::Value(std::move(list)));
   }
 
   if (policy.has_device_scheduled_reboot()) {
