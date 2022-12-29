@@ -5945,7 +5945,6 @@ crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-transfer.ht
 
 # Sheriff 2022-04-22
 crbug.com/1318695 http/tests/devtools/elements/highlight/highlight-multiple-css-grid.js [ Failure Pass ]
-crbug.com/1318929 http/tests/devtools/console/console-uncaught-promise.js [ Failure Pass ]
 crbug.com/1282966 http/tests/security/mixedContent/insecure-plugin-in-iframe.html [ Failure Pass ]
 crbug.com/1318952 http/tests/inspector-protocol/fetch/fetch-samesite-cookies.js [ Failure Pass ]
 
