@@ -30,8 +30,6 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
  private:
   void LoginWithPin(const std::string& username, const std::string& pin);
   void AdvanceToScreen(const std::string& screen);
-  // Advances to login/update screen. This function starts wizard controller if
-  // it is not initialized.
   void SkipToLoginForTesting();
   void SkipPostLoginScreens();
   void LoginAsGuest();
