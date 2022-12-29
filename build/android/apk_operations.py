@@ -212,6 +212,8 @@ def _ResolveActivity(device, package_name, category, action):
   start_idx = next((i for i, l in enumerate(lines)
                     if l.startswith('Activity Resolver Table:')), None)
   if start_idx is None:
+    if not device.IsApplicationInstalled(package_name):
+      raise Exception('Package not installed: ' + package_name)
     raise Exception('No Activity Resolver Table in:\n' + '\n'.join(lines))
   line_count = next(i for i, l in enumerate(lines[start_idx + 1:])
                     if l and not l[0].isspace())
@@ -220,19 +222,37 @@ def _ResolveActivity(device, package_name, category, action):
   # Split on each Activity entry.
   entries = re.split(r'^        [0-9a-f]+ ', data, flags=re.MULTILINE)
 
+  def activity_name_from_entry(entry):
+    assert entry.startswith(package_name), 'Got: ' + entry
+    activity_name = entry[len(package_name) + 1:].split(' ', 1)[0]
+    if activity_name[0] == '.':
+      activity_name = package_name + activity_name
+    return activity_name
+
   # Find the one with the text we want.
   category_text = f'Category: "{category}"'
   action_text = f'Action: "{action}"'
-  matched_entry = next(
-      (e for e in entries[1:] if category_text in e and action_text in e), None)
-  if matched_entry is None:
-    raise Exception(f'Did not find {category_text}, {action_text} in\n{data}')
+  matched_entries = [
+      e for e in entries[1:] if category_text in e and action_text in e
+  ]
 
-  assert matched_entry.startswith(package_name), 'Got: ' + matched_entry
-  activity_name = matched_entry[len(package_name) + 1:].split(' ', 1)[0]
-  if activity_name[0] == '.':
-    activity_name = package_name + activity_name
-  return activity_name
+  if not matched_entries:
+    raise Exception(f'Did not find {category_text}, {action_text} in\n{data}')
+  if len(matched_entries) > 1:
+    # When there are multiple matches, look for the one marked as default.
+    # Necessary for Monochrome, which also has MonochromeLauncherActivity.
+    default_entries = [
+        e for e in matched_entries if 'android.intent.category.DEFAULT' in e
+    ]
+    matched_entries = default_entries or matched_entries
+
+  # See if all matches point to the same activity.
+  activity_names = {activity_name_from_entry(e) for e in matched_entries}
+
+  if len(activity_names) > 1:
+    raise Exception('Found multiple launcher activities:\n * ' +
+                    '\n * '.join(sorted(activity_names)))
+  return next(iter(activity_names))
 
 
 def _LaunchUrl(devices,
@@ -1445,10 +1465,6 @@ class _LaunchCommand(_Command):
   def Run(self):
     if self.is_test_apk:
       raise Exception('Use the bin/run_* scripts to run test apks.')
-    if self.args.url and self.is_bundle:
-      # TODO(digit): Support this, maybe by using 'dumpsys' as described
-      # in the _LaunchUrl() comment.
-      raise Exception('Launching with URL not supported for bundles yet!')
     _LaunchUrl(self.devices,
                self.args.package_name,
                argv=self.args.args,
