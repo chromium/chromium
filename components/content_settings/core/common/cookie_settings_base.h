@@ -117,12 +117,14 @@ class CookieSettingsBase {
     kCookies,
   };
 
-  // Similar to IsFullCookieAccessAllowed(GURL, GURL) but provides a mechanism
-  // to specify a separate `site_for_cookies`, which is used to determine
-  // whether a request is in a third_party context and `top_frame_origin`, which
-  // is used to check if there are any content_settings exceptions.
-  // `top_frame_origin` should at least be specified when `site_for_cookies` is
-  // non-empty.
+  // Returns true if the page identified by (`url`, `site_for_cookies`,
+  // `top_frame_origin`) is allowed to access (i.e., read or write) cookies.
+  // `site_for_cookies` is used to determine third-party-ness of `url`.
+  // `top_frame_origin` is used to check if there are any content_settings
+  // exceptions. `top_frame_origin` should at least be specified when
+  // `site_for_cookies` is non-empty.
+  //
+  // This may be called on any thread.
   bool IsFullCookieAccessAllowed(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
