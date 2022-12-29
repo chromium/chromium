@@ -865,6 +865,7 @@ bool TaskEnvironment::TestTaskTracker::DisallowRunTasks(TimeDelta timeout) {
 void TaskEnvironment::TestTaskTracker::RunTask(internal::Task task,
                                                internal::TaskSource* sequence,
                                                const TaskTraits& traits) {
+  const Location posted_from = task.posted_from;
   int task_number;
   {
     AutoLock auto_lock(lock_);
@@ -873,27 +874,24 @@ void TaskEnvironment::TestTaskTracker::RunTask(internal::Task task,
       can_run_tasks_cv_.Wait();
 
     task_number = next_task_number_++;
-    auto pair = running_tasks_.emplace(task_number, task.posted_from);
+    auto pair = running_tasks_.emplace(task_number, posted_from);
     CHECK(pair.second);  // If false, the |task_number| was already present.
   }
 
-  {
-    // Using TimeTicksNowIgnoringOverride() because in tests that mock time,
-    // Now() can advance very far very fast, and that's not a problem. This is
-    // watching for tests that have actually long running tasks which cause our
-    // test suites to run slowly.
-    base::TimeTicks before = base::subtle::TimeTicksNowIgnoringOverride();
-    const Location posted_from = task.posted_from;
-    internal::ThreadPoolImpl::TaskTrackerImpl::RunTask(std::move(task),
-                                                       sequence, traits);
-    base::TimeTicks after = base::subtle::TimeTicksNowIgnoringOverride();
+  // Using TimeTicksNowIgnoringOverride() because in tests that mock time,
+  // Now() can advance very far very fast, and that's not a problem. This is
+  // watching for tests that have actually long running tasks which cause our
+  // test suites to run slowly.
+  base::TimeTicks before = base::subtle::TimeTicksNowIgnoringOverride();
+  internal::ThreadPoolImpl::TaskTrackerImpl::RunTask(std::move(task), sequence,
+                                                     traits);
+  base::TimeTicks after = base::subtle::TimeTicksNowIgnoringOverride();
 
-    const TimeDelta kTimeout = TestTimeouts::action_max_timeout();
-    if ((after - before) > kTimeout) {
-      ADD_FAILURE() << "TaskEnvironment: RunTask took more than "
-                    << kTimeout.InSeconds() << " seconds. Posted from "
-                    << posted_from.ToString();
-    }
+  const TimeDelta kTimeout = TestTimeouts::action_max_timeout();
+  if ((after - before) > kTimeout) {
+    ADD_FAILURE() << "TaskEnvironment: RunTask took more than "
+                  << kTimeout.InSeconds() << " seconds. Posted from "
+                  << posted_from.ToString();
   }
 
   {
