@@ -65,11 +65,11 @@
     background-color: white;
   }
 
-  :host([in-searchbox][background-image='realbox/icons/google_g.svg']) #icon {
+  :host([in-searchbox][background-image*='//resources/cr_components/omnibox/icons/google_g.svg']) #icon {
     background-size: 24px;
   }
 
-  :host([in-searchbox][mask-image*='search.svg']) #icon {
+  :host([in-searchbox][mask-image*='//resources/images/icon_search.svg']) #icon {
     -webkit-mask-size: 20px;  /* Loupe in realbox is larger than in matches. */
   }
 </style>

@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getFaviconForPageURL} from '//resources/js/icon.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AutocompleteMatch} from '../omnibox.mojom-webui.js';
-
+import {AutocompleteMatch} from './omnibox.mojom-webui.js';
 import {getTemplate} from './realbox_icon.html.js';
 
 const DOCUMENT_MATCH_TYPE: string = 'document';
@@ -140,7 +139,8 @@ export class RealboxIconElement extends PolymerElement {
       }
     }
 
-    if (this.defaultIcon === 'realbox/icons/google_g.svg') {
+    if (this.defaultIcon ===
+        '//resources/cr_components/omnibox/icons/google_g.svg') {
       // The google_g.svg is a fully colored icon, so it needs to be displayed
       // as a background image as mask images will mask the colors.
       return `url(${this.defaultIcon})`;
@@ -181,7 +181,7 @@ export class RealboxIconElement extends PolymerElement {
       return this.match.imageUrl;
     }
 
-    return `chrome://image?${this.match.imageUrl}`;
+    return `//image?${this.match.imageUrl}`;
   }
 
   private containerBgColor_(imageDominantColor: string, imageLoading: boolean):

@@ -4,21 +4,20 @@
 
 import './realbox_match.js';
 import './realbox_dropdown_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
+import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_icons.css.js';
 
-import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
+import {IronSelectorElement} from '//resources/polymer/v3_0/iron-selector/iron-selector.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-import {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from '../omnibox.mojom-webui.js';
-import {decodeString16} from '../utils.js';
-
+import {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {getTemplate} from './realbox_dropdown.html.js';
 import {RealboxMatchElement} from './realbox_match.js';
+import {decodeString16} from './utils.js';
 
 // The '%' operator in JS returns negative numbers. This workaround avoids that.
 const remainder = (lhs: number, rhs: number) => ((lhs % rhs) + rhs) % rhs;

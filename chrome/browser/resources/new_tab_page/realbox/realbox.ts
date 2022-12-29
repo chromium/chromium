@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './realbox_dropdown.js';
-import './realbox_icon.js';
+import 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
+import 'chrome://resources/cr_components/omnibox/realbox_icon.js';
 
+import {PageCallbackRouter, PageHandlerInterface, RealboxBrowserProxy} from 'chrome://resources/cr_components/omnibox/realbox_browser_proxy.js';
+import {RealboxDropdownElement} from 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
+import {RealboxIconElement} from 'chrome://resources/cr_components/omnibox/realbox_icon.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {AutocompleteMatch, AutocompleteResult, NavigationPredictor, PageCallbackRouter, PageHandlerInterface} from '../omnibox.mojom-webui.js';
+import {AutocompleteMatch, AutocompleteResult, NavigationPredictor} from '../omnibox.mojom-webui.js';
 import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 
 import {getTemplate} from './realbox.html.js';
-import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
-import {RealboxDropdownElement} from './realbox_dropdown.js';
-import {RealboxIconElement} from './realbox_icon.js';
 
 interface Input {
   text: string;

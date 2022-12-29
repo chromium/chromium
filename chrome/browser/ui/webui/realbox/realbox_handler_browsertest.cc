@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, MatchVectorIcons) {
       // Pedals are not supported in the NTP Realbox.
       EXPECT_TRUE(svg_name.empty());
     } else if (is_bookmark) {
-      EXPECT_EQ("chrome://resources/images/icon_bookmark.svg", svg_name);
+      EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
     } else {
       EXPECT_FALSE(svg_name.empty());
     }
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, AnswerVectorIcons) {
     const std::string& svg_name =
         RealboxHandler::AutocompleteMatchVectorIconToResourceName(vector_icon);
     if (is_bookmark) {
-      EXPECT_EQ("chrome://resources/images/icon_bookmark.svg", svg_name);
+      EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
     } else {
       EXPECT_FALSE(svg_name.empty());
       EXPECT_NE("search.svg", svg_name);

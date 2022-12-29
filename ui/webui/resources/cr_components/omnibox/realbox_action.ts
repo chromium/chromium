@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Action} from '../omnibox.mojom-webui.js';
-import {decodeString16} from '../utils.js';
-
+import {Action} from './omnibox.mojom-webui.js';
 import {getTemplate} from './realbox_action.html.js';
+import {decodeString16} from './utils.js';
 
 // Displays an action associated with AutocompleteMatch (i.e. Clear
 // Browsing History, etc.)

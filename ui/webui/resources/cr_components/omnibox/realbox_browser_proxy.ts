@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandler, PageHandlerInterface} from '../omnibox.mojom-webui.js';
+import {PageCallbackRouter, PageHandler, PageHandlerInterface} from './omnibox.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a singleton class that exposes the Mojo
@@ -31,3 +31,5 @@ export class RealboxBrowserProxy {
     this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
   }
 }
+
+export {PageCallbackRouter, PageHandlerInterface, PageRemote} from './omnibox.mojom-webui.js';

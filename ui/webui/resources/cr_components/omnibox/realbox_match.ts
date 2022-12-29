@@ -5,20 +5,20 @@
 import './realbox_icon.js';
 import './realbox_action.js';
 import './realbox_dropdown_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_icons.css.js';
+import '//resources/cr_elements/cr_hidden_style.css.js';
 
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-import {ACMatchClassification, AutocompleteMatch, NavigationPredictor, PageHandlerInterface} from '../omnibox.mojom-webui.js';
-import {decodeString16, mojoTimeTicks} from '../utils.js';
-
+import {ACMatchClassification, AutocompleteMatch, NavigationPredictor, PageHandlerInterface} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {RealboxIconElement} from './realbox_icon.js';
 import {getTemplate} from './realbox_match.html.js';
+import {decodeString16, mojoTimeTicks} from './utils.js';
+
 
 
 // clang-format off

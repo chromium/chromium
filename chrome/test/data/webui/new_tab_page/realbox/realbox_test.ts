@@ -128,7 +128,6 @@ suite('NewTabPageRealboxTest', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      realboxMatchOmniboxTheme: true,
       realboxSeparator: ' - ',
     });
   });
@@ -158,14 +157,6 @@ suite('NewTabPageRealboxTest', () => {
     assertStyle(
         iconElement.$.icon, 'background-image',
         getFaviconForPageURL(destinationUrl, false, '', 32, true));
-    assertStyle(iconElement.$.icon, '-webkit-mask-image', 'none');
-  }
-
-  function assertIconBackgroundImageUrl(
-      iconElement: RealboxIconElement, url: string) {
-    assertStyle(
-        iconElement.$.icon, 'background-image',
-        `url("chrome://new-tab-page/${url}")`);
     assertStyle(iconElement.$.icon, '-webkit-mask-image', 'none');
   }
 
@@ -217,14 +208,18 @@ suite('NewTabPageRealboxTest', () => {
   test('realbox default Google G icon', async () => {
     // Arrange.
     loadTimeData.overrideValues({
-      realboxDefaultIcon: 'realbox/icons/google_g.svg',
+      realboxDefaultIcon:
+          '//resources/cr_components/omnibox/icons/google_g.svg',
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('ntp-realbox');
     document.body.appendChild(realbox);
 
     // Assert.
-    assertIconBackgroundImageUrl(realbox.$.icon, 'realbox/icons/google_g.svg');
+    assertStyle(
+        realbox.$.icon.$.icon, 'background-image',
+        `url("chrome://resources/cr_components/omnibox/icons/google_g.svg")`);
+    assertStyle(realbox.$.icon.$.icon, '-webkit-mask-image', 'none');
 
     // Restore.
     loadTimeData.overrideValues({
@@ -2222,7 +2217,7 @@ suite('NewTabPageRealboxTest', () => {
 
         assertEquals(
             matchEls[1]!.$.icon.$.image.getAttribute('src'),
-            `chrome://image?${matches[1]!.imageUrl}`);
+            `//image?${matches[1]!.imageUrl}`);
 
         // Mock image finishing loading, which should remove the temporary
         // background color.

@@ -66,61 +66,81 @@
 
 namespace {
 
-constexpr char kSearchIconResourceName[] = "search.svg";
-
-constexpr char kAnswerCurrencyIconResourceName[] = "realbox/icons/currency.svg";
-constexpr char kAnswerDefaultIconResourceName[] = "realbox/icons/default.svg";
+constexpr char kAnswerCurrencyIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/currency.svg";
+constexpr char kAnswerDefaultIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/default.svg";
 constexpr char kAnswerDictionaryIconResourceName[] =
-    "realbox/icons/definition.svg";
-constexpr char kAnswerFinanceIconResourceName[] = "realbox/icons/finance.svg";
-constexpr char kAnswerSunriseIconResourceName[] = "realbox/icons/sunrise.svg";
+    "//resources/cr_components/omnibox/icons/definition.svg";
+constexpr char kAnswerFinanceIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/finance.svg";
+constexpr char kAnswerSunriseIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/sunrise.svg";
 constexpr char kAnswerTranslationIconResourceName[] =
-    "realbox/icons/translation.svg";
-constexpr char kAnswerWhenIsIconResourceName[] = "realbox/icons/when_is.svg";
+    "//resources/cr_components/omnibox/icons/translation.svg";
+constexpr char kAnswerWhenIsIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/when_is.svg";
 constexpr char kBookmarkIconResourceName[] =
-    "chrome://resources/images/icon_bookmark.svg";
-constexpr char kCalculatorIconResourceName[] = "realbox/icons/calculator.svg";
+    "//resources/images/icon_bookmark.svg";
+constexpr char kCalculatorIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/calculator.svg";
 constexpr char kChromeProductIconResourceName[] =
-    "realbox/icons/chrome_product.svg";
-constexpr char kClockIconResourceName[] =
-    "chrome://resources/images/icon_clock.svg";
-constexpr char kDinoIconResourceName[] = "realbox/icons/dino.svg";
-constexpr char kDriveDocsIconResourceName[] = "realbox/icons/drive_docs.svg";
+    "//resources/cr_components/omnibox/icons/chrome_product.svg";
+constexpr char kClockIconResourceName[] = "//resources/images/icon_clock.svg";
+constexpr char kDinoIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/dino.svg";
+constexpr char kDriveDocsIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/drive_docs.svg";
 constexpr char kDriveFolderIconResourceName[] =
-    "realbox/icons/drive_folder.svg";
-constexpr char kDriveFormIconResourceName[] = "realbox/icons/drive_form.svg";
-constexpr char kDriveImageIconResourceName[] = "realbox/icons/drive_image.svg";
-constexpr char kDriveLogoIconResourceName[] = "icons/drive_logo.svg";
-constexpr char kDrivePdfIconResourceName[] = "realbox/icons/drive_pdf.svg";
+    "//resources/cr_components/omnibox/icons/drive_folder.svg";
+constexpr char kDriveFormIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/drive_form.svg";
+constexpr char kDriveImageIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/drive_image.svg";
+constexpr char kDriveLogoIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/drive_logo.svg";
+constexpr char kDrivePdfIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/drive_pdf.svg";
 constexpr char kDriveSheetsIconResourceName[] =
-    "realbox/icons/drive_sheets.svg";
+    "//resources/cr_components/omnibox/icons/drive_sheets.svg";
 constexpr char kDriveSlidesIconResourceName[] =
-    "realbox/icons/drive_slides.svg";
-constexpr char kDriveVideoIconResourceName[] = "realbox/icons/drive_video.svg";
+    "//resources/cr_components/omnibox/icons/drive_slides.svg";
+constexpr char kDriveVideoIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/drive_video.svg";
 constexpr char kExtensionAppIconResourceName[] =
-    "realbox/icons/extension_app.svg";
-constexpr char kGoogleGIconResourceName[] = "realbox/icons/google_g.svg";
+    "//resources/cr_components/omnibox/icons/extension_app.svg";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr char kGoogleCalendarIconResourceName[] = "realbox/icons/calendar.svg";
-constexpr char kGoogleGTransparentIconResourceName[] =
-    "realbox/icons/google_g_transparent.svg";
-constexpr char kGoogleKeepNoteIconResourceName[] = "realbox/icons/note.svg";
-constexpr char kGoogleSitesIconResourceName[] = "realbox/icons/sites.svg";
+constexpr char kGoogleCalendarIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/calendar.svg";
+constexpr char kGoogleGIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/google_g.svg";
+constexpr char kGoogleKeepNoteIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/note.svg";
+constexpr char kGoogleSitesIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/sites.svg";
 #endif
-constexpr char kIncognitoIconResourceName[] = "realbox/icons/incognito.svg";
-constexpr char kJourneysIconResourceName[] = "realbox/icons/journeys.svg";
-constexpr char kPageIconResourceName[] = "realbox/icons/page.svg";
-constexpr char kPedalsIconResourceName[] =
-    "chrome://theme/current-channel-logo";
-constexpr char kTabIconResourceName[] = "realbox/icons/tab.svg";
-constexpr char kTrendingUpIconResourceName[] = "realbox/icons/trending_up.svg";
+constexpr char kIncognitoIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/incognito.svg";
+constexpr char kJourneysIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/journeys.svg";
+constexpr char kPageIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/page.svg";
+constexpr char kPedalsIconResourceName[] = "//theme/current-channel-logo";
+constexpr char kSearchIconResourceName[] = "//resources/images/icon_search.svg";
+constexpr char kTabIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/tab.svg";
+constexpr char kTrendingUpIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/trending_up.svg";
 
 #if BUILDFLAG(IS_MAC)
-constexpr char kMacShareIconResourceName[] = "realbox/icons/mac_share.svg";
+constexpr char kMacShareIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/mac_share.svg";
 #elif BUILDFLAG(IS_WIN)
-constexpr char kWinShareIconResourceName[] = "realbox/icons/win_share.svg";
+constexpr char kWinShareIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/win_share.svg";
 #else
-constexpr char kShareIconResourceName[] = "realbox/icons/share.svg";
+constexpr char kShareIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/share.svg";
 #endif
 
 base::flat_map<int32_t, omnibox::mojom::SuggestionGroupPtr>
@@ -332,41 +352,46 @@ std::string GetBase64UrlVariations(Profile* profile) {
 // static
 void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                                           Profile* profile) {
-  static constexpr webui::ResourcePath kImages[] = {
-      {kSearchIconResourceName, IDR_WEBUI_IMAGES_ICON_SEARCH_SVG}};
-  source->AddResourcePaths(kImages);
+  RealboxHandler::SetupDropdownWebUIDataSource(source, profile);
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},
+      {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD}};
+  source->AddLocalizedStrings(kStrings);
+
+  source->AddBoolean(
+      "realboxMatchSearchboxTheme",
+      base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
+
+  source->AddString(
+      "realboxDefaultIcon",
+      base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          ? kGoogleGIconResourceName
+#else
+          ? kSearchIconResourceName
+#endif
+          : kSearchIconResourceName);
+
+  source->AddBoolean(
+      "realboxLensSearch",
+      base::FeatureList::IsEnabled(ntp_features::kNtpRealboxLensSearch) &&
+          profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled));
+  source->AddString("realboxLensVariations", GetBase64UrlVariations(profile));
+}
+
+// static
+void RealboxHandler::SetupDropdownWebUIDataSource(
+    content::WebUIDataSource* source,
+    Profile* profile) {
+  static constexpr webui::LocalizedString kStrings[] = {
       {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
       {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
       {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
       {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
   source->AddLocalizedStrings(kStrings);
 
-  source->AddBoolean(
-      "realboxMatchOmniboxTheme",
-      base::FeatureList::IsEnabled(ntp_features::kRealboxMatchOmniboxTheme));
-
-  source->AddBoolean(
-      "realboxMatchSearchboxTheme",
-      base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
-
   source->AddBoolean("roundCorners", base::FeatureList::IsEnabled(
                                          ntp_features::kRealboxRoundedCorners));
-
-  source->AddString(
-      "realboxDefaultIcon",
-      base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
-          ? kGoogleGIconResourceName
-          : kSearchIconResourceName);
-  source->AddString("realboxHint", l10n_util::GetStringUTF8(
-                                       IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD));
-  source->AddBoolean(
-      "realboxLensSearch",
-      base::FeatureList::IsEnabled(ntp_features::kNtpRealboxLensSearch) &&
-          profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled));
-  source->AddString("realboxLensVariations", GetBase64UrlVariations(profile));
 }
 
 // static
@@ -469,7 +494,7 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
     return kGoogleSitesIconResourceName;
   }
   if (icon.name == vector_icons::kGoogleSuperGIcon.name) {
-    return kGoogleGTransparentIconResourceName;
+    return kGoogleGIconResourceName;
   }
 #endif
   if (icon.name == omnibox::kIncognitoIcon.name) {
@@ -581,7 +606,8 @@ void RealboxHandler::OpenAutocompleteMatch(
     bool ctrl_key,
     bool meta_key,
     bool shift_key) {
-  if (autocomplete_controller_->result().size() <= line) {
+  if (!autocomplete_controller_ ||
+      autocomplete_controller_->result().size() <= line) {
     return;
   }
 
@@ -706,8 +732,10 @@ void RealboxHandler::OpenAutocompleteMatch(
 void RealboxHandler::OnNavigationLikely(
     uint8_t line,
     omnibox::mojom::NavigationPredictor navigation_predictor) {
-  if (line >= autocomplete_controller_->result().size())
+  if (!autocomplete_controller_ ||
+      autocomplete_controller_->result().size() <= line) {
     return;
+  }
   if (auto* search_prefetch_service =
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
     AutocompleteMatch match(autocomplete_controller_->result().match_at(line));
@@ -732,7 +760,8 @@ void RealboxHandler::OpenURL(const GURL& destination_url,
 }
 
 void RealboxHandler::DeleteAutocompleteMatch(uint8_t line) {
-  if (autocomplete_controller_->result().size() <= line ||
+  if (!autocomplete_controller_ ||
+      autocomplete_controller_->result().size() <= line ||
       !autocomplete_controller_->result().match_at(line).SupportsDeletion()) {
     return;
   }
