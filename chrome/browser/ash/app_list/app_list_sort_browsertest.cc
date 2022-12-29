@@ -1095,8 +1095,17 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 // Verify that switching to clamshell mode when the fade in animation in tablet
 // mode is running, and gets aborted during tablet mode transition works as
 // expected.
-IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
-                       TransitionToClamshellModeDuringAbortedFadeInAnimation) {
+// TODO(crbug.com/1404129): flaky on linux-chromeos-dbg.
+#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
+#define MAYBE_TransitionToClamshellModeDuringAbortedFadeInAnimation \
+  DISABLED_TransitionToClamshellModeDuringAbortedFadeInAnimation
+#else
+#define MAYBE_TransitionToClamshellModeDuringAbortedFadeInAnimation \
+  TransitionToClamshellModeDuringAbortedFadeInAnimation
+#endif  // BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
+IN_PROC_BROWSER_TEST_F(
+    AppListSortBrowserTest,
+    MAYBE_TransitionToClamshellModeDuringAbortedFadeInAnimation) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
 
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
