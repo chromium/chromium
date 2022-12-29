@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
+#import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #include "url/gurl.h"
 
@@ -114,6 +115,10 @@ class WebState;
 // updates the presaved credential.
 - (void)updateFieldDataOnUserInput:(autofill::FieldRendererId)field_id
                         inputValue:(NSString*)field_value;
+
+// Processes `message` sent by JavaScript to the `PasswordFormSubmitButtonClick`
+// handler.
+- (void)handleFormSubmittedMessage:(const web::ScriptMessage&)message;
 
 // Creates a instance with the given |webState|.
 - (instancetype)initWithWebState:(web::WebState*)webState

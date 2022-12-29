@@ -81,6 +81,11 @@ class PasswordManagerJavaScriptFeature : public web::JavaScriptFeature {
   PasswordManagerJavaScriptFeature& operator=(
       const PasswordManagerJavaScriptFeature&) = delete;
 
+  // web::JavaScriptFeature
+  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  void ScriptMessageReceived(web::WebState* web_state,
+                             const web::ScriptMessage& message) override;
+
   // Calls the "passwords.fillPasswordForm" JavaScript function to fill the form
   // described by |form_value| with |username| and |password|.
   void FillPasswordForm(web::WebFrame* frame,

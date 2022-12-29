@@ -82,8 +82,7 @@ const onSubmitButtonTouchEnd = function(evt) {
   if (!formData) {
     return;
   }
-  formData['command'] = 'passwordForm.submitButtonClick';
-  __gCrWeb.message.invokeOnHost(formData);
+  __gCrWeb.common.sendWebKitMessage('PasswordFormSubmitButtonClick', formData);
 };
 
 /**

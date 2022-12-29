@@ -241,7 +241,7 @@ source_set("web_internal") {
     "//components/metrics_services_manager",
     "//components/open_from_clipboard",
     "//components/password_manager/core/common:features",
-    "//components/password_manager/ios:password_manager_feature",
+    "//components/password_manager/ios:password_manager_feature_header",
     "//components/payments/core",
     "//components/prefs",
     "//components/resources",

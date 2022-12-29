@@ -21,6 +21,7 @@
 #include "components/password_manager/ios/account_select_fill_data.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
+#import "components/password_manager/ios/password_manager_tab_helper.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
@@ -53,19 +54,13 @@ bool GetPageURLAndCheckTrustLevel(web::WebState* web_state,
   *page_url = web_state->GetCurrentURL(&trustLevel);
   return trustLevel == web::URLVerificationTrustLevel::kAbsolute;
 }
+
+// The frame id associated with the frame which sent to form message.
+const char kFrameIdKey[] = "frame_id";
+
 }  // namespace password_manager
 
-namespace {
-// Script command prefix for form changes. Possible command to be sent from
-// injected JS is 'passwordForm.submitButtonClick'.
-constexpr char kCommandPrefix[] = "passwordForm";
-}  // namespace
-
 @interface PasswordFormHelper ()
-
-// Handler for injected JavaScript callbacks.
-- (BOOL)handleScriptCommand:(const base::Value&)JSONCommand
-                    inFrame:(web::WebFrame*)frame;
 
 // Parses the |jsonString| which contatins the password forms found on a web
 // page to populate the |forms| vector.
@@ -90,9 +85,6 @@ constexpr char kCommandPrefix[] = "passwordForm";
   // Bridge to observe form activity in |_webState|.
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
-
-  // Subscription for JS message.
-  base::CallbackListSubscription _subscription;
 }
 
 #pragma mark - Properties
@@ -120,15 +112,8 @@ constexpr char kCommandPrefix[] = "passwordForm";
         UniqueIDDataTabHelper::FromWebState(_webState);
     _fieldDataManager = uniqueIDDataTabHelper->GetFieldDataManager();
 
-    __weak PasswordFormHelper* weakSelf = self;
-    auto callback =
-        base::BindRepeating(^(const base::Value& JSON, const GURL& originURL,
-                              bool interacting, web::WebFrame* senderFrame) {
-          // |originURL| and |interacting| aren't used.
-          [weakSelf handleScriptCommand:JSON inFrame:senderFrame];
-        });
-    _subscription =
-        _webState->AddScriptCommandCallback(callback, kCommandPrefix);
+    password_manager::PasswordManagerTabHelper::GetOrCreateForWebState(webState)
+        ->SetFormHelper(self);
   }
   return self;
 }
@@ -185,35 +170,6 @@ constexpr char kCommandPrefix[] = "passwordForm";
 }
 
 #pragma mark - Private methods
-
-- (BOOL)handleScriptCommand:(const base::Value&)JSONCommand
-                    inFrame:(web::WebFrame*)frame {
-  const std::string* command = JSONCommand.GetDict().FindString("command");
-  if (!command || *command != "passwordForm.submitButtonClick") {
-    return NO;
-  }
-
-  GURL pageURL;
-  if (!GetPageURLAndCheckTrustLevel(_webState, &pageURL)) {
-    return NO;
-  }
-
-  FormData form;
-  if (!autofill::ExtractFormData(JSONCommand, false, std::u16string(), pageURL,
-                                 pageURL.DeprecatedGetOriginAsURL(), &form)) {
-    return NO;
-  }
-
-  // Extract FieldDataManager data for observed fields.
-  [self extractKnownFieldData:form];
-
-  if (_webState && self.delegate) {
-    [self.delegate formHelper:self didSubmitForm:form inFrame:frame];
-    return YES;
-  }
-
-  return NO;
-}
 
 - (void)getPasswordForms:(std::vector<FormData>*)forms
                 fromJSON:(NSString*)JSONString
@@ -406,6 +362,37 @@ constexpr char kCommandPrefix[] = "passwordForm";
   self.fieldDataManager->UpdateFieldDataMap(
       field_id, base::SysNSStringToUTF16(value),
       autofill::FieldPropertiesFlags::kUserTyped);
+}
+
+- (void)handleFormSubmittedMessage:(const web::ScriptMessage&)message {
+  web::WebFrame* frame = nullptr;
+  std::string* frame_id =
+      message.body()->FindStringKey(password_manager::kFrameIdKey);
+  if (frame_id) {
+    frame = web::GetWebFrameWithId(_webState, *frame_id);
+  }
+  if (!frame) {
+    return;
+  }
+
+  GURL pageURL;
+  if (!GetPageURLAndCheckTrustLevel(_webState, &pageURL)) {
+    return;
+  }
+
+  FormData form;
+  if (!autofill::ExtractFormData(*message.body(), false, std::u16string(),
+                                 pageURL, pageURL.DeprecatedGetOriginAsURL(),
+                                 &form)) {
+    return;
+  }
+
+  // Extract FieldDataManager data for observed fields.
+  [self extractKnownFieldData:form];
+
+  if (_webState && self.delegate) {
+    [self.delegate formHelper:self didSubmitForm:form inFrame:frame];
+  }
 }
 
 @end

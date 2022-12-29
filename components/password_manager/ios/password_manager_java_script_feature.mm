@@ -11,6 +11,7 @@
 #include "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
+#include "components/password_manager/ios/password_manager_tab_helper.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,6 +25,7 @@ namespace password_manager {
 
 namespace {
 constexpr char kScriptName[] = "password_controller";
+constexpr char FormSubmittedHandlerName[] = "PasswordFormSubmitButtonClick";
 
 // The timeout for any JavaScript call in this file.
 constexpr int64_t kJavaScriptExecutionTimeoutInSeconds = 5;
@@ -145,6 +147,18 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
   CallJavaScriptFunction(frame, "passwords.fillPasswordForm", parameters,
                          CreateBoolCallback(std::move(callback)),
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+}
+
+absl::optional<std::string>
+PasswordManagerJavaScriptFeature::GetScriptMessageHandlerName() const {
+  return FormSubmittedHandlerName;
+}
+
+void PasswordManagerJavaScriptFeature::ScriptMessageReceived(
+    web::WebState* web_state,
+    const web::ScriptMessage& message) {
+  PasswordManagerTabHelper::GetOrCreateForWebState(web_state)
+      ->ScriptMessageReceived(message);
 }
 
 void PasswordManagerJavaScriptFeature::FillPasswordForm(

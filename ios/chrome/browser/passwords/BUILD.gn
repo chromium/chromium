@@ -216,7 +216,6 @@ source_set("unit_tests") {
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
-    "//components/password_manager/ios:password_manager_feature",
     "//components/password_manager/ios:test_support",
     "//components/prefs",
     "//components/prefs:test_support",

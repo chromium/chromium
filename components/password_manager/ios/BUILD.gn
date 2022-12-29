@@ -7,9 +7,11 @@ import("//ios/web/public/js_messaging/optimize_js.gni")
 component("ios") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
+  public_deps = [ ":password_manager_feature_header" ]
+
   deps = [
     ":account_select_fill_data",
-    ":password_manager_feature",
+    ":password_controller_js",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -45,6 +47,9 @@ component("ios") {
     "password_manager_driver_bridge.h",
     "password_manager_ios_util.h",
     "password_manager_ios_util.mm",
+    "password_manager_java_script_feature.mm",
+    "password_manager_tab_helper.h",
+    "password_manager_tab_helper.mm",
     "password_suggestion_helper.h",
     "password_suggestion_helper.mm",
     "shared_password_controller+private.h",
@@ -53,23 +58,16 @@ component("ios") {
   ]
 }
 
-source_set("password_manager_feature") {
+source_set("password_manager_feature_header") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":account_select_fill_data",
-    ":password_controller_js",
     "//base",
     "//components/autofill/core/common",
-    "//components/autofill/ios/browser:util",
-    "//components/autofill/ios/form_util:form_util_feature",
     "//ios/web/public/js_messaging",
   ]
 
-  sources = [
-    "password_manager_java_script_feature.h",
-    "password_manager_java_script_feature.mm",
-  ]
+  sources = [ "password_manager_java_script_feature.h" ]
 }
 
 source_set("account_select_fill_data") {
@@ -132,7 +130,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/common:features",
-    "//components/password_manager/ios:password_manager_feature",
+    "//components/password_manager/ios:password_manager_feature_header",
     "//components/ukm:test_support",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/web/public/js_messaging",

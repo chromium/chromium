@@ -522,14 +522,17 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
   // on the button touchend event.
   FindPasswordForms();
 
-  // Replace __gCrWeb.message.invokeOnHost with mock method for checking of call
-  // arguments.
+  // Replace __gCrWeb.common.sendWebKitMessage with mock method for checking of
+  // call arguments.
   web::test::ExecuteJavaScript(
-      @"var invokeOnHostArgument = null;"
-       "var invokeOnHostCalls = 0;"
-       "__gCrWeb.message.invokeOnHost = function(command) {"
-       "  invokeOnHostArgument = command;"
-       "  invokeOnHostCalls++;"
+      @"var submittedFormData = null;"
+       "var submittedFormMessageCalls = 0;"
+       "__gCrWeb.common.sendWebKitMessage = function(messageName, messageData) "
+       "{"
+       "  if (messageName == 'PasswordFormSubmitButtonClick') {"
+       "    submittedFormData = messageData;"
+       "    submittedFormMessageCalls++;"
+       "  }"
        "}",
       web_state());
 
@@ -542,8 +545,8 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
       web_state());
 
   // Check that there was only 1 call for invokeOnHost.
-  EXPECT_NSEQ(@1,
-              web::test::ExecuteJavaScript(@"invokeOnHostCalls", web_state()));
+  EXPECT_NSEQ(@1, web::test::ExecuteJavaScript(@"submittedFormMessageCalls",
+                                               web_state()));
 
   WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
   std::string mainFrameID = main_frame->GetFrameId();
@@ -569,14 +572,13 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
           @"\"aria_label\":\"\",\"aria_description\":\"\","
           @"\"should_autocomplete\":true,"
           @"\"is_focusable\":true,\"max_length\":524288,\"is_checkable\":false,"
-          @"\"value\":\"password1\",\"label\":\"Password:\"}],"
-          @"\"command\":\"passwordForm.submitButtonClick\"}",
+          @"\"value\":\"password1\",\"label\":\"Password:\"}]}",
           BaseUrl().c_str(), mainFrameID.c_str()];
 
   // Check that invokeOnHost was called with the correct argument.
   EXPECT_NSEQ(expected_command,
               web::test::ExecuteJavaScript(
-                  @"__gCrWeb.stringify(invokeOnHostArgument)", web_state()));
+                  @"__gCrWeb.stringify(submittedFormData)", web_state()));
 }
 
 // Check that a form is filled if url of a page and url in form fill data are

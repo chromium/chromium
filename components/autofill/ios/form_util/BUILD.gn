@@ -53,7 +53,7 @@ source_set("form_handler_feature") {
     ":form_util",
     ":form_util_feature",
     "//base",
-    "//components/password_manager/ios:password_manager_feature",
+    "//components/password_manager/ios:password_manager_feature_header",
     "//ios/web/public/js_messaging",
   ]
 }
