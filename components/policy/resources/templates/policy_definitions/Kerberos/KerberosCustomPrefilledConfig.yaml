@@ -3,7 +3,7 @@ default: ""
 desc: |-
   Specifies the suggested <ph name="KRB5_CONFIG">krb5</ph> configuration for the new manually created tickets.
 
-        If the 'KerberosUseCustomPrefilledConfig' policy is enabled, the policy's value is applied as the suggested configuration and shown in the "Advanced" section of the Kerberos authentication dialog. Setting this policy to an empty string, or leaving it unset, will result in deleting the recommended <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> configuration. The same will happen if this policy is unset.
+        If the 'KerberosUseCustomPrefilledConfig' policy is enabled, the policy's value is applied as the suggested configuration and shown in the "Advanced" section of the Kerberos authentication dialog. Setting this policy to an empty string, or leaving it unset, will result in deleting the recommended <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> configuration.
 
         If the 'KerberosUseCustomPrefilledConfig' policy is disabled, the value of this policy is not used.
 example_value: |
