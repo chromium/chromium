@@ -766,7 +766,7 @@ bool ArgumentSpec::ParseArgumentToFunction(
       // generated types have adapted to consider functions "objects" and
       // serialize them as dictionaries.
       // TODO(devlin): It'd be awfully nice to get rid of this eccentricity.
-      *out_value = std::make_unique<base::DictionaryValue>();
+      *out_value = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
     }
   }
 

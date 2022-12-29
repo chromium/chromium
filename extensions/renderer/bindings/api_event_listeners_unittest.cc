@@ -4,11 +4,13 @@
 
 #include "extensions/renderer/bindings/api_event_listeners.h"
 
+#include <functional>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/test/mock_callback.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "extensions/common/event_filter.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -245,16 +247,15 @@ TEST_F(APIEventListenersTest, FilteredListeners) {
   v8::Local<v8::Object> empty_filter;
   std::string error;
 
+  const base::Value::Dict empty_dict;
   // Register function_a with no filter; this is equivalent to registering for
   // all events. The callback should be triggered since this is a 0 -> 1
   // transition.
-  // Note that we don't test the passed filter here. This is mostly because it's
-  // a pain to match against a DictionaryValue (which doesn't have an
-  // operator==).
   EXPECT_CALL(handler, Run(kEvent,
                            binding::EventListenersChanged::
                                kFirstListenerWithFilterForContextOwnerAdded,
-                           testing::NotNull(), true, context));
+                           testing::Pointee(testing::Eq(std::cref(empty_dict))),
+                           true, context));
   EXPECT_TRUE(listeners.AddListener(function_a, empty_filter, context, &error));
   ::testing::Mock::VerifyAndClearExpectations(&handler);
 
@@ -296,6 +297,8 @@ TEST_F(APIEventListenersTest, FilteredListeners) {
   // Register function_b with a filter for pathContains: 'foo'. Unlike
   // unfiltered listeners, this *should* trigger the callback, since there is
   // no other listener registered with this same filter.
+  const base::Value::Dict expected_dict =
+      base::test::ParseJsonDict(R"({"url": [{"pathContains": "foo"}]})");
   v8::Local<v8::Object> path_filter;
   {
     v8::Local<v8::Value> val =
@@ -303,10 +306,12 @@ TEST_F(APIEventListenersTest, FilteredListeners) {
     ASSERT_TRUE(val->IsObject());
     path_filter = val.As<v8::Object>();
   }
-  EXPECT_CALL(handler, Run(kEvent,
-                           binding::EventListenersChanged::
-                               kFirstListenerWithFilterForContextOwnerAdded,
-                           testing::NotNull(), true, context));
+  EXPECT_CALL(handler,
+              Run(kEvent,
+                  binding::EventListenersChanged::
+                      kFirstListenerWithFilterForContextOwnerAdded,
+                  testing::Pointee(testing::Eq(std::cref(expected_dict))), true,
+                  context));
   EXPECT_TRUE(listeners.AddListener(function_b, path_filter, context, &error));
   ::testing::Mock::VerifyAndClearExpectations(&handler);
 
@@ -336,7 +341,8 @@ TEST_F(APIEventListenersTest, FilteredListeners) {
   EXPECT_CALL(handler, Run(kEvent,
                            binding::EventListenersChanged::
                                kLastListenerWithFilterForContextOwnerRemoved,
-                           testing::NotNull(), true, context));
+                           testing::Pointee(testing::Eq(std::cref(empty_dict))),
+                           true, context));
   listeners.RemoveListener(function_a, context);
   ::testing::Mock::VerifyAndClearExpectations(&handler);
   EXPECT_FALSE(listeners.HasListener(function_a));
@@ -353,10 +359,12 @@ TEST_F(APIEventListenersTest, FilteredListeners) {
       listeners.GetListeners(filtering_info_no_match.Clone(), context).empty());
 
   // Remove function_b. No listeners should remain.
-  EXPECT_CALL(handler, Run(kEvent,
-                           binding::EventListenersChanged::
-                               kLastListenerWithFilterForContextOwnerRemoved,
-                           testing::NotNull(), true, context));
+  EXPECT_CALL(handler,
+              Run(kEvent,
+                  binding::EventListenersChanged::
+                      kLastListenerWithFilterForContextOwnerRemoved,
+                  testing::Pointee(testing::Eq(std::cref(expected_dict))), true,
+                  context));
   listeners.RemoveListener(function_b, context);
   ::testing::Mock::VerifyAndClearExpectations(&handler);
   EXPECT_FALSE(listeners.HasListener(function_b));
