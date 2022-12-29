@@ -40,18 +40,20 @@ bool PassesTimingAllowCheck(
     const GURL& url,
     const GURL& next_url,
     const url::Origin& parent_origin,
-    bool& response_tainting_not_basic,
-    bool& tainted_origin_flag) {
+    bool* response_tainting_basic,
+    bool* tainted_origin_flag) {
+  DCHECK(response_tainting_basic);
+  DCHECK(tainted_origin_flag);
   const url::Origin response_origin = url::Origin::Create(url);
   const bool is_same_origin = response_origin.IsSameOriginWith(parent_origin);
   // Still same-origin and resource tainting is "basic": just return true.
-  if (!response_tainting_not_basic && is_same_origin) {
+  if (*response_tainting_basic && is_same_origin) {
     return true;
   }
 
   // Otherwise, a cross-origin response is currently (or has previously) been
   // handled, so resource tainting is no longer "basic".
-  response_tainting_not_basic = true;
+  *response_tainting_basic = false;
 
   const network::mojom::TimingAllowOriginPtr& tao =
       response_head.parsed_headers->timing_allow_origin;
@@ -71,7 +73,7 @@ bool PassesTimingAllowCheck(
   }
 
   if (!is_same_origin && !is_next_resource_same_origin) {
-    tainted_origin_flag = true;
+    *tainted_origin_flag = true;
   }
 
   return base::Contains(tao->get_serialized_origins(),
@@ -92,7 +94,7 @@ bool AllowTimingDetailsForParent(
     const blink::mojom::CommonNavigationParams& common_params,
     const blink::mojom::CommitNavigationParams& commit_params,
     const network::mojom::URLResponseHead& response_head,
-    bool& response_tainting_not_basic) {
+    bool* response_tainting_basic) {
   bool tainted_origin_flag = false;
 
   DCHECK_EQ(commit_params.redirect_infos.size(),
@@ -105,14 +107,14 @@ bool AllowTimingDetailsForParent(
     if (!PassesTimingAllowCheck(
             *commit_params.redirect_response[i],
             commit_params.redirect_infos[i].new_url, next_response_url,
-            parent_origin, response_tainting_not_basic, tainted_origin_flag)) {
+            parent_origin, response_tainting_basic, &tainted_origin_flag)) {
       return false;
     }
   }
 
-  return PassesTimingAllowCheck(
-      response_head, common_params.url, common_params.url, parent_origin,
-      response_tainting_not_basic, tainted_origin_flag);
+  return PassesTimingAllowCheck(response_head, common_params.url,
+                                common_params.url, parent_origin,
+                                response_tainting_basic, &tainted_origin_flag);
 }
 
 // This logic is duplicated from Performance::GenerateResourceTiming(). Ensure
@@ -148,14 +150,14 @@ blink::mojom::ResourceTimingInfoPtr GenerateResourceTiming(
   // `response_end` will be populated after loading the body.
   timing_info->context_type = blink::mojom::RequestContextType::OBJECT;
 
-  bool response_tainting_not_basic = false;
+  bool response_tainting_basic = true;
   timing_info->allow_timing_details =
       AllowTimingDetailsForParent(parent_origin, common_params, commit_params,
-                                  response_head, response_tainting_not_basic);
+                                  response_head, &response_tainting_basic);
 
   // Only expose the response code when the response tainting is "basic" -
-  // same-origin requests throughout the redirect chain.
-  if (!response_tainting_not_basic) {
+  // same-origin requests throughout the redirect chain
+  if (response_tainting_basic) {
     timing_info->response_status = commit_params.http_response_code;
   }
 
