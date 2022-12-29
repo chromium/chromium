@@ -500,12 +500,12 @@ const Extension* ExtensionBrowserTest::LoadExtensionAsComponent(
 }
 
 const Extension* ExtensionBrowserTest::LoadAndLaunchApp(
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    bool uses_guest_view) {
   const Extension* app = LoadExtension(path);
   CHECK(app);
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
+  content::CreateAndLoadWebContentsObserver app_loaded_observer(
+      /*num_expected_contents=*/uses_guest_view ? 2 : 1);
   apps::AppLaunchParams params(
       app->id(), apps::LaunchContainer::kLaunchContainerNone,
       WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);

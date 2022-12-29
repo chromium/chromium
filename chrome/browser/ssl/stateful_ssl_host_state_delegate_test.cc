@@ -959,7 +959,8 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
   const extensions::Extension* app =
       LoadAndLaunchApp(test_data_dir_.AppendASCII("platform_apps")
                            .AppendASCII("web_view")
-                           .AppendASCII("simple"));
+                           .AppendASCII("simple"),
+                       /*uses_guest_view=*/true);
   ASSERT_TRUE(app);
   auto app_windows =
       extensions::AppWindowRegistry::Get(profile)->GetAppWindowsForApp(
@@ -1010,7 +1011,8 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
   const extensions::Extension* app =
       LoadAndLaunchApp(test_data_dir_.AppendASCII("platform_apps")
                            .AppendASCII("web_view")
-                           .AppendASCII("simple"));
+                           .AppendASCII("simple"),
+                       /*uses_guest_view=*/true);
   ASSERT_TRUE(app);
   auto app_windows =
       extensions::AppWindowRegistry::Get(profile)->GetAppWindowsForApp(

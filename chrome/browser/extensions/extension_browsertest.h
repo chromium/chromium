@@ -168,8 +168,13 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   // LoadExtensionAsComponentWithManifest(path, kManifestFilename).
   const Extension* LoadExtensionAsComponent(const base::FilePath& path);
 
-  // Loads and launches the app from |path|, and returns it.
-  const Extension* LoadAndLaunchApp(const base::FilePath& path);
+  // Loads and launches the app from |path|, and returns it. Waits until the
+  // launched app's WebContents has been created and finished loading. If the
+  // app uses a guest view this will create two WebContents (one for the host
+  // and one for the guest view). `uses_guest_view` is used to wait for the
+  // second WebContents.
+  const Extension* LoadAndLaunchApp(const base::FilePath& path,
+                                    bool uses_guest_view = false);
 
   // Launches |extension| as a window and returns the browser.
   Browser* LaunchAppBrowser(const Extension* extension);
