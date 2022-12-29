@@ -103,6 +103,16 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         state => this.onTopicsStateChanged_(state));
   }
 
+  private isTopicsPrefManaged_(): boolean {
+    const topicsEnabledPref = this.getPref('privacy_sandbox.m1.topics_enabled');
+    if (topicsEnabledPref.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      assert(!topicsEnabledPref.value);
+      return true;
+    }
+    return false;
+  }
+
   private onTopicsStateChanged_(state: TopicsState) {
     this.topicsList_ = state.topTopics.map(topic => {
       return {topic, removed: false};

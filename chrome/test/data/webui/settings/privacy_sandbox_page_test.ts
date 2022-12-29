@@ -160,6 +160,7 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.topicsToggle));
     assertFalse(page.$.topicsToggle.checked);
+    assertFalse(page.$.topicsToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
@@ -171,6 +172,7 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.topicsToggle));
     assertTrue(page.$.topicsToggle.checked);
+    assertFalse(page.$.topicsToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
@@ -187,6 +189,7 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.topicsToggle));
     assertTrue(page.$.topicsToggle.checked);
+    assertFalse(page.$.topicsToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
@@ -200,6 +203,7 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.topicsToggle));
     assertFalse(page.$.topicsToggle.checked);
+    assertFalse(page.$.topicsToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
@@ -344,6 +348,19 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertEquals(
         loadTimeData.getString('topicsPageBlockedTopicsDescriptionEmpty'),
         blockedTopicsDescription.innerText);
+  });
+
+  test('topicsManaged', async function() {
+    page.set('prefs.privacy_sandbox.m1.topics_enabled', {
+      ...page.get('prefs.privacy_sandbox.m1.topics_enabled'),
+      value: false,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    await flushTasks();
+    assertFalse(page.$.topicsToggle.checked);
+    assertTrue(page.$.topicsToggle.controlDisabled());
+    assertFalse(isChildVisible(page, '#currentTopicsSection'));
   });
 });
 
