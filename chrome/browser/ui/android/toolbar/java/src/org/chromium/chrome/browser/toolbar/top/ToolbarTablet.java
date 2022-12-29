@@ -513,6 +513,7 @@ public class ToolbarTablet
             MenuButtonCoordinator menuButtonCoordinator) {
         boolean isInTabSwitcherMode = mShowTabStack && inTabSwitcherMode;
         mIsInTabSwitcherMode = isInTabSwitcherMode;
+        mAccessibilitySwitcherButton.setClickable(!isInTabSwitcherMode);
 
         if (isTabletGridTabSwitcherPolishEnabled()) {
             int importantForAccessibility = inTabSwitcherMode

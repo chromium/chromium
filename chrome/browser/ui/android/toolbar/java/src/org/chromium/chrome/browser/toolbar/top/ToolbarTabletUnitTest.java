@@ -163,6 +163,23 @@ public final class ToolbarTabletUnitTest {
 
     @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
     @Test
+    public void testSetTabSwitcherModeOn_tabSwitcherButtonDisabledInGTSMode() {
+        assertEquals("Initial Toolbar visibility is not as expected", View.VISIBLE,
+                mToolbarTablet.getVisibility());
+        // Call to enter GTS Mode
+        mToolbarTablet.setTabSwitcherMode(true, false, false, mMenuButtonCoordinator);
+        mToolbarTablet.getTabSwitcherModeAnimation().end();
+        assertFalse("Button should not be enabled in GTS Mode",
+                mToolbarTablet.findViewById(R.id.tab_switcher_button).isClickable());
+
+        // Leave GTS Mode
+        mToolbarTablet.setTabSwitcherMode(false, false, false, mMenuButtonCoordinator);
+        assertTrue("Button should be re-enabled after leaving GTS Mode",
+                mToolbarTablet.findViewById(R.id.tab_switcher_button).isClickable());
+    }
+
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
+    @Test
     public void testSetTabSwitcherModeOff_showsToolbar() {
         // Hide toolbar as initial state.
         mToolbarTablet.setVisibility(View.GONE);
