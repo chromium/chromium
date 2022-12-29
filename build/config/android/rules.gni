@@ -1911,7 +1911,7 @@ if (enable_java_templates && is_android) {
       } else {
         _rebased_build_config = rebase_path(_build_config, root_build_dir)
         input_dex_filearg =
-            "@FileArg(${_rebased_build_config}:final_dex:all_dex_files)"
+            "@FileArg(${_rebased_build_config}:deps_info:all_dex_files)"
       }
     }
   }
@@ -2626,10 +2626,10 @@ if (enable_java_templates && is_android) {
 
     if (!_incremental_apk && !_omit_dex) {
       # Bundle modules don't build the dex here, but need to write this path
-      # to their .build_config.json file.
+      # to their .build_config.json file only when proguarding.
       if (_proguard_enabled) {
         _final_dex_path = "$_base_path.r8dex.jar"
-      } else {
+      } else if (!_is_bundle_module) {
         _final_dex_path = "$_base_path.mergeddex.jar"
       }
     }
@@ -2724,7 +2724,6 @@ if (enable_java_templates && is_android) {
                                "max_sdk_version",
                                "no_xml_namespaces",
                                "package_id",
-                               "package_name",
                                "png_to_webp",
                                "r_java_root_package_name",
                                "resource_exclusion_exceptions",
@@ -2747,6 +2746,10 @@ if (enable_java_templates && is_android) {
 
       if (defined(_resource_ids_provider_dep)) {
         resource_ids_provider_dep = _resource_ids_provider_dep
+      }
+
+      if (defined(invoker.module_name)) {
+        package_name = invoker.module_name
       }
 
       if (defined(invoker.post_process_package_resources_script)) {
@@ -3038,7 +3041,11 @@ if (enable_java_templates && is_android) {
       if (_is_bundle_module) {
         type = "android_app_bundle_module"
         res_size_info_path = _res_size_info_path
-        is_base_module = _is_base_module
+        if (defined(invoker.module_name)) {
+          module_name = invoker.module_name
+        } else {
+          module_name = "base"
+        }
         forward_variables_from(invoker,
                                [
                                  "version_code",
@@ -3110,8 +3117,9 @@ if (enable_java_templates && is_android) {
       }
     }
 
-    if ((_is_bundle_module && _proguard_enabled) || _omit_dex) {
-      # No library dep needed.
+    if (_is_bundle_module || _omit_dex) {
+      # Dex generation for app bundle modules take place in the
+      # android_app_bundle template.
       not_needed(invoker, [ "custom_assertion_handler" ])
     } else if (_incremental_apk) {
       not_needed(invoker,
@@ -3120,8 +3128,6 @@ if (enable_java_templates && is_android) {
                    "custom_assertion_handler",
                  ])
     } else {
-      # Dex generation for app bundle modules with proguarding enabled takes
-      # place later due to synchronized proguarding.
       _final_dex_target_name = "${_template_name}__final_dex"
       dex(_final_dex_target_name) {
         forward_variables_from(invoker,
@@ -3150,7 +3156,7 @@ if (enable_java_templates && is_android) {
             # Enable dex merging only when min_sdk_version is >= what the library
             # .dex files were created with.
             input_dex_filearg =
-                "@FileArg(${_rebased_build_config}:final_dex:all_dex_files)"
+                "@FileArg(${_rebased_build_config}:deps_info:all_dex_files)"
 
             # Pure dex-merge.
             enable_desugar = false
@@ -3317,7 +3323,7 @@ if (enable_java_templates && is_android) {
         args = [
           "--apk-path=$_rebased_incremental_apk_path",
           "--output-path=$_rebased_incremental_install_json_path",
-          "--dex-file=@FileArg($_rebased_build_config:final_dex:all_dex_files)",
+          "--dex-file=@FileArg($_rebased_build_config:deps_info:all_dex_files)",
         ]
         if (_proguard_enabled) {
           args += [ "--show-proguard-warning" ]
@@ -3678,10 +3684,10 @@ if (enable_java_templates && is_android) {
                                "manual_jni_registration",
                                "max_sdk_version",
                                "min_sdk_version",
+                               "module_name",
                                "native_lib_placeholders",
                                "no_xml_namespaces",
                                "package_id",
-                               "package_name",
                                "png_to_webp",
                                "processor_args_javac",
                                "proguard_configs",
@@ -4955,6 +4961,7 @@ if (enable_java_templates && is_android) {
       build_config = _build_config
       proguard_enabled = _proguard_enabled
       module_build_configs = _module_build_configs
+      modules = _modules
 
       if (_proguard_enabled) {
         add_view_trace_events = _add_view_trace_events
@@ -4963,8 +4970,6 @@ if (enable_java_templates && is_android) {
     }
 
     if (_proguard_enabled) {
-      # If this Bundle uses a static library, the static library APK will
-      # create the synchronized dex file path.
       if (_add_view_trace_events) {
         _trace_event_rewriter_target =
             "//build/android/bytecode:trace_event_adder"
@@ -5035,14 +5040,33 @@ if (enable_java_templates && is_android) {
     _all_module_unused_resources_deps = []
     foreach(_module, _modules) {
       _module_target = _module.module_target
+      _module_target_name = get_label_info(_module_target, "name")
       _module_build_config = _module.build_config
       _module_build_config_target = _module.build_config_target
 
       if (!_proguard_enabled) {
-        _dex_target_for_module = "${_module_target}__final_dex"
-      } else {
-        _dex_target_for_module = ":$_dex_target"
+        _dex_target = "${_module_target_name}__final_dex"
+        _rebased_module_build_config =
+            rebase_path(_module_build_config, root_build_dir)
+        _dex_path = "$target_out_dir/$_module_target_name/$_module_target_name.mergeddex.jar"
+        dex(_dex_target) {
+          forward_variables_from(invoker,
+                                 [
+                                   "custom_assertion_handler",
+                                   "min_sdk_version",
+                                 ])
+          enable_multidex = _enable_multidex
+          output = _dex_path
+          build_config = _build_config
+
+          # This will be a pure dex-merge.
+          input_dex_filearg = "@FileArg($_rebased_build_config:modules:${_module.name}:all_dex_files)"
+          enable_desugar = false
+
+          deps = [ ":$_build_config_target" ]
+        }
       }
+      _dex_target_for_module = ":$_dex_target"
 
       # Generate one module .zip file per bundle module.
       #
@@ -5062,6 +5086,10 @@ if (enable_java_templates && is_android) {
         build_config = _module_build_config
         module_zip_path = _module_zip_path
         native_libraries_config = _native_libraries_config
+        if (!_proguard_enabled) {
+          dex_path = _dex_path
+          # dex_path is read from the build_config in the proguard case.
+        }
 
         if (module_name == "base" &&
             defined(invoker.expected_libs_and_assets)) {

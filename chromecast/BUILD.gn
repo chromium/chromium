@@ -742,7 +742,7 @@ if (is_android) {
         min_sdk_version = 24
         target_sdk_version = 33
 
-        package_name = "cast_browser"
+        module_name = "cast_browser"
 
         # |package_id| is required because the default one conflicts with the base
         # modules' ID (0x7f).

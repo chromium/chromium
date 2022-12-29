@@ -59,7 +59,7 @@ template("system_webview_bundle") {
       }
       aapt_locale_allowlist = platform_pak_locales
       proguard_enabled = !is_java_debug
-      package_name = "weblayer"
+      module_name = "weblayer"
       package_id = 126
       version_name =
           "@FileArg($_rebased_base_module_build_config:deps_info:version_name)"
