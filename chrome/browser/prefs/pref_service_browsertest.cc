@@ -100,30 +100,30 @@ IN_PROC_BROWSER_TEST_F(PreferenceServiceTest, Test) {
 
   ASSERT_TRUE(root.get());
   ASSERT_TRUE(root->is_dict());
-
-  base::DictionaryValue* root_dict =
-      static_cast<base::DictionaryValue*>(root.get());
+  base::Value::Dict& root_dict = root->GetDict();
 
   // Retrieve the screen rect for the launched window
   gfx::Rect bounds = browser()->window()->GetRestoredBounds();
 
   // Retrieve the expected rect values from "Preferences"
   std::string kBrowserWindowPlacement(prefs::kBrowserWindowPlacement);
-  EXPECT_THAT(root_dict->FindIntPath(kBrowserWindowPlacement + ".bottom"),
-              Optional(bounds.y() + bounds.height()));
+  EXPECT_THAT(
+      root_dict.FindIntByDottedPath(kBrowserWindowPlacement + ".bottom"),
+      Optional(bounds.y() + bounds.height()));
 
-  EXPECT_THAT(root_dict->FindIntPath(kBrowserWindowPlacement + ".top"),
+  EXPECT_THAT(root_dict.FindIntByDottedPath(kBrowserWindowPlacement + ".top"),
               Optional(bounds.y()));
 
-  EXPECT_THAT(root_dict->FindIntPath(kBrowserWindowPlacement + ".left"),
+  EXPECT_THAT(root_dict.FindIntByDottedPath(kBrowserWindowPlacement + ".left"),
               Optional(bounds.x()));
 
-  EXPECT_THAT(root_dict->FindIntPath(kBrowserWindowPlacement + ".right"),
+  EXPECT_THAT(root_dict.FindIntByDottedPath(kBrowserWindowPlacement + ".right"),
               Optional(bounds.x() + bounds.width()));
 
   // Find if launched window is maximized.
   bool is_window_maximized = browser()->window()->IsMaximized();
-  EXPECT_THAT(root_dict->FindBoolPath(kBrowserWindowPlacement + ".maximized"),
-              Optional(is_window_maximized));
+  EXPECT_THAT(
+      root_dict.FindBoolByDottedPath(kBrowserWindowPlacement + ".maximized"),
+      Optional(is_window_maximized));
 }
 #endif

@@ -355,7 +355,7 @@ scoped_refptr<Extension> CreateExtension(const std::u16string& name,
   manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
   switch (type) {
     case extensions::Manifest::TYPE_THEME:
-      manifest.Set(extensions::manifest_keys::kTheme, base::DictionaryValue());
+      manifest.Set(extensions::manifest_keys::kTheme, base::Value::Dict());
       break;
     case extensions::Manifest::TYPE_HOSTED_APP:
       manifest.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL,
