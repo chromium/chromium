@@ -5867,7 +5867,8 @@ domain Network
 
   # Returns all browser cookies. Depending on the backend support, will return detailed cookie
   # information in the `cookies` field.
-  command getAllCookies
+  # Deprecated. Use Storage.getCookies instead.
+  deprecated command getAllCookies
     returns
       # Array of cookie objects.
       array of Cookie cookies
