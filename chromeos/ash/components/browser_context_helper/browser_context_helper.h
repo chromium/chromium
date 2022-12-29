@@ -61,6 +61,26 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
   static std::string GetUserIdHashFromBrowserContext(
       content::BrowserContext* browser_context);
 
+  // In ash-chrome, we have three special browser context instances
+  // (a.k.a. Profile).
+  // 1) Singin browser context, which is used on login screen.
+  // 2) Lock-screen-app browser context, which is used for launching platform
+  //    apps that can display windows on top of the lock screen.
+  // 3) Lock-screen browser context, which is used during online authentication
+  //    on the lock screen.
+
+  // Base name of the signin browser context.
+  static const char kSigninBrowserContextBaseName[];
+
+  // Base name of the lock-screen-app browser context.
+  static const char kLockScreenAppBrowserContextBaseName[];
+
+  // Base name of the lock-screen browser context.
+  static const char kLockScreenBrowserContextBaseName[];
+
+  // Hereafter, define two additional directory names, one for compatibility
+  // and the other for testing.
+
   // Legacy profile dir that was used when only one cryptohome has been mounted.
   static const char kLegacyBrowserContextDirName[];
 
@@ -74,6 +94,15 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
   // Returns browser context path that corresponds to the given |user_id_hash|.
   base::FilePath GetBrowserContextPathByUserIdHash(
       base::StringPiece user_id_hash);
+
+  // Returns the path of signin browser context.
+  base::FilePath GetSigninBrowserContextPath() const;
+
+  // Returns the path of lock-screen-app browser context.
+  base::FilePath GetLockScreenAppBrowserContextPath() const;
+
+  // Returns the path of lock-screen browser context.
+  base::FilePath GetLockScreenBrowserContextPath() const;
 
  private:
   // This is only for graceful migration.

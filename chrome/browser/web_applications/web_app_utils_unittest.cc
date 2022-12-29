@@ -22,7 +22,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -224,7 +224,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
       signin_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   Profile* lock_screen_profile = profile_manager().CreateTestingProfile(
-      ash::ProfileHelper::GetLockScreenAppProfileName());
+      ash::BrowserContextHelper::kLockScreenAppBrowserContextBaseName);
   EXPECT_TRUE(AreWebAppsEnabled(lock_screen_profile));
   EXPECT_TRUE(AreWebAppsEnabled(
       lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
@@ -322,7 +322,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
       signin_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   Profile* lock_screen_profile = profile_manager().CreateTestingProfile(
-      ash::ProfileHelper::GetLockScreenAppProfileName());
+      ash::BrowserContextHelper::kLockScreenAppBrowserContextBaseName);
   EXPECT_FALSE(AreWebAppsUserInstallable(lock_screen_profile));
   EXPECT_FALSE(AreWebAppsUserInstallable(
       lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));

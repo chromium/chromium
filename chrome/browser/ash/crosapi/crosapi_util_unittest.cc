@@ -10,8 +10,8 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -70,7 +70,8 @@ TEST_F(CrosapiUtilTest, GetInterfaceVersions) {
 
 TEST_F(CrosapiUtilTest, IsSigninProfileOrBelongsToAffiliatedUserSigninProfile) {
   TestingProfile::Builder builder;
-  builder.SetPath(base::FilePath(FILE_PATH_LITERAL(chrome::kInitialProfile)));
+  builder.SetPath(
+      base::FilePath(ash::BrowserContextHelper::kSigninBrowserContextBaseName));
   std::unique_ptr<Profile> signin_profile = builder.Build();
 
   EXPECT_TRUE(browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
@@ -112,8 +113,8 @@ TEST_F(CrosapiUtilTest,
 TEST_F(CrosapiUtilTest,
        IsSigninProfileOrBelongsToAffiliatedUserLockScreenProfile) {
   TestingProfile::Builder builder;
-  builder.SetPath(
-      base::FilePath(FILE_PATH_LITERAL(chrome::kLockScreenProfile)));
+  builder.SetPath(base::FilePath(
+      ash::BrowserContextHelper::kLockScreenBrowserContextBaseName));
   std::unique_ptr<Profile> lock_screen_profile = builder.Build();
 
   EXPECT_FALSE(browser_util::IsSigninProfileOrBelongsToAffiliatedUser(

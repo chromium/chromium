@@ -77,6 +77,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "chrome_constants_ash_unittest\.cc": [
+    "+chromeos/ash/components/browser_context_helper/browser_context_helper.h",
+  ],
   "logging_chrome\.cc": [
     "+ash/constants/ash_switches.h",
   ],

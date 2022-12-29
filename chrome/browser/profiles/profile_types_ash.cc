@@ -6,23 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_constants.h"
-
-namespace {
-
-bool IsSigninProfilePath(const base::FilePath& profile_path) {
-  return profile_path.value() == chrome::kInitialProfile;
-}
-
-bool IsLockScreenAppProfilePath(const base::FilePath& profile_path) {
-  return profile_path.value() == chrome::kLockScreenAppProfile;
-}
-
-bool IsLockScreenProfilePath(const base::FilePath& profile_path) {
-  return profile_path.value() == chrome::kLockScreenProfile;
-}
-
-}  // namespace
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 
 bool IsUserProfile(const Profile* profile) {
   return !IsSigninProfile(profile) && !IsLockScreenAppProfile(profile) &&
@@ -30,19 +14,27 @@ bool IsUserProfile(const Profile* profile) {
 }
 
 bool IsUserProfilePath(const base::FilePath& profile_path) {
-  return !IsSigninProfilePath(profile_path) &&
-         !IsLockScreenAppProfilePath(profile_path) &&
-         !IsLockScreenProfilePath(profile_path);
+  const auto& value = profile_path.value();
+  return value != ash::BrowserContextHelper::kSigninBrowserContextBaseName &&
+         value !=
+             ash::BrowserContextHelper::kLockScreenAppBrowserContextBaseName &&
+         value != ash::BrowserContextHelper::kLockScreenBrowserContextBaseName;
 }
 
 bool IsLockScreenProfile(const Profile* profile) {
-  return profile && IsLockScreenProfilePath(profile->GetBaseName());
+  return profile &&
+         profile->GetBaseName().value() ==
+             ash::BrowserContextHelper::kLockScreenBrowserContextBaseName;
 }
 
 bool IsLockScreenAppProfile(const Profile* profile) {
-  return profile && IsLockScreenAppProfilePath(profile->GetBaseName());
+  return profile &&
+         profile->GetBaseName().value() ==
+             ash::BrowserContextHelper::kLockScreenAppBrowserContextBaseName;
 }
 
 bool IsSigninProfile(const Profile* profile) {
-  return profile && IsSigninProfilePath(profile->GetBaseName());
+  return profile &&
+         profile->GetBaseName().value() ==
+             ash::BrowserContextHelper::kSigninBrowserContextBaseName;
 }

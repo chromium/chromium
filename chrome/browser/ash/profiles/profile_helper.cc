@@ -153,7 +153,7 @@ base::FilePath ProfileHelper::GetProfilePathByUserIdHash(
 
 // static
 base::FilePath ProfileHelper::GetSigninProfileDir() {
-  return GetImpl()->GetProfileDir(chrome::kInitialProfile);
+  return BrowserContextHelper::Get()->GetSigninBrowserContextPath();
 }
 
 // static
@@ -191,17 +191,12 @@ bool ProfileHelper::IsLockScreenAppProfile(const Profile* profile) {
 
 // static
 base::FilePath ProfileHelper::GetLockScreenAppProfilePath() {
-  return GetImpl()->GetProfileDir(chrome::kLockScreenAppProfile);
-}
-
-// static
-std::string ProfileHelper::GetLockScreenAppProfileName() {
-  return chrome::kLockScreenAppProfile;
+  return BrowserContextHelper::Get()->GetLockScreenAppBrowserContextPath();
 }
 
 // static
 base::FilePath ProfileHelper::GetLockScreenProfileDir() {
-  return GetImpl()->GetProfileDir(chrome::kLockScreenProfile);
+  return BrowserContextHelper::Get()->GetLockScreenBrowserContextPath();
 }
 
 // static

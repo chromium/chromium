@@ -64,7 +64,10 @@ source_set("profile") {
     deps += [ "//extensions/browser" ]
   }
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash/constants",
+      "//chromeos/ash/components/browser_context_helper",
+    ]
   }
   if (is_chromeos_lacros) {
     deps += [

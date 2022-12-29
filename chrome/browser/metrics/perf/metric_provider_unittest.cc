@@ -16,10 +16,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -315,12 +315,14 @@ class MetricProviderSyncSettingsTest : public testing::Test {
     // initialized on Chrome OS. So creating the Default profile here to reflect
     // this. The Default profile is skipped when getting the sync settings from
     // user profile(s).
-    testing_profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
+    testing_profile_manager_->CreateTestingProfile(
+        ash::BrowserContextHelper::kSigninBrowserContextBaseName);
     // Also add two non-regular profiles that might appear on ChromeOS. They
     // always disable sync and are skipped when getting sync settings.
     testing_profile_manager_->CreateTestingProfile(
-        chrome::kLockScreenAppProfile);
-    testing_profile_manager_->CreateTestingProfile(chrome::kLockScreenProfile);
+        ash::BrowserContextHelper::kLockScreenAppBrowserContextBaseName);
+    testing_profile_manager_->CreateTestingProfile(
+        ash::BrowserContextHelper::kLockScreenBrowserContextBaseName);
     metric_provider_ = std::make_unique<TestMetricProvider>(
         std::make_unique<TestMetricCollector>(test_params),
         testing_profile_manager_->profile_manager());

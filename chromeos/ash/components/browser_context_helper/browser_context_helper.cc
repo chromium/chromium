@@ -71,6 +71,17 @@ std::string BrowserContextHelper::GetUserIdHashFromBrowserContext(
 }
 
 // static
+const char BrowserContextHelper::kSigninBrowserContextBaseName[] = "Default";
+
+// static
+const char BrowserContextHelper::kLockScreenAppBrowserContextBaseName[] =
+    "LockScreenAppsProfile";
+
+// static
+const char BrowserContextHelper::kLockScreenBrowserContextBaseName[] =
+    "LockScreenProfile";
+
+// static
 const char BrowserContextHelper::kLegacyBrowserContextDirName[] = "user";
 
 // static
@@ -97,6 +108,20 @@ base::FilePath BrowserContextHelper::GetBrowserContextPathByUserIdHash(
          "--login-profile=user@example.com-hash to command line parameters";
   return delegate_->GetUserDataDir()->Append(
       GetUserBrowserContextDirName(user_id_hash));
+}
+
+base::FilePath BrowserContextHelper::GetSigninBrowserContextPath() const {
+  return delegate_->GetUserDataDir()->Append(kSigninBrowserContextBaseName);
+}
+
+base::FilePath BrowserContextHelper::GetLockScreenAppBrowserContextPath()
+    const {
+  return delegate_->GetUserDataDir()->Append(
+      kLockScreenAppBrowserContextBaseName);
+}
+
+base::FilePath BrowserContextHelper::GetLockScreenBrowserContextPath() const {
+  return delegate_->GetUserDataDir()->Append(kLockScreenBrowserContextBaseName);
 }
 
 }  // namespace ash

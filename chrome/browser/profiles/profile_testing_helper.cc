@@ -4,10 +4,13 @@
 
 #include "chrome/browser/profiles/profile_testing_helper.h"
 
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ProfileTestingHelper::ProfileTestingHelper()
     : manager_(TestingBrowserProcess::GetGlobal()) {}
@@ -49,7 +52,8 @@ void ProfileTestingHelper::SetUp() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  signin_profile_ = manager_.CreateTestingProfile(chrome::kInitialProfile);
+  signin_profile_ = manager_.CreateTestingProfile(
+      ash::BrowserContextHelper::kSigninBrowserContextBaseName);
   ASSERT_TRUE(signin_profile_);
   ASSERT_TRUE(ash::ProfileHelper::IsSigninProfile(signin_profile_));
   ASSERT_FALSE(ash::ProfileHelper::IsUserProfile(signin_profile_));
@@ -60,8 +64,8 @@ void ProfileTestingHelper::SetUp() {
   ASSERT_FALSE(ash::ProfileHelper::IsUserProfile(signin_profile_otr_));
   ASSERT_TRUE(signin_profile_otr_->IsOffTheRecord());
 
-  lockscreen_profile_ =
-      manager_.CreateTestingProfile(chrome::kLockScreenProfile);
+  lockscreen_profile_ = manager_.CreateTestingProfile(
+      ash::BrowserContextHelper::kLockScreenBrowserContextBaseName);
   ASSERT_TRUE(lockscreen_profile_);
   ASSERT_TRUE(ash::ProfileHelper::IsLockScreenProfile(lockscreen_profile_));
   ASSERT_FALSE(ash::ProfileHelper::IsUserProfile(lockscreen_profile_));
@@ -72,8 +76,8 @@ void ProfileTestingHelper::SetUp() {
   ASSERT_FALSE(ash::ProfileHelper::IsUserProfile(lockscreen_profile_otr_));
   ASSERT_TRUE(lockscreen_profile_otr_->IsOffTheRecord());
 
-  lockscreenapp_profile_ =
-      manager_.CreateTestingProfile(chrome::kLockScreenAppProfile);
+  lockscreenapp_profile_ = manager_.CreateTestingProfile(
+      ash::BrowserContextHelper::kLockScreenAppBrowserContextBaseName);
   ASSERT_TRUE(lockscreenapp_profile_);
   ASSERT_TRUE(
       ash::ProfileHelper::IsLockScreenAppProfile(lockscreenapp_profile_));

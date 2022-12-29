@@ -6,7 +6,6 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/common/chrome_version.h"
 
@@ -177,11 +176,6 @@ const wchar_t kUserDataDirname[] = L"User Data";
 #endif
 
 const float kMaxShareOfExtensionProcesses = 0.30f;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kLockScreenAppProfile[] = "LockScreenAppsProfile";
-const char kLockScreenProfile[] = "LockScreenProfile";
-#endif
 
 // This GUID is associated with any 'don't ask me again' settings that the
 // user can select for different file types.
