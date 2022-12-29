@@ -23,7 +23,7 @@ source_set("incognito_interstitial_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/elements:elements",
-    "//ios/chrome/browser/ui/ntp:ntp_internal",
+    "//ios/chrome/browser/ui/ntp/incognito",
     "//ios/chrome/browser/ui/util:util",
     "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/promo_style:promo_style",
@@ -49,7 +49,8 @@ source_set("incognito_interstitial") {
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/main:scene_state_header",
-    "//ios/chrome/browser/ui/ntp:ntp_internal",
+    "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/browser/ui/ntp/incognito",
     "//ios/chrome/browser/url_loading:url_loading",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
   ]

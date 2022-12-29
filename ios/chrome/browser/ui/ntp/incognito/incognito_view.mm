@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/incognito_view.h"
+#import "ios/chrome/browser/ui/ntp/incognito/incognito_view.h"
 
 #import "base/ios/ns_range.h"
 #import "components/content_settings/core/common/features.h"
@@ -86,10 +86,10 @@ UIFont* BoldBodyFont() {
 // properly in a UILabel.  Removes the "<ul>" tag and replaces "<li>" with a
 // bullet unicode character.
 NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
-  listString =
-      [listString stringByReplacingOccurrencesOfString:@"<ul>" withString:@""];
-  listString =
-      [listString stringByReplacingOccurrencesOfString:@"</ul>" withString:@""];
+  listString = [listString stringByReplacingOccurrencesOfString:@"<ul>"
+                                                     withString:@""];
+  listString = [listString stringByReplacingOccurrencesOfString:@"</ul>"
+                                                     withString:@""];
 
   // Use a regular expression to find and remove all leading whitespace from the
   // lines which contain the "<li>" tag.  This un-indents the bulleted lines.
@@ -309,8 +309,9 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 
 - (void)didMoveToSuperview {
   [super didMoveToSuperview];
-  if (!self.superview)
+  if (!self.superview) {
     return;
+  }
 
   id<LayoutGuideProvider> safeAreaGuide = self.superview.safeAreaLayoutGuide;
   _bottomUnsafeAreaGuideInSuperview = [[UILayoutGuide alloc] init];

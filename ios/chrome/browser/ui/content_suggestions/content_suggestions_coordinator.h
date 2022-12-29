@@ -11,11 +11,11 @@ namespace web {
 class WebState;
 }
 
+@class ContentSuggestionsMediator;
 @class ContentSuggestionsViewController;
 @protocol FeedDelegate;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageDelegate;
-@class NTPHomeMediator;
 @protocol ThumbStripSupporting;
 @class ViewRevealingVerticalPanHandler;
 
@@ -35,15 +35,14 @@ class WebState;
 @property(nonatomic, strong, readonly)
     ContentSuggestionsViewController* viewController;
 
+// The mediator used by this coordinator.
+// TODO(crbug.com/1403298): Replace this with a delegate to avoid exposing this.
+@property(nonatomic, strong, readonly)
+    ContentSuggestionsMediator* contentSuggestionsMediator;
+
 // Allows for the in-flight enabling/disabling of the thumb strip.
 @property(nonatomic, weak, readonly) id<ThumbStripSupporting>
     thumbStripSupporting;
-
-// NTP Mediator used by this Coordinator.
-// TODO(crbug.com/1114792): Move all usage of this mediator to NTPCoordinator.
-// It might also be necessary to split it and create a ContentSuggestions
-// mediator for non NTP logic.
-@property(nonatomic, strong) NTPHomeMediator* ntpMediator;
 
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
@@ -53,12 +52,6 @@ class WebState;
 
 // Reloads the suggestions.
 - (void)reload;
-
-// The location bar has lost focus.
-- (void)locationBarDidResignFirstResponder;
-
-// Tell location bar has taken focus.
-- (void)locationBarDidBecomeFirstResponder;
 
 // Configure Content Suggestions if showing the Start Surface.
 - (void)configureStartSurfaceIfNeeded;

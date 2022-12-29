@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/revamped_incognito_view.h"
+#import "ios/chrome/browser/ui/ntp/incognito/revamped_incognito_view.h"
 
 #import "base/ios/ns_range.h"
 #import "components/content_settings/core/common/features.h"

@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 
 #import "base/bind.h"
 #import "base/hash/md5.h"
@@ -22,7 +22,7 @@
 #error "This file requires ARC support."
 #endif
 
-namespace ntp_tile_saver {
+namespace content_suggestions_tile_saver {
 
 // Write the `most_visited_sites` to disk.
 void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_sites);
@@ -53,9 +53,9 @@ void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data);
 void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
                         NSURL* favicons_directory);
 
-}  // namespace ntp_tile_saver
+}  // namespace content_suggestions_tile_saver
 
-namespace ntp_tile_saver {
+namespace content_suggestions_tile_saver {
 
 void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data) {
   NSMutableDictionary<NSURL*, NTPTile*>* tiles =
@@ -242,4 +242,4 @@ void UpdateSingleFavicon(const GURL& site_url,
   [favicon_provider fetchFaviconAttributesForURL:site_url
                                       completion:faviconAttributesBlock];
 }
-}  // namespace ntp_tile_saver
+}  // namespace content_suggestions_tile_saver

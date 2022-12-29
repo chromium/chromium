@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
@@ -74,13 +73,14 @@
 #import "ios/chrome/browser/ui/ntp/feed_sign_in_promo_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
-#import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/incognito/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+private.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
@@ -146,8 +146,8 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 // View controller for the regular NTP.
 @property(nonatomic, strong) NewTabPageViewController* ntpViewController;
 
-// Mediator owned by this Coordinator.
-@property(nonatomic, strong) NTPHomeMediator* ntpMediator;
+// Mediator owned by this coordinator.
+@property(nonatomic, strong) NewTabPageMediator* ntpMediator;
 
 // View controller wrapping the feed.
 @property(nonatomic, strong)
@@ -287,8 +287,8 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
     [self configureFeedAndHeader];
   }
   [self configureHeaderController];
-  [self configureNTPMediator];
   [self configureContentSuggestionsCoordinator];
+  [self configureNTPMediator];
   [self configureFeedMetricsRecorder];
   [self configureNTPViewController];
 
@@ -406,11 +406,11 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 }
 
 - (void)locationBarDidBecomeFirstResponder {
-  [self.contentSuggestionsCoordinator locationBarDidBecomeFirstResponder];
+  [self.headerController locationBarBecomesFirstResponder];
 }
 
 - (void)locationBarDidResignFirstResponder {
-  [self.contentSuggestionsCoordinator locationBarDidResignFirstResponder];
+  [self.headerController locationBarResignsFirstResponder];
 }
 
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide {
@@ -557,7 +557,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 - (void)initializeNTPComponents {
   self.ntpViewController = [[NewTabPageViewController alloc] init];
   self.headerController = [[ContentSuggestionsHeaderViewController alloc] init];
-  self.ntpMediator = [[NTPHomeMediator alloc]
+  self.ntpMediator = [[NewTabPageMediator alloc]
               initWithWebState:self.webState
             templateURLService:self.templateURLService
                      URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)
@@ -640,24 +640,27 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   }
 }
 
+// Configures `self.contentSuggestionsCoordiantor`.
+- (void)configureContentSuggestionsCoordinator {
+  DCHECK(self.contentSuggestionsCoordinator);
+  self.contentSuggestionsCoordinator.webState = self.webState;
+  self.contentSuggestionsCoordinator.ntpDelegate = self;
+  self.contentSuggestionsCoordinator.feedDelegate = self;
+  [self.contentSuggestionsCoordinator start];
+}
+
 // Configures `self.ntpMediator`.
 - (void)configureNTPMediator {
   DCHECK(self.ntpMediator);
+  DCHECK(self.contentSuggestionsCoordinator.contentSuggestionsMediator);
   self.ntpMediator.headerCollectionInteractionHandler = self.headerSynchronizer;
   self.ntpMediator.browser = self.browser;
   self.ntpMediator.ntpViewController = self.ntpViewController;
   self.ntpMediator.feedControlDelegate = self;
   self.ntpMediator.consumer = self.headerController;
-}
-
-// Configures `self.contentSuggestionsCoordiantor`.
-- (void)configureContentSuggestionsCoordinator {
-  DCHECK(self.contentSuggestionsCoordinator);
-  self.contentSuggestionsCoordinator.webState = self.webState;
-  self.contentSuggestionsCoordinator.ntpMediator = self.ntpMediator;
-  self.contentSuggestionsCoordinator.ntpDelegate = self;
-  self.contentSuggestionsCoordinator.feedDelegate = self;
-  [self.contentSuggestionsCoordinator start];
+  self.ntpMediator.suggestionsMediator =
+      self.contentSuggestionsCoordinator.contentSuggestionsMediator;
+  [self.ntpMediator setUp];
 }
 
 // Configures `self.feedMetricsRecorder`.

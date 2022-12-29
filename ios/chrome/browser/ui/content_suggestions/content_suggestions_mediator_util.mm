@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/content_suggestions/mediator_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 
 #import "base/callback.h"
 #import "base/strings/sys_string_conversions.h"

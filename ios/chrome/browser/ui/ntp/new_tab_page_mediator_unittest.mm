@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_mediator.h"
 
 #import <memory>
 
@@ -18,8 +18,6 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
-#import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
@@ -41,9 +39,9 @@
 #error "This file requires ARC support."
 #endif
 
-class NTPHomeMediatorTest : public PlatformTest {
+class NewTabPageMediatorTest : public PlatformTest {
  public:
-  NTPHomeMediatorTest() {
+  NewTabPageMediatorTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
@@ -81,7 +79,7 @@ class NTPHomeMediatorTest : public PlatformTest {
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
     imageUpdater_ = OCMProtocolMock(@protocol(UserAccountImageUpdateDelegate));
-    mediator_ = [[NTPHomeMediator alloc]
+    mediator_ = [[NewTabPageMediator alloc]
                 initWithWebState:fake_web_state_.get()
               templateURLService:ios::TemplateURLServiceFactory::
                                      GetForBrowserState(
@@ -98,7 +96,7 @@ class NTPHomeMediatorTest : public PlatformTest {
   }
 
   // Explicitly disconnect the mediator.
-  ~NTPHomeMediatorTest() override { [mediator_ shutdown]; }
+  ~NewTabPageMediatorTest() override { [mediator_ shutdown]; }
 
  protected:
   web::WebTaskEnvironment task_environment_;
@@ -109,7 +107,7 @@ class NTPHomeMediatorTest : public PlatformTest {
   id consumer_;
   id imageUpdater_;
   id logo_vendor_;
-  NTPHomeMediator* mediator_;
+  NewTabPageMediator* mediator_;
   ToolbarTestNavigationManager* navigation_manager_;
   FakeUrlLoadingBrowserAgent* url_loader_;
   AuthenticationService* auth_service_;
@@ -118,7 +116,7 @@ class NTPHomeMediatorTest : public PlatformTest {
 };
 
 // Tests that the consumer has the right value set up.
-TEST_F(NTPHomeMediatorTest, TestConsumerSetup) {
+TEST_F(NewTabPageMediatorTest, TestConsumerSetup) {
   // Setup.
   OCMExpect([consumer_ setLogoVendor:logo_vendor_]);
   OCMExpect([consumer_ setLogoIsShowing:YES]);
@@ -127,33 +125,5 @@ TEST_F(NTPHomeMediatorTest, TestConsumerSetup) {
   [mediator_ setUp];
 
   // Tests.
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
-// Tests that the consumer is notified when the location bar is focused.
-TEST_F(NTPHomeMediatorTest, TestConsumerNotificationFocus) {
-  // Setup.
-  [mediator_ setUp];
-
-  OCMExpect([consumer_ locationBarBecomesFirstResponder]);
-
-  // Action.
-  [mediator_ locationBarDidBecomeFirstResponder];
-
-  // Test.
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
-// Tests that the consumer is notified when the location bar is unfocused.
-TEST_F(NTPHomeMediatorTest, TestConsumerNotificationUnfocus) {
-  // Setup.
-  [mediator_ setUp];
-
-  OCMExpect([consumer_ locationBarResignsFirstResponder]);
-
-  // Action.
-  [mediator_ locationBarDidResignFirstResponder];
-
-  // Test.
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

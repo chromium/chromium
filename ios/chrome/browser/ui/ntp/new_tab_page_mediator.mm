@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_mediator.h"
 
 #import <memory>
 
@@ -74,10 +74,10 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
                                  "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1";
 }  // namespace
 
-@interface NTPHomeMediator () <ChromeAccountManagerServiceObserver,
-                               CRWWebStateObserver,
-                               IdentityManagerObserverBridgeDelegate,
-                               SearchEngineObserving> {
+@interface NewTabPageMediator () <ChromeAccountManagerServiceObserver,
+                                  CRWWebStateObserver,
+                                  IdentityManagerObserverBridgeDelegate,
+                                  SearchEngineObserving> {
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
@@ -102,7 +102,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 @end
 
-@implementation NTPHomeMediator
+@implementation NewTabPageMediator
 
 - (instancetype)
             initWithWebState:(web::WebState*)webState
@@ -168,14 +168,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _identityObserverBridge.reset();
   _accountManagerServiceObserver.reset();
   self.accountManagerService = nil;
-}
-
-- (void)locationBarDidBecomeFirstResponder {
-  [self.consumer locationBarBecomesFirstResponder];
-}
-
-- (void)locationBarDidResignFirstResponder {
-  [self.consumer locationBarResignsFirstResponder];
 }
 
 - (void)saveContentOffsetForWebState:(web::WebState*)webState {
@@ -271,7 +263,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)webStateWasHidden:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
-  [self locationBarDidResignFirstResponder];
+  DCHECK(self.consumer);
+  [self.consumer locationBarResignsFirstResponder];
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {

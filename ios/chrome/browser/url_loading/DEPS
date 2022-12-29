@@ -3,7 +3,7 @@ specific_include_rules = {
   "^url_loading_browser_agent.mm": [
     "+ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h",
     "+ios/chrome/browser/ui/main/scene_state_browser_agent.h",
-    "+ios/chrome/browser/ui/ntp/ntp_util.h",
+    "+ios/chrome/browser/ui/ntp/new_tab_page_util.h",
     "+ios/chrome/browser/ui/ui_feature_flags.h",
   ],
 }

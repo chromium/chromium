@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -25,7 +25,7 @@
 
 namespace {
 
-class NTPTileSaverControllerTest : public BlockCleanupTest {
+class ContentSuggestionsTileSaverControllerTest : public BlockCleanupTest {
  protected:
   void SetUp() override {
     BlockCleanupTest::SetUp();
@@ -173,7 +173,7 @@ class NTPTileSaverControllerTest : public BlockCleanupTest {
   UIImage* mock_image_;
 };
 
-TEST_F(NTPTileSaverControllerTest, SaveMostVisitedToDisk) {
+TEST_F(ContentSuggestionsTileSaverControllerTest, SaveMostVisitedToDisk) {
   ntp_tiles::NTPTile image_tile = ntp_tiles::NTPTile();
   image_tile.title = u"Title";
   image_tile.url = GURL("http://image.com");
@@ -191,14 +191,14 @@ TEST_F(NTPTileSaverControllerTest, SaveMostVisitedToDisk) {
       image_tile,     // NTP tile with favicon
   };
 
-  ntp_tile_saver::SaveMostVisitedToDisk(tiles, mock_favicon_fetcher,
-                                        TestFaviconDirectory());
+  content_suggestions_tile_saver::SaveMostVisitedToDisk(
+      tiles, mock_favicon_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
 
   // Read most visited from disk.
   NSDictionary<NSURL*, NTPTile*>* saved_tiles =
-      ntp_tile_saver::ReadSavedMostVisited();
+      content_suggestions_tile_saver::ReadSavedMostVisited();
 
   EXPECT_EQ(saved_tiles.count, 2U);
 
@@ -213,7 +213,7 @@ TEST_F(NTPTileSaverControllerTest, SaveMostVisitedToDisk) {
   VerifyWithImage(image_saved_tile, image_title, image_url);
 }
 
-TEST_F(NTPTileSaverControllerTest, UpdateSingleFaviconFallback) {
+TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateSingleFaviconFallback) {
   // Set up test with 3 saved sites, 2 of which have a favicon.
   ntp_tiles::NTPTile image_tile1 = ntp_tiles::NTPTile();
   image_tile1.title = u"Title1";
@@ -233,14 +233,14 @@ TEST_F(NTPTileSaverControllerTest, UpdateSingleFaviconFallback) {
 
   ntp_tiles::NTPTilesVector tiles = {image_tile1, fallback_tile, image_tile2};
 
-  ntp_tile_saver::SaveMostVisitedToDisk(tiles, mock_favicon_fetcher,
-                                        TestFaviconDirectory());
+  content_suggestions_tile_saver::SaveMostVisitedToDisk(
+      tiles, mock_favicon_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
 
   // Read most visited from disk.
   NSDictionary<NSURL*, NTPTile*>* saved_tiles =
-      ntp_tile_saver::ReadSavedMostVisited();
+      content_suggestions_tile_saver::ReadSavedMostVisited();
 
   EXPECT_EQ(saved_tiles.count, 3U);
 
@@ -263,14 +263,14 @@ TEST_F(NTPTileSaverControllerTest, UpdateSingleFaviconFallback) {
   id mock_favicon_fetcher2 = OCMClassMock([FaviconAttributesProvider class]);
   SetupMockCallback(mock_favicon_fetcher2, {image_tile2.url},
                     {image_tile1.url, fallback_tile.url});
-  ntp_tile_saver::UpdateSingleFavicon(image_tile1.url, mock_favicon_fetcher2,
-                                      TestFaviconDirectory());
+  content_suggestions_tile_saver::UpdateSingleFavicon(
+      image_tile1.url, mock_favicon_fetcher2, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
 
   // Read most visited from disk.
   NSDictionary<NSURL*, NTPTile*>* saved_tiles_after_update =
-      ntp_tile_saver::ReadSavedMostVisited();
+      content_suggestions_tile_saver::ReadSavedMostVisited();
 
   EXPECT_EQ(saved_tiles_after_update.count, 3U);
 
@@ -286,7 +286,7 @@ TEST_F(NTPTileSaverControllerTest, UpdateSingleFaviconFallback) {
 }
 
 // Checks that the image saved for an item is deleted when the item is deleted.
-TEST_F(NTPTileSaverControllerTest, DeleteOutdatedImage) {
+TEST_F(ContentSuggestionsTileSaverControllerTest, DeleteOutdatedImage) {
   ntp_tiles::NTPTile image_tile1 = ntp_tiles::NTPTile();
   image_tile1.title = u"Title";
   image_tile1.url = GURL("http://image1.com");
@@ -303,13 +303,13 @@ TEST_F(NTPTileSaverControllerTest, DeleteOutdatedImage) {
       image_tile1,
   };
 
-  ntp_tile_saver::SaveMostVisitedToDisk(tiles, mock_favicon_fetcher,
-                                        TestFaviconDirectory());
+  content_suggestions_tile_saver::SaveMostVisitedToDisk(
+      tiles, mock_favicon_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
 
   NSDictionary<NSURL*, NTPTile*>* saved_tiles =
-      ntp_tile_saver::ReadSavedMostVisited();
+      content_suggestions_tile_saver::ReadSavedMostVisited();
   NSString* image_title1 = base::SysUTF16ToNSString(image_tile1.title);
   NSURL* image_url1 = net::NSURLWithGURL(image_tile1.url);
   NTPTile* saved_tile1 = [saved_tiles objectForKey:image_url1];
@@ -319,12 +319,12 @@ TEST_F(NTPTileSaverControllerTest, DeleteOutdatedImage) {
       image_tile2,
   };
 
-  ntp_tile_saver::SaveMostVisitedToDisk(tiles2, mock_favicon_fetcher,
-                                        TestFaviconDirectory());
+  content_suggestions_tile_saver::SaveMostVisitedToDisk(
+      tiles2, mock_favicon_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
   NSDictionary<NSURL*, NTPTile*>* saved_tiles2 =
-      ntp_tile_saver::ReadSavedMostVisited();
+      content_suggestions_tile_saver::ReadSavedMostVisited();
   NSString* image_title2 = base::SysUTF16ToNSString(image_tile2.title);
   NSURL* image_url2 = net::NSURLWithGURL(image_tile2.url);
   NTPTile* saved_tile2 = [saved_tiles2 objectForKey:image_url2];
@@ -340,7 +340,7 @@ TEST_F(NTPTileSaverControllerTest, DeleteOutdatedImage) {
 // Checks the different icon transition for an item.
 // Checks that when a fallback exists, it persists even if an image is set.
 // Checks that if a new icon is received it replaces the old one.
-TEST_F(NTPTileSaverControllerTest, UpdateEntry) {
+TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateEntry) {
   ntp_tiles::NTPTile tile = ntp_tiles::NTPTile();
 
   // Set up a red favicon.
@@ -359,12 +359,12 @@ TEST_F(NTPTileSaverControllerTest, UpdateEntry) {
   ntp_tiles::NTPTilesVector tiles = {
       tile,
   };
-  ntp_tile_saver::SaveMostVisitedToDisk(tiles, mock_favicon_image_fetcher,
-                                        TestFaviconDirectory());
+  content_suggestions_tile_saver::SaveMostVisitedToDisk(
+      tiles, mock_favicon_image_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
   NSDictionary<NSURL*, NTPTile*>* saved =
-      ntp_tile_saver::ReadSavedMostVisited();
+      content_suggestions_tile_saver::ReadSavedMostVisited();
   NTPTile* saved_tile = [saved objectForKey:ns_url];
   VerifyWithImage(saved_tile, ns_title, ns_url);
 
@@ -372,20 +372,20 @@ TEST_F(NTPTileSaverControllerTest, UpdateEntry) {
   UIImage* blue_image = CreateMockImage([UIColor blueColor]);
   EXPECT_NSNE(UIImagePNGRepresentation(red_image),
               UIImagePNGRepresentation(blue_image));
-  ntp_tile_saver::SaveMostVisitedToDisk(tiles, mock_favicon_image_fetcher,
-                                        TestFaviconDirectory());
+  content_suggestions_tile_saver::SaveMostVisitedToDisk(
+      tiles, mock_favicon_image_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
-  saved = ntp_tile_saver::ReadSavedMostVisited();
+  saved = content_suggestions_tile_saver::ReadSavedMostVisited();
   saved_tile = [saved objectForKey:ns_url];
   VerifyWithImage(saved_tile, ns_title, ns_url);
 
   // Update with fallback
-  ntp_tile_saver::SaveMostVisitedToDisk(tiles, mock_favicon_fallback_fetcher,
-                                        TestFaviconDirectory());
+  content_suggestions_tile_saver::SaveMostVisitedToDisk(
+      tiles, mock_favicon_fallback_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
-  saved = ntp_tile_saver::ReadSavedMostVisited();
+  saved = content_suggestions_tile_saver::ReadSavedMostVisited();
   saved_tile = [saved objectForKey:ns_url];
   VerifyWithFallback(saved_tile, ns_title, ns_url);
 
@@ -393,19 +393,19 @@ TEST_F(NTPTileSaverControllerTest, UpdateEntry) {
   UIImage* green_image = CreateMockImage([UIColor greenColor]);
   EXPECT_NSNE(UIImagePNGRepresentation(blue_image),
               UIImagePNGRepresentation(green_image));
-  ntp_tile_saver::SaveMostVisitedToDisk(tiles, mock_favicon_image_fetcher,
-                                        TestFaviconDirectory());
+  content_suggestions_tile_saver::SaveMostVisitedToDisk(
+      tiles, mock_favicon_image_fetcher, TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
-  saved = ntp_tile_saver::ReadSavedMostVisited();
+  saved = content_suggestions_tile_saver::ReadSavedMostVisited();
   saved_tile = [saved objectForKey:ns_url];
   // Fallback should still be present.
   VerifyWithFallbackAndImage(saved_tile, ns_title, ns_url);
 
   // Remove tile.
-  ntp_tile_saver::SaveMostVisitedToDisk(ntp_tiles::NTPTilesVector(),
-                                        mock_favicon_image_fetcher,
-                                        TestFaviconDirectory());
+  content_suggestions_tile_saver::SaveMostVisitedToDisk(
+      ntp_tiles::NTPTilesVector(), mock_favicon_image_fetcher,
+      TestFaviconDirectory());
   // Wait for all asynchronous tasks to complete.
   scoped_task_evironment_.RunUntilIdle();
   EXPECT_FALSE([[NSFileManager defaultManager]

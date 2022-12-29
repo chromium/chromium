@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_NTP_INCOGNITO_VIEW_H_
-#define IOS_CHROME_BROWSER_UI_NTP_INCOGNITO_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_UI_NTP_INCOGNITO_REVAMPED_INCOGNITO_VIEW_H_
+#define IOS_CHROME_BROWSER_UI_NTP_INCOGNITO_REVAMPED_INCOGNITO_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
@@ -11,7 +11,7 @@
 
 // The scrollview containing the views. Its content's size is constrained on its
 // superview's size.
-@interface IncognitoView : UIScrollView
+@interface RevampedIncognitoView : UIScrollView
 
 // Initialize the view with a given `frame`.
 // Set `showTopIncognitoImageAndTitle` to `YES` to have the top Incognito
@@ -40,4 +40,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_NTP_INCOGNITO_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_UI_NTP_INCOGNITO_REVAMPED_INCOGNITO_VIEW_H_

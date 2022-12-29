@@ -91,14 +91,6 @@ imageset("ntp_opentabs_list_item") {
   ]
 }
 
-imageset("incognito_icon") {
-  sources = [
-    "incognito_icon.imageset/Contents.json",
-    "incognito_icon.imageset/incognito_icon@2x.png",
-    "incognito_icon.imageset/incognito_icon@3x.png",
-  ]
-}
-
 imageset("ntp_opentabs_recent_arrow") {
   sources = [
     "ntp_opentabs_recent_arrow.imageset/Contents.json",

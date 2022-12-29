@@ -44,7 +44,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -88,14 +87,15 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 }
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
-@property(nonatomic, strong)
-    ContentSuggestionsMediator* contentSuggestionsMediator;
 @property(nonatomic, strong) ActionSheetCoordinator* alertCoordinator;
 @property(nonatomic, assign) BOOL contentSuggestionsEnabled;
 // Authentication Service for the user's signed-in state.
 @property(nonatomic, assign) AuthenticationService* authService;
 // Coordinator in charge of handling sharing use cases.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
+// Redefined to not be readonly.
+@property(nonatomic, strong)
+    ContentSuggestionsMediator* contentSuggestionsMediator;
 
 @end
 
@@ -103,7 +103,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 - (void)start {
   DCHECK(self.browser);
-  DCHECK(self.ntpMediator);
   if (self.started) {
     // Prevent this coordinator from being started twice in a row
     return;
@@ -174,21 +173,16 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
     self.contentSuggestionsMediator.consumer =
         self.contentSuggestionsViewController;
-
-    self.ntpMediator.suggestionsMediator = self.contentSuggestionsMediator;
-    [self.ntpMediator setUp];
 }
 
 - (void)stop {
-  [self.ntpMediator shutdown];
-  self.ntpMediator = nil;
-  // Reset the observer bridge object before setting
-  // `contentSuggestionsMediator` nil.
-  if (_startSurfaceObserver) {
+    // Reset the observer bridge object before setting
+    // `contentSuggestionsMediator` nil.
+    if (_startSurfaceObserver) {
     StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
         ->RemoveObserver(_startSurfaceObserver.get());
     _startSurfaceObserver.reset();
-  }
+    }
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
   self.contentSuggestionsViewController = nil;
@@ -244,14 +238,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 - (void)reload {
   [self.contentSuggestionsMediator reloadAllData];
-}
-
-- (void)locationBarDidBecomeFirstResponder {
-  [self.ntpMediator locationBarDidBecomeFirstResponder];
-}
-
-- (void)locationBarDidResignFirstResponder {
-  [self.ntpMediator locationBarDidResignFirstResponder];
 }
 
 #pragma mark - ContentSuggestionsMenuProvider

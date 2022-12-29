@@ -49,8 +49,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_favicon_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
-#import "ios/chrome/browser/ui/content_suggestions/mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -59,7 +60,6 @@
 #import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/metrics/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
-#import "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -486,7 +486,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 - (void)onMostVisitedURLsAvailable:
     (const ntp_tiles::NTPTilesVector&)mostVisited {
   // This is used by the content widget.
-  ntp_tile_saver::SaveMostVisitedToDisk(
+  content_suggestions_tile_saver::SaveMostVisitedToDisk(
       mostVisited, self.faviconMediator.mostVisitedAttributesProvider,
       app_group::ContentWidgetFaviconsFolder());
 
@@ -515,7 +515,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)onIconMadeAvailable:(const GURL&)siteURL {
   // This is used by the content widget.
-  ntp_tile_saver::UpdateSingleFavicon(
+  content_suggestions_tile_saver::UpdateSingleFavicon(
       siteURL, self.faviconMediator.mostVisitedAttributesProvider,
       app_group::ContentWidgetFaviconsFolder());
 

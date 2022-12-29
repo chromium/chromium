@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MEDIATOR_UTIL_H_
-#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MEDIATOR_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_MEDIATOR_UTIL_H_
+#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_MEDIATOR_UTIL_H_
 
 #include "components/ntp_snippets/content_suggestion.h"
 #include "components/ntp_snippets/status.h"
@@ -48,4 +48,4 @@ ContentSuggestionsMostVisitedActionItem* HistoryActionItem();
 // Creates and returns a Whats New action item.
 ContentSuggestionsMostVisitedActionItem* WhatsNewActionItem();
 
-#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MEDIATOR_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_MEDIATOR_UTIL_H_

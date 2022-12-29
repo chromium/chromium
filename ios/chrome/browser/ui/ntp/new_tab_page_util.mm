@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/ntp_util.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_util.h"
 
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -20,8 +20,9 @@ bool IsURLNewTabPage(const GURL& url) {
 }
 
 bool IsVisibleURLNewTabPage(web::WebState* web_state) {
-  if (!web_state)
+  if (!web_state) {
     return false;
+  }
   NewTabPageTabHelper* ntp_helper =
       NewTabPageTabHelper::FromWebState(web_state);
   return ntp_helper && ntp_helper->IsActive();
