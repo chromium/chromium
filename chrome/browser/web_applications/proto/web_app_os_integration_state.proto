@@ -50,5 +50,8 @@ message WebAppOsIntegrationState {
   optional ShortcutDescription shortcut = 1;
   optional ProtocolsHandled protocols_handled = 3;
   optional RunOnOsLogin run_on_os_login = 4;
+
   // Add data states for other OS integration hooks here.
+  // New fields added to this message must also be added to:
+  // OsStatesDebugValue()
 }

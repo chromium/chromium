@@ -12,8 +12,10 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -54,6 +56,58 @@ std::string OsIntegrationStateToString(OsIntegrationState state) {
     case OsIntegrationState::kDisabled:
       return "kDisabled";
   }
+}
+
+std::string GetRunOnOsLoginMode(const proto::RunOnOsLoginMode& mode) {
+  switch (mode) {
+    case proto::RunOnOsLoginMode::RUN_ON_OS_LOGIN_MODE_UNSPECIFIED:
+      return "unspecified";
+    case proto::RunOnOsLoginMode::NOT_RUN:
+      return "not_run";
+    case proto::RunOnOsLoginMode::WINDOWED:
+      return "windowed";
+    case proto::RunOnOsLoginMode::MINIMIZED:
+      return "minimized";
+  }
+}
+
+base::Value OsStatesDebugValue(
+    const proto::WebAppOsIntegrationState& current_states) {
+  base::Value::Dict debug_dict;
+
+  if (current_states.has_shortcut()) {
+    base::Value::Dict shortcut_data;
+    shortcut_data.Set("title", current_states.shortcut().title());
+    shortcut_data.Set("description", current_states.shortcut().description());
+    base::Value::Dict icon_data;
+    for (const auto& data : current_states.shortcut().icon_data_any()) {
+      icon_data.Set(base::NumberToString(data.icon_size()),
+                    syncer::GetTimeDebugString(
+                        syncer::ProtoTimeToTime(data.timestamp())));
+    }
+    shortcut_data.Set("icon_size_to_timestamp_map",
+                      base::Value(std::move(icon_data)));
+    debug_dict.Set("shortcut_descriptions",
+                   base::Value(std::move(shortcut_data)));
+  }
+
+  if (current_states.has_protocols_handled()) {
+    base::Value::Dict protocol_data;
+    for (const auto& data : current_states.protocols_handled().protocols()) {
+      protocol_data.Set(data.protocol(), data.url());
+    }
+    debug_dict.Set("protocols_handled", base::Value(std::move(protocol_data)));
+  }
+
+  if (current_states.has_run_on_os_login() &&
+      current_states.run_on_os_login().has_run_on_os_login_mode()) {
+    debug_dict.Set(
+        "run_on_os_login",
+        GetRunOnOsLoginMode(
+            current_states.run_on_os_login().run_on_os_login_mode()));
+  }
+
+  return base::Value(std::move(debug_dict));
 }
 
 }  // namespace
@@ -868,8 +922,8 @@ base::Value WebApp::AsDebugValue() const {
   root.Set("always_show_toolbar_in_fullscreen",
            always_show_toolbar_in_fullscreen_);
 
-  // TODO(crbug.com/1295044) : Add logic to parse and show data.
-  root.Set("current_os_integration_states", base::Value());
+  root.Set("current_os_integration_states",
+           OsStatesDebugValue(current_os_integration_states_));
 
   if (isolation_data_.has_value()) {
     root.Set("isolation_data", isolation_data_->AsDebugValue());

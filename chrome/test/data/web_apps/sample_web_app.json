@@ -12,7 +12,7 @@
    "client_data": {
       "system_web_app_data": null
    },
-   "current_os_integration_states": null,
+   "current_os_integration_states": {},
    "dark_mode_background_color": "none",
    "dark_mode_theme_color": "rgba(34,214,187,1)",
    "data_size_in_bytes": "3687618762",
