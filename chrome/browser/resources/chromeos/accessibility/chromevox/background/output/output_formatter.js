@@ -106,7 +106,7 @@ export class OutputFormatter {
     } else if (this.params_.node[token] !== undefined) {
       this.formatAsFieldAccessor_(this.params_, token, options);
     } else if (outputTypes.OUTPUT_STATE_INFO[token]) {
-      this.output_.formatAsStateValue_(this.params_, token, options);
+      this.formatAsStateValue_(this.params_, token, options);
     } else if (token === 'phoneticReading') {
       this.output_.formatPhoneticReading_(this.params_);
     } else if (token === 'listNestedLevel') {
@@ -200,6 +200,37 @@ export class OutputFormatter {
     }
     this.output_.append_(buff, value, options);
     formatLog.writeTokenWithValue(token, value);
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatAsStateValue_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    options.annotation.push('state');
+    const stateInfo = outputTypes.OUTPUT_STATE_INFO[token];
+    let resolvedInfo = {};
+    resolvedInfo = node.state[/** @type {StateType} */ (token)] ? stateInfo.on :
+                                                                  stateInfo.off;
+    if (!resolvedInfo) {
+      return;
+    }
+    if (this.output_.formatAsSpeech && resolvedInfo.earcon) {
+      options.annotation.push(
+          new outputTypes.OutputEarconAction(resolvedInfo.earcon),
+          node.location || undefined);
+    }
+    const msgId = this.output_.formatAsBraille ? resolvedInfo.msgId + '_brl' :
+                                                 resolvedInfo.msgId;
+    const msg = Msgs.getMsg(msgId);
+    this.output_.append_(buff, msg, options);
+    formatLog.writeTokenWithValue(token, msg);
   }
 
   /**

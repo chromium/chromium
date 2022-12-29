@@ -671,32 +671,6 @@ export class Output {
   }
 
   /** @override */
-  formatAsStateValue_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    options.annotation.push('state');
-    const stateInfo = outputTypes.OUTPUT_STATE_INFO[token];
-    let resolvedInfo = {};
-    resolvedInfo = node.state[/** @type {StateType} */ (token)] ? stateInfo.on :
-                                                                  stateInfo.off;
-    if (!resolvedInfo) {
-      return;
-    }
-    if (this.formatOptions_.speech && resolvedInfo.earcon) {
-      options.annotation.push(
-          new outputTypes.OutputEarconAction(resolvedInfo.earcon),
-          node.location || undefined);
-    }
-    const msgId = this.formatOptions_.braille ? resolvedInfo.msgId + '_brl' :
-                                                resolvedInfo.msgId;
-    const msg = Msgs.getMsg(msgId);
-    this.append_(buff, msg, options);
-    formatLog.writeTokenWithValue(token, msg);
-  }
-
-  /** @override */
   formatPhoneticReading_(data) {
     const buff = data.outputBuffer;
     const node = data.node;
@@ -1807,6 +1781,11 @@ export class Output {
   /** @override */
   get formatAsBraille() {
     return this.formatOptions_.braille;
+  }
+
+  /** @override */
+  get formatAsSpeech() {
+    return this.formatOptions_.speech;
   }
 }
 
