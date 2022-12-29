@@ -8587,6 +8587,14 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
     // frame detach if the kStopCancellingNavigationsOnCommitAndNewNavigation
     // flag is enabled, or for all pending deletion cases otherwise.
     ResetAllNavigationsInSubtreeForFrameDetach();
+  } else {
+    CHECK(
+        pending_deletion_reason == PendingDeletionReason::kSwappedOut ||
+        base::FeatureList::IsEnabled(kAvoidUnnecessaryNavigationCancellations));
+    // The pending deletion state is caused by swapping out the RFH. Reset only
+    // the navigations that are owned by or will be using the swapped out RFH,
+    // and also reset all navigations happening in the descendant frames.
+    ResetNavigationsUsingSwappedOutRFHAndAllNavigationsInSubtree();
   }
 
   for (std::unique_ptr<FrameTreeNode>& child_frame : children_) {
@@ -8667,6 +8675,34 @@ void RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree() {
 
   if (self) {
     check_deletion_for_bug_1276535_ = false;
+  }
+}
+
+void RenderFrameHostImpl::
+    ResetNavigationsUsingSwappedOutRFHAndAllNavigationsInSubtree() {
+  // Only delete the navigation owned by the swapped out RFH or those that
+  // intend to use the current RFH.
+  ResetOwnedNavigationRequests(
+      NavigationDiscardReason::kRenderFrameHostDestruction);
+  if (frame_tree_node_->navigation_request() &&
+      frame_tree_node_->navigation_request()->state() >=
+          NavigationRequest::WILL_PROCESS_RESPONSE &&
+      frame_tree_node_->navigation_request()->GetRenderFrameHost() == this) {
+    // It's possible for a RenderFrameHost to already have been picked for a
+    // navigation but the NavigationRequest's ownership hasn't been moved to the
+    // RenderFrameHost yet, if the navigation is deferred by a
+    // NavigationThrottle or CommitDeferringCondition. We need to reset the
+    // NavigationRequest to prevent it from trying to commit in the pending
+    // deletion RFH.
+    frame_tree_node_->ResetNavigationRequest(
+        NavigationDiscardReason::kRenderFrameHostDestruction);
+  }
+
+  // For the child frames, we should delete all ongoing navigations instead of
+  // just the one using the current RFH, because the child frames will be
+  // deleted when this RFH gets unloaded.
+  for (auto& child : children_) {
+    child->current_frame_host()->ResetAllNavigationsInSubtreeForFrameDetach();
   }
 }
 

@@ -3488,6 +3488,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // this frame's subtree.
   void PendingDeletionCheckCompletedOnSubtree();
 
+  // In this RenderFramehost, cancels every:
+  // - Non-pending commit NavigationRequest owned by the FrameTreeNode that
+  // intends to commit in this RFH
+  // - Pending commit NavigationRequest owned by the RenderFrameHost
+  // In this RenderFrameHost's children, calls
+  // `ResetAllNavigationsInSubtreeForFrameDetach()` to cancel all navigations
+  // that are ongoing in the descendant FrameTreeNodes.
+  // This function should only be called on swapped out RenderFrameHosts.
+  void ResetNavigationsUsingSwappedOutRFHAndAllNavigationsInSubtree();
+
   // In this RenderFrameHost and its children, removes every:
   // - Non-pending commit NavigationRequest owned by the FrameTreeNode
   // - Pending commit NavigationRequest owned by the RenderFrameHost
