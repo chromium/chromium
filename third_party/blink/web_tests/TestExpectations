@@ -6040,6 +6040,9 @@ crbug.com/1308932 compositing/overflow/non-reparented-overlay-scrollbars.html [ 
 crbug.com/1308932 scrollbars/auto-scrollbar-fades-out.html [ Failure ]
 crbug.com/1308932 scrollbars/overlay-scrollbars-within-overflow-scroll.html [ Failure ]
 
+# Temporarily disabled to land https://crrev.com/c/4129514
+crbug.com/1403432 http/tests/devtools/sourcemap-section-warning.js [ Failure Pass Timeout ]
+
 # Sheriff 2022-06-24
 crbug.com/1339211 [ Mac ] external/wpt/css/css-text-decor/text-decoration-thickness-fixed.html [ Failure Pass ]
 crbug.com/1339291 [ Mac ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure Pass ]
