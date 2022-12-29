@@ -2983,6 +2983,16 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-004.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-005.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-manual-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-manual-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-manual-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-manual-004.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-manual-005.html [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/embedded-content/the-img-element/responsive-image-select-print.html [ Failure ]
 crbug.com/626703 [ Win11 ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/web-animations/idlharness.window.html [ Crash Failure ]
