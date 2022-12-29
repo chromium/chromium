@@ -658,6 +658,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1595492813686795610">Poteka nadgradnja Linuxa</translation>
 <translation id="1596286373007273895">Na voljo</translation>
 <translation id="1596709061955594992">Bluetooth je izklopljen. Če si želite ogledati razpoložljive naprave, vklopite Bluetooth.</translation>
+<translation id="1596780725094407793">– vsebuje poddomene</translation>
 <translation id="1598233202702788831">Skrbnik je onemogočil posodobitve.</translation>
 <translation id="1600857548979126453">Dostopajte do podsistema iskalnika napak na strani</translation>
 <translation id="1601560923496285236">Uporabi</translation>
@@ -2897,6 +2898,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3617891479562106823">Ozadja niso na voljo. Poskusite znova pozneje.</translation>
 <translation id="3619115746895587757">Kapučino</translation>
 <translation id="3620136223548713675">Geolokacija</translation>
+<translation id="362023940451053340">V računu Google, za <ph name="ACCOUNT" />.</translation>
 <translation id="3621807901162200696">Pomagajte izboljšati funkcije sistema Chrome OS in njegovo delovanje</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikacijo}one{# aplikacijo}two{# aplikaciji}few{# aplikacije}other{# aplikacij}}</translation>
 <translation id="362333465072914957">Čakanje, da overitelj potrdil izda potrdilo</translation>
@@ -5634,6 +5636,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6169967265765719844">Dovoljenja za igre in aplikacije, nameščene prek storitve Steam, je mogoče upravljati v <ph name="LINK_BEGIN" />nastavitvah aplikacije Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6170498031581934115">Mosta za odpravljanje težav s sistemom Android (ADB) ni bilo mogoče omogočiti. Odprite nastavitve in poskusite znova.</translation>
+<translation id="6171779718418683144">Vprašaj ob vsakem obisku</translation>
 <translation id="617213288191670920">Noben jezik ni dodan</translation>
 <translation id="6173623053897475761">Znova vnesite kodo PIN</translation>
 <translation id="6175314957787328458">GUID Microsoftove domene</translation>
@@ -6768,6 +6771,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7235737137505019098">Na varnostnem ključu ni dovolj prostora za dodatne račune.</translation>
 <translation id="7235873936132740888">Ko kliknete določene vrste povezav, lahko spletna mesta obravnavajo posebna opravila, kot je ustvarjanje novega sporočila v e-poštnem odjemalcu ali dodajanje novih dogodkov v spletni koledar.</translation>
 <translation id="7238609589076576185">Naglasno znamenje je vstavljeno.</translation>
+<translation id="7238665222668706269">Googlov upravitelj gesel <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">Naprava <ph name="DEVICE_NAME" /> je preklicala prenos.</translation>
 <translation id="7240339475467890413">Se želite povezati z novo dostopno točko?</translation>
 <translation id="7241389281993241388">Prijavite se v <ph name="TOKEN_NAME" />, da uvozite potrdilo odjemalca.</translation>
@@ -7510,6 +7514,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7920363873148656176">Spletno mesto <ph name="ORIGIN" /> si lahko ogleda datoteko <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Dodajte besede, za katere želite, da jih preverjanje črkovanja preskoči</translation>
 <translation id="7921347341284348270">V tem upravljanem računu si ni mogoče ogledati obvestil telefona. Poskusite z drugim računom. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 razširitev</translation>
 <translation id="7922935920104868876">Prikaži podrobnosti o blokiranju piškotkov drugih mest v anonimnem načinu</translation>
 <translation id="7923564237306226146">Nadgradnja Linuxa je dokončana</translation>
 <translation id="7924358170328001543">Napaka pri posredovanju vrat</translation>
@@ -7897,6 +7902,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8263744495942430914">Stran <ph name="FULLSCREEN_ORIGIN" /> je onemogočila miškin kazalec.</translation>
 <translation id="8264024885325823677">To nastavitev upravlja skrbnik.</translation>
 <translation id="8264718194193514834">Razširitev »<ph name="EXTENSION_NAME" />« je sprožila celozaslonski način.</translation>
+<translation id="8265018477030547118">Samo v tej napravi</translation>
 <translation id="826511437356419340">Izbran je način pregleda okna. Povlecite, če se želite premikati, ali pritisnite tabulatorko, če uporabljate tipkovnico.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Anonimno okno se ne bo odprlo po vnovičnem zagonu.}one{{COUNT} anonimno okno se ne bo znova odprlo po vnovičnem zagonu.}two{{COUNT} anonimni okni se ne bosta znova odprli po vnovičnem zagonu.}few{{COUNT} anonimna okna se ne bodo znova odprla po vnovičnem zagonu.}other{{COUNT} anonimnih oken se ne bo znova odprlo po vnovičnem zagonu.}}</translation>
 <translation id="8266947622852630193">Vsi načini vnosa</translation>
@@ -8304,6 +8310,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Prijava ni uspela, ker ni bilo mogoče preveriti gesla. Obrnite se na skrbnika ali poskusite znova.</translation>
 <translation id="8657393004602556571">Ali želite zavreči povratne informacije?</translation>
+<translation id="8657762806752649049">V račun Google, za <ph name="ACCOUNT" />.</translation>
 <translation id="8661290697478713397">Odpri povezavo v oknu brez bele&amp;ženja zgodovine</translation>
 <translation id="8662671328352114214">Pridružitev omrežju <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Postopek traja dlje, kot je pričakovano. Lahko preskočite ali počakate, da se dokonča.</translation>

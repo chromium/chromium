@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">ÉÉÉÉ</translation>
 <translation id="1013952917065545813">Ide visszatérve újra megnyithatja a nemrég bezárt lapokat</translation>
 <translation id="1016495303386450659">Elem frissítve</translation>
+<translation id="1035980983510608210">Az összes lap bezárásával a rögzített lapok is bezáródnak.</translation>
 <translation id="1044891598689252897">A webhelyek a megszokott módon fognak működni</translation>
 <translation id="1049743911850919806">Inkognitó mód</translation>
 <translation id="105093091697134113">Az alábbi fiókokhoz olyan jelszavak tartoznak, amelyek harmadik félhez kapcsolódó adatszivárgás során vagy megtévesztő webhelyen beírva nyilvánosságra kerültek. A fiókok biztonságának megőrzése érdekében azonnal módosítsa ezeket a jelszavakat.</translation>
@@ -208,6 +209,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2578571896248130439">Weboldal küldése</translation>
 <translation id="2584132361465095047">Fiók hozzáadása...</translation>
 <translation id="2600682495497606169">Webhely cookie-jainak törlése</translation>
+<translation id="2609008503159898744">Bezárja az összes lapot?</translation>
 <translation id="2625189173221582860">Jelszó vágólapra másolva</translation>
 <translation id="2626236249646841566">Ellenőrizze a kapcsolatot, majd próbáljon újból bejelentkezni.</translation>
 <translation id="2637313651144986786">Lapok keresése…</translation>
@@ -299,6 +301,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3174662312949010067">A többi eszközén is használhatja mentett jelszavait.</translation>
 <translation id="3175081911749765310">Webszolgáltató</translation>
 <translation id="3178650076442119961">Ma volt aktív</translation>
+<translation id="3181261441371833039">Csak a nem rögzített lapok bezárása</translation>
 <translation id="3181825792072797598">Szinkronizálás bekapcsolása</translation>
 <translation id="3181954750937456830">Biztonságos Böngészés (megvédi Önt és eszközét a veszélyes webhelyekkel szemben)</translation>
 <translation id="3184767182050912705">Feloldás a következővel: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>

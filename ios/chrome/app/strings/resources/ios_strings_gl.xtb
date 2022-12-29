@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Podes volver aquí para abrir de novo as pestanas que pechaches recentemente</translation>
 <translation id="1016495303386450659">Actualizouse o elemento</translation>
+<translation id="1035980983510608210">Ao pechar todas as pestanas, tamén se cerrarán as fixadas.</translation>
 <translation id="1044891598689252897">Os sitios funcionarán con normalidade</translation>
 <translation id="1049743911850919806">Modo de incógnito</translation>
 <translation id="105093091697134113">As contas seguintes utilizan contrasinais que quedaron expostas nunha violación da seguranza dos datos de terceiros ou que entraron nun sitio web enganoso. Cámbiaos inmediatamente para protexer as túas contas.</translation>
@@ -208,6 +209,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2578571896248130439">Enviar páxina web</translation>
 <translation id="2584132361465095047">Engadir conta...</translation>
 <translation id="2600682495497606169">Borrar cookies dos sitios</translation>
+<translation id="2609008503159898744">Queres pechar todas as pestanas?</translation>
 <translation id="2625189173221582860">Copiouse o contrasinal</translation>
 <translation id="2626236249646841566">Comproba a túa conexión e tenta iniciar sesión de novo.</translation>
 <translation id="2637313651144986786">Busca nas pestanas…</translation>
@@ -299,6 +301,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3174662312949010067">Tamén podes utilizar os contrasinais gardados nos teus outros dispositivos.</translation>
 <translation id="3175081911749765310">Servizos web</translation>
 <translation id="3178650076442119961">Dispositivo activo hoxe</translation>
+<translation id="3181261441371833039">Pechar só pestanas non fixadas</translation>
 <translation id="3181825792072797598">Activar sincronización</translation>
 <translation id="3181954750937456830">Navegación segura (protección para ti e o teu dispositivo contra os sitios perigosos)</translation>
 <translation id="3184767182050912705">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
@@ -751,6 +754,7 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="6476800141292307438">Traducindo a páxina ao <ph name="LANGUAGE" />. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="648164694371393720">Produciuse un erro de autenticación</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
+<translation id="6495429111159337775">Usar e gardar contrasinais da túa Conta de Google</translation>
 <translation id="6497772452874122664">Se confías en <ph name="TIME" />, podes usar un contrasinal gardado doutro sitio.
 
 Tenta usar un contrasinal distinto para cada sitio.</translation>

@@ -863,6 +863,7 @@
 
       如果此政策已停用或未设置，远程协助主机会在用户的环境中运行，而且远程用户将无法与本地用户的桌面设备上需有较高权限才能使用的窗口交互。</translation>
 <translation id="1837165432382702436">页面的高度（以微米为单位）</translation>
+<translation id="1838910874018595451">Kerberos 票据的预填充配置</translation>
 <translation id="1843117931376765605">用户策略的更新频率</translation>
 <translation id="1844620919405873871">配置快速解锁相关政策。</translation>
 <translation id="1844972978764975668">允许向 Google 服务器发送查询以检索准确的时间戳</translation>
@@ -882,6 +883,7 @@
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 已设置，系统便会应用它，否则就会应用用户的个人设置。
 
       此政策中的网址不应与通过 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 配置的网址冲突。如果它们冲突，此政策优先于 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />。</translation>
+<translation id="1858775210076906272">Kerberos 预填充配置</translation>
 <translation id="1861206724856734193">设置一系列规则，防止数据泄露。</translation>
 <translation id="1862267110714201519">停用“ghost 窗口”功能。</translation>
 <translation id="1865417998205858223">密钥使用权限</translation>
@@ -986,6 +988,7 @@
 
       如果此政策和 <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> 都已启用，而且 DownloadRestrictions 设为屏蔽危险文件类型，系统会以 DownloadRestrictions 中针对下载文件的屏蔽设置为准。例如，倘若此政策设为允许从网域“website1.com”下载具有扩展名“exe”的文件，同时 DownloadRestrictions 设为屏蔽恶意下载内容和危险文件类型，系统仍会在所有网域中屏蔽文件类型扩展名为“exe”的下载文件。如果 DownloadRestrictions 未设为屏蔽危险文件类型，此政策中指定的文件类型将不会在所列网域中触发基于文件类型扩展名的下载警告。不妨详细了解 DownloadRestrictions (https://chromeenterprise.google/policies/?policy=DownloadRestrictions)。</translation>
 <translation id="1954612656043024615">启用“共享剪贴板”功能</translation>
+<translation id="1960059835237529462">允许向用户显示弹出式提醒“<ph name="IOS_NAME" /> App Store 评分”</translation>
 <translation id="1960416154405676350">启用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
 <translation id="1961091374249454164">此政策仅适用于受管理的访客会话。
       通过设置此政策，您可指定一个扩展程序 ID 列表，以表明要从受限受管理访客会话清理过程中排除哪些扩展程序（请参阅 <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />）。
@@ -1007,6 +1010,11 @@
 <translation id="1980777339173013601">除非已通过其他方式关闭 ARC，否则当此政策设为 True 或未设置时，用户可以使用 ARC。将此政策设为 False 意味着禁止独立用户使用 ARC。
 
       仅当 ARC 未运行时（例如 Chrome 操作系统启动时），对此政策做出的更改才会生效。</translation>
+<translation id="1982507511322683896">旨在为手动创建的新票据指定建议的 <ph name="KRB5_CONFIG" /> 配置。
+
+      如果“KerberosUseCustomPrefilledConfig”政策已启用：系统会使用此政策的值作为建议的配置，并会将其显示在 Kerberos 身份验证对话框内的“高级”部分中。如果此政策设为空字符串或未设置，系统会删除建议的 <ph name="PRODUCT_OS_NAME" /> 配置。如果此政策未设置，也会发生同样的情况。
+
+      如果“KerberosUseCustomPrefilledConfig”政策已停用：系统不会使用此政策的值。</translation>
 <translation id="1985598967415986700">“用户代理字符串缩短”功能将可通过现场试验和源试用进行控制。</translation>
 <translation id="1987789058026551147">启用设备自助服务终端会话报告功能</translation>
 <translation id="1988345404999458987">提供可用打印服务器的配置。
@@ -1257,6 +1265,7 @@
 <translation id="2204753382813641270">控制任务栏是否自动隐藏</translation>
 <translation id="2208976000652006649">在使用 POST 的搜索网址中所需的参数</translation>
 <translation id="2213059592185933570">允许创建漫游个人资料</translation>
+<translation id="2213342458177721585">启用设备级印地语 Inscript 布局。</translation>
 <translation id="2215238871726750562">如果此政策设为 True，系统会阻止浏览器窗口在会话开始时启动。
 
       如果此政策设为 False 或未设置，系统会允许窗口启动。
@@ -1722,6 +1731,7 @@
 <translation id="2664682171745499686">禁止在特定网域中针对相似域名显示警告</translation>
 <translation id="2665422249821137126">在登录屏幕上启用大号光标</translation>
 <translation id="2667894101494585925">启用优化指南提取功能</translation>
+<translation id="2669157090883237118">不更改建议的 <ph name="PRODUCT_OS_NAME" /> 配置。</translation>
 <translation id="2672012807430078509">控制是否允许将 NTLM 作为 SMB 装载功能的身份验证协议</translation>
 <translation id="2673363037046384711">最终用户可以启用或停用高效模式。</translation>
 <translation id="2678503605767349615">必需的设备级客户端证书</translation>
@@ -2273,6 +2283,8 @@
 
       此政策需要额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
 <translation id="3159375329008977062">允许用户通过界面导出/导入 Crostini 容器</translation>
+<translation id="3163167792874598128">如果此政策未设置或已启用，弹出式提醒“App Store 评分”可能每年最多向用户显示 1 次。
+如果此政策已停用，系统将不会向用户显示弹出式提醒“App Store 评分”。</translation>
 <translation id="3164531087779621747">打印 PostScript 模式</translation>
 <translation id="3165468162820163252">此政策用于控制是让系统始终在启动时加载登录屏幕的 WebUI 部分，还是仅在显示该部分之前加载它。此政策适用于登录屏幕。
 
@@ -2540,6 +2552,7 @@
       如需查看可用变量的列表，请访问 https://support.google.com/chrome/a?p=Supported_directory_variables。
 
       如果您未设置此政策，系统将会使用默认的个人资料路径，而用户可以使用“--user-data-dir”命令行标记来替换此路径。</translation>
+<translation id="3380801667330555918">为 Kerberos 票据更改预填充配置</translation>
 <translation id="338149029069528354">不清除本地用户数据</translation>
 <translation id="3381968327636295719">默认情况下托管主机浏览器</translation>
 <translation id="3387211681524224831">如果此政策已启用，系统将不会保存浏览记录，并且会停用标签页同步功能，用户则无法更改相关设置。
@@ -2574,6 +2587,11 @@
 <translation id="3412937883532015092">如果此政策设为一个数字，则意味着在打开备用浏览器之前，<ph name="PRODUCT_NAME" /> 会先按照与该数字等同的毫秒数显示一条消息。
 
       如果此政策未设置或设为 0，当用户要前往指定的网址时，系统会立即在备用浏览器中打开相应网页。</translation>
+<translation id="3413763534078822244">此政策已被弃用，请改用 <ph name="USER_BOREALIS_ALLOWED_NAME" />。
+
+      控制该设备能否使用 <ph name="BOREALIS_NAME" />。
+
+      如果此政策设为 false，该设备的所有用户都将无法使用 <ph name="BOREALIS_NAME" />。否则（如果此政策未设置或设为 true），仅当未被任何其他政策/设置停用时，<ph name="BOREALIS_NAME" /> 才可用。</translation>
 <translation id="3415954062311826850">此政策在 Arc 中不受支持。</translation>
 <translation id="34160070798637152">控制设备级网络配置。</translation>
 <translation id="3417130629744653218">允许网站查询可用的付款方式。</translation>
@@ -3537,6 +3555,7 @@
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="4389073105055031853">允许用户管理所有证书</translation>
 <translation id="4389091865841123886">通过 TPM 机制配置远程认证。</translation>
+<translation id="4389113579547582722">允许显示弹出式提醒“App Store 评分”</translation>
 <translation id="4394840953265135019">要下载的压缩对象的网址。对象可以使用 gzip、bzip2、lzma 或 zstd 进行压缩，待下载完毕后，系统会自动检测压缩格式。对象必须经过压缩，否则无法被系统自动检测到。</translation>
 <translation id="439661169333921592">禁止在登录屏幕上使用键盘焦点突出显示</translation>
 <translation id="4397045637922200204">停用帐号恢复服务</translation>
@@ -3903,6 +3922,11 @@
           如果未设置此政策，则“单声道音频”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="4768446404233019970">在传输层安全协议 (TLS) 中启用 3DES 加密套件</translation>
 <translation id="4770334626033858263">用于生成和验证家长访问码的配置。</translation>
+<translation id="4773997835955617342">旨在为手动创建的新票据更改建议的 <ph name="KRB5_CONFIG" /> 配置。
+
+      如果此政策已启用，系统会使用“KerberosCustomPrefilledConfig”政策的值作为建议的配置，并会将其显示在 Kerberos 身份验证对话框内的“高级”部分中。
+
+      如果此政策已停用或未设置，系统会改用建议的 <ph name="PRODUCT_OS_NAME" /> 配置。请注意，它也会显示在 Kerberos 身份验证对话框内的“高级”部分中。</translation>
 <translation id="4774030790286815890">如果启用此设置，用户将能够选择启用 Phone Hub 功能，以便在 Chrome 操作系统设备上与其手机互动。
 
       如果停用此设置，用户将无法选择启用 Phone Hub 功能。
@@ -6012,6 +6036,8 @@
 
       指定要在 <ph name="PRODUCT_NAME" /> 启动时向其应用的实验性设置。指定的实验性设置仅会应用于登录屏幕。通过此政策设定的实验性设置不会反映在用户会话中。</translation>
 <translation id="6857240169209507953">禁止 <ph name="BOREALIS_NAME" /> 在设备上运行</translation>
+<translation id="6857372417233723544">通过设置此政策，您可为 <ph name="PRODUCT_OS_NAME" /> 启用印地语 Inscript 布局。
+如果此政策设为 false 或未设置，布局将不可用。需要重新启动才能生效。</translation>
 <translation id="685769593149966548">强制启用 YouTube“严格”受限模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 或更高版本</translation>
 <translation id="68818134518270542">通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
@@ -6936,6 +6962,7 @@
 
           如果未设置此政策，默认情况下，无障碍功能快捷方式在登录屏幕上会处于启用状态。</translation>
 <translation id="7777535871204167559">以只读模式处理外部存储设备</translation>
+<translation id="7781452670568828399">更改建议的 <ph name="PRODUCT_OS_NAME" /> 配置。</translation>
 <translation id="7784062550705119230">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" />，您便可通过设置 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="7788511847830146438">根据个人资料</translation>
 <translation id="7788632499792081231">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以使用剪贴板网站权限。这并不涵盖与相应格式匹配的源上的所有剪贴板操作。例如，用户仍能使用键盘快捷键进行粘贴，因为此操作不受剪贴板网站权限的限制。
@@ -8378,6 +8405,7 @@
 
       此政策只是一项暂时性措施，会从 <ph name="PRODUCT_NAME" /> 的未来版本中移除。移除此政策后，<ph name="PRODUCT_NAME" /> 将始终都能查询其他 DNS 类型。</translation>
 <translation id="9167719789236691545">在 <ph name="PRODUCT_OS_NAME" />的“文件”应用中停用 Google 云端硬盘</translation>
+<translation id="9172911925443428317">不允许显示弹出式提醒“App Store 评分”</translation>
 <translation id="9180108183162961002">允许通过浏览器访客模式登录</translation>
 <translation id="9185963199234034321">为登录屏幕启用高对比度模式，并允许用户暂时停用它</translation>
 <translation id="9187743794267626640">禁止装载外部存储设备</translation>

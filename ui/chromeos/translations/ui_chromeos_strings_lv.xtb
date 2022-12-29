@@ -679,6 +679,7 @@
 <translation id="6607272825297743757">Faila informācija</translation>
 <translation id="6609332149380188670">Vairākas mapes (kopā <ph name="NUMBER_OF_ITEMS" />) tika kopīgotas ar Parallels Desktop</translation>
 <translation id="6629518321609546825">Ievadiet vismaz 4 ciparus</translation>
+<translation id="6639661343369899134">Failus nevar augšupielādēt, jo kopīgā diska “<ph name="SHARED_DRIVE_NAME" />” krātuvē nav pietiekami daudz vietas.</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6650726141019353908">Rozā tauriņš</translation>
 <translation id="6657585470893396449">Parole</translation>

@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">En son kapattığınız sekmeleri yeniden açmak için buraya geri gelebilirsiniz</translation>
 <translation id="1016495303386450659">Öğe güncellendi</translation>
+<translation id="1035980983510608210">Tüm sekmelerin kapatılması, sabit sekmelerin de kapanmasına neden olur.</translation>
 <translation id="1044891598689252897">Siteler normal şekilde çalışır</translation>
 <translation id="1049743911850919806">Gizli mod</translation>
 <translation id="105093091697134113">Aşağıdaki hesaplar, üçüncü taraf kaynaklı veri ihlali nedeniyle açığa çıkan şifreler kullanıyor veya bu hesapların şifreleriyle yanıltıcı bir web sitesine giriş yapılmış. Hesabınızın güvende kalması için bu şifreleri hemen değiştirin.</translation>
@@ -208,6 +209,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2578571896248130439">Web sayfasını gönder</translation>
 <translation id="2584132361465095047">Hesap Ekle…</translation>
 <translation id="2600682495497606169">Site Çerezlerini Temizle</translation>
+<translation id="2609008503159898744">Tüm sekmeler kapatılsın mı?</translation>
 <translation id="2625189173221582860">Şifre kopyalandı</translation>
 <translation id="2626236249646841566">Bağlantınızı kontrol edip tekrar oturum açmayı deneyin.</translation>
 <translation id="2637313651144986786">Sekmelerde ara...</translation>
@@ -299,6 +301,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3174662312949010067">Kayıtlı şifreleri diğer cihazlarınızda da kullanabilirsiniz.</translation>
 <translation id="3175081911749765310">Web Hizmetleri</translation>
 <translation id="3178650076442119961">Bugün Etkin</translation>
+<translation id="3181261441371833039">Yalnızca Normal Sekmeleri Kapat</translation>
 <translation id="3181825792072797598">Senkronizasyonu aç</translation>
 <translation id="3181954750937456830">Gizli Göz Atma (sizi ve cihazınızı tehlikelerden korur)</translation>
 <translation id="3184767182050912705">Kilidi <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ile Aç</translation>

@@ -654,6 +654,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1595492813686795610">Notiek Linux jaunināšana</translation>
 <translation id="1596286373007273895">Pieejams</translation>
 <translation id="1596709061955594992">Bluetooth ir izslēgts. Lai skatītu pieejamās ierīces, ieslēdziet Bluetooth.</translation>
+<translation id="1596780725094407793">— ietver apakšdomēnus</translation>
 <translation id="1598233202702788831">Administrators ir atspējojis atjauninājumus.</translation>
 <translation id="1600857548979126453">Piekļūtu lapas atkļūdotāja aizmugursistēmai</translation>
 <translation id="1601560923496285236">Lietot</translation>
@@ -2881,6 +2882,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3617891479562106823">Fona attēli nav pieejami. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="3619115746895587757">Kapučīno</translation>
 <translation id="3620136223548713675">Ģeolokācija</translation>
+<translation id="362023940451053340">Jūsu Google kontā — lietotājam <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Palīdzēt uzlabot Chrome OS funkcijas un veiktspēju</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{lietotne}zero{# lietotņu}one{# lietotne}other{# lietotnes}}</translation>
 <translation id="362333465072914957">Tiek gaidīts sertifikāts no sertifikāta izdevējiestādes</translation>
@@ -5612,6 +5614,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6169967265765719844">Ja spēļu un lietotņu instalēšanai izmantojāt Steam, šo spēļu un lietotņu atļaujas varat pārvaldīt <ph name="LINK_BEGIN" />lietotnes Steam iestatījumos<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sviestmaize</translation>
 <translation id="6170498031581934115">Nevarēja iespējot ADB atkļūdošanu. Dodieties uz sadaļu Iestatījumi un mēģiniet vēlreiz.</translation>
+<translation id="6171779718418683144">Vaicāt katrā apmeklējuma reizē</translation>
 <translation id="617213288191670920">Nav pievienota neviena valoda</translation>
 <translation id="6173623053897475761">Ierakstiet PIN kodu vēlreiz</translation>
 <translation id="6175314957787328458">Microsoft domēna GUID</translation>
@@ -6744,6 +6747,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7235737137505019098">Jūsu drošības atslēgai nav pietiekami daudz brīvas vietas papildu kontiem.</translation>
 <translation id="7235873936132740888">Vietnēs var tikt izpildīti īpaši uzdevumi, kad jūs noklikšķināt uz noteiktu veidu saitēm, piemēram, jauna ziņojuma izveide jūsu e-pasta klientā vai jaunu pasākumu pievienošana jūsu tiešsaistes kalendāram.</translation>
 <translation id="7238609589076576185">Uzsvara zīme ir ievietota.</translation>
+<translation id="7238665222668706269">Google paroļu pārvaldnieks <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> atcēla pārsūtīšanu</translation>
 <translation id="7240339475467890413">Vai izveidot savienojumu ar jaunu tīklāju?</translation>
 <translation id="7241389281993241388">Pierakstieties ierīcē <ph name="TOKEN_NAME" />, lai importētu klienta sertifikātu.</translation>
@@ -7485,6 +7489,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7920363873148656176"><ph name="ORIGIN" /> var skatīt failu <ph name="FILENAME" />.</translation>
 <translation id="7920482456679570420">Pievienojiet vārdus, kurus pareizrakstības pārbaudē izlaist</translation>
 <translation id="7921347341284348270">Šajā pārvaldītajā kontā nevar skatīt tālruņa paziņojumus. Mēģiniet vēlreiz, izmantojot citu kontu. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
+<translation id="7922606348470480702">1 paplašinājums</translation>
 <translation id="7922935920104868876">Rādīt detalizētu informāciju par trešo pušu sīkfailu bloķēšanu inkognito režīmā</translation>
 <translation id="7923564237306226146">Linux jaunināšana ir pabeigta</translation>
 <translation id="7924358170328001543">Porta pārsūtīšanas kļūda</translation>
@@ -7872,6 +7877,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ir atspējojis jūsu peles kursoru.</translation>
 <translation id="8264024885325823677">Šo iestatījumu pārvalda jūsu administrators.</translation>
 <translation id="8264718194193514834">Paplašinājums <ph name="EXTENSION_NAME" /> aktivizēja pilnekrāna režīmu.</translation>
+<translation id="8265018477030547118">Tikai šajā ierīcē</translation>
 <translation id="826511437356419340">Tika atvērts logu kopsavilkuma režīms. Velciet, lai pārvietotos, vai nospiediet tabulēšanas taustiņu, ja izmantojat tastatūru.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Jūsu inkognito režīma logs netiks atvērts pēc atkārtotas palaišanas.}zero{Jūsu {COUNT} inkognito režīma logi netiks atkārtoti atvērti pēc atkārtotas palaišanas.}one{Jūsu {COUNT} inkognito režīma logs netiks atkārtoti atvērts pēc atkārtotas palaišanas.}other{Jūsu {COUNT} inkognito režīma logi netiks atkārtoti atvērti pēc atkārtotas palaišanas.}}</translation>
 <translation id="8266947622852630193">Visas ievades metodes</translation>
@@ -8279,6 +8285,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8655295600908251630">Kanāls</translation>
 <translation id="8655972064210167941">Neizdevās pierakstīties, jo nevarēja apstiprināt paroli. Lūdzu, sazinieties ar administratoru vai mēģiniet vēlreiz.</translation>
 <translation id="8657393004602556571">Vai vēlaties atmest atsauksmes?</translation>
+<translation id="8657762806752649049">Jūsu Google kontā — lietotājam <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Atvērt saiti inko&amp;gnito režīma logā</translation>
 <translation id="8662671328352114214">Pievienošanās <ph name="TYPE" /> tīklam</translation>
 <translation id="8662733268723715832">Diemžēl tam ir nepieciešams ilgāks laiks, nekā paredzēts. Varat izlaist šo darbību vai gaidīt, līdz tā tiek pabeigta.</translation>

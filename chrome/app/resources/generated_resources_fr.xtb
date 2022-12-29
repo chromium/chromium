@@ -653,6 +653,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1595492813686795610">Mise à jour de Linux…</translation>
 <translation id="1596286373007273895">Disponible</translation>
 <translation id="1596709061955594992">Le Bluetooth est désactivé. Pour voir les appareils disponibles, activez-le.</translation>
+<translation id="1596780725094407793">- inclut des sous-domaines</translation>
 <translation id="1598233202702788831">L'administrateur a désactivé les mises à jour.</translation>
 <translation id="1600857548979126453">Accéder au système du débogueur de pages</translation>
 <translation id="1601560923496285236">Appliquer</translation>
@@ -2880,6 +2881,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3617891479562106823">Les arrière-plans sont indisponibles. Réessayez plus tard.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Géolocalisation</translation>
+<translation id="362023940451053340">Dans votre compte Google, pour <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{une appli}one{# appli}other{# applis}}</translation>
 <translation id="362333465072914957">En attente de l'émission du certificat par l'autorité de certification</translation>
@@ -5615,6 +5617,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6169967265765719844">Les autorisations pour les jeux et applis installés via Steam peuvent être gérées dans les <ph name="LINK_BEGIN" />paramètres de l'appli Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6170498031581934115">Impossible d'activer le débogage ADB. Accédez aux paramètres et réessayez.</translation>
+<translation id="6171779718418683144">Demander à chaque visite</translation>
 <translation id="617213288191670920">Aucune langue ajoutée</translation>
 <translation id="6173623053897475761">Saisir à nouveau votre code</translation>
 <translation id="6175314957787328458">GUID de domaine Microsoft</translation>
@@ -6745,6 +6748,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7235737137505019098">L'espace de stockage de votre clé de sécurité est insuffisant pour y enregistrer d'autres comptes.</translation>
 <translation id="7235873936132740888">Les sites peuvent traiter des tâches particulières lorsque vous cliquez sur certains types de liens (ils peuvent, par exemple, créer un e-mail via votre client de messagerie ou ajouter des événements dans votre agenda en ligne)</translation>
 <translation id="7238609589076576185">Accentuation insérée.</translation>
+<translation id="7238665222668706269">Gestionnaire de mots de passe de Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> a annulé le transfert</translation>
 <translation id="7240339475467890413">Se connecter au nouveau point d'accès ?</translation>
 <translation id="7241389281993241388">Connectez-vous à <ph name="TOKEN_NAME" /> pour importer le certificat client.</translation>
@@ -7487,6 +7491,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7920363873148656176"><ph name="ORIGIN" /> peut accéder à <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Ajoutez les termes que le correcteur orthographique doit ignorer</translation>
 <translation id="7921347341284348270">Vous ne pouvez pas afficher les notifications de votre téléphone sur ce compte géré. Réessayez avec un autre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 extension</translation>
 <translation id="7922935920104868876">Afficher les détails sur le blocage des cookies tiers en navigation privée</translation>
 <translation id="7923564237306226146">Mise à niveau Linux terminée</translation>
 <translation id="7924358170328001543">Erreur lors du transfert du port.</translation>
@@ -7874,6 +7879,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> a désactivé le curseur de votre souris.</translation>
 <translation id="8264024885325823677">Ce paramètre est géré par votre administrateur.</translation>
 <translation id="8264718194193514834">L'extension <ph name="EXTENSION_NAME" /> a déclenché le mode Plein écran.</translation>
+<translation id="8265018477030547118">Uniquement sur cet appareil</translation>
 <translation id="826511437356419340">Mode de présentation de la fenêtre activé. Balayez l'écran pour naviguer, ou appuyez sur Tabulation si vous utilisez un clavier.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Votre fenêtre de navigation privée ne se rouvrira pas après le redémarrage}one{Vous avez {COUNT} fenêtre de navigation privée ouverte. Elle ne se rouvrira pas après le redémarrage}other{Les {COUNT} fenêtres de navigation privée ne se rouvriront pas après le redémarrage}}</translation>
 <translation id="8266947622852630193">Tous les modes de saisie</translation>
@@ -8281,6 +8287,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8655295600908251630">Version</translation>
 <translation id="8655972064210167941">Échec de la connexion, car il est impossible de valider votre mot de passe. Veuillez contacter votre administrateur ou réessayer.</translation>
 <translation id="8657393004602556571">Voulez-vous supprimer les commentaires ?</translation>
+<translation id="8657762806752649049">Dans votre compte Google, pour <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Ouvrir le lien dans la fenêtre de navi&amp;gation privée</translation>
 <translation id="8662671328352114214">Rejoindre le réseau <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Cette opération dure plus longtemps que prévu. Vous pouvez l'annuler ou attendre qu'elle prenne fin.</translation>

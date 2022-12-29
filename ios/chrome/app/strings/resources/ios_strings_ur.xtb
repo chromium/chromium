@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">آپ ان ٹیبز کو دوبارہ کھولنے کے لیے یہاں واپس آ سکتے ہیں جنہیں آپ نے حال ہی میں بند کر دیا ہے</translation>
 <translation id="1016495303386450659">آئٹم اپ ڈيٹ ہوگیا</translation>
+<translation id="1035980983510608210">سبھی ٹیبز کو بند کرنے سے پن کردہ ٹیبز بھی بند ہو جائیں گے۔</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
 <translation id="1049743911850919806">پوشیدگی</translation>
 <translation id="105093091697134113">درج ذیل اکاؤنٹس وہ پاس ورڈز استعمال کرتے ہیں جو تیسرے فریق کے ڈیٹا کی خلاف ورزی میں افشاء ہوئے تھے یا کسی فریب ویب سائٹ پر درج کیے گئے تھے۔ اپنے اکاؤنٹ کو محفوظ رکھنے کے لیے ان پاس ورڈز کو فوری طور پر تبدیل کریں۔</translation>
@@ -208,6 +209,7 @@
 <translation id="2578571896248130439">ویب صفحہ بھیجیں</translation>
 <translation id="2584132361465095047">اکاؤنٹ شامل کریں…</translation>
 <translation id="2600682495497606169">سائٹ کوکیز صاف کریں</translation>
+<translation id="2609008503159898744">سبھی ٹیبز بند کریں؟</translation>
 <translation id="2625189173221582860">پاس ورڈ کاپی ہو گیا</translation>
 <translation id="2626236249646841566">اپنا کنکشن چیک کریں اور دوبارہ سائن ان کرنے کی کوشش کریں۔</translation>
 <translation id="2637313651144986786">ٹیبز تلاش کریں...</translation>
@@ -299,6 +301,7 @@
 <translation id="3174662312949010067">آپ اپنے دوسرے آلات پر بھی محفوظ کردہ پاس ورڈز کا استعمال کر سکتے ہیں۔</translation>
 <translation id="3175081911749765310">ویب سروسز</translation>
 <translation id="3178650076442119961">آج فعال تھا</translation>
+<translation id="3181261441371833039">صرف ریگولر ٹیبز کو بند کریں</translation>
 <translation id="3181825792072797598">مطابقت پذیری آن کریں</translation>
 <translation id="3181954750937456830">محفوظ براؤزنگ (آپ اور آپ کے آلہ کی خطرناک سائٹس سے حفاظت کرتی ہے)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے غیر مقفل کریں</translation>

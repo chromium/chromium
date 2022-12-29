@@ -502,7 +502,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Huwag munang alisin ang iyong device!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Maaaring magsanhi ng pagkawala ng data ang pag-aalis sa iyong device habang ginagamit ito.  Mangyaring maghintay hanggang matapos ang operasyon, pagkatapos ay i-eject ang device gamit ang Files app.</translation>
-<translation id="5163869187418756376">Nabigo ang pagbabahagi. Suriin ang iyong koneksyon at subukang muli sa ibang pagkakataon.</translation>
+<translation id="5163869187418756376">Nabigo ang pagbabahagi. Suriin ang iyong koneksyon at subukan ulit sa ibang pagkakataon.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5177526793333269655">View na thumbnail</translation>
 <translation id="5181896909298187506">Walang kamakailang file</translation>
@@ -572,7 +572,7 @@
 <translation id="5678784840044122290">Magiging available ang Linux application sa iyong Terminal at maaari din itong magpakita ng icon sa Launcher mo.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Hindi makadiskonekta sa isang archive o virtual disk<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
-   Isara ang lahat ng file sa archive o virtual disk, pagkatapos ay subukang muli.</translation>
+   Isara ang lahat ng file sa archive o virtual disk, pagkatapos ay subukan ulit.</translation>
 <translation id="5691596662111998220">Whoops, hindi na umiiral ang <ph name="FILE_NAME" />.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, I-unlock</translation>
 <translation id="5700087501958648444">Impormasyon ng audio</translation>
@@ -800,7 +800,7 @@
 <translation id="7592775719802218421">Ginagawang available offline ang <ph name="FILE_NAME" /></translation>
 <translation id="7600126690270271294">Serbian</translation>
 <translation id="7603724359189955920">Mga Grid</translation>
-<translation id="7627790789328695202">Whoops, umiiral na ang <ph name="FILE_NAME" />. Palitan ang pangalan nito at subukang muli.</translation>
+<translation id="7627790789328695202">Whoops, umiiral na ang <ph name="FILE_NAME" />. Palitan ang pangalan nito at subukan ulit.</translation>
 <translation id="7628656427739290098">Kumpleto na nang <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7654209398114106148">Inililipat ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>

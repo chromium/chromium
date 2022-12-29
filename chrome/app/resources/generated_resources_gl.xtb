@@ -651,6 +651,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1595492813686795610">Estase actualizando Linux</translation>
 <translation id="1596286373007273895">Dispoñible</translation>
 <translation id="1596709061955594992">O Bluetooth está desactivado. Para ver os dispositivos dispoñibles, actívao.</translation>
+<translation id="1596780725094407793">(inclúe subdominios)</translation>
 <translation id="1598233202702788831">O teu administrador desactivou as actualizacións.</translation>
 <translation id="1600857548979126453">Acceder ao back-end de depuración de páxinas</translation>
 <translation id="1601560923496285236">Aplicar</translation>
@@ -1235,6 +1236,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2104166991923847969">Desactivar a zona wifi automaticamente</translation>
 <translation id="2105809836724866556">Ocultouse <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
+<translation id="2110941575868943054">Sitios que teñen permiso para buscar dispositivos Bluetooth</translation>
 <translation id="211144231511833662">Borrar tipos</translation>
 <translation id="2111670510994270194">Nova pestana á dereita</translation>
 <translation id="2112554630428445878">Dámosche a benvida, <ph name="USERNAME" /></translation>
@@ -2878,6 +2880,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3617891479562106823">Os fondos non están dispoñibles. Téntao de novo máis tarde.</translation>
 <translation id="3619115746895587757">Capuchino</translation>
 <translation id="3620136223548713675">Xeolocalización</translation>
+<translation id="362023940451053340">Almacenaríase na túa Conta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="3621807901162200696">Axudar a mellorar as funcións e o rendemento de Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 aplicación}other{# aplicacións}}</translation>
 <translation id="362333465072914957">Agardando a que a entidade de certificación emita un certificado</translation>
@@ -3025,6 +3028,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3756485814916578707">Emitindo pantalla</translation>
 <translation id="3756578970075173856">Establecer PIN</translation>
 <translation id="3756795331760037744">Para recibir axuda do Asistente de Google, permítelle usar a información que apareza na pantalla de <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="3756806135608816820">Os sitios poden pedirche permiso para buscar dispositivos Bluetooth</translation>
 <translation id="3757733214359997190">Non se atoparon sitios</translation>
 <translation id="375841316537350618">Descargando script de proxy...</translation>
 <translation id="3758842566811519622">Cookies establecidas</translation>
@@ -4999,6 +5003,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5600706100022181951">Para descargar a actualización utilizaranse <ph name="UPDATE_SIZE_MB" /> MB de datos móbiles. Queres continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Sitios que non poden conectarse a dispositivos MIDI</translation>
+<translation id="5601833336918638013">Non permitir que os sitios busquen dispositivos Bluetooth</translation>
 <translation id="5602765853043467355">Borrar marcadores, historial, contrasinais etc., deste dispositivo</translation>
 <translation id="5605758115928394442">Enviouse unha notificación ao teu teléfono para confirmar a túa identidade.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensión está bloqueada}other{Estas extensións están bloqueadas}}</translation>
@@ -5609,6 +5614,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6169967265765719844">Os permisos das aplicacións e xogos instalados a través de Steam poden xestionarse na <ph name="LINK_BEGIN" />configuración da aplicación Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sándwich</translation>
 <translation id="6170498031581934115">Non se puido activar a depuración de ADB. Accede á configuración e téntao de novo.</translation>
+<translation id="6171779718418683144">Preguntar en cada visita</translation>
 <translation id="617213288191670920">Non se engadiu ningún idioma</translation>
 <translation id="6173623053897475761">Escribe o PIN de novo</translation>
 <translation id="6175314957787328458">GUID de dominio de Microsoft</translation>
@@ -6452,6 +6458,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6960507406838246615">É necesario actualizar Linux</translation>
 <translation id="6960648667961844909">Non se puideron descargar os ficheiros de voz en <ph name="LANGUAGE" />. Tentarase de novo máis tarde. Ata que finalice a descarga, enviaráselle a Google o que se fale para que o procese.</translation>
 <translation id="696103774840402661">Elimináronse permanentemente todos os ficheiros e os datos locais de todos os usuarios deste dispositivo (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="6961327401577924850">Os sitios adoitan buscar dispositivos Bluetooth para ofrecerche determinadas funcións (por exemplo, configurar ou sincronizar unha baliza de baixo consumo, un dispositivo de seguimento da saúde ou da forma física, ou unha lámpada de luz intelixente)</translation>
 <translation id="6963872466817251924">Marcador de cursor de texto</translation>
 <translation id="6964390816189577014">Heroe</translation>
 <translation id="6964760285928603117">Quitar do grupo</translation>
@@ -6737,6 +6744,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7235737137505019098">A túa chave de seguranza non ten suficiente espazo para máis contas.</translation>
 <translation id="7235873936132740888">Os sitios poden realizar tarefas especiais (por exemplo, crear unha mensaxe nova no teu cliente de correo electrónico ou engadir eventos novos ao teu calendario en liña) cando fas clic en certos tipos de ligazóns</translation>
 <translation id="7238609589076576185">Escribiuse o acento gráfico.</translation>
+<translation id="7238665222668706269">Xestor de contrasinais de Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> cancelou a transferencia</translation>
 <translation id="7240339475467890413">Queres conectarte á nova zona wifi?</translation>
 <translation id="7241389281993241388">Inicia sesión en <ph name="TOKEN_NAME" /> para importar o certificado de cliente.</translation>
@@ -7479,6 +7487,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pode ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Engade as palabras que queiras que omita o corrector ortográfico</translation>
 <translation id="7921347341284348270">Non podes ver as notificacións do móbil nesta conta xestionada. Téntao de novo con outra conta. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 extensión</translation>
 <translation id="7922935920104868876">Mostrar detalles sobre o bloqueo de cookies de terceiros no modo de incógnito</translation>
 <translation id="7923564237306226146">Completouse a actualización de Linux</translation>
 <translation id="7924358170328001543">Produciuse un erro co encamiñamento do porto</translation>
@@ -7865,6 +7874,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> desactivou o cursor do rato.</translation>
 <translation id="8264024885325823677">O teu administrador xestiona esta opción de configuración.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" activou a pantalla completa.</translation>
+<translation id="8265018477030547118">Almacenaríase só neste dispositivo</translation>
 <translation id="826511437356419340">Entraches no modo de vista xeral da ventá. Pasa o dedo para navegar ou preme o tabulador no teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{A ventá do modo de incógnito non se abrirá tras o reinicio}other{As {COUNT} ventás do modo de incógnito non se volverán abrir tras o reinicio}}</translation>
 <translation id="8266947622852630193">Todos os métodos de introdución de texto</translation>
@@ -8083,6 +8093,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> precisa do teu permiso para executarse</translation>
 <translation id="8466417995783206254">Esta pestana está reproducindo un vídeo no modo de pantalla superposta.</translation>
 <translation id="8467326454809944210">Escoller outro idioma</translation>
+<translation id="8468087214092422866">Sitios que non teñen permiso para buscar dispositivos Bluetooth</translation>
 <translation id="8470513973197838199">Gardáronse os contrasinais para <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Os sitios adoitan conectarse aos dispositivos USB para ofrecerche determinadas funcións (por exemplo, imprimir documentos ou gardar información nun dispositivo de almacenamento)</translation>
 <translation id="8471959340398751476">Os descontos están desactivados. Podes activalos no menú de personalización</translation>
@@ -8272,6 +8283,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8655295600908251630">Canle</translation>
 <translation id="8655972064210167941">Produciuse un erro no inicio de sesión porque o teu contrasinal non se puido verificar. Contacta co administrador ou téntao de novo.</translation>
 <translation id="8657393004602556571">Queres descartar o comentario?</translation>
+<translation id="8657762806752649049">Almacenaríase na túa Conta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8661290697478713397">Abrir ligazón na ventá de incó&amp;gnito</translation>
 <translation id="8662671328352114214">Unirse á rede <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Este proceso está demorándose máis do previsto. Podes omitilo ou agardar a que remate.</translation>

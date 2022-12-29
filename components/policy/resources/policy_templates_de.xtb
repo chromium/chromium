@@ -33,6 +33,7 @@
       Aktuell werden die folgenden Sprachen unterstützt: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="1019101089073227242">Verzeichnis für Nutzerdaten festlegen</translation>
 <translation id="1020006815010587263">Der Papierkorb ist für den Nutzer deaktiviert.</translation>
+<translation id="1021462144002396313"><ph name="PRIVACY_SANDBOX_NAME" />-Richtlinien</translation>
 <translation id="1022361784792428773">Erweiterungs-IDs, die der Nutzer nicht installieren darf ("*" für alle)</translation>
 <translation id="102492767056134033">Standardstatus für die Bildschirmtastatur auf der Anmeldeseite festlegen</translation>
 <translation id="102658870205613876">Einstellungen für Pop-ups</translation>
@@ -159,6 +160,7 @@ Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph
       Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirksam, wenn <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> auf „False“ gesetzt ist.</translation>
 <translation id="1147732569915511430">SHA-256-Hash des Avatarbilds.</translation>
 <translation id="1148415065145333943">Modus „Intelligente Akkuladung“ deaktivieren</translation>
+<translation id="1150742937785306405">Nutzer dürfen die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung auf ihrem Gerät aktivieren oder deaktivieren.</translation>
 <translation id="1151353063931113432">Bilder auf diesen Websites zulassen</translation>
 <translation id="1151987132434751822">Authentifizierungsschemas, für die die Anmeldedaten in der Richtlinie angewendet werden können. Mögliche Werte:
             * basic
@@ -188,6 +190,7 @@ Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien fes
 <translation id="1160479894929412407">QUIC-Protokoll zulassen</translation>
 <translation id="1160939557934457296">Fortfahren von der Safe Browsing-Hinweisseite deaktivieren</translation>
 <translation id="1163080558183062209">Druckertypen auf der "Deny"-Liste deaktivieren</translation>
+<translation id="1163389598183927209">Eine Gruppe von Richtlinien in Bezug auf <ph name="PRIVACY_SANDBOX_NAME" />. Unter <ph name="PRIVACY_SANDBOX_URL" /> findest du Informationen dazu, wie Drittanbieter-Cookies durch <ph name="PRODUCT_NAME" /> eingestellt werden.</translation>
 <translation id="1165923723751466821">Profilanmeldungen und Browseranmeldungen durch Gäste zulassen</translation>
 <translation id="117059611145966538">Externe Druckserver</translation>
 <translation id="117080706484659953">Lässt die Erkennung des Anwendungsbereichs von Richtlinien unter <ph name="MAC_OS_NAME" /> zu</translation>
@@ -569,6 +572,7 @@ Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragm
 
       Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet (kein automatischer Zugriff).</translation>
 <translation id="1530812829012954197">Immer die folgenden URL-Muster im Host-Browser darstellen</translation>
+<translation id="1542491165152947087">Nutzer dürfen die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Anzeigenthemen auf ihrem Gerät aktivieren oder deaktivieren.</translation>
 <translation id="1552418937045050762">Wenn diese Einstellung aktiviert ist, können Nutzer der Verwendung von Nearby Share zustimmen und Dateien mit Personen austauschen, die sich in der Nähe befinden.
 
       Ist diese Einstellung deaktiviert, können Nutzer der Verwendung von Nearby Share nicht zustimmen.
@@ -1241,6 +1245,12 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
       Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, kann der Nutzer die VM-Management-Befehlszeile verwenden.
       Andernfalls ist diese Befehlszeile deaktiviert und ausgeblendet.
       </translation>
+<translation id="2194051055390000601">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Anzeigenthemen für Nutzer deaktiviert werden kann.
+
+Wenn die Richtlinie deaktiviert ist, wird die Einstellung für Anzeigenthemen für Nutzer deaktiviert.
+Wenn sie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Anzeigenthemen auf ihrem Gerät aktivieren oder deaktivieren.
+
+Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deaktiviert sein.</translation>
 <translation id="2195032660890227692">Diese Richtlinie wurde in Version 68 von <ph name="PRODUCT_NAME" /> entfernt und durch "<ph name="ARC_BR_POLICY_NAME" />" ersetzt.</translation>
 <translation id="2197625019569762163">Wenn diese Richtlinie auf "true" gesetzt ist, wird standardmäßig die numerische Tastatur zur Eingabe des Passworts auf dem Anmeldebildschirm angezeigt. Nutzer haben jedoch die Möglichkeit, zur normalen Tastatur zu wechseln.
 
@@ -1776,6 +1786,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Genaue Informationen zu gültigen URL-Mustern für Websites findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.
 
       Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
+<translation id="2727844239611930002"><ph name="PRODUCT_NAME" /> darf prüfen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung angezeigt werden kann.</translation>
 <translation id="2730200383593984228">Nicht zugehörige Nutzer dürfen Android-Apps verwenden</translation>
 <translation id="2730419309754848345">Standardeinstellung „PDF als Bild drucken“</translation>
 <translation id="2731299561202635374">Diese Richtlinie steuert die Überprüfung von URLs in Echtzeit, um unsichere URLs zu erkennen.
@@ -3531,6 +3542,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 
           Wenn "false" oder nichts eingestellt ist, gibt der Contentanbieter keine Informationen zurück.</translation>
 <translation id="435395045087992163">Das Gerät nicht sperren, wenn es in den Ruhemodus versetzt oder zugeklappt wird</translation>
+<translation id="4354792057099570728">Dadurch wird die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse für Nutzer deaktiviert.</translation>
 <translation id="4357587374229381015">Legt einen URL-Parameternamen fest, der auf der SAML-IdP-Anmeldeseite automatisch in das Feld für den Nutzernamen eingetragen wird.
 
       Die E-Mail-Adresse des Nutzers, die mit seinem <ph name="PRODUCT_OS_NAME" />-Profil verknüpft ist, wird als Wert für den URL-Parameter verwendet. Diese Einstellung sollte daher deaktiviert werden, wenn Nutzer voraussichtlich unterschiedliche E-Mail-Adressen mit SAML-IdP verwenden.
@@ -3622,6 +3634,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Die Richtlinie selbst wird zwar auf den genannten Plattformen unterstützt, die damit aktivierten Funktionen sind aber möglicherweise nicht auf allen Plattformen verfügbar. Nicht alle eingestellten Webplattformfunktionen können wieder aktiviert werden. Nur die nachfolgend ausdrücklich aufgeführten Funktionen können für einen begrenzten Zeitraum wieder aktiviert werden. Der Zeitraum variiert je nach Funktion. Das allgemeine Format des String-Tags lautet [Name der veralteten Funktion]_EffectiveUntil[jjjjmmtt]. Weitere Informationen zu Änderungen an den Webplattformfunktionen erhältst du unter http://bit.ly/blinkintents.
       </translation>
 <translation id="4443711908766051441">Easter-Egg-Dinosaurierspiel aktivieren</translation>
+<translation id="4445728642576791607">Nutzer dürfen die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse auf ihrem Gerät aktivieren oder deaktivieren.</translation>
 <translation id="4447668084338250480">Verhalten zur Intranet-Weiterleitung</translation>
 <translation id="4449469846627734399">Tageskonfiguration für das Umschalten bei Leistungsspitzen festlegen</translation>
 <translation id="4449545651113180484">Bildschirm um 270 Grad im Uhrzeigersinn drehen</translation>
@@ -3658,6 +3671,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="4483649828988077221">Automatische Updates deaktivieren</translation>
 <translation id="4484515651939984695">Gibt an, wie lange (in Sekunden) ein Übertragungsgerät, das mit einem Zugriffscode oder QR-Code ausgewählt wurde, im <ph name="PRODUCT_NAME" />-Menü für Übertragungsgeräte angezeigt wird.</translation>
 <translation id="4485425108474077672">URL für "Neuer Tab"-Seite konfigurieren</translation>
+<translation id="4491607814095953976">Du kannst festlegen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse deaktiviert werden kann</translation>
 <translation id="4492287494009043413">Aufnahme von Screenshots deaktivieren</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">Richtlinien für <ph name="PLUGIN_VM_NAME" /> konfigurieren.</translation>
@@ -4560,6 +4574,7 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
       Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
       Ist die Richtlinie nicht konfiguriert, kann der Nutzer sein Avatarbild für den Anmeldebildschirm selbst auswählen.</translation>
+<translation id="5428716437928918274">Einstellungen für die Privacy Sandbox</translation>
 <translation id="5431392643649571773">Wenn die "<ph name="PRODUCT_NAME" />"-Funktion aktiviert ist, ermöglicht sie die Nutzung des Back-Forward-Cache. Wenn eine Seite verlassen wird, bleibt der aktuelle Status (Dokumentbaum, Skript etc.) im Back-Forward-Cache erhalten. Wenn der Browser zur Seite zurückkehrt, wird sie aus dem Back-Forward-Cache wiederhergestellt und in dem Status angezeigt, in dem sie war, bevor sie in den Cache geladen wurde.
 
           Diese Funktion kann manchen Websites Probleme bereiten, da sie dieses Caching nicht erwarten. Insbesondere hängen manche Websites davon ab, dass das "<ph name="UNLOAD_HANDLER_NAME" />"-Ereignis gesendet wird, wenn der Browser die Seite verlässt. Das "<ph name="UNLOAD_HANDLER_NAME" />"-Ereignis wird nicht gesendet, wenn die Seite in den Back-Forward-Cache geladen wird.
@@ -6610,6 +6625,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       </translation>
 <translation id="7459601923199346224">Diese Richtlinie steuert Nutzer- und Geräterichtlinien zur Zertifikatverwaltung.</translation>
 <translation id="7459633275230216698">Dialogfelder zur Dateiauswahl zulassen</translation>
+<translation id="7462256705280836453">Du kannst festlegen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung deaktiviert werden kann</translation>
 <translation id="7463055558720530430">Zulassen, dass Nutzer Kerberos-Passwörter speichern</translation>
 <translation id="7464058117970792805">Druckvorschau aktivieren</translation>
 <translation id="7464991223784276288">Cookies von übereinstimmenden URLs auf die aktuelle Sitzung beschränken</translation>
@@ -6815,6 +6831,12 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wird die Richtlinie deaktiviert, erscheint stattdessen eine Meldung, wenn Nutzer mit einer Aktion ein Dialogfeld zur Dateiauswahl öffnen würden, etwa beim Importieren von Lesezeichen, Hochladen von Dateien und Speichern von Links. Es wird angenommen, dass der Nutzer im Dialogfeld zur Dateiauswahl auf „Abbrechen“ geklickt hat.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Verwendung von Systembenachrichtigungen zulassen</translation>
+<translation id="7643151458117317518">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse für Nutzer deaktiviert werden kann.
+
+Wenn die Richtlinie deaktiviert ist, wird die Einstellung für die Anzeigenanalyse für Nutzer deaktiviert.
+Wenn sie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse auf ihrem Gerät aktivieren oder deaktivieren.
+
+Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deaktiviert sein.</translation>
 <translation id="7643883929273267746">Sichtbarkeit von Konten in <ph name="PRODUCT_NAME" /> einschränken</translation>
 <translation id="7648664871086956188">Mit dieser Richtlinie werden alle in der Richtlinie DataLeakPreventionRulesList definierten Regeln gesteuert.
       Wenn die Richtlinie auf „True“ gesetzt ist, werden Echtzeitberichte zur Verhinderung von Datenlecks aktiviert.
@@ -7413,6 +7435,16 @@ Diese Richtlinien dienen ausschließlich der Konfiguration von internen <ph name
 Diese Einstellungen müssen nicht manuell konfiguriert werden. Nutzerfreundliche Vorlagen für Windows, Mac und Linux sind unter <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" /> zum Download verfügbar.
 
 Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte zu konfigurieren, die Bereitstellung von Richtlinien über die Registrierung wird jedoch auch weiterhin von Windows-Instanzen unterstützt, die Teil einer <ph name="MS_AD_NAME" />-Domain sind.</translation>
+<translation id="8261008508574620157">Durch diese Richtlinie wird festgelegt, ob Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung sehen.
+Die Aufforderung blockiert Nutzer und informiert sie über die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellungen. Unter <ph name="PRIVACY_SANDBOX_URL" /> findest du Informationen dazu, wie Drittanbieter-Cookies durch Chrome eingestellt werden.
+
+Wenn die Richtlinie deaktiviert ist, zeigt <ph name="PRODUCT_NAME" /> die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung nicht an.
+Wenn sie aktiviert oder nicht konfiguriert ist, prüft <ph name="PRODUCT_NAME" />, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung angezeigt werden kann, und zeigt sie wenn möglich an.
+
+Wenn eine der folgenden Richtlinien konfiguriert ist, muss diese Richtlinie deaktiviert sein:
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="8266778278542911985">Wenn die Richtlinie auf "3" gesetzt ist, dürfen Websites um Zugriff auf serielle Ports bitten. Ist die Richtlinie auf "2" gesetzt, wird der Zugriff auf serielle Ports blockiert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
@@ -7456,6 +7488,7 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
       Wenn diese Richtlinie nicht konfiguriert ist, wird ein Standardfaktor für die Skalierung verwendet.
 
       Hinweis: Der Skalierungsfaktor muss bei mindestens 100 % liegen.</translation>
+<translation id="8284621384813278750">Du kannst festlegen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Anzeigenthemen deaktiviert werden kann</translation>
 <translation id="8285435910062771358">Vollbildlupe aktiviert</translation>
 <translation id="828566872219880247">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, welche Websites die Schlüsselgenerierung verwenden dürfen. Wenn ein URL-Muster in „KeygenBlockedForUrls“ angegeben ist, werden diese Ausnahmen dadurch überschrieben.
 
@@ -7650,6 +7683,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die re
 
       Hinweis: In <ph name="MS_WIN_NAME" />-Instanzen, die nicht Teil einer <ph name="MS_AD_NAME" />-Domain sind, und <ph name="MAC_OS_NAME" />-Instanzen, die nicht über die Mobilgeräteverwaltung verwaltet werden oder Teil einer MCX-Domain sind, bleibt die erzwungene Installation auf die im Chrome Web Store aufgeführten Apps und Erweiterungen beschränkt.</translation>
 <translation id="8451988835943702790">"Neuer Tab"-Seite als Startseite verwenden</translation>
+<translation id="8453218444172088993">Dadurch wird die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Anzeigenthemen für Nutzer deaktiviert.</translation>
 <translation id="8455529558077979314">Einstellungen des Datenschutzbildschirms</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parameter für URL der Suche im Voraus, die POST verwendet</translation>
@@ -7775,6 +7809,12 @@ Rollback auf <ph name="PRODUCT_OS_NAME" /> Version 106 oder niedriger wird nich
       URL-Muster dürfen nicht im Konflikt mit <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
+<translation id="8554750769356971993">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert werden kann.
+
+Wenn die Richtlinie deaktiviert ist, wird die Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert.
+Wenn sie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung auf ihrem Gerät aktivieren oder deaktivieren.
+
+Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deaktiviert sein.</translation>
 <translation id="8559221882677768248">„Vorlesen“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="8566842294717252664">Web Store auf der "Neuer Tab"-Seite und im App Launcher ausblenden</translation>
 <translation id="8571314270766672278">Bei Versionsdowngrade ein Rollback durchführen und das Gerät zurücksetzen; dabei die Registrierung möglichst erhalten</translation>
@@ -7804,6 +7844,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
           Wenn die Richtlinie nicht konfiguriert ist, wird ein Standardwert verwendet.
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden.</translation>
+<translation id="859579553230883285">Dadurch wird die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert.</translation>
 <translation id="8598786284856179541">Erfassen von Versionsinformationen aktivieren</translation>
 <translation id="859937827887158048">Keine Peer-to-Peer-Downloads von automatischen Updates zulassen</translation>
 <translation id="8603454805657060638">Wenn die Richtlinie konfiguriert ist, kann der Administrator beim Verbinden eines Geräts mit dem Dock die MAC (Media Access Control)-Adresse ändern. Beim Verbinden bestimmter Gerätemodelle mit einem Dock wird standardmäßig die eingetragene Dock-MAC-Adresse des Geräts zur Identifikation des Geräts im Ethernet-Netzwerk verwendet.
@@ -8062,6 +8103,7 @@ Die Richtlinie ist eine Zuordnung von Konfigurations-IDs zu VM-Konfigurationen. 
       Mit dieser Richtlinie sollen Unternehmen die Möglichkeit erhalten, die Netzwerk-Sandbox zu deaktivieren, falls sie Drittanbieter-Software einsetzen, die einen Konflikt mit der Netzwerkdienst-Sandbox verursacht.</translation>
 <translation id="8840243776706727185">Funktion „NewBaseUrlInheritanceBehavior“ deaktiviert</translation>
 <translation id="8842208363354615697">Aktivieren des Nur-HTTPS-Modus erlauben</translation>
+<translation id="8843331294082716286">Nutzern wird die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung nicht angezeigt.</translation>
 <translation id="885147810817138322">Nutzern Empfehlungen zu Medien anzeigen</translation>
 <translation id="8852579753940989645">Renderer-Codeintegrität aktivieren</translation>
 <translation id="8854571659927427063">Wenn die Richtlinie aktiviert ist, werden Lesezeichen bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine Lesezeichen importiert.
@@ -8184,6 +8226,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 <translation id="8955719471735800169">Zurück nach oben</translation>
 <translation id="8956312248048980644">Diese Richtlinie erlaubt standardmäßig das an Ursprünge gebundene Agent-Clustering.</translation>
 <translation id="8970205333161758602">Hinweis auf Einstellung von <ph name="PRODUCT_FRAME_NAME" /> unterdrücken</translation>
+<translation id="8973579598359969188">Du kannst festlegen, ob Nutzern die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung angezeigt werden kann</translation>
 <translation id="8974588819713914715">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="URL_ALLOWLIST_POLICY_NAME" />“.</translation>
 <translation id="8976248126101463034">Gnubby-Authentifizierung für Remotezugriff-Hosts zulassen</translation>
 <translation id="8976531594979650914">Standarddrucker des Betriebssystems als Standardeinstellung verwenden</translation>

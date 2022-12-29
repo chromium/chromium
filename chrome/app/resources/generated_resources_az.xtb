@@ -3795,6 +3795,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> qovluğundakı faylları redaktə edə bilər</translation>
 <translation id="4470957202018033307">Xarici yaddaş tərcihləri</translation>
 <translation id="4471354919263203780">Nitq tanıma faylları endirilir... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Tərcih etdiyiniz Google Hesabı dilini (<ph name="NEW_LOCALE_FROM_GAIA" />) istifadə edə bilərsiniz</translation>
 <translation id="447252321002412580">Chrome'un funksiya və performansını təkmilləşdirməyə kömək edin</translation>
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4474155171896946103">Bütün panelləri əlfəcinləyin...</translation>
@@ -6730,6 +6731,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7227458944009118910">Aşağıda sadalanan tətbiqlər protokol keçidlərini də idarə edə bilər. Digər tətbiqlər icazə istəyəcək.</translation>
 <translation id="7228056665272655255">Barmaq izini ayarlamaq üçün uşağınızdan klaviaturanın yuxarı sağ küncündə olan barmaq izi sensoruna toxunmasını istəyin. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
 <translation id="7228523857728654909">Ekran kilidi və giriş</translation>
+<translation id="7228854227189381547">Dəyişdirməyin</translation>
 <translation id="7230222852462421043">&amp;Pəncərəni Bərpa edin</translation>
 <translation id="7231260028442989757">Telefonunuzun bildirişlərinə baxın, qapadın və cavab yazın</translation>
 <translation id="7232750842195536390">Yenidən adlandırmaq alınmadı</translation>
@@ -7063,6 +7065,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7545466883021407599">Serverə qoşulmaq mümkün olmadı. Şəbəkə bağlantınızı yoxlayıb yenidən cəhd edin. Hələ də problem varsa, Chromebook'u yenidən başladın Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Xəbərdarlıq: <ph name="PRODUCT_NAME" /> ayarlarınız şəbəkə diskində saxlanılır. Bu, işin yavaşlamasına, qəzaya və hətta datanın itməsinə gətirə bilər.</translation>
 <translation id="7548856833046333824">Limonad</translation>
+<translation id="7549434883223124329">Cihazın dili dəyişdirilsin?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> endirmə uğursuz oldu</translation>
 <translation id="7551643184018910560">Rəfə sancaqlayın</translation>

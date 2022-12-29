@@ -925,6 +925,7 @@
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6043212731627905357">该显示器与您的<ph name="DEVICE_TYPE" />不兼容（系统不支持该显示器）。</translation>
 <translation id="6043994281159824495">立即退出</translation>
+<translation id="6045629311476491587">被 <ph name="APP_COUNT" /> 款应用使用过</translation>
 <translation id="6047696787498798094">切换到其他用户后将停止屏幕共享。要继续吗？</translation>
 <translation id="6054305421211936131">使用智能卡登录</translation>
 <translation id="6059276912018042191">最近打开的 Chrome 标签页</translation>

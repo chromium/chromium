@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Vous pouvez revenir ici plus tard pour rouvrir les onglets que vous avez fermés récemment</translation>
 <translation id="1016495303386450659">Élément mis à jour</translation>
+<translation id="1035980983510608210">La fermeture de tous les onglets fermera également les onglets épinglés.</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="105093091697134113">Les comptes suivants utilisent des mots de passe qui ont été exposés lors d'une violation de données d'un tiers ou lorsqu'ils ont été entrés sur un site Web trompeur. Modifiez immédiatement ces mots de passe pour protéger vos comptes.</translation>
@@ -208,6 +209,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2578571896248130439">Envoyer la page Web</translation>
 <translation id="2584132361465095047">Ajouter un compte…</translation>
 <translation id="2600682495497606169">Effacer les témoins du site</translation>
+<translation id="2609008503159898744">Fermer tous les onglets?</translation>
 <translation id="2625189173221582860">Mot de passe copié</translation>
 <translation id="2626236249646841566">Vérifiez votre connexion et réessayez de vous connecter.</translation>
 <translation id="2637313651144986786">Rechercher des onglets…</translation>
@@ -299,6 +301,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3174662312949010067">Vous pouvez aussi utiliser des mots de passe enregistrés sur vos autres appareils.</translation>
 <translation id="3175081911749765310">Servic Web</translation>
 <translation id="3178650076442119961">Actif aujourd'hui</translation>
+<translation id="3181261441371833039">Fermer les onglets normaux uniquement</translation>
 <translation id="3181825792072797598">Activer la synchronisation</translation>
 <translation id="3181954750937456830">Navigation sécurisée (vous protège, vous et votre appareil, des sites dangereux)</translation>
 <translation id="3184767182050912705">Déverrouiller avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>

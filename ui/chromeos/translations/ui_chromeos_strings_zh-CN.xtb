@@ -674,6 +674,7 @@
 <translation id="6607272825297743757">文件信息</translation>
 <translation id="6609332149380188670">已与 Parallels Desktop 共享 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
 <translation id="6629518321609546825">请输入至少 4 位数字</translation>
+<translation id="6639661343369899134">无法上传文件，因为“<ph name="SHARED_DRIVE_NAME" />”的存储空间不足。</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6650726141019353908">粉蝴蝶</translation>
 <translation id="6657585470893396449">密码</translation>

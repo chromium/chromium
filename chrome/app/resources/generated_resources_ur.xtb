@@ -652,6 +652,7 @@
 <translation id="1595492813686795610">‏Linux اپ گریڈ ہو رہا ہے</translation>
 <translation id="1596286373007273895">دستیاب</translation>
 <translation id="1596709061955594992">بلوٹوتھ آف ہے۔ دستیاب آلات دیکھنے کے لیے بلوٹوتھ آن کریں۔</translation>
+<translation id="1596780725094407793">- ذیلی ڈومینز شامل ہیں</translation>
 <translation id="1598233202702788831">آپ کے منتظم نے اپ ڈیٹس کو غیر فعال کر دیا ہے۔</translation>
 <translation id="1600857548979126453">صفحہ ڈیبگر بیک اینڈ تک رسائی حاصل کریں</translation>
 <translation id="1601560923496285236">لاگو کریں</translation>
@@ -2881,6 +2882,7 @@
 <translation id="3617891479562106823">پس منظر غیر دستیاب ہیں۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="3619115746895587757">کیپو چینو</translation>
 <translation id="3620136223548713675">جغرافیائی مقام</translation>
+<translation id="362023940451053340">‏آپ کے Google اکاؤنٹ میں، <ph name="ACCOUNT" /> کے لیے</translation>
 <translation id="3621807901162200696">‏ChromeOS کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ایک ایپ}other{# ایپس}}</translation>
 <translation id="362333465072914957">‏سرٹیفیکیٹ جاری کرنے کے لیے CA کا انتظار</translation>
@@ -5614,6 +5616,7 @@
 <translation id="6169967265765719844">‏Steam کے ذریعے انسٹال کردہ گیمز اور ایپس کی اجازتوں کا نظم <ph name="LINK_BEGIN" />Steam ایپ کی ترتیبات<ph name="LINK_END" /> میں کیا جا سکتا ہے۔</translation>
 <translation id="6170470584681422115">سینڈوچ</translation>
 <translation id="6170498031581934115">‏ADB ڈیبگنگ کو فعال نہیں کیا جا سکا۔ ترتیبات میں جائیں اور دوبارہ کوشش کریں۔</translation>
+<translation id="6171779718418683144">ہر دورے پر پوچھیں</translation>
 <translation id="617213288191670920">کوئی زبان شامل نہیں کی گئی</translation>
 <translation id="6173623053897475761">‏اپنا PIN دوبارہ ٹائپ کریں</translation>
 <translation id="6175314957787328458">‏Microsoft ڈومین GUID</translation>
@@ -6742,6 +6745,7 @@
 <translation id="7235737137505019098">آپ کی سیکیورٹی کلید میں کسی اور اکاؤنٹ کے لیے کافی جگہ نہیں ہے۔</translation>
 <translation id="7235873936132740888">آپ کے خاص قسم کے لنکس پر کلک کرنے پر سائٹس مخصوص ٹاسکس کو ہینڈل کر سکتی ہیں، جیسے کہ آپ کے ای میل کلائنٹ میں نیا پیغام تخلیق کرنا یا آپ کے آن لائن کیلنڈر میں نئے ایونٹس شامل کرنا</translation>
 <translation id="7238609589076576185">لہجہ کا نشان داخل کر دیا گیا۔</translation>
+<translation id="7238665222668706269">‏Google پاس ورڈ مینیجر <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> نے منتقلی منسوخ کر دی</translation>
 <translation id="7240339475467890413">نئے ہاٹ اسپاٹ سے منسلک کریں؟</translation>
 <translation id="7241389281993241388">براہ کرم کلائنٹ سرٹیفکیٹ درآمد کرنے کیلئے <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
@@ -7484,6 +7488,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> <ph name="FILENAME" /> دیکھ سکتا ہے</translation>
 <translation id="7920482456679570420">وہ الفاظ شامل کریں جنہیں آپ چاہتے ہیں کہ املا کی جانچ نظر انداز کرے</translation>
 <translation id="7921347341284348270">آپ اس نظم کردہ اکاؤنٹ پر اپنے فون کی اطلاعات نہیں دیکھ سکتے۔ مختلف اکاؤنٹ کے ساتھ دوبارہ کوشش کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 ایکسٹینشن</translation>
 <translation id="7922935920104868876">پوشیدگی میں فریق ثالث کی کوکیز کو مسدود کرنے کے بارے میں تفصیلات دکھائیں</translation>
 <translation id="7923564237306226146">‏Linux اپ گریڈ مکمل ہو گیا</translation>
 <translation id="7924358170328001543">پورٹ فارورڈ کرنے میں خرابی</translation>
@@ -7870,6 +7875,7 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> نے آپ کا ماؤس کرسر غیر فعال کر دیا ہے۔</translation>
 <translation id="8264024885325823677">یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" نے پوری اسکرین کو تحریک دی۔</translation>
+<translation id="8265018477030547118">صرف اس آلے پر</translation>
 <translation id="826511437356419340">ونڈو کے عمومی جائزہ کی وضع میں داخل ہوگئے۔ نیویگیٹ کرنے کے لیے سوائپ کریں، یا اگر آپ کی بورڈ استعمال کر رہے ہیں تو ٹیب کو دبائیں۔</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{آپ کے بند کر کے دوبارہ چلانے کے بعد آپ کی پوشیدگی ونڈو نہیں کھلے گی}other{آپ کے بند کر کے دوبارہ چلانے کے بعد آپ کی {COUNT} پوشیدگی ونڈوز نہیں کھلیں گی}}</translation>
 <translation id="8266947622852630193">سبھی اندراج کے طریقے</translation>
@@ -8277,6 +8283,7 @@
 <translation id="8655295600908251630">چینل</translation>
 <translation id="8655972064210167941">سائن ان ناکام ہو گیا کیونکہ آپ کے پاس ورڈز کی توثیق نہيں ہو سکی۔ براہ کرم اپنے منتظم سے رابطہ کریں یا دوبارہ کوشش کریں۔</translation>
 <translation id="8657393004602556571">کیا آپ تاثرات کو مسترد کرنا چاہتے ہیں؟</translation>
+<translation id="8657762806752649049">‏آپ کے Google اکاؤنٹ میں، <ph name="ACCOUNT" /> کے لیے</translation>
 <translation id="8661290697478713397">لنک پوشید&amp;گی ونڈو میں کھولیں</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> نیٹ ورک میں شامل ہوں</translation>
 <translation id="8662733268723715832">اس میں توقع سے زیادہ وقت لگ رہا ہے، آپ اسے نظر انداز کر سکتے ہیں یا اس کے مکمل ہونے تک انتظار کر سکتے ہیں۔</translation>

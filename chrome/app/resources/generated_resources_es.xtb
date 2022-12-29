@@ -652,6 +652,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1595492813686795610">Linux se está actualizando</translation>
 <translation id="1596286373007273895">Disponible</translation>
 <translation id="1596709061955594992">El Bluetooth está desactivado. Para ver los dispositivos disponibles, activa el Bluetooth.</translation>
+<translation id="1596780725094407793">(subdominios incluidos)</translation>
 <translation id="1598233202702788831">El administrador ha inhabilitado las actualizaciones.</translation>
 <translation id="1600857548979126453">Acceder al servidor de depuración de página</translation>
 <translation id="1601560923496285236">Aplicar</translation>
@@ -2880,6 +2881,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3617891479562106823">Los fondos no están disponibles. Inténtalo de nuevo más tarde.</translation>
 <translation id="3619115746895587757">Capuchino</translation>
 <translation id="3620136223548713675">Geolocalización</translation>
+<translation id="362023940451053340">En tu cuenta de Google <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Ayudar a mejorar las funciones y el rendimiento de ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{una aplicación}other{# aplicaciones}}</translation>
 <translation id="362333465072914957">Esperando a que la autoridad de certificación publique un certificado</translation>
@@ -3482,7 +3484,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4159681666905192102">Esta es una cuenta infantil administrada por <ph name="CUSTODIAN_EMAIL" /> y <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconocido</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> no pertenece a una organización válida. Ponte en contacto con tu administrador. Si eres administrador, puedes configurar tu organización en g.co/ChromeEnterpriseAccount.</translation>
-<translation id="4165986682804962316">Configuración del sitio</translation>
+<translation id="4165986682804962316">Configuración de sitios</translation>
 <translation id="4167212649627589331"><ph name="APP_NAME" /> está intentando acceder a <ph name="DEVICE_NAME" />. Desactiva el interruptor de privacidad de <ph name="DEVICE_NAME" /> para permitir el acceso.</translation>
 <translation id="4167393659000039775">Google no se responsabiliza de las pérdidas de datos. Es posible que <ph name="DEVICE_OS" /> no funcione en modelos no certificados. Consulta más información en g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Los sitios suelen utilizar JavaScript para mostrar contenido interactivo, como videojuegos o formularios web.</translation>
@@ -5613,6 +5615,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6169967265765719844">Los permisos para juegos y aplicaciones instalados a través de Steam pueden gestionarse en los <ph name="LINK_BEGIN" />ajustes de la aplicación Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Bocadillo</translation>
 <translation id="6170498031581934115">No se ha podido habilitar la depuración ADB. Ve a Ajustes y vuelve a intentarlo.</translation>
+<translation id="6171779718418683144">Preguntar en cada visita</translation>
 <translation id="617213288191670920">No se han añadido idiomas</translation>
 <translation id="6173623053897475761">Vuelve a escribir tu PIN</translation>
 <translation id="6175314957787328458">GUID de dominio de Microsoft</translation>
@@ -6741,6 +6744,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7235737137505019098">Tu llave de seguridad no tiene suficiente espacio libre para más cuentas.</translation>
 <translation id="7235873936132740888">Los sitios pueden realizar tareas especiales cuando haces clic en ciertos tipos de enlaces, como crear un mensaje nuevo en tu cliente de correo o añadir eventos nuevos a tu calendario online.</translation>
 <translation id="7238609589076576185">Acento insertado.</translation>
+<translation id="7238665222668706269">Gestor de contraseñas de Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> ha cancelado la transferencia</translation>
 <translation id="7240339475467890413">¿Quieres conectarte a un nuevo punto de acceso?</translation>
 <translation id="7241389281993241388">Inicia sesión en <ph name="TOKEN_NAME" /> para importar el certificado de cliente.</translation>
@@ -7483,6 +7487,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7920363873148656176"><ph name="ORIGIN" /> puede ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Añade palabras que quieras que se omitan en el corrector ortográfico</translation>
 <translation id="7921347341284348270">No puedes ver las notificaciones de tu teléfono en esta cuenta gestionada. Vuelve a intentarlo con otra cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 extensión</translation>
 <translation id="7922935920104868876">Muestra información sobre cómo bloquear cookies de terceros en incógnito</translation>
 <translation id="7923564237306226146">Actualización de Linux completada</translation>
 <translation id="7924358170328001543">No se ha podido redirigir el puerto</translation>
@@ -7870,6 +7875,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ha inhabilitado el cursor de tu ratón.</translation>
 <translation id="8264024885325823677">Este ajuste lo gestiona tu administrador.</translation>
 <translation id="8264718194193514834"><ph name="EXTENSION_NAME" /> ha activado el modo de pantalla completa.</translation>
+<translation id="8265018477030547118">Solo en este dispositivo</translation>
 <translation id="826511437356419340">Se ha cambiado al modo de vista general de ventanas. Desliza el dedo para desplazarte o pulsa el tabulador si estás utilizando un teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{1 ventana de Incógnito no se abrirá después de reiniciar}other{{COUNT} ventanas de Incógnito no se volverán a abrir después de reiniciar}}</translation>
 <translation id="8266947622852630193">Todos los métodos de introducción de texto</translation>
@@ -8277,6 +8283,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">Se ha producido un error al iniciar sesión porque no ha sido posible verificar la contraseña. Ponte en contacto con el administrador o vuelve a intentarlo.</translation>
 <translation id="8657393004602556571">¿Quieres descartar los comentarios?</translation>
+<translation id="8657762806752649049">En tu cuenta de Google <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Abrir enlace en una ventana de incó&amp;gnito</translation>
 <translation id="8662671328352114214">Unirse a la red <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">El proceso está tardando más tiempo del esperado. Puedes saltártelo o esperar hasta que acabe.</translation>

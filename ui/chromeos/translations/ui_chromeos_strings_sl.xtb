@@ -679,6 +679,7 @@
 <translation id="6607272825297743757">Podatki o datoteki</translation>
 <translation id="6609332149380188670">Št. map, deljenih s programom Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Vnesite vsaj 4 številke.</translation>
+<translation id="6639661343369899134">Datotek ni mogoče naložiti, ker v disku <ph name="SHARED_DRIVE_NAME" /> ni dovolj prostora za shranjevanje.</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6650726141019353908">Rožnat metulj</translation>
 <translation id="6657585470893396449">Geslo</translation>

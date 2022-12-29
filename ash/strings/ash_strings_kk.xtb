@@ -490,7 +490,7 @@
 <translation id="3630697955794050612">өшірулі</translation>
 <translation id="3631369015426612114">Келесі көздерден алынатын хабарландыруларға рұқсат беру</translation>
 <translation id="3633097874324966332">Құрылғыны жұптау үшін Bluetooth параметрлерін ашыңыз.</translation>
-<translation id="3638400994746983214">Құпиялылық экранын қосу немесе өшіру. <ph name="STATE_TEXT" />.</translation>
+<translation id="3638400994746983214">Құпиялық экранын қосу немесе өшіру. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Жаңарту мерзімі өтіп кетті</translation>
 <translation id="3659444876902283058">(<ph name="CURRENT_DAY" />-күн/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Шамамен <ph name="TIME_LEFT" /> қалды (<ph name="PERCENTAGE" /> %).
@@ -678,7 +678,7 @@
 <translation id="468293128311738995">Телефондағы қолданбалар</translation>
 <translation id="4690510401873698237">Төмен жақтағы сөре</translation>
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
-<translation id="4702647871202761252">Құпиялылық экраны өшірулі.</translation>
+<translation id="4702647871202761252">Құпиялық экраны өшірулі.</translation>
 <translation id="4706121060329443414">Кейінірек жүктеп алынады. Айтылған сөз әзірше Google-дың өңдеуіне жіберіледі.</translation>
 <translation id="470644585772471629">Түс инверсиясы</translation>
 <translation id="4717575069099566988">USB-C кабелі USB4 стандартын қолдамайды. Құрылғының өнімділігі шектелуі мүмкін.</translation>
@@ -756,7 +756,7 @@
 <translation id="5117590920725113268">Келесі айды көрсету</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
 <translation id="5147567197700016471">Құлып ашылды.</translation>
-<translation id="5150070631291639005">Құпиялылық параметрлері</translation>
+<translation id="5150070631291639005">Құпиялық параметрлері</translation>
 <translation id="5155897006997040331">Оқу жылдамдығы</translation>
 <translation id="5166007464919321363">Жұмыс үстелін үлгі ретінде сақтау</translation>
 <translation id="5168181903108465623">Трансляциялау құрылғылары қолжетімді</translation>
@@ -872,7 +872,7 @@
 <translation id="576341972084747908">Қауіпті <ph name="FILENAME" /> файлы жүктеп алынуда</translation>
 <translation id="5763928712329149804">Shelf Party режимі өшірулі.</translation>
 <translation id="576453121877257266">"Түнгі жарық" функциясы қосулы.</translation>
-<translation id="5769373120130404283">Құпиялылық экраны</translation>
+<translation id="5769373120130404283">Құпиялық экраны</translation>
 <translation id="5773950591113557721">Бұл <ph name="APP_NAME" /> қолданбасына және камера мен микрофон рұқсаттары бар барлық қолданба мен веб-сайтқа кіруге мүмкіндік береді</translation>
 <translation id="5777841717266010279">Экран бөлісуді тоқтату қажет пе?</translation>
 <translation id="5779721926447984944">Бекітілген файлдар</translation>
@@ -1024,7 +1024,7 @@
 <translation id="6597278316891651699">Камера төменгі сол жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, әкімші басқарады</translation>
 <translation id="6612802754306526077">Экранды жазу режимі таңдалды.</translation>
-<translation id="6614169507485700968">Құпиялылық экраны қосулы.</translation>
+<translation id="6614169507485700968">Құпиялық экраны қосулы.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> және тағы басқа хабарландырулар жасырылған, себебі көруден қорғау режимі қосулы тұр.</translation>
 <translation id="6627638273713273709">Іздеу+Shift+K</translation>
 <translation id="6637729079642709226">Уақытты өзгерту</translation>
@@ -1252,7 +1252,7 @@
 <translation id="7872786842639831132">Өшірулі</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> құрылғыңызда Bluetooth өшірулі сияқты. Phone Hub функциясын пайдалану үшін Bluetooth қосыңыз.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Құрылғыны алдыңғы нұсқаға қазір қайтару}=1{Құрылғыны алдыңғы нұсқаға 1 секундта қайтару}other{Құрылғыны алдыңғы нұсқаға # секундта қайтару}}</translation>
-<translation id="7886169021410746335">Құпиялылық параметрлерін реттеу</translation>
+<translation id="7886169021410746335">Құпиялық параметрлерін реттеу</translation>
 <translation id="7886277072580235377">Сіз шыққан кезде, сеансыңыз өшіріледі. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Электрондық хат жіберу</translation>
 <translation id="7893503627044934815">Бұл файлдың көрсетілгенін қаламаймын</translation>

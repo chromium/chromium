@@ -1248,6 +1248,7 @@
 <translation id="2104166991923847969">כיבוי אוטומטי של הנקודה לשיתוף אינטרנט</translation>
 <translation id="2105809836724866556">ההסתרה של <ph name="MODULE_TITLE" /> בוצעה</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{מספר טלפון}one{# מספרי טלפון}two{# מספרי טלפון}other{# מספרי טלפון}}</translation>
+<translation id="2110941575868943054">‏יש הרשאה לאתר מכשירי Bluetooth</translation>
 <translation id="211144231511833662">ניקוי הסוגים</translation>
 <translation id="2111670510994270194">כרטיסייה חדשה מצד ימין</translation>
 <translation id="2112554630428445878">שלום, <ph name="USERNAME" /></translation>
@@ -3043,6 +3044,7 @@
 <translation id="3756485814916578707">העברת המסך מתבצעת</translation>
 <translation id="3756578970075173856">הגדרת קוד אימות</translation>
 <translation id="3756795331760037744">‏הרשאה ל-Google Assistant להשתמש במידע שמופיע במסך כדי לעזור ל<ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="3756806135608816820">‏אתרים רשאים לבקש הרשאה לאיתור מכשירי Bluetooth</translation>
 <translation id="3757733214359997190">לא נמצאו אתרים</translation>
 <translation id="375841316537350618">‏מוריד סקריפט של שרת proxy...</translation>
 <translation id="3758842566811519622">‏קובצי Cookie הוגדרו</translation>
@@ -3813,6 +3815,7 @@
 <translation id="4469762931504673593">ל-<ph name="ORIGIN" /> יש הרשאה לערוך קבצים בתיקייה <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">העדפות אחסון חיצוני</translation>
 <translation id="4471354919263203780">‏מתבצעת הורדה של קובצי זיהוי דיבור… ‎<ph name="PERCENT" />%‎</translation>
+<translation id="4472298120638043495">‏אפשר להשתמש בשפה המועדפת שהגדרת בחשבון Google ‏(<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">‏עזרה בשיפור התכונות והביצועים של Chrome</translation>
 <translation id="4472575034687746823">תחילת העבודה</translation>
 <translation id="4474155171896946103">יצירת סימנייה לכל הכרטיסיות...</translation>
@@ -5018,6 +5021,7 @@
 <translation id="5600706100022181951">‏ההורדה של העדכון תנצל MB <ph name="UPDATE_SIZE_MB" /> מחבילת הגלישה. להמשיך?</translation>
 <translation id="5601503069213153581">קוד אימות</translation>
 <translation id="5601823921345337195">‏לא מורשים להתחבר אל מכשירי MIDI</translation>
+<translation id="5601833336918638013">‏לא לאפשר לאתרים לאתר מכשירי Bluetooth</translation>
 <translation id="5602765853043467355">ניקוי הסימניות, ההיסטוריה, הסיסמאות ונתונים נוספים מהמכשיר הזה</translation>
 <translation id="5605758115928394442">הודעה נשלחה לטלפון שלך כדי לאשר את זהותך.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{התוסף הזה נחסם}one{התוספים האלה נחסמו}two{התוספים האלה נחסמו}other{התוספים האלה נחסמו}}</translation>
@@ -6479,6 +6483,7 @@
 <translation id="6960507406838246615">‏נדרש עדכון ל-Linux</translation>
 <translation id="6960648667961844909">‏לא ניתן היה להוריד את קובצי הדיבור של <ph name="LANGUAGE" />. יתבצע ניסיון הורדה מאוחר יותר. הדיבור יישלח אל Google לעיבוד עד שההורדה תושלם.</translation>
 <translation id="696103774840402661">כל הקבצים והנתונים המקומיים של כל המשתמשים במכשיר <ph name="DEVICE_TYPE" /> זה נמחקו באופן סופי.</translation>
+<translation id="6961327401577924850">‏בדרך כלל, אתרים מאתרים מכשירי Bluetooth כדי לתמוך בתכונות כמו הגדרת איתות Bluetooth בעל מתח נמוך או סנכרון עם איתות כזה, מכשיר למעקב אחר נתוני בריאות או כושר, או נורה חכמה.</translation>
 <translation id="6963872466817251924">הדגשת סמן הטקסט</translation>
 <translation id="6964390816189577014">גיבור</translation>
 <translation id="6964760285928603117">הסרה מהקבוצה</translation>
@@ -6755,6 +6760,7 @@
 <translation id="7227458944009118910">האפליקציות המפורטות בהמשך גם יכולות לטפל בקישורים מסוג פרוטוקול. אפליקציות אחרות יבקשו הרשאה.</translation>
 <translation id="7228056665272655255">כדי להגדיר טביעת אצבע, על הילד או הילדה לגעת בחיישן טביעות האצבע שבפינה הימנית העליונה של המקלדת. נתוני טביעות האצבע של הילד או הילדה נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" /> הזה.</translation>
 <translation id="7228523857728654909">נעילת מסך וכניסה</translation>
+<translation id="7228854227189381547">לא רוצה לעבור</translation>
 <translation id="7230222852462421043">&amp;שחזור החלון</translation>
 <translation id="7231260028442989757">יש לך אפשרות להציג ולסגור את ההתראות בטלפון ולהשיב להן</translation>
 <translation id="7232750842195536390">המערכת לא הצליחה לשנות את השם</translation>
@@ -7088,6 +7094,7 @@
 <translation id="7545466883021407599">‏לא ניתן להתחבר לשרת. צריך לבדוק את החיבור לרשת ולנסות שוב. אם הבעיה נמשכת, כדאי לנסות להפעיל מחדש את ה-Chromebook. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">אזהרה: הגדרות <ph name="PRODUCT_NAME" /> שלך מאוחסנות בכונן רשת. דבר זה עשוי לגרום להאטות, לקריסות ואפילו לאובדן נתונים.</translation>
 <translation id="7548856833046333824">לימונדה</translation>
+<translation id="7549434883223124329">רוצה לעבור לשפה אחרת במכשיר?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">ההורדה של <ph name="FILE_NAME" /> הצליחה</translation>
 <translation id="7551643184018910560">הצמדה למדף</translation>
@@ -8115,6 +8122,7 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> צריך אישור ממך כדי לפעול</translation>
 <translation id="8466417995783206254">בכרטיסייה הזו מופעל סרטון במצב 'תמונה בתוך תמונה'.</translation>
 <translation id="8467326454809944210">בחירת שפה אחרת</translation>
+<translation id="8468087214092422866">‏אין הרשאה לאתר מכשירי Bluetooth</translation>
 <translation id="8470513973197838199">סיסמאות שנשמרו בשביל <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">‏אתרים מתחברים בדרך כלל להתקני USB כדי לתמוך בתכונות כמו הדפסת מסמכים או שמירה בהתקן אחסון</translation>
 <translation id="8471959340398751476">ההנחות כבויות. ניתן להפעיל אותן בתפריט ההתאמה האישית</translation>

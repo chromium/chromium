@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">您只需回到这里，便可重新打开最近关闭的标签页</translation>
 <translation id="1016495303386450659">书签已更新</translation>
+<translation id="1035980983510608210">关闭所有标签页也会关闭固定标签页。</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="1049743911850919806">无痕</translation>
 <translation id="105093091697134113">以下帐号使用的密码在第三方数据泄露事件中遭到了外泄，或者曾在诈骗网站上输入过。为确保您帐号的安全，请立即更改这些密码。</translation>
@@ -208,6 +209,7 @@
 <translation id="2578571896248130439">发送网页</translation>
 <translation id="2584132361465095047">添加帐号…</translation>
 <translation id="2600682495497606169">清除网站 Cookie</translation>
+<translation id="2609008503159898744">关闭所有标签页？</translation>
 <translation id="2625189173221582860">已复制密码</translation>
 <translation id="2626236249646841566">请检查网络连接状况并尝试重新登录。</translation>
 <translation id="2637313651144986786">搜索标签页…</translation>
@@ -299,6 +301,7 @@
 <translation id="3174662312949010067">您还可在其他设备上使用已存密码。</translation>
 <translation id="3175081911749765310">网络服务</translation>
 <translation id="3178650076442119961">今天曾有活动</translation>
+<translation id="3181261441371833039">仅关闭常规标签页</translation>
 <translation id="3181825792072797598">开启同步功能</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
 <translation id="3184767182050912705">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁</translation>
@@ -751,6 +754,7 @@
 <translation id="6476800141292307438">将页面翻译成<ph name="LANGUAGE" />。选项位于屏幕底部附近。</translation>
 <translation id="648164694371393720">身份验证出错</translation>
 <translation id="6482629121755362506">删除了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
+<translation id="6495429111159337775">将密码保存到您的 Google 帐号并自动填充</translation>
 <translation id="6497772452874122664">如果您信任 <ph name="TIME" />，则可使用您为另一网站保存的密码。
 
 请尽量为每个网站使用独一无二的密码。</translation>

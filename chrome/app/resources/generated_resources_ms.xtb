@@ -655,6 +655,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1595492813686795610">Linux sedang ditingkatkan</translation>
 <translation id="1596286373007273895">Tersedia</translation>
 <translation id="1596709061955594992">Bluetooth dimatikan. Untuk melihat peranti yang tersedia, hidupkan Bluetooth.</translation>
+<translation id="1596780725094407793">- termasuk subdomain</translation>
 <translation id="1598233202702788831">Kemas kini dilumpuhkan oleh pentadbir anda</translation>
 <translation id="1600857548979126453">Akses bahagian belakang penyahpepijat halaman</translation>
 <translation id="1601560923496285236">Gunakan</translation>
@@ -2894,6 +2895,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3617891479562106823">Latar belakang tidak tersedia. Cuba lagi nanti.</translation>
 <translation id="3619115746895587757">Kapucino</translation>
 <translation id="3620136223548713675">Geolokasi</translation>
+<translation id="362023940451053340">Dalam Google Account anda, untuk <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Bantu kami memperbaik ciri dan prestasi Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{satu apl}other{# apl}}</translation>
 <translation id="362333465072914957">Menunggu CA mengeluarkan sijil</translation>
@@ -5629,6 +5631,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6169967265765719844">Kebenaran untuk permainan dan apl yang dipasang melalui Steam boleh diurus dalam <ph name="LINK_BEGIN" />Tetapan apl Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sandwic</translation>
 <translation id="6170498031581934115">Tidak dapat mendayakan penyahpepijatan ADB. Buka Tetapan dan cuba lagi.</translation>
+<translation id="6171779718418683144">Tanya setiap kali melawat</translation>
 <translation id="617213288191670920">Tiada bahasa ditambah</translation>
 <translation id="6173623053897475761">Taipkan PIN anda sekali lagi</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
@@ -6757,6 +6760,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7235737137505019098">Kunci keselamatan anda tiada ruang yang mencukupi untuk menambahkan sebarang akaun lagi.</translation>
 <translation id="7235873936132740888">Laman boleh mengendalikan tugas khas apabila anda mengklik jenis pautan tertentu, seperti membuat mesej baharu dalam klien e-mel anda atau menambahkan acara baharu pada kalendar dalam talian anda</translation>
 <translation id="7238609589076576185">Tanda aksen disisipkan.</translation>
+<translation id="7238665222668706269">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> membatalkan pemindahan</translation>
 <translation id="7240339475467890413">Sambungkan ke tempat liputan baharu?</translation>
 <translation id="7241389281993241388">Sila log masuk ke <ph name="TOKEN_NAME" /> untuk mengimport sijil klien.</translation>
@@ -7499,6 +7503,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7920363873148656176"><ph name="ORIGIN" /> boleh melihat <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Tambah perkataan yang perlu dilangkau oleh semak ejaan</translation>
 <translation id="7921347341284348270">Anda tidak boleh melihat pemberitahuan telefon anda pada akaun terurus ini. Cuba lagi dengan akaun lain. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 sambungan</translation>
 <translation id="7922935920104868876">Tunjukkan butiran tentang menyekat kuki pihak ketiga dalam Inkognito</translation>
 <translation id="7923564237306226146">Peningkatan Linux selesai</translation>
 <translation id="7924358170328001543">Ralat semasa mengirim semula port</translation>
@@ -7886,6 +7891,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> telah melumpuhkan kursor tetikus anda.</translation>
 <translation id="8264024885325823677">Tetapan ini diurus oleh pentadbir anda.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" mencetuskan skrin penuh.</translation>
+<translation id="8265018477030547118">Hanya pada peranti ini</translation>
 <translation id="826511437356419340">Telah memasuki mod ikhtisar tetingkap. Leret untuk menavigasi atau tekan tab jika menggunakan papan kekunci.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Tetingkap Inkognito anda tidak akan dibuka selepas anda melancarkan semula penyemak imbas}other{{COUNT} tetingkap Inkognito anda tidak akan dibuka semula selepas anda melancarkan semula penyemak imbas}}</translation>
 <translation id="8266947622852630193">Semua kaedah input</translation>
@@ -8294,6 +8300,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655972064210167941">Log masuk gagal kerana kata laluan anda tidak dapat disahkan. Sila hubungi pentadbir anda atau cuba lagi.</translation>
 <translation id="8657393004602556571">Adakah anda ingin membuang maklum balas?</translation>
+<translation id="8657762806752649049">Ke Google Account anda, untuk <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Buka Pautan dalam Tetingkap Inko&amp;gnito</translation>
 <translation id="8662671328352114214">Sertai rangkaian <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Proses ini mengambil masa lebih lama daripada jangkaan, anda boleh melangkau atau menunggu sehingga selesai.</translation>
@@ -8637,7 +8644,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8967427617812342790">Tambahkan pada senarai bacaan</translation>
 <translation id="8968527460726243404">Penulis Imej Sistem ChromeOS</translation>
 <translation id="8968766641738584599">Simpan kad</translation>
-<translation id="89720367119469899">Lepas</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Sila semak dengan pentadbir rangkaian anda bagi memastikan bahawa tembok api tidak menyekat muat turun dari pelayan Google.</translation>
 <translation id="8973263196882835828">&amp;Dayakan Sari Kata Langsung</translation>
 <translation id="8973557916016709913">Alih keluar tahap zum</translation>

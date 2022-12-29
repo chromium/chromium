@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">Anda boleh kembali ke sini untuk membuka semula tab yang baru anda tutup</translation>
 <translation id="1016495303386450659">Item dikemas kini</translation>
+<translation id="1035980983510608210">Penutupan semua tab akan menutup tab tersemat juga.</translation>
 <translation id="1044891598689252897">Tapak akan berfungsi seperti biasa</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="105093091697134113">Akaun yang berikut menggunakan kata laluan yang terdedah dalam pelanggaran data pihak ketiga atau yang dimasukkan pada laman web menipu. Tukar kata laluan ini dengan segera untuk memastikan akaun anda selamat.</translation>
@@ -208,6 +209,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2578571896248130439">Hantar Halaman Web</translation>
 <translation id="2584132361465095047">Tambahkan Akaun...</translation>
 <translation id="2600682495497606169">Kosongkan Kuki Tapak</translation>
+<translation id="2609008503159898744">Tutup Semua Tab?</translation>
 <translation id="2625189173221582860">Kata laluan disalin</translation>
 <translation id="2626236249646841566">Semak sambungan anda dan cuba log masuk sekali lagi.</translation>
 <translation id="2637313651144986786">Cari Tab...</translation>
@@ -299,6 +301,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3174662312949010067">Anda juga boleh menggunakan kata laluan yang disimpan pada peranti anda yang lain.</translation>
 <translation id="3175081911749765310">Prkhdmtn Web</translation>
 <translation id="3178650076442119961">Aktif Hari Ini</translation>
+<translation id="3181261441371833039">Tutup Tab Biasa Sahaja</translation>
 <translation id="3181825792072797598">Hidupkan Penyegerakan</translation>
 <translation id="3181954750937456830">Penyemakan Imbas Selamat (melindungi anda dan peranti anda daripada tapak yang berbahaya)</translation>
 <translation id="3184767182050912705">Buka Kunci dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>

@@ -653,6 +653,7 @@
 <translation id="1595492813686795610">Linux আপগ্ৰে‘ড হৈ আছে</translation>
 <translation id="1596286373007273895">উপলব্ধ</translation>
 <translation id="1596709061955594992">ব্লুটুথ অফ কৰা হ’ল। উপলব্ধ ডিভাইচসমূহ চাবলৈ ব্লুটুথ অন কৰক।</translation>
+<translation id="1596780725094407793">- ছাবড’মেইন অন্তৰ্ভুক্ত</translation>
 <translation id="1598233202702788831">আপোনাৰ প্ৰশাসকে আপডে’ট অক্ষম কৰি থৈছে৷</translation>
 <translation id="1600857548979126453">পৃষ্ঠা ডিবাগাৰ বেকএণ্ড এক্সেছ কৰক</translation>
 <translation id="1601560923496285236">প্ৰয়োগ কৰক</translation>
@@ -2892,6 +2893,7 @@
 <translation id="3617891479562106823">নেপথ্য উপলব্ধ নহয়। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3619115746895587757">কেপ’চিনো</translation>
 <translation id="3620136223548713675">জিঅ’লোকেশ্বন</translation>
+<translation id="362023940451053340"><ph name="ACCOUNT" />ৰ বাবে থকা আপোনাৰ Google একাউণ্টত</translation>
 <translation id="3621807901162200696">ChromeOSৰ সুবিধা আৰু কাৰ্যক্ষমতা উন্নত কৰাত সহায় কৰক</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{এটা এপ্}one{# টা এপ্}other{# টা এপ্}}</translation>
 <translation id="362333465072914957">CAএ এখন প্ৰমাণপত্ৰ জাৰি কৰালৈ অপেক্ষা কৰি থকা হৈছে</translation>
@@ -5626,6 +5628,7 @@
 <translation id="6169967265765719844">Steamৰ জৰিয়তে ইনষ্টল কৰা গে’ম আৰু এপৰ বাবে অনুমতি <ph name="LINK_BEGIN" />Steam এপৰ ছেটিঙ<ph name="LINK_END" />ত পৰিচালনা কৰিব পৰা যায়।</translation>
 <translation id="6170470584681422115">ছেণ্ডৱিচ্চ</translation>
 <translation id="6170498031581934115">ADB ডিবাগিং সক্ষম কৰিব পৰা নগ’ল। ছেটিংসমূহলৈ যাওক আৰু পুনৰ চেষ্টা কৰক।</translation>
+<translation id="6171779718418683144">প্ৰতিবাৰ যাওঁতে সোধক</translation>
 <translation id="617213288191670920">কোনো ভাষা যোগ দিয়া হোৱা নাই</translation>
 <translation id="6173623053897475761">আপোনাৰ পিন পুনৰ টাইপ কৰক</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
@@ -6756,6 +6759,7 @@
 <translation id="7235737137505019098">আপোনাৰ সুৰক্ষা চাবিত আৰু কোনো একাউণ্টৰ বাবে পৰ্যাপ্ত খালী ঠাই নাই।</translation>
 <translation id="7235873936132740888">আপুনি নিৰ্দিষ্ট প্ৰকাৰৰ লিংকত ক্লিক কৰিলে ছাইটসমূহে বিশেষ কাৰ্যসমূহ পৰিচালনা কৰিব পাৰে, যেনে, আপোনাৰ ইমেইল ক্লাইণ্টত এটা নতুন বাৰ্তা সৃষ্টি কৰা অথবা আপোনাৰ অনলাইন কেলেণ্ডাৰত নতুন অনুষ্ঠান যোগ দিয়া</translation>
 <translation id="7238609589076576185">উচ্চাৰণ চিহ্ন ভৰোৱা হৈছে।</translation>
+<translation id="7238665222668706269">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" />এ স্থানান্তৰণটো বাতিল কৰিছে</translation>
 <translation id="7240339475467890413">নতুন হটস্পটৰ সৈতে সংযোগ হ'ব বিচাৰেনে?</translation>
 <translation id="7241389281993241388">ক্লাইণ্টৰ প্ৰমাণপত্ৰ আমদানি কৰিবলৈ <ph name="TOKEN_NAME" />ত ছাইন ইন কৰক।</translation>
@@ -7498,6 +7502,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" />এ <ph name="FILENAME" /> চাব পাৰে</translation>
 <translation id="7920482456679570420">আপুনি বানান পৰীক্ষা কৰা সুবিধাটোৱে যিবোৰ শব্দ বাদ দিয়াটো বিচাৰে সেইবোৰ যোগ দিয়ক</translation>
 <translation id="7921347341284348270">আপুনি এই পৰিচালিত একাউণ্টটোত আপোনাৰ ফ’নৰ জাননীসমূহ চাব নোৱাৰে। অন্য এটা একাউণ্টৰ জৰিয়তে পুনৰ চেষ্টা কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">১ টা এক্সটেনশ্বন</translation>
 <translation id="7922935920104868876">ইনক’গনিট’ত তৃতীয় পক্ষৰ কুকি অৱৰোধ কৰাৰ বিষয়ে সবিশেষ দেখুৱাওক</translation>
 <translation id="7923564237306226146">Linuxৰ আপগ্ৰে’ড সম্পূৰ্ণ হৈছে</translation>
 <translation id="7924358170328001543">প’ৰ্ট যোগ কৰাটো ফৰৱাৰ্ড কৰাৰ সময়ত আসোঁৱাহ হৈছে</translation>
@@ -7884,6 +7889,7 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />এ আপোনাৰ মাউছৰ কাৰ্ছৰ অক্ষম কৰিছে।</translation>
 <translation id="8264024885325823677">এই ছেটিংটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে।</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />"এ সম্পূৰ্ণ স্ক্রীণৰ ম’ডটো সক্রিয় কৰিলে।</translation>
+<translation id="8265018477030547118">কেৱল এই ডিভাইচটোত</translation>
 <translation id="826511437356419340">ৱিণ্ড’ ৰূপৰেখা ম‘ডত প্ৰৱেশ কৰা হৈছে। নেভিগে’ট কৰিবলৈ ছোৱাইপ কৰক অথবা কীব’ৰ্ড ব্যৱহাৰ কৰি আছে যদি টেব দবাওক।</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{আপুনি পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ ইনক’গনিট’ ৱিণ্ড’ খোলা নাযাব}one{আপুনি পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ {COUNT} খন ইনক’গনিট’ ৱিণ্ড’ পুনৰ খোলা নাযাব}other{আপুনি পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ {COUNT} খন ইনক’গনিট’ ৱিণ্ড’ পুনৰ খোলা নাযাব}}</translation>
 <translation id="8266947622852630193">সকলো ইনপুট পদ্ধতি</translation>
@@ -8291,6 +8297,7 @@
 <translation id="8655295600908251630">চেনেল</translation>
 <translation id="8655972064210167941">ছাইন ইন বিফল হ’ল কিয়নো আপোনাৰ পাছৱৰ্ডটোৰ প্ৰমাণীকৰণ কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক বা আকৌ চেষ্টা কৰক।</translation>
 <translation id="8657393004602556571">আপুনি মতামতটো বাতিল কৰিব বিচাৰেনে?</translation>
+<translation id="8657762806752649049"><ph name="ACCOUNT" />ৰ বাবে থকা আপোনাৰ Google একাউণ্টত</translation>
 <translation id="8661290697478713397">লিংকটো ইনক’&amp;গনিট’ ৱিণ্ড'ত খোলক</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> নেটৱর্কত যোগদান কৰক</translation>
 <translation id="8662733268723715832">এইটোৱে আশা কৰাতকৈ বেছি সময় লৈছে, আপুনি এইটো বাদ দিব পাৰে অথবা এইটো সম্পূৰ্ণ হোৱালৈকে অপেক্ষা কৰিব পাৰে।</translation>

@@ -1237,6 +1237,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2104166991923847969">Desativar a zona Wi-Fi automaticamente</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> oculto</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de telefone}other{# números de telefone}}</translation>
+<translation id="2110941575868943054">Com autorização para procurar dispositivos Bluetooth</translation>
 <translation id="211144231511833662">Limpar tipos</translation>
 <translation id="2111670510994270194">Novo separador à direita</translation>
 <translation id="2112554630428445878">Damos-lhe as boas-vindas, <ph name="USERNAME" /></translation>
@@ -3029,6 +3030,7 @@ Pretende pará-lo?</translation>
 <translation id="3756485814916578707">A transmitir o ecrã</translation>
 <translation id="3756578970075173856">Defina o PIN</translation>
 <translation id="3756795331760037744">Permita que o Assistente Google utilize as informações do ecrã de <ph name="SUPERVISED_USER_NAME" /> para ajudar</translation>
+<translation id="3756806135608816820">Os sites podem pedir para procurar dispositivos Bluetooth</translation>
 <translation id="3757733214359997190">Não foram encontrados sites.</translation>
 <translation id="375841316537350618">A transferir o script de proxy...</translation>
 <translation id="3758842566811519622">Cookies definidos</translation>
@@ -3799,6 +3801,7 @@ Pretende pará-lo?</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pode editar ficheiros em <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferências de armazenamento externo</translation>
 <translation id="4471354919263203780">A transferir ficheiros de reconhecimento de voz… <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Pode usar o idioma preferido da sua Conta Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
 <translation id="4472575034687746823">Começar</translation>
 <translation id="4474155171896946103">Adicionar todos os separadores aos marcadores...</translation>
@@ -5003,6 +5006,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5600706100022181951">A atualização será transferida e irá utilizar <ph name="UPDATE_SIZE_MB" /> MB de dados móveis. Pretende continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Sem autorização para estabelecer ligação a dispositivos MIDI</translation>
+<translation id="5601833336918638013">Não permitir que os sites procurem dispositivos Bluetooth</translation>
 <translation id="5602765853043467355">Limpar os marcadores, o histórico, as palavras-passe e mais dados deste dispositivo</translation>
 <translation id="5605758115928394442">Foi enviada uma notificação para o seu telemóvel para confirmar a sua identidade.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensão está bloqueada}other{Estas extensões estão bloqueadas}}</translation>
@@ -6461,6 +6465,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6960507406838246615">Atualização do Linux necessária</translation>
 <translation id="6960648667961844909">Não foi possível transferir os ficheiros de voz em <ph name="LANGUAGE" />. Tentar-se-á a transferência mais tarde. A voz é enviada para a Google para processamento até à conclusão da transferência.</translation>
 <translation id="696103774840402661">Todos os ficheiros e dados locais para todos os utilizadores neste dispositivo <ph name="DEVICE_TYPE" /> foram eliminados de forma permanente.</translation>
+<translation id="6961327401577924850">Normalmente, os sites procuram dispositivos Bluetooth para funcionalidades como configurar ou sincronizar um beacon Bluetooth Low Energy, uma lâmpada inteligente ou um monitorizador de saúde ou fitness</translation>
 <translation id="6963872466817251924">Marcador de cursor de texto</translation>
 <translation id="6964390816189577014">Herói</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
@@ -6737,6 +6742,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7227458944009118910">As apps listadas abaixo também podem processar links de protocolo. Outras apps pedirão autorização.</translation>
 <translation id="7228056665272655255">Para configurar a impressão digital, peça à criança para tocar no sensor de impressões digitais no canto superior direito do teclado. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Bloqueio de ecrã e início de sessão</translation>
+<translation id="7228854227189381547">Não mudar</translation>
 <translation id="7230222852462421043">&amp;Restaurar janela</translation>
 <translation id="7231260028442989757">Veja, ignore e responda às notificações do telemóvel</translation>
 <translation id="7232750842195536390">Falha ao mudar o nome</translation>
@@ -7070,6 +7076,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7545466883021407599">Não foi possível estabelecer ligação ao servidor. Verifique a ligação de rede e tente novamente. Se continuar a ter problemas, experimente reiniciar o Chromebook. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Aviso: as definições do <ph name="PRODUCT_NAME" /> estão armazenadas numa unidade de rede. Isto pode resultar em lentidão, falhas ou mesmo perda de dados.</translation>
 <translation id="7548856833046333824">Limonada</translation>
+<translation id="7549434883223124329">Mudar o idioma do dispositivo?</translation>
 <translation id="7550830279652415241">marcadores_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">A transferência de <ph name="FILE_NAME" /> falhou</translation>
 <translation id="7551643184018910560">Fixar na prateleira</translation>
@@ -8096,6 +8103,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8465444703385715657">O <ph name="PLUGIN_NAME" /> necessita da sua autorização para ser executado</translation>
 <translation id="8466417995783206254">Este separador está a reproduzir um vídeo no modo ecrã no ecrã.</translation>
 <translation id="8467326454809944210">Selecionar outro idioma</translation>
+<translation id="8468087214092422866">Sem autorização para procurar dispositivos Bluetooth</translation>
 <translation id="8470513973197838199">Palavras-passe guardadas para <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Normalmente, os sites estabelecem ligação a dispositivos USB para funcionalidades como imprimir um documento ou guardar num dispositivo de armazenamento.</translation>
 <translation id="8471959340398751476">Os descontos estão desativados. Pode ativá-los no menu Personalizar</translation>

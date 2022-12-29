@@ -679,6 +679,7 @@
 <translation id="6607272825297743757">Información del archivo</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> carpetas compartidas con Parallels Desktop</translation>
 <translation id="6629518321609546825">Escribe al menos 4 números</translation>
+<translation id="6639661343369899134">No se pueden subir los archivos porque <ph name="SHARED_DRIVE_NAME" /> no tiene suficiente espacio de almacenamiento.</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6650726141019353908">Mariposa rosa</translation>
 <translation id="6657585470893396449">Contraseña</translation>

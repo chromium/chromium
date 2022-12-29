@@ -284,7 +284,7 @@
 <translation id="2873259058405069099">前往表格開頭</translation>
 <translation id="287383510823843610">深橘</translation>
 <translation id="2879867157561757640">以三指向下滑動</translation>
-<translation id="288178314850623291">使用跳轉指令可直接在特定類型的元素之間移動。如要跳到下一個標題，請按下搜尋鍵 + H 鍵；如要跳到下一個標題，請按下搜尋鍵 + Shift 鍵 + H 鍵。</translation>
+<translation id="288178314850623291">使用跳轉指令可直接在特定類型的元素之間移動。如要跳到下一個標題，請按下搜尋鍵 + H 鍵；如要跳到上一個標題，請按下搜尋鍵 + Shift 鍵 + H 鍵。</translation>
 <translation id="2885764457467528513">{COUNT,plural, =1{分鐘}other{分鐘}}</translation>
 <translation id="2894654529758326923">資訊</translation>
 <translation id="2899328121302785497">{COUNT,plural, =1{左大括弧}other{# 個左大括弧}}</translation>

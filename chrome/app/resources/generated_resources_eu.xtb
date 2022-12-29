@@ -652,6 +652,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1595492813686795610">Bertsio-berritzen ari da Linux</translation>
 <translation id="1596286373007273895">Erabilgarri</translation>
 <translation id="1596709061955594992">Bluetootha desaktibatuta dago. Aktiba ezazu gailu erabilgarriak ikusteko.</translation>
+<translation id="1596780725094407793">- azpidomeinuak barne</translation>
 <translation id="1598233202702788831">Administratzaileak desgaitu ditu eguneratzeak.</translation>
 <translation id="1600857548979126453">Atzitu orriaren araztailearen backenda</translation>
 <translation id="1601560923496285236">Aplikatu</translation>
@@ -2879,6 +2880,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3617891479562106823">Atzeko planoak ez daude erabilgarri. Saiatu berriro geroago.</translation>
 <translation id="3619115746895587757">Kaputxinoa</translation>
 <translation id="3620136223548713675">Geokokapena</translation>
+<translation id="362023940451053340">Google-ko kontuan (<ph name="ACCOUNT" />)</translation>
 <translation id="3621807901162200696">Lagundu Chrome OS-ren eginbideak eta errendimendua hobetzen</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikazio bat}other{# aplikazio}}</translation>
 <translation id="362333465072914957">Ziurtagiri-emaileak ziurtagiria jaulkitzeko zain</translation>
@@ -5610,6 +5612,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6169967265765719844"><ph name="LINK_BEGIN" />Steam aplikazioaren ezarpenetan<ph name="LINK_END" /> kudea ditzakezu Steam bidez instalatutako jokoen eta aplikazioen baimenak.</translation>
 <translation id="6170470584681422115">Ogitartekoa</translation>
 <translation id="6170498031581934115">Ezin izan da gaitu ADB arazketa. Joan ezarpenetara eta saiatu berriro.</translation>
+<translation id="6171779718418683144">Galdetu bisita bakoitzean</translation>
 <translation id="617213288191670920">Ez da gehitu hizkuntzarik</translation>
 <translation id="6173623053897475761">Idatzi berriro PINa</translation>
 <translation id="6175314957787328458">Microsoft domeinuen GUID identifikatzailea</translation>
@@ -6738,6 +6741,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7235737137505019098">Segurtasun-giltzak ez dauka tokirik beste konturik gehitzeko.</translation>
 <translation id="7235873936132740888">Esteka mota jakin batzuk sakatzean, webguneek zeregin bereziak bete ditzakete; esaterako, posta-bezeroan mezuak sortu edo sareko egutegian gertaerak gehitu</translation>
 <translation id="7238609589076576185">Azentu-marka bat txertatu da.</translation>
+<translation id="7238665222668706269">Google-ren Pasahitz-kudeatzailea zerbitzuan <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> gailuak transferentzia bertan behera utzi du</translation>
 <translation id="7240339475467890413">Wifi-gune berrira konektatu nahi duzu?</translation>
 <translation id="7241389281993241388">Bezero-ziurtagiria inportatzeko, hasi saioa <ph name="TOKEN_NAME" /> gailuan.</translation>
@@ -7480,6 +7484,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7920363873148656176"><ph name="ORIGIN" /> webguneak <ph name="FILENAME" /> ikus dezake</translation>
 <translation id="7920482456679570420">Gehitu zer hitz nahi duzun ortografia-zuzentzaileak saltatzea</translation>
 <translation id="7921347341284348270">Ezin dituzu kontu kudeatu honetan ikusi telefonoan jasotzen dituzun jakinarazpenak. Saiatu berriro beste kontu bat erabilita. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">Luzapen bat</translation>
 <translation id="7922935920104868876">Erakutsi ezkutuko moduan hirugarrenen cookieak blokeatzeari buruzko xehetasunak</translation>
 <translation id="7923564237306226146">Bertsio-berritu da Linux</translation>
 <translation id="7924358170328001543">Errore bat gertatu da ataka desbideratzean</translation>
@@ -7866,6 +7871,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> orriak saguaren kurtsorea desgaitu du.</translation>
 <translation id="8264024885325823677">Administratzaileak kudeatzen du ezarpen hau.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" luzapenak pantaila osoa abiarazi du.</translation>
+<translation id="8265018477030547118">Gailu honetan soilik</translation>
 <translation id="826511437356419340">Leihoen ikuspegi orokorraren moduan sartu zara. Pasatu hatza nabigatzeko edo, teklatu bat erabiltzen ari bazara, sakatu tabuladorea.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Berriro abiarazi ondoren, ezkutuko moduko leihoa ez da irekiko}other{Berriro abiarazi ondoren, ezkutuko moduko {COUNT} leihoak ez dira irekiko}}</translation>
 <translation id="8266947622852630193">Idazketa-metodo guztiak</translation>
@@ -8273,6 +8279,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8655295600908251630">Kanala</translation>
 <translation id="8655972064210167941">Ezin izan da hasi saioa, ezin izan delako egiaztatu pasahitza. Jarri administratzailearekin harremanetan edo saiatu berriro.</translation>
 <translation id="8657393004602556571">Oharrak baztertu nahi dituzu?</translation>
+<translation id="8657762806752649049">Google-ko kontuan (<ph name="ACCOUNT" />)</translation>
 <translation id="8661290697478713397">Ireki esteka &amp;ezkutuko moduko leihoan</translation>
 <translation id="8662671328352114214">Sartu <ph name="TYPE" /> sarean</translation>
 <translation id="8662733268723715832">Ohi baino gehiago ari da luzatzen prozesua. Salta ezazu edo itxaron amaitu arte.</translation>

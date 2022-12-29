@@ -3802,6 +3802,7 @@
 <translation id="4469762931504673593">بإمكان <ph name="ORIGIN" /> تعديل الملفات في <ph name="FOLDERNAME" />.</translation>
 <translation id="4470957202018033307">الإعدادات المفضلة لمساحة التخزين الخارجية</translation>
 <translation id="4471354919263203780">جارٍ تنزيل ملفات التعرّف على الكلام... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">‏يمكنك استخدام اللغة المفضلة في حسابك على Google (<ph name="NEW_LOCALE_FROM_GAIA" />).</translation>
 <translation id="447252321002412580">‏المساعدة في تحسين ميزات Chrome وأدائه</translation>
 <translation id="4472575034687746823">الخطوات الأولى</translation>
 <translation id="4474155171896946103">وضع إشارات على كل علامات التبويب...</translation>
@@ -6748,6 +6749,7 @@
 <translation id="7227458944009118910">يمكن للتطبيقات المدرَجة أدناه التعامل مع روابط البروتوكولات أيضًا. وستطلب التطبيقات الأخرى الحصول على الإذن.</translation>
 <translation id="7228056665272655255">لضبط إعدادات بصمة الإصبع، اطلب من طفلك لمس أداة استشعار بصمة الإصبع في أعلى يمين لوحة المفاتيح. يتم تخزين بيانات بصمة إصبع طفلك بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> هذا فقط.</translation>
 <translation id="7228523857728654909">قفل الشاشة وتسجيل الدخول</translation>
+<translation id="7228854227189381547">عدم التبديل</translation>
 <translation id="7230222852462421043">استعادة النافذة</translation>
 <translation id="7231260028442989757">يمكنك عرض إشعارات هاتفك وإغلاقها والردّ عليها.</translation>
 <translation id="7232750842195536390">تعذّرت إعادة التسمية</translation>
@@ -7081,6 +7083,7 @@
 <translation id="7545466883021407599">‏تعذَّر الاتصال بالخادم. يُرجى التحقُّق من اتصال الشبكة ثم إعادة المحاولة. إذا كنت لا تزال تواجه مشكلة، يُرجى إعادة تشغيل جهاز Chromebook. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="7547317915858803630">تحذير: إعدادات <ph name="PRODUCT_NAME" /> مخزنة على محرك أقراص شبكة. قد يؤدي هذا إلى حدوث مشاكل بطء أو أعطال أو حتى فقدان البيانات.</translation>
 <translation id="7548856833046333824">الليمون</translation>
+<translation id="7549434883223124329">هل تريد تبديل لغة الجهاز؟</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">لم يتم تحميل <ph name="FILE_NAME" /> بنجاح</translation>
 <translation id="7551643184018910560">تثبيت في الرف</translation>

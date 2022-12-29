@@ -865,6 +865,7 @@ Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione 
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, l'host di assistenza remota viene eseguito nel contesto dell'utente e gli utenti remoti non possono interagire con finestre con privilegi più elevati sul desktop.</translation>
 <translation id="1837165432382702436">L'altezza della pagina in micron.</translation>
+<translation id="1838910874018595451">Configurazione precompilata per i ticket Kerberos</translation>
 <translation id="1843117931376765605">Frequenza di aggiornamento criteri relativi agli utenti</translation>
 <translation id="1844620919405873871">Consente di configurare le norme relative allo sblocco rapido.</translation>
 <translation id="1844972978764975668">Consenti query al server di Google per recuperare un timestamp accurato</translation>
@@ -884,6 +885,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Gli URL in questo criterio non devono essere in conflitto con quelli configurati tramite <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza su <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="1858775210076906272">Configurazione precompilata Kerberos</translation>
 <translation id="1861206724856734193">Consente di configurare un elenco di regole per la prevenzione della fuga di dati.</translation>
 <translation id="1862267110714201519">Disattiva la funzionalità di finestre nascoste.</translation>
 <translation id="1865417998205858223">Autorizzazioni chiave</translation>
@@ -1011,6 +1013,11 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="1980777339173013601">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono utilizzare ARC, a meno che ARC sia stato disattivato in altri modi. Se il criterio è impostato su false, gli utenti non affiliati non possono utilizzare ARC.
 
       Le modifiche al criterio vengono applicate solo mentre ARC non è in esecuzione, ad esempio durante l'avvio di ChromeOS.</translation>
+<translation id="1982507511322683896">Consente di specificare la configurazione <ph name="KRB5_CONFIG" /> suggerita per i nuovi ticket creati manualmente.
+
+      Se il criterio "KerberosUseCustomPrefilledConfig" viene attivato, il valore del criterio viene applicato come configurazione suggerita e viene mostrato nella sezione "Avanzate" della finestra di dialogo dell'autenticazione Kerberos. Se il criterio viene impostato su una stringa vuota o se non viene configurato, viene eliminata la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata. Se questo criterio non viene configurato avverrà la stessa cosa.
+
+      Se il criterio "KerberosUseCustomPrefilledConfig" viene disattivato, il valore di questo criterio non viene usato.</translation>
 <translation id="1985598967415986700">La riduzione dello user agent sarà controllabile tramite Field-Trials e Origin-Trials.</translation>
 <translation id="1987789058026551147">Attiva i report sulle sessioni kiosk del dispositivo</translation>
 <translation id="1988345404999458987">Consente di specificare le configurazioni dei server di stampa disponibili.
@@ -1263,6 +1270,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="2204753382813641270">Controlla la visualizzazione automatica della barra delle app</translation>
 <translation id="2208976000652006649">Parametri per l'URL di ricerca che utilizza POST</translation>
 <translation id="2213059592185933570">Attiva la creazione di profili di roaming</translation>
+<translation id="2213342458177721585">Attiva il layout Hindi Inscript a livello di dispositivo.</translation>
 <translation id="2215238871726750562">Se il criterio è impostato su True, la finestra del browser non viene avviata all'inizio della sessione.
 
       Se il criterio è impostato su False o se non viene configurato, la finestra si avvia automaticamente.
@@ -1728,6 +1736,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2664682171745499686">Elimina gli avvisi di domini simili dai domini</translation>
 <translation id="2665422249821137126">Attiva il puntatore grande nella schermata di accesso</translation>
 <translation id="2667894101494585925">Attiva il recupero della guida all'ottimizzazione</translation>
+<translation id="2669157090883237118">Non modificare la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.</translation>
 <translation id="2672012807430078509">Controlla l'attivazione del protocollo di autenticazione NTLM per i montaggi SMB</translation>
 <translation id="2673363037046384711">L'utente finale può attivare o disattivare la modalità ad alta efficienza.</translation>
 <translation id="2678503605767349615">Certificati client a livello di dispositivo richiesti</translation>
@@ -2549,6 +2558,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
       Per un elenco di varianti che possono essere utilizzate, vai all'indirizzo https://support.google.com/chrome/a?p=Supported_directory_variables.
 
       Se il criterio non viene configurato, viene utilizzato il percorso del profilo predefinito e l'utente può ignorarlo con il flag della riga di comando "--user-data-dir".</translation>
+<translation id="3380801667330555918">Modifica la configurazione precompilata per i ticket Kerberos</translation>
 <translation id="338149029069528354">Non cancellare i dati utente locali</translation>
 <translation id="3381968327636295719">Utilizza il browser host per impostazione predefinita</translation>
 <translation id="3387211681524224831">Se il criterio viene impostato su Attivato, la cronologia di navigazione non viene salvata, la sincronizzazione delle schede viene disattivata e gli utenti non possono modificare questa impostazione.
@@ -3940,6 +3950,11 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
           Se questo criterio non viene impostato, inizialmente l'audio in formato mono è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="4768446404233019970">Attiva le suite di crittografia 3DES in TLS</translation>
 <translation id="4770334626033858263">La configurazione usata per generare e verificare il codice accesso genitori.</translation>
+<translation id="4773997835955617342">Consente di modificare la configurazione <ph name="KRB5_CONFIG" /> suggerita per i nuovi ticket creati manualmente.
+
+      Se questo criterio viene attivato, il valore del criterio "KerberosCustomPrefilledConfig" viene applicato come configurazione suggerita e viene mostrato nella sezione "Avanzate" della finestra di dialogo dell'autenticazione Kerberos.
+
+      Se questo criterio viene disattivato o se non viene configurato, viene applicata la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata. Tieni presente che viene visualizzato anche nella sezione "Avanzate" della finestra di dialogo dell'autenticazione Kerberos.</translation>
 <translation id="4774030790286815890">Se questa impostazione viene attivata, gli utenti possono attivare Phone Hub, che consente loro di interagire con il proprio telefono su un dispositivo ChromeOS.
 
       Se viene disattivata, gli utenti non possono attivare Phone Hub.
@@ -6064,6 +6079,8 @@ Il criterio verrà rimosso da <ph name="PRODUCT_NAME" /> in futuro.</translation
 
       Consente di specificare i flag da applicare all'avvio di <ph name="PRODUCT_NAME" />. I flag specificati vengono applicati soltanto alla schermata di accesso. I flag impostati tramite questa norma non vengono applicati anche alle sessioni utente.</translation>
 <translation id="6857240169209507953">È vietata l'esecuzione di <ph name="BOREALIS_NAME" /> su un dispositivo</translation>
+<translation id="6857372417233723544">Se il criterio viene impostato, viene attivato il layout Hindi Inscript su <ph name="PRODUCT_OS_NAME" />.
+Se viene impostato su False o se non viene configurato, il layout non è disponibile. È necessario riavviare per applicare il criterio.</translation>
 <translation id="685769593149966548">Imponi il livello massimo della Modalità con restrizioni per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="68818134518270542">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
@@ -6990,6 +7007,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
           Se questo criterio non viene impostato, le scorciatoie delle funzioni di accessibilità saranno attive per impostazione predefinita nella schermata di accesso.</translation>
 <translation id="7777535871204167559">Considera i dispositivi di archiviazione esterni come di sola lettura</translation>
+<translation id="7781452670568828399">Modifica la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.</translation>
 <translation id="7784062550705119230">Se per il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Per profilo</translation>
 <translation id="7788632499792081231">La configurazione del criterio consente di impostare un elenco di pattern URL che specificano i siti che possono usare l'autorizzazione di accesso dei siti agli appunti. Tutte le operazioni relative agli appunti nelle origini corrispondenti ai pattern non sono incluse. Ad esempio, gli utenti potranno ancora incollare usando scorciatoie da tastiera perché questa operazione non è controllata dall'autorizzazione di accesso dei siti agli appunti.

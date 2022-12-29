@@ -1249,6 +1249,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2104166991923847969">Turn off hotspot automatically</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> hidden</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Phone number}other{# phone numbers}}</translation>
+<translation id="2110941575868943054">Allowed to look for Bluetooth devices</translation>
 <translation id="211144231511833662">Clear types</translation>
 <translation id="2111670510994270194">New tab to the right</translation>
 <translation id="2112554630428445878">Welcome, <ph name="USERNAME" /></translation>
@@ -3043,6 +3044,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3756485814916578707">Casting screen</translation>
 <translation id="3756578970075173856">Set PIN</translation>
 <translation id="3756795331760037744">Allow Google Assistant to use info on <ph name="SUPERVISED_USER_NAME" />’s screen to help</translation>
+<translation id="3756806135608816820">Sites can ask to look for Bluetooth devices</translation>
 <translation id="3757733214359997190">No sites found</translation>
 <translation id="375841316537350618">Downloading proxy script...</translation>
 <translation id="3758842566811519622">Cookies set</translation>
@@ -3813,6 +3815,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4469762931504673593"><ph name="ORIGIN" /> can edit files in <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">External storage preferences</translation>
 <translation id="4471354919263203780">Downloading speech recognition files <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">You can use your preferred Google Account language (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Help improve Chrome's features and performance</translation>
 <translation id="4472575034687746823">Get started</translation>
 <translation id="4474155171896946103">Bookmark all tabs...</translation>
@@ -5018,6 +5021,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5600706100022181951">Update will be downloaded using <ph name="UPDATE_SIZE_MB" /> MB of mobile data. Would you like to continue?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Not allowed to connect to MIDI devices</translation>
+<translation id="5601833336918638013">Don't allow sites to look for Bluetooth devices</translation>
 <translation id="5602765853043467355">Clear bookmarks, history, passwords and more from this device</translation>
 <translation id="5605758115928394442">A notification was sent to your phone to confirm that it's you.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{This extension is blocked}other{These extensions are blocked}}</translation>
@@ -6475,6 +6479,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6960507406838246615">Linux update required</translation>
 <translation id="6960648667961844909">Couldn’t download <ph name="LANGUAGE" /> speech files. Download will be attempted later. Speech is sent to Google for processing until download is completed.</translation>
 <translation id="696103774840402661">All files and local data for all users on this <ph name="DEVICE_TYPE" /> has been permanently deleted.</translation>
+<translation id="6961327401577924850">Sites usually look for Bluetooth devices for features like setting up or syncing a low-energy beacon, a health or fitness tracker or a smart light bulb</translation>
 <translation id="6963872466817251924">Text cursor highlighter</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remove From Group</translation>
@@ -6751,6 +6756,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7227458944009118910">Apps listed below can handle protocol links as well. Other apps will ask for permission.</translation>
 <translation id="7228056665272655255">To set up fingerprint, have your child touch the fingerprint sensor at the top right corner of the keyboard. Your child's fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Screen lock and sign-in</translation>
+<translation id="7228854227189381547">Don't switch</translation>
 <translation id="7230222852462421043">&amp;Restore Window</translation>
 <translation id="7231260028442989757">View, dismiss and reply to your phone’s notifications</translation>
 <translation id="7232750842195536390">Renaming failed</translation>
@@ -7084,6 +7090,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7545466883021407599">Couldn’t connect with the server. Check your network connection and try again. If you're still having trouble, try restarting your Chromebook. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Warning: your <ph name="PRODUCT_NAME" /> settings are stored on a network drive. This may result in slowdowns, crashes or even loss of data.</translation>
 <translation id="7548856833046333824">Fizzy</translation>
+<translation id="7549434883223124329">Switch device language?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> download unsuccessful</translation>
 <translation id="7551643184018910560">Pin to shelf</translation>
@@ -8110,6 +8117,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> needs your permission to run</translation>
 <translation id="8466417995783206254">This tab is playing a video in picture-in-picture mode.</translation>
 <translation id="8467326454809944210">Choose another language</translation>
+<translation id="8468087214092422866">Not allowed to look for Bluetooth devices</translation>
 <translation id="8470513973197838199">Saved passwords for <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sites usually connect to USB devices for features like printing a document or saving to a storage device</translation>
 <translation id="8471959340398751476">Discounts are off. You can turn them on in the customise menu</translation>

@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">GGGG</translation>
 <translation id="1013952917065545813">Varat atgriezties šeit, lai atkārtoti atvērtu nesen aizvērtās cilnes.</translation>
 <translation id="1016495303386450659">Vienums atjaunināts</translation>
+<translation id="1035980983510608210">Aizverot visas cilnes, tiks aizvērtas arī piespraustās cilnes.</translation>
 <translation id="1044891598689252897">Vietnes darbosies normāli</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="105093091697134113">Tālāk norādītajos kontos tiek izmantotas paroles, kas tika atklātas trešās puses datu aizsardzības pārkāpumā vai ievadītas maldinošā vietnē. Nekavējoties nomainiet šīs paroles, lai aizsargātu savus kontus.</translation>
@@ -208,6 +209,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="2578571896248130439">Tīmekļa lapas sūtīšana</translation>
 <translation id="2584132361465095047">Pievienot kontu…</translation>
 <translation id="2600682495497606169">Vietņu sīkfailu dzēšana</translation>
+<translation id="2609008503159898744">Vai aizvērt visas cilnes?</translation>
 <translation id="2625189173221582860">Parole ir nokopēta.</translation>
 <translation id="2626236249646841566">Pārbaudiet savienojumu un mēģiniet pierakstīties vēlreiz.</translation>
 <translation id="2637313651144986786">Meklēt cilnēs…</translation>
@@ -299,6 +301,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3174662312949010067">Varat arī izmantot saglabātās paroles citās savās ierīcēs.</translation>
 <translation id="3175081911749765310">Tīm. pak.</translation>
 <translation id="3178650076442119961">Aktīva šodien</translation>
+<translation id="3181261441371833039">Aizvērt tikai parastās cilnes</translation>
 <translation id="3181825792072797598">Ieslēgt sinhronizāciju</translation>
 <translation id="3181954750937456830">Droša pārlūkošana (aizsargā jūs un ierīci pret bīstamām vietnēm)</translation>
 <translation id="3184767182050912705">Atbloķēt, izmantojot šo autentifikācijas veidu: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>

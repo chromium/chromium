@@ -655,6 +655,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1595492813686795610">Linuxit uuendatakse</translation>
 <translation id="1596286373007273895">Saadaval</translation>
 <translation id="1596709061955594992">Bluetooth on välja lülitatud. Saadaval seadmete nägemiseks lülitage Bluetooth sisse.</translation>
+<translation id="1596780725094407793">ja kõik alamdomeenid</translation>
 <translation id="1598233202702788831">Administraator on värskendused keelanud.</translation>
 <translation id="1600857548979126453">Juurdepääs lehesiluri tagaosale</translation>
 <translation id="1601560923496285236">Rakenda</translation>
@@ -2885,6 +2886,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3617891479562106823">Taustad pole saadaval. Proovige hiljem uuesti</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Asukoha määramine</translation>
+<translation id="362023940451053340">Konto <ph name="ACCOUNT" /> parooli värskendatakse teie Google'i kontol</translation>
 <translation id="3621807901162200696">Aidake Chrome OS-i funktsioone ja toimivust täiustada</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{rakendus}other{# rakendust}}</translation>
 <translation id="362333465072914957">Oodatakse, et CA väljastaks sertifikaadi</translation>
@@ -5619,6 +5621,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6169967265765719844">Steami kaudu installitud mängude ja rakenduste lube saab hallata <ph name="LINK_BEGIN" />Steami rakenduse seadetes<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Võileib</translation>
 <translation id="6170498031581934115">ADB silumist ei saanud lubada. Avage seaded ja proovige uuesti</translation>
+<translation id="6171779718418683144">Küsi igal külastuskorral</translation>
 <translation id="617213288191670920">Ühtegi keelt pole lisatud</translation>
 <translation id="6173623053897475761">Sisestage PIN-kood uuesti</translation>
 <translation id="6175314957787328458">Microsofti domeeni GUID</translation>
@@ -6747,6 +6750,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7235737137505019098">Teie turvavõtmel pole muude kontode jaoks piisavalt ruumi.</translation>
 <translation id="7235873936132740888">Saidid saavad teha eri toiminguid, kui klõpsate teatud tüüpi linkidel (nt uue sõnumi loomiseks oma e-posti kliendis või uute sündmuste lisamiseks oma veebikalendrisse)</translation>
 <translation id="7238609589076576185">Sisestati rõhumärk.</translation>
+<translation id="7238665222668706269">Google'i paroolihaldur <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> tühistas ülekande</translation>
 <translation id="7240339475467890413">Kas luua ühendus uue levialaga?</translation>
 <translation id="7241389281993241388">Logige sisse rakendusse <ph name="TOKEN_NAME" /> kliendi sertifikaadi importimiseks.</translation>
@@ -7489,6 +7493,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> saab vaadata faili <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Lisage sõnad, mille soovite lasta õigekirjakontrollil vahele jätta</translation>
 <translation id="7921347341284348270">Te ei saa sellel hallatud kontol oma telefoni märguandeid vaadata. Proovige uuesti mõne teise kontoga. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 laiendus</translation>
 <translation id="7922935920104868876">Kuva üksikasjad kolmanda osapoole küpsisefailide blokeerimise kohta inkognito režiimis</translation>
 <translation id="7923564237306226146">Linuxi versiooni uuendamine viidi lõpule</translation>
 <translation id="7924358170328001543">Viga pordi edastamisel</translation>
@@ -7876,6 +7881,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> keelas teie hiirekursori.</translation>
 <translation id="8264024885325823677">Seda seadet haldab administraator.</translation>
 <translation id="8264718194193514834">„<ph name="EXTENSION_NAME" />” aktiveeris täisekraani režiimi.</translation>
+<translation id="8265018477030547118">Ainult selles seadmes</translation>
 <translation id="826511437356419340">Akna ülevaate režiim on aktiveeritud. Pühkige navigeerimiseks või vajutage tabulaatorit, kui kasutate klaviatuuri.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Teie inkognito akent ei avata pärast uuesti käivitamist}other{Teie {COUNT} inkognito akent ei avata pärast uuesti käivitamist}}</translation>
 <translation id="8266947622852630193">Kõik sisestusmeetodid</translation>
@@ -8283,6 +8289,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Sisselogimine ebaõnnestus, kuna teie parooli ei saanud kinnitada. Võtke ühendust administraatoriga või proovige uuesti.</translation>
 <translation id="8657393004602556571">Kas soovite tagasisidest loobuda?</translation>
+<translation id="8657762806752649049">Konto <ph name="ACCOUNT" /> parool salvestatakse teie Google'i kontole</translation>
 <translation id="8661290697478713397">Ava link inko&amp;gnito aknas</translation>
 <translation id="8662671328352114214"><ph name="TYPE" />-võrguga liitumine</translation>
 <translation id="8662733268723715832">See võtab oodatust kauem aega. Võite selle vahele jätta või lõpuni oodata.</translation>

@@ -652,6 +652,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1595492813686795610">Linux yeni sürüme geçiriliyor</translation>
 <translation id="1596286373007273895">Kullanılabilir</translation>
 <translation id="1596709061955594992">Bluetooth kapalı. Kullanılabilir cihazları görmek için Bluetooth'u açın.</translation>
+<translation id="1596780725094407793">- alt alan adlarını içerir</translation>
 <translation id="1598233202702788831">Güncellemeler yöneticiniz tarafından devre dışı bırakıldı.</translation>
 <translation id="1600857548979126453">Sayfa hata ayıklayıcı arka ucuna erişme</translation>
 <translation id="1601560923496285236">Uygula</translation>
@@ -2877,6 +2878,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3617891479562106823">Arka planlar kullanılamıyor. Daha sonra tekrar deneyin.</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
 <translation id="3620136223548713675">Coğrafi konum</translation>
+<translation id="362023940451053340"><ph name="ACCOUNT" /> için, Google Hesabınızda</translation>
 <translation id="3621807901162200696">ChromeOS özelliklerini ve performansını iyileştirmeye yardımcı olun</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{bir uygulama}other{# uygulama}}</translation>
 <translation id="362333465072914957">CA'nın sertifika yayınlaması bekleniyor</translation>
@@ -5612,6 +5614,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6169967265765719844">Steam aracılığıyla yüklenen oyunların ve uygulamaların izinleri, <ph name="LINK_BEGIN" />Steam uygulama ayarlarından<ph name="LINK_END" /> yönetilebilir.</translation>
 <translation id="6170470584681422115">Sandviç</translation>
 <translation id="6170498031581934115">ADB hata ayıklama işlevi etkinleştirilemedi. Ayarlar'a gidip tekrar deneyin.</translation>
+<translation id="6171779718418683144">Her ziyarette sor</translation>
 <translation id="617213288191670920">Dil eklenmedi</translation>
 <translation id="6173623053897475761">PIN'inizi tekrar yazın</translation>
 <translation id="6175314957787328458">Microsoft Etki Alanı GUID'si</translation>
@@ -6740,6 +6743,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7235737137505019098">Güvenlik anahtarınızda başka hesaplar için yeterli alan yok.</translation>
 <translation id="7235873936132740888">Siteler, belirli türde bağlantıları tıkladığınızda e-posta istemcinizde yeni bir mesaj oluşturmak veya çevrimiçi takviminize yeni etkinlikler eklemek gibi özel görevler gerçekleştirebilir</translation>
 <translation id="7238609589076576185">Aksan işareti eklendi.</translation>
+<translation id="7238665222668706269">Google Şifre Yöneticisi <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> aktarımı iptal etti</translation>
 <translation id="7240339475467890413">Yeni hotspot'a bağlanılsın mı?</translation>
 <translation id="7241389281993241388">Lütfen istemci sertifikasını içe aktarmak için <ph name="TOKEN_NAME" /> cihazında oturum açın.</translation>
@@ -7482,6 +7486,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> dosyasını görüntüleyebilir</translation>
 <translation id="7920482456679570420">Yazım denetiminin atlamasını istediğiniz kelimeleri ekleyin</translation>
 <translation id="7921347341284348270">Telefon bildirimlerinizi bu yönetilen hesapta görüntüleyemezsiniz. Farklı bir hesapla tekrar deneyin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 uzantı</translation>
 <translation id="7922935920104868876">Gizli modda üçüncü taraf çerezleri engelleme ile ilgili ayrıntıları göster</translation>
 <translation id="7923564237306226146">Linux'u yeni sürüme geçirme işlemi tamamlandı</translation>
 <translation id="7924358170328001543">Bağlantı noktası yönlendirme hatası</translation>
@@ -7869,6 +7874,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />, fare imlecinizi devre dışı bıraktı.</translation>
 <translation id="8264024885325823677">Bu ayar, yöneticiniz tarafından yönetilir.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" tam ekranı tetikledi.</translation>
+<translation id="8265018477030547118">Yalnızca bu cihazda</translation>
 <translation id="826511437356419340">Pencere genel bakış moduna girildi. Gezinmek için kaydırın veya klavye kullanıyorsanız sekme tuşuna basın.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Yeniden başlatırsanız gizli pencereniz açılmaz}other{Yeniden başlatırsanız {COUNT} gizli pencereniz tekrar açılmaz}}</translation>
 <translation id="8266947622852630193">Tüm giriş yöntemleri</translation>
@@ -8276,6 +8282,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Şifreniz doğrulanamadığı için oturum açma işlemi başarısız oldu. Lütfen yöneticinizle iletişime geçin veya tekrar deneyin.</translation>
 <translation id="8657393004602556571">Geri bildirimi silmek istediğinizden emin misiniz?</translation>
+<translation id="8657762806752649049"><ph name="ACCOUNT" /> için, Google Hesabınıza</translation>
 <translation id="8661290697478713397">Bağlantıyı Giz&amp;li Pencere'de Aç</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ağına katılın</translation>
 <translation id="8662733268723715832">Bu işlem beklenenden daha uzun sürüyor. İşlemi atlayabilir veya tamamlanana kadar bekleyebilirsiniz.</translation>

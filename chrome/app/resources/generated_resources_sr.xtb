@@ -1236,6 +1236,7 @@
 <translation id="2104166991923847969">Аутоматски искључи хотспот</translation>
 <translation id="2105809836724866556">Скривено: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Број телефона}one{# број телефона}few{# броја телефона}other{# бројева телефона}}</translation>
+<translation id="2110941575868943054">Тражење Bluetooth уређаја је дозвољено</translation>
 <translation id="211144231511833662">Обриши типове</translation>
 <translation id="2111670510994270194">Нова картица на десној страни</translation>
 <translation id="2112554630428445878">Добро дошли, <ph name="USERNAME" /></translation>
@@ -3027,6 +3028,7 @@
 <translation id="3756485814916578707">Пребацује се екран</translation>
 <translation id="3756578970075173856">Подесите PIN</translation>
 <translation id="3756795331760037744">Дозволите да Google помоћник користи информације на екрану детета <ph name="SUPERVISED_USER_NAME" /> да би пружио помоћ</translation>
+<translation id="3756806135608816820">Сајтови имају дозволу да траже Bluetooth уређаје</translation>
 <translation id="3757733214359997190">Није пронађен ниједан сајт</translation>
 <translation id="375841316537350618">Преузимање скрипте проксија...</translation>
 <translation id="3758842566811519622">Колачићи су подешени</translation>
@@ -3797,6 +3799,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да мења датотеке у директоријуму <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Подешавања спољне меморије</translation>
 <translation id="4471354919263203780">Преузимају се датотеке за препознавање говора... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Можете да користите жељени језик Google налога (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Помозите нам да побољшамо Chrome-ове функције и учинак</translation>
 <translation id="4472575034687746823">Започнимо</translation>
 <translation id="4474155171896946103">Обележи све картице...</translation>
@@ -5000,6 +5003,7 @@
 <translation id="5600706100022181951">Ажурирање ће се преузети уз употребу <ph name="UPDATE_SIZE_MB" /> MB мобилних података. Желите ли да наставите?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Није им дозвољено да се повезују са MIDI уређајима</translation>
+<translation id="5601833336918638013">Не дозвољавај сајтовима да траже Bluetooth уређаје</translation>
 <translation id="5602765853043467355">Обриши обележиваче, историју, лозинке и друго са овог уређаја</translation>
 <translation id="5605758115928394442">Послали смо вам обавештење на телефон да бисте потврдили да сте то ви.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Овај додатак је блокиран}one{Ови додаци су блокирани}few{Ови додаци су блокирани}other{Ови додаци су блокирани}}</translation>
@@ -6462,6 +6466,7 @@
 <translation id="6960507406838246615">Треба да ажурирате Linux</translation>
 <translation id="6960648667961844909">Преузимање фајлова са говором на језику <ph name="LANGUAGE" /> није успело. Пробаћемо преузимање касније. Говор се шаље Google-у ради обраде док се преузимање не заврши.</translation>
 <translation id="696103774840402661">Сви фајлови и локални подаци за све кориснике на овом уређају (<ph name="DEVICE_TYPE" />) трајно су избрисани.</translation>
+<translation id="6961327401577924850">Сајтови обично траже Bluetooth уређаје за потребе функција попут подешавања или синхронизације локатора са ниском потрошњом, уређаја за праћење здравља или фитнеса или паметне сијалице</translation>
 <translation id="6963872466817251924">Алатка за истицање курсора за текст</translation>
 <translation id="6964390816189577014">Херој</translation>
 <translation id="6964760285928603117">Уклони из групе</translation>
@@ -6738,6 +6743,7 @@
 <translation id="7227458944009118910">Апликације наведене испод могу да обрађују и линкове протокола. Остале апликације ће тражити дозволу.</translation>
 <translation id="7228056665272655255">Да бисте подесили отисак прста, нека дете додирне сензор за отисак прста у горњем десном углу тастатуре. Подаци о отиску прста детета се безбедно чувају на овом <ph name="DEVICE_TYPE" /> уређају и увек остају на њему.</translation>
 <translation id="7228523857728654909">Закључавање екрана и пријављивање</translation>
+<translation id="7228854227189381547">Не пребацуј</translation>
 <translation id="7230222852462421043">&amp;Врати прозор</translation>
 <translation id="7231260028442989757">Прегледајте и одбаците обавештења на телефону или одговорите на њих</translation>
 <translation id="7232750842195536390">Промена назива није успела</translation>
@@ -7071,6 +7077,7 @@
 <translation id="7545466883021407599">Повезивање са сервером није успело. Проверите мрежну везу и пробајте поново. Ако и даље имате проблема, пробајте поново да покренете Chromebook. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Упозорење: Подешавања производа <ph name="PRODUCT_NAME" /> су ускладиштена на мрежном диску. То може да доведе до успоравања, отказивања па чак и губитка података.</translation>
 <translation id="7548856833046333824">Лимунада</translation>
+<translation id="7549434883223124329">Желите да промените језик уређаја?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Нисте успели да преузмете <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Закачи на полицу</translation>
@@ -8097,6 +8104,7 @@
 <translation id="8465444703385715657">Потребна је ваша дозвола да би се додатна компонента <ph name="PLUGIN_NAME" /> покренула</translation>
 <translation id="8466417995783206254">Ова картица репродукује видео у режиму слике у слици.</translation>
 <translation id="8467326454809944210">Одаберите други језик</translation>
+<translation id="8468087214092422866">Тражење Bluetooth уређаја није дозвољено</translation>
 <translation id="8470513973197838199">Сачуване лозинке за <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Сајтови се обично повезују са USB уређајима за потребе функција попут штампања докумената или чувања садржаја на меморијским уређајима</translation>
 <translation id="8471959340398751476">Попусти су искључени. Можете да их укључите у менију за прилагођавање</translation>

@@ -1236,6 +1236,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2104166991923847969">Automatski isključi hotspot</translation>
 <translation id="2105809836724866556">Skriveno: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Broj telefona}one{# broj telefona}few{# broja telefona}other{# brojeva telefona}}</translation>
+<translation id="2110941575868943054">Traženje Bluetooth uređaja je dozvoljeno</translation>
 <translation id="211144231511833662">Obriši tipove</translation>
 <translation id="2111670510994270194">Nova kartica na desnoj strani</translation>
 <translation id="2112554630428445878">Dobro došli, <ph name="USERNAME" /></translation>
@@ -3027,6 +3028,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3756485814916578707">Prebacuje se ekran</translation>
 <translation id="3756578970075173856">Podesite PIN</translation>
 <translation id="3756795331760037744">Dozvolite da Google pomoćnik koristi informacije na ekranu deteta <ph name="SUPERVISED_USER_NAME" /> da bi pružio pomoć</translation>
+<translation id="3756806135608816820">Sajtovi imaju dozvolu da traže Bluetooth uređaje</translation>
 <translation id="3757733214359997190">Nije pronađen nijedan sajt</translation>
 <translation id="375841316537350618">Preuzimanje skripte proksija...</translation>
 <translation id="3758842566811519622">Kolačići su podešeni</translation>
@@ -3797,6 +3799,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4469762931504673593"><ph name="ORIGIN" /> može da menja datoteke u direktorijumu <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Podešavanja spoljne memorije</translation>
 <translation id="4471354919263203780">Preuzimaju se datoteke za prepoznavanje govora... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Možete da koristite željeni jezik Google naloga (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Pomozite nam da poboljšamo Chrome-ove funkcije i učinak</translation>
 <translation id="4472575034687746823">Započnimo</translation>
 <translation id="4474155171896946103">Obeleži sve kartice...</translation>
@@ -5000,6 +5003,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5600706100022181951">Ažuriranje će se preuzeti uz upotrebu <ph name="UPDATE_SIZE_MB" /> MB mobilnih podataka. Želite li da nastavite?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Nije im dozvoljeno da se povezuju sa MIDI uređajima</translation>
+<translation id="5601833336918638013">Ne dozvoljavaj sajtovima da traže Bluetooth uređaje</translation>
 <translation id="5602765853043467355">Obriši obeleživače, istoriju, lozinke i drugo sa ovog uređaja</translation>
 <translation id="5605758115928394442">Poslali smo vam obaveštenje na telefon da biste potvrdili da ste to vi.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ovaj dodatak je blokiran}one{Ovi dodaci su blokirani}few{Ovi dodaci su blokirani}other{Ovi dodaci su blokirani}}</translation>
@@ -6462,6 +6466,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6960507406838246615">Treba da ažurirate Linux</translation>
 <translation id="6960648667961844909">Preuzimanje fajlova sa govorom na jeziku <ph name="LANGUAGE" /> nije uspelo. Probaćemo preuzimanje kasnije. Govor se šalje Google-u radi obrade dok se preuzimanje ne završi.</translation>
 <translation id="696103774840402661">Svi fajlovi i lokalni podaci za sve korisnike na ovom uređaju (<ph name="DEVICE_TYPE" />) trajno su izbrisani.</translation>
+<translation id="6961327401577924850">Sajtovi obično traže Bluetooth uređaje za potrebe funkcija poput podešavanja ili sinhronizacije lokatora sa niskom potrošnjom, uređaja za praćenje zdravlja ili fitnesa ili pametne sijalice</translation>
 <translation id="6963872466817251924">Alatka za isticanje kursora za tekst</translation>
 <translation id="6964390816189577014">Heroj</translation>
 <translation id="6964760285928603117">Ukloni iz grupe</translation>
@@ -6738,6 +6743,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7227458944009118910">Aplikacije navedene ispod mogu da obrađuju i linkove protokola. Ostale aplikacije će tražiti dozvolu.</translation>
 <translation id="7228056665272655255">Da biste podesili otisak prsta, neka dete dodirne senzor za otisak prsta u gornjem desnom uglu tastature. Podaci o otisku prsta deteta se bezbedno čuvaju na ovom <ph name="DEVICE_TYPE" /> uređaju i uvek ostaju na njemu.</translation>
 <translation id="7228523857728654909">Zaključavanje ekrana i prijavljivanje</translation>
+<translation id="7228854227189381547">Ne prebacuj</translation>
 <translation id="7230222852462421043">&amp;Vrati prozor</translation>
 <translation id="7231260028442989757">Pregledajte i odbacite obaveštenja na telefonu ili odgovorite na njih</translation>
 <translation id="7232750842195536390">Promena naziva nije uspela</translation>
@@ -7071,6 +7077,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7545466883021407599">Povezivanje sa serverom nije uspelo. Proverite mrežnu vezu i probajte ponovo. Ako i dalje imate problema, probajte ponovo da pokrenete Chromebook. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Upozorenje: Podešavanja proizvoda <ph name="PRODUCT_NAME" /> su uskladištena na mrežnom disku. To može da dovede do usporavanja, otkazivanja pa čak i gubitka podataka.</translation>
 <translation id="7548856833046333824">Limunada</translation>
+<translation id="7549434883223124329">Želite da promenite jezik uređaja?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Niste uspeli da preuzmete <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Zakači na policu</translation>
@@ -8097,6 +8104,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8465444703385715657">Potrebna je vaša dozvola da bi se dodatna komponenta <ph name="PLUGIN_NAME" /> pokrenula</translation>
 <translation id="8466417995783206254">Ova kartica reprodukuje video u režimu slike u slici.</translation>
 <translation id="8467326454809944210">Odaberite drugi jezik</translation>
+<translation id="8468087214092422866">Traženje Bluetooth uređaja nije dozvoljeno</translation>
 <translation id="8470513973197838199">Sačuvane lozinke za <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sajtovi se obično povezuju sa USB uređajima za potrebe funkcija poput štampanja dokumenata ili čuvanja sadržaja na memorijskim uređajima</translation>
 <translation id="8471959340398751476">Popusti su isključeni. Možete da ih uključite u meniju za prilagođavanje</translation>

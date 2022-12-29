@@ -656,6 +656,7 @@
 <translation id="1595492813686795610">Linux се надградува</translation>
 <translation id="1596286373007273895">Достапно</translation>
 <translation id="1596709061955594992">Bluetooth е исклучено. За да видите достапни уреди, вклучете Bluetooth.</translation>
+<translation id="1596780725094407793">- вклучува поддомени</translation>
 <translation id="1598233202702788831">Ажурирањата се оневозможени од администраторот.</translation>
 <translation id="1600857548979126453">Пристапете кон задниот дел на отстранувачот на грешки на страница</translation>
 <translation id="1601560923496285236">Примени</translation>
@@ -1249,6 +1250,7 @@
 <translation id="2104166991923847969">Автоматско исклучување на точката на пристап</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> е сокриен</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
+<translation id="2110941575868943054">Дозволено да се бараат уреди со Bluetooth</translation>
 <translation id="211144231511833662">Избриши ги типовите</translation>
 <translation id="2111670510994270194">Нова картичка надесно</translation>
 <translation id="2112554630428445878">Добре дојдовте, <ph name="USERNAME" /></translation>
@@ -2895,6 +2897,7 @@
 <translation id="3617891479562106823">Заднините се недостапни. Обидете се повторно подоцна.</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620136223548713675">Геолокација</translation>
+<translation id="362023940451053340">Во вашата сметка на Google, за <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Помогнете да се подобрат функциите и изведбата на Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{апликација}one{# апликација}other{# апликации}}</translation>
 <translation id="362333465072914957">Се чека CA да издаде сертификат</translation>
@@ -3042,6 +3045,7 @@
 <translation id="3756485814916578707">Се емитува екранот</translation>
 <translation id="3756578970075173856">Поставете PIN</translation>
 <translation id="3756795331760037744">Дозволете „Помошникот на Google“ да ги користи податоците од екранот на <ph name="SUPERVISED_USER_NAME" /> за да помогне</translation>
+<translation id="3756806135608816820">Сајтовите може да прашуваат дали да бараат уреди со Bluetooth</translation>
 <translation id="3757733214359997190">Не се најдени сајтови</translation>
 <translation id="375841316537350618">Се презема прокси-скрипта...</translation>
 <translation id="3758842566811519622">Колачињата се поставени</translation>
@@ -3812,6 +3816,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да изменува датотеки во <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Поставки за надворешно складирање</translation>
 <translation id="4471354919263203780">Се преземаат датотеки за препознавање говор… <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Може да го користите посакуваниот јазик на сметката на Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Помогнете да се подобрат функциите и изведбата на Chrome</translation>
 <translation id="4472575034687746823">Започнете</translation>
 <translation id="4474155171896946103">Обележи ги сите картички</translation>
@@ -5017,6 +5022,7 @@
 <translation id="5600706100022181951">Ажурирањето ќе се преземе со користење <ph name="UPDATE_SIZE_MB" /> MB мобилен интернет. Дали сакате да продолжите?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Не им е дозволено да се поврзуваат со MIDI-уредите</translation>
+<translation id="5601833336918638013">Не им дозволувај на сајтовите да бараат уреди со Bluetooth</translation>
 <translation id="5602765853043467355">Исчисти обележувачи, историја, лозинки и друго од уредов</translation>
 <translation id="5605758115928394442">Испратено ви е известување на телефонот за потврда на вашиот идентитет.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Екстензијава е блокирана}one{Екстензииве се блокирани}other{Екстензииве се блокирани}}</translation>
@@ -5630,6 +5636,7 @@
 <translation id="6169967265765719844">Можете да управувате со дозволите за игри и апликации инсталирани преку Steam во <ph name="LINK_BEGIN" />поставките за апликацијата Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Сендвич</translation>
 <translation id="6170498031581934115">Не може да се овозможи отстранување грешки на ADB. Одете во „Поставки“ и обидете се повторно.</translation>
+<translation id="6171779718418683144">Прашувај при секоја посета</translation>
 <translation id="617213288191670920">Не се додадени јазици</translation>
 <translation id="6173623053897475761">Напишете го вашиот PIN повторно</translation>
 <translation id="6175314957787328458">ГУИД на домен на Microsoft</translation>
@@ -6475,6 +6482,7 @@
 <translation id="6960507406838246615">Потребно е ажурирање на Linux</translation>
 <translation id="6960648667961844909">Не може да се преземат датотеките за говор на <ph name="LANGUAGE" />. Подоцна ќе се изврши обид за преземање. Говорот се испраќа во Google за обработка додека да заврши преземањето.</translation>
 <translation id="696103774840402661">Сите датотеки и локални податоци за сите корисници на овој <ph name="DEVICE_TYPE" /> трајно се избришани.</translation>
+<translation id="6961327401577924850">Сајтовите обично бараат уреди со Bluetooth за функции, како поставување или синхронизирање предаватели со ниска потрошувачка на енергија, следач на здравје/фитнес или паметна светилка</translation>
 <translation id="6963872466817251924">Нагласувач на курсорот за текст</translation>
 <translation id="6964390816189577014">Херој</translation>
 <translation id="6964760285928603117">Отстрани од групата</translation>
@@ -6751,6 +6759,7 @@
 <translation id="7227458944009118910">Апликациите наведени подолу може да ракуваат и со линкови за протоколи. Другите апликации ќе побараат дозвола.</translation>
 <translation id="7228056665272655255">За да поставите отпечаток, детето треба да го допре сензорот за отпечатоци најгоре десно на тастатурата. Податоците за отпечатокот на детето безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Заклучување на екранот и најавување</translation>
+<translation id="7228854227189381547">Не менувај</translation>
 <translation id="7230222852462421043">&amp;Врати го прозорецот</translation>
 <translation id="7231260028442989757">Прегледувајте ги, отфрлајте ги и одговарајте на известувањата од телефонот</translation>
 <translation id="7232750842195536390">Преименувањето не успеа</translation>
@@ -6760,6 +6769,7 @@
 <translation id="7235737137505019098">Вашиот безбедносен клуч нема доволно простор за уште сметки.</translation>
 <translation id="7235873936132740888">Сајтовите може да извршуваат посебни задачи кога ќе кликнете на одредени типови линкови, како на пр., создавање нова порака во клиентот за е-пошта или додавање нови настани во онлајн календарот</translation>
 <translation id="7238609589076576185">Вметнат е надреден знак.</translation>
+<translation id="7238665222668706269">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> го откажа преносот</translation>
 <translation id="7240339475467890413">Да се поврзе со нова точка на пристап?</translation>
 <translation id="7241389281993241388">Најавете се на <ph name="TOKEN_NAME" /> за да го увезете клиентскиот сертификат.</translation>
@@ -7083,6 +7093,7 @@
 <translation id="7545466883021407599">Не можеше да се поврзе со серверот. Проверете ја мрежната врска и обидете се повторно. Ако и понатаму имате проблем, рестартирајте го вашиот Chromebook. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Предупредување: вашите поставки за <ph name="PRODUCT_NAME" /> се складираат на мрежна податочна единица. Тоа може да резултира со забавувања, падови, па дури и загуба на податоци.</translation>
 <translation id="7548856833046333824">Лимонада</translation>
+<translation id="7549434883223124329">Да се промени јазикот на уредот?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Преземањето на <ph name="FILE_NAME" /> е неуспешно</translation>
 <translation id="7551643184018910560">Прикачи на полицата</translation>
@@ -7502,6 +7513,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> може да ја прегледува <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Додајте ги зборовите што сакате проверката на правописот да ги прескокне</translation>
 <translation id="7921347341284348270">Не можете да ги прегледате известувањата од телефонот на оваа управувана сметка. Пробајте пак со различна сметка. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
+<translation id="7922606348470480702">1 екстензија</translation>
 <translation id="7922935920104868876">Прикажи детали за блокирање колачиња од трети страни во „Инкогнито“</translation>
 <translation id="7923564237306226146">Надградбата на Linux заврши</translation>
 <translation id="7924358170328001543">Грешка при проследувањето порта</translation>
@@ -7888,6 +7900,7 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> го оневозможи курсорот на глувчето.</translation>
 <translation id="8264024885325823677">Администраторот управува со поставкава.</translation>
 <translation id="8264718194193514834">„<ph name="EXTENSION_NAME" />“ активираше цел екран.</translation>
+<translation id="8265018477030547118">Само на уредов</translation>
 <translation id="826511437356419340">Влеговте во режим на преглед на прозорец. Повлечете за да се движите или притиснете „Tab“ ако користите тастатура.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Вашиот прозорец „Инкогнито“ нема да се отвори по рестартирањето}one{Вашиот {COUNT} прозорец „Инкогнито“ нема да се отворат по рестартирањето}other{Вашите {COUNT} прозорци „Инкогнито“ нема да се отворат по рестартирањето}}</translation>
 <translation id="8266947622852630193">Сите методи за внесување</translation>
@@ -8109,6 +8122,7 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> бара ваша дозвола за да се изврши</translation>
 <translation id="8466417995783206254">Картичкава пушта видео во режимот „слика во слика“.</translation>
 <translation id="8467326454809944210">Изберете друг јазик</translation>
+<translation id="8468087214092422866">Не е дозволено да се бараат уреди со Bluetooth</translation>
 <translation id="8470513973197838199">Зачувани лозинки за <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Сајтовите обично се поврзуваат со USB-уредите за функции како што се печатењето документи или зачувувањето на уред за складирање</translation>
 <translation id="8471959340398751476">Попустите се исклучени. Може да ги вклучите во менито за приспособување</translation>
@@ -8298,6 +8312,7 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Најавувањето не успеа бидејќи не може да се потврди вашата лозинка. Контактирајте со администраторот или обидете се повторно.</translation>
 <translation id="8657393004602556571">Дали сакате да ги откажете повратните информации?</translation>
+<translation id="8657762806752649049">На вашата сметка на Google, за <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Отвори ја врската во инко&amp;гнито прозорец</translation>
 <translation id="8662671328352114214">Придружување на мрежа <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Ова трае подолго од очекуваното, може да прескокнете или да почекате да заврши.</translation>

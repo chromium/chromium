@@ -1237,6 +1237,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2104166991923847969">Disattiva hotspot automaticamente</translation>
 <translation id="2105809836724866556">Modulo nascosto: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numero di telefono}other{# numeri di telefono}}</translation>
+<translation id="2110941575868943054">Autorizzati a cercare dispositivi Bluetooth</translation>
 <translation id="211144231511833662">Cancella Tipi</translation>
 <translation id="2111670510994270194">Nuova scheda a destra</translation>
 <translation id="2112554630428445878">Ti diamo il benvenuto <ph name="USERNAME" /></translation>
@@ -3028,6 +3029,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3756485814916578707">Trasmissione dello schermo</translation>
 <translation id="3756578970075173856">Imposta il PIN</translation>
 <translation id="3756795331760037744">Consenti all'Assistente Google di utilizzare le informazioni visualizzate sullo schermo di <ph name="SUPERVISED_USER_NAME" /> per fornire aiuto</translation>
+<translation id="3756806135608816820">I siti possono chiedere di cercare dispositivi Bluetooth</translation>
 <translation id="3757733214359997190">Nessun sito trovato</translation>
 <translation id="375841316537350618">Download script proxy...</translation>
 <translation id="3758842566811519622">Cookie impostati</translation>
@@ -3798,6 +3800,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4469762931504673593"><ph name="ORIGIN" /> può modificare i file nella cartella <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferenze dello spazio di archiviazione esterno</translation>
 <translation id="4471354919263203780">Download dei file di riconoscimento vocale… <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Puoi usare la lingua che preferisci per il tuo Account Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome</translation>
 <translation id="4472575034687746823">Come iniziare</translation>
 <translation id="4474155171896946103">Aggiungi tutte le schede ai Preferiti...</translation>
@@ -5002,6 +5005,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5600706100022181951">Il download dell'aggiornamento richiederà <ph name="UPDATE_SIZE_MB" /> MB di dati mobili. Vuoi continuare?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Non possono connettersi ai dispositivi MIDI</translation>
+<translation id="5601833336918638013">Non consentire ai siti di cercare dispositivi Bluetooth</translation>
 <translation id="5602765853043467355">Cancella preferiti, cronologia, password e altro da questo dispositivo</translation>
 <translation id="5605758115928394442">È stata inviata una notifica al tuo telefono per verificare la tua identità.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Questa estensione è bloccata}other{Queste estensioni sono bloccate}}</translation>
@@ -6456,6 +6460,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6960507406838246615">Aggiornamento di Linux necessario</translation>
 <translation id="6960648667961844909">Impossibile scaricare i file di contenuti vocali per la lingua <ph name="LANGUAGE" />. Verrà effettuato un tentativo di download in un secondo tempo. Ciò che dici viene inviato a Google per l'elaborazione fino al completamento del download.</translation>
 <translation id="696103774840402661">Tutti i file e i dati locali di tutti gli utenti su questo <ph name="DEVICE_TYPE" /> sono stati eliminati in modo permanente.</translation>
+<translation id="6961327401577924850">Solitamente i siti cercano dispositivi Bluetooth per funzionalità quali la configurazione o la sincronizzazione di beacon a bassa energia, di tracker per il monitoraggio dell'attività fisica o dello stato di salute oppure di lampadine smart</translation>
 <translation id="6963872466817251924">Evidenziazione del cursore di testo</translation>
 <translation id="6964390816189577014">Eroe</translation>
 <translation id="6964760285928603117">Rimuovi dal gruppo</translation>
@@ -6732,6 +6737,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7227458944009118910">Le app elencate di seguito possono gestire anche link protocollo. Le altre app richiederanno l'autorizzazione.</translation>
 <translation id="7228056665272655255">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali nell'angolo in alto a destra della tastiera. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Blocco schermo e accesso</translation>
+<translation id="7228854227189381547">Non cambiare</translation>
 <translation id="7230222852462421043">&amp;Ripristina finestra</translation>
 <translation id="7231260028442989757">Visualizza, ignora e rispondi alle notifiche del tuo telefono</translation>
 <translation id="7232750842195536390">Ridenominazione non riuscita</translation>
@@ -7065,6 +7071,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7545466883021407599">Impossibile connettersi al server. Controlla la connessione di rete e riprova. Se continui ad avere problemi, prova a riavviare Chromebook. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Avviso. Le tue impostazioni <ph name="PRODUCT_NAME" /> sono memorizzate su un'unità di rete. Potrebbero verificarsi rallentamenti, arresti anomali o persino perdite di dati.</translation>
 <translation id="7548856833046333824">Limonata</translation>
+<translation id="7549434883223124329">Vuoi cambiare la lingua del dispositivo?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Download di <ph name="FILE_NAME" /> non riuscito</translation>
 <translation id="7551643184018910560">Blocca sulla barra delle app</translation>
@@ -8091,6 +8098,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8465444703385715657">Per poter eseguire <ph name="PLUGIN_NAME" /> è necessaria la tua autorizzazione</translation>
 <translation id="8466417995783206254">In questa scheda è in corso la riproduzione di un video in modalità Picture in picture.</translation>
 <translation id="8467326454809944210">Seleziona un'altra lingua</translation>
+<translation id="8468087214092422866">Non autorizzati a cercare dispositivi Bluetooth</translation>
 <translation id="8470513973197838199">Password salvate per il sito <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">In genere, i siti si connettono a dispositivi USB per funzionalità come la stampa di un documento o il salvataggio su un dispositivo di archiviazione</translation>
 <translation id="8471959340398751476">Gli sconti sono disattivati. Puoi attivarli nel menu Personalizza</translation>
