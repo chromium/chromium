@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 
 class Browser;
 class SidePanelRegistry;
@@ -38,6 +39,9 @@ class ExtensionSidePanelManager
   ExtensionSidePanelManager& operator=(const ExtensionSidePanelManager&) =
       delete;
   ~ExtensionSidePanelManager() override;
+
+  ExtensionSidePanelCoordinator* GetExtensionCoordinatorForTesting(
+      const ExtensionId& extension_id);
 
   // Called when the BrowserView for `browser_` is being created. Creates
   // ExtensionSidePanelCoordinators (which in turn, registers extension

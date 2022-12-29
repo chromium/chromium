@@ -7,6 +7,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -22,6 +24,14 @@ namespace extensions {
 class SidePanelService : public BrowserContextKeyedAPI,
                          public ExtensionRegistryObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnPanelOptionsChanged(
+        const ExtensionId& extension_id,
+        const api::side_panel::PanelOptions& updated_options) = 0;
+    virtual void OnSidePanelServiceShutdown() = 0;
+  };
+
   explicit SidePanelService(content::BrowserContext* context);
 
   SidePanelService(const SidePanelService&) = delete;
@@ -48,6 +58,10 @@ class SidePanelService : public BrowserContextKeyedAPI,
   // Determine if panel options have been set for extension id. Used in tests.
   bool HasExtensionPanelOptionsForTest(const ExtensionId& id);
 
+  // Adds or removes observers.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
   friend class BrowserContextKeyedAPIFactory<SidePanelService>;
 
@@ -70,6 +84,12 @@ class SidePanelService : public BrowserContextKeyedAPI,
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const Extension* extension,
                               UninstallReason reason) override;
+
+  // KeyedService implementation.
+  void Shutdown() override;
+
+  // The associated observers.
+  base::ObserverList<Observer> observers_;
 
   // ExtensionRegistry observer.
   base::ScopedObservation<extensions::ExtensionRegistry,

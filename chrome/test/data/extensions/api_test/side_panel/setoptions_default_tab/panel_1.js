@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 document.body.onload = () => {
-  chrome.test.sendMessage("side_panel_shown");
+  chrome.test.sendMessage("panel_1");
 }

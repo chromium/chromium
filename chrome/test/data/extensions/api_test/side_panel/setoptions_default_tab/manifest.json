@@ -1,0 +1,6 @@
+{
+  "name": "Extension with side panel but no manifest path",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["sidePanel"]
+}

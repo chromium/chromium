@@ -111,6 +111,11 @@ void SidePanelService::SetOptions(const Extension& extension,
   } else {
     update_existing_options(it->second);
   }
+
+  for (auto& observer : observers_) {
+    observer.OnPanelOptionsChanged(extension.id(),
+                                   extension_panel_options[tab_id]);
+  }
 }
 
 bool SidePanelService::HasExtensionPanelOptionsForTest(const ExtensionId& id) {
@@ -134,6 +139,14 @@ void SidePanelService::RemoveExtensionOptions(const ExtensionId& id) {
   panels_.erase(id);
 }
 
+void SidePanelService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SidePanelService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void SidePanelService::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
@@ -146,6 +159,12 @@ void SidePanelService::OnExtensionUninstalled(
     const Extension* extension,
     UninstallReason reason) {
   RemoveExtensionOptions(extension->id());
+}
+
+void SidePanelService::Shutdown() {
+  for (auto& observer : observers_) {
+    observer.OnSidePanelServiceShutdown();
+  }
 }
 
 }  // namespace extensions

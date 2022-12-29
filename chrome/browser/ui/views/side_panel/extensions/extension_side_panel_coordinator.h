@@ -7,12 +7,18 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 
 class Browser;
 class SidePanelRegistry;
+
+namespace content {
+class WebContents;
+}
 
 namespace views {
 class View;
@@ -25,7 +31,8 @@ class Extension;
 // ExtensionSidePanelCoordinator handles the creation and registration of
 // SidePanelEntries for the associated extension and creates the view to be
 // shown if this extension's SidePanelEntry is active.
-class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer {
+class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
+                                      public SidePanelService::Observer {
  public:
   explicit ExtensionSidePanelCoordinator(Browser* browser,
                                          const Extension* extension,
@@ -35,24 +42,46 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer {
       const ExtensionSidePanelCoordinator&) = delete;
   ~ExtensionSidePanelCoordinator() override;
 
+  // Returns the WebContents managed by `host_`.
+  content::WebContents* GetHostWebContentsForTesting() const;
+
  private:
+  SidePanelEntry::Key GetEntryKey() const;
+
+  // Deregisters this extension's SidePanelEntry from the global
+  // SidePanelCoordinator.
+  void DeregisterGlobalEntry();
+
+  // SidePanelService::Observer:
+  void OnPanelOptionsChanged(
+      const ExtensionId& extension_id,
+      const api::side_panel::PanelOptions& updated_options) override;
+  void OnSidePanelServiceShutdown() override;
+
   // ExtensionViewViews::Observer
   void OnViewDestroying() override;
 
-  // Creates and registers the SidePanelEntry for this extension. This is called
-  // if the extension has a default side panel path when the browser view is
-  // created or when the extension is loaded.
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry,
-                              const GURL& side_panel_url);
+  // Creates and registers the SidePanelEntry for this extension, and observes
+  // the entry. This is called if the extension has a default side panel path
+  // when the browser view is created or when the extension is loaded.
+  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
-  // Creates and transfers ownership of a view for the extension's resource URL
-  // `side_panel_url`. This is called when this extension's SidePanelEntry is
-  // about to be shown in the side panel and a view for the entry has not been
-  /// cached.
-  std::unique_ptr<views::View> CreateView(const GURL& side_panel_url);
+  // Creates a view for the extension's resource URL. This is called when this
+  // extension's SidePanelEntry is about to be shown in the side panel and a
+  // view for the entry has not been cached.
+  std::unique_ptr<views::View> CreateView();
+
+  // Loads the `side_panel_url_` into the WebContents of the view for the
+  // extension's SidePanelEntry. To avoid unnecessary updates, this is only
+  // called when this extension's SidePanelEntry is currently active.
+  void NavigateIfNecessary();
 
   raw_ptr<Browser> browser_;
   const Extension* extension_;
+
+  // The current URL set for the extension's global side panel. This is set in
+  // the constructor or during OnPanelOptionsChanged.
+  GURL side_panel_url_;
 
   // The ExtensionViewHost that backs the view in the side panel for this
   // extension. This is defined if and only if the aforementioned view exists.
@@ -62,6 +91,8 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer {
 
   base::ScopedObservation<ExtensionViewViews, ExtensionViewViews::Observer>
       scoped_view_observation_{this};
+  base::ScopedObservation<SidePanelService, SidePanelService::Observer>
+      scoped_service_observation_{this};
 };
 
 }  // namespace extensions

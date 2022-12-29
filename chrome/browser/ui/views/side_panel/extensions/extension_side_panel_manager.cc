@@ -22,6 +22,13 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(Browser* browser)
 
 ExtensionSidePanelManager::~ExtensionSidePanelManager() = default;
 
+ExtensionSidePanelCoordinator*
+ExtensionSidePanelManager::GetExtensionCoordinatorForTesting(
+    const ExtensionId& extension_id) {
+  auto it = coordinators_.find(extension_id);
+  return (it == coordinators_.end()) ? nullptr : it->second.get();
+}
+
 void ExtensionSidePanelManager::RegisterExtensionEntries(
     SidePanelRegistry* global_registry) {
   ExtensionRegistry* extension_registry =
