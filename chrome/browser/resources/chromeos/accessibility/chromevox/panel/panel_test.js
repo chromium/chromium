@@ -34,7 +34,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
       obj.preventDefault = function() {};
       obj.stopPropagation = function() {};
       obj.key = key;
-      this.getPanel().onKeyDown(obj);
+      this.getPanel().instance_.onKeyDown_(obj);
     }.bind(this);
   }
 
@@ -43,7 +43,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
       const evt = {};
       evt.target = {};
       evt.target.value = query;
-      this.getPanel().onSearchBarQuery(evt);
+      this.getPanel().instance_.onSearchBarQuery_(evt);
     }.bind(this);
   }
 
@@ -58,11 +58,11 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
 
     return new Promise(resolve => {
       const Panel = this.getPanel();
-      const original = Panel.activateMenu;
-      Panel.activateMenu = (menu, activateFirstItem) => {
+      const original = Panel.instance_.activateMenu_.bind(Panel.instance_);
+      Panel.instance_.activateMenu_ = (menu, activateFirstItem) => {
         original(menu, activateFirstItem);
         makeAssertions();
-        Panel.activateMenu = original;
+        Panel.instance_.activateMenu_ = original;
         resolve();
       };
     });
