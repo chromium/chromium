@@ -369,8 +369,9 @@ enum class AppListSearchResultType {
   kPersonalization,        // Personalization search results.
   kZeroStateHelpApp,       // Help App (aka Explore) results for zero-state.
   kZeroStateApp,           // App recommendations for zero-state / recent apps.
+  kImageSearch,            // Local image search result.
   // Add new values here.
-  kMaxValue = kZeroStateApp,
+  kMaxValue = kImageSearch,
 };
 
 ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(

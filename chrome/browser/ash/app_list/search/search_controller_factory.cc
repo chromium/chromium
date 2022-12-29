@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/app_list/search/help_app_provider.h"
 #include "chrome/browser/ash/app_list/search/help_app_zero_state_provider.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_provider.h"
+#include "chrome/browser/ash/app_list/search/local_images/local_image_search_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
 #include "chrome/browser/ash/app_list/search/os_settings_provider.h"
@@ -86,6 +87,10 @@ std::unique_ptr<SearchController> CreateSearchController(
   if (!profile->IsGuestSession()) {
     controller->AddProvider(std::make_unique<FileSearchProvider>(profile));
     controller->AddProvider(std::make_unique<DriveSearchProvider>(profile));
+    if (search_features::IsLauncherImageSearchEnabled()) {
+      controller->AddProvider(
+          std::make_unique<LocalImageSearchProvider>(profile));
+    }
   }
 
   if (app_list_features::IsLauncherPlayStoreSearchEnabled()) {

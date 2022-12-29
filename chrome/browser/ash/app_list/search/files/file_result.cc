@@ -90,6 +90,9 @@ void LogRelevance(ChromeSearchResult::ResultType result_type,
           "Apps.AppList.ZeroStateDriveProvider.Relevance", scaled_relevance,
           /*exclusive_max=*/101);
       break;
+    case FileResult::ResultType::kImageSearch:
+      // TODO(b/260646344): add UMA metric
+      break;
     default:
       NOTREACHED();
   }
@@ -132,6 +135,9 @@ FileResult::FileResult(const std::string& id,
       break;
     case ResultType::kDriveSearch:
       SetMetricsType(ash::DRIVE_SEARCH);
+      break;
+    case ResultType::kImageSearch:
+      // TODO(b/260646344): fix the metric type.
       break;
     default:
       NOTREACHED();

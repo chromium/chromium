@@ -58,6 +58,8 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
       return "Games";
     case ash::AppListSearchResultType::kPersonalization:
       return "Personalization";
+    case ash::AppListSearchResultType::kImageSearch:
+      return "Image search";
   }
   NOTREACHED();
 }

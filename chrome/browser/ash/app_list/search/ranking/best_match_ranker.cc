@@ -32,6 +32,8 @@ bool ShouldIgnoreProvider(ProviderType type) {
       // Internal results:
     case ProviderType::kUnknown:
     case ProviderType::kInternalPrivacyInfo:
+    // In development:
+    case ProviderType::kImageSearch:
       return true;
     case ProviderType::kInternalApp:
     case ProviderType::kArcAppShortcut:
