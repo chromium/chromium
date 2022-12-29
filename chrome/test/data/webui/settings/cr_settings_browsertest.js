@@ -1043,16 +1043,24 @@ function registerTest(testName, module, caseName) {
 // Some tests files are too large to run as a single "All" test (e.g. as above),
 // and flake on some bots. Each test suite can instead be run as an individual
 // test fixture, allowing more time to complete.
+
+// TODO(crbug.com/1403969): SecurityPage_SafeBrowsing suite is flaky on Mac,
+// but the operation of this file requires disabling all tests.
+// TODO(crbug.com/1404146): Figure out way of disabling tests per suite instead
+// of disabling the entire file.
+GEN('#if !BUILDFLAG(IS_MAC)');
 [[
   'SecurityPage',
   'security_page_test.js',
   [
     'SecurityPage',
-    'SecurityPage_FlagsDisabled',
     'SecurityPage_SafeBrowsing',
+    'SecurityPage_FlagsDisabled',
   ],
-],
- [
+]].forEach(test => registerTestSuites(...test));
+GEN('#endif');
+
+[[
    'AllSites',
    'all_sites_tests.js',
    [
