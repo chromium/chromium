@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
@@ -47,6 +48,8 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) StableCdmContextImpl
  private:
   // Receives callbacks from the |cdm_context_| after we register with it.
   void CdmEventCallback(media::CdmContext::Event event);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   const raw_ptr<media::CdmContext> cdm_context_;
   std::unique_ptr<media::CdmContextRef> cdm_context_ref_;

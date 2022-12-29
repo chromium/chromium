@@ -7,29 +7,41 @@
 #include "base/callback.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
+#include "media/base/bind_to_current_loop.h"
 
 namespace chromeos {
 
 StableCdmContextImpl::StableCdmContextImpl(media::CdmContext* cdm_context)
     : cdm_context_(cdm_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(cdm_context_);
   DCHECK(cdm_context_->GetChromeOsCdmContext());
   cdm_context_ref_ = cdm_context_->GetChromeOsCdmContext()->GetCdmContextRef();
 }
 
-StableCdmContextImpl::~StableCdmContextImpl() {}
+StableCdmContextImpl::~StableCdmContextImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void StableCdmContextImpl::GetHwKeyData(
     std::unique_ptr<media::DecryptConfig> decrypt_config,
     const std::vector<uint8_t>& hw_identifier,
     GetHwKeyDataCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cdm_context_->GetChromeOsCdmContext()->GetHwKeyData(
-      decrypt_config.get(), hw_identifier, std::move(callback));
+      decrypt_config.get(), hw_identifier,
+      media::BindToCurrentLoop(std::move(callback)));
 }
 
 void StableCdmContextImpl::RegisterEventCallback(
     mojo::PendingRemote<media::stable::mojom::CdmContextEventCallback>
         callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Note: we don't need to use media::BindToCurrentLoop() for either |callback|
+  // or the callback we pass to RegisterEventCB() because the documentation for
+  // media::CdmContext::RegisterEventCB() says that "[t]he registered callback
+  // will always be called on the thread where RegisterEventCB() is called."
   remote_event_callbacks_.Add(std::move(callback));
   if (!callback_registration_) {
     callback_registration_ = cdm_context_->RegisterEventCB(
@@ -39,15 +51,20 @@ void StableCdmContextImpl::RegisterEventCallback(
 }
 
 void StableCdmContextImpl::GetHwConfigData(GetHwConfigDataCallback callback) {
-  ChromeOsCdmFactory::GetHwConfigData(std::move(callback));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ChromeOsCdmFactory::GetHwConfigData(
+      media::BindToCurrentLoop(std::move(callback)));
 }
 
 void StableCdmContextImpl::GetScreenResolutions(
     GetScreenResolutionsCallback callback) {
-  ChromeOsCdmFactory::GetScreenResolutions(std::move(callback));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ChromeOsCdmFactory::GetScreenResolutions(
+      media::BindToCurrentLoop(std::move(callback)));
 }
 
 void StableCdmContextImpl::CdmEventCallback(media::CdmContext::Event event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& cb : remote_event_callbacks_)
     cb->EventCallback(event);
 }
