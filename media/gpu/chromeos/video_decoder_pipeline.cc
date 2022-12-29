@@ -196,6 +196,14 @@ bool VideoDecoderMixin::NeedsTranscryption() {
   return false;
 }
 
+VideoDecoderPipeline::ClientFlushCBState::ClientFlushCBState(
+    DecodeCB flush_cb,
+    DecoderStatus decoder_decode_status)
+    : flush_cb(std::move(flush_cb)),
+      decoder_decode_status(decoder_decode_status) {}
+
+VideoDecoderPipeline::ClientFlushCBState::~ClientFlushCBState() = default;
+
 // static
 std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     const gpu::GpuDriverBugWorkarounds& workarounds,
@@ -545,7 +553,7 @@ void VideoDecoderPipeline::OnResetDone(base::OnceClosure reset_cb) {
     buffer_transcryptor_->Reset(DecoderStatus::Codes::kAborted);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  CallFlushCbIfNeeded(DecoderStatus::Codes::kAborted);
+  CallFlushCbIfNeeded(/*override_status=*/DecoderStatus::Codes::kAborted);
 
   if (need_frame_pool_rebuild_) {
     need_frame_pool_rebuild_ = false;
@@ -609,9 +617,10 @@ void VideoDecoderPipeline::OnDecodeDone(bool is_flush,
   if (has_error_)
     status = DecoderStatus::Codes::kFailed;
 
-  if (is_flush && status.is_ok()) {
-    client_flush_cb_ = std::move(decode_cb);
-    CallFlushCbIfNeeded(DecoderStatus::Codes::kOk);
+  if (is_flush) {
+    client_flush_cb_state_.emplace(
+        /*flush_cb=*/std::move(decode_cb), /*decoder_decode_status=*/status);
+    CallFlushCbIfNeeded(/*override_status=*/absl::nullopt);
     return;
   }
 
@@ -667,7 +676,7 @@ void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
       FROM_HERE, base::BindOnce(client_output_cb_, std::move(frame)));
 
   // After outputting a frame, flush might be completed.
-  CallFlushCbIfNeeded(DecoderStatus::Codes::kOk);
+  CallFlushCbIfNeeded(/*override_status=*/absl::nullopt);
   CallApplyResolutionChangeIfNeeded();
 }
 
@@ -698,22 +707,29 @@ void VideoDecoderPipeline::OnError(const std::string& msg) {
   if (buffer_transcryptor_)
     buffer_transcryptor_->Reset(DecoderStatus::Codes::kFailed);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  CallFlushCbIfNeeded(DecoderStatus::Codes::kFailed);
+  CallFlushCbIfNeeded(/*override_status=*/DecoderStatus::Codes::kFailed);
 }
 
-void VideoDecoderPipeline::CallFlushCbIfNeeded(DecoderStatus status) {
+void VideoDecoderPipeline::CallFlushCbIfNeeded(
+    absl::optional<DecoderStatus> override_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+
+  if (!client_flush_cb_state_) {
+    return;
+  }
+
+  if (HasPendingFrames()) {
+    // Flush is not completed yet.
+    return;
+  }
+
+  DecodeCB flush_cb = std::move(client_flush_cb_state_->flush_cb);
+  const DecoderStatus status =
+      override_status.value_or(client_flush_cb_state_->decoder_decode_status);
   DVLOGF(3) << "status: " << static_cast<int>(status.code());
-
-  if (!client_flush_cb_)
-    return;
-
-  // Flush is not completed yet.
-  if (status == DecoderStatus::Codes::kOk && HasPendingFrames())
-    return;
-
-  client_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(client_flush_cb_), status));
+  client_flush_cb_state_.reset();
+  client_task_runner_->PostTask(FROM_HERE,
+                                base::BindOnce(std::move(flush_cb), status));
 }
 
 void VideoDecoderPipeline::PrepareChangeResolution() {

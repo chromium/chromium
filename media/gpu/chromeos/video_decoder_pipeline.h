@@ -235,8 +235,20 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // Call VideoDecoderMixin::ApplyResolutionChange() when we need to.
   void CallApplyResolutionChangeIfNeeded();
 
-  // Call |client_flush_cb_| with |status|.
-  void CallFlushCbIfNeeded(DecoderStatus status);
+  // Calls the client flush callback if there is a flush in progress and there
+  // are no pending frames in the pipeline. If |override_status| is not nullopt,
+  // we use it as the DecoderStatus to call the client flush callback with.
+  // Otherwise, we use the original DecoderStatus passed by the underlying
+  // decoder at the moment it notified us that the flush was completed at that
+  // level. This is useful to handle cases like the following: suppose the
+  // underlying decoder tells us a flush was completed without problems but we
+  // can't call the client flush callback yet because there are pending frames
+  // in the pipeline (perhaps in the image processor); then later, we get a
+  // reset request; once the reset request is completed, we can call the client
+  // flush callback but we should pass a DecoderStatus of kAborted instead of
+  // kOk. In this scenario, the original DecoderStatus is kOk and
+  // *|override_status| is kAborted.
+  void CallFlushCbIfNeeded(absl::optional<DecoderStatus> override_status);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Callback for when transcryption of a buffer completes.
@@ -303,7 +315,18 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // Callbacks provided by the client. Used on |decoder_task_runner_|.
   // The callback methods themselves are exercised on |client_task_runner_|.
   OutputCB client_output_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
-  DecodeCB client_flush_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+  // For the flush callback, we keep a couple of things: the callback itself
+  // provided by the client and the DecoderStatus obtained from the underlying
+  // decoder at the moment it notifies the VideoDecoderPipeline that a flush has
+  // been completed.
+  struct ClientFlushCBState {
+    ClientFlushCBState(DecodeCB flush_cb, DecoderStatus decoder_decode_status);
+    ~ClientFlushCBState();
+    DecodeCB flush_cb;
+    const DecoderStatus decoder_decode_status;
+  };
+  absl::optional<ClientFlushCBState> client_flush_cb_state_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_);
   WaitingCB waiting_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   using CreateImageProcessorCBForTesting =
