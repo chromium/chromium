@@ -256,6 +256,9 @@ TaskAttributionTrackerImpl::V8Adapter::GetValue(ScriptState* script_state) {
 void TaskAttributionTrackerImpl::V8Adapter::SetValue(
     ScriptState* script_state,
     absl::optional<TaskAttributionId> task_id) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("TaskAttributionTrackerImpl::V8Adapter::SetValue");
+
   DCHECK(script_state);
   if (!script_state->ContextIsValid()) {
     return;
@@ -271,6 +274,9 @@ void TaskAttributionTrackerImpl::V8Adapter::SetValue(
   DCHECK(!context.IsEmpty());
 
   if (task_id) {
+    // https://linear.app/replay/issue/RUN-885
+    recordreplay::Assert("TaskAttributionTrackerImpl::V8Adapter::SetValue #1");
+
     ScriptWrappableTaskAttributionId* script_wrappable_task_id =
         MakeGarbageCollected<ScriptWrappableTaskAttributionId>(task_id.value());
     context->SetContinuationPreservedEmbedderData(

@@ -69,7 +69,7 @@ using RemoteObjectIdType = WTF::String;
 const char* gReplayScript = R""""(
 (() => {
 
-const Verbose = 1;
+const Verbose = false;
 const VerboseCommands = Verbose;
 
 const {

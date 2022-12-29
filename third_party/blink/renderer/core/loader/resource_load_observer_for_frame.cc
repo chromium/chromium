@@ -112,7 +112,12 @@ ResourceLoadObserverForFrame::ResourceLoadObserverForFrame(
       document_loader_(loader),
       document_(document),
       fetcher_properties_(fetcher_properties) {}
-ResourceLoadObserverForFrame::~ResourceLoadObserverForFrame() = default;
+ResourceLoadObserverForFrame::~ResourceLoadObserverForFrame() {
+  // Avoid destroying power mode voters at non-deterministic points, as their
+  // vote will affect the arbiter's behavior.
+  if (recordreplay::AreEventsDisallowed())
+    power_mode_voter_.release();
+}
 
 void ResourceLoadObserverForFrame::DidStartRequest(
     const FetchParameters& params,

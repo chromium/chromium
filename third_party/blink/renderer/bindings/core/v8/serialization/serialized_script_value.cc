@@ -266,6 +266,7 @@ SerializedScriptValue::SerializedScriptValue(DataBufferPtr data,
 
     data_buffer_ = AllocateBuffer(recorded_size);
     memset(data_buffer_.get(), 0, recorded_size);
+    data_buffer_size_ = recorded_size;
   }
 }
 

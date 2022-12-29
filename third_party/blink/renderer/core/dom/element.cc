@@ -7350,8 +7350,14 @@ Element* Element::closest(const AtomicString& selectors) {
 }
 
 DOMTokenList& Element::classList() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("Element::classList %d", RecordReplayId());
+
   ElementRareData& rare_data = EnsureElementRareData();
   if (!rare_data.GetClassList()) {
+    // https://linear.app/replay/issue/RUN-885
+    recordreplay::Assert("Element::classList #1");
+
     auto* class_list =
         MakeGarbageCollected<DOMTokenList>(*this, html_names::kClassAttr);
     class_list->DidUpdateAttributeValue(g_null_atom,
