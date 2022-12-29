@@ -777,6 +777,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                : DragDropTabs::kDragEndAtSameIndex;
   base::UmaHistogramEnumeration(kUmaDragDropTabs, dragEvent);
 
+  // Used to let the Taptic Engine return to its idle state.
+  // To preserve power, the Taptic Engine remains in a prepared state for only a
+  // short period of time (on the order of seconds). If for some reason the
+  // interactive move / reordering session is not completely finished, the
+  // unfinished `UIFeedbackGenerator` may result in a crash.
+  [self.collectionView endInteractiveMovement];
+
   [self.dragDropHandler dragSessionDidEnd];
   [self.delegate gridViewControllerDragSessionDidEnd:self];
 }
