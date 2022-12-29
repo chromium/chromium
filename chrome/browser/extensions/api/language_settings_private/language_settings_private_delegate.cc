@@ -31,8 +31,7 @@ LanguageSettingsPrivateDelegate::LanguageSettingsPrivateDelegate(
     : custom_dictionary_(nullptr),
       context_(context),
       listening_spellcheck_(false),
-      listening_input_method_(false),
-      profile_added_(false) {
+      listening_input_method_(false) {
   // Register with the event router so we know when renderers are listening to
   // our events. We first check and see if there *is* an event router, because
   // some unit tests try to create all context services, but don't initialize
@@ -50,12 +49,8 @@ LanguageSettingsPrivateDelegate::LanguageSettingsPrivateDelegate(
   event_router->RegisterObserver(
       this, language_settings_private::OnInputMethodRemoved::kEventName);
 
-  // SpellcheckService cannot be created until Profile::DoFinalInit() has been
-  // called. http://crbug.com/171406
-  // TODO(crbug.com/1038437): Investigate if this is still required.
-  Profile* profile = Profile::FromBrowserContext(context_);
-  profile_observation_.Observe(profile);
-  pref_change_registrar_.Init(profile->GetPrefs());
+  pref_change_registrar_.Init(
+      Profile::FromBrowserContext(context_)->GetPrefs());
 
   StartOrStopListeningForSpellcheckChanges();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -115,8 +110,6 @@ void LanguageSettingsPrivateDelegate::Shutdown() {
     listening_input_method_ = false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  profile_observation_.Reset();
 }
 
 void LanguageSettingsPrivateDelegate::OnListenerAdded(
@@ -147,14 +140,6 @@ void LanguageSettingsPrivateDelegate::OnListenerRemoved(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   StartOrStopListeningForInputMethodChanges();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-void LanguageSettingsPrivateDelegate::OnProfileInitializationComplete(
-    Profile* profile) {
-  DCHECK(profile_observation_.IsObservingSource(profile));
-  profile_observation_.Reset();
-  profile_added_ = true;
-  StartOrStopListeningForSpellcheckChanges();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -226,10 +211,8 @@ void LanguageSettingsPrivateDelegate::OnCustomDictionaryChanged(
   EventRouter::Get(context_)->BroadcastEvent(std::move(extension_event));
 }
 
-void LanguageSettingsPrivateDelegate::RefreshDictionaries(
-    bool was_listening, bool should_listen) {
-  if (!profile_added_)
-    return;
+void LanguageSettingsPrivateDelegate::RefreshDictionaries(bool was_listening,
+                                                          bool should_listen) {
   if (was_listening)
     RemoveDictionaryObservers();
   hunspell_dictionaries_.clear();

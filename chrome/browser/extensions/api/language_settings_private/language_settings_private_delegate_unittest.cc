@@ -72,7 +72,6 @@ class LanguageSettingsPrivateDelegateTest
     dictionary->RemoveObserver(this);
 
     delegate_.reset(LanguageSettingsPrivateDelegate::Create(browser_context()));
-    delegate_->OnProfileInitializationComplete(profile());
   }
 
   void TearDown() override {

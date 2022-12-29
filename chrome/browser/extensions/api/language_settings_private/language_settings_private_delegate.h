@@ -10,9 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/spellchecker/spellcheck_hunspell_dictionary.h"
 #include "chrome/common/extensions/api/language_settings_private.h"
@@ -35,7 +33,6 @@ namespace extensions {
 class LanguageSettingsPrivateDelegate
     : public KeyedService,
       public EventRouter::Observer,
-      public ProfileObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       public ash::input_method::InputMethodManager::Observer,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -59,9 +56,6 @@ class LanguageSettingsPrivateDelegate
 
   // Retry downloading the spellcheck dictionary.
   virtual void RetryDownloadHunspellDictionary(const std::string& language);
-
-  // ProfileObserver implementation.
-  void OnProfileInitializationComplete(Profile* profile) override;
 
  protected:
   explicit LanguageSettingsPrivateDelegate(content::BrowserContext* context);
@@ -142,12 +136,7 @@ class LanguageSettingsPrivateDelegate
   // True if there are observers listening for input method events.
   bool listening_input_method_;
 
-  // True if the profile has finished initializing.
-  bool profile_added_;
-
   PrefChangeRegistrar pref_change_registrar_;
-
-  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace extensions
