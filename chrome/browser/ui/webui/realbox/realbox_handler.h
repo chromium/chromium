@@ -109,6 +109,8 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
                const AutocompleteMatch&,
                IDNA2008DeviationCharacter);
 
+  void SelectMatchAtLine(size_t old_line, size_t new_line);
+
  private:
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;

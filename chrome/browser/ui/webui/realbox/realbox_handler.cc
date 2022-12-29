@@ -861,3 +861,7 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
     }
   }
 }
+
+void RealboxHandler::SelectMatchAtLine(size_t old_line, size_t new_line) {
+  page_->SelectMatchAtLine(new_line);
+}

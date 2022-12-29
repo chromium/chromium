@@ -24,6 +24,7 @@ class LocationBarView;
 class OmniboxEditModel;
 class OmniboxResultView;
 class OmniboxViewViews;
+class WebUIOmniboxPopupView;
 
 // A view representing the contents of the autocomplete popup.
 class OmniboxPopupContentsView : public views::View,
@@ -134,6 +135,10 @@ class OmniboxPopupContentsView : public views::View,
 
   // The location bar view that owns |omnibox_view_|. May be nullptr in tests.
   raw_ptr<LocationBarView> location_bar_view_;
+
+  // The reference to the child suggestions WebView. Added only if
+  // omnibox::kWebUIOmniboxPopup is enabled.
+  raw_ptr<WebUIOmniboxPopupView> webui_view_;
 
   // A pref change registrar for toggling result view visibility.
   PrefChangeRegistrar pref_change_registrar_;

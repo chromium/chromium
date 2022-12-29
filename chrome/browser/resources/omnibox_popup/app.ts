@@ -5,13 +5,21 @@
 import '//resources/cr_components/omnibox/realbox_dropdown.js';
 import './strings.m.js';
 
+import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PageCallbackRouter, RealboxBrowserProxy} from '//resources/cr_components/omnibox/realbox_browser_proxy.js';
+import {RealboxDropdownElement} from '//resources/cr_components/omnibox/realbox_dropdown.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import {AutocompleteResult} from './omnibox.mojom-webui.js';
+
+export interface OmniboxPopupAppElement {
+  $: {
+    matches: RealboxDropdownElement,
+  };
+}
 
 // Displays the autocomplete matches in the autocomplete result.
 export class OmniboxPopupAppElement extends PolymerElement {
@@ -32,10 +40,12 @@ export class OmniboxPopupAppElement extends PolymerElement {
   private callbackRouter_: PageCallbackRouter;
   private omniboxAutocompleteResultChangedListenerId_: number|null = null;
   private result_: AutocompleteResult;
+  private selectMatchAtLineListenerId_: number|null = null;
 
   constructor() {
     super();
     this.callbackRouter_ = RealboxBrowserProxy.getInstance().callbackRouter;
+    startColorChangeUpdater();
   }
 
   override connectedCallback() {
@@ -43,6 +53,9 @@ export class OmniboxPopupAppElement extends PolymerElement {
     this.omniboxAutocompleteResultChangedListenerId_ =
         this.callbackRouter_.omniboxAutocompleteResultChanged.addListener(
             this.onOmniboxAutocompleteResultChanged_.bind(this));
+    this.selectMatchAtLineListenerId_ =
+        this.callbackRouter_.selectMatchAtLine.addListener(
+            this.onSelectMatchAtLine_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -50,10 +63,18 @@ export class OmniboxPopupAppElement extends PolymerElement {
     assert(this.omniboxAutocompleteResultChangedListenerId_);
     this.callbackRouter_.removeListener(
         this.omniboxAutocompleteResultChangedListenerId_);
+    assert(this.selectMatchAtLineListenerId_);
+    this.callbackRouter_.removeListener(this.selectMatchAtLineListenerId_);
   }
 
   private onOmniboxAutocompleteResultChanged_(result: AutocompleteResult) {
     this.result_ = result;
+
+    if (result.matches[0]?.allowedToBeDefaultMatch) {
+      this.$.matches.selectFirst();
+    } else if (this.$.matches.selectedMatchIndex >= result.matches.length) {
+      this.$.matches.unselect();
+    }
   }
 
   private onResultRepaint_() {
@@ -65,6 +86,10 @@ export class OmniboxPopupAppElement extends PolymerElement {
         .then(() => metricsReporter.clearMark('ResultChanged'))
         // Ignore silently if mark 'ResultChanged' is missing.
         .catch(() => {});
+  }
+
+  private onSelectMatchAtLine_(line: number) {
+    this.$.matches.selectIndex(line);
   }
 }
 

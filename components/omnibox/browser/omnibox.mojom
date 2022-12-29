@@ -146,4 +146,6 @@ interface Page {
   AutocompleteResultChanged(AutocompleteResult result);
   // Updates the WebUI omnibox with the autocomplete results.
   OmniboxAutocompleteResultChanged(AutocompleteResult result);
+  // Selects the match located at |line|.
+  SelectMatchAtLine(uint8 line);
 };
