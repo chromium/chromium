@@ -316,7 +316,7 @@ const CGFloat kTableViewTopSpace = 14;
       stringByReplacingOccurrencesOfString:@"$2"
                                 withString:self.currentHost]
       stringByReplacingOccurrencesOfString:@"$1"
-                                withString:[self currentUsername]];
+                                withString:[self currentUsername] ?: @""];
   UIAlertController* alertController = [UIAlertController
       alertControllerWithTitle:
           NSLocalizedString(
