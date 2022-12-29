@@ -1,8 +1,18 @@
-<style include="shortcut-customization-fonts shortcut-customization-shared">
+<style include="shortcut-customization-shared">
   :host {
-    font-family: var(--shortcuts-default-font-family);
-    font-size: var(--shortcuts-default-font-size);
+    font-family: var(--shortcuts-font-family-default);
+    font-size: var(--shortcuts-font-size-default);
     font-weight: var(--shortcuts-font-weight-regular);
+  }
+
+  #navigationPanel::part(top-nav) {
+    height: 72px;
+  }
+
+  #navigationPanel::part(toolbar-container) {
+    align-items: flex-end;
+    display: flex;
+    height: 100%;
   }
 
   #navigationPanel::part(title) {

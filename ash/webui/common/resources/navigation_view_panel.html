@@ -103,11 +103,11 @@
   <iron-media-query query="(min-width: 769px)" query-matches="{{showNav}}">
   </iron-media-query>
   <template is="dom-if" if="[[showToolBar]]">
-    <div id="topNav">
+    <div id="topNav" part="top-nav">
       <page-toolbar
           title="[[title]]"
           is-narrow="[[!showNav]]"
-          exportparts="title">
+          exportparts="title, toolbar-container">
       </page-toolbar>
     </div>
   </template>

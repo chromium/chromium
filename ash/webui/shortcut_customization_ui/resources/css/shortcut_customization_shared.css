@@ -15,6 +15,6 @@ html {
   --shortcuts-font-weight-regular: 400;
   --shortcuts-font-weight-medium: 500;
 
-  --shortcuts-default-font-family: "Google Sans", Roboto, sans-serif;
-  --shortcuts-default-font-size: 13px;
+  --shortcuts-font-family-default: "Google Sans", Roboto, sans-serif;
+  --shortcuts-font-size-default: 13px;
 }
