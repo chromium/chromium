@@ -158,11 +158,11 @@ TEST_F(SchemaMapTest, FilterBundle) {
 
   PolicyNamespace extension_ns(POLICY_DOMAIN_EXTENSIONS, "abc");
   PolicyMap& map = expected_bundle.Get(extension_ns);
-  base::ListValue list;
+  base::Value::List list;
   list.Append("a");
   list.Append("b");
   map.Set("list", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-          POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+          POLICY_SOURCE_CLOUD, base::Value(std::move(list)), nullptr);
   map.Set("boolean", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
           POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   map.Set("integer", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,

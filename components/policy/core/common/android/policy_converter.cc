@@ -82,11 +82,11 @@ void PolicyConverter::SetPolicyStringArray(JNIEnv* env,
                                            const JavaRef<jstring>& policyKey,
                                            const JavaRef<jobjectArray>& array) {
   SetPolicyValue(ConvertJavaStringToUTF8(env, policyKey),
-                 ConvertJavaStringArrayToListValue(env, array));
+                 base::Value(ConvertJavaStringArrayToListValue(env, array)));
 }
 
 // static
-base::Value PolicyConverter::ConvertJavaStringArrayToListValue(
+base::Value::List PolicyConverter::ConvertJavaStringArrayToListValue(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array) {
   DCHECK(!array.is_null());
@@ -94,7 +94,7 @@ base::Value PolicyConverter::ConvertJavaStringArrayToListValue(
   DCHECK_GE(array_reader.size(), 0)
       << "Invalid array length: " << array_reader.size();
 
-  base::Value list_value(base::Value::Type::LIST);
+  base::Value::List list_value;
   for (auto j_str : array_reader)
     list_value.Append(ConvertJavaStringToUTF8(env, j_str));
 

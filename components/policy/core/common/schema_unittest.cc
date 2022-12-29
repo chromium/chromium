@@ -906,11 +906,11 @@ TEST(SchemaTest, Validate) {
   {
     Schema subschema = schema.GetProperty("ArrayOfObjectOfArray");
     ASSERT_TRUE(subschema.valid());
-    base::ListValue root;
+    base::Value root(base::Value::Type::LIST);
 
     base::Value::Dict dict_value;
     base::Value* list_value = dict_value.Set("List", base::Value::List());
-    root.Append(std::move(dict_value));
+    root.GetList().Append(std::move(dict_value));
 
     // Test that there are not errors here.
     list_value->GetList().Append("blabla");

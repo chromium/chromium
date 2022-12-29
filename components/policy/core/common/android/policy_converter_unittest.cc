@@ -13,8 +13,6 @@
 #include "components/policy/core/common/schema.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::DictionaryValue;
-using base::ListValue;
 using base::Value;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -59,13 +57,13 @@ class PolicyConverterTest : public testing::Test {
     return json_string;
   }
 
-  // Uses|PolicyConverter::ConvertJavaStringArrayToListValue| to convert the
+  // Uses `PolicyConverter::ConvertJavaStringArrayToListValue` to convert the
   // passed in java array and serializes the result to JSON, to make it easier
-  // to compare with EXPECT_EQ.
+  // to compare with `EXPECT_EQ`.
   std::string ConvertJavaStringArrayToListValue(
       JNIEnv* env,
       const JavaRef<jobjectArray>& java_array) {
-    base::Value list =
+    base::Value::List list =
         PolicyConverter::ConvertJavaStringArrayToListValue(env, java_array);
 
     std::string json_string;
@@ -165,13 +163,13 @@ TEST_F(PolicyConverterTest, ConvertFromJavaListToListValue) {
                       env, MakeJavaStringArray(env, {})));
 }
 
-TEST_F(PolicyConverterTest, ConvertToDictionaryValue) {
+TEST_F(PolicyConverterTest, ConvertToDictValue) {
   Schema dict_schema = schema_.GetKnownProperty("dict");
   ASSERT_TRUE(dict_schema.valid());
 
-  Value dict = Value(Value::Type::DICTIONARY);
-  dict.SetIntKey("thx", 1138);
-  EXPECT_EQ("{\"thx\":1138}", Convert(std::move(dict), dict_schema));
+  base::Value::Dict dict;
+  dict.Set("thx", 1138);
+  EXPECT_EQ("{\"thx\":1138}", Convert(Value(std::move(dict)), dict_schema));
   EXPECT_EQ("{\"moose\":true}",
             Convert(Value("{\"moose\": true}"), dict_schema));
   EXPECT_EQ("\"fnord\"", Convert(Value("fnord"), dict_schema));

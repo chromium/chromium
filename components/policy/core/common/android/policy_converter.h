@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -71,7 +72,7 @@ class POLICY_EXPORT PolicyConverter {
                                                           const Schema& schema);
 
   // Public for testing.
-  static base::Value ConvertJavaStringArrayToListValue(
+  static base::Value::List ConvertJavaStringArrayToListValue(
       JNIEnv* env,
       const base::android::JavaRef<jobjectArray>& array);
 
