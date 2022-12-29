@@ -45,4 +45,7 @@
 
 #define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
 
+// TODO(https://crbug.com/1404157): Remove this.
+#define _LIBCPP_HAS_NO_C11_ALIGNED_ALLOC
+
 #endif // _LIBCPP_CONFIG_SITE
