@@ -44,7 +44,8 @@ constexpr char kKeyStartTime[] = "start_time";
 StringPiece SerializeEnumForUma(
     PasswordChangeSuccessTracker::StartEvent event) {
   switch (event) {
-    case PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow:
+    case PasswordChangeSuccessTracker::StartEvent::kDeprecatedAutomatedFlow:
+      NOTREACHED();
       return ".AutomatedFlow";
     // Combine all manual flows for UMA reporting to reduce number of
     // histograms.
@@ -53,21 +54,25 @@ StringPiece SerializeEnumForUma(
     case PasswordChangeSuccessTracker::StartEvent::kManualChangePasswordUrlFlow:
     case PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow:
       return ".ManualFlow";
-    case PasswordChangeSuccessTracker::StartEvent::kManualResetLinkFlow:
+    case PasswordChangeSuccessTracker::StartEvent::
+        kDeprecatedManualResetLinkFlow:
+      NOTREACHED();
       return ".ManualResetLinkFlow";
   }
 }
 
 StringPiece SerializeEnumForUma(PasswordChangeSuccessTracker::EndEvent event) {
   switch (event) {
-    // Combine automated flow end events for UMA reporting.
+    // (DEPRECATED) Combine automated flow end events for UMA reporting.
     case PasswordChangeSuccessTracker::EndEvent::
-        kAutomatedFlowGeneratedPasswordChosen:
+        kDeprecatedAutomatedFlowGeneratedPasswordChosen:
     case PasswordChangeSuccessTracker::EndEvent::
-        kAutomatedFlowOwnPasswordChosen:
+        kDeprecatedAutomatedFlowOwnPasswordChosen:
+      NOTREACHED();
       return ".AutomatedFlowPasswordChosen";
     case PasswordChangeSuccessTracker::EndEvent::
-        kAutomatedFlowResetLinkRequested:
+        kDeprecatedAutomatedFlowResetLinkRequested:
+      NOTREACHED();
       return ".AutomatedFlowResetLinkRequested";
     // Combine manual flow end events for UMA reporting.
     case PasswordChangeSuccessTracker::EndEvent::
@@ -82,10 +87,11 @@ StringPiece SerializeEnumForUma(PasswordChangeSuccessTracker::EndEvent event) {
 StringPiece SerializeEnumForUma(
     PasswordChangeSuccessTracker::EntryPoint entry_point) {
   switch (entry_point) {
+    case PasswordChangeSuccessTracker::EntryPoint::kDeprecatedLeakWarningDialog:
+      NOTREACHED();
+      return ".LeakWarningDialog";
     case PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings:
       return ".LeakCheckInSettings";
-    case PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog:
-      return ".LeakWarningDialog";
   }
 }
 
@@ -112,19 +118,14 @@ base::Value::Dict CreateFlow(
 void RecordUserActionOnPhishedCredentialforUma(
     PasswordChangeSuccessTracker::EndEvent event) {
   switch (event) {
-    // Combine automated flow end events for UMA reporting.
+    // (DEPRECATED) Combine automated flow end events for UMA reporting.
     case PasswordChangeSuccessTracker::EndEvent::
-        kAutomatedFlowGeneratedPasswordChosen:
+        kDeprecatedAutomatedFlowGeneratedPasswordChosen:
     case PasswordChangeSuccessTracker::EndEvent::
-        kAutomatedFlowOwnPasswordChosen:
-      RecordAction(UserMetricsAction(
-          "PasswordProtection.PasswordUpdated.AutomatedFlowPasswordChosen"));
-      break;
+        kDeprecatedAutomatedFlowOwnPasswordChosen:
     case PasswordChangeSuccessTracker::EndEvent::
-        kAutomatedFlowResetLinkRequested:
-      RecordAction(
-          UserMetricsAction("PasswordProtection.PasswordUpdated."
-                            "AutomatedFlowResetLinkRequested"));
+        kDeprecatedAutomatedFlowResetLinkRequested:
+      NOTREACHED();
       break;
     // Combine manual flow end events for UMA reporting.
     case PasswordChangeSuccessTracker::EndEvent::
@@ -254,21 +255,6 @@ PasswordChangeSuccessTrackerImpl::PasswordChangeSuccessTrackerImpl(
 
 PasswordChangeSuccessTrackerImpl::~PasswordChangeSuccessTrackerImpl() = default;
 
-void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowStarted(
-    const GURL& url,
-    const std::string& username,
-    StartEvent event_type,
-    EntryPoint entry_point) {
-  ScopedListPrefUpdate update(pref_service_,
-                              prefs::kPasswordChangeSuccessTrackerFlows);
-  base::Value::List& flows = update.Get();
-  RemoveFlowsWithTimeout(flows);
-
-  flows.Append(
-      base::Value(CreateFlow(ExtractEtldPlus1(url), username, event_type,
-                             entry_point, base::Time::Now())));
-}
-
 void PasswordChangeSuccessTrackerImpl::OnManualChangePasswordFlowStarted(
     const GURL& url,
     const std::string& username,
@@ -300,43 +286,6 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowModified(
         base::Value(CreateFlow(it->etld_plus_1, it->username, new_event_type,
                                it->entry_point, it->start_time)));
     incomplete_manual_flows_.erase(it);
-  }
-}
-
-void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowModified(
-    const GURL& url,
-    const std::string& username,
-    StartEvent new_event_type) {
-  ScopedListPrefUpdate update(pref_service_,
-                              prefs::kPasswordChangeSuccessTrackerFlows);
-  base::Value::List& flows = update.Get();
-  RemoveFlowsWithTimeout(flows);
-
-  // Currently, this method can only get called if a request link is requested
-  // inside an automated flow.
-  DCHECK(new_event_type == StartEvent::kManualResetLinkFlow);
-
-  // In the unlikely case that there are two flows with the same url and
-  // username, we take the last entry.
-  std::string target_etld_plus_1 = ExtractEtldPlus1(url);
-  for (size_t i = flows.size(); i-- > 0;) {
-    FlowView view(&flows[i].GetDict());
-    if (view.GetStartEvent() == StartEvent::kAutomatedFlow &&
-        view.GetEtldPlus1() == target_etld_plus_1 &&
-        view.GetUsername() == username) {
-      EntryPoint entry_point = view.GetEntryPoint();
-      RecordMetrics(view.GetEtldPlus1(), view.GetStartEvent(),
-                    EndEvent::kAutomatedFlowResetLinkRequested, entry_point,
-                    base::Time::Now() - view.GetStartTime());
-      flows.erase(flows.begin() + i);
-
-      // Add a new flow and reset the timer.
-      flows.Append(base::Value(CreateFlow(target_etld_plus_1, username,
-                                          StartEvent::kManualResetLinkFlow,
-                                          entry_point, base::Time::Now())));
-
-      return;
-    }
   }
 }
 

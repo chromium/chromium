@@ -17,14 +17,6 @@ class MockPasswordChangeSuccessTracker : public PasswordChangeSuccessTracker {
   ~MockPasswordChangeSuccessTracker() override;
 
   MOCK_METHOD(void,
-              OnChangePasswordFlowStarted,
-              (const GURL& url,
-               const std::string& username,
-               StartEvent event_type,
-               EntryPoint entry_point),
-              (override));
-
-  MOCK_METHOD(void,
               OnManualChangePasswordFlowStarted,
               (const GURL& url,
                const std::string& username,
@@ -34,13 +26,6 @@ class MockPasswordChangeSuccessTracker : public PasswordChangeSuccessTracker {
   MOCK_METHOD(void,
               OnChangePasswordFlowModified,
               (const GURL& url, StartEvent new_event_type),
-              (override));
-
-  MOCK_METHOD(void,
-              OnChangePasswordFlowModified,
-              (const GURL& url,
-               const std::string& username,
-               StartEvent new_event_type),
               (override));
 
   MOCK_METHOD(void,

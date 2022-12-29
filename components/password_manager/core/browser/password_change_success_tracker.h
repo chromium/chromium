@@ -42,8 +42,8 @@ class PasswordChangeSuccessTracker : public KeyedService {
   // These values are persisted to prefs and used in enums.xml; do not reorder
   // or renumber entries!
   enum class StartEvent {
-    // An automated password change flow.
-    kAutomatedFlow = 0,
+    // Deprecated as a part of APC removal (crbug.com/1386065).
+    kDeprecatedAutomatedFlow = 0,
 
     // A manual password change flow of unknown type since no navigation has
     // been attempted yet.
@@ -60,26 +60,23 @@ class PasswordChangeSuccessTracker : public KeyedService {
     // credential (supposed to be the homepage).
     kManualHomepageFlow = 4,
 
-    // A manual password reset flow. This StartEvent can currently only be
-    // triggered during an automated password change flow for which login fails
-    // and the user chooses to request a password reset.
-    kManualResetLinkFlow = 5,
+    // Deprecated as a part of APC removal (crbug.com/1386065).
+    kDeprecatedManualResetLinkFlow = 5,
 
-    kMaxValue = kManualResetLinkFlow
+    kMaxValue = kDeprecatedManualResetLinkFlow
   };
 
   // These values are persisted to prefs and used in enums.xml; do not reorder
   // or renumber entries!
   enum class EndEvent {
-    // Automated password change flow completed with a generated password.
-    kAutomatedFlowGeneratedPasswordChosen = 0,
+    // Deprecated as a part of APC removal (crbug.com/1386065).
+    kDeprecatedAutomatedFlowGeneratedPasswordChosen = 0,
 
-    // Automated password change flow completed with a user-chosen password.
-    kAutomatedFlowOwnPasswordChosen = 1,
+    // Deprecated as a part of APC removal (crbug.com/1386065).
+    kDeprecatedAutomatedFlowOwnPasswordChosen = 1,
 
-    // Password-reset link was requested. Autofill Assistant's part is done and
-    // a user is supposed to continue the flow on their own.
-    kAutomatedFlowResetLinkRequested = 2,
+    // Deprecated as a part of APC removal (crbug.com/1386065).
+    kDeprecatedAutomatedFlowResetLinkRequested = 2,
 
     // A manual password change flow or password reset flow completed with a
     // generated password.
@@ -103,22 +100,12 @@ class PasswordChangeSuccessTracker : public KeyedService {
     // manager.
     kLeakCheckInSettings = 0,
 
-    // Started after receiving a warning after logging into a website with
-    // a leaked credential.
-    kLeakWarningDialog = 1,
+    // Deprecated as part of APC removal (crbug.com/1386065). If change password
+    // URLs will be used in the leak warning, this entry should be used again.
+    kDeprecatedLeakWarningDialog = 1,
 
-    kMaxValue = kLeakWarningDialog
+    kMaxValue = kDeprecatedLeakWarningDialog
   };
-
-  // Called when a change flow starts and its |StartEvent| is fully known (
-  // currently true only for automated flows). It stores an entry to wait
-  // for a matching |OnChangePasswordFlowModified()| or
-  // |OnChangePasswordFlowCompleted()| call. Times out after |kFlowTimeout|
-  // if no matching EndEvent is received.
-  virtual void OnChangePasswordFlowStarted(const GURL& url,
-                                           const std::string& username,
-                                           StartEvent event_type,
-                                           EntryPoint entry_point) = 0;
 
   // Called when a manual change flow is started. At that point, the
   // exact |StartEvent| (i.e. whether it supports .well-known/change-password)
@@ -131,12 +118,6 @@ class PasswordChangeSuccessTracker : public KeyedService {
   // Called when a change flow with an unknown username is refined, e.g. the
   // exact |StartEvent| of a manual flow is specified.
   virtual void OnChangePasswordFlowModified(const GURL& url,
-                                            StartEvent new_event_type) = 0;
-
-  // Call when a change flow with a known username is modified, e.g. a flow
-  // that started as an automated password change and became a password reset.
-  virtual void OnChangePasswordFlowModified(const GURL& url,
-                                            const std::string& username,
                                             StartEvent new_event_type) = 0;
 
   // Called when a change flow succeeds and a password is updated.

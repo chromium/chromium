@@ -66,24 +66,28 @@ TEST_F(PasswordChangeSuccessTrackerFactoryTest,
       PasswordChangeSuccessTrackerFactory::GetForBrowserContext(
           browser_context());
 
-  tracker->OnChangePasswordFlowStarted(
+  tracker->OnManualChangePasswordFlowStarted(
       GURL(kUrl), kUsername,
-      PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
-      PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog);
+      PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings);
+
+  tracker->OnChangePasswordFlowModified(
+      GURL(kUrl),
+      PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow);
 
   tracker->OnChangePasswordFlowCompleted(
       GURL(kUrl), kUsername,
-      PasswordChangeSuccessTracker::EndEvent::kAutomatedFlowOwnPasswordChosen,
+      PasswordChangeSuccessTracker::EndEvent::
+          kManualFlowGeneratedPasswordChosen,
       kNotPhished);
 
   histogram_tester.ExpectTotalCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakWarningDialog."
-      "AutomatedFlow",
+      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
+      "ManualFlow",
       1);
 
   histogram_tester.ExpectTotalCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakWarningDialog."
-      "AutomatedFlow.AutomatedFlowPasswordChosen",
+      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
+      "ManualFlow.ManualFlowPasswordChosen",
       1);
 }
 
@@ -95,10 +99,13 @@ TEST_F(PasswordChangeSuccessTrackerFactoryTest,
       PasswordChangeSuccessTrackerFactory::GetForBrowserContext(
           browser_context());
 
-  tracker->OnChangePasswordFlowStarted(
+  tracker->OnManualChangePasswordFlowStarted(
       GURL(kUrl), kUsername,
-      PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow,
       PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings);
+
+  tracker->OnChangePasswordFlowModified(
+      GURL(kUrl),
+      PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow);
 
   tracker->OnChangePasswordFlowCompleted(
       GURL(kUrl), kUsername,

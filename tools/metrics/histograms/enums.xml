@@ -77740,9 +77740,12 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PasswordManager.PasswordChangeSuccessTracker.EndEvent">
-  <int value="0" label="Automated flow, generated password chosen"/>
-  <int value="1" label="Automated flow, manual password chosen"/>
-  <int value="2" label="Automated flow, reset link requested"/>
+  <int value="0"
+      label="(DEPRECATED IN M110) Automated flow, generated password chosen"/>
+  <int value="1"
+      label="(DEPRECATED IN M110) Automated flow, manual password chosen"/>
+  <int value="2"
+      label="(DEPRECATED IN M110) Automated flow, reset link requested"/>
   <int value="3" label="Manual flow, generated password chosen"/>
   <int value="4" label="Manual flow, manual password chosen"/>
   <int value="5" label="Timeout"/>
@@ -77754,12 +77757,12 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PasswordManager.PasswordChangeSuccessTracker.StartEvent">
-  <int value="0" label="Automated flow"/>
+  <int value="0" label="(DEPRECATED IN M110) Automated flow"/>
   <int value="1" label="Manual unknown flow"/>
   <int value="2" label="Manual well-known URL flow"/>
   <int value="3" label="Manual domain-specific URL flow"/>
   <int value="4" label="Manual homepage flow"/>
-  <int value="5" label="Manual reset link flow"/>
+  <int value="5" label="(DEPRECATED IN M110) Manual reset link flow"/>
 </enum>
 
 <enum name="PasswordManager.ReauthResult">
