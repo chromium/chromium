@@ -34,7 +34,10 @@ export const FilesQuickView = Polymer({
      */
     canDelete: Boolean,
 
-    // Preview content to be sent rendered in a sandboxed environment.
+    /**
+     * Preview content to be sent rendered in a sandboxed environment.
+     * @type {!FilePreviewContent}
+     */
     sourceContent: {
       type: Object,
       observer: 'refreshUntrustedIframe_',
@@ -46,9 +49,9 @@ export const FilesQuickView = Polymer({
     // Autoplay property for audio, video.
     autoplay: Boolean,
 
-    // True if this file is not image, audio, video nor HTML but is supported
+    // True if this file is not image, audio, video or HTML, but is supported
     // by Chrome - content that is directly preview-able in Chrome by setting
-    // the <webview> src attribute. Examples: pdf, text.
+    // the untrusted <iframe> src attribute. Examples: pdf, text.
     browsable: Boolean,
 
     // The metadata-box-active-changed event is fired on attribute change.
@@ -77,7 +80,7 @@ export const FilesQuickView = Polymer({
 
   /**
    * Send browsable preview content (i.e. content that can be displayed by the
-   * browser directly as PDF/text/html) to the chrome-untrusted:// <iframe>.
+   * browser directly e.g. PDF/text) to the chrome-untrusted:// <iframe>.
    */
   refreshUntrustedIframe_: function() {
     if (!this.browsable) {
@@ -94,6 +97,7 @@ export const FilesQuickView = Polymer({
       subtype: this.subtype,
       sourceContent: this.sourceContent,
     };
+
     iframe.contentWindow.postMessage(data, toSandboxedURL().origin);
   },
 
@@ -115,10 +119,15 @@ export const FilesQuickView = Polymer({
       browsable: false,
     });
 
+    // Remove the video's untrusted <iframe> child. The <iframe> contains the
+    // <video> element. Removing the <iframe> removes the <video>: that stops
+    // the video and its audio track playing: crbug.com/970192
     const video = this.$.contentPanel.querySelector('#videoSafeMedia');
     if (video) {
-      video.src = '';
-      video.fire('src-changed');
+      video.src = /** @type {!FilePreviewContent} */ ({
+        data: null,
+        dataType: '',
+      });
     }
 
     this.removeAttribute('load-error');
@@ -127,10 +136,10 @@ export const FilesQuickView = Polymer({
   // Handle load error from the files-safe-media container.
   loaderror: function() {
     this.setAttribute('load-error', '');
-    this.sourceContent = {
+    this.sourceContent = /** @type {!FilePreviewContent} */ ({
       data: null,
       dataType: '',
-    };
+    });
   },
 
   /** @return {boolean} */
@@ -247,7 +256,7 @@ export const FilesQuickView = Polymer({
   },
 
   /**
-   * @param {Object} sourceContent
+   * @param {!FilePreviewContent} sourceContent
    * @return {boolean}
    *
    * @private
@@ -298,9 +307,9 @@ export const FilesQuickView = Polymer({
   },
 
   /**
-   * @param {Object} sourceContent
+   * @param {!FilePreviewContent} sourceContent
    * @param {string} type
-   * @return {Object}
+   * @return {!FilePreviewContent}
    *
    * @private
    */

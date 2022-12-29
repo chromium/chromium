@@ -1982,10 +1982,9 @@ testcase.openQuickViewVideo = async () => {
   // Close Quick View.
   await closeQuickView(appId);
 
-  // Check quickview video <files-safe-media> has no "src", so it stops
-  // playing the video. crbug.com/970192
-  const noSrcFilesSafeMedia = ['#quick-view', '#videoSafeMedia[src=""]'];
-  await remoteCall.waitForElement(appId, noSrcFilesSafeMedia);
+  // Check: closing Quick View should remove the video <files-safe-media>
+  // preview element, so it stops playing the video. crbug.com/970192
+  await remoteCall.waitForElementLost(appId, preview);
 };
 
 /**
@@ -2039,10 +2038,9 @@ testcase.openQuickViewVideoOnDrive = async () => {
   // Close Quick View.
   await closeQuickView(appId);
 
-  // Check quickview video <files-safe-media> has no "src", so it stops
-  // playing the video. crbug.com/970192
-  const noSrcFilesSafeMedia = ['#quick-view', '#videoSafeMedia[src=""]'];
-  await remoteCall.waitForElement(appId, noSrcFilesSafeMedia);
+  // Check: closing Quick View should remove the video <files-safe-media>
+  // preview element, so it stops playing the video. crbug.com/970192
+  await remoteCall.waitForElementLost(appId, preview);
 };
 
 /**
