@@ -26,6 +26,7 @@ namespace {
 bool GetTopicsHeaderValueForSubresourceRequest(
     WeakDocumentPtr request_initiator_document,
     const GURL& url,
+    const network::ResourceRequest& request,
     std::string& header_value) {
   DCHECK(header_value.empty());
 
@@ -71,12 +72,13 @@ bool GetTopicsHeaderValueForSubresourceRequest(
       static_cast<RenderFrameHostImpl*>(request_initiator_frame)
           ->permissions_policy();
 
-  if (!permissions_policy->IsFeatureEnabledForOrigin(
-          blink::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin) ||
-      !permissions_policy->IsFeatureEnabledForOrigin(
+  if (!permissions_policy->IsFeatureEnabledForSubresourceRequest(
+          blink::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin,
+          request) ||
+      !permissions_policy->IsFeatureEnabledForSubresourceRequest(
           blink::mojom::PermissionsPolicyFeature::
               kBrowsingTopicsBackwardCompatible,
-          origin)) {
+          origin, request)) {
     return false;
   }
 
@@ -119,24 +121,21 @@ BrowsingTopicsURLLoader::BrowsingTopicsURLLoader(
     scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory)
     : document_(std::move(document)),
       url_(resource_request.url),
+      request_(resource_request),
       forwarding_client_(std::move(client)) {
   DCHECK(network_loader_factory);
 
-  network::ResourceRequest new_resource_request = resource_request;
-
   std::string header_value;
   topics_eligible_ = GetTopicsHeaderValueForSubresourceRequest(
-      document_, new_resource_request.url, header_value);
+      document_, request_.url, request_, header_value);
 
   if (topics_eligible_) {
-    new_resource_request.headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
-                                           header_value);
+    request_.headers.SetHeader(kBrowsingTopicsRequestHeaderKey, header_value);
   }
 
   network_loader_factory->CreateLoaderAndStart(
-      loader_.BindNewPipeAndPassReceiver(), request_id, options,
-      new_resource_request, client_receiver_.BindNewPipeAndPassRemote(),
-      traffic_annotation);
+      loader_.BindNewPipeAndPassReceiver(), request_id, options, request_,
+      client_receiver_.BindNewPipeAndPassRemote(), traffic_annotation);
 
   client_receiver_.set_disconnect_handler(
       base::BindOnce(&BrowsingTopicsURLLoader::OnNetworkConnectionError,
@@ -159,8 +158,8 @@ void BrowsingTopicsURLLoader::FollowRedirect(
   new_removed_headers.push_back(kBrowsingTopicsRequestHeaderKey);
 
   std::string header_value;
-  topics_eligible_ =
-      GetTopicsHeaderValueForSubresourceRequest(document_, url_, header_value);
+  topics_eligible_ = GetTopicsHeaderValueForSubresourceRequest(
+      document_, url_, request_, header_value);
 
   if (topics_eligible_) {
     new_modified_headers.SetHeader(kBrowsingTopicsRequestHeaderKey,

@@ -100,6 +100,10 @@ class CONTENT_EXPORT BrowsingTopicsURLLoader
   // The current request or redirect URL.
   GURL url_;
 
+  // The initial request state. This will be used to derive the opt-in
+  // permissions policy features for each request/redirect.
+  network::ResourceRequest request_;
+
   // Whether the ongoing request or redirect is eligible for topics. Set to the
   // desired state when a request/redirect is made. Reset to false when the
   // corresponding response is received.

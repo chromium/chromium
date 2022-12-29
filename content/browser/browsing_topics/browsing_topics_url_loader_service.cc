@@ -62,6 +62,14 @@ void BrowsingTopicsURLLoaderService::CreateLoaderAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (!resource_request.browsing_topics) {
+    loader_factory_receivers_.ReportBadMessage(
+        "Unexpected `resource_request` in "
+        "BrowsingTopicsURLLoaderService::CreateLoaderAndStart(): no "
+        "resource_request.browsing_topics");
+    return;
+  }
+
   const std::unique_ptr<BindContext>& current_context =
       loader_factory_receivers_.current_context();
 

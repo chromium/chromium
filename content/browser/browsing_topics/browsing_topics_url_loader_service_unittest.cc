@@ -4,6 +4,8 @@
 
 #include "content/browser/browsing_topics/browsing_topics_url_loader_service.h"
 
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/navigation_simulator.h"
@@ -11,6 +13,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -88,6 +91,10 @@ class TopicsInterceptingContentBrowserClient : public ContentBrowserClient {
 
 class BrowsingTopicsURLLoaderServiceTest : public RenderViewHostTestHarness {
  public:
+  BrowsingTopicsURLLoaderServiceTest() {
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kBrowsingTopics);
+  }
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
@@ -137,9 +144,11 @@ class BrowsingTopicsURLLoaderServiceTest : public RenderViewHostTestHarness {
     return head;
   }
 
-  network::ResourceRequest CreateResourceRequest(const GURL& url) {
+  network::ResourceRequest CreateResourceRequest(const GURL& url,
+                                                 bool browsing_topics = true) {
     network::ResourceRequest request;
     request.url = url;
+    request.browsing_topics = browsing_topics;
     return request;
   }
 
@@ -172,6 +181,8 @@ class BrowsingTopicsURLLoaderServiceTest : public RenderViewHostTestHarness {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   TopicsInterceptingContentBrowserClient browser_client_;
   raw_ptr<ContentBrowserClient> original_client_ = nullptr;
 
@@ -977,6 +988,45 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, BindContextClearedDueToDisconnect) {
   // Destroying `remote_url_loader_factory` would reset `bind_context`.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bind_context);
+}
+
+TEST_F(BrowsingTopicsURLLoaderServiceTest, ReportBadMessageOnInvalidRequest) {
+  NavigatePage(GURL("https://google.com"));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
+
+  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  std::string received_error;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { received_error = error; }));
+
+  // Invoke CreateLoaderAndStart() with a ResourceRequest invalid for this
+  // factory. This will trigger a ReportBadMessage.
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com"),
+                            /*browsing_topics=*/false),
+      client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  EXPECT_FALSE(remote_url_loader_factory.is_connected());
+  EXPECT_EQ(0, proxied_url_loader_factory.NumPending());
+  EXPECT_EQ(
+      "Unexpected `resource_request` in "
+      "BrowsingTopicsURLLoaderService::CreateLoaderAndStart(): no "
+      "resource_request.browsing_topics",
+      received_error);
+
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 }  // namespace content
