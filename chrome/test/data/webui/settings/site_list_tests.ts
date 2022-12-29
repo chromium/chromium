@@ -953,35 +953,34 @@ suite('SiteList', function() {
         });
   });
 
-  test('list items shown and clickable when data is present', function() {
+  test('list items shown and clickable when data is present', async function() {
     const contentType = ContentSettingsTypes.GEOLOCATION;
     setUpCategory(contentType, ContentSetting.ALLOW, prefsGeolocation);
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(actualContentType) {
-          assertEquals(contentType, actualContentType);
+    const actualContentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(contentType, actualContentType);
 
-          // Required for firstItem to be found below.
-          flush();
+    // Required for firstItem to be found below.
+    flush();
 
-          // Validate that the sites gets populated from pre-canned prefs.
-          assertEquals(2, testElement.sites.length);
-          assertEquals(
-              prefsGeolocation.exceptions[contentType][0]!.origin,
-              testElement.sites[0]!.origin);
-          assertEquals(
-              prefsGeolocation.exceptions[contentType][1]!.origin,
-              testElement.sites[1]!.origin);
+    // Validate that the sites gets populated from pre-canned prefs.
+    assertEquals(2, testElement.sites.length);
+    assertEquals(
+        prefsGeolocation.exceptions[contentType][0]!.origin,
+        testElement.sites[0]!.origin);
+    assertEquals(
+        prefsGeolocation.exceptions[contentType][1]!.origin,
+        testElement.sites[1]!.origin);
 
-          // Validate that the sites are shown in UI and can be selected.
-          const clickable =
-              testElement.shadowRoot!.querySelector('site-list-entry')!
-                  .shadowRoot!.querySelector<HTMLElement>('.middle');
-          assertTrue(!!clickable);
-          clickable!.click();
-          assertEquals(
-              prefsGeolocation.exceptions[contentType][0]!.origin,
-              Router.getInstance().getQueryParameters().get('site'));
-        });
+    // Validate that the sites are shown in UI and can be selected.
+    const clickable = testElement.shadowRoot!.querySelector('site-list-entry')!
+                          .shadowRoot!.querySelector<HTMLElement>('.middle');
+    assertTrue(!!clickable);
+    clickable!.click();
+
+    await flushTasks();
+    assertEquals(
+        prefsGeolocation.exceptions[contentType][0]!.origin,
+        Router.getInstance().getQueryParameters().get('site'));
   });
 
   test('Block list open when Allow list is empty', async function() {
