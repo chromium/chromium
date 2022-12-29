@@ -176,6 +176,10 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
   // launch. This must be done before launching.
   void MakeWindowIdsUniqueForDeskTemplate();
 
+  // Update the app id for the browser app to lacros if lacros is enabled and is
+  // primary. This must be done before launching.
+  void UpdateBrowserAppIdToLacros();
+
   std::string ToString() const;
 
   const AppIdToLaunchList& app_id_to_launch_list() const {

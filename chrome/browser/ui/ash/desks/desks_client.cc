@@ -34,6 +34,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -451,6 +452,14 @@ void DesksClient::LaunchAppsFromTemplate(
   if (restore_data->app_id_to_launch_list().empty())
     return;
 
+  // Since we default the browser to launch as ash chrome, we want to to check
+  // to see if lacros is enabled and primary. If so, update the app id of the
+  // browser app to launch lacros instead of ash.
+  if (crosapi::browser_util::IsLacrosEnabled() &&
+      crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    restore_data->UpdateBrowserAppIdToLacros();
+  }
+
   // Make window IDs of the template unique. This is a requirement for launching
   // templates concurrently since the contained window IDs are used as lookup
   // keys in many places. We must also do this *before* creating the performance
@@ -468,8 +477,9 @@ void DesksClient::LaunchAppsFromTemplate(
   auto& handler = app_launch_handlers_[launch_id];
   // Some tests reach into this class and install a handler ahead of time. In
   // all other cases, we create a handler for the launch here.
-  if (!handler)
+  if (!handler) {
     handler = std::make_unique<DesksTemplatesAppLaunchHandler>(active_profile_);
+  }
 
   handler->LaunchTemplate(*desk_template);
 
