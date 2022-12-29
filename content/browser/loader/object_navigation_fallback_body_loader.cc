@@ -91,8 +91,8 @@ bool AllowTimingDetailsForParent(
     const url::Origin& parent_origin,
     const blink::mojom::CommonNavigationParams& common_params,
     const blink::mojom::CommitNavigationParams& commit_params,
-    const network::mojom::URLResponseHead& response_head) {
-  bool response_tainting_not_basic = false;
+    const network::mojom::URLResponseHead& response_head,
+    bool& response_tainting_not_basic) {
   bool tainted_origin_flag = false;
 
   DCHECK_EQ(commit_params.redirect_infos.size(),
@@ -148,8 +148,16 @@ blink::mojom::ResourceTimingInfoPtr GenerateResourceTiming(
   // `response_end` will be populated after loading the body.
   timing_info->context_type = blink::mojom::RequestContextType::OBJECT;
 
-  timing_info->allow_timing_details = AllowTimingDetailsForParent(
-      parent_origin, common_params, commit_params, response_head);
+  bool response_tainting_not_basic = false;
+  timing_info->allow_timing_details =
+      AllowTimingDetailsForParent(parent_origin, common_params, commit_params,
+                                  response_head, response_tainting_not_basic);
+
+  // Only expose the response code when the response tainting is "basic" -
+  // same-origin requests throughout the redirect chain.
+  if (!response_tainting_not_basic) {
+    timing_info->response_status = commit_params.http_response_code;
+  }
 
   DCHECK_EQ(commit_params.redirect_infos.size(),
             commit_params.redirect_response.size());
