@@ -78,7 +78,7 @@
         ABSL_RAW_LOG_INTERNAL_##severity, absl_raw_log_internal_filename, \
         __LINE__, message);                                               \
     if (ABSL_RAW_LOG_INTERNAL_##severity == ::absl::LogSeverity::kFatal)  \
-      ABSL_INTERNAL_UNREACHABLE;                                          \
+      ABSL_UNREACHABLE();                                                 \
   } while (0)
 
 #define ABSL_INTERNAL_CHECK(condition, message)                    \

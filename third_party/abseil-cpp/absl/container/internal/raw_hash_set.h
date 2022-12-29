@@ -2064,8 +2064,8 @@ class raw_hash_set {
       // This is after resize, to ensure that we have completed the allocation
       // and have potentially sampled the hashtable.
       infoz().RecordReservation(n);
-      common().reset_reserved_growth(n);
     }
+    common().reset_reserved_growth(n);
   }
 
   // Extension API: support for heterogeneous keys.

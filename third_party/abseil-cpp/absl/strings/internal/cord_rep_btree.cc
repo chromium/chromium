@@ -23,6 +23,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/base/optimization.h"
 #include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_consume.h"
@@ -286,7 +287,7 @@ struct StackOperations {
       case CordRepBtree::kSelf:
         return result.tree;
     }
-    ABSL_INTERNAL_UNREACHABLE;
+    ABSL_UNREACHABLE();
     return result.tree;
   }
 

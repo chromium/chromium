@@ -20,6 +20,7 @@
 
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/internal/strerror.h"
+#include "absl/base/macros.h"
 #include "absl/debugging/stacktrace.h"
 #include "absl/debugging/symbolize.h"
 #include "absl/status/status_payload_printer.h"

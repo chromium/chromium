@@ -505,4 +505,5 @@ TEST(StatusErrno, ErrnoToStatus) {
   EXPECT_EQ(status.code(), absl::StatusCode::kNotFound);
   EXPECT_EQ(status.message(), "Cannot open 'path': No such file or directory");
 }
+
 }  // namespace

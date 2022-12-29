@@ -134,6 +134,10 @@ struct PerThreadSynch {
 
 // The instances of this class are allocated in NewThreadIdentity() with an
 // alignment of PerThreadSynch::kAlignment.
+//
+// NOTE: The layout of fields in this structure is critical, please do not
+//       add, remove, or modify the field placements without fully auditing the
+//       layout.
 struct ThreadIdentity {
   // Must be the first member.  The Mutex implementation requires that
   // the PerThreadSynch object associated with each thread is

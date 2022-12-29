@@ -66,6 +66,7 @@
 #include "absl/base/config.h"
 #include "absl/base/internal/invoke.h"
 #include "absl/base/macros.h"
+#include "absl/base/optimization.h"
 #include "absl/meta/type_traits.h"
 #include "absl/utility/utility.h"
 
@@ -281,7 +282,7 @@ void LocalManagerNontrivial(FunctionToCall operation,
       from_object.~T();  // Must not throw. // NOLINT
       return;
   }
-  ABSL_INTERNAL_UNREACHABLE;
+  ABSL_UNREACHABLE();
 }
 
 // The invoker that is used when a target function is in local storage
@@ -319,7 +320,7 @@ inline void RemoteManagerTrivial(FunctionToCall operation,
 #endif  // __cpp_sized_deallocation
       return;
   }
-  ABSL_INTERNAL_UNREACHABLE;
+  ABSL_UNREACHABLE();
 }
 
 // The manager that is used when a target function is in remote storage and the
@@ -341,7 +342,7 @@ void RemoteManagerNontrivial(FunctionToCall operation,
       ::delete static_cast<T*>(from->remote.target);  // Must not throw.
       return;
   }
-  ABSL_INTERNAL_UNREACHABLE;
+  ABSL_UNREACHABLE();
 }
 
 // The invoker that is used when a target function is in remote storage

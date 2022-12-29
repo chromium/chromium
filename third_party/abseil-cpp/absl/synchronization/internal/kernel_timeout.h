@@ -19,8 +19,8 @@
 // Constructible from a absl::Time (for a timeout to be respected) or {}
 // (for "no timeout".)
 // This is a private low-level API for use by a handful of low-level
-// components that are friends of this class. Higher-level components
-// should build APIs based on absl::Time and absl::Duration.
+// components. Higher-level components should build APIs based on
+// absl::Time and absl::Duration.
 
 #ifndef ABSL_SYNCHRONIZATION_INTERNAL_KERNEL_TIMEOUT_H_
 #define ABSL_SYNCHRONIZATION_INTERNAL_KERNEL_TIMEOUT_H_
@@ -39,7 +39,6 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace synchronization_internal {
 
-class Futex;
 class Waiter;
 
 class KernelTimeout {
@@ -124,10 +123,9 @@ class KernelTimeout {
     }
     return 0;
   }
-#endif
 
-  friend class Futex;
   friend class Waiter;
+#endif
 };
 
 inline struct timespec KernelTimeout::MakeAbsTimespec() const {

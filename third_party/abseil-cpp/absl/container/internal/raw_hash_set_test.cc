@@ -2292,6 +2292,21 @@ TEST(Table, InvalidIteratorUseWithReserve) {
   EXPECT_DEATH_IF_SUPPORTED(*it, kInvalidIteratorDeathMessage);
 }
 
+TEST(Table, ReservedGrowthUpdatesWhenTableDoesntGrow) {
+  IntTable t;
+  for (int i = 0; i < 8; ++i) t.insert(i);
+  // Want to insert twice without invalidating iterators so reserve.
+  const size_t cap = t.capacity();
+  t.reserve(t.size() + 2);
+  // We want to be testing the case in which the reserve doesn't grow the table.
+  ASSERT_EQ(cap, t.capacity());
+  auto it = t.find(0);
+  t.insert(100);
+  t.insert(200);
+  // `it` shouldn't have been invalidated.
+  EXPECT_EQ(*it, 0);
+}
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END
