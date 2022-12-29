@@ -635,14 +635,15 @@ TEST_F(GuestOsSharePathTest, SharePathVmToBeRestarted) {
 TEST_F(GuestOsSharePathTest, SharePersistedPaths) {
   base::FilePath share_path2_ = root_.AppendASCII("path-to-share-2");
   ASSERT_TRUE(base::CreateDirectory(share_path2_));
-  base::Value shared_paths(base::Value::Type::DICTIONARY);
-  base::Value vms(base::Value::Type::LIST);
+  base::Value::Dict shared_paths;
+  base::Value::List vms;
   vms.Append(base::Value(crostini::kCrostiniDefaultVmName));
-  shared_paths.SetKey(share_path_.value(), std::move(vms));
-  base::Value vms2(base::Value::Type::LIST);
+  shared_paths.Set(share_path_.value(), std::move(vms));
+  base::Value::List vms2;
   vms2.Append(base::Value(crostini::kCrostiniDefaultVmName));
-  shared_paths.SetKey(share_path2_.value(), std::move(vms2));
-  profile()->GetPrefs()->Set(prefs::kGuestOSPathsSharedToVms, shared_paths);
+  shared_paths.Set(share_path2_.value(), std::move(vms2));
+  profile()->GetPrefs()->SetDict(prefs::kGuestOSPathsSharedToVms,
+                                 std::move(shared_paths));
   guest_os_share_path_->SharePersistedPaths(
       crostini::kCrostiniDefaultVmName, 0,
       base::BindOnce(&GuestOsSharePathTest::SharePersistedPathsCallback,
@@ -651,8 +652,9 @@ TEST_F(GuestOsSharePathTest, SharePersistedPaths) {
 }
 
 TEST_F(GuestOsSharePathTest, RegisterPersistedPaths) {
-  base::Value shared_paths(base::Value::Type::DICTIONARY);
-  profile()->GetPrefs()->Set(prefs::kGuestOSPathsSharedToVms, shared_paths);
+  base::Value::Dict shared_paths;
+  profile()->GetPrefs()->SetDict(prefs::kGuestOSPathsSharedToVms,
+                                 std::move(shared_paths));
 
   guest_os_share_path_->RegisterPersistedPaths("v1",
                                                {base::FilePath("/a/a/a")});
@@ -774,26 +776,27 @@ TEST_F(GuestOsSharePathTest, UnsharePathInvalidPath) {
 
 TEST_F(GuestOsSharePathTest, GetPersistedSharedPaths) {
   // path1:['vm1'], path2:['vm2'], path3:['vm3'], path12:['vm1','vm2']
-  base::Value shared_paths(base::Value::Type::DICTIONARY);
+  base::Value::Dict shared_paths;
 
   base::FilePath path1("/path1");
-  base::Value path1vms(base::Value::Type::LIST);
+  base::Value::List path1vms;
   path1vms.Append(base::Value("vm1"));
-  shared_paths.SetKey(path1.value(), std::move(path1vms));
+  shared_paths.Set(path1.value(), std::move(path1vms));
   base::FilePath path2("/path2");
-  base::Value path2vms(base::Value::Type::LIST);
+  base::Value::List path2vms;
   path2vms.Append(base::Value("vm2"));
-  shared_paths.SetKey(path2.value(), std::move(path2vms));
+  shared_paths.Set(path2.value(), std::move(path2vms));
   base::FilePath path3("/path3");
-  base::Value path3vms(base::Value::Type::LIST);
+  base::Value::List path3vms;
   path3vms.Append(base::Value("vm3"));
-  shared_paths.SetKey(path3.value(), std::move(path3vms));
+  shared_paths.Set(path3.value(), std::move(path3vms));
   base::FilePath path12("/path12");
-  base::Value path12vms(base::Value::Type::LIST);
+  base::Value::List path12vms;
   path12vms.Append(base::Value("vm1"));
   path12vms.Append(base::Value("vm2"));
-  shared_paths.SetKey(path12.value(), std::move(path12vms));
-  profile()->GetPrefs()->Set(prefs::kGuestOSPathsSharedToVms, shared_paths);
+  shared_paths.Set(path12.value(), std::move(path12vms));
+  profile()->GetPrefs()->SetDict(prefs::kGuestOSPathsSharedToVms,
+                                 std::move(shared_paths));
 
   std::vector<base::FilePath> paths =
       guest_os_share_path_->GetPersistedSharedPaths("vm1");

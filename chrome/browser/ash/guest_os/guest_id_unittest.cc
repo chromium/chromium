@@ -106,11 +106,11 @@ TEST_F(GuestIdTest, GetContainers) {
 
 TEST_F(GuestIdTest, VmTypeFromPref) {
   EXPECT_EQ(VmType::UNKNOWN, VmTypeFromPref(base::Value("not-dict")));
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   EXPECT_EQ(VmType::TERMINA, VmTypeFromPref(dict));
-  dict.SetIntKey("vm_type", 1);
+  dict.GetDict().Set("vm_type", 1);
   EXPECT_EQ(VmType::PLUGIN_VM, VmTypeFromPref(dict));
-  dict.SetIntKey("vm_type", 999);
+  dict.GetDict().Set("vm_type", 999);
   EXPECT_EQ(VmType::UNKNOWN, VmTypeFromPref(dict));
 }
 

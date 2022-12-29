@@ -67,33 +67,32 @@ FindAppIdResult FindAppId(const base::Value::Dict& prefs,
                           bool ignore_space = false) {
   result->clear();
   for (const auto item : prefs) {
-    if (require_startup_notify &&
-        !item.second
-             .FindKeyOfType(guest_os::prefs::kAppStartupNotifyKey,
-                            base::Value::Type::BOOLEAN)
-             ->GetBool())
+    if (require_startup_notify && !*item.second.GetDict().FindBool(
+                                      guest_os::prefs::kAppStartupNotifyKey)) {
       continue;
-
-    if (need_display) {
-      const base::Value* no_display = item.second.FindKeyOfType(
-          guest_os::prefs::kAppNoDisplayKey, base::Value::Type::BOOLEAN);
-      if (no_display && no_display->GetBool())
-        continue;
     }
 
-    const base::Value* value = item.second.FindKey(prefs_key);
+    if (need_display) {
+      const absl::optional<bool> no_display =
+          item.second.GetDict().FindBool(guest_os::prefs::kAppNoDisplayKey);
+      if (no_display && *no_display) {
+        continue;
+      }
+    }
+
+    const base::Value* value = item.second.GetDict().Find(prefs_key);
     if (!value)
       continue;
-    if (value->type() == base::Value::Type::STRING) {
+    if (value->is_string()) {
       if (!MatchingString(std::string(search_value), value->GetString(),
                           ignore_space)) {
         continue;
       }
-    } else if (value->type() == base::Value::Type::DICTIONARY) {
+    } else if (value->is_dict()) {
       // Look at the unlocalized name to see if that matches.
-      value = value->FindKeyOfType("", base::Value::Type::STRING);
-      if (!value || !MatchingString(std::string(search_value),
-                                    value->GetString(), ignore_space)) {
+      const std::string* str_value = value->GetDict().FindString("");
+      if (!str_value || !MatchingString(std::string(search_value), *str_value,
+                                        ignore_space)) {
         continue;
       }
     } else {

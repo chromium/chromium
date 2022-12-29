@@ -58,8 +58,8 @@ constexpr char kCrostiniAppIdPrefix[] = "crostini:";
 
 constexpr char kCrostiniIconFolder[] = "crostini.icons";
 
-base::Value ProtoToDictionary(const App::LocaleString& locale_string) {
-  base::Value result(base::Value::Type::DICTIONARY);
+base::Value::Dict ProtoToDictionary(const App::LocaleString& locale_string) {
+  base::Value::Dict result;
   for (const App::LocaleString::Entry& entry : locale_string.values()) {
     const std::string& locale = entry.locale();
 
@@ -71,36 +71,36 @@ base::Value ProtoToDictionary(const App::LocaleString& locale_string) {
       continue;
     }
 
-    result.SetKey(locale, base::Value(entry.value()));
+    result.Set(locale, base::Value(entry.value()));
   }
   return result;
 }
 
-std::set<std::string> ListToStringSet(const base::Value* list,
+std::set<std::string> ListToStringSet(const base::Value::List* list,
                                       bool to_lower_ascii = false) {
   std::set<std::string> result;
   if (!list) {
     return result;
   }
-  for (const base::Value& value : list->GetList()) {
+  for (const base::Value& value : *list) {
     result.insert(to_lower_ascii ? base::ToLowerASCII(value.GetString())
                                  : value.GetString());
   }
   return result;
 }
 
-base::Value ProtoToList(
+base::Value::List ProtoToList(
     const google::protobuf::RepeatedPtrField<std::string>& strings) {
-  base::Value result(base::Value::Type::LIST);
+  base::Value::List result;
   for (const std::string& string : strings) {
     result.Append(string);
   }
   return result;
 }
 
-base::Value LocaleStringsProtoToDictionary(
+base::Value::Dict LocaleStringsProtoToDictionary(
     const App::LocaleStrings& repeated_locale_string) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
   for (const auto& strings_with_locale : repeated_locale_string.values()) {
     const std::string& locale = strings_with_locale.locale();
 
@@ -111,56 +111,52 @@ base::Value LocaleStringsProtoToDictionary(
         !l10n_util::IsValidLocaleSyntax(locale_with_dashes)) {
       continue;
     }
-    result.SetKey(locale, ProtoToList(strings_with_locale.value()));
+    result.Set(locale, ProtoToList(strings_with_locale.value()));
   }
   return result;
 }
 
 // Populate |pref_registration| based on the given App proto.
 // |name| should be |app.name()| in Dictionary form.
-void PopulatePrefRegistrationFromApp(base::Value& pref_registration,
+void PopulatePrefRegistrationFromApp(base::Value::Dict& pref_registration,
                                      VmType vm_type,
                                      const std::string& vm_name,
                                      const std::string& container_name,
                                      const vm_tools::apps::App& app,
-                                     base::Value name) {
-  pref_registration.SetKey(guest_os::prefs::kAppDesktopFileIdKey,
-                           base::Value(app.desktop_file_id()));
-  pref_registration.SetIntKey(guest_os::prefs::kVmTypeKey,
-                              static_cast<int>(vm_type));
-  pref_registration.SetKey(guest_os::prefs::kVmNameKey, base::Value(vm_name));
-  pref_registration.SetKey(guest_os::prefs::kContainerNameKey,
-                           base::Value(container_name));
-  pref_registration.SetKey(guest_os::prefs::kAppNameKey, std::move(name));
-  pref_registration.SetKey(guest_os::prefs::kAppCommentKey,
-                           ProtoToDictionary(app.comment()));
-  pref_registration.SetKey(guest_os::prefs::kAppExecKey,
-                           base::Value(app.exec()));
-  pref_registration.SetKey(guest_os::prefs::kAppExecutableFileNameKey,
-                           base::Value(app.executable_file_name()));
-  pref_registration.SetKey(guest_os::prefs::kAppExtensionsKey,
-                           ProtoToList(app.extensions()));
-  pref_registration.SetKey(guest_os::prefs::kAppMimeTypesKey,
-                           ProtoToList(app.mime_types()));
-  pref_registration.SetKey(guest_os::prefs::kAppKeywordsKey,
-                           LocaleStringsProtoToDictionary(app.keywords()));
-  pref_registration.SetKey(guest_os::prefs::kAppNoDisplayKey,
-                           base::Value(app.no_display()));
-  pref_registration.SetKey(guest_os::prefs::kAppStartupWMClassKey,
-                           base::Value(app.startup_wm_class()));
-  pref_registration.SetKey(guest_os::prefs::kAppStartupNotifyKey,
-                           base::Value(app.startup_notify()));
-  pref_registration.SetKey(guest_os::prefs::kAppPackageIdKey,
-                           base::Value(app.package_id()));
+                                     base::Value::Dict name) {
+  pref_registration.Set(guest_os::prefs::kAppDesktopFileIdKey,
+                        base::Value(app.desktop_file_id()));
+  pref_registration.Set(guest_os::prefs::kVmTypeKey, static_cast<int>(vm_type));
+  pref_registration.Set(guest_os::prefs::kVmNameKey, base::Value(vm_name));
+  pref_registration.Set(guest_os::prefs::kContainerNameKey,
+                        base::Value(container_name));
+  pref_registration.Set(guest_os::prefs::kAppNameKey, std::move(name));
+  pref_registration.Set(guest_os::prefs::kAppCommentKey,
+                        ProtoToDictionary(app.comment()));
+  pref_registration.Set(guest_os::prefs::kAppExecKey, base::Value(app.exec()));
+  pref_registration.Set(guest_os::prefs::kAppExecutableFileNameKey,
+                        base::Value(app.executable_file_name()));
+  pref_registration.Set(guest_os::prefs::kAppExtensionsKey,
+                        ProtoToList(app.extensions()));
+  pref_registration.Set(guest_os::prefs::kAppMimeTypesKey,
+                        ProtoToList(app.mime_types()));
+  pref_registration.Set(guest_os::prefs::kAppKeywordsKey,
+                        LocaleStringsProtoToDictionary(app.keywords()));
+  pref_registration.Set(guest_os::prefs::kAppNoDisplayKey,
+                        base::Value(app.no_display()));
+  pref_registration.Set(guest_os::prefs::kAppStartupWMClassKey,
+                        base::Value(app.startup_wm_class()));
+  pref_registration.Set(guest_os::prefs::kAppStartupNotifyKey,
+                        base::Value(app.startup_notify()));
+  pref_registration.Set(guest_os::prefs::kAppPackageIdKey,
+                        base::Value(app.package_id()));
 }
 
-bool EqualsExcludingTimestamps(const base::Value& left,
-                               const base::Value& right) {
-  auto left_items = left.DictItems();
-  auto right_items = right.DictItems();
-  auto left_iter = left_items.begin();
-  auto right_iter = right_items.begin();
-  while (left_iter != left_items.end() && right_iter != right_items.end()) {
+bool EqualsExcludingTimestamps(const base::Value::Dict& left,
+                               const base::Value::Dict& right) {
+  auto left_iter = left.begin();
+  auto right_iter = right.begin();
+  while (left_iter != left.end() && right_iter != right.end()) {
     if (left_iter->first == guest_os::prefs::kAppInstallTimeKey ||
         left_iter->first == guest_os::prefs::kAppLastLaunchTimeKey) {
       ++left_iter;
@@ -176,7 +172,7 @@ bool EqualsExcludingTimestamps(const base::Value& left,
     ++left_iter;
     ++right_iter;
   }
-  return left_iter == left_items.end() && right_iter == right_items.end();
+  return left_iter == left.end() && right_iter == right.end();
 }
 
 void InstallIconFromFileThread(const base::FilePath& icon_path,
@@ -283,11 +279,11 @@ std::string GetStringKey(const base::Value& dict,
   if (!dict.is_dict()) {
     return std::string();
   }
-  const base::Value* value = dict.FindKeyOfType(key, base::Value::Type::STRING);
+  const std::string* value = dict.GetDict().FindString(key);
   if (!value) {
     return std::string();
   }
-  return value->GetString();
+  return *value;
 }
 
 }  // namespace
@@ -340,9 +336,9 @@ std::set<std::string> GuestOsRegistryService::Registration::Extensions() const {
     return {};
   }
   // Convert to lowercase ASCII to allow case-insensitive match.
-  return ListToStringSet(pref_.FindKeyOfType(guest_os::prefs::kAppExtensionsKey,
-                                             base::Value::Type::LIST),
-                         /*to_lower_ascii=*/true);
+  return ListToStringSet(
+      pref_.GetDict().FindList(guest_os::prefs::kAppExtensionsKey),
+      /*to_lower_ascii=*/true);
 }
 
 std::set<std::string> GuestOsRegistryService::Registration::MimeTypes() const {
@@ -350,9 +346,9 @@ std::set<std::string> GuestOsRegistryService::Registration::MimeTypes() const {
     return {};
   }
   // Convert to lowercase ASCII to allow case-insensitive match.
-  return ListToStringSet(pref_.FindKeyOfType(guest_os::prefs::kAppMimeTypesKey,
-                                             base::Value::Type::LIST),
-                         /*to_lower_ascii=*/true);
+  return ListToStringSet(
+      pref_.GetDict().FindList(guest_os::prefs::kAppMimeTypesKey),
+      /*to_lower_ascii=*/true);
 }
 
 std::set<std::string> GuestOsRegistryService::Registration::Keywords() const {
@@ -381,10 +377,10 @@ bool GuestOsRegistryService::Registration::CanUninstall() const {
   // desktop files, and it's better to show an error message (which the user can
   // then Google to learn more) than to just not have an uninstall option at
   // all.
-  const base::Value* package_id = pref_.FindKeyOfType(
-      guest_os::prefs::kAppPackageIdKey, base::Value::Type::STRING);
+  const std::string* package_id =
+      pref_.GetDict().FindString(guest_os::prefs::kAppPackageIdKey);
   if (package_id) {
-    return !package_id->GetString().empty();
+    return !package_id->empty();
   }
   return false;
 }
@@ -411,12 +407,8 @@ bool GuestOsRegistryService::Registration::GetBool(
   if (!pref_.is_dict()) {
     return false;
   }
-  const base::Value* value =
-      pref_.FindKeyOfType(key, base::Value::Type::BOOLEAN);
-  if (!value) {
-    return false;
-  }
-  return value->GetBool();
+  const absl::optional<bool> value = pref_.GetDict().FindBool(key);
+  return value.value_or(false);
 }
 
 // This is the companion to GuestOsRegistryService::SetCurrentTime().
@@ -425,10 +417,9 @@ base::Time GuestOsRegistryService::Registration::GetTime(
   if (!pref_.is_dict()) {
     return base::Time();
   }
-  const base::Value* value =
-      pref_.FindKeyOfType(key, base::Value::Type::STRING);
+  const std::string* value = pref_.GetDict().FindString(key);
   int64_t time;
-  if (!value || !base::StringToInt64(value->GetString(), &time)) {
+  if (!value || !base::StringToInt64(*value, &time)) {
     return base::Time();
   }
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(time));
@@ -442,8 +433,7 @@ std::string GuestOsRegistryService::Registration::GetLocalizedString(
   if (!pref_.is_dict()) {
     return std::string();
   }
-  const base::Value* dict =
-      pref_.FindKeyOfType(key, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* dict = pref_.GetDict().FindDict(key);
   if (!dict) {
     return std::string();
   }
@@ -456,10 +446,9 @@ std::string GuestOsRegistryService::Registration::GetLocalizedString(
   locales.push_back(std::string());
 
   for (const std::string& locale : locales) {
-    const base::Value* value =
-        dict->FindKeyOfType(locale, base::Value::Type::STRING);
+    const std::string* value = dict->FindString(locale);
     if (value) {
-      return value->GetString();
+      return *value;
     }
   }
   return std::string();
@@ -470,8 +459,7 @@ std::set<std::string> GuestOsRegistryService::Registration::GetLocalizedList(
   if (!pref_.is_dict()) {
     return {};
   }
-  const base::Value* dict =
-      pref_.FindKeyOfType(key, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* dict = pref_.GetDict().FindDict(key);
   if (!dict) {
     return {};
   }
@@ -484,10 +472,9 @@ std::set<std::string> GuestOsRegistryService::Registration::GetLocalizedList(
   locales.push_back(std::string());
 
   for (const std::string& locale : locales) {
-    const base::Value* value =
-        dict->FindKeyOfType(locale, base::Value::Type::LIST);
-    if (value) {
-      return ListToStringSet(value);
+    const base::Value::List* list = dict->FindList(locale);
+    if (list) {
+      return ListToStringSet(list);
     }
   }
   return {};
@@ -850,8 +837,8 @@ void GuestOsRegistryService::UpdateApplicationList(
         continue;
       }
 
-      base::Value name = ProtoToDictionary(app.name());
-      if (name.FindKey(base::StringPiece()) == nullptr) {
+      base::Value::Dict name = ProtoToDictionary(app.name());
+      if (name.Find(base::StringPiece()) == nullptr) {
         LOG(WARNING) << "Received app '" << app.desktop_file_id()
                      << "' with missing unlocalized name";
         continue;
@@ -861,12 +848,12 @@ void GuestOsRegistryService::UpdateApplicationList(
           app.desktop_file_id(), app_list.vm_name(), app_list.container_name());
       new_app_ids.insert(app_id);
 
-      base::Value pref_registration(base::Value::Type::DICTIONARY);
+      base::Value::Dict pref_registration;
       PopulatePrefRegistrationFromApp(
           pref_registration, app_list.vm_type(), app_list.vm_name(),
           app_list.container_name(), app, std::move(name));
 
-      base::Value* old_app = apps.Find(app_id);
+      base::Value::Dict* old_app = apps.FindDict(app_id);
       if (old_app && EqualsExcludingTimestamps(pref_registration, *old_app)) {
         continue;
       }
@@ -875,24 +862,23 @@ void GuestOsRegistryService::UpdateApplicationList(
       base::Value* old_last_launch_time = nullptr;
       if (old_app) {
         updated_apps.push_back(app_id);
-        old_install_time =
-            old_app->FindKey(guest_os::prefs::kAppInstallTimeKey);
+        old_install_time = old_app->Find(guest_os::prefs::kAppInstallTimeKey);
         old_last_launch_time =
-            old_app->FindKey(guest_os::prefs::kAppLastLaunchTimeKey);
+            old_app->Find(guest_os::prefs::kAppLastLaunchTimeKey);
       } else {
         inserted_apps.push_back(app_id);
       }
 
       if (old_install_time) {
-        pref_registration.SetKey(guest_os::prefs::kAppInstallTimeKey,
-                                 old_install_time->Clone());
+        pref_registration.Set(guest_os::prefs::kAppInstallTimeKey,
+                              old_install_time->Clone());
       } else {
-        SetCurrentTime(&pref_registration, guest_os::prefs::kAppInstallTimeKey);
+        SetCurrentTime(pref_registration, guest_os::prefs::kAppInstallTimeKey);
       }
 
       if (old_last_launch_time) {
-        pref_registration.SetKey(guest_os::prefs::kAppLastLaunchTimeKey,
-                                 old_last_launch_time->Clone());
+        pref_registration.Set(guest_os::prefs::kAppLastLaunchTimeKey,
+                              old_last_launch_time->Clone());
       }
 
       apps.Set(app_id, std::move(pref_registration));
@@ -982,16 +968,14 @@ void GuestOsRegistryService::RemoveObserver(Observer* observer) {
 
 void GuestOsRegistryService::AppLaunched(const std::string& app_id) {
   ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
-  base::Value* app = update->Find(app_id);
-  DCHECK(app);
+  base::Value::Dict& app = update->Find(app_id)->GetDict();
   SetCurrentTime(app, guest_os::prefs::kAppLastLaunchTimeKey);
 }
 
-void GuestOsRegistryService::SetCurrentTime(base::Value* dictionary,
+void GuestOsRegistryService::SetCurrentTime(base::Value::Dict& dictionary,
                                             const char* key) const {
-  DCHECK(dictionary);
   int64_t time = clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  dictionary->SetKey(key, base::Value(base::NumberToString(time)));
+  dictionary.Set(key, base::Value(base::NumberToString(time)));
 }
 
 void GuestOsRegistryService::SetAppScaled(const std::string& app_id,

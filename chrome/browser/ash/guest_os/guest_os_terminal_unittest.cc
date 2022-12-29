@@ -140,8 +140,8 @@ TEST_F(CrostiniTerminalTest, GetTerminalSettingBackgroundColor) {
       "#101010");
 
   // Use default color.
-  profile.GetPrefs()->Set(guest_os::prefs::kGuestOsTerminalSettings,
-                          base::Value(base::Value::Type::DICT));
+  profile.GetPrefs()->SetDict(guest_os::prefs::kGuestOsTerminalSettings,
+                              base::Value::Dict());
   EXPECT_EQ(
       GetTerminalSettingBackgroundColor(
           &profile, GURL("chrome-untrusted://terminal/html/terminal.html"),

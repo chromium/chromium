@@ -116,14 +116,14 @@ void GuestOsMimeTypesService::UpdateMimeTypes(
     return;
   }
 
-  base::Value exts(base::Value::Type::DICTIONARY);
+  base::Value::Dict exts;
   for (const auto& mapping : mime_type_mappings.mime_type_mappings()) {
     // Only store mappings from container that are different to host.
     std::string type;
     if (!xdg_shared_mime_info::GetMimeCacheTypeFromExtension(mapping.first,
                                                              &type) ||
         mapping.second != type) {
-      exts.SetStringKey(mapping.first, mapping.second);
+      exts.Set(mapping.first, mapping.second);
     }
   }
   VLOG(1) << "UpdateMimeTypes(" << mime_type_mappings.vm_name() << ", "
@@ -131,7 +131,7 @@ void GuestOsMimeTypesService::UpdateMimeTypes(
   ScopedDictPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
   base::Value::Dict& mime_types = update.Get();
   base::Value::Dict* vm = mime_types.EnsureDict(mime_type_mappings.vm_name());
-  vm->Set(mime_type_mappings.container_name(), std::move(exts));
+  vm->Set(mime_type_mappings.container_name(), base::Value(std::move(exts)));
 }
 
 }  // namespace guest_os

@@ -458,9 +458,9 @@ bool GetTerminalSettingPassCtrlW(Profile* profile) {
 }
 
 std::string ShortcutIdForSSH(const std::string& profileId) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(kShortcutKey, base::Value(kShortcutValueSSH));
-  dict.SetKey(kProfileIdKey, base::Value(profileId));
+  base::Value::Dict dict;
+  dict.Set(kShortcutKey, base::Value(kShortcutValueSSH));
+  dict.Set(kProfileIdKey, base::Value(profileId));
   std::string shortcut_id;
   base::JSONWriter::Write(dict, &shortcut_id);
   return shortcut_id;

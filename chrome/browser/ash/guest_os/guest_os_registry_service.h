@@ -233,7 +233,7 @@ class GuestOsRegistryService : public KeyedService {
   void AppLaunched(const std::string& app_id);
 
   // Serializes the current time and stores it in |dictionary|.
-  void SetCurrentTime(base::Value* dictionary, const char* key) const;
+  void SetCurrentTime(base::Value::Dict& dictionary, const char* key) const;
 
   // Set the display scaled setting of the |app_id| to |scaled|.
   void SetAppScaled(const std::string& app_id, bool scaled);
