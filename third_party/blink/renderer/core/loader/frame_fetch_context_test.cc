@@ -536,9 +536,7 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest {
   FrameFetchContextHintsTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kUserAgentClientHint,
-         blink::features::kPrefersColorSchemeClientHintHeader,
-         blink::features::kPrefersReducedMotionClientHintHeader},
+        {blink::features::kUserAgentClientHint},
         /*disabled_features=*/{});
   }
 

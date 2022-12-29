@@ -36,10 +36,6 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
         return true;
       break;
     case WebClientHintsType::kPrefersColorScheme:
-      if (!base::FeatureList::IsEnabled(
-              features::kPrefersColorSchemeClientHintHeader)) {
-        return true;
-      }
       break;
     case WebClientHintsType::kViewportHeight:
       if (!base::FeatureList::IsEnabled(
@@ -90,10 +86,6 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
         return true;
       break;
     case WebClientHintsType::kPrefersReducedMotion:
-      if (!base::FeatureList::IsEnabled(
-              features::kPrefersReducedMotionClientHintHeader)) {
-        return true;
-      }
       break;
     default:
       break;

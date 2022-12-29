@@ -503,10 +503,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
   virtual std::unique_ptr<base::FeatureList> EnabledFeatures() {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,CriticalClientHint,"
-        "AcceptCHFrame,PrefersColorSchemeClientHintHeader,"
-        "PrefersReducedMotionClientHintHeader",
-        "");
+        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame", "");
     return feature_list;
   }
 
@@ -3016,10 +3013,7 @@ class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {
             ->AssociateFieldTrialParams(kTrialName, kGroupName, params));
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,PrefersColorSchemeClientHintHeader,"
-        "PrefersReducedMotionClientHintHeader",
-        "");
+    feature_list->InitializeFromCommandLine("UserAgentClientHint", "");
     feature_list->RegisterFieldTrialOverride(
         features::kNetworkQualityEstimatorWebHoldback.name,
         base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
@@ -3122,10 +3116,11 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
-    // Don't include PrefersColorSchemeClientHintHeader in the enabled
-    // features; we will verify that PrefersColorScheme is not included.
+    // Don't include ClientHintsDPR in the enabled features; we will verify that
+    // sec-ch-dpr is not included.
     feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame", "");
+        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame",
+        "ClientHintsDPR");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
     InProcessBrowserTest::SetUp();
@@ -3141,8 +3136,8 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     return https_server_.GetURL("/critical_ch_ua_full_version.html");
   }
 
-  GURL critical_ch_prefers_color_scheme_url() const {
-    return https_server_.GetURL("/critical_ch_prefers-color-scheme.html");
+  GURL critical_ch_dpr_url() const {
+    return https_server_.GetURL("/critical_ch_dpr.html");
   }
 
   GURL critical_ch_ua_full_version_list_url() const {
@@ -3173,9 +3168,9 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     return ch_ua_full_version_list_;
   }
 
-  const absl::optional<std::string>& observed_ch_prefers_color_scheme() {
-    base::AutoLock lock(ch_prefers_color_scheme_lock_);
-    return ch_prefers_color_scheme_;
+  const absl::optional<std::string>& observed_ch_dpr() {
+    base::AutoLock lock(ch_dpr_lock_);
+    return ch_dpr_;
   }
 
   void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
@@ -3187,8 +3182,8 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
         request.headers.end()) {
       SetChUaFullVersionList(request.headers.at("sec-ch-ua-full-version-list"));
     }
-    if (request.headers.find("prefers-color-scheme") != request.headers.end()) {
-      SetChPrefersColorScheme(request.headers.at("prefers-color-scheme"));
+    if (request.headers.find("sec-ch-dpr") != request.headers.end()) {
+      SetChDpr(request.headers.at("sec-ch-dpr"));
     }
   }
 
@@ -3231,9 +3226,9 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     ch_ua_full_version_list_ = ch_ua_full_version_list;
   }
 
-  void SetChPrefersColorScheme(const std::string& ch_prefers_color_scheme) {
-    base::AutoLock lock(ch_prefers_color_scheme_lock_);
-    ch_prefers_color_scheme_ = ch_prefers_color_scheme;
+  void SetChDpr(const std::string& ch_dpr) {
+    base::AutoLock lock(ch_dpr_lock_);
+    ch_dpr_ = ch_dpr;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -3244,9 +3239,8 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
   base::Lock ch_ua_full_version_list_lock_;
   absl::optional<std::string> ch_ua_full_version_list_
       GUARDED_BY(ch_ua_full_version_list_lock_);
-  base::Lock ch_prefers_color_scheme_lock_;
-  absl::optional<std::string> ch_prefers_color_scheme_
-      GUARDED_BY(ch_prefers_color_scheme_lock_);
+  base::Lock ch_dpr_lock_;
+  absl::optional<std::string> ch_dpr_ GUARDED_BY(ch_dpr_lock_);
 };
 
 // Verify that setting Critical-CH in the response header causes the request to
@@ -3261,7 +3255,7 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
   const std::string expected_ch_ua_full_version = "\"" + ua.full_version + "\"";
   EXPECT_THAT(observed_ch_ua_full_version(),
               Optional(Eq(expected_ch_ua_full_version)));
-  EXPECT_EQ(observed_ch_prefers_color_scheme(), absl::nullopt);
+  EXPECT_EQ(observed_ch_dpr(), absl::nullopt);
   EXPECT_EQ(observed_ch_ua_full_version_list(), absl::nullopt);
 }
 
@@ -3279,10 +3273,10 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
       ua.SerializeBrandFullVersionList();
   EXPECT_THAT(observed_ch_ua_full_version_list(),
               Optional(Eq(expected_ch_ua_full_version_list)));
-  // The request should not have been resent, so ch-ua-full-version and
-  // prefers-color-schemeshould also not be present.
+  // The request should not have been resent, so ch-ua-full-version and dpr
+  // should also not be present.
   EXPECT_EQ(observed_ch_ua_full_version(), absl::nullopt);
-  EXPECT_EQ(observed_ch_prefers_color_scheme(), absl::nullopt);
+  EXPECT_EQ(observed_ch_dpr(), absl::nullopt);
 }
 
 // Verify that setting Critical-CH in the response header with a client hint
@@ -3292,12 +3286,11 @@ IN_PROC_BROWSER_TEST_F(
     CriticalClientHintsBrowserTest,
     CriticalClientHintFilteredOutOfAcceptChNotInRequestHeader) {
   // On the first navigation request, the client hints in the Critical-CH
-  // should be set on the request header, but in this case, the
-  // kPrefersColorSchemeClientHintHeader is not enabled, so the critical client
-  // hint won't be set in the request header.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), critical_ch_prefers_color_scheme_url()));
-  EXPECT_EQ(observed_ch_prefers_color_scheme(), absl::nullopt);
+  // should be set on the request header, but in this case, the kClientHintsDPR
+  // is not enabled, so the critical client hint won't be set in the request
+  // header.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), critical_ch_dpr_url()));
+  EXPECT_EQ(observed_ch_dpr(), absl::nullopt);
   // The request should not have been resent, so ch-ua-full-version should also
   // not be present.
   EXPECT_EQ(observed_ch_ua_full_version(), absl::nullopt);
@@ -3538,9 +3531,7 @@ class ClientHintsBrowserTestWithEmulatedMedia
   ClientHintsBrowserTestWithEmulatedMedia()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     scoped_feature_list_.InitFromCommandLine(
-        "UserAgentClientHint,AcceptCHFrame,PrefersColorSchemeClientHintHeader,"
-        "PrefersReducedMotionClientHintHeader",
-        "");
+        "UserAgentClientHint,AcceptCHFrame", "");
 
     https_server_.ServeFilesFromSourceDirectory(
         "chrome/test/data/client_hints");

@@ -2171,18 +2171,8 @@
       settable_from_internals: true,
     },
     {
-      name: "PrefersColorSchemeClientHintHeader",
-      status: "stable",
-      base_feature: "PrefersColorSchemeClientHintHeader",
-    },
-    {
       name: "PrefersReducedData",
       status: "experimental",
-    },
-    {
-      name: "PrefersReducedMotionClientHintHeader",
-      status: "stable",
-      base_feature: "PrefersReducedMotionClientHintHeader",
     },
     // TODO(crbug/695586): This flag is being used to deprecate support for
     // legacy quota API window.webkitStorageInfo.

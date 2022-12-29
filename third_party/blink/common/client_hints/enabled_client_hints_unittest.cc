@@ -78,11 +78,10 @@ class EnabledClientHintsTest : public testing::Test {
   EnabledClientHintsTest()
       : response_headers_(base::MakeRefCounted<net::HttpResponseHeaders>("")) {
     // The UserAgentClientHint feature is enabled, and the
-    // PrefersColorSchemeClientHintHeader feature is disabled.
+    // ClientHintsSaveData feature is disabled.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kUserAgentClientHint},
-        /*disabled_features=*/{
-            blink::features::kPrefersColorSchemeClientHintHeader});
+        /*disabled_features=*/{blink::features::kClientHintsSaveData});
     TrialTokenValidator::SetOriginTrialPolicyGetter(
         base::BindRepeating([](OriginTrialPolicy* policy) { return policy; },
                             base::Unretained(&policy_)));
@@ -135,10 +134,10 @@ TEST_F(EnabledClientHintsTest, DisabledClientHint) {
 
 TEST_F(EnabledClientHintsTest, EnabledClientHintOnDisabledFeature) {
   EnabledClientHints hints;
-  // Attempting to enable the PrefersColorScheme client hint, but the runtime
-  // flag for it is disabled.
-  hints.SetIsEnabled(WebClientHintsType::kPrefersColorScheme, true);
-  EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kPrefersColorScheme));
+  // Attempting to enable the SaveData client hint, but the runtime flag for it
+  // is disabled.
+  hints.SetIsEnabled(WebClientHintsType::kSaveData, true);
+  EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kSaveData));
 }
 
 TEST_F(EnabledClientHintsTest,
