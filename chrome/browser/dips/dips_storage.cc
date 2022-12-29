@@ -12,12 +12,39 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
 namespace {
+
+void RunDeletionTaskOnUIThread(content::BrowsingDataRemover* remover,
+                               std::vector<std::string> sites) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(remover);
+
+  std::unique_ptr<content::BrowsingDataFilterBuilder> filter =
+      content::BrowsingDataFilterBuilder::Create(
+          content::BrowsingDataFilterBuilder::Mode::kDelete);
+  for (std::string site : sites) {
+    filter->AddRegisterableDomain(site);
+  }
+
+  // TODO(jdh): Follow up on clearing HTTP auth cache without closing active
+  // connections.
+  remover->RemoveWithFilter(
+      base::Time::Min(), base::Time::Max(),
+      chrome_browsing_data_remover::FILTERABLE_DATA_TYPES |
+          content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+          content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
+      std::move(filter));
+}
 
 inline void UmaHistogramTimeToInteraction(base::TimeDelta sample,
                                           DIPSCookieMode mode) {
@@ -54,8 +81,10 @@ DIPSStorage::PrepopulateArgs::PrepopulateArgs(PrepopulateArgs&&) = default;
 
 DIPSStorage::PrepopulateArgs::~PrepopulateArgs() = default;
 
-DIPSStorage::DIPSStorage(const absl::optional<base::FilePath>& path)
-    : db_(std::make_unique<DIPSDatabase>(path)) {
+DIPSStorage::DIPSStorage(const absl::optional<base::FilePath>& path,
+                         content::BrowsingDataRemover* browsing_data_remover)
+    : db_(std::make_unique<DIPSDatabase>(path)),
+      browsing_data_remover_(browsing_data_remover) {
   base::AssertLongCPUWorkAllowed();
 }
 
@@ -111,20 +140,20 @@ void DIPSStorage::RemoveEvents(base::Time delete_begin,
   if (delete_end.is_null()) {
     delete_end = base::Time::Max();
   }
+  if (delete_begin.is_null()) {
+    delete_begin = base::Time::Min();
+  }
 
   if (filter.is_null()) {
     db_->RemoveEventsByTime(delete_begin, delete_end, type);
   } else if (type == DIPSEventRemovalType::kStorage &&
              filter->origins.empty()) {
-    // Site-filtered deletion is only supported for cookie-related
-    // DIPS events, since only cookie deletion allows domains but not hosts.
-    //
     // TODO(jdh): Assess the use of cookie deletions with both a time range and
     // a list of domains to determine whether supporting time ranges here is
     // necessary.
     // Time ranges aren't currently supported for site-filtered
     // deletion of DIPS Events.
-    if (delete_begin != base::Time() || delete_end != base::Time::Max()) {
+    if (delete_begin != base::Time::Min() || delete_end != base::Time::Max()) {
       return;
     }
 
@@ -138,6 +167,9 @@ void DIPSStorage::RemoveEvents(base::Time delete_begin,
 
 void DIPSStorage::RemoveRows(const std::vector<std::string>& sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (sites.empty()) {
+    return;
+  }
   db_->RemoveRows(sites);
 }
 
@@ -208,7 +240,7 @@ std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage() const {
   return db_->GetSitesThatUsedStorage();
 }
 
-void DIPSStorage::DeleteDIPSEligibleState(DIPSCookieMode mode) {
+std::vector<std::string> DIPSStorage::GetSitesToClear() const {
   std::vector<std::string> sites_to_clear;
   switch (dips::kTriggeringAction.Get()) {
     case DIPSTriggeringAction::kStorage: {
@@ -225,13 +257,33 @@ void DIPSStorage::DeleteDIPSEligibleState(DIPSCookieMode mode) {
     }
   }
 
+  return sites_to_clear;
+}
+
+void DIPSStorage::DeleteDIPSEligibleState(DIPSCookieMode mode,
+                                          base::OnceClosure callback) {
+  std::vector<std::string> sites_to_clear = GetSitesToClear();
   base::UmaHistogramCounts1000(base::StrCat({"Privacy.DIPS.ClearedSitesCount",
                                              GetHistogramSuffix(mode)}),
                                sites_to_clear.size());
 
   // Perform clearing of sites.
-  // TODO: Actually clear the site-data for `sites_to_clear` here as well.
   RemoveRows(sites_to_clear);
+
+  if (!sites_to_clear.empty() &&
+      (mode == DIPSCookieMode::kBlock3PC ||
+       mode == DIPSCookieMode::kOffTheRecord_Block3PC) &&
+      dips::kDeletionEnabled.Get()) {
+    // Using base::Unretained(this) is safe here because the task is being
+    // completed by this object, just on a different thread.
+    content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&RunDeletionTaskOnUIThread, browsing_data_remover_,
+                       std::move(sites_to_clear)),
+        std::move(callback));
+  } else {
+    std::move(callback).Run();
+  }
 }
 
 /* static */

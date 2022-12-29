@@ -18,6 +18,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/browsing_data:constants",
     "//chrome/test:test_support",
     "//components/ukm:test_support",
     "//content/test:test_support",

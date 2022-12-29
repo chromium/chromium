@@ -634,7 +634,10 @@ bool DIPSDatabase::RemoveEventsByTime(const base::Time& delete_begin,
     return false;
   }
 
-  transaction.Commit();
+  if (!transaction.Commit()) {
+    return false;
+  }
+
   return true;
 }
 
@@ -654,7 +657,10 @@ bool DIPSDatabase::RemoveEventsBySite(bool preserve,
   if (!ClearTimestampsBySite(preserve, sites, type))
     return false;
 
-  transaction.Commit();
+  if (!transaction.Commit()) {
+    return false;
+  }
+
   return true;
 }
 
@@ -904,9 +910,9 @@ bool DIPSDatabase::ClearTimestampsBySite(bool preserve,
                                          const std::vector<std::string>& sites,
                                          const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (sites.empty())
     return false;
+  ClearRowsWithExpiredInteractions();
 
   std::string placeholders =
       base::JoinString(std::vector<std::string>(sites.size(), "?"), ",");
@@ -914,10 +920,11 @@ bool DIPSDatabase::ClearTimestampsBySite(bool preserve,
   if ((type & DIPSEventRemovalType::kStorage) ==
       DIPSEventRemovalType::kStorage) {
     sql::Statement s_clear_storage(db_->GetUniqueStatement(  // clang-format off
-        base::StrCat({"UPDATE bounces SET first_site_storage_time=NULL,"
-                                         "last_site_storage_time=NULL,"
-                                         "first_stateful_bounce_time=NULL,"
-                                         "last_stateful_bounce_time=NULL "
+        base::StrCat({"UPDATE bounces SET "
+                          "first_site_storage_time=NULL,"
+                          "last_site_storage_time=NULL,"
+                          "first_stateful_bounce_time=NULL,"
+                          "last_stateful_bounce_time=NULL "
                           "WHERE site ", (preserve ? "NOT " : ""),
                               "IN(", placeholders, ")" })  // clang-format on
             .c_str()));

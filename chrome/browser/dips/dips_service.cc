@@ -27,6 +27,7 @@
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -86,6 +87,11 @@ inline void UmaHistogramBounceCategory(RedirectCategory category,
   base::UmaHistogramEnumeration(histogram_name, category);
 }
 
+inline void OnStateDeletionDone(base::Time deletion_start) {
+  base::UmaHistogramLongTimes100("Privacy.DIPS.DeletionLatency",
+                                 base::Time::Now() - deletion_start);
+}
+
 }  // namespace
 
 DIPSService::DIPSService(content::BrowserContext* context)
@@ -95,17 +101,26 @@ DIPSService::DIPSService(content::BrowserContext* context)
       repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))) {
   DCHECK(base::FeatureList::IsEnabled(dips::kFeature));
   absl::optional<base::FilePath> path;
+  content::BrowsingDataRemover* browsing_data_remover;
 
   if (dips::kPersistedDatabaseEnabled.Get() &&
       !browser_context_->IsOffTheRecord()) {
     path = browser_context_->GetPath().Append(kDIPSFilename);
   }
-  storage_ = base::SequenceBound<DIPSStorage>(CreateTaskRunner(), path);
+
+  if (dips::kDeletionEnabled.Get()) {
+    browsing_data_remover =
+        Profile::FromBrowserContext(context)->GetBrowsingDataRemover();
+  }
+
+  storage_ = base::SequenceBound<DIPSStorage>(CreateTaskRunner(), path,
+                                              browsing_data_remover);
 
   // TODO: Prevent use of the DB until prepopulation starts.
   InitializeStorageWithEngagedSites();
-  if (repeating_timer_)
+  if (repeating_timer_) {
     repeating_timer_->Start();
+  }
 }
 
 std::unique_ptr<signin::PersistentRepeatingTimer> DIPSService::CreateTimer(
@@ -259,11 +274,5 @@ void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
 void DIPSService::OnTimerFired() {
   base::Time start = base::Time::Now();
   storage_.AsyncCall(&DIPSStorage::DeleteDIPSEligibleState)
-      .WithArgs(GetCookieMode())
-      .Then(base::BindOnce(
-          [](base::Time deletion_start) {
-            base::UmaHistogramLongTimes100("Privacy.DIPS.DeletionLatency",
-                                           base::Time::Now() - deletion_start);
-          },
-          start));
+      .WithArgs(GetCookieMode(), base::BindOnce(&OnStateDeletionDone, start));
 }
