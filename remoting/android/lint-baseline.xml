@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.0.0-alpha06" type="baseline" client="" dependencies="true" name="" variant="all" version="8.0.0-alpha06">
-
-    <issue
-        id="LintError"
-        message="../../remoting/android/lint-baseline.xml (relative to /usr/local/google/code/clankium/src/out/Lint-Default) does not exist"
-        errorLine1="  &lt;baseline file=&quot;../../remoting/android/lint-baseline.xml&quot;/>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="project.xml"
-            line="5"
-            column="3"/>
-    </issue>
+<issues format="6" by="lint 8.0.0-alpha10" type="baseline" client="" dependencies="true" name="" variant="all" version="8.0.0-alpha10">
 
     <issue
         id="WrongConstant"
@@ -19,7 +8,7 @@
         errorLine2="                                       ~~~~~~~~~~~~~">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
-            line="204"
+            line="203"
             column="40"/>
     </issue>
 
@@ -30,7 +19,7 @@
         errorLine2="                                      ~~~~~~~~~~~~~">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
-            line="205"
+            line="204"
             column="39"/>
     </issue>
 
@@ -41,7 +30,7 @@
         errorLine2="                                                       ~~~~~~~~~~~~~">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
-            line="292"
+            line="291"
             column="56"/>
     </issue>
 
@@ -52,7 +41,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
-            line="293"
+            line="292"
             column="55"/>
     </issue>
 
@@ -63,7 +52,7 @@
         errorLine2="                                                     ~~~~~~~~~~~~~">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
-            line="295"
+            line="294"
             column="54"/>
     </issue>
 
@@ -74,7 +63,7 @@
         errorLine2="                                      ~~~~~~~~~~~">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
-            line="351"
+            line="340"
             column="39"/>
     </issue>
 
@@ -96,7 +85,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/help/HelpActivity.java"
-            line="91"
+            line="89"
             column="9"/>
     </issue>
 
@@ -107,7 +96,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/WebViewActivity.java"
-            line="46"
+            line="44"
             column="9"/>
     </issue>
 

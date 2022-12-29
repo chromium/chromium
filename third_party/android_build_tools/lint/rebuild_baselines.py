@@ -68,6 +68,35 @@ def build_all_lint_targets(
     return built_targets + target_names
 
 
+def _remove_redundant_lint_error(path: pathlib.Path):
+    with open(path) as f:
+        original_content = f.read()
+
+    # Lint error is always the first issue.
+    first_issue_idx = original_content.find('    <issue\n')
+    if first_issue_idx == -1:
+        return
+
+    lint_error_idx = original_content.find('id="LintError"', first_issue_idx)
+    if lint_error_idx == -1:
+        return
+
+    # If the lint error isn't the first issue, we should keep it.
+    if lint_error_idx - first_issue_idx > 20:
+        return
+
+    issue_end_idx = original_content.find('</issue>\n', lint_error_idx)
+    if issue_end_idx == -1:
+        return
+
+    # Replace 10 characters past the start of </issue> to remove extra newlines.
+    replaced_content = original_content[:first_issue_idx] + original_content[
+        issue_end_idx + 10:]
+
+    with open(path, 'w') as f:
+        f.write(replaced_content)
+
+
 def main():
     logging.basicConfig(
         level=logging.INFO,
@@ -161,6 +190,7 @@ def main():
     for git_root, repo_path in repo_file_paths:
         path = git_root / repo_path
         if path.name == 'lint-baseline.xml':
+            _remove_redundant_lint_error(path)
             # Since we are passing -C to git, the relative path is needed
             logging.info(f'> Adding to git: {repo_path}')
             subprocess.run(['git', '-C', str(git_root), 'add', repo_path])

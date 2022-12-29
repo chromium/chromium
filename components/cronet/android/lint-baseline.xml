@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.0.0-alpha06" type="baseline" client="" dependencies="true" name="" variant="all" version="8.0.0-alpha06">
-
-    <issue
-        id="LintError"
-        message="../../components/cronet/android/lint-baseline.xml (relative to /usr/local/google/code/clankium/src/out/Lint-Default) does not exist"
-        errorLine1="  &lt;baseline file=&quot;../../components/cronet/android/lint-baseline.xml&quot;/>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="project.xml"
-            line="5"
-            column="3"/>
-    </issue>
+<issues format="6" by="lint 8.0.0-alpha10" type="baseline" client="" dependencies="true" name="" variant="all" version="8.0.0-alpha10">
 
     <issue
         id="ObsoleteSdkInt"
