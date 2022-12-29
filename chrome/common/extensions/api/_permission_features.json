@@ -476,35 +476,35 @@
     ]
   },
   "login": [{
-  "channel": "stable",
-  "dependencies": ["behavior:imprivata_extension"],
-  "extension_types": ["extension","login_screen_extension"],
-  "location": "policy",
-  "platforms": ["chromeos", "lacros"]
+    "channel": "stable",
+    "dependencies": ["behavior:imprivata_extension"],
+    "extension_types": ["extension", "login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "stable",
-    "extension_types": ["extension","login_screen_extension"],
+    "extension_types": ["extension", "login_screen_extension"],
     "location": "policy",
     "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
-      "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-sesesion test extension
+      "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-session test extension
     ]
   }],
   "loginScreenStorage": [{
     "channel": "stable",
     "dependencies": ["behavior:imprivata_extension"],
-    "extension_types": ["extension","login_screen_extension"],
+    "extension_types": ["extension", "login_screen_extension"],
     "location": "policy",
     "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "canary",
-    "extension_types": ["extension","login_screen_extension"],
+    "extension_types": ["extension", "login_screen_extension"],
     "location": "policy",
     "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
-      "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-sesesion test extension
+      "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-session test extension
     ]
   }],
   "loginScreenUi": [{
