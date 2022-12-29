@@ -54,7 +54,6 @@ Response BrowserHandler::GetWindowForTarget(
   if (!web_contents)
     return Response::ServerError("No web contents for the given target id");
 
-  auto result = std::make_unique<base::DictionaryValue>();
   *out_window_id = web_contents->window_id();
   *out_bounds = CreateBrowserBounds(web_contents);
   return Response::Success();

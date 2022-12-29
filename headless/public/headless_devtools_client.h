@@ -8,12 +8,9 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/values.h"
 #include "headless/public/headless_devtools_channel.h"
 #include "headless/public/headless_export.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace headless {
 
@@ -191,9 +188,8 @@ class HEADLESS_EXPORT HeadlessDevToolsClient {
     virtual ~RawProtocolListener() {}
 
     // Returns true if the listener handled the message.
-    virtual bool OnProtocolMessage(
-        base::span<const uint8_t> json_message,
-        const base::DictionaryValue& parsed_message) = 0;
+    virtual bool OnProtocolMessage(base::span<const uint8_t> json_message,
+                                   const base::Value::Dict& parsed_message) = 0;
   };
 
   virtual void AttachToChannel(
