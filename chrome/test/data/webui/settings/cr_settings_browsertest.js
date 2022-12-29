@@ -379,7 +379,13 @@ var CrSettingsSiteListTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsSiteListTest', 'SiteList', function() {
+// TODO(crbug.com/1064002): Flaky on Linux.
+GEN('#if BUILDFLAG(IS_LINUX)');
+GEN('#define MAYBE_SiteList DISABLED_SiteList');
+GEN('#else');
+GEN('#define MAYBE_SiteList SiteList');
+GEN('#endif');
+TEST_F('CrSettingsSiteListTest', 'MAYBE_SiteList', function() {
   runMochaSuite('SiteList');
 });
 
