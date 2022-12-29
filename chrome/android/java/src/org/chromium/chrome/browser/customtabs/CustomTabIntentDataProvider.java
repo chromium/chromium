@@ -514,7 +514,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 intent, EXTRA_ENABLE_BACKGROUND_INTERACTION, BACKGROUND_INTERACT_DEFAULT);
         mInteractWithBackground = backgroundInteractBehavior != BACKGROUND_INTERACT_OFF;
 
-        logCustomTabFeatures(intent, colorScheme);
+        logCustomTabFeatures(intent, colorScheme, usingDynamicFeatures);
     }
 
     /** Returns the toolbar corner radius in px. */
@@ -740,8 +740,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * usage by apps.
      * @param intent The intent used to launch the CCT.
      * @param colorScheme The requested color scheme to use with the CCT.
+     * @param isUsingDynamicFeatures Whether the intent specified Features to dynamically enable or
+     *                               disable.
      */
-    private void logCustomTabFeatures(Intent intent, int colorScheme) {
+    private void logCustomTabFeatures(
+            Intent intent, int colorScheme, boolean isUsingDynamicFeatures) {
         if (!CustomTabsFeatureUsage.isEnabled()) return;
         CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
 
@@ -845,6 +848,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             featureUsage.log(CustomTabsFeature.EXTRA_ADDITIONAL_TRUSTED_ORIGINS);
         }
         if (mEnableUrlBarHiding) featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_URLBAR_HIDING);
+        if (isUsingDynamicFeatures) {
+            featureUsage.log(CustomTabsFeature.EXTRA_INTENT_FEATURE_OVERRIDES);
+        }
     }
 
     @Override
