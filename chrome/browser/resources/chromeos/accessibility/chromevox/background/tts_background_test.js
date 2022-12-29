@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
+GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
 
 // E2E tests for PrimaryTts.
 
 /** Test fixture. */
-ChromeVoxBackgroundTtsTest = class extends ChromeVoxE2ETest {
+ChromeVoxBackgroundTtsTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

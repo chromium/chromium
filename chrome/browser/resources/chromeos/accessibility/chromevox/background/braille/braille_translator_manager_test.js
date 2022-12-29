@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
+GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
 
 /**
  * Test fixture for BrailleTranslatorManager tests.
  * This is an E2E test because there's no easy way to load a data file in
  * a webui-style test.
  */
-ChromeVoxBrailleTranslatorManagerTest = class extends ChromeVoxE2ETest {
+ChromeVoxBrailleTranslatorManagerTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
