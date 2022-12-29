@@ -7,6 +7,7 @@
 #include <cmath>
 #include <memory>
 #include <ostream>
+#include <utility>
 #include <vector>
 
 #include "base/bit_cast.h"
@@ -567,7 +568,7 @@ void TestInvalidStaticImage(const char* avif_file, ErrorPhase error_phase) {
 
   scoped_refptr<SharedBuffer> data = ReadFile(avif_file);
   ASSERT_TRUE(data.get());
-  decoder->SetData(data.get(), true);
+  decoder->SetData(std::move(data), true);
 
   if (error_phase == ErrorPhase::kParse) {
     EXPECT_FALSE(decoder->IsSizeAvailable());
@@ -602,7 +603,7 @@ void ReadYUV(const char* file_name,
   ASSERT_TRUE(data);
 
   auto decoder = CreateAVIFDecoder();
-  decoder->SetData(data.get(), true);
+  decoder->SetData(std::move(data), true);
 
   ASSERT_TRUE(decoder->IsDecodedSizeAvailable());
   ASSERT_TRUE(decoder->CanDecodeToYUV());
@@ -805,7 +806,7 @@ TEST(StaticAVIFTests, NoCrashWhenCheckingForMultipleSubImages) {
   constexpr char kHeader[] = {0x00, 0x00, 0x00, 0x20, 0x66, 0x74, 0x79, 0x70};
   auto buffer = SharedBuffer::Create();
   buffer->Append(kHeader, std::size(kHeader));
-  decoder->SetData(buffer.get(), false);
+  decoder->SetData(std::move(buffer), false);
   EXPECT_FALSE(decoder->ImageHasBothStillAndAnimatedSubImages());
 }
 
@@ -1067,7 +1068,7 @@ TEST_P(StaticAVIFColorTests, InspectImage) {
   EXPECT_EQ(param.compression_format,
             ImageDecoder::GetCompressionFormat(data, "image/avif"));
 #endif
-  decoder->SetData(data.get(), true);
+  decoder->SetData(std::move(data), true);
   EXPECT_EQ(1u, decoder->FrameCount());
   EXPECT_EQ(kAnimationNone, decoder->RepetitionCount());
   EXPECT_EQ(param.bit_depth > 8, decoder->ImageIsHighBitDepth());
