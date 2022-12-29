@@ -703,10 +703,17 @@ void VideoDecoderPipeline::OnError(const std::string& msg) {
   MEDIA_LOG(ERROR, media_log_) << "VideoDecoderPipeline " << msg;
 
   has_error_ = true;
+
+  if (image_processor_) {
+    image_processor_->Reset();
+  }
+  frame_converter_->AbortPendingFrames();
+
 #if BUILDFLAG(IS_CHROMEOS)
   if (buffer_transcryptor_)
     buffer_transcryptor_->Reset(DecoderStatus::Codes::kFailed);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
   CallFlushCbIfNeeded(/*override_status=*/DecoderStatus::Codes::kFailed);
 }
 
@@ -718,7 +725,13 @@ void VideoDecoderPipeline::CallFlushCbIfNeeded(
     return;
   }
 
-  if (HasPendingFrames()) {
+  // All the call sites where |override_status| is non-null should guarantee
+  // that there are no pending frames. If there were pending frames, then we
+  // would drop |override_status|, and that seems like undesired behavior.
+  const bool has_pending_frames = HasPendingFrames();
+  DCHECK(!override_status || !has_pending_frames);
+
+  if (has_pending_frames) {
     // Flush is not completed yet.
     return;
   }
