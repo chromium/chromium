@@ -17,12 +17,10 @@ namespace blink {
 P2PPortAllocator::P2PPortAllocator(
     std::unique_ptr<rtc::NetworkManager> network_manager,
     rtc::PacketSocketFactory* socket_factory,
-    const Config& config,
-    const GURL& origin)
+    const Config& config)
     : cricket::BasicPortAllocator(network_manager.get(), socket_factory),
       network_manager_(std::move(network_manager)),
-      config_(config),
-      origin_(origin) {
+      config_(config) {
   DCHECK(network_manager_);
   DCHECK(socket_factory);
   uint32_t flags = 0;

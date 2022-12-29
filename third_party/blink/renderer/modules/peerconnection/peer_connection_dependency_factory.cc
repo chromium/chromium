@@ -784,15 +784,6 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
     }
   }
 
-  // Now that this file is within Blink, it can not rely on WebURL's
-  // GURL() operator directly. Hence, as per the comment on gurl.h, the
-  // following GURL ctor is used instead.
-  WebURL document_url = web_frame->GetDocument().Url();
-  const GURL& requesting_origin =
-      GURL(document_url.GetString().Utf8(), document_url.GetParsed(),
-           document_url.IsValid())
-          .DeprecatedGetOriginAsURL();
-
   std::unique_ptr<rtc::NetworkManager> network_manager;
   if (port_config.enable_multiple_routes) {
     network_manager = std::make_unique<FilteringNetworkManager>(
@@ -802,8 +793,7 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
         std::make_unique<blink::EmptyNetworkManager>(network_manager_.get());
   }
   auto port_allocator = std::make_unique<P2PPortAllocator>(
-      std::move(network_manager), socket_factory_.get(), port_config,
-      requesting_origin);
+      std::move(network_manager), socket_factory_.get(), port_config);
   if (IsValidPortRange(min_port, max_port))
     port_allocator->SetPortRange(min_port, max_port);
 
