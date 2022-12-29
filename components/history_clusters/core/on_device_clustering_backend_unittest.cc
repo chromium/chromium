@@ -194,6 +194,26 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
     return clusters;
   }
 
+  std::vector<history::Cluster> GetClusterTriggerability(
+      const std::vector<history::Cluster>& in_clusters) {
+    std::vector<history::Cluster> clusters;
+
+    base::RunLoop run_loop;
+    clustering_backend_->GetClusterTriggerability(
+        base::BindOnce(
+            [](base::RunLoop* run_loop,
+               std::vector<history::Cluster>* out_clusters,
+               std::vector<history::Cluster> clusters) {
+              *out_clusters = std::move(clusters);
+              run_loop->Quit();
+            },
+            &run_loop, &clusters),
+        in_clusters);
+    run_loop.Run();
+
+    return clusters;
+  }
+
   size_t GetSiteEngagementGetScoreInvocationCount() const {
     return test_site_engagement_provider_.count_get_score_invocations();
   }
@@ -323,6 +343,46 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
               ElementsAre(ElementsAre(testing::VisitResult(
                   2, 1.0, {history::DuplicateClusterVisit{1}}))));
   EXPECT_FALSE(result_clusters[0].label->empty());
+}
+
+TEST_F(OnDeviceClusteringWithoutContentBackendTest,
+       GetClusterTriggerabilitySimpleCase) {
+  std::vector<history::Cluster> clusters;
+
+  // Cluster finalizers should be run.
+
+  history::Cluster cluster1;
+  cluster1.cluster_id = 1;
+  cluster1.should_show_on_prominent_ui_surfaces = false;
+  cluster1.visits.emplace_back(
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          1, GURL("https://google.com/"), base::Time::FromTimeT(1))));
+  clusters.push_back(cluster1);
+
+  history::Cluster cluster2;
+  cluster2.cluster_id = 2;
+  cluster2.should_show_on_prominent_ui_surfaces = false;
+  cluster2.visits.emplace_back(
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          3, GURL("https://google.com/2"), base::Time::FromTimeT(3))));
+  cluster2.visits.emplace_back(
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          4, GURL("https://google.com/3"), base::Time::FromTimeT(4))));
+  clusters.push_back(cluster2);
+
+  std::vector<history::Cluster> result_clusters =
+      GetClusterTriggerability(clusters);
+  EXPECT_EQ(result_clusters.size(), 2u);
+  history::Cluster out_cluster1 = result_clusters[0];
+  EXPECT_EQ(out_cluster1.cluster_id, 1);
+  EXPECT_TRUE(out_cluster1.triggerability_calculated);
+  // Single visit cluster.
+  EXPECT_FALSE(out_cluster1.should_show_on_prominent_ui_surfaces);
+
+  history::Cluster out_cluster2 = result_clusters[1];
+  EXPECT_EQ(out_cluster2.cluster_id, 2);
+  EXPECT_TRUE(out_cluster2.triggerability_calculated);
+  EXPECT_TRUE(out_cluster2.should_show_on_prominent_ui_surfaces);
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest, DedupeClusters) {

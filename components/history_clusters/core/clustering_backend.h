@@ -38,6 +38,13 @@ class ClusteringBackend {
   //   which UI surface we want to calculate for.
   virtual void GetClustersForUI(ClustersCallback callback,
                                 std::vector<history::Cluster> clusters) = 0;
+
+  // Gets the metadata required for cluster triggerability (e.g. keywords,
+  // whether to show on prominent UI surfaces) for each cluster in `clusters`.
+  // Will return results asynchronously via `callback`.
+  virtual void GetClusterTriggerability(
+      ClustersCallback callback,
+      std::vector<history::Cluster> clusters) = 0;
 };
 
 }  // namespace history_clusters

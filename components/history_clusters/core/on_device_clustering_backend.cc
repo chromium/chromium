@@ -179,6 +179,24 @@ void OnDeviceClusteringBackend::GetClustersForUI(
       std::move(callback));
 }
 
+void OnDeviceClusteringBackend::GetClusterTriggerability(
+    ClustersCallback callback,
+    std::vector<history::Cluster> clusters) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(b/259466296): Fetch entity metadata before computing cluster
+  // triggerability.
+  base::flat_map<std::string, optimization_guide::EntityMetadata>
+      entity_metadata_map;
+  best_effort_priority_background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&OnDeviceClusteringBackend::
+                         GetClusterTriggerabilityOnBackgroundThread,
+                     engagement_score_provider_ != nullptr, std::move(clusters),
+                     base::OwnedRef(std::move(entity_metadata_map))),
+      std::move(callback));
+}
+
 void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
     ClusteringRequestSource clustering_request_source,
     optimization_guide::BatchEntityMetadataTask* completed_task,
@@ -359,15 +377,13 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
       compute_clusters_for_ui_timer.Elapsed());
 
   // 3. Determine the triggerability for the clusters.
-  for (auto& cluster : clusters) {
-    base::ElapsedThreadTimer cluster_triggerability_timer;
-    cluster = GetClusterTriggerabilityOnBackgroundThread(
-        engagement_score_provider_is_valid, std::move(cluster),
-        entity_id_to_entity_metadata_map);
-    base::UmaHistogramTimes(
-        "History.Clusters.Backend.ComputeClusterTriggerability.ThreadTime",
-        cluster_triggerability_timer.Elapsed());
-  }
+  base::ElapsedThreadTimer cluster_triggerability_timer;
+  clusters = GetClusterTriggerabilityOnBackgroundThread(
+      engagement_score_provider_is_valid, std::move(clusters),
+      entity_id_to_entity_metadata_map);
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.ComputeClusterTriggerability2.ThreadTime",
+      cluster_triggerability_timer.Elapsed());
 
   base::UmaHistogramTimes("History.Clusters.Backend.ComputeClusters.ThreadTime",
                           compute_clusters_timer.Elapsed());
@@ -417,10 +433,10 @@ OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
 }
 
 // static
-history::Cluster
+std::vector<history::Cluster>
 OnDeviceClusteringBackend::GetClusterTriggerabilityOnBackgroundThread(
     bool engagement_score_provider_is_valid,
-    history::Cluster cluster,
+    std::vector<history::Cluster> clusters,
     base::flat_map<std::string, optimization_guide::EntityMetadata>&
         entity_id_to_entity_metadata_map) {
   // The cluster finalizers to be run.
@@ -441,13 +457,17 @@ OnDeviceClusteringBackend::GetClusterTriggerabilityOnBackgroundThread(
     cluster_finalizers.push_back(std::make_unique<CategoryClusterFinalizer>());
   }
 
-  for (const auto& finalizer : cluster_finalizers) {
-    finalizer->FinalizeCluster(cluster);
+  for (auto& cluster : clusters) {
+    // Initially set this default to true since the finalizers will only set the
+    // visibility to false.
+    cluster.should_show_on_prominent_ui_surfaces = true;
+    for (const auto& finalizer : cluster_finalizers) {
+      finalizer->FinalizeCluster(cluster);
+    }
+    cluster.triggerability_calculated = true;
   }
 
-  cluster.triggerability_calculated = true;
-
-  return cluster;
+  return clusters;
 }
 
 }  // namespace history_clusters

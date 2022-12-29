@@ -767,7 +767,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.ComputeClusterTriggerability.ThreadTime"
-    units="ms" expires_after="2023-06-04">
+    units="ms" expires_after="2022-12-29">
+  <obsolete>
+    Obsolete as of 12/2022.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -779,6 +782,24 @@ chromium-metrics-reviews@google.com.
     calculated based on any clustering request, which could be triggered from
     several things, including loading the journeys UI, putting a query in the
     journeys page, etc. This is a segment within
+    `History.Clusters.Backend.ComputeClusters.ThreadTime`.
+  </summary>
+</histogram>
+
+<histogram
+    name="History.Clusters.Backend.ComputeClusterTriggerability2.ThreadTime"
+    units="ms" expires_after="2023-06-04">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Logs the time taken to run the steps during a clustering pass that are
+    required for determinining the triggerability for a cluster, which is
+    performed on a background worker. This does not include any thread hop or
+    queuing delay. Logged when clusters have been calculated based on any
+    request to cluster visits, which could be triggered from several things,
+    including loading the journeys UI, putting a query in the journeys page,
+    etc. This is a segment within
     `History.Clusters.Backend.ComputeClusters.ThreadTime`.
   </summary>
 </histogram>

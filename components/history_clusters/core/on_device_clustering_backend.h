@@ -51,6 +51,9 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
                    std::vector<history::AnnotatedVisit> visits) override;
   void GetClustersForUI(ClustersCallback callback,
                         std::vector<history::Cluster> clusters) override;
+  void GetClusterTriggerability(
+      ClustersCallback callback,
+      std::vector<history::Cluster> clusters) override;
 
  private:
   // Callback invoked when batch entity metadata has been received from
@@ -105,11 +108,12 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
           entity_id_to_entity_metadata_map);
 
   // Gets the metadata required for cluster triggerability (e.g. keywords,
-  // whether to show on prominent UI surfaces) for `cluster` on background
-  // thread.
-  static history::Cluster GetClusterTriggerabilityOnBackgroundThread(
-      bool engagement_score_proivder_is_valid,
-      history::Cluster cluster,
+  // whether to show on prominent UI surfaces) for each cluster in `clusters` on
+  // background thread.
+  static std::vector<history::Cluster>
+  GetClusterTriggerabilityOnBackgroundThread(
+      bool engagement_score_provider_is_valid,
+      std::vector<history::Cluster> clusters,
       base::flat_map<std::string, optimization_guide::EntityMetadata>&
           entity_id_to_entity_metadata_map);
 

@@ -33,6 +33,9 @@ class FileClusteringBackend : public ClusteringBackend {
                    std::vector<history::AnnotatedVisit> visits) override;
   void GetClustersForUI(ClustersCallback callback,
                         std::vector<history::Cluster> clusters) override;
+  void GetClusterTriggerability(
+      ClustersCallback callback,
+      std::vector<history::Cluster> clusters) override;
 
  private:
   // Private so that it does not incidentally get called if the command line is
