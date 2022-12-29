@@ -83,7 +83,7 @@ def main(args):
                 normalize_path(out_json_dir,
                                out_json['compilerOptions']['rootDir']),
             ],
-            'outDir': '/tmp',
+            'noEmit': True,
             'paths': {
                 key: [normalize_path(out_json_dir, path) for path in value]
                 for key, value in out_json['compilerOptions']['paths'].items()
