@@ -5,9 +5,12 @@
 #include "chromeos/components/cdm_factory_daemon/remote_cdm_context.h"
 
 #include "base/callback.h"
+#include "base/sequence_checker_impl.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_checker.h"
+#include "media/base/callback_registry.h"
 #include "media/cdm/cdm_context_ref_impl.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -30,29 +33,87 @@ class RemoteCdmContextRef final : public media::CdmContextRef {
 };
 }  // namespace
 
+class RemoteCdmContext::MojoSequenceState
+    : public media::stable::mojom::CdmContextEventCallback {
+ public:
+  explicit MojoSequenceState(
+      mojo::PendingRemote<media::stable::mojom::StableCdmContext>
+          pending_stable_cdm_context)
+      : pending_stable_cdm_context_(std::move(pending_stable_cdm_context)) {
+    sequence_checker_.DetachFromSequence();
+  }
+
+  ~MojoSequenceState() override {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+  }
+
+  mojo::Remote<media::stable::mojom::StableCdmContext>& GetStableCdmContext() {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    if (!stable_cdm_context_) {
+      stable_cdm_context_.Bind(std::move(pending_stable_cdm_context_));
+      mojo_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+    }
+    return stable_cdm_context_;
+  }
+
+  std::unique_ptr<media::CallbackRegistration> RegisterEventCB(
+      EventCB event_cb) {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    if (!event_callback_receiver_.is_bound()) {
+      GetStableCdmContext()->RegisterEventCallback(
+          event_callback_receiver_.BindNewPipeAndPassRemote());
+    }
+    auto registration = event_callbacks_.Register(std::move(event_cb));
+    return registration;
+  }
+
+  static void DeleteOnCorrectSequence(MojoSequenceState* mojo_sequence_state) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner =
+        mojo_sequence_state->mojo_task_runner_;
+    if (task_runner && !task_runner->RunsTasksInCurrentSequence()) {
+      // When DeleteSoon() returns false, |mojo_sequence_state| will be leaked,
+      // which is okay.
+      task_runner->DeleteSoon(FROM_HERE, mojo_sequence_state);
+    } else {
+      // We're either on the right sequence or the |mojo_sequence_state| was
+      // never bound to a sequence (i.e., it was constructed but never used).
+      DCHECK(task_runner || mojo_sequence_state->pending_stable_cdm_context_);
+      DCHECK(task_runner || !mojo_sequence_state->stable_cdm_context_);
+      DCHECK(task_runner ||
+             !mojo_sequence_state->event_callback_receiver_.is_bound());
+      delete mojo_sequence_state;
+    }
+  }
+
+ private:
+  // media::stable::mojom::CdmContextEventCallback:
+  void EventCallback(media::CdmContext::Event event) override {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    event_callbacks_.Notify(std::move(event));
+  }
+
+  base::SequenceCheckerImpl sequence_checker_;
+  mojo::PendingRemote<media::stable::mojom::StableCdmContext>
+      pending_stable_cdm_context_;
+  mojo::Remote<media::stable::mojom::StableCdmContext> stable_cdm_context_;
+  mojo::Receiver<media::stable::mojom::CdmContextEventCallback>
+      event_callback_receiver_{this};
+  media::CallbackRegistry<EventCB::RunType> event_callbacks_;
+  scoped_refptr<base::SequencedTaskRunner> mojo_task_runner_;
+};
+
 RemoteCdmContext::RemoteCdmContext(
     mojo::PendingRemote<media::stable::mojom::StableCdmContext>
         stable_cdm_context)
-    : stable_cdm_context_(std::move(stable_cdm_context)),
-      mojo_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
+    : mojo_sequence_state_(new MojoSequenceState(std::move(stable_cdm_context)),
+                           &MojoSequenceState::DeleteOnCorrectSequence) {}
 
 std::unique_ptr<media::CallbackRegistration> RemoteCdmContext::RegisterEventCB(
     EventCB event_cb) {
-  auto registration = event_callbacks_.Register(std::move(event_cb));
-  mojo_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RemoteCdmContext::RegisterForRemoteCallbacks,
-                                weak_ptr_factory_.GetWeakPtr()));
-  return registration;
+  return mojo_sequence_state_->RegisterEventCB(std::move(event_cb));
 }
 
 RemoteCdmContext::~RemoteCdmContext() {}
-
-void RemoteCdmContext::RegisterForRemoteCallbacks() {
-  if (!event_callback_receiver_.is_bound()) {
-    stable_cdm_context_->RegisterEventCallback(
-        event_callback_receiver_.BindNewPipeAndPassRemote());
-  }
-}
 
 ChromeOsCdmContext* RemoteCdmContext::GetChromeOsCdmContext() {
   return this;
@@ -61,36 +122,18 @@ ChromeOsCdmContext* RemoteCdmContext::GetChromeOsCdmContext() {
 void RemoteCdmContext::GetHwKeyData(const media::DecryptConfig* decrypt_config,
                                     const std::vector<uint8_t>& hw_identifier,
                                     GetHwKeyDataCB callback) {
-  // Clone the |decrypt_config| in case the pointer becomes invalid when we are
-  // re-posting the task.
-  GetHwKeyDataInternal(decrypt_config->Clone(), hw_identifier,
-                       std::move(callback));
-}
-
-void RemoteCdmContext::GetHwKeyDataInternal(
-    std::unique_ptr<media::DecryptConfig> decrypt_config,
-    const std::vector<uint8_t>& hw_identifier,
-    GetHwKeyDataCB callback) {
-  // This can get called from decoder threads, so we may need to repost the
-  // task.
-  if (!mojo_task_runner_->RunsTasksInCurrentSequence()) {
-    mojo_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&RemoteCdmContext::GetHwKeyDataInternal,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  std::move(decrypt_config), hw_identifier,
-                                  std::move(callback)));
-    return;
-  }
-  stable_cdm_context_->GetHwKeyData(std::move(decrypt_config), hw_identifier,
-                                    std::move(callback));
+  mojo_sequence_state_->GetStableCdmContext()->GetHwKeyData(
+      decrypt_config->Clone(), hw_identifier, std::move(callback));
 }
 
 void RemoteCdmContext::GetHwConfigData(GetHwConfigDataCB callback) {
-  stable_cdm_context_->GetHwConfigData(std::move(callback));
+  mojo_sequence_state_->GetStableCdmContext()->GetHwConfigData(
+      std::move(callback));
 }
 
 void RemoteCdmContext::GetScreenResolutions(GetScreenResolutionsCB callback) {
-  stable_cdm_context_->GetScreenResolutions(std::move(callback));
+  mojo_sequence_state_->GetStableCdmContext()->GetScreenResolutions(
+      std::move(callback));
 }
 
 std::unique_ptr<media::CdmContextRef> RemoteCdmContext::GetCdmContextRef() {
@@ -103,25 +146,6 @@ bool RemoteCdmContext::UsingArcCdm() const {
 
 bool RemoteCdmContext::IsRemoteCdm() const {
   return true;
-}
-
-void RemoteCdmContext::EventCallback(media::CdmContext::Event event) {
-  event_callbacks_.Notify(std::move(event));
-}
-
-void RemoteCdmContext::DeleteOnCorrectThread() const {
-  if (!mojo_task_runner_->RunsTasksInCurrentSequence()) {
-    // When DeleteSoon returns false, |this| will be leaked, which is okay.
-    mojo_task_runner_->DeleteSoon(FROM_HERE, this);
-  } else {
-    delete this;
-  }
-}
-
-// static
-void RemoteCdmContextTraits::Destruct(
-    const RemoteCdmContext* remote_cdm_context) {
-  remote_cdm_context->DeleteOnCorrectThread();
 }
 
 }  // namespace chromeos
