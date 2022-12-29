@@ -57,7 +57,7 @@ public class UmaUtils {
 
     private static boolean sSkipRecordingNextForegroundStartTimeForTesting;
 
-    // Will short-circuit out of the next recordForegroundStartTime() call.
+    // Will short-circuit out of the next recordForegroundStartTimeWithNative() call.
     public static void skipRecordingNextForegroundStartTimeForTesting() {
         sSkipRecordingNextForegroundStartTimeForTesting = true;
     }

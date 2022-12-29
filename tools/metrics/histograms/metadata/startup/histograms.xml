@@ -62,8 +62,8 @@ chromium-metrics-reviews@google.com.
   <owner>yfriedman@chromium.org</owner>
   <summary>
     Records whether the first navigation commit after a cold start occurred
-    before UmaUtils.hasComeToForeground() became true. Recorded only for
-    startups in which startup metrics were being tracked.
+    before UmaUtils.hasComeToForegroundWithNative() became true. Recorded only
+    for startups in which startup metrics were being tracked.
   </summary>
 </histogram>
 
@@ -73,8 +73,8 @@ chromium-metrics-reviews@google.com.
   <owner>yfriedman@chromium.org</owner>
   <summary>
     Records whether the first paint of StartupPaintPreview after a cold start
-    occurred before UmaUtils.hasComeToForeground() became true. Recorded only
-    for startups in which startup metrics were being tracked.
+    occurred before UmaUtils.hasComeToForegroundWithNative() became true.
+    Recorded only for startups in which startup metrics were being tracked.
   </summary>
 </histogram>
 
