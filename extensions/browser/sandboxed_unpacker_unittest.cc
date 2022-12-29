@@ -488,7 +488,7 @@ TEST_F(SandboxedUnpackerTest, TestRewriteManifestInjections) {
                   fingerprint.c_str(),
                   base::checked_cast<int>(fingerprint.size()));
   absl::optional<base::Value::Dict> manifest(RewriteManifestFile(
-      DictionaryBuilder().Set(kVersionStr, kTestVersion).BuildDict()));
+      DictionaryBuilder().Set(kVersionStr, kTestVersion).Build()));
   auto* key = manifest->FindString("key");
   auto* version = manifest->FindString(kVersionStr);
   auto* differential_fingerprint =

@@ -62,7 +62,7 @@ TEST_P(ExtensionActionManagerTest, TestPopulateMissingValues_Icons) {
           .SetManifestKey("icons", DictionaryBuilder()
                                        .Set("48", "icon48.png")
                                        .Set("128", "icon128.png")
-                                       .BuildDict())
+                                       .Build())
           .SetManifestKey(ActionInfo::GetManifestKeyForActionType(GetParam()),
                           base::Value::Dict())
           .Build();
@@ -102,15 +102,15 @@ TEST_P(ExtensionActionManagerTest, TestPopulateMissingValues_Title) {
 TEST_P(ExtensionActionManagerTest, TestDontOverrideIfDefaultsProvided) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test Extension")
-          .SetManifestKey(
-              "icons", DictionaryBuilder().Set("24", "icon24.png").BuildDict())
+          .SetManifestKey("icons",
+                          DictionaryBuilder().Set("24", "icon24.png").Build())
           .SetManifestKey(
               ActionInfo::GetManifestKeyForActionType(GetParam()),
               DictionaryBuilder()
                   .Set("default_icon",
-                       DictionaryBuilder().Set("19", "icon19.png").BuildDict())
+                       DictionaryBuilder().Set("19", "icon19.png").Build())
                   .Set("default_title", "Action!")
-                  .BuildDict())
+                  .Build())
           .Build();
 
   ASSERT_TRUE(extension);

@@ -804,7 +804,7 @@ class DeviceCommandStartCrdSessionJobRemoteAccessTest
     return DictionaryBuilder(
         Payload()
             .Set("crdSessionType", CrdSessionType::REMOTE_ACCESS_SESSION)
-            .BuildDict());
+            .Build());
   }
 
   void AddActiveManagedNetwork() {

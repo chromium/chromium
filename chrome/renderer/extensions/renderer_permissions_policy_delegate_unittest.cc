@@ -55,7 +55,7 @@ scoped_refptr<const Extension> CreateTestExtension(const std::string& id) {
               .Set("version", "1.0")
               .Set("manifest_version", 2)
               .Set("permissions", ListBuilder().Append("<all_urls>").Build())
-              .BuildDict())
+              .Build())
       .SetID(id)
       .Build();
 }

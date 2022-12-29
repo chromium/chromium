@@ -30,7 +30,7 @@ base::Value::Dict SimpleManifest() {
       .Set("name", "extension")
       .Set("manifest_version", 2)
       .Set("version", "1.0")
-      .BuildDict();
+      .Build();
 }
 
 }  // namespace

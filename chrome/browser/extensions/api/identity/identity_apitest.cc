@@ -2873,7 +2873,7 @@ class GetAuthTokenFunctionDeviceLocalAccountTest
             "oauth2", DictionaryBuilder()
                           .Set("client_id", "clientId")
                           .Set("scopes", ListBuilder().Append("scope1").Build())
-                          .BuildDict())
+                          .Build())
         .SetID(id)
         .Build();
   }

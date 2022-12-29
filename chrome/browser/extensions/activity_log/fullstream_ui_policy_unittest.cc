@@ -345,7 +345,7 @@ TEST_F(FullStreamUIPolicyTest, Construct) {
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
   extension_service_->AddExtension(extension.get());
   scoped_refptr<Action> action = new Action(extension->id(),
@@ -366,7 +366,7 @@ TEST_F(FullStreamUIPolicyTest, LogAndFetchActions) {
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
   extension_service_->AddExtension(extension.get());
   GURL gurl("http://www.google.com");
@@ -404,7 +404,7 @@ TEST_F(FullStreamUIPolicyTest, LogAndFetchFilteredActions) {
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
   extension_service_->AddExtension(extension.get());
   GURL gurl("http://www.google.com");
@@ -484,7 +484,7 @@ TEST_F(FullStreamUIPolicyTest, LogWithArguments) {
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
   extension_service_->AddExtension(extension.get());
 
@@ -776,7 +776,7 @@ TEST_F(FullStreamUIPolicyTest, DeleteDatabase) {
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
   extension_service_->AddExtension(extension.get());
   GURL gurl("http://www.google.com");

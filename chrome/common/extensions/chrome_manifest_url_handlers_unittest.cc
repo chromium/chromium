@@ -20,7 +20,7 @@ TEST(ChromeURLOverridesHandlerTest, TestFileMissing) {
   manifest.Set("description", "description");
   manifest.Set("chrome_url_overrides",
                DictionaryBuilder().Set("newtab", "newtab.html").Build());
-  base::Value::Dict manifest_value = manifest.BuildDict();
+  base::Value::Dict manifest_value = manifest.Build();
   std::string error;
   std::vector<InstallWarning> warnings;
   base::ScopedTempDir dir;

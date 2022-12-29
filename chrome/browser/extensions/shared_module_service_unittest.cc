@@ -40,11 +40,11 @@ scoped_refptr<const Extension> CreateExtensionImportingModules(
   if (!import_ids.empty()) {
     ListBuilder import_list;
     for (const std::string& import_id : import_ids)
-      import_list.Append(DictionaryBuilder().Set("id", import_id).BuildDict());
+      import_list.Append(DictionaryBuilder().Set("id", import_id).Build());
     builder.Set("import", import_list.Build());
   }
   return ExtensionBuilder()
-      .SetManifest(builder.BuildDict())
+      .SetManifest(builder.Build())
       .AddFlags(Extension::FROM_WEBSTORE)
       .SetID(id)
       .Build();
@@ -60,8 +60,8 @@ scoped_refptr<const Extension> CreateSharedModule(
           .Set("export",
                DictionaryBuilder()
                    .Set("resources", ListBuilder().Append("foo.js").Build())
-                   .BuildDict())
-          .BuildDict();
+                   .Build())
+          .Build();
 
   return ExtensionBuilder()
       .SetManifest(std::move(manifest))
@@ -186,8 +186,8 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUpdate) {
           .Set("export",
                DictionaryBuilder()
                    .Set("resources", ListBuilder().Append("foo.js").Build())
-                   .BuildDict())
-          .BuildDict();
+                   .Build())
+          .Build();
   scoped_refptr<const Extension> shared_module_2 =
       CreateSharedModule("shared_module_2");
   EXPECT_TRUE(InstallExtension(shared_module_2.get(), false));
@@ -247,8 +247,8 @@ TEST_F(SharedModuleServiceUnitTest, AllowlistedImports) {
                    .Set("allowlist",
                         ListBuilder().Append(allowlisted_id).Build())
                    .Set("resources", ListBuilder().Append("*").Build())
-                   .BuildDict())
-          .BuildDict();
+                   .Build())
+          .Build();
   scoped_refptr<const Extension> shared_module =
       ExtensionBuilder()
           .SetManifest(std::move(manifest))

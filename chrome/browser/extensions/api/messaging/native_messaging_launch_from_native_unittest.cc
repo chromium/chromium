@@ -108,7 +108,7 @@ class ExtensionSupportsConnectionFromNativeAppTest : public ::testing::Test {
 
     std::string error;
     scoped_refptr<Extension> extension(Extension::Create(
-        path, mojom::ManifestLocation::kInternal, manifest_builder.BuildDict(),
+        path, mojom::ManifestLocation::kInternal, manifest_builder.Build(),
         Extension::NO_FLAGS, &error));
     ASSERT_TRUE(extension.get()) << error;
     ExtensionRegistry::Get(&profile_)->AddEnabled(extension);

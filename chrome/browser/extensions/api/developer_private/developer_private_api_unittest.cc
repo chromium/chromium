@@ -364,7 +364,7 @@ const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
           .Set("description", "an extension");
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(manifest.BuildDict())
+          .SetManifest(manifest.Build())
           .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(id)
           .Build();
@@ -456,8 +456,7 @@ void DeveloperPrivateApiUnitTest::UpdateProfileConfigurationDevMode(
       api::DeveloperPrivateUpdateProfileConfigurationFunction>();
   base::Value::List args =
       ListBuilder()
-          .Append(
-              DictionaryBuilder().Set("inDeveloperMode", dev_mode).BuildDict())
+          .Append(DictionaryBuilder().Set("inDeveloperMode", dev_mode).Build())
           .Build();
   EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
 }
@@ -1242,7 +1241,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDeleteExtensionErrors) {
                                .Append(DictionaryBuilder()
                                            .Set("extensionId", extension->id())
                                            .Set("type", type_string)
-                                           .BuildDict())
+                                           .Build())
                                .Build();
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateDeleteExtensionErrorsFunction>();
@@ -1259,7 +1258,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDeleteExtensionErrors) {
           .Append(DictionaryBuilder()
                       .Set("extensionId", extension->id())
                       .Set("errorIds", ListBuilder().Append(error_id).Build())
-                      .BuildDict())
+                      .Build())
           .Build();
   function = base::MakeRefCounted<
       api::DeveloperPrivateDeleteExtensionErrorsFunction>();
@@ -1268,11 +1267,11 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDeleteExtensionErrors) {
   EXPECT_EQ(1u, error_console->GetErrorsForExtension(extension->id()).size());
 
   // Finally remove all errors for the extension.
-  args = ListBuilder()
-             .Append(DictionaryBuilder()
-                         .Set("extensionId", extension->id())
-                         .BuildDict())
-             .Build();
+  args =
+      ListBuilder()
+          .Append(
+              DictionaryBuilder().Set("extensionId", extension->id()).Build())
+          .Build();
   function = base::MakeRefCounted<
       api::DeveloperPrivateDeleteExtensionErrorsFunction>();
   EXPECT_TRUE(RunFunction(function, args)) << function->GetError();

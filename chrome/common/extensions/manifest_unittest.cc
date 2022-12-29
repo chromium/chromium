@@ -202,7 +202,7 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
                                 .Set(keys::kName, "extension")
                                 .Set(keys::kVersion, "1")
                                 .Set(keys::kManifestVersion, 2)
-                                .BuildDict();
+                                .Build();
 
   auto manifest =
       std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),
@@ -232,7 +232,7 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ItemType) {
                                 .Set(keys::kVersion, "1")
                                 .Set(keys::kManifestVersion, 2)
                                 .Set(keys::kPageAction, base::Value::Dict())
-                                .BuildDict();
+                                .Build();
 
   auto manifest =
       std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),

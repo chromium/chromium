@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersSuccess) {
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id.c_str()))
           .Set("name", "Printer 1")
-          .BuildDict());
+          .Build());
   expected_printers.push_back(
       DictionaryBuilder()
           .Set("extensionId", extension_id)
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersSuccess) {
           .Set("id",
                base::StringPrintf("%s:printerNoDesc", extension_id.c_str()))
           .Set("name", "Printer 2")
-          .BuildDict());
+          .Build());
 
   ValidatePrinterListValue(printers, expected_printers);
 }
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersAsyncSuccess) {
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id.c_str()))
           .Set("name", "Printer 1")
-          .BuildDict());
+          .Build());
 
   ValidatePrinterListValue(printers, expected_printers);
 }
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersTwoExtensions) {
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_1.c_str()))
           .Set("name", "Printer 1")
-          .BuildDict());
+          .Build());
   expected_printers.push_back(
       DictionaryBuilder()
           .Set("extensionId", extension_id_1)
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersTwoExtensions) {
           .Set("id",
                base::StringPrintf("%s:printerNoDesc", extension_id_1.c_str()))
           .Set("name", "Printer 2")
-          .BuildDict());
+          .Build());
   expected_printers.push_back(
       DictionaryBuilder()
           .Set("description", "Test printer")
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersTwoExtensions) {
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_2.c_str()))
           .Set("name", "Printer 1")
-          .BuildDict());
+          .Build());
   expected_printers.push_back(
       DictionaryBuilder()
           .Set("extensionId", extension_id_2)
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersTwoExtensions) {
           .Set("id",
                base::StringPrintf("%s:printerNoDesc", extension_id_2.c_str()))
           .Set("name", "Printer 2")
-          .BuildDict());
+          .Build());
 
   ValidatePrinterListValue(printers, expected_printers);
 }
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_2.c_str()))
           .Set("name", "Printer 1")
-          .BuildDict());
+          .Build());
   expected_printers.push_back(
       DictionaryBuilder()
           .Set("extensionId", extension_id_2)
@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
           .Set("id",
                base::StringPrintf("%s:printerNoDesc", extension_id_2.c_str()))
           .Set("name", "Printer 2")
-          .BuildDict());
+          .Build());
 
   ValidatePrinterListValue(printers, expected_printers);
 }
@@ -624,7 +624,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_2.c_str()))
           .Set("name", "Printer 1")
-          .BuildDict());
+          .Build());
   expected_printers.push_back(
       DictionaryBuilder()
           .Set("extensionId", extension_id_2)
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
           .Set("id",
                base::StringPrintf("%s:printerNoDesc", extension_id_2.c_str()))
           .Set("name", "Printer 2")
-          .BuildDict());
+          .Build());
 
   ValidatePrinterListValue(printers, expected_printers);
 }
@@ -800,7 +800,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderUsbApiTest, GetUsbPrinterInfo) {
                base::StringPrintf("%s:usbDevice-%u", extension_id.c_str(),
                                   device_manager->GetIdFromGuid(device->guid)))
           .Set("name", "Test Printer")
-          .BuildDict();
+          .Build();
   base::RunLoop run_loop;
   StartGetUsbPrinterInfoRequest(
       extension_id, *device,

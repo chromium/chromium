@@ -298,13 +298,13 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
     base::Value::Dict background =
         DictionaryBuilder()
             .Set("scripts", ListBuilder().Append("background.js").Build())
-            .BuildDict();
+            .Build();
     base::Value::List action_handlers =
         ListBuilder()
             .Append(DictionaryBuilder()
                         .Set("action", "new_note")
                         .Set("enabled_on_lock_screen", true)
-                        .BuildDict())
+                        .Build())
             .Build();
 
     DictionaryBuilder manifest_builder;
@@ -313,12 +313,12 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
         .Set("version", "1.1")
         .Set("app", DictionaryBuilder()
                         .Set("background", std::move(background))
-                        .BuildDict())
+                        .Build())
         .Set("permissions", ListBuilder().Append("lockScreen").Build())
         .Set("action_handlers", std::move(action_handlers));
 
     return extensions::ExtensionBuilder()
-        .SetManifest(manifest_builder.BuildDict())
+        .SetManifest(manifest_builder.Build())
         .SetID(crx_file::id_util::GenerateId("test_app"))
         .Build();
   }

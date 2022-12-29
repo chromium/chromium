@@ -299,7 +299,7 @@ void PersistExtensionWithPaths(
                                    .Set(keys::kName, "Test extension")
                                    .Set(keys::kVersion, "1.0")
                                    .Set(keys::kManifestVersion, 2)
-                                   .BuildDict();
+                                   .Build();
 
   // Persist manifest file.
   base::FilePath manifest_path = extension_dir.Append(kManifestFilename);

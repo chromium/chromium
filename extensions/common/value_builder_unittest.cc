@@ -24,9 +24,8 @@ TEST(ValueBuilderTest, Basic) {
 
   base::Value::Dict settings;
   ASSERT_FALSE(settings.FindList("permissions"));
-  settings = DictionaryBuilder()
-                 .Set("permissions", permission_list.Build())
-                 .BuildDict();
+  settings =
+      DictionaryBuilder().Set("permissions", permission_list.Build()).Build();
 
   base::Value::List* list_value = settings.FindList("permissions");
 

@@ -52,9 +52,6 @@ class DictionaryBuilder {
 
   ~DictionaryBuilder();
 
-  // Deprecated: Use Build instead.
-  base::Value::Dict BuildDict() { return Build(); }
-
   base::Value::Dict Build() {
     base::Value::Dict result = std::move(dict_);
     dict_ = base::Value::Dict();

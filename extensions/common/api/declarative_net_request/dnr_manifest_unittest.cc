@@ -151,7 +151,7 @@ TEST_F(DNRManifestTest, InvalidRulesFileFormat) {
                DictionaryBuilder()
                    .Set(dnr_api::DNRInfo::kRuleResources,
                         (ListBuilder().Append(kRulesetFile)).Build())
-                   .BuildDict());
+                   .Build());
 
   WriteManifestAndRuleset(manifest, {});
 

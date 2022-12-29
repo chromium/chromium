@@ -259,7 +259,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
                             .Set("name", "My First Extension")
                             .Set("version", version)
                             .Set("manifest_version", 2)
-                            .BuildDict());
+                            .Build());
     builder.SetID(extension_id);
     builder.SetPath(temp_dir.GetPath());
     extension_service()->AddExtension(builder.Build().get());

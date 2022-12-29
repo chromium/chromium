@@ -112,12 +112,11 @@ scoped_refptr<Extension> CreateWebStoreExtension() {
           .Set("name", "WebStore")
           .Set("version", "1")
           .Set("manifest_version", 2)
-          .Set(
-              "icons",
-              DictionaryBuilder().Set("16", "webstore_icon_16.png").BuildDict())
+          .Set("icons",
+               DictionaryBuilder().Set("16", "webstore_icon_16.png").Build())
           .Set("web_accessible_resources",
                ListBuilder().Append("webstore_icon_16.png").Build())
-          .BuildDict();
+          .Build();
 
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_RESOURCES, &path));

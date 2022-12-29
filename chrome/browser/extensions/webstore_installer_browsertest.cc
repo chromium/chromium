@@ -127,7 +127,7 @@ class WebstoreInstallerMV2BrowserTest : public WebstoreInstallerBrowserTest {
         .Set("manifest_version", 2)
         .Set("version", "1.0")
         .Set("permissions", ListBuilder().Append("tabs").Build())
-        .BuildDict();
+        .Build();
   }
 };
 
@@ -223,7 +223,7 @@ class WebstoreInstallerWithWithholdingUIBrowserTest
         .Set("manifest_version", 3)
         .Set("version", "1.0")
         .Set("host_permissions", ListBuilder().Append("<all_urls>").Build())
-        .BuildDict();
+        .Build();
   }
 
  private:

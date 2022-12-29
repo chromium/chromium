@@ -83,7 +83,7 @@ class ExtensionNavigationThrottleUnitTest
         .Set("web_accessible_resources",
              ListBuilder().Append(kAccessible).Append(kAccessibleDir).Build());
     extension_ = ExtensionBuilder()
-                     .SetManifest(manifest.BuildDict())
+                     .SetManifest(manifest.Build())
                      .SetID(crx_file::id_util::GenerateId("foo"))
                      .Build();
     ASSERT_TRUE(extension_);

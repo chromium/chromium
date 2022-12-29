@@ -187,7 +187,7 @@ TEST_F(NativeRendererMessagingServiceTest, OpenMessagePort) {
   base::Value::Dict expected_sender =
       DictionaryBuilder()
           .Set("frameId", 0)
-          .Set("tab", DictionaryBuilder().Set("tabId", tab_id).BuildDict())
+          .Set("tab", DictionaryBuilder().Set("tabId", tab_id).Build())
           .Set("url", source_url.spec())
           .Set("id", extension()->id())
           .Build();

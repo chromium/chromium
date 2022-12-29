@@ -211,19 +211,18 @@ class RendererStartupHelperTest : public ExtensionsTest {
                                      .Set("description", "an extension")
                                      .Set("manifest_version", 2)
                                      .Set("version", "0.1")
-                                     .BuildDict();
+                                     .Build();
     return CreateExtension(id_input, std::move(manifest));
   }
 
   scoped_refptr<const Extension> CreateTheme(const std::string& id_input) {
-    base::Value::Dict manifest =
-        DictionaryBuilder()
-            .Set("name", "theme")
-            .Set("description", "a theme")
-            .Set("theme", DictionaryBuilder().BuildDict())
-            .Set("manifest_version", 2)
-            .Set("version", "0.1")
-            .BuildDict();
+    base::Value::Dict manifest = DictionaryBuilder()
+                                     .Set("name", "theme")
+                                     .Set("description", "a theme")
+                                     .Set("theme", DictionaryBuilder().Build())
+                                     .Set("manifest_version", 2)
+                                     .Set("version", "0.1")
+                                     .Build();
     return CreateExtension(id_input, std::move(manifest));
   }
 
@@ -232,17 +231,17 @@ class RendererStartupHelperTest : public ExtensionsTest {
     base::Value::Dict background =
         DictionaryBuilder()
             .Set("scripts", ListBuilder().Append("background.js").Build())
-            .BuildDict();
+            .Build();
     base::Value::Dict manifest =
         DictionaryBuilder()
             .Set("name", "platform_app")
             .Set("description", "a platform app")
             .Set("app", DictionaryBuilder()
                             .Set("background", std::move(background))
-                            .BuildDict())
+                            .Build())
             .Set("manifest_version", 2)
             .Set("version", "0.1")
-            .BuildDict();
+            .Build();
     return CreateExtension(id_input, std::move(manifest));
   }
 

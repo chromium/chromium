@@ -64,8 +64,7 @@ class ChromeOSPermissionMessageUnittest : public testing::Test {
       base::Value::List optional_permissions) {
     app_ = extensions::ExtensionBuilder("Test ChromeOS System Extension")
                .SetManifestVersion(3)
-               .SetManifestKey("chromeos_system_extension",
-                               extensions::DictionaryBuilder().BuildDict())
+               .SetManifestKey("chromeos_system_extension", base::Value::Dict())
                .SetManifestKey("permissions", std::move(required_permissions))
                .SetManifestKey("optional_permissions",
                                std::move(optional_permissions))
@@ -76,7 +75,7 @@ class ChromeOSPermissionMessageUnittest : public testing::Test {
                             extensions::ListBuilder()
                                 .Append("*://googlechromelabs.github.io/*")
                                 .Build())
-                       .BuildDict())
+                       .Build())
                .SetID(kChromeOSSystemExtensionId)  // only allowlisted id
                .SetLocation(ManifestLocation::kInternal)
                .Build();

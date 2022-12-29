@@ -400,7 +400,7 @@ TEST_F(CountingPolicyTest, Construct) {
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
   extension_service_->AddExtension(extension.get());
   scoped_refptr<Action> action = new Action(extension->id(),
@@ -421,7 +421,7 @@ TEST_F(CountingPolicyTest, LogWithStrippedArguments) {
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
   extension_service_->AddExtension(extension.get());
 
@@ -542,7 +542,7 @@ TEST_F(CountingPolicyTest, LogAndFetchFilteredActions) {
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
   extension_service_->AddExtension(extension.get());
   GURL gurl("http://www.google.com");

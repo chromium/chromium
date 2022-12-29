@@ -47,7 +47,7 @@ base::Value::Dict SimpleManifest() {
       .Set("name", "extension")
       .Set("manifest_version", 2)
       .Set("version", "1.0")
-      .BuildDict();
+      .Build();
 }
 
 class RequestContentScriptTest : public ExtensionServiceTestBase {
@@ -117,7 +117,7 @@ TEST(DeclarativeContentActionTest, ShowActionWithoutAction) {
       .Set("description", "an extension");
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(manifest.BuildDict())
+          .SetManifest(manifest.Build())
           .SetLocation(ManifestLocation::kComponent)
           .Build();
   env.GetExtensionService()->AddExtension(extension.get());
@@ -230,13 +230,12 @@ TEST(DeclarativeContentActionTest, SetIcon) {
       case Base64: {
         std::string data64 =
             base::Base64Encode(skia::mojom::InlineBitmap::Serialize(&bitmap));
-        builder.Set("imageData",
-                    DictionaryBuilder().Set("19", data64).BuildDict());
+        builder.Set("imageData", DictionaryBuilder().Set("19", data64).Build());
         break;
       }
       case Mojo: {
         std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
-        builder.Set("imageData", DictionaryBuilder().Set("19", s).BuildDict());
+        builder.Set("imageData", DictionaryBuilder().Set("19", s).Build());
         break;
       }
       case MojoHuge: {
@@ -251,11 +250,11 @@ TEST(DeclarativeContentActionTest, SetIcon) {
                   mojo_base::BigBuffer::kMaxInlineBytes);
         bitmap.eraseARGB(255, 255, 0, 0);
         std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
-        builder.Set("imageData", DictionaryBuilder().Set("19", s).BuildDict());
+        builder.Set("imageData", DictionaryBuilder().Set("19", s).Build());
         break;
       }
     }
-    base::Value::Dict dict = builder.BuildDict();
+    base::Value::Dict dict = builder.Build();
 
     const Extension* extension = env.MakeExtension(
         ParseJsonDict(R"({"page_action": {"default_title": "Extension"}})"));
@@ -311,8 +310,8 @@ TEST(DeclarativeContentActionTest, SetInvisibleIcon) {
   base::Value::Dict dict =
       DictionaryBuilder()
           .Set("instanceType", "declarativeContent.SetIcon")
-          .Set("imageData", DictionaryBuilder().Set("19", data64).BuildDict())
-          .BuildDict();
+          .Set("imageData", DictionaryBuilder().Set("19", data64).Build())
+          .Build();
 
   // Expect an error and no instance to be created.
   const Extension* extension = env.MakeExtension(

@@ -86,7 +86,7 @@ TEST_F(ErrorConsoleUnitTest, EnableAndDisableErrorConsole) {
                            .Set("name", "apps dev tools")
                            .Set("version", "0.2.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .SetID(kAppsDeveloperToolsExtensionId)
           .Build();
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_.get());
@@ -201,7 +201,7 @@ TEST_F(ErrorConsoleUnitTest, TestDefaultStoringPrefs) {
                            .Set("name", "unpacked")
                            .Set("version", "0.0.1")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .SetLocation(mojom::ManifestLocation::kUnpacked)
           .SetID(crx_file::id_util::GenerateId("unpacked"))
           .Build();
@@ -211,7 +211,7 @@ TEST_F(ErrorConsoleUnitTest, TestDefaultStoringPrefs) {
                            .Set("name", "packed")
                            .Set("version", "0.0.1")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(crx_file::id_util::GenerateId("packed"))
           .Build();

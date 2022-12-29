@@ -106,7 +106,7 @@ struct ExtensionBuilder::ManifestData {
                    scripts_value.Build());
     }
 
-    base::Value::Dict result = manifest.BuildDict();
+    base::Value::Dict result = manifest.Build();
     if (extra)
       result.Merge(extra->Clone());
 

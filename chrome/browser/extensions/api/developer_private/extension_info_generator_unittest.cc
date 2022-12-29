@@ -184,7 +184,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
                              .Set("manifest_version", 2)
                              .Set("version", "1.0.0")
                              .Set("permissions", std::move(permissions))
-                             .BuildDict())
+                             .Build())
             .SetLocation(location)
             .SetID(kId)
             .Build();
@@ -275,7 +275,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
                                        .Append("*://*.chromium.org/*")
                                        .Build())
           .Set("permissions", ListBuilder().Append("tabs").Build())
-          .BuildDict();
+          .Build();
   base::Value::Dict manifest_copy = manifest.Clone();
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
@@ -394,7 +394,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionInfoInstalledByDefault) {
           .Set("version", "1.2")
           .Set("manifest_version", 3)
           .Set("update_url", "https://clients2.google.com/service/update2/crx")
-          .BuildDict();
+          .Build();
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
@@ -422,7 +422,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionInfoInstalledByOem) {
           .Set("version", "1.2")
           .Set("manifest_version", 3)
           .Set("update_url", "https://clients2.google.com/service/update2/crx")
-          .BuildDict();
+          .Build();
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
@@ -892,7 +892,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
     base::Value::Dict command_dict =
         DictionaryBuilder()
             .Set("suggested_key",
-                 DictionaryBuilder().Set("default", "Ctrl+Shift+P").BuildDict())
+                 DictionaryBuilder().Set("default", "Ctrl+Shift+P").Build())
             .Set("description", "Execute!")
             .Build();
     scoped_refptr<const Extension> extension =
@@ -901,7 +901,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
             .SetManifestKey("commands", DictionaryBuilder()
                                             .Set(test_case.command_key,
                                                  std::move(command_dict))
-                                            .BuildDict())
+                                            .Build())
             .SetManifestVersion(test_case.manifest_version)
             .Build();
     service()->AddExtension(extension.get());

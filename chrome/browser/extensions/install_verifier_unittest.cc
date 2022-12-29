@@ -40,10 +40,10 @@ class InstallVerifierTest : public ExtensionServiceTestBase {
   // Adds an extension as being allowed by policy.
   void AddExtensionAsPolicyInstalled(const ExtensionId& id) {
     base::Value::Dict extension_entry =
-        DictionaryBuilder().Set("installation_mode", "allowed").BuildDict();
+        DictionaryBuilder().Set("installation_mode", "allowed").Build();
     testing_profile()->GetTestingPrefService()->SetManagedPref(
         pref_names::kExtensionManagement,
-        DictionaryBuilder().Set(id, std::move(extension_entry)).BuildDict());
+        DictionaryBuilder().Set(id, std::move(extension_entry)).Build());
     EXPECT_TRUE(ExtensionManagementFactory::GetForBrowserContext(profile())
                     ->IsInstallationExplicitlyAllowed(id));
   }

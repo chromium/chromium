@@ -37,7 +37,7 @@ TEST_F(StreamsPrivateManifestTest, ValidMimeTypesHandlerMIMETypes) {
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
                   .Set("mime_types", ListBuilder().Append("text/plain").Build())
-                  .BuildDict())
+                  .Build())
           .Build();
 
   ASSERT_TRUE(extension.get());
@@ -57,7 +57,7 @@ TEST_F(StreamsPrivateManifestTest, MimeTypesHandlerMIMETypesNotAllowlisted) {
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
                   .Set("mime_types", ListBuilder().Append("text/plain").Build())
-                  .BuildDict())
+                  .Build())
           .Build();
 
   ASSERT_TRUE(extension.get());

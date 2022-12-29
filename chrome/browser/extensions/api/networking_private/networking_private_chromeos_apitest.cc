@@ -1084,12 +1084,12 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
                       .Set(shill::kNetworkIdProperty, "network1")
                       .Set(shill::kTechnologyProperty, "GSM")
                       .Set(shill::kStatusProperty, "current")
-                      .BuildDict())
+                      .Build())
           .Append(extensions::DictionaryBuilder()
                       .Set(shill::kNetworkIdProperty, "network2")
                       .Set(shill::kTechnologyProperty, "GSM")
                       .Set(shill::kStatusProperty, "available")
-                      .BuildDict())
+                      .Build())
           .Build();
   SetDeviceProperty(kCellularDevicePath, shill::kFoundNetworksProperty,
                     base::Value(std::move(found_networks)));

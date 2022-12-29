@@ -40,7 +40,7 @@ class TestExternalRegistryLoader : public ExternalRegistryLoader {
   ~TestExternalRegistryLoader() override {}
 
   base::Value::Dict LoadPrefsOnBlockingThread() override {
-    return DictionaryBuilder().Set(kDummyRegistryKey, id_++).BuildDict();
+    return DictionaryBuilder().Set(kDummyRegistryKey, id_++).Build();
   }
   void LoadFinished(base::Value::Dict prefs) override {
     ++load_finished_count_;

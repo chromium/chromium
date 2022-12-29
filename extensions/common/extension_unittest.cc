@@ -115,7 +115,7 @@ TEST(ExtensionTest, ExtensionManifestVersions) {
         .Set("description", "An awesome extension");
     if (manifest_version)
       builder.Set("manifest_version", *manifest_version);
-    return builder.BuildDict();
+    return builder.Build();
   };
 
   const Manifest::Type kType = Manifest::TYPE_EXTENSION;
@@ -162,7 +162,7 @@ TEST(ExtensionTest, PlatformAppManifestVersions) {
              DictionaryBuilder().Set("background", background.Build()).Build());
     if (manifest_version)
       builder.Set("manifest_version", *manifest_version);
-    return builder.BuildDict();
+    return builder.Build();
   };
 
   const Manifest::Type kType = Manifest::TYPE_PLATFORM_APP;
@@ -202,7 +202,7 @@ TEST(ExtensionTest, HostedAppManifestVersions) {
         .Set("app", app.Build());
     if (manifest_version)
       builder.Set("manifest_version", *manifest_version);
-    return builder.BuildDict();
+    return builder.Build();
   };
 
   const Manifest::Type kType = Manifest::TYPE_HOSTED_APP;
@@ -230,7 +230,7 @@ TEST(ExtensionTest, UserScriptManifestVersions) {
         .Set("converted_from_user_script", true);
     if (manifest_version)
       builder.Set("manifest_version", *manifest_version);
-    return builder.BuildDict();
+    return builder.Build();
   };
 
   const Manifest::Type kType = Manifest::TYPE_USER_SCRIPT;
@@ -255,7 +255,7 @@ TEST(ExtensionTest, LoginScreenFlag) {
       .Set("version", "0.1")
       .Set("description", "An awesome extension")
       .Set("manifest_version", 2);
-  base::Value::Dict manifest = builder.BuildDict();
+  base::Value::Dict manifest = builder.Build();
 
   EXPECT_TRUE(RunCreationWithFlags(manifest, ManifestLocation::kExternalPolicy,
                                    Manifest::TYPE_EXTENSION,

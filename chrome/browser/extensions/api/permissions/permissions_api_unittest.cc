@@ -52,7 +52,7 @@ scoped_refptr<const Extension> CreateExtensionWithPermissions(
                        .Set("manifest_version", 2)
                        .Set("version", "0.1.2.3")
                        .Set("permissions", std::move(permissions))
-                       .BuildDict())
+                       .Build())
       .AddFlags(creation_flags)
       .SetID(crx_file::id_util::GenerateId(name))
       .Build();

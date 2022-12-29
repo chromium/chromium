@@ -132,7 +132,7 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
                            .Set("name", "Watchdog Extension ")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .SetID(kExtensionID)
           .Build();
   extension_service1->AddExtension(extension.get());
@@ -192,7 +192,7 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
                            .Set("name", "Watchdog Extension ")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .SetID("fpofdchlamddhnajleknffcbmnjfahpg")
           .Build();
   extension_service1->AddExtension(extension.get());
@@ -239,7 +239,7 @@ TEST_F(ActivityLogEnabledTest, AppAndCommandLine) {
                            .Set("name", "Watchdog Extension ")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .SetID(kExtensionID)
           .Build();
   extension_service->AddExtension(extension.get());
@@ -295,7 +295,7 @@ TEST_F(ActivityLogEnabledTest, IncorrectPrefsRecovery) {
                            .Set("name", "Watchdog Extension ")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .SetID(kExtensionID)
           .Build();
   extension_service->AddExtension(extension.get());

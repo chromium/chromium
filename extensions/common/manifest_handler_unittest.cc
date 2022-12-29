@@ -218,7 +218,7 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
                                    .Set("version", "0")
                                    .Set("manifest_version", 2)
                                    .Set("a", 1)
-                                   .BuildDict());
+                                   .Build());
 
   // Succeeds when "a" is not recognized.
   std::string error;

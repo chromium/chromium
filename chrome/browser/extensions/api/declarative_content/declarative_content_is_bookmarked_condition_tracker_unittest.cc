@@ -42,7 +42,7 @@ scoped_refptr<const Extension> CreateExtensionWithBookmarksPermission(
                        .Set("version", "1.0")
                        .Set("manifest_version", 2)
                        .Set("permissions", permissions.Build())
-                       .BuildDict())
+                       .Build())
       .Build();
 }
 

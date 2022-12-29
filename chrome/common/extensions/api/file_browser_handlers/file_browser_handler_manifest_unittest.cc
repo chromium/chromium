@@ -45,9 +45,9 @@ TEST_F(FileBrowserHandlerManifestTest, GetHandlersRequiresPermission) {
                                                     .Append("filesystem:*.txt")
                                                     .Append("filesystem:*.html")
                                                     .Build())
-                           .BuildDict())
+                           .Build())
                .Build());
-  base::Value::Dict bad_manifest_value(bad_manifest_builder.BuildDict());
+  base::Value::Dict bad_manifest_value(bad_manifest_builder.Build());
 
   // Create a good manifest by extending the bad one with the missing
   // permission.
@@ -121,9 +121,9 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandler) {
                                             ListBuilder()
                                                 .Append("filesystem:*.txt")
                                                 .Build())
-                                       .BuildDict())
+                                       .Build())
                            .Build())
-                  .BuildDict())
+                  .Build())
           .Build();
 
   ASSERT_TRUE(extension.get());
@@ -172,9 +172,9 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerMIMETypes) {
                                             ListBuilder()
                                                 .Append("filesystem:*.txt")
                                                 .Build())
-                                       .BuildDict())
+                                       .Build())
                            .Build())
-                  .BuildDict())
+                  .Build())
           .Build();
 
   ASSERT_TRUE(extension.get());
@@ -218,9 +218,9 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerWithCreate) {
                                             .Build())
                                    .Set("file_access",
                                         ListBuilder().Append("create").Build())
-                                   .BuildDict())
+                                   .Build())
                            .Build())
-                  .BuildDict())
+                  .Build())
           .Build();
 
   ASSERT_TRUE(extension.get());

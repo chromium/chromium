@@ -317,7 +317,7 @@ TEST_F(ActivityLogTest, LogPrerender) {
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
   extension_service_->AddExtension(extension.get());
   ActivityLog* activity_log = ActivityLog::GetInstance(profile());
@@ -412,7 +412,7 @@ TEST_F(ActivityLogTest, UninstalledExtension) {
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
 
   ActivityLog* activity_log = ActivityLog::GetInstance(profile());

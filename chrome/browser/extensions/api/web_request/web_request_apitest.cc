@@ -1347,9 +1347,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HostedAppRequest) {
                                   .Set("launch", DictionaryBuilder()
                                                      .Set("web_url",
                                                           hosted_app_url.spec())
-                                                     .BuildDict())
-                                  .BuildDict())
-                  .BuildDict())
+                                                     .Build())
+                                  .Build())
+                  .Build())
           .Build();
   extension_service()->AddExtension(hosted_app.get());
 

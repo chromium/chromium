@@ -605,7 +605,7 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
                              .Set("name", "Test app")
                              .Set("version", "1.0")
                              .Set("manifest_version", 2)
-                             .BuildDict())
+                             .Build())
             .Build();
     ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
   };

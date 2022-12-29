@@ -278,7 +278,7 @@ TEST(ExtensionAPITest, APIFeaturesAlias) {
                            .Set("name", "extension")
                            .Set("version", "1")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
   const Feature* test_feature =
       api_feature_provider.GetFeature("alias_api_source");
@@ -304,11 +304,11 @@ TEST(ExtensionAPITest, IsAnyFeatureAvailableToContext) {
                                     .Set("scripts", ListBuilder()
                                                         .Append("background.js")
                                                         .Build())
-                                    .BuildDict())
-                           .BuildDict())
+                                    .Build())
+                           .Build())
                   .Set("version", "1")
                   .Set("manifest_version", 2)
-                  .BuildDict())
+                  .Build())
           .Build();
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
@@ -316,7 +316,7 @@ TEST(ExtensionAPITest, IsAnyFeatureAvailableToContext) {
                            .Set("name", "extension")
                            .Set("version", "1")
                            .Set("manifest_version", 2)
-                           .BuildDict())
+                           .Build())
           .Build();
 
   struct {
@@ -394,11 +394,11 @@ TEST(ExtensionAPITest, SessionTypeFeature) {
                                     .Set("scripts", ListBuilder()
                                                         .Append("background.js")
                                                         .Build())
-                                    .BuildDict())
-                           .BuildDict())
+                                    .Build())
+                           .Build())
                   .Set("version", "1")
                   .Set("manifest_version", 2)
-                  .BuildDict())
+                  .Build())
           .Build();
 
   const std::vector<FeatureSessionTypesTestData> kTestData(

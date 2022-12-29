@@ -353,7 +353,7 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
                 .Set("extensionId", extension->id())
                 .Set("extensionName", extension->name())
                 .Set("provisional", true)
-                .BuildDict());
+                .Build());
       }
     }
   }

@@ -186,11 +186,11 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
         DictionaryBuilder()
             .Set("installation_mode", "allowed")
             .Set(ExternalProviderImpl::kExternalUpdateUrl, kExtensionUpdateUrl)
-            .BuildDict();
+            .Build();
     prefs()->SetManagedPref(pref_names::kExtensionManagement,
                             DictionaryBuilder()
                                 .Set(kExtensionId1, std::move(extension_entry))
-                                .BuildDict());
+                                .Build());
   }
 
   void CreateExtensionService(bool extensions_enabled) {

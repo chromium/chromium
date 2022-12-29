@@ -222,13 +222,13 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
         .Set("sandbox",
              DictionaryBuilder()
                  .Set("pages", ListBuilder().Append("sandboxed.html").Build())
-                 .BuildDict())
+                 .Build())
         .Set("web_accessible_resources",
              ListBuilder().Append("*.html").Build());
 
     if (has_background_process) {
       manifest.Set("background",
-                   DictionaryBuilder().Set("page", "bg.html").BuildDict());
+                   DictionaryBuilder().Set("page", "bg.html").Build());
       dir->WriteFile(FILE_PATH_LITERAL("bg.html"),
                      "<iframe id='bgframe' src='empty.html'></iframe>");
     }

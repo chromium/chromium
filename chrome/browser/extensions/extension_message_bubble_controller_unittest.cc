@@ -203,7 +203,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
                             .Set("name", std::string("Extension " + index))
                             .Set("version", "1.0")
                             .Set("manifest_version", 2)
-                            .BuildDict());
+                            .Build());
     builder.SetLocation(location);
     builder.SetID(id);
     service_->AddExtension(builder.Build().get());
@@ -224,8 +224,8 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
             .Set("manifest_version", 2)
             .Set("browser_action", DictionaryBuilder()
                                        .Set("default_title", "Default title")
-                                       .BuildDict())
-            .BuildDict());
+                                       .Build())
+            .Build());
     builder.SetLocation(location);
     builder.SetID(id);
     service_->AddExtension(builder.Build().get());
@@ -247,8 +247,8 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
                             .Set("chrome_settings_overrides",
                                  DictionaryBuilder()
                                      .Set("homepage", "http://www.google.com")
-                                     .BuildDict())
-                            .BuildDict());
+                                     .Build())
+                            .Build());
     builder.SetLocation(location);
     builder.SetID(id);
     service_->AddExtension(builder.Build().get());
@@ -272,8 +272,8 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
                  DictionaryBuilder()
                      .Set("startup_pages",
                           ListBuilder().Append("http://www.google.com").Build())
-                     .BuildDict())
-            .BuildDict());
+                     .Build())
+            .Build());
     builder.SetLocation(location);
     builder.SetID(id);
     service_->AddExtension(builder.Build().get());
@@ -294,8 +294,8 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
             .Set("version", "1.0")
             .Set("manifest_version", 2)
             .Set("chrome_url_overrides",
-                 DictionaryBuilder().Set("newtab", "Default.html").BuildDict())
-            .BuildDict());
+                 DictionaryBuilder().Set("newtab", "Default.html").Build())
+            .Build());
 
     builder.SetLocation(location);
     builder.SetID(id);
@@ -317,7 +317,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
             .Set("version", "1.0")
             .Set("manifest_version", 2)
             .Set("permissions", ListBuilder().Append("proxy").Build())
-            .BuildDict());
+            .Build());
 
     builder.SetLocation(location);
     builder.SetID(id);

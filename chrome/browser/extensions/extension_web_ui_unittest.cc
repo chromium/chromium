@@ -89,10 +89,10 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
       .Set(manifest_keys::kVersion, "0.1")
       .Set(manifest_keys::kManifestVersion, 2)
       .Set(api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
-           DictionaryBuilder().Set("bookmarks", kOverrideResource).BuildDict());
+           DictionaryBuilder().Set("bookmarks", kOverrideResource).Build());
   scoped_refptr<const Extension> ext_unpacked(
       ExtensionBuilder()
-          .SetManifest(manifest.BuildDict())
+          .SetManifest(manifest.Build())
           .SetLocation(ManifestLocation::kUnpacked)
           .SetID("abcdefghijabcdefghijabcdefghijaa")
           .Build());
@@ -124,12 +124,11 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   manifest2.Set(manifest_keys::kName, "ext2")
       .Set(manifest_keys::kVersion, "0.1")
       .Set(manifest_keys::kManifestVersion, 2)
-      .Set(
-          api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
-          DictionaryBuilder().Set("bookmarks", kOverrideResource2).BuildDict());
+      .Set(api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
+           DictionaryBuilder().Set("bookmarks", kOverrideResource2).Build());
   scoped_refptr<const Extension> ext_component(
       ExtensionBuilder()
-          .SetManifest(manifest2.BuildDict())
+          .SetManifest(manifest2.Build())
           .SetLocation(ManifestLocation::kComponent)
           .SetID("bbabcdefghijabcdefghijabcdefghij")
           .Build());
@@ -267,7 +266,7 @@ TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
 TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
   auto load_extension_overriding_newtab = [this](const char* name) {
     base::Value::Dict chrome_url_overrides =
-        DictionaryBuilder().Set("newtab", "newtab.html").BuildDict();
+        DictionaryBuilder().Set("newtab", "newtab.html").Build();
     scoped_refptr<const Extension> extension =
         ExtensionBuilder(name)
             .SetLocation(ManifestLocation::kInternal)

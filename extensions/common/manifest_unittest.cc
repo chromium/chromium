@@ -25,7 +25,7 @@ TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyUnpacked) {
   Manifest(ManifestLocation::kUnpacked,
            DictionaryBuilder()
                .Set(manifest_keys::kDifferentialFingerprint, "")
-               .BuildDict(),
+               .Build(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -39,7 +39,7 @@ TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyCommandLine) {
   Manifest(ManifestLocation::kCommandLine,
            DictionaryBuilder()
                .Set(manifest_keys::kDifferentialFingerprint, "")
-               .BuildDict(),
+               .Build(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -53,7 +53,7 @@ TEST(ManifestTest, ValidateSilentOnDiffFingerprintKeyInternal) {
   Manifest(ManifestLocation::kInternal,
            DictionaryBuilder()
                .Set(manifest_keys::kDifferentialFingerprint, "")
-               .BuildDict(),
+               .Build(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -63,7 +63,7 @@ TEST(ManifestTest, ValidateSilentOnDiffFingerprintKeyInternal) {
 TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyUnpacked) {
   std::string error;
   std::vector<InstallWarning> warnings;
-  Manifest(ManifestLocation::kUnpacked, DictionaryBuilder().BuildDict(),
+  Manifest(ManifestLocation::kUnpacked, DictionaryBuilder().Build(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -73,7 +73,7 @@ TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyUnpacked) {
 TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyInternal) {
   std::string error;
   std::vector<InstallWarning> warnings;
-  Manifest(ManifestLocation::kInternal, DictionaryBuilder().BuildDict(),
+  Manifest(ManifestLocation::kInternal, DictionaryBuilder().Build(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);

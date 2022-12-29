@@ -98,7 +98,7 @@ scoped_refptr<const Extension> BuildExtension() {
                        .Set("name", "My Wonderful Extension")
                        .Set("version", "0.1.1.0")
                        .Set("manifest_version", 2)
-                       .BuildDict())
+                       .Build())
       .Build();
 }
 

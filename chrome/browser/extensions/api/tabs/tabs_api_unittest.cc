@@ -308,7 +308,7 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
                   .Set("version", "1.0")
                   .Set("manifest_version", 2)
                   .Set("permissions", ListBuilder().Append("tabs").Build())
-                  .BuildDict())
+                  .Build())
           .Build();
   base::Value::List tabs_list_with_permission = RunTabsQueryFunction(
       browser(), extension_with_permission.get(), kTitleAndURLQueryInfo);
@@ -360,7 +360,7 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
                   .Set("manifest_version", 2)
                   .Set("permissions",
                        ListBuilder().Append("*://www.google.com/*").Build())
-                  .BuildDict())
+                  .Build())
           .Build();
 
   {
@@ -413,7 +413,7 @@ TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
       .Set("permissions", ListBuilder().Append("tabs").Build());
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(manifest.BuildDict())
+          .SetManifest(manifest.Build())
           .SetID(extension_misc::kPdfExtensionId)
           .Build();
   ASSERT_TRUE(extension);
@@ -522,7 +522,7 @@ TEST_F(TabsApiUnitTest, TabsUpdateJavaScriptUrlNotAllowed) {
                   .Set("manifest_version", 2)
                   .Set("permissions",
                        ListBuilder().Append("http://www.example.com/*").Build())
-                  .BuildDict())
+                  .Build())
           .Build();
   auto function = base::MakeRefCounted<TabsUpdateFunction>();
   function->set_extension(extension);

@@ -123,9 +123,9 @@ IN_PROC_BROWSER_TEST_P(SharedArrayBufferTest, TransferToWorker) {
   if (is_cross_origin_isolated) {
     builder
         .Set("cross_origin_opener_policy",
-             DictionaryBuilder().Set("value", "same-origin").BuildDict())
+             DictionaryBuilder().Set("value", "same-origin").Build())
         .Set("cross_origin_embedder_policy",
-             DictionaryBuilder().Set("value", "require-corp").BuildDict());
+             DictionaryBuilder().Set("value", "require-corp").Build());
   }
 
   DictionaryBuilder background_builder;
@@ -134,10 +134,10 @@ IN_PROC_BROWSER_TEST_P(SharedArrayBufferTest, TransferToWorker) {
 
   if (is_platform_app) {
     builder.Set("app", DictionaryBuilder()
-                           .Set("background", background_builder.BuildDict())
-                           .BuildDict());
+                           .Set("background", background_builder.Build())
+                           .Build());
   } else {
-    builder.Set("background", background_builder.BuildDict());
+    builder.Set("background", background_builder.Build());
   }
 
   test_dir().WriteManifest(builder.ToJSON());

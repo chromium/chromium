@@ -299,7 +299,7 @@ base::Value::Dict CreateManifest(
         dnr_api::ManifestKeys::kDeclarativeNetRequest,
         DictionaryBuilder()
             .Set(dnr_api::DNRInfo::kRuleResources, ToValue(ruleset_info))
-            .BuildDict());
+            .Build());
   }
 
   return manifest_builder.Set(keys::kName, extension_name)
@@ -308,9 +308,9 @@ base::Value::Dict CreateManifest(
       .Set(keys::kManifestVersion, 2)
       .Set("background", DictionaryBuilder()
                              .Set("scripts", ToValue(background_scripts))
-                             .BuildDict())
-      .Set(keys::kBrowserAction, DictionaryBuilder().BuildDict())
-      .BuildDict();
+                             .Build())
+      .Set(keys::kBrowserAction, DictionaryBuilder().Build())
+      .Build();
 }
 
 base::Value::List ToListValue(const std::vector<std::string>& vec) {

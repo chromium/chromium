@@ -118,7 +118,7 @@ TEST_F(ExtensionInstallPromptUnitTest, PromptShowsPermissionWarnings) {
                            .Set("version", "1.0")
                            .Set("manifest_version", 2)
                            .Set("description", "Random Ext")
-                           .BuildDict())
+                           .Build())
           .Build();
 
   content::TestWebContentsFactory factory;
@@ -148,7 +148,7 @@ TEST_F(ExtensionInstallPromptUnitTest,
                                 ListBuilder().Append("clipboardRead").Build())
                            .Set("optional_permissions",
                                 ListBuilder().Append("tabs").Build())
-                           .BuildDict())
+                           .Build())
           .Build();
 
   content::TestWebContentsFactory factory;

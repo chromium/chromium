@@ -146,8 +146,8 @@ scoped_refptr<Extension> CreateExtensionWithSearchProvider(
       .Set("chrome_settings_overrides",
            DictionaryBuilder()
                .Set("search_provider", std::move(search_provider))
-               .BuildDict());
-  return CreateExtension(manifest.BuildDict(), error);
+               .Build());
+  return CreateExtension(manifest.Build(), error);
 }
 
 TEST(OverrideSettingsTest, ParseManifest) {
@@ -315,7 +315,7 @@ TEST(OverrideSettingsTest, SearchProviderMissingKeys) {
   for (const KeyValue& kv : kMandatorySearchProviderKeyValues)
     search_provider.Set(kv.key, kv.value);
   base::Value::Dict search_provider_with_all_keys_dict =
-      search_provider.BuildDict();
+      search_provider.Build();
 
   // Missing all keys from |kMandatorySearchProviderValues|.
   for (const KeyValue& kv : kMandatorySearchProviderKeyValues) {

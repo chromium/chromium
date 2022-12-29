@@ -104,8 +104,8 @@ TEST(ExtensionTest, EnsureNewLinesInExtensionNameAreCollapsed) {
       .Set("description", "some description");
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(manifest.BuildDict())
-          .MergeManifest(DictionaryBuilder().Set("version", "0.1").BuildDict())
+          .SetManifest(manifest.Build())
+          .MergeManifest(DictionaryBuilder().Set("version", "0.1").Build())
           .Build();
   ASSERT_TRUE(extension.get());
   EXPECT_EQ("TestNew lines", extension->name());
@@ -121,8 +121,8 @@ TEST(ExtensionTest, EnsureWhitespacesInExtensionNameAreCollapsed) {
       .Set("description", "some description");
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(manifest.BuildDict())
-          .MergeManifest(DictionaryBuilder().Set("version", "0.1").BuildDict())
+          .SetManifest(manifest.Build())
+          .MergeManifest(DictionaryBuilder().Set("version", "0.1").Build())
           .Build();
   ASSERT_TRUE(extension.get());
   EXPECT_EQ("Test Whitespace", extension->name());
@@ -142,7 +142,7 @@ TEST(ExtensionTest, RTLNameInLTRLocale) {
         .Set("version",
              "0.1");  // <NOTE> Moved this here to avoid the MergeManifest call.
     scoped_refptr<const Extension> extension =
-        ExtensionBuilder().SetManifest(manifest.BuildDict()).Build();
+        ExtensionBuilder().SetManifest(manifest.Build()).Build();
     ASSERT_TRUE(extension);
     const int kResourceId = IDS_EXTENSION_PERMISSIONS_PROMPT_TITLE;
     const std::u16string expected_utf16 = base::WideToUTF16(expected);

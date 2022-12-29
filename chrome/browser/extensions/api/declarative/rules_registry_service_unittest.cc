@@ -113,7 +113,7 @@ TEST_F(RulesRegistryServiceTest, TestConstructionAndMultiThreading) {
                                    .Set("name", "Extension")
                                    .Set("version", "1.0")
                                    .Set("manifest_version", 2)
-                                   .BuildDict();
+                                   .Build();
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(std::move(manifest))

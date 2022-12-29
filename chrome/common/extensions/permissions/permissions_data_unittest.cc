@@ -87,7 +87,7 @@ scoped_refptr<const Extension> GetExtensionWithHostPermission(
                        .Set("manifest_version", 2)
                        .Set("version", "1.0.0")
                        .Set("permissions", permissions.Build())
-                       .BuildDict())
+                       .Build())
       .SetLocation(location)
       .SetID(id)
       .Build();
