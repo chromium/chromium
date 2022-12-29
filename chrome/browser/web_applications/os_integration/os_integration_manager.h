@@ -16,10 +16,12 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_run_on_os_login.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -38,8 +40,17 @@ class FakeOsIntegrationManager;
 class WebAppIconManager;
 class WebAppRegistrar;
 class WebAppSyncBridge;
-class OsIntegrationSubManager;
 class WebAppUiManager;
+
+// Returns if the sub-manager architecture is enabled. This means that they are
+// writing the expected os integration state to disk. See
+// `AreSubManagersExecuteEnabled` to check if they are also executing.
+bool AreOsIntegrationSubManagersEnabled();
+
+// Returns if the sub-manager architecture is enabled AND the "execute"
+// architecture is enabled. This causes os integration execution to happen from
+// the sub-managers and not the OsIntegrationManager.
+bool AreSubManagersExecuteEnabled();
 
 // OsHooksErrors contains the result of all Os hook deployments.
 // If a bit is set to `true`, then an error did occur.
@@ -120,7 +131,10 @@ class OsIntegrationManager : public AppRegistrarObserver {
   // TODO(crbug.com/1401125): Remove all install, uninstall and update functions
   // from this file once all OS Integration sub managers have been implemented,
   // connected to the web_app system and tested.
-  virtual void Synchronize(const AppId& app_id, base::OnceClosure callback);
+  virtual void Synchronize(
+      const AppId& app_id,
+      base::OnceClosure callback,
+      absl::optional<SynchronizeOsOptions> options = absl::nullopt);
 
   // Install all needed OS hooks for the web app.
   // If provided |web_app_info| is a nullptr, it will read icons data from disk,
@@ -299,6 +313,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
 
   virtual void ExecuteAllSubManagerConfigurations(
       const AppId& app_id,
+      absl::optional<SynchronizeOsOptions> options,
       std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
       base::OnceClosure callback);
 

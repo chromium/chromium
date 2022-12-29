@@ -329,8 +329,10 @@ std::string GetExternalPrefMigrationTestName(
 std::string GetOsIntegrationSubManagersTestName(
     const ::testing::TestParamInfo<OsIntegrationSubManagersState>& info) {
   switch (info.param) {
-    case OsIntegrationSubManagersState::kEnabled:
-      return "OSIntegrationSubManagers_Enabled";
+    case OsIntegrationSubManagersState::kSaveStateToDB:
+      return "OSIntegrationSubManagers_SaveStateToDB";
+    case OsIntegrationSubManagersState::kSaveStateAndExecute:
+      return "OSIntegrationSubManagers_SaveStateAndExecute";
     case OsIntegrationSubManagersState::kDisabled:
       return "OSIntegrationSubManagers_Disabled";
   }

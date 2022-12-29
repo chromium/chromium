@@ -41,6 +41,8 @@
 namespace web_app {
 namespace {
 
+// TODO(https://crbug.com/1403999): This test should be refactored to remove the
+// MockOsIntegrationManager.
 class WebAppUninstallCommandTest : public WebAppTest {
  public:
   WebAppUninstallCommandTest() = default;
@@ -83,7 +85,8 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
   }
 
   OsHooksErrors result;
-  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+  EXPECT_CALL(*os_integration_manager_,
+              Synchronize(app_id, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(result));
@@ -118,7 +121,8 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallExternal) {
   }
 
   OsHooksErrors result;
-  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+  EXPECT_CALL(*os_integration_manager_,
+              Synchronize(app_id, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(result));
@@ -154,7 +158,8 @@ TEST_F(WebAppUninstallCommandTest, FailedDataDeletion) {
   }
 
   OsHooksErrors result;
-  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+  EXPECT_CALL(*os_integration_manager_,
+              Synchronize(app_id, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(result));
@@ -190,7 +195,8 @@ TEST_F(WebAppUninstallCommandTest, FailedOsHooksSetting) {
 
   OsHooksErrors result;
   result.set(true);
-  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+  EXPECT_CALL(*os_integration_manager_,
+              Synchronize(app_id, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(result));
@@ -220,7 +226,8 @@ TEST_F(WebAppUninstallCommandTest, TryToUninstallNonExistentApp) {
                                     WebAppManagement::kSync);
   AppId app_id = web_app->app_id();
 
-  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+  EXPECT_CALL(*os_integration_manager_,
+              Synchronize(app_id, testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .Times(0);
@@ -254,7 +261,8 @@ TEST_F(WebAppUninstallCommandTest, CommandManagerShutdownThrowsError) {
     update->CreateApp(std::move(web_app));
   }
 
-  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+  EXPECT_CALL(*os_integration_manager_,
+              Synchronize(app_id, testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .Times(0);
@@ -292,7 +300,8 @@ TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
                    .DoesAppIdExist(app_id));
 
   OsHooksErrors result;
-  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+  EXPECT_CALL(*os_integration_manager_,
+              Synchronize(app_id, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(result));
@@ -329,7 +338,8 @@ TEST_F(WebAppUninstallCommandTest, ExternalConfigMapMissing) {
   }
   EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(app_id));
   OsHooksErrors result;
-  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+  EXPECT_CALL(*os_integration_manager_,
+              Synchronize(app_id, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(result));
@@ -371,7 +381,8 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
     update->CreateApp(std::move(web_app));
   }
 
-  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+  EXPECT_CALL(*os_integration_manager_,
+              Synchronize(app_id, testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .Times(0);
@@ -385,7 +396,8 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
   EXPECT_CALL(*os_integration_manager_,
               RegisterWebAppOsUninstallation(app_id, testing::_))
       .Times(1);
-  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+  EXPECT_CALL(*os_integration_manager_,
+              Synchronize(app_id, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());
 #else
   EXPECT_CALL(*os_integration_manager_,
@@ -446,7 +458,8 @@ TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
   }
 
   OsHooksErrors result;
-  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+  EXPECT_CALL(*os_integration_manager_,
+              Synchronize(app_id, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(result));

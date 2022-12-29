@@ -1,4 +1,4 @@
 file://components/search/OWNERS
 estade@chromium.org
 
-per-file app_launcher_handler.*=dmurph@chromium.org
+per-file app_launcher_handler*=dmurph@chromium.org

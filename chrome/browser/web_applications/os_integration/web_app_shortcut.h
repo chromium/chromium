@@ -31,8 +31,11 @@
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #endif
 
+class Profile;
+
 namespace base {
 class TaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace gfx {
@@ -40,6 +43,9 @@ class ImageSkia;
 }
 
 namespace web_app {
+namespace proto {
+class WebAppOsIntegrationState;
+}
 
 #if BUILDFLAG(IS_LINUX)
 struct LinuxFileRegistration {
@@ -166,6 +172,13 @@ struct ShortcutInfo {
   // instance on the same thread.
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
+    const AppId& app_id,
+    const GURL& start_url,
+    const base::FilePath& profile_path,
+    const std::string& profile_name,
+    const proto::WebAppOsIntegrationState& state);
 
 // This specifies a folder in the system applications menu (e.g the Start Menu
 // on Windows).
@@ -313,7 +326,7 @@ void PostShortcutIOTaskAndReplyWithResult(
 // runner that permits access to COM libraries. Shortcut tasks typically deal
 // with ensuring Profile changes are reflected on disk, so shutdown is always
 // blocked so that an inconsistent shortcut state is not left on disk.
-scoped_refptr<base::TaskRunner> GetShortcutIOTaskRunner();
+scoped_refptr<base::SequencedTaskRunner> GetShortcutIOTaskRunner();
 
 base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info);
 

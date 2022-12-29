@@ -1421,7 +1421,7 @@ TEST_F(RegisterOsSettingsTest, MaybeRegisterOsUninstall) {
   EXPECT_CALL(manager, MacAppShimOnAppInstalledForProfile(app_id)).Times(1);
   EXPECT_CALL(manager, RegisterWebAppOsUninstallation(app_id, testing::_))
       .Times(1);
-  EXPECT_CALL(manager, Synchronize(app_id, testing::_))
+  EXPECT_CALL(manager, Synchronize(app_id, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());
 
   // Scenario 1.
@@ -1493,7 +1493,7 @@ TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsUninstall) {
   // sets only kUninstallationViaOsSettings that will async call from
   // InstallOsHooks. Test ends before async is called so we test against
   // InstallOsHooks.
-  EXPECT_CALL(manager, Synchronize(app_id, testing::_)).Times(1);
+  EXPECT_CALL(manager, Synchronize(app_id, testing::_, testing::_)).Times(1);
   EXPECT_CALL(manager, UnregisterWebAppOsUninstallation(app_id)).Times(1);
 
   // Scenario 1.

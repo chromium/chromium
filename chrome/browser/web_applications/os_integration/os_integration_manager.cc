@@ -28,7 +28,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/protocol_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/run_on_os_login_sub_manager.h"
-#include "chrome/browser/web_applications/os_integration/shortcut_handling_sub_manager.h"
+#include "chrome/browser/web_applications/os_integration/shortcut_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -56,6 +56,15 @@ bool g_suppress_os_hooks_for_testing_ = false;
 namespace web_app {
 
 namespace {
+OsHooksErrors GetFinalErrorBitsetFromCollection(
+    std::vector<OsHooksErrors> os_hooks_errors) {
+  OsHooksErrors final_errors;
+  for (const OsHooksErrors& error : os_hooks_errors) {
+    final_errors = final_errors | error;
+  }
+  return final_errors;
+}
+}  // namespace
 
 bool AreOsIntegrationSubManagersEnabled() {
   return base::FeatureList::IsEnabled(features::kOsIntegrationSubManagers);
@@ -67,17 +76,6 @@ bool AreSubManagersExecuteEnabled() {
   return (features::kOsIntegrationSubManagersStageParam.Get() ==
           features::OsIntegrationSubManagersStage::kExecuteAndWriteConfig);
 }
-
-OsHooksErrors GetFinalErrorBitsetFromCollection(
-    std::vector<OsHooksErrors> os_hooks_errors) {
-  OsHooksErrors final_errors;
-  for (const OsHooksErrors& error : os_hooks_errors) {
-    final_errors = final_errors | error;
-  }
-  return final_errors;
-}
-
-}  // namespace
 
 OsIntegrationManager::ScopedSuppressForTesting::ScopedSuppressForTesting()
     :
@@ -186,8 +184,8 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
     url_handler_manager_->SetSubsystems(registrar);
 
   sub_managers_.clear();
-  auto shortcut_handling_sub_manager =
-      std::make_unique<ShortcutHandlingSubManager>(*icon_manager, *registrar);
+  auto shortcut_handling_sub_manager = std::make_unique<ShortcutSubManager>(
+      *profile_, *icon_manager, *registrar);
   auto protocol_handling_sub_manager =
       std::make_unique<ProtocolHandlingSubManager>(*registrar);
 
@@ -214,8 +212,10 @@ void OsIntegrationManager::Start() {
   }
 }
 
-void OsIntegrationManager::Synchronize(const AppId& app_id,
-                                       base::OnceClosure callback) {
+void OsIntegrationManager::Synchronize(
+    const AppId& app_id,
+    base::OnceClosure callback,
+    absl::optional<SynchronizeOsOptions> options) {
   if (!AreOsIntegrationSubManagersEnabled()) {
     std::move(callback).Run();
     return;
@@ -230,21 +230,15 @@ void OsIntegrationManager::Synchronize(const AppId& app_id,
       std::make_unique<proto::WebAppOsIntegrationState>();
   proto::WebAppOsIntegrationState* desired_states_ptr = desired_states.get();
 
+  // Note: Sometimes the execute step is a no-op based on feature flags or if os
+  // integration is disabled for testing. This logic is in the
+  // ExecuteAllSubManagerConfigurations method.
   base::RepeatingClosure configure_barrier;
-  if (AreSubManagersExecuteEnabled()) {
-    configure_barrier = base::BarrierClosure(
-        sub_managers_.size(),
-        base::BindOnce(
-            &OsIntegrationManager::ExecuteAllSubManagerConfigurations,
-            weak_ptr_factory_.GetWeakPtr(), app_id, std::move(desired_states),
-            std::move(callback)));
-  } else {
-    configure_barrier = base::BarrierClosure(
-        sub_managers_.size(),
-        base::BindOnce(&OsIntegrationManager::WriteStateToDB,
-                       weak_ptr_factory_.GetWeakPtr(), app_id,
-                       std::move(desired_states), std::move(callback)));
-  }
+  configure_barrier = base::BarrierClosure(
+      sub_managers_.size(),
+      base::BindOnce(&OsIntegrationManager::ExecuteAllSubManagerConfigurations,
+                     weak_ptr_factory_.GetWeakPtr(), app_id, options,
+                     std::move(desired_states), std::move(callback)));
 
   for (const auto& sub_manager : sub_managers_) {
     // This dereference is safe because the barrier closure guarantees that it
@@ -259,7 +253,10 @@ void OsIntegrationManager::InstallOsHooks(
     InstallOsHooksCallback callback,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     InstallOsHooksOptions options) {
-  if (g_suppress_os_hooks_for_testing_) {
+  // If the "Execute" step is enabled for sub-managers, then the 'old' os
+  // integration path needs to be turned off so that os integration doesn't get
+  // done twice.
+  if (g_suppress_os_hooks_for_testing_ || AreSubManagersExecuteEnabled()) {
     OsHooksErrors os_hooks_errors;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
@@ -312,7 +309,10 @@ void OsIntegrationManager::UninstallAllOsHooks(
 void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
                                             const OsHooksOptions& os_hooks,
                                             UninstallOsHooksCallback callback) {
-  if (g_suppress_os_hooks_for_testing_) {
+  // If the "Execute" step is enabled for sub-managers, then the 'old' os
+  // integration path needs to be turned off so that os integration doesn't get
+  // done twice.
+  if (g_suppress_os_hooks_for_testing_ || AreSubManagersExecuteEnabled()) {
     OsHooksErrors os_hooks_errors;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
@@ -372,7 +372,10 @@ void OsIntegrationManager::UpdateOsHooks(
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebAppInstallInfo& web_app_info,
     UpdateOsHooksCallback callback) {
-  if (g_suppress_os_hooks_for_testing_) {
+  // If the "Execute" step is enabled for sub-managers, then the 'old' os
+  // integration path needs to be turned off so that os integration doesn't get
+  // done twice.
+  if (g_suppress_os_hooks_for_testing_ || AreSubManagersExecuteEnabled()) {
     OsHooksErrors os_hooks_errors;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
@@ -710,6 +713,14 @@ void OsIntegrationManager::UnregisterWebAppOsUninstallation(
 void OsIntegrationManager::UpdateShortcuts(const AppId& app_id,
                                            base::StringPiece old_name,
                                            ResultCallback callback) {
+  // If the "Execute" step is enabled for sub-managers, then the 'old' os
+  // integration path needs to be turned off so that os integration doesn't get
+  // done twice.
+  if (AreSubManagersExecuteEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
+    return;
+  }
   DCHECK(shortcut_manager_);
   if (!shortcut_manager_->CanCreateShortcuts()) {
     std::move(callback).Run(Result::kOk);
@@ -743,6 +754,14 @@ void OsIntegrationManager::UpdateShortcutsMenu(
 void OsIntegrationManager::UpdateUrlHandlers(
     const AppId& app_id,
     base::OnceCallback<void(bool success)> callback) {
+  // If the "Execute" step is enabled for sub-managers, then the 'old' os
+  // integration path needs to be turned off so that os integration doesn't get
+  // done twice.
+  if (AreSubManagersExecuteEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+    return;
+  }
   if (!url_handler_manager_)
     return;
 
@@ -753,6 +772,20 @@ void OsIntegrationManager::UpdateFileHandlers(
     const AppId& app_id,
     FileHandlerUpdateAction file_handlers_need_os_update,
     ResultCallback finished_callback) {
+  // If the "Execute" step is enabled for sub-managers, then the 'old' os
+  // integration path needs to be turned off so that os integration doesn't get
+  // done twice.
+  if (AreSubManagersExecuteEnabled()) {
+    // Due to the way UpdateFileHandlerCommand is currently written, this needs
+    // to be synchronously called on Mac.
+#if BUILDFLAG(IS_MAC)
+    std::move(finished_callback).Run(Result::kOk);
+#else
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(finished_callback), Result::kOk));
+    return;
+#endif
+  }
   if (file_handlers_need_os_update == FileHandlerUpdateAction::kNoUpdate) {
     std::move(finished_callback).Run(Result::kOk);
     return;
@@ -876,21 +909,20 @@ std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(
 
 void OsIntegrationManager::ExecuteAllSubManagerConfigurations(
     const AppId& app_id,
+    absl::optional<SynchronizeOsOptions> options,
     std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
     base::OnceClosure callback) {
-  if (g_suppress_os_hooks_for_testing_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&OsIntegrationManager::WriteStateToDB,
-                       weak_ptr_factory_.GetWeakPtr(), app_id,
-                       std::move(desired_states), std::move(callback)));
-    return;
-  }
-
   // This can never be a use-case where we execute OS integration registration/
   // unregistration but do not update the WebAppOsIntegrationState proto in the
   // web_app DB.
   DCHECK(AreOsIntegrationSubManagersEnabled());
+
+  // The "execute" step is skipped in the following cases:
+  // 1. The app is no longer in the registrar. The whole synchronize process is
+  //    stopped here.
+  // 2. The `g_suppress_os_hooks_for_testing_` flag is set.
+  // 3. Execution has been disabled by the feature parameters (see
+  //    `AreSubManagersExecuteEnabled()`).
 
   const WebApp* web_app = registrar_->GetAppById(app_id);
   if (!web_app) {
@@ -899,18 +931,25 @@ void OsIntegrationManager::ExecuteAllSubManagerConfigurations(
   }
 
   proto::WebAppOsIntegrationState* desired_states_ptr = desired_states.get();
-  auto write_state_callback = base::BarrierClosure(
-      sub_managers_.size(),
-      base::BindOnce(&OsIntegrationManager::WriteStateToDB,
-                     weak_ptr_factory_.GetWeakPtr(), app_id,
-                     std::move(desired_states), std::move(callback)));
+  auto write_state_to_db = base::BindOnce(
+      &OsIntegrationManager::WriteStateToDB, weak_ptr_factory_.GetWeakPtr(),
+      app_id, std::move(desired_states), std::move(callback));
+
+  if (g_suppress_os_hooks_for_testing_ || !AreSubManagersExecuteEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(write_state_to_db));
+    return;
+  }
+
+  auto write_state_barrier =
+      base::BarrierClosure(sub_managers_.size(), std::move(write_state_to_db));
 
   const proto::WebAppOsIntegrationState current_state =
       web_app->current_os_integration_states();
 
   for (const auto& sub_manager : sub_managers_) {
-    sub_manager->Execute(app_id, *desired_states_ptr, current_state,
-                         write_state_callback);
+    sub_manager->Execute(app_id, options, *desired_states_ptr, current_state,
+                         write_state_barrier);
   }
 }
 

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/os_integration/shortcut_handling_sub_manager.h"
-
 #include <memory>
 #include <utility>
 
@@ -11,10 +9,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/shortcut_sub_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -36,7 +34,7 @@ using ::testing::IsFalse;
 
 namespace {
 
-class ShortcutHandlingSubManagerBrowserTest
+class ShortcutSubManagerBrowserTest
     : public WebAppControllerBrowserTest,
       public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
  public:
@@ -53,9 +51,14 @@ class ShortcutHandlingSubManagerBrowserTest
   }
 
   void SetUp() override {
-    if (OsIntegrationSubManagersEnabled()) {
+    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
           features::kOsIntegrationSubManagers, {{"stage", "write_config"}});
+    } else if (GetParam() ==
+               OsIntegrationSubManagersState::kSaveStateAndExecute) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kOsIntegrationSubManagers,
+          {{"stage", "execute_and_write_config"}});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{},
@@ -97,17 +100,13 @@ class ShortcutHandlingSubManagerBrowserTest
                 testing::Eq(webapps::UninstallResultCode::kSuccess));
   }
 
-  bool OsIntegrationSubManagersEnabled() {
-    return GetParam() == OsIntegrationSubManagersState::kEnabled;
-  }
-
  private:
   std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
       shortcut_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ShortcutHandlingSubManagerBrowserTest, Configure) {
+IN_PROC_BROWSER_TEST_P(ShortcutSubManagerBrowserTest, Configure) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html");
@@ -117,7 +116,7 @@ IN_PROC_BROWSER_TEST_P(ShortcutHandlingSubManagerBrowserTest, Configure) {
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-  if (OsIntegrationSubManagersEnabled()) {
+  if (AreOsIntegrationSubManagersEnabled()) {
     ASSERT_THAT(state.value().shortcut().title(),
                 testing::Eq("Manifest test app"));
     // All icons are read from the disk.
@@ -130,12 +129,14 @@ IN_PROC_BROWSER_TEST_P(ShortcutHandlingSubManagerBrowserTest, Configure) {
           syncer::ProtoTimeToTime(icon_time_map_data.timestamp()).is_null(),
           testing::IsFalse());
     }
+    // TODO(dmurph): Implement shortcut & color detection if
+    // `AreSubManagersExecuteEnabled()` returns true. https://crbug.com/1404032.
   } else {
     ASSERT_FALSE(state.value().has_shortcut());
   }
 }
 
-IN_PROC_BROWSER_TEST_P(ShortcutHandlingSubManagerBrowserTest,
+IN_PROC_BROWSER_TEST_P(ShortcutSubManagerBrowserTest,
                        ConfigureUninstallReturnsEmptyState) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
@@ -146,12 +147,16 @@ IN_PROC_BROWSER_TEST_P(ShortcutHandlingSubManagerBrowserTest,
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   EXPECT_FALSE(state.has_value());
+
+  // TODO(dmurph): Implement shortcut & color detection if
+  // `AreSubManagersExecuteEnabled()` returns true. https://crbug.com/1404032.
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ShortcutHandlingSubManagerBrowserTest,
-    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+    ShortcutSubManagerBrowserTest,
+    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
+                      OsIntegrationSubManagersState::kSaveStateAndExecute,
                       OsIntegrationSubManagersState::kDisabled),
     test::GetOsIntegrationSubManagersTestName);
 

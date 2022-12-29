@@ -81,7 +81,7 @@ class WebAppInstallFinalizerUnitTest
       public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
  public:
   WebAppInstallFinalizerUnitTest() {
-    if (GetParam() == OsIntegrationSubManagersState::kEnabled) {
+    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{blink::features::kFileHandlingAPI, {}},
            {features::kOsIntegrationSubManagers, {{"stage", "write_config"}}}},
@@ -460,7 +460,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebAppInstallFinalizerUnitTest,
-    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
                       OsIntegrationSubManagersState::kDisabled),
     test::GetOsIntegrationSubManagersTestName);
 

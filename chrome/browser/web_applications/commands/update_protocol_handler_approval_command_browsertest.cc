@@ -122,7 +122,7 @@ class UpdateProtocolHandlerApprovalCommandTest
   }
 
   bool EnableOsIntegrationSubManager() {
-    return GetParam() == OsIntegrationSubManagersState::kEnabled;
+    return GetParam() == OsIntegrationSubManagersState::kSaveStateToDB;
   }
 
  private:
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(UpdateProtocolHandlerApprovalCommandTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     UpdateProtocolHandlerApprovalCommandTest,
-    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
                       OsIntegrationSubManagersState::kDisabled),
     test::GetOsIntegrationSubManagersTestName);
 

@@ -113,9 +113,6 @@ class AppHomePageHandler
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
                                         const std::u16string& error) override;
 
-  // Records result to UMA after OS Hooks are installed.
-  void OnOsHooksInstalled(const web_app::AppId& app_id,
-                          const web_app::OsHooksErrors os_hooks_errors);
   void InstallOsHooks(const web_app::AppId& app_id, web_app::AppLock* lock);
   void LaunchAppInternal(const std::string& app_id,
                          int source,

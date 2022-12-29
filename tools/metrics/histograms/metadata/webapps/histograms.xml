@@ -1078,6 +1078,20 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of shortcut creation for PWA.</summary>
 </histogram>
 
+<histogram name="WebApp.Shortcuts.Delete.Result" enum="BooleanSuccess"
+    expires_after="2023-12-16">
+  <owner>dmurph@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    The result of deleting shortcuts for an installed PWA. Shortcuts are usually
+    the icon in the operating system signifying the app or extension as an OS
+    entity (e.g. on Mac, it's the .app file). Deleting shortcuts occurs when an
+    app is uninstalled, which can be triggered by the user uninstalling the app,
+    or by other 'app management' sources uninstalling an app (e.g. organization
+    policy).
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Shortcuts.Update.Result" enum="BooleanSuccess"
     expires_after="2023-12-16">
   <owner>camdenking@google.com</owner>

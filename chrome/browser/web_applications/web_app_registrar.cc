@@ -896,8 +896,14 @@ ApiApprovalState WebAppRegistrar::GetAppFileHandlerApprovalState(
 bool WebAppRegistrar::ExpectThatFileHandlersAreRegisteredWithOs(
     const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
-  return web_app && web_app->file_handler_os_integration_state() ==
-                        OsIntegrationState::kEnabled;
+  if (!web_app) {
+    return false;
+  }
+
+  // TODO(dibyapal): Add support for the new `current_os_integration_state()`
+  // when file handlers are added there. https://crbug.com/1404165.
+  return web_app->file_handler_os_integration_state() ==
+         OsIntegrationState::kEnabled;
 }
 
 absl::optional<GURL> WebAppRegistrar::GetAppScopeInternal(

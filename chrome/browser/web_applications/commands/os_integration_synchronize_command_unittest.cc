@@ -42,7 +42,7 @@ class OsIntegrationSynchronizeCommandTest
   const GURL kWebAppUrl = GURL("https://example.com");
 
   OsIntegrationSynchronizeCommandTest() {
-    if (GetParam() == OsIntegrationSubManagersState::kEnabled) {
+    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{features::kOsIntegrationSubManagers, {{"stage", "write_config"}}}},
           /*disabled_features=*/{});
@@ -166,7 +166,7 @@ TEST_P(OsIntegrationSynchronizeCommandTest, SynchronizeWorks) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     OsIntegrationSynchronizeCommandTest,
-    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
                       OsIntegrationSubManagersState::kDisabled),
     test::GetOsIntegrationSubManagersTestName);
 

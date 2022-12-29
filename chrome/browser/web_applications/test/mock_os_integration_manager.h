@@ -31,7 +31,9 @@ class MockOsIntegrationManager : public OsIntegrationManager {
   // Installation:
   MOCK_METHOD(void,
               Synchronize,
-              (const AppId& app_id, base::OnceClosure callback),
+              (const AppId& app_id,
+               base::OnceClosure callback,
+               absl::optional<SynchronizeOsOptions> options),
               (override));
 
   MOCK_METHOD(void,

@@ -98,9 +98,15 @@ void InstallAppLocallyCommand::StartWithLock(
                      weak_factory_.GetWeakPtr()));
 
   app_lock_->os_integration_manager().InstallOsHooks(
-      app_id_, os_hooks_barrier, /*web_app_info=*/nullptr, std::move(options));
+      app_id_, os_hooks_barrier, /*web_app_info=*/nullptr, options);
+
+  SynchronizeOsOptions synchronize_options;
+  synchronize_options.add_shortcut_to_desktop = options.add_to_desktop;
+  synchronize_options.add_to_quick_launch_bar = options.add_to_quick_launch_bar;
+  synchronize_options.reason = options.reason;
   app_lock_->os_integration_manager().Synchronize(
-      app_id_, base::BindOnce(os_hooks_barrier, web_app::OsHooksErrors()));
+      app_id_, base::BindOnce(os_hooks_barrier, OsHooksErrors()),
+      synchronize_options);
 }
 
 void InstallAppLocallyCommand::OnOsHooksInstalled(

@@ -35,8 +35,9 @@ class WebApp;
 
 // Intended to be used for parameterizing tests that involve OS integration.
 enum class OsIntegrationSubManagersState {
-  kEnabled = 0,
-  kDisabled = 1,
+  kSaveStateToDB = 0,
+  kSaveStateAndExecute = 1,
+  kDisabled = 2,
   kMaxValue = kDisabled
 };
 

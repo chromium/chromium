@@ -1607,7 +1607,7 @@ class WebAppBrowserTestUpdateShortcutResult
       public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
  public:
   WebAppBrowserTestUpdateShortcutResult() {
-    if (GetParam() == OsIntegrationSubManagersState::kEnabled) {
+    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{features::kOsIntegrationSubManagers, {{"stage", "write_config"}}}},
           /*disabled_features=*/{});
@@ -1703,7 +1703,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebAppBrowserTestUpdateShortcutResult,
-    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
                       OsIntegrationSubManagersState::kDisabled),
     test::GetOsIntegrationSubManagersTestName);
 

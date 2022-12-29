@@ -29,7 +29,7 @@ class UpdateFileHandlerCommandTest
   const GURL kTestAppUrl = GURL("https://example.com");
 
   UpdateFileHandlerCommandTest() {
-    if (GetParam() == OsIntegrationSubManagersState::kEnabled) {
+    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{features::kOsIntegrationSubManagers, {{"stage", "write_config"}}},
            {blink::features::kFileHandlingAPI, {}}},
@@ -157,7 +157,7 @@ TEST_P(UpdateFileHandlerCommandTest, UpdateFileHandler) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     UpdateFileHandlerCommandTest,
-    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
                       OsIntegrationSubManagersState::kDisabled),
     test::GetOsIntegrationSubManagersTestName);
 

@@ -57,9 +57,14 @@ class ProtocolHandlingSubManagerTest
           ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
     }
 
-    if (EnableOsIntegrationSubManager()) {
+    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
           features::kOsIntegrationSubManagers, {{"stage", "write_config"}});
+    } else if (GetParam() ==
+               OsIntegrationSubManagersState::kSaveStateAndExecute) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kOsIntegrationSubManagers,
+          {{"stage", "execute_and_write_config"}});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{},
@@ -118,10 +123,6 @@ class ProtocolHandlingSubManagerTest
     return result.Get<AppId>();
   }
 
-  bool EnableOsIntegrationSubManager() {
-    return GetParam() == OsIntegrationSubManagersState::kEnabled;
-  }
-
  protected:
   WebAppProvider& provider() { return *provider_; }
 
@@ -145,7 +146,7 @@ TEST_P(ProtocolHandlingSubManagerTest, ConfigureOnlyProtocolHandler) {
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (EnableOsIntegrationSubManager()) {
+  if (AreOsIntegrationSubManagersEnabled()) {
     ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
                 testing::Eq(1));
 
@@ -202,7 +203,7 @@ TEST_P(ProtocolHandlingSubManagerTest, ConfigureProtocolHandlerDisallowed) {
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (EnableOsIntegrationSubManager()) {
+  if (AreOsIntegrationSubManagersEnabled()) {
     ASSERT_THAT(os_integration_state.protocols_handled().protocols_size(),
                 testing::Eq(1));
 
@@ -220,7 +221,7 @@ TEST_P(ProtocolHandlingSubManagerTest, ConfigureProtocolHandlerDisallowed) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     ProtocolHandlingSubManagerTest,
-    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
                       OsIntegrationSubManagersState::kDisabled),
     test::GetOsIntegrationSubManagersTestName);
 

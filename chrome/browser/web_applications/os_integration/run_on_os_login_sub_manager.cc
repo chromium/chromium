@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -63,10 +64,12 @@ void RunOnOsLoginSubManager::Shutdown() {}
 
 void RunOnOsLoginSubManager::Execute(
     const AppId& app_id,
+    const absl::optional<SynchronizeOsOptions>& synchronize_options,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
-  NOTREACHED() << "Not yet implemented";
+  // Not implemented yet.
+  std::move(callback).Run();
 }
 
 }  // namespace web_app

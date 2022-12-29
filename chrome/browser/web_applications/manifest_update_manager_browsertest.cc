@@ -3461,7 +3461,7 @@ class ManifestUpdateBrowserTestUrlHandlerSynchronize
       public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
  public:
   ManifestUpdateBrowserTestUrlHandlerSynchronize() {
-    if (GetParam() == OsIntegrationSubManagersState::kEnabled) {
+    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{features::kOsIntegrationSubManagers, {{"stage", "write_config"}}}},
           /*disabled_features=*/{});
@@ -3541,7 +3541,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateBrowserTestUrlHandlerSynchronize,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ManifestUpdateBrowserTestUrlHandlerSynchronize,
-    ::testing::Values(OsIntegrationSubManagersState::kEnabled,
+    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
                       OsIntegrationSubManagersState::kDisabled),
     test::GetOsIntegrationSubManagersTestName);
 #endif

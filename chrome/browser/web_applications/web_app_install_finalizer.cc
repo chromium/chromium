@@ -553,8 +553,15 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   // sub managers have been implemented.
   os_integration_manager_->InstallOsHooks(
       app_id, os_hooks_barrier, /*web_app_info=*/nullptr, hooks_options);
+
+  SynchronizeOsOptions synchronize_options;
+  synchronize_options.add_shortcut_to_desktop = hooks_options.add_to_desktop;
+  synchronize_options.add_to_quick_launch_bar =
+      hooks_options.add_to_quick_launch_bar;
+  synchronize_options.reason = hooks_options.reason;
   os_integration_manager_->Synchronize(
-      app_id, base::BindOnce(os_hooks_barrier, OsHooksErrors()));
+      app_id, base::BindOnce(os_hooks_barrier, OsHooksErrors()),
+      synchronize_options);
 }
 
 void WebAppInstallFinalizer::OnInstallHooksFinished(

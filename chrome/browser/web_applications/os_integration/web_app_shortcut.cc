@@ -29,12 +29,14 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_constants.h"
@@ -301,6 +303,45 @@ ShortcutInfo::~ShortcutInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
+    const AppId& app_id,
+    const GURL& start_url,
+    const base::FilePath& profile_path,
+    const std::string& profile_name,
+    const proto::WebAppOsIntegrationState& state) {
+  auto shortcut_info = std::make_unique<ShortcutInfo>();
+
+  shortcut_info->extension_id = app_id;
+  shortcut_info->url = start_url;
+  DCHECK(state.has_shortcut());
+  const proto::ShortcutDescription& shortcut_state = state.shortcut();
+  DCHECK(shortcut_state.has_title());
+  shortcut_info->title = base::UTF8ToUTF16(shortcut_state.title());
+  DCHECK(shortcut_state.has_description());
+  shortcut_info->description = base::UTF8ToUTF16(shortcut_state.description());
+  shortcut_info->profile_path = profile_path;
+  shortcut_info->profile_name = profile_name;
+  shortcut_info->is_multi_profile = true;
+
+  // TODO(https://crbug.com/1295044): Add file handlers.
+
+  if (state.has_protocols_handled()) {
+    for (const auto& protocol_handler : state.protocols_handled().protocols()) {
+      DCHECK(protocol_handler.has_protocol());
+      if (protocol_handler.has_protocol() &&
+          !protocol_handler.protocol().empty()) {
+        shortcut_info->protocol_handlers.emplace(protocol_handler.protocol());
+      }
+    }
+  }
+
+  // TODO(https://crbug.com/1295044): Add shortcut menu infos.
+
+  // TODO(https://crbug.com/1295044): Add mac's file handlers per profile.
+
+  return shortcut_info;
+}
+
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info) {
   // TODO(loyso): Remove this empty()/non-empty difference.
   if (shortcut_info.extension_id.empty())
@@ -316,8 +357,9 @@ base::FilePath GetOsIntegrationResourcesDirectoryForApp(
   DCHECK(!profile_path.empty());
   base::FilePath app_data_dir(profile_path.Append(chrome::kWebAppDirname));
 
-  if (!app_id.empty())
+  if (!app_id.empty()) {
     return app_data_dir.AppendASCII(GenerateApplicationNameFromAppId(app_id));
+  }
 
   std::string host(url.host());
   std::string scheme(url.has_scheme() ? url.scheme() : "http");
@@ -431,7 +473,7 @@ void PostShortcutIOTaskAndReplyWithResult(
                      std::move(reply)));
 }
 
-scoped_refptr<base::TaskRunner> GetShortcutIOTaskRunner() {
+scoped_refptr<base::SequencedTaskRunner> GetShortcutIOTaskRunner() {
   return g_shortcuts_task_runner.Get();
 }
 
@@ -449,5 +491,4 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
 #endif
 
 }  // namespace internals
-
 }  // namespace web_app
