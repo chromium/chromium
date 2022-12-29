@@ -724,7 +724,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
-    enum="OsSettingsProviderError" expires_after="2023-06-25">
+    enum="OsSettingsProviderStatus" expires_after="2023-06-25">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -738,7 +738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.IconLoadStatus"
-    enum="OsSettingsProviderError" expires_after="2023-02-24">
+    enum="OsSettingsProviderIconLoadStatus" expires_after="2023-02-24">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>chenjih@chromium.org</owner>

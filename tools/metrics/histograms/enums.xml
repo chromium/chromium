@@ -75881,6 +75881,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="OsSettingsProviderError">
+  <obsolete>
+    Removed as of 12/2022.
+  </obsolete>
   <int value="0" label="Ok"/>
   <int value="1" label="App service unavailable"/>
   <int value="2" label="No settings icon"/>
@@ -75888,6 +75891,33 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Hierarchy empty"/>
   <int value="5" label="No hierarchy"/>
   <int value="6" label="Settings app not ready"/>
+</enum>
+
+<enum name="OsSettingsProviderIconLoadStatus">
+  <int value="0" label="No app service proxy"/>
+  <int value="1" label="Bind OnLoadIcon from Constructor"/>
+  <int value="2" label="Bind OnLoadIcon from OnAppUpdate"/>
+  <int value="3" label="Readiness unknown"/>
+  <int value="4" label="Icon key not changed"/>
+  <int value="5" label="Ok from Constructor"/>
+  <int value="6" label="No value from Constructor"/>
+  <int value="7" label="Not standard from Constructor"/>
+  <int value="8" label="Ok from OnAppUpdate"/>
+  <int value="9" label="No value from OnAppUpdate"/>
+  <int value="10" label="Not standard from OnAppUpdate"/>
+  <int value="11" label="Icon exist on Destroyed"/>
+  <int value="12" label="Icon not exist on Destroyed"/>
+</enum>
+
+<enum name="OsSettingsProviderStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="App service unavailable"/>
+  <int value="2" label="No settings icon"/>
+  <int value="3" label="Search handler unavailable"/>
+  <int value="4" label="Hierarchy empty"/>
+  <int value="5" label="No hierarchy"/>
+  <int value="6" label="Settings app not ready"/>
+  <int value="7" label="No app service proxy"/>
 </enum>
 
 <enum name="OsSettingsSearchResultType">
