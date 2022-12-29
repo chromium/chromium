@@ -47,24 +47,32 @@ fi
 echo "Copying mojoms from Chrome OS side ..."
 cp $1/platform2/ml/mojom/*.mojom . || exit 1
 
+echo "Removing big_buffer.mojom ..."
+rm big_buffer.mojom || exit 1
+
 echo "Removing file_path.mojom ..."
 rm file_path.mojom || exit 1
-
-echo "Removing time.mojom ..."
-rm time.mojom || exit 1
-
-echo "Removing shared_memory.mojom ..."
-rm shared_memory.mojom || exit 1
 
 echo "Removing geometry.mojom ..."
 rm geometry.mojom || exit 1
 
+echo "Removing shared_memory.mojom ..."
+rm shared_memory.mojom || exit 1
+
+echo "Removing time.mojom ..."
+rm time.mojom || exit 1
+
+echo "Removing web_platform_model.mojom ..."
+rm web_platform_model.mojom || exit 1
+
 echo "Changing import paths ..."
 sed --in-place --regexp-extended \
+  -e 's~^import "ml/mojom/big_buffer.mojom~import "mojo/public/mojom/base/big_buffer.mojom~g' \
   -e 's~^import "ml/mojom/file_path.mojom~import "mojo/public/mojom/base/file_path.mojom~g' \
   -e 's~^import "ml/mojom/geometry.mojom~import "ui/gfx/geometry/mojom/geometry.mojom~g' \
   -e 's~^import "ml/mojom/shared_memory.mojom~import "mojo/public/mojom/base/shared_memory.mojom~g' \
   -e 's~^import "ml/mojom/time.mojom~import "mojo/public/mojom/base/time.mojom~g' \
+  -e 's~^import "ml/mojom/web_platform_model.mojom~import "components/ml/mojom/web_platform_model.mojom~g' \
   -e 's~^import "ml~import "chromeos/services/machine_learning/public~g' \
   *.mojom
 
