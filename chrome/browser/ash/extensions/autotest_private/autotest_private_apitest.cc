@@ -294,8 +294,9 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
             absl::nullopt);
   ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstPin(prefs), absl::nullopt);
 
-  if (timeOfFirstAdd)
+  if (timeOfFirstAdd) {
     ASSERT_GT(timeOfFirstAdd, timeOfFirstAvailability);
+  }
 }
 
 class AutotestPrivateApiOverviewTest : public AutotestPrivateApiTest {
@@ -314,8 +315,9 @@ class AutotestPrivateApiOverviewTest : public AutotestPrivateApiTest {
     base::RunLoop run_loop;
     ash::OverviewTestApi().SetOverviewMode(
         /*start=*/true, base::BindLambdaForTesting([&run_loop](bool finished) {
-          if (!finished)
+          if (!finished) {
             ADD_FAILURE() << "Failed to enter overview.";
+          }
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -558,12 +560,9 @@ class AutotestPrivateSearchTest
       const std::vector<double>& scores) {
     std::vector<std::unique_ptr<ChromeSearchResult>> results;
     for (size_t i = 0; i < ids.size(); ++i) {
-      std::unique_ptr<app_list::TestResult> test_result =
-          std::make_unique<app_list::TestResult>(
-              ids[i], display_types[i], categories[i], best_match_ranks[i],
-              /*relevance=*/scores[i], /*ftrl_result_score=*/scores[i]);
-      test_result->scoring().override_filter_for_test = true;
-      results.emplace_back(std::move(test_result));
+      results.emplace_back(std::make_unique<app_list::TestResult>(
+          ids[i], display_types[i], categories[i], best_match_ranks[i],
+          /*relevance=*/scores[i], /*ftrl_result_score=*/scores[i]));
     }
     return results;
   }
@@ -576,7 +575,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutotestPrivateSearchTest,
                          /* tablet_mode= */ ::testing::Bool());
 
-// TODO(https://crbug.com/1385365): This test is extremely flaky.
 IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
                        LauncherSearchBoxStateAPITest) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(GetParam());
@@ -606,8 +604,9 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
   for (auto* result : PublishedResults()) {
     // There may be zero state results that are also published, but not visible
     // in the UI. This test should only check search list results.
-    if (result->display_type() != ash::SearchResultDisplayType::kList)
+    if (result->display_type() != ash::SearchResultDisplayType::kList) {
       continue;
+    }
 
     results.push_back(result);
   }

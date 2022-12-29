@@ -11,21 +11,24 @@
 namespace app_list {
 
 double Scoring::FinalScore() const {
-  if (filter && !override_filter_for_test)
+  if (filter) {
     return -1.0;
+  }
   return ftrl_result_score;
 }
 
 double Scoring::BestMatchScore() const {
-  if (filter)
+  if (filter) {
     return -1.0;
-  else
+  } else {
     return std::max(mrfu_result_score, normalized_relevance);
+  }
 }
 
 ::std::ostream& operator<<(::std::ostream& os, const Scoring& scoring) {
-  if (scoring.filter)
+  if (scoring.filter) {
     return os << "{" << scoring.FinalScore() << " | filtered}";
+  }
   return os << base::StringPrintf(
              "{%.2f | nr:%.2f rs:%.2f bm:%d cr:%d bi:%d}", scoring.FinalScore(),
              scoring.normalized_relevance, scoring.ftrl_result_score,

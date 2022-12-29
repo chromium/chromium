@@ -18,11 +18,6 @@ struct Scoring {
   double normalized_relevance = 0.0;
   double mrfu_result_score = 0.0;
   double ftrl_result_score = 0.0;
-  // TODO(b/259607603) remove 'override_filter_for_test'. This field is used
-  // to temporarily disable filtering for a specific result. This is needed
-  // due to a race condition with the test beginning before the
-  // RemovedResultsRanker is initialized.
-  bool override_filter_for_test = false;
 
   // Used only for results in the Continue section. Continue results are first
   // ordered by |continue_rank|, and then by their display score. -1 indicates
