@@ -86,7 +86,7 @@ public abstract class PrivacySandboxSettingsBaseFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
             // Action for the question mark button.
-            openUrlInCct(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_URL);
+            openUrlInCct(PrivacySandboxSettingsFragmentV3.PRIVACY_SANDBOX_URL);
             return true;
         }
         return false;

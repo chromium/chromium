@@ -6,8 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-  <dimen name="privacy_sandbox_illustration_height">120dp</dimen>
-  <dimen name="privacy_sandbox_illustration_width">120dp</dimen>
   <dimen name="privacy_sandbox_dialog_illustration_margin_top">32dp</dimen>
   <dimen name="privacy_sandbox_dialog_illustration_margin_bottom">16dp</dimen>
   <dimen name="privacy_sandbox_dialog_logo_margin">8dp</dimen>

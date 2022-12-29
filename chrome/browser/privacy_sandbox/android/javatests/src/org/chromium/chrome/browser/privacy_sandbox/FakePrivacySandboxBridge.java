@@ -107,31 +107,6 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public String getFlocStatusString() {
-        return null;
-    }
-
-    @Override
-    public String getFlocGroupString() {
-        return null;
-    }
-
-    @Override
-    public String getFlocUpdateString() {
-        return null;
-    }
-
-    @Override
-    public String getFlocDescriptionString() {
-        return null;
-    }
-
-    @Override
-    public String getFlocResetExplanationString() {
-        return null;
-    }
-
-    @Override
     public Topic[] getCurrentTopTopics() {
         return mCurrentTopTopics.toArray(new Topic[] {});
     }

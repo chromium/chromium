@@ -70,46 +70,6 @@ static void JNI_PrivacySandboxBridge_SetPrivacySandboxEnabled(
   GetPrivacySandboxService()->SetPrivacySandboxEnabled(enabled);
 }
 
-static ScopedJavaLocalRef<jstring> JNI_PrivacySandboxBridge_GetFlocStatusString(
-    JNIEnv* env) {
-  // FLoC always disabled while OT not active.
-  // TODO(crbug.com/1299720): Perform cleanup / adjustment as required.
-  return ConvertUTF16ToJavaString(
-      env,
-      l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE));
-}
-
-static ScopedJavaLocalRef<jstring> JNI_PrivacySandboxBridge_GetFlocGroupString(
-    JNIEnv* env) {
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return ConvertUTF16ToJavaString(
-      env, l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID));
-}
-
-static ScopedJavaLocalRef<jstring> JNI_PrivacySandboxBridge_GetFlocUpdateString(
-    JNIEnv* env) {
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return ConvertUTF16ToJavaString(
-      env, l10n_util::GetStringUTF16(
-               IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE_INVALID));
-}
-
-static ScopedJavaLocalRef<jstring>
-JNI_PrivacySandboxBridge_GetFlocDescriptionString(JNIEnv* env) {
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return ConvertUTF16ToJavaString(env,
-                                  l10n_util::GetPluralStringFUTF16(
-                                      IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION, 7));
-}
-
-static ScopedJavaLocalRef<jstring>
-JNI_PrivacySandboxBridge_GetFlocResetExplanationString(JNIEnv* env) {
-  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-  return ConvertUTF16ToJavaString(
-      env, l10n_util::GetPluralStringFUTF16(
-               IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 7));
-}
-
 static ScopedJavaLocalRef<jobjectArray>
 JNI_PrivacySandboxBridge_GetCurrentTopTopics(JNIEnv* env) {
   return ToJavaTopicsArray(env,

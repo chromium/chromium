@@ -130,7 +130,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
 
     private void openPrivacySandboxSettings() {
         Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
+        fragmentArgs.putInt(PrivacySandboxSettingsFragmentV3.PRIVACY_SANDBOX_REFERRER,
                 PrivacySandboxReferrer.PRIVACY_SETTINGS);
         mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
         ViewUtils.onViewWaiting(withText(R.string.privacy_sandbox_trials_title));
@@ -435,7 +435,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     @SmallTest
     public void testCreateActivityFromCookiesSnackbar() {
         Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
+        fragmentArgs.putInt(PrivacySandboxSettingsFragmentV3.PRIVACY_SANDBOX_REFERRER,
                 PrivacySandboxReferrer.COOKIES_SNACKBAR);
         mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
 
