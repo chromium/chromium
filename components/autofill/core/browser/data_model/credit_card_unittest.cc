@@ -1825,9 +1825,18 @@ TEST(CreditCardTest, FullDigitsForDisplay) {
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"5212-3412-3412-3489");
   ASSERT_EQ(u"5212 3412 3412 3489", card.FullDigitsForDisplay());
 
-  // 15-digit card number stays the same.
+  // 15-digit Amex card number adds spacing.
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"378282246310005");
-  ASSERT_EQ(u"378282246310005", card.FullDigitsForDisplay());
+  ASSERT_EQ(u"3782 822463 10005", card.FullDigitsForDisplay());
+
+  // 16-digit card number that begins with Amex digits should have normal
+  // spacing.
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"3782822463100052");
+  ASSERT_EQ(u"3782 8224 6310 0052", card.FullDigitsForDisplay());
+
+  // 15-digit non-Amex card number stays the same.
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"998282246310005");
+  ASSERT_EQ(u"998282246310005", card.FullDigitsForDisplay());
 
   // 19-digit card number stays the same.
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"4532261615476013542");
