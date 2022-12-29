@@ -51,6 +51,12 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   PrefetchStreamingURLLoader& operator=(const PrefetchStreamingURLLoader&) =
       delete;
 
+  // Registers a callback that is called once the head of the response is
+  // received via either |OnReceiveResponse| or |OnReceiveRedirect|. The
+  // callback is called once it is determined whether or not the prefetch is
+  // servable.
+  void SetOnReceivedHeadCallback(base::OnceClosure on_received_head_callback);
+
   bool Servable(base::TimeDelta cacheable_duration) const;
 
   absl::optional<network::URLLoaderCompletionStatus> GetCompletionStatus()
@@ -143,6 +149,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   OnPrefetchResponseStartedCallback on_prefetch_response_started_callback_;
   OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback_;
   OnPrefetchRedirectCallback on_prefetch_redirect_callback_;
+  base::OnceClosure on_received_head_callback_;
 
   // The prefetched data and metadata.
   network::mojom::URLResponseHeadPtr head_;

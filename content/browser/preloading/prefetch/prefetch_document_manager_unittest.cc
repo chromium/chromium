@@ -259,6 +259,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   candidate1->requires_anonymous_client_ip_when_cross_origin = true;
   candidate1->url = GetCrossOriginUrl("/candidate1.html");
   candidate1->referrer = blink::mojom::Referrer::New();
+  candidate1->eagerness = blink::mojom::SpeculationEagerness::kEager;
   candidates.push_back(std::move(candidate1));
 
   // Create candidate for non-private cross-origin prefetch. This candidate
@@ -268,6 +269,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   candidate2->requires_anonymous_client_ip_when_cross_origin = false;
   candidate2->url = GetCrossOriginUrl("/candidate2.html");
   candidate2->referrer = blink::mojom::Referrer::New();
+  candidate2->eagerness = blink::mojom::SpeculationEagerness::kEager;
   candidates.push_back(std::move(candidate2));
 
   // Create candidate for non-private cross-origin prefetch. This candidate
@@ -277,6 +279,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   candidate3->requires_anonymous_client_ip_when_cross_origin = false;
   candidate3->url = GetSameOriginUrl("/candidate3.html");
   candidate3->referrer = blink::mojom::Referrer::New();
+  candidate3->eagerness = blink::mojom::SpeculationEagerness::kEager;
   candidates.push_back(std::move(candidate3));
 
   // Create candidate for private cross-origin prefetch with subresources. This
@@ -287,6 +290,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   candidate4->requires_anonymous_client_ip_when_cross_origin = true;
   candidate4->url = GetCrossOriginUrl("/candidate4.html");
   candidate4->referrer = blink::mojom::Referrer::New();
+  candidate4->eagerness = blink::mojom::SpeculationEagerness::kEager;
   candidates.push_back(std::move(candidate4));
 
   // Create candidate for prerender. This candidate should not be prefetched by
@@ -296,7 +300,18 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   candidate5->requires_anonymous_client_ip_when_cross_origin = false;
   candidate5->url = GetCrossOriginUrl("/candidate5.html");
   candidate5->referrer = blink::mojom::Referrer::New();
+  candidate5->eagerness = blink::mojom::SpeculationEagerness::kEager;
   candidates.push_back(std::move(candidate5));
+
+  // Create candidate for private cross-origin prefetch with default eagerness.
+  // This candidate should be prefetched by |PrefetchDocumentManager|.
+  auto candidate6 = blink::mojom::SpeculationCandidate::New();
+  candidate6->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate6->requires_anonymous_client_ip_when_cross_origin = true;
+  candidate6->url = GetCrossOriginUrl("/candidate6.html");
+  candidate6->referrer = blink::mojom::Referrer::New();
+  candidate6->eagerness = blink::mojom::SpeculationEagerness::kDefault;
+  candidates.push_back(std::move(candidate6));
 
   // Process the candidates with the |PrefetchDocumentManager| for the current
   // document.
@@ -309,19 +324,27 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   // Check that the candidates that should be prefetched were sent to
   // |PrefetchService|.
   const auto& prefetch_urls = GetPrefetches();
-  ASSERT_EQ(prefetch_urls.size(), 3U);
+  ASSERT_EQ(prefetch_urls.size(), 4U);
   EXPECT_EQ(prefetch_urls[0]->GetURL(), GetCrossOriginUrl("/candidate1.html"));
   EXPECT_EQ(prefetch_urls[0]->GetPrefetchType(),
             PrefetchType(/*use_isolated_network_context=*/true,
-                         /*use_prefetch_proxy=*/true));
+                         /*use_prefetch_proxy=*/true,
+                         blink::mojom::SpeculationEagerness::kEager));
   EXPECT_EQ(prefetch_urls[1]->GetURL(), GetCrossOriginUrl("/candidate2.html"));
   EXPECT_EQ(prefetch_urls[1]->GetPrefetchType(),
             PrefetchType(/*use_isolated_network_context=*/true,
-                         /*use_prefetch_proxy=*/false));
+                         /*use_prefetch_proxy=*/false,
+                         blink::mojom::SpeculationEagerness::kEager));
   EXPECT_EQ(prefetch_urls[2]->GetURL(), GetSameOriginUrl("/candidate3.html"));
   EXPECT_EQ(prefetch_urls[2]->GetPrefetchType(),
             PrefetchType(/*use_isolated_network_context=*/false,
-                         /*use_prefetch_proxy=*/false));
+                         /*use_prefetch_proxy=*/false,
+                         blink::mojom::SpeculationEagerness::kEager));
+  EXPECT_EQ(prefetch_urls[3]->GetURL(), GetCrossOriginUrl("/candidate6.html"));
+  EXPECT_EQ(prefetch_urls[3]->GetPrefetchType(),
+            PrefetchType(/*use_isolated_network_context=*/true,
+                         /*use_prefetch_proxy=*/true,
+                         blink::mojom::SpeculationEagerness::kDefault));
 
   // Check that the only remaining entries in candidates are those that
   // shouldn't be prefetched by |PrefetchService|.

@@ -9,6 +9,7 @@
 #include "base/rand_util.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/public/browser/prefetch_service_delegate.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 namespace content {
 
@@ -220,6 +221,20 @@ int PrefetchCanaryCheckRetries() {
 bool PrefetchUseStreamingURLLoader() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kPrefetchUseContentRefactor, "use_streaming_url_loader", true);
+}
+
+bool PrefetchShouldBlockUntilHead(
+    blink::mojom::SpeculationEagerness prefetch_eagerness) {
+  switch (prefetch_eagerness) {
+    case blink::mojom::SpeculationEagerness::kEager:
+      return base::GetFieldTrialParamByFeatureAsBool(
+          features::kPrefetchUseContentRefactor,
+          "block_until_head_eager_prefetch", false);
+    case blink::mojom::SpeculationEagerness::kDefault:
+      return base::GetFieldTrialParamByFeatureAsBool(
+          features::kPrefetchUseContentRefactor,
+          "block_until_head_default_prefetch", true);
+  }
 }
 
 bool IsContentPrefetchHoldback() {

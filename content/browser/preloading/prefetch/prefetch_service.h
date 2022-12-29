@@ -83,10 +83,12 @@ class CONTENT_EXPORT PrefetchService {
       const GURL& url,
       base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Returns the prefetch with |url| that is ready to serve. In order for a
-  // prefetch to be ready to serve, |PrepareToServe| must have been previously
-  // called with the prefetch.
-  base::WeakPtr<PrefetchContainer> GetPrefetchToServe(const GURL& url);
+  // Finds the prefetch (if any) that can be used to serve a navigation to
+  // |url|, and then calls |on_prefetch_to_serve_ready| with that prefetch.
+  using OnPrefetchToServeReady = base::OnceCallback<void(
+      base::WeakPtr<PrefetchContainer> prefetch_to_serve)>;
+  void GetPrefetchToServe(const GURL& url,
+                          OnPrefetchToServeReady on_prefetch_to_serve_ready);
 
   // Removes the prefetch with the given |prefetch_container_key| from
   // |all_prefetches_|.
@@ -225,6 +227,13 @@ class CONTENT_EXPORT PrefetchService {
       base::WeakPtr<PrefetchContainer> prefetch_container,
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);
+
+  // Helper function for |GetPrefetchToServe| to return |prefetch_container| via
+  // |on_prefetch_to_serve_ready|. Starts the cookie copy process for the given
+  // prefetch if needed, and updates its state.
+  void ReturnPrefetchToServe(
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      OnPrefetchToServeReady on_prefetch_to_serve_ready);
 
   // Checks if there is a prefetch in |all_prefetches_| with the same URL as
   // |prefetch_container| but from a different referring RenderFrameHost.
