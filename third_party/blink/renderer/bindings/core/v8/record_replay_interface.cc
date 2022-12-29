@@ -2163,10 +2163,7 @@ struct InspectorChannel final : public v8_inspector::V8Inspector::Channel {
   void sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) final {
     SendMessageToFrontend(message->string());
   }
-  void flushProtocolNotifications() final {
-    // https://linear.app/replay/issue/RUN-885
-    recordreplay::Assert("InspectorChannel::flushProtocolNotifications");
-  }
+  void flushProtocolNotifications() final {}
 };
 
 static v8_inspector::V8Inspector* gInspector;
