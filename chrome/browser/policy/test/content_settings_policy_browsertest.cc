@@ -250,25 +250,25 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WebUsbAllowDevicesForUrls) {
   // |kTestOrigin| to access the device described by |device_info|.
   PolicyMap policies;
 
-  base::Value device_value(base::Value::Type::DICTIONARY);
-  device_value.SetKey("vendor_id", base::Value(0));
-  device_value.SetKey("product_id", base::Value(0));
+  base::Value::Dict device_value;
+  device_value.Set("vendor_id", 0);
+  device_value.Set("product_id", 0);
 
-  base::Value devices_value(base::Value::Type::LIST);
+  base::Value::List devices_value;
   devices_value.Append(std::move(device_value));
 
-  base::Value urls_value(base::Value::Type::LIST);
+  base::Value::List urls_value;
   urls_value.Append(base::Value("https://foo.com"));
 
-  base::Value entry(base::Value::Type::DICTIONARY);
-  entry.SetKey("devices", std::move(devices_value));
-  entry.SetKey("urls", std::move(urls_value));
+  base::Value::Dict entry;
+  entry.Set("devices", std::move(devices_value));
+  entry.Set("urls", std::move(urls_value));
 
-  base::Value policy_value(base::Value::Type::LIST);
+  base::Value::List policy_value;
   policy_value.Append(std::move(entry));
 
   SetPolicy(&policies, key::kWebUsbAllowDevicesForUrls,
-            std::move(policy_value));
+            base::Value(std::move(policy_value)));
   UpdateProviderPolicy(policies);
 
   EXPECT_TRUE(context->HasDevicePermission(kTestOrigin, device_info));
@@ -298,11 +298,11 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, ShouldAllowInsecurePrivateNetworkRequests) {
   EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
       settings_map, url::Origin::Create(GURL("http://bleep.com"))));
 
-  base::Value allowlist(base::Value::Type::LIST);
+  base::Value::List allowlist;
   allowlist.Append(base::Value("http://bleep.com"));
   allowlist.Append(base::Value("http://woohoo.com:1234"));
   SetPolicy(&policies, key::kInsecurePrivateNetworkRequestsAllowedForUrls,
-            std::move(allowlist));
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Domain is not the in allowlist.
@@ -401,26 +401,28 @@ class SensorsPolicyTest : public PolicyTest {
   }
 
   void AllowUrl(const char* url) {
-    base::Value policy_value(base::Value::Type::LIST);
+    base::Value::List policy_value;
     policy_value.Append(url);
-    SetPolicy(&policies_, key::kSensorsAllowedForUrls, std::move(policy_value));
+    SetPolicy(&policies_, key::kSensorsAllowedForUrls,
+              base::Value(std::move(policy_value)));
     UpdateProviderPolicy(policies_);
   }
 
   void BlockUrl(const char* url) {
-    base::Value policy_value(base::Value::Type::LIST);
+    base::Value::List policy_value;
     policy_value.Append(url);
-    SetPolicy(&policies_, key::kSensorsBlockedForUrls, std::move(policy_value));
+    SetPolicy(&policies_, key::kSensorsBlockedForUrls,
+              base::Value(std::move(policy_value)));
     UpdateProviderPolicy(policies_);
   }
 
   void ClearLists() {
-    base::Value policy_value_allow(base::Value::Type::LIST);
-    base::Value policy_value_block(base::Value::Type::LIST);
+    base::Value::List policy_value_allow;
+    base::Value::List policy_value_block;
     SetPolicy(&policies_, key::kSensorsAllowedForUrls,
-              std::move(policy_value_allow));
+              base::Value(std::move(policy_value_allow)));
     SetPolicy(&policies_, key::kSensorsBlockedForUrls,
-              std::move(policy_value_block));
+              base::Value(std::move(policy_value_block)));
     UpdateProviderPolicy(policies_);
   }
 
