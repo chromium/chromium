@@ -418,6 +418,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 const gfx::Size&,
                 const gfx::ColorSpace& color_space,
                 viz::ResourceFormat,
+                SkAlphaType alpha_type,
                 GLenum texture_target,
                 GLuint texture_id,
                 std::unique_ptr<gfx::GpuMemoryBuffer>,
@@ -438,6 +439,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     const gfx::Size size;
     const gfx::ColorSpace color_space;
     const viz::ResourceFormat format;
+    const SkAlphaType alpha_type;
     const GLenum texture_target;
     const GLuint texture_id;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
@@ -456,9 +458,11 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   using CopyFunctionRef = base::FunctionRef<bool(const gpu::MailboxHolder&,
                                                  viz::ResourceFormat,
+                                                 SkAlphaType alpha_type,
                                                  const gfx::Size&,
                                                  const gfx::ColorSpace&)>;
   bool CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
+                              bool dst_is_unpremul_gl,
                               SourceDrawingBuffer src_buffer,
                               CopyFunctionRef copy_function);
 
@@ -626,15 +630,11 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // The id of the renderbuffer storage for |m_multisampleFBO|.
   GLuint multisample_renderbuffer_ = 0;
 
-  // If premultipliedAlpha:false is set during context creation, and a
-  // GpuMemoryBuffer is used for the DrawingBuffer's storage, then a separate,
-  // regular, OpenGL texture is allocated to hold either the rendering results
-  // (if antialias:false) or resolve results (if antialias:true). Then
-  // CopyTextureCHROMIUM is used to multiply the alpha channel into the color
-  // channels when copying into the GMB.
-  bool premultiplied_alpha_false_texture_needed_ = false;
-  GLuint premultiplied_alpha_false_texture_ = 0;
-  gpu::Mailbox premultiplied_alpha_false_mailbox_;
+  // A staging texture to handle backbuffer formats that cannot be represented
+  // as SharedImages. This includes unpremultiplied alpha and sRGB textures.
+  bool staging_texture_needed_ = false;
+  GLuint staging_texture_ = 0;
+  void CopyStagingTextureToBackColorBufferIfNeeded();
 
   // When wantExplicitResolve() returns false, the target of all draw and
   // read operations. When wantExplicitResolve() returns true, the target of

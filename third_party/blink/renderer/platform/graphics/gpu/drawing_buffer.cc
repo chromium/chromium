@@ -529,15 +529,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     gl_->BindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
   }
 
-  if (premultiplied_alpha_false_texture_) {
-    // The rendering results are in this texture rather than the
-    // back_color_buffer_'s texture. Copy them in, multiplying the alpha channel
-    // into the color channels.
-    gl_->CopySubTextureCHROMIUM(
-        premultiplied_alpha_false_texture_, 0,
-        back_color_buffer_->texture_target, back_color_buffer_->texture_id, 0,
-        0, 0, 0, 0, size_.width(), size_.height(), GL_FALSE, GL_TRUE, GL_FALSE);
-  }
+  CopyStagingTextureToBackColorBufferIfNeeded();
 
   // Specify the buffer that we will put in the mailbox.
   scoped_refptr<ColorBuffer> color_buffer_for_mailbox;
@@ -841,6 +833,7 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     viz::ResourceFormat format,
+    SkAlphaType alpha_type,
     GLenum texture_target,
     GLuint texture_id,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
@@ -851,6 +844,7 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
       size(size),
       color_space(color_space),
       format(format),
+      alpha_type(alpha_type),
       texture_target(texture_target),
       texture_id(texture_id),
       gpu_memory_buffer(std::move(gpu_memory_buffer)),
@@ -963,7 +957,27 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
   return true;
 }
 
+void DrawingBuffer::CopyStagingTextureToBackColorBufferIfNeeded() {
+  if (!staging_texture_) {
+    return;
+  }
+
+  // The rendering results are in `staging_texture_` rather than the
+  // `back_color_buffer_`'s texture. Copy them over, doing any conversion
+  // from the requested format to the SharedImage-supported format.
+  const GLboolean do_flip_y = GL_FALSE;
+  const GLboolean do_premultiply_alpha =
+      back_color_buffer_->alpha_type == kPremul_SkAlphaType &&
+      requested_alpha_type_ == kUnpremul_SkAlphaType;
+  const GLboolean do_unpremultiply_alpha = GL_FALSE;
+  gl_->CopySubTextureCHROMIUM(
+      staging_texture_, 0, back_color_buffer_->texture_target,
+      back_color_buffer_->texture_id, 0, 0, 0, 0, 0, size_.width(),
+      size_.height(), do_flip_y, do_premultiply_alpha, do_unpremultiply_alpha);
+}
+
 bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
+                                           bool dst_is_unpremul_gl,
                                            SourceDrawingBuffer src_buffer,
                                            CopyFunctionRef copy_function) {
   ScopedStateRestorer scoped_state_restorer(this);
@@ -977,38 +991,43 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
 
   // Contexts may be in a different share group. We must transfer the texture
   // through a mailbox first.
-  gpu::Mailbox mailbox;
-  GLenum texture_target = 0;
   gpu::SyncToken produce_sync_token;
   GLuint texture_id_to_restore_access = 0;
-  viz::ResourceFormat format;
-  gfx::Size size;
-  gfx::ColorSpace color_space;
+  scoped_refptr<ColorBuffer> src_color_buffer;
+  SkAlphaType src_alpha_type = kUnknown_SkAlphaType;
   if (src_buffer == kFrontBuffer && front_color_buffer_) {
-    mailbox = front_color_buffer_->mailbox;
-    produce_sync_token = front_color_buffer_->produce_sync_token;
-    format = front_color_buffer_->format;
-    size = front_color_buffer_->size;
-    color_space = front_color_buffer_->color_space;
-    texture_target = front_color_buffer_->texture_target;
+    src_color_buffer = front_color_buffer_;
+    src_alpha_type = src_color_buffer->alpha_type;
+    produce_sync_token = src_color_buffer->produce_sync_token;
   } else {
-    GLuint texture_id = 0;
-    if (premultiplied_alpha_false_texture_) {
-      DCHECK(!premultiplied_alpha_false_mailbox_.IsZero());
-      mailbox = premultiplied_alpha_false_mailbox_;
-      texture_target = GL_TEXTURE_2D;
-      texture_id = premultiplied_alpha_false_texture_;
-    } else {
-      mailbox = back_color_buffer_->mailbox;
-      texture_target = back_color_buffer_->texture_target;
-      texture_id = back_color_buffer_->texture_id;
+    src_color_buffer = back_color_buffer_;
+    src_alpha_type = src_color_buffer->alpha_type;
+    texture_id_to_restore_access = src_color_buffer->texture_id;
+    if (staging_texture_) {
+      // The source for the copy must be a SharedImage that is accessible to
+      // `dst_interface`. If the rendering results are in `staging_texture_`,
+      // then they cannot be accessed by `dst_interface`. Copy the results
+      // to `back_color_buffer`, without any (e.g alpha premultiplication)
+      // conversion.
+      if (dst_is_unpremul_gl) {
+        // In this situation we are copying to another WebGL context that has
+        // unpremultiplied alpha, and it is required that we do not lose the
+        // precision that premultiplication would cause.
+        const GLboolean do_flip_y = GL_FALSE;
+        const GLboolean do_premultiply_alpha = GL_FALSE;
+        const GLboolean do_unpremultiply_alpha = GL_FALSE;
+        gl_->CopySubTextureCHROMIUM(
+            staging_texture_, 0, back_color_buffer_->texture_target,
+            back_color_buffer_->texture_id, 0, 0, 0, 0, 0, size_.width(),
+            size_.height(), do_flip_y, do_premultiply_alpha,
+            do_unpremultiply_alpha);
+        src_alpha_type = requested_alpha_type_;
+      } else {
+        CopyStagingTextureToBackColorBufferIfNeeded();
+      }
     }
-    format = back_color_buffer_->format;
-    size = back_color_buffer_->size;
-    color_space = back_color_buffer_->color_space;
-    src_gl->EndSharedImageAccessDirectCHROMIUM(texture_id);
+    src_gl->EndSharedImageAccessDirectCHROMIUM(back_color_buffer_->texture_id);
     src_gl->GenUnverifiedSyncTokenCHROMIUM(produce_sync_token.GetData());
-    texture_id_to_restore_access = texture_id;
   }
 
   if (!produce_sync_token.HasData()) {
@@ -1020,8 +1039,11 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
 
   // Use an empty sync token for `mailbox_holder` because we have already waited
   // on the required sync tokens above.
-  gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), texture_target);
-  bool succeeded = copy_function(mailbox_holder, format, size, color_space);
+  gpu::MailboxHolder mailbox_holder(src_color_buffer->mailbox, gpu::SyncToken(),
+                                    src_color_buffer->texture_target);
+  bool succeeded =
+      copy_function(mailbox_holder, src_color_buffer->format, src_alpha_type,
+                    src_color_buffer->size, src_color_buffer->color_space);
 
   gpu::SyncToken sync_token;
   dst_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
@@ -1046,18 +1068,17 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
   if (!Extensions3DUtil::CanUseCopyTextureCHROMIUM(dst_texture_target))
     return false;
 
-  GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
-  GLboolean unpack_unpremultiply_alpha_needed = GL_FALSE;
-  if (requested_alpha_type_ == kPremul_SkAlphaType && !premultiply_alpha) {
-    unpack_unpremultiply_alpha_needed = GL_TRUE;
-  } else if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
-             premultiply_alpha) {
-    unpack_premultiply_alpha_needed = GL_TRUE;
-  }
-
   auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
-                           viz::ResourceFormat, const gfx::Size&,
-                           const gfx::ColorSpace&) -> bool {
+                           viz::ResourceFormat, SkAlphaType src_alpha_type,
+                           const gfx::Size&, const gfx::ColorSpace&) -> bool {
+    GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
+    GLboolean unpack_unpremultiply_alpha_needed = GL_FALSE;
+    if (src_alpha_type == kPremul_SkAlphaType && !premultiply_alpha) {
+      unpack_unpremultiply_alpha_needed = GL_TRUE;
+    } else if (src_alpha_type == kUnpremul_SkAlphaType && premultiply_alpha) {
+      unpack_premultiply_alpha_needed = GL_TRUE;
+    }
+
     GLuint src_texture = dst_gl->CreateAndTexStorage2DSharedImageCHROMIUM(
         src_mailbox.mailbox.name);
     dst_gl->BeginSharedImageAccessDirectCHROMIUM(
@@ -1072,7 +1093,8 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
     dst_gl->DeleteTextures(1, &src_texture);
     return true;
   };
-  return CopyToPlatformInternal(dst_gl, src_buffer, copy_function);
+  return CopyToPlatformInternal(dst_gl, !premultiply_alpha, src_buffer,
+                                copy_function);
 }
 
 bool DrawingBuffer::CopyToPlatformMailbox(
@@ -1083,14 +1105,14 @@ bool DrawingBuffer::CopyToPlatformMailbox(
     const gfx::Point& dst_texture_offset,
     const gfx::Rect& src_sub_rectangle,
     SourceDrawingBuffer src_buffer) {
-  GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
-  if (requested_alpha_type_ == kUnpremul_SkAlphaType) {
-    unpack_premultiply_alpha_needed = GL_TRUE;
-  }
-
   auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
-                           viz::ResourceFormat, const gfx::Size&,
-                           const gfx::ColorSpace&) -> bool {
+                           viz::ResourceFormat, SkAlphaType src_alpha_type,
+                           const gfx::Size&, const gfx::ColorSpace&) -> bool {
+    GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
+    if (src_alpha_type == kUnpremul_SkAlphaType) {
+      unpack_premultiply_alpha_needed = GL_TRUE;
+    }
+
     dst_raster_interface->CopySubTexture(
         src_mailbox.mailbox, dst_mailbox, dst_texture_target,
         dst_texture_offset.x(), dst_texture_offset.y(), src_sub_rectangle.x(),
@@ -1099,7 +1121,8 @@ bool DrawingBuffer::CopyToPlatformMailbox(
     return true;
   };
 
-  return CopyToPlatformInternal(dst_raster_interface, src_buffer,
+  return CopyToPlatformInternal(dst_raster_interface,
+                                /*dst_is_unpremul_gl=*/false, src_buffer,
                                 copy_function);
 }
 
@@ -1119,12 +1142,14 @@ bool DrawingBuffer::CopyToVideoFrame(
                                                  : kBottomLeft_GrSurfaceOrigin;
   auto copy_function =
       [&](const gpu::MailboxHolder& src_mailbox, viz::ResourceFormat src_format,
-          const gfx::Size& src_size, const gfx::ColorSpace& src_color_space) {
+          SkAlphaType src_alpha_type, const gfx::Size& src_size,
+          const gfx::ColorSpace& src_color_space) {
         return frame_pool->CopyRGBATextureToVideoFrame(
             src_format, src_size, src_color_space, src_surface_origin,
             src_mailbox, dst_color_space, std::move(callback));
       };
-  return CopyToPlatformInternal(raster_interface, src_buffer, copy_function);
+  return CopyToPlatformInternal(raster_interface, /*dst_is_unpremul_gl=*/false,
+                                src_buffer, copy_function);
 }
 
 cc::Layer* DrawingBuffer::CcLayer() {
@@ -1136,8 +1161,8 @@ cc::Layer* DrawingBuffer::CcLayer() {
     layer_->SetContentsOpaque(requested_alpha_type_ == kOpaque_SkAlphaType);
     layer_->SetBlendBackgroundColor(requested_alpha_type_ !=
                                     kOpaque_SkAlphaType);
-    if (premultiplied_alpha_false_texture_) {
-      // If premultiplied_alpha_false_texture_ exists, then premultiplication
+    if (staging_texture_) {
+      // If staging_texture_ exists, then premultiplication
       // has already been handled via CopySubTextureCHROMIUM.
       DCHECK(requested_alpha_type_ == kUnpremul_SkAlphaType);
       layer_->SetPremultipliedAlpha(true);
@@ -1184,14 +1209,9 @@ void DrawingBuffer::BeginDestruction() {
   if (depth_stencil_buffer_)
     gl_->DeleteRenderbuffers(1, &depth_stencil_buffer_);
 
-  if (premultiplied_alpha_false_texture_) {
-    gl_->EndSharedImageAccessDirectCHROMIUM(premultiplied_alpha_false_texture_);
-    gl_->DeleteTextures(1, &premultiplied_alpha_false_texture_);
-    gpu::SharedImageInterface* sii = ContextProvider()->SharedImageInterface();
-    gpu::SyncToken sync_token;
-    gl_->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-    sii->DestroySharedImage(sync_token, premultiplied_alpha_false_mailbox_);
-    premultiplied_alpha_false_mailbox_.SetZero();
+  if (staging_texture_) {
+    gl_->DeleteTextures(1, &staging_texture_);
+    staging_texture_ = 0;
   }
 
   size_ = gfx::Size();
@@ -1200,7 +1220,6 @@ void DrawingBuffer::BeginDestruction() {
   front_color_buffer_ = nullptr;
   multisample_renderbuffer_ = 0;
   depth_stencil_buffer_ = 0;
-  premultiplied_alpha_false_texture_ = 0;
   multisample_fbo_ = 0;
   fbo_ = 0;
 
@@ -1213,45 +1232,22 @@ bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
   // Recreate back_color_buffer_.
   back_color_buffer_ = CreateColorBuffer(size);
 
-  // Most OS compositors assume GpuMemoryBuffers contain premultiplied-alpha
-  // content. If the user created the context with premultipliedAlpha:false and
-  // GpuMemoryBuffers are being used, allocate a non-GMB texture which will hold
-  // the non-premultiplied rendering results. These will be copied into the GMB
-  // via CopySubTextureCHROMIUM, performing the premultiplication step then.
-  // This also applies to swap chains which are exported via AsCanvasResource().
-  gpu::SharedImageInterface* sii = ContextProvider()->SharedImageInterface();
-  if (premultiplied_alpha_false_texture_) {
+  if (staging_texture_) {
     state_restorer_->SetTextureBindingDirty();
-    gl_->EndSharedImageAccessDirectCHROMIUM(premultiplied_alpha_false_texture_);
-    gl_->DeleteTextures(1, &premultiplied_alpha_false_texture_);
-    gpu::SyncToken sync_token;
-    gl_->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-    sii->DestroySharedImage(sync_token, premultiplied_alpha_false_mailbox_);
-    premultiplied_alpha_false_mailbox_.SetZero();
-    premultiplied_alpha_false_texture_ = 0;
+    gl_->DeleteTextures(1, &staging_texture_);
+    staging_texture_ = 0;
   }
-  if (premultiplied_alpha_false_texture_needed_) {
+  if (staging_texture_needed_) {
     state_restorer_->SetTextureBindingDirty();
-    GrSurfaceOrigin origin = opengl_flip_y_extension_
-                                 ? kTopLeft_GrSurfaceOrigin
-                                 : kBottomLeft_GrSurfaceOrigin;
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
-                     gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-                     gpu::SHARED_IMAGE_USAGE_RASTER;
-    if (gpu::GetPlatformSpecificTextureTarget() == GL_TEXTURE_2D) {
-      usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    gl_->GenTextures(1, &staging_texture_);
+    gl_->BindTexture(GL_TEXTURE_2D, staging_texture_);
+    GLenum internal_format = requested_format_;
+    if (requested_format_ == GL_RGB8) {
+      internal_format =
+          viz::AlphaBits(color_buffer_format_) ? GL_RGBA8 : GL_RGB8;
     }
-    premultiplied_alpha_false_mailbox_ = sii->CreateSharedImage(
-        back_color_buffer_->format, size, back_color_buffer_->color_space,
-        origin, kUnpremul_SkAlphaType, usage, gpu::kNullSurfaceHandle);
-    gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
-    gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-    premultiplied_alpha_false_texture_ =
-        gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
-            premultiplied_alpha_false_mailbox_.name);
-    gl_->BeginSharedImageAccessDirectCHROMIUM(
-        premultiplied_alpha_false_texture_,
-        GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+    gl_->TexStorage2DEXT(GL_TEXTURE_2D, 1, internal_format, size.width(),
+                         size.height());
   }
 
   AttachColorBufferToReadFramebuffer();
@@ -1788,16 +1784,7 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
     return;
   }
 
-  if (premultiplied_alpha_false_texture_) {
-    // The rendering results are in |premultiplied_alpha_false_texture_| rather
-    // than the |back_color_buffer_|'s texture. Copy them in, multiplying the
-    // alpha channel into the color channels.
-    gl_->CopySubTextureCHROMIUM(
-        premultiplied_alpha_false_texture_, 0,
-        back_color_buffer_->texture_target, back_color_buffer_->texture_id, 0,
-        0, 0, 0, 0, size_.width(), size_.height(), GL_FALSE, GL_TRUE, GL_FALSE);
-  }
-
+  CopyStagingTextureToBackColorBufferIfNeeded();
   gpu::SyncToken sync_token;
   gl_->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
 
@@ -1810,13 +1797,11 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
   // If a multisample fbo is used it already preserves the previous contents.
   if (preserve_drawing_buffer_ == kPreserve && !WantExplicitResolve()) {
     // If premultiply alpha is false rendering results are in
-    // |premultiplied_alpha_false_texture_|.
-    GLenum dest_texture_target = premultiplied_alpha_false_texture_
-                                     ? GL_TEXTURE_2D
-                                     : back_color_buffer_->texture_target;
-    GLuint dest_texture_id = premultiplied_alpha_false_texture_
-                                 ? premultiplied_alpha_false_texture_
-                                 : back_color_buffer_->texture_id;
+    // |staging_texture_|.
+    GLenum dest_texture_target =
+        staging_texture_ ? GL_TEXTURE_2D : back_color_buffer_->texture_target;
+    GLuint dest_texture_id =
+        staging_texture_ ? staging_texture_ : back_color_buffer_->texture_id;
     gl_->BeginSharedImageAccessDirectCHROMIUM(
         front_color_buffer_->texture_id,
         GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
@@ -1926,13 +1911,20 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     }
   }
 
-  // If it was requested that our format be unpremultiplied, but the backbuffer
-  // that we will use for compositing will be premultiplied, then we will need
-  // to create a separate unpremultiplied staging backbuffer for WebGL to render
-  // to.
-  premultiplied_alpha_false_texture_needed_ =
-      requested_alpha_type_ == kUnpremul_SkAlphaType &&
-      requested_alpha_type_ != back_buffer_alpha_type;
+  staging_texture_needed_ = false;
+  if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
+      requested_alpha_type_ != back_buffer_alpha_type) {
+    // If it was requested that our format be unpremultiplied, but the
+    // backbuffer that we will use for compositing will be premultiplied (e.g,
+    // because it be used as an overlay), then we will need to create a separate
+    // unpremultiplied staging backbuffer for WebGL to render to.
+    staging_texture_needed_ = true;
+  }
+  if (requested_format_ == GL_SRGB8_ALPHA8) {
+    // SharedImages do not support sRGB texture formats, so a staging texture is
+    // always needed for them.
+    staging_texture_needed_ = true;
+  }
 
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
   gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
@@ -1943,8 +1935,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         front_buffer_mailbox.name);
     front_color_buffer_ = base::MakeRefCounted<ColorBuffer>(
         weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,
-        texture_target, texture_id, nullptr, /*is_overlay_candidate=*/false,
-        front_buffer_mailbox);
+        back_buffer_alpha_type, texture_target, texture_id, nullptr,
+        /*is_overlay_candidate=*/false, front_buffer_mailbox);
   }
 
   // Import the backbuffer of swap chain or allocated SharedImage into GL.
@@ -1975,8 +1967,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
 
   return base::MakeRefCounted<ColorBuffer>(
       weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,
-      texture_target, texture_id, std::move(gpu_memory_buffer),
-      is_overlay_candidate, back_buffer_mailbox);
+      back_buffer_alpha_type, texture_target, texture_id,
+      std::move(gpu_memory_buffer), is_overlay_candidate, back_buffer_mailbox);
 }
 
 void DrawingBuffer::AttachColorBufferToReadFramebuffer() {
@@ -1989,8 +1981,8 @@ void DrawingBuffer::AttachColorBufferToReadFramebuffer() {
   GLenum id = 0;
   GLenum texture_target = 0;
 
-  if (premultiplied_alpha_false_texture_) {
-    id = premultiplied_alpha_false_texture_;
+  if (staging_texture_) {
+    id = staging_texture_;
     texture_target = GL_TEXTURE_2D;
   } else {
     id = back_color_buffer_->texture_id;
