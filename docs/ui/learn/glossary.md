@@ -61,6 +61,17 @@ allows it to cache, transform, and blend various graphical layers so that it can
 minimize repaints, accelerate scrolling, and sync animation to the underlying
 display refresh rate.
 
+### Focus Ring
+
+A colored outline around an object that is visible when an object has focus
+and hidden when focus is gone. It is often drawn by a
+[`FocusRing`](/ui/views/controls/focus_ring.h) object, a `View` subclass that
+handles drawing a colored border along a path. When creating focus rings, it's
+important to color them such that they contrast with both the color inside and
+the color outside the ring; see the uses of the
+[`PickGoogleColorTwoBackgrounds()`](/chrome/browser/ui/color/chrome_color_mixer.cc)
+function.
+
 ### HWND
 
 Windows-specific. An opaque handle to a system-native window. Ultimately
@@ -174,3 +185,42 @@ The specific [control](/ui/views/controls/throbber.h) in Views is a 16 DIP
 spinning circle that can optionally display a checkmark when an operation
 completes. The "Throbber" example in
 [`views_examples`](ui_debugging.md#views-examples) creates a throbber.
+
+### Views (library)
+
+A cross-platform UI toolkit used to create "native" UI (as opposed to UI built
+from web technologies). Views is important to both the Chrome browser and the
+Chrome OS native UI in Ash. Views was created in the early days of Chrome to
+abstract away calls to platform-specific functions and make it possible to
+build Chrome UI for multiple operating systems; unlike other cross-platform
+toolkits of the time like wxWidgets or GTK, it aimed for a platform-native feel
+(especially on Windows) and a minimal API that was designed to do just what
+Chrome needed. Over time the Views look-and-feel moved away from
+platform-native fidelity, toward a style called "Harmony" influenced by all
+desktop platforms as well as Google's Material Design. However, the minimal API
+surface persists; Views lacks many controls and features found in other UI
+toolkits and is not supported on mobile.
+
+### `View` (class)
+
+A node in a tree of objects used to represent UI. A `View` has rectangular
+bounds, a (possibly-empty) set of child `View`s, and a large set of APIs to
+allow interaction and extension. Its primary goal is to abstract user
+interactions and present data to the browser for display. Historically,
+implementers have built subclasses as heavyweight objects containing all the
+code to handle display, business logic, and the underlying data model; this
+reduces boilerplate but makes classes difficult to test, reuse, or port to
+other platforms. By taking the name literally and making a `View` subclass
+handle only the "view" role in the MVC paradigm, implementers can produce more
+robust code.
+
+### Widget
+
+The cross-platform abstraction that represents a "window" in the Views toolkit.
+It is the gateway between the `Views` library and the OS platform. Each
+`Widget` contains exactly one `RootView` object that in turn holds a hierarchy
+of `View`s representing the UI in that window. `Widget` is implemented in turns
+of a platform-specific `NativeWidget`, which itself may be backed by other
+abstractions (at least on Aura). It's possible to have parent/child
+relationships between widgets, for example when displaying a small floating
+bubble anchored to (and clipped by) a larger window.
