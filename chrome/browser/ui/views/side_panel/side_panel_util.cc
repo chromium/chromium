@@ -71,13 +71,7 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
       ->CreateAndRegisterEntry(global_registry);
 
   // Add history clusters.
-  auto* history_clusters_service =
-      HistoryClustersServiceFactory::GetForBrowserContext(browser->profile());
-  if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) &&
-      history_clusters_service &&
-      history_clusters_service->IsJourneysEnabled() &&
-      !browser->profile()->IsIncognitoProfile() &&
-      !browser->profile()->IsGuestSession()) {
+  if (HistoryClustersSidePanelCoordinator::IsSupported(browser->profile())) {
     auto* history_clusters_side_panel_coordinator =
         HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser);
     if (browser->profile()->GetPrefs()->GetBoolean(

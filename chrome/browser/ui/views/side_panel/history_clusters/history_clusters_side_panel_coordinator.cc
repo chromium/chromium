@@ -42,6 +42,16 @@ HistoryClustersSidePanelCoordinator::HistoryClustersSidePanelCoordinator(
 HistoryClustersSidePanelCoordinator::~HistoryClustersSidePanelCoordinator() =
     default;
 
+// static
+bool HistoryClustersSidePanelCoordinator::IsSupported(Profile* profile) {
+  auto* history_clusters_service =
+      HistoryClustersServiceFactory::GetForBrowserContext(profile);
+  return base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) &&
+         history_clusters_service &&
+         history_clusters_service->IsJourneysEnabled() &&
+         !profile->IsIncognitoProfile() && !profile->IsGuestSession();
+}
+
 void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
   global_registry->Register(std::make_unique<SidePanelEntry>(
@@ -107,13 +117,7 @@ void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
                               ->GetGlobalSidePanelRegistry();
   if (browser->profile()->GetPrefs()->GetBoolean(
           history_clusters::prefs::kVisible)) {
-    auto* history_clusters_service =
-        HistoryClustersServiceFactory::GetForBrowserContext(browser->profile());
-    if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) &&
-        history_clusters_service &&
-        history_clusters_service->IsJourneysEnabled() &&
-        !browser->profile()->IsIncognitoProfile() &&
-        !browser->profile()->IsGuestSession()) {
+    if (IsSupported(browser->profile())) {
       HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
           ->CreateAndRegisterEntry(global_registry);
     }

@@ -30,6 +30,11 @@ class HistoryClustersSidePanelCoordinator
       const HistoryClustersSidePanelCoordinator&) = delete;
   ~HistoryClustersSidePanelCoordinator() override;
 
+  // Returns whether HistoryClustersSidePanelCoordinator is supported for
+  // `profile`. If this returns false, it should not be registered with the side
+  // panel registry.
+  static bool IsSupported(Profile* profile);
+
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
   // Shows the Journeys side panel with `query` pre-populated. Returns true if
