@@ -479,6 +479,8 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
                                 "IOException while attempting to restore "
                                         + "%s. Details: %s",
                                 mFile, e.getMessage()));
+            } finally {
+                StreamUtil.closeQuietly(fileInputStream);
             }
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.PersistedTabData.Storage.Restore." + getUmaTag(), success);
