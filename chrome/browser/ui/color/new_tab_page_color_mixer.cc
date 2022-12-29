@@ -136,12 +136,12 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
       select_topmost_element_foreground_color;
   mixer[kColorNewTabPageModuleItemBackground] = {kColorNewTabPageBackground};
   mixer[kColorNewTabPageModuleControlBorder] = SelectBasedOnWhiteNtpBackground(
-      {gfx::kGoogleGrey300}, themed_foreground_color);
+      {gfx::kGoogleGrey300}, {kColorNewTabPageBackground});
   mixer[kColorNewTabPageMostVisitedForeground] = SelectBasedOnDarkInput(
       element_background_color, SK_ColorWHITE, gfx::kGoogleGrey800);
   mixer[kColorNewTabPageMostVisitedTileBackground] =
       SelectBasedOnWhiteNtpBackground({gfx::kGoogleGrey100},
-                                      {element_background_color});
+                                      element_background_color);
   mixer[kColorNewTabPageMostVisitedTileBackgroundThemed] = {
       element_background_color};
   mixer[kColorNewTabPageOnThemeForeground] = themed_foreground_color;
@@ -393,9 +393,9 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
   // cr_elements/cr_button/cr_button.html
   mixer[kColorNewTabPageButtonBackgroundHovered] =
       dark_mode ? ui::SetAlpha(gfx::kGoogleBlue300,
-                               /* 8% opacity */ .08 * SK_AlphaOPAQUE)
+                               /* 8% opacity */ 0.08 * SK_AlphaOPAQUE)
                 : ui::SetAlpha(gfx::kGoogleBlue500,
-                               /* 4% opacity */ .04 * SK_AlphaOPAQUE);
+                               /* 4% opacity */ 0.04 * SK_AlphaOPAQUE);
   mixer[kColorNewTabPageButtonForeground] = {accent_color};
   mixer[kColorNewTabPageCartModuleDiscountChipBackground] = {
       dark_mode ? gfx::kGoogleGrey800 : gfx::kGoogleGreen050};
