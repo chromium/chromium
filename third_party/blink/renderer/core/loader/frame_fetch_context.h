@@ -184,7 +184,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   const KURL& Url() const override;
   ContentSecurityPolicy* GetContentSecurityPolicy() const override;
-  void AddConsoleMessage(ConsoleMessage*) const override;
 
   WebContentSettingsClient* GetContentSettingsClient() const;
   Settings* GetSettings() const;

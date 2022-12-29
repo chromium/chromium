@@ -608,8 +608,9 @@ bool MixedContentChecker::ShouldBlockFetchOnWorker(
   }
 
   if (reporting_disposition == ReportingDisposition::kReport) {
-    worker_fetch_context.AddConsoleMessage(CreateConsoleMessageAboutFetch(
-        worker_fetch_context.Url(), url, request_context, allowed, nullptr));
+    worker_fetch_context.GetDetachableConsoleLogger().AddConsoleMessage(
+        CreateConsoleMessageAboutFetch(worker_fetch_context.Url(), url,
+                                       request_context, allowed, nullptr));
   }
   return !allowed;
 }
@@ -705,8 +706,9 @@ bool MixedContentChecker::IsWebSocketAllowed(
         KURL(security_origin->ToString()), url);
   }
 
-  worker_fetch_context.AddConsoleMessage(CreateConsoleMessageAboutWebSocket(
-      worker_fetch_context.Url(), url, allowed));
+  worker_fetch_context.GetDetachableConsoleLogger().AddConsoleMessage(
+      CreateConsoleMessageAboutWebSocket(worker_fetch_context.Url(), url,
+                                         allowed));
 
   return allowed;
 }

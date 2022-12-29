@@ -520,7 +520,7 @@ void BaseFetchContext::PrintAccessDeniedMessage(const KURL& url) const {
               ". Domains, protocols and ports must match.\n";
   }
 
-  AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+  console_logger_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kSecurity,
       mojom::ConsoleMessageLevel::kError, message));
 }
@@ -596,7 +596,7 @@ BaseFetchContext::CanRequestInternal(
   if (request_mode != network::mojom::RequestMode::kNavigate &&
       !resource_request.CanDisplay(url)) {
     if (reporting_disposition == ReportingDisposition::kReport) {
-      AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      console_logger_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kJavaScript,
           mojom::ConsoleMessageLevel::kError,
           "Not allowed to load local resource: " + url.GetString()));
@@ -700,7 +700,7 @@ BaseFetchContext::CanRequestInternal(
       url.HasIDNA2008DeviationCharacter()) {
     String message = GetConsoleWarningForIDNADeviationCharacters(url);
     if (!message.empty()) {
-      AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      console_logger_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kSecurity,
           mojom::ConsoleMessageLevel::kWarning, message));
       UseCounter::Count(
@@ -734,6 +734,7 @@ bool BaseFetchContext::ShouldSendClientHint(
 
 void BaseFetchContext::Trace(Visitor* visitor) const {
   visitor->Trace(fetcher_properties_);
+  visitor->Trace(console_logger_);
   FetchContext::Trace(visitor);
 }
 

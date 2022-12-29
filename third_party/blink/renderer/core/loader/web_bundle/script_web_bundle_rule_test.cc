@@ -25,6 +25,7 @@ class MockConsoleLogger final : public GarbageCollected<MockConsoleLogger>,
       absl::optional<mojom::ConsoleMessageCategory>) override {
     message_ = message;
   }
+  void AddConsoleMessageImpl(ConsoleMessage*, bool) override { NOTREACHED(); }
   String message_;
 };
 

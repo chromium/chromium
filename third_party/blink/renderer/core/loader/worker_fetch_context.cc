@@ -40,7 +40,9 @@ WorkerFetchContext::WorkerFetchContext(
     SubresourceFilter* subresource_filter,
     ContentSecurityPolicy& content_security_policy,
     WorkerResourceTimingNotifier& resource_timing_notifier)
-    : BaseFetchContext(properties),
+    : BaseFetchContext(
+          properties,
+          MakeGarbageCollected<DetachableConsoleLogger>(&global_scope)),
       global_scope_(global_scope),
       web_context_(std::move(web_context)),
       subresource_filter_(subresource_filter),
@@ -179,10 +181,6 @@ const KURL& WorkerFetchContext::Url() const {
 
 ContentSecurityPolicy* WorkerFetchContext::GetContentSecurityPolicy() const {
   return content_security_policy_;
-}
-
-void WorkerFetchContext::AddConsoleMessage(ConsoleMessage* message) const {
-  return global_scope_->AddConsoleMessage(message);
 }
 
 void WorkerFetchContext::PrepareRequest(ResourceRequest& request,

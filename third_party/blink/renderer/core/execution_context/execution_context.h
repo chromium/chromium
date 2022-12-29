@@ -501,8 +501,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       const String& message,
       bool discard_duplicates,
       absl::optional<mojom::ConsoleMessageCategory> category) override;
-  virtual void AddConsoleMessageImpl(ConsoleMessage*,
-                                     bool discard_duplicates) = 0;
+  void AddConsoleMessageImpl(ConsoleMessage*,
+                             bool discard_duplicates) override = 0;
 
   v8::Isolate* const isolate_;
 

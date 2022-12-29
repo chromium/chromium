@@ -44,6 +44,7 @@ class MockConsoleLogger : public GarbageCollected<MockConsoleLogger>,
                     const String&,
                     bool,
                     absl::optional<mojom::ConsoleMessageCategory>));
+  MOCK_METHOD2(AddConsoleMessageImpl, void(ConsoleMessage*, bool));
 };
 
 }  // namespace

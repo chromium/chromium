@@ -23,7 +23,7 @@
 namespace blink {
 
 class ClientHintsPreferences;
-class ConsoleMessage;
+class DetachableConsoleLogger;
 class DOMWrapperWorld;
 class DetachableResourceFetcherProperties;
 class KURL;
@@ -75,6 +75,10 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
     return *fetcher_properties_;
   }
 
+  DetachableConsoleLogger& GetDetachableConsoleLogger() const {
+    return *console_logger_;
+  }
+
   virtual void CountUsage(mojom::WebFeature) const = 0;
   virtual void CountDeprecation(mojom::WebFeature) const = 0;
   virtual net::SiteForCookies GetSiteForCookies() const = 0;
@@ -108,9 +112,9 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       ResourceRequest& request);
 
  protected:
-  explicit BaseFetchContext(
-      const DetachableResourceFetcherProperties& properties)
-      : fetcher_properties_(properties) {}
+  BaseFetchContext(const DetachableResourceFetcherProperties& properties,
+                   DetachableConsoleLogger* logger)
+      : fetcher_properties_(properties), console_logger_(logger) {}
 
   // Used for security checks.
   virtual bool AllowScriptFromSource(const KURL&) const = 0;
@@ -139,13 +143,12 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual const KURL& Url() const = 0;
   virtual ContentSecurityPolicy* GetContentSecurityPolicy() const = 0;
 
-  // TODO(yhirano): Remove this.
-  virtual void AddConsoleMessage(ConsoleMessage*) const = 0;
-
   virtual ExecutionContext* GetExecutionContext() const = 0;
 
  private:
   const Member<const DetachableResourceFetcherProperties> fetcher_properties_;
+
+  const Member<DetachableConsoleLogger> console_logger_;
 
   void PrintAccessDeniedMessage(const KURL&) const;
 

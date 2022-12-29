@@ -100,6 +100,10 @@ class ResourceLoadSchedulerTest : public testing::Test {
         absl::optional<mojom::ConsoleMessageCategory> category) override {
       has_message_ = true;
     }
+    void AddConsoleMessageImpl(ConsoleMessage*,
+                               bool discard_duplicates) override {
+      has_message_ = true;
+    }
     bool has_message_ = false;
   };
 

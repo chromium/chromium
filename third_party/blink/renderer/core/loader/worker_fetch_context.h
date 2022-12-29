@@ -73,7 +73,6 @@ class WorkerFetchContext final : public BaseFetchContext {
                                                  const KURL&) const override;
   const KURL& Url() const override;
   ContentSecurityPolicy* GetContentSecurityPolicy() const override;
-  void AddConsoleMessage(ConsoleMessage*) const override;
 
   // FetchContext implementation:
   void PrepareRequest(ResourceRequest&,
