@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.tab;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Build;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -58,6 +59,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashSet;
+import java.util.Locale;
 
 /**
  * Utilities for requesting desktop sites support.
@@ -70,6 +72,8 @@ public class RequestDesktopUtils {
     static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES = 12.0;
     static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_LOW_END_DEVICES =
             "default_on_on_low_end_devices";
+    static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_X86_DEVICES =
+            "default_on_on_x86_devices";
     static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH =
             "default_on_smallest_screen_width";
     static final int DEFAULT_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP = 600;
@@ -86,6 +90,7 @@ public class RequestDesktopUtils {
             "opt_in_display_size_max_threshold_inches";
     static final double DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES =
             Double.MAX_VALUE;
+    static final String PARAM_GLOBAL_SETTING_OPT_IN_ON_X86_DEVICES = "opt_in_on_x86_devices";
     static final String PARAM_GLOBAL_SETTING_OPT_IN_SMALLEST_SCREEN_WIDTH =
             "opt_in_smallest_screen_width";
     static final int DEFAULT_GLOBAL_SETTING_OPT_IN_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP = 600;
@@ -358,6 +363,13 @@ public class RequestDesktopUtils {
             return false;
         }
 
+        // Check whether default-on for x86 devices is disabled.
+        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_X86_DEVICES, true)
+                && !isCpuArchitectureArm()) {
+            return false;
+        }
+
         // If the smallest screen size in dp is below threshold, avoid default-enabling the setting.
         if (context.getResources().getConfiguration().smallestScreenWidthDp
                 < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
@@ -571,6 +583,13 @@ public class RequestDesktopUtils {
         if (memoryLimitMB != 0
                 && SysUtils.amountOfPhysicalMemoryKB()
                         < memoryLimitMB * ConversionUtils.KILOBYTES_PER_MEGABYTE) {
+            return false;
+        }
+
+        // Check whether opt-in for x86 devices is disabled.
+        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    feature, PARAM_GLOBAL_SETTING_OPT_IN_ON_X86_DEVICES, true)
+                && !isCpuArchitectureArm()) {
             return false;
         }
 
@@ -803,5 +822,16 @@ public class RequestDesktopUtils {
                 .readStringSet(
                         ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET)
                 .contains(String.valueOf(tabId));
+    }
+
+    /**
+     * Check if the CPU architecture is ARM.
+     */
+    private static boolean isCpuArchitectureArm() {
+        String[] abiStrings = Build.SUPPORTED_ABIS;
+        if (abiStrings == null || abiStrings.length == 0) {
+            return false;
+        }
+        return abiStrings[0].toLowerCase(Locale.ROOT).contains("arm");
     }
 }
