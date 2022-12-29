@@ -303,8 +303,7 @@ class WebApp {
     return always_show_toolbar_in_fullscreen_;
   }
 
-  const absl::optional<proto::WebAppOsIntegrationState>&
-  current_os_integration_states() const {
+  const proto::WebAppOsIntegrationState& current_os_integration_states() const {
     return current_os_integration_states_;
   }
 
@@ -400,8 +399,7 @@ class WebApp {
       ExternalConfigMap management_to_external_config_map);
   void SetTabStrip(absl::optional<blink::Manifest::TabStrip> tab_strip);
   void SetCurrentOsIntegrationStates(
-      absl::optional<proto::WebAppOsIntegrationState>
-          current_os_integration_states);
+      proto::WebAppOsIntegrationState current_os_integration_states);
   void SetIsolationData(IsolationData isolation_data);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
@@ -525,8 +523,8 @@ class WebApp {
   // Only used on Mac.
   bool always_show_toolbar_in_fullscreen_ = true;
 
-  absl::optional<proto::WebAppOsIntegrationState>
-      current_os_integration_states_ = absl::nullopt;
+  proto::WebAppOsIntegrationState current_os_integration_states_ =
+      proto::WebAppOsIntegrationState();
 
   absl::optional<IsolationData> isolation_data_;
 

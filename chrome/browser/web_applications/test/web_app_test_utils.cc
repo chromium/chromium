@@ -643,6 +643,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetAlwaysShowToolbarInFullscreen(random.next_bool());
 
   if (random.next_bool()) {
+    // TODO(crbug.com/1403844): Fill this up randomly to use in
+    // WebAppDatabaseTests.
     proto::WebAppOsIntegrationState state;
     app->SetCurrentOsIntegrationStates(state);
   }

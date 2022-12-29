@@ -23,11 +23,10 @@ class OsIntegrationSubManager {
   virtual void Configure(const AppId& app_id,
                          proto::WebAppOsIntegrationState& desired_state,
                          base::OnceClosure configure_done) = 0;
-  virtual void Execute(
-      const AppId& app_id,
-      const proto::WebAppOsIntegrationState& desired_state,
-      const absl::optional<proto::WebAppOsIntegrationState>& current_state,
-      base::OnceClosure callback) = 0;
+  virtual void Execute(const AppId& app_id,
+                       const proto::WebAppOsIntegrationState& desired_state,
+                       const proto::WebAppOsIntegrationState& current_state,
+                       base::OnceClosure callback) = 0;
 };
 }  // namespace web_app
 

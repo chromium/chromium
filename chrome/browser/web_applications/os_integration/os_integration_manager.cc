@@ -905,7 +905,7 @@ void OsIntegrationManager::ExecuteAllSubManagerConfigurations(
                      weak_ptr_factory_.GetWeakPtr(), app_id,
                      std::move(desired_states), std::move(callback)));
 
-  const absl::optional<proto::WebAppOsIntegrationState> current_state =
+  const proto::WebAppOsIntegrationState current_state =
       web_app->current_os_integration_states();
 
   for (const auto& sub_manager : sub_managers_) {

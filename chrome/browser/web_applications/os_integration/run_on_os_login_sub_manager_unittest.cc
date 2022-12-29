@@ -136,17 +136,17 @@ TEST_P(RunOnOsLoginSubManagerTest, VerifyRunOnOsLoginSetProperlyOnInstall) {
   const AppId& app_id = InstallWebApp();
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (EnableOsIntegrationSubManager()) {
     // on installation, both values are set to NOT_RUN.
-    ASSERT_TRUE(state.has_value());
-    const proto::WebAppOsIntegrationState& os_integration_state = state.value();
     ASSERT_TRUE(os_integration_state.has_run_on_os_login());
     const proto::RunOnOsLogin& run_on_os_login =
         os_integration_state.run_on_os_login();
     ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
                 testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
   } else {
-    ASSERT_FALSE(state.has_value());
+    ASSERT_THAT(os_integration_state.ByteSizeLong(), testing::Eq(0ul));
   }
 }
 
@@ -157,18 +157,18 @@ TEST_P(RunOnOsLoginSubManagerTest, VerifyRunOnOsLoginSetFromCommand) {
   provider().scheduler().SetRunOnOsLoginMode(
       app_id, RunOnOsLoginMode::kWindowed, future.GetCallback());
   EXPECT_TRUE(future.Wait());
-  auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
 
+  auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (EnableOsIntegrationSubManager()) {
-    ASSERT_TRUE(state.has_value());
-    const proto::WebAppOsIntegrationState& os_integration_state = state.value();
     ASSERT_TRUE(os_integration_state.has_run_on_os_login());
     const proto::RunOnOsLogin& run_on_os_login =
         os_integration_state.run_on_os_login();
     ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
                 testing::Eq(proto::RunOnOsLoginMode::WINDOWED));
   } else {
-    ASSERT_FALSE(state.has_value());
+    ASSERT_THAT(os_integration_state.ByteSizeLong(), testing::Eq(0ul));
   }
 }
 
@@ -191,16 +191,16 @@ TEST_P(RunOnOsLoginSubManagerTest, VerifyPolicySettingBlocked) {
   }
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (EnableOsIntegrationSubManager()) {
-    ASSERT_TRUE(state.has_value());
-    const proto::WebAppOsIntegrationState& os_integration_state = state.value();
     ASSERT_TRUE(os_integration_state.has_run_on_os_login());
     const proto::RunOnOsLogin& run_on_os_login =
         os_integration_state.run_on_os_login();
     ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
                 testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
   } else {
-    ASSERT_FALSE(state.has_value());
+    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
   }
 }
 
@@ -223,16 +223,16 @@ TEST_P(RunOnOsLoginSubManagerTest, VerifyPolicySettingWindowedMode) {
   }
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (EnableOsIntegrationSubManager()) {
-    ASSERT_TRUE(state.has_value());
-    const proto::WebAppOsIntegrationState& os_integration_state = state.value();
     ASSERT_TRUE(os_integration_state.has_run_on_os_login());
     const proto::RunOnOsLogin& run_on_os_login =
         os_integration_state.run_on_os_login();
     ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
                 testing::Eq(proto::RunOnOsLoginMode::WINDOWED));
   } else {
-    ASSERT_FALSE(state.has_value());
+    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
   }
 }
 
@@ -255,16 +255,16 @@ TEST_P(RunOnOsLoginSubManagerTest, VerifyPolicySettingAllowedMode) {
   }
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (EnableOsIntegrationSubManager()) {
-    ASSERT_TRUE(state.has_value());
-    const proto::WebAppOsIntegrationState& os_integration_state = state.value();
     ASSERT_TRUE(os_integration_state.has_run_on_os_login());
     const proto::RunOnOsLogin& run_on_os_login =
         os_integration_state.run_on_os_login();
     ASSERT_THAT(run_on_os_login.run_on_os_login_mode(),
                 testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
   } else {
-    ASSERT_FALSE(state.has_value());
+    ASSERT_FALSE(os_integration_state.has_run_on_os_login());
   }
 }
 

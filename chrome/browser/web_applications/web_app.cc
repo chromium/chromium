@@ -406,8 +406,7 @@ void WebApp::SetTabStrip(absl::optional<blink::Manifest::TabStrip> tab_strip) {
 }
 
 void WebApp::SetCurrentOsIntegrationStates(
-    absl::optional<proto::WebAppOsIntegrationState>
-        current_os_integration_states) {
+    proto::WebAppOsIntegrationState current_os_integration_states) {
   current_os_integration_states_ = std::move(current_os_integration_states);
 }
 
@@ -580,7 +579,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.management_to_external_config_map_,
         app.tab_strip_,
         app.always_show_toolbar_in_fullscreen_,
-        app.current_os_integration_states_.value_or(proto::WebAppOsIntegrationState()).SerializeAsString(),
+        app.current_os_integration_states_.SerializeAsString(),
         app.isolation_data_
         // clang-format on
     );
@@ -869,10 +868,8 @@ base::Value WebApp::AsDebugValue() const {
   root.Set("always_show_toolbar_in_fullscreen",
            always_show_toolbar_in_fullscreen_);
 
-  if (current_os_integration_states_.has_value()) {
-    root.Set("current_os_integration_states", base::Value());
-    // TODO(crbug.com/1295044) : Add logic to parse and show data.
-  }
+  // TODO(crbug.com/1295044) : Add logic to parse and show data.
+  root.Set("current_os_integration_states", base::Value());
 
   if (isolation_data_.has_value()) {
     root.Set("isolation_data", isolation_data_->AsDebugValue());

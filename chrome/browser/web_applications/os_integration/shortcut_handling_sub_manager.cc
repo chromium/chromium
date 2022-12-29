@@ -51,7 +51,7 @@ void ShortcutHandlingSubManager::Shutdown() {}
 void ShortcutHandlingSubManager::Execute(
     const AppId& app_id,
     const proto::WebAppOsIntegrationState& desired_state,
-    const absl::optional<proto::WebAppOsIntegrationState>& current_state,
+    const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
   NOTREACHED() << "Not yet implemented";
 }

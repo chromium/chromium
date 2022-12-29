@@ -755,9 +755,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     }
   }
 
-  if (web_app.current_os_integration_states().has_value()) {
-    local_data->mutable_current_os_integration_states();
-  }
+  *local_data->mutable_current_os_integration_states() =
+      web_app.current_os_integration_states();
 
   if (web_app.app_size_in_bytes().has_value())
     local_data->set_app_size_in_bytes(web_app.app_size_in_bytes().value());

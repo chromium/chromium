@@ -29,11 +29,10 @@ class ShortcutHandlingSubManager : public OsIntegrationSubManager {
   void Configure(const AppId& app_id,
                  proto::WebAppOsIntegrationState& desired_state,
                  base::OnceClosure configure_done) override;
-  void Execute(
-      const AppId& app_id,
-      const proto::WebAppOsIntegrationState& desired_state,
-      const absl::optional<proto::WebAppOsIntegrationState>& current_state,
-      base::OnceClosure callback) override;
+  void Execute(const AppId& app_id,
+               const proto::WebAppOsIntegrationState& desired_state,
+               const proto::WebAppOsIntegrationState& current_state,
+               base::OnceClosure callback) override;
 
  private:
   void StoreIconDataFromDisk(proto::ShortcutDescription* shortcut,
