@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
-<translation id="1002108253973310084">Nakakita ng hindi tugmang bersyon ng protocol. Pakitiyak na na-install mo ang pinakabagong bersyon ng software sa parehong computer at subukang muli.</translation>
+<translation id="1002108253973310084">Nakakita ng hindi tugmang bersyon ng protocol. Pakitiyak na na-install mo ang pinakabagong bersyon ng software sa parehong computer at subukan ulit.</translation>
 <translation id="1008557486741366299">Hindi Ngayon</translation>
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1297009705180977556">Nagkaroon ng error sa pagkonekta sa <ph name="HOSTNAME" /></translation>
@@ -43,7 +43,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="2919669478609886916">Kasalukuyan mong ibinabahagi ang machine na ito sa isa pang user. Nais mo bang ituloy ang pagbabahagi?</translation>
 <translation id="2939145106548231838">Patunayan upang ma-host</translation>
 <translation id="3027681561976217984">Touch mode</translation>
-<translation id="3106379468611574572">Hindi tumutugon ang malayuang computer sa mga kahilingan sa koneksyon. Paki-verify na online ito at subukang muli.</translation>
+<translation id="3106379468611574572">Hindi tumutugon ang malayuang computer sa mga kahilingan sa koneksyon. Paki-verify na online ito at subukan ulit.</translation>
 <translation id="3150823315463303127">Hindi nabasa ng host ang patakaran.</translation>
 <translation id="3171922709365450819">Hindi sinusuportahan ng client na ito ang device na ito dahil nangangailangan ito ng pag-authenticate ng third party.</translation>
 <translation id="3197730452537982411">Remote na Desktop</translation>
@@ -66,7 +66,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="4060747889721220580">I-download ang File</translation>
 <translation id="4126409073460786861">Pagkatapos ng pag-set up, i-refresh ang page na ito, pagkatapos ay maa-access mo ang computer sa pamamagitan ng pagpili sa iyong device at paglagay ng PIN</translation>
 <translation id="4145029455188493639">Naka-sign in bilang <ph name="EMAIL_ADDRESS" />.</translation>
-<translation id="4155497795971509630">Nawawala ang ilang bahagi na kinakailangan. Pakitiyak na na-install mo ang pinakabagong bersyon ng software at subukang muli.</translation>
+<translation id="4155497795971509630">Nawawala ang ilang bahagi na kinakailangan. Pakitiyak na na-install mo ang pinakabagong bersyon ng software at subukan ulit.</translation>
 <translation id="4176825807642096119">Access code</translation>
 <translation id="4227991223508142681">Host na Provisioning Utility</translation>
 <translation id="4240294130679914010">Uninstaller ng Chromoting Host</translation>
@@ -164,7 +164,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="806699900641041263">Kumokonekta sa <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">Upang magamit ang Chrome Remote Desktop, kakailanganin mong magdagdag ng Google Account sa iyong device.</translation>
 <translation id="809687642899217504">Aking Mga Computer</translation>
-<translation id="8116630183974937060">May nangyaring error sa network. Pakitiyak na on-line ang iyong device at subukang muli.</translation>
+<translation id="8116630183974937060">May nangyaring error sa network. Pakitiyak na on-line ang iyong device at subukan ulit.</translation>
 <translation id="8295077433896346116">Para magamit ang <ph name="PRODUCT_NAME" />, kailangan mong ibigay ang pahintulot sa 'Accessibility' para mailagay sa Mac na ito ang input mula sa malayuang machine.
 
 Para ibigay ang pahintulot na ito, i-click ang '<ph name="BUTTON_NAME" />' sa ibaba. Sa magbubukas na pane ng mga kagustuhan sa 'Accessibility,' lagyan ng check ang kahon sa tabi ng '<ph name="SERVICE_SCRIPT_NAME" />.'
