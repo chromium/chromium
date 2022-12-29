@@ -129,10 +129,7 @@ js_library("files_quick_view") {
     "//ash/webui/common/resources:assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-  ]
+  externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
 
 js_library("files_safe_media") {
