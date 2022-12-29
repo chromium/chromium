@@ -2983,6 +2983,11 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-022.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/word-break/word-break-break-all-ethiopic.html [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/resource-timing/response-status-code.html [ Timeout ]
+crbug.com/626703 [ Win ] external/wpt/resource-timing/response-status-code.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/resource-timing/response-status-code.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-003.html [ Failure ]

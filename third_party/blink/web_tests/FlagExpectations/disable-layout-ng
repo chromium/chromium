@@ -13,6 +13,7 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/resource-timing/response-status-code.html [ Timeout ]
 crbug.com/626703 virtual/force-renderer-accessibility/external/wpt/accessibility/crashtests/bdo-table-cell.html [ Crash ]
 crbug.com/626703 external/wpt/url/a-element.html?include=mailto [ Crash Failure ]
 crbug.com/626703 external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Crash Failure ]
