@@ -101,13 +101,14 @@ void GuestOsSessionTracker::OnListRunningContainers(
     ash::CiceroneClient::Get()->GetGarconSessionInfo(
         req, base::BindOnce(&GuestOsSessionTracker::OnGetGarconSessionInfo,
                             weak_ptr_factory_.GetWeakPtr(), container.vm_name(),
-                            container.container_name()));
+                            container.container_name(), container.container_token()));
   }
 }
 
 void GuestOsSessionTracker::OnGetGarconSessionInfo(
     std::string vm_name,
     std::string container_name,
+    std::string container_token,
     absl::optional<vm_tools::cicerone::GetGarconSessionInfoResponse> response) {
   if (!response ||
       response->status() !=
@@ -117,8 +118,8 @@ void GuestOsSessionTracker::OnGetGarconSessionInfo(
   }
   // Don't need ipv4 address yet so haven't plumbed it through. Once we get
   // around to port forwarding or similar we'll need it though.
-  HandleNewGuest(vm_name, container_name, response->container_username(),
-                 response->container_homedir(), "",
+  HandleNewGuest(vm_name, container_name,
+                 container_token, response->container_username(), response->container_homedir(), "",
                  response->sftp_vsock_port());
 }
 
@@ -136,6 +137,15 @@ absl::optional<vm_tools::concierge::VmInfo> GuestOsSessionTracker::GetVmInfo(
     const std::string& vm_name) {
   auto iter = vms_.find(vm_name);
   if (iter == vms_.end()) {
+    return absl::nullopt;
+  }
+  return iter->second;
+}
+
+absl::optional<GuestId> GuestOsSessionTracker::GetGuestIdForToken(
+    const std::string& container_token) {
+  auto iter = tokens_to_guests_.find(container_token);
+  if (iter == tokens_to_guests_.end()) {
     return absl::nullopt;
   }
   return iter->second;
@@ -170,11 +180,7 @@ void GuestOsSessionTracker::OnVmStopped(
     ids.push_back(pair.first);
   }
   for (const auto& id : ids) {
-    guests_.erase(id);
-    auto cb_list = container_shutdown_callbacks_.find(id);
-    if (cb_list != container_shutdown_callbacks_.end()) {
-      cb_list->second->Notify();
-    }
+    HandleContainerShutdown(id.vm_name, id.container_name);
   }
 }
 
@@ -186,20 +192,22 @@ void GuestOsSessionTracker::OnContainerStarted(
     return;
   }
   HandleNewGuest(signal.vm_name(), signal.container_name(),
-                 signal.container_username(), signal.container_homedir(),
-                 signal.ipv4_address(), signal.sftp_vsock_port());
+                 signal.container_token(), signal.container_username(),
+                 signal.container_homedir(), signal.ipv4_address(),
+                 signal.sftp_vsock_port());
 }
 
 void GuestOsSessionTracker::HandleNewGuest(const std::string& vm_name,
                                            const std::string& container_name,
+                                           const std::string& container_token,
                                            const std::string& username,
                                            const std::string& homedir,
                                            const std::string& ipv4_address,
-                                           uint32_t sftp_vsock_port) {
+                                           const uint32_t& sftp_vsock_port) {
   auto iter = vms_.find(vm_name);
   if (iter == vms_.end()) {
     LOG(ERROR)
-        << "Received ContainerStarted signal for an unexpected VM, ignoring";
+        << "Received ContainerStarted signal for an unexpected VM, ignoring.";
     return;
   }
   GuestId id{VmType::UNKNOWN, vm_name, container_name};
@@ -207,6 +215,13 @@ void GuestOsSessionTracker::HandleNewGuest(const std::string& vm_name,
                  username,     base::FilePath(homedir),
                  ipv4_address, sftp_vsock_port};
   guests_.insert_or_assign(id, info);
+
+  if (container_token.length() == 0) {
+    LOG(ERROR)
+        << "Received ContainerStarted signal with no container token specified.";
+  } else {
+    tokens_to_guests_.emplace(container_token, id);
+  }
 
   // If there're any pending container start callbacks for this guest run them.
   auto cb_list = container_start_callbacks_.find(id);
@@ -245,6 +260,16 @@ void GuestOsSessionTracker::HandleContainerShutdown(
     const std::string& container_name) {
   GuestId id{VmType::UNKNOWN, vm_name, container_name};
   guests_.erase(id);
+
+  auto iter = std::find_if(tokens_to_guests_.begin(), tokens_to_guests_.end(),
+                           [&id](const auto& it) { return it.second == id; });
+  if (iter == tokens_to_guests_.end()) {
+    LOG(ERROR) << "Attempted to remove token from the map which does not "
+                  "exist, ignoring";
+  } else {
+    tokens_to_guests_.erase(iter);
+  }
+
   auto cb_list = container_shutdown_callbacks_.find(id);
   if (cb_list != container_shutdown_callbacks_.end()) {
     cb_list->second->Notify();
