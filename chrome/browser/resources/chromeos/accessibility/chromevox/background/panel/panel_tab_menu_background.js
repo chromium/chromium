@@ -10,6 +10,16 @@
 import {Msgs} from '../../common/msgs.js';
 import {PanelTabMenuItemData} from '../../common/panel_menu_data.js';
 
+async function getLastFocusedWindow() {
+  return new Promise(resolve => chrome.windows.getLastFocused(w => {
+    // lastError will be set if there is no last focused window.
+    if (chrome.runtime.lastError) {
+      w = {};
+    }
+    resolve(w);
+  }));
+}
+
 export class PanelTabMenuBackground {
   /**
    * @param {number} windowId
@@ -26,8 +36,7 @@ export class PanelTabMenuBackground {
   /** @return {!Promise<!Array<!PanelTabMenuItemData>>} */
   static async getTabMenuData() {
     const menuData = [];
-    const lastFocusedWindow =
-        await new Promise(resolve => chrome.windows.getLastFocused(resolve));
+    const lastFocusedWindow = await getLastFocusedWindow();
     const windows = await new Promise(
         resolve => chrome.windows.getAll({populate: true}, resolve));
     for (const w of windows) {
