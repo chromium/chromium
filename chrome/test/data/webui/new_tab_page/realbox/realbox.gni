@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 realbox_test_files = [
+  "realbox/lens_test.ts",
   "realbox/realbox_test.ts",
   "realbox/test_realbox_browser_proxy.ts",
 ]

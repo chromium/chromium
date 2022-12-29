@@ -178,8 +178,15 @@ TEST_F('NewTabPageRealboxTest', 'All', function() {
   mocha.run();
 });
 
-TEST_F('NewTabPageRealboxTest', 'LensSearch', function() {
-  runMochaSuite('NewTabPageRealboxTest Lens search');
+var NewTabPageRealboxLensTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/realbox/lens_test.js';
+  }
+};
+
+TEST_F('NewTabPageRealboxLensTest', 'All', function() {
+  mocha.run();
 });
 
 var NewTabPageLogoTest = class extends NewTabPageBrowserTest {
