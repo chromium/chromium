@@ -155,6 +155,12 @@ declare_args() {
                              use_custom_libcxx && !is_component_build
 }
 
+# To try out this combination, delete this assert.
+assert(
+    !use_relative_vtables_abi || !is_cfi,
+    "is_cfi=true is known to conflict with use_relative_vtables_abi=true.\n" +
+        "See https://bugs.chromium.org/p/chromium/issues/detail?id=1375035#c53")
+
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
 assert(!enable_profiling || !is_component_build,
        "Cannot profile component builds (crbug.com/1199271).")
