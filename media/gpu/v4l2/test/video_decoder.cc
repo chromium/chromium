@@ -21,7 +21,7 @@ std::vector<char> CopyAndRemovePadding(const char* src,
   std::vector<char> dst;
   dst.reserve(size.GetArea());
 
-  const auto kSrcLimit = src + stride * size.height();
+  const auto* const kSrcLimit = src + stride * size.height();
   for (; src < kSrcLimit; src += stride)
     dst.insert(dst.end(), src, src + size.width());
 
