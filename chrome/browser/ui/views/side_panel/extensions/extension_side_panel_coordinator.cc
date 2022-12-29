@@ -16,8 +16,11 @@
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_icon_placeholder.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/manifest_handlers/icons_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
@@ -34,6 +37,7 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
   // `service` can be null for some tests.
   if (service) {
     scoped_service_observation_.Observe(service);
+    LoadExtensionIcon();
     auto default_options =
         service->GetOptions(*extension, /*tab_id=*/absl::nullopt);
     if (default_options.enabled.has_value() && *default_options.enabled &&
@@ -52,6 +56,10 @@ content::WebContents*
 ExtensionSidePanelCoordinator::GetHostWebContentsForTesting() const {
   DCHECK(host_);
   return host_->host_contents();
+}
+
+void ExtensionSidePanelCoordinator::LoadExtensionIconForTesting() {
+  LoadExtensionIcon();
 }
 
 SidePanelEntry::Key ExtensionSidePanelCoordinator::GetEntryKey() const {
@@ -130,17 +138,34 @@ void ExtensionSidePanelCoordinator::OnViewDestroying() {
   scoped_view_observation_.Reset();
 }
 
+void ExtensionSidePanelCoordinator::OnExtensionIconImageChanged(
+    IconImage* updated_icon) {
+  DCHECK_EQ(extension_icon_.get(), updated_icon);
+
+  // If the SidePanelEntry exists for this extension, update its icon.
+  // TODO(crbug.com/1378048): Update the icon for all extension entries in
+  // contextual registries.
+  if (auto* global_registry = GetGlobalSidePanelRegistry(browser_)) {
+    if (SidePanelEntry* entry =
+            global_registry->GetEntryForKey(GetEntryKey())) {
+      entry->ResetIcon(ui::ImageModel::FromImage(updated_icon->image()));
+    }
+  }
+}
+
 void ExtensionSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
+  // The extension icon should be initialized in the constructor, so this should
+  // not be null.
+  DCHECK(extension_icon_);
+
   // We use an unretained receiver here: the callback is called only when the
   // SidePanelEntry exists for the extension, and the extension's SidePanelEntry
   // is always deregistered when this class is destroyed, so CreateView can't be
   // called after the destruction of `this`.
-  // TODO(crbug.com/1378048): Get the extension's own icon.
   global_registry->Register(std::make_unique<SidePanelEntry>(
       GetEntryKey(), base::UTF8ToUTF16(extension_->short_name()),
-      ui::ImageModel::FromVectorIcon(omnibox::kExtensionAppIcon,
-                                     ui::kColorIcon),
+      ui::ImageModel::FromImage(extension_icon_->image()),
       base::BindRepeating(&ExtensionSidePanelCoordinator::CreateView,
                           base::Unretained(this))));
 }
@@ -172,6 +197,19 @@ void ExtensionSidePanelCoordinator::NavigateIfNecessary() {
                                            ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                            /*extra_headers=*/std::string());
   }
+}
+
+void ExtensionSidePanelCoordinator::LoadExtensionIcon() {
+  gfx::Image placeholder_icon = ExtensionIconPlaceholder::CreateImage(
+      extension_misc::EXTENSION_ICON_BITTY, extension_->name());
+
+  extension_icon_ = std::make_unique<IconImage>(
+      browser_->profile(), extension_, IconsInfo::GetIcons(extension_),
+      extension_misc::EXTENSION_ICON_BITTY, placeholder_icon.AsImageSkia(),
+      this);
+
+  // Triggers actual image loading with 1x resources.
+  extension_icon_->image_skia().GetRepresentation(1.0f);
 }
 
 }  // namespace extensions

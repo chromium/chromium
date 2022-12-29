@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
+#include "extensions/browser/extension_icon_image.h"
 
 class Browser;
 class SidePanelRegistry;
@@ -32,6 +33,7 @@ class Extension;
 // SidePanelEntries for the associated extension and creates the view to be
 // shown if this extension's SidePanelEntry is active.
 class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
+                                      public IconImage::Observer,
                                       public SidePanelService::Observer {
  public:
   explicit ExtensionSidePanelCoordinator(Browser* browser,
@@ -44,6 +46,12 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   // Returns the WebContents managed by `host_`.
   content::WebContents* GetHostWebContentsForTesting() const;
+
+  // Calls LoadExtensionIcon() again. Since LoadExtensionIcon() is called right
+  // when this class is created, it's difficult for tests to catch the
+  // OnExtensionIconImageChanged event. This method allows tests to initiate
+  // and wait for that event.
+  void LoadExtensionIconForTesting();
 
  private:
   SidePanelEntry::Key GetEntryKey() const;
@@ -61,6 +69,9 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // ExtensionViewViews::Observer
   void OnViewDestroying() override;
 
+  // IconImage::Observer
+  void OnExtensionIconImageChanged(IconImage* image) override;
+
   // Creates and registers the SidePanelEntry for this extension, and observes
   // the entry. This is called if the extension has a default side panel path
   // when the browser view is created or when the extension is loaded.
@@ -76,6 +87,9 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // called when this extension's SidePanelEntry is currently active.
   void NavigateIfNecessary();
 
+  // Loads the extension's icon for its SidePanelEntry.
+  void LoadExtensionIcon();
+
   raw_ptr<Browser> browser_;
   const Extension* extension_;
 
@@ -88,6 +102,9 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Note: the view is destroyed when the side panel is closed or when the
   // SidePanelEntry for this extension is deregistered.
   std::unique_ptr<ExtensionViewHost> host_ = nullptr;
+
+  // The extension's own icon for its side panel entry.
+  std::unique_ptr<IconImage> extension_icon_;
 
   base::ScopedObservation<ExtensionViewViews, ExtensionViewViews::Observer>
       scoped_view_observation_{this};

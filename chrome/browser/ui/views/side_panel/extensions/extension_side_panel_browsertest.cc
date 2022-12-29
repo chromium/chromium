@@ -19,8 +19,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/test_image_loader.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace extensions {
 namespace {
@@ -29,8 +32,7 @@ SidePanelEntry::Key GetKey(const ExtensionId& id) {
   return SidePanelEntry::Key(SidePanelEntry::Id::kExtension, id);
 }
 
-// A class which waits for a SidePanelEntry's view to be shown in the side
-// panel.
+// A class which waits on various SidePanelEntryObserver events.
 class TestSidePanelEntryWaiter : public SidePanelEntryObserver {
  public:
   explicit TestSidePanelEntryWaiter(SidePanelEntry* entry) {
@@ -42,22 +44,21 @@ class TestSidePanelEntryWaiter : public SidePanelEntryObserver {
   TestSidePanelEntryWaiter& operator=(const TestSidePanelEntryWaiter& other) =
       delete;
 
-  // Waits until the view for the SidePanelEntry is shown. Since `run_loop_` can
-  // only wait once, stop observing the SidePanelEntry after `run_loop_` is
-  // unblocked. This also guards against a use-after-free if the SidePanelEntry
-  // is freed while this object tries to call SidePanelEntry::RemoveObserver as
-  // it falls out of scope/is destroyed.
-  void Wait() {
-    run_loop_.Run();
-    side_panel_entry_observation_.Reset();
-  }
+  void WaitForEntryShown() { entry_shown_run_loop_.Run(); }
+
+  void WaitForIconUpdated() { icon_updated_run_loop_.Run(); }
 
  private:
   void OnEntryShown(SidePanelEntry* entry) override {
-    run_loop_.QuitWhenIdle();
+    entry_shown_run_loop_.QuitWhenIdle();
   }
 
-  base::RunLoop run_loop_;
+  void OnEntryIconUpdated(SidePanelEntry* entry) override {
+    icon_updated_run_loop_.QuitWhenIdle();
+  }
+
+  base::RunLoop entry_shown_run_loop_;
+  base::RunLoop icon_updated_run_loop_;
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
       side_panel_entry_observation_{this};
 };
@@ -256,6 +257,44 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SidePanelQuicklyClosed) {
   side_panel_coordinator()->Close();
 }
 
+// Test that the extension's side panel entry shows the extension's icon.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, EntryShowsExtensionIcon) {
+  // Load an extension and verify that its SidePanelEntry is registered.
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(extension);
+
+  auto* extension_coordinator =
+      extensions::ExtensionSidePanelManager::GetOrCreateForBrowser(browser())
+          ->GetExtensionCoordinatorForTesting(extension->id());
+
+  SidePanelEntry::Key extension_key =
+      SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id());
+  SidePanelEntry* extension_entry =
+      global_registry()->GetEntryForKey(extension_key);
+
+  // At this point, we don't know if the extension's icon has finished loading
+  // or not, since the first icon load is initiated right when the extension
+  // loads. Attempting to wait on OnEntryIconUpdated will hang forever if the
+  // icon has been loaded after setting up the waiter. To ensure the icon is
+  // loaded and the OnEntryIconUpdated event is broadcast, initiate a reload for
+  // the extension's icon manually.
+  {
+    TestSidePanelEntryWaiter icon_updated_waiter(extension_entry);
+    extension_coordinator->LoadExtensionIconForTesting();
+    icon_updated_waiter.WaitForIconUpdated();
+  }
+
+  // Check that the entry's icon bitmap is identical to the bitmap of the
+  // extension's icon scaled down to `extension_misc::EXTENSION_ICON_BITTY`.
+  SkBitmap expected_icon_bitmap = TestImageLoader::LoadAndGetExtensionBitmap(
+      extension.get(), "icon.png", extension_misc::EXTENSION_ICON_BITTY);
+  const SkBitmap& actual_icon_bitmap =
+      *extension_entry->icon().GetImage().ToSkBitmap();
+  EXPECT_TRUE(
+      gfx::test::AreBitmapsEqual(expected_icon_bitmap, actual_icon_bitmap));
+}
+
 // Test that sidePanel.setOptions() will register and deregister the extension's
 // SidePanelEntry when called with enabled: true/false.
 IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Enabled) {
@@ -351,11 +390,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Path) {
   // Switch to the reading list in the side panel and check that the extension
   // view is cached (i.e. the view exists but is not shown, and its web contents
   // still exists).
-  TestSidePanelEntryWaiter reading_list_waiter(
-      global_registry()->GetEntryForKey(
-          SidePanelEntry::Key(SidePanelEntry::Id::kReadingList)));
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kReadingList);
-  reading_list_waiter.Wait();
+  {
+    TestSidePanelEntryWaiter reading_list_waiter(
+        global_registry()->GetEntryForKey(
+            SidePanelEntry::Key(SidePanelEntry::Id::kReadingList)));
+    side_panel_coordinator()->Show(SidePanelEntry::Id::kReadingList);
+    reading_list_waiter.WaitForEntryShown();
+  }
 
   EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key)->CachedView());
 
