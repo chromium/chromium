@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_commands.h"
 
 class Browser;
-@protocol PinnedTabsCollectionConsumer;
+@protocol TabCollectionConsumer;
 
 // Mediates between model layer and pinned tabs collection UI layer.
 @interface PinnedTabsMediator : NSObject <PinnedTabsCommands>
@@ -19,7 +19,7 @@ class Browser;
 @property(nonatomic, assign) Browser* browser;
 
 // Initializer with `consumer` as the receiver of model layer updates.
-- (instancetype)initWithConsumer:(id<PinnedTabsCollectionConsumer>)consumer
+- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

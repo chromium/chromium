@@ -31,7 +31,6 @@ source_set("pinned_tabs_ui") {
   sources = [
     "pinned_cell.h",
     "pinned_cell.mm",
-    "pinned_tabs_collection_consumer.h",
     "pinned_tabs_constants.h",
     "pinned_tabs_constants.mm",
     "pinned_tabs_layout.h",

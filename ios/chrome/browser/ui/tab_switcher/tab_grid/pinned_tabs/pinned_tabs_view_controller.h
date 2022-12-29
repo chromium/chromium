@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 
 @protocol GridImageDataSource;
 @protocol TabContextMenuProvider;
@@ -23,7 +23,7 @@
 
 // UICollectionViewController used to display pinned tabs.
 @interface PinnedTabsViewController
-    : UICollectionViewController <PinnedTabsCollectionConsumer>
+    : UICollectionViewController <TabCollectionConsumer>
 
 // Data source for images.
 @property(nonatomic, weak) id<GridImageDataSource> imageDataSource;

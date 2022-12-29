@@ -8,6 +8,7 @@
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
+#import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
@@ -133,7 +134,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       }];
 }
 
-#pragma mark - PinnedTabsCollectionConsumer
+#pragma mark - TabCollectionConsumer
 
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(NSString*)selectedItemID {
@@ -281,6 +282,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       completion:^(BOOL completed) {
         collectionViewUpdatesCompletion();
       }];
+}
+
+- (void)dismissModals {
+  // Should never be called for this class.
+  NOTREACHED();
 }
 
 #pragma mark - UICollectionViewDataSource
