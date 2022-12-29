@@ -5,7 +5,9 @@
 
 import dataclasses
 import datetime as dt
+import functools
 import logging
+import multiprocessing
 import os
 import pathlib
 import sys
@@ -89,8 +91,9 @@ def get_repo_test_health(git_repo: Optional[pathlib.Path] = None,
     test_dir = test_dir or pathlib.Path('.')
     tests_root = (git_repo / test_dir).resolve(strict=True)
     repo_info = _get_git_repo_info(git_repo)
-    test_health_infos: list[TestHealthInfo] = []
 
+    logging.debug(f'Starting os.walk in {tests_root}')
+    test_paths = []
     for dirpath, _, filenames in os.walk(tests_root):
         if os.path.relpath(dirpath, tests_root).startswith(ignored_dirs):
             continue
@@ -103,16 +106,19 @@ def get_repo_test_health(git_repo: Optional[pathlib.Path] = None,
             if os.path.relpath(test_path, tests_root) in ignored_files:
                 continue
 
-            test_health_info = _get_test_health_info(git_repo, test_path,
-                                                     repo_info)
-            if test_health_info:
-                test_health_infos.append(test_health_info)
+            test_paths.append(test_path)
 
-    return test_health_infos
+    logging.debug(f'Parsing {len(test_paths)} test files')
+    with multiprocessing.Pool() as p:
+        test_health_infos: list[Optional[TestHealthInfo]] = p.map(
+            functools.partial(_get_test_health_info, git_repo, repo_info),
+            test_paths)
+
+    return [t for t in test_health_infos if t is not None]
 
 
-def _get_test_health_info(repo_root: pathlib.Path, test_path: pathlib.Path,
-                          repo_info: GitRepoInfo) -> Optional[TestHealthInfo]:
+def _get_test_health_info(repo_root: pathlib.Path, repo_info: GitRepoInfo,
+                          test_path: pathlib.Path) -> Optional[TestHealthInfo]:
     test_file = test_path.relative_to(repo_root)
     try:
         test_health_stats = java_test_utils.get_java_test_health(test_path)

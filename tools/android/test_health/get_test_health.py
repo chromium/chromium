@@ -40,7 +40,18 @@ def main():
                         required=False,
                         help='subdirectory containing the tests of interest;'
                         ' defaults to the root of the Git repo')
+    parser.add_argument('-v',
+                        '--verbose',
+                        action='store_true',
+                        help='Used to display detailed logging.')
     args = parser.parse_args()
+
+    if args.verbose:
+        level = logging.DEBUG
+    else:
+        level = logging.INFO
+    logging.basicConfig(
+        level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
     logging.info('Extracting test health data from Git repo.')
     start_time = time.time()
