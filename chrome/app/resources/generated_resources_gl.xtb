@@ -2882,6 +2882,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3617891479562106823">Os fondos non están dispoñibles. Téntao de novo máis tarde.</translation>
 <translation id="3619115746895587757">Capuchino</translation>
 <translation id="3620136223548713675">Xeolocalización</translation>
+<translation id="362023940451053340">Almacenaríase na túa Conta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="3621807901162200696">Axudar a mellorar as funcións e o rendemento de Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 aplicación}other{# aplicacións}}</translation>
 <translation id="362333465072914957">Agardando a que a entidade de certificación emita un certificado</translation>
@@ -6746,6 +6747,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7235737137505019098">A túa chave de seguranza non ten suficiente espazo para máis contas.</translation>
 <translation id="7235873936132740888">Os sitios poden realizar tarefas especiais (por exemplo, crear unha mensaxe nova no teu cliente de correo electrónico ou engadir eventos novos ao teu calendario en liña) cando fas clic en certos tipos de ligazóns</translation>
 <translation id="7238609589076576185">Escribiuse o acento gráfico.</translation>
+<translation id="7238665222668706269">Xestor de contrasinais de Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> cancelou a transferencia</translation>
 <translation id="7240339475467890413">Queres conectarte á nova zona wifi?</translation>
 <translation id="7241389281993241388">Inicia sesión en <ph name="TOKEN_NAME" /> para importar o certificado de cliente.</translation>
@@ -7877,6 +7879,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> desactivou o cursor do rato.</translation>
 <translation id="8264024885325823677">O teu administrador xestiona esta opción de configuración.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" activou a pantalla completa.</translation>
+<translation id="8265018477030547118">Almacenaríase só neste dispositivo</translation>
 <translation id="826511437356419340">Entraches no modo de vista xeral da ventá. Pasa o dedo para navegar ou preme o tabulador no teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{A ventá do modo de incógnito non se abrirá tras o reinicio}other{As {COUNT} ventás do modo de incógnito non se volverán abrir tras o reinicio}}</translation>
 <translation id="8266947622852630193">Todos os métodos de introdución de texto</translation>
@@ -8285,6 +8288,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8655295600908251630">Canle</translation>
 <translation id="8655972064210167941">Produciuse un erro no inicio de sesión porque o teu contrasinal non se puido verificar. Contacta co administrador ou téntao de novo.</translation>
 <translation id="8657393004602556571">Queres descartar o comentario?</translation>
+<translation id="8657762806752649049">Almacenaríase na túa Conta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8661290697478713397">Abrir ligazón na ventá de incó&amp;gnito</translation>
 <translation id="8662671328352114214">Unirse á rede <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Este proceso está demorándose máis do previsto. Podes omitilo ou agardar a que remate.</translation>

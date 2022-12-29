@@ -2881,6 +2881,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3617891479562106823">Sfondet nuk disponohen. Provo sërish më vonë.</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
 <translation id="3620136223548713675">Vendndodhja gjeografike</translation>
+<translation id="362023940451053340">Në "Llogarinë tënde të Google", për <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Ndihmo në përmirësimin e veçorive dhe performancës së ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{një aplikacion}other{# aplikacione}}</translation>
 <translation id="362333465072914957">Në pritje të lëshimit të certifikatës nga autoriteti i certifikatave</translation>
@@ -6748,6 +6749,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7235737137505019098">Çelësi yt i sigurisë nuk ka hapësirë të mjaftueshme për llogari të mëtejshme.</translation>
 <translation id="7235873936132740888">Sajtet mund të kryejnë detyra të veçanta kur klikon lloje të caktuara lidhjesh, si p.sh. krijimin e një mesazhi të ri në programin tënd të email-it ose shtimin e ngjarjeve të reja në kalendarin tënd në internet</translation>
 <translation id="7238609589076576185">U fut shenja e theksimit.</translation>
+<translation id="7238665222668706269">Menaxheri i fjalëkalimeve i Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> e anuloi transferimin</translation>
 <translation id="7240339475467890413">Do të lidhesh me një zonë të re të qasjes në internet?</translation>
 <translation id="7241389281993241388">Identifikohu te <ph name="TOKEN_NAME" /> për të importuar certifikatën e klientit.</translation>
@@ -7878,6 +7880,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ka çaktivizuar kursorin e miut.</translation>
 <translation id="8264024885325823677">Ky cilësim menaxhohet nga administratori yt.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" aktivizoi ekranin e plotë.</translation>
+<translation id="8265018477030547118">Vetëm në këtë pajisje</translation>
 <translation id="826511437356419340">Hyre në modalitetin e përmbledhjes së dritares. Rrëshqit shpejt për të naviguar ose shtyp Tab nëse po përdor një tastierë.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Dritarja jote "e fshehtë" nuk do të hapet pasi ta nisësh sërish}other{{COUNT} dritaret e tua "të fshehta" nuk do të rihapen pasi ta nisësh sërish.}}</translation>
 <translation id="8266947622852630193">Të gjitha metodat e hyrjes</translation>
@@ -8286,6 +8289,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8655295600908251630">Kanali</translation>
 <translation id="8655972064210167941">Identifikimi dështoi pasi fjalëkalimi nuk mund të verifikohej. Kontakto me administratorin ose provo përsëri.</translation>
 <translation id="8657393004602556571">Dëshiron të heqësh komentin?</translation>
+<translation id="8657762806752649049">Te "Llogaria jote e Google", për <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Hape lidhjen në një dritare të fshe&amp;htë</translation>
 <translation id="8662671328352114214">Bashkohu në rrjetin <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Kjo po zgjat më shumë nga sa pritej. Mund ta kapërcesh ose të presësh derisa të kryhet.</translation>

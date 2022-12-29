@@ -2901,6 +2901,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3617891479562106823">Nid yw cefndiroedd ar gael. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geoleoliad</translation>
+<translation id="362023940451053340">Yn eich Cyfrif Google, ar gyfer <ph name="ACCOUNT" /></translation>
 <translation id="3621807901162200696">Helpu i wella nodweddion a pherfformiad ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ap}zero{# ap}two{# ap}few{# ap}many{# ap}other{# ap}}</translation>
 <translation id="362333465072914957">Wrthi'n aros i'r CA gyhoeddi tystysgrif</translation>
@@ -6777,6 +6778,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7235737137505019098">Nid oes gan eich allwedd ddiogelwch ddigon o le ar gyfer rhagor o gyfrifon.</translation>
 <translation id="7235873936132740888">Gall gwefannau drin tasgau arbennig pan fyddwch yn clicio ar rai mathau o ddolenni, megis creu neges newydd yn eich cleient e-bost neu ychwanegu digwyddiadau newydd at eich calendr ar-lein.</translation>
 <translation id="7238609589076576185">Mewnosodwyd nod acen.</translation>
+<translation id="7238665222668706269">Rheolwr Cyfrineiriau Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">Gwnaeth <ph name="DEVICE_NAME" /> ganslo'r trosglwyddiad</translation>
 <translation id="7240339475467890413">Cysylltu â poethfan newydd?</translation>
 <translation id="7241389281993241388">Mewngofnodwch i <ph name="TOKEN_NAME" /> i fewnforio'r dystysgrif cleient.</translation>
@@ -7908,6 +7910,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8263744495942430914">Mae <ph name="FULLSCREEN_ORIGIN" /> wedi analluogi'ch cyrchwr llygoden.</translation>
 <translation id="8264024885325823677">Mae'r gosodiad hwn yn cael ei reoli gan eich gweinyddwr.</translation>
 <translation id="8264718194193514834">Mae "<ph name="EXTENSION_NAME" />" wedi sbarduno'r modd sgrîn lawn.</translation>
+<translation id="8265018477030547118">Ar y ddyfais hon yn unig</translation>
 <translation id="826511437356419340">Dechreuwyd y modd trosolwg ffenestr. Sweipiwch i lywio, neu pwyswch Tab os ydych yn defnyddio bysellfwrdd.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Ni fydd eich ffenestr Anhysbys yn agor ar ôl i chi ail-lansio}zero{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}two{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}few{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}many{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}other{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}}</translation>
 <translation id="8266947622852630193">Pob dull mewnbynnu</translation>
@@ -8316,6 +8319,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8655295600908251630">Sianel</translation>
 <translation id="8655972064210167941">Methwyd â mewngofnodi gan nad oedd modd dilysu eich cyfrinair. Cysylltwch â'ch gweinyddwr neu rhowch gynnig arall arni.</translation>
 <translation id="8657393004602556571">Ydych chi am gael gwared ar yr adborth?</translation>
+<translation id="8657762806752649049">I'ch Cyfrif Google, ar gyfer <ph name="ACCOUNT" /></translation>
 <translation id="8661290697478713397">Agor y Ddolen mewn Ffenestr Anh&amp;ysbys</translation>
 <translation id="8662671328352114214">Ymuno â rhwydwaith <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Mae hyn yn cymryd mwy o amser na'r disgwyl, gallwch ei hepgor neu aros nes ei fod wedi gorffen.</translation>
