@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
@@ -43,7 +44,6 @@ using base::test::RepeatingTestFuture;
 using base::test::TestFuture;
 using extensions::DictionaryBuilder;
 using test::TestSessionType;
-using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
 using UmaSessionType = DeviceCommandStartCrdSessionJob::UmaSessionType;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
@@ -61,6 +61,33 @@ constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
 constexpr char kTestOAuthToken[] = "test-oauth-token";
 constexpr char kTestAccessCode[] = "111122223333";
 constexpr char kTestNoOAuthTokenReason[] = "Not authorized.";
+// Common template used in all our UMA histograms.
+constexpr char kHistogramSessionTemplate[] =
+    "Enterprise.DeviceRemoteCommand.Crd.%s.%s.Result";
+
+// Created for session type logged to UMA.
+const char* SessionTypeToUmaString(TestSessionType session_type) {
+  switch (session_type) {
+    case TestSessionType::kManuallyLaunchedArcKioskSession:
+    case TestSessionType::kManuallyLaunchedWebKioskSession:
+    case TestSessionType::kManuallyLaunchedKioskSession:
+      return "ManuallyLaunchedKioskSession";
+    case TestSessionType::kAutoLaunchedArcKioskSession:
+    case TestSessionType::kAutoLaunchedWebKioskSession:
+    case TestSessionType::kAutoLaunchedKioskSession:
+      return "AutoLaunchedKioskSession";
+    case TestSessionType::kManagedGuestSession:
+      return "ManagedGuestSession";
+    case TestSessionType::kAffiliatedUserSession:
+      return "AffiliatedUserSession";
+    case TestSessionType::kGuestSession:
+      return "GuestSession";
+    case TestSessionType::kUnaffiliatedUserSession:
+      return "UnaffiliatedUserSession";
+    case TestSessionType::kNoSession:
+      return "NoUserSession";
+  }
+}
 
 // Macro expecting success. We are using a macro because a function would
 // report any error against the line in the function, and not against the
@@ -677,6 +704,10 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.SessionType", expected_session_type,
       1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kHistogramSessionTemplate, "RemoteSupport",
+                         SessionTypeToUmaString(user_session_type)),
+      ResultCode::SUCCESS, /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -689,6 +720,10 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.Result",
       ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kHistogramSessionTemplate, "RemoteSupport",
+                         "UnaffiliatedUserSession"),
+      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -706,6 +741,10 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.Result", ResultCode::FAILURE_NOT_IDLE,
       1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kHistogramSessionTemplate, "RemoteSupport",
+                         "AutoLaunchedKioskSession"),
+      ResultCode::FAILURE_NOT_IDLE, /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -719,6 +758,10 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.Result",
       ResultCode::FAILURE_NO_OAUTH_TOKEN, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kHistogramSessionTemplate, "RemoteSupport",
+                         "AutoLaunchedKioskSession"),
+      ResultCode::FAILURE_NO_OAUTH_TOKEN, /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -732,6 +775,10 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.Result",
       ResultCode::FAILURE_CRD_HOST_ERROR, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kHistogramSessionTemplate, "RemoteSupport",
+                         "AutoLaunchedKioskSession"),
+      ResultCode::FAILURE_CRD_HOST_ERROR, /*expected_bucket_count=*/1);
 }
 
 class DeviceCommandStartCrdSessionJobRemoteAccessTest
@@ -1052,6 +1099,61 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
 
   // We must invoke the callback to satisfy the Mojom contract
   std::move(callback).Run({});
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
+       ShouldSendUmaLogsForRemoteAccessForUnsupportedUserType) {
+  base::HistogramTester histogram_tester;
+  TestSessionType user_session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(user_session_type)));
+
+  if (SupportsRemoteAccess(user_session_type)) {
+    // This test is only about the cases where remote access is not supported.
+    return;
+  }
+  AddActiveManagedNetwork();
+  StartSessionOfType(user_session_type, user_manager());
+  Result result = RunJobAndWaitForResult(RemoteAccessPayload());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kHistogramSessionTemplate, "RemoteAccess",
+                         SessionTypeToUmaString(user_session_type)),
+      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, /*expected_bucket_count=*/1);
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
+       ShouldSendUmaLogsForRemoteAccessForSupportedUserType) {
+  base::HistogramTester histogram_tester;
+  TestSessionType user_session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(user_session_type)));
+
+  if (!SupportsRemoteAccess(user_session_type)) {
+    // This test is only about the cases where remote access is supported.
+    return;
+  }
+  AddActiveManagedNetwork();
+  StartSessionOfType(user_session_type, user_manager());
+  Result result = RunJobAndWaitForResult(RemoteAccessPayload());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kHistogramSessionTemplate, "RemoteAccess",
+                         SessionTypeToUmaString(user_session_type)),
+      ResultCode::SUCCESS, /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
+       ShouldSendUmaLogsIfThereAreNoActiveNetworks) {
+  fake_cros_network_config().ClearActiveNetworks();
+  base::HistogramTester histogram_tester;
+
+  RunJobAndWaitForResult(RemoteAccessPayload());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kHistogramSessionTemplate, "RemoteAccess",
+                         SessionTypeToUmaString(TestSessionType::kNoSession)),
+      ResultCode::FAILURE_UNMANAGED_ENVIRONMENT, /*expected_bucket_count=*/1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

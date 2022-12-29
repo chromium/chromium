@@ -10,13 +10,13 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/remoting_service.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
 
 namespace policy {
 
-using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
 using AccessCodeCallback = DeviceCommandStartCrdSessionJob::AccessCodeCallback;
 using ErrorCallback = DeviceCommandStartCrdSessionJob::ErrorCallback;
 

@@ -247,6 +247,8 @@ POLICY_EXPORT extern const char
 POLICY_EXPORT extern const char kMetricUserRemoteCommandReceived[];
 POLICY_EXPORT extern const char kMetricUserRemoteCommandExecutedTemplate[];
 
+POLICY_EXPORT extern const char kMetricDeviceRemoteCommandCrdResultTemplate[];
+
 POLICY_EXPORT extern const char kMetricDeviceRemoteCommandReceived[];
 POLICY_EXPORT extern const char kMetricDeviceRemoteCommandExecutedTemplate[];
 

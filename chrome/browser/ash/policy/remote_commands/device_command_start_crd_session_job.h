@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -21,38 +22,6 @@ namespace policy {
 // Affiliated Users and for Managed Guest Sessions.
 class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
  public:
-  // This enum can't be renumbered because it's logged to UMA and because its
-  // values must match the values in the server side
-  // `DeviceCommandUtil::ClientResultCode` enum.
-  enum class ResultCode {
-    // Successfully obtained access code.
-    SUCCESS = 0,
-
-    // Failed as required services are not launched on the device.
-    // deprecated FAILURE_SERVICES_NOT_READY = 1,
-
-    // Failure as the current user type does not support remotely starting CRD.
-    FAILURE_UNSUPPORTED_USER_TYPE = 2,
-
-    // Failed as device is currently in use and no interruptUser flag is set.
-    FAILURE_NOT_IDLE = 3,
-
-    // Failed as we could not get OAuth token for whatever reason.
-    FAILURE_NO_OAUTH_TOKEN = 4,
-
-    // Failed as we could not get ICE configuration for whatever reason.
-    // deprecated FAILURE_NO_ICE_CONFIG = 5,
-
-    // Failure during attempt to start CRD host and obtain CRD token.
-    FAILURE_CRD_HOST_ERROR = 6,
-
-    // Failure to start a curtained session as we're not in a managed
-    // environment.
-    FAILURE_UNMANAGED_ENVIRONMENT = 7,
-
-    kMaxValue = FAILURE_UNMANAGED_ENVIRONMENT
-  };
-
   using OAuthTokenCallback = base::OnceCallback<void(const std::string&)>;
   using AccessCodeCallback = base::OnceCallback<void(const std::string&)>;
   using ErrorCallback =
@@ -100,6 +69,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   void SetOAuthTokenForTest(const std::string& token);
 
   // This enum can't be renumbered because it is logged to UMA.
+  // TODO(b/261425261): Remove this enum when the Uma histogram is removed.
   enum class UmaSessionType {
     kAutoLaunchedKiosk = 0,
     kAffiliatedUser = 1,
@@ -128,6 +98,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
 
   bool UserTypeSupportsCrd() const;
   UmaSessionType GetUmaSessionType() const;
+  CrdSessionType GetCrdSessionType() const;
   bool IsDeviceIdle() const;
 
   std::string GetRobotAccountUserName() const;

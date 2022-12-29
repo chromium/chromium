@@ -2398,6 +2398,8 @@ source_set("ash") {
     "policy/remote_commands/crd_logging.h",
     "policy/remote_commands/crd_remote_command_utils.cc",
     "policy/remote_commands/crd_remote_command_utils.h",
+    "policy/remote_commands/crd_uma_logger.cc",
+    "policy/remote_commands/crd_uma_logger.h",
     "policy/remote_commands/device_command_fetch_crd_availability_info_job.cc",
     "policy/remote_commands/device_command_fetch_crd_availability_info_job.h",
     "policy/remote_commands/device_command_fetch_status_job.cc",

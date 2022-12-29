@@ -22,6 +22,38 @@ using ::enterprise_management::UserSessionType;
 // The type of the CRD session.
 using ::enterprise_management::CrdSessionType;
 
+// This enum can't be renumbered because it's logged to UMA.
+// Update the tools/metrics/histogram/enums.xml to be in parity with this for
+// UMA.
+enum class ResultCode {
+  // Successfully obtained access code.
+  SUCCESS = 0,
+
+  // Failed as required services are not launched on the device.
+  // deprecated FAILURE_SERVICES_NOT_READY = 1,
+
+  // Failure as the current user type does not support remotely starting CRD.
+  FAILURE_UNSUPPORTED_USER_TYPE = 2,
+
+  // Failed as device is currently in use and no interruptUser flag is set.
+  FAILURE_NOT_IDLE = 3,
+
+  // Failed as we could not get OAuth token for whatever reason.
+  FAILURE_NO_OAUTH_TOKEN = 4,
+
+  // Failed as we could not get ICE configuration for whatever reason.
+  // deprecated FAILURE_NO_ICE_CONFIG = 5,
+
+  // Failure during attempt to start CRD host and obtain CRD token.
+  FAILURE_CRD_HOST_ERROR = 6,
+
+  // Failure to start a curtained session as we're not in a managed
+  // environment.
+  FAILURE_UNMANAGED_ENVIRONMENT = 7,
+
+  kMaxValue = FAILURE_UNMANAGED_ENVIRONMENT
+};
+
 // Returns the time since the last user activity on this device.
 base::TimeDelta GetDeviceIdleTime();
 

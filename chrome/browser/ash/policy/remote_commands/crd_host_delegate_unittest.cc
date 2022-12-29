@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,7 +27,6 @@ using SessionParameters =
 using StartSupportSessionCallback =
     crosapi::mojom::Remoting::StartSupportSessionCallback;
 
-using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
 using remoting::mojom::StartSupportSessionResponse;
 using remoting::mojom::StartSupportSessionResponsePtr;
 using remoting::mojom::SupportHostObserver;

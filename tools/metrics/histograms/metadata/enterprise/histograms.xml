@@ -35,6 +35,17 @@ chromium-metrics-reviews@google.com.
   <variant name="PrintJobs" summary="Handler for print jobs"/>
 </variants>
 
+<variants name="Enterprise_CrdSessionType">
+  <variant name="RemoteAccess"
+      summary="A CRD session where the admin has exclusive control of the
+               ChromeOs device."/>
+  <variant name="RemoteSupport"
+      summary="A CRD session where the admin and the local user share control
+               of the ChromeOs device."/>
+  <variant name="Unknown"
+      summary="When the CRD session type couldn't be determined."/>
+</variants>
+
 <variants name="Enterprise_RemoteCommandType">
   <variant name=".BrowserClearBrowsingData" summary="Clear Browsing Data"/>
   <variant name=".BrowserRotateAttestationCredential"
@@ -58,6 +69,23 @@ chromium-metrics-reviews@google.com.
   <variant name=".FetchCrdAvailabilityInfo"
       summary="Fetch CRD availability info"/>
   <variant name=".UserArcCommand" summary="ARC command"/>
+</variants>
+
+<variants name="Enterprise_UserSessionType">
+  <variant name="AffiliatedUserSession"
+      summary="The local user is affiliated to the organisation."/>
+  <variant name="AutoLaunchedKioskSession"
+      summary="The local session is auto launched kiosk."/>
+  <variant name="GuestSession"
+      summary="The local guest session is not managed by an organisation."/>
+  <variant name="ManagedGuestSession"
+      summary="The local guest session is managed by an organisation."/>
+  <variant name="ManuallyLaunchedKioskSession"
+      summary="The local session is manually launched kiosk"/>
+  <variant name="NoUserSession" summary="There is no user."/>
+  <variant name="UnaffiliatedUserSession"
+      summary="The local user is not affiliated to the organisation."/>
+  <variant name="UnknownUserSession" summary="user session is unknown."/>
 </variants>
 
 <variants name="EnterpriseAutoEnrollmentType">
@@ -578,6 +606,20 @@ chromium-metrics-reviews@google.com.
     Reports the user type for the attempted session only when the result is
     EnterpriseCrdSessionResultCode::SUCCESS.
   </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.DeviceRemoteCommand.Crd.{Enterprise_CrdSessionType}.{Enterprise_UserSessionType}.Result"
+    enum="EnterpriseCrdSessionResultCode" expires_after="2023-06-01">
+  <owner>macinashutosh@google.com</owner>
+  <owner>chromeos-commercial-crd@google.com</owner>
+  <summary>
+    Reports success/failure when a session is attempted for the
+    {Enterprise_CrdSessionType} and {Enterprise_UserSessionType}
+  </summary>
+  <token key="Enterprise_CrdSessionType" variants="Enterprise_CrdSessionType"/>
+  <token key="Enterprise_UserSessionType"
+      variants="Enterprise_UserSessionType"/>
 </histogram>
 
 <histogram

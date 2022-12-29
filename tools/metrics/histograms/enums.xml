@@ -30774,6 +30774,7 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="FAILURE_NO_OAUTH_TOKEN"/>
   <int value="5" label="FAILURE_NO_ICE_CONFIG"/>
   <int value="6" label="FAILURE_CRD_HOST_ERROR"/>
+  <int value="7" label="FAILURE_UNMANAGED_ENVIRONMENT"/>
 </enum>
 
 <enum name="EnterpriseCrdUserType">
