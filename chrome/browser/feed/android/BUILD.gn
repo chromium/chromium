@@ -75,6 +75,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/sort_ui/FeedOptionsCoordinator.java",
     "java/src/org/chromium/chrome/browser/feed/sort_ui/FeedOptionsProperties.java",
     "java/src/org/chromium/chrome/browser/feed/sort_ui/FeedOptionsView.java",
+    "java/src/org/chromium/chrome/browser/feed/webfeed/CreatorIntentConstants.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/ShadowedClickableTextBubble.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogContents.java",

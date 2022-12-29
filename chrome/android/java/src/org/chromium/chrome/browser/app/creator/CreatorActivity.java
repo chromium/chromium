@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.creator.CreatorCoordinator;
+import org.chromium.chrome.browser.feed.webfeed.CreatorIntentConstants;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -37,11 +38,6 @@ import org.chromium.ui.base.IntentRequestTracker;
  * Activity for the Creator Page.
  */
 public class CreatorActivity extends SnackbarActivity {
-    // CREATOR_WEB_FEED_ID is the Intent key under which the Web Feed ID is stored.
-    public static final String CREATOR_WEB_FEED_ID = "CREATOR_WEB_FEED_ID";
-    public static final String CREATOR_TITLE = "CREATOR_TITLE";
-    public static final String CREATOR_URL = "CREATOR_URL";
-
     private ActivityWindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
     private ViewGroup mBottomSheetContainer;
@@ -57,9 +53,10 @@ public class CreatorActivity extends SnackbarActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        byte[] mWebFeedId = getIntent().getByteArrayExtra(CREATOR_WEB_FEED_ID);
-        String mTitle = getIntent().getStringExtra(CREATOR_TITLE);
-        String mUrl = getIntent().getStringExtra(CREATOR_URL);
+        byte[] mWebFeedId =
+                getIntent().getByteArrayExtra(CreatorIntentConstants.CREATOR_WEB_FEED_ID);
+        String mTitle = getIntent().getStringExtra(CreatorIntentConstants.CREATOR_TITLE);
+        String mUrl = getIntent().getStringExtra(CreatorIntentConstants.CREATOR_URL);
         mActivityTabProvider = new ActivityTabProvider();
         mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(this);
         mShareDelegateSupplier = new ShareDelegateSupplier();
