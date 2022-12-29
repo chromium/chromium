@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "chrome/updater/test_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,8 +32,10 @@ TEST(UnitTestUtil, Processes) {
 
   // Start two long-lived processes and expect to find them running.
   std::vector<base::Process> long_running;
-  long_running.push_back(LongRunningProcess(nullptr));
-  long_running.push_back(LongRunningProcess(nullptr));
+  long_running.push_back(
+      LongRunningProcess(GetTestScope(), GetTestName(), nullptr));
+  long_running.push_back(
+      LongRunningProcess(GetTestScope(), GetTestName(), nullptr));
   for (const base::Process& p : long_running) {
     EXPECT_TRUE(p.IsValid());
   }

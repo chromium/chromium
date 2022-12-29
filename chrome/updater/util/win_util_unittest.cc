@@ -30,6 +30,7 @@
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/util/unittest_util.h"
 #include "chrome/updater/util/unittest_util_win.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
@@ -116,7 +117,9 @@ TEST(WinUtil, ShellExecuteAndWait) {
   EXPECT_EQ(result.error(), HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
 
   result = ShellExecuteAndWait(
-      GetTestProcessCommandLine(GetTestScope()).GetProgram(), {}, {});
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName())
+          .GetProgram(),
+      {}, {});
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), DWORD{0});
 }
@@ -128,7 +131,7 @@ TEST(WinUtil, RunElevated) {
     return;
 
   const base::CommandLine test_process_cmd_line =
-      GetTestProcessCommandLine(GetTestScope());
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
   HResultOr<DWORD> result =
       RunElevated(test_process_cmd_line.GetProgram(),
                   test_process_cmd_line.GetArgumentsString());
@@ -171,7 +174,7 @@ TEST(WinUtil, RunDeElevated_Exe) {
   ASSERT_NE(event.handle(), nullptr);
 
   base::CommandLine test_process_cmd_line =
-      GetTestProcessCommandLine(GetTestScope());
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
   test_process_cmd_line.AppendSwitchNative(kTestEventToSignalIfMediumIntegrity,
                                            event_name);
   EXPECT_HRESULT_SUCCEEDED(

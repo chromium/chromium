@@ -25,16 +25,10 @@ namespace updater {
 // the "test_executables" target of updater/win/test/BUILD.gn.
 const wchar_t kTestProcessExecutableName[] = L"updater_test_process.exe";
 
-base::Process LongRunningProcess(base::CommandLine* cmd) {
-  base::FilePath exe_dir;
-  if (!base::PathService::Get(base::DIR_EXE, &exe_dir)) {
-    LOG(ERROR) << "Failed to get the executable path, unable to create always "
-                  "running process";
-    return base::Process();
-  }
-
-  base::FilePath exe_path = exe_dir.Append(updater::kTestProcessExecutableName);
-  base::CommandLine command_line(exe_path);
+base::Process LongRunningProcess(UpdaterScope scope,
+                                 const std::string& test_name,
+                                 base::CommandLine* cmd) {
+  base::CommandLine command_line = GetTestProcessCommandLine(scope, test_name);
 
   // This will ensure this new process will run for one minute before dying.
   command_line.AppendSwitchASCII(updater::kTestSleepMinutesSwitch, "1");
@@ -63,7 +57,8 @@ base::Process LongRunningProcess(base::CommandLine* cmd) {
   return result;
 }
 
-base::CommandLine GetTestProcessCommandLine(UpdaterScope scope) {
+base::CommandLine GetTestProcessCommandLine(UpdaterScope scope,
+                                            const std::string& test_name) {
   base::FilePath executable_path;
   CHECK(base::PathService::Get(base::DIR_EXE, &executable_path));
 
@@ -75,6 +70,7 @@ base::CommandLine GetTestProcessCommandLine(UpdaterScope scope) {
   command_line.AppendSwitch(kEnableLoggingSwitch);
   command_line.AppendSwitchASCII(kLoggingModuleSwitch,
                                  kLoggingModuleSwitchValue);
+  command_line.AppendSwitchASCII(kTestName, test_name);
   return command_line;
 }
 

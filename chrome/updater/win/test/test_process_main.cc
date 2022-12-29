@@ -51,6 +51,11 @@ int main(int, char**) {
 
   updater::NotifyInitializationDoneForTesting();
 
+  if (command_line->HasSwitch(updater::kTestName)) {
+    VLOG(1) << "Running for test: "
+            << command_line->GetSwitchValueASCII(updater::kTestName);
+  }
+
   if (command_line->HasSwitch(updater::kTestSleepMinutesSwitch)) {
     std::string value =
         command_line->GetSwitchValueASCII(updater::kTestSleepMinutesSwitch);

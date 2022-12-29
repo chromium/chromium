@@ -1567,7 +1567,8 @@ void RunOfflineInstall(UpdaterScope scope,
          const std::wstring& event_name) -> std::string {
         const std::string reg_hive = IsSystemInstall(scope) ? "HKLM" : "HKCU";
 
-        base::CommandLine post_install_cmd(GetTestProcessCommandLine(scope));
+        base::CommandLine post_install_cmd(
+            GetTestProcessCommandLine(scope, GetTestName()));
         post_install_cmd.AppendSwitchNative(kTestEventToSignal, event_name);
         std::vector<std::string> commands;
         const struct {

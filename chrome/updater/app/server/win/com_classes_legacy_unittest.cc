@@ -28,6 +28,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/util/unittest_util.h"
 #include "chrome/updater/util/unittest_util_win.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
@@ -188,7 +189,8 @@ TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
     return;
 
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
-  base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
+  base::CommandLine command_line =
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
 
   const std::wstring event_name =
       base::StrCat({kTestProcessExecutableName, L"-",

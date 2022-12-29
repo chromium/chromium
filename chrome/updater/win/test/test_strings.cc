@@ -13,5 +13,6 @@ const char kTestEventToSignalIfMediumIntegrity[] =
     "test-event-to-signal-if-medium-integrity";
 const char kTestEventToWaitOn[] = "test-event-to-wait-on";
 const char kTestExitCode[] = "test-exit-code";
+const char kTestName[] = "test-name";
 
 }  // namespace updater

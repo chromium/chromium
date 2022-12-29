@@ -28,6 +28,9 @@ extern const char kTestEventToWaitOn[];
 // Specifies an exit code that the test process exits with.
 extern const char kTestExitCode[];
 
+// Specifies the test name invoking the executable.
+extern const char kTestName[];
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_TEST_TEST_STRINGS_H_
