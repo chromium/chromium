@@ -351,6 +351,11 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     }
 
     private static boolean shouldSendRealValues() {
+        boolean enabledWithOverride =
+                CustomTabsConnection.getInstance().isDynamicFeatureEnabledWithOverrides(
+                        ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS);
+        if (enabledWithOverride) return true;
+
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS, REAL_VALUES, true);
     }

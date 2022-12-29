@@ -80,6 +80,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sCctFeatureUsage);
                 add(ChromeFeatureList.sCctIncognito);
                 add(ChromeFeatureList.sCctIncognitoAvailableToThirdParty);
+                add(ChromeFeatureList.sCctIntentFeatureOverrides);
                 add(ChromeFeatureList.sCctRemoveRemoteViewIds);
                 add(ChromeFeatureList.sCctResizable90MaximumHeight);
                 add(ChromeFeatureList.sCctResizableForThirdParties);

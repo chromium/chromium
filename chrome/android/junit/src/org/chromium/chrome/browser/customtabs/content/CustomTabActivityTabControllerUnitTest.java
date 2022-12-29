@@ -13,6 +13,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
@@ -228,6 +229,7 @@ public class CustomTabActivityTabControllerUnitTest {
     @Test
     @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
     public void attachEngagementSignalObserver() {
+        when(env.connection.isDynamicFeatureEnabled(anyString())).thenReturn(true);
         env.reachNativeInit(mTabController);
 
         ArgumentCaptor<CustomTabTabObserver> tabObservers =
