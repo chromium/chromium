@@ -718,9 +718,7 @@ void PaintController::CommitNewDisplayItems() {
 #endif
 }
 
-void PaintController::StartCycle(
-    HeapVector<Member<const DisplayItemClient>>& clients_to_validate,
-    bool record_debug_info) {
+void PaintController::StartCycle(bool record_debug_info) {
   // StartCycle() can only be called before the controller has painted anything.
   DCHECK(new_paint_artifact_);
   DCHECK(new_paint_artifact_->IsEmpty());
@@ -728,16 +726,26 @@ void PaintController::StartCycle(
   record_debug_info_ = record_debug_info;
   if (usage_ == kTransient)
     return;
-  clients_to_validate_ = &clients_to_validate;
-  paint_chunker_.StartMarkingClientsForValidation(clients_to_validate);
+  clients_to_validate_ =
+      MakeGarbageCollected<HeapVector<Member<const DisplayItemClient>>>();
+  paint_chunker_.StartMarkingClientsForValidation(*clients_to_validate_);
   ReserveCapacity();
 }
 
 void PaintController::FinishCycle() {
   DCHECK(usage_ == kTransient || clients_to_validate_);
-  clients_to_validate_ = nullptr;
+
   record_debug_info_ = false;
   paint_chunker_.StopMarkingClientsForValidation();
+  if (clients_to_validate_) {
+    for (const auto& client : *clients_to_validate_) {
+      if (client->IsCacheable()) {
+        client->Validate();
+      }
+    }
+    clients_to_validate_ = nullptr;
+  }
+
   if (usage_ == kTransient || !committed_)
     return;
 
@@ -845,15 +853,6 @@ void PaintController::ValidateNewChunkClient(const DisplayItemClient& client) {
 void PaintController::SetBenchmarkMode(PaintBenchmarkMode mode) {
   DCHECK(new_paint_artifact_->IsEmpty());
   benchmark_mode_ = mode;
-}
-
-PaintControllerCycleScope::~PaintControllerCycleScope() {
-  for (const auto& client : *clients_to_validate_) {
-    if (client->IsCacheable())
-      client->Validate();
-  }
-  for (auto* controller : controllers_)
-    controller->FinishCycle();
 }
 
 }  // namespace blink

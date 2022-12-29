@@ -2778,8 +2778,9 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
 
   bool needed_update;
   {
-    PaintControllerCycleScope cycle_scope(PaintDebugInfoEnabled());
-    bool repainted = PaintTree(benchmark_mode, cycle_scope);
+    PaintControllerCycleScope cycle_scope(EnsurePaintController(),
+                                          PaintDebugInfoEnabled());
+    bool repainted = PaintTree(benchmark_mode);
 
     if (paint_artifact_compositor_ &&
         benchmark_mode ==
@@ -2906,8 +2907,7 @@ void LocalFrameView::EnqueueScrollEvents() {
   });
 }
 
-bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
-                               PaintControllerCycleScope& cycle_scope) {
+bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
   SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(), LocalFrameUkmAggregator::kPaint);
 
   DCHECK(GetFrame().IsLocalRoot());
@@ -2953,12 +2953,6 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
 
   bool repainted = false;
   bool needs_clear_repaint_flags = false;
-
-  // TODO(paint-dev): We should be able to get rid of AddController entirely
-  // after non-CAP code is removed. The call to EnsurePaintController() will
-  // need to be moved up the call stack.
-  EnsurePaintController();
-  cycle_scope.AddController(*paint_controller_);
 
   PaintChunkSubset previous_chunks(paint_controller_->GetPaintArtifactShared());
 

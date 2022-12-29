@@ -41,16 +41,15 @@ class RasterInvalidationCycleScope : public PaintControllerCycleScope {
         invalidator_(invalidator) {}
   ~RasterInvalidationCycleScope() {
     ++sequence_number_;
-    for (auto* controller : controllers_) {
-      controller->CommitNewDisplayItems();
-      invalidator_.Generate(
-          base::DoNothing(),
-          PaintChunkSubset(controller->GetPaintArtifactShared()),
-          // The layer bounds are big enough not to clip display item raster
-          // invalidation rects in the tests.
-          gfx::Vector2dF(), gfx::Size(20000, 20000), PropertyTreeState::Root());
-      for (auto& chunk : controller->PaintChunks())
-        chunk.properties.ClearChangedToRoot(sequence_number_);
+    controller_.CommitNewDisplayItems();
+    invalidator_.Generate(
+        base::DoNothing(),
+        PaintChunkSubset(controller_.GetPaintArtifactShared()),
+        // The layer bounds are big enough not to clip display item raster
+        // invalidation rects in the tests.
+        gfx::Vector2dF(), gfx::Size(20000, 20000), PropertyTreeState::Root());
+    for (auto& chunk : controller_.PaintChunks()) {
+      chunk.properties.ClearChangedToRoot(sequence_number_);
     }
   }
 

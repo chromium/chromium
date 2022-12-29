@@ -100,7 +100,6 @@ class MobileFriendlinessChecker;
 class Page;
 class PaintArtifactCompositor;
 class PaintController;
-class PaintControllerCycleScope;
 class PaintLayer;
 class PaintLayerScrollableArea;
 class PaintTimingDetector;
@@ -910,7 +909,7 @@ class CORE_EXPORT LocalFrameView final
   void PerformLayout();
   void PerformPostLayoutTasks(bool view_size_changed);
 
-  bool PaintTree(PaintBenchmarkMode, PaintControllerCycleScope&);
+  bool PaintTree(PaintBenchmarkMode);
   void PushPaintArtifactToCompositor(bool repainted);
   void CreatePaintTimelineEvents();
 
