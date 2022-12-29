@@ -859,10 +859,12 @@ void DismissDefaultBrowserPromo() {
                        kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Accept sync.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  // Sometimes EG continues before the Sync screen is displayed. Make sure to
+  // wait for it.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunSyncScreenAccessibilityIdentifier)];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
                    scrollViewIdentifier:
