@@ -222,9 +222,12 @@ struct InsecureDownloadData {
       }
     }
     const GURL& dl_url = item->GetURL();
-    bool is_download_secure = is_redirect_chain_secure_ &&
-                              (network::IsUrlPotentiallyTrustworthy(dl_url) ||
-                               dl_url.SchemeIsBlob() || dl_url.SchemeIsFile());
+    // Whether or not the download was securely delivered, ignoring where we got
+    // the download URL from (i.e. ignoring the initiator).
+    bool download_delivered_securely =
+        is_redirect_chain_secure_ &&
+        (network::IsUrlPotentiallyTrustworthy(dl_url) ||
+         dl_url.SchemeIsBlob() || dl_url.SchemeIsFile());
 
     // Configure mixed content status.
     // Some downloads don't qualify for blocking, and are thus never
@@ -261,7 +264,7 @@ struct InsecureDownloadData {
     } else {  // Not ignorable download.
       // Record some metrics first.
       auto security_status = GetDownloadBlockingEnum(
-          initiator_, is_download_secure, initiator_inferred);
+          initiator_, download_delivered_securely, initiator_inferred);
       base::UmaHistogramEnumeration(
           GetDownloadBlockingExtensionMetricName(security_status),
           GetExtensionEnumFromString(extension_));
@@ -273,17 +276,47 @@ struct InsecureDownloadData {
                                                     item->GetUrlChain()),
           download::DownloadContentFromMimeType(item->GetMimeType(), false));
 
-      is_mixed_content_ =
-          (initiator_.has_value() &&
-           initiator_->GetURL().SchemeIsCryptographic() && !is_download_secure);
+      is_mixed_content_ = (initiator_.has_value() &&
+                           initiator_->GetURL().SchemeIsCryptographic() &&
+                           !download_delivered_securely);
+    }
+
+    // Configure insecure download status.
+    // Exclude download sources needed by Chrome from blocking. While this is
+    // similar to MIX-DL above, it intentionally blocks more user-initiated
+    // downloads. For example, downloads are blocked even if they're initiated
+    // from the omnibox.
+    if (download_source == DownloadSource::RETRY ||
+        (transition_type & ui::PAGE_TRANSITION_RELOAD) ||
+        (transition_type & ui::PAGE_TRANSITION_FROM_API) ||
+        download_source == DownloadSource::OFFLINE_PAGE ||
+        download_source == DownloadSource::INTERNAL_API ||
+        download_source == DownloadSource::EXTENSION_API ||
+        download_source == DownloadSource::EXTENSION_INSTALLER) {
+      base::UmaHistogramEnumeration(
+          kInsecureDownloadHistogramName,
+          InsecureDownloadSecurityStatus::kDownloadIgnored);
+      is_insecure_download_ = false;
+    } else {  // Not ignorable download.
+      // TODO(crbug.com/1352598): Add blocking metrics.
+      // insecure downloads are either delivered insecurely, or we can't trust
+      // who told us to download them (i.e. have an insecure initiator).
+      is_insecure_download_ = (initiator_.has_value() &&
+                               !initiator_->GetURL().SchemeIsCryptographic()) ||
+                              !download_delivered_securely;
     }
   }
 
   absl::optional<url::Origin> initiator_;
   std::string extension_;
   raw_ptr<const download::DownloadItem> item_;
+
+  // Was the download redirected only through secure URLs?
   bool is_redirect_chain_secure_;
+  // Was the download initiated by a secure origin, but delivered insecurely?
   bool is_mixed_content_;
+  // Was the download initiated by an insecure origin or delivered insecurely?
+  bool is_insecure_download_;
 };
 
 // Check if |extension| is contained in the comma separated |extension_list|.
@@ -365,9 +398,14 @@ InsecureDownloadStatus GetInsecureDownloadStatusForDownload(
     const download::DownloadItem* item) {
   InsecureDownloadData data(path, item);
 
-  // For now, the only downloads that are marked as insecure are "mixed"
-  // downloads (i.e. insecure downloads that are initiated from a secure
-  // context). We expect this to change in the future.
+  // When enabled, show a visible (bypassable) warning on insecure downloads.
+  // Since mixed download blocking is more severe, exclude mixed downloads from
+  // this early-return to let the mixed download logic below apply.
+  if (base::FeatureList::IsEnabled(features::kBlockInsecureDownloads) &&
+      data.is_insecure_download_ && !data.is_mixed_content_) {
+    PrintConsoleMessage(data, true);
+    return InsecureDownloadStatus::BLOCK;
+  }
 
   if (!data.is_mixed_content_) {
     return InsecureDownloadStatus::SAFE;
