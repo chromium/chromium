@@ -31,6 +31,11 @@ export class PowerBookmarkRowElement extends PolymerElement {
         observer: 'updateImages_',
       },
 
+      checkboxDisabled: {
+        type: Boolean,
+        value: false,
+      },
+
       compact: {
         type: Boolean,
         reflectToAttribute: true,
@@ -68,6 +73,7 @@ export class PowerBookmarkRowElement extends PolymerElement {
   }
 
   bookmark: chrome.bookmarks.BookmarkTreeNode;
+  checkboxDisabled: boolean;
   compact: boolean;
   description: string;
   hasCheckbox: boolean;

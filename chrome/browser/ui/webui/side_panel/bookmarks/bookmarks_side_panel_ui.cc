@@ -104,6 +104,10 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   source->AddString(
+      "bookmarksBarId",
+      base::NumberToString(
+          bookmark_model ? bookmark_model->bookmark_bar_node()->id() : -1));
+  source->AddString(
       "otherBookmarksId",
       base::NumberToString(bookmark_model ? bookmark_model->other_node()->id()
                                           : -1));

@@ -74,7 +74,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
   }
 
   private getMenuItemsForBookmark_(): MenuItem[] {
-    const menuItems: MenuItem[] = [
+    let menuItems: MenuItem[] = [
       {
         id: MenuItemId.OPEN_NEW_TAB,
         label: loadTimeData.getString('menuOpenNewTab'),
@@ -92,10 +92,12 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       });
     }
 
-    menuItems.push(
+    if (this.bookmark_.id !== loadTimeData.getString('bookmarksBarId')) {
+      menuItems = menuItems.concat([
         {id: MenuItemId.DIVIDER},
         {id: MenuItemId.DELETE, label: loadTimeData.getString('tooltipDelete')},
-    );
+      ]);
+    }
 
     return menuItems;
   }

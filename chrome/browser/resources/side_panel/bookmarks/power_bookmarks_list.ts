@@ -488,8 +488,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     } else {
       let topLevelBookmarks: chrome.bookmarks.BookmarkTreeNode[] = [];
       this.folders_.forEach(
-          folder => topLevelBookmarks =
-              topLevelBookmarks.concat(folder.children!));
+          folder => topLevelBookmarks = topLevelBookmarks.concat(
+              (folder.id === loadTimeData.getString('bookmarksBarId')) ?
+                  [folder] :
+                  folder.children!));
       shownBookmarks = topLevelBookmarks;
     }
     shownBookmarks = shownBookmarks.filter(
@@ -516,6 +518,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
     return unfilteredShownBookmarks.findIndex(
                b => b.url === this.currentUrl_) === -1;
+  }
+
+  private canEdit_(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean {
+    return bookmark.id !== loadTimeData.getString('bookmarksBarId');
   }
 
   private nodeMatchesContentFilters_(

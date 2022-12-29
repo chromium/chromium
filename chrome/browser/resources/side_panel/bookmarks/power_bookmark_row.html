@@ -164,7 +164,8 @@
 </style>
 <div id="container" role="listitem">
   <template is="dom-if" if="[[hasCheckbox]]" restamp>
-    <cr-checkbox hidden="[[!hasCheckbox]]" on-change="onCheckboxChange_">
+    <cr-checkbox hidden="[[!hasCheckbox]]" on-change="onCheckboxChange_"
+        disabled="[[checkboxDisabled]]">
       TODO: hidden label text
     </cr-checkbox>
   </template>
