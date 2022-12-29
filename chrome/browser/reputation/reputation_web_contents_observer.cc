@@ -32,19 +32,16 @@ void RecordHeuristicsUKMData(ReputationCheckResult result,
                              SafetyTipInteraction action) {
   // If we didn't trigger any heuristics at all, we don't want to record UKM
   // data.
-  if (!result.triggered_heuristics.triggered_any()) {
+  if (!result.lookalike_heuristic_triggered) {
     return;
   }
 
   ukm::builders::Security_SafetyTip(navigation_source_id)
       .SetSafetyTipStatus(static_cast<int64_t>(result.safety_tip_status))
       .SetSafetyTipInteraction(static_cast<int64_t>(action))
-      .SetTriggeredKeywordsHeuristics(
-          result.triggered_heuristics.keywords_heuristic_triggered)
-      .SetTriggeredLookalikeHeuristics(
-          result.triggered_heuristics.lookalike_heuristic_triggered)
-      .SetTriggeredServerSideBlocklist(
-          result.triggered_heuristics.blocklist_heuristic_triggered)
+      .SetTriggeredLookalikeHeuristics(result.lookalike_heuristic_triggered)
+      .SetTriggeredServerSideBlocklist(false) /* Deprecated */
+      .SetTriggeredKeywordsHeuristics(false)  /* Deprecated */
       .SetUserPreviouslyIgnored(
           result.safety_tip_status ==
               security_state::SafetyTipStatus::kBadReputationIgnored ||

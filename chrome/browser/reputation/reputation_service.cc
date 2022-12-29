@@ -182,18 +182,7 @@ void ReputationService::GetReputationStatusWithEngagedSites(
     done_checking_reputation_status = true;
   }
 
-  // 2. Server-side blocklist check.
-  SafetyTipStatus status = reputation::GetSafetyTipUrlBlockType(url);
-  if (status != SafetyTipStatus::kNone) {
-    if (!done_checking_reputation_status) {
-      result.safety_tip_status = status;
-    }
-
-    result.triggered_heuristics.blocklist_heuristic_triggered = true;
-    done_checking_reputation_status = true;
-  }
-
-  // 3. Protect against bad false positives by allowing top domains and safe
+  // 2. Protect against bad false positives by allowing top domains and safe
   // TLDs. Empty domain_and_registry happens on private domains.
   if (navigated_domain.domain_and_registry.empty() ||
       IsTopDomain(navigated_domain) ||
@@ -201,7 +190,7 @@ void ReputationService::GetReputationStatusWithEngagedSites(
     done_checking_reputation_status = true;
   }
 
-  // 4. Lookalike heuristics.
+  // 3. Lookalike heuristics.
   GURL safe_url;
   if (!already_engaged &&
       ShouldTriggerSafetyTipFromLookalike(url, navigated_domain, engaged_sites,
@@ -211,7 +200,7 @@ void ReputationService::GetReputationStatusWithEngagedSites(
       result.safety_tip_status = SafetyTipStatus::kLookalike;
     }
 
-    result.triggered_heuristics.lookalike_heuristic_triggered = true;
+    result.lookalike_heuristic_triggered = true;
     done_checking_reputation_status = true;
   }
   DCHECK(result.safety_tip_status != SafetyTipStatus::kBadKeyword);
@@ -240,7 +229,7 @@ void ReputationService::GetReputationStatusWithEngagedSites(
   result.url = url;
 
   DCHECK(done_checking_reputation_status ||
-         !result.triggered_heuristics.triggered_any());
+         !result.lookalike_heuristic_triggered);
   std::move(callback).Run(result);
 
   UMA_HISTOGRAM_TIMES(

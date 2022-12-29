@@ -65,21 +65,6 @@ void UrlToSafetyTipPatterns(const GURL& url,
   }
 }
 
-security_state::SafetyTipStatus FlagTypeToSafetyTipStatus(
-    FlaggedPage::FlagType type) {
-  switch (type) {
-    case FlaggedPage::FlagType::FlaggedPage_FlagType_UNKNOWN:
-    case FlaggedPage::FlagType::FlaggedPage_FlagType_YOUNG_DOMAIN:
-      // Reached if component includes these flags, which might happen to
-      // support newer Chrome releases.
-      return security_state::SafetyTipStatus::kNone;
-    case FlaggedPage::FlagType::FlaggedPage_FlagType_BAD_REP:
-      return security_state::SafetyTipStatus::kBadReputation;
-  }
-  NOTREACHED();
-  return security_state::SafetyTipStatus::kNone;
-}
-
 // Return whether |canonical_url| is a member of the designated cohort.
 bool IsUrlAllowedByCohort(const SafetyTipsConfig* proto,
                           const GURL& canonical_url,
@@ -192,40 +177,6 @@ bool IsTargetHostAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
     }
   }
   return false;
-}
-
-security_state::SafetyTipStatus GetSafetyTipUrlBlockType(const GURL& url) {
-  auto* proto = GetSafetyTipsRemoteConfigProto();
-  if (!proto) {
-    return security_state::SafetyTipStatus::kNone;
-  }
-
-  std::vector<std::string> patterns;
-  UrlToSafetyTipPatterns(url, &patterns);
-  auto flagged_pages = proto->flagged_page();
-  for (const auto& pattern : patterns) {
-    FlaggedPage search_target;
-    search_target.set_pattern(pattern);
-
-    auto lower = std::lower_bound(
-        flagged_pages.begin(), flagged_pages.end(), search_target,
-        [](const FlaggedPage& a, const FlaggedPage& b) -> bool {
-          return a.pattern() < b.pattern();
-        });
-
-    while (lower != flagged_pages.end() && pattern == lower->pattern()) {
-      // Skip over sites with unexpected flag types and keep looking for other
-      // matches. This allows components to include flag types not handled by
-      // this release.
-      auto type = FlagTypeToSafetyTipStatus(lower->type());
-      if (type != security_state::SafetyTipStatus::kNone) {
-        return type;
-      }
-      ++lower;
-    }
-  }
-
-  return security_state::SafetyTipStatus::kNone;
 }
 
 bool IsCommonWordInConfigProto(const SafetyTipsConfig* proto,

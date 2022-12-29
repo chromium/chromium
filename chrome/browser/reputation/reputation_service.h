@@ -21,20 +21,6 @@
 class Profile;
 struct DomainInfo;
 
-// All potential heuristics that can trigger. Used temporarily to keep track of
-// which heuristics trigger during a reputation check, and later used to decide
-// which metrics get recorded.
-struct TriggeredHeuristics {
-  bool blocklist_heuristic_triggered = false;
-  bool lookalike_heuristic_triggered = false;
-  bool keywords_heuristic_triggered = false;
-
-  inline bool triggered_any() const {
-    return blocklist_heuristic_triggered || lookalike_heuristic_triggered ||
-           keywords_heuristic_triggered;
-  }
-};
-
 // Wrapper used to store the results of a reputation check. Specifically, this
 // is passed to the callback given to GetReputationStatus.  |url| is the URL
 // applicable for this result.
@@ -46,7 +32,10 @@ struct ReputationCheckResult {
       security_state::SafetyTipStatus::kNone;
   GURL url;
   GURL suggested_url;
-  TriggeredHeuristics triggered_heuristics;
+  // True if a lookalike heuristic was triggered. Used temporarily to keep track
+  // of whether a heuristic triggers during a reputation check, and later used
+  // to decide whether metrics get recorded.
+  bool lookalike_heuristic_triggered = false;
 };
 
 // Callback type used for retrieving reputation status. The results of the

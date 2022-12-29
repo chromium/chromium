@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/lookalikes/lookalike_test_helper.h"
 #include "chrome/browser/reputation/reputation_web_contents_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -27,6 +28,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -73,6 +75,13 @@ class SecurityStatePageLoadMetricsBrowserTest : public InProcessBrowserTest {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("accounts-google.com", "127.0.0.1");
+    SetUpLookalikeTestParams();
+  }
+
+  void TearDownOnMainThread() override { TearDownLookalikeTestParams(); }
 
  protected:
   void StartHttpsServer(net::EmbeddedTestServer::ServerCertificate cert) {
@@ -255,17 +264,23 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
   const std::string kSiteEngagementDeltaHistogramPrefix =
       "Security.SiteEngagementDelta.";
 
-  StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
-  GURL url = https_test_server()->GetURL("/simple.html");
+  StartHttpServer();
+
+  struct TestCase {
+    // The URL to navigate to.
+    GURL url;
+    // If true, url is expected to show a safety tip.
+    bool expect_safety_tip;
+  } kTestCases[] = {
+      {http_test_server()->GetURL("/simple.html"), false},
+      {http_test_server()->GetURL("accounts-google.com", "/simple.html"), true},
+  };
 
   // The histogram should be recorded regardless of whether the page is flagged
   // with a Safety Tip or not.
-  for (bool flag_page : {false, true}) {
+  for (const TestCase& test_case : kTestCases) {
     ClearUkmRecorder();
     base::HistogramTester histogram_tester;
-    if (flag_page) {
-      reputation::SetSafetyTipBadRepPatterns({url.host() + "/"});
-    }
 
     chrome::AddTabAt(browser(), GURL(), -1, true);
     content::WebContents* contents =
@@ -280,26 +295,29 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
     base::RunLoop run_loop;
     rep_observer->RegisterReputationCheckCallbackForTesting(
         run_loop.QuitClosure());
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_case.url));
     run_loop.Run();
+
     // The UKM isn't recorded until the page is destroyed.
     ASSERT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
         1, TabCloseTypes::CLOSE_NONE));
 
     histogram_tester.ExpectTotalCount(
-        kSiteEngagementHistogramPrefix +
-            (flag_page ? "SafetyTip_BadReputation" : "SafetyTip_None"),
+        kSiteEngagementHistogramPrefix + (test_case.expect_safety_tip
+                                              ? "SafetyTip_Lookalike"
+                                              : "SafetyTip_None"),
         1);
     histogram_tester.ExpectTotalCount(
-        kSiteEngagementDeltaHistogramPrefix +
-            (flag_page ? "SafetyTip_BadReputation" : "SafetyTip_None"),
+        kSiteEngagementDeltaHistogramPrefix + (test_case.expect_safety_tip
+                                                   ? "SafetyTip_Lookalike"
+                                                   : "SafetyTip_None"),
         1);
     EXPECT_EQ(1u, CountUkmEntries());
     ExpectMetricForUrl(
-        url, UkmEntry::kSafetyTipStatusName,
-        static_cast<int64_t>(
-            flag_page ? security_state::SafetyTipStatus::kBadReputation
-                      : security_state::SafetyTipStatus::kNone));
+        test_case.url, UkmEntry::kSafetyTipStatusName,
+        static_cast<int64_t>(test_case.expect_safety_tip
+                                 ? security_state::SafetyTipStatus::kLookalike
+                                 : security_state::SafetyTipStatus::kNone));
   }
 }
 
@@ -308,16 +326,22 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
 // the histogram.
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
                        ReloadPageWithSafetyTip) {
-  StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
-  GURL url = https_test_server()->GetURL("/simple.html");
+  StartHttpServer();
+
+  struct TestCase {
+    // The URL to navigate to.
+    GURL url;
+    // If true, url is expected to show a safety tip.
+    bool expect_safety_tip;
+  } kTestCases[] = {
+      {http_test_server()->GetURL("/simple.html"), false},
+      {http_test_server()->GetURL("accounts-google.com", "/simple.html"), true},
+  };
 
   // The histogram should be recorded regardless of whether the page is flagged
   // with a Safety Tip or not.
-  for (bool flag_page : {false, true}) {
+  for (const TestCase& test_case : kTestCases) {
     base::HistogramTester histogram_tester;
-    if (flag_page) {
-      reputation::SetSafetyTipBadRepPatterns({url.host() + "/"});
-    }
 
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -325,12 +349,12 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
         ReputationWebContentsObserver::FromWebContents(contents);
     ASSERT_TRUE(rep_observer);
 
-    // Navigate to |url| and wait for the reputation check to complete before
-    // checking the histograms.
+    // Navigate to the lookalike and wait for the reputation check to complete
+    // before checking the histograms.
     base::RunLoop run_loop;
     rep_observer->RegisterReputationCheckCallbackForTesting(
         run_loop.QuitClosure());
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_case.url));
     run_loop.Run();
 
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -339,8 +363,9 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
     histogram_tester.ExpectUniqueSample(
         SecurityStatePageLoadMetricsObserver::
             GetSafetyTipPageEndReasonHistogramNameForTesting(
-                flag_page ? security_state::SafetyTipStatus::kBadReputation
-                          : security_state::SafetyTipStatus::kNone),
+                test_case.expect_safety_tip
+                    ? security_state::SafetyTipStatus::kLookalike
+                    : security_state::SafetyTipStatus::kNone),
         page_load_metrics::END_RELOAD, 1);
   }
 }
@@ -494,32 +519,27 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
 // net error page. No Safety Tip should appear on net errors.
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
                        SafetyTipHostDoesNotExist) {
-  GURL url("http://nonexistent.test/page.html");
+  GURL url("http://nonexistent-google.com/page.html");
 
-  for (bool flag_page : {false, true}) {
-    if (flag_page) {
-      reputation::SetSafetyTipBadRepPatterns({url.host() + "/"});
-    }
-    content::WebContents* contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    ReputationWebContentsObserver* rep_observer =
-        ReputationWebContentsObserver::FromWebContents(contents);
-    ASSERT_TRUE(rep_observer);
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ReputationWebContentsObserver* rep_observer =
+      ReputationWebContentsObserver::FromWebContents(contents);
+  ASSERT_TRUE(rep_observer);
 
-    // Navigate to |url| and wait for the reputation check to complete before
-    // checking the histograms.
-    base::RunLoop run_loop;
-    rep_observer->RegisterReputationCheckCallbackForTesting(
-        run_loop.QuitClosure());
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    run_loop.Run();
+  // Navigate to |url| and wait for the reputation check to complete before
+  // checking the histograms.
+  base::RunLoop run_loop;
+  rep_observer->RegisterReputationCheckCallbackForTesting(
+      run_loop.QuitClosure());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  run_loop.Run();
 
-    histogram_tester()->ExpectTotalCount(
-        SecurityStatePageLoadMetricsObserver::
-            GetSafetyTipPageEndReasonHistogramNameForTesting(
-                security_state::SafetyTipStatus::kNone),
-        0);
-  }
+  histogram_tester()->ExpectTotalCount(
+      SecurityStatePageLoadMetricsObserver::
+          GetSafetyTipPageEndReasonHistogramNameForTesting(
+              security_state::SafetyTipStatus::kNone),
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,

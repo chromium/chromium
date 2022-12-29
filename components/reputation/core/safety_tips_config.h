@@ -39,12 +39,6 @@ bool IsUrlAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
 bool IsTargetHostAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
                                                   const std::string& hostname);
 
-// Checks SafeBrowsing-style permutations of |url| against the component updater
-// blocklist and returns the match type. kNone means the URL is not blocked.
-// This method assumes that the flagged pages in the safety tip config proto are
-// in sorted order.
-security_state::SafetyTipStatus GetSafetyTipUrlBlockType(const GURL& url);
-
 // Returns whether |word| is included in the component updater common word list
 bool IsCommonWordInConfigProto(const SafetyTipsConfig* proto,
                                const std::string& word);
