@@ -27,6 +27,7 @@
 #include "components/search_engines/template_url_service_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/entity_info.pb.h"
 
 namespace {
 
@@ -37,6 +38,9 @@ SearchSuggestionParser::SuggestResult BuildSuggestion(
     const std::string& additional_query_params,
     int relevance,
     bool should_prerender) {
+  omnibox::EntityInfo entity_info;
+  entity_info.set_suggest_search_parameters(additional_query_params);
+
   return SearchSuggestionParser::SuggestResult(
       /*suggestion=*/query,
       /*type=*/type,
@@ -44,11 +48,8 @@ SearchSuggestionParser::SuggestResult BuildSuggestion(
       /*match_contents=*/query,
       /*match_contents_prefix=*/u"",
       /*annotation=*/std::u16string(),
-      /*additional_query_params=*/additional_query_params,
-      /*entity_id=*/"",
+      /*entity_info=*/entity_info,
       /*deletion_url=*/std::string(),
-      /*image_dominant_color=*/std::string(),
-      /*image_url=*/std::string(),
       /*from_keyword=*/false,
       /*relevance=*/relevance,
       /*relevance_from_server=*/true,

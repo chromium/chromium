@@ -239,11 +239,8 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
                     suggestion,
                     /*match_contents_prefix=*/std::u16string(),
                     /*annotation=*/std::u16string(),
-                    /*additional_query_params=*/"",
-                    /*entity_id=*/"",
+                    /*entity_info=*/omnibox::EntityInfo(),
                     /*deletion_url=*/"",
-                    /*image_dominant_color=*/"",
-                    /*image_url=*/"",
                     from_keyword,
                     relevance,
                     relevance_from_server,
@@ -258,11 +255,8 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
     const std::u16string& match_contents,
     const std::u16string& match_contents_prefix,
     const std::u16string& annotation,
-    const std::string& additional_query_params,
-    const std::string& entity_id,
+    const omnibox::EntityInfo& entity_info,
     const std::string& deletion_url,
-    const std::string& image_dominant_color,
-    const std::string& image_url,
     bool from_keyword,
     int relevance,
     bool relevance_from_server,
@@ -277,14 +271,16 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
              deletion_url),
       suggestion_(suggestion),
       match_contents_prefix_(match_contents_prefix),
-      annotation_(annotation),
-      additional_query_params_(additional_query_params),
-      entity_id_(entity_id),
-      image_dominant_color_(image_dominant_color),
-      image_url_(GURL(image_url)),
+      image_url_(GURL(entity_info.image_url())),
+      entity_info_(entity_info),
       should_prefetch_(should_prefetch),
       should_prerender_(should_prerender) {
-  match_contents_ = match_contents;
+  annotation_ = !entity_info.annotation().empty()
+                    ? base::UTF8ToUTF16(entity_info.annotation())
+                    : annotation;
+  match_contents_ = !entity_info.name().empty()
+                        ? base::UTF8ToUTF16(entity_info.name())
+                        : match_contents;
   DCHECK(!match_contents_.empty());
   ClassifyMatchContents(true, input_text);
 }
@@ -827,11 +823,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
               FindStringKeyOrEmpty(suggestion_detail, "zae"));
         }
 
-        if (!entity_info.annotation().empty())
-          annotation = base::UTF8ToUTF16(entity_info.annotation());
-        if (!entity_info.name().empty())
-          match_contents = base::UTF8ToUTF16(entity_info.name());
-
         match_contents_prefix =
             base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "mp"));
 
@@ -860,9 +851,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       results->suggest_results.push_back(SuggestResult(
           suggestion, match_type, subtypes[index],
           base::CollapseWhitespace(match_contents, false),
-          match_contents_prefix, annotation,
-          entity_info.suggest_search_parameters(), entity_info.entity_id(),
-          deletion_url, entity_info.dominant_color(), entity_info.image_url(),
+          match_contents_prefix, annotation, entity_info, deletion_url,
           is_keyword_result, relevance, relevances != nullptr, should_prefetch,
           should_prerender, trimmed_input));
 
