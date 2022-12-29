@@ -1,0 +1,205 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/ash/desks/chrome_desks_templates_delegate.h"
+
+#include "ash/constants/app_types.h"
+#include "ash/public/cpp/ash_public_export.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "chrome/browser/ash/crosapi/browser_loader.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/full_restore_save_handler.h"
+#include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/window_types.h"
+#include "ui/aura/window.h"
+#include "ui/compositor/layer_type.h"
+
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::Return;
+
+namespace {
+constexpr char kTestProfileEmail[] = "test@test.com";
+constexpr int32_t kLacrosWindowId = 123456;
+constexpr int32_t kActivationIndex1 = 100;
+
+std::unique_ptr<aura::Window> CreateLacrosWindow(
+    const std::string& lacros_window_id) {
+  auto window =
+      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(ash::AppType::LACROS));
+  window->SetProperty(app_restore::kLacrosWindowId,
+                      std::string(lacros_window_id));
+
+  window->Init(ui::LAYER_NOT_DRAWN);
+
+  return window;
+}
+
+class MockDesksClient : public DesksClient {
+ public:
+  MOCK_CONST_METHOD1(GetAppIdForLacrosWindow,
+                     absl::optional<std::string>(aura::Window* window));
+};
+
+class MockBrowserManager : public crosapi::BrowserManager {
+ public:
+  MockBrowserManager()
+      : BrowserManager(std::unique_ptr<crosapi::BrowserLoader>(), nullptr) {}
+  MOCK_CONST_METHOD0(IsRunning, bool());
+  MOCK_METHOD2(GetBrowserInformation,
+               void(const std::string&,
+                    crosapi::BrowserManager::GetBrowserInformationCallback));
+};
+
+void ReturnEmptyGetBrowserInformation(
+    const std::string& window_unique_id,
+    crosapi::BrowserManager::GetBrowserInformationCallback callback) {
+  // Returns empty Lacros browser information.
+  std::move(callback).Run({});
+}
+}  // namespace
+
+class ChromeDesksTemplatesDelegateTest : public testing::Test {
+ public:
+  ChromeDesksTemplatesDelegateTest()
+      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
+
+  ChromeDesksTemplatesDelegateTest(const ChromeDesksTemplatesDelegateTest&) =
+      delete;
+  ChromeDesksTemplatesDelegateTest& operator=(
+      const ChromeDesksTemplatesDelegateTest&) = delete;
+
+  ~ChromeDesksTemplatesDelegateTest() override = default;
+
+  void SetUp() override {
+    // Create a test user and profile so the ChromeDesksTemplatesDelegate does
+    // not return empty result simply because of missing user profile.
+    auto account_id = AccountId::FromUserEmail(kTestProfileEmail);
+    const auto* user = GetFakeUserManager()->AddUser(account_id);
+
+    ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetProfileName(kTestProfileEmail);
+    profile_builder.SetPath(profile_dir_.GetPath());
+    profile_ = profile_builder.Build();
+
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user, profile_.get());
+
+    // Set up Full Restore Save Handler so that ChromeDesksTemplatesDelegate can
+    // get launch info for a Lacros window.
+    full_restore::FullRestoreSaveHandler* save_handler = GetSaveHandler();
+    save_handler->SetPrimaryProfilePath(profile_dir_.GetPath());
+
+    chrome_desks_templates_delegate_ =
+        std::make_unique<ChromeDesksTemplatesDelegate>();
+  }
+
+  void TearDown() override { chrome_desks_templates_delegate_.reset(); }
+
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
+  }
+
+  ChromeDesksTemplatesDelegate* chrome_desks_templates_delegate() {
+    return chrome_desks_templates_delegate_.get();
+  }
+
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
+  MockBrowserManager& mock_browser_manager() { return mock_browser_manager_; }
+  MockDesksClient& mock_desks_client() { return mock_desks_client_; }
+
+  full_restore::FullRestoreSaveHandler* GetSaveHandler(
+      bool start_save_timer = true) {
+    auto* save_handler = full_restore::FullRestoreSaveHandler::GetInstance();
+    save_handler->SetActiveProfilePath(profile_->GetPath());
+    save_handler->AllowSave();
+    return save_handler;
+  }
+
+  void SaveWindowInfo(aura::Window* window, int32_t activation_index) {
+    app_restore::WindowInfo window_info;
+    window_info.window = window;
+    window_info.activation_index = activation_index;
+    full_restore::SaveWindowInfo(window_info);
+  }
+
+ private:
+  // Browser profiles need to be created on UI thread.
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
+
+  base::ScopedTempDir profile_dir_;
+  std::unique_ptr<TestingProfile> profile_;
+
+  testing::NiceMock<MockBrowserManager> mock_browser_manager_;
+  testing::NiceMock<MockDesksClient> mock_desks_client_;
+
+  std::unique_ptr<ChromeDesksTemplatesDelegate>
+      chrome_desks_templates_delegate_;
+
+  user_manager::ScopedUserManager user_manager_enabler_;
+};
+
+TEST_F(ChromeDesksTemplatesDelegateTest, NullWindowReturnsEmptyAppLaunchData) {
+  base::RunLoop loop;
+  chrome_desks_templates_delegate()->GetAppLaunchDataForDeskTemplate(
+      /*window*/ nullptr,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
+            EXPECT_FALSE(app_launch_info);
+            loop.Quit();
+          }));
+  loop.Run();
+}
+
+TEST_F(ChromeDesksTemplatesDelegateTest,
+       EmptyLacrosWindowInfoReturnsEmptyAppLaunchData) {
+  ASSERT_EQ(&mock_desks_client(), DesksClient::Get());
+
+  std::unique_ptr<aura::Window> window =
+      CreateLacrosWindow(base::NumberToString(kLacrosWindowId));
+
+  // Saves window info so that GetAppLaunchDataForDeskTemplate will attempt to
+  // get Lacros window information.
+  SaveWindowInfo(window.get(), kActivationIndex1);
+
+  EXPECT_CALL(mock_browser_manager(), IsRunning()).WillOnce(Return(true));
+  EXPECT_CALL(mock_browser_manager(), GetBrowserInformation(_, _))
+      .WillOnce(Invoke(ReturnEmptyGetBrowserInformation));
+
+  task_environment().RunUntilIdle();
+
+  base::RunLoop loop;
+  chrome_desks_templates_delegate()->GetAppLaunchDataForDeskTemplate(
+      window.get(),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
+            EXPECT_FALSE(app_launch_info);
+            loop.Quit();
+          }));
+  loop.Run();
+}

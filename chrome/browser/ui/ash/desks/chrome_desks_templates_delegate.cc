@@ -424,6 +424,10 @@ void ChromeDesksTemplatesDelegate::LaunchAppsFromTemplate(
 // Returns true if `window` is supported in desk templates feature.
 bool ChromeDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
     aura::Window* window) const {
+  if (!window) {
+    return false;
+  }
+
   if (!ash::DeskTemplate::IsAppTypeSupported(window))
     return false;
 
@@ -448,10 +452,14 @@ void ChromeDesksTemplatesDelegate::OnLacrosChromeInfoReturned(
     GetAppLaunchDataCallback callback,
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info,
     crosapi::mojom::DeskTemplateStatePtr state) {
-  if (state) {
-    app_launch_info->urls = state->urls;
-    app_launch_info->active_tab_index = state->active_index;
+  if (state.is_null()) {
+    std::move(callback).Run({});
+    return;
   }
+
+  app_launch_info->urls = state->urls;
+  app_launch_info->active_tab_index = state->active_index;
+
   std::move(callback).Run(std::move(app_launch_info));
 }
 

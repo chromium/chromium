@@ -262,8 +262,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
       base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)>;
   // Gets URLs and active indices of the tab strip models from the Lacros
   // browser window.
-  void GetBrowserInformation(const std::string& window_unique_id,
-                             GetBrowserInformationCallback callback);
+  // Virtual for testing.
+  virtual void GetBrowserInformation(const std::string& window_unique_id,
+                                     GetBrowserInformationCallback callback);
 
   void AddObserver(BrowserManagerObserver* observer);
   void RemoveObserver(BrowserManagerObserver* observer);

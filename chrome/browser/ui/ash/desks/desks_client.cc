@@ -223,13 +223,17 @@ class DesksClient::LaunchPerformanceTracker
 DesksClient::DesksClient() : desks_controller_(ash::DesksController::Get()) {
   DCHECK(!g_desks_client_instance);
   g_desks_client_instance = this;
-  ash::SessionController::Get()->AddObserver(this);
+  if (ash::SessionController::Get()) {
+    ash::SessionController::Get()->AddObserver(this);
+  }
 }
 
 DesksClient::~DesksClient() {
   DCHECK_EQ(this, g_desks_client_instance);
   g_desks_client_instance = nullptr;
-  ash::SessionController::Get()->RemoveObserver(this);
+  if (ash::SessionController::Get()) {
+    ash::SessionController::Get()->RemoveObserver(this);
+  }
 }
 
 // static
