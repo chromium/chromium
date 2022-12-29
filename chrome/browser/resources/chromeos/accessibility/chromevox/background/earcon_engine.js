@@ -8,7 +8,7 @@
  * rest of the code.
  */
 
-import {Earcon} from '../common/abstract_earcons.js';
+import {EarconId} from '../common/earcon_id.js';
 
 /** EarconEngine generates ChromeVox's earcons using the web audio API. */
 export class EarconEngine {
@@ -117,11 +117,11 @@ export class EarconEngine {
     /**
      * Maps a earcon name to the last source input audio for that
      * earcon.
-     * @private {!Object<!Earcon, !AudioNode|undefined>}
+     * @private {!Object<!EarconId, !AudioNode|undefined>}
      */
     this.lastEarconSources_ = {};
 
-    /** @private {!Earcon|undefined} */
+    /** @private {!EarconId|undefined} */
     this.currentTrackedEarcon_;
 
     // Initialization: load the base sound data files asynchronously.
@@ -135,38 +135,38 @@ export class EarconEngine {
 
   /**
    * A high-level way to ask the engine to play a specific earcon.
-   * @param {!Earcon} earcon The earcon to play.
+   * @param {!EarconId} earcon The earcon to play.
    */
   playEarcon(earcon) {
     // These earcons are not tracked by the engine via their audio sources.
     switch (earcon) {
-      case Earcon.CHROMEVOX_LOADED:
+      case EarconId.CHROMEVOX_LOADED:
         this.cancelProgressPersistent();
         return;
-      case Earcon.CHROMEVOX_LOADING:
+      case EarconId.CHROMEVOX_LOADING:
         this.startProgressPersistent();
         return;
-      case Earcon.PAGE_FINISH_LOADING:
+      case EarconId.PAGE_FINISH_LOADING:
         this.cancelProgress();
         return;
-      case Earcon.PAGE_START_LOADING:
+      case EarconId.PAGE_START_LOADING:
         this.startProgress();
         return;
-      case Earcon.POP_UP_BUTTON:
+      case EarconId.POP_UP_BUTTON:
         this.onPopUpButton();
         return;
 
       // These had earcons in previous versions of ChromeVox but
       // they're currently unused / unassigned.
-      case Earcon.LIST_ITEM:
-      case Earcon.LONG_DESC:
-      case Earcon.MATH:
-      case Earcon.OBJECT_CLOSE:
-      case Earcon.OBJECT_ENTER:
-      case Earcon.OBJECT_EXIT:
-      case Earcon.OBJECT_OPEN:
-      case Earcon.OBJECT_SELECT:
-      case Earcon.RECOVER_FOCUS:
+      case EarconId.LIST_ITEM:
+      case EarconId.LONG_DESC:
+      case EarconId.MATH:
+      case EarconId.OBJECT_CLOSE:
+      case EarconId.OBJECT_ENTER:
+      case EarconId.OBJECT_EXIT:
+      case EarconId.OBJECT_OPEN:
+      case EarconId.OBJECT_SELECT:
+      case EarconId.RECOVER_FOCUS:
         return;
     }
 
@@ -178,54 +178,54 @@ export class EarconEngine {
 
     this.currentTrackedEarcon_ = earcon;
     switch (earcon) {
-      case Earcon.ALERT_MODAL:
-      case Earcon.ALERT_NONMODAL:
+      case EarconId.ALERT_MODAL:
+      case EarconId.ALERT_NONMODAL:
         this.onAlert();
         break;
-      case Earcon.BUTTON:
+      case EarconId.BUTTON:
         this.onButton();
         break;
-      case Earcon.CHECK_OFF:
+      case EarconId.CHECK_OFF:
         this.onCheckOff();
         break;
-      case Earcon.CHECK_ON:
+      case EarconId.CHECK_ON:
         this.onCheckOn();
         break;
-      case Earcon.EDITABLE_TEXT:
+      case EarconId.EDITABLE_TEXT:
         this.onTextField();
         break;
-      case Earcon.INVALID_KEYPRESS:
+      case EarconId.INVALID_KEYPRESS:
         this.onWrap();
         break;
-      case Earcon.LINK:
+      case EarconId.LINK:
         this.onLink();
         break;
-      case Earcon.LISTBOX:
+      case EarconId.LISTBOX:
         this.onSelect();
         break;
-      case Earcon.SELECTION:
+      case EarconId.SELECTION:
         this.onSelection();
         break;
-      case Earcon.SELECTION_REVERSE:
+      case EarconId.SELECTION_REVERSE:
         this.onSelectionReverse();
         break;
-      case Earcon.SKIP:
+      case EarconId.SKIP:
         this.onSkim();
         break;
-      case Earcon.SLIDER:
+      case EarconId.SLIDER:
         this.onSlider();
         break;
-      case Earcon.SMART_STICKY_MODE_OFF:
+      case EarconId.SMART_STICKY_MODE_OFF:
         this.onSmartStickyModeOff();
         break;
-      case Earcon.SMART_STICKY_MODE_ON:
+      case EarconId.SMART_STICKY_MODE_ON:
         this.onSmartStickyModeOn();
         break;
-      case Earcon.NO_POINTER_ANCHOR:
+      case EarconId.NO_POINTER_ANCHOR:
         this.onNoPointerAnchor();
         break;
-      case Earcon.WRAP:
-      case Earcon.WRAP_EDGE:
+      case EarconId.WRAP:
+      case EarconId.WRAP_EDGE:
         this.onWrap();
         break;
     }

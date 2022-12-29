@@ -129,6 +129,7 @@ chromevox_es6_modules = [
   "common/command_store.js",
   "common/content_script_bridge.js",
   "common/custom_automation_event.js",
+  "common/earcon_id.js",
   "common/event_source_type.js",
   "common/gesture_command_data.js",
   "common/key_map.js",

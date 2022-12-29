@@ -7,8 +7,8 @@
  */
 import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
-import {Earcon} from '../common/abstract_earcons.js';
 import {ChromeVoxEvent} from '../common/custom_automation_event.js';
+import {EarconId} from '../common/earcon_id.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {ChromeVox} from './chromevox.js';
@@ -59,7 +59,7 @@ export class PageLoadSoundHandler extends BaseAutomationHandler {
     }
 
     if (this.didRequestLoadSound_ && top.parent && top.parent.state.focused) {
-      ChromeVox.earcons.playEarcon(Earcon.PAGE_FINISH_LOADING);
+      ChromeVox.earcons.playEarcon(EarconId.PAGE_FINISH_LOADING);
       this.didRequestLoadSound_ = false;
     }
   }
@@ -73,7 +73,7 @@ export class PageLoadSoundHandler extends BaseAutomationHandler {
     const top = AutomationUtil.getTopLevelRoot(evt.target);
     if (top && top === evt.target.root && top.docUrl && top.parent &&
         top.parent.state.focused) {
-      ChromeVox.earcons.playEarcon(Earcon.PAGE_START_LOADING);
+      ChromeVox.earcons.playEarcon(EarconId.PAGE_START_LOADING);
       this.didRequestLoadSound_ = true;
     }
   }
@@ -87,7 +87,7 @@ export class PageLoadSoundHandler extends BaseAutomationHandler {
     const top = AutomationUtil.getTopLevelRoot(range.start.node);
     // |top| might be undefined e.g. if range is not in a root web area.
     if (this.didRequestLoadSound_ && (!top || top.docLoadingProgress === 1)) {
-      ChromeVox.earcons.playEarcon(Earcon.PAGE_FINISH_LOADING);
+      ChromeVox.earcons.playEarcon(EarconId.PAGE_FINISH_LOADING);
       this.didRequestLoadSound_ = false;
     }
 

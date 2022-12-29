@@ -11,8 +11,8 @@ import {constants} from '../../../common/constants.js';
 import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {LocalStorage} from '../../../common/local_storage.js';
-import {Earcon} from '../../common/abstract_earcons.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
+import {EarconId} from '../../common/earcon_id.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {LocaleOutputHelper} from '../../common/locale_output_helper.js';
 import {LogType} from '../../common/log_types.js';
@@ -811,7 +811,7 @@ export class Output {
       }
 
       options.annotation.push(new outputTypes.OutputEarconAction(
-          Earcon[tree.firstChild.value], node.location || undefined));
+          EarconId[tree.firstChild.value], node.location || undefined));
       this.append_(buff, '', options);
       formatLog.writeTokenWithValue(token, tree.firstChild.value);
     }

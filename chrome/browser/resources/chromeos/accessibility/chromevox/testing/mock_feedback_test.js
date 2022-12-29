@@ -8,14 +8,14 @@ function speak(text, opt_properties) {
   ChromeVox.tts.speak(text, 0, opt_properties);
 }
 
+function earcon(earconId) {
+  ChromeVox.earcons.playEarcon(earconId);
+}
+
 function braille(text) {
   const navBraille = NavBraille.fromText(text);
   ChromeVox.braille.write(navBraille);
   return navBraille;
-}
-
-function earcon(earconName) {
-  ChromeVox.earcons.playEarcon(Earcon[earconName]);
 }
 
 /**
@@ -36,9 +36,10 @@ MockFeedbackUnitTest = class extends AccessibilityTestBase {
         '/chromevox/background/braille/braille_interface.js');
     await importModule('ChromeVox', '/chromevox/background/chromevox.js');
     await importModule(
-        ['AbstractEarcons', 'Earcon'], '/chromevox/common/abstract_earcons.js');
+        'AbstractEarcons', '/chromevox/common/abstract_earcons.js');
     await importModule(
         'NavBraille', '/chromevox/common/braille/nav_braille.js');
+    await importModule('EarconId', '/chromevox/common/earcon_id.js');
     await importModule('Spannable', '/chromevox/common/spannable.js');
     await importModule('QueueMode', '/chromevox/common/tts_types.js');
   }
@@ -209,23 +210,23 @@ TEST_F('MockFeedbackUnitTest', 'SpeechAndEarcons', function() {
   mock.call(function() {
         speak('MyButton', {
           startCallback() {
-            earcon('BUTTON');
+            earcon(EarconId.BUTTON);
           },
         });
       })
       .expectSpeech('MyButton')
-      .expectEarcon(Earcon.BUTTON)
+      .expectEarcon(EarconId.BUTTON)
       .call(function() {
-        earcon('ALERT_MODAL');
+        earcon(EarconId.ALERT_MODAL);
         speak('MyTextField', {
           startCallback() {
-            earcon('EDITABLE_TEXT');
+            earcon(EarconId.EDITABLE_TEXT);
           },
         });
       })
-      .expectEarcon(Earcon.ALERT_MODAL)
+      .expectEarcon(EarconId.ALERT_MODAL)
       .expectSpeech('MyTextField')
-      .expectEarcon(Earcon.EDITABLE_TEXT)
+      .expectEarcon(EarconId.EDITABLE_TEXT)
       .replay();
   assertTrue(finishCalled);
 });

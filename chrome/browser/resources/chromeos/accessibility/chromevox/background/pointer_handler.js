@@ -9,8 +9,8 @@
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {LocalStorage} from '../../common/local_storage.js';
-import {Earcon} from '../common/abstract_earcons.js';
 import {CustomAutomationEvent} from '../common/custom_automation_event.js';
+import {EarconId} from '../common/earcon_id.js';
 import {QueueMode} from '../common/tts_types.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
@@ -187,7 +187,7 @@ export class PointerHandler extends BaseAutomationHandler {
       // Play a earcon to let the user know they're in the middle of nowhere.
       if ((new Date() - this.lastNoPointerAnchorEarconPlayedTime_) >
           PointerHandler.MIN_NO_POINTER_ANCHOR_SOUND_DELAY_MS) {
-        ChromeVox.earcons.playEarcon(Earcon.NO_POINTER_ANCHOR);
+        ChromeVox.earcons.playEarcon(EarconId.NO_POINTER_ANCHOR);
         this.lastNoPointerAnchorEarconPlayedTime_ = new Date();
       }
       chrome.tts.stop();

@@ -53,6 +53,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'CustomAutomationEvent',
         '/chromevox/common/custom_automation_event.js');
+    await importModule('EarconId', '/chromevox/common/earcon_id.js');
     await importModule(
         ['Spannable', 'MultiSpannable'], '/chromevox/common/spannable.js');
     await importModule('QueueMode', '/chromevox/common/tts_types.js');
@@ -528,32 +529,32 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'EarconsForControls', async function() {
   const rootNode = await this.runWithLoadedTree(site);
   mockFeedback.call(doCmd('nextObject'))
       .expectSpeech('MyLink')
-      .expectEarcon(Earcon.LINK)
+      .expectEarcon(EarconId.LINK)
       .call(doCmd('nextObject'))
       .expectSpeech('MyButton')
-      .expectEarcon(Earcon.BUTTON)
+      .expectEarcon(EarconId.BUTTON)
       .call(doCmd('nextObject'))
       .expectSpeech('Check box')
-      .expectEarcon(Earcon.CHECK_OFF)
+      .expectEarcon(EarconId.CHECK_OFF)
       .call(doCmd('nextObject'))
       .expectSpeech('Check box')
-      .expectEarcon(Earcon.CHECK_ON)
+      .expectEarcon(EarconId.CHECK_ON)
       .call(doCmd('nextObject'))
       .expectSpeech('Edit text')
-      .expectEarcon(Earcon.EDITABLE_TEXT)
+      .expectEarcon(EarconId.EDITABLE_TEXT)
 
       // Editable text Search re-mappings are in effect.
       .call(doCmd('toggleStickyMode'))
       .expectSpeech('Sticky mode enabled')
       .call(doCmd('nextObject'))
       .expectSpeech('List box')
-      .expectEarcon(Earcon.LISTBOX)
+      .expectEarcon(EarconId.LISTBOX)
       .call(doCmd('nextObject'))
       .expectSpeech('Button', 'has pop up')
-      .expectEarcon(Earcon.POP_UP_BUTTON)
+      .expectEarcon(EarconId.POP_UP_BUTTON)
       .call(doCmd('nextObject'))
       .expectSpeech(/Slider/)
-      .expectEarcon(Earcon.SLIDER);
+      .expectEarcon(EarconId.SLIDER);
 
   await mockFeedback.replay();
 });
@@ -1220,9 +1221,9 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'HeadingLevels', async function() {
     mockFeedback.call(doCmd('nextHeading' + level))
         .expectSpeech('Heading ' + level)
         .call(doCmd('nextHeading' + level))
-        .expectEarcon('wrap')
+        .expectEarcon(EarconId.WRAP)
         .call(doCmd('previousHeading' + level))
-        .expectEarcon('wrap');
+        .expectEarcon(EarconId.WRAP);
   };
   for (let i = 1; i <= 6; i++) {
     makeLevelAssertions(i);
@@ -1711,7 +1712,7 @@ AX_TEST_F(
           .call(doCmd('nextObject'))
           .expectSpeech('label headingLabel', 'Button')
           .call(doCmd('nextObject'))
-          .expectEarcon(Earcon.WRAP)
+          .expectEarcon(EarconId.WRAP)
           .call(doCmd('nextObject'))
           .expectSpeech('before');
       await mockFeedback.replay();
@@ -1745,7 +1746,7 @@ AX_TEST_F(
           .call(doCmd('nextObject'))
           .expectSpeech('label', 'lebal', 'Button')
           .call(doCmd('nextObject'))
-          .expectEarcon(Earcon.WRAP)
+          .expectEarcon(EarconId.WRAP)
           .call(doCmd('nextObject'))
           .expectSpeech('before');
       await mockFeedback.replay();
@@ -2793,12 +2794,12 @@ AX_TEST_F(
           })
           .call(simulateHitTestResult(group))
           .expectSpeech('range cleared!')
-          .expectEarcon(Earcon.NO_POINTER_ANCHOR)
+          .expectEarcon(EarconId.NO_POINTER_ANCHOR)
           .call(simulateHitTestResult(button))
           .expectSpeech('Button')
           .call(simulateHitTestResult(group))
           .expectSpeech('range cleared!')
-          .expectEarcon(Earcon.NO_POINTER_ANCHOR);
+          .expectEarcon(EarconId.NO_POINTER_ANCHOR);
       await mockFeedback.replay();
     });
 
@@ -2897,7 +2898,7 @@ AX_TEST_F(
               GestureCommandHandler.instance_, Gesture.TOUCH_EXPLORE,
               button.location.left, button.location.top + 60))
           .expectSpeech('range cleared!')
-          .expectEarcon(Earcon.NO_POINTER_ANCHOR)
+          .expectEarcon(EarconId.NO_POINTER_ANCHOR)
           .clearPendingOutput()
           .call(simulateHitTestResult(button))
           .expectSpeech('hi', 'Button');
@@ -3224,7 +3225,7 @@ AX_TEST_F(
       mockFeedback.call(doCmd('nextObject'))
           .expectSpeech('Edit text')
           .call(doCmd('nextObject'))
-          .expectEarcon(Earcon.WRAP)
+          .expectEarcon(EarconId.WRAP)
           .expectSpeech('Web Content')
           .call(doCmd('nextObject'))
           .expectSpeech('start');
@@ -3485,13 +3486,13 @@ AX_TEST_F(
       mockFeedback.expectSpeech('Start')
           .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_RIGHT1))
           .expectSpeech('ok', 'Button')
-          .expectEarcon(Earcon.BUTTON)
+          .expectEarcon(EarconId.BUTTON)
           .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_RIGHT1))
           .expectSpeech('cancel', 'Link')
-          .expectEarcon(Earcon.LINK)
+          .expectEarcon(EarconId.LINK)
           .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_LEFT1))
           .expectSpeech('ok', 'Button')
-          .expectEarcon(Earcon.BUTTON);
+          .expectEarcon(EarconId.BUTTON);
       await mockFeedback.replay();
     });
 
@@ -3543,7 +3544,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'FocusAfterClick', async function() {
 });
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'EarconPlayback', function() {
-  const engine = ChromeVoxState.instance.earcons_.engine_;
+  const engine = ChromeVox.earcons.engine_;
   assertTrue(engine !== undefined);
 
   // We only test a few earcons here. Not all earcons prevent parallel playback
@@ -3555,32 +3556,33 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'EarconPlayback', function() {
   // Note that alert modal vs nonmodal would be allowed to play in parallel (as
   // do wrap / wrap edge) because they are different events even though they
   // really play the same sound.
-  ChromeVox.earcons.playEarcon(Earcon.ALERT_MODAL);
+  ChromeVox.earcons.playEarcon(EarconId.ALERT_MODAL);
   assertEquals(1, Object.keys(engine.lastEarconSources_).length);
-  const lastAlertSource = engine.lastEarconSources_[Earcon.ALERT_MODAL];
+  const lastAlertSource = engine.lastEarconSources_[EarconId.ALERT_MODAL];
   assertTrue(lastAlertSource !== undefined);
 
-  ChromeVox.earcons.playEarcon(Earcon.ALERT_MODAL);
+  ChromeVox.earcons.playEarcon(EarconId.ALERT_MODAL);
   assertEquals(1, Object.keys(engine.lastEarconSources_).length);
 
   // The earcon for this stayed the same (above), so there's no duplicate
   // playback of two alerts.
-  assertEquals(lastAlertSource, engine.lastEarconSources_[Earcon.ALERT_MODAL]);
+  assertEquals(
+      lastAlertSource, engine.lastEarconSources_[EarconId.ALERT_MODAL]);
 
   // This simulates a parallel playback of the button earcon which is allowed.
-  ChromeVox.earcons.playEarcon(Earcon.BUTTON);
+  ChromeVox.earcons.playEarcon(EarconId.BUTTON);
   assertEquals(2, Object.keys(engine.lastEarconSources_).length);
-  assertTrue(engine.lastEarconSources_[Earcon.BUTTON] !== undefined);
+  assertTrue(engine.lastEarconSources_[EarconId.BUTTON] !== undefined);
 
   // This gets called by web audio when the earcon finishes.
   lastAlertSource.onended();
 
   // The button earcon is still playing.
   assertEquals(1, Object.keys(engine.lastEarconSources_).length);
-  assertTrue(engine.lastEarconSources_[Earcon.BUTTON] !== undefined);
+  assertTrue(engine.lastEarconSources_[EarconId.BUTTON] !== undefined);
 
   // Finish up the button earcon, too.
-  engine.lastEarconSources_[Earcon.BUTTON].onended();
+  engine.lastEarconSources_[EarconId.BUTTON].onended();
   assertEquals(0, Object.keys(engine.lastEarconSources_).length);
 });
 
@@ -3697,15 +3699,15 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'PageLoadEarcons', function() {
   fakeNode.parent = {state: {focused: true}};
 
   handler.onLoadStart({target: fakeNode});
-  assertEqualStringArrays([Earcon.PAGE_START_LOADING], sawEarcons);
+  assertEqualStringArrays([EarconId.PAGE_START_LOADING], sawEarcons);
   handler.onLoadComplete({target: fakeNode});
   assertEqualStringArrays(
-      [Earcon.PAGE_START_LOADING, Earcon.PAGE_FINISH_LOADING], sawEarcons);
+      [EarconId.PAGE_START_LOADING, EarconId.PAGE_FINISH_LOADING], sawEarcons);
 
   // No extra earcons.
   handler.onLoadComplete({target: fakeNode});
   assertEqualStringArrays(
-      [Earcon.PAGE_START_LOADING, Earcon.PAGE_FINISH_LOADING], sawEarcons);
+      [EarconId.PAGE_START_LOADING, EarconId.PAGE_FINISH_LOADING], sawEarcons);
 
   // Try a range change that finishes the load sound.
   sawEarcons.length = 0;
@@ -3713,7 +3715,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'PageLoadEarcons', function() {
   fakeNode.docLoadingProgress = 1;
   handler.onCurrentRangeChanged({start: {node: fakeNode}});
   assertEqualStringArrays(
-      [Earcon.PAGE_START_LOADING, Earcon.PAGE_FINISH_LOADING], sawEarcons);
+      [EarconId.PAGE_START_LOADING, EarconId.PAGE_FINISH_LOADING], sawEarcons);
 });
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'NewTabRead', async function() {

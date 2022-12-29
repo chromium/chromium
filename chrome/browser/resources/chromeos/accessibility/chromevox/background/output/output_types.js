@@ -6,7 +6,7 @@
  * @fileoverview Definitions of all types related to output.
  */
 
-import {Earcon} from '../../common/abstract_earcons.js';
+import {EarconId} from '../../common/earcon_id.js';
 import {Spannable} from '../../common/spannable.js';
 import {ChromeVox} from '../chromevox.js';
 
@@ -73,13 +73,13 @@ export class OutputAction {
  */
 export class OutputEarconAction extends OutputAction {
   /**
-   * @param {!Earcon} earcon
+   * @param {!EarconId} earcon
    * @param {chrome.automation.Rect=} opt_location
    */
   constructor(earcon, opt_location) {
     super();
 
-    /** @type {!Earcon} */
+    /** @type {!EarconId} */
     this.earcon = earcon;
     /** @type {chrome.automation.Rect|undefined} */
     this.location = opt_location;
@@ -169,8 +169,8 @@ export const OutputPropertyMap = {
 
 /**
  * Metadata about supported automation states.
- * @const {!Object<string, {on: {msgId: string, earcon: !Earcon},
- *                          off: {msgId: string, earcon: !Earcon},
+ * @const {!Object<string, {on: {msgId: string, earcon: !EarconId},
+ *                          off: {msgId: string, earcon: !EarconId},
  *                          isRoleSpecific: (boolean|undefined)}>}
  *     on: info used to describe a state that is set to true.
  *     off: info used to describe a state that is set to undefined.

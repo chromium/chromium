@@ -14,12 +14,12 @@ import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
 import {LocalStorage} from '../../common/local_storage.js';
 import {RectUtil} from '../../common/rect_util.js';
-import {Earcon} from '../common/abstract_earcons.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command, CommandStore} from '../common/command_store.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
+import {EarconId} from '../common/earcon_id.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureGranularity} from '../common/gesture_command_data.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
@@ -754,7 +754,7 @@ export class CommandHandler extends CommandHandlerInterface {
         if (node) {
           currentRange = CursorRange.fromNode(node);
         } else {
-          ChromeVox.earcons.playEarcon(Earcon.WRAP);
+          ChromeVox.earcons.playEarcon(EarconId.WRAP);
           if (!shouldWrap) {
             if (predErrorMsg) {
               new Output()
@@ -820,7 +820,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
     if (currentRange) {
       if (currentRange.wrapped) {
-        ChromeVox.earcons.playEarcon(Earcon.WRAP);
+        ChromeVox.earcons.playEarcon(EarconId.WRAP);
       }
 
       ChromeVoxState.instance.navigateToRange(
@@ -1802,12 +1802,12 @@ export class CommandHandler extends CommandHandlerInterface {
    */
   toggleSelection_() {
     if (!ChromeVoxState.instance.pageSel) {
-      ChromeVox.earcons.playEarcon(Earcon.SELECTION);
+      ChromeVox.earcons.playEarcon(EarconId.SELECTION);
       ChromeVoxState.instance.pageSel = ChromeVoxState.instance.currentRange;
       DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
           true);
     } else {
-      ChromeVox.earcons.playEarcon(Earcon.SELECTION_REVERSE);
+      ChromeVox.earcons.playEarcon(EarconId.SELECTION_REVERSE);
       const root = ChromeVoxState.instance.currentRange.start.node.root;
       if (root && root.selectionStartObject && root.selectionEndObject &&
           !isNaN(Number(root.selectionStartOffset)) &&

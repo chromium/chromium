@@ -6,7 +6,7 @@
  * @fileoverview Roel information for the Output module.
  */
 
-import {Earcon} from '../../common/abstract_earcons.js';
+import {EarconId} from '../../common/earcon_id.js';
 import {AbstractRole, ChromeVoxRole} from '../../common/role_type.js';
 
 import {OutputContextOrder} from './output_types.js';
@@ -16,7 +16,7 @@ const RoleType = chrome.automation.RoleType;
 /**
  * Metadata about supported automation roles.
  * @const {Object<{msgId: string,
- *                 earcon: (!Earcon|undefined),
+ *                 earcon: (!EarconId|undefined),
  *                 inherits: (ChromeVoxRole|undefined),
  *                 verboseAncestry: (boolean|undefined),
  *                 contextOrder: (OutputContextOrder|undefined),
@@ -39,16 +39,16 @@ export const OutputRoleInfo = {
   application: {msgId: 'role_application', inherits: AbstractRole.CONTAINER},
   audio: {msgId: 'tag_audio', inherits: AbstractRole.FORM_FIELD_CONTAINER},
   banner: {msgId: 'role_banner', inherits: AbstractRole.CONTAINER},
-  button: {msgId: 'role_button', earcon: Earcon.BUTTON},
-  buttonDropDown: {msgId: 'role_button', earcon: Earcon.BUTTON},
+  button: {msgId: 'role_button', earcon: EarconId.BUTTON},
+  buttonDropDown: {msgId: 'role_button', earcon: EarconId.BUTTON},
   checkBox: {msgId: 'role_checkbox'},
   columnHeader: {msgId: 'role_columnheader', inherits: RoleType.CELL},
-  comboBoxMenuButton: {msgId: 'role_combobox', earcon: Earcon.LISTBOX},
+  comboBoxMenuButton: {msgId: 'role_combobox', earcon: EarconId.LISTBOX},
   comboBoxGrouping:
       {msgId: 'role_combobox', inherits: AbstractRole.FORM_FIELD_CONTAINER},
   comboBoxSelect: {
     msgId: 'role_button',
-    earcon: Earcon.POP_UP_BUTTON,
+    earcon: EarconId.POP_UP_BUTTON,
     inherits: RoleType.COMBO_BOX_MENU_BUTTON,
   },
   complementary:
@@ -91,19 +91,19 @@ export const OutputRoleInfo = {
   docAppendix: {msgId: 'role_doc_appendix', inherits: AbstractRole.SPAN},
   docBackLink: {
     msgId: 'role_doc_back_link',
-    earcon: Earcon.LINK,
+    earcon: EarconId.LINK,
     inherits: RoleType.LINK,
   },
   docBiblioEntry: {
     msgId: 'role_doc_biblio_entry',
-    earcon: Earcon.LIST_ITEM,
+    earcon: EarconId.LIST_ITEM,
     inherits: AbstractRole.ITEM,
   },
   docBibliography:
       {msgId: 'role_doc_bibliography', inherits: AbstractRole.SPAN},
   docBiblioRef: {
     msgId: 'role_doc_biblio_ref',
-    earcon: Earcon.LINK,
+    earcon: EarconId.LINK,
     inherits: RoleType.LINK,
   },
   docChapter: {msgId: 'role_doc_chapter', inherits: AbstractRole.SPAN},
@@ -115,12 +115,12 @@ export const OutputRoleInfo = {
   docDedication: {msgId: 'role_doc_dedication', inherits: AbstractRole.SPAN},
   docEndnote: {
     msgId: 'role_doc_endnote',
-    earcon: Earcon.LIST_ITEM,
+    earcon: EarconId.LIST_ITEM,
     inherits: AbstractRole.ITEM,
   },
   docEndnotes: {
     msgId: 'role_doc_endnotes',
-    earcon: Earcon.LISTBOX,
+    earcon: EarconId.LISTBOX,
     inherits: RoleType.LIST,
   },
   docEpigraph: {msgId: 'role_doc_epigraph', inherits: AbstractRole.SPAN},
@@ -129,14 +129,14 @@ export const OutputRoleInfo = {
   docExample: {msgId: 'role_doc_example', inherits: AbstractRole.SPAN},
   docFootnote: {
     msgId: 'role_doc_footnote',
-    earcon: Earcon.LIST_ITEM,
+    earcon: EarconId.LIST_ITEM,
     inherits: AbstractRole.ITEM,
   },
   docForeword: {msgId: 'role_doc_foreword', inherits: AbstractRole.SPAN},
   docGlossary: {msgId: 'role_doc_glossary', inherits: AbstractRole.SPAN},
   docGlossRef: {
     msgId: 'role_doc_gloss_ref',
-    earcon: Earcon.LINK,
+    earcon: EarconId.LINK,
     inherits: RoleType.LINK,
   },
   docIndex: {msgId: 'role_doc_index', inherits: AbstractRole.SPAN},
@@ -144,7 +144,7 @@ export const OutputRoleInfo = {
       {msgId: 'role_doc_introduction', inherits: AbstractRole.SPAN},
   docNoteRef: {
     msgId: 'role_doc_note_ref',
-    earcon: Earcon.LINK,
+    earcon: EarconId.LINK,
     inherits: RoleType.LINK,
   },
   docNotice: {msgId: 'role_doc_notice', inherits: AbstractRole.SPAN},
@@ -178,14 +178,14 @@ export const OutputRoleInfo = {
   imeCandidate: {msgId: 'ime_candidate', ignoreAncestry: true},
   inputTime:
       {msgId: 'input_type_time', inherits: AbstractRole.FORM_FIELD_CONTAINER},
-  link: {msgId: 'role_link', earcon: Earcon.LINK},
+  link: {msgId: 'role_link', earcon: EarconId.LINK},
   list: {msgId: 'role_list', inherits: AbstractRole.LIST},
-  listBox: {msgId: 'role_listbox', earcon: Earcon.LISTBOX},
-  listBoxOption: {msgId: 'role_listitem', earcon: Earcon.LIST_ITEM},
+  listBox: {msgId: 'role_listbox', earcon: EarconId.LISTBOX},
+  listBoxOption: {msgId: 'role_listitem', earcon: EarconId.LIST_ITEM},
   listGrid: {msgId: 'role_list_grid', inherits: RoleType.TABLE},
   listItem: {
     msgId: 'role_listitem',
-    earcon: Earcon.LIST_ITEM,
+    earcon: EarconId.LIST_ITEM,
     inherits: AbstractRole.ITEM,
   },
   log: {msgId: 'role_log', inherits: AbstractRole.NAME_FROM_CONTENTS},
@@ -218,7 +218,7 @@ export const OutputRoleInfo = {
       {msgId: 'role_progress_indicator', inherits: AbstractRole.RANGE},
   popUpButton: {
     msgId: 'role_button',
-    earcon: Earcon.POP_UP_BUTTON,
+    earcon: EarconId.POP_UP_BUTTON,
     inherits: RoleType.COMBO_BOX_MENU_BUTTON,
   },
   radioButton: {msgId: 'role_radio'},
@@ -234,12 +234,12 @@ export const OutputRoleInfo = {
   slider: {
     msgId: 'role_slider',
     inherits: AbstractRole.RANGE,
-    earcon: Earcon.SLIDER,
+    earcon: EarconId.SLIDER,
   },
   spinButton: {
     msgId: 'role_spinbutton',
     inherits: AbstractRole.RANGE,
-    earcon: Earcon.LISTBOX,
+    earcon: EarconId.LISTBOX,
   },
   splitter: {msgId: 'role_separator', inherits: AbstractRole.SPAN},
   status: {msgId: 'role_status', inherits: AbstractRole.NAME_FROM_CONTENTS},
@@ -254,9 +254,10 @@ export const OutputRoleInfo = {
   tab: {msgId: 'role_tab', inherits: AbstractRole.CONTAINER},
   tabList: {msgId: 'role_tablist', inherits: AbstractRole.FORM_FIELD_CONTAINER},
   tabPanel: {msgId: 'role_tabpanel', inherits: AbstractRole.CONTAINER},
-  searchBox: {msgId: 'role_search', earcon: Earcon.EDITABLE_TEXT},
-  textField: {msgId: 'input_type_text', earcon: Earcon.EDITABLE_TEXT},
-  textFieldWithComboBox: {msgId: 'role_combobox', earcon: Earcon.EDITABLE_TEXT},
+  searchBox: {msgId: 'role_search', earcon: EarconId.EDITABLE_TEXT},
+  textField: {msgId: 'input_type_text', earcon: EarconId.EDITABLE_TEXT},
+  textFieldWithComboBox:
+      {msgId: 'role_combobox', earcon: EarconId.EDITABLE_TEXT},
   time: {msgId: 'tag_time', inherits: AbstractRole.FORM_FIELD_CONTAINER},
   timer: {msgId: 'role_timer', inherits: AbstractRole.NAME_FROM_CONTENTS},
   toolbar: {msgId: 'role_toolbar', ignoreAncestry: true},

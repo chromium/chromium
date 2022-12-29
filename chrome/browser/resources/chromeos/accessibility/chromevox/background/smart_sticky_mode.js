@@ -10,7 +10,7 @@
 import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {LocalStorage} from '../../common/local_storage.js';
-import {Earcon} from '../common/abstract_earcons.js';
+import {EarconId} from '../common/earcon_id.js';
 
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';
@@ -93,11 +93,11 @@ export class SmartStickyMode {
 
       // Save the sticky state for restoration later.
       this.didTurnOffStickyMode_ = true;
-      ChromeVox.earcons.playEarcon(Earcon.SMART_STICKY_MODE_OFF);
+      ChromeVox.earcons.playEarcon(EarconId.SMART_STICKY_MODE_OFF);
       ChromeVoxPrefs.instance.setAndAnnounceStickyPref(false);
     } else if (this.didTurnOffStickyMode_) {
       // Restore the previous sticky mode state.
-      ChromeVox.earcons.playEarcon(Earcon.SMART_STICKY_MODE_ON);
+      ChromeVox.earcons.playEarcon(EarconId.SMART_STICKY_MODE_ON);
       ChromeVoxPrefs.instance.setAndAnnounceStickyPref(true);
       this.didTurnOffStickyMode_ = false;
     }

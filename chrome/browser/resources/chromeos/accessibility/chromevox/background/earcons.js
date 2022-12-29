@@ -8,7 +8,8 @@
  */
 
 import {LocalStorage} from '../../common/local_storage.js';
-import {AbstractEarcons, Earcon} from '../common/abstract_earcons.js';
+import {AbstractEarcons} from '../common/abstract_earcons.js';
+import {EarconId} from '../common/earcon_id.js';
 import {LogType} from '../common/log_types.js';
 
 import {ChromeVoxState} from './chromevox_state.js';
@@ -48,7 +49,7 @@ export class Earcons extends AbstractEarcons {
 
   /**
    * Plays the specified earcon sound.
-   * @param {Earcon} earcon An earcon identifier.
+   * @param {EarconId} earcon An earcon identifier.
    * @param {chrome.automation.Rect=} opt_location A location associated with
    *     the earcon such as a control's bounding rectangle.
    * @override
@@ -81,7 +82,7 @@ export class Earcons extends AbstractEarcons {
    */
   cancelEarcon(earcon) {
     switch (earcon) {
-      case Earcon.PAGE_START_LOADING:
+      case EarconId.PAGE_START_LOADING:
         this.engine_.cancelProgress();
         break;
     }

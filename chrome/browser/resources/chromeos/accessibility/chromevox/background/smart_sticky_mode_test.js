@@ -19,6 +19,7 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
     await importModule('ChromeVoxPrefs', '/chromevox/background/prefs.js');
     await importModule(
         'SmartStickyMode', '/chromevox/background/smart_sticky_mode.js');
+    await importModule('EarconId', '/chromevox/common/earcon_id.js');
     await importModule('CursorRange', '/common/cursors/range.js');
     this.ssm_ = new SmartStickyMode();
     // Deregister from actual range changes.
@@ -165,12 +166,12 @@ AX_TEST_F(
       mockFeedback.call(doCmd('toggleStickyMode'))
           .expectSpeech('Sticky mode enabled')
           .call(doCmd('nextObject'))
-          .expectEarcon(Earcon.SMART_STICKY_MODE_OFF)
+          .expectEarcon(EarconId.SMART_STICKY_MODE_OFF)
           .expectSpeech('Sticky mode disabled')
           .expectSpeech('Edit text')
           .call(() => assertFalse(ChromeVoxPrefs.isStickyModeOn()))
           .call(doCmd('nextObject'))
-          .expectEarcon(Earcon.SMART_STICKY_MODE_ON)
+          .expectEarcon(EarconId.SMART_STICKY_MODE_ON)
           .expectSpeech('Sticky mode enabled')
           .expectSpeech('Button')
           .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()));
