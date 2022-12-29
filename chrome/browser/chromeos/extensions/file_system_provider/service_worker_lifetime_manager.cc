@@ -10,7 +10,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 
 namespace extensions::file_system_provider {
 

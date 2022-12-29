@@ -1,0 +1,5 @@
+include_rules = [
+  # In is_chromeos_ash sources.
+  "+ash/public/cpp",
+  "+ash/wm/desks",
+]

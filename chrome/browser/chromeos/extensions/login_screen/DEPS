@@ -1,0 +1,8 @@
+include_rules = [
+  # In is_chromeos_ash sources.
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/policy",
+  "+chrome/browser/ash/printing",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/settings",
+]
