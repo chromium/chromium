@@ -671,21 +671,6 @@ export class Output {
   }
 
   /** @override */
-  formatAsFieldAccessor_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    options.annotation.push(token);
-    let value = node[token];
-    if (typeof value === 'number') {
-      value = String(value);
-    }
-    this.append_(buff, value, options);
-    formatLog.writeTokenWithValue(token, value);
-  }
-
-  /** @override */
   formatAsStateValue_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;

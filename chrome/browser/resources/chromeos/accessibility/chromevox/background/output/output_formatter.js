@@ -104,7 +104,7 @@ export class OutputFormatter {
     } else if (token === 'nameOrTextContent' || token === 'textContent') {
       this.formatTextContent_(this.params_, token, options);
     } else if (this.params_.node[token] !== undefined) {
-      this.output_.formatAsFieldAccessor_(this.params_, token, options);
+      this.formatAsFieldAccessor_(this.params_, token, options);
     } else if (outputTypes.OUTPUT_STATE_INFO[token]) {
       this.output_.formatAsStateValue_(this.params_, token, options);
     } else if (token === 'phoneticReading') {
@@ -180,6 +180,26 @@ export class OutputFormatter {
       roles.add(currentNode.value);
     }
     return roles;
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatAsFieldAccessor_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    options.annotation.push(token);
+    let value = node[token];
+    if (typeof value === 'number') {
+      value = String(value);
+    }
+    this.output_.append_(buff, value, options);
+    formatLog.writeTokenWithValue(token, value);
   }
 
   /**

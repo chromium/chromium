@@ -53,13 +53,6 @@ export class OutputInterface {
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
-  formatAsFieldAccessor_(data, token, options) {}
-
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
   formatAsStateValue_(data, token, options) {}
 
   /**
