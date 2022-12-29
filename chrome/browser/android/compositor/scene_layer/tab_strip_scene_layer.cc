@@ -23,7 +23,8 @@ bool tab_strip_redesign_enabled;
 namespace android {
 
 TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
-                                       const JavaRef<jobject>& jobj)
+                                       const JavaRef<jobject>& jobj,
+                                       jboolean is_tab_strip_redesign_enabled)
     : SceneLayer(env, jobj),
       tab_strip_layer_(cc::SolidColorLayer::Create()),
       scrollable_strip_layer_(cc::Layer::Create()),
@@ -43,6 +44,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   left_fade_->SetIsDrawable(true);
   right_fade_->SetIsDrawable(true);
   scrim_layer_->SetIsDrawable(true);
+  tab_strip_redesign_enabled = is_tab_strip_redesign_enabled;
 
   // When the ScrollingStripStacker is used, the new tab button and tabs scroll,
   // while the incognito button and left/ride fade stay fixed. Put the new tab
@@ -50,8 +52,6 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   scrollable_strip_layer_->SetIsDrawable(true);
   const bool tab_strip_improvements_enabled =
       base::FeatureList::IsEnabled(chrome::android::kTabStripImprovements);
-  tab_strip_redesign_enabled =
-      base::FeatureList::IsEnabled(chrome::android::kTabStripRedesign);
   if (!tab_strip_improvements_enabled) {
     scrollable_strip_layer_->AddChild(new_tab_button_);
   }
@@ -431,12 +431,12 @@ void TabStripSceneLayer::PutStripTabLayer(
                                                   close_tint);
   ui::Resource* divider_resource = resource_manager->GetStaticResourceWithTint(
       divider_resource_id, divider_tint, true);
-  layer->SetProperties(id, close_button_resource, divider_resource,
-                       tab_handle_resource, tab_handle_outline_resource,
-                       foreground, close_pressed, toolbar_width, x, y, width,
-                       height, content_offset_x, divider_offset_x,
-                       bottom_offset_y, close_button_alpha, divider_alpha,
-                       is_loading, spinner_rotation, brightness, opacity);
+  layer->SetProperties(
+      id, close_button_resource, divider_resource, tab_handle_resource,
+      tab_handle_outline_resource, foreground, close_pressed, toolbar_width, x,
+      y, width, height, content_offset_x, divider_offset_x, bottom_offset_y,
+      close_button_alpha, divider_alpha, is_loading, spinner_rotation,
+      brightness, opacity, tab_strip_redesign_enabled);
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextLayer(
@@ -464,10 +464,13 @@ SkColor TabStripSceneLayer::GetBackgroundColor() {
   return SceneLayer::GetBackgroundColor();
 }
 
-static jlong JNI_TabStripSceneLayer_Init(JNIEnv* env,
-                                         const JavaParamRef<jobject>& jobj) {
+static jlong JNI_TabStripSceneLayer_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jobj,
+    jboolean is_tab_strip_redesign_enabled) {
   // This will automatically bind to the Java object and pass ownership there.
-  TabStripSceneLayer* scene_layer = new TabStripSceneLayer(env, jobj);
+  TabStripSceneLayer* scene_layer =
+      new TabStripSceneLayer(env, jobj, is_tab_strip_redesign_enabled);
   return reinterpret_cast<intptr_t>(scene_layer);
 }
 

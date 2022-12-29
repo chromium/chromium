@@ -46,7 +46,8 @@ void TabHandleLayer::SetProperties(
     bool is_loading,
     float spinner_rotation,
     float brightness,
-    float opacity) {
+    float opacity,
+    bool is_tab_strip_redesign_enabled) {
   if (brightness != brightness_ || foreground != foreground_ ||
       opacity != opacity_) {
     brightness_ = brightness;
@@ -58,7 +59,7 @@ void TabHandleLayer::SetProperties(
     // rather than adding a brightness filter. We can't swap to simply setting
     // the opacity when TSR is disabled, because then, the tab containers can
     // be seen overlapping. (See https://crbug.com/1373632).
-    if (base::FeatureList::IsEnabled(chrome::android::kTabStripRedesign)) {
+    if (is_tab_strip_redesign_enabled) {
       tab_->SetOpacity(brightness_);
     } else {
       cc::FilterOperations filters;
@@ -67,6 +68,7 @@ void TabHandleLayer::SetProperties(
             cc::FilterOperation::CreateBrightnessFilter(brightness_));
       }
       layer_->SetFilters(filters);
+      tab_outline_->SetIsDrawable(true);
     }
   }
 
@@ -229,10 +231,6 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
       brightness_(1.0f),
       foreground_(false) {
   decoration_tab_->SetIsDrawable(true);
-  // Show tab outline when TabStripRedesign is NOT enabled
-  if (!base::FeatureList::IsEnabled(chrome::android::kTabStripRedesign)) {
-    tab_outline_->SetIsDrawable(true);
-  }
 
   tab_->AddChild(decoration_tab_);
   tab_->AddChild(tab_outline_);

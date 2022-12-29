@@ -29,7 +29,9 @@ class TabHandleLayer;
 // added as a subtree.
 class TabStripSceneLayer : public SceneLayer {
  public:
-  TabStripSceneLayer(JNIEnv* env, const base::android::JavaRef<jobject>& jobj);
+  TabStripSceneLayer(JNIEnv* env,
+                     const base::android::JavaRef<jobject>& jobj,
+                     jboolean is_tab_strip_redesign_enabled);
 
   TabStripSceneLayer(const TabStripSceneLayer&) = delete;
   TabStripSceneLayer& operator=(const TabStripSceneLayer&) = delete;

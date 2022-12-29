@@ -53,7 +53,8 @@ class TabHandleLayer : public Layer {
                      bool is_loading,
                      float spinner_rotation,
                      float brightness,
-                     float opacity);
+                     float opacity,
+                     bool is_tab_strip_redesign_enabled);
   scoped_refptr<cc::Layer> layer() override;
 
  protected:

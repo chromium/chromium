@@ -49,7 +49,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = TabStripSceneLayerJni.get().init(TabStripSceneLayer.this);
+            mNativePtr = TabStripSceneLayerJni.get().init(
+                    TabStripSceneLayer.this, ChromeFeatureList.sTabStripRedesign.isEnabled());
         }
         // Set flag for testing
         if (!sTestFlag) {
@@ -221,7 +222,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
     @NativeMethods
     public interface Natives {
-        long init(TabStripSceneLayer caller);
+        long init(TabStripSceneLayer caller, boolean isTabStripRedesignEnabled);
         void beginBuildingFrame(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, boolean visible);
         void finishBuildingFrame(long nativeTabStripSceneLayer, TabStripSceneLayer caller);
