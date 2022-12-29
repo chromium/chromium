@@ -765,7 +765,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
 
     case IDC_SHOW_BOOKMARK_MANAGER:
-      ShowBookmarkManager(browser_);
+      ShowBookmarkManager(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_SHOW_APP_MENU:
       base::RecordAction(base::UserMetricsAction("Accel_Show_App_Menu"));
@@ -775,31 +775,33 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowAvatarMenu(browser_);
       break;
     case IDC_SHOW_HISTORY:
-      ShowHistory(browser_);
+      ShowHistory(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_SHOW_DOWNLOADS:
-      ShowDownloads(browser_);
+      ShowDownloads(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_MANAGE_EXTENSIONS:
-      ShowExtensions(browser_, std::string());
+      ShowExtensions(browser_->GetBrowserForOpeningWebUi(), std::string());
       break;
     case IDC_PERFORMANCE:
-      ShowSettingsSubPage(browser_, chrome::kPerformanceSubPage);
+      ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
+                          chrome::kPerformanceSubPage);
       break;
     case IDC_OPTIONS:
-      ShowSettings(browser_);
+      ShowSettings(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_EDIT_SEARCH_ENGINES:
-      ShowSearchEngineSettings(browser_);
+      ShowSearchEngineSettings(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_VIEW_PASSWORDS:
-      ShowPasswordManager(browser_);
+      ShowPasswordManager(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_CLEAR_BROWSING_DATA: {
       if (profile()->IsIncognitoProfile()) {
-        ShowIncognitoClearBrowsingDataDialog(browser_);
+        ShowIncognitoClearBrowsingDataDialog(
+            browser_->GetBrowserForOpeningWebUi());
       } else {
-        ShowClearBrowsingDataDialog(browser_);
+        ShowClearBrowsingDataDialog(browser_->GetBrowserForOpeningWebUi());
       }
       break;
     }
@@ -810,7 +812,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ToggleRequestTabletSite(browser_);
       break;
     case IDC_ABOUT:
-      ShowAboutChrome(browser_);
+      ShowAboutChrome(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_UPGRADE_DIALOG:
       OpenUpdateChromeDialog(browser_);

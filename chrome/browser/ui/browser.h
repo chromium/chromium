@@ -751,6 +751,11 @@ class Browser : public TabStripModelObserver,
   // Sets the browser's user title. Setting it to an empty string clears it.
   void SetWindowUserTitle(const std::string& user_title);
 
+  // Gets the browser for opening chrome:// pages. This will return the opener
+  // browser if the current browser is in picture-in-picture mode, otherwise
+  // returns the current browser.
+  Browser* GetBrowserForOpeningWebUi();
+
   StatusBubble* GetStatusBubbleForTesting();
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -1306,6 +1311,10 @@ class Browser : public TabStripModelObserver,
 #endif
 
   const base::ElapsedTimer creation_timer_;
+
+  // The opener browser of the document picture-in-picture browser. Null if the
+  // current browser is a regular browser.
+  raw_ptr<Browser> opener_browser_ = nullptr;
 
   WebContentsCollection web_contents_collection_{this};
 

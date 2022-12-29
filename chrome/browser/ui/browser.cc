@@ -901,6 +901,23 @@ void Browser::SetWindowUserTitle(const std::string& user_title) {
     session_service->SetWindowUserTitle(session_id(), user_title);
 }
 
+Browser* Browser::GetBrowserForOpeningWebUi() {
+  if (!is_type_picture_in_picture()) {
+    return this;
+  }
+
+  if (!opener_browser_) {
+    auto* opener_web_contents =
+        PictureInPictureWindowManager::GetInstance()->GetWebContents();
+    // We should always have an opener web contents if the current browser is a
+    // picture-in-picture type.
+    DCHECK(opener_web_contents);
+    opener_browser_ = chrome::FindBrowserWithWebContents(opener_web_contents);
+  }
+
+  return opener_browser_;
+}
+
 StatusBubble* Browser::GetStatusBubbleForTesting() {
   return GetStatusBubble();
 }
