@@ -48,7 +48,6 @@ class LayoutSVGRoot;
 class LocalFrame;
 class Node;
 class Page;
-class PaintController;
 class SVGImageChromeClient;
 class SVGImageForContainer;
 class SVGSVGElement;
@@ -224,7 +223,6 @@ class CORE_EXPORT SVGImage final : public Image {
 
   Persistent<SVGImageChromeClient> chrome_client_;
   Persistent<Page> page_;
-  std::unique_ptr<PaintController> paint_controller_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
 
   // When an SVG image has no intrinsic size, the size depends on the default

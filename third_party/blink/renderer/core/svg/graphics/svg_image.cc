@@ -193,7 +193,6 @@ class SVGImage::SVGImageLocalFrameClient : public EmptyLocalFrameClient {
 
 SVGImage::SVGImage(ImageObserver* observer, bool is_multipart)
     : Image(observer, is_multipart),
-      paint_controller_(std::make_unique<PaintController>()),
       // TODO(chikamune): use an existing AgentGroupScheduler
       // SVG will be shared via MemoryCache (which is renderer process
       // global cache) across multiple AgentSchedulingGroups. That's
