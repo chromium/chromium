@@ -3707,42 +3707,47 @@ TEST_F(AuthenticatorImplTest, ExtensionHMACSecret) {
 
   for (const bool include_extension : {false, true}) {
     for (const bool authenticator_support : {false, true}) {
-      SCOPED_TRACE(include_extension);
-      SCOPED_TRACE(authenticator_support);
+      for (const bool pin_support : {false, true}) {
+        SCOPED_TRACE(include_extension);
+        SCOPED_TRACE(authenticator_support);
+        SCOPED_TRACE(pin_support);
 
-      device::VirtualCtap2Device::Config config;
-      config.hmac_secret_support = authenticator_support;
-      virtual_device_factory_->SetCtap2Config(config);
+        device::VirtualCtap2Device::Config config;
+        config.hmac_secret_support = authenticator_support;
+        config.pin_support = pin_support;
+        virtual_device_factory_->SetCtap2Config(config);
 
-      PublicKeyCredentialCreationOptionsPtr options =
-          GetTestPublicKeyCredentialCreationOptions();
-      options->hmac_create_secret = include_extension;
-      MakeCredentialResult result =
-          AuthenticatorMakeCredential(std::move(options));
-      EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+        PublicKeyCredentialCreationOptionsPtr options =
+            GetTestPublicKeyCredentialCreationOptions();
+        options->hmac_create_secret = include_extension;
+        MakeCredentialResult result =
+            AuthenticatorMakeCredential(std::move(options));
+        EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
 
-      device::AuthenticatorData parsed_auth_data =
-          AuthDataFromMakeCredentialResponse(result.response);
+        device::AuthenticatorData parsed_auth_data =
+            AuthDataFromMakeCredentialResponse(result.response);
 
-      // The virtual CTAP2 device always echos the hmac-secret extension on
-      // registrations. Therefore, if |hmac_secret| was set above it should be
-      // serialised in the CBOR and correctly passed all the way back around to
-      // the reply's authenticator data.
-      bool has_hmac_secret = false;
-      const auto& extensions = parsed_auth_data.extensions();
-      if (extensions) {
-        CHECK(extensions->is_map());
-        const cbor::Value::MapValue& extensions_map = extensions->GetMap();
-        const auto hmac_secret_it =
-            extensions_map.find(cbor::Value(device::kExtensionHmacSecret));
-        if (hmac_secret_it != extensions_map.end()) {
-          ASSERT_TRUE(hmac_secret_it->second.is_bool());
-          EXPECT_TRUE(hmac_secret_it->second.GetBool());
-          has_hmac_secret = true;
+        // The virtual CTAP2 device always echos the hmac-secret extension on
+        // registrations. Therefore, if |hmac_secret| was set above it should be
+        // serialised in the CBOR and correctly passed all the way back around
+        // to the reply's authenticator data.
+        bool has_hmac_secret = false;
+        const auto& extensions = parsed_auth_data.extensions();
+        if (extensions) {
+          CHECK(extensions->is_map());
+          const cbor::Value::MapValue& extensions_map = extensions->GetMap();
+          const auto hmac_secret_it =
+              extensions_map.find(cbor::Value(device::kExtensionHmacSecret));
+          if (hmac_secret_it != extensions_map.end()) {
+            ASSERT_TRUE(hmac_secret_it->second.is_bool());
+            EXPECT_TRUE(hmac_secret_it->second.GetBool());
+            has_hmac_secret = true;
+          }
         }
-      }
 
-      EXPECT_EQ(include_extension && authenticator_support, has_hmac_secret);
+        EXPECT_EQ(include_extension && authenticator_support && pin_support,
+                  has_hmac_secret);
+      }
     }
   }
 }

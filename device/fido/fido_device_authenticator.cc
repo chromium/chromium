@@ -1062,7 +1062,10 @@ bool FidoDeviceAuthenticator::SupportsHMACSecretExtension() const {
   const absl::optional<AuthenticatorGetInfoResponse>& get_info_response =
       device_->device_info();
   return get_info_response && get_info_response->extensions &&
-         base::Contains(*get_info_response->extensions, kExtensionHmacSecret);
+         base::Contains(*get_info_response->extensions, kExtensionHmacSecret) &&
+         // The hmac-secret extension involves encrypting the values passed
+         // back and forth, thus there must be a valid PIN protocol.
+         chosen_pin_uv_auth_protocol_.has_value();
 }
 
 bool FidoDeviceAuthenticator::SupportsEnterpriseAttestation() const {
