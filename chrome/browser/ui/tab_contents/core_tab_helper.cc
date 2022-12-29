@@ -135,9 +135,13 @@ bool CoreTabHelper::IsInProgressiveWebApp() {
 }
 
 bool CoreTabHelper::IsSidePanelEnabled() {
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   return GetTemplateURLService()
              ->IsSideImageSearchSupportedForDefaultSearchProvider() &&
          !IsInProgressiveWebApp();
+#else
+  return false;
+#endif
 }
 
 bool CoreTabHelper::IsSidePanelEnabledFor3PDse() {
