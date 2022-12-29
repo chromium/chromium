@@ -24,6 +24,12 @@ export interface NavigatorDelegate {
    * Called when navigation should happen in the new window.
    */
   navigateInNewWindow(url: string): void;
+
+  /*
+   * Returns true if `url` should be allowed to access local files, false
+   * otherwise.
+   */
+  isAllowedLocalFileAccess(url: string): Promise<boolean>;
 }
 
 // NavigatorDelegate for calling browser-specific functions to do the actual
@@ -57,6 +63,14 @@ export class NavigatorDelegateImpl implements NavigatorDelegate {
     } else {
       window.open(url, '_blank');
     }
+  }
+
+
+  isAllowedLocalFileAccess(url: string): Promise<boolean> {
+    return new Promise(resolve => {
+      chrome.pdfViewerPrivate.isAllowedLocalFileAccess(
+          url, result => resolve(result));
+    });
   }
 }
 
@@ -95,7 +109,7 @@ export class PdfNavigator {
    *     URL.
    * @return When navigation has completed (used for testing).
    */
-  navigate(urlString: string, disposition: WindowOpenDisposition):
+  async navigate(urlString: string, disposition: WindowOpenDisposition):
       Promise<void> {
     if (urlString.length === 0) {
       return Promise.resolve();
@@ -113,7 +127,7 @@ export class PdfNavigator {
 
     // If there's no scheme, then take a guess at the scheme.
     if (!urlString.includes('://') && !urlString.includes('mailto:')) {
-      urlString = this.guessUrlWithoutScheme_(urlString);
+      urlString = await this.guessUrlWithoutScheme_(urlString);
     }
 
     let url = null;
@@ -123,7 +137,7 @@ export class PdfNavigator {
       return Promise.reject(err);
     }
 
-    if (!this.isValidUrl_(url)) {
+    if (!(await this.isValidUrl_(url))) {
       return Promise.resolve();
     }
 
@@ -181,17 +195,19 @@ export class PdfNavigator {
   /**
    * Checks if the URL starts with a scheme and is not just a scheme.
    */
-  private isValidUrl_(url: URL): boolean {
+  private async isValidUrl_(url: URL): Promise<boolean> {
     // Make sure |url| starts with a valid scheme.
     const validSchemes = ['http:', 'https:', 'ftp:', 'file:', 'mailto:'];
     if (!validSchemes.includes(url.protocol)) {
       return false;
     }
 
-    // Navigations to file:-URLs are only allowed from file:-URLs.
+    // Navigations to file:-URLs are only allowed from file:-URLs or allowlisted
+    // domains.
     if (url.protocol === 'file:' && this.originalUrl_ &&
         this.originalUrl_.protocol !== 'file:') {
-      return false;
+      return this.navigatorDelegate_.isAllowedLocalFileAccess(
+          this.originalUrl_.toString());
     }
 
     return true;
@@ -202,13 +218,13 @@ export class PdfNavigator {
    * @return The URL with a scheme or the original URL if it is not
    *     possible to determine the scheme.
    */
-  private guessUrlWithoutScheme_(url: string): string {
+  private async guessUrlWithoutScheme_(url: string): Promise<string> {
     // If the original URL is mailto:, that does not make sense to start with,
     // and neither does adding |url| to it.
     // If the original URL is not a valid URL, this cannot make a valid URL.
     // In both cases, just bail out.
     if (!this.originalUrl_ || this.originalUrl_.protocol === 'mailto:' ||
-        !this.isValidUrl_(this.originalUrl_)) {
+        !(await this.isValidUrl_(this.originalUrl_))) {
       return url;
     }
 

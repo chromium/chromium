@@ -8,6 +8,9 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
 
+// URL allowed local file access.
+const ALLOWED_URL: string = 'https://test-allowed-domain.com/document.pdf';
+
 class MockNavigatorDelegate extends TestBrowserProxy implements
     NavigatorDelegate {
   constructor() {
@@ -15,6 +18,7 @@ class MockNavigatorDelegate extends TestBrowserProxy implements
       'navigateInCurrentTab',
       'navigateInNewTab',
       'navigateInNewWindow',
+      'isAllowedLocalFileAccess',
     ]);
   }
 
@@ -28,6 +32,10 @@ class MockNavigatorDelegate extends TestBrowserProxy implements
 
   navigateInNewWindow(url: string) {
     this.methodCalled('navigateInNewWindow', url);
+  }
+
+  isAllowedLocalFileAccess(url: string): Promise<boolean> {
+    return Promise.resolve(url === ALLOWED_URL);
   }
 }
 
@@ -274,4 +282,19 @@ chrome.test.runTests([
 
     chrome.test.succeed();
   },
+
+  /**
+   * Test domains and urls have access to file:/// urls when allowed.
+   */
+  async function testNavigateAllowedLocalFileAccess() {
+    await doNavigationUrlTests(
+        ALLOWED_URL, 'file:///bar.pdf', 'file:///bar.pdf');
+
+    const disallowedUrl = 'https://test-disallowed-domain.com/document.pdf';
+
+    await doNavigationUrlTests(disallowedUrl, 'file:///bar.pdf', undefined);
+
+    chrome.test.succeed();
+  },
+
 ]);

@@ -12,6 +12,7 @@
     "chrome://webui-test/",
     "contentSettings",
     "metricsPrivate",
+    "pdfViewerPrivate",
     "resourcesPrivate",
     "tabs",
     {"fileSystem": ["write"]}
