@@ -286,7 +286,7 @@ TEST_F(SearchControllerImplTest,
 
 // Tests that categories which arrive pre-burn-in are ordered correctly, and
 // their results are grouped together and ordered by score.
-TEST_F(SearchControllerImplTest, CategoriesOrderedCorrectly_PreBurnIn) {
+TEST_F(SearchControllerImplTest, CategoriesOrderedCorrectlyPreBurnIn) {
   ranker_manager_->SetCategoryRanks(
       {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
   auto file_results = MakeListResults({"a"}, {Category::kFiles}, {-1}, {0.9});
@@ -311,7 +311,7 @@ TEST_F(SearchControllerImplTest, CategoriesOrderedCorrectly_PreBurnIn) {
 
 // Tests that categories which arrive post-burn-in are ordered correctly, and
 // their results are grouped together and ordered by score.
-TEST_F(SearchControllerImplTest, CategoriesOrderedCorrectly_PostBurnIn) {
+TEST_F(SearchControllerImplTest, CategoriesOrderedCorrectlyPostBurnIn) {
   ranker_manager_->SetCategoryRanks(
       {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
   auto web_results = MakeListResults(

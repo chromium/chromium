@@ -161,7 +161,7 @@ TEST_F(BestMatchRankerTest, IgnoreProviders) {
 // During the post-burn-in phase, the highest-ranked best match should remain
 // stabilized in this position, and any remaining best matches should be sorted
 // by (normalized) relevance score.
-TEST_F(BestMatchRankerTest, PostBurnIn_HighestBestMatchIsStabilized) {
+TEST_F(BestMatchRankerTest, PostBurnInHighestBestMatchIsStabilized) {
   ResultsMap results_map;
 
   // Simulate one provider returning pre-burn-in.
@@ -183,7 +183,7 @@ TEST_F(BestMatchRankerTest, PostBurnIn_HighestBestMatchIsStabilized) {
 //
 // This test also checks that a result which is demoted out of best match has
 // this correctly reflected.
-TEST_F(BestMatchRankerTest, ProviderReturnsMoreThanOnce_ResultDemoted) {
+TEST_F(BestMatchRankerTest, ProviderReturnsMoreThanOnceResultDemoted) {
   ResultsMap results_map;
 
   // Simulate a provider returning.
