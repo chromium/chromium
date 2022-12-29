@@ -414,12 +414,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_3CharShortening) {
   scoped_feature_list().InitAndEnableFeature(omnibox::kShortcutExpanding);
   InitBackend();
 
-  scoped_refptr<FakeAutocompleteProvider> provider =
-      new FakeAutocompleteProvider(
-          AutocompleteProvider::Type::TYPE_HISTORY_QUICK);
-
   AutocompleteMatch match;
-  match.provider = provider.get();
   match.destination_url = GURL("https://www.google.com");
 
   // Should not have a shortcut initially.
@@ -473,15 +468,10 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   scoped_feature_list().InitAndEnableFeature(omnibox::kShortcutExpanding);
   InitBackend();
 
-  scoped_refptr<FakeAutocompleteProvider> provider =
-      new FakeAutocompleteProvider(
-          AutocompleteProvider::Type::TYPE_HISTORY_QUICK);
-
   AutocompleteMatch match;
-  match.provider = provider.get();
-  match.destination_url = GURL("https://www.google.com");
-  match.contents = u"https://www.google.com";
-  match.description = u"a an app apple i it word ZaZaaZZ symbols(╯°□°）╯";
+  match.destination_url = GURL("https://www.host-shared2.com/path");
+  match.description = u"https://www.description.com";
+  match.contents = u"a an app apple i it word ZaZaaZZ symbols(╯°□°）╯ shared1";
   match.contents_class.emplace_back(0, 0);
   match.description_class.emplace_back(0, 0);
 
@@ -514,9 +504,24 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"i"));
   ClearShortcutsMap();
 
-  // Should not expand to words in the URL or contents.
-  backend()->AddOrUpdateShortcut(u"g", match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"g"));
+  // Should not expand to words in the `description`.
+  backend()->AddOrUpdateShortcut(u"d", match);
+  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"d"));
+  ClearShortcutsMap();
+
+  // Should not expand to words in the URL path.
+  backend()->AddOrUpdateShortcut(u"p", match);
+  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"p"));
+  ClearShortcutsMap();
+
+  // Should expand to words in the URL host.
+  backend()->AddOrUpdateShortcut(u"h", match);
+  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"host"));
+  ClearShortcutsMap();
+
+  // Should prefer expanding to words in the `contents`.
+  backend()->AddOrUpdateShortcut(u"shar", match);
+  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"shared1"));
   ClearShortcutsMap();
 
   // When updating, should expand the last word after appending up to 3 chars.
@@ -580,27 +585,26 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   backend()->AddOrUpdateShortcut(u"", match);
   EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre());
 
-  // Should not expand when match description is empty.
-  AutocompleteMatch match_without_description;
-  match_without_description.provider = provider.get();
-  match_without_description.destination_url = GURL("https://www.google.com");
-  match_without_description.contents = u"https://www.google.com";
-  match_without_description.contents_class.emplace_back(0, 0);
-  backend()->AddOrUpdateShortcut(u"goo", match_without_description);
+  // Should not expand when match contents is empty.
+  AutocompleteMatch match_without_contents;
+  match_without_contents.destination_url = GURL("https://www.host.com/google");
+  match_without_contents.description = u"google";
+  match_without_contents.description_class.emplace_back(0, 0);
+  backend()->AddOrUpdateShortcut(u"goo", match_without_contents);
   EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"goo"));
   ClearShortcutsMap();
 
-  // Should expand with contents for built in suggestion.
-  provider->SetType(AutocompleteProvider::Type::TYPE_BUILTIN);
-  AutocompleteMatch built_in_match;
-  built_in_match.provider = provider.get();
-  built_in_match.destination_url = GURL("https://www.google.com");
-  built_in_match.contents = u"https://www.googlecontents.com";
-  built_in_match.description = u"googledescription";
-  built_in_match.contents_class.emplace_back(0, 0);
-  built_in_match.description_class.emplace_back(0, 0);
-  backend()->AddOrUpdateShortcut(u"goo", built_in_match);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"googlecontents"));
+  // Should expand with description when `swap_contents_and_description` is
+  // true.
+  AutocompleteMatch swapped_match;
+  swapped_match.swap_contents_and_description = true;
+  swapped_match.destination_url = GURL("https://www.google.com");
+  swapped_match.contents = u"https://www.googlecontents.com";
+  swapped_match.description = u"googledescription";
+  swapped_match.contents_class.emplace_back(0, 0);
+  swapped_match.description_class.emplace_back(0, 0);
+  backend()->AddOrUpdateShortcut(u"goo", swapped_match);
+  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"googledescription"));
   ClearShortcutsMap();
 }
 
@@ -611,17 +615,12 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Prefix) {
   scoped_feature_list().InitAndEnableFeature(omnibox::kShortcutExpanding);
   InitBackend();
 
-  scoped_refptr<FakeAutocompleteProvider> provider =
-      new FakeAutocompleteProvider(
-          AutocompleteProvider::Type::TYPE_HISTORY_QUICK);
-
   const auto test = [&](const std::string& text, const std::string& match_text,
                         const std::string& expected_expanded_text) {
     SCOPED_TRACE("Text: " + text + ", match_text: " + match_text);
     AutocompleteMatch match;
-    match.provider = provider.get();
-    match.description = base::UTF8ToUTF16(match_text);
-    match.description_class.emplace_back(0, 0);
+    match.contents = base::UTF8ToUTF16(match_text);
+    match.contents_class.emplace_back(0, 0);
 
     // Should expand last word when creating shortcuts.
     backend()->AddOrUpdateShortcut(base::UTF8ToUTF16(text), match);

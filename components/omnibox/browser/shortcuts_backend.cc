@@ -296,21 +296,24 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
 
   // If no shortcuts to `match` prefixed by `text` were found, create one.
 
-  // The match contents (i.e. URLs) and destination URLs often contain garble,
-  // e.g., 'docs.google.com/d/3SyB0Y83dG_WuxX'. So `text` only expands to the
-  // match description (i.e., page or bookmark title). Built in suggestions are
-  // an exception because their descriptions are empty and their contents are
-  // meaningful.
-  // TODO(manukh): Also consider URL hosts. Otherwise, 'stacko' won't expand to
-  //  'stackoverflow.com' since the page title is 'stack overflow...'.
-  const auto& match_text =
-      match.provider &&
-              match.provider->type() == AutocompleteProvider::Type::TYPE_BUILTIN
-          ? match.contents
-          : GetDescription(match);
-  const auto expanded_text = OmniboxFieldTrial::IsShortcutExpandingEnabled()
-                                 ? ExpandToFullWord(text, match_text)
-                                 : text;
+  // Try to expand the input to a full word so that inputs like 'Aram Kha' later
+  // autocomplete 'Aram Khachaturian' instead of the incomplete input. Prefer
+  // `contents` as the `description` & URL are usually less meaningful (e.g.
+  // 'docs.google.com/d/3SyB0Y83dG_WuxX' or 'Google Search'). Except when
+  // `swap_contents_and_description` is true, which means the description
+  // contains the title or meaningful text. Also consider the URL host, which
+  // is usually also recognizable and helpful when there are whitespace or other
+  // discrepancies between the title and host (e.g. 'Stack Overflow' and
+  // 'stackoverflow.com').
+  const auto& match_text = match.swap_contents_and_description
+                               ? GetDescription(match)
+                               : match.contents;
+  const auto expanded_text =
+      OmniboxFieldTrial::IsShortcutExpandingEnabled()
+          ? ExpandToFullWord(
+                text, match_text + u" " +
+                          base::UTF8ToUTF16(match.destination_url.host()))
+          : text;
   AddShortcut(ShortcutsDatabase::Shortcut(
       base::GenerateGUID(), expanded_text,
       MatchToMatchCore(match, template_url_service_, search_terms_data_.get()),
