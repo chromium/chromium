@@ -33,6 +33,7 @@ enum class DemuxerType {
   kMediaUrlDemuxer,
   kFrameInjectingDemuxer,
   kStreamProviderDemuxer,
+  kHlsDemuxer,
 };
 
 class MEDIA_EXPORT DemuxerHost {

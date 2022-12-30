@@ -244,6 +244,13 @@ source_set("filters") {
       "h264_bitstream_buffer.h",
     ]
   }
+
+  if (enable_hls_demuxer) {
+    sources += [
+      "hls_demuxer.cc",
+      "hls_demuxer.h",
+    ]
+  }
 }
 
 source_set("perftests") {
@@ -392,6 +399,10 @@ source_set("unit_tests") {
         "ffmpeg_h264_to_annex_b_bitstream_converter_unittest.cc",
       ]
     }
+  }
+
+  if (enable_hls_demuxer) {
+    sources += [ "hls_demuxer_unittest.cc" ]
   }
 
   if (media_use_ffmpeg) {

@@ -558,6 +558,10 @@ MATCHER_P(FrameEndTimestampOutOfRange, frame_type, "") {
                              " frame exceeds range allowed by implementation");
 }
 
+MATCHER(HlsDemuxerCtor, "") {
+  return CONTAINS_STRING(arg, "HlsDemuxer");
+}
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_TEST_HELPERS_H_
