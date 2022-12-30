@@ -213,6 +213,11 @@ Ranges<base::TimeDelta> ChunkDemuxerStream::GetBufferedRanges(
   return range.IntersectionWith(valid_time_range);
 }
 
+base::TimeDelta ChunkDemuxerStream::GetLowestPresentationTimestamp() const {
+  base::AutoLock auto_lock(lock_);
+  return stream_->GetLowestPresentationTimestamp();
+}
+
 base::TimeDelta ChunkDemuxerStream::GetHighestPresentationTimestamp() const {
   base::AutoLock auto_lock(lock_);
   return stream_->GetHighestPresentationTimestamp();
@@ -810,6 +815,17 @@ Ranges<base::TimeDelta> ChunkDemuxer::GetBufferedRanges(
 
   DCHECK(itr != source_state_map_.end());
   return itr->second->GetBufferedRanges(duration_, state_ == ENDED);
+}
+
+base::TimeDelta ChunkDemuxer::GetLowestPresentationTimestamp(
+    const std::string& id) const {
+  base::AutoLock auto_lock(lock_);
+  DCHECK(!id.empty());
+
+  auto itr = source_state_map_.find(id);
+
+  DCHECK(itr != source_state_map_.end());
+  return itr->second->GetLowestPresentationTimestamp();
 }
 
 base::TimeDelta ChunkDemuxer::GetHighestPresentationTimestamp(

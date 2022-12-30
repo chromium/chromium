@@ -134,6 +134,10 @@ class MEDIA_EXPORT SourceBufferStream {
   // Returns a list of the buffered time ranges.
   Ranges<base::TimeDelta> GetBufferedTime() const;
 
+  // Returns the lowest buffered PTS or base::TimeDelta() if nothing is
+  // buffered.
+  base::TimeDelta GetLowestPresentationTimestamp() const;
+
   // Returns the highest buffered PTS or base::TimeDelta() if nothing is
   // buffered.
   base::TimeDelta GetHighestPresentationTimestamp() const;

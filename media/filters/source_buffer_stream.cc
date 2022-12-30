@@ -1723,6 +1723,14 @@ Ranges<base::TimeDelta> SourceBufferStream::GetBufferedTime() const {
   return ranges;
 }
 
+base::TimeDelta SourceBufferStream::GetLowestPresentationTimestamp() const {
+  if (ranges_.empty()) {
+    return base::TimeDelta();
+  }
+
+  return ranges_.front()->GetStartTimestamp();
+}
+
 base::TimeDelta SourceBufferStream::GetHighestPresentationTimestamp() const {
   if (ranges_.empty())
     return base::TimeDelta();

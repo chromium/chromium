@@ -390,6 +390,25 @@ Ranges<base::TimeDelta> SourceBufferState::GetBufferedRanges(
   return ComputeRangesIntersection(ranges_list, ended);
 }
 
+base::TimeDelta SourceBufferState::GetLowestPresentationTimestamp() const {
+  base::TimeDelta min_pts;
+
+  for (const auto& it : audio_streams_) {
+    min_pts = std::min(min_pts, it.second->GetLowestPresentationTimestamp());
+  }
+
+  for (const auto& it : video_streams_) {
+    min_pts = std::min(min_pts, it.second->GetLowestPresentationTimestamp());
+  }
+
+  for (const auto& it : text_streams_) {
+    min_pts = std::min(min_pts, it.second->GetLowestPresentationTimestamp());
+  }
+
+  DCHECK_LE(base::TimeDelta(), min_pts);
+  return min_pts;
+}
+
 base::TimeDelta SourceBufferState::GetHighestPresentationTimestamp() const {
   base::TimeDelta max_pts;
 
