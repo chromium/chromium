@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerClientsApiBrowserTest,
   EXPECT_EQ("navigate failed", EvalJs(shell(), "requestToNavigate();"));
 
   // The browser-initiated navigation should finish.
-  navigation.WaitForNavigationFinished();  // Resume navigation.
+  ASSERT_TRUE(navigation.WaitForNavigationFinished());  // Resume navigation.
   EXPECT_TRUE(navigation.was_successful());
 }
 
