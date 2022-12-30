@@ -1033,12 +1033,6 @@ void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
 
   NotifyVisibilityChangeDown();
   host_->OnVisibilityChanged(window_visible_);
-
-  // Toolkit-views suppresses redraws while not visible. To prevent Cocoa asking
-  // for an "empty" draw, disable auto-display while hidden. For example, this
-  // prevents Cocoa drawing just *after* a minimize, resulting in a blank window
-  // represented in the deminiaturize animation.
-  [window_ setAutodisplay:window_visible_];
 }
 
 void NativeWidgetNSWindowBridge::OnSystemControlTintChanged() {
