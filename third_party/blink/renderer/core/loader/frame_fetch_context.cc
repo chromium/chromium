@@ -475,7 +475,7 @@ void FrameFetchContext::PrepareRequest(
     uint64_t identifier = RecordReplayNetworkRequestId(request.InspectorId());
 
     String request_id = IdentifiersFactory::RequestId(document_loader_, identifier);
-    dict.SetDouble("bookmark", (double) bookmark);
+    dict.SetDoubleKey("bookmark", (double) bookmark);
     dict.SetString("requestUrl", url_string);
     dict.SetString("requestMethod", request.HttpMethod().Utf8());
     dict.SetString("requestId", request_id.Utf8());
