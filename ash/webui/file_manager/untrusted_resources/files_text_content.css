@@ -19,7 +19,10 @@ body {
 }
 
 html {
+  /* TODO(files-app-dark-mode): figure out what text/background colors should
+     be used for quick view text (and html?) content display. */
   background: white;
+  color: black;
   overflow: auto;
 }
 
