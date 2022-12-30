@@ -114,10 +114,10 @@ Path to an AndroidManifest.xml file related to the current target.
 Only seen for the [`android_app_bundle`](#target_android_app_bundle) type.
 Path to the base module for the bundle.
 
-* `deps_info['module_name']`:
+* `deps_info['is_base_module']`:
 Only seen for the
 [`android_app_bundle_module`](#target_android_app_bundle_module)
-type. The name of the feature module.
+type. Whether or not this module is the base module for some bundle.
 
 * `deps_info['dependency_zips']`:
 List of `deps_info['resources_zip']` entries for all `android_resources`
@@ -329,10 +329,6 @@ The classpath used when running a Java or Android binary. Essentially the
 collection of all `deps_info['device_jar_path']` entries for the target and all
 its dependencies.
 
-* `deps_info['all_dex_files']`:
-The list of paths to all `deps_info['dex_path']` entries for all libraries
-that comprise this APK. Valid only for debug builds.
-
 
 ## <a name="target_robolectric_binary">Target type `robolectric_binary`</a>:
 
@@ -371,7 +367,11 @@ that will be merged into the final `.jar` file for distribution.
 
 * `deps_info['final_dex']['path']`:
 Path to the final classes.dex file (or classes.zip in case of multi-dex)
-for this APK - only used for proguarded builds.
+for this APK.
+
+* `deps_info['final_dex']['all_dex_files']`:
+The list of paths to all `deps_info['dex_path']` entries for all libraries
+that comprise this APK. Valid only for debug builds.
 
 * `native['libraries']`
 List of native libraries for the primary ABI to be embedded in this APK.
@@ -929,86 +929,6 @@ def _CompareClasspathPriority(dep):
   return 1 if dep.get('low_classpath_priority') else 0
 
 
-def _DedupFeatureModuleSharedCode(uses_split_arg, modules,
-                                  field_names_to_dedup):
-  child_to_ancestors = collections.defaultdict(list)
-  if uses_split_arg:
-    for split_pair in uses_split_arg:
-      child, parent = split_pair.split(':')
-      assert child in modules
-      assert parent in modules
-      child_to_ancestors[child] = [parent]
-
-  # Create a full list of ancestors for each module.
-  for name in modules:
-    if name == 'base':
-      continue
-    curr_name = name
-    while curr_name in child_to_ancestors:
-      parent = child_to_ancestors[curr_name][0]
-      if parent not in child_to_ancestors[name]:
-        child_to_ancestors[name].append(parent)
-      curr_name = parent
-
-    if curr_name != 'base':
-      child_to_ancestors[name].append('base')
-
-  # Strip out duplicates from ancestors.
-  for name, module in modules.items():
-    if name == 'base':
-      continue
-    # Make sure we get all ancestors, not just direct parent.
-    for ancestor in child_to_ancestors[name]:
-      for f in field_names_to_dedup:
-        if f in module:
-          RemoveObjDups(module, modules[ancestor], f)
-
-  # Strip out duplicates from siblings/cousins.
-  for f in field_names_to_dedup:
-    _PromoteToCommonAncestor(modules, child_to_ancestors, f)
-
-
-def _PromoteToCommonAncestor(modules, child_to_ancestors, field_name):
-  module_to_fields_set = {}
-  for module_name, module in modules.items():
-    if field_name in module:
-      module_to_fields_set[module_name] = set(module[field_name])
-
-  seen = set()
-  dupes = set()
-  for fields in module_to_fields_set.values():
-    new_dupes = seen & fields
-    if new_dupes:
-      dupes |= new_dupes
-    seen |= fields
-
-  for d in dupes:
-    owning_modules = []
-    for module_name, fields in module_to_fields_set.items():
-      if d in fields:
-        owning_modules.append(module_name)
-    assert len(owning_modules) >= 2
-    # Rely on the fact that ancestors are inserted from closest to
-    # farthest, where "base" should always be the last element.
-    # Arbitrarily using the first owning module - any would work.
-    for ancestor in child_to_ancestors[owning_modules[0]]:
-      ancestor_is_shared_with_all = True
-      for o in owning_modules[1:]:
-        if ancestor not in child_to_ancestors[o]:
-          ancestor_is_shared_with_all = False
-          break
-      if ancestor_is_shared_with_all:
-        common_ancestor = ancestor
-        break
-    for o in owning_modules:
-      module_to_fields_set[o].remove(d)
-    module_to_fields_set[common_ancestor].add(d)
-
-  for module_name, module in modules.items():
-    if field_name in module:
-      module[field_name] = sorted(list(module_to_fields_set[module_name]))
-
-
 def _CopyBuildConfigsForDebugging(debug_dir):
   shutil.rmtree(debug_dir, ignore_errors=True)
   os.makedirs(debug_dir)
@@ -1212,12 +1132,15 @@ def main(argv):
   parser.add_option(
       '--base-allowlist-rtxt-path',
       help='Path to R.txt file for the base resources allowlist.')
+  parser.add_option(
+      '--is-base-module',
+      action='store_true',
+      help='Specifies that this module is a base module for some app bundle.')
 
   parser.add_option('--generate-markdown-format-doc', action='store_true',
                     help='Dump the Markdown .build_config format documentation '
                     'then exit immediately.')
 
-  parser.add_option('--module-name', help='The name of this feature module.')
   parser.add_option(
       '--base-module-build-config',
       help='Path to the base module\'s build config '
@@ -1227,11 +1150,6 @@ def main(argv):
       '--module-build-configs',
       help='For bundles, the paths of all non-async module .build_configs '
       'for modules that are part of the bundle.')
-  parser.add_option(
-      '--uses-split',
-      action='append',
-      help='List of name pairs separated by : mapping a feature module to a '
-      'dependent feature module.')
 
   parser.add_option(
       '--trace-events-jar-dir',
@@ -1259,7 +1177,8 @@ def main(argv):
   required_options_map = {
       'android_apk': ['build_config'] + lib_options + device_lib_options,
       'android_app_bundle_module':
-      ['build_config', 'res_size_info'] + lib_options + device_lib_options,
+      ['build_config', 'final_dex_path', 'res_size_info'] + lib_options +
+      device_lib_options,
       'android_assets': ['build_config'],
       'android_resources': ['build_config', 'resources_zip'],
       'dist_aar': ['build_config'],
@@ -1288,8 +1207,8 @@ def main(argv):
     if options.base_allowlist_rtxt_path:
       raise Exception('--base-allowlist-rtxt-path can only be used with '
                       '--type=android_app_bundle_module')
-    if options.module_name:
-      raise Exception('--module-name can only be used with '
+    if options.is_base_module:
+      raise Exception('--is-base-module can only be used with '
                       '--type=android_app_bundle_module')
 
   is_apk_or_module_target = options.type in ('android_apk',
@@ -1407,7 +1326,7 @@ def main(argv):
     gradle['apk_under_test'] = tested_apk_config['name']
 
   if options.type == 'android_app_bundle_module':
-    deps_info['module_name'] = options.module_name
+    deps_info['is_base_module'] = bool(options.is_base_module)
 
   # Required for generating gradle files.
   if options.type == 'java_library':
@@ -1788,12 +1707,9 @@ def main(argv):
       deps_info['lint_android_manifest'] = options.android_manifest
 
   if options.type == 'android_app_bundle':
-    module_config_paths = build_utils.ParseGnList(options.module_build_configs)
-    module_configs = [GetDepConfig(c) for c in module_config_paths]
-    module_configs_by_name = {d['module_name']: d for d in module_configs}
-    per_module_fields = [
-        'device_classpath', 'trace_event_rewritten_device_classpath',
-        'all_dex_files'
+    module_configs = [
+        GetDepConfig(c)
+        for c in build_utils.ParseGnList(options.module_build_configs)
     ]
     jni_all_source = set()
     lint_aars = set()
@@ -1802,10 +1718,8 @@ def main(argv):
     lint_resource_sources = set()
     lint_resource_zips = set()
     lint_extra_android_manifests = set()
-    config['modules'] = {}
-    modules = config['modules']
-    for n, c in module_configs_by_name.items():
-      if c['module_name'] == 'base':
+    for c in module_configs:
+      if c['is_base_module']:
         assert 'base_module_config' not in deps_info, (
             'Must have exactly 1 base module!')
         deps_info['package_name'] = c['package_name']
@@ -1820,10 +1734,6 @@ def main(argv):
       lint_java_sources.update(c['lint_java_sources'])
       lint_resource_sources.update(c['lint_resource_sources'])
       lint_resource_zips.update(c['lint_resource_zips'])
-      module = modules[n] = {}
-      for f in per_module_fields:
-        if f in c:
-          module[f] = c[f]
     deps_info['jni'] = {'all_source': sorted(jni_all_source)}
     deps_info['lint_aars'] = sorted(lint_aars)
     deps_info['lint_srcjars'] = sorted(lint_srcjars)
@@ -1832,9 +1742,6 @@ def main(argv):
     deps_info['lint_resource_zips'] = sorted(lint_resource_zips)
     deps_info['lint_extra_android_manifests'] = sorted(
         lint_extra_android_manifests)
-
-    _DedupFeatureModuleSharedCode(options.uses_split, modules,
-                                  per_module_fields)
 
   if is_apk_or_module_target or options.type in ('group', 'java_library',
                                                  'robolectric_binary',
@@ -1945,11 +1852,14 @@ def main(argv):
     deps_info['proguard_classpath_jars'] = sorted(
         set(extra_proguard_classpath_jars))
 
-  if options.final_dex_path:
-    config['final_dex'] = {'path': options.final_dex_path}
+  # Dependencies for the final dex file of an apk.
+  if (is_apk_or_module_target or options.final_dex_path
+      or options.type == 'dist_jar'):
+    config['final_dex'] = {}
+    dex_config = config['final_dex']
+    dex_config['path'] = options.final_dex_path
   if is_apk_or_module_target or options.type == 'dist_jar':
-    # Dependencies for the final dex file of an apk.
-    deps_info['all_dex_files'] = all_dex_files
+    dex_config['all_dex_files'] = all_dex_files
 
   if is_java_target:
     config['javac']['classpath'] = sorted(javac_classpath)
@@ -2118,21 +2028,22 @@ def main(argv):
     deps_info['java_resources_jar'] = options.java_resources_jar_path
 
   # DYNAMIC FEATURE MODULES:
-  # Make sure that dependencies that exist on the base module are not
-  # duplicated on the feature module. Note: this is only approximately correct,
-  # and doesn't take into account other parent modules. If we are able to read
-  # the build config of the whole bundle (instead of reading the individual
-  # modules'), we can use _DedupFeatureModuleSharedCode() and have the
-  # fully-deduplicated values.
+  # Make sure that dependencies that exist on the base module
+  # are not duplicated on the feature module.
   if base_module_build_config:
     base = base_module_build_config
     RemoveObjDups(config, base, 'deps_info', 'dependency_zips')
     RemoveObjDups(config, base, 'deps_info', 'dependency_zip_overlays')
     RemoveObjDups(config, base, 'deps_info', 'extra_package_names')
+    RemoveObjDups(config, base, 'deps_info', 'device_classpath')
     RemoveObjDups(config, base, 'deps_info', 'javac_full_classpath')
     RemoveObjDups(config, base, 'deps_info', 'javac_full_interface_classpath')
     RemoveObjDups(config, base, 'deps_info', 'jni', 'all_source')
+    RemoveObjDups(config, base, 'final_dex', 'all_dex_files')
     RemoveObjDups(config, base, 'extra_android_manifests')
+    if options.trace_events_jar_dir:
+      RemoveObjDups(config, base, 'deps_info',
+                    'trace_event_rewritten_device_classpath')
 
   if is_java_target:
     jar_to_target = {}

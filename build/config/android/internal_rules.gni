@@ -419,6 +419,10 @@ template("write_build_config") {
       ]
     }
 
+    if (defined(invoker.is_base_module) && invoker.is_base_module) {
+      args += [ "--is-base-module" ]
+    }
+
     if (defined(invoker.loadable_modules)) {
       _rebased_loadable_modules =
           rebase_path(invoker.loadable_modules, root_build_dir)
@@ -542,19 +546,6 @@ template("write_build_config") {
         "--base-module-build-config",
         rebase_path(_base_module_build_config, root_build_dir),
       ]
-    }
-    if (defined(invoker.module_name)) {
-      args += [
-        "--module-name",
-        invoker.module_name,
-      ]
-    }
-    if (defined(invoker.modules)) {
-      foreach(_module, invoker.modules) {
-        if (defined(_module.uses_split)) {
-          args += [ "--uses-split=${_module.name}:${_module.uses_split}" ]
-        }
-      }
     }
     if (defined(invoker.module_build_configs)) {
       inputs += invoker.module_build_configs
@@ -1217,13 +1208,11 @@ if (enable_java_templates) {
           "--dex-dest=@FileArg($_rebased_module_build_config:final_dex:path)",
         ]
 
-        # The bundle's build config has the correct classpaths - the individual
-        # modules' build configs may double-use some jars.
         if (defined(invoker.add_view_trace_events) &&
             invoker.add_view_trace_events) {
-          _args += [ "--feature-jars=@FileArg($_rebased_build_config:modules:${_feature_module.name}:trace_event_rewritten_device_classpath)" ]
+          _args += [ "--feature-jars=@FileArg($_rebased_module_build_config:deps_info:trace_event_rewritten_device_classpath)" ]
         } else {
-          _args += [ "--feature-jars=@FileArg($_rebased_build_config:modules:${_feature_module.name}:device_classpath)" ]
+          _args += [ "--feature-jars=@FileArg($_rebased_module_build_config:deps_info:device_classpath)" ]
         }
 
         if (defined(_feature_module.uses_split)) {
@@ -3480,7 +3469,6 @@ if (enable_java_templates) {
                                "low_classpath_priority",
                                "main_class",
                                "mergeable_android_manifests",
-                               "module_name",
                                "proguard_configs",
                                "proguard_enabled",
                                "proguard_mapping_path",
@@ -3520,6 +3508,7 @@ if (enable_java_templates) {
                                [
                                  "add_view_trace_events",
                                  "base_module_target",
+                                 "is_base_module",
                                  "module_pathmap_path",
                                  "proto_resources_path",
                                  "version_name",
