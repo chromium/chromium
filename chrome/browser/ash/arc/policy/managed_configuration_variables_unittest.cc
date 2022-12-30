@@ -50,14 +50,15 @@ constexpr const char kVariablePattern[] = "${%s}";
 
 Parameter SampleWithoutVariables(bool is_affiliated) {
   // Set up an |input| Value without variables.
-  base::Value input(base::Value::Type::DICTIONARY);
-  input.SetStringKey(kKey1, "value1");
-  input.SetStringKey(kKey2, "value2");
+  base::Value::Dict input;
+  input.Set(kKey1, "value1");
+  input.Set(kKey2, "value2");
 
   // Expected |output| is the same as the input.
-  base::Value output = input.Clone();
+  base::Value::Dict output = input.Clone();
 
-  return std::make_pair(std::move(input), std::move(output));
+  return std::make_pair(base::Value(std::move(input)),
+                        base::Value(std::move(output)));
 }
 
 Parameter SampleWithVariables(bool is_affiliated) {
@@ -85,30 +86,30 @@ Parameter SampleWithVariables(bool is_affiliated) {
       base::StringPrintf("${%s}", kDeviceAnnotatedLocation);
 
   // Set up an |input| Value with some variables.
-  base::Value input(base::Value::Type::DICTIONARY);
-  input.SetStringKey(kUserEmailKey, kUserEmailVariable);
-  input.SetStringKey(kUserNameKey, kUserEmailNameVariable);
-  input.SetStringKey(kUserDomainKey, kUserEmailDomainVariable);
-  input.SetStringKey(kDeviceSerialNumberKey, kDeviceSerialNumberVariable);
-  input.SetStringKey(kDeviceDirectoryIdKey, kDeviceDirectoryIdVariable);
-  input.SetStringKey(kDeviceAssetIdKey, kDeviceAssetIdVariable);
-  input.SetStringKey(kDeviceLocationKey, kDeviceAnnotatedLocationVariable);
+  base::Value::Dict input;
+  input.Set(kUserEmailKey, kUserEmailVariable);
+  input.Set(kUserNameKey, kUserEmailNameVariable);
+  input.Set(kUserDomainKey, kUserEmailDomainVariable);
+  input.Set(kDeviceSerialNumberKey, kDeviceSerialNumberVariable);
+  input.Set(kDeviceDirectoryIdKey, kDeviceDirectoryIdVariable);
+  input.Set(kDeviceAssetIdKey, kDeviceAssetIdVariable);
+  input.Set(kDeviceLocationKey, kDeviceAnnotatedLocationVariable);
 
   // Set up an |output| Value where variables have been replaced.
-  base::Value output(base::Value::Type::DICTIONARY);
-  output.SetStringKey(kUserEmailKey, kTestEmail);
-  output.SetStringKey(kUserNameKey, kTestEmailName);
-  output.SetStringKey(kUserDomainKey, kTestEmailDomain);
-  output.SetStringKey(kDeviceSerialNumberKey,
-                      is_affiliated ? kTestDeviceSerialNumber : "");
-  output.SetStringKey(kDeviceDirectoryIdKey,
-                      is_affiliated ? kTestDeviceDirectoryId : "");
-  output.SetStringKey(kDeviceAssetIdKey,
-                      is_affiliated ? kTestDeviceAssetId : "");
-  output.SetStringKey(kDeviceLocationKey,
-                      is_affiliated ? kTestDeviceAnnotatedLocation : "");
+  base::Value::Dict output;
+  output.Set(kUserEmailKey, kTestEmail);
+  output.Set(kUserNameKey, kTestEmailName);
+  output.Set(kUserDomainKey, kTestEmailDomain);
+  output.Set(kDeviceSerialNumberKey,
+             is_affiliated ? kTestDeviceSerialNumber : "");
+  output.Set(kDeviceDirectoryIdKey,
+             is_affiliated ? kTestDeviceDirectoryId : "");
+  output.Set(kDeviceAssetIdKey, is_affiliated ? kTestDeviceAssetId : "");
+  output.Set(kDeviceLocationKey,
+             is_affiliated ? kTestDeviceAnnotatedLocation : "");
 
-  return std::make_pair(std::move(input), std::move(output));
+  return std::make_pair(base::Value(std::move(input)),
+                        base::Value(std::move(output)));
 }
 
 Parameter SampleWithNestedVariables(bool is_affiliated) {
@@ -130,26 +131,27 @@ Parameter SampleWithNestedVariables(bool is_affiliated) {
       base::StringPrintf(kVariablePattern, kDeviceSerialNumber);
 
   // Set up an |input| Value with variables in nested values.
-  base::Value nestedInput2(base::Value::Type::DICTIONARY);
-  nestedInput2.SetStringKey(kEmailKey, kUserEmailVariable);
-  nestedInput2.SetStringKey(kKey2, kValue2);
-  nestedInput2.SetStringKey(kSerialNumberKey, kDeviceSerialNumberVariable);
-  base::Value nestedInput1(base::Value::Type::DICTIONARY);
-  nestedInput1.SetKey(kSubSubKey, std::move(nestedInput2));
-  nestedInput1.SetStringKey(kKey1, kValue1);
-  base::Value input(base::Value::Type::DICTIONARY);
-  input.SetStringKey(kKey0, kValue0);
-  input.SetKey(kSubKey, std::move(nestedInput1));
-  input.SetStringKey(kNameKey, kTestEmailName);
+  base::Value::Dict nestedInput2;
+  nestedInput2.Set(kEmailKey, kUserEmailVariable);
+  nestedInput2.Set(kKey2, kValue2);
+  nestedInput2.Set(kSerialNumberKey, kDeviceSerialNumberVariable);
+  base::Value::Dict nestedInput1;
+  nestedInput1.Set(kSubSubKey, std::move(nestedInput2));
+  nestedInput1.Set(kKey1, kValue1);
+  base::Value::Dict input;
+  input.Set(kKey0, kValue0);
+  input.Set(kSubKey, std::move(nestedInput1));
+  input.Set(kNameKey, kTestEmailName);
 
   // |output| is the same as |input| except the variables have been replaced.
-  base::Value output = input.Clone();
-  output.SetStringKey(kNameKey, kTestEmailName);
-  output.SetStringPath(kNestedEmailKey, kTestEmail);
-  output.SetStringPath(kNestedSerialNumberKey,
-                       is_affiliated ? kTestDeviceSerialNumber : "");
+  base::Value::Dict output = input.Clone();
+  output.Set(kNameKey, kTestEmailName);
+  output.SetByDottedPath(kNestedEmailKey, kTestEmail);
+  output.SetByDottedPath(kNestedSerialNumberKey,
+                         is_affiliated ? kTestDeviceSerialNumber : "");
 
-  return std::make_pair(std::move(input), std::move(output));
+  return std::make_pair(base::Value(std::move(input)),
+                        base::Value(std::move(output)));
 }
 
 Parameter SampleWithVariableChains(bool is_affiliated) {
@@ -177,18 +179,19 @@ Parameter SampleWithVariableChains(bool is_affiliated) {
       kChainReplacedPattern, is_affiliated ? kTestDeviceAnnotatedLocation : "");
 
   // Set up an |input| Value with some variable chains.
-  base::Value input(base::Value::Type::DICTIONARY);
-  input.SetStringKey(kChain1, kChainVariable1);
-  input.SetStringKey(kChain2, kChainVariable2);
-  input.SetStringKey(kChain3, kChainVariable3);
+  base::Value::Dict input;
+  input.Set(kChain1, kChainVariable1);
+  input.Set(kChain2, kChainVariable2);
+  input.Set(kChain3, kChainVariable3);
 
   // Set up an |output| Value where variables have been replaced.
-  base::Value output(base::Value::Type::DICTIONARY);
-  output.SetStringKey(kChain1, kReplacedChain1);
-  output.SetStringKey(kChain2, kReplacedChain2);
-  output.SetStringKey(kChain3, kReplacedChain3);
+  base::Value::Dict output;
+  output.Set(kChain1, kReplacedChain1);
+  output.Set(kChain2, kReplacedChain2);
+  output.Set(kChain3, kReplacedChain3);
 
-  return std::make_pair(std::move(input), std::move(output));
+  return std::make_pair(base::Value(std::move(input)),
+                        base::Value(std::move(output)));
 }
 
 }  // namespace
@@ -295,35 +298,35 @@ TEST_F(ManagedConfigurationVariablesTest, VariableChains) {
   const std::string kChain =
       base::StringPrintf("${%s:%s:%s}", kDeviceAnnotatedLocation,
                          kDeviceAssetId, kDeviceDirectoryId);
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey(kKey, kChain);
+  base::Value dict(base::Value::Type::DICT);
+  dict.GetDict().Set(kKey, kChain);
 
   // Initially all values in the chain are set, expect annotated location will
   // be returned.
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), &dict);
-  EXPECT_EQ(*dict.FindStringKey(kKey), kTestDeviceAnnotatedLocation);
+  EXPECT_EQ(*dict.GetDict().FindString(kKey), kTestDeviceAnnotatedLocation);
 
   // Clear location and expect chain resolves to asset ID.
   device_attributes()->SetFakeDeviceAnnotatedLocation("");
-  dict.SetStringKey(kKey, kChain);
+  dict.GetDict().Set(kKey, kChain);
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), &dict);
-  EXPECT_EQ(*dict.FindStringKey(kKey), kTestDeviceAssetId);
+  EXPECT_EQ(*dict.GetDict().FindString(kKey), kTestDeviceAssetId);
 
   // Clear asset ID and expect chain resolves to directory ID.
   device_attributes()->SetFakeDeviceAssetId("");
-  dict.SetStringKey(kKey, kChain);
+  dict.GetDict().Set(kKey, kChain);
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), &dict);
-  EXPECT_EQ(*dict.FindStringKey(kKey), kTestDeviceDirectoryId);
+  EXPECT_EQ(*dict.GetDict().FindString(kKey), kTestDeviceDirectoryId);
 
   // Clear directory ID and expect chain resolves to the empty string.
   device_attributes()->SetFakeDirectoryApiId("");
-  dict.SetStringKey(kKey, kChain);
+  dict.GetDict().Set(kKey, kChain);
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), &dict);
-  EXPECT_EQ(*dict.FindStringKey(kKey), "");
+  EXPECT_EQ(*dict.GetDict().FindString(kKey), "");
 }
 
 TEST_F(ManagedConfigurationVariablesTest, IgnoresInvalidVariables) {
@@ -344,22 +347,22 @@ TEST_F(ManagedConfigurationVariablesTest, IgnoresInvalidVariables) {
   const std::string kInvalidChain3 = base::StringPrintf(
       "${%s:DEVICE_ASsEt_ID:%s}", kDeviceAnnotatedLocation, kDeviceAssetId);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey(kValidKey, kValidChain);
-  dict.SetStringKey(kInvalidKey1, kInvalidChain1);
-  dict.SetStringKey(kInvalidKey2, kInvalidChain2);
-  dict.SetStringKey(kInvalidKey3, kInvalidChain3);
+  base::Value dict(base::Value::Type::DICT);
+  dict.GetDict().Set(kValidKey, kValidChain);
+  dict.GetDict().Set(kInvalidKey1, kInvalidChain1);
+  dict.GetDict().Set(kInvalidKey2, kInvalidChain2);
+  dict.GetDict().Set(kInvalidKey3, kInvalidChain3);
 
   // Clear location, valid chain should resolve to asset ID.
   device_attributes()->SetFakeDeviceAnnotatedLocation("");
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), &dict);
   // Expect the valid chain was replaced.
-  EXPECT_EQ(*dict.FindStringKey(kValidKey), kTestDeviceAssetId);
+  EXPECT_EQ(*dict.GetDict().FindString(kValidKey), kTestDeviceAssetId);
   // Expect none of the invalid chains were replaced.
-  EXPECT_EQ(*dict.FindStringKey(kInvalidKey1), kInvalidChain1);
-  EXPECT_EQ(*dict.FindStringKey(kInvalidKey2), kInvalidChain2);
-  EXPECT_EQ(*dict.FindStringKey(kInvalidKey3), kInvalidChain3);
+  EXPECT_EQ(*dict.GetDict().FindString(kInvalidKey1), kInvalidChain1);
+  EXPECT_EQ(*dict.GetDict().FindString(kInvalidKey2), kInvalidChain2);
+  EXPECT_EQ(*dict.GetDict().FindString(kInvalidKey3), kInvalidChain3);
 }
 
 TEST_F(ManagedConfigurationVariablesTest, RespectsSpecialCharacters) {
@@ -367,8 +370,8 @@ TEST_F(ManagedConfigurationVariablesTest, RespectsSpecialCharacters) {
   const std::string kVariable =
       base::StringPrintf(kVariablePattern, kDeviceAssetId);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey(kKey1, kVariable);
+  base::Value dict(base::Value::Type::DICT);
+  dict.GetDict().Set(kKey1, kVariable);
 
   // Setup a fake asset ID using special characters.
   constexpr char kSpecialCharacters[] =
@@ -377,7 +380,7 @@ TEST_F(ManagedConfigurationVariablesTest, RespectsSpecialCharacters) {
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), &dict);
   // Expect special characters were replaced correctly.
-  EXPECT_EQ(*dict.FindStringKey(kKey1), kSpecialCharacters);
+  EXPECT_EQ(*dict.GetDict().FindString(kKey1), kSpecialCharacters);
 }
 
 TEST_F(ManagedConfigurationVariablesTest, RecursiveValuesAreReplacedCorrectly) {
@@ -387,9 +390,9 @@ TEST_F(ManagedConfigurationVariablesTest, RecursiveValuesAreReplacedCorrectly) {
   const std::string kVariable2 =
       base::StringPrintf(kVariablePattern, kDeviceAnnotatedLocation);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey(kKey1, kVariable1);
-  dict.SetStringKey(kKey2, kVariable2);
+  base::Value dict(base::Value::Type::DICT);
+  dict.GetDict().Set(kKey1, kVariable1);
+  dict.GetDict().Set(kKey2, kVariable2);
 
   // Setup fake asset ID and location that are also valid variables.
   device_attributes()->SetFakeDeviceAssetId(kVariable2);
@@ -397,8 +400,8 @@ TEST_F(ManagedConfigurationVariablesTest, RecursiveValuesAreReplacedCorrectly) {
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), &dict);
   // Expect variables are replaced only once without an infinite loop.
-  EXPECT_EQ(*dict.FindStringKey(kKey1), kVariable2);
-  EXPECT_EQ(*dict.FindStringKey(kKey2), kVariable1);
+  EXPECT_EQ(*dict.GetDict().FindString(kKey1), kVariable2);
+  EXPECT_EQ(*dict.GetDict().FindString(kKey2), kVariable1);
 }
 
 TEST_P(ManagedConfigurationVariablesAffiliatedTest, ReplacesVariables) {

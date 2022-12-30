@@ -170,7 +170,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
     }
   }
 
-  base::Value ca_certs(base::Value::Type::LIST);
+  base::Value::List ca_certs;
   for (const auto& certificate : certificates) {
     if (!certificate.is_dict()) {
       DLOG(FATAL) << "Value of a certificate entry is not a dictionary "
@@ -178,18 +178,19 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
       continue;
     }
 
+    const base::Value::Dict& cert_dict = certificate.GetDict();
     const std::string* const cert_type =
-        certificate.FindStringKey(::onc::certificate::kType);
+        cert_dict.FindString(::onc::certificate::kType);
     if (!cert_type || *cert_type != ::onc::certificate::kAuthority)
       continue;
 
-    const base::Value* const trust_list =
-        certificate.FindListKey(::onc::certificate::kTrustBits);
+    const base::Value::List* const trust_list =
+        cert_dict.FindList(::onc::certificate::kTrustBits);
     if (!trust_list)
       continue;
 
     bool web_trust_flag = false;
-    for (const auto& list_val : trust_list->GetList()) {
+    for (const auto& list_val : *trust_list) {
       if (!list_val.is_string())
         NOTREACHED();
 
@@ -204,16 +205,17 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
       continue;
 
     const std::string* const x509_data =
-        certificate.FindStringKey(::onc::certificate::kX509);
+        cert_dict.FindString(::onc::certificate::kX509);
     if (!x509_data)
       continue;
 
-    base::Value data(base::Value::Type::DICTIONARY);
-    data.SetStringKey("X509", *x509_data);
+    base::Value::Dict data;
+    data.Set("X509", *x509_data);
     ca_certs.Append(std::move(data));
   }
-  if (!ca_certs.GetList().empty())
+  if (!ca_certs.empty()) {
     filtered_policies->Set("credentialsConfigDisabled", base::Value(true));
+  }
   filtered_policies->Set(kArcCaCerts, std::move(ca_certs));
 }
 
@@ -221,10 +223,10 @@ void AddRequiredKeyPairs(const CertStoreService* cert_store_service,
                          base::Value::Dict* filtered_policies) {
   if (!cert_store_service)
     return;
-  base::Value cert_names(base::Value::Type::LIST);
+  base::Value::List cert_names;
   for (const auto& name : cert_store_service->get_required_cert_names()) {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("alias", name);
+    base::Value::Dict value;
+    value.Set("alias", name);
     cert_names.Append(std::move(value));
   }
   filtered_policies->Set(kArcRequiredKeyPairs, std::move(cert_names));
@@ -243,21 +245,21 @@ void AddChoosePrivateKeyRuleToPolicy(
 
   auto app_ids = chromeos::platform_keys::ExtensionKeyPermissionsService::
       GetCorporateKeyUsageAllowedAppIds(policy_service);
-  base::Value arc_app_ids(base::Value::Type::LIST);
+  base::Value::List arc_app_ids;
   for (const auto& app_id : app_ids) {
     if (LooksLikeAndroidPackageName(app_id))
       arc_app_ids.Append(app_id);
   }
-  if (arc_app_ids.GetList().empty() ||
+  if (arc_app_ids.empty() ||
       cert_store_service->get_required_cert_names().empty()) {
     return;
   }
 
-  base::Value rules(base::Value::Type::LIST);
+  base::Value::List rules;
   for (const auto& name : cert_store_service->get_required_cert_names()) {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("privateKeyAlias", name);
-    value.SetKey("packageNames", arc_app_ids.Clone());
+    base::Value::Dict value;
+    value.Set("privateKeyAlias", name);
+    value.Set("packageNames", arc_app_ids.Clone());
     rules.Append(std::move(value));
   }
 
