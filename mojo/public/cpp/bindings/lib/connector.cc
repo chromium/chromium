@@ -163,6 +163,9 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
           base::JoinString({interface_name ? interface_name : "Generic",
                             "MessageHeaderValidator"},
                            "")) {
+  // https://linear.app/replay/issue/RUN-999
+  CHECK(!recordreplay::AreEventsDisallowed());
+
   recordreplay::RegisterPointer("Connector", this);
 
   if (config == MULTI_THREADED_SEND)

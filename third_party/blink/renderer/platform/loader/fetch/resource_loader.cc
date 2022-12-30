@@ -965,6 +965,25 @@ bool ResourceLoader::WillFollowRedirect(
     return false;
   }
 
+  if (PermitRecordReplayBrowserEvents()) {
+    // The redirect has not been cancelled.  Notify RecordReplay netmonitor.
+    base::DictionaryValue dict;
+    dict.SetDouble("identifier",
+                   (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
+    dict.SetString("requestUrl", new_request->Url().GetString().Utf8());
+
+    base::ListValue headers;
+    for (auto header : new_request->HttpHeaderFields()) {
+      base::DictionaryValue header_obj;
+      header_obj.SetString("name", header.key.Utf8());
+      header_obj.SetString("value", header.value.Utf8());
+      headers.Append(std::move(header_obj));
+    }
+    dict.SetKey("requestHeaders", std::move(headers));
+
+    recordreplay::BrowserEvent("Network.ResourceRedirect", dict);
+  }
+
   has_devtools_request_id = new_request->GetDevToolsId().has_value();
   return true;
 }

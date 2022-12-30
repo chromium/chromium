@@ -108,11 +108,6 @@ class ReusingTextShaper final {
   scoped_refptr<ShapeResult> Shape(const NGInlineItem& start_item,
                                    const Font& font,
                                    unsigned end_offset) {
-    // https://linear.app/replay/issue/RUN-480
-    recordreplay::Assert("ReusingTextShaper::Shape %d %u",
-                         start_item.GetLayoutObject() ? start_item.GetLayoutObject()->RecordReplayId() : 0,
-                         end_offset);
-
     const unsigned start_offset = start_item.StartOffset();
     DCHECK_LT(start_offset, end_offset);
 
@@ -198,11 +193,6 @@ class ReusingTextShaper final {
                                      const Font& font,
                                      unsigned start_offset,
                                      unsigned end_offset) {
-    // https://linear.app/replay/issue/RUN-480
-    recordreplay::Assert("ReusingTextShaper::Reshape %d %u %u",
-                         start_item.GetLayoutObject() ? start_item.GetLayoutObject()->RecordReplayId() : 0,
-                         start_offset, end_offset);
-
     DCHECK_LT(start_offset, end_offset);
     const TextDirection direction = start_item.Direction();
     if (data_.segments) {
@@ -940,14 +930,7 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
 }
 
 const NGInlineNodeData& NGInlineNode::EnsureData() const {
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineNode::EnsureData Start %d",
-                       GetLayoutBox()->RecordReplayId());
-
   PrepareLayoutIfNeeded();
-
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineNode::EnsureData Done");
   return Data();
 }
 
@@ -1274,10 +1257,6 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
                              const String* previous_text,
                              const HeapVector<NGInlineItem>* previous_items,
                              const Font* override_font) const {
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineNode::ShapeText %d",
-                       GetLayoutBox()->RecordReplayId());
-
   TRACE_EVENT0("fonts", "NGInlineNode::ShapeText");
   const String& text_content = data->text_content;
   HeapVector<NGInlineItem>* items = &data->items;
@@ -1291,10 +1270,6 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
   for (unsigned index = 0; index < items->size();) {
     NGInlineItem& start_item = (*items)[index];
-
-    // https://linear.app/replay/issue/RUN-480
-    recordreplay::Assert("NGInlineNode::ShapeText #1 %d",
-                         start_item.GetLayoutObject() ? start_item.GetLayoutObject()->RecordReplayId() : 0);
 
     if (start_item.Type() != NGInlineItem::kText || !start_item.Length()) {
       index++;
@@ -1319,10 +1294,6 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     unsigned end_index = index + 1;
     unsigned end_offset = start_item.EndOffset();
 
-    // https://linear.app/replay/issue/RUN-480
-    recordreplay::Assert("NGInlineNode::ShapeText #2 %d %u %u",
-                         direction, end_index, end_offset);
-
     // Symbol marker is painted as graphics. Create a ShapeResult of space
     // glyphs with the desired size to make it less special for line breaker.
     if (UNLIKELY(start_item.IsSymbolMarker())) {
@@ -1342,11 +1313,6 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     for (; end_index < items->size(); end_index++) {
       const NGInlineItem& item = (*items)[end_index];
 
-      // https://linear.app/replay/issue/RUN-480
-      recordreplay::Assert("NGInlineNode::ShapeText #3 %d %d %u %u",
-                           item.GetLayoutObject() ? item.GetLayoutObject()->RecordReplayId() : 0,
-                           item.Type(), item.Length(), item.EndOffset());
-
       if (item.Type() == NGInlineItem::kControl) {
         // Do not shape across control characters (line breaks, zero width
         // spaces, etc).
@@ -1357,20 +1323,13 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
           continue;
         if (ShouldBreakShapingBeforeText(item, start_item, start_style, font,
                                          direction)) {
-          // https://linear.app/replay/issue/RUN-480
-          recordreplay::Assert("NGInlineNode::ShapeText #4");
           break;
         }
         // Break shaping at ZWNJ so that it prevents kerning. ZWNJ is always at
         // the beginning of an item for this purpose; see NGInlineItemsBuilder.
         if (text_content[item.StartOffset()] == kZeroWidthNonJoinerCharacter) {
-          // https://linear.app/replay/issue/RUN-480
-          recordreplay::Assert("NGInlineNode::ShapeText #5");
           break;
         }
-
-        // https://linear.app/replay/issue/RUN-480
-        recordreplay::Assert("NGInlineNode::ShapeText #6");
 
         end_offset = item.EndOffset();
         num_text_items++;
@@ -1426,9 +1385,6 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
         continue;
       }
     }
-
-    // https://linear.app/replay/issue/RUN-480
-    recordreplay::Assert("NGInlineNode::ShapeText #10 %u", end_offset);
 
     // Shape each item with the full context of the entire node.
     scoped_refptr<ShapeResult> shape_result;

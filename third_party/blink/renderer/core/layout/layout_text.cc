@@ -184,10 +184,6 @@ LayoutText::LayoutText(Node* node, scoped_refptr<StringImpl> str)
   DCHECK(text_);
   DCHECK(!node || !node->IsDocumentNode());
 
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("LayoutText::LayoutText %d %u",
-                       RecordReplayId(), text_.length());
-
   SetIsText();
 
   if (node)
@@ -2088,20 +2084,12 @@ void LayoutText::SetTextInternal(scoped_refptr<StringImpl> text) {
   text_ = String(std::move(text));
   DCHECK(text_);
   DCHECK(!IsBR() || (TextLength() == 1 && text_[0] == kNewlineCharacter));
-
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("LayoutText::SetTextInternal %d %u",
-                       RecordReplayId(), text_.length());
 }
 
 void LayoutText::ApplyTextTransform() {
   NOT_DESTROYED();
   if (const ComputedStyle* style = Style()) {
     style->ApplyTextTransform(&text_, PreviousCharacter());
-
-    // https://linear.app/replay/issue/RUN-480
-    recordreplay::Assert("LayoutText::ApplyTextTransform #1 %d %u",
-                         RecordReplayId(), text_.length());
 
     // We use the same characters here as for list markers.
     // See CollectUACounterStyleRules() in ua_counter_style_map.cc.
@@ -2145,10 +2133,6 @@ void LayoutText::SecureText(UChar mask) {
     // last_typed_character_offset_ to avoid inconsistency.
     secure_text_timer->Invalidate();
   }
-
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("LayoutText::SecureText Done %d %u",
-                       RecordReplayId(), text_.length());
 }
 
 void LayoutText::SetTextIfNeeded(scoped_refptr<StringImpl> text) {

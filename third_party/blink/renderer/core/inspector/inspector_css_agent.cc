@@ -988,12 +988,14 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
     Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*
         css_keyframes_rules,
     Maybe<int>* parentLayoutNodeId) {
-  Response response = AssertEnabled();
-  if (!response.IsSuccess())
-    return response;
+  if (!recordreplay::HasDivergedFromRecording()) {
+    Response response = AssertEnabled();
+    if (!response.IsSuccess())
+      return response;
+  }
 
   Element* element = nullptr;
-  response = dom_agent_->AssertElement(node_id, element);
+  auto response = dom_agent_->AssertElement(node_id, element);
   if (!response.IsSuccess())
     return response;
 
@@ -1359,6 +1361,25 @@ Response InspectorCSSAgent::getStyleSheetText(const String& style_sheet_id,
 
   inspector_style_sheet->GetText(result);
   return Response::Success();
+}
+
+CSSStyleSheet* InspectorCSSAgent::getStyleSheet(const String& style_sheet_id) {
+  InspectorStyleSheetBase* inspector_style_sheet = nullptr;
+  Response response =
+      AssertStyleSheetForId(style_sheet_id, inspector_style_sheet);
+  if (response.IsSuccess()) {
+    if (!inspector_style_sheet->IsInlineStyle()) {
+      auto* targetSheet =
+          static_cast<InspectorStyleSheet*>(inspector_style_sheet);
+      return targetSheet->PageStyleSheet();
+    }
+  } else {
+    recordreplay::Print(
+      "[RuntimeError] InspectorCSSAgent::getStyleSheet failed (style_sheet_id: %s, Code: %d): %s",
+      style_sheet_id.Utf8().c_str(), response.Code(), response.Message().c_str()
+    );
+  }
+  return nullptr;
 }
 
 Response InspectorCSSAgent::collectClassNames(
@@ -2356,9 +2377,10 @@ Response InspectorCSSAgent::AssertEnabled() {
 Response InspectorCSSAgent::AssertInspectorStyleSheetForId(
     const String& style_sheet_id,
     InspectorStyleSheet*& result) {
-  Response response = AssertEnabled();
-  if (!response.IsSuccess())
-    return response;
+  // [recordreplay] allow this to work without being enabled?
+  // Response response = AssertEnabled();
+  // if (!response.IsSuccess())
+  //   return response;
   IdToInspectorStyleSheet::iterator it =
       id_to_inspector_style_sheet_.find(style_sheet_id);
   if (it == id_to_inspector_style_sheet_.end())

@@ -1393,6 +1393,11 @@ extern "C" void V8RecordReplayBrowserEvent(const char* name, const char* payload
 void RenderThreadImpl::RecordReplayBrowserEvent(
     const std::string& name,
     base::Value::Dict value) {
+  // Do nothing if not in record/replay mode.
+  if (!recordreplay::IsRecordingOrReplaying("browser-event") || !v8::IsMainThread()) {
+    return;
+  }
+
   std::string json;
   base::JSONWriter::Write(value, &json);
   V8RecordReplayBrowserEvent(name.c_str(), json.c_str());

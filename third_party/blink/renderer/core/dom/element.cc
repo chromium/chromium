@@ -3574,10 +3574,6 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 void Element::AttachLayoutTree(AttachContext& context) {
   DCHECK(GetDocument().InStyleRecalc());
 
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("Element::AttachLayoutTree %d",
-                       RecordReplayId());
-
   StyleEngine& style_engine = GetDocument().GetStyleEngine();
 
   const ComputedStyle* style = GetComputedStyle();

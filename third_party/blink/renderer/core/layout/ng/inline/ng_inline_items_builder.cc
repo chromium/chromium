@@ -249,11 +249,6 @@ NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextItem(
     NGInlineItem::NGInlineItemType type,
     const StringView string,
     LayoutText* layout_object) {
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendTextItem %d %u %u",
-                       layout_object ? layout_object->RecordReplayId() : 0,
-                       text_.length(), string.length());
-
   DCHECK(layout_object);
   unsigned start_offset = text_.length();
   text_.Append(string);
@@ -271,11 +266,6 @@ NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextItem(
 template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendEmptyTextItem(
     LayoutText* layout_object) {
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendEmptyTextItem %d %u",
-                       layout_object ? layout_object->RecordReplayId() : 0,
-                       text_.length());
-
   DCHECK(layout_object);
   unsigned offset = text_.length();
   NGInlineItem& item =
@@ -420,11 +410,6 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     if (!text_.length() && !item.Length() && collapse_spaces)
       continue;
 
-    // https://linear.app/replay/issue/RUN-480
-    recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendTextReusing #5 %d %u %u %u",
-                         item.GetLayoutObject() ? item.GetLayoutObject()->RecordReplayId() : 0,
-                         text_.length(), item.StartOffset(), item.Length());
-
     // We are reusing items that included 'generated line breaks', inserted to
     // deal with leading preserved space sequences. If we are performing a
     // relayout after removing a <br> (eg. <div>abc<br><span> dfg</span></div>)
@@ -497,11 +482,6 @@ template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     LayoutText* layout_text,
     const NGInlineNodeData* previous_data) {
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendText #1 Start %d %u",
-                       layout_text ? layout_text->RecordReplayId() : 0,
-                       layout_text->GetText().length());
-
   // If the LayoutText element hasn't changed, reuse the existing items.
   if (previous_data && layout_text->HasValidInlineItems()) {
     if (AppendTextReusing(*previous_data, layout_text)) {
@@ -532,11 +512,6 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     const String& string,
     LayoutText* layout_object) {
   DCHECK(layout_object);
-
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendText #2 Start %d %u",
-                       layout_object ? layout_object->RecordReplayId() : 0,
-                       string.length());
 
   if (string.empty()) {
     AppendEmptyTextItem(layout_object);
@@ -619,15 +594,6 @@ void NGInlineItemsBuilderTemplate<
                                                     const ComputedStyle* style,
                                                     LayoutText* layout_object) {
   DCHECK(!string.empty());
-
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendCollapseWhitespace Start %d %u",
-                       layout_object ? layout_object->RecordReplayId() : 0,
-                       string.length());
-  for (unsigned i = 0; i < string.length(); i++) {
-    recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendCollapseWhitespace #1 %d %u",
-                         i, string[i]);
-  }
 
   // This algorithm segments the input string at the collapsible space, and
   // process collapsible space run and non-space run alternately.
@@ -719,10 +685,6 @@ void NGInlineItemsBuilderTemplate<
     // Done computing the interaction with the last item. Start appending.
     start_offset = text_.length();
 
-    // https://linear.app/replay/issue/RUN-480
-    recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendCollapseWhitespace #10 %u %d",
-                         text_.length(), insert_space);
-
     DCHECK(i);
     unsigned collapsed_length = i;
     if (insert_space) {
@@ -767,10 +729,6 @@ void NGInlineItemsBuilderTemplate<
           break;
       }
 
-      // https://linear.app/replay/issue/RUN-480
-      recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendCollapseWhitespace #15 %u %d %d",
-                           text_.length(), start_of_non_space, i);
-
       text_.Append(string, start_of_non_space, i - start_of_non_space);
       mapping_builder_.AppendIdentityMapping(i - start_of_non_space);
 
@@ -793,10 +751,6 @@ void NGInlineItemsBuilderTemplate<
       bool remove_newline = space_run_has_newline &&
                             ShouldRemoveNewline(text_, text_.length(), style,
                                                 StringView(string, i), style);
-
-      // https://linear.app/replay/issue/RUN-480
-      recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendCollapseWhitespace #16 %u %d",
-                           text_.length(), remove_newline);
 
       if (UNLIKELY(remove_newline)) {
         // |kNotCollapsible| because the newline is removed, not collapsed.
@@ -826,10 +780,6 @@ void NGInlineItemsBuilderTemplate<
     AppendEmptyTextItem(layout_object);
     return;
   }
-
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendCollapseWhitespace Done %u %u",
-                       start_offset, text_.length());
 
   NGInlineItem& item = AppendItem(items_, NGInlineItem::kText, start_offset,
                                   text_.length(), layout_object);
@@ -1065,11 +1015,6 @@ NGInlineItem& NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::Append(
     LayoutObject* layout_object) {
   DCHECK_NE(character, kSpaceCharacter);
 
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItemsBuilderTemplate::Append %d %u %u",
-                       layout_object ? layout_object->RecordReplayId() : 0,
-                       text_.length(), character);
-
   text_.Append(character);
   mapping_builder_.AppendIdentityMapping(1);
   unsigned end_offset = text_.length();
@@ -1142,11 +1087,6 @@ NGInlineItem& NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
     NGInlineItem::NGInlineItemType type,
     UChar character,
     LayoutObject* layout_object) {
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendOpaque #1 %d %u %u",
-                       layout_object ? layout_object->RecordReplayId() : 0,
-                       text_.length(), character);
-
   text_.Append(character);
   mapping_builder_.AppendIdentityMapping(1);
   unsigned end_offset = text_.length();
@@ -1161,11 +1101,6 @@ template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
     NGInlineItem::NGInlineItemType type,
     LayoutObject* layout_object) {
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendOpaque #2 %d %u",
-                       layout_object ? layout_object->RecordReplayId() : 0,
-                       text_.length());
-
   unsigned end_offset = text_.length();
   NGInlineItem& item =
       AppendItem(items_, type, end_offset, end_offset, layout_object);
@@ -1198,11 +1133,6 @@ void NGInlineItemsBuilderTemplate<
            item->Type() == NGInlineItem::kBlockInInline);
     return;
   }
-
-  // https://linear.app/replay/issue/RUN-480
-  recordreplay::Assert("NGInlineItemsBuilderTemplate::RemoveTrailingCollapsibleSpace #1 %d %u %u",
-                       item->GetLayoutObject() ? item->GetLayoutObject()->RecordReplayId() : 0,
-                       item->StartOffset(), item->EndOffset());
 
   DCHECK_GT(item->EndOffset(), item->StartOffset());
   unsigned space_offset = item->EndOffset() - 1;
@@ -1245,18 +1175,8 @@ void NGInlineItemsBuilderTemplate<
 
   // TODO(kojii): Implement StringBuilder::insert().
   if (text_.length() == item->EndOffset()) {
-    // https://linear.app/replay/issue/RUN-480
-    recordreplay::Assert("NGInlineItemsBuilderTemplate::RestoreTrailingCollapsibleSpace #1 %d %u",
-                         item->GetLayoutObject() ? item->GetLayoutObject()->RecordReplayId() : 0,
-                         text_.length());
-
     text_.Append(' ');
   } else {
-    // https://linear.app/replay/issue/RUN-480
-    recordreplay::Assert("NGInlineItemsBuilderTemplate::RestoreTrailingCollapsibleSpace #2 %d %u %u",
-                         item->GetLayoutObject() ? item->GetLayoutObject()->RecordReplayId() : 0,
-                         text_.length(), item->EndOffset());
-
     String current = text_.ToString();
     text_.Clear();
     text_.Append(StringView(current, 0, item->EndOffset()));
