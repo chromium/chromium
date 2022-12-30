@@ -411,7 +411,7 @@ if (is_win) {
       "//components/policy:generated",
       "//content/public/app",
       "//crypto",
-      "//headless:headless_renderer",
+      "//headless:headless_non_renderer",
       "//headless:headless_shell_browser_lib",
       "//net:net_resources",
       "//ppapi/buildflags",
