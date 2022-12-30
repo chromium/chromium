@@ -111,6 +111,23 @@ class DeclarativeNetRequestGetEnabledRulesetsFunction
   ExtensionFunction::ResponseAction Run() override;
 };
 
+class DeclarativeNetRequestUpdateStaticRulesFunction
+    : public ExtensionFunction {
+ public:
+  DeclarativeNetRequestUpdateStaticRulesFunction();
+  DECLARE_EXTENSION_FUNCTION("declarativeNetRequest.updateStaticRules",
+                             DECLARATIVENETREQUEST_UPDATESTATICRULES)
+
+ protected:
+  ~DeclarativeNetRequestUpdateStaticRulesFunction() override;
+
+ private:
+  void OnStaticRulesUpdated(absl::optional<std::string> error);
+
+  // ExtensionFunction override:
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 class DeclarativeNetRequestGetMatchedRulesFunction : public ExtensionFunction {
  public:
   DeclarativeNetRequestGetMatchedRulesFunction();

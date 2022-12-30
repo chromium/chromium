@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
+#include "extensions/browser/api/declarative_net_request/declarative_net_request_prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/global_rules_tracker.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -100,6 +101,14 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
                                    std::set<RulesetID> ids_to_enable,
                                    ApiCallback callback);
 
+  // Updates the set of disabled rule ids for the |ruleset_id| of the
+  // |extension| and then invokes |callback| with an optional error.
+  using RuleIdsToUpdate = DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate;
+  void UpdateStaticRules(const Extension& extension,
+                         RulesetID ruleset_id,
+                         RuleIdsToUpdate rule_ids_to_update,
+                         ApiCallback callback);
+
   // Returns the list of session scoped rules for |extension_id| as a
   // base::Value::List.
   const base::Value::List& GetSessionRulesValue(
@@ -174,6 +183,12 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
                                            std::set<RulesetID> ids_to_disable,
                                            std::set<RulesetID> ids_to_enable,
                                            ApiCallback callback);
+
+  // Internal helper for UpdateStaticRules.
+  void UpdateStaticRulesInternal(const ExtensionId& extension_id,
+                                 RulesetID ruleset_id,
+                                 RuleIdsToUpdate rule_ids_to_update,
+                                 ApiCallback callback);
 
   // Internal helper for UpdateSessionRules.
   void UpdateSessionRulesInternal(

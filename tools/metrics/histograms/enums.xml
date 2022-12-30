@@ -35501,6 +35501,7 @@ Called by update_extension_histograms.py.-->
   <int value="1744" label="AUTOFILLPRIVATE_GETIBANLIST"/>
   <int value="1745" label="ENTERPRISE_PLATFORMKEYS_CHALLENGEKEY"/>
   <int value="1746" label="PDFVIEWERPRIVATE_ISALLOWEDLOCALFILEACCESS"/>
+  <int value="1747" label="DECLARATIVENETREQUEST_UPDATESTATICRULES"/>
 </enum>
 
 <enum name="ExtensionIconState">

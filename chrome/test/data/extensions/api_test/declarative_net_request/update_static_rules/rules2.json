@@ -1,0 +1,30 @@
+[{
+  "id" : 1,
+  "priority": 1,
+  "condition" : {
+    "requestDomains": ["rules2-1.example.com"],
+    "resourceTypes": ["main_frame"],
+    "requestMethods": ["get"]
+  },
+  "action": {"type" : "block"}
+},
+{
+  "id": 2,
+  "priority": 1,
+  "condition" : {
+    "requestDomains": ["rules2-2.example.com"],
+    "resourceTypes": ["main_frame"],
+    "requestMethods": ["get"]
+  },
+  "action": {"type" : "block"}
+},
+{
+  "id": 3,
+  "priority": 1,
+  "condition" : {
+    "requestDomains": ["rules2-3.example.com"],
+    "resourceTypes": ["main_frame"],
+    "requestMethods": ["get"]
+  },
+  "action": {"type" : "block"}
+}]

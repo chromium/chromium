@@ -115,6 +115,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, TestMatchOutcome) {
   ASSERT_TRUE(RunExtensionTest("test_match_outcome")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, UpdateStaticRules) {
+  ASSERT_TRUE(RunExtensionTest("update_static_rules")) << message_;
+}
+
 class DeclarativeNetRequestApiFencedFrameTest
     : public DeclarativeNetRequestApiTest {
  protected:

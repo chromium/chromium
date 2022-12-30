@@ -18,6 +18,7 @@
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/declarative_net_request_prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/request_params.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
@@ -325,6 +326,62 @@ DeclarativeNetRequestGetEnabledRulesetsFunction::Run() {
 
   return RespondNow(
       ArgumentList(dnr_api::GetEnabledRulesets::Results::Create(public_ids)));
+}
+
+DeclarativeNetRequestUpdateStaticRulesFunction::
+    DeclarativeNetRequestUpdateStaticRulesFunction() = default;
+DeclarativeNetRequestUpdateStaticRulesFunction::
+    ~DeclarativeNetRequestUpdateStaticRulesFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeclarativeNetRequestUpdateStaticRulesFunction::Run() {
+  using Params = dnr_api::UpdateStaticRules::Params;
+  using DNRManifestData = declarative_net_request::DNRManifestData;
+  using RulesMonitorService = declarative_net_request::RulesMonitorService;
+  using RuleIdsToUpdate = declarative_net_request::
+      DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate;
+
+  std::u16string error;
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  EXTENSION_FUNCTION_VALIDATE(error.empty());
+
+  const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
+      DNRManifestData::GetManifestIDToRulesetMap(*extension());
+  auto it = public_id_map.find(params->options.ruleset_id);
+  if (it == public_id_map.end()) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        declarative_net_request::kInvalidRulesetIDError,
+        params->options.ruleset_id)));
+  }
+
+  RuleIdsToUpdate rule_ids_to_update(params->options.disable_rule_ids,
+                                     params->options.enable_rule_ids);
+
+  if (rule_ids_to_update.Empty()) {
+    return RespondNow(NoArguments());
+  }
+
+  auto* rules_monitor_service = RulesMonitorService::Get(browser_context());
+  DCHECK(rules_monitor_service);
+  DCHECK(extension());
+
+  rules_monitor_service->UpdateStaticRules(
+      *extension(), it->second->id, std::move(rule_ids_to_update),
+      base::BindOnce(
+          &DeclarativeNetRequestUpdateStaticRulesFunction::OnStaticRulesUpdated,
+          this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DeclarativeNetRequestUpdateStaticRulesFunction::OnStaticRulesUpdated(
+    absl::optional<std::string> error) {
+  if (error) {
+    Respond(Error(std::move(*error)));
+  } else {
+    Respond(NoArguments());
+  }
 }
 
 // static

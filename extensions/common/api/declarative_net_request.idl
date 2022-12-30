@@ -546,6 +546,15 @@ namespace declarativeNetRequest {
     DOMString[]? enableRulesetIds;
   };
 
+  dictionary UpdateStaticRulesOptions {
+    // The id corresponding to a static $(ref:Ruleset).
+    DOMString rulesetId;
+    // Set of ids corresponding to rules in the $(ref:Ruleset) to disable.
+    long[]? disableRuleIds;
+    // Set of ids corresponding to rules in the $(ref:Ruleset) to enable.
+    long[]? enableRuleIds;
+  };
+
   dictionary TabActionCountUpdate {
     // The tab for which to update the action count.
     long tabId;
@@ -646,6 +655,16 @@ namespace declarativeNetRequest {
     // enabled static $(ref:Ruleset).
     [supportsPromises] static void getEnabledRulesets(
         GetEnabledRulesetsCallback callback);
+
+    // Disables and enables individual static rules in a $(ref:Ruleset).
+    // Changes to rules belonging to a disabled $(ref:Ruleset) will take
+    // effect the next time that it becomes enabled.
+    // |callback|: Called once the update is complete. In case of an error,
+    // $(ref:runtime.lastError) will be set and no change will be made to the
+    // enabled static rules.
+    [nodoc, supportsPromises] static void updateStaticRules(
+        UpdateStaticRulesOptions options,
+        optional EmptyCallback callback);
 
     // Returns all rules matched for the extension. Callers can optionally
     // filter the list of matched rules by specifying a |filter|. This method is

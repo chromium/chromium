@@ -108,6 +108,8 @@ source_set("browser_sources") {
     "api/declarative_net_request/composite_matcher.h",
     "api/declarative_net_request/constants.cc",
     "api/declarative_net_request/constants.h",
+    "api/declarative_net_request/declarative_net_request_prefs_helper.cc",
+    "api/declarative_net_request/declarative_net_request_prefs_helper.h",
     "api/declarative_net_request/extension_url_pattern_index_matcher.cc",
     "api/declarative_net_request/extension_url_pattern_index_matcher.h",
     "api/declarative_net_request/file_backed_ruleset_source.cc",

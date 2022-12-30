@@ -150,6 +150,11 @@ class WarningServiceObserver : public WarningService::Observer {
   base::RunLoop run_loop_;
 };
 
+base::flat_set<int> GetDisabledRuleIdsFromMatcherForTesting(
+    const RulesetManager& ruleset_manager,
+    const Extension& extension,
+    const std::string& ruleset_id_string);
+
 }  // namespace declarative_net_request
 }  // namespace extensions
 

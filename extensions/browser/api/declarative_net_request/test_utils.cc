@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
+#include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
@@ -511,6 +512,30 @@ void WarningServiceObserver::ExtensionWarningsChanged(
     return;
 
   run_loop_.Quit();
+}
+
+base::flat_set<int> GetDisabledRuleIdsFromMatcherForTesting(
+    const RulesetManager& ruleset_manager,
+    const Extension& extension,
+    const std::string& ruleset_id_string) {
+  const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
+      DNRManifestData::GetManifestIDToRulesetMap(extension);
+  auto it = public_id_map.find(ruleset_id_string);
+  DCHECK(public_id_map.end() != it);
+  RulesetID ruleset_id = it->second->id;
+
+  const CompositeMatcher* composite_matcher =
+      ruleset_manager.GetMatcherForExtension(extension.id());
+  DCHECK(composite_matcher);
+
+  for (const auto& matcher : composite_matcher->matchers()) {
+    if (ruleset_id != matcher->id()) {
+      continue;
+    }
+
+    return matcher->GetDisabledRuleIdsForTesting();
+  }
+  return {};
 }
 
 }  // namespace declarative_net_request
