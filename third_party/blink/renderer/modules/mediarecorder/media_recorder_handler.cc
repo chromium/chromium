@@ -354,13 +354,14 @@ void MediaRecorderHandler::Stop() {
   DCHECK(IsMainThread());
   // Don't check |recording_| since we can go directly from pause() to stop().
 
+  // Ensure any stored data inside the muxer is flushed out before invalidation.
+  muxer_ = nullptr;
   invalidated_ = true;
 
   recording_ = false;
   timeslice_ = base::Milliseconds(0);
   video_recorders_.clear();
   audio_recorders_.clear();
-  muxer_.reset();
 }
 
 void MediaRecorderHandler::Pause() {
@@ -604,7 +605,7 @@ void MediaRecorderHandler::OnEncodedAudio(const media::AudioParameters& params,
 
 void MediaRecorderHandler::WriteData(base::StringPiece data) {
   DCHECK(IsMainThread());
-
+  DVLOG(3) << __func__ << " " << data.length() << "B";
   if (invalidated_)
     return;
 

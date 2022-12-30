@@ -394,7 +394,7 @@ void MediaRecorder::ContextDestroyed() {
   recorder_handler_ = nullptr;
 }
 
-void MediaRecorder::WriteData(const char* data,
+void MediaRecorder::WriteData(const void* data,
                               size_t length,
                               bool last_in_slice,
                               double timecode) {
