@@ -379,14 +379,14 @@ var CrSettingsSiteListTest = class extends CrSettingsBrowserTest {
   }
 };
 
-// TODO(crbug.com/1064002): Flaky on Linux.
-GEN('#if BUILDFLAG(IS_LINUX)');
-GEN('#define MAYBE_SiteList DISABLED_SiteList');
-GEN('#else');
-GEN('#define MAYBE_SiteList SiteList');
-GEN('#endif');
-TEST_F('CrSettingsSiteListTest', 'MAYBE_SiteList', function() {
+TEST_F('CrSettingsSiteListTest', 'SiteList', function() {
   runMochaSuite('SiteList');
+});
+
+// TODO(crbug.com/929455, crbug.com/1064002): Flaky test. When it is fixed,
+// merge SiteListDisabled back into SiteList.
+TEST_F('CrSettingsSiteListTest', 'DISABLED_SiteListDisabled', function() {
+  runMochaSuite('DISABLED_SiteList');
 });
 
 // TODO(crbug.com/929455): When the bug is fixed, merge
