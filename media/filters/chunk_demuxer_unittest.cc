@@ -4578,6 +4578,115 @@ TEST_F(ChunkDemuxerTest, SequenceModeSingleTrackNoWarning) {
       video_id, GenerateSingleStreamCluster(0, 33, kVideoTrackNum, 33)));
 }
 
+TEST_F(ChunkDemuxerTest, GetLowestAndHighestPresentationTimestamps_NonMuxed) {
+  std::string audio_id = "audio1";
+  std::string video_id = "video1";
+
+  ASSERT_TRUE(InitDemuxerAudioAndVideoSources(audio_id, video_id));
+
+  EXPECT_EQ(base::TimeDelta(),
+            demuxer_->GetLowestPresentationTimestamp(audio_id));
+  EXPECT_EQ(base::TimeDelta(),
+            demuxer_->GetHighestPresentationTimestamp(audio_id));
+  EXPECT_EQ(base::TimeDelta(),
+            demuxer_->GetLowestPresentationTimestamp(video_id));
+  EXPECT_EQ(base::TimeDelta(),
+            demuxer_->GetHighestPresentationTimestamp(video_id));
+
+  // Append audio and video data into separate source ids.
+  AppendSingleStreamCluster(audio_id, kAudioTrackNum, "0K 10K 20D10K");
+  AppendSingleStreamCluster(video_id, kVideoTrackNum, "10K 20K 30D10K");
+  EXPECT_EQ(base::TimeDelta(),
+            demuxer_->GetLowestPresentationTimestamp(audio_id));
+  EXPECT_EQ(base::Milliseconds(20),
+            demuxer_->GetHighestPresentationTimestamp(audio_id));
+  EXPECT_EQ(base::Milliseconds(10),
+            demuxer_->GetLowestPresentationTimestamp(video_id));
+  EXPECT_EQ(base::Milliseconds(30),
+            demuxer_->GetHighestPresentationTimestamp(video_id));
+
+  // Remove the first and last audio and video frames.
+  demuxer_->Remove(audio_id, base::Milliseconds(0), base::Milliseconds(10));
+  demuxer_->Remove(audio_id, base::Milliseconds(20), base::Milliseconds(30));
+  demuxer_->Remove(video_id, base::Milliseconds(10), base::Milliseconds(20));
+  demuxer_->Remove(video_id, base::Milliseconds(30), base::Milliseconds(40));
+  EXPECT_EQ(base::Milliseconds(10),
+            demuxer_->GetLowestPresentationTimestamp(audio_id));
+  EXPECT_EQ(base::Milliseconds(10),
+            demuxer_->GetHighestPresentationTimestamp(audio_id));
+  EXPECT_EQ(base::Milliseconds(20),
+            demuxer_->GetLowestPresentationTimestamp(video_id));
+  EXPECT_EQ(base::Milliseconds(20),
+            demuxer_->GetHighestPresentationTimestamp(video_id));
+
+  CheckExpectedRanges(audio_id, "{ [10,20) }");
+  CheckExpectedRanges(video_id, "{ [20,30) }");
+
+  // Since the buffered range of each of the sources are disjoint, nothing
+  // should be in their intersection (unless endOfStream has been called.)
+  CheckExpectedRangesForMediaSource("{ }");
+  EXPECT_CALL(host_, SetDuration(base::Milliseconds(30)));
+  MarkEndOfStream(PIPELINE_OK);
+  CheckExpectedRangesForMediaSource("{ [20,30) }");
+
+  Seek(base::TimeDelta());
+  CheckExpectedBuffers(GetStream(DemuxerStream::AUDIO), "10K");
+  ExpectEndOfStream(DemuxerStream::AUDIO);
+  CheckExpectedBuffers(GetStream(DemuxerStream::VIDEO), "20K");
+  ExpectEndOfStream(DemuxerStream::VIDEO);
+}
+
+TEST_F(ChunkDemuxerTest, GetLowestAndHighestPresentationTimestamps_Muxed) {
+  InitDemuxer(HAS_AUDIO | HAS_VIDEO);
+  EXPECT_EQ(base::TimeDelta(),
+            demuxer_->GetLowestPresentationTimestamp(kSourceId));
+  EXPECT_EQ(base::TimeDelta(),
+            demuxer_->GetHighestPresentationTimestamp(kSourceId));
+
+  AppendMuxedCluster(MuxedStreamInfo(kAudioTrackNum, "10K 33K 56K", 23),
+                     MuxedStreamInfo(kVideoTrackNum, "20K 50K 80K", 30));
+  EXPECT_EQ(base::Milliseconds(10),
+            demuxer_->GetLowestPresentationTimestamp(kSourceId));
+  EXPECT_EQ(base::Milliseconds(80),
+            demuxer_->GetHighestPresentationTimestamp(kSourceId));
+
+  // Note the coded frame group start time was 10ms in this muxed source append,
+  // so the buffered ranges reflect a resulting start time of 10ms even though
+  // there is no video precisely at that presentation time.
+  CheckExpectedRanges("{ [10,79) }");  // 56 + 23 = 79
+  EXPECT_CALL(host_, SetDuration(base::Milliseconds(110)));
+  MarkEndOfStream(PIPELINE_OK);
+  CheckExpectedRanges("{ [10,110) }");  // 80 + 30 = 110
+  Seek(base::TimeDelta());
+  CheckExpectedBuffers(GetStream(DemuxerStream::AUDIO), "10K 33K 56K");
+  ExpectEndOfStream(DemuxerStream::AUDIO);
+  CheckExpectedBuffers(GetStream(DemuxerStream::VIDEO), "20K 50K 80K");
+  ExpectEndOfStream(DemuxerStream::VIDEO);
+
+  demuxer_->UnmarkEndOfStream();
+  // Remove the first audio buffer.
+  demuxer_->Remove(kSourceId, base::Milliseconds(10), base::Milliseconds(11));
+  // Remove the last video buffer.
+  demuxer_->Remove(kSourceId, base::Milliseconds(80), base::Milliseconds(81));
+
+  // Even though no audio or video is actually buffered until time 20ms, the
+  // front removal, above, caused the underlying range start time for video to
+  // move to time 11 since it didn't actually remove any video from the front.
+  EXPECT_EQ(base::Milliseconds(11),
+            demuxer_->GetLowestPresentationTimestamp(kSourceId));
+  EXPECT_EQ(base::Milliseconds(56),
+            demuxer_->GetHighestPresentationTimestamp(kSourceId));
+  CheckExpectedRanges("{ [33,79) }");
+  EXPECT_CALL(host_, SetDuration(base::Milliseconds(80)));
+  MarkEndOfStream(PIPELINE_OK);
+  CheckExpectedRanges("{ [33,80) }");
+  Seek(base::TimeDelta());
+  CheckExpectedBuffers(GetStream(DemuxerStream::AUDIO), "33K 56K");
+  ExpectEndOfStream(DemuxerStream::AUDIO);
+  CheckExpectedBuffers(GetStream(DemuxerStream::VIDEO), "20K 50K");
+  ExpectEndOfStream(DemuxerStream::VIDEO);
+}
+
 TEST_F(ChunkDemuxerTest, Mp4Vp9CodecSupport) {
   demuxer_->Initialize(&host_,
                        base::BindOnce(&ChunkDemuxerTest::DemuxerInitialized,

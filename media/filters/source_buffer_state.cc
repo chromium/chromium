@@ -391,7 +391,7 @@ Ranges<base::TimeDelta> SourceBufferState::GetBufferedRanges(
 }
 
 base::TimeDelta SourceBufferState::GetLowestPresentationTimestamp() const {
-  base::TimeDelta min_pts;
+  base::TimeDelta min_pts = kInfiniteDuration;
 
   for (const auto& it : audio_streams_) {
     min_pts = std::min(min_pts, it.second->GetLowestPresentationTimestamp());
@@ -406,6 +406,10 @@ base::TimeDelta SourceBufferState::GetLowestPresentationTimestamp() const {
   }
 
   DCHECK_LE(base::TimeDelta(), min_pts);
+  if (min_pts == kInfiniteDuration) {
+    return base::TimeDelta();
+  }
+
   return min_pts;
 }
 
