@@ -1594,12 +1594,16 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
 
   // Show an infobar reminding the user to reload tabs where their site
   // permissions have been updated.
+  // Info bar should only be shown on pages with the same origin and
+  // on the same profile
   for (auto* it : *BrowserList::GetInstance()) {
     TabStripModel* tab_strip = it->tab_strip_model();
     for (int i = 0; i < tab_strip->count(); ++i) {
       content::WebContents* web_contents = tab_strip->GetWebContentsAt(i);
       GURL tab_url = web_contents->GetLastCommittedURL();
-      if (url::IsSameOriginWith(origin, tab_url)) {
+      if (url::IsSameOriginWith(origin, tab_url) &&
+          it->profile()->GetOriginalProfile() ==
+              profile_->GetOriginalProfile()) {
         infobars::ContentInfoBarManager* infobar_manager =
             infobars::ContentInfoBarManager::FromWebContents(web_contents);
         PageInfoInfoBarDelegate::Create(infobar_manager);

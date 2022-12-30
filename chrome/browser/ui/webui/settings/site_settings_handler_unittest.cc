@@ -1962,6 +1962,11 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
     window2_ = CreateBrowserWindow();
     browser2_ =
         CreateBrowser(profile(), browser()->type(), false, window2_.get());
+    window3_ = CreateBrowserWindow();
+
+    TestingProfile* profile2_ = CreateProfile2();
+    browser3_ =
+        CreateBrowser(profile2_, browser()->type(), false, window3_.get());
 
     extensions::TestExtensionSystem* extension_system =
         static_cast<extensions::TestExtensionSystem*>(
@@ -1975,10 +1980,16 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
     // make sure that's cleared before BrowserContext / profile destruction.
     handler()->DisallowJavascript();
 
-    // Also destroy |browser2_| before the profile. browser()'s destruction is
-    // handled in BrowserWithTestWindowTest::TearDown().
+    // Also destroy `browser2_` before the profile.
     browser2()->tab_strip_model()->CloseAllTabs();
     browser2_.reset();
+
+    // Destroy `browser3_`.
+    browser3()->tab_strip_model()->CloseAllTabs();
+    browser3_.reset();
+
+    // Browser()'s destruction is handled in
+    // BrowserWithTestWindowTest::TearDown()
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -2017,6 +2028,18 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
 
   Browser* browser2() { return browser2_.get(); }
 
+  // browser3 is from a different profile `profile2_` than
+  // browser2 and browser() which are from profile()
+  Browser* browser3() { return browser3_.get(); }
+
+  // Creates the second profile used by this test. The caller doesn't own the
+  // return value.
+  TestingProfile* CreateProfile2() {
+    return profile_manager()->CreateTestingProfile("testing_profile2@test",
+                                                   nullptr, std::u16string(), 0,
+                                                   GetTestingFactories());
+  }
+
   const std::string kNotifications;
 
  private:
@@ -2024,6 +2047,8 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   std::unique_ptr<SiteSettingsHandler> handler_;
   std::unique_ptr<BrowserWindow> window2_;
   std::unique_ptr<Browser> browser2_;
+  std::unique_ptr<BrowserWindow> window3_;
+  std::unique_ptr<Browser> browser3_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
@@ -2167,6 +2192,54 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
                 ->infobar_at(0)
                 ->delegate()
                 ->GetIdentifier());
+  EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
+}
+
+TEST_F(SiteSettingsHandlerInfobarTest,
+       SettingPermissionsDoesNotTriggerInfobarOnDifferentProfile) {
+  // Note all GURLs starting with 'origin' below belong to the same origin.
+  //               _______________
+  //   Window 1:  / origin_anchor \
+  // -------------       -----------------------------------------------------
+  const GURL origin("https://www.example.com/");
+  std::string origin_anchor_string =
+      "https://www.example.com/with/path/blah#heading";
+  const GURL origin_anchor(origin_anchor_string);
+
+  //   Different
+  //   Profile (2) ______________
+  //   Window 3:  / origin_query \
+  // -------------------------------------------------------------------------
+  const GURL origin_query("https://www.example.com/?param=value");
+
+  // Set up. No info bars.
+  AddTab(browser(), origin_anchor);
+  EXPECT_EQ(0u,
+            GetInfoBarManagerForTab(browser(), 0, nullptr)->infobar_count());
+
+  AddTab(browser3(), origin_query);
+  EXPECT_EQ(0u,
+            GetInfoBarManagerForTab(browser3(), 0, nullptr)->infobar_count());
+
+  // Block notifications.
+  base::Value::List set_args;
+  set_args.Append(origin_anchor_string);
+  set_args.Append(kNotifications);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  handler()->HandleSetOriginPermissions(set_args);
+
+  // Make sure all tabs within the same profile belonging to the same origin
+  // as `origin_anchor` have an infobar shown.
+  GURL tab_url;
+  EXPECT_EQ(1u,
+            GetInfoBarManagerForTab(browser(), 0, &tab_url)->infobar_count());
+  EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
+
+  // Make sure all tabs with the same origin as `origin_anchor` that don't
+  // belong to the same profile don't have an infobar shown
+  EXPECT_EQ(0u,
+            GetInfoBarManagerForTab(browser3(), 0, &tab_url)->infobar_count());
   EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
 }
 

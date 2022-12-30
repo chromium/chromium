@@ -165,6 +165,9 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(
       SiteSettingsHandlerTest,
       SendNotificationPermissionReviewList_FeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      SiteSettingsHandlerInfobarTest,
+      SettingPermissionsDoesNotTriggerInfobarOnDifferentProfile);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetExtensionName);
 #endif
