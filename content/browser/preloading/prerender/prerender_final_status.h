@@ -80,7 +80,11 @@ enum class PrerenderFinalStatus {
   // TODO(https://crbug.com/1363550): Remove this reason if no sample is
   // recorded in stable, or look into the reason if there are.
   kActivationNavigationDestroyedBeforeSuccess = 53,
-  kMaxValue = kActivationNavigationDestroyedBeforeSuccess,
+  // See comments on WebContents::kTabClosedWithoutUserGesture for the
+  // difference between the two statuses below.
+  kTabClosedByUserGesture = 54,
+  kTabClosedWithoutUserGesture = 55,
+  kMaxValue = kTabClosedWithoutUserGesture,
 };
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FINAL_STATUS_H_

@@ -1606,6 +1606,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CloseOnPrerendering) {
 
   // Should not crash.
   shell()->Close();
+
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kTabClosedWithoutUserGesture);
 }
 
 namespace {

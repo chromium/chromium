@@ -8555,6 +8555,8 @@ domain Page
       ActivatedInBackground
       EmbedderHostDisallowed
       ActivationNavigationDestroyedBeforeSuccess
+      TabClosedByUserGesture
+      TabClosedWithoutUserGesture
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

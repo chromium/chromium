@@ -1584,6 +1584,10 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderFinalStatus::kActivationNavigationDestroyedBeforeSuccess:
       return Page::PrerenderFinalStatusEnum::
           ActivationNavigationDestroyedBeforeSuccess;
+    case PrerenderFinalStatus::kTabClosedByUserGesture:
+      return Page::PrerenderFinalStatusEnum::TabClosedByUserGesture;
+    case PrerenderFinalStatus::kTabClosedWithoutUserGesture:
+      return Page::PrerenderFinalStatusEnum::TabClosedWithoutUserGesture;
   }
 }
 

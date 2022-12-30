@@ -80,6 +80,18 @@ PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents) {
 }
 
 PrerenderHostRegistry::~PrerenderHostRegistry() {
+  // This function is called by WebContentsImpl's dtor, so web_contents() should
+  // not be a null ptr at this moment.
+  DCHECK(web_contents());
+
+  PrerenderFinalStatus final_status =
+      web_contents()->GetClosedByUserGesture()
+          ? PrerenderFinalStatus::kTabClosedByUserGesture
+          : PrerenderFinalStatus::kTabClosedWithoutUserGesture;
+
+  // Here we have to delete the prerender hosts synchronously, to ensure the
+  // FrameTrees would not access the WebContents.
+  CancelAllHosts(final_status);
   Observe(nullptr);
   for (Observer& obs : observers_)
     obs.OnRegistryDestroyed();
