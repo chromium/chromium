@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WINDOW_CONTROLS_OVERLAY_TOGGLE_BUTTON_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 
 class BrowserView;
@@ -31,6 +32,7 @@ class WindowControlsOverlayToggleButton : public ToolbarButton {
   // The containing browser view.
   raw_ptr<BrowserView> browser_view_;
   SkColor icon_color_ = gfx::kPlaceholderColor;
+  base::WeakPtrFactory<WindowControlsOverlayToggleButton> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WINDOW_CONTROLS_OVERLAY_TOGGLE_BUTTON_H_
