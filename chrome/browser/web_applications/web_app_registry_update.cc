@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -71,13 +72,20 @@ std::unique_ptr<RegistryUpdateData> WebAppRegistryUpdate::TakeUpdateData() {
 }
 
 ScopedRegistryUpdate::ScopedRegistryUpdate(WebAppSyncBridge* sync_bridge)
-    : update_(sync_bridge->BeginUpdate()), sync_bridge_(sync_bridge) {}
+    : ScopedRegistryUpdate(sync_bridge, base::DoNothing()) {}
+ScopedRegistryUpdate::ScopedRegistryUpdate(
+    WebAppSyncBridge* sync_bridge,
+    base::OnceCallback<void(bool success)> commit_complete)
+    : update_(sync_bridge->BeginUpdate()),
+      sync_bridge_(sync_bridge),
+      commit_complete_(std::move(commit_complete)) {}
 
 ScopedRegistryUpdate::ScopedRegistryUpdate(ScopedRegistryUpdate&&) = default;
 
 ScopedRegistryUpdate::~ScopedRegistryUpdate() {
-  if (update_)
-    sync_bridge_->CommitUpdate(std::move(update_), base::DoNothing());
+  if (update_) {
+    sync_bridge_->CommitUpdate(std::move(update_), std::move(commit_complete_));
+  }
 }
 
 }  // namespace web_app
