@@ -295,4 +295,13 @@ const CGFloat kImageHeight = 30;
   return value;
 }
 
+- (UIAccessibilityTraits)accessibilityTraits {
+  UIAccessibilityTraits accessibilityTraits = super.accessibilityTraits;
+  accessibilityTraits |= UIAccessibilityTraitButton;
+  if (self.checked) {
+    accessibilityTraits |= UIAccessibilityTraitSelected;
+  }
+  return accessibilityTraits;
+}
+
 @end
