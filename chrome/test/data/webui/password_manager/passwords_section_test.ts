@@ -17,12 +17,14 @@ import {createCredentialGroup, createPasswordEntry} from './test_util.js';
  * @param subsection The passwords subsection element that will be checked.
  * @param expectedPasswords The expected passwords in this subsection.
  */
-async function validatePasswordsSubsection(
+function validatePasswordsSubsection(
     list: IronListElement,
     expectedGroups: chrome.passwordsPrivate.CredentialGroup[]) {
   assertDeepEquals(expectedGroups, list.items);
 
   const listItemElements = list.querySelectorAll('password-list-item');
+  assertEquals(listItemElements.length, expectedGroups.length);
+
   for (let index = 0; index < expectedGroups.length; ++index) {
     const expectedGroup = expectedGroups[index]!;
     const listItemElement = listItemElements[index];
@@ -43,15 +45,7 @@ suite('PasswordsSectionTest', function() {
     return flushTasks();
   });
 
-  test('password section listens to updates', async function() {
-    const section: PasswordsSectionElement =
-        document.createElement('passwords-section');
-    document.body.appendChild(section);
-    await flushTasks();
-
-    // PasswordsList is hidden as there are no passwords.
-    assertFalse(isVisible(section.$.passwordsList));
-
+  test('groups shown correctly', async function() {
     passwordManager.data.groups = [
       createCredentialGroup({
         name: 'test.com',
@@ -62,12 +56,26 @@ suite('PasswordsSectionTest', function() {
         credentials: [createPasswordEntry({username: 'user', id: 1})],
       }),
     ];
-    assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
-    passwordManager.listeners.savedPasswordListChangedListener!([]);
+
+    const section: PasswordsSectionElement =
+        document.createElement('passwords-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getCredentialGroups');
     await flushTasks();
 
     validatePasswordsSubsection(
         section.$.passwordsList, passwordManager.data.groups);
+  });
+
+  test('passwords list is hidden if nothing to show', async function() {
+    const section: PasswordsSectionElement =
+        document.createElement('passwords-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getCredentialGroups');
+    await flushTasks();
+
+    // PasswordsList is hidden as there are no passwords.
+    assertFalse(isVisible(section.$.passwordsList));
   });
 
   test('clicking group navigates to details page', async function() {
