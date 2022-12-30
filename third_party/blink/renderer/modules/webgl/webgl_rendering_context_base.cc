@@ -555,6 +555,9 @@ WebGLRenderingContextBase::CreateContextProviderInternal(
                                           String(graphics_info->error_message));
   }
   if (!context_provider || g_should_fail_context_creation_for_testing) {
+    // https://linear.app/replay/issue/RUN-1039
+    recordreplay::Assert("WebGLRenderingContextBase::CreateContextProviderInternal #1");
+
     g_should_fail_context_creation_for_testing = false;
     host->HostDispatchEvent(WebGLContextEvent::Create(
         event_type_names::kWebglcontextcreationerror,
@@ -564,6 +567,9 @@ WebGLRenderingContextBase::CreateContextProviderInternal(
   gpu::gles2::GLES2Interface* gl = context_provider->ContextGL();
   if (!String(gl->GetString(GL_EXTENSIONS))
            .Contains("GL_OES_packed_depth_stencil")) {
+    // https://linear.app/replay/issue/RUN-1039
+    recordreplay::Assert("WebGLRenderingContextBase::CreateContextProviderInternal #2");
+
     host->HostDispatchEvent(WebGLContextEvent::Create(
         event_type_names::kWebglcontextcreationerror,
         "OES_packed_depth_stencil support is required."));

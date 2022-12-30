@@ -7350,12 +7350,12 @@ Element* Element::closest(const AtomicString& selectors) {
 }
 
 DOMTokenList& Element::classList() {
-  // https://linear.app/replay/issue/RUN-885
+  // https://linear.app/replay/issue/RUN-1040
   recordreplay::Assert("Element::classList %d", RecordReplayId());
 
   ElementRareData& rare_data = EnsureElementRareData();
   if (!rare_data.GetClassList()) {
-    // https://linear.app/replay/issue/RUN-885
+    // https://linear.app/replay/issue/RUN-1040
     recordreplay::Assert("Element::classList #1");
 
     auto* class_list =

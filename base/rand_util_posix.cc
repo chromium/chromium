@@ -189,7 +189,9 @@ void RandBytes(void* output, size_t output_length, bool avoid_allocation) {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
      BUILDFLAG(IS_ANDROID)) &&                        \
     !BUILDFLAG(IS_NACL)
-  if (avoid_allocation || UseGetrandom()) {
+  // When replaying we don't support the fallback below of reading from urandom
+  // at non-deterministic points, so always use the getrandom syscall.
+  if (true/*avoid_allocation || UseGetrandom()*/) {
     // On Android it is mandatory to check that the kernel _version_ has the
     // support for a syscall before calling. The same check is made on Linux and
     // ChromeOS to avoid making a syscall that predictably returns ENOSYS.

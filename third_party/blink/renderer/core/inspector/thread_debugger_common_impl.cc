@@ -775,6 +775,9 @@ void ThreadDebuggerCommonImpl::cancelTimer(void* data) {
 }
 
 int64_t ThreadDebuggerCommonImpl::generateUniqueId() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("ThreadDebuggerCommonImpl::generateUniqueId");
+
   int64_t result;
   base::RandBytes(&result, sizeof result);
   return result;
