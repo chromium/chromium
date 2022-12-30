@@ -91,6 +91,9 @@ bool DOMWindow::IsWindowOrWorkerGlobalScope() const {
 }
 
 Location* DOMWindow::location() const {
+  // https://linear.app/replay/issue/RUN-1043
+  recordreplay::Assert("[RUN-1043] DOMWindow::location %d", !!location_);
+
   RecordWindowProxyAccessMetrics(
       WebFeature::kWindowProxyCrossOriginAccessLocation,
       WebFeature::kWindowProxyCrossOriginAccessFromOtherPageLocation);

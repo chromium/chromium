@@ -290,6 +290,9 @@ void PageTimingMetricsSender::UpdateCpuTiming(base::TimeDelta task_time) {
 }
 
 void PageTimingMetricsSender::EnsureSendTimer(bool urgent) {
+  // https://linear.app/replay/issue/RUN-571
+  recordreplay::Assert("[RUN-571] PageTimingMetricsSender::EnsureSendTimer %d", urgent);
+
   if (urgent)
     timer_->Stop();
   else if (timer_->IsRunning())

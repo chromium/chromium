@@ -299,6 +299,10 @@ InvalidationSet& RuleFeatureSet::EnsureMutableInvalidationSet(
     InvalidationType type,
     PositionType position,
     scoped_refptr<InvalidationSet>& invalidation_set) {
+  // https://linear.app/replay/issue/RUN-968
+  recordreplay::Assert("[RUN-968] RuleFeatureSet::EnsureMutableInvalidationSet %d %d %d",
+                       !!invalidation_set, (int)type, (int)position);
+
   if (!invalidation_set) {
     // Create a new invalidation set of the right type.
     if (type == InvalidationType::kInvalidateDescendants) {
