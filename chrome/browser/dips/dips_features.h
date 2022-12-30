@@ -14,7 +14,6 @@ namespace dips {
 
 BASE_DECLARE_FEATURE(kFeature);
 extern const base::FeatureParam<bool> kPersistedDatabaseEnabled;
-extern const base::FeatureParam<bool> kDeletionEnabled;
 extern const base::FeatureParam<base::TimeDelta> kGracePeriod;
 extern const base::FeatureParam<base::TimeDelta> kTimerDelay;
 extern const base::FeatureParam<base::TimeDelta> kInteractionTtl;

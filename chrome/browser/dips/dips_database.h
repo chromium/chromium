@@ -172,7 +172,6 @@ class DIPSDatabase {
   bool ClearTimestampsBySite(bool preserve,
                              const std::vector<std::string>& sites,
                              const DIPSEventRemovalType type);
-
   bool RemoveEmptyRows();
 
   void LogDatabaseMetrics() const;

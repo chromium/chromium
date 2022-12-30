@@ -3,26 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/dips/dips_storage.h"
-#include <memory>
 
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
-#include "content/public/browser/browsing_data_remover.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/mock_browsing_data_remover_delegate.h"
-#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -31,8 +22,7 @@ namespace {
 
 class TestStorage : public DIPSStorage {
  public:
-  explicit TestStorage(content::BrowsingDataRemover* remover)
-      : DIPSStorage(absl::nullopt, remover) {}
+  TestStorage() : DIPSStorage(absl::nullopt) {}
 
   void WriteForTesting(GURL url, const StateValue& state) {
     Write(DIPSState(this, GetSiteForDIPS(url), state));
@@ -71,7 +61,7 @@ class DIPSStorageTest : public testing::Test {
  protected:
   base::test::TaskEnvironment env_;
   ScopedDIPSFeatureEnabledWithParams feature{{{"interaction_ttl", "inf"}}};
-  TestStorage storage_{nullptr};
+  TestStorage storage_;
 };
 
 TEST(DirtyBit, Constructor) {
@@ -507,121 +497,13 @@ TEST_F(DIPSStorageTest, RemoveRows) {
   EXPECT_FALSE(storage_.Read(url2).was_loaded());
 }
 
-class DIPSStorageStateRemovalTest : public testing::Test {
- public:
-  DIPSStorageStateRemovalTest() : profile_(new TestingProfile()) {
-    remover_ = static_cast<content::BrowsingDataRemover*>(
-        profile_->GetBrowsingDataRemover());
-    storage_ = std::make_unique<TestStorage>(BrowsingDataRemover());
-  }
-
-  base::TimeDelta grace_period;
-  base::TimeDelta interaction_ttl;
-  base::TimeDelta tiny_delta = base::Milliseconds(1);
-
- protected:
-  base::SimpleTestClock clock_;
-  content::BrowserTaskEnvironment env_;
-  ScopedDIPSFeatureEnabledWithParams feature{{{"interaction_ttl", "24h"},
-                                              {"delete", "true"},
-                                              {"grace_period", "10s"},
-                                              {"triggering_action", "bounce"}}};
-  std::unique_ptr<TestStorage> storage_;
-
-  // Test setup.
-  void SetUp() override {
-    grace_period = dips::kGracePeriod.Get();
-    interaction_ttl = dips::kInteractionTtl.Get();
-
-    storage_->SetClockForTesting(clock());
-  }
-
-  void TearDown() override {
-    storage_.reset();
-    profile_.reset();
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void DeleteDIPSEligibleState() {
-    base::RunLoop loop;
-    storage_->DeleteDIPSEligibleState(
-        DIPSCookieMode::kBlock3PC,
-        base::BindOnce([](base::RunLoop* loop) { loop->Quit(); }, &loop));
-    loop.Run();
-  }
-
-  base::Time Now() { return clock_.Now(); }
-
-  void AdvanceTimeTo(base::Time now) {
-    ASSERT_GE(now, clock_.Now());
-    clock_.SetNow(now);
-  }
-  void AdvanceTimeBy(base::TimeDelta delta) { clock_.Advance(delta); }
-
-  base::Clock* clock() { return &clock_; }
-
-  content::BrowsingDataRemover* BrowsingDataRemover() { return remover_; }
-
- private:
-  // Cached pointer to BrowsingDataRemover for access to testing methods.
-  raw_ptr<content::BrowsingDataRemover> remover_;
-
-  std::unique_ptr<TestingProfile> profile_;
-};
-
-TEST_F(DIPSStorageStateRemovalTest, DeleteDIPSEligibleState) {
-  content::MockBrowsingDataRemoverDelegate delegate;
-  BrowsingDataRemover()->SetEmbedderDelegate(&delegate);
-  GURL url("https://example.com");
-
-  // Set up an interaction that happens before a bounce.
-  base::Time interaction = base::Time::FromDoubleT(1);
-  TimestampRange interaction_times = {interaction, interaction};
-  base::Time bounce = base::Time::FromDoubleT(2);
-  TimestampRange bounce_times = {bounce, bounce};
-
-  storage_->WriteForTesting(url, {/*storage_times=*/{}, interaction_times,
-                                  /*stateful_bounce_times=*/{}, bounce_times});
-
-  // Set the current time to just after the bounce happened.
-  AdvanceTimeTo(bounce + tiny_delta);
-  DeleteDIPSEligibleState();
-  content::RunAllTasksUntilIdle();
-
-  // Verify state was not cleared.
-  delegate.VerifyAndClearExpectations();
-  EXPECT_TRUE(storage_->Read(url).was_loaded());
-
-  auto filter_builder = content::BrowsingDataFilterBuilder::Create(
-      content::BrowsingDataFilterBuilder::Mode::kDelete);
-  filter_builder->AddRegisterableDomain(GetSiteForDIPS(url));
-  delegate.ExpectCall(
-      base::Time::Min(), base::Time::Max(),
-      chrome_browsing_data_remover::FILTERABLE_DATA_TYPES |
-          content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
-      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
-          content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
-      filter_builder.get());
-
-  // Time-travel to after the interaction has expired.
-  AdvanceTimeTo(interaction + interaction_ttl + tiny_delta);
-  DeleteDIPSEligibleState();
-  content::RunAllTasksUntilIdle();
-
-  // Verify that state was removed and a removal task was posted to storage_'s
-  // browsing_data_remover.
-  delegate.VerifyAndClearExpectations();
-  EXPECT_FALSE(storage_->Read(url).was_loaded());
-}
-
 class DIPSStoragePrepopulateTest : public testing::Test {
  public:
   DIPSStoragePrepopulateTest()
       : task_environment_(base::test::TaskEnvironment(
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED)),
         storage_(base::SequenceBound<DIPSStorage>(CreateTaskRunner(),
-                                                  absl::nullopt,
-                                                  nullptr)) {}
+                                                  absl::nullopt)) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;
