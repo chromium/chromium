@@ -1932,6 +1932,21 @@
   <message name="IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_SUB_LABEL" translateable="false" desc="Subabel for the toggle in the Fledge preferences page.">
     Donec pretium non elit vitae ornare. Morbi arcu elit, rutrum nec sapien quis, tristique tristique ante.
   </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_HEADING" translateable="false" desc="Section title for the current sites list underneath toggle in the FLEDGE preferences page.">
+    Aliquam
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION" translateable="false" desc="Section description for the current sites list in the FLEDGE preferences page.">
+    Nullam sollicitudin elit vitae hendrerit suscipit. Nunc mi leo, placerat sit amet lorem non, semper convallis sapien.
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_LEARN_MORE" translateable="false" desc="Text for the clickable section of the description ('Learn more') for the current sites list in the FLEDGE preferences page.">
+    Learn More
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_DISABLED" translateable="false" desc="Section description for the current sites list when FLEDGE is disabled in the FLEDGE preferences page.">
+    Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the current sites list when the sites list is empty in the FLEDGE preferences page.">
+    Morbi quis orci in mauris tempus rutrum. Curabitur blandit orci tortor, pellentesque tempor turpis lacinia ac.
+  </message>
 
   <!-- Privacy Sandbox Settings 4 - Ad Measurement Page -->
   <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE" translateable="false" desc="Title for the Ad Measurement preferences page.">

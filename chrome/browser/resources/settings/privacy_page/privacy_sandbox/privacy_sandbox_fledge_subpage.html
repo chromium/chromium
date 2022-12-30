@@ -1,6 +1,78 @@
+<style include="cr-shared-style">
+  #currentSitesSection {
+    align-items: center;
+    display: flex;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #currentSitesSectionWrapper {
+    width: 100%;
+  }
+
+  #currentSitesHeading {
+    color: var(--cr-secondary-text-color);
+    font-size: 100%;
+    font-weight: 500;
+    margin: 0;
+    padding-block-start: var(--cr-section-vertical-padding);
+  }
+
+  #currentSitesDescription {
+    padding-block-end: var(--cr-section-vertical-padding);
+  }
+
+  #learnMoreLink {
+    background: none;
+    border: none;
+    color: var(--cr-link-color);
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    text-decoration: underline;
+  }
+
+  .no-sites {
+    padding-block-end: 32px;
+    padding-block-start: 16px;
+    padding-inline-start: 40px;
+  }
+</style>
+
 <settings-toggle-button
     id="fledgeToggle"
     pref="{{prefs.privacy_sandbox.m1.fledge_enabled}}"
     label="$i18n{fledgePageToggleLabel}"
     sub-label="$i18n{fledgePageToggleSubLabel}">
 </settings-toggle-button>
+<div id="currentSitesSection">
+  <div id="currentSitesSectionWrapper" class="hr">
+    <h2 id="currentSitesHeading">
+      $i18n{fledgePageCurrentSitesHeading}
+    </h2>
+    <template is="dom-if" if="[[isFledgeEnabledAndLoaded_(
+        prefs.privacy_sandbox.m1.fledge_enabled.value, isSitesListLoaded_)]]"
+        restamp>
+      <div id="currentSitesDescription" class="cr-secondary-text"
+          hidden="[[isSitesListEmpty_(sitesList_.length)]]">
+        $i18n{fledgePageCurrentSitesDescription}
+        <!-- TODO(b/264024469): Add "Learn more" into current sites description
+             string. -->
+        <!-- TODO(b/254412043): Add aria-label or aria-describedby. -->
+        <button id="learnMoreLink" on-click="onLearnMoreClick_">
+          $i18n{fledgePageCurrentSitesDescriptionLearnMore}
+        </button>
+      </div>
+      <!-- TODO(b/254411463): Add sites list. -->
+      <div id="currentSitesDescriptionEmpty"
+          class="no-sites cr-secondary-text"
+          hidden="[[!isSitesListEmpty_(sitesList_.length)]]">
+        $i18n{fledgePageCurrentSitesDescriptionEmpty}
+      </div>
+    </template>
+    <div id="currentSitesDescriptionDisabled"
+        class="no-sites cr-secondary-text"
+        hidden="[[prefs.privacy_sandbox.m1.fledge_enabled.value]]">
+      $i18n{fledgePageCurrentSitesDescriptionDisabled}
+    </div>
+  </div>
+</div>
