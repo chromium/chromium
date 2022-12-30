@@ -1550,7 +1550,7 @@ void VolumeManager::DoAttachMtpStorage(
 
   // Register the MTP storage device with chrome::storage.
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
-  if (!profile_->IsIncognitoProfile()) {
+  if (!FindExternalMountPoint(fsid)) {
     bool result = mount_points->RegisterFileSystem(
         fsid, storage::kFileSystemTypeDeviceMediaAsFileStorage,
         storage::FileSystemMountOption(), path);
@@ -1585,11 +1585,12 @@ void VolumeManager::DoAttachMtpStorage(
       Volume::CreateForFuseBoxMTP(mount_path, label, read_only);
 
   // Register the fusebox MTP storage device with chrome::storage.
-  if (!profile_->IsIncognitoProfile()) {
+  const std::string fusebox_fsid =
+      base::StrCat({util::kFuseBoxMountNamePrefix, subdir});
+  if (!FindExternalMountPoint(fusebox_fsid)) {
     bool result = mount_points->RegisterFileSystem(
-        base::StrCat({util::kFuseBoxMountNamePrefix, subdir}),
-        storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
-        fusebox_volume->mount_path());
+        fusebox_fsid, storage::kFileSystemTypeFuseBox,
+        storage::FileSystemMountOption(), fusebox_volume->mount_path());
     DCHECK(result);
   }
 
@@ -1637,8 +1638,9 @@ void VolumeManager::OnRemovableStorageDetached(
 
   // Remove the fusebox MTP storage device from chrome::storage.
   std::string subdir = FuseBoxSubdirMTP(info.device_id());
-  mount_points->RevokeFileSystem(
-      base::StrCat({util::kFuseBoxMountNamePrefix, subdir}));
+  const std::string fusebox_fsid =
+      base::StrCat({util::kFuseBoxMountNamePrefix, subdir});
+  mount_points->RevokeFileSystem(fusebox_fsid);
 
   // Detach the fusebox MTP storage device from the fusebox daemon.
   fusebox_mounter_.DetachStorage(subdir);
