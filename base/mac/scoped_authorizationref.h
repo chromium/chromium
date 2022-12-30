@@ -7,21 +7,30 @@
 
 #include <Security/Authorization.h>
 
-#include "base/base_export.h"
+#include <utility>
 
-// ScopedAuthorizationRef maintains ownership of an AuthorizationRef.  It is
-// patterned after the unique_ptr interface.
+#include "base/base_export.h"
+#include "base/check.h"
+
+// `ScopedAuthorizationRef` maintains ownership of an `AuthorizationRef`.  It is
+// patterned after the `unique_ptr` interface.
 
 namespace base::mac {
 
 class BASE_EXPORT ScopedAuthorizationRef {
  public:
-  explicit ScopedAuthorizationRef(AuthorizationRef authorization = NULL)
-      : authorization_(authorization) {
-  }
+  explicit ScopedAuthorizationRef(AuthorizationRef authorization = nullptr)
+      : authorization_(authorization) {}
 
   ScopedAuthorizationRef(const ScopedAuthorizationRef&) = delete;
   ScopedAuthorizationRef& operator=(const ScopedAuthorizationRef&) = delete;
+
+  ScopedAuthorizationRef(ScopedAuthorizationRef&& that)
+      : authorization_(std::exchange(that.authorization_, nullptr)) {}
+  ScopedAuthorizationRef& operator=(ScopedAuthorizationRef&& that) {
+    authorization_ = std::exchange(that.authorization_, nullptr);
+    return *this;
+  }
 
   ~ScopedAuthorizationRef() {
     if (authorization_) {
@@ -29,7 +38,7 @@ class BASE_EXPORT ScopedAuthorizationRef {
     }
   }
 
-  void reset(AuthorizationRef authorization = NULL) {
+  void reset(AuthorizationRef authorization = nullptr) {
     if (authorization_ != authorization) {
       if (authorization_) {
         FreeInternal();
@@ -50,16 +59,16 @@ class BASE_EXPORT ScopedAuthorizationRef {
     return authorization_;
   }
 
-  AuthorizationRef* get_pointer() { return &authorization_; }
+  // This is to be used only to take ownership of objects that are created
+  // by pass-by-pointer create functions. To enforce this, require that the
+  // object be reset to NULL before this may be used.
+  [[nodiscard]] AuthorizationRef* InitializeInto() {
+    DCHECK(!authorization_);
+    return &authorization_;
+  }
 
   AuthorizationRef get() const {
     return authorization_;
-  }
-
-  void swap(ScopedAuthorizationRef& that) {
-    AuthorizationRef temp = that.authorization_;
-    that.authorization_ = authorization_;
-    authorization_ = temp;
   }
 
   // ScopedAuthorizationRef::release() is like std::unique_ptr<>::release. It is
@@ -67,7 +76,7 @@ class BASE_EXPORT ScopedAuthorizationRef {
   // object to call AuthorizationFree(), use ScopedAuthorizationRef::reset().
   [[nodiscard]] AuthorizationRef release() {
     AuthorizationRef temp = authorization_;
-    authorization_ = NULL;
+    authorization_ = nullptr;
     return temp;
   }
 

@@ -25,7 +25,8 @@ bool AuthenticateUser(password_manager::ReauthPurpose purpose) {
   // AuthorizationDB, using the flag
   // kAuthorizationRuleAuthenticateAsSessionUser, to ensure that the session
   // user password, as opposed to an admin's password, is required.
-  AuthorizationItem right_items[] = {{"system.login.screensaver", 0, NULL, 0}};
+  AuthorizationItem right_items[] = {
+      {"system.login.screensaver", 0, nullptr, 0}};
   AuthorizationRights rights = {std::size(right_items), right_items};
 
   NSString* prompt;
@@ -49,11 +50,11 @@ bool AuthenticateUser(password_manager::ReauthPurpose purpose) {
 
   // Pass kAuthorizationFlagDestroyRights to prevent the OS from saving the
   // authorization and not prompting the user when future requests are made.
-  base::mac::ScopedAuthorizationRef authorization(
+  base::mac::ScopedAuthorizationRef authorization =
       base::mac::GetAuthorizationRightsWithPrompt(
           &rights, base::mac::NSToCFCast(prompt),
-          kAuthorizationFlagDestroyRights));
-  return authorization.get() != NULL;
+          kAuthorizationFlagDestroyRights);
+  return authorization.get() != nullptr;
 }
 
 std::u16string GetMessageForBiometricLoginPrompt(

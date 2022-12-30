@@ -266,8 +266,8 @@ void SetupSystemUpdater() {
   NSString* prompt = l10n_util::GetNSStringFWithFixup(
       IDS_PROMOTE_AUTHENTICATION_PROMPT,
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-  base::mac::ScopedAuthorizationRef authorization(
-      base::mac::AuthorizationCreateToRunAsRoot(base::mac::NSToCFCast(prompt)));
+  base::mac::ScopedAuthorizationRef authorization =
+      base::mac::AuthorizationCreateToRunAsRoot(base::mac::NSToCFCast(prompt));
   if (!authorization.get()) {
     VLOG(0) << "Could not get authorization to run as root.";
     return;

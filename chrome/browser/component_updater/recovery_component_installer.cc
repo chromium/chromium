@@ -203,8 +203,8 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
   options.elevated = true;
   base::Process process = base::LaunchProcess(cmdline, options);
 #elif BUILDFLAG(IS_MAC)
-  base::mac::ScopedAuthorizationRef authRef(
-      base::mac::AuthorizationCreateToRunAsRoot(nullptr));
+  base::mac::ScopedAuthorizationRef authRef =
+      base::mac::AuthorizationCreateToRunAsRoot(nullptr);
   if (!authRef.get()) {
     RecordRecoveryComponentUMAEvent(RCE_ELEVATED_FAILED);
     return;

@@ -89,8 +89,8 @@ bool RunHelperAsRoot(const std::string& command,
   NSString* prompt = l10n_util::GetNSStringFWithFixup(
       IDS_HOST_AUTHENTICATION_PROMPT,
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-  base::mac::ScopedAuthorizationRef authorization(
-      base::mac::AuthorizationCreateToRunAsRoot(base::mac::NSToCFCast(prompt)));
+  base::mac::ScopedAuthorizationRef authorization =
+      base::mac::AuthorizationCreateToRunAsRoot(base::mac::NSToCFCast(prompt));
   if (!authorization.get()) {
     LOG(ERROR) << "Failed to obtain authorizationRef";
     return false;

@@ -160,9 +160,9 @@ extern NSString* const kAutoupdateStatusErrorMessages;
 // Promotes the Keystone ticket into the system store.  System Keystone will
 // be installed if necessary.  If synchronous is NO, the promotion may occur
 // in the background.  synchronous should be YES for promotion during
-// installation. The KeystoneGlue object assumes ownership of
-// |anAuthorization|.
-- (void)promoteTicketWithAuthorization:(AuthorizationRef)anAuthorization
+// installation.
+- (void)promoteTicketWithAuthorization:
+            (base::mac::ScopedAuthorizationRef)authorization
                            synchronous:(BOOL)synchronous;
 
 // Requests authorization and calls -promoteTicketWithAuthorization: in
