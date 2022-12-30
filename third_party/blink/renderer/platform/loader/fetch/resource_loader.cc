@@ -968,8 +968,8 @@ bool ResourceLoader::WillFollowRedirect(
   if (PermitRecordReplayBrowserEvents()) {
     // The redirect has not been cancelled.  Notify RecordReplay netmonitor.
     base::DictionaryValue dict;
-    dict.SetDouble("identifier",
-                   (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
+    dict.SetDoubleKey("identifier",
+                      (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
     dict.SetString("requestUrl", new_request->Url().GetString().Utf8());
 
     base::ListValue headers;

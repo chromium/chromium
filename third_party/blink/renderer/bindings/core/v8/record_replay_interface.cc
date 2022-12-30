@@ -2978,7 +2978,7 @@ v8::MaybeLocal<v8::Value> convertCborToJSTempl(v8::Isolate* isolate,
     if (!errorMessage.length()) {
       auto jsonStr =
           v8::String::NewFromOneByte(isolate, json.data(),
-                                    v8::NewStringType::kNormal, json.size())
+                                     v8::NewStringType::kNormal, (int)json.size())
               .ToLocalChecked();
       // see https://stackoverflow.com/a/23688325
       auto context = isolate->GetCurrentContext();
@@ -3192,7 +3192,7 @@ static void fromJsMakeDebuggeeValue(
     v8_crdtp::json::ConvertCBORToJSON(v8_crdtp::SpanFrom(cbor), &json);
     auto remoteObjectJsonStr =
         v8::String::NewFromOneByte(isolate, json.data(),
-                                   v8::NewStringType::kNormal, json.size())
+                                   v8::NewStringType::kNormal, (int)json.size())
             .ToLocalChecked();
     auto s = ToCoreString(remoteObjectJsonStr);
 
@@ -3391,12 +3391,12 @@ static void HandleNetworkResourceRedirectEvent(const base::DictionaryValue& info
   // The request_method is obtained from the saved request info.
   base::DictionaryValue event;
   event.SetString("kind", "request");
-  event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->DeepCopy()));
+  event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->CreateDeepCopy()));
   event.SetString("requestMethod", request_info->second.method);
-  event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->DeepCopy()));
+  event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->CreateDeepCopy()));
   const base::Value* request_cause_value = info.FindPath("requestCause");
   if (request_cause_value) {
-    event.Set("requestCause", std::unique_ptr<base::Value>(request_cause_value->DeepCopy()));
+    event.Set("requestCause", std::unique_ptr<base::Value>(request_cause_value->CreateDeepCopy()));
   }
 
   gCurrentNetworkRequestEvent = &event;
@@ -3428,9 +3428,9 @@ static void HandleNetworkNavigationEvent(const base::DictionaryValue& info) {
   // Package and emit a network request event.
   base::DictionaryValue event;
   event.SetString("kind", "request");
-  event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->DeepCopy()));
+  event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->CreateDeepCopy()));
   event.SetString("requestMethod", request_method);
-  event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->DeepCopy()));
+  event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->CreateDeepCopy()));
   event.SetString("requestCause", "document");
 
   gCurrentNetworkRequestEvent = &event;
@@ -3462,9 +3462,9 @@ static void HandleNetworkNavigationRedirectEvent(const base::DictionaryValue& in
   // The request method is obtained from the saved request info.
   base::DictionaryValue event;
   event.SetString("kind", "request");
-  event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->DeepCopy()));
+  event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->CreateDeepCopy()));
   event.SetString("requestMethod", request_info->second.method);
-  event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->DeepCopy()));
+  event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->CreateDeepCopy()));
   event.SetString("requestCause", "document");
 
   gCurrentNetworkRequestEvent = &event;
@@ -3759,7 +3759,7 @@ static void fromJsGetMatchedStylesForNode(
 
   auto response = cssAgent->getMatchedStylesForNode(
       nodeId, &inlineStyle, &attributesStyle, &matchedRules,
-      &pseudoIdMatches, &inheritedEntries, &keyframesRules);
+      &pseudoIdMatches, &inheritedEntries, nullptr, &keyframesRules, nullptr);
 
   // WIP: will fix everything up and clean up when done w/ RUN-981
 
@@ -3814,7 +3814,7 @@ static void fromJsCssGetStylesheetByCpdId(
   if (styleSheet) {
     v8::Local<v8::Value> jsStyleSheet;
     ScriptState* scriptState = ScriptState::Current(isolate);
-    if (styleSheet->WrapV2(scriptState).ToLocal(&jsStyleSheet)) {
+    if (styleSheet->Wrap(scriptState).ToLocal(&jsStyleSheet)) {
       args.GetReturnValue().Set(jsStyleSheet);
       return;
     }
