@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
 <meta charset="utf-8" />
+<meta name="timeout" content="long">
 <title>This test validates the response status of resources.</title>
 <link rel="help" href="https://www.w3.org/TR/resource-timing-2/#sec-performanceresourcetiming"/>
 <script src="/resources/testharness.js"></script>
@@ -40,7 +41,9 @@ for(const loader of [
   load_null_object
 ]) {
   for(const status of status_codes) {
-    const path = `/resource-timing/resources/empty.js?pipe=status(${status})`;
+    let path = (loader == load.font) ? '/fonts/pass.woff' :
+                                       '/resource-timing/resources/empty.js';
+    path += `?pipe=status(${status})`;
     attribute_test(
       loader, new URL(path, ORIGIN),
       entry => {
@@ -89,10 +92,11 @@ for(const loader of [
 ]) {
   for(const tao of [false, true]) {
     for(const status of status_codes) {
-      let path = `/resource-timing/resources/empty.js?pipe=status(${status})`;
-      path += `|header(access-control-allow-origin, *})`;
+      let path = (loader == load.font) ? '/fonts/pass.woff' :
+                                         '/resource-timing/resources/empty.js';
+      path += `?pipe=status(${status})`;
       if (tao) {
-        path += `|header(timing-allow-origin, *})`;
+        path += `|header(timing-allow-origin, *)`;
       }
       attribute_test(
         loader, new URL(path, REMOTE_ORIGIN),
