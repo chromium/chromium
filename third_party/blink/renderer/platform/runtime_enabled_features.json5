@@ -2553,7 +2553,6 @@
     {
       name: "SkipAd",
       depends_on: ["MediaSession"],
-      origin_trial_feature_name: "SkipAd",
       status: "experimental",
     },
     {
