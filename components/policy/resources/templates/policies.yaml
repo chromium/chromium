@@ -1053,6 +1053,7 @@ policies:
   1052: AppStoreRatingEnabled
   1053: KerberosUseCustomPrefilledConfig
   1054: DeviceHindiInscriptLayoutEnabled
+  1055: DeviceLoginScreenExtensionManifestV2Availability
 atomic_groups:
   1: Homepage
   2: RemoteAccess

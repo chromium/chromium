@@ -1111,6 +1111,11 @@ message DeviceLoginScreenExtensionsProto {
   repeated string device_login_screen_extensions = 1;
 }
 
+// A boolean indicate if manifest v2 extension is available.
+message LoginScreenExtensionManifestV2AvailabilityProto {
+  optional bool login_screen_extension_manifest_v2_availability = 1;
+}
+
 // A list of allowed locales on the login screen.
 message LoginScreenLocalesProto {
   repeated string login_screen_locales = 1;
@@ -1913,4 +1918,6 @@ message ChromeDeviceSettingsProto {
   optional KeyboardBacklightColorProto keyboard_backlight_color = 139;
   optional DeviceHindiInscriptLayoutEnabledProto
       device_hindi_inscript_layout_enabled = 140;
+  optional LoginScreenExtensionManifestV2AvailabilityProto
+      login_screen_extension_manifest_v2_availability = 141;
 }
