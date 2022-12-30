@@ -1,8 +1,14 @@
 package com.ark.browser.utils;
 
+import android.content.Context;
+
 import com.zpj.utils.FileUtils;
 
 import org.chromium.chrome.R;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 public class FileUtil {
 
@@ -40,6 +46,30 @@ public class FileUtil {
             return R.drawable.wechat_icon_txt;
         }
         return R.drawable.wechat_icon_others;
+    }
+
+    public static void copyAssetsFile(Context myContext, String ASSETS_NAME, String filename) {
+        try {
+            File file = new File(filename);
+            if (file.exists()) {
+                file.delete();
+            }
+            InputStream is = myContext.getResources().getAssets().open(ASSETS_NAME);
+            FileOutputStream fos = new FileOutputStream(filename);
+            byte[] buffer = new byte[7168];
+            while (true) {
+                int count = is.read(buffer);
+                if (count > 0) {
+                    fos.write(buffer, 0, count);
+                } else {
+                    fos.close();
+                    is.close();
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

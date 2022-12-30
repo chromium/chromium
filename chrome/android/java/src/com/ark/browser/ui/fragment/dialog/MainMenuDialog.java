@@ -14,6 +14,7 @@ import com.ark.browser.ui.dialog.DownloadManagerDialog;
 import com.ark.browser.ui.dialog.HistoryManagerDialog;
 import com.ark.browser.ui.fragment.collection.CollectionFragment;
 import com.ark.browser.ui.fragment.download.DownloadFragment;
+import com.ark.browser.ui.fragment.manager.ManagerFragment;
 import com.ark.browser.ui.fragment.settings.SettingsFragment;
 import com.ark.browser.ui.widget.DrawableTintTextView;
 import com.ark.browser.utils.SkinChangeAnimation;
@@ -148,7 +149,7 @@ public class MainMenuDialog extends OverDragBottomDialogFragment<MainMenuDialog>
         } else if (R.id.tv_download == id) {
             start(DownloadFragment.newInstance(true));
         } else if (R.id.tv_manager == id) {
-//            new ManagerFragment().show(context);
+            start(new ManagerFragment());
         } else if (R.id.tv_exit == id) {
             new ExitDialog().show(context);
         }

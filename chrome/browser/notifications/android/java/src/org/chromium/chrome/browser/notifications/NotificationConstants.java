@@ -144,7 +144,7 @@ public class NotificationConstants {
      * developer specified tag. This and the prefix following it need to be the same as the one
      * specified in notification_id_generator.cc.
      */
-    static final String NOTIFICATION_TAG_SEPARATOR = "#";
+    public static final String NOTIFICATION_TAG_SEPARATOR = "#";
     static final String PERSISTENT_NOTIFICATION_TAG_PREFIX = "p";
 
     /**

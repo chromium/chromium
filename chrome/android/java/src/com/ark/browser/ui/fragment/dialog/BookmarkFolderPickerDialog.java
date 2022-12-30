@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -229,7 +230,7 @@ public class BookmarkFolderPickerDialog extends OverDragBottomDialogFragment<Boo
     private void getBookmarkFolderTree(TreeMultiData parent, int index) {
         BookmarkId id = parent.getBookmarkId();
         for (BookmarkItem child : mBookmarkModel.getBookmarksForFolder(id)) {
-            if (child.isFolder()) {
+            if (child.isFolder() && !TextUtils.isEmpty(child.getTitle())) {
                 if (!mBookmarkModel.isFolderVisible(child.getId())) continue;
                 child.getId().setParentFolder(id);
                 TreeMultiData childNode = new TreeMultiData(parent, child.getId());

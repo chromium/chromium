@@ -107,4 +107,15 @@
         <item name="app:z_setting_rightTextColor">?attr/textColorNormal</item>
     </style>
 
+    <style name="layout_manager_item">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="app:layout_columnWeight">1</item>
+        <item name="app:hl_cornerRadius">8dp</item>
+        <item name="app:hl_shadowLimit">4dp</item>
+        <!--        <item name="hl_shadowColor">@color/white_alpha_50</item>-->
+        <item name="app:hl_shadowBackColor">@color/white_alpha_70</item>
+    </style>
+
 </resources>

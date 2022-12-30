@@ -1,0 +1,348 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_manager"
+    >
+
+    <com.ark.browser.ui.widget.particle.ParticleView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:pv_min_size="180"
+        app:pv_alpha="120"
+        app:pv_max_size="360"
+        app:pv_count="8"
+        app:pv_color="@color/colorPrimary"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="100dp"
+        android:orientation="vertical"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="千寻浏览器"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:layout_gravity="center_horizontal"
+            android:textStyle="bold"
+            android:padding="8dp"
+            />
+
+    </LinearLayout>
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        >
+
+        <androidx.gridlayout.widget.GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:rowCount="3"
+            app:columnCount="2"
+            android:padding="4dp"
+            android:layout_gravity="bottom"
+            >
+
+            <com.ark.browser.ui.widget.ShadowLayout
+                android:id="@+id/item_cleaner"
+                style="@style/layout_manager_item"
+                >
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="20dp"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/menu_icon_garbage_normal"
+                        android:layout_marginBottom="10dp"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="垃圾清理"
+                        android:textSize="16sp"
+                        android:textColor="@color/google_black_400"
+                        android:paddingBottom="2dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="浏览器很干净，无需清理"
+                        android:textSize="10sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                </LinearLayout>
+
+            </com.ark.browser.ui.widget.ShadowLayout>
+
+            <com.ark.browser.ui.widget.ShadowLayout
+                android:id="@+id/item_permission"
+                style="@style/layout_manager_item"
+                >
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="20dp"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/menu_icon_appmanager_normal"
+                        android:layout_marginBottom="10dp"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="权限管理"
+                        android:textSize="16sp"
+                        android:textColor="@color/google_black_400"
+                        android:padding="2dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="管理网页的权限"
+                        android:textSize="10sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                </LinearLayout>
+
+            </com.ark.browser.ui.widget.ShadowLayout>
+
+            <com.ark.browser.ui.widget.ShadowLayout
+                android:id="@+id/item_network"
+                style="@style/layout_manager_item"
+                >
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="20dp"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/menu_icon_net_safe_normal"
+                        android:layout_marginBottom="10dp"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="网络管理"
+                        android:textSize="16sp"
+                        android:textColor="@color/google_black_400"
+                        android:padding="2dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="网络设置与省流管理"
+                        android:textSize="10sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                </LinearLayout>
+
+            </com.ark.browser.ui.widget.ShadowLayout>
+
+            <com.ark.browser.ui.widget.ShadowLayout
+                android:id="@+id/item_ads_blocker"
+                style="@style/layout_manager_item"
+                >
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="20dp"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/menu_icon_virus_safe_normal"
+                        android:layout_marginBottom="10dp"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="广告拦截"
+                        android:textSize="16sp"
+                        android:textColor="@color/google_black_400"
+                        android:padding="2dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="网页广告拦截与管理"
+                        android:textSize="10sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                </LinearLayout>
+
+            </com.ark.browser.ui.widget.ShadowLayout>
+
+            <com.ark.browser.ui.widget.ShadowLayout
+                android:id="@+id/item_addon"
+                style="@style/layout_manager_item"
+                >
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="20dp"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/menu_icon_power_safe_normal"
+                        android:layout_marginBottom="10dp"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="插件管理"
+                        android:textSize="16sp"
+                        android:textColor="@color/google_black_400"
+                        android:padding="2dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="管理安装的插件"
+                        android:textSize="10sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                </LinearLayout>
+
+            </com.ark.browser.ui.widget.ShadowLayout>
+
+            <com.ark.browser.ui.widget.ShadowLayout
+                android:id="@+id/item_script"
+                style="@style/layout_manager_item"
+                >
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="20dp"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/menu_icon_power_safe_normal"
+                        android:layout_marginBottom="10dp"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="脚本管理"
+                        android:textSize="16sp"
+                        android:textColor="@color/google_black_400"
+                        android:padding="2dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="管理"
+                        android:textSize="10sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                </LinearLayout>
+
+            </com.ark.browser.ui.widget.ShadowLayout>
+
+
+        </androidx.gridlayout.widget.GridLayout>
+
+    </ScrollView>
+
+    <com.zpj.widget.toolbar.ZToolBar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:z_toolbar_fillStatusBar="true"
+        app:z_toolbar_isLightStyle="true"
+        app:z_toolbar_statusBarColor="@color/transparent"
+        app:z_toolbar_titleBarColor="@color/transparent"
+        app:z_toolbar_leftType="imageButton"
+        app:z_toolbar_leftImageResource="@drawable/btn_back"
+        app:z_toolbar_centerType="textView"
+        app:z_toolbar_centerText="浏览器管家"
+        />
+
+</FrameLayout>

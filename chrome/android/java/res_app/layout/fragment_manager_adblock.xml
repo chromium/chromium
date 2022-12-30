@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    >
+
+    <include
+        layout="@layout/layout_header"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/ic_launcher"
+                    />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="18"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:layout_gravity="center"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="已拦截广告"
+                        android:layout_gravity="center"
+                        android:textColor="@color/white"
+                        />
+
+                </LinearLayout>
+
+
+
+            </FrameLayout>
+
+            <com.zpj.widget.setting.SwitchSettingItem
+                android:id="@+id/item_block_ads"
+                style="@style/setting_item_style"
+                app:z_setting_titleText="广告拦截"
+                />
+
+            <com.zpj.widget.setting.SwitchSettingItem
+                android:id="@+id/item_block_ads_tip"
+                style="@style/setting_item_style"
+                app:z_setting_titleText="广告拦截提示"
+                />
+
+            <com.zpj.widget.setting.CommonSettingItem
+                android:id="@+id/item_domain_rules"
+                style="@style/setting_item_style"
+                app:z_setting_titleText="域名规则"
+                />
+
+            <com.zpj.widget.setting.CommonSettingItem
+                android:id="@+id/item_dom_rules"
+                style="@style/setting_item_style"
+                app:z_setting_titleText="DOM规则"
+                />
+
+            <com.zpj.widget.setting.CommonSettingItem
+                android:id="@+id/item_abp_rules"
+                style="@style/setting_item_style"
+                app:z_setting_titleText="ABP规则"
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

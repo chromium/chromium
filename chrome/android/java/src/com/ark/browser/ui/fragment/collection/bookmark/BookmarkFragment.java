@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,8 +61,11 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 
 public class BookmarkFragment extends CollectionChildFragment
@@ -101,20 +105,6 @@ public class BookmarkFragment extends CollectionChildFragment
         public void bookmarkModelChanged() {
             Log.d(TAG, "bookmarkModelChanged");
             refresh();
-        }
-    };
-
-    private final Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            mRecycler.setItems(bookmarkModel.getBookmarksForFolder(getCurrentFolder()));
-            postOnEnterAnimationEnd(() -> {
-                if (editBtn != null) {
-                    editBtn.setClickable(!mRecycler.isEmpty());
-                    SkinEngine.setTextColor(editBtn, mRecycler.isEmpty() ? R.attr.textColorMinor : R.attr.textColorMajor);
-                }
-                mRecycler.notifyDataSetChanged();
-            });
         }
     };
 
@@ -382,8 +372,46 @@ public class BookmarkFragment extends CollectionChildFragment
 
     private void refresh() {
         mRecycler.clearSelectedPosition();
-//        ThreadPool.execute(runnable);
-        runnable.run();
+        bookmarkModel.getBookmarksForFolder(getCurrentFolder(), new BookmarkBridge.BookmarksCallback() {
+            @Override
+            public void onBookmarksAvailable(BookmarkId folderId, List<BookmarkItem> bookmarksList) {
+                ThreadPool.execute(() -> {
+                    Collections.sort(bookmarksList, (item1, item2) -> {
+                        if (item1.isFolder() && !item2.isFolder()) {
+                            return -1;
+                        } else if (item2.isFolder() && !item1.isFolder()) {
+                            return 1;
+                        }
+                        return Long.compare(item2.getId().getId(), item1.getId().getId());
+                    });
+                    ListIterator<BookmarkItem> it = bookmarksList.listIterator();
+                    while (it.hasNext()) {
+                        BookmarkItem item = it.next();
+                        if (item.isFolder() && TextUtils.isEmpty(item.getTitle())) {
+                            it.remove();
+                        }
+                        if (!item.isFolder()) {
+                            break;
+                        }
+                    }
+
+                    postOnEnterAnimationEnd(() -> {
+                        if (editBtn != null) {
+                            editBtn.setClickable(!mRecycler.isEmpty());
+                            SkinEngine.setTextColor(editBtn, mRecycler.isEmpty() ? R.attr.textColorMinor : R.attr.textColorMajor);
+                        }
+                        mRecycler.setItems(bookmarksList);
+                        mRecycler.notifyDataSetChanged();
+                    });
+                });
+            }
+
+            @Override
+            public void onBookmarksFolderHierarchyAvailable(BookmarkId folderId, List<BookmarkItem> bookmarksList) {
+
+            }
+        });
+
     }
 
     @Override

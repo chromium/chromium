@@ -91,6 +91,15 @@
         <attr name="right_text_color" format="color"/>
     </declare-styleable>
 
+    <declare-styleable name="ParticleView">
+        <attr name="pv_count" format="integer" />
+        <attr name="pv_alpha" format="integer" />
+        <attr name="pv_min_size" format="integer" />
+        <attr name="pv_max_size" format="integer" />
+        <attr name="pv_color" format="color" />
+        <attr name="pv_background" format="reference" />
+    </declare-styleable>
+
     <attr name="backgroundColor" format="color" />
     <attr name="backgroundColorDark" format="color" />
     <attr name="backgroundColorAccent" format="color" />

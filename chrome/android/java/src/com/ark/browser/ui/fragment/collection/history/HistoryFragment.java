@@ -224,6 +224,8 @@ public class HistoryFragment extends CollectionChildFragment
                             historyProvider.markItemForRemoval(item);
                         }
                         historyProvider.removeItems();
+                        mRecycler.removeItems(mRecycler.getSelectedItem());
+                        mRecycler.notifyDataSetChanged();
                     })
                     .show(context);
         }

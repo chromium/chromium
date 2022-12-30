@@ -22,7 +22,7 @@
             android:textSize="14sp"
             android:textStyle="bold"
             android:paddingStart="16dp"
-            android:drawableStart="@drawable/ic_sync_on_48dp"
+            android:drawableStart="@drawable/ic_turn_off_sync_48dp"
             android:textColor="?attr/textColorMajor"
             app:drawable_tint_color="?attr/textColorMajor"
             />
