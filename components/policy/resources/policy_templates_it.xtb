@@ -1013,11 +1013,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="1980777339173013601">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono utilizzare ARC, a meno che ARC sia stato disattivato in altri modi. Se il criterio è impostato su false, gli utenti non affiliati non possono utilizzare ARC.
 
       Le modifiche al criterio vengono applicate solo mentre ARC non è in esecuzione, ad esempio durante l'avvio di ChromeOS.</translation>
-<translation id="1982507511322683896">Consente di specificare la configurazione <ph name="KRB5_CONFIG" /> suggerita per i nuovi ticket creati manualmente.
-
-      Se il criterio "KerberosUseCustomPrefilledConfig" viene attivato, il valore del criterio viene applicato come configurazione suggerita e viene mostrato nella sezione "Avanzate" della finestra di dialogo dell'autenticazione Kerberos. Se il criterio viene impostato su una stringa vuota o se non viene configurato, viene eliminata la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata. Se questo criterio non viene configurato avverrà la stessa cosa.
-
-      Se il criterio "KerberosUseCustomPrefilledConfig" viene disattivato, il valore di questo criterio non viene usato.</translation>
 <translation id="1985598967415986700">La riduzione dello user agent sarà controllabile tramite Field-Trials e Origin-Trials.</translation>
 <translation id="1987789058026551147">Attiva i report sulle sessioni kiosk del dispositivo</translation>
 <translation id="1988345404999458987">Consente di specificare le configurazioni dei server di stampa disponibili.

@@ -139,7 +139,6 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="1718835860248848330">Azken ordukoak</translation>
 <translation id="1724977129262658800">Pasahitza editatzeko, desblokeatu gailua</translation>
 <translation id="1726477445370128854">Ustez bisitatuko dituzun orriak aurrez kargatzen baditu Chrome-k, azkarrago arakatu ahalko dituzu webguneak, bai eta bilaketak bizkorrago egin ere.</translation>
-<translation id="173522743738009831">Privacy Sandbox-ari buruz</translation>
 <translation id="1736419249208073774">Arakatu</translation>
 <translation id="1749561566933687563">Sinkronizatu laster-markak</translation>
 <translation id="1750259112639922169">Fitxa taldea (<ph name="TAB_COUNT" /> fitxa)</translation>
@@ -318,9 +317,7 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundo gelditzen dira</translation>
 <translation id="2779651927720337254">huts egin du</translation>
 <translation id="2781151931089541271">Segundo bat gelditzen da</translation>
-<translation id="2788468313014644040">Taldearen zenbakia</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> izeneko fitxa itxi egingo da</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Ikusi eta kudeatu <ph name="BEGIN_LINK" />Google-ko kontuan<ph name="END_LINK" /> gordetako pasahitzak</translation>
 <translation id="2818669890320396765">Laster-markak gailu guztietan izateko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="2827278682606527653">Jarioko txartelaren menua altuera erdian irekita dago</translation>
@@ -441,7 +438,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="3384347053049321195">Partekatu irudia</translation>
 <translation id="3387650086002190359">Ezin izan da deskargatu <ph name="FILE_NAME" />, fitxategi-sisteman erroreak daudelako.</translation>
 <translation id="3389286852084373014">Testua luzeegia da</translation>
-<translation id="3391512812407811893">Privacy Sandbox-aren probaldiak</translation>
 <translation id="3398320232533725830">Ireki laster-marken kudeatzailea</translation>
 <translation id="3407392651057365886">Orri gehiago kargatzen dira aurrez. Baliteke orriak Google-ren zerbitzarien bidez aurrez kargatzea beste webgune batzuek hala eskatzen dutenean.</translation>
 <translation id="3414952576877147120">Tamaina:</translation>
@@ -913,10 +909,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6000203700195075278">Jarraitu berriro</translation>
 <translation id="6002122790816966947">Zure gailuak</translation>
 <translation id="6005538289190791541">Iradokitako pasahitza</translation>
-<translation id="6032091552407840792"><ph name="BEGIN_LINK" />Lurralde batzuetan<ph name="END_LINK" /> soilik dago aktibo probaldia.</translation>
-<translation id="6033245666633565791"><ph name="BEGIN_LINK" />Privacy Sandbox-arekin<ph name="END_LINK" />, Chrome teknologia berriak garatzen ari da sare irekia mantendu bitartean zu webguneen arteko jarraipenetik babesteko.
-
-Privacy Sandbox-eko probaldiak garapen-prozesuan daude oraindik eta lurralde jakin batzuetan baino ezin dira egin. Oraingoz, une honetako web-teknologiak (hirugarrenen cookieak, kasu) erabiltzen jarraitzen duten bitartean probatu ahal izango dute webguneek Privacy Sandbox-a.</translation>
 <translation id="6039379616847168523">Saltatu hurrengo fitxara</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="604124094241169006">Automatikoa</translation>
@@ -1248,7 +1240,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7791543448312431591">Gehitu</translation>
 <translation id="7798392620021911922">Leheneratu egin dira <ph name="TAB_COUNT" /> fitxa</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
-<translation id="7805768142964895445">Egoera</translation>
 <translation id="7808889146555843082">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="SITE" /> webguneko kontua. <ph name="SITE" /> domeinuko kontua babestuta mantentzeko, ezaba ezazu edo alda iezaiozu pasahitza.</translation>
 <translation id="7810647596859435254">Ireki honekin…</translation>
 <translation id="7815484226266492798">Orri osoaren pantaila-argazkia</translation>
@@ -1382,11 +1373,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8461694314515752532">Enkriptatu sinkronizatutako datuak sinkronizazio-pasaesaldiarekin</translation>
 <translation id="8466613982764129868">Ziurtatu <ph name="TARGET_DEVICE_NAME" /> Internetera konektatuta dagoela</translation>
 <translation id="8473863474539038330">Helbideak eta beste</translation>
-<translation id="8481921391193215807">Aktibatuta dagoenean, hemen agertzen diren pribatutasuna babesteko teknikak erabil ditzakete webguneek haien edukia eta zerbitzuak eskaintzeko. Besteak beste, webguneen arteko jarraipenaren ordezko aukerak hartzen dira barnean. Litekeena da beste probaldi batzuk gehitzea denborak aurrera egin ahala.
-
-<ph name="BEGIN_LIST_ITEM1" />Iragarleek eta argitaratzaileek FLoC teknika erabil dezakete.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Iragarleek eta argitaratzaileek iragarkien eraginkortasuna azter dezakete, webguneetan zure jarraipena egin beharrik gabe.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Probako eginbideak aktibatuta daude</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Ireki historiaren orria</translation>
@@ -1432,9 +1418,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8664979001105139458">Badago izen hori duen fitxategi bat</translation>
 <translation id="8666759526542103597">Iragarkiak arakatzailean oinarrituta pertsonalizatzeari buruz</translation>
 <translation id="8676789164135894283">Saioa hasteko egiaztapenak</translation>
-<translation id="867767487203716855">Hurrengo eguneratzea</translation>
 <translation id="8683039184091909753">irudia</translation>
-<translation id="8683081248374354009">Berrezarri taldea</translation>
 <translation id="869891660844655955">Iraungitze-data</translation>
 <translation id="8699120352855309748">Ez eskaini hizkuntza hauek itzultzea</translation>
 <translation id="8712637175834984815">Ados</translation>

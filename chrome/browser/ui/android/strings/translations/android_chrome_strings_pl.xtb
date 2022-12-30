@@ -139,7 +139,6 @@ Jeśli usuniesz swoją historię przeglądania – całą lub dotyczącą okre�
 <translation id="1718835860248848330">Ostatnia godzina</translation>
 <translation id="1724977129262658800">Odblokuj, aby edytować hasło</translation>
 <translation id="1726477445370128854">Przeglądanie i wyszukiwanie działa szybciej, gdy Chrome wstępnie wczytuje strony, które przewiduje, że możesz odwiedzić</translation>
-<translation id="173522743738009831">Piaskownica prywatności – informacje</translation>
 <translation id="1736419249208073774">Odkrywaj</translation>
 <translation id="1749561566933687563">Synchronizuj swoje zakładki</translation>
 <translation id="1750259112639922169">Grupa <ph name="TAB_COUNT" /> kart</translation>
@@ -318,9 +317,7 @@ Tokeny prywatności zwiększają prywatność w sieci i nie można za ich pomo
 <translation id="2777555524387840389">Pozostało: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">Nie pobrano</translation>
 <translation id="2781151931089541271">Pozostała sekunda</translation>
-<translation id="2788468313014644040">Numer grupy</translation>
 <translation id="2800066122460699237">Zostanie zamknięta karta <ph name="TAB_TITLE" /></translation>
-<translation id="2806840421670364300">Sfederowane uczenie się kohort</translation>
 <translation id="281504910091592009">Zapisane hasła znajdziesz na swoim <ph name="BEGIN_LINK" />koncie Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Aby korzystać ze swoich zakładek na wszystkich urządzeniach, zaloguj się i włącz synchronizację</translation>
 <translation id="2827278682606527653">Menu karty kanału – połowa wysokości</translation>
@@ -441,7 +438,6 @@ Tokeny prywatności zwiększają prywatność w sieci i nie można za ich pomo
 <translation id="3384347053049321195">Udostępnij zdjęcie</translation>
 <translation id="3387650086002190359">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu błędów systemu plików.</translation>
 <translation id="3389286852084373014">Tekst jest za długi</translation>
-<translation id="3391512812407811893">Wersje próbne w Piaskownicy prywatności</translation>
 <translation id="3398320232533725830">Otwórz menedżera zakładek</translation>
 <translation id="3407392651057365886">Wczytywanych jest więcej stron. Serwery Google mogą wstępnie wczytywać strony, gdy żądają tego inne witryny.</translation>
 <translation id="3414952576877147120">Rozmiar:</translation>
@@ -913,10 +909,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="6000203700195075278">Ponownie dodaj do obserwowanych</translation>
 <translation id="6002122790816966947">Twoje urządzenia</translation>
 <translation id="6005538289190791541">Proponowane hasło</translation>
-<translation id="6032091552407840792">Wersja próbna jest dostępna tylko w <ph name="BEGIN_LINK" />niektórych regionach<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">W ramach <ph name="BEGIN_LINK" />Piaskownicy prywatności<ph name="END_LINK" /> Chrome rozwija nowe technologie chroniące przed śledzeniem w różnych witrynach przy zachowaniu otwartego charakteru internetu.
-
-Prace nad rozwojem Piaskownicy prywatności wciąż trwają, więc wersja próbna jest dostępna w wybranych regionach. Teraz witryny mogą ją wypróbować, korzystając nadal z obecnie stosowanych technologii sieciowych takich jak pliki cookie innych firm.</translation>
 <translation id="6039379616847168523">Przejdź do następnej karty</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="604124094241169006">Automatyczne</translation>
@@ -1248,7 +1240,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Liczba przywróconych kart: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
-<translation id="7805768142964895445">Stan</translation>
 <translation id="7808889146555843082">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="SITE" />. Aby uniemożliwić innym osobom dostęp do konta w serwisie <ph name="SITE" />, usuń je lub zmień do niego hasło.</translation>
 <translation id="7810647596859435254">Otwórz za pomocą…</translation>
 <translation id="7815484226266492798">Długi zrzut ekranu</translation>
@@ -1382,11 +1373,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8461694314515752532">Szyfruj synchronizowane dane własnym hasłem synchronizacji</translation>
 <translation id="8466613982764129868">Sprawdź, czy <ph name="TARGET_DEVICE_NAME" /> ma połączenie z internetem</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
-<translation id="8481921391193215807">Gdy włączysz tę funkcję, witryny będą mogły dostarczać swoje treści i usługi, używając wymienionych tu technik chroniących prywatność. Obejmują one rozwiązania alternatywne dla śledzenia w witrynach. Z czasem może pojawić się więcej wersji próbnych.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklamodawcy i wydawcy mogą korzystać ze sfederowanego uczenia się kohort (FLoC).<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklamodawcy i wydawcy mogą analizować skuteczność reklam, stosując metody niewymagające śledzenia Cię w witrynach.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Funkcje próbne są włączone</translation>
 <translation id="8485434340281759656"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8489271220582375723">Otwórz stronę historii</translation>
@@ -1432,9 +1418,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8664979001105139458">Ta nazwa pliku już istnieje</translation>
 <translation id="8666759526542103597">O personalizacji reklam na podstawie informacji z przeglądarki.</translation>
 <translation id="8676789164135894283">Weryfikacje logowania</translation>
-<translation id="867767487203716855">Następna aktualizacja</translation>
 <translation id="8683039184091909753">obraz</translation>
-<translation id="8683081248374354009">Resetuj grupę</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
 <translation id="8712637175834984815">Rozumiem</translation>

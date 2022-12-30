@@ -121,7 +121,6 @@
 <translation id="3038232873781883849">설치 대기 중...</translation>
 <translation id="3059710691562604940">세이프 브라우징이 사용 중지되어 있습니다. 사용 설정하는 것이 좋습니다.</translation>
 <translation id="3065168410429928842">Chrome 탭</translation>
-<translation id="3069821012350118710">내가 방문한 사이트에서는 Chrome을 종료할 때까지 내 정보를 기억합니다.</translation>
 <translation id="3080151273017101988">Chrome 종료 후에도 백그라운드 앱을 계속 실행</translation>
 <translation id="3089968997497233615">새롭고 안전한 Chrome의 새 버전을 사용할 수 있습니다.</translation>
 <translation id="3100998948628680988">Chrome 프로필 이름 지정</translation>
@@ -253,7 +252,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5804318322022881572">Chrome을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="5867197326698922595">Chrome에서 비밀번호를 수정하려고 합니다.</translation>
 <translation id="5895138241574237353">다시 시작</translation>
-<translation id="5901850848447342934">Chrome을 종료하면 <ph name="BEGIN_BOLD" />대부분의 사이트에서 로그아웃<ph name="END_BOLD" />됩니다. 동기화를 사용 중지하면 <ph name="BEGIN_BOLD" />Google 서비스 및 Chrome에서도 로그아웃<ph name="END_BOLD" />됩니다.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 네트워크 로그인</translation>
 <translation id="5924017743176219022">인터넷에 연결 중...</translation>
 <translation id="5940385492829620908">웹, 북마크 및 기타 Chrome 콘텐츠가 여기에 저장됩니다.</translation>
@@ -390,7 +388,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8614913330719544658">Chrome이 응답하지 않습니다. 다시 시작하시겠습니까?</translation>
 <translation id="861702415419836452">Chrome에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
 <translation id="8625237574518804553">{0,plural, =1{1분 후 Chrome이 다시 시작됩니다}other{#분 후 Chrome이 다시 시작됩니다}}</translation>
-<translation id="8629311577791198377">모든 Chrome 창을 닫으면 쿠키와 사이트 데이터가 자동으로 삭제됩니다.</translation>
 <translation id="8641606876632989680">유출된 비밀번호로 로그인하면 Chrome에서 알림을 표시함</translation>
 <translation id="8649026945479135076">방문하는 사이트에서는 일반적으로 사용 경험을 개인화하기 위해 내가 관심을 보인 항목을 기억합니다. 또한 사이트에서는 내 관심분야에 관한 정보를 Chrome에 저장할 수 있습니다.</translation>
 <translation id="8669527147644353129">Chrome 도우미</translation>

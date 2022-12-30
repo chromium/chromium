@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">Изминатиот час</translation>
 <translation id="1724977129262658800">Отклучете за да ја измените лозинката</translation>
 <translation id="1726477445370128854">Може да прелистувате и да пребарувате побрзо кога Chrome однапред ги вчитува страниците што мисли дека ќе ги посетите</translation>
-<translation id="173522743738009831">Информации за Privacy Sandbox</translation>
 <translation id="1736419249208073774">Истражете</translation>
 <translation id="1749561566933687563">Синхронизирајте ги обележувачите</translation>
 <translation id="1750259112639922169">Група картички - <ph name="TAB_COUNT" /> картички</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389">Останаа <ph name="SECONDS" /> секунди</translation>
 <translation id="2779651927720337254">не успеа</translation>
 <translation id="2781151931089541271">Остана 1 секунда</translation>
-<translation id="2788468313014644040">Број на групата</translation>
 <translation id="2800066122460699237">Картичката <ph name="TAB_TITLE" /> ќе се затвори</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Прегледајте ги и управувајте со зачуваните лозинки во вашата <ph name="BEGIN_LINK" />сметка на Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">За да ги добиете обележувачите на сите ваши уреди, најавете се и вклучете ја синхронизацијата</translation>
 <translation id="2827278682606527653">Менито на картичката за активност е отворено на половина екран</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">Сподели ја сликата</translation>
 <translation id="3387650086002190359">Преземањето на <ph name="FILE_NAME" /> не успеа поради грешки на системот со датотеки.</translation>
 <translation id="3389286852084373014">Премногу е долго</translation>
-<translation id="3391512812407811893">Пробни периоди за Privacy Sandbox</translation>
 <translation id="3398320232533725830">Отворете го управникот на обележувачи</translation>
 <translation id="3407392651057365886">Вчитани се повеќе страници однапред. Страниците може да се вчитуваат однапред преку серверите на Google кога тоа го бараат другите сајтови.</translation>
 <translation id="3414952576877147120">Големина:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">Следете пак</translation>
 <translation id="6002122790816966947">Ваши уреди</translation>
 <translation id="6005538289190791541">Предложена лозинка</translation>
-<translation id="6032091552407840792">Оваа пробна верзија е активна само во <ph name="BEGIN_LINK" />некои региони<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Со <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome развива нови технологии за заштита од следење на повеќе сајтови, додека истовремено го зачувува отворениот интернет.
-
-Пробната верзија на Privacy Sandbox сѐ уште активно се развива и таа е достапна само во одредени региони. Засега, сајтовите може да ја испробаат Privacy Sandbox, а притоа да продолжат да ги користат тековните веб-технологии, како што се колачињата од трети страни.</translation>
 <translation id="6039379616847168523">Скокнете на следната картичка</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="604124094241169006">Автоматски</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7798392620021911922">Вратени се <ph name="TAB_COUNT" /> картички</translation>
 <translation id="780301667611848630">Не, фала</translation>
-<translation id="7805768142964895445">Статус</translation>
 <translation id="7808889146555843082">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" />. Променете ја лозинката или избришете ја сметката на <ph name="SITE" /> за да ја заштитите од другите.</translation>
 <translation id="7810647596859435254">Отвори со…</translation>
 <translation id="7815484226266492798">Копче за долга слика од екранот</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">Шифрирајте ги синхронизираните податоци со сопствената лозинка за синхронизација</translation>
 <translation id="8466613982764129868">Проверете дали <ph name="TARGET_DEVICE_NAME" /> е поврзан на интернет</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
-<translation id="8481921391193215807">Кога е вклучено, сајтовите може да ги користат техниките за зачувување на приватноста што се прикажани тука за обезбедување на нивните содржини и услуги. Тие вклучуваат алтернативи за следење на повеќе сајтови. Можеби ќе се додадат повеќе пробни верзии со тек на време.
-
-<ph name="BEGIN_LIST_ITEM1" />Огласувачите и издавачите може да ја користат техниката FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Огласувачите и издавачите може да ја проучуваат ефикасноста на рекламите на начин што не ве следи на сајтовите.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Пробните функции се вклучени</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Отворете ја страницата „Историја“</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">Името на датотеката веќе постои</translation>
 <translation id="8666759526542103597">За персоналзирањето реклами според прелистувач</translation>
 <translation id="8676789164135894283">Потврди за најавување</translation>
-<translation id="867767487203716855">Следно ажурирање</translation>
 <translation id="8683039184091909753">слика</translation>
-<translation id="8683081248374354009">Ресетирај група</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699120352855309748">Не нуди превод за овие јазици</translation>
 <translation id="8712637175834984815">Сфатив</translation>

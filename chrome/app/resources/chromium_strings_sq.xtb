@@ -284,7 +284,6 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="718435575166326686">Chromium ka nevojë për lejen e kamerës për këtë sajt</translation>
 <translation id="7196312274710523067">Chromium nuk mund të hapej. Provo përsëri.</translation>
 <translation id="7197677400338048821">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh.</translation>
-<translation id="7218568399872925918">Sajtet që ti viziton i kujtojnë informacionet e tua derisa ti mbyll Chromium</translation>
 <translation id="7223968959479464213">Menaxheri i detyrave - Chromium</translation>
 <translation id="7246575524853130370">Interesat e tua sipas përllogaritjes nga Chromium</translation>
 <translation id="7309928523159922338">Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chromium të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon gjurmimin nëpër sajte duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
@@ -356,8 +355,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8621669128220841554">Instalimi dështoi për shkak të një gabimi të papërcaktuar. Shkarko përsëri Chromium.</translation>
 <translation id="8697124171261953979">Kontrollon po ashtu se cila faqe shfaqet kur nis Chromium ose kur kërkon nga Omnibox.</translation>
 <translation id="8704119203788522458">Ky është Chromium për ty</translation>
-<translation id="8713679423359107094">Kur të mbyllësh të gjitha dritaret e Chromium, kukit dhe të dhënat e sajtit do të pastrohen automatikisht</translation>
-<translation id="8796443464227412154">Do të <ph name="BEGIN_BOLD" />dalësh nga shumica e sajteve<ph name="END_BOLD" /> kur të mbyllësh Chromium. Nëse sinkronizimi është joaktiv, do të <ph name="BEGIN_BOLD" />dalësh gjithashtu nga shërbimet e Google dhe nga Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium ka nevojë për leje për t'u qasur te kamera dhe mikrofoni yt për këtë sajt</translation>
 <translation id="8833697763442816810">Sistemi ChromiumOS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Çfarë të dhënash përdoren:<ph name="END_BOLD" /> Historiku yt i shfletimit, regjistri i sajteve që ke vizituar duke përdorur Chromium në këtë pajisje.</translation>

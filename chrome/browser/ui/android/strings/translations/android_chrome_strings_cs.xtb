@@ -139,7 +139,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="1718835860248848330">Poslední hodina</translation>
 <translation id="1724977129262658800">Chcete-li upravit heslo, odemkněte zařízení</translation>
 <translation id="1726477445370128854">Když bude Chrome předběžně načítat stránky, které byste podle něj mohli navštívit, budete moci procházet web a vyhledávat rychleji.</translation>
-<translation id="173522743738009831">Informace o funkci Privacy Sandbox</translation>
 <translation id="1736419249208073774">Prozkoumat</translation>
 <translation id="1749561566933687563">Synchronizace záložek</translation>
 <translation id="1750259112639922169">Skupina karet – počet karet: <ph name="TAB_COUNT" /></translation>
@@ -318,9 +317,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="2777555524387840389">Zbývá: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">nezdařilo se</translation>
 <translation id="2781151931089541271">Zbývá: 1 s</translation>
-<translation id="2788468313014644040">Číslo skupiny</translation>
 <translation id="2800066122460699237">Zavře se karta <ph name="TAB_TITLE" /></translation>
-<translation id="2806840421670364300">Federované učení kohort</translation>
 <translation id="281504910091592009">Zobrazit a spravovat uložená hesla v <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Chcete-li mít záložky ve všech zařízeních, přihlaste se a zapněte synchronizaci</translation>
 <translation id="2827278682606527653">Napůl otevřená nabídka karty informačního kanálu</translation>
@@ -441,7 +438,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3384347053049321195">Sdílet obrázek</translation>
 <translation id="3387650086002190359">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu chyb systému souborů.</translation>
 <translation id="3389286852084373014">Text je příliš dlouhý</translation>
-<translation id="3391512812407811893">Privacy Sandbox</translation>
 <translation id="3398320232533725830">Otevřít správce záložek</translation>
 <translation id="3407392651057365886">Předběžně se načítá více stránek. Stránky, o které žádají jiné weby, se mohou předběžně načíst prostřednictvím serverů Google.</translation>
 <translation id="3414952576877147120">Velikost:</translation>
@@ -913,10 +909,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="6000203700195075278">Znovu sledovat</translation>
 <translation id="6002122790816966947">Vaše zařízení</translation>
 <translation id="6005538289190791541">Navrhované heslo</translation>
-<translation id="6032091552407840792">Tato zkušební funkce je k dispozici pouze v <ph name="BEGIN_LINK" />některých oblastech<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">V rámci sady <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> vyvíjí tým Chrome nové technologie, které uživatele chrání před sledováním mezi weby a přitom zachovávají otevřenost webu.
-
-Zkušební technologie Privacy Sandbox jsou stále aktivně vyvíjeny a jsou dostupné jen ve vybraných oblastech. Prozatím mohou weby technologie Privacy Sandbox zkoušet a přitom nadále používat aktuální technologie, jako jsou soubory cookie třetích stran.</translation>
 <translation id="6039379616847168523">Přejít na další kartu</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="604124094241169006">Automaticky</translation>
@@ -1248,7 +1240,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7791543448312431591">Přidat</translation>
 <translation id="7798392620021911922">Obnovené karty: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
-<translation id="7805768142964895445">Stav</translation>
 <translation id="7808889146555843082">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="SITE" />. Pokud chcete ochránit svá data, změňte své heslo nebo účet na <ph name="SITE" /> smažte.</translation>
 <translation id="7810647596859435254">Otevřít v aplikaci…</translation>
 <translation id="7815484226266492798">Dlouhý snímek obrazovky</translation>
@@ -1382,11 +1373,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8461694314515752532">Šifrovat synchronizovaná data pomocí vlastní heslové fráze pro synchronizaci</translation>
 <translation id="8466613982764129868">Zkontrolujte, zda je zařízení <ph name="TARGET_DEVICE_NAME" /> připojené k internetu</translation>
 <translation id="8473863474539038330">Adresy a další</translation>
-<translation id="8481921391193215807">Když je tato možnost zapnutá, weby při poskytování obsahu a služeb mohou používat zde uvedené techniky zajišťující ochranu soukromí. Patří sem i alternativy ke sledování napříč weby. Časem mohou přibýt další zkušební funkce.
-
-<ph name="BEGIN_LIST_ITEM1" />Inzerenti a majitelé obsahu mohou používat federované učení kohort.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Inzerenti a majitelé obsahu mohou posuzovat účinnost reklam způsobem, při kterém nebudete sledováni napříč weby.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Zkušební funkce jsou zapnuté</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Otevřít stránku historie</translation>
@@ -1432,9 +1418,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8664979001105139458">Název souboru již existuje</translation>
 <translation id="8666759526542103597">Personalizace reklam na základě prohlížeče</translation>
 <translation id="8676789164135894283">Ověření přihlášení</translation>
-<translation id="867767487203716855">Další aktualizace</translation>
 <translation id="8683039184091909753">obrázek</translation>
-<translation id="8683081248374354009">Resetovat skupinu</translation>
 <translation id="869891660844655955">Datum vypršení platnosti</translation>
 <translation id="8699120352855309748">Nenabízet překlad do těchto jazyků</translation>
 <translation id="8712637175834984815">Hotovo</translation>

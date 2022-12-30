@@ -1250,6 +1250,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2104166991923847969">Desativar ponto de acesso automaticamente</translation>
 <translation id="2105809836724866556">Módulo "<ph name="MODULE_TITLE" />" oculto</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de telefone}one{# número de telefone}other{# números de telefone}}</translation>
+<translation id="2110941575868943054">Com permissão para procurar dispositivos Bluetooth</translation>
 <translation id="211144231511833662">Limpar tipos</translation>
 <translation id="2111670510994270194">Nova guia à direita</translation>
 <translation id="2112554630428445878">Olá, <ph name="USERNAME" /></translation>
@@ -3045,6 +3046,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3756485814916578707">Transmitindo tela</translation>
 <translation id="3756578970075173856">Definir PIN</translation>
 <translation id="3756795331760037744">Permita que o Google Assistente use as informações na tela de <ph name="SUPERVISED_USER_NAME" /> para ajudar</translation>
+<translation id="3756806135608816820">Os sites podem pedir para procurar dispositivos Bluetooth</translation>
 <translation id="3757733214359997190">Nenhum site encontrado</translation>
 <translation id="375841316537350618">Fazendo o download do script de proxy...</translation>
 <translation id="3758842566811519622">Cookies definidos</translation>
@@ -3815,6 +3817,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pode editar arquivos em <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferências de armazenamento externo</translation>
 <translation id="4471354919263203780">Fazendo o download dos arquivos de reconhecimento de fala… <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Você pode usar o idioma de sua preferência da Conta do Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Ajude a melhorar os recursos e o desempenho do Chrome</translation>
 <translation id="4472575034687746823">Vamos começar</translation>
 <translation id="4474155171896946103">Adicionar todas as guias aos favoritos...</translation>
@@ -4545,7 +4548,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5158206172605340248">Menu de acentos dispensado.</translation>
 <translation id="5159094275429367735">Configurar o Crostini</translation>
 <translation id="5159419673777902220">Seu familiar responsável desativou as permissões da extensão</translation>
-<translation id="5159643365935452998">Revisar a limpeza de dados automática</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Faça login no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Dispositivos USB do <ph name="VENDOR_NAME" /></translation>
@@ -5020,6 +5022,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5600706100022181951">O download da atualização será feito com <ph name="UPDATE_SIZE_MB" /> MB de dados móveis. Quer continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Bloquear a conexão a dispositivos MIDI</translation>
+<translation id="5601833336918638013">Não permitir que os sites procurem dispositivos Bluetooth</translation>
 <translation id="5602765853043467355">Limpar favoritos, histórico, senhas e mais deste dispositivo.</translation>
 <translation id="5605758115928394442">Uma notificação foi enviada ao seu smartphone para confirmar sua identidade.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{A extensão está bloqueada}one{A extensão está bloqueada}other{As extensões estão bloqueadas}}</translation>
@@ -6480,6 +6483,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6960507406838246615">É necessário atualizar o Linux</translation>
 <translation id="6960648667961844909">Não foi possível fazer o download dos arquivos de fala em <ph name="LANGUAGE" />. O download será feito mais tarde. A fala será enviada ao Google para processamento até que o download seja concluído.</translation>
 <translation id="696103774840402661">Todos os arquivos e dados locais para todos os usuários neste <ph name="DEVICE_TYPE" /> foram excluídos permanentemente.</translation>
+<translation id="6961327401577924850">Os sites geralmente procuram dispositivos Bluetooth para recursos como a configuração ou sincronização de um sensor de baixa energia, um tracker de condicionamento físico e saúde ou uma lâmpada de iluminação inteligente</translation>
 <translation id="6963872466817251924">Destaque do cursor de texto</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
@@ -6756,6 +6760,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7227458944009118910">Os apps listados abaixo também podem processar links de protocolo. Outros apps solicitarão permissão.</translation>
 <translation id="7228056665272655255">Para configurar a impressão digital, peça para a criança tocar no sensor no canto superior direito do teclado. Os dados de impressão digital dela são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Bloqueio de tela e login</translation>
+<translation id="7228854227189381547">Não trocar</translation>
 <translation id="7230222852462421043">&amp;Restaurar janela</translation>
 <translation id="7231260028442989757">Ver, dispensar e responder às notificações do smartphone</translation>
 <translation id="7232750842195536390">Falha na renomeação</translation>
@@ -7089,6 +7094,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7545466883021407599">Não foi possível se conectar ao servidor. Verifique sua conexão de rede e tente novamente. Se ainda assim tiver problemas, reinicie o Chromebook. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Aviso: as configurações do <ph name="PRODUCT_NAME" /> são armazenadas em um disco de rede. Isso pode acarretar lentidão, falhas ou até mesmo perda de dados.</translation>
 <translation id="7548856833046333824">Margarita</translation>
+<translation id="7549434883223124329">Trocar o idioma do dispositivo?</translation>
 <translation id="7550830279652415241">favoritos_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Falha no dowload de <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Fixar na estante</translation>
@@ -8115,6 +8121,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8465444703385715657">O pulg-in <ph name="PLUGIN_NAME" /> precisa da sua permissão para ser executado</translation>
 <translation id="8466417995783206254">Esta guia está reproduzindo um vídeo em picture-in-picture.</translation>
 <translation id="8467326454809944210">Escolher outro idioma</translation>
+<translation id="8468087214092422866">Sem permissão para procurar dispositivos Bluetooth</translation>
 <translation id="8470513973197838199">Senhas salvas para <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Os sites geralmente se conectam a dispositivos USB para recursos como imprimir um documento ou salvar em um dispositivo de armazenamento</translation>
 <translation id="8471959340398751476">Os descontos estão desativados. Você pode ativá-los no menu de personalização</translation>

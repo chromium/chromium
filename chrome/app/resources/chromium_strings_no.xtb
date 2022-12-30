@@ -282,7 +282,6 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="718435575166326686">Chromium trenger kameratillatelse for dette nettstedet</translation>
 <translation id="7196312274710523067">Kunne ikke starte Chromium. Prøv på nytt.</translation>
 <translation id="7197677400338048821">Chromium kan ikke sjekke passordene dine. Prøv på nytt når det har gått 24 timer.</translation>
-<translation id="7218568399872925918">Nettsteder du besøker, husker informasjonen din til du lukker Chromium</translation>
 <translation id="7223968959479464213">Oppgavebehandling – Chromium</translation>
 <translation id="7246575524853130370">Interessene dine som Chromium har anslått</translation>
 <translation id="7309928523159922338">Med annonsemålinger kan nettsteder du besøker, spørre Chromium om informasjon som hjelper nettstedet å måle annonseresultatene sine. Annonsemålinger begrenser sporing på tvers av nettsteder ved å overføre så lite informasjon som mulig mellom nettsteder.</translation>
@@ -354,8 +353,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8621669128220841554">Installeringen mislyktes på grunn av en uspesifisert feil. Last ned Chromium på nytt.</translation>
 <translation id="8697124171261953979">Den styrer også hvilken side som vises når du starter Chromium eller søker fra multifunksjonsfeltet.</translation>
 <translation id="8704119203788522458">Dette er din Chromium</translation>
-<translation id="8713679423359107094">Når du lukker alle Chromium-vinduer, blir informasjonskapsler og nettstedsdata slettet automatisk</translation>
-<translation id="8796443464227412154">Du blir <ph name="BEGIN_BOLD" />logget av de fleste nettsteder<ph name="END_BOLD" /> når du lukker Chromium. Hvis synkronisering er av, blir du også <ph name="BEGIN_BOLD" />logget av Google-tjenester og Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium trenger tilgang til kameraet ditt og mikrofonen din for dette nettstedet</translation>
 <translation id="8833697763442816810">ChromiumOS-systemet</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Disse dataene brukes:<ph name="END_BOLD" /> nettleserloggen din, som er en logg over nettsteder du har besøkt med Chromium på denne enheten.</translation>

@@ -3799,6 +3799,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4469762931504673593">Le site <ph name="ORIGIN" /> peut modifier les fichiers du dossier <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Préférences de l'espace de stockage externe</translation>
 <translation id="4471354919263203780">Téléchargement des fichiers de reconnaissance vocale… <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Vous pouvez utiliser la langue définie comme préférée dans votre compte Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4474155171896946103">Ajouter tous les onglets aux favoris...</translation>
@@ -4528,7 +4529,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5158206172605340248">Menu d'accentuation fermé.</translation>
 <translation id="5159094275429367735">Configurer Crostini</translation>
 <translation id="5159419673777902220">Tes parents ont bloqué les autorisations liées aux extensions</translation>
-<translation id="5159643365935452998">Examiner la suppression automatique des données</translation>
 <translation id="5160634252433617617">Clavier physique</translation>
 <translation id="5160857336552977725">Connectez-vous à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5161251470972801814">Appareils USB <ph name="VENDOR_NAME" /></translation>
@@ -6739,6 +6739,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7227458944009118910">Les applis listées ci-dessous peuvent aussi gérer les liens de protocole. D'autres demanderont l'autorisation.</translation>
 <translation id="7228056665272655255">Pour configurer l'empreinte de votre enfant, demandez-lui d'appuyer sur le lecteur d'empreinte digitale en haut à droite du clavier. Les données liées à son empreinte sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Verrouillage de l'écran et connexion</translation>
+<translation id="7228854227189381547">Ne pas changer</translation>
 <translation id="7230222852462421043">&amp;Restaurer la fenêtre</translation>
 <translation id="7231260028442989757">Affichez les notifications de votre téléphone, fermez-les et répondez-y</translation>
 <translation id="7232750842195536390">Échec du changement de nom</translation>
@@ -7072,6 +7073,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7545466883021407599">Impossible de se connecter au serveur. Vérifiez votre connexion réseau et réessayez. Si le problème persiste, essayez de redémarrer votre Chromebook. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Avertissement : Vos paramètres <ph name="PRODUCT_NAME" /> sont enregistrés sur un lecteur réseau, ce qui peut entraîner des ralentissements, des plantages, voire la perte de données.</translation>
 <translation id="7548856833046333824">Limonade</translation>
+<translation id="7549434883223124329">Changer la langue de l'appareil ?</translation>
 <translation id="7550830279652415241">favoris_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Échec du téléchargement de "<ph name="FILE_NAME" />".</translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>

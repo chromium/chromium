@@ -116,7 +116,6 @@
 <translation id="3038232873781883849">Se așteaptă instalarea…</translation>
 <translation id="3059710691562604940">Navigarea sigură este dezactivată. Chrome îți recomandă să o activezi.</translation>
 <translation id="3065168410429928842">Fila Chrome</translation>
-<translation id="3069821012350118710">Site-urile pe care le accesezi rețin informațiile tale până când închizi Chrome</translation>
 <translation id="3080151273017101988">Rulează în continuare aplicații în fundal când Google Chrome este închis</translation>
 <translation id="3089968997497233615">Google Chrome este disponibil într-o versiune nouă și mai sigură.</translation>
 <translation id="3100998948628680988">Denumește profilul Chrome</translation>
@@ -244,7 +243,6 @@
 <translation id="5804318322022881572">Chrome nu a putut fi lansat. Încearcă din nou.</translation>
 <translation id="5867197326698922595">Google Chrome încearcă să modifice parolele.</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
-<translation id="5901850848447342934">Vei fi <ph name="BEGIN_BOLD" />deconectat(ă) de pe majoritatea site-urilor<ph name="END_BOLD" /> când închizi Chrome. Dacă sincronizarea este dezactivată, vei fi <ph name="BEGIN_BOLD" />deconectat(ă) și de la serviciile Google și de la Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – conectare la rețea</translation>
 <translation id="5924017743176219022">Se conectează la internet…</translation>
 <translation id="5940385492829620908">Experiența web personalizată, marcajele și celelalte date Chrome chiar aici.</translation>
@@ -381,7 +379,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8614913330719544658">Google Chrome nu mai răspunde. Îl repornești acum?</translation>
 <translation id="861702415419836452">Chrome are nevoie de permisiunea de a accesa camera foto pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se va relansa într-un minut}few{Chrome se va relansa în # minute}other{Chrome se va relansa în # de minute}}</translation>
-<translation id="8629311577791198377">Când închizi toate ferestrele Chrome, cookie-urile și datele privind site-urile sunt șterse automat</translation>
 <translation id="8641606876632989680">Chrome te va anunța dacă te conectezi folosind o parolă compromisă</translation>
 <translation id="8649026945479135076">Se întâmplă frecvent ca site-urile pe care le accesezi să rețină lucrurile care te interesează, pentru a-ți personaliza experiența. În plus, site-urile pot stoca informații în Chrome despre interesele tale.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

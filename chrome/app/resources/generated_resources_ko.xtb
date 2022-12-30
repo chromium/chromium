@@ -1177,7 +1177,7 @@
 <translation id="2048182445208425546">네트워크 트래픽에 액세스</translation>
 <translation id="2048554637254265991">컨테이너 관리자 시작 중에 오류가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="2048653237708779538">실행할 수 없는 작업</translation>
-<translation id="2050339315714019657">세로 방향</translation>
+<translation id="2050339315714019657">인물</translation>
 <translation id="2052572566310583903">다른 기기에서 설치됨</translation>
 <translation id="2053105195397337973">Google은 추적을 제한하고 사이트에서 광고 스팸과 사기를 방지하도록 돕는 방안을 모색하고 있습니다.</translation>
 <translation id="2053312383184521053">유휴 상태 데이터</translation>
@@ -1728,7 +1728,7 @@
 <translation id="2514326558286966059">지문으로 신속하게 잠금 해제</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">사용자 이름 확인</translation>
-<translation id="2517472476991765520">검색</translation>
+<translation id="2517472476991765520">스캔</translation>
 <translation id="2518024842978892609">클라이언트 인증서 사용</translation>
 <translation id="2519517390894391510">인증서 프로필 이름</translation>
 <translation id="2520644704042891903">사용 가능한 소켓 대기 중...</translation>
@@ -4542,7 +4542,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5158206172605340248">발음 구별 부호 메뉴를 닫았습니다.</translation>
 <translation id="5159094275429367735">Crostini 설정</translation>
 <translation id="5159419673777902220">부모님이 확장 프로그램 권한을 사용 중지했습니다.</translation>
-<translation id="5159643365935452998">자동 데이터 삭제 검토</translation>
 <translation id="5160634252433617617">물리적 키보드</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" />에 로그인</translation>
 <translation id="5161251470972801814">USB 기기(업체: <ph name="VENDOR_NAME" />)</translation>

@@ -121,7 +121,6 @@
 <translation id="3038232873781883849">ກຳ​ລັງ​ລໍ​ຖ້າ​ຕິດ​ຕັ້ງ...</translation>
 <translation id="3059710691562604940">Safe Browsing ປິດຢູ່. Chrome ແນະນຳໃຫ້ເປີດມັນ.</translation>
 <translation id="3065168410429928842">ແຖບ Chrome</translation>
-<translation id="3069821012350118710">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຈະຈື່ຂໍ້ມູນຂອງທ່ານໄວ້ຈົນກວ່າທ່ານຈະປິດ Chrome</translation>
 <translation id="3080151273017101988">ສືບຕໍ່ແລ່ນແອັບພື້ນຫຼັງ ເມື່ອ Google Chrome ປິດ</translation>
 <translation id="3089968997497233615">ມີ Google Chrome ລຸ້ນໃໝ່ປອດໄພກ່ວາຢູ່.</translation>
 <translation id="3100998948628680988">ຕັ້ງຊື່ໂປຣໄຟລ໌ Chrome ຂອງທ່ານ</translation>
@@ -253,7 +252,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5804318322022881572">ບໍ່ສາມາດເປີດໃຊ້ Chrome. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="5867197326698922595">Google Chrome ກໍາລັງພະຍາຍາມແກ້ໄຂລະຫັດຜ່ານ.</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
-<translation id="5901850848447342934">ທ່ານຈະຖືກ <ph name="BEGIN_BOLD" />ພາອອກຈາກລະບົບຂອງເວັບໄຊສ່ວນໃຫຍ່<ph name="END_BOLD" /> ເມື່ອທ່ານປິດ Chrome. ຫາກປິດການຊິ້ງຂໍ້ມູນໄວ້, ທ່ານຈະຖືກ <ph name="BEGIN_BOLD" />ພາອອກຈາກລະບົບຂອງບໍລິການ Google ແລະ Chrome<ph name="END_BOLD" /> ນຳ.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ</translation>
 <translation id="5924017743176219022">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່​ອິນ​ເຕີ​ເນັດ...</translation>
 <translation id="5940385492829620908">ເວັບຂອງທ່ານ, ບຸກມາກສ໌, ແລະ Chrome ອື່ນສົດຢູ່ທີ່ນີ້.</translation>
@@ -390,7 +388,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8614913330719544658">Google Chrome ບໍ່ຕອບຮັບ. ເລີ່ມເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
 <translation id="861702415419836452">Chrome ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຂອງທ່ານເພື່ອສ້າງແຜນທີ່ 3 ມິຕິຂອງສະພາບແວດລ້ອມອ້ອມຂ້າງຂອງທ່ານ</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ຈະເປີດຄືນໃໝ່ໃນ 1 ນາທີ}other{Chrome ຈະເປີດຄືນໃໝ່ໃນ # ນາທີ}}</translation>
-<translation id="8629311577791198377">ເມື່ອທ່ານປິດໜ້າຈໍ Chrome ທັງໝົດ, ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊຈະຖືກລຶບລ້າງໂດຍອັດຕະໂນມັດ</translation>
 <translation id="8641606876632989680">Chrome ຈະແຈ້ງບອກທ່ານເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍລະຫັດຜ່ານທີ່ຖືກລະເມີດ</translation>
 <translation id="8649026945479135076">ມັນເປັນເລື່ອງປົກກະຕິສຳລັບເວັບໄຊທີ່ທ່ານເຂົ້າໃນການຈື່ສິ່ງຕ່າງໆທີ່ທ່ານສົນໃຈ, ເພື່ອປັບແຕ່ງປະສົບການຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ. ເວັບໄຊສາມາດບັນທຶກຂໍ້ມູນກັບ Chrome ກ່ຽວກັບຄວາມສົນໃຈຂອງທ່ານໄດ້ນຳ.</translation>
 <translation id="8669527147644353129">ຕົວຊ່ວຍ Google Chrome</translation>

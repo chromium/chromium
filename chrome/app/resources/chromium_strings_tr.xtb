@@ -280,7 +280,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="718435575166326686">Bu site için Chromium'un kamera iznine ihtiyacı var</translation>
 <translation id="7196312274710523067">Chromium başlatılamadı. Tekrar deneyin.</translation>
 <translation id="7197677400338048821">Chromium, şifrelerinizi kontrol edemiyor. 24 saat sonra tekrar deneyin.</translation>
-<translation id="7218568399872925918">Ziyaret ettiğiniz siteler, Chromium'u kapatana kadar bilgilerinizi hatırlar</translation>
 <translation id="7223968959479464213">Görev Yöneticisi - Chromium</translation>
 <translation id="7246575524853130370">Chromium'un tahmin ettiği ilgi alanlarınız</translation>
 <translation id="7309928523159922338">Reklam ölçümü, ziyaret ettiğiniz sitelerin Chromium'dan bilgi istemesine olanak tanır. Bu bilgiler de sitenin, reklamlarının performansını ölçmesine yardımcı olur. Reklam ölçümü, siteler arasında mümkün olduğunca az bilgi aktararak siteler arası izlemeyi kısıtlar.</translation>
@@ -352,8 +351,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8621669128220841554">Yükleme belirtilmeyen bir hata nedeniyle başarısız oldu. Lütfen Chromium'u tekrar indirin.</translation>
 <translation id="8697124171261953979">Ayrıca Chromium'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="8704119203788522458">Bu sizin Chromium'unuz</translation>
-<translation id="8713679423359107094">Tüm Chromium pencerelerini kapattığınızda çerezler ve site verileri otomatik olarak silinir</translation>
-<translation id="8796443464227412154">Chromium'u kapattığınızda <ph name="BEGIN_BOLD" />çoğu sitede oturumunuz kapatılır<ph name="END_BOLD" />. Senkronizasyon kapalıysa <ph name="BEGIN_BOLD" />Google hizmetleri ve Chromium oturumunuz da kapatılır<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium'un bu sitede kameranıza ve mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="8833697763442816810">ChromiumOS Sistemi</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Kullanılan veriler:<ph name="END_BOLD" /> Tarama geçmişiniz, bu cihazda Chromium'u kullanarak ziyaret ettiğiniz sitelerin kaydı.</translation>

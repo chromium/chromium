@@ -3805,6 +3805,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kan redigere filer i <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Innstillinger for ekstern lagring</translation>
 <translation id="4471354919263203780">Laster ned filer for talegjenkjenning … <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Du kan bruke det foretrukne språket for Google-kontoen din (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Hjelp til med å forbedre funksjonene og ytelsen til Chrome</translation>
 <translation id="4472575034687746823">Kom i gang</translation>
 <translation id="4474155171896946103">Bokmerk alle fanene</translation>
@@ -4534,7 +4535,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5158206172605340248">Menyen med aksenttegn er lukket.</translation>
 <translation id="5159094275429367735">Konfigurer Crostini</translation>
 <translation id="5159419673777902220">Forelderen din har slått av utvidelsestillatelser</translation>
-<translation id="5159643365935452998">Gjennomgå automatisk datasletting</translation>
 <translation id="5160634252433617617">Fysisk tastatur</translation>
 <translation id="5160857336552977725">Logg på <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">USB-enheter fra <ph name="VENDOR_NAME" /></translation>
@@ -6741,6 +6741,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7227458944009118910">Appene som er oppført nedenfor, kan også håndtere protokoll-linker. Andre apper kommer til å be om tillatelse.</translation>
 <translation id="7228056665272655255">For å konfigurere fingeravtrykk, få barnet ditt til å trykke på fingeravtrykkssensoren øverst til høyre på tastaturet. Barnets fingeravtrykksdata lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Skjermlås og pålogging</translation>
+<translation id="7228854227189381547">Ikke bytt</translation>
 <translation id="7230222852462421043">&amp;Gjenopprett vindu</translation>
 <translation id="7231260028442989757">Se, skjul og svar på varsler fra telefonen</translation>
 <translation id="7232750842195536390">Navneendringen mislyktes</translation>
@@ -7074,6 +7075,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7545466883021407599">Kunne ikke koble til tjeneren. Kontroller nettverkstilkoblingen og prøv på nytt. Hvis du fremdeles har problemer, kan du prøve å starte Chromebook på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Advarsel: <ph name="PRODUCT_NAME" />-innstillingene dine lagres på en nettverksdisk. Dette kan forårsake forsinkelser, krasjer og til og med tap av data.</translation>
 <translation id="7548856833046333824">Limonade</translation>
+<translation id="7549434883223124329">Vil du bytte enhetsspråk?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ble ikke lastet ned</translation>
 <translation id="7551643184018910560">Fest til hyllen</translation>

@@ -120,7 +120,6 @@
 <translation id="3038232873781883849">इंस्टॉल करण्यासाठी प्रतीक्षा करत आहे...</translation>
 <translation id="3059710691562604940">सुरक्षित ब्राउझिंग बंद आहे. Chrome ते सुरू करण्याची शिफारस करते.</translation>
 <translation id="3065168410429928842">Chrome टॅब</translation>
-<translation id="3069821012350118710">तुम्ही Chrome बंद करेपर्यंत तुम्ही भेट दिलेल्या साइट तुमची माहिती लक्षात ठेवतात</translation>
 <translation id="3080151273017101988">जेव्हा Google Chrome बंद असेल तेव्हा पार्श्वभूमीत ॲप्लिकेशन चालणे सुरू ठेवा</translation>
 <translation id="3089968997497233615">Google Chrome ची नवीन, सुरक्षित आवृत्ती उपलब्ध आहे.</translation>
 <translation id="3100998948628680988">तुमच्या Chrome प्रोफाइलला नाव द्या</translation>
@@ -251,7 +250,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5804318322022881572">Chrome लाँच करता आले नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="5867197326698922595">Google Chrome पासवर्ड संपादित करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
-<translation id="5901850848447342934">तुम्ही Chrome बंद कराल तेव्हा, तुम्हाला <ph name="BEGIN_BOLD" />बहुतांश साइटवरून साइन आउट केले<ph name="END_BOLD" /> जाईल. सिंक बंद असल्यास, तुम्हाला <ph name="BEGIN_BOLD" />Google सेवा आणि Chrome मधूनदेखील साइन आउट<ph name="END_BOLD" /> करता येईल.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन</translation>
 <translation id="5924017743176219022">इंटरनेटशी कनेक्ट करत आहे...</translation>
 <translation id="5940385492829620908">तुमचे वेब, बुकमार्क आणि अन्य Chrome आशय येथे थेट आहे.</translation>
@@ -388,7 +386,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8614913330719544658">Google Chrome प्रतिसाद देत नाही. त्वरित पुन्हा लाँच करायचा?</translation>
 <translation id="861702415419836452">तुमच्या आसपासचा 3D नकाशा तयार करण्यासाठी Chrome ला तुमचा कॅमेरा अ‍ॅक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome एका मिनिटामध्ये पुन्हा लॉंच होईल}other{Chrome # मिनिटांमध्ये पुन्हा लॉंच होईल}}</translation>
-<translation id="8629311577791198377">तुम्ही Chrome च्या सर्व विंडो बंद करता तेव्हा, कुकी आणि साइट डेटा आपोआप साफ केला जातो</translation>
 <translation id="8641606876632989680">तुम्ही धोक्यात असलेल्या पासवर्डने साइन इन केल्यावर Chrome तुम्हाला सूचित करेल</translation>
 <translation id="8649026945479135076">सर्वसाधारणपणे, तुम्ही भेट देता त्या साइट तुमचा अनुभव पर्सनलाइझ करण्यासाठी, तुम्हाला स्वारस्य असलेल्या गोष्टी लक्षात ठेवतात. साइट तुमच्या स्वारस्यांबद्दलची माहिती Chrome वापरून स्टोअरदेखील करू शकतात.</translation>
 <translation id="8669527147644353129">Google Chrome मदतनीस</translation>

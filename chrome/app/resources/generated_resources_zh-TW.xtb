@@ -1237,6 +1237,7 @@
 <translation id="2104166991923847969">自動關閉無線基地台</translation>
 <translation id="2105809836724866556">已隱藏「<ph name="MODULE_TITLE" />」</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 組電話號碼}}</translation>
+<translation id="2110941575868943054">可以尋找藍牙裝置</translation>
 <translation id="211144231511833662">取消勾選類型</translation>
 <translation id="2111670510994270194">在右側新增分頁</translation>
 <translation id="2112554630428445878"><ph name="USERNAME" />，歡迎使用！</translation>
@@ -2881,7 +2882,7 @@
 <translation id="3619115746895587757">卡布奇諾</translation>
 <translation id="3620136223548713675">地理位置</translation>
 <translation id="362023940451053340">更新 Google 帳戶 (<ph name="ACCOUNT" />) 的密碼</translation>
-<translation id="3621807901162200696">協助改善 Chrome OS 的功能與效能</translation>
+<translation id="3621807901162200696">協助改善 ChromeOS 的功能與效能</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 個應用程式}other{# 個應用程式}}</translation>
 <translation id="362333465072914957">正在等待 CA 核發憑證</translation>
 <translation id="3624567683873126087">解鎖裝置並登入 Google 帳戶</translation>
@@ -3028,6 +3029,7 @@
 <translation id="3756485814916578707">正在投放螢幕畫面</translation>
 <translation id="3756578970075173856">設定 PIN 碼</translation>
 <translation id="3756795331760037744">允許 Google 助理使用<ph name="SUPERVISED_USER_NAME" />畫面上的資訊來提供協助</translation>
+<translation id="3756806135608816820">網站可要求掃描藍牙裝置</translation>
 <translation id="3757733214359997190">找不到任何網站</translation>
 <translation id="375841316537350618">正在下載 Proxy 指令碼...</translation>
 <translation id="3758842566811519622">已設定 Cookie</translation>
@@ -3797,6 +3799,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可以編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="4470957202018033307">外部儲存空間偏好設定</translation>
 <translation id="4471354919263203780">正在下載語音辨識檔案...<ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">你可以使用偏好的 Google 帳戶語言 (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">協助改善 Chrome 的功能與效能</translation>
 <translation id="4472575034687746823">開始使用</translation>
 <translation id="4474155171896946103">將所有分頁加入書籤...</translation>
@@ -4526,7 +4529,6 @@
 <translation id="5158206172605340248">重音符號選單已關閉。</translation>
 <translation id="5159094275429367735">設定 Crostini</translation>
 <translation id="5159419673777902220">貴家長已停用擴充功能權限</translation>
-<translation id="5159643365935452998">檢查自動資料清除設定</translation>
 <translation id="5160634252433617617">實體鍵盤</translation>
 <translation id="5160857336552977725">登入您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">來自 <ph name="VENDOR_NAME" /> 的 USB 裝置</translation>
@@ -5001,6 +5003,7 @@
 <translation id="5600706100022181951">下載更新將使用 <ph name="UPDATE_SIZE_MB" /> MB 的行動數據。要繼續嗎？</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">不得連接 MIDI 裝置</translation>
+<translation id="5601833336918638013">不允許網站掃描藍牙裝置</translation>
 <translation id="5602765853043467355">清除這個裝置的書籤、歷史記錄、密碼和其他設定</translation>
 <translation id="5605758115928394442">為了確認你的身分，系統已傳送通知到你的手機。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充功能}other{已封鎖這些擴充功能}}</translation>
@@ -6455,6 +6458,7 @@
 <translation id="6960507406838246615">必須更新 Linux</translation>
 <translation id="6960648667961844909">無法下載<ph name="LANGUAGE" />語音檔案。系統稍後將再次嘗試下載。在下載作業完成前，系統會先將語音內容傳送給 Google 處理。</translation>
 <translation id="696103774840402661">系統已永久刪除這部「<ph name="DEVICE_TYPE" />」上所有使用者的所有檔案與本機資料。</translation>
+<translation id="6961327401577924850">一般來說，網站掃描藍牙裝置的原因是為了執行功能，例如設定或同步低功耗信標、健康/健身智慧手環或智慧型燈泡</translation>
 <translation id="6963872466817251924">文字游標醒目顯示工具</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
@@ -6617,7 +6621,7 @@
 <translation id="7098447629416471489">你所儲存的其他搜尋引擎會顯示在這裡</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{移除應用程式}other{移除應用程式}}</translation>
 <translation id="7099337801055912064">無法載入大型 PPD。大小上限為 250 KB。</translation>
-<translation id="7099739618316136113">{COUNT,plural, =0{沒有任何密碼遭外洩}=1{{COUNT} 個遭外洩的密碼}other{{COUNT} 個遭外洩的密碼}}</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{沒有任何密碼遭外洩}=1{{COUNT} 組遭外洩的密碼}other{{COUNT} 組遭外洩的密碼}}</translation>
 <translation id="7102832101143475489">要求逾時</translation>
 <translation id="710640343305609397">開啟網路設定</translation>
 <translation id="7107609441453408294">透過所有揚聲器播放相同的音訊</translation>
@@ -6731,6 +6735,7 @@
 <translation id="7227458944009118910">下列應用程式也可以處理通訊協定連結。其他應用程式則會要求授權。</translation>
 <translation id="7228056665272655255">如要設定指紋，請讓孩子輕觸鍵盤右上角的指紋感應器。孩子的指紋資料會安全地儲存在這部「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
 <translation id="7228523857728654909">螢幕鎖定和登入</translation>
+<translation id="7228854227189381547">不切換</translation>
 <translation id="7230222852462421043">還原視窗 (&amp;R)</translation>
 <translation id="7231260028442989757">查看、關閉及回覆手機的通知</translation>
 <translation id="7232750842195536390">無法重新命名</translation>
@@ -7064,6 +7069,7 @@
 <translation id="7545466883021407599">無法連上伺服器。請檢查網路連線，然後再試一次。如果問題仍然無法解決，請嘗試重新啟動 Chromebook。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="7547317915858803630">警告：你的 <ph name="PRODUCT_NAME" /> 設定均儲存在網路硬碟中。這麼做可能導致速度變慢、當機，甚至資料遺失。</translation>
 <translation id="7548856833046333824">檸檬汁</translation>
+<translation id="7549434883223124329">要切換裝置語言嗎？</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> 下載失敗</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
@@ -8090,6 +8096,7 @@
 <translation id="8465444703385715657">需要你的授權才能執行「<ph name="PLUGIN_NAME" />」</translation>
 <translation id="8466417995783206254">這個分頁正在使用子母畫面模式播放影片。</translation>
 <translation id="8467326454809944210">選擇其他語言</translation>
+<translation id="8468087214092422866">不得尋找藍牙裝置</translation>
 <translation id="8470513973197838199">已儲存 <ph name="ORIGIN" /> 的密碼</translation>
 <translation id="8471525937465764768">網站通常會連線至 USB 裝置，以提供列印文件或儲存至裝置等功能</translation>
 <translation id="8471959340398751476">折扣搜尋功能已關閉。你可以在自訂選單中開啟這項功能</translation>

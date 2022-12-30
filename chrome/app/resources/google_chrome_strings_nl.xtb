@@ -120,7 +120,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3038232873781883849">Wachten op installatie...</translation>
 <translation id="3059710691562604940">Safe Browsing staat uit. Chrome raadt je aan deze functie aan te zetten.</translation>
 <translation id="3065168410429928842">Chrome-tabblad</translation>
-<translation id="3069821012350118710">Sites die je bezoekt, onthouden je informatie totdat je Chrome sluit</translation>
 <translation id="3080151273017101988">Achtergrondapps blijven uitvoeren wanneer Google Chrome is gesloten</translation>
 <translation id="3089968997497233615">Er is een nieuwere, veiligere versie van Google Chrome beschikbaar.</translation>
 <translation id="3100998948628680988">Je Chrome-profiel een naam geven</translation>
@@ -250,7 +249,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5804318322022881572">Kan Chrome niet starten. Probeer het opnieuw.</translation>
 <translation id="5867197326698922595">Google Chrome probeert wachtwoorden te bewerken.</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
-<translation id="5901850848447342934">Je wordt <ph name="BEGIN_BOLD" />uitgelogd van de meeste sites<ph name="END_BOLD" /> als je Chrome sluit. Als synchronisatie uitstaat, word je ook <ph name="BEGIN_BOLD" />uitgelogd van Google-services en Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Inloggen bij netwerk</translation>
 <translation id="5924017743176219022">Verbinding maken met internet...</translation>
 <translation id="5940385492829620908">Hier vind je internet, bookmarks en andere Chrome-instellingen.</translation>
@@ -387,7 +385,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8614913330719544658">Google Chrome reageert niet meer. Nu opnieuw starten?</translation>
 <translation id="861702415419836452">Chrome heeft toegangsrechten voor de camera nodig om een 3D-kaart van je omgeving te maken.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome wordt over één minuut opnieuw gestart}other{Chrome wordt over # minuten opnieuw gestart}}</translation>
-<translation id="8629311577791198377">Als je alle Chrome-vensters sluit, worden de cookies en sitegegevens automatisch gewist</translation>
 <translation id="8641606876632989680">Chrome laat het je weten als je inlogt met een gehackt wachtwoord</translation>
 <translation id="8649026945479135076">Door jou bezochte sites onthouden over het algemeen informatie over je interesses om zo de functionaliteit te personaliseren. Sites kunnen ook informatie over je interesses in Chrome opslaan.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

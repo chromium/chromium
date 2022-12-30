@@ -1249,6 +1249,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2104166991923847969">Tự động tắt điểm phát sóng</translation>
 <translation id="2105809836724866556">Đã ẩn <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Số điện thoại}other{# số điện thoại}}</translation>
+<translation id="2110941575868943054">Được phép tìm thiết bị Bluetooth</translation>
 <translation id="211144231511833662">Xóa các loại thiết bị</translation>
 <translation id="2111670510994270194">Thẻ mới ở bên phải</translation>
 <translation id="2112554630428445878">Chào mừng <ph name="USERNAME" />!</translation>
@@ -3043,6 +3044,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3756485814916578707">Đang truyền màn hình</translation>
 <translation id="3756578970075173856">Đặt mã PIN</translation>
 <translation id="3756795331760037744">Cho phép Trợ lý Google dùng thông tin trên màn hình của <ph name="SUPERVISED_USER_NAME" /> để trợ giúp</translation>
+<translation id="3756806135608816820">Các trang web có thể yêu cầu tìm thiết bị Bluetooth</translation>
 <translation id="3757733214359997190">Không tìm thấy trang web nào</translation>
 <translation id="375841316537350618">Đang tải xuống tập lệnh proxy...</translation>
 <translation id="3758842566811519622">Đã đặt cookie</translation>
@@ -3813,6 +3815,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4469762931504673593"><ph name="ORIGIN" /> có thể chỉnh sửa tệp trong <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Tùy chọn bộ nhớ bên ngoài</translation>
 <translation id="4471354919263203780">Đang tải các tệp nhận dạng lời nói xuống... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Bạn có thể sử dụng ngôn ngữ ưu tiên trong Tài khoản Google của mình (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Giúp cải thiện hiệu suất và các tính năng của Chrome</translation>
 <translation id="4472575034687746823">Bắt đầu</translation>
 <translation id="4474155171896946103">Đánh dấu tất cả các thẻ...</translation>
@@ -4543,7 +4546,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5158206172605340248">Trình đơn dấu phụ đã đóng.</translation>
 <translation id="5159094275429367735">Thiết lập Crostini</translation>
 <translation id="5159419673777902220">Cha mẹ của bạn đã tắt quyền sử dụng tiện ích</translation>
-<translation id="5159643365935452998">Xem xét tính năng xóa dữ liệu tự động</translation>
 <translation id="5160634252433617617">Bàn phím vật lý</translation>
 <translation id="5160857336552977725">Đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="5161251470972801814">Các thiết bị USB của <ph name="VENDOR_NAME" /></translation>
@@ -5018,6 +5020,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5600706100022181951">Bản cập nhật sẽ được tải xuống bằng cách dùng <ph name="UPDATE_SIZE_MB" /> MB dữ liệu di động. Bạn có muốn tiếp tục không?</translation>
 <translation id="5601503069213153581">Mã PIN</translation>
 <translation id="5601823921345337195">Không được phép kết nối với các thiết bị MIDI</translation>
+<translation id="5601833336918638013">Không cho phép các trang web tìm thiết bị Bluetooth</translation>
 <translation id="5602765853043467355">Xóa dấu trang, lịch sử, mật khẩu và nhiều nội dung khác từ thiết bị này</translation>
 <translation id="5605758115928394442">Chúng tôi đã gửi một thông báo đến điện thoại của bạn để xác nhận đó là bạn.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Tiện ích này đã bị chặn}other{Các tiện ích này đã bị chặn}}</translation>
@@ -6475,6 +6478,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6960507406838246615">Cần cập nhật Linux</translation>
 <translation id="6960648667961844909">Không thể tải các tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống. Thử tải xuống sau. Dữ liệu giọng nói sẽ được gửi tới Google cho đến khi quá trình tải xuống hoàn tất.</translation>
 <translation id="696103774840402661">Tất cả tệp và dữ liệu dành cho mọi người dùng trên <ph name="DEVICE_TYPE" /> này sẽ bị xóa vĩnh viễn.</translation>
+<translation id="6961327401577924850">Các trang web thường tìm thiết bị Bluetooth cho những tính năng như thiết lập hoặc đồng bộ hoá beacon năng lượng thấp, trình theo dõi sức khoẻ/hoạt động tập thể dục hoặc bóng đèn thông minh</translation>
 <translation id="6963872466817251924">Công cụ đánh dấu bằng con trỏ văn bản</translation>
 <translation id="6964390816189577014">Anh hùng</translation>
 <translation id="6964760285928603117">Xóa khỏi nhóm</translation>
@@ -6751,6 +6755,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7227458944009118910">Những ứng dụng được liệt kê bên dưới cũng có thể xử lý các đường liên kết giao thức. Các ứng dụng khác sẽ yêu cầu bạn cấp quyền.</translation>
 <translation id="7228056665272655255">Để thiết lập vân tay, con bạn cần chạm vào cảm biến vân tay ở góc trên bên phải bàn phím. Dữ liệu vân tay của con bạn được lưu trữ an toàn và chỉ có trên <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="7228523857728654909">Khóa màn hình và đăng nhập</translation>
+<translation id="7228854227189381547">Không chuyển</translation>
 <translation id="7230222852462421043">&amp;Khôi phục Cửa sổ</translation>
 <translation id="7231260028442989757">Xem, đóng và trả lời thông báo của điện thoại</translation>
 <translation id="7232750842195536390">Không đổi tên được</translation>
@@ -7084,6 +7089,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7545466883021407599">Không thể kết nối với máy chủ. Hãy kiểm tra kết nối mạng rồi thử lại. Nếu bạn vẫn gặp sự cố, hãy thử khởi động lại Chromebook. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Cảnh báo: cài đặt <ph name="PRODUCT_NAME" /> của bạn được lưu trữ trên ổ đĩa mạng. Điều này có thể dẫn đến giảm tốc độ, trục trặc hoặc thậm chí là mất dữ liệu.</translation>
 <translation id="7548856833046333824">Nước chanh</translation>
+<translation id="7549434883223124329">Bạn muốn chuyển đổi ngôn ngữ của thiết bị?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Tải xuống <ph name="FILE_NAME" /> không thành công</translation>
 <translation id="7551643184018910560">Ghim vào kệ</translation>
@@ -8110,6 +8116,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> cần có sự cho phép của bạn để chạy</translation>
 <translation id="8466417995783206254">Thẻ này đang phát video ở chế độ hình trong hình.</translation>
 <translation id="8467326454809944210">Chọn ngôn ngữ khác</translation>
+<translation id="8468087214092422866">Không được phép tìm thiết bị Bluetooth</translation>
 <translation id="8470513973197838199">Đã lưu mật khẩu cho <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Các trang web thường kết nối với thiết bị USB để áp dụng những tính năng như in tài liệu hoặc lưu vào thiết bị lưu trữ</translation>
 <translation id="8471959340398751476">Tính năng nhận chiết khấu đang tắt. Bạn có thể bật tính năng này trong trình đơn tùy chỉnh</translation>

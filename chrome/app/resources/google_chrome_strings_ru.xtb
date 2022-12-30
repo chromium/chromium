@@ -116,7 +116,6 @@
 <translation id="3038232873781883849">Ожидание установки…</translation>
 <translation id="3059710691562604940">Безопасный просмотр отключен. Chrome рекомендует включить его.</translation>
 <translation id="3065168410429928842">Вкладка Chrome</translation>
-<translation id="3069821012350118710">Ваши данные сохраняются на посещенных сайтах, пока вы не закроете браузер Chrome.</translation>
 <translation id="3080151273017101988">Не отключать работающие в фоновом режиме сервисы при закрытии браузера</translation>
 <translation id="3089968997497233615">Доступна новая, более безопасная версия Google Chrome.</translation>
 <translation id="3100998948628680988">Введите название профиля Chrome</translation>
@@ -244,7 +243,6 @@
 <translation id="5804318322022881572">Не удалось запустить Chrome. Повторите попытку.</translation>
 <translation id="5867197326698922595">Google Chrome пытается изменить пароли</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
-<translation id="5901850848447342934">Когда вы закроете Chrome, вы <ph name="BEGIN_BOLD" />выйдете с большинства сайтов<ph name="END_BOLD" />. Если синхронизация отключена, вы также <ph name="BEGIN_BOLD" />выйдете из сервисов Google и браузера Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592">"<ph name="PAGE_TITLE" />" – вход в сеть</translation>
 <translation id="5924017743176219022">Подключение к интернету…</translation>
 <translation id="5940385492829620908">Все веб-страницы, закладки и другие данные Chrome можно найти здесь.</translation>
@@ -381,7 +379,6 @@
 <translation id="8614913330719544658">Google Chrome не отвечает. Перезапустить сейчас?</translation>
 <translation id="861702415419836452">Chrome запрашивает доступ к камере, чтобы создать 3D-карту места, в котором вы находитесь.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome перезапустится через 1 минуту}one{Chrome перезапустится через # минуту}few{Chrome перезапустится через # минуты}many{Chrome перезапустится через # минут}other{Chrome перезапустится через # минуты}}</translation>
-<translation id="8629311577791198377">Когда вы закроете все окна браузера Chrome, файлы cookie и данные сайтов будут автоматически удалены.</translation>
 <translation id="8641606876632989680">Вы получите уведомление от Chrome, если войдете в аккаунт с паролем, который был раскрыт.</translation>
 <translation id="8649026945479135076">Обычно сайты, которые вы посещаете, запоминают ваши интересы, чтобы показывать персонализированную рекламу. В том числе они могут хранить об этом информацию в Chrome.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

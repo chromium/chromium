@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">Сүүлийн цаг</translation>
 <translation id="1724977129262658800">Нууц үгээ засахын тулд түгжээг тайлна уу</translation>
 <translation id="1726477445370128854">Chrome таныг зочилж магадгүй гэж бодсон хуудаснуудыг урьдчилан ачаалсан үед та илүү хурдан үзэж, хайх боломжтой</translation>
-<translation id="173522743738009831">Privacy Sandbox-н тухай</translation>
 <translation id="1736419249208073774">Судлах</translation>
 <translation id="1749561566933687563">Хавчуургаа синхрончлоорой</translation>
 <translation id="1750259112639922169">Табын бүлэг - <ph name="TAB_COUNT" /> таб</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> секунд үлдсэн</translation>
 <translation id="2779651927720337254">татаж чадсангүй</translation>
 <translation id="2781151931089541271">1 секунд үлдсэн</translation>
-<translation id="2788468313014644040">Бүлгийн тоо</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> табыг хаана</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google Бүртгэл<ph name="END_LINK" />-дээ хадгалсан нууц үгнүүдийг харах болон удирдах</translation>
 <translation id="2818669890320396765">Хавчуургаа бүх төхөөрөмждөө авахын тулд нэвтрээд синкийг асаана уу</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">Зураг хуваалцах</translation>
 <translation id="3387650086002190359">Файлын системийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
 <translation id="3389286852084373014">Текст хэт том байна</translation>
-<translation id="3391512812407811893">Privacy Sandbox-н туршилт</translation>
 <translation id="3398320232533725830">Хавчуургын менежерийг нээх</translation>
 <translation id="3407392651057365886">Илүү олон хуудсыг урьдчилан ачаална. Бусад сайтаас хүсэлт тавьсан үед хуудаснуудыг Google-н серверээр урьдчилан ачаалж магадгүй.</translation>
 <translation id="3414952576877147120">Хэмжээ:</translation>
@@ -912,10 +908,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6000203700195075278">Дахин дагах</translation>
 <translation id="6002122790816966947">Таны төхөөрөмжүүд</translation>
 <translation id="6005538289190791541">Санал болгосон нууц үг</translation>
-<translation id="6032091552407840792">Энэ туршилт зөвхөн <ph name="BEGIN_LINK" />зарим бүс нутагт<ph name="END_LINK" /> идэвхтэй байна.</translation>
-<translation id="6033245666633565791"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />-р Chrome нээлттэй вебийг хадгалах явцдаа таныг сайт хооронд хянахаас хамгаалах шинэ технологийг хөгжүүлж байна.
-
-Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд байгаа бөгөөд сонгосон бүс нутгуудад боломжтой. Одоогоор сайтууд гуравдагч талын күүки зэрэг одоогийн веб технологийг үргэлжлүүлэн ашиглах үедээ Privacy Sandbox-г туршиж үзэж болно.</translation>
 <translation id="6039379616847168523">Дараагийн табад очих</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="604124094241169006">Автомат</translation>
@@ -1247,7 +1239,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7791543448312431591">Нэмэх</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> табыг сэргээсэн</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
-<translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7808889146555843082">Энэ нууц үгийг устгасан ч <ph name="SITE" /> дээрх таны бүртгэл устахгүй. <ph name="SITE" /> дээрх нууц үгээ өөрчлөн, эсвэл бүртгэлээ устган бусдаас хамгаална уу.</translation>
 <translation id="7810647596859435254">Дараахаар нээх...</translation>
 <translation id="7815484226266492798">Урт дэлгэцийн агшин</translation>
@@ -1381,11 +1372,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8461694314515752532">Синк хийсэн өгөгдлийг синкийн нэвтрэх үгээрээ шифрлэх</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> интернэтэд холбогдсон эсэхийг шалгана уу</translation>
 <translation id="8473863474539038330">Хаяг болон бусад</translation>
-<translation id="8481921391193215807">Асаалттай үед сайтууд өөрсдийн контент болон үйлчилгээг хүргэхдээ энд харуулсан нууцлал хадгалах техникийг ашиглаж магадгүй. Үүнд сайт хоорондын хяналтын хувилбарууд орно. Илүү олон туршилтыг аажимдаа нэмж магадгүй.
-
-<ph name="BEGIN_LIST_ITEM1" />Сурталчлагчид болон нийтлэгчид FLoC-г ашиглах боломжтой.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Сурталчлагчид болон нийтлэгчид таныг сайтууд дээр дагахгүйгээр зарын үр нөлөөг судлах боломжтой.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Туршилтын онцлог асаалттай байна</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Түүхийн хуудсыг нээх</translation>
@@ -1431,9 +1417,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8664979001105139458">Файлын нэр ашиглалтад байна</translation>
 <translation id="8666759526542103597">Хөтчид тулгуурласан сонирхсон зарын тохируулгын тухай</translation>
 <translation id="8676789164135894283">Нэвтрэх баталгаажуулалт</translation>
-<translation id="867767487203716855">Дараагийн шинэчлэлт</translation>
 <translation id="8683039184091909753">зураг</translation>
-<translation id="8683081248374354009">Бүлгийг шинэчлэх</translation>
 <translation id="869891660844655955">Дуусах хугацаа</translation>
 <translation id="8699120352855309748">Эдгээр хэлийг орчуулахыг бүү санал болго</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>

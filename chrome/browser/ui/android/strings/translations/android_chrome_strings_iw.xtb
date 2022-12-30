@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">מהשעה האחרונה</translation>
 <translation id="1724977129262658800">יש לבטל את הנעילה כדי לערוך את הסיסמה</translation>
 <translation id="1726477445370128854">‏אפשר לגלוש ולחפש מהר יותר כשמערכת Chrome מבצעת הערכה לגבי דפים שהמשתמש יעבור אליהם וטוענת אותם מראש</translation>
-<translation id="173522743738009831">מידע על ארגז החול לפרטיות</translation>
 <translation id="1736419249208073774">מידע נוסף</translation>
 <translation id="1749561566933687563">סנכרון הסימניות שלך</translation>
 <translation id="1750259112639922169">קבוצת כרטיסיות - <ph name="TAB_COUNT" /> כרטיסיות</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389">נותרו <ph name="SECONDS" /> שניות</translation>
 <translation id="2779651927720337254">נכשל</translation>
 <translation id="2781151931089541271">נותרה שנייה אחת</translation>
-<translation id="2788468313014644040">מספר הקבוצה</translation>
 <translation id="2800066122460699237">הכרטיסייה <ph name="TAB_TITLE" /> תיסגר</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">‏הצגה וניהול של סיסמאות שמורות ב<ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">כדי לקבל גישה אל הסימניות שלך בכל המכשירים, יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="2827278682606527653">תפריט כרטיס הפיד נפתח בחצי מגובה המסך</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">שיתוף תמונה</translation>
 <translation id="3387650086002190359">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאות במערכת הקבצים.</translation>
 <translation id="3389286852084373014">הטקסט ארוך מדי</translation>
-<translation id="3391512812407811893">תכונות ניסיוניות של ארגז החול לפרטיות</translation>
 <translation id="3398320232533725830">פתיחת מנהל הסימניות</translation>
 <translation id="3407392651057365886">‏יותר דפים נטענים מראש. דפים יכולים להיטען מראש באמצעות השרתים של Google כשמתקבלת בקשה מאתרים אחרים.</translation>
 <translation id="3414952576877147120">גודל:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">מעקב מחודש</translation>
 <translation id="6002122790816966947">המכשירים שלך</translation>
 <translation id="6005538289190791541">הצעה לסיסמה</translation>
-<translation id="6032091552407840792">תקופת הניסיון הזו פעילה רק ב<ph name="BEGIN_LINK" />אזורים מסוימים<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">‏באמצעות <ph name="BEGIN_LINK" />ארגז חול לפרטיות<ph name="END_LINK" />, מפתחים ב-Chrome טכנולוגיות חדשות שמגינות עליך מפני מעקב באתרים שונים תוך שמירה על האופי הפתוח של רשת האינטרנט.
-
-תקופות הניסיון של ארגז החול לפרטיות נמצאות עדיין בתהליכי פיתוח והן זמינות רק באזורים נבחרים. נכון לעכשיו, ניתן לנסות באתרים את 'ארגז חול של הגדרות פרטיות' במקביל לשימוש בטכנולוגיות אינטרנט קיימות, כמו קובצי cookie של צד שלישי.</translation>
 <translation id="6039379616847168523">מעבר לכרטיסייה הבאה</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="604124094241169006">אוטומטי</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="7798392620021911922">שוחזרו <ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="780301667611848630">לא תודה</translation>
-<translation id="7805768142964895445">סטטוס</translation>
 <translation id="7808889146555843082">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="SITE" />. כדי למנוע את החשיפה של הסיסמה, כדאי לשנות אותה או למחוק את החשבון שלך ב-<ph name="SITE" />.</translation>
 <translation id="7810647596859435254">פתיחה באמצעות...</translation>
 <translation id="7815484226266492798">צילום מסך ארוך</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">הצפנת נתונים מסונכרנים בעזרת ביטוי סיסמה אישי לסנכרון</translation>
 <translation id="8466613982764129868">יש לוודא ש-<ph name="TARGET_DEVICE_NAME" /> מחובר לאינטרנט</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
-<translation id="8481921391193215807">‏כאשר התכונה מופעלת, אתרים יוכלו לספק את התוכן ואת השירותים שלהם בשיטות המוצגות כאן, שמאפשרות לשמור על הפרטיות. השיטות האלו כוללות חלופות למעקב בין אתרים. ייתכן שיתווספו עוד תכונות ניסיוניות בהמשך.
-
-<ph name="BEGIN_LIST_ITEM1" />מפרסמים ובעלי תוכן דיגיטלי יכולים להשתמש בשיטת FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />מפרסמים ובעלי תוכן דיגיטלי יכולים לבחון את יעילות המודעות בדרך שאינה כוללת מעקב אחריך באתרים שונים.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">התכונות הניסיוניות מופעלות</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">פתיחת דף ההיסטוריה</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">שם הקובץ כבר קיים</translation>
 <translation id="8666759526542103597">מידע על התאמה אישית של מודעות על סמך הדפדפן</translation>
 <translation id="8676789164135894283">שימוש במכשיר לאימות כניסה לחשבון</translation>
-<translation id="867767487203716855">העדכון הבא</translation>
 <translation id="8683039184091909753">תמונה</translation>
-<translation id="8683081248374354009">איפוס הקבוצה</translation>
 <translation id="869891660844655955">תאריך תפוגה</translation>
 <translation id="8699120352855309748">אין להציג את ההצעה לתרגם את השפות האלה</translation>
 <translation id="8712637175834984815">הבנתי</translation>

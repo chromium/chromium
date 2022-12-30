@@ -1238,6 +1238,7 @@
 <translation id="2104166991923847969">خودکار طور پر ہاٹ اسپاٹ آف کریں</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> پوشیدہ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{فون نمبر}other{# فون نمبرز}}</translation>
+<translation id="2110941575868943054">بلوٹوتھ آلات تلاش کرنے کی اجازت ہے</translation>
 <translation id="211144231511833662">اقسام صاف کریں</translation>
 <translation id="2111670510994270194">دائیں طرف نیا ٹیب</translation>
 <translation id="2112554630428445878">خوش آمدید، <ph name="USERNAME" /></translation>
@@ -3030,6 +3031,7 @@
 <translation id="3756485814916578707">اسکرین کاسٹ ہو رہی ہے</translation>
 <translation id="3756578970075173856">‏PIN سیٹ کریں</translation>
 <translation id="3756795331760037744">‏Google اسسٹنٹ کو مدد کیلئے <ph name="SUPERVISED_USER_NAME" /> کی اسکرین پر معلومات کا استعمال کرنے کی اجازت دیں</translation>
+<translation id="3756806135608816820">سائٹس بلوٹوتھ آلات تلاش کرنے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="3757733214359997190">کوئی سائٹ نہیں ملی</translation>
 <translation id="375841316537350618">پراکسی اسکرپٹ ڈاؤن لوڈ ہو رہی ہے…</translation>
 <translation id="3758842566811519622">کوکیز سیٹ ہو گئیں</translation>
@@ -3800,6 +3802,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں فائلز میں ترمیم کر سکتا ہے</translation>
 <translation id="4470957202018033307">خارجی اسٹوریج کی ترجیحات</translation>
 <translation id="4471354919263203780">اسپیچ شناخت کی فائلز ڈاؤن لوڈ ہو رہی ہیں... %<ph name="PERCENT" /></translation>
+<translation id="4472298120638043495">‏آپ اپنے Google اکاؤنٹ کی ترجیحی زبان (<ph name="NEW_LOCALE_FROM_GAIA" />) استعمال کر سکتے ہیں</translation>
 <translation id="447252321002412580">‏Chrome کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="4472575034687746823">شروع کریں</translation>
 <translation id="4474155171896946103">سبھی ٹیبز کو بُک مارک کریں…</translation>
@@ -4529,7 +4532,6 @@
 <translation id="5158206172605340248">لہجے کے نشانات کا مینو مسترد کر دیا گیا۔</translation>
 <translation id="5159094275429367735">‏Crostini سیٹ اپ کریں</translation>
 <translation id="5159419673777902220">آپ کے والد/والدہ نے ایکسٹینشن کی اجازتیں غیر فعال کر دی ہیں</translation>
-<translation id="5159643365935452998">خودکار ڈیٹا کلیئرنگ کا جائزہ لیں</translation>
 <translation id="5160634252433617617">فزیکل کی بورڈ</translation>
 <translation id="5160857336552977725">اپنے <ph name="DEVICE_TYPE" /> میں سائن ان کریں</translation>
 <translation id="5161251470972801814">‏<ph name="VENDOR_NAME" /> کی جانب سے USB آلات</translation>
@@ -5003,6 +5005,7 @@
 <translation id="5600706100022181951">‏موبائل ڈیٹا <ph name="UPDATE_SIZE_MB" /> MB استعمال کرتے ہوۓ اپڈیٹ ڈاؤن لوڈ ہو جائے گا۔ کیا آپ اسے جاری رکھنا چاہتے ہيں؟</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">‏MIDI آلات سے منسلک ہونے کی اجازت نہیں ہے</translation>
+<translation id="5601833336918638013">سائٹس کو بلوٹوتھ آلات تلاش کرنے کی اجازت نہ دیں</translation>
 <translation id="5602765853043467355">بُک مارکس، سرگزشت، پاس ورڈز وغیرہ اس آلہ سے صاف کريں</translation>
 <translation id="5605758115928394442">اس بات کی تصدیق کرنے کیلئے کہ یہ آپ ہی ہیں، آپ کے فون پر ایک اطلاع بھیجی گئی۔</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{یہ ایکسٹینشن مسدود ہے}other{یہ ایکسٹینشنز مسدود ہیں}}</translation>
@@ -6460,6 +6463,7 @@
 <translation id="6960507406838246615">‏Linux کا اپ ڈیٹ درکار ہے</translation>
 <translation id="6960648667961844909">‏<ph name="LANGUAGE" /> کی اسپیچ فائلز کو ڈاؤن لوڈ نہیں کیا جا سکا۔ بعد میں ڈاؤن لوڈ کرنے کی کوشش کی جائے گی۔ اسپیچ پروسیسنگ کے لیے Google کو بھیجی جاتی ہے جب تک کہ ڈاؤن لوڈ مکمل نہ ہو جائے۔</translation>
 <translation id="696103774840402661">اس <ph name="DEVICE_TYPE" /> پر موجود سبھی صارفین کے لیے تمام فائلز اور مقامی ڈیٹا کو مستقل طور پر حذف کر دیا گیا ہے۔</translation>
+<translation id="6961327401577924850">سائٹس عام طور پر کم توانائی والے بیکن کو سیٹ اپ کرنے یا مطابقت پذیر کرنے، صحت یا تندرستی کے ٹریکر یا اسمارٹ لائٹ بلب جیسی خصوصیات کے لئے بلوٹوتھ آلات کو تلاش کرتی ہیں</translation>
 <translation id="6963872466817251924">ٹیکسٹ نمایاں کرنے والا کرسر</translation>
 <translation id="6964390816189577014">ہیرو</translation>
 <translation id="6964760285928603117">گروپ سے ہٹائیں</translation>
@@ -6736,6 +6740,7 @@
 <translation id="7227458944009118910">ذیل میں درج ایپس پروٹوکول لنکس کو بھی ہینڈل کر سکتی ہیں۔ دیگر ایپس اجازت طلب کریں گی۔</translation>
 <translation id="7228056665272655255">فنگر پرنٹ سیٹ اپ کرنے کے لیے، اپنے بچے سے کی بورڈ کے اوپر دائیں کونے میں موجود فنگر پرنٹ سینسر کو ٹچ کرنے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی اس <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="7228523857728654909">اسکرین لاک اور سائن ان</translation>
+<translation id="7228854227189381547">سوئچ نہ کریں</translation>
 <translation id="7230222852462421043">&amp;ونڈو بحال کریں</translation>
 <translation id="7231260028442989757">اپنے فون کی اطلاعات دیکھیں، برخاست کریں اور ان کا جواب دیں</translation>
 <translation id="7232750842195536390">نام کی تبدییلی ناکام ہو گئی</translation>
@@ -7069,6 +7074,7 @@
 <translation id="7545466883021407599">‏سرور سے منسلک نہیں ہو سکا۔ اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔ اگر آپ کو اب بھی مشکل درپیش ہے تو اپنا Chromebook ری سٹارٹ کرنے کی کوشش کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="7547317915858803630">وارننگ: آپ کی <ph name="PRODUCT_NAME" /> ترتیبات ایک نیٹ ورک ڈرائیو پر محفوظ ہیں۔ اس کا نتیجہ رفتار میں کمی، کریشز یا ڈیٹا سے محرومی ہو سکتا ہے۔</translation>
 <translation id="7548856833046333824">لیمونیڈ</translation>
+<translation id="7549434883223124329">آلہ کی زبان سوئچ کریں؟</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام رہا</translation>
 <translation id="7551643184018910560">شیلف میں پن کریں</translation>
@@ -8094,6 +8100,7 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> کو چلنے کیلئے آپ کی اجازت درکار ہے</translation>
 <translation id="8466417995783206254">یہ ٹیب تصویر میں تصویر وضع میں ویڈیو چلا رہا ہے۔</translation>
 <translation id="8467326454809944210">کسی دوسری زبان کا انتخاب کریں</translation>
+<translation id="8468087214092422866">بلوٹوتھ آلات تلاش کرنے کی اجازت نہیں ہے</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> کے لیے محفوظ کردہ پاسورڈز</translation>
 <translation id="8471525937465764768">‏سائٹس عام طور دستاویز پرنٹ کرنے یا اسٹوریج آلہ پر محفوظ کرنے جیسی خصوصیات کے لیے USB آلات سے منسلک ہوتی ہیں</translation>
 <translation id="8471959340398751476">رعایتوں کی سہولیات آف ہیں۔ آپ انہیں حسب ضرورت مینو میں آن کر سکتے ہیں</translation>

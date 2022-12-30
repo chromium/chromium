@@ -117,7 +117,6 @@
 <translation id="3038232873781883849">Asennetaan…</translation>
 <translation id="3059710691562604940">Selaussuoja on pois päältä. Chrome suosittelee laittamaan sen päälle.</translation>
 <translation id="3065168410429928842">Chrome-välilehti</translation>
-<translation id="3069821012350118710">Avaamasi sivustot muistavat tietosi, kunnes suljet Chromen</translation>
 <translation id="3080151273017101988">Jätä taustaohjelmat käyntiin, kun Google Chrome suljetaan</translation>
 <translation id="3089968997497233615">Google Chromesta on saatavillaa uusi, turvallisempi versio.</translation>
 <translation id="3100998948628680988">Nimeä Chrome-profiilisi</translation>
@@ -245,7 +244,6 @@
 <translation id="5804318322022881572">Chromen käynnistäminen epäonnistui. Yritä uudelleen.</translation>
 <translation id="5867197326698922595">Google Chrome yrittää muuttaa salasanoja.</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
-<translation id="5901850848447342934">Kun suljet Chromen, sinut <ph name="BEGIN_BOLD" />kirjataan ulos useimmilta sivustoilta<ph name="END_BOLD" />. Jos synkronointi on pois päältä, sinut <ph name="BEGIN_BOLD" />kirjataan ulos myös Googlen palveluista ja Chromesta<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon</translation>
 <translation id="5924017743176219022">Muodostetaan internetyhteyttä…</translation>
 <translation id="5940385492829620908">Tämä on verkkosi, kirjanmerkkiesi ja muun Chrome-sisältösi koti.</translation>
@@ -382,7 +380,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8614913330719544658">Google Chrome ei vastaa. Käynnistetäänkö uudelleen?</translation>
 <translation id="861702415419836452">Chrome tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome käynnistetään uudelleen 1 minuutin kuluttua}other{Chrome käynnistetään uudelleen # minuutin kuluttua.}}</translation>
-<translation id="8629311577791198377">Kun suljet kaikki Chrome-ikkunat, evästeet ja sivustodata tyhjennetään automaattisesti</translation>
 <translation id="8641606876632989680">Chrome ilmoittaa, kun kirjaudut sisään vaarantuneella salasanalla</translation>
 <translation id="8649026945479135076">On tavallista, että avaamasi sivustot muistavat sinua kiinnostavat asiat personoidakseen käyttökokemustasi. Sivustot voivat myös tallentaa Chromeen tietoja kiinnostuksen kohteistasi.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

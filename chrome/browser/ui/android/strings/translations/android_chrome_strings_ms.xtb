@@ -139,7 +139,6 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="1718835860248848330">Jam terakhir</translation>
 <translation id="1724977129262658800">Buka kunci untuk mengedit kata laluan anda</translation>
 <translation id="1726477445370128854">Anda boleh menyemak imbas dan mencari dengan lebih pantas apabila Chrome mempramuat halaman yang diramal akan anda lawati</translation>
-<translation id="173522743738009831">Perihal Kotak Pasir Privasi</translation>
 <translation id="1736419249208073774">Teroka</translation>
 <translation id="1749561566933687563">Segerakkan penanda halaman anda</translation>
 <translation id="1750259112639922169">Kumpulan tab - <ph name="TAB_COUNT" /> tab</translation>
@@ -318,9 +317,7 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="2777555524387840389"><ph name="SECONDS" /> saat lagi</translation>
 <translation id="2779651927720337254">gagal</translation>
 <translation id="2781151931089541271">1 saat lagi</translation>
-<translation id="2788468313014644040">Nombor kumpulan</translation>
 <translation id="2800066122460699237">Tab <ph name="TAB_TITLE" /> akan ditutup</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Lihat dan urus kata laluan yang disimpan dalam <ph name="BEGIN_LINK" />Akaun Google<ph name="END_LINK" /> anda</translation>
 <translation id="2818669890320396765">Log masuk dan hidupkan penyegerakan untuk mendapatkan penanda halaman pada semua peranti anda</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -441,7 +438,6 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="3384347053049321195">Kongsi imej</translation>
 <translation id="3387650086002190359">Muat turun <ph name="FILE_NAME" /> gagal disebabkan oleh ralat sistem fail.</translation>
 <translation id="3389286852084373014">Teks terlalu besar</translation>
-<translation id="3391512812407811893">Percubaan Kotak Pasir Privasi</translation>
 <translation id="3398320232533725830">Buka pengurus penanda halaman</translation>
 <translation id="3407392651057365886">Lagi halaman yang dipramuat. Halaman mungkin dipramuat melalui pelayan Google apabila diminta oleh laman lain.</translation>
 <translation id="3414952576877147120">Saiz:</translation>
@@ -913,10 +909,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="6000203700195075278">Ikuti semula</translation>
 <translation id="6002122790816966947">Peranti anda</translation>
 <translation id="6005538289190791541">Kata laluan yang disyorkan</translation>
-<translation id="6032091552407840792">Percubaan ini hanya aktif di <ph name="BEGIN_LINK" />sesetengah rantau<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Dengan <ph name="BEGIN_LINK" />Kotak Pasir Privasi<ph name="END_LINK" />, Chrome membangunkan teknologi baharu untuk melindungi anda daripada penjejakan rentas laman sambil memelihara web terbuka.
-
-Percubaan Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Buat masa ini, laman boleh mencuba Kotak Pasir Privasi sambil terus menggunakan teknologi web semasa seperti kuki pihak ketiga.</translation>
 <translation id="6039379616847168523">Lompat ke tab seterusnya</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="604124094241169006">Automatik</translation>
@@ -1248,7 +1240,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> tab dipulihkan</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>
-<translation id="7805768142964895445">Status</translation>
 <translation id="7808889146555843082">Pemadaman kata laluan ini tidak akan memadamkan akaun anda pada <ph name="SITE" />. Tukar kata laluan anda atau padamkan akaun anda pada <ph name="SITE" /> untuk melindungi kata laluan itu daripada orang lain.</translation>
 <translation id="7810647596859435254">Buka dengan...</translation>
 <translation id="7815484226266492798">Tangkapan Skrin Panjang</translation>
@@ -1382,11 +1373,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8461694314515752532">Sulitkan data yang disegerakkan dengan ungkapan laluan penyegerakan anda sendiri</translation>
 <translation id="8466613982764129868">Pastikan <ph name="TARGET_DEVICE_NAME" /> disambungkan ke Internet</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
-<translation id="8481921391193215807">Apabila dihidupkan, laman boleh menggunakan teknik yang menjaga privasi yang ditunjukkan di sini untuk menyediakan kandungan dan perkhidmatan laman tersebut. Teknik ini termasuklah teknik alternatif bagi penjejakan rentas laman. Lebih banyak percubaan mungkin ditambahkan dari semasa ke semasa.
-
-<ph name="BEGIN_LIST_ITEM1" />Pengiklan dan penerbit boleh menggunakan FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Pengiklan dan penerbit boleh mengkaji keberkesanan iklan dengan cara yang tidak menjejak anda merentas berbilang laman.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Ciri percubaan dihidupkan</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Buka halaman sejarah</translation>
@@ -1432,9 +1418,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8664979001105139458">Nama fail sudah wujud</translation>
 <translation id="8666759526542103597">Perihal pemeribadian iklan berasaskan penyemak imbas</translation>
 <translation id="8676789164135894283">Pengesahan log masuk</translation>
-<translation id="867767487203716855">Kemas kini seterusnya</translation>
 <translation id="8683039184091909753">imej</translation>
-<translation id="8683081248374354009">Tetapkan semula kumpulan</translation>
 <translation id="869891660844655955">Tarikh tamat tempoh</translation>
 <translation id="8699120352855309748">Jangan tawarkan untuk menterjemahkan bahasa ini</translation>
 <translation id="8712637175834984815">Faham</translation>

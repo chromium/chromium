@@ -1247,6 +1247,7 @@
 <translation id="2104166991923847969">হটস্পট স্বয়ংক্ৰিয়ভাৱে অফ কৰক</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> লুকুওৱা হ’ল</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ফ’ন নম্বৰ}one{# টা ফ’ন নম্বৰ}other{# টা ফ’ন নম্বৰ}}</translation>
+<translation id="2110941575868943054">ব্লুটুথ ডিভাইচ বিচাৰিবলৈ অনুমতি দিয়া হয়</translation>
 <translation id="211144231511833662">মচাৰ প্ৰকাৰসমূহ</translation>
 <translation id="2111670510994270194">সোঁফালৰ নতুন টেব</translation>
 <translation id="2112554630428445878">স্বাগতম <ph name="USERNAME" /></translation>
@@ -3041,6 +3042,7 @@
 <translation id="3756485814916578707">স্ক্ৰীন কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="3756578970075173856">পিন ছেট কৰক</translation>
 <translation id="3756795331760037744">Google Assistantক সহায় কৰিবলৈ <ph name="SUPERVISED_USER_NAME" />ৰ স্ক্ৰীনত থকা তথ্যখিনি ব্যৱহাৰ কৰিবলৈ দিয়ক</translation>
+<translation id="3756806135608816820">ছাইটে ব্লুটুথ ডিভাইচ বিচৰাৰ অনুমতি দিবলৈ ক’ব পাৰে</translation>
 <translation id="3757733214359997190">কোনো ছাইট বিচাৰি পোৱা নগ’ল</translation>
 <translation id="375841316537350618">প্ৰ’ক্সি স্ক্ৰিপ্ট ডাউনল’ড কৰি থকা হৈছে...</translation>
 <translation id="3758842566811519622">কুকিৰ ছেট</translation>
@@ -4540,7 +4542,6 @@
 <translation id="5158206172605340248">উচ্চাৰণ চিহ্নৰ মেনু অগ্ৰাহ্য কৰা হৈছে।</translation>
 <translation id="5159094275429367735">Crostini ছেট আপ কৰক</translation>
 <translation id="5159419673777902220">আপোনাৰ অভিভাৱকে এক্সটেনশ্বনৰ অনুমতিসমূহ অক্ষম কৰিছে</translation>
-<translation id="5159643365935452998">স্বয়ংক্ৰিয়ভাৱে ডেটা মচাটো পর্যালোচনা কৰক</translation>
 <translation id="5160634252433617617">কায়িক কীব’ৰ্ড</translation>
 <translation id="5160857336552977725">আপোনাৰ <ph name="DEVICE_TYPE" />ত ছাইন ইন কৰক</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" />ৰ ইউএছবি ডিভাইচ</translation>
@@ -5015,6 +5016,7 @@
 <translation id="5600706100022181951">আপডে’টটো ম’বাইল ডেটাৰ <ph name="UPDATE_SIZE_MB" /> এম.বি. ব্যৱহাৰ কৰি ডাউনল’ড কৰা হ’ব। আপুনি অব্যাহত ৰাখিবলৈ বিচাৰেনে?</translation>
 <translation id="5601503069213153581">পিন</translation>
 <translation id="5601823921345337195">MIDI ডিভাইচৰ সৈতে সংযোগ কৰাৰ অনুমতি নাই</translation>
+<translation id="5601833336918638013">ছাইটক ব্লুটুথ ডিভাইচ বিচাৰিবলৈ নিদিব</translation>
 <translation id="5602765853043467355">এই ডিভাইচৰ পৰা বুকমার্ক, ইতিহাস, পাছৱর্ড আৰু অধিক তথ্য মচক</translation>
 <translation id="5605758115928394442">এইগৰাকী আপুনিয়েই হয় বুলি নিশ্চিত কৰিবলৈ আপোনাৰ ফ'নলৈ এটা জাননী পঠিওৱা হৈছে।</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশ্বনটো অৱৰোধ কৰা হৈছে}one{এই এক্সটেনশ্বনসমূহ অৱৰোধ কৰা হৈছে}other{এই এক্সটেনশ্বনসমূহ অৱৰোধ কৰা হৈছে}}</translation>
@@ -6474,6 +6476,7 @@
 <translation id="6960507406838246615">Linux আপডে'ট কৰাৰ আৱশ্যক</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" />ৰ কথনৰ ফাইল ডাউনল’ড কৰিব পৰা নগ’ল। পাছত ডাউনল’ড কৰিবলৈ প্ৰয়াস কৰা হ’ব। ডাউনল’ড সম্পূৰ্ণ নোহোৱা পৰ্যন্ত প্ৰক্ৰিয়াকৰণৰ বাবে Googleলৈ কথন পঠিওৱা হয়।</translation>
 <translation id="696103774840402661">এই <ph name="DEVICE_TYPE" />ত থকা আটাইবোৰ ব্যৱহাৰকাৰীৰ আটাইবোৰ ফাইল আৰু স্থানীয় ডেটা স্থায়ীভাৱে মচা হ’ল।</translation>
+<translation id="6961327401577924850">ছাইটে সচৰাচৰ কম শক্তিৰ সংকেত, স্বাস্থ্য অথবা শৰীৰচৰ্চাৰ ট্ৰেকাৰ অথবা স্মাৰ্ট লাইট বাল্ব ছেট আপ কৰা অথবা ছিংক কৰাৰ দৰে সুবিধাসমূহৰ বাবে ব্লুটুথ ডিভাইচ বিচাৰে</translation>
 <translation id="6963872466817251924">পাঠৰ কাৰ্ছৰৰ হাইলাইটাৰ</translation>
 <translation id="6964390816189577014">হিৰ'</translation>
 <translation id="6964760285928603117">গোটৰ পৰা আঁতৰাওক</translation>
@@ -8108,6 +8111,7 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" />ক চলিবলৈ আপোনাৰ অনুমতিৰ আৱশ্যক</translation>
 <translation id="8466417995783206254">এই টেবটোৱে চিত্ৰৰ ভিতৰত চিত্ৰ ম'ডত এটা ভিডিঅ' প্লে' কৰি আছে।</translation>
 <translation id="8467326454809944210">অন্য এটা ভাষা বাছনি কৰক</translation>
+<translation id="8468087214092422866">ব্লুটুথ ডিভাইচ বিচাৰিবলৈ অনুমতি দিয়া নহয়</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />ৰ বাবে ছেভ কৰি থোৱা পাছৱৰ্ড</translation>
 <translation id="8471525937465764768">ছাইটসমূহে সচৰাচৰ নথি প্ৰিণ্ট কৰা অথবা এটা ষ্ট'ৰেজ ডিভাইচত ছেভ কৰাৰ দৰে সুবিধাসমূহৰ বাবে ইউএছবি ডিভাইচসমূহৰ সৈতে সংযোগ কৰে</translation>
 <translation id="8471959340398751476">ৰেহাইসমূহ অফ কৰা আছে। আপুনি সেইবোৰ কাষ্টমাইজ মেনুখনত অন কৰিব পাৰে</translation>

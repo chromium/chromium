@@ -282,7 +282,6 @@
 <translation id="718435575166326686">このサイトを利用するには、Chromium でカメラの使用を許可する必要があります</translation>
 <translation id="7196312274710523067">Chromium を起動できませんでした。もう一度お試しください。</translation>
 <translation id="7197677400338048821">Chromium でパスワードを確認できません。24 時間後にもう一度お試しください。</translation>
-<translation id="7218568399872925918">Chromium を閉じるまで、アクセスしたサイトにお客様の情報が保存されます</translation>
 <translation id="7223968959479464213">タスク マネージャ - Chromium</translation>
 <translation id="7246575524853130370">Chromium が推定したお客様の興味 / 関心</translation>
 <translation id="7309928523159922338">広告の測定により、アクセスしたサイトは、サイトが広告のパフォーマンスを測定する際に役立つ Chromium の情報をリクエストできます。広告の測定は、サイト間で転送する情報をできるだけ少なくすることで、クロスサイト トラッキングを制限します。</translation>
@@ -354,8 +353,6 @@
 <translation id="8621669128220841554">原因不明のエラーによりインストールに失敗しました。Chromium をもう一度ダウンロードしてください。</translation>
 <translation id="8697124171261953979">この拡張機能では、Chromium の起動時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="8704119203788522458">自分好みに設定</translation>
-<translation id="8713679423359107094">Chromium のウィンドウをすべて閉じると、Cookie とサイトデータは自動的に削除されます</translation>
-<translation id="8796443464227412154">Chromium を閉じると、<ph name="BEGIN_BOLD" />ほとんどのサイトからログアウト<ph name="END_BOLD" />します。同期がオフの場合は、<ph name="BEGIN_BOLD" />Google サービスと Chromium からもログアウト<ph name="END_BOLD" />します。</translation>
 <translation id="8796602469536043152">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="8833697763442816810">Chromium OS システム</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> 閲覧履歴（このデバイスで Chromium を使用してアクセスしたサイトの記録）。</translation>

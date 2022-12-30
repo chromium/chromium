@@ -285,7 +285,6 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="718435575166326686">Du behöver ge Chromium kamerabehörighet för den här webbplatsen</translation>
 <translation id="7196312274710523067">Det gick inte att starta Chromium. Försök igen.</translation>
 <translation id="7197677400338048821">Chromium kan inte kontrollera dina lösenord. Försök igen om ett dygn.</translation>
-<translation id="7218568399872925918">Webbplatser du besöker kommer ihåg dina uppgifter tills du stänger Chromium</translation>
 <translation id="7223968959479464213">Aktivitetshanteraren – Chromium</translation>
 <translation id="7246575524853130370">Chromiums uppskattning av dina intressen</translation>
 <translation id="7309928523159922338">Genom annonsmätning kan webbplatser du besöker begära information från Chromium som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.</translation>
@@ -357,8 +356,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8621669128220841554">Installationen misslyckades på grund av ett okänt fel. Ladda ned Chromium igen.</translation>
 <translation id="8697124171261953979">Det styr också vilken sida som visas när du startar Chromium eller söker i adressfältet.</translation>
 <translation id="8704119203788522458">Det här är Chromium</translation>
-<translation id="8713679423359107094">När du stänger alla öppna fönster i Chromium rensas cookies och webbplatsdata automatiskt</translation>
-<translation id="8796443464227412154">Du <ph name="BEGIN_BOLD" />loggas ut från de flesta webbplatser<ph name="END_BOLD" /> när du stänger Chromium. Om synkronisering har inaktiverats <ph name="BEGIN_BOLD" />loggas du även ut från Googles tjänster och Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Du behöver ge Chromium behörighet att använda kameran och mikrofonen på webbplatsen</translation>
 <translation id="8833697763442816810">Chromium OS-system</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Vilken data används:<ph name="END_BOLD" /> Webbhistoriken, där webbplatser som du besökt i Chromium på den här enheten registreras.</translation>

@@ -139,7 +139,6 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="1718835860248848330">Viimase tunni jooksul</translation>
 <translation id="1724977129262658800">Parooli muutmiseks avage</translation>
 <translation id="1726477445370128854">Kui Chrome eellaadib lehed, mida võite arvatavasti külastada, võimaldab see teil kiiremini sirvida ja otsida</translation>
-<translation id="173522743738009831">Teave privaatsuse liivakasti kohta</translation>
 <translation id="1736419249208073774">Avastage</translation>
 <translation id="1749561566933687563">Järjehoidjate sünkroonimine</translation>
 <translation id="1750259112639922169">Vahelehegrupp – <ph name="TAB_COUNT" /> vahelehte</translation>
@@ -318,9 +317,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="2777555524387840389">Jäänud on <ph name="SECONDS" /> sekundit</translation>
 <translation id="2779651927720337254">ebaõnnestus</translation>
 <translation id="2781151931089541271">Jäänud on 1 sekund</translation>
-<translation id="2788468313014644040">Grupi number</translation>
 <translation id="2800066122460699237">Vaheleht <ph name="TAB_TITLE" /> suletakse</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Vaadake ja hallake salvestatud paroole oma <ph name="BEGIN_LINK" />Google'i kontol<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Järjehoidjate kõikidesse seadmetesse hankimiseks logige sisse ja lülitage sünkroonimine sisse</translation>
 <translation id="2827278682606527653">Voo kaardimenüü on poole kõrgusega</translation>
@@ -441,7 +438,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3384347053049321195">Jaga kujutist</translation>
 <translation id="3387650086002190359">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus failisüsteemi vigade tõttu.</translation>
 <translation id="3389286852084373014">Tekst on liiga pikk</translation>
-<translation id="3391512812407811893">Privaatsuse liivakasti prooviversioonid</translation>
 <translation id="3398320232533725830">Järjehoidjate halduri avamine</translation>
 <translation id="3407392651057365886">Rohkem lehti eellaaditakse. Lehed võidakse eellaadida Google'i serverite kaudu, kui muud saidid seda taotlevad.</translation>
 <translation id="3414952576877147120">Suurus:</translation>
@@ -913,10 +909,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="6000203700195075278">Jälgi uuesti</translation>
 <translation id="6002122790816966947">Teie seadmed</translation>
 <translation id="6005538289190791541">Soovitatud parool</translation>
-<translation id="6032091552407840792">See prooviperiood on aktiivne vaid <ph name="BEGIN_LINK" />teatud piirkondades<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791"><ph name="BEGIN_LINK" />Privaatsuse liivakasti<ph name="END_LINK" /> abil arendab Chrome uusi tehnoloogiaid, mille abil kaitsta teid saidiülese jälgimise eest, säilitades siiski juurdepääsu avatud veebile.
-
-Privaatsuse liivakasti prooviperioodid on endiselt arendusjärgus ja saadaval vaid valitud piirkondades. Praegu võivad saidid privaatsuse liivakasti proovida, kasutades jätkuvalt ka muid veebitehnoloogiaid, nagu kolmandate osapoolte küpsisefailid.</translation>
 <translation id="6039379616847168523">Järgmisele vahelehele liikumine</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="604124094241169006">Automaatne</translation>
@@ -1248,7 +1240,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7791543448312431591">Lisa</translation>
 <translation id="7798392620021911922">Taastati <ph name="TAB_COUNT" /> vahelehte</translation>
 <translation id="780301667611848630">Ei, aitäh</translation>
-<translation id="7805768142964895445">Olek</translation>
 <translation id="7808889146555843082">Selle parooli eemaldamisel ei kustutata teie kontot saidil <ph name="SITE" />. Muutke oma parooli või kustutage saidil <ph name="SITE" /> olev konto, et parooli kaitsta.</translation>
 <translation id="7810647596859435254">Ava rakendusega …</translation>
 <translation id="7815484226266492798">Pikk ekraanipilt</translation>
@@ -1382,11 +1373,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8461694314515752532">Krüpteeri sünkroonitud andmed sünkroonimisparooliga</translation>
 <translation id="8466613982764129868">Veenduge, et seadmel <ph name="TARGET_DEVICE_NAME" /> oleks internetiühendus</translation>
 <translation id="8473863474539038330">Aadressid ja muu</translation>
-<translation id="8481921391193215807">Kui see on sisse lülitatud, võivad saidid oma sisu ja teenuste pakkumiseks kasutada siin kuvatud privaatsust säilitavaid meetodeid. Need hõlmavad saitidevahelise jälgimise alternatiive. Aja jooksul võidakse lisada rohkem prooviversioone.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklaamijad ja väljaandjad saavad kasutada FLoC-tehnoloogiat.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklaamijad ja väljaandjad saavad reklaamide tõhusust uurida viisil, mis teie tegevusi saitidel ei jälgi.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Prooviversiooni funktsioonid on sisse lülitatud</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Lehe Ajalugu avamine</translation>
@@ -1432,9 +1418,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8664979001105139458">Faili nimi on juba olemas</translation>
 <translation id="8666759526542103597">Teave brauseripõhise reklaamide isikupärastamise kohta</translation>
 <translation id="8676789164135894283">Sisselogimise kinnitused</translation>
-<translation id="867767487203716855">Järgmine värskendus</translation>
 <translation id="8683039184091909753">pilt</translation>
-<translation id="8683081248374354009">Lähtesta grupp</translation>
 <translation id="869891660844655955">Aegumiskuupäev</translation>
 <translation id="8699120352855309748">Ära paku nende keelte tõlkimist</translation>
 <translation id="8712637175834984815">Selge</translation>

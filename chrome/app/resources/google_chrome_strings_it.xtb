@@ -116,7 +116,6 @@
 <translation id="3038232873781883849">In attesa dell'installazione…</translation>
 <translation id="3059710691562604940">Navigazione sicura è disattivata. Chrome consiglia di attivarla.</translation>
 <translation id="3065168410429928842">Scheda Chrome</translation>
-<translation id="3069821012350118710">I siti visitati memorizzano le tue informazioni fino alla chiusura di Chrome</translation>
 <translation id="3080151273017101988">Continua a eseguire applicazioni in background dopo la chiusura di Google Chrome</translation>
 <translation id="3089968997497233615">È disponibile una nuova versione più sicura di Google Chrome.</translation>
 <translation id="3100998948628680988">Assegna un nome al tuo profilo Chrome</translation>
@@ -244,7 +243,6 @@
 <translation id="5804318322022881572">Impossibile avviare Chrome. Riprova.</translation>
 <translation id="5867197326698922595">Google Chrome sta cercando di modificare le password.</translation>
 <translation id="5895138241574237353">Riavvia</translation>
-<translation id="5901850848447342934">Quando chiudi Chrome, verrà <ph name="BEGIN_BOLD" />eseguita la disconnessione dalla maggior parte dei siti<ph name="END_BOLD" />. Se la sincronizzazione è disattivata, verrà anche <ph name="BEGIN_BOLD" />eseguita la disconnessione dai servizi Google e da Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Accesso rete</translation>
 <translation id="5924017743176219022">Connessione a Internet in corso…</translation>
 <translation id="5940385492829620908">Il tuoi siti web, i tuoi segnalibri e gli altri contenuti Chrome sempre disponibili e aggiornati qui.</translation>
@@ -381,7 +379,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8614913330719544658">Google Chrome non risponde. Riavviarlo ora?</translation>
 <translation id="861702415419836452">Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome verrà riavviato tra 1 minuto}other{Chrome verrà riavviato tra # minuti}}</translation>
-<translation id="8629311577791198377">Quando chiudi tutte le finestre di Chrome, i cookie e i dati dei siti vengono cancellati automaticamente</translation>
 <translation id="8641606876632989680">Chrome ti invierà una notifica quando esegui l'accesso con una password compromessa</translation>
 <translation id="8649026945479135076">È normale che i siti che visiti memorizzino argomenti di tuo interesse per personalizzare la tua esperienza. I siti possono anche memorizzare su Chrome informazioni relative ai tuoi interessi.</translation>
 <translation id="8669527147644353129">Supporto Google Chrome</translation>

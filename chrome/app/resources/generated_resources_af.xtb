@@ -1249,6 +1249,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2104166991923847969">Skakel warmkol outomaties af</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> is versteek</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Foonnommer}other{# foonnommers}}</translation>
+<translation id="2110941575868943054">Toegelaat om na Bluetooth-toestelle te soek</translation>
 <translation id="211144231511833662">Vee soorte uit</translation>
 <translation id="2111670510994270194">Nuwe oortjie aan die regterkant</translation>
 <translation id="2112554630428445878">Welkom, <ph name="USERNAME" /></translation>
@@ -3043,6 +3044,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3756485814916578707">Skerm word tans uitgesaai</translation>
 <translation id="3756578970075173856">Stel PIN</translation>
 <translation id="3756795331760037744">Laat Google Assistent toe om inligting op <ph name="SUPERVISED_USER_NAME" /> se skerm te gebruik om te help</translation>
+<translation id="3756806135608816820">Werwe kan vra om Bluetooth-toestelle te soek</translation>
 <translation id="3757733214359997190">Geen werwe gekry nie</translation>
 <translation id="375841316537350618">Laai tans instaanbedienerskrip af …</translation>
 <translation id="3758842566811519622">Webkoekies is gestel</translation>
@@ -4544,7 +4546,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5158206172605340248">Aksentmerkkieslys is toegemaak.</translation>
 <translation id="5159094275429367735">Stel Crostini op</translation>
 <translation id="5159419673777902220">Jou ouer het uitbreidingtoestemmings gedeaktiveer</translation>
-<translation id="5159643365935452998">Gaan outomatiese dataskoonmaak na</translation>
 <translation id="5160634252433617617">Fisieke sleutelbord</translation>
 <translation id="5160857336552977725">Meld by jou <ph name="DEVICE_TYPE" /> aan</translation>
 <translation id="5161251470972801814">USB-toestelle vanaf <ph name="VENDOR_NAME" /></translation>
@@ -5019,6 +5020,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5600706100022181951"><ph name="UPDATE_SIZE_MB" /> MB se mobiele data sal gebruik word om opdatering af te laai. Wil jy voortgaan?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Mag nie aan MIDI-toestelle koppel nie</translation>
+<translation id="5601833336918638013">Moenie werwe toelaat om Bluetooth-toestelle te soek nie</translation>
 <translation id="5602765853043467355">Vee boekmerke, geskiedenis, wagwoorde en meer van hierdie toestel af uit</translation>
 <translation id="5605758115928394442">'n Kennisgewing is na jou foon toe gestuur om te bevestig dat dit jy is.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Hierdie uitbreiding is geblokkeer}other{Hierdie uitbreidings is geblokkeer}}</translation>
@@ -6477,6 +6479,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6960507406838246615">Linux-opdatering word vereis</translation>
 <translation id="6960648667961844909">Kon nie <ph name="LANGUAGE" />-spraaklêers aflaai nie. Sal later probeer aflaai. Spraak word na Google toe gestuur vir verwerking totdat aflaai voltooi is.</translation>
 <translation id="696103774840402661">Alle lêers en plaaslike data vir alle gebruikers op hierdie <ph name="DEVICE_TYPE" /> is permanent uitgevee.</translation>
+<translation id="6961327401577924850">Werwe soek gewoonlik na Bluetooth-toestelle vir kenmerke soos om ’n lae-energiebaken, ’n gesondheid- of fiksheidnaspoorder, of ’n slimgloeilamp op te stel of te sinkroniseer</translation>
 <translation id="6963872466817251924">Teksskermpyltjiemerker</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Verwyder uit groep</translation>
@@ -8113,6 +8116,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> het jou toestemming nodig om te werk</translation>
 <translation id="8466417995783206254">Hierdie oortjie speel tans 'n video in prent-in-prent-modus.</translation>
 <translation id="8467326454809944210">Kies 'n ander taal</translation>
+<translation id="8468087214092422866">Nie toegelaat om na Bluetooth-toestelle te soek nie</translation>
 <translation id="8470513973197838199">Gestoorde wagwoorde vir <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Werwe koppel gewoonlik aan USB-toestelle vir kenmerke soos om 'n dokument te druk of om op 'n bergingtoestel te stoor</translation>
 <translation id="8471959340398751476">Afslag is af. Jy kan dit in die gepasmaakte kieslys aanskakel</translation>

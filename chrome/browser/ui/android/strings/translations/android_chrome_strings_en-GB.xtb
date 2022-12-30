@@ -139,7 +139,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1718835860248848330">Last hour</translation>
 <translation id="1724977129262658800">Unlock to edit your password</translation>
 <translation id="1726477445370128854">You can browse and search faster when Chrome preloads pages that it thinks you might visit</translation>
-<translation id="173522743738009831">About Privacy Sandbox</translation>
 <translation id="1736419249208073774">Explore</translation>
 <translation id="1749561566933687563">Sync your bookmarks</translation>
 <translation id="1750259112639922169">Tab group – <ph name="TAB_COUNT" /> tabs</translation>
@@ -318,9 +317,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="2777555524387840389"><ph name="SECONDS" /> secs left</translation>
 <translation id="2779651927720337254">failed</translation>
 <translation id="2781151931089541271">1 sec left</translation>
-<translation id="2788468313014644040">Group number</translation>
 <translation id="2800066122460699237">The tab <ph name="TAB_TITLE" /> will be closed</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">To get your bookmarks on all your devices, sign in and turn on sync</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -441,7 +438,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3384347053049321195">Share image</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> download failed due to file system errors.</translation>
 <translation id="3389286852084373014">Text is too large</translation>
-<translation id="3391512812407811893">Privacy Sandbox trials</translation>
 <translation id="3398320232533725830">Open the bookmarks manager</translation>
 <translation id="3407392651057365886">More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites.</translation>
 <translation id="3414952576877147120">Size:</translation>
@@ -913,10 +909,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="6000203700195075278">Refollow</translation>
 <translation id="6002122790816966947">Your devices</translation>
 <translation id="6005538289190791541">Suggested password</translation>
-<translation id="6032091552407840792">This trial is active only in <ph name="BEGIN_LINK" />some regions<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">With <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome is developing new technologies to safeguard you from cross-site tracking while preserving the open web.
-
-Privacy Sandbox trials are still in active development and are available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies.</translation>
 <translation id="6039379616847168523">Jump to the next tab</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="604124094241169006">Automatic</translation>
@@ -1248,7 +1240,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7791543448312431591">Add</translation>
 <translation id="7798392620021911922">Restored <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="780301667611848630">No, thanks</translation>
-<translation id="7805768142964895445">Status</translation>
 <translation id="7808889146555843082">Deleting this password will not delete your account on <ph name="SITE" />. Change your password or delete your account on <ph name="SITE" /> to keep it safe from others.</translation>
 <translation id="7810647596859435254">Open with…</translation>
 <translation id="7815484226266492798">Long screenshot</translation>
@@ -1382,11 +1373,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8461694314515752532">Encrypt synced data with your own sync passphrase</translation>
 <translation id="8466613982764129868">Make sure that <ph name="TARGET_DEVICE_NAME" /> is connected to the Internet</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
-<translation id="8481921391193215807">When on, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.
-
-<ph name="BEGIN_LIST_ITEM1" />Advertisers and publishers can use FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Advertisers and publishers can study the effectiveness of ads in a way that does not track you across sites.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Trial features are on</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Open the history page</translation>
@@ -1432,9 +1418,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8664979001105139458">File name already exists</translation>
 <translation id="8666759526542103597">About browser-based ad personalisation</translation>
 <translation id="8676789164135894283">Sign-in verifications</translation>
-<translation id="867767487203716855">Next update</translation>
 <translation id="8683039184091909753">image</translation>
-<translation id="8683081248374354009">Reset group</translation>
 <translation id="869891660844655955">Expiry date</translation>
 <translation id="8699120352855309748">Don’t offer to translate these languages</translation>
 <translation id="8712637175834984815">Got it</translation>

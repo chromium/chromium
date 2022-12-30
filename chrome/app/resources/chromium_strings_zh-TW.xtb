@@ -282,7 +282,6 @@
 <translation id="718435575166326686">Chromium 需要相機權限，才能執行這個網站要求的功能</translation>
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>
 <translation id="7197677400338048821">Chromium 無法檢查你的密碼，請於 24 小時後再試。</translation>
-<translation id="7218568399872925918">在 Chromium 關閉前，你造訪的網站會記住你的資訊</translation>
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
 <translation id="7246575524853130370">Chromium 推測的興趣喜好</translation>
 <translation id="7309928523159922338">廣告評估功能會允許你造訪的網站向 Chromium 要求資訊，以便協助網站評估自家廣告的成效。廣告評估功能會盡可能減少網站之間分享資訊的情況，藉此限制跨網站追蹤行為。</translation>
@@ -355,8 +354,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8621669128220841554">不明錯誤導致安裝失敗，請重新下載 Chromium。</translation>
 <translation id="8697124171261953979">這個擴充功能也會控管 Chromium 啟動時或你使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="8704119203788522458">這是你專屬的 Chromium</translation>
-<translation id="8713679423359107094">當你關閉所有 Chromium 視窗時，系統會自動清除 Cookie 和網站資料</translation>
-<translation id="8796443464227412154">關閉 Chromium 會導致你<ph name="BEGIN_BOLD" />從大部分的網站登出<ph name="END_BOLD" />。如果關閉同步處理功能，你也會<ph name="BEGIN_BOLD" />從 Google 服務和 Chromium 登出<ph name="END_BOLD" />。</translation>
 <translation id="8796602469536043152">Chromium 需要相關權限，才能讓這個網站使用你的攝影機和麥克風</translation>
 <translation id="8833697763442816810">Chromium OS 系統</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />我們會使用哪些資料：<ph name="END_BOLD" />你的瀏覽記錄，也就是在這部裝置上透過 Chromium 造訪網站的記錄。</translation>

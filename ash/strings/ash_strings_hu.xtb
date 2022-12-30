@@ -926,6 +926,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6043212731627905357">Ez a monitor nem illik össze <ph name="DEVICE_TYPE" />-eszközével (a monitor nem támogatott).</translation>
 <translation id="6043994281159824495">Kijelentkezés most</translation>
+<translation id="6045629311476491587"><ph name="APP_COUNT" /> alkalmazás használja</translation>
 <translation id="6047696787498798094">A képernyőmegosztás leáll, amikor másik felhasználóra vált. Folytatja?</translation>
 <translation id="6054305421211936131">Bejelentkezés intelligens kártyával</translation>
 <translation id="6059276912018042191">Nemrég megnyitott Chrome-lapok</translation>

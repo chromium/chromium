@@ -1233,6 +1233,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2104166991923847969">Hotspot avtomatik deaktiv edilsin</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> gizlədilib</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefon nömrəsi}other{# telefon nömrəsi}}</translation>
+<translation id="2110941575868943054">Bluetooth cihazlarını axtarmağa icazə verilir</translation>
 <translation id="211144231511833662">Növləri silin</translation>
 <translation id="2111670510994270194">Sağa yeni panel</translation>
 <translation id="2112554630428445878">Xoş gəlmisiniz, <ph name="USERNAME" /></translation>
@@ -3027,6 +3028,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3756485814916578707">Ekran yayımlanır</translation>
 <translation id="3756578970075173856">PIN ayarlayın</translation>
 <translation id="3756795331760037744">Google Assistentin kömək etməsi üçün <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin ekranındakı məlumatdan istifadə etməsinə icazə verin</translation>
+<translation id="3756806135608816820">Saytlar Bluetooth cihazlarını axtarmağı istəyə bilər</translation>
 <translation id="3757733214359997190">Sayt tapılmadı</translation>
 <translation id="375841316537350618">Proksi skripti endirilir...</translation>
 <translation id="3758842566811519622">Kuki dəsti</translation>
@@ -4525,7 +4527,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5158206172605340248">Vurğu işarələri menyusu qapadılıb.</translation>
 <translation id="5159094275429367735">Crostini'ni ayarlayın</translation>
 <translation id="5159419673777902220">Valideyniniz artırma icazələrini deaktiv edib</translation>
-<translation id="5159643365935452998">Avtomatik data silinməsini nəzərdən keçirin</translation>
 <translation id="5160634252433617617">Fiziki klaviatura</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> cihazınıza daxil olun</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> adlı təminatçıdan USB cihazları</translation>
@@ -5000,6 +5001,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5600706100022181951">Güncəlləmə <ph name="UPDATE_SIZE_MB" /> MB mobil data istifadə edərək endiriləcək. Davam etmək istərdiniz?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI cihazlarına qoşulmağa icazə verilməyib</translation>
+<translation id="5601833336918638013">Saytlara Bluetooth cihazlarını axtarmağa icazə verməyin</translation>
 <translation id="5602765853043467355">Bu cihazda əlfəcin, tarixçə, parollar və daha çoxunu silin</translation>
 <translation id="5605758115928394442">Kimliyinizi doğrulamaq üçün telefona bildiriş göndərildi.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Bu artırma bloklanıb}other{Bu artırmalar bloklanıb}}</translation>
@@ -6455,6 +6457,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6960507406838246615">Linux güncəlləməsi tələb edilir</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> dilində danışıq fayllarını endirmək mümkün olmadı. Endirməyə daha sonra cəhd ediləcək. Danışıq endirmə tamamlanana qədər emal üçün Google'a göndərilir.</translation>
 <translation id="696103774840402661">Bu <ph name="DEVICE_TYPE" /> cihazındakı bütün istifadəçilər üçün bütün fayllar və yerli data həmişəlik silinib.</translation>
+<translation id="6961327401577924850">Saytlar adətən aşağı enerji mayakını, sağlamlıq və ya fitnes izləyicisini, yaxud smart işıq lampasını qurmaq və ya sinxronlaşdırmaq kimi xüsusiyyətlər üçün Bluetooth cihazlarını axrarır</translation>
 <translation id="6963872466817251924">Mətn kursoru vurğulayıcısı</translation>
 <translation id="6964390816189577014">Qəhrəman</translation>
 <translation id="6964760285928603117">Qrupdan Çıxarın</translation>
@@ -8091,6 +8094,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> işləmək üçün icazənizi gözləyir</translation>
 <translation id="8466417995783206254">Bu tab şəkil içində şəkil funksiyasında video oxudur.</translation>
 <translation id="8467326454809944210">Başqa dil seçin</translation>
+<translation id="8468087214092422866">Bluetooth cihazlarını axtarmağa icazə verilmir</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> üçün parollar yadda saxlanıldı</translation>
 <translation id="8471525937465764768">Saytlar adətən sənəd çap etmək və ya yaddaş cihazında saxlamaq kimi xüsusiyyətlər üçün USB cihazlarına qoşulur</translation>
 <translation id="8471959340398751476">Endirimlər deaktivdir. Onları fərdiləşdirmə menyusunda aktiv edə bilərsiniz</translation>

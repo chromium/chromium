@@ -139,7 +139,6 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1724977129262658800">Desbloqueie para editar sua senha</translation>
 <translation id="1726477445370128854">Você pode navegar e fazer buscas mais rápido quando o Chrome pré-carrega páginas que acredita serem de seu interesse</translation>
-<translation id="173522743738009831">Sobre o Sandbox de privacidade</translation>
 <translation id="1736419249208073774">Explorar</translation>
 <translation id="1749561566933687563">Sincronize seus favoritos</translation>
 <translation id="1750259112639922169">Grupo de guias: <ph name="TAB_COUNT" /> guias</translation>
@@ -318,9 +317,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundos restantes</translation>
 <translation id="2779651927720337254">falha</translation>
 <translation id="2781151931089541271">Um segundo restante</translation>
-<translation id="2788468313014644040">Número do grupo</translation>
 <translation id="2800066122460699237">A guia <ph name="TAB_TITLE" /> será fechada</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Ver e gerenciar as senhas salvas na sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Para ter seus favoritos em todos os seus dispositivos, faça login e ative a sincronização</translation>
 <translation id="2827278682606527653">O menu do card do feed está aberto pela metade</translation>
@@ -441,7 +438,6 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="3384347053049321195">Compartilhar imagem</translation>
 <translation id="3387650086002190359">Falha no download de <ph name="FILE_NAME" /> devido a erros do sistema de arquivos.</translation>
 <translation id="3389286852084373014">O texto está grande demais</translation>
-<translation id="3391512812407811893">Testes do Sandbox de privacidade</translation>
 <translation id="3398320232533725830">Abrir o gerenciador de favoritos</translation>
 <translation id="3407392651057365886">Mais páginas são pré-carregadas. As páginas podem ser pré-carregadas por servidores do Google quando solicitado por outros sites.</translation>
 <translation id="3414952576877147120">Tamanho:</translation>
@@ -914,10 +910,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="6000203700195075278">Voltar a seguir</translation>
 <translation id="6002122790816966947">Seus dispositivos</translation>
 <translation id="6005538289190791541">Senha sugerida</translation>
-<translation id="6032091552407840792">Esse teste está disponível apenas em <ph name="BEGIN_LINK" />algumas regiões<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Com o <ph name="BEGIN_LINK" />Sandbox de privacidade<ph name="END_LINK" />, o Chrome está desenvolvendo novas tecnologias de proteção contra mecanismos de rastreamento entre sites, preservando uma Internet livre.
-
-Os testes dessa tecnologia ainda estão em desenvolvimento ativo e estão disponíveis apenas em algumas regiões. Por enquanto, os sites podem testar o Sandbox de privacidade enquanto continuam usando as tecnologias atuais da Web, como cookies de terceiros.</translation>
 <translation id="6039379616847168523">Ir para a próxima guia</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604124094241169006">Automático</translation>
@@ -1249,7 +1241,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> guias restauradas</translation>
 <translation id="780301667611848630">Não</translation>
-<translation id="7805768142964895445">Status</translation>
 <translation id="7808889146555843082">Remover a senha não excluirá a conta em <ph name="SITE" />. Mude a senha ou exclua a conta em <ph name="SITE" /> para protegê-la.</translation>
 <translation id="7810647596859435254">Abrir com…</translation>
 <translation id="7815484226266492798">Captura de tela longa</translation>
@@ -1383,11 +1374,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
 <translation id="8466613982764129868">Verifique se o <ph name="TARGET_DEVICE_NAME" /> está conectado à Internet</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
-<translation id="8481921391193215807">Quando esse recurso estiver ativado, os sites poderão usar as técnicas de preservação de privacidade mostradas aqui para exibir conteúdo e serviços. Isso inclui alternativas ao rastreamento entre sites. Ao longo do tempo, é possível que outros testes sejam adicionados.
-
-<ph name="BEGIN_LIST_ITEM1" />Anunciantes e editores podem usar o FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Eles também podem analisar a eficácia dos anúncios sem rastrear suas ações em sites.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Os recursos de teste estão ativados</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Abrir Histórico</translation>
@@ -1433,9 +1419,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8664979001105139458">O nome do arquivo já existe</translation>
 <translation id="8666759526542103597">Sobre a personalização de anúncios com base no navegador</translation>
 <translation id="8676789164135894283">Verificações de login</translation>
-<translation id="867767487203716855">Próxima atualização</translation>
 <translation id="8683039184091909753">imagem</translation>
-<translation id="8683081248374354009">Redefinir grupo</translation>
 <translation id="869891660844655955">Validade</translation>
 <translation id="8699120352855309748">Não oferecer a opção de traduzir estes idiomas</translation>
 <translation id="8712637175834984815">Entendi</translation>

@@ -1234,6 +1234,7 @@
 <translation id="2104166991923847969">હૉટસ્પૉટ ઑટોમૅટિક રીતે બંધ કરો</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> છુપાવેલા છે</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ફોન નંબર}one{# ફોન નંબર}other{# ફોન નંબર}}</translation>
+<translation id="2110941575868943054">બ્લૂટૂથ ડિવાઇસ શોધવા માટે મંજૂરી છે</translation>
 <translation id="211144231511833662">ડિવાઇસના પ્રકારો સાફ કરો</translation>
 <translation id="2111670510994270194">જમણી બાજુએ નવું ટૅબ</translation>
 <translation id="2112554630428445878">સ્વાગત છે, <ph name="USERNAME" /></translation>
@@ -3026,6 +3027,7 @@
 <translation id="3756485814916578707">સ્ક્રીનને કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="3756578970075173856">પિન સેટ કરો</translation>
 <translation id="3756795331760037744">સહાય કરવા માટે Google Assistantને <ph name="SUPERVISED_USER_NAME" />ની સ્ક્રીન પરની માહિતીનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
+<translation id="3756806135608816820">બ્લૂટૂથ ડિવાઇસ શોધવા માટે સાઇટ પૂછી શકશે</translation>
 <translation id="3757733214359997190">કોઈ સાઇટ મળી નથી</translation>
 <translation id="375841316537350618">પ્રૉક્સી સ્ક્રિપ્ટ ડાઉનલોડ થાય છે...</translation>
 <translation id="3758842566811519622">કુકી સેટ કરી</translation>
@@ -4525,7 +4527,6 @@
 <translation id="5158206172605340248">ઉચ્ચારણ ચિહ્નોનું મેનૂ છોડી દીધું.</translation>
 <translation id="5159094275429367735">Crostiniનું સેટઅપ કરો</translation>
 <translation id="5159419673777902220">તમારા માતાપિતાએ એક્સ્ટેન્શનની પરવાનગીઓ બંધ કરી દીધી છે</translation>
-<translation id="5159643365935452998">ડેટા ઑટોમૅટિક રીતે સાફ કરવાની પ્રક્રિયાનો રિવ્યૂ કરો</translation>
 <translation id="5160634252433617617">વાસ્તવિક કીબોર્ડ</translation>
 <translation id="5160857336552977725">તમારા <ph name="DEVICE_TYPE" /> પર સાઇન ઇન કરો</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" />ના USB ડિવાઇસ</translation>
@@ -5000,6 +5001,7 @@
 <translation id="5600706100022181951">અપડેટ ડાઉનલોડ કરવામાં <ph name="UPDATE_SIZE_MB" /> MB મોબાઇલ ડેટા વપરાશે. શું તમે ચાલુ રાખવા માગો છો?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી આપેલી નથી</translation>
+<translation id="5601833336918638013">બ્લૂટૂથ ડિવાઇસ શોધવા માટે સાઇટને મંજૂરી આપશો નહીં</translation>
 <translation id="5602765853043467355">આ ડિવાઇસમાંથી બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને વધુ સાફ કરો</translation>
 <translation id="5605758115928394442">તમે જ છો તે કન્ફર્મ કરવા માટે તમારા ફોન પર નોટિફિકેશન મોકલવામાં આવ્યું હતું.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}one{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}other{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યા છે}}</translation>
@@ -6461,6 +6463,7 @@ USB ડિવાઇસ</translation>
 <translation id="6960507406838246615">Linux અપડેટ જરૂરી છે</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> સ્પીચ ફાઇલો ડાઉનલોડ કરી શકાઈ નથી. થોડા સમય પછી ડાઉનલોડ કરવાનો પ્રયાસ કરવામાં આવશે. ડાઉનલોડ પૂર્ણ થાય ત્યાં સુધી, Googleને પ્રક્રિયા કરવા માટે સ્પીચ મોકલવામાં આવે છે.</translation>
 <translation id="696103774840402661">આ <ph name="DEVICE_TYPE" /> પરના બધા વપરાશકર્તાઓ માટેની તમામ ફાઇલો અને સ્થાનિક ડેટા કાયમ માટે ડિલીટ કરવામાં આવ્યો છે.</translation>
+<translation id="6961327401577924850">ઊર્જાનો ઓછા વપરાશવાળું કોઈ બીકન, કોઈ સ્વાસ્થ્ય કે ફિટનેસ ટ્રૅકર અથવા કોઈ સ્માર્ટ લાઇટ બલ્બનું સેટઅપ કરવા કે તેને સિંક કરવા જેવી સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે બ્લૂટૂથ ડિવાઇસ શોધે છે</translation>
 <translation id="6963872466817251924">ટેક્સ્ટ કર્સર હાઇલાઇટર</translation>
 <translation id="6964390816189577014">હીરો</translation>
 <translation id="6964760285928603117">ગ્રૂપમાંથી દૂર કરો</translation>
@@ -8090,6 +8093,7 @@ USB ડિવાઇસ</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ને ચલાવવા માટે તમારી પરવાનગીની જરૂર છે</translation>
 <translation id="8466417995783206254">આ ટૅબમાં ચિત્રમાં ચિત્ર મોડમાં વીડિઓ ચાલી રહ્યો છે.</translation>
 <translation id="8467326454809944210">બીજી ભાષા પસંદ કરો</translation>
+<translation id="8468087214092422866">બ્લૂટૂથ ડિવાઇસ શોધવા માટે કોઈ મંજૂરી નથી</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> માટે સાચવેલા પાસવર્ડ</translation>
 <translation id="8471525937465764768">દસ્તાવેજ પ્રિન્ટ કરવા જેવી અથવા સ્ટોરેજ ડિવાઇસમાં સાચવવા જેવી સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે USB ડિવાઇસ સાથે કનેક્ટ કરે છે</translation>
 <translation id="8471959340398751476">છૂટ મેળવવાની સુવિધા બંધ છે. તમે તેને 'કસ્ટમાઇઝ કરો' મેનૂમાં જઈને ચાલુ કરી શકો છો</translation>

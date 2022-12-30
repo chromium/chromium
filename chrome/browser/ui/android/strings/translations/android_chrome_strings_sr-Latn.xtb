@@ -139,7 +139,6 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="1718835860248848330">Poslednjih sat vremena</translation>
 <translation id="1724977129262658800">Otključajte da biste izmenili lozinku</translation>
 <translation id="1726477445370128854">Možete da pregledate i pretražujete brže kada Chrome predučita stranice za koje smatra da ćete ih možda posetiti</translation>
-<translation id="173522743738009831">O Zaštićenom okruženju privatnosti</translation>
 <translation id="1736419249208073774">Istraži</translation>
 <translation id="1749561566933687563">Sinhronizujte obeleživače</translation>
 <translation id="1750259112639922169">Grupa kartica – kartica: <ph name="TAB_COUNT" /></translation>
@@ -318,9 +317,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="2777555524387840389">Još <ph name="SECONDS" /> sek</translation>
 <translation id="2779651927720337254">nije uspelo</translation>
 <translation id="2781151931089541271">Još 1 sek</translation>
-<translation id="2788468313014644040">Broj grupe</translation>
 <translation id="2800066122460699237">Kartica <ph name="TAB_TITLE" /> će biti zatvorena</translation>
-<translation id="2806840421670364300">Grupisani podaci o kohortama</translation>
 <translation id="281504910091592009">Pregledajte sačuvane lozinke i upravljajte njima na <ph name="BEGIN_LINK" />Google nalogu<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Da bi vam obeleživači bili dostupni na svim uređajima, prijavite se i uključite sinhronizaciju</translation>
 <translation id="2827278682606527653">Meni kartice fida je do polovine ekrana</translation>
@@ -441,7 +438,6 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3384347053049321195">Deli sliku</translation>
 <translation id="3387650086002190359">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog grešaka sistema datoteka.</translation>
 <translation id="3389286852084373014">Tekst je prevelik</translation>
-<translation id="3391512812407811893">Probe Zaštićenog okruženja privatnosti</translation>
 <translation id="3398320232533725830">Otvaranje Menadžera obeleživača</translation>
 <translation id="3407392651057365886">Više stranica se predučitava. Stranice mogu da budu predučitane preko Google servera kada to traže drugi sajtovi.</translation>
 <translation id="3414952576877147120">Veličina:</translation>
@@ -913,10 +909,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="6000203700195075278">Ponovo prati</translation>
 <translation id="6002122790816966947">Uređaji</translation>
 <translation id="6005538289190791541">Predložena lozinka</translation>
-<translation id="6032091552407840792">Ova proba je aktivna samo u <ph name="BEGIN_LINK" />nekim regionima<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Sa <ph name="BEGIN_LINK" />Zaštićenim okruženjem privatnosti<ph name="END_LINK" /> Chrome razvija nove tehnologije koje će vas predostrožno zaštititi od praćenja na više sajtova uz očuvanje otvorenog veba.
-
-Aktivno programiranje proba Zaštićenog okruženja privatnosti je još uvek u toku i one su dostupne u određenim regionima. Sajtovi za sada mogu da isprobaju Zaštićeno okruženje privatnosti, a da i dalje koriste aktuelne veb-tehnologije poput kolačića trećih strana.</translation>
 <translation id="6039379616847168523">Prelazak na sledeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>
@@ -1248,7 +1240,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Vraćene kartice: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ne, hvala</translation>
-<translation id="7805768142964895445">Status</translation>
 <translation id="7808889146555843082">Brisanjem ove lozinke nećete izbrisati nalog na <ph name="SITE" />. Promenite lozinku ili izbrišite nalog na <ph name="SITE" /> da biste ga zaštitili od drugih.</translation>
 <translation id="7810647596859435254">Otvori pomoću…</translation>
 <translation id="7815484226266492798">Dugačak snimak ekrana</translation>
@@ -1382,11 +1373,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8461694314515752532">Šifrujte sinhronizovane podatke pomoću sopstvene pristupne fraze za sinhronizaciju</translation>
 <translation id="8466613982764129868">Uverite se da je <ph name="TARGET_DEVICE_NAME" /> povezan na internet</translation>
 <translation id="8473863474539038330">Adrese i drugo</translation>
-<translation id="8481921391193215807">Kada je ovo uključeno, sajtovi mogu da koriste tehnike za očuvanje privatnosti koje su prikazane ovde da bi pružali sadržaj i usluge. One obuhvataju alternative za praćenje na više sajtova. Možda će tokom vremena biti dodato još proba.
-
-<ph name="BEGIN_LIST_ITEM1" />Oglašavači i objavljivači mogu da koriste grupisane podatke o kohortama.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Oglašavači i objavljivači mogu da proučavaju efikasnost oglasa na način koji vas ne prati na sajtovima.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Probne funkcije su uključene</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Otvaranje stranice istorija</translation>
@@ -1432,9 +1418,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8664979001105139458">Ime datoteke već postoji</translation>
 <translation id="8666759526542103597">O personalizaciji oglasa na osnovu pregledača</translation>
 <translation id="8676789164135894283">Potvrde prijavljivanja</translation>
-<translation id="867767487203716855">Sledeće ažuriranje</translation>
 <translation id="8683039184091909753">slika</translation>
-<translation id="8683081248374354009">Resetuj grupu</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699120352855309748">Ne nudi prevod ovih jezika</translation>
 <translation id="8712637175834984815">Važi</translation>

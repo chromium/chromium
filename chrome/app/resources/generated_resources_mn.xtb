@@ -3808,6 +3808,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> нь <ph name="FOLDERNAME" />-н файлыг засах боломжтой</translation>
 <translation id="4470957202018033307">Гадаад санах ойн сонголт</translation>
 <translation id="4471354919263203780">Яриа таних файлыг татаж байна... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Та Google Бүртгэлийн сонгосон хэлээ ашиглах боломжтой (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Chrome-н онцлог болон гүйцэтгэлийг сайжруулахад туслах</translation>
 <translation id="4472575034687746823">Эхлүүлэх</translation>
 <translation id="4474155171896946103">Бүх цонхнуудыг хадгалж жагсаах ...</translation>
@@ -4538,7 +4539,6 @@
 <translation id="5158206172605340248">Өргөлтийн тэмдгийн цэс хаалттай байна.</translation>
 <translation id="5159094275429367735">Crostini-г тохируулах</translation>
 <translation id="5159419673777902220">Таны эцэг эх өргөтгөлийн зөвшөөрлийг идэвхгүй болгосон.</translation>
-<translation id="5159643365935452998">Өгөгдлийг автоматаар арилгахыг шалгах</translation>
 <translation id="5160634252433617617">Биет гар</translation>
 <translation id="5160857336552977725">Өөрийн <ph name="DEVICE_TYPE" /> руу нэвтэрч орно уу</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" />-н USB төхөөрөмжүүд</translation>
@@ -6746,6 +6746,7 @@
 <translation id="7227458944009118910">Доор жагсаасан аппууд мөн протоколын холбоосыг зохицуулах боломжтой. Бусад апп зөвшөөрөл хүснэ.</translation>
 <translation id="7228056665272655255">Хурууны хээ тохируулахын тулд хүүхдээрээ гарын баруун дээд буланд байх хурууны хээ мэдрэгчид хурууг нь хүргүүлнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ өгөгдөл энэ <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="7228523857728654909">Дэлгэцийн түгжээ болон нэвтрэлт</translation>
+<translation id="7228854227189381547">Сэлгэхгүй</translation>
 <translation id="7230222852462421043">&amp;Цонхыг сэргээх</translation>
 <translation id="7231260028442989757">Утасныхaa мэдэгдлүүдийг харж, хааж мөн тэдгээрт хариу бичнэ үү</translation>
 <translation id="7232750842195536390">Нэрийг өөрчилж чадсангүй</translation>
@@ -7079,6 +7080,7 @@
 <translation id="7545466883021407599">Сервертэй холбогдож чадсангүй. Сүлжээний холболтоо шалгаад, дахин оролдоно уу. Хэрэв асуудалтай хэвээр байвал та Chromebook-ээ дахин эхлүүлж үзнэ үү. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Анхааруулга: Таны <ph name="PRODUCT_NAME" /> тохиргоонууд нь сүлжээний драйв дээр хадгалагдсан байна.  Энэ нь удаашруулах, эвдрэл үүсгэх эсвэл мэдээлэл алдагдахад хүргэж болно.</translation>
 <translation id="7548856833046333824">Lemonade</translation>
+<translation id="7549434883223124329">Төхөөрөмжийн хэлийг сэлгэх үү?</translation>
 <translation id="7550830279652415241">Хадгалагдсан хуудас_ <ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> татанж авах үйлдэл амжилтгүй</translation>
 <translation id="7551643184018910560">Програмын жагсаалтын өмнө гаргах</translation>

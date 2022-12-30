@@ -281,7 +281,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="718435575166326686">A Chromiumnak kamerahasználati engedélyre van szüksége ehhez a webhelyhez</translation>
 <translation id="7196312274710523067">Nem sikerült a Chromium elindítása. Próbálkozzon újra.</translation>
 <translation id="7197677400338048821">A Chromium nem tudja ellenőrizni a jelszavait. Próbálja újra 24 óra múlva.</translation>
-<translation id="7218568399872925918">A felkeresett webhelyek megjegyzik az Ön adatait a Chromium bezárásáig</translation>
 <translation id="7223968959479464213">Feladatkezelő -- Chromium</translation>
 <translation id="7246575524853130370">Az Ön Chromium által megbecsült érdeklődési körei</translation>
 <translation id="7309928523159922338">A hirdetésmérés segítségével az Ön által felkeresett webhelyek olyan adatokat kérhetnek a Chromiumtól, amelyek segítségével a webhely mérheti hirdetéseinek teljesítményét. A hirdetésmérés azáltal korlátozza a webhelyeken átnyúló nyomon követést, hogy a lehető legkevesebb adatot továbbítja a webhelyek között.</translation>
@@ -353,8 +352,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8621669128220841554">A telepítés egy meg nem határozott hiba miatt nem sikerült. Kérjük, töltse le újra a Chromiumot.</translation>
 <translation id="8697124171261953979">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Chromium indításakor vagy a cím- és keresősávban indított kereséskor.</translation>
 <translation id="8704119203788522458">Ez az Ön Chromiumja</translation>
-<translation id="8713679423359107094">A Chromium ablakainak bezárásakor a cookie-kat és webhelyadatokat automatikusan törli a rendszer.</translation>
-<translation id="8796443464227412154">A <ph name="BEGIN_BOLD" />legtöbb webhelyről kijelentkezteti<ph name="END_BOLD" /> Önt a rendszer a Chromium bezárásakor. Ha pedig a szinkronizálás is ki van kapcsolva, akkor <ph name="BEGIN_BOLD" />a Google-szolgáltatásokból és a Chromiumból is megtörténik a kijelentkezés<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">A Chromiumnak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához és a mikrofonhoz ennél a webhelynél</translation>
 <translation id="8833697763442816810">ChromiumOS rendszer</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />A felhasznált adatok:<ph name="END_BOLD" /> Böngészési előzményei, az Ön által az ezen az eszközön használt Chromiumban felkeresett webhelyek jegyzéke.</translation>

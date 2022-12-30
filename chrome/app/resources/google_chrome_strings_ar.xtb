@@ -119,7 +119,6 @@
 <translation id="3038232873781883849">في انتظار التثبيت...</translation>
 <translation id="3059710691562604940">‏تم إيقاف "التصفّح الآمن" ويقترح متصفّح Chrome تفعيله.</translation>
 <translation id="3065168410429928842">‏علامة تبويب Chrome</translation>
-<translation id="3069821012350118710">‏تحتفظ المواقع الإلكترونية التي تزورها بمعلوماتك إلى أن تغلق متصفّح Chrome.</translation>
 <translation id="3080151273017101988">‏استمرار تشغيل تطبيقات الخلفية عند إغلاق Google Chrome</translation>
 <translation id="3089968997497233615">‏يتوفر إصدار جديد وأكثر أمانًا لمتصفح Google Chrome.</translation>
 <translation id="3100998948628680988">‏تسمية ملفك الشخصى على Chrome</translation>
@@ -249,7 +248,6 @@
 <translation id="5804318322022881572">‏تعذَّر إطلاق Chrome. يُرجى إعادة المحاولة.</translation>
 <translation id="5867197326698922595">‏يحاول Google Chrome تعديل كلمات المرور.</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
-<translation id="5901850848447342934">‏سيتم <ph name="BEGIN_BOLD" />تسجيل خروجك من معظم المواقع الإلكترونية<ph name="END_BOLD" /> عند إغلاق متصفّح Chrome. إذا كانت المزامنة متوقّفة، سيتم أيضًا <ph name="BEGIN_BOLD" />تسجيل خروجك من خدمات Google ومتصفّح Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - تسجيل الدخول إلى الشبكة</translation>
 <translation id="5924017743176219022">جارٍ الاتصال بالإنترنت...</translation>
 <translation id="5940385492829620908">‏الويب والإشارات المرجعية وغيرها من عناصر Chrome توجد هنا.</translation>
@@ -382,7 +380,6 @@
 <translation id="8614913330719544658">‏لا يستجيب Google Chrome. هل تريد إعادة التشغيل الآن؟</translation>
 <translation id="861702415419836452">‏يحتاج متصفِّح Chrome إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك.</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏ستتم إعادة تشغيل Chrome في غضون دقيقة واحدة}zero{‏ستتم إعادة تشغيل Chrome في غضون # دقيقة}two{‏ستتم إعادة تشغيل Chrome في غضون دقيقتين}few{‏ستتم إعادة تشغيل Chrome في غضون # دقائق}many{‏ستتم إعادة تشغيل Chrome في غضون # دقيقةً}other{‏ستتم إعادة تشغيل Chrome في غضون # دقيقة}}</translation>
-<translation id="8629311577791198377">‏عند إغلاق جميع نوافذ Chrome، يتم تلقائيًا محو ملفات تعريف الارتباط وبيانات المواقع الإلكترونية.</translation>
 <translation id="8641606876632989680">‏في حال تسجيل الدخول باستخدام كلمة مرور محتمَل تعرّضها للاختراق، سيرسل Chrome إشعارات إليك.</translation>
 <translation id="8649026945479135076">‏غالبًا ما تتذكّر المواقع الإلكترونية التي تزورها المحتوى الذي يهمك، وذلك من أجل تخصيص تجربتك. يمكن أيضًا أن تخزّن المواقع الإلكترونية معلومات عن اهتماماتك في متصفّح Chrome.</translation>
 <translation id="8669527147644353129">‏مساعد Google Chrome</translation>

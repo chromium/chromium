@@ -139,7 +139,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="1718835860248848330">Ultima ora</translation>
 <translation id="1724977129262658800">Sblocca per modificare la password</translation>
 <translation id="1726477445370128854">Puoi eseguire ricerche e navigare più rapidamente quando Chrome precarica le pagine che ritiene tu possa visitare</translation>
-<translation id="173522743738009831">Informazioni su Privacy Sandbox</translation>
 <translation id="1736419249208073774">Esplora</translation>
 <translation id="1749561566933687563">Sincronizza i tuoi preferiti</translation>
 <translation id="1750259112639922169">Gruppo di schede - <ph name="TAB_COUNT" /> schede</translation>
@@ -318,9 +317,7 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="2777555524387840389"><ph name="SECONDS" /> sec rimanenti</translation>
 <translation id="2779651927720337254">non riuscito</translation>
 <translation id="2781151931089541271">1 sec rimanente</translation>
-<translation id="2788468313014644040">Numero del gruppo</translation>
 <translation id="2800066122460699237">La scheda <ph name="TAB_TITLE" /> verrà chiusa</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Visualizza e gestisci le password salvate nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Accedi e attiva la sincronizzazione per trovare i tuoi preferiti su tutti i dispositivi</translation>
 <translation id="2827278682606527653">Menu scheda feed aperto nella metà inferiore dello schermo</translation>
@@ -441,7 +438,6 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="3384347053049321195">Condividi immagine</translation>
 <translation id="3387650086002190359">Download di <ph name="FILE_NAME" /> non riuscito a causa di errori del file system.</translation>
 <translation id="3389286852084373014">Il testo è troppo grande</translation>
-<translation id="3391512812407811893">Prove di Privacy Sandbox</translation>
 <translation id="3398320232533725830">Apri Gestione preferiti</translation>
 <translation id="3407392651057365886">Vengono precaricate più pagine. Le pagine potrebbero essere precaricate tramite i server di Google quando richiesto da altri siti.</translation>
 <translation id="3414952576877147120">Dimensioni:</translation>
@@ -913,10 +909,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="6000203700195075278">Segui di nuovo</translation>
 <translation id="6002122790816966947">I tuoi dispositivi</translation>
 <translation id="6005538289190791541">Password consigliata</translation>
-<translation id="6032091552407840792">Questa prova è attiva soltanto in <ph name="BEGIN_LINK" />alcune regioni<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome sviluppa nuove tecnologie che ti tutelano dai meccanismi di tracciamento tra siti salvaguardando al contempo il Web aperto.
-
-Le prove di Privacy Sandbox sono ancora in fase di sviluppo attivo e sono disponibili soltanto in alcune regioni. Per il momento i siti possono provare Privacy Sandbox continuando a usare le attuali tecnologie web quali i cookie di terze parti.</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="604124094241169006">Automatico</translation>
@@ -1248,7 +1240,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> schede ripristinate</translation>
 <translation id="780301667611848630">No grazie</translation>
-<translation id="7805768142964895445">Stato</translation>
 <translation id="7808889146555843082">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="SITE" />. Cambia la password o elimina il tuo account su <ph name="SITE" /> per proteggerlo dagli altri.</translation>
 <translation id="7810647596859435254">Apri con…</translation>
 <translation id="7815484226266492798">Screenshot lungo</translation>
@@ -1382,11 +1373,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8461694314515752532">Cripta i dati sincronizzati con la tua passphrase di sincronizzazione</translation>
 <translation id="8466613982764129868">Assicurati che il dispositivo <ph name="TARGET_DEVICE_NAME" /> sia connesso a Internet</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
-<translation id="8481921391193215807">Se attivi questa funzionalità, i siti potrebbero usare le tecniche che garantiscono la tutela della privacy mostrate qui per fornire i propri contenuti e servizi. Sono incluse alternative al tracciamento tra siti. Nel tempo potrebbero essere aggiunte altre prove.
-
-<ph name="BEGIN_LIST_ITEM1" />Gli inserzionisti e i publisher possono usare la tecnologia FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Gli inserzionisti e i publisher possono esaminare l'efficacia degli annunci senza tracciarti tra i siti.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Funzionalità di prova attive</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Apri la pagina Cronologia</translation>
@@ -1432,9 +1418,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8664979001105139458">Nome file già esistente</translation>
 <translation id="8666759526542103597">Informazioni sull'impostazione Personalizzazione degli annunci basata sul browser</translation>
 <translation id="8676789164135894283">Verifiche degli accessi</translation>
-<translation id="867767487203716855">Prossimo aggiornamento</translation>
 <translation id="8683039184091909753">immagine</translation>
-<translation id="8683081248374354009">Reimposta gruppo</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
 <translation id="8712637175834984815">Fatto</translation>

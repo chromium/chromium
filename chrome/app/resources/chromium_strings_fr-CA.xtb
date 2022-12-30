@@ -284,7 +284,6 @@ Certaines fonctionnalités seront peut-être inaccessibles. Veuillez spécifier 
 <translation id="718435575166326686">Chromium requiert l'autorisation d'accéder à l'appareil photo pour ce site</translation>
 <translation id="7196312274710523067">Impossible de lancer Chromium. Réessayez.</translation>
 <translation id="7197677400338048821">Chromium ne peut pas vérifier vos mots de passe. Réessayez dans 24 heures.</translation>
-<translation id="7218568399872925918">Les sites que vous consultez gardent vos informations en mémoire tant que vous ne fermez pas Chromium</translation>
 <translation id="7223968959479464213">Gestionnaire de tâches – Chromium</translation>
 <translation id="7246575524853130370">Vos centres d'intérêt estimés par Chromium</translation>
 <translation id="7309928523159922338">La mesure des annonces permet aux sites que vous visitez de demander des informations à Chromium afin de leur permettre de mesurer la performance de leurs annonces. La mesure des annonces limite les suivis intersites en transférant le moins d'informations possible entre les sites.</translation>
@@ -356,8 +355,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8621669128220841554">Échec de l'installation en raison d'une erreur non spécifiée. Veuillez télécharger Chromium à nouveau.</translation>
 <translation id="8697124171261953979">Elle définit également quelle page s'affiche lorsque vous démarrez Chromium ou que vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="8704119203788522458">Voici votre Chromium</translation>
-<translation id="8713679423359107094">Lorsque vous fermez toutes les fenêtres de Chromium, les témoins et les données relatives aux sites sont automatiquement effacés</translation>
-<translation id="8796443464227412154">Vous serez <ph name="BEGIN_BOLD" />déconnecté de la plupart des sites<ph name="END_BOLD" /> lorsque vous fermerez Chromium. Si la synchronisation est désactivée, vous serez également <ph name="BEGIN_BOLD" />déconnecté des services Google et de Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site</translation>
 <translation id="8833697763442816810">Système Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Quelles données sont utilisées :<ph name="END_BOLD" /> votre historique de navigation, soit un enregistrement des sites que vous avez visités à l'aide de Chromium sur cet appareil.</translation>

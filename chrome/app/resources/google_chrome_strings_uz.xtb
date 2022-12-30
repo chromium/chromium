@@ -118,7 +118,6 @@
 <translation id="3038232873781883849">Oʻrnatish kutilmoqda…</translation>
 <translation id="3059710691562604940">Saytlarni xavfsiz kezish yoniq emas. Chrome uni yoqishingizni tavsiya qiladi.</translation>
 <translation id="3065168410429928842">Chrome sahifasi</translation>
-<translation id="3069821012350118710">Siz ochgan saytlar maʼlumotlaringizni Chrome yopilmaguncha esda saqlaydi</translation>
 <translation id="3080151273017101988">Google Chrome yopilishida orqa fon rejimida ishlayotgan ilovalar to‘xtatilmasin</translation>
 <translation id="3089968997497233615">Google Chrome brauzerining yangi, yanada xavfsiz versiyasi chiqdi.</translation>
 <translation id="3100998948628680988">Chrome profilingizga nom bering</translation>
@@ -250,7 +249,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5804318322022881572">Chrome ishga tushmadi. Qayta urining.</translation>
 <translation id="5867197326698922595">Google Chrome parollarni tahrirlashga urinmoqda.</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
-<translation id="5901850848447342934">Chrome yopilganda <ph name="BEGIN_BOLD" />aksar saytlardan chiqib ketasiz<ph name="END_BOLD" />. Agar sinxronizatsiya oʻchiq boʻlsa, <ph name="BEGIN_BOLD" />Google xizmatlari va Chrome hisobingizdan ham chiqib ketasiz<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish</translation>
 <translation id="5924017743176219022">Internetga ulanmoqda…</translation>
 <translation id="5940385492829620908">Chrome‘dagi barcha veb sahifalar, xatcho‘plar va boshqa ma’lumotlarni bu yerdan topish mumkin.</translation>
@@ -387,7 +385,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8614913330719544658">Google Chrome javob bermayapti. Qaytadan ishga tushirilsinmi?</translation>
 <translation id="861702415419836452">Chrome atrofingiz 3D xaritasini yaratishi uchun unga kamera ruxsati zarur</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 daqiqadan keyin qayta ishga tushadi}other{Chrome # daqiqadan keyin qayta ishga tushadi}}</translation>
-<translation id="8629311577791198377">Barcha Chrome oynalari yopilganda, cookie fayllar va sayt maʼlumotlari avtomatik ravishda tozalanadi</translation>
 <translation id="8641606876632989680">Google hisobingizga kirsangiz, Chrome oshkor qilingan parollar haqida xabar qiladi</translation>
 <translation id="8649026945479135076">Odatda siz kiradigan saytlar oʻz xizmatlarini sizga moslashtirish uchun sizga qiziq narsalarni eslab qoladi. Chrome orqali saytlar ham qiziqishlaringiz haqidagi maʼlumotlarni saqlashi mumkin.</translation>
 <translation id="8669527147644353129">Google Chrome yordamchisi</translation>

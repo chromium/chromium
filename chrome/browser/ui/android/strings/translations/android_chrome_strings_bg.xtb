@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">Последния час</translation>
 <translation id="1724977129262658800">Отключете, за да редактирате паролата си</translation>
 <translation id="1726477445370128854">Можете да сърфирате и търсите по-бързо, когато Chrome зарежда предварително страниците, които смята, че е възможно да посетите</translation>
-<translation id="173522743738009831">Всичко за Privacy Sandbox</translation>
 <translation id="1736419249208073774">Разглеждане</translation>
 <translation id="1749561566933687563">Синхронизирайте отметките си</translation>
 <translation id="1750259112639922169">Група раздели – <ph name="TAB_COUNT" /> раздела</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389">Остават <ph name="SECONDS" /> сек</translation>
 <translation id="2779651927720337254">неуспешно</translation>
 <translation id="2781151931089541271">Остава 1 сек</translation>
-<translation id="2788468313014644040">Номер на групата</translation>
 <translation id="2800066122460699237">Разделът <ph name="TAB_TITLE" /> ще бъде затворен</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Преглеждайте и управлявайте запазените пароли в <ph name="BEGIN_LINK" />профила си в Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Влезте в профила си и включете синхронизирането, за да получите отметките си на всичките си устройства</translation>
 <translation id="2827278682606527653">Менюто на картата за емисията се показва на половината височина</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">Споделяне на изображението</translation>
 <translation id="3387650086002190359">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради грешки във файловата система.</translation>
 <translation id="3389286852084373014">Текстът е твърде голям</translation>
-<translation id="3391512812407811893">Изпробване на Privacy Sandbox</translation>
 <translation id="3398320232533725830">Отваряне на диспечера на отметките</translation>
 <translation id="3407392651057365886">Предварително зареждане на още страници. Възможно е страници да бъдат заредени предварително чрез сървърите на Google, когато други сайтове заявят това.</translation>
 <translation id="3414952576877147120">Размер:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">Повторно следене</translation>
 <translation id="6002122790816966947">Вашите устройства</translation>
 <translation id="6005538289190791541">Предложена парола</translation>
-<translation id="6032091552407840792">Този експеримент е активен само в <ph name="BEGIN_LINK" />някои региони<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Чрез <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> Chrome разработва нови технологии, за да ви предпазва от проследяване в различни сайтове, съхранявайки отворената мрежа.
-
-Експериментите за Privacy Sandbox продължават да се разработват активно и са налице в избрани региони. Засега сайтовете може да изпробват Privacy Sandbox и да продължат да използват настоящите уеб технологии, като „бисквитките“ на трети страни.</translation>
 <translation id="6039379616847168523">Преминаване към следващия раздел</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="604124094241169006">Автоматично</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7798392620021911922">Бяха възстановени <ph name="TAB_COUNT" /> раздела</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
-<translation id="7805768142964895445">Състояние</translation>
 <translation id="7808889146555843082">Изтриването на тази парола няма да премахне профила ви за <ph name="SITE" />. За да го защитите от други хора, променете паролата си или изтрийте профила си за <ph name="SITE" />.</translation>
 <translation id="7810647596859435254">Отваряне със…</translation>
 <translation id="7815484226266492798">Дълга екранна снимка</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">Шифроване на синхронизираните данни със собствения ви пропуск за синхронизиране</translation>
 <translation id="8466613982764129868">Уверете се, че устройството <ph name="TARGET_DEVICE_NAME" /> е свързано с интернет</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>
-<translation id="8481921391193215807">Когато настройката е включена, сайтовете може да използват описаните тук техники за защита на поверителността, за да предоставят съдържанието и услугите си. Техниките съдържат алтернативи на проследяването в различни сайтове. С течение на времето може да бъдат добавени други експерименти.
-
-<ph name="BEGIN_LIST_ITEM1" />Рекламодателите и издателите могат да използват техниката FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Те могат да проучват ефективността на рекламите по начин, който не проследява действията ви в различните сайтове.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Функциите за изпробване са включени</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /><ph name="SEPARATOR" /><ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Отваряне на страницата „История“</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">Името на файла вече съществува</translation>
 <translation id="8666759526542103597">Всичко за персонализирането на рекламите въз основа на браузъра</translation>
 <translation id="8676789164135894283">Потвърждения при вход</translation>
-<translation id="867767487203716855">Следваща актуализация</translation>
 <translation id="8683039184091909753">изображение</translation>
-<translation id="8683081248374354009">Повторно задаване на групата</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
 <translation id="8712637175834984815">Разбрах</translation>

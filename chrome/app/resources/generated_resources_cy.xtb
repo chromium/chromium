@@ -3816,6 +3816,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4469762931504673593">Mae <ph name="ORIGIN" /> yn gallu golygu ffeiliau yn <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Dewisiadau storfa allanol</translation>
 <translation id="4471354919263203780">Wrthi'n lawrlwytho ffeiliau adnabod llais… <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Gallwch ddefnyddio'r dewis iaith o'ch Cyfrif Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Helpu i Wella nodweddion a pherfformiad Chrome</translation>
 <translation id="4472575034687746823">Cychwyn arni</translation>
 <translation id="4474155171896946103">Creu nod tudalen ar gyfer pob tab...</translation>
@@ -4546,7 +4547,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5158206172605340248">Gwrthodwyd y ddewislen nodau acen.</translation>
 <translation id="5159094275429367735">Gosod Crostini</translation>
 <translation id="5159419673777902220">Mae eich rhiant wedi analluogi caniatadau estyniad</translation>
-<translation id="5159643365935452998">Adolygu clirio data yn awtomatig</translation>
 <translation id="5160634252433617617">Bysellfwrdd ffisegol</translation>
 <translation id="5160857336552977725">Mewngofnodi i'ch <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Dyfeisiau USB gan <ph name="VENDOR_NAME" /></translation>
@@ -6762,6 +6762,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7227458944009118910">Gall yr apiau sydd wedi'u rhestru isod ymdrin â dolenni protocol hefyd. Bydd apiau eraill yn gofyn am ganiatâd.</translation>
 <translation id="7228056665272655255">I osod olion bysedd, gofynnwch i'ch plentyn gyffwrdd â'r synhwyrydd olion bysedd ar gornel dde uchaf y bysellfwrdd. Mae data olion bysedd eich plentyn yn cael eu storio'n ddiogel a byth yn gadael y <ph name="DEVICE_TYPE" /> hwn.</translation>
 <translation id="7228523857728654909">Clo sgrîn a mewngofnodi</translation>
+<translation id="7228854227189381547">Peidio â newid</translation>
 <translation id="7230222852462421043">&amp;Adfer y Ffenestr</translation>
 <translation id="7231260028442989757">Gweld, gwrthod, ac ymateb i hysbysebion eich ffôn</translation>
 <translation id="7232750842195536390">Wedi methu ag ailenwi</translation>
@@ -7095,6 +7096,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7545466883021407599">Wedi methu â chysylltu â'r gweinydd. Gwiriwch eich cysylltiad rhwydwaith a rhowch gynnig arall arni. Os ydych yn dal i gael trafferth, rhowch gynnig ar ailgychwyn eich Chromebook. Cod gwall: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Rhybudd: Mae eich gosodiadau <ph name="PRODUCT_NAME" /> yn cael eu storio ar yriant rhwydwaith. Mae'n bosib y bydd hyn yn arwain at arafu, torri, neu hyd yn oed golli data.</translation>
 <translation id="7548856833046333824">Lemonêd</translation>
+<translation id="7549434883223124329">Newid iaith y ddyfais?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Wedi methu â lawrlwytho <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Pinio i'r silff</translation>

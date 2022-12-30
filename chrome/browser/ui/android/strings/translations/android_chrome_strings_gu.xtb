@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">છેલ્લા એક કલાક</translation>
 <translation id="1724977129262658800">તમારા પાસવર્ડમાં ફેરફાર કરવા માટે અનલૉક કરો</translation>
 <translation id="1726477445370128854">તમે મુલાકાત લઈ શકો છો એવી સંભાવના ધરાવતા પેજને Chrome જ્યારે પહેલેથી લોડ કરે, ત્યારે તમે ઝડપથી બ્રાઉઝ અને શોધ કરી શકો છો</translation>
-<translation id="173522743738009831">પ્રાઇવસી સૅન્ડબૉક્સનું વર્ણન</translation>
 <translation id="1736419249208073774">શોધખોળ કરો</translation>
 <translation id="1749561566933687563">તમારા બુકમાર્કને સિંક કરો</translation>
 <translation id="1750259112639922169">ટૅબનું ગ્રૂપ - <ph name="TAB_COUNT" /> ટૅબ</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> સેકંડ બાકી</translation>
 <translation id="2779651927720337254">નિષ્ફળ થયું</translation>
 <translation id="2781151931089541271">1 સેકંડ બાકી</translation>
-<translation id="2788468313014644040">ગ્રૂપ નંબર</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ટૅબ બંધ કરવામાં આવશે</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">સાચવેલા પાસવર્ડ તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />માં જુઓ અને મેનેજ કરો</translation>
 <translation id="2818669890320396765">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">છબી શેર કરો</translation>
 <translation id="3387650086002190359">ફાઇલ સિસ્ટમ ભૂલોના કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="3389286852084373014">ટેક્સ્ટ ખૂબ મોટી છે</translation>
-<translation id="3391512812407811893">પ્રાઇવસી સૅન્ડબૉક્સની અજમાયશ</translation>
 <translation id="3398320232533725830">બુકમાર્ક મેનેજર ખોલો</translation>
 <translation id="3407392651057365886">વધુ પેજ પહેલેથી લોડ કરવામાં આવ્યા છે. જ્યારે અન્ય સાઇટ દ્વારા વિનંતી કરવામાં આવે, ત્યારે પેજને Googleના સર્વર મારફતે પહેલેથી લોડ કરી શકાય છે.</translation>
 <translation id="3414952576877147120">કદ:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">ફરીથી ફૉલો કરો</translation>
 <translation id="6002122790816966947">તમારા ડિવાઇસ</translation>
 <translation id="6005538289190791541">સૂચવેલ પાસવર્ડ</translation>
-<translation id="6032091552407840792">આ અજમાયશ માત્ર <ph name="BEGIN_LINK" />કેટલાક પ્રદેશો<ph name="END_LINK" />માં સક્રિય છે.</translation>
-<translation id="6033245666633565791"><ph name="BEGIN_LINK" />પ્રાઇવસી સૅન્ડબૉક્સ<ph name="END_LINK" /> વડે, Chrome નવી ટેક્નોલોજીનો વિકાસ કરી રહ્યું છે, જે ખુલ્લી વેબ પર સુરક્ષિત રાખીને, ક્રોસ-સાઇટ ટ્રૅકિંગ સામે તમારું સંરક્ષણ કરે છે.
-
-પ્રાઇવસી સૅન્ડબૉક્સની અજમાયશો હજુ પણ સક્રિય વિકાસ હેઠળ છે અને અમુક પ્રદેશોમાં ઉપલબ્ધ છે. હાલ પૂરતું, સાઇટ ત્રીજા પક્ષની કુકી જેવી વર્તમાન વેબ ટેક્નોલોજીનો ઉપયોગ કરવાનું ચાલુ રાખીને પ્રાઇવસી સૅન્ડબૉક્સને અજમાવી શકે છે.</translation>
 <translation id="6039379616847168523">આગલા ટૅબ પર જાઓ</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">ઉમેરો</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ટૅબ રિસ્ટોર કરી</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>
-<translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7808889146555843082">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="SITE" /> પરનું તમારું એકાઉન્ટ ડિલીટ થશે નહીં. <ph name="SITE" /> પરનું તમારું એકાઉન્ટ ડિલીટ કરો અથવા તમારો પાસવર્ડ બદલો કે જેથી તેને અન્ય લોકોથી સુરક્ષિત રાખી શકાય.</translation>
 <translation id="7810647596859435254">આની સાથે ખોલો…</translation>
 <translation id="7815484226266492798">લાંબો સ્ક્રીનશૉટ</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">તમારા પોતાના સિંક પાસફ્રેઝ સાથે સિંક કરેલા ડેટાને એન્ક્રિપ્ટ કરો</translation>
 <translation id="8466613982764129868">ખાતરી કરો કે <ph name="TARGET_DEVICE_NAME" />ને ઇન્ટરનેટ સાથે કનેક્ટ કરેલું છે</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
-<translation id="8481921391193215807">જ્યારે ચાલુ હોય, ત્યારે સાઇટ તેમાંનું કન્ટેન્ટ અને સેવાઓ પ્રદાન કરવા માટે, અહીં બતાવેલી પ્રાઇવસીની જાળવણી કરતી ટેક્નોલોજીનો ઉપયોગ કરી શકે છે. આમાં ક્રોસ-સાઇટ ટ્રૅકિંગ માટેના વિકલ્પોનો સમાવેશ છે. સમયાંતરે વધુ અજમાયશો ઉમેરવામાં આવી શકે છે.
-
-<ph name="BEGIN_LIST_ITEM1" />જાહેરાતકર્તાઓ અને પ્રકાશકો FLoCનો ઉપયોગ કરી શકે છે.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />જાહેરાતકર્તાઓ અને પ્રકાશકો જાહેરાતોની અસરકારકતાનો એવી રીતે અભ્યાસ કરી શકે છે કે તમને કોઈ પણ સાઇટ પર ટ્રૅક કરવામાં ન આવે.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">અજમાયશની સુવિધાઓ ચાલુ છે</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ઇતિહાસ પેજ ખોલો</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">ફાઇલનું નામ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="8666759526542103597">બ્રાઉઝર આધારિત રુચિ મુજબ જાહેરાત વિશેની માહિતી</translation>
 <translation id="8676789164135894283">સાઇન ઇન માટેની ચકાસણીઓ</translation>
-<translation id="867767487203716855">આગલી અપડેટ</translation>
 <translation id="8683039184091909753">છબી</translation>
-<translation id="8683081248374354009">ગ્રૂપને રીસેટ કરો</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
 <translation id="8699120352855309748">આ ભાષાઓનો અનુવાદ કરવાનું ઑફર કરશો નહીં</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>

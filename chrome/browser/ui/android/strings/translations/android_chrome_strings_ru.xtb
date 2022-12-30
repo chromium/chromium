@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">Последний час</translation>
 <translation id="1724977129262658800">Чтобы изменить пароль, разблокируйте устройство</translation>
 <translation id="1726477445370128854">Предзагрузка страниц позволяет ускорить работу браузера Chrome.</translation>
-<translation id="173522743738009831">О Privacy Sandbox</translation>
 <translation id="1736419249208073774">Подробнее</translation>
 <translation id="1749561566933687563">Синхронизируйте закладки</translation>
 <translation id="1750259112639922169">Группа вкладок (вкладок: <ph name="TAB_COUNT" />)</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389">Осталось <ph name="SECONDS" /> сек.</translation>
 <translation id="2779651927720337254">ошибка</translation>
 <translation id="2781151931089541271">Осталась 1 сек.</translation>
-<translation id="2788468313014644040">Номер группы</translation>
 <translation id="2800066122460699237">Вкладка "<ph name="TAB_TITLE" />" будет закрыта.</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Просматривать сохраненные пароли и управлять ими можно на странице <ph name="BEGIN_LINK" />Аккаунт Google<ph name="END_LINK" />.</translation>
 <translation id="2818669890320396765">Чтобы получить доступ к закладкам на всех устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="2827278682606527653">Меню карточки из ленты открыто наполовину</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">Поделиться изображением</translation>
 <translation id="3387650086002190359">Не удалось скачать файл <ph name="FILE_NAME" /> из-за ошибок файловой системы.</translation>
 <translation id="3389286852084373014">Сообщение слишком длинное</translation>
-<translation id="3391512812407811893">Пробные версии Privacy Sandbox</translation>
 <translation id="3398320232533725830">Открыть диспетчер закладок</translation>
 <translation id="3407392651057365886">Предзагружается больше страниц. Этот процесс может выполняться через серверы Google по запросу других сайтов.</translation>
 <translation id="3414952576877147120">Размер:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">Снова подписаться</translation>
 <translation id="6002122790816966947">Ваши устройства</translation>
 <translation id="6005538289190791541">Предложенный пароль</translation>
-<translation id="6032091552407840792">Эта пробная функция доступна только в <ph name="BEGIN_LINK" />некоторых регионах<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> – инициатива Chrome по разработке новых технологий, которые позволят защитить пользователей от межсайтового отслеживания и при этом сохранить интернет открытым.
-
-Пробные функции Privacy Sandbox находятся на стадии разработки и доступны не во всех регионах. Пока сайты могут использовать Privacy Sandbox, не отказываясь от существующих веб-технологий, таких как сторонние файлы cookie.</translation>
 <translation id="6039379616847168523">Перейти к следующей вкладке</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="604124094241169006">Автоматически</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="7798392620021911922">Восстановлено вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Пропустить</translation>
-<translation id="7805768142964895445">Состояние</translation>
 <translation id="7808889146555843082">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="SITE" />. Чтобы защитить от злоумышленников свои данные на сайте <ph name="SITE" />, удалите аккаунт или измените пароль.</translation>
 <translation id="7810647596859435254">Открыть с помощью...</translation>
 <translation id="7815484226266492798">Длинный скриншот</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">Задать кодовую фразу для шифрования синхронизированных данных</translation>
 <translation id="8466613982764129868">Проверьте, подключено ли устройство <ph name="TARGET_DEVICE_NAME" /> к Интернету.</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
-<translation id="8481921391193215807">Если функции Privacy Sandbox включены, сайты могут использовать представленные здесь технологии, не нарушающие конфиденциальность, в том числе альтернативы межсайтовому отслеживанию. Со временем будет доступно больше пробных функций.
-
-<ph name="BEGIN_LIST_ITEM1" />Рекламодатели и издатели могут использовать технологию FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Рекламодатели и издатели могут оценивать эффективность рекламы, не отслеживая ваши действия на сайтах.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Функции включены</translation>
 <translation id="8485434340281759656"><ph name="DESCRIPTION" /> <ph name="FILE_SIZE" /> <ph name="SEPARATOR" /></translation>
 <translation id="8489271220582375723">Открыть страницу "История"</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">Файл с таким именем уже существует.</translation>
 <translation id="8666759526542103597">О персонализации рекламы на основе данных браузера</translation>
 <translation id="8676789164135894283">Подтверждение входа</translation>
-<translation id="867767487203716855">Следующее обновление</translation>
 <translation id="8683039184091909753">Изображение</translation>
-<translation id="8683081248374354009">Сбросить настройки группы</translation>
 <translation id="869891660844655955">Срок действия</translation>
 <translation id="8699120352855309748">Не предлагать переводить страницы на этих языках</translation>
 <translation id="8712637175834984815">Готово</translation>

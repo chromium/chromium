@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">ชั่วโมงที่แล้ว</translation>
 <translation id="1724977129262658800">ปลดล็อกเพื่อแก้ไขรหัสผ่าน</translation>
 <translation id="1726477445370128854">คุณจะท่องเว็บและค้นหาได้เร็วขึ้นเมื่อ Chrome โหลดหน้าเว็บที่คิดว่าคุณอาจจะเข้าชมไว้ล่วงหน้า</translation>
-<translation id="173522743738009831">เกี่ยวกับ Privacy Sandbox</translation>
 <translation id="1736419249208073774">สำรวจ</translation>
 <translation id="1749561566933687563">ซิงค์บุ๊กมาร์กของคุณ</translation>
 <translation id="1750259112639922169">กลุ่มแท็บ - <ph name="TAB_COUNT" /> แท็บ</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389">เหลือ <ph name="SECONDS" /> วิ</translation>
 <translation id="2779651927720337254">ล้มเหลว</translation>
 <translation id="2781151931089541271">เหลือ 1 วิ</translation>
-<translation id="2788468313014644040">หมายเลขกลุ่ม</translation>
 <translation id="2800066122460699237">ระบบจะปิดแท็บ <ph name="TAB_TITLE" /></translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">ดูและจัดการรหัสผ่านที่บันทึกไว้ใน<ph name="BEGIN_LINK" />บัญชี Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อรับบุ๊กมาร์กในอุปกรณ์ทุกเครื่องของคุณ</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">แชร์รูปภาพ</translation>
 <translation id="3387650086002190359">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเกิดข้อผิดพลาดกับระบบไฟล์</translation>
 <translation id="3389286852084373014">ข้อความมีขนาดใหญ่เกินไป</translation>
-<translation id="3391512812407811893">ทดลองใช้ Privacy Sandbox</translation>
 <translation id="3398320232533725830">เปิดตัวจัดการบุ๊กมาร์ก</translation>
 <translation id="3407392651057365886">ระบบจะโหลดหน้าเว็บล่วงหน้าเพิ่มเติม ระบบอาจโหลดหน้าเว็บล่วงหน้าผ่านเซิร์ฟเวอร์ของ Google เมื่อเว็บไซต์อื่นๆ ขอ</translation>
 <translation id="3414952576877147120">ขนาด:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">ติดตามอีกครั้ง</translation>
 <translation id="6002122790816966947">อุปกรณ์ของคุณ</translation>
 <translation id="6005538289190791541">รหัสผ่านที่แนะนำ</translation>
-<translation id="6032091552407840792">การทดลองใช้นี้ใช้งานได้ใน<ph name="BEGIN_LINK" />บางภูมิภาค<ph name="END_LINK" />เท่านั้น</translation>
-<translation id="6033245666633565791">การใช้ <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> ช่วยให้ Chrome พัฒนาเทคโนโลยีใหม่ๆ เพื่อปกป้องคุณจากการติดตามข้ามเว็บไซต์ในขณะที่ยังคงรักษาความเปิดกว้างของเว็บไว้
-
-การทดลองใช้ Privacy Sandbox ยังคงอยู่ระหว่างการพัฒนาอย่างสุดความสามารถ และพร้อมให้ใช้งานแล้วในบางภูมิภาค ตอนนี้เว็บไซต์ต่างๆ อาจลองใช้ Privacy Sandbox ไปพร้อมกับการใช้เทคโนโลยีเว็บปัจจุบัน เช่น คุกกี้ของบุคคลที่สาม</translation>
 <translation id="6039379616847168523">ข้ามไปยังแท็บถัดไป</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="604124094241169006">อัตโนมัติ</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">เพิ่ม</translation>
 <translation id="7798392620021911922">คืนค่าแท็บ <ph name="TAB_COUNT" /> แล้ว</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
-<translation id="7805768142964895445">สถานะ</translation>
 <translation id="7808889146555843082">การลบรหัสผ่านนี้จะไม่ลบบัญชีของคุณใน <ph name="SITE" /> เปลี่ยนรหัสผ่านหรือลบบัญชีของคุณใน <ph name="SITE" /> เพื่อให้ปลอดภัยจากบุคคลอื่น</translation>
 <translation id="7810647596859435254">เปิดด้วย…</translation>
 <translation id="7815484226266492798">ภาพหน้าจอแบบยาว</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">เข้ารหัสลับข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
 <translation id="8466613982764129868">ตรวจสอบว่า <ph name="TARGET_DEVICE_NAME" /> เชื่อมต่ออินเทอร์เน็ตอยู่</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
-<translation id="8481921391193215807">เมื่อเปิดไว้ เว็บไซต์อาจใช้เทคนิคการรักษาความเป็นส่วนตัวที่แสดงอยู่ที่นี่เพื่อจัดเตรียมเนื้อหาและให้บริการ ซึ่งรวมถึงทางเลือกในการติดตามข้ามเว็บไซต์ และอาจมีการเพิ่มช่วงทดลองใช้ในอนาคต
-
-<ph name="BEGIN_LIST_ITEM1" />ผู้ลงโฆษณาและผู้เผยแพร่โฆษณาใช้ FLoC ได้<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />ผู้ลงโฆษณาและผู้เผยแพร่โฆษณาจะศึกษาประสิทธิภาพของโฆษณาได้ในลักษณะที่ไม่ติดตามคุณข้ามเว็บไซต์<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">ฟีเจอร์ช่วงทดลองใช้เปิดอยู่</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">เปิดหน้าประวัติการเข้าชม</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">มีชื่อไฟล์นี้อยู่แล้ว</translation>
 <translation id="8666759526542103597">เกี่ยวกับการปรับโฆษณาตามโปรไฟล์ของผู้ใช้ด้วยข้อมูลจากเบราว์เซอร์</translation>
 <translation id="8676789164135894283">การยืนยันการลงชื่อเข้าใช้</translation>
-<translation id="867767487203716855">การอัปเดตถัดไป</translation>
 <translation id="8683039184091909753">รูปภาพ</translation>
-<translation id="8683081248374354009">รีเซ็ตกลุ่ม</translation>
 <translation id="869891660844655955">วันหมดอายุ</translation>
 <translation id="8699120352855309748">ไม่ต้องเสนอการแปลภาษาเหล่านี้</translation>
 <translation id="8712637175834984815">สำเร็จ</translation>

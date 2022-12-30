@@ -119,7 +119,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3038232873781883849">Čaká sa na inštaláciu…</translation>
 <translation id="3059710691562604940">Bezpečné prehliadanie je vypnuté. Chrome ho odporúča zapnúť.</translation>
 <translation id="3065168410429928842">Karta Chrome</translation>
-<translation id="3069821012350118710">Navštevované weby si pamätajú vaše informácie, dokým nezavriete Chrome</translation>
 <translation id="3080151273017101988">Po zatvorení prehliadača Google Chrome nechať aplikácie na pozadí spustené</translation>
 <translation id="3089968997497233615">K dispozícii je nová, bezpečnejšia verzia prehliadača Google Chrome.</translation>
 <translation id="3100998948628680988">Pomenujte svoj profil Chromu</translation>
@@ -251,7 +250,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5804318322022881572">Chrome sa nepodarilo spustiť. Skúste to znova.</translation>
 <translation id="5867197326698922595">Google Chrome sa pokúša upraviť heslá.</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
-<translation id="5901850848447342934">Keď zavriete Chrome, systém vás <ph name="BEGIN_BOLD" />odhlási z väčšiny webov<ph name="END_BOLD" />. Ak je synchronizácia vypnutá, <ph name="BEGIN_BOLD" />odhlási vás aj zo služieb Googlu a Chromu<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – prihlásenie do siete</translation>
 <translation id="5924017743176219022">Pripája sa k internetu…</translation>
 <translation id="5940385492829620908">Tu nájdete svoj obsah na webe, záložky a ďalšie položky prehliadača Chrome.</translation>
@@ -388,7 +386,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8614913330719544658">Google Chrome nereaguje. Chcete ho spustiť znova?</translation>
 <translation id="861702415419836452">Chrome potrebuje povolenie použiť fotoaparát, aby mohol vytvoriť 3D mapu vášho okolia</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome sa reštartuje o 1 minútu}few{Chrome sa reštartuje o # minúty}many{Chrome sa reštartuje o # minúty}other{Chrome sa reštartuje o # minút}}</translation>
-<translation id="8629311577791198377">Keď zavriete všetky okná Chromu, súbory cookie a dáta webov budú automaticky vymazané</translation>
 <translation id="8641606876632989680">Chrome vás upozorní, keď sa prihlásite pomocou prelomeného hesla</translation>
 <translation id="8649026945479135076">Je bežné, že navštívené weby si pamätajú veci, ktoré vás zaujímajú, aby vám mohli prispôsobiť prostredie. Weby môžu v Chrome ukladať aj údaje o vašich záujmoch.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

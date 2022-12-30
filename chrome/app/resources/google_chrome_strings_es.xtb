@@ -121,7 +121,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3038232873781883849">Esperando para instalar...</translation>
 <translation id="3059710691562604940">La función Navegación segura está desactivada. Chrome recomienda activarla.</translation>
 <translation id="3065168410429928842">Pestaña de Chrome</translation>
-<translation id="3069821012350118710">Los sitios que visitas recuerdan tu información hasta que cierras Chrome</translation>
 <translation id="3080151273017101988">Seguir ejecutando aplicaciones en segundo plano al cerrar Google Chrome</translation>
 <translation id="3089968997497233615">Hay una nueva versión más segura de Google Chrome disponible.</translation>
 <translation id="3100998948628680988">Pon un nombre a tu perfil de Chrome</translation>
@@ -253,7 +252,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5804318322022881572">No se ha podido iniciar Chrome. Inténtalo de nuevo.</translation>
 <translation id="5867197326698922595">Google Chrome está intentando cambiar contraseñas.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
-<translation id="5901850848447342934">Cuando cierres Chrome, <ph name="BEGIN_BOLD" />se cerrará tu sesión en la mayoría de los sitios<ph name="END_BOLD" />. Si la sincronización está desactivada, también <ph name="BEGIN_BOLD" />se cerrará tu sesión de los servicios de Google y de Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" />, inicio de sesión en la red</translation>
 <translation id="5924017743176219022">Conectando a Internet...</translation>
 <translation id="5940385492829620908">Aquí puedes encontrar tus páginas web, tus marcadores y otros contenidos de Chrome.</translation>
@@ -390,7 +388,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8614913330719544658">Google Chrome no responde. ¿Quieres reiniciarlo ahora?</translation>
 <translation id="861702415419836452">Para crear un mapa 3D de tu entorno, Chrome necesita permiso para acceder a tu cámara</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se reiniciará dentro de 1 minuto}other{Chrome se reiniciará dentro de # minutos}}</translation>
-<translation id="8629311577791198377">Cuando cierras todas las ventanas de Chrome, las cookies y los datos de sitios se borran automáticamente</translation>
 <translation id="8641606876632989680">Chrome te enviará una notificación cuando inicies sesión con una contraseña vulnerada</translation>
 <translation id="8649026945479135076">Es habitual que los sitios que visitas recuerden lo que te interesa para personalizar tu experiencia. Los sitios también pueden almacenar información con Chrome sobre tus intereses.</translation>
 <translation id="8669527147644353129">Ayudante de Google Chrome</translation>

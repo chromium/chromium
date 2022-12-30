@@ -280,7 +280,6 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="718435575166326686">Ta strona musi mieć w Chromium dostęp do aparatu</translation>
 <translation id="7196312274710523067">Nie udało się uruchomić Chromium. Spróbuj ponownie.</translation>
 <translation id="7197677400338048821">Chromium nie może sprawdzić Twoich haseł. Spróbuj ponownie za 24 godziny.</translation>
-<translation id="7218568399872925918">Strony, na które wchodzisz, pamiętają Cię, dopóki nie zamkniesz Chromium</translation>
 <translation id="7223968959479464213">Menedżer zadań – Chromium</translation>
 <translation id="7246575524853130370">Twoje zainteresowania oszacowane przez Chromium</translation>
 <translation id="7309928523159922338">W ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chromium o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>
@@ -352,8 +351,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8621669128220841554">Instalacja nie powiodła się z powodu nieokreślonego błędu. Pobierz Chromium ponownie.</translation>
 <translation id="8697124171261953979">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium lub wyszukiwaniu w omniboksie.</translation>
 <translation id="8704119203788522458">Oto Twoja przeglądarka Chromium</translation>
-<translation id="8713679423359107094">Gdy zamkniesz wszystkie okna Chromium, zostaną automatycznie wyczyszczone pliki cookie i dane witryn</translation>
-<translation id="8796443464227412154">Gdy zamkniesz Chromium, nastąpi <ph name="BEGIN_BOLD" />wylogowanie z większości stron<ph name="END_BOLD" />. Jeśli wyłączona jest synchronizacja, dojdzie też do <ph name="BEGIN_BOLD" />wylogowania z usług Google i Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium potrzebuje uprawnień dostępu do aparatu i mikrofonu na tej stronie</translation>
 <translation id="8833697763442816810">System operacyjny Chromium</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Jakich danych używamy:<ph name="END_BOLD" /> używamy Twojej historii przeglądania, czyli rejestru witryn, które odwiedzasz w Chromium na tym urządzeniu.</translation>

@@ -121,7 +121,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3038232873781883849">Čakanje na namestitev …</translation>
 <translation id="3059710691562604940">Varno brskanje je izklopljeno. Chrome priporoča, da ga vklopite.</translation>
 <translation id="3065168410429928842">Zavihek v Chromu</translation>
-<translation id="3069821012350118710">Spletna mesta, ki jih obiščete, si zapomnijo vaše podatke, dokler ne zaprete Chroma.</translation>
 <translation id="3080151273017101988">Nadaljuj izvajanje programov v ozadju, ko je Google Chrome zaprt</translation>
 <translation id="3089968997497233615">Na voljo je nova, varnejša različica Google Chroma.</translation>
 <translation id="3100998948628680988">Poimenujte profil v Chromu</translation>
@@ -253,7 +252,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5804318322022881572">Chroma ni bilo mogoče zagnati. Poskusite znova.</translation>
 <translation id="5867197326698922595">Google Chrome poskuša urejati gesla.</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
-<translation id="5901850848447342934">Ko zaprete Chrome, boste <ph name="BEGIN_BOLD" />odjavljeni z večine spletnih mest<ph name="END_BOLD" />. Če je sinhronizacija izklopljena, boste prav tako <ph name="BEGIN_BOLD" />odjavljeni iz Googlovih storitev in Chroma<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Prijava v omrežje</translation>
 <translation id="5924017743176219022">Vzpostavljanje povezave z internetom …</translation>
 <translation id="5940385492829620908">Tu so shranjeni vaš splet, zaznamki in druge stvari v Chromu.</translation>
@@ -390,7 +388,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8614913330719544658">Google Chrome se ne odziva. Ga želite znova zagnati?</translation>
 <translation id="861702415419836452">Chrome potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se bo znova zagnal čez eno minuto}one{Chrome se bo znova zagnal čez # minuto}two{Chrome se bo znova zagnal čez # minuti}few{Chrome se bo znova zagnal čez # minute}other{Chrome se bo znova zagnal čez # minut}}</translation>
-<translation id="8629311577791198377">Ko zaprete vsa okna Chroma, so piškotki in podatki spletnih mest samodejno izbrisani.</translation>
 <translation id="8641606876632989680">Chrome vas bo obvestil, če se prijavite z ogroženim geslom</translation>
 <translation id="8649026945479135076">Spletna mesta, ki jih obiščete, si zaradi osebnega prilagajanja vaše izkušnje pogosto zapomnijo, kaj vas zanima. Spletna mesta lahko v Chromu prav tako shranjujejo podatke o vaših zanimanjih.</translation>
 <translation id="8669527147644353129">Pomočnik za Google Chrome</translation>

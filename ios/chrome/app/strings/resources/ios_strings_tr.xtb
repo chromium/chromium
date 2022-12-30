@@ -765,7 +765,7 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Bir siteyi ziyaret edip Chrome menüsündeki Takip Et seçeneğini tıklayın</translation>
 <translation id="6561262006871132942">Yakınlaştır</translation>
-<translation id="6583087784430677195">Özelliği kapatmak için <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'ı açıp Parolaları Otomatik Doldur'a gidin.</translation>
+<translation id="6583087784430677195">Özelliği kapatmak için <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'ı açıp Şifreleri Otomatik Doldur'a gidin.</translation>
 <translation id="6585618849026997638">Önemli gördüğünüz sayfalara yer işareti koyarak geri dönebilirsiniz.</translation>
 <translation id="6596481460663245319">Resmi Google'la arayın</translation>
 <translation id="6598875554591387303">Yayıncıya göre sırala</translation>
@@ -946,7 +946,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerezler kullanabilir.</translation>
 <translation id="7971521879845308059">Pop-up'ları Engelle</translation>
 <translation id="797413074872316787">Cihazlar arasında senkronizasyon ve kişiselleştirme yapmak için senkronizasyonu etkinleştirin.</translation>
-<translation id="7978018860671536736">3. Parolaları Otomatik Doldur seçeneğine dokunun</translation>
+<translation id="7978018860671536736">3. Şifreleri Otomatik Doldur seçeneğine dokunun</translation>
 <translation id="7981908678811807838">Fiyat takibi bu sitede kullanılamıyor.</translation>
 <translation id="7982789257301363584">Ağ</translation>
 <translation id="7987685713885608670">Ek güvenlik için, Google Şifre Yöneticisi'ne kaydedilmeden önce şifrelerinizi cihazınızda şifreleyin.</translation>
@@ -983,7 +983,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8206354486702514201">Bu seçenek, yöneticiniz tarafınızdan denetleniyor.</translation>
 <translation id="821809831108207540">Keşfet feed'inizi ve Chrome'u kişiselleştirmek için oturum açıp senkronizasyonu etkinleştirin.</translation>
 <translation id="8225985093977202398">Önbelleğe Alınan Resimler ve Dosyalar</translation>
-<translation id="8237382152611443140">Parolaları Otomatik Doldur ayarlarını açın</translation>
+<translation id="8237382152611443140">Şifreleri Otomatik Doldur ayarlarını açın</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8271720166617117963">Kabul Et ve Oturum Aç</translation>
 <translation id="8278938988428169257">Bir kelime veya kelime öbeği girin</translation>

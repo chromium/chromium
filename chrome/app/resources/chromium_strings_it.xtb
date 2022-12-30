@@ -282,7 +282,6 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="718435575166326686">Chromium deve avere l'autorizzazione di accesso alla fotocamera per questo sito</translation>
 <translation id="7196312274710523067">Impossibile avviare Chromium. Riprova.</translation>
 <translation id="7197677400338048821">Chromium non può controllare le tue password. Riprova tra 24 ore.</translation>
-<translation id="7218568399872925918">I siti visitati memorizzano le tue informazioni fino alla chiusura di Chromium</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">I tuoi interessi stimati da Chromium</translation>
 <translation id="7309928523159922338">Ad measurement consente ai siti che visiti di chiedere a Chromium informazioni che li aiutino a valutare il rendimento dei loro annunci. Ad measurement limita il tracciamento tra siti trasferendo il minor numero possibile di informazioni tra i siti.</translation>
@@ -354,8 +353,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8621669128220841554">Installazione non riuscita a causa di un errore imprecisato. Scarica di nuovo Chromium.</translation>
 <translation id="8697124171261953979">Controlla anche la pagina visualizzata all'avvio di Chromium o quando esegui ricerche dalla Omnibox.</translation>
 <translation id="8704119203788522458">Questo è il tuo account Chromium</translation>
-<translation id="8713679423359107094">Quando chiudi tutte le finestre di Chromium, i cookie e i dati dei siti vengono cancellati automaticamente</translation>
-<translation id="8796443464227412154">Quando chiudi Chromium, verrà <ph name="BEGIN_BOLD" />eseguita la disconnessione dalla maggior parte dei siti<ph name="END_BOLD" />. Se la sincronizzazione è disattivata, verrà anche <ph name="BEGIN_BOLD" />eseguita la disconnessione dai servizi Google e da Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera e al microfono</translation>
 <translation id="8833697763442816810">Sistema Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Quali dati vengono utilizzati:<ph name="END_BOLD" /> la cronologia di navigazione, ossia un record dei siti visitati da Chromium sul dispositivo in uso.</translation>

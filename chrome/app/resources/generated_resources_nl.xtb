@@ -1237,6 +1237,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2104166991923847969">Hotspot automatisch uitzetten</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> is verborgen</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefoonnummer}other{# telefoonnummers}}</translation>
+<translation id="2110941575868943054">Toestemming om naar bluetooth-apparaten te zoeken</translation>
 <translation id="211144231511833662">Typen wissen</translation>
 <translation id="2111670510994270194">Nieuw tabblad aan de rechterkant</translation>
 <translation id="2112554630428445878">Welkom, <ph name="USERNAME" /></translation>
@@ -3028,6 +3029,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3756485814916578707">Scherm casten</translation>
 <translation id="3756578970075173856">Pincode instellen</translation>
 <translation id="3756795331760037744">Toestaan dat de Google Assistent informatie op het scherm van <ph name="SUPERVISED_USER_NAME" /> gebruikt om te helpen</translation>
+<translation id="3756806135608816820">Sites kunnen vragen of ze naar bluetooth-apparaten mogen zoeken</translation>
 <translation id="3757733214359997190">Geen sites gevonden</translation>
 <translation id="375841316537350618">Proxyscript downloaden...</translation>
 <translation id="3758842566811519622">Cookies ingesteld</translation>
@@ -3797,6 +3799,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kan bestanden bewerken in <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Voorkeuren voor externe opslag</translation>
 <translation id="4471354919263203780">Bestanden voor spraakherkenning downloaden... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Je kunt de voorkeurstaal van je Google-account gebruiken (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Help de functies en prestaties van Chrome verbeteren</translation>
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4474155171896946103">Bookmark toevoegen aan alle tabbladen...</translation>
@@ -4525,7 +4528,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5158206172605340248">Menu met accenttekens is gesloten.</translation>
 <translation id="5159094275429367735">Crostini instellen</translation>
 <translation id="5159419673777902220">Je ouder heeft extensierechten uitgezet</translation>
-<translation id="5159643365935452998">Instellingen bekijken voor automatisch gegevens wissen</translation>
 <translation id="5160634252433617617">Fysiek toetsenbord</translation>
 <translation id="5160857336552977725">Log in bij je <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">USB-apparaten van <ph name="VENDOR_NAME" /></translation>
@@ -5000,6 +5002,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5600706100022181951">De update wordt gedownload met <ph name="UPDATE_SIZE_MB" /> MB mobiele data. Wil je doorgaan?</translation>
 <translation id="5601503069213153581">Pincode</translation>
 <translation id="5601823921345337195">Geen toestemming om verbinding te maken met MIDI-apparaten</translation>
+<translation id="5601833336918638013">Niet toestaan dat sites naar bluetooth-apparaten zoeken</translation>
 <translation id="5602765853043467355">Bookmarks, geschiedenis, wachtwoorden en meer wissen van dit apparaat</translation>
 <translation id="5605758115928394442">Er is een melding naar je telefoon verstuurd om te bevestigen dat jij het bent.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Deze extensie is geblokkeerd}other{Deze extensies zijn geblokkeerd}}</translation>
@@ -6452,6 +6455,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6960507406838246615">Linux-update vereist</translation>
 <translation id="6960648667961844909">Kan spraakbestanden in het <ph name="LANGUAGE" /> niet downloaden. Download wordt later geprobeerd. Spraak wordt naar Google gestuurd voor verwerking totdat de download klaar is.</translation>
 <translation id="696103774840402661">Alle bestanden en lokale gegevens voor alle gebruikers op deze <ph name="DEVICE_TYPE" /> zijn definitief verwijderd.</translation>
+<translation id="6961327401577924850">Sites zoeken meestal naar bluetooth-apparaten voor functies zoals het instellen of synchroniseren van een Bluetooth Low Energy-beacon, een gezondheids- of fitnesstracker, of een smartlamp</translation>
 <translation id="6963872466817251924">Tekstcursor markeren</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Uit groep verwijderen</translation>
@@ -6728,6 +6732,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7227458944009118910">Hieronder vermelde apps kunnen ook protocollinks verwerken. Andere apps vragen om toestemming.</translation>
 <translation id="7228056665272655255">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor rechtsboven op het toetsenbord aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="7228523857728654909">Schermvergrendeling en inloggen</translation>
+<translation id="7228854227189381547">Niet overschakelen</translation>
 <translation id="7230222852462421043">Venste&amp;r herstellen</translation>
 <translation id="7231260028442989757">Bekijk, sluit en beantwoord meldingen van je telefoon</translation>
 <translation id="7232750842195536390">Kan naam niet wijzigen</translation>
@@ -7061,6 +7066,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7545466883021407599">Kan geen verbinding maken met de server. Check je netwerkverbinding en probeer het opnieuw. Als je nog steeds problemen ondervindt, start je de Chromebook opnieuw op. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Waarschuwing: je instellingen voor <ph name="PRODUCT_NAME" /> zijn opgeslagen op een netwerkschijf. Dit kan leiden tot vertragingen, crashes of zelfs gegevensverlies.</translation>
 <translation id="7548856833046333824">Cocktail</translation>
+<translation id="7549434883223124329">Taal van apparaat wijzigen?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> is gedownload</translation>
 <translation id="7551643184018910560">Vastzetten op plank</translation>
@@ -8085,6 +8091,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8465444703385715657">Voor het uitvoeren van <ph name="PLUGIN_NAME" /> is je toestemming nodig</translation>
 <translation id="8466417995783206254">De video op dit tabblad wordt afgespeeld in de scherm-in-scherm-modus.</translation>
 <translation id="8467326454809944210">Een andere taal kiezen</translation>
+<translation id="8468087214092422866">Geen toestemming om naar bluetooth-apparaten te zoeken</translation>
 <translation id="8470513973197838199">Opgeslagen wachtwoorden voor <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sites maken meestal verbinding met USB-apparaten voor functies zoals het afdrukken van een document of opslaan naar een opslagapparaat</translation>
 <translation id="8471959340398751476">Kortingen staan uit. Je kunt ze aanzetten via het menu Aanpassen.</translation>

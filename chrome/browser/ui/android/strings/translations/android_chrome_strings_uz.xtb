@@ -139,7 +139,6 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="1718835860248848330">Oxirgi bir soat</translation>
 <translation id="1724977129262658800">Parolni almashtirish uchun qurilma qulfini oching</translation>
 <translation id="1726477445370128854">Sahifalarni tezroq koʻrib chiqish va qidirishingiz uchun Chrome sizni ochishi mumkin deb hisoblagan sahifalarni oldindan yuklaydi</translation>
-<translation id="173522743738009831">Privacy Sandbox haqida</translation>
 <translation id="1736419249208073774">Tanishuv</translation>
 <translation id="1749561566933687563">Xatcho‘plarni sinxronlang</translation>
 <translation id="1750259112639922169">Varaqlar guruhi - <ph name="TAB_COUNT" /> ta varaq</translation>
@@ -318,9 +317,7 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="2777555524387840389"><ph name="SECONDS" /> soniya qoldi</translation>
 <translation id="2779651927720337254">xatolik:</translation>
 <translation id="2781151931089541271">1 soniya qoldi</translation>
-<translation id="2788468313014644040">Guruh raqami</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> nomli varaq yopiladi</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google hisobingizga<ph name="END_LINK" /> saqlangan parollarni ko‘rish va boshqarish</translation>
 <translation id="2818669890320396765">Xatcho‘plarni barcha qurilmalaringizda sinxronlash uchun hisobingizga kiring va sinxronizatsiyani yoqing</translation>
 <translation id="2827278682606527653">Quyi bildirgi menyu yarim hajmda ochildi</translation>
@@ -441,7 +438,6 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="3384347053049321195">Rasmni ulashish</translation>
 <translation id="3387650086002190359">Fayllar tizimi xatoliklari tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
 <translation id="3389286852084373014">Matn juda katta</translation>
-<translation id="3391512812407811893">Privacy Sandbox sinov versiyalari</translation>
 <translation id="3398320232533725830">Xatcho‘plar menejerini ochish</translation>
 <translation id="3407392651057365886">Aksariyat sahifalar oldindan yuklanadi. Sahifalar boshqa saytlar tomonidan talab qilinganida Google serverlari orqali oldindan yuklanadi.</translation>
 <translation id="3414952576877147120">Hajmi:</translation>
@@ -913,10 +909,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="6000203700195075278">Qayta obuna</translation>
 <translation id="6002122790816966947">Qurilmalaringiz</translation>
 <translation id="6005538289190791541">Taklif qilingan parol</translation>
-<translation id="6032091552407840792">Bu tajribaviy funksiya faqatgina <ph name="BEGIN_LINK" />ayrim mamlakatlarda<ph name="END_LINK" /> ishlaydi.</translation>
-<translation id="6033245666633565791"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> yordamida Chrome ochiq internetni rivojlantirishni qoʻllab-quvvatlovchi va foydalanuvchilarni kuzatuv mexanizmlaridan himoya qiladigan texnologiyalarni ishlab chiqadi.
-
-Privacy Sandbox hali ishlab chiqish jarayonida va faqatgina ayrim mamlakatlarda mavjud. Hozircha uchinchi tomon cookie fayllari kabi veb texnologiyalardan voz kechmaslik sharti bilan, saytlar Privacy Sandbox funksiyalaridan foydalanishi mumkin.</translation>
 <translation id="6039379616847168523">Keyingi varaqqa o‘tish</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="604124094241169006">Avtomatik</translation>
@@ -1248,7 +1240,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7791543448312431591">Qo‘shish</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ta varaq tiklandi</translation>
 <translation id="780301667611848630">Kerak emas</translation>
-<translation id="7805768142964895445">Holat</translation>
 <translation id="7808889146555843082">Bu parol olib tashlangani bilan <ph name="SITE" /> hisobingiz oʻchib ketmaydi. Boshqalardan himoyalash maqsadida <ph name="SITE" /> hisobingiz parolini almashtiring yoki olib tashlang.</translation>
 <translation id="7810647596859435254">Quyidagi bilan ochish…</translation>
 <translation id="7815484226266492798">Uzun skrinshot</translation>
@@ -1382,11 +1373,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8461694314515752532">Sinxronlangan ma’lumotlarni kodli ibora bilan shifrlash</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> internetga ulanganini tekshiring.</translation>
 <translation id="8473863474539038330">Mazillar va boshqa ma’lumotlar</translation>
-<translation id="8481921391193215807">Agar yoqilsa, saytlar oʻzlarining kontent va xizmatlarini taqdim etish uchun bu yerda koʻrsatilgan maxfiylikni saqlash texnikalaridan foydalanishi mumkin. Bunga muqobil saytlararo kuzatuv ham kiradi. Vaqti-vaqti bilan koʻproq sinov funksiyalari kiritiladi.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklama beruvchilar va noshirlar FLoC uslubidan foydalanishi mumkin.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklama beruvchilar va noshirlar sizni internetda kuzatmasdan reklamalar samaradorligini oʻrganishlari mumkin.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Bepul sinov funksiyalari yoniq</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">“Tarix” sahifasini ochish</translation>
@@ -1432,9 +1418,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8664979001105139458">Bunday nomli fayl allaqachon bor</translation>
 <translation id="8666759526542103597">Reklamalarni brauzer asosida moslashtirish haqida</translation>
 <translation id="8676789164135894283">Kirishni tasdiqlash</translation>
-<translation id="867767487203716855">Keyingi yangilanish</translation>
 <translation id="8683039184091909753">rasm</translation>
-<translation id="8683081248374354009">Guruh sozlamalarini tiklash</translation>
 <translation id="869891660844655955">Tugash muddati</translation>
 <translation id="8699120352855309748">Quyidagi tillarga tarjima taklif qilinmasin</translation>
 <translation id="8712637175834984815">Tushunarli</translation>

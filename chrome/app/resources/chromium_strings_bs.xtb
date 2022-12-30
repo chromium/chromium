@@ -285,7 +285,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="718435575166326686">Chromiumu je za ovu web lokaciju potrebno odobrenje za kameru</translation>
 <translation id="7196312274710523067">Pokretanje Chromiuma nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="7197677400338048821">Chromium ne može provjeravati vaše lozinke. Pokušajte ponovo za 24 sata.</translation>
-<translation id="7218568399872925918">Web lokacije koje posjetite pamte vaše podatke dok ne zatvorite Chromium</translation>
 <translation id="7223968959479464213">Upravitelj zadataka za Chromium</translation>
 <translation id="7246575524853130370">Vaša interesovanja prema Chromiumovoj procjeni</translation>
 <translation id="7309928523159922338">Mjerenje oglasa omogućava web lokacijama koje posjećujete da zatraže informaciju iz Chromiuma koja će im pomoći da izmjere performanse svojih oglasa. Mjerenje oglasa ograničava unakrsno praćenje web lokacija prenoseći minimalnu količinu informacija između njih.</translation>
@@ -357,8 +356,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8621669128220841554">Instalacija nije uspjela zbog neodređene greške. Ponovo preuzmite Chromium.</translation>
 <translation id="8697124171261953979">Također kontrolira koja stranica će se prikazati kada pokrenete Chromium ili budete pretraživali iz višenamjenskog okvira.</translation>
 <translation id="8704119203788522458">Ovo je vaš Chromium</translation>
-<translation id="8713679423359107094">Kada zatvorite sve prozore Chromiuma, kolačići i podaci web lokacija se automatski brišu</translation>
-<translation id="8796443464227412154"><ph name="BEGIN_BOLD" />Odjavit ćete se s većine web lokacija<ph name="END_BOLD" /> kada zatvorite Chromium. Ako je sinhronizacija isključena, također ćete se <ph name="BEGIN_BOLD" />odjaviti s Googleovih usluga i Chromiuma<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium traži odobrenje za pristup vašoj kameri i mikrofonu na ovoj web lokaciji</translation>
 <translation id="8833697763442816810">Sistem ChromiumOS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Koji podaci se koriste:<ph name="END_BOLD" /> vaša historija pregledanja, zapisi o web lokacijama koje ste posjetili koristeći Chromium na ovom uređaju.</translation>

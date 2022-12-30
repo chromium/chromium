@@ -119,7 +119,6 @@
 <translation id="3038232873781883849">Изчаква се инсталирането да започне...</translation>
 <translation id="3059710691562604940">Функцията „Безопасно сърфиране“ е изключена. Chrome препоръчва да я включите.</translation>
 <translation id="3065168410429928842">Раздел в Chrome</translation>
-<translation id="3069821012350118710">Сайтовете, които посещавате, помнят информацията ви, докато затворите Chrome</translation>
 <translation id="3080151273017101988">Изпълняване на приложения на заден план при затворен браузър Google Chrome</translation>
 <translation id="3089968997497233615">Налице е нова, по-сигурна версия на Google Chrome.</translation>
 <translation id="3100998948628680988">Наименуване на потребителския ви профил в Chrome</translation>
@@ -247,7 +246,6 @@
 <translation id="5804318322022881572">Chrome не можа да се стартира. Опитайте отново.</translation>
 <translation id="5867197326698922595">Google Chrome се опитва да редактира паролите.</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
-<translation id="5901850848447342934">Когато затворите Chrome, <ph name="BEGIN_BOLD" />ще излезете от повечето сайтове<ph name="END_BOLD" />. Ако синхронизирането е изключено, <ph name="BEGIN_BOLD" />ще излезете и от услугите на Google и Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вход в мрежата</translation>
 <translation id="5924017743176219022">Установява се връзка с интернет...</translation>
 <translation id="5940385492829620908">Тук ще намерите посещаваните от вас места в мрежата, отметките и другите си неща в Chrome.</translation>
@@ -384,7 +382,6 @@
 <translation id="8614913330719544658">Google Chrome блокира. Да се стартира ли отново сега?</translation>
 <translation id="861702415419836452">Chrome се нуждае от разрешение за достъп до камерата ви, за да създаде триизмерна карта на заобикалящата ви среда</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ще се стартира отново след 1 минута}other{Chrome ще се стартира отново след # минути}}</translation>
-<translation id="8629311577791198377">Когато затворите прозорците на Chrome, „бисквитките“ и данните за сайтовете автоматично се изчистват</translation>
 <translation id="8641606876632989680">Chrome ще ви уведоми, когато влизате в профил с компрометирана парола</translation>
 <translation id="8649026945479135076">Посещаваните от вас сайтове обикновено запомнят нещата, които ви интересуват, за да персонализират практическата ви работа. Те също така могат да съхраняват в Chrome информация за интересите ви.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

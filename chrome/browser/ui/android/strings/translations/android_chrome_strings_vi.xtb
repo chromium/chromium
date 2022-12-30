@@ -139,7 +139,6 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="1718835860248848330">Một giờ qua</translation>
 <translation id="1724977129262658800">Mở khóa để chỉnh sửa mật khẩu của bạn</translation>
 <translation id="1726477445370128854">Bạn có thể duyệt và tìm kiếm nhanh hơn khi Chrome tải trước các trang mà trình duyệt cho rằng bạn có thể sẽ truy cập</translation>
-<translation id="173522743738009831">Giới thiệu về Hộp cát về quyền riêng tư</translation>
 <translation id="1736419249208073774">Khám phá</translation>
 <translation id="1749561566933687563">Đồng bộ hóa dấu trang của bạn</translation>
 <translation id="1750259112639922169">Nhóm thẻ – <ph name="TAB_COUNT" /> thẻ</translation>
@@ -318,9 +317,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="2777555524387840389">Còn <ph name="SECONDS" /> giây</translation>
 <translation id="2779651927720337254">không tải xuống được</translation>
 <translation id="2781151931089541271">Còn 1 giây</translation>
-<translation id="2788468313014644040">Số nhóm</translation>
 <translation id="2800066122460699237">Thẻ <ph name="TAB_TITLE" /> sẽ đóng</translation>
-<translation id="2806840421670364300">FLoC (Học liên kết theo nhóm cùng sở thích)</translation>
 <translation id="281504910091592009">Xem và quản lý các mật khẩu đã lưu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> của bạn</translation>
 <translation id="2818669890320396765">Để sử dụng dấu trang trên tất cả các thiết bị, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="2827278682606527653">Trình đơn thẻ nguồn cấp dữ liệu mở ở nửa dưới của màn hình</translation>
@@ -441,7 +438,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="3384347053049321195">Chia sẻ hình ảnh</translation>
 <translation id="3387650086002190359">Tải xuống <ph name="FILE_NAME" /> không thành công do lỗi hệ thống tệp.</translation>
 <translation id="3389286852084373014">Văn bản quá lớn</translation>
-<translation id="3391512812407811893">Dùng thử Hộp cát về quyền riêng tư</translation>
 <translation id="3398320232533725830">Mở trình quản lý dấu trang</translation>
 <translation id="3407392651057365886">Sẽ có nhiều trang được tải trước hơn. Những trang này có thể được tải trước thông qua các máy chủ của Google khi được các trang web khác yêu cầu.</translation>
 <translation id="3414952576877147120">Kích thước:</translation>
@@ -913,10 +909,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6000203700195075278">Theo dõi lại</translation>
 <translation id="6002122790816966947">Thiết bị của bạn</translation>
 <translation id="6005538289190791541">Mật khẩu đề xuất</translation>
-<translation id="6032091552407840792">Chế độ dùng thử này chỉ hoạt động ở <ph name="BEGIN_LINK" />một số khu vực<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Với <ph name="BEGIN_LINK" />Hộp cát về quyền riêng tư<ph name="END_LINK" />, Chrome sẽ phát triển các công nghệ mới để giúp bạn không bị theo dõi trên nhiều trang web trong khi vẫn duy trì môi trường web mở.
-
-Chế độ dùng thử Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển và được cung cấp ở một số khu vực. Các trang web hiện có thể dùng thử Hộp cát về quyền riêng tư trong khi tiếp tục sử dụng các công nghệ web hiện tại như cookie của bên thứ ba.</translation>
 <translation id="6039379616847168523">Chuyển sang thẻ tiếp theo</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="604124094241169006">Tự động</translation>
@@ -1248,7 +1240,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="7798392620021911922">Đã khôi phục <ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
-<translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7808889146555843082">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="SITE" />. Hãy đổi mật khẩu hoặc xóa tài khoản của bạn trên <ph name="SITE" /> để giữ an toàn cho tài khoản của bạn.</translation>
 <translation id="7810647596859435254">Mở bằng…</translation>
 <translation id="7815484226266492798">Ảnh chụp toàn bộ màn hình</translation>
@@ -1382,11 +1373,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8466613982764129868">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> có kết nối Internet</translation>
 <translation id="8473863474539038330">Địa chỉ và các lựa chọn khác</translation>
-<translation id="8481921391193215807">Khi bạn bật Hộp cát về quyền riêng tư, các trang web có thể dùng kỹ thuật bảo vệ quyền riêng tư theo mô tả ở đây để cung cấp nội dung và dịch vụ của mình. Các kỹ thuật này gồm có những biện pháp thay thế cho hoạt động theo dõi trên nhiều trang web. Theo thời gian, chúng tôi có thể bổ sung nhiều chế độ dùng thử khác.
-
-<ph name="BEGIN_LIST_ITEM1" />Các nhà quảng cáo và nhà xuất bản có thể dùng kỹ thuật FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Các nhà quảng cáo và nhà xuất bản có thể nghiên cứu tính hiệu quả của quảng cáo mà không cần theo dõi bạn trên các trang web.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Các tính năng dùng thử đang bật</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Mở trang lịch sử</translation>
@@ -1432,9 +1418,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8664979001105139458">Tên tệp đã tồn tại</translation>
 <translation id="8666759526542103597">Giới thiệu về tính năng cá nhân hoá quảng cáo dựa vào trình duyệt</translation>
 <translation id="8676789164135894283">Xác minh việc đăng nhập</translation>
-<translation id="867767487203716855">Thời gian cập nhật tiếp theo</translation>
 <translation id="8683039184091909753">hình ảnh</translation>
-<translation id="8683081248374354009">Đặt lại nhóm</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>
 <translation id="8712637175834984815">Bỏ qua</translation>

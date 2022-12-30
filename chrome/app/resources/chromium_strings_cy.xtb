@@ -285,7 +285,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="718435575166326686">Mae angen caniatâd camera ar Chromium ar gyfer y wefan hon</translation>
 <translation id="7196312274710523067">Methu â lansio Chromium. Rhowch gynnig arall arni.</translation>
 <translation id="7197677400338048821">Ni all Chromium wirio'ch cyfrineiriau. Rhowch gynnig arall arni ar ôl 24 awr.</translation>
-<translation id="7218568399872925918">Mae gwefannau rydych yn ymweld â nhw yn cofio'ch gwybodaeth nes i chi gau Chromium</translation>
 <translation id="7223968959479464213">Rheolydd Tasgau - Chromium</translation>
 <translation id="7246575524853130370">Eich diddordebau fel yr amcangyfrifir gan Chromium</translation>
 <translation id="7309928523159922338">Mae Mesur hysbysebion yn caniatáu i wefannau rydych yn ymweld â nhw ofyn am wybodaeth o Chromium sy'n helpu'r wefan i fesur perfformiad eu hysbysebion. Mae Mesur hysbysebion yn cyfyngu ar olrhain traws-wefan drwy drosglwyddo cyn lleied o wybodaeth â phosib rhwng gwefannau.</translation>
@@ -357,8 +356,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8621669128220841554">Methwyd y gosodiad oherwydd gwall amhenodol. Lawrlwythwch Chromium eto.</translation>
 <translation id="8697124171261953979">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn cychwyn Chromium neu'n chwilio o'r Omniflwch.</translation>
 <translation id="8704119203788522458">Dyma eich Chromium</translation>
-<translation id="8713679423359107094">Pan fyddwch yn cau holl ffenestri Chromium, mae cwcis a data gwefan yn cael eu clirio'n awtomatig</translation>
-<translation id="8796443464227412154">Byddwch yn cael eich <ph name="BEGIN_BOLD" />allgofnodi o'r mwyafrif o wefannau<ph name="END_BOLD" /> pan fyddwch yn cau Chromium. Os yw cysoni wedi'i ddiffodd, byddwch hefyd yn cael eich <ph name="BEGIN_BOLD" />allgofnodi o wasanaethau Google a Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Mae angen caniatâd ar Chromium i gael mynediad at eich camera a'ch meicroffon ar gyfer y wefan hon</translation>
 <translation id="8833697763442816810">System ChromiumOS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Pa ddata a ddefnyddir:<ph name="END_BOLD" /> Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chromium ar y ddyfais hon.</translation>

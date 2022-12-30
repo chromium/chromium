@@ -3810,6 +3810,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да редактира файловете в(ъв) „<ph name="FOLDERNAME" />“</translation>
 <translation id="4470957202018033307">Предпочитания за външно хранилище</translation>
 <translation id="4471354919263203780">Файловете за разпознаване на говор се изтеглят... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Можете да използвате предпочитания от вас език за профила в Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Помощ за подобряването на функциите и ефективността на Chrome</translation>
 <translation id="4472575034687746823">Първи стъпки</translation>
 <translation id="4474155171896946103">Запазване на отметки към всички раздели…</translation>
@@ -4540,7 +4541,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5158206172605340248">Менюто за диакритични знаци е отхвърлено.</translation>
 <translation id="5159094275429367735">Настройване на Crostini</translation>
 <translation id="5159419673777902220">Родителят ви е деактивирал разрешенията за разширенията</translation>
-<translation id="5159643365935452998">Преглед на автоматичното изчистване на данните</translation>
 <translation id="5160634252433617617">Физическа клавиатура</translation>
 <translation id="5160857336552977725">Влезте в своя <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">USB устройства от <ph name="VENDOR_NAME" /></translation>
@@ -6749,6 +6749,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7227458944009118910">Приложенията по-долу също могат да обработват връзки с протокол. Другите приложения ще искат разрешение.</translation>
 <translation id="7228056665272655255">За да настрои отпечатък, детето ви трябва да докосне сензора за отпечатъци в горния десен ъгъл на клавиатурата. Данните за отпечатъка му се съхраняват надеждно и никога не напускат устройството <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Заключване на екрана и влизане в профила</translation>
+<translation id="7228854227189381547">Без превключване</translation>
 <translation id="7230222852462421043">Възстановяване на &amp;прозореца</translation>
 <translation id="7231260028442989757">Преглеждайте, отхвърляйте и отговаряйте на известията на телефона си</translation>
 <translation id="7232750842195536390">Преименуването не бе успешно</translation>
@@ -7082,6 +7083,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7545466883021407599">Не се установи връзка със сървъра. Проверете връзката си с мрежата и опитайте отново. Ако продължавате да имате проблеми, рестартирайте своя Chromebook. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Предупреждение: Настройките ви за <ph name="PRODUCT_NAME" /> се съхраняват на мрежов диск. Това може да доведе до забавяния, сривове или дори до загуба на данни.</translation>
 <translation id="7548856833046333824">Лимонада</translation>
+<translation id="7549434883223124329">Да се превключи ли езикът на устройството?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">„<ph name="FILE_NAME" />“ се изтегли успешно</translation>
 <translation id="7551643184018910560">Фиксиране в лавицата</translation>

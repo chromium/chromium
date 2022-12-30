@@ -121,7 +121,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="3038232873781883849">Wrthi'n aros i osod...</translation>
 <translation id="3059710691562604940">Mae Pori'n Ddiogel wedi'i ddiffodd. Mae Chrome yn argymell ei droi ymlaen.</translation>
 <translation id="3065168410429928842">Tab Chrome</translation>
-<translation id="3069821012350118710">Mae gwefannau rydych yn ymweld â nhw yn cofio'ch gwybodaeth nes i chi gau Chrome</translation>
 <translation id="3080151273017101988">Parhau i redeg apiau cefndir pan fydd Google Chrome ar gau</translation>
 <translation id="3089968997497233615">Mae fersiwn newydd, fwy diogel o Google Chrome ar gael.</translation>
 <translation id="3100998948628680988">Enwch eich proffil Chrome</translation>
@@ -253,7 +252,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="5804318322022881572">Methu â lansio Chrome. Rhowch gynnig arall arni.</translation>
 <translation id="5867197326698922595">Mae Google Chrome yn ceisio golygu cyfrineiriau.</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
-<translation id="5901850848447342934">Byddwch yn cael eich <ph name="BEGIN_BOLD" />allgofnodi o'r mwyafrif o wefannau<ph name="END_BOLD" /> pan fyddwch yn cau Chrome. Os yw cysoni wedi'i ddiffodd, byddwch hefyd yn cael eich <ph name="BEGIN_BOLD" />allgofnodi o wasanaethau Google a Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Mewngofnodi Rhwydwaith</translation>
 <translation id="5924017743176219022">Wrthi'n cysylltu â'r Rhyngrwyd...</translation>
 <translation id="5940385492829620908">Mae'ch gwe, nodau tudalen, a phethau Chrome eraill yn byw yma.</translation>
@@ -390,7 +388,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8614913330719544658">Nid yw Google Chrome yn ymateb. Ail-lansio nawr?</translation>
 <translation id="861702415419836452">Mae angen caniatâd ar Chrome i gael mynediad at eich camera i greu map 3D o'ch amgylchoedd</translation>
 <translation id="8625237574518804553">{0,plural, =1{Bydd Chrome yn ail-lansio mewn 1 funud}zero{Bydd Chrome yn ail-lansio mewn # munud}two{Bydd Chrome yn ail-lansio mewn # funud}few{Bydd Chrome yn ail-lansio mewn # munud}many{Bydd Chrome yn ail-lansio mewn # munud}other{Bydd Chrome yn ail-lansio mewn # munud}}</translation>
-<translation id="8629311577791198377">Pan fyddwch yn cau holl ffenestri Chrome, mae cwcis a data gwefan yn cael eu clirio'n awtomatig</translation>
 <translation id="8641606876632989680">Bydd Chrome yn eich hysbysu pan fyddwch yn mewngofnodi gyda chyfrinair sydd dan fygythiad</translation>
 <translation id="8649026945479135076">Mae'n gyffredin i wefannau y byddwch yn ymweld â nhw gofio pethau y mae gennych ddiddordeb ynddynt, i bersonoleiddio'ch profiad. Gall gwefannau hefyd storio gwybodaeth am eich diddordebau gyda Chrome.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

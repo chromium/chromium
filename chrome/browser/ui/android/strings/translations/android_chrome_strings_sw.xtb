@@ -139,7 +139,6 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="1718835860248848330">Saa iliyopita</translation>
 <translation id="1724977129262658800">Fungua ili ubadilishe nenosiri lako</translation>
 <translation id="1726477445370128854">Unaweza kuvinjari na kutafuta kwa haraka zaidi Chrome inapopakia mapema kurasa ambazo inafikiri kuwa huenda ukazitembelea</translation>
-<translation id="173522743738009831">Kuhusu Utaratibu wa kuwekea vikwazo vya faragha</translation>
 <translation id="1736419249208073774">Gundua</translation>
 <translation id="1749561566933687563">Sawazisha alamisho zako</translation>
 <translation id="1750259112639922169">Kikundi cha vichupo - vichupo <ph name="TAB_COUNT" /></translation>
@@ -318,9 +317,7 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="2777555524387840389">Zimesalia sekunde <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">imeshindwa</translation>
 <translation id="2781151931089541271">Imesalia sekunde 1</translation>
-<translation id="2788468313014644040">Nambari ya kikundi</translation>
 <translation id="2800066122460699237">Kichupo cha <ph name="TAB_TITLE" /> kitafungwa</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Angalia na udhibiti manenosiri yaliyohifadhiwa kwenye <ph name="BEGIN_LINK" />Akaunti yako ya Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Ingia katika akaunti na uwashe kipengele cha usawazishaji ili upate alamisho zako kwenye vifaa vyako vyote</translation>
 <translation id="2827278682606527653">Menyu ya kadi ya mipasho inaonekana kiasi</translation>
@@ -441,7 +438,6 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="3384347053049321195">Shiriki picha</translation>
 <translation id="3387650086002190359">Kipakuliwa cha <ph name="FILE_NAME" /> hakijafaulu kwa sababu ya hitilafu za mfumo wa faili.</translation>
 <translation id="3389286852084373014">Maandishi ni makubwa mno</translation>
-<translation id="3391512812407811893">Majaribio ya Utaratibu wa kuwekea vikwazo vya faragha</translation>
 <translation id="3398320232533725830">Fungua kidhibiti cha alamisho</translation>
 <translation id="3407392651057365886">Kurasa nyingi zaidi hupakiwa mapema. Huenda kurasa zikapakiwa mapema kupitia seva za Google zinapoombwa na tovuti zingine.</translation>
 <translation id="3414952576877147120">Ukubwa:</translation>
@@ -913,10 +909,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="6000203700195075278">Fuatilia tena</translation>
 <translation id="6002122790816966947">Vifaa vyako</translation>
 <translation id="6005538289190791541">Nenosiri linalopendekezwa</translation>
-<translation id="6032091552407840792">Jaribio hili linatumika katika <ph name="BEGIN_LINK" />baadhi ya maeneo<ph name="END_LINK" /> pekee.</translation>
-<translation id="6033245666633565791">Kwa kutumia <ph name="BEGIN_LINK" />Utaratibu wa kuwekea vikwazo vya faragha<ph name="END_LINK" />, Chrome inakuza teknolojia mpya zitakazokulinda dhidi ya ufuatiliaji wa data kwenye tovuti nyingi huku zikidumisha wavuti huria.
-
-Majaribio ya Utaratibu wa Kuwekea Vikwazo vya Faragha bado yanaendelea kutengenezwa na yanapatikana katika maeneo mahususi. Kwa sasa, tovuti zinaweza kujaribu Utaratibu wa Kuwekea Vikwazo vya Faragha huku zikiendelea kutumia teknolojia za sasa za wavuti kama vile vidakuzi vya wengine.</translation>
 <translation id="6039379616847168523">Nenda kwenye kichupo kinachofuata</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="604124094241169006">Otomatiki</translation>
@@ -1248,7 +1240,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7791543448312431591">Ongeza</translation>
 <translation id="7798392620021911922">Umerejesha vichupo <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Hapana</translation>
-<translation id="7805768142964895445">Hali</translation>
 <translation id="7808889146555843082">Hatua ya kufuta nenosiri hili haitafuta akaunti yako kwenye <ph name="SITE" />. Badilisha nenosiri au futa akaunti yako kwenye <ph name="SITE" /> ili uilinde dhidi ya watu wengine.</translation>
 <translation id="7810647596859435254">Fungua ukitumia...</translation>
 <translation id="7815484226266492798">Picha Ndefu ya Skrini</translation>
@@ -1382,11 +1373,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8461694314515752532">Simba data iliyosawazishwa kwa njia fiche ukitumia kauli yako ya siri ya usawazishaji</translation>
 <translation id="8466613982764129868">Hakikisha kwamba <ph name="TARGET_DEVICE_NAME" /> imeunganishwa kwenye intaneti</translation>
 <translation id="8473863474539038330">Anwani na zaidi</translation>
-<translation id="8481921391193215807">Wakati umewasha teknolojia hii, tovuti zinaweza kutumia mbinu zinazolinda faragha zilizoonyeshwa hapa kutoa maudhui na huduma. Mbinu hizi zitatumika badala ya zile za kufuatilia data kwenye tovuti nyingi. Huenda majaribio zaidi yakaongezwa baada ya muda.
-
-<ph name="BEGIN_LIST_ITEM1" />Watangazaji na wachapishaji wanaweza kutumia teknolojia ya FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Watangazaji na wachapishaji wanaweza kubaini ufanisi wa matangazo kwa njia ambayo haikufuatilii kwenye tovuti mbalimbali.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Vipengele vya jaribio vimewashwa</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Fungua ukurasa wa historia</translation>
@@ -1432,9 +1418,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8664979001105139458">Jina la faili tayari lipo</translation>
 <translation id="8666759526542103597">Maelezo kuhusu kuweka mapendeleo ya matangazo kwenye kivinjari</translation>
 <translation id="8676789164135894283">Uthibitishaji wa kuingia katika akaunti</translation>
-<translation id="867767487203716855">Sasisho lijalo</translation>
 <translation id="8683039184091909753">picha</translation>
-<translation id="8683081248374354009">Badilisha kikundi</translation>
 <translation id="869891660844655955">Muda wake unakwisha tarehe</translation>
 <translation id="8699120352855309748">Usionyeshe chaguo la kutafsiri lugha hizi</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>

@@ -285,7 +285,6 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="718435575166326686">Kailangan ng Chromium ng pahintulot sa camera para sa site na ito</translation>
 <translation id="7196312274710523067">Hindi mailunsad ang Chromium. Subukang muli.</translation>
 <translation id="7197677400338048821">Hindi masuri ng Chromium ang iyong mga password. Subukan ulit pagkalipas ng 24 na oras.</translation>
-<translation id="7218568399872925918">Naaalala ng mga site na binibisita mo ang iyong impormasyon hanggang sa isara mo ang Chromium</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">Iyong mga interes tulad ng tinatantya ng Chromium</translation>
 <translation id="7309928523159922338">Nagbibigay-daan ang pagsukat ng ad sa mga site na binibisita mo na humiling ng impormasyon mula sa Chromium na tumutulong sa site na sukatin ang performance ng mga ad ng mga ito. Pinaghihigpitan ng pagsukat ng ad ang cross-site na pagsubaybay sa pamamagitan ng paglilipat ng kaunting impormasyon hangga't posible sa pagitan ng mga site.</translation>
@@ -357,8 +356,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8621669128220841554">Nabigo ang pag-install dahil sa hindi natukoy na error. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="8697124171261953979">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chromium o naghanap mula sa Omnibox.</translation>
 <translation id="8704119203788522458">Ito ang iyong Chromium</translation>
-<translation id="8713679423359107094">Kapag isinara mo ang lahat ng window ng Chromium, awtomatikong maki-clear ang cookies at data ng site</translation>
-<translation id="8796443464227412154"><ph name="BEGIN_BOLD" />Masa-sign out ka sa karamihan ng mga site<ph name="END_BOLD" /> kapag isinara mo ang Chromium. Kung naka-off ang pag-sync, <ph name="BEGIN_BOLD" />masa-sign out ka sa mga serbisyo ng Google at Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Kailangan ng Chromium ng pahintulot na i-access ang iyong camera at mikropono para sa site na ito</translation>
 <translation id="8833697763442816810">ChromiumOS System</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Anong data ang ginagamit:<ph name="END_BOLD" /> Iyong history ng pag-browse, record ng mga site na binisita mo gamit ang Chromium sa device na ito.</translation>

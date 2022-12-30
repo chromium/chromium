@@ -285,7 +285,6 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="718435575166326686">Chromium pro tento web potřebuje přístup k fotoaparátu</translation>
 <translation id="7196312274710523067">Chromium nelze spustit. Zkuste to znovu.</translation>
 <translation id="7197677400338048821">Chromium nemůže zkontrolovat hesla. Zkuste to znovu za 24 hodin.</translation>
-<translation id="7218568399872925918">Navštívené weby si pamatují vaše údaje, dokud Chromium nezavřete</translation>
 <translation id="7223968959479464213">Správce úloh – Chromium</translation>
 <translation id="7246575524853130370">Vaše zájmy podle odhadu Chromium</translation>
 <translation id="7309928523159922338">Měření reklam umožňuje navštíveným webům žádat Chromium o informace, na základě kterých mohou měřit výkonnost svých reklam. Měření reklam zabraňuje sledování mezi weby, protože se při něm mezi weby přenáší co možná nejméně informací.</translation>
@@ -357,8 +356,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8621669128220841554">Instalace se z neznámého důvodu nezdařila. Stáhněte prosím Chromium znovu.</translation>
 <translation id="8697124171261953979">Také řídí, která stránka se zobrazí po spuštění prohlížeče Chromium nebo při vyhledávání v omniboxu.</translation>
 <translation id="8704119203788522458">Toto je váš prohlížeč Chromium</translation>
-<translation id="8713679423359107094">Když zavřete všechna okna prohlížeče Chromium, automaticky se vymažou soubory cookie a data webů</translation>
-<translation id="8796443464227412154">Po zavření prohlížeče Chromium budete <ph name="BEGIN_BOLD" />odhlášeni z většiny webů<ph name="END_BOLD" />. Pokud je vypnutá synchronizace, budete také <ph name="BEGIN_BOLD" />odhlášeni ze služeb Google a z prohlížeče Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu</translation>
 <translation id="8833697763442816810">Systém ChromiumOS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Jaké údaje používáme:<ph name="END_BOLD" /> Vaši historii prohlížení, což je seznam webů, které jste navštívili v Chromiu na tomto zařízení.</translation>

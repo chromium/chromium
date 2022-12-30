@@ -282,7 +282,6 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein and
 <translation id="718435575166326686">Chromium benötigt die Kameraberechtigung für diese Website</translation>
 <translation id="7196312274710523067">Chromium konnte nicht gestartet werden. Versuche es noch einmal.</translation>
 <translation id="7197677400338048821">Chromium kann deine Passwörter nicht prüfen. Bitte versuche es in 24 Stunden noch einmal.</translation>
-<translation id="7218568399872925918">Websites, die du besuchst, speichern deine Daten, bis du Chromium schließt</translation>
 <translation id="7223968959479464213">Task-Manager - Chromium</translation>
 <translation id="7246575524853130370">Deine von Chromium geschätzten Interessen</translation>
 <translation id="7309928523159922338">Mithilfe der Anzeigenanalyse können von dir besuchte Websites Informationen von Chromium anfordern, mit denen sie die Leistung ihrer Werbung analysieren können. Durch die Anzeigenanalyse wird das websiteübergreifende Tracking eingeschränkt, indem so wenig Informationen wie möglich zwischen Websites ausgetauscht werden.</translation>
@@ -354,8 +353,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8621669128220841554">Die Installation konnte aufgrund eines undefinierten Fehlers nicht abgeschlossen werden. Bitte lade Chromium erneut herunter.</translation>
 <translation id="8697124171261953979">Die Erweiterung legt auch fest, welche Seite beim Start von Chromium oder bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="8704119203788522458">Dies ist dein persönlicher Chromium-Browser</translation>
-<translation id="8713679423359107094">Wenn du alle Chromium-Fenster schließt, werden alle Cookies und Websitedaten automatisch gelöscht</translation>
-<translation id="8796443464227412154">Du wirst <ph name="BEGIN_BOLD" />auf den meisten Websites abgemeldet<ph name="END_BOLD" />, wenn du Chromium schließt. Wenn die Synchronisierung deaktiviert ist, wirst du auch <ph name="BEGIN_BOLD" />bei Google-Diensten und Chromium abgemeldet<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium benötigt für diese Website die Berechtigung, auf deine Kamera und dein Mikrofon zuzugreifen</translation>
 <translation id="8833697763442816810">Chromium OS-System</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Welche Daten werden verwendet?<ph name="END_BOLD" /> Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chromium besuchten Websites.</translation>

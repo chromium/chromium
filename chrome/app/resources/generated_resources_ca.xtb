@@ -3797,6 +3797,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pot editar els fitxers que conté la carpeta <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferències de l'emmagatzematge extern</translation>
 <translation id="4471354919263203780">S'estan baixant els fitxers de reconeixement de parla... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Pots utilitzar l'idioma que prefereixes per al teu Compte de Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Ajuda a millorar les funcions i el rendiment de Chrome</translation>
 <translation id="4472575034687746823">Comença</translation>
 <translation id="4474155171896946103">Afegeix totes les pestanyes a les adreces d'interès...</translation>
@@ -4526,7 +4527,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5158206172605340248">S'ha ignorat el menú de marques d'èmfasi.</translation>
 <translation id="5159094275429367735">Configura Crostini</translation>
 <translation id="5159419673777902220">El teu pare o mare han desactivat els permisos d'extensions</translation>
-<translation id="5159643365935452998">Revisa l'eliminació automàtica de dades</translation>
 <translation id="5160634252433617617">Teclat físic</translation>
 <translation id="5160857336552977725">Inicieu la sessió al vostre dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5161251470972801814">Dispositius USB fabricats per <ph name="VENDOR_NAME" /></translation>
@@ -6733,6 +6733,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7227458944009118910">Les aplicacions que s'enumeren a continuació també poden gestionar enllaços de protocol. Les altres aplicacions et demanaran permís.</translation>
 <translation id="7228056665272655255">Per configurar una empremta digital, fes que el teu fill o filla toqui el sensor d'empremtes digitals que hi ha a l'extrem superior dret del teclat. Les dades de la seva empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Bloqueig de pantalla i inici de sessió</translation>
+<translation id="7228854227189381547">No canviïs</translation>
 <translation id="7230222852462421043">&amp;Restaura la finestra</translation>
 <translation id="7231260028442989757">Consulta les notificacions del telèfon, ignora-les o respon-hi</translation>
 <translation id="7232750842195536390">S'ha produït un error en canviar el nom</translation>
@@ -7066,6 +7067,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7545466883021407599">No s'ha pogut connectar amb el servidor. Comprova la connexió a la xarxa i torna-ho a provar. Si encara tens problemes, prova de reiniciar el Chromebook. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Advertiment: la vostra configuració de <ph name="PRODUCT_NAME" /> s'emmagatzema en una unitat de xarxa. Això pot provocar alentiments, bloquejos o fins i tot la pèrdua de dades.</translation>
 <translation id="7548856833046333824">Còctel</translation>
+<translation id="7549434883223124329">Vols canviar l'idioma del dispositiu?</translation>
 <translation id="7550830279652415241">marcadors_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">No s'ha pogut baixar <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Fixa al prestatge</translation>

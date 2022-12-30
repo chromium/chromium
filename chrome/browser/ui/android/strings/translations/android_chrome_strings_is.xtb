@@ -139,7 +139,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1718835860248848330">Undanfarna klukkustund</translation>
 <translation id="1724977129262658800">Taktu úr lás til að breyta aðgangsorðinu</translation>
 <translation id="1726477445370128854">Þú getur vafrað og leitað á hraðari hátt þegar Chrome forhleður síðum sem vafrinn telur að þú munir opna</translation>
-<translation id="173522743738009831">Um Privacy Sandbox</translation>
 <translation id="1736419249208073774">Kanna</translation>
 <translation id="1749561566933687563">Samstilltu bókamerkin þín</translation>
 <translation id="1750259112639922169">Flipahópur – <ph name="TAB_COUNT" /> flipar</translation>
@@ -318,9 +317,7 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="2777555524387840389"><ph name="SECONDS" /> sek. eftir</translation>
 <translation id="2779651927720337254">mistókst</translation>
 <translation id="2781151931089541271">Ein sek. eftir</translation>
-<translation id="2788468313014644040">Númer hóps</translation>
 <translation id="2800066122460699237">Flipanum <ph name="TAB_TITLE" /> verður lokað</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Þú getur skoðað og haft umsjón með vistuðum aðgangsorðum á <ph name="BEGIN_LINK" />Google reikningnum<ph name="END_LINK" /> þínum</translation>
 <translation id="2818669890320396765">Skráðu þig inn og kveiktu á samstillingu til að fá aðgang að bókamerkjunum þínum í öllum tækjum</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -441,7 +438,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3384347053049321195">Deila mynd</translation>
 <translation id="3387650086002190359">Niðurhal á <ph name="FILE_NAME" /> mistókst vegna villu í skráakerfi.</translation>
 <translation id="3389286852084373014">Textinn er of stór</translation>
-<translation id="3391512812407811893">Prufuútgáfur Privacy Sandbox</translation>
 <translation id="3398320232533725830">Opna bókamerkjaumsjón</translation>
 <translation id="3407392651057365886">Fleiri síðum er forhlaðið. Síðum er hugsanlega forhlaðið í gegnum þjóna Google samkvæmt beiðnum frá öðrum vefsvæðum.</translation>
 <translation id="3414952576877147120">Stærð:</translation>
@@ -913,10 +909,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="6000203700195075278">Fylgja aftur</translation>
 <translation id="6002122790816966947">Tækin þín</translation>
 <translation id="6005538289190791541">Útbúið aðgangsorð</translation>
-<translation id="6032091552407840792">Þessi prufuútgáfa er aðeins virk á <ph name="BEGIN_LINK" />sumum svæðum<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Chrome notar <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> til að þróa nýja tækni sem verndar þig fyrir rakningartækni en varðveitir á sama tíma opna vefinn.
-
-Prufuútgáfur Privacy Sandbox eru enn í þróun og eru í boði á völdum svæðum. Eins og er geta vefsvæði prófað persónuverndarafmörkun á sama tíma og þau nota núverandi veftækni á borð við fótspor þriðja aðila.</translation>
 <translation id="6039379616847168523">Stökkva í næsta flipa</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="604124094241169006">Sjálfvirkt</translation>
@@ -1248,7 +1240,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7791543448312431591">Bæta við</translation>
 <translation id="7798392620021911922">Endurheimti <ph name="TAB_COUNT" /> flipa</translation>
 <translation id="780301667611848630">Nei, takk</translation>
-<translation id="7805768142964895445">Staða</translation>
 <translation id="7808889146555843082">Reikningnum þínum á <ph name="SITE" /> verður ekki eytt þó að þessu aðgangsorði verði eytt. Breyttu aðgangsorðinu eða eyddu reikningnum þínum á <ph name="SITE" /> til að halda honum öruggum fyrir öðrum.</translation>
 <translation id="7810647596859435254">Opna með…</translation>
 <translation id="7815484226266492798">Löng skjámynd</translation>
@@ -1382,11 +1373,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8461694314515752532">Dulkóða samstillt gögn með eigin aðgangsorði samstillingar</translation>
 <translation id="8466613982764129868">Gakktu úr skugga um að <ph name="TARGET_DEVICE_NAME" /> sé tengt við internetið</translation>
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
-<translation id="8481921391193215807">Þegar kveikt er á þessu geta vefsvæði notað umrædda persónuverndartækni til að birta efni og veita þjónustu. Þar á meðal er tækni sem kemur í stað rakningar á vefsvæðum. Mögulegt er að fleiri prufueiginleikum verði bætt við reglulega.
-
-<ph name="BEGIN_LIST_ITEM1" />Auglýsendur og útgefendur geta notað FLoC-tæknina.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Auglýsendur og útgefendur geta metið árangur auglýsinga án þess að rekja virkni þína á vefsvæðum.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Kveikt er á prufueiginleikum</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Opna ferilsíðuna</translation>
@@ -1432,9 +1418,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8664979001105139458">Skráarheiti er þegar til</translation>
 <translation id="8666759526542103597">Um sérsniðnar auglýsingar út frá vafravirkni</translation>
 <translation id="8676789164135894283">Innskráningarstaðfestingar</translation>
-<translation id="867767487203716855">Næsta uppfærsla</translation>
 <translation id="8683039184091909753">mynd</translation>
-<translation id="8683081248374354009">Endurstilla hóp</translation>
 <translation id="869891660844655955">Lokadagsetning</translation>
 <translation id="8699120352855309748">Ekki bjóða upp á að þýða þessi tungumál</translation>
 <translation id="8712637175834984815">Ég skil</translation>

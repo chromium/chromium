@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">ຊົ່ວໂມງຜ່ານມາ</translation>
 <translation id="1724977129262658800">ປົດລັອກເພື່ອແກ້ໄຂລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="1726477445370128854">ທ່ານສາມາດທ່ອງເວັບ ແລະ ຊອກຫາໄດ້ໄວຂຶ້ນເມື່ອ Chrome ໂຫຼດໜ້າທີ່ມັນຄິດວ່າທ່ານອາດຈະເຂົ້າໄວ້ກ່ອນລ່ວງໜ້າ</translation>
-<translation id="173522743738009831">ກ່ຽວກັບ Privacy Sandbox</translation>
 <translation id="1736419249208073774">ສຳຫຼວດເບິ່ງ</translation>
 <translation id="1749561566933687563">ຊິ້ງຂໍ້ມູນບຸກມາກຂອງທ່ານ</translation>
 <translation id="1750259112639922169">ກຸ່ມແຖບ - <ph name="TAB_COUNT" /> ແຖບ</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389">ຍັງເຫຼືອ <ph name="SECONDS" /> ວິ</translation>
 <translation id="2779651927720337254">ບໍ່ສໍາເລັດ</translation>
 <translation id="2781151931089541271">ຍັງເຫຼືອ 1 ວິ</translation>
-<translation id="2788468313014644040">ໝາຍເລກກຸ່ມ</translation>
 <translation id="2800066122460699237">ແຖບ <ph name="TAB_TITLE" /> ຈະຖືກປິດ</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">ເບິ່ງ ແລະ ຈັດການລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນ <ph name="BEGIN_LINK" />ບັນຊີ Google<ph name="END_LINK" /> ຂອງທ່ານ</translation>
 <translation id="2818669890320396765">ເພື່ອໃຊ້ບຸກມາກຂອງທ່ານຢູ່ໃນທຸກອຸປະກອນຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງຂໍ້ມູນກ່ອນ</translation>
 <translation id="2827278682606527653">ເມນູບັດຟີດເປີດໄວ້ເຄິ່ງລວງສູງ</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">ແບ່ງ​ປັນ​ຮູບ</translation>
 <translation id="3387650086002190359">ການ​ດາວ​ໂຫຼ​ດ <ph name="FILE_NAME" /> ລົ້ມເຫລວ​ເນື່ອງ​ຈາກ​ຄວາມ​ຜິດພາດ​ຂອງ​ລະບົບ​ໄຟ​ລ໌.</translation>
 <translation id="3389286852084373014">ຂໍ້ຄວາມໃຫຍ່ເກີນໄປ</translation>
-<translation id="3391512812407811893">ການທົດລອງໃຊ້ Privacy Sandbox</translation>
 <translation id="3398320232533725830">ເປີດຕົວຈັດການບຸກມາກ</translation>
 <translation id="3407392651057365886">ຈະມີການໂຫຼດໜ້າຕ່າງໆກ່ອນລ່ວງໜ້າເພີ່ມຂຶ້ນ. ໜ້າຕ່າງໆອາດຖືກໂຫຼດກ່ອນລ່ວງໜ້າຜ່ານເຊີບເວີ Google ເມື່ອຖືກຮ້ອງຂໍໂດຍເວັບໄຊອື່ນ.</translation>
 <translation id="3414952576877147120">ຂະໜາດ:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">ຕິດຕາມຄືນໃໝ່</translation>
 <translation id="6002122790816966947">ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="6005538289190791541">ລະຫັດຜ່ານທີ່ແນະນຳ</translation>
-<translation id="6032091552407840792">ການທົດລອງໃຊ້ນີ້ແມ່ນໃຊ້ໄດ້ສະເພາະໃນ <ph name="BEGIN_LINK" />ບາງພາກພື້ນ<ph name="END_LINK" /> ເທົ່ານັ້ນ.</translation>
-<translation id="6033245666633565791">ດ້ວຍ <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome ກຳລັງພັດທະນາເທັກໂນໂລຢີໃໝ່ເພື່ອປ້ອງກັນທ່ານຈາກການຕິດຕາມຂ້າມເວັບໄຊໃນຂະນະທີ່ຍັງຄົງຮັກສາຄວາມເປີດກວ້າງຂອງເວັບໄວ້.
-
-ການທົດລອງໃຊ້ Privacy Sandbox ຍັງຄົງຢູ່ໃນລະຫວ່າງການພັດທະນາຢ່າງຫ້າວຫັນ ແລະ ສາມາດໃຊ້ໄດ້ໃນບາງພາກພື້ນ. ສຳລັບຕອນນີ້, ເວັບໄຊອາດລອງໃຊ້ Privacy Sandbox ໃນຂະນະທີ່ສືບຕໍ່ໃຊ້ເທັກໂນໂລຢີເວັບປັດຈຸບັນ ເຊັ່ນ: ຄຸກກີ້ພາກສ່ວນທີສາມ.</translation>
 <translation id="6039379616847168523">ໂດດໄປຫາແຖບຕໍ່ໄປ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="604124094241169006">ອັດ​ຕະ​ໂນ​ມັດ</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">ເພີ່ມ</translation>
 <translation id="7798392620021911922">ກູ້ <ph name="TAB_COUNT" /> ແຖບຄືນແລ້ວ</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>
-<translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
 <translation id="7808889146555843082">ການລຶບລະຫັດຜ່ານນີ້ຈະບໍ່ລຶບບັນຊີຂອງທ່ານໃນ <ph name="SITE" />. ການປ່ຽນລະຫັດຜ່ານຂອງທ່ານ ຫຼື ລຶບບັນຊີຂອງທ່ານໃນ <ph name="SITE" /> ເພື່ອຮັກສາໃຫ້ມັນປອດໄພຈາກຄົນອື່ນ.</translation>
 <translation id="7810647596859435254">ເປີດດ້ວຍ...</translation>
 <translation id="7815484226266492798">ຮູບໜ້າຈໍຍາວ</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">ເຂົ້າລະຫັດຂໍ້ມູນທີ່ຊິ້ງດ້ວຍລະຫັດຜ່ານການຊິ້ງຂໍ້ມູນຂອງທ່ານເອງ</translation>
 <translation id="8466613982764129868">ກວດໃຫ້ແນ່ໃຈວ່າ <ph name="TARGET_DEVICE_NAME" /> ເຊື່ອມຕໍ່ກັບອິນເຕີເນັດ</translation>
 <translation id="8473863474539038330">ທີ່ຢູ່ ແລະ ອື່ນໆອີກ</translation>
-<translation id="8481921391193215807">ເມື່ອເປີດໃຊ້, ເວັບໄຊອາດໃຊ້ເທັກໂນໂລຢີການຮັກສາຄວາມເປັນສ່ວນຕົວທີ່ສະແດງຢູ່ບ່ອນນີ້ເພື່ອສະໜອງເນື້ອຫາ ແລະ ບໍລິການຂອງພວກມັນ. ເທັກນິກເຫຼົ່ານີ້ຮວມທັງທາງເລືອກຕໍ່ກັບການຕິດຕາມຂ້າມເວັບໄຊ. ອາດມີການເພີ່ມການທົດລອງໃຊ້ເພີ່ມເຕີມໃນອະນາຄົດ.
-
-<ph name="BEGIN_LIST_ITEM1" />ຜູ້ລົງໂຄສະນາ ແລະ ຜູ້ເຜີຍແຜ່ສາມາດໃຊ້ FLoC ໄດ້.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />ຜູ້ໂຄສະນາ ແລະ ຜູ້ເຜີຍແຜ່ສາມາດສຶກສາປະສິດທິຜົນຂອງໂຄສະນາໃນແບບທີ່ບໍ່ຕິດຕາມທ່ານຂ້າມເວັບໄຊໄດ້.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">ຄຸນສົມບັດທົດລອງໃຊ້ເປີດຢູ່</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ເປີດໜ້າປະຫວັດ</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">ມີຊື່ໄຟລ໌ນີ້ຢູ່ແລ້ວ</translation>
 <translation id="8666759526542103597">ກ່ຽວກັບການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວໂດຍອ້າງອີງໃສ່ໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="8676789164135894283">ການຢັ້ງຢືນການເຂົ້າສູ່ລະບົບ</translation>
-<translation id="867767487203716855">ອັບເດດຕໍ່ໄປ</translation>
 <translation id="8683039184091909753">ຮູບ</translation>
-<translation id="8683081248374354009">ຣີເຊັດກຸ່ມ</translation>
 <translation id="869891660844655955">ວັນ​ຫມົດ​ອາ​ຍຸ</translation>
 <translation id="8699120352855309748">ບໍ່ສະເໜີແປພາສາເຫຼົ່ານີ້</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>

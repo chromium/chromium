@@ -139,7 +139,6 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="1718835860248848330">Ultima oră</translation>
 <translation id="1724977129262658800">Deblochează pentru a modifica parola</translation>
 <translation id="1726477445370128854">Poți să navighezi și să cauți mai repede când Chrome preîncarcă pagini pe care crede că le-ai putea accesa</translation>
-<translation id="173522743738009831">Despre Privacy Sandbox</translation>
 <translation id="1736419249208073774">Explorează</translation>
 <translation id="1749561566933687563">Sincronizează marcajele</translation>
 <translation id="1750259112639922169">Grup de file – <ph name="TAB_COUNT" /> file</translation>
@@ -318,9 +317,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="2777555524387840389"><ph name="SECONDS" /> sec. rămase</translation>
 <translation id="2779651927720337254">nereușită</translation>
 <translation id="2781151931089541271">1 sec. rămasă</translation>
-<translation id="2788468313014644040">Numărul grupului</translation>
 <translation id="2800066122460699237">Fila <ph name="TAB_TITLE" /> va fi închisă</translation>
-<translation id="2806840421670364300">ÎFG</translation>
 <translation id="281504910091592009">Vezi și gestionează parolele salvate în <ph name="BEGIN_LINK" />Contul Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Pentru a accesa marcajele pe toate dispozitivele, conectează-te și activează sincronizarea</translation>
 <translation id="2827278682606527653">Meniul cardului din feed la jumătate din înălțime</translation>
@@ -441,7 +438,6 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="3384347053049321195">Trimite imaginea</translation>
 <translation id="3387650086002190359">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza unor erori privind sistemul de fișiere.</translation>
 <translation id="3389286852084373014">Textul este prea mare</translation>
-<translation id="3391512812407811893">Perioadele de încercare pentru Privacy Sandbox</translation>
 <translation id="3398320232533725830">Deschide managerul de marcaje</translation>
 <translation id="3407392651057365886">Mai multe pagini sunt preîncărcate. Este posibil ca paginile să fie preîncărcate prin serverele Google atunci când alte site-uri solicită acest lucru.</translation>
 <translation id="3414952576877147120">Dimensiune:</translation>
@@ -913,10 +909,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="6000203700195075278">Urmărește din nou</translation>
 <translation id="6002122790816966947">Dispozitivele tale</translation>
 <translation id="6005538289190791541">Parola sugerată</translation>
-<translation id="6032091552407840792">Această versiune de încercare este activă numai în <ph name="BEGIN_LINK" />anumite regiuni<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Cu <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome dezvoltă noi tehnologii care te apără de mecanismele de urmărire de pe mai multe site-uri, păstrând un web deschis.
-
-Versiunile de încercare Privacy Sandbox sunt încă în dezvoltare și sunt disponibile în anumite regiuni. Pentru moment, site-urile pot încerca Privacy Sandbox în timp ce folosesc mai departe tehnologiile web actuale, precum cookie-urile terțe.</translation>
 <translation id="6039379616847168523">Accesează fila următoare</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="604124094241169006">Automat</translation>
@@ -1248,7 +1240,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7791543448312431591">Adaugă</translation>
 <translation id="7798392620021911922">S-au restabilit <ph name="TAB_COUNT" /> file</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
-<translation id="7805768142964895445">Stare</translation>
 <translation id="7808889146555843082">Prin ștergerea acestei parole, nu va fi șters și contul de pe <ph name="SITE" />. Schimbă-ți parola sau șterge contul din <ph name="SITE" /> ca să nu poată fi accesat de alte persoane.</translation>
 <translation id="7810647596859435254">Deschide cu…</translation>
 <translation id="7815484226266492798">Captură de ecran lungă</translation>
@@ -1382,11 +1373,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8461694314515752532">Criptează datele sincronizate folosind propria expresie de acces pentru sincronizare</translation>
 <translation id="8466613982764129868">Asigură-te că <ph name="TARGET_DEVICE_NAME" /> este conectat la internet</translation>
 <translation id="8473863474539038330">Adrese și altele</translation>
-<translation id="8481921391193215807">Când opțiunea este activată, site-urile pot folosi tehnicile de păstrare a confidențialității indicate aici pentru a-și pune la dispoziție conținutul și serviciile. Acestea includ alternative la urmărirea pe mai multe site-uri. În timp se pot adăuga mai multe versiuni de încercare.
-
-<ph name="BEGIN_LIST_ITEM1" />Advertiserii și editorii pot folosi tehnologia ÎFG.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Advertiserii și editorii pot studia eficiența anunțurilor într-un mod care nu te urmărește pe site-uri.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Funcțiile de încercare sunt activate</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Deschide pagina Istoric</translation>
@@ -1432,9 +1418,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8664979001105139458">Numele fișierului există deja</translation>
 <translation id="8666759526542103597">Despre Personalizarea anunțurilor bazată pe browser</translation>
 <translation id="8676789164135894283">Confirmarea conectării</translation>
-<translation id="867767487203716855">Următoarea actualizare</translation>
 <translation id="8683039184091909753">imagine</translation>
-<translation id="8683081248374354009">Resetează grupul</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8699120352855309748">Nu oferi traducerea pentru aceste limbi</translation>
 <translation id="8712637175834984815">Am înțeles</translation>

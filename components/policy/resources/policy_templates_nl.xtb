@@ -870,6 +870,7 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
 
       Als je het beleid niet toepast of niet instelt, wordt de host voor hulp op afstand uitgevoerd in de context van de gebruiker en kunnen externe gebruikers geen vensters met verhoogde bevoegdheid op de desktop gebruiken.</translation>
 <translation id="1837165432382702436">Hoogte van de pagina in micrometers</translation>
+<translation id="1838910874018595451">Vooraf ingestelde configuratie voor Kerberos-tickets</translation>
 <translation id="1843117931376765605">Vernieuwingsfrequentie voor gebruikersbeleid</translation>
 <translation id="1844620919405873871">Hiermee configureer je het beleid ten aanzien van snel ontgrendelen.</translation>
 <translation id="1844972978764975668">Toestaan dat query's naar een Google-server worden gestuurd om een nauwkeurig tijdstempel op te halen</translation>
@@ -889,6 +890,7 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
       Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> van toepassing als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       De URL's in dit beleid mogen niet conflicteren met de URL's die zijn ingesteld via <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Als dit het geval is, krijgt dit beleid voorrang op <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="1858775210076906272">Vooraf ingevulde configuratie voor Kerberos</translation>
 <translation id="1861206724856734193">Hiermee stel je een lijst in met regels ter voorkoming van datalekken.</translation>
 <translation id="1862267110714201519">De functie voor ghostvenster uitzetten.</translation>
 <translation id="1865417998205858223">Rechten voor sleutels</translation>
@@ -1267,6 +1269,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="2204753382813641270">Automatisch verbergen van archief beheren</translation>
 <translation id="2208976000652006649">Parameters voor zoek-URL die POST gebruikt</translation>
 <translation id="2213059592185933570">Maken van roamingprofielen aanzetten</translation>
+<translation id="2213342458177721585">De Hindi Inscript-indeling aanzetten voor het hele apparaat.</translation>
 <translation id="2215238871726750562">Als je het beleid instelt op 'True', wordt het browservenster niet geopend nadat de sessie is gestart.
 
       Als je het beleid instelt op 'False' of niet instelt, wordt het venster geopend.
@@ -1731,6 +1734,7 @@ Voor een URL-patroon wordt deze indeling gehanteerd (https://support.google.com/
 <translation id="2664682171745499686">Waarschuwingen voor nagebootste domeinen onderdrukken voor domeinen</translation>
 <translation id="2665422249821137126">Grote muisaanwijzer op het inlogscherm gebruiken</translation>
 <translation id="2667894101494585925">Ophalen van optimalisatiegids aanzetten</translation>
+<translation id="2669157090883237118">De aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie niet wijzigen.</translation>
 <translation id="2672012807430078509">Bepaalt of NTLM is aangezet als verificatieprotocol voor SMB-activeringen</translation>
 <translation id="2673363037046384711">De eindgebruiker kan de modus voor hoge efficiëntie aan- of uitzetten.</translation>
 <translation id="2678503605767349615">Vereiste clientcertificaten voor het hele apparaat</translation>
@@ -2548,6 +2552,7 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
       Ga naar https://support.google.com/chrome/a?p=Supported_directory_variables voor een lijst met variabelen die je kunt gebruiken.
 
       Als dit beleid niet wordt ingesteld, wordt het standaard profielpad gebruikt. De gebruiker kan dit overschrijven met de opdrachtregelmarkering '--user-data-dir'.</translation>
+<translation id="3380801667330555918">De vooraf ingevulde configuratie voor Kerberos-tickets wijzigen</translation>
 <translation id="338149029069528354">Lokale gebruikersgegevens niet wissen</translation>
 <translation id="3381968327636295719"> gebruiken</translation>
 <translation id="3387211681524224831">Als je het beleid toepast, wordt browsegeschiedenis niet opgeslagen en tabbladsynchronisatie uitgezet. Gebruikers kunnen deze instelling niet wijzigen.
@@ -3917,6 +3922,11 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
           Als dit beleid niet is ingesteld, staat de functie voor monogeluid in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="4768446404233019970">3DES cipher suites aanzetten in TLS</translation>
 <translation id="4770334626033858263">De configuratie die is gebruikt om de toegangscode voor ouders te genereren en te verifiëren.</translation>
+<translation id="4773997835955617342">Hiermee wordt de voorgestelde <ph name="KRB5_CONFIG" />-configuratie voor de nieuwe handmatig gemaakte tickets gewijzigd.
+
+      Als je dit beleid toepast, wordt de waarde van het beleid KerberosCustomPrefilledConfig toegepast als voorgestelde configuratie en getoond in het gedeelte Geavanceerd van het dialoogvenster voor Kerberos-verificatie.
+
+      Als je dit beleid niet toepast of niet instelt, wordt in plaats daarvan de aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie toegepast. Deze staat ook in het gedeelte Geavanceerd van het dialoogvenster voor Kerberos-verificatie.</translation>
 <translation id="4774030790286815890">Als je deze instelling aanzet, mogen gebruikers toestemming geven voor Telefoonhub. Hiermee kunnen ze interactie met hun telefoon hebben op een Chrome OS-apparaat.
 
       Als je deze instelling uitzet, mogen gebruikers geen toestemming geven voor Telefoonhub.
@@ -6028,6 +6038,8 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 
       Hiermee worden de markeringen gespecificeerd die bij het starten moeten worden toegepast op <ph name="PRODUCT_NAME" />. De opgegeven markeringen worden alleen toegepast op het inlogscherm. Markeringen die worden ingesteld via dit beleid, worden niet doorgevoerd in gebruikerssessies.</translation>
 <translation id="6857240169209507953">Voorkomen dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd op een apparaat</translation>
+<translation id="6857372417233723544">Als je het beleid instelt, wordt Hindi InScript-indeling aangezet voor <ph name="PRODUCT_OS_NAME" />.
+Als het beleid is ingesteld op False of niet is ingesteld, is de indeling niet beschikbaar. Hiervoor moet opnieuw worden opgestart.</translation>
 <translation id="685769593149966548">Strenge 'Beperkte modus' voor YouTube afdwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 of later</translation>
 <translation id="68818134518270542">Als je het beleid instelt, geef je de apps op die gebruikers beschikbaar kunnen maken als notitie-app op het vergrendelscherm van <ph name="PRODUCT_OS_NAME" />.
@@ -6952,6 +6964,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 
           Als dit beleid niet is ingesteld, staan snelkoppelingen voor toegankelijkheidsfuncties standaard aan op het inlogscherm.</translation>
 <translation id="7777535871204167559">Externe opslagapparaten behandelen als alleen-lezen</translation>
+<translation id="7781452670568828399">De aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie wijzigen.</translation>
 <translation id="7784062550705119230">Als <ph name="PRINTERS_ALLOWLIST" /> wordt gekozen voor <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID overeenkomt met de waarden in dit beleid, zijn beschikbaar voor gebruikers. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Per profiel</translation>
 <translation id="7788632499792081231">Als je het beleid instelt, kun je een lijst met URL-patronen instellen voor sites die het klembord kunnen gebruiken. Dit omvat niet alle klembordbewerkingen op oorsprongen die overeenkomen met de patronen. Gebruikers kunnen bijvoorbeeld nog steeds plakken met sneltoetsen, aangezien dit niet wordt beperkt door de klembordrechten voor sites.

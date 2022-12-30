@@ -139,7 +139,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="1718835860248848330">Siste time</translation>
 <translation id="1724977129262658800">Lås opp for å redigere passordet ditt</translation>
 <translation id="1726477445370128854">Du kan surfe og søke raskere når Chrome forhåndslaster sider du kanskje kommer til å besøke</translation>
-<translation id="173522743738009831">Om Privacy Sandbox</translation>
 <translation id="1736419249208073774">Utforsk</translation>
 <translation id="1749561566933687563">Synkroniser bokmerkene dine</translation>
 <translation id="1750259112639922169">Fanegruppe – <ph name="TAB_COUNT" /> faner</translation>
@@ -318,9 +317,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder igjen</translation>
 <translation id="2779651927720337254">mislyktes</translation>
 <translation id="2781151931089541271">1 sekund igjen</translation>
-<translation id="2788468313014644040">Gruppenummer</translation>
 <translation id="2800066122460699237">Fanen <ph name="TAB_TITLE" /> blir lukket</translation>
-<translation id="2806840421670364300">FLoC (samlet læring i kohorter)</translation>
 <translation id="281504910091592009">Se og administrer lagrede passord i <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din</translation>
 <translation id="2818669890320396765">For å få bokmerkene dine på alle enhetene dine, logg på og slå på synkronisering</translation>
 <translation id="2827278682606527653">Feedkortmenyen er åpnet i halv høyde</translation>
@@ -441,7 +438,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="3384347053049321195">Del bildet</translation>
 <translation id="3387650086002190359">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av filsystemfeil.</translation>
 <translation id="3389286852084373014">Teksten er for stor</translation>
-<translation id="3391512812407811893">Prøvefunksjoner i Privacy Sandbox</translation>
 <translation id="3398320232533725830">Åpne bokmerkebehandlingen</translation>
 <translation id="3407392651057365886">Flere sider forhåndslastes. Sider kan bli forhåndslastet via Googles tjenere når andre nettsteder ber om det.</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
@@ -913,10 +909,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="6000203700195075278">Følg på nytt</translation>
 <translation id="6002122790816966947">Enhetene dine</translation>
 <translation id="6005538289190791541">Foreslått passord</translation>
-<translation id="6032091552407840792">Denne utprøvingen er kun aktiv i <ph name="BEGIN_LINK" />enkelte regioner<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Med <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />utvikler Chrome nye teknologier for å sikre deg fra sporing på tvers av sider samtidig som det åpne nettet ivaretas.
-
-Utprøving av Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte regioner. Inntil videre kan nettsteder prøve prosessisolering for personvern samtidig som de fortsetter å bruke dagens netteknologier, som tredjeparts informasjonskapsler.</translation>
 <translation id="6039379616847168523">Gå til den neste fanen</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="604124094241169006">Automatisk</translation>
@@ -1248,7 +1240,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7791543448312431591">Legg til</translation>
 <translation id="7798392620021911922">Gjenopprettet <ph name="TAB_COUNT" /> faner</translation>
 <translation id="780301667611848630">Nei takk</translation>
-<translation id="7805768142964895445">Status</translation>
 <translation id="7808889146555843082">Sletting av dette passordet sletter ikke kontoen din på <ph name="SITE" />. Endre passordet eller slett kontoen på <ph name="SITE" /> for å beskytte den mot andre.</translation>
 <translation id="7810647596859435254">Åpne med…</translation>
 <translation id="7815484226266492798">Lang skjermdump</translation>
@@ -1382,11 +1373,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8461694314515752532">Kryptér synkroniserte data med din egen passordfrase for synkronisering</translation>
 <translation id="8466613982764129868">Kontroller at <ph name="TARGET_DEVICE_NAME" /> er koblet til internett</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
-<translation id="8481921391193215807">Når dette er på, kan nettsteder bruke de personvernbevarende teknikkene som vises her, for å levere innhold og tjenester. Disse omfatter alternativer til sporing på tvers av nettsteder. Flere prøvefunksjoner kan bli lagt til over tid.
-
-<ph name="BEGIN_LIST_ITEM1" />Annonsører og utgivere kan bruke FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Annonsører og utgivere kan studere effektiviteten av annonser på en måte som ikke sporer deg på tvers av nettsteder.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Prøvefunksjoner er påslått</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Åpne loggsiden</translation>
@@ -1432,9 +1418,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8664979001105139458">Filnavnet finnes allerede</translation>
 <translation id="8666759526542103597">Om nettleserbasert personlig tilpasning av annonser</translation>
 <translation id="8676789164135894283">Påloggingsbekreftelser</translation>
-<translation id="867767487203716855">Neste oppdatering</translation>
 <translation id="8683039184091909753">bilde</translation>
-<translation id="8683081248374354009">Tilbakestill gruppen</translation>
 <translation id="869891660844655955">Utløpsdato</translation>
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
 <translation id="8712637175834984815">Skjønner</translation>

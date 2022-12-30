@@ -139,7 +139,6 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="1718835860248848330">Zadnji sat</translation>
 <translation id="1724977129262658800">Otključajte da biste izmijenili zaporku</translation>
 <translation id="1726477445370128854">Možete pregledavati i pretraživati brže kad Chrome predučitava stranice za koje misli da biste ih mogli posjetiti</translation>
-<translation id="173522743738009831">O Privacy Sandboxu</translation>
 <translation id="1736419249208073774">Istražite</translation>
 <translation id="1749561566933687563">Sinkronizirajte oznake</translation>
 <translation id="1750259112639922169">Grupa kartica – broj kartica: <ph name="TAB_COUNT" /></translation>
@@ -318,9 +317,7 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="2777555524387840389">Preostalo sekundi: <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">nije uspjelo</translation>
 <translation id="2781151931089541271">Još 1 s</translation>
-<translation id="2788468313014644040">Broj grupe</translation>
 <translation id="2800066122460699237">Zatvorit će se kartica <ph name="TAB_TITLE" /></translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Spremljene zaporke možete pregledati i upravljati njima na svojem <ph name="BEGIN_LINK" />Google računu<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Da bi se vaše oznake prikazale na svim vašim uređajima, prijavite se i uključite sinkronizaciju</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -441,7 +438,6 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="3384347053049321195">Dijeli sliku</translation>
 <translation id="3387650086002190359">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspjelo zbog nepoznate pogreške sustava datoteka.</translation>
 <translation id="3389286852084373014">Tekst je prevelik</translation>
-<translation id="3391512812407811893">Probne verzije Privacy Sandboxa</translation>
 <translation id="3398320232533725830">Otvaranje upravitelja oznaka</translation>
 <translation id="3407392651057365886">Predučitava se više stranica. Stranice se mogu predučitati putem Googleovih poslužitelja kad to zatraže druge web-lokacije.</translation>
 <translation id="3414952576877147120">Veličina:</translation>
@@ -913,10 +909,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="6000203700195075278">Pratite ponovo</translation>
 <translation id="6002122790816966947">Vaši uređaji</translation>
 <translation id="6005538289190791541">Predložena zaporka</translation>
-<translation id="6032091552407840792">Proba je aktivna samo u <ph name="BEGIN_LINK" />nekim regijama<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Uz <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> Chrome razvija nove tehnologije koje će vas štititi od praćenja na različitim web-lokacijama, a istovremeno očuvati otvorenost weba.
-
-Probe Privacy Sandboxa i dalje su u aktivnom razvoju i dostupne su u odabranim regijama. Web-lokacije trenutačno mogu isprobati Privacy Sandbox dok se istovremeno još uvijek koriste aktualnim web-tehnologijama, npr. kolačićima trećih strana.</translation>
 <translation id="6039379616847168523">Preskakanje na sljedeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>
@@ -1248,7 +1240,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7791543448312431591">Dodavanje</translation>
 <translation id="7798392620021911922">Kartice su vraćene (njih <ph name="TAB_COUNT" />)</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
-<translation id="7805768142964895445">Status</translation>
 <translation id="7808889146555843082">Brisanjem zaporke neće se izbrisati vaš račun na <ph name="SITE" />. Izmijenite zaporku ili izbrišite račun na <ph name="SITE" /> da biste ga zaštitili od drugih.</translation>
 <translation id="7810647596859435254">Otvori aplikacijom…</translation>
 <translation id="7815484226266492798">Duga snimka zaslona</translation>
@@ -1382,11 +1373,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8461694314515752532">Šifriraj sinkronizirane podatke vlastitom šifrom za sinkronizaciju</translation>
 <translation id="8466613982764129868">Provjerite je li <ph name="TARGET_DEVICE_NAME" /> povezan s internetom</translation>
 <translation id="8473863474539038330">Adrese i više</translation>
-<translation id="8481921391193215807">Kada je Privacy Sandbox uključen, za pružanje svog sadržaja i svojih usluga web-lokacije mogu primjenjivati ovdje prikazane tehnike kojima se čuva privatnost. Te tehnike uključuju alternative praćenju na različitim web-lokacijama. U budućnosti će se možda dodati još probnih značajki.
-
-<ph name="BEGIN_LIST_ITEM1" />Oglašivači i izdavači mogu koristiti FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Oglašivači i izdavači mogu steći uvid u učinkovitost oglasa na način koji ne uključuje praćenje korisnika na raznim web-lokacijama.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Probne značajke su uključene</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Prikaz stranice povijesti</translation>
@@ -1432,9 +1418,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8664979001105139458">Već postoji datoteka s tim nazivom</translation>
 <translation id="8666759526542103597">O prilagodbi oglasa na temelju preglednika</translation>
 <translation id="8676789164135894283">Potvrde prijave</translation>
-<translation id="867767487203716855">Sljedeće ažuriranje</translation>
 <translation id="8683039184091909753">slika</translation>
-<translation id="8683081248374354009">Poništi grupu</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699120352855309748">Nemoj nuditi prevođenje ovih jezika</translation>
 <translation id="8712637175834984815">Shvaćam</translation>

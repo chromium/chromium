@@ -120,7 +120,6 @@
 <translation id="3038232873781883849">ინსტალაციის მოლოდინში...</translation>
 <translation id="3059710691562604940">Safe Browsing გამორთულია. Chrome გირჩევთ მის ჩართვას.</translation>
 <translation id="3065168410429928842">Chrome-ის ჩანართი</translation>
-<translation id="3069821012350118710">თქვენ მიერ მონახულებული საიტები დაიმახსოვრებს თქვენს ინფორმაციას, სანამ Chrome-ს არ დახურავთ</translation>
 <translation id="3080151273017101988">გაგრძელება გაშვებული ფონური პროგრამებით Google Chrome-ის დახურვისას</translation>
 <translation id="3089968997497233615">ხელმისაწვდომია Google Chrome-ის უფრო ახალი და უსაფრთხო ვერსია.</translation>
 <translation id="3100998948628680988">დაასათაურეთ თქვენი Chrome პროფილი</translation>
@@ -252,7 +251,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="5804318322022881572">Chrome-ის გაშვება ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="5867197326698922595">Google Chrome ცდილობს პაროლების რედაქტირებას.</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
-<translation id="5901850848447342934">როცა Chrome-ს დახურავთ, <ph name="BEGIN_BOLD" />საიტების უმეტესობაზე სისტემიდან გახვალთ<ph name="END_BOLD" />. თუ სინქრონიზაცია გამორთულია, ასევე, <ph name="BEGIN_BOLD" />გახვალთ Google სერვისებისა და Chrome-ის სისტემიდან<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> — ქსელში შესვლა</translation>
 <translation id="5924017743176219022">მიმდინარეობს ინტერნეტთან დაკავშირება...</translation>
 <translation id="5940385492829620908">თქვენი ვები, სანიშნეები და Chrome-ის სხვა მასალა არის აქ.</translation>
@@ -389,7 +387,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8614913330719544658">Google Chrome არ პასუხობს. გავუშვათ ხელახლა?</translation>
 <translation id="861702415419836452">Chrome საჭიროებს თქვენს კამერაზე წვდომის ნებართვას, თქვენი გარემოს 3-განზომილებიანი რუკის შექმნა რომ შეძლოს</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ხელახლა გაეშვება 1 წუთში}other{Chrome ხელახლა გაეშვება # წუთში}}</translation>
-<translation id="8629311577791198377">როცა Chrome-ის ყველა ფანჯარას დახურავთ, ქუქი-ჩანაწერები და საიტების მონაცემები ავტომატურად გასუფთავდება</translation>
 <translation id="8641606876632989680">Chrome შეგატყობინებთ, როცა სისტემაში გატეხილი პაროლით შეხვალთ</translation>
 <translation id="8649026945479135076">თქვენ მიერ მონახულებული საიტები, როგორც წესი, ინახავს თქვენს ინტერესებს ფუნქციების თქვენზე მორგების მიზნით. საიტებს Chrome-ის მეშვეობითაც შეუძლია თქვენს ინტერესებთან დაკავშირებული ინფორმაციის შენახვა.</translation>
 <translation id="8669527147644353129">Google Chrome-ის დახმარება</translation>

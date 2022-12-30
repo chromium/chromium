@@ -869,6 +869,7 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 
       Se a política for definida como "Desativada" ou deixada sem definição, o host de assistência remota será executado no contexto do usuário e os usuários remotos não poderão interagir com janelas elevadas no computador.</translation>
 <translation id="1837165432382702436">Altura da página em micrômetros.</translation>
+<translation id="1838910874018595451">Configuração pré-preenchida para tíquetes do Kerberos</translation>
 <translation id="1843117931376765605">Taxa de atualização da política do usuário</translation>
 <translation id="1844620919405873871">Configura as políticas relacionadas ao desbloqueio rápido.</translation>
 <translation id="1844972978764975668">Permitir consultas a um servidor do Google para recuperar um carimbo de data/hora preciso</translation>
@@ -888,6 +889,7 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
       Se a política for deixada sem definição, a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> será aplicada, caso esteja definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Os URLs desta política não devem entrar em conflito com os configurados pela <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Se entrarem, esta política terá precedência sobre a <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="1858775210076906272">Configuração pré-preenchida do Kerberos</translation>
 <translation id="1861206724856734193">Define uma lista de regras para prevenção contra vazamento de dados.</translation>
 <translation id="1862267110714201519">Desativar o recurso de janela fantasma.</translation>
 <translation id="1865417998205858223">Principais permissões</translation>
@@ -1271,6 +1273,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 <translation id="2204753382813641270">Controlar a ocultação automática da estante</translation>
 <translation id="2208976000652006649">Parâmetros para URL de pesquisa que usa POST</translation>
 <translation id="2213059592185933570">Permitir a criação de perfis de roaming</translation>
+<translation id="2213342458177721585">Ativar o dispositivo Inscript Layout em todo o dispositivo.</translation>
 <translation id="2215238871726750562">Se a política for definida como verdadeira, a janela do navegador não será aberta no início da sessão.
 
       Se ela for definida como falsa ou não for definida, a janela poderá ser aberta.
@@ -1736,6 +1739,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2664682171745499686">Suprimir alertas de domínios parecidos em domínios</translation>
 <translation id="2665422249821137126">Ativar o cursor grande na tela de login</translation>
 <translation id="2667894101494585925">Ativar a busca do guia de otimização</translation>
+<translation id="2669157090883237118">Não mudar a configuração recomendada do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2672012807430078509">Controles que ativam o NTLM como protocolo de autenticação para ativações de PMEs</translation>
 <translation id="2673363037046384711">O usuário final pode ativar ou desativar o modo de alta eficiência.</translation>
 <translation id="2678503605767349615">Certificados do cliente em todo o dispositivo obrigatórios</translation>
@@ -2590,6 +2594,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
       Acesse https://support.google.com/chrome/a?p=Supported_directory_variables para ver uma lista das variáveis que podem ser usadas.
 
       Se esta política for deixada sem definição, o caminho padrão do perfil será usado, e o usuário poderá substituí-lo pela flag de linha de comando "--user-data-dir".</translation>
+<translation id="3380801667330555918">Mudar a configuração pré-preenchida para tíquetes do Kerberos</translation>
 <translation id="338149029069528354">Não apagar dados locais de usuários</translation>
 <translation id="3381968327636295719">Usar o navegador de host por padrão</translation>
 <translation id="3387211681524224831">Se a política for definida como "Ativada" o histórico de navegação não será salvo, a sincronização de guias será desativada e os usuários não poderão mudar essa configuração.
@@ -4003,6 +4008,11 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
           Se esta política não for definida, o áudio mono ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="4768446404233019970">Ativar pacotes de criptografia 3DES em TLS</translation>
 <translation id="4770334626033858263">Configuração usada para gerar e verificar o código de acesso do familiar responsável.</translation>
+<translation id="4773997835955617342">Muda a configuração sugerida do <ph name="KRB5_CONFIG" /> para os novos tíquetes criados manualmente.
+
+      Se esta política for ativada, o valor da "KerberosCustomPrefilledConfig" será aplicado como a configuração sugerida e mostrado na seção "Avançado" da caixa de diálogo de autenticação Kerberos.
+
+      Se ela for desativada ou for deixada sem definição, a configuração recomendada do <ph name="PRODUCT_OS_NAME" /> vai ser aplicada. Essa informação também aparece na seção "Avançado" da caixa de diálogo de autenticação do Kerberos.</translation>
 <translation id="4774030790286815890">Se esta configuração estiver ativada, os usuários não terão permissão para ativar o recurso "Seu smartphone", que permite que eles interajam com o smartphone em um dispositivo ChromeOS.
 
       Se esta configuração estiver desativada, os usuários não terão permissão para usar o recurso "Seu smartphone".
@@ -6163,6 +6173,8 @@ Esta política pode ser removida de <ph name="PRODUCT_NAME" /> no futuro.</trans
 
       Especifica os sinalizadores a serem aplicados ao <ph name="PRODUCT_NAME" /> quando ele for iniciado. Os sinalizadores especificados são aplicados apenas na tela de login. Os sinalizadores definidos por meio desta política não são propagados em sessões de usuário.</translation>
 <translation id="6857240169209507953">Evitar que a <ph name="BOREALIS_NAME" /> seja executada em um dispositivo</translation>
+<translation id="6857372417233723544">Se a política for definida, o layout de teclado Inscript hindi vai ser ativado no <ph name="PRODUCT_OS_NAME" />.
+Se ela for definida como "false" ou deixada sem definição, o layout não ficará disponível. É necessário reiniciar para que a mudança seja aplicada.</translation>
 <translation id="685769593149966548">Aplicar o Modo restrito rigoroso para o YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou versão posterior</translation>
 <translation id="68818134518270542">A definição da política especifica os apps que os usuários podem ativar para fazer anotações na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.
@@ -7092,6 +7104,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
           Se esta política não for definida, os atalhos de recursos de acessibilidade serão ativados por padrão na tela de login.</translation>
 <translation id="7777535871204167559">Tratar dispositivos de armazenamento externo como somente leitura</translation>
+<translation id="7781452670568828399">Mudar a configuração recomendada do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7784062550705119230">Se <ph name="PRINTERS_ALLOWLIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> especificará quais impressoras os usuários podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para os usuários. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Por perfil</translation>
 <translation id="7788632499792081231">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem usar a permissão do site para a área de transferência. Essa ação não inclui todas as operações da área de transferência ou origens que correspondem aos padrões. Por exemplo, os usuários ainda poderão colar usando atalhos do teclado, porque essa opção não é controlada pela permissão do site para a área de transferência.

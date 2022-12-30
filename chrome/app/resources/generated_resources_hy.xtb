@@ -3800,6 +3800,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> կայքը կարող է փոփոխել <ph name="FOLDERNAME" /> պանակի ֆայլերը</translation>
 <translation id="4470957202018033307">Արտաքին հիշողության կարգավորումներ</translation>
 <translation id="4471354919263203780">Խոսքի ճանաչման ֆայլերը ներբեռնվում են… <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Կարող եք օգտագործել Google հաշվի ձեր նախընտրած լեզուն (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Օգնել ավել լավը դարձնել Chrome-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="4472575034687746823">Սկսել</translation>
 <translation id="4474155171896946103">Էջանշել բոլոր ներդիրները…</translation>
@@ -4530,7 +4531,6 @@
 <translation id="5158206172605340248">Շեշտի նշանների ընտրացանկը փակվեց։</translation>
 <translation id="5159094275429367735">Կարգավորել Crostini-ն</translation>
 <translation id="5159419673777902220">Ձեր ծնողն անջատել է ընդլայնումների թույլտվությունները</translation>
-<translation id="5159643365935452998">Դիտեք տվյալների ավտոմատ ջնջման պարամետրերը</translation>
 <translation id="5160634252433617617">Ֆիզիկական ստեղնաշար</translation>
 <translation id="5160857336552977725">Մուտք գործեք ձեր <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">USB սարքեր <ph name="VENDOR_NAME" />-ից</translation>
@@ -6739,6 +6739,7 @@
 <translation id="7227458944009118910">Ստորև նշված հավելվածները կարող են մշակել նաև հաղորդակարգի հղումներ։ Մյուս հավելվածները կխնդրեն թույլտվություն։</translation>
 <translation id="7228056665272655255">Մատնահետքը կարգավորելու համար ձեր երեխան պետք է հպի մատնահետքերի սկաներին, որը ստեղնաշարի վերևի աջ անկյունում է։ Երեխայի մատնահետքի տվյալները ապահով պահվում են այս <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց։</translation>
 <translation id="7228523857728654909">Էկրանի կողպում և մուտք</translation>
+<translation id="7228854227189381547">Չփոխել</translation>
 <translation id="7230222852462421043">&amp;Վերականգնել պատուհանը</translation>
 <translation id="7231260028442989757">Թույլ է տալիս դիտել և անտեսել հեռախոսի ծանուցումները, ինչպես նաև պատասխանել դրանց։</translation>
 <translation id="7232750842195536390">Չհաջողվեց վերանվանել</translation>
@@ -7072,6 +7073,7 @@
 <translation id="7545466883021407599">Չհաջողվեց միանալ սերվերին։ Ստուգեք կապը և նորից փորձեք։ Եթե չի հաջողվում վերացնել խնդիրը, փորձեք վերագործարկել Chromebook-ը։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="7547317915858803630">Ուշադրություն. Ձեր <ph name="PRODUCT_NAME" />-ի կարգավորումները պահվել են ցանցի հիշասարքում: Սա կարող է դանդաղեցնել աշխատանքը, խափանումներ կամ, նույնիսկ տվյալների կորուստ առաջացնել:</translation>
 <translation id="7548856833046333824">Լիմոնադ</translation>
+<translation id="7549434883223124329">Փոխե՞լ սարքի լեզուն</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց</translation>
 <translation id="7551643184018910560">Ամրացնել դարակում</translation>

@@ -121,7 +121,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3038232873781883849">Laukiama, kol bus įdiegta...</translation>
 <translation id="3059710691562604940">Saugaus naršymo funkcija išjungta. „Chrome“ rekomenduoja ją įjungti.</translation>
 <translation id="3065168410429928842">„Chrome“ skirtukas</translation>
-<translation id="3069821012350118710">Svetainės, kuriose apsilankote, prisimena jūsų informaciją, kol uždarote „Chrome“</translation>
 <translation id="3080151273017101988">Uždarius „Google Chrome“ toliau leisti fono programas</translation>
 <translation id="3089968997497233615">Galima nauja, saugesnė „Google Chrome“ versija.</translation>
 <translation id="3100998948628680988">Pavadinkite „Chrome“ profilį</translation>
@@ -253,7 +252,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5804318322022881572">Nepavyko paleisti „Chrome“. Bandykite dar kartą.</translation>
 <translation id="5867197326698922595">„Google Chrome“ bando redaguoti slaptažodžius.</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
-<translation id="5901850848447342934">Būsite <ph name="BEGIN_BOLD" />atjungti nuo daugumos svetainių<ph name="END_BOLD" />, kai uždarysite „Chrome“. Jei sinchronizavimas išjungtas, taip pat būsite <ph name="BEGIN_BOLD" />atjungti nuo „Google“ paslaugų ir „Chrome“<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592">„<ph name="PAGE_TITLE" />“ – prisijungimas prie tinklo</translation>
 <translation id="5924017743176219022">Prisijungiama prie interneto...</translation>
 <translation id="5940385492829620908">Čia saugoma žiniatinklio informacija, žymės ir kiti „Chrome“ duomenys.</translation>
@@ -390,7 +388,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8614913330719544658">„Google Chrome“ neatsako. Paleisti iš naujo dabar?</translation>
 <translation id="861702415419836452">„Chrome“ reikia leidimo naudoti fotoaparatą jūsų aplinkos 3D žemėlapiui kurti</translation>
 <translation id="8625237574518804553">{0,plural, =1{„Chrome“ bus paleista iš naujo po 1 minutės}one{„Chrome“ bus paleista iš naujo po # minutės}few{„Chrome“ bus paleista iš naujo po # minučių}many{„Chrome“ bus paleista iš naujo po # minutės}other{„Chrome“ bus paleista iš naujo po # minučių}}</translation>
-<translation id="8629311577791198377">Kai uždarote visus „Chrome“ langus, slapukai ir svetainių duomenys automatiškai išvalomi</translation>
 <translation id="8641606876632989680">„Chrome“ praneš jums, kai prisijungsite naudodami pažeistą slaptažodį</translation>
 <translation id="8649026945479135076">Įprasta, kad svetainės, kuriose lankotės, įsimena, kuo domitės, kad galėtų suasmeninti jūsų patirtį. Svetainėse taip pat gali būti renkama su „Chrome“ susijusi informacija apie jūsų pomėgius.</translation>
 <translation id="8669527147644353129">„Google Chrome“ pagalbos priemonė</translation>

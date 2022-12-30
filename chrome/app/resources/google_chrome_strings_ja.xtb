@@ -116,7 +116,6 @@
 <translation id="3038232873781883849">インストールの待機中...</translation>
 <translation id="3059710691562604940">セーフ ブラウジングがオフになっています。Chrome はオンにすることをおすすめしています。</translation>
 <translation id="3065168410429928842">Chrome タブ</translation>
-<translation id="3069821012350118710">Chrome を閉じるまで、アクセスしたサイトにお客様の情報が保存されます</translation>
 <translation id="3080151273017101988">Google Chrome を閉じた際にバックグラウンド アプリの処理を続行する</translation>
 <translation id="3089968997497233615">Google クロームブラウザがより速く、さらに便利に。いますぐトライ！</translation>
 <translation id="3100998948628680988">Chrome プロフィールの名前を設定</translation>
@@ -244,7 +243,6 @@
 <translation id="5804318322022881572">Chrome を起動できませんでした。もう一度お試しください。</translation>
 <translation id="5867197326698922595">Google Chrome でパスワードを編集しようとしています。</translation>
 <translation id="5895138241574237353">再起動</translation>
-<translation id="5901850848447342934">Chrome を閉じると、<ph name="BEGIN_BOLD" />ほとんどのサイトからログアウト<ph name="END_BOLD" />します。同期がオフの場合は、<ph name="BEGIN_BOLD" />Google サービスと Chrome からもログアウト<ph name="END_BOLD" />します。</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ネットワークにログイン</translation>
 <translation id="5924017743176219022">インターネットに接続しています…</translation>
 <translation id="5940385492829620908">ウェブ、ブックマーク、その他の Chrome データを好みに設定できます。</translation>
@@ -381,7 +379,6 @@
 <translation id="8614913330719544658">Google Chrome が応答しません。今すぐ再起動しますか？</translation>
 <translation id="861702415419836452">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome は 1 分後に再起動されます}other{Chrome は # 分後に再起動されます}}</translation>
-<translation id="8629311577791198377">Chrome のウィンドウをすべて閉じると、Cookie とサイトデータは自動的に削除されます</translation>
 <translation id="8641606876632989680">不正使用されたパスワードでログインした場合、Chrome で通知します</translation>
 <translation id="8649026945479135076">多くのサイトでは、アクセスしたユーザーの興味 / 関心を記憶して、エクスペリエンスをカスタマイズするのが一般的です。そうしたサイトでは、ユーザーの興味 / 関心についての情報を Chrome に保存する場合もあります。</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

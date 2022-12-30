@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">የመጨረሻው ሰዓት</translation>
 <translation id="1724977129262658800">የይለፍ ቃልዎን ለማርትዕ ይክፈቱ</translation>
 <translation id="1726477445370128854">Chrome እርስዎ ሊጎበኟቸው ይችላሉ ብሎ የሚያስባቸውን ገጾች ቅድሚያ ሲጭን በበለጠ ፍጥነት ማሰስ እና መፈለግ ይችላሉ</translation>
-<translation id="173522743738009831">ስለግላዊነት ማጠሪያ</translation>
 <translation id="1736419249208073774">አስስ</translation>
 <translation id="1749561566933687563">የእርስዎን ዕልባቶች ያስምሩ</translation>
 <translation id="1750259112639922169">የትር ቡድን - <ph name="TAB_COUNT" /> ትሮች</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ሰከንዶች ይቀራሉ</translation>
 <translation id="2779651927720337254">አልተሳካም</translation>
 <translation id="2781151931089541271">1 ሰከንድ ይቀራል</translation>
-<translation id="2788468313014644040">የቡድን ቁጥር</translation>
 <translation id="2800066122460699237">ትር <ph name="TAB_TITLE" /> ይዘጋል</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">የተቀመጡ የይለፍ ቃላትን በእርስዎ <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ውስጥ ይመልከቱ እና ያስተዳድሩ</translation>
 <translation id="2818669890320396765">የእርስዎን ዕልባቶች በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በመለያ መግባት እና ስምረትን ማብራት ለማግኘት</translation>
 <translation id="2827278682606527653">የምግብ ካርድ ምናሌ በግማሽ ቁመት</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">ምስል አጋራ</translation>
 <translation id="3387650086002190359">በስርዓተ-ፋይል ስህተቶች ምክንያት <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
 <translation id="3389286852084373014">ጽሁፍ ከልክ በላይ ግዙፍ ነው</translation>
-<translation id="3391512812407811893">የግላዊነት Sandbox ሙከራዎች</translation>
 <translation id="3398320232533725830">የዕልባቶች አስተዳዳሪን ክፈት</translation>
 <translation id="3407392651057365886">ተጨማሪ ገጾች ቅድሚያ ይጫናሉ። ገጾች በሌሎች ጣቢያዎች ሲጠየቁ በGoogle አገልጋዮች በኩል ቅድሚያ ሊጫኑ ይችላሉ።</translation>
 <translation id="3414952576877147120">መጠን፦</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">እንደገና ይከተሉ</translation>
 <translation id="6002122790816966947">የእርስዎ መሣሪያዎች</translation>
 <translation id="6005538289190791541">የተጠቆመ የይለፍ ቃል</translation>
-<translation id="6032091552407840792">ይህ ሙከራ ንቁ የሆነው <ph name="BEGIN_LINK" />በአንዳንድ ክልሎች<ph name="END_LINK" /> ውስጥ ብቻ ነው።</translation>
-<translation id="6033245666633565791">በ<ph name="BEGIN_LINK" />የግላዊነት Sandbox<ph name="END_LINK" /> አማካኝነት Chrome ክፍት ድርን በሚጠብቁበት ጊዜ እርስዎን ከጣቢያ-ተሻጋሪ መከታተያ ለመጠበቅ አዲስ ቴክኖሎጂዎችን እየገነባ ነው።
-
-የግላዊነት ማጠሪያ ሙከራዎች አሁንም በንቁ ግንባታ ላይ ናቸው፣ እንዲሁም በተመረጡ ክልሎች ውስጥም ይገኛሉ። ለአሁን ጣቢያዎች እንደ የሶስተኛ ወገን ኩኪዎች ያሉ ወቅታዊ የድር ቴክኖሎጂዎችን መጠቀሙን በሚቀጥሉበት ጊዜ የግላዊነት ማጠሪያን ሊሞክሩ ይችላሉ።</translation>
 <translation id="6039379616847168523">ወደ ቀጣዩ ትር ዝለል</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="604124094241169006">ራስ-ሰር</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="7798392620021911922">ወደነበሩበት የተመለሱ <ph name="TAB_COUNT" /> ትሮች</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
-<translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7808889146555843082">ይህን የይለፍ ቃል መሰረዝ <ph name="SITE" /> ላይ መለያዎን አይሰርዘውም። መለያዎን ከሌሎች ለመጠበቅ የይለፍ ቃልዎን ይቀይሩት ወይም <ph name="SITE" /> ላይ መለያዎን ይሰርዙት።</translation>
 <translation id="7810647596859435254">ክፈት በ…</translation>
 <translation id="7815484226266492798">ረጅም ቅጽበታዊ ገጽ እይታ</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">የሰመረ ውሂብ በራስዎ የስምረት ይለፍ ሐረግ ያመሣጥሩ</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ከበይነ መረብ ጋር መገናኘቱን ያረጋግጡ</translation>
 <translation id="8473863474539038330">አድራሻዎች እና ተጨማሪ</translation>
-<translation id="8481921391193215807">ሲበራ ጣቢያዎች ይዘታቸውን እና አገልግሎቶቻቸውን ለማቅረብ እዚህ የሚታዩትን የግላዊነት መጠበቂያ ቴክኒኮችን ሊጠቀሙ ይችላሉ። እነዚህ ጣቢያ-ተሻጋሪ ተለዋጭ አማራጮችን ያካትታሉ። በጊዜ ሂደት ተጨማሪ ሙከራዎች ሊታከሉ ይችላሉ።
-
-<ph name="BEGIN_LIST_ITEM1" />ማስታወቂያ ሰሪዎች እና አታሚዎች FLoCን መጠቀም ይችላሉ።<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />ማስታወቂያ ሰሪዎች እና አታሚዎች በሁሉም ጣቢያዎች ላይ እርስዎን በማይከታተል መንገድ የማስታወቂያዎች ውጤታማነትን ማጥናት ይችላሉ።<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">የሙከራ ባህሪዎች በርተዋል</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">የታሪክ ገጹን ክፈት</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">የፋይል ስም አስቀድሞ አለ</translation>
 <translation id="8666759526542103597">በአሳሽ ላይ የተመሰረተ ማስታወቂያን ግላዊነት ስለማላበስ</translation>
 <translation id="8676789164135894283">የመግቢያ ማረጋገጫዎች</translation>
-<translation id="867767487203716855">ቀጣዩ ዝማኔ</translation>
 <translation id="8683039184091909753">ምስል</translation>
-<translation id="8683081248374354009">ቡድንን ዳግም አስጀምር</translation>
 <translation id="869891660844655955">የሚያበቀበት ጊዜ</translation>
 <translation id="8699120352855309748">እነዚህን ቋንቋዎች ለመተርጎም አያቅርቡ</translation>
 <translation id="8712637175834984815">ገባኝ</translation>

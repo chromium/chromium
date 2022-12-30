@@ -139,7 +139,6 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1724977129262658800">Desbloqueie para editar a palavra-passe</translation>
 <translation id="1726477445370128854">Pode explorar e pesquisar mais rapidamente quando o Chrome pré-carrega páginas que pensa que poderá visitar</translation>
-<translation id="173522743738009831">Acerca da Privacy Sandbox</translation>
 <translation id="1736419249208073774">Explorar</translation>
 <translation id="1749561566933687563">Sincronizar os marcadores</translation>
 <translation id="1750259112639922169">Grupo de separadores – <ph name="TAB_COUNT" /> separadores</translation>
@@ -318,9 +317,7 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="2777555524387840389">Faltam <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">falhou</translation>
 <translation id="2781151931089541271">Falta 1 segundo</translation>
-<translation id="2788468313014644040">Número do grupo</translation>
 <translation id="2800066122460699237">O separador <ph name="TAB_TITLE" /> será fechado</translation>
-<translation id="2806840421670364300">APC</translation>
 <translation id="281504910091592009">Veja e faça a gestão das palavras-passe guardadas na sua <ph name="BEGIN_LINK" />Conta Google<ph name="END_LINK" />.</translation>
 <translation id="2818669890320396765">Para obter os seus marcadores em todos os dispositivos, inicie sessão e ative a sincronização.</translation>
 <translation id="2827278682606527653">O menu do cartão do feed a meia altura.</translation>
@@ -441,7 +438,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="3384347053049321195">Partilhar imagem</translation>
 <translation id="3387650086002190359">A transferência de <ph name="FILE_NAME" /> falhou devido a erros do sistema de ficheiros.</translation>
 <translation id="3389286852084373014">O texto é demasiado grande</translation>
-<translation id="3391512812407811893">Avaliações da Privacy Sandbox</translation>
 <translation id="3398320232533725830">Abrir o gestor de marcadores</translation>
 <translation id="3407392651057365886">Mais páginas são pré-carregadas. As páginas podem ser pré-carregadas através dos servidores da Google quando solicitado por outros sites.</translation>
 <translation id="3414952576877147120">Tamanho:</translation>
@@ -913,10 +909,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="6000203700195075278">Voltar a seguir</translation>
 <translation id="6002122790816966947">Os seus dispositivos</translation>
 <translation id="6005538289190791541">Palavra-passe sugerida</translation>
-<translation id="6032091552407840792">Esta avaliação está ativa apenas em <ph name="BEGIN_LINK" />algumas regiões<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Com a <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, o Chrome está a desenvolver novas tecnologias que protegem da monitorização entre sites, ao mesmo tempo que preservam a Web aberta.
-
-As avaliações da Privacy Sandbox ainda estão em desenvolvimento e estão disponíveis em regiões selecionadas. Por agora, os sites podem experimentar a Privacy Sandbox enquanto continuam a utilizar as tecnologias da Web atuais, como os cookies de terceiros.</translation>
 <translation id="6039379616847168523">Ir para o próximo separador</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604124094241169006">Automático</translation>
@@ -1248,7 +1240,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> separadores restaurados.</translation>
 <translation id="780301667611848630">Não, obrigado</translation>
-<translation id="7805768142964895445">Estado</translation>
 <translation id="7808889146555843082">Eliminar esta palavra-passe não elimina a sua conta em <ph name="SITE" />. Altere a palavra-passe ou elimine a sua conta em <ph name="SITE" /> para a manter protegida contra terceiros.</translation>
 <translation id="7810647596859435254">Abrir com…</translation>
 <translation id="7815484226266492798">Captura de ecrã longa</translation>
@@ -1382,11 +1373,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8461694314515752532">Encriptar dados sincronizados com a sua própria frase de acesso de sincronização</translation>
 <translation id="8466613982764129868">Certifique-se de que o <ph name="TARGET_DEVICE_NAME" /> está ligado à Internet.</translation>
 <translation id="8473863474539038330">Moradas e mais</translation>
-<translation id="8481921391193215807">Quando esta opção está ativada, os sites podem utilizar as técnicas de preservação da privacidade mostradas aqui para fornecer o respetivo conteúdo e serviços. Estas incluem alternativas para a monitorização entre sites. Ao longo do tempo, podem ser adicionadas mais avaliações.
-
-<ph name="BEGIN_LIST_ITEM1" />Os anunciantes e os publicadores podem utilizar a APC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Os anunciantes e os publicadores podem estudar a eficácia dos anúncios sem monitorizar a sua navegação em sites.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">As funcionalidades de avaliação estão ativadas</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Abrir a página do histórico</translation>
@@ -1432,9 +1418,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8664979001105139458">O nome do ficheiro já existe</translation>
 <translation id="8666759526542103597">Acerca da personalização de anúncios com base no navegador</translation>
 <translation id="8676789164135894283">Validações de início de sessão</translation>
-<translation id="867767487203716855">Próxima atualização</translation>
 <translation id="8683039184091909753">imagem</translation>
-<translation id="8683081248374354009">Repor grupo</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8699120352855309748">Não se disponibilizar para traduzir estes idiomas</translation>
 <translation id="8712637175834984815">Entendido</translation>

@@ -139,7 +139,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="1718835860248848330">Ora e fundit</translation>
 <translation id="1724977129262658800">Shkyçe për të modifikuar fjalëkalimin tënd</translation>
 <translation id="1726477445370128854">Mund të shfletosh dhe të kërkosh më shpejt kur Chrome ngarkon paraprakisht faqet që mendon se mund të vizitosh</translation>
-<translation id="173522743738009831">Rreth Privacy Sandbox</translation>
 <translation id="1736419249208073774">Eksploro</translation>
 <translation id="1749561566933687563">Sinkronizo faqeshënuesit e tu</translation>
 <translation id="1750259112639922169">Grupi i skedave - <ph name="TAB_COUNT" /> skeda</translation>
@@ -318,9 +317,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekonda të mbetura</translation>
 <translation id="2779651927720337254">dështoi</translation>
 <translation id="2781151931089541271">1 sekondë e mbetur</translation>
-<translation id="2788468313014644040">Numri i grupit</translation>
 <translation id="2800066122460699237">Skeda <ph name="TAB_TITLE" /> do të mbyllet</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Shfaq dhe menaxho fjalëkalimet e ruajtura në <ph name="BEGIN_LINK" />llogarinë tënde të Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Për të marrë faqeshënuesit në të gjitha pajisjet e tua, identifikohu dhe aktivizo sinkronizimin</translation>
 <translation id="2827278682606527653">Menyja e kartave të furnizimit në gjysmë lartësi</translation>
@@ -441,7 +438,6 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3384347053049321195">Shpërndaje imazhin</translation>
 <translation id="3387650086002190359">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të gabimeve të sistemit të skedarëve.</translation>
 <translation id="3389286852084373014">Teksti është tepër i madh</translation>
-<translation id="3391512812407811893">Provat e Privacy Sandbox</translation>
 <translation id="3398320232533725830">Hap menaxherin e faqeshënuesve</translation>
 <translation id="3407392651057365886">Ngarkohen paraprakisht më shumë faqe. Faqet mund të ngarkohen paraprakisht nëpërmjet serverëve të Google kur kërkohen nga sajte të tjera.</translation>
 <translation id="3414952576877147120">Madhësia:</translation>
@@ -913,10 +909,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="6000203700195075278">Ndiqe përsëri</translation>
 <translation id="6002122790816966947">Pajisjet e tua</translation>
 <translation id="6005538289190791541">Fjalëkalimi i sugjeruar</translation>
-<translation id="6032091552407840792">Kjo provë është aktive vetëm në <ph name="BEGIN_LINK" />disa rajone<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Me <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome po zhvillon teknologji të reja për të të mbrojtur nga gjurmimi nëpër sajtet e uebit, ndërkohë që vazhdon të ruajë uebin e hapur.
-
-Provat për Privacy Sandbox janë ende në zhvillim aktiv dhe ofrohen në rajone të zgjedhura. Për momentin, sajtet mund të provojnë Privacy Sandbox ndërkohë që vazhdojnë të përdorin teknologjitë aktuale të uebit si kukit e palëve të treta.</translation>
 <translation id="6039379616847168523">Kalo te skeda tjetër</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="604124094241169006">Automatike</translation>
@@ -1248,7 +1240,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7791543448312431591">Shtoje</translation>
 <translation id="7798392620021911922">Rikthyer <ph name="TAB_COUNT" /> skeda</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
-<translation id="7805768142964895445">Statusi</translation>
 <translation id="7808889146555843082">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="SITE" />. Ndrysho fjalëkalimin ose fshi llogarinë tënde në <ph name="SITE" /> për ta mbajtur të sigurt nga të tjerët.</translation>
 <translation id="7810647596859435254">Hape me...</translation>
 <translation id="7815484226266492798">Pamje e gjatë e ekranit</translation>
@@ -1382,11 +1373,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8461694314515752532">Enkripto të dhënat e sinkronizuara me frazën tënde të kalimit për sinkronizimin</translation>
 <translation id="8466613982764129868">Sigurohu që <ph name="TARGET_DEVICE_NAME" /> të jetë lidhur me internetin</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
-<translation id="8481921391193215807">Kur janë aktive, sajtet mund të përdorin teknikat e ruajtjes së privatësisë që shfaqen këtu për të ofruar përmbajtjen dhe shërbimet e tyre. Këto përfshijnë alternativa për gjurmimin ndërmjet sajteve. Mund të shtohen prova të tjera me kalimin e kohës.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklamuesit dhe botuesit mund të përdorin teknikën FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklamuesit dhe botuesit mund të studiojnë efikasitetin e reklamave në një mënyrë që nuk të gjurmon nëpër sajtet e uebit.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Veçoritë e provës janë aktive</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Hap faqen e historikut</translation>
@@ -1432,9 +1418,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8664979001105139458">Emri i skedarit ekziston tashmë</translation>
 <translation id="8666759526542103597">Rreth personalizimit të reklamave në bazë të shfletuesit</translation>
 <translation id="8676789164135894283">Verifikimet e identifikimit</translation>
-<translation id="867767487203716855">Përditësimi tjetër</translation>
 <translation id="8683039184091909753">imazhi</translation>
-<translation id="8683081248374354009">Rivendos grupin</translation>
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8699120352855309748">Mos ofro t'i përkthesh këto gjuhë</translation>
 <translation id="8712637175834984815">E kuptova</translation>

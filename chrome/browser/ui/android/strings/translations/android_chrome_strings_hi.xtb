@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">पिछला घंटा</translation>
 <translation id="1724977129262658800">अपना पासवर्ड बदलने के लिए अनलॉक करें</translation>
 <translation id="1726477445370128854">अगर Chrome उन पेजों को पहले से लोड कर लेता है जिन पर आपके विज़िट करने की संभावना हो, तो उन्हें ज़्यादा तेज़ी से खोजा और ब्राउज़ किया जा सकता है.</translation>
-<translation id="173522743738009831">निजता सैंडबॉक्स की जानकारी</translation>
 <translation id="1736419249208073774">बेहतर जानें</translation>
 <translation id="1749561566933687563">अपने बुकमार्क समन्‍वयित करें</translation>
 <translation id="1750259112639922169">टैब ग्रुप - <ph name="TAB_COUNT" /> टैब</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकंड शेष</translation>
 <translation id="2779651927720337254">डाउनलोड नहीं हो सका</translation>
 <translation id="2781151931089541271">1 सेकंड शेष</translation>
-<translation id="2788468313014644040">ग्रुप नंबर</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> टैब बंद हो जाएगा</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">अपने <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> में सेव किए गए पासवर्ड देखें और उन्हें प्रबंधित करें</translation>
 <translation id="2818669890320396765">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, साइन इन करें और 'सिंक करें' को चालू करें</translation>
 <translation id="2827278682606527653">फ़ीड कार्ड मेन्यू आधा खुल गया है</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">इमेज शेयर करें</translation>
 <translation id="3387650086002190359">सिस्‍टम त्रुटियों के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
 <translation id="3389286852084373014">टेक्स्ट बहुत बड़ा है</translation>
-<translation id="3391512812407811893">निजता सैंडबॉक्स ट्रायल</translation>
 <translation id="3398320232533725830">बुकमार्क मैनेजर खोलें</translation>
 <translation id="3407392651057365886">ज़्यादा पेज पहले से लोड किए जाते हैं. दूसरी साइटों के अनुरोध करने पर, Google के सर्वर की मदद से, पेजों को पहले से लोड किया जा सकता है.</translation>
 <translation id="3414952576877147120">आकार:</translation>
@@ -912,10 +908,6 @@
 <translation id="6000203700195075278">फिर से फ़ॉलो करें</translation>
 <translation id="6002122790816966947">आपके डिवाइस</translation>
 <translation id="6005538289190791541">सुझाया गया पासवर्ड</translation>
-<translation id="6032091552407840792">मुफ़्त में आज़माने की यह सुविधा सिर्फ़ <ph name="BEGIN_LINK" />कुछ क्षेत्रों<ph name="END_LINK" /> में चालू है.</translation>
-<translation id="6033245666633565791"><ph name="BEGIN_LINK" />निजता सैंडबॉक्स<ph name="END_LINK" /> की मदद से Chrome एक नई टेक्नोलॉजी डेवलप कर रहा है. यह टेक्नोलॉजी ओपन वेब को सुरक्षित रखते हुए, आपको क्रॉस-साइट ट्रैकिंग से बचाने में मदद करेगी.
-
-निजता सैंडबॉक्स को मुफ़्त में आज़माने की सुविधाएं अब भी डेवलप की जा रही हैं. ये चुनिंदा क्षेत्रों में उपलब्ध हैं. फ़िलहाल, साइटें मौजूदा वेब टेक्नोलॉजी (जैसे, तीसरे पक्ष की कुकी) का इस्तेमाल जारी रखते हुए, निजता सैंडबॉक्स को आज़मा सकती हैं.</translation>
 <translation id="6039379616847168523">सीधे अगले टैब पर जाएं</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="604124094241169006">स्वचालित</translation>
@@ -1247,7 +1239,6 @@
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टैब वापस लाए गए</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
-<translation id="7805768142964895445">स्थिति</translation>
 <translation id="7808889146555843082">इस पासवर्ड को मिटाने से, आपका <ph name="SITE" /> वाला खाता नहीं मिटेगा. दूसरों से सुरक्षित रखने के लिए, अपना पासवर्ड बदलें या अपना <ph name="SITE" /> वाला खाता मिटाएं.</translation>
 <translation id="7810647596859435254">इसमें खोलें…</translation>
 <translation id="7815484226266492798">लंबा स्क्रीनशॉट</translation>
@@ -1381,11 +1372,6 @@
 <translation id="8461694314515752532">सिंक किए गए डेटा को अपने खुद के सिंक लंबे पासवर्ड से सुरक्षित करें</translation>
 <translation id="8466613982764129868">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> को इंटरनेट से कनेक्ट किया गया है</translation>
 <translation id="8473863474539038330">पते वगैरह</translation>
-<translation id="8481921391193215807">इसे चालू करने पर, साइटें अपना कॉन्टेंट और सेवाएं उपलब्ध कराने के लिए, यहां दिखाई गई 'निजता की सुरक्षा से जुड़ी तकनीकें' इस्तेमाल कर सकती हैं. इनमें ऐसे तरीके शामिल हैं जिन्हें क्रॉस-साइट ट्रैकिंग की जगह इस्तेमाल किया जा सकता है. बाद में, मुफ़्त में आज़माने की सुविधा ज़्यादा बार दी जा सकती है.
-
-<ph name="BEGIN_LIST_ITEM1" />विज्ञापन देने वाले और प्रकाशक, FLoC इस्तेमाल कर सकते हैं.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />प्रकाशक और विज्ञापन देने वाले, सभी साइटों पर आपको ट्रैक किए बिना, किसी खास तरीके से अपने विज्ञापनों के असर का अध्ययन कर सकते हैं.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">ट्रायल की सुविधाएं चालू हैं</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">इतिहास पेज खोलें</translation>
@@ -1431,9 +1417,7 @@
 <translation id="8664979001105139458">इस नाम की फ़ाइल पहले से मौजूद है</translation>
 <translation id="8666759526542103597">ब्राउज़र के हिसाब से दिलचस्पी के मुताबिक विज्ञापन के बारे में जानकारी</translation>
 <translation id="8676789164135894283">अन्य कंप्यूटर पर साइन इन करें</translation>
-<translation id="867767487203716855">अगला अपडेट</translation>
 <translation id="8683039184091909753">इमेज</translation>
-<translation id="8683081248374354009">ग्रुप को रीसेट करें</translation>
 <translation id="869891660844655955">खत्म होने की तारीख</translation>
 <translation id="8699120352855309748">इन भाषाओं का अनुवाद करने की सुविधा न दें</translation>
 <translation id="8712637175834984815">समझ लिया</translation>

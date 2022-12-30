@@ -120,7 +120,6 @@
 <translation id="3038232873781883849">正在等待安裝…</translation>
 <translation id="3059710691562604940">「安全瀏覽」功能已停用。Chrome 建議啟用此功能。</translation>
 <translation id="3065168410429928842">Chrome 分頁</translation>
-<translation id="3069821012350118710">在 Chrome 關閉前，您瀏覽的網站可以記住您的資料</translation>
 <translation id="3080151273017101988">Google Chrome 關閉時繼續執行背景應用程式</translation>
 <translation id="3089968997497233615">Google Chrome 推出全新版本，安全性更勝從前。</translation>
 <translation id="3100998948628680988">為 Chrome 設定檔命名</translation>
@@ -252,7 +251,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5804318322022881572">無法啟動 Chrome，請再試一次。</translation>
 <translation id="5867197326698922595">Google Chrome 正在嘗試編輯密碼。</translation>
 <translation id="5895138241574237353">重新啟動</translation>
-<translation id="5901850848447342934">Chrome 關閉時，您將會<ph name="BEGIN_BOLD" />從大部分網站登出<ph name="END_BOLD" />。如果同步功能已關閉，您亦會<ph name="BEGIN_BOLD" />從 Google 服務和 Chrome 登出<ph name="END_BOLD" />。</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 網絡登入</translation>
 <translation id="5924017743176219022">正在連線至互聯網…</translation>
 <translation id="5940385492829620908">您的網頁、書籤和其他 Chrome 資料在這裡直播。</translation>
@@ -389,7 +387,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8614913330719544658">Google Chrome 沒有回應，要立即重新啟動嗎？</translation>
 <translation id="861702415419836452">Chrome 需要取得權限，才能存取相機以建立您身處環境的 3D 地圖</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 將於 1 分鐘後重新啟動}other{Chrome 將於 # 分鐘後重新啟動}}</translation>
-<translation id="8629311577791198377">關閉所有 Chrome 視窗時，系統將自動清除 Cookie 和網站資料</translation>
 <translation id="8641606876632989680">如果您使用被盜用的密碼登入帳戶，Chrome 會通知您</translation>
 <translation id="8649026945479135076">您瀏覽的網站經常會記住您感興趣的項目，以便為您提供個人化體驗。將您的興趣相關資訊儲存在 Chrome 中。</translation>
 <translation id="8669527147644353129">Google Chrome 輔助工具</translation>

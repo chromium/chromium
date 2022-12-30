@@ -117,7 +117,6 @@
 <translation id="3038232873781883849">Várakozás a telepítésre…</translation>
 <translation id="3059710691562604940">A Biztonságos Böngészés ki van kapcsolva. A Chrome a szolgáltatás bekapcsolását javasolja.</translation>
 <translation id="3065168410429928842">Chrome-lap</translation>
-<translation id="3069821012350118710">A felkeresett webhelyek megjegyzik az Ön adatait a Chrome bezárásáig</translation>
 <translation id="3080151273017101988">A háttéralkalmazások továbbfuttatása, ha a Google Chrome-ot bezárják</translation>
 <translation id="3089968997497233615">Elérhető a Google Chrome új, biztonságosabb verziója.</translation>
 <translation id="3100998948628680988">Nevezze el Chrome-profilját</translation>
@@ -245,7 +244,6 @@
 <translation id="5804318322022881572">Nem sikerült a Chrome elindítása. Próbálkozzon újra.</translation>
 <translation id="5867197326698922595">A Google Chrome szerkeszteni próbálja a jelszavakat.</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
-<translation id="5901850848447342934">A <ph name="BEGIN_BOLD" />legtöbb webhelyről kijelentkezteti<ph name="END_BOLD" /> Önt a rendszer a Chrome bezárásakor. Ha pedig a szinkronizálás is ki van kapcsolva, akkor a <ph name="BEGIN_BOLD" />a Google-szolgáltatásokból és a Chrome-ból is megtörténik a kijelentkezés<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés</translation>
 <translation id="5924017743176219022">Kapcsolódás az internethez…</translation>
 <translation id="5940385492829620908">Az Ön könyvjelzői, valamint az internetezéssel és a Chrome-mal kapcsolatos egyéb dolgai vannak itt.</translation>
@@ -382,7 +380,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8614913330719544658">A Google Chrome nem válaszol. Újraindítja most?</translation>
 <translation id="861702415419836452">A Chrome-nak engedélyre van szüksége a kamerájához való hozzáféréshez annak érdekében, hogy 3D-s térképet készíthessen az Ön környezetéről.</translation>
 <translation id="8625237574518804553">{0,plural, =1{A Chrome 1 percen belül újraindul}other{A Chrome # percen belül újraindul}}</translation>
-<translation id="8629311577791198377">A Chrome ablakainak bezárásakor a cookie-kat és webhelyadatokat automatikusan törli a rendszer.</translation>
 <translation id="8641606876632989680">A Chrome figyelmezteti Önt, amikor olyan jelszóval jelentkezik be, amelyhez illetéktelenül hozzáfértek</translation>
 <translation id="8649026945479135076">A felkeresett webhelyek esetében megszokott dolog, hogy megjegyzik az Önt érdeklő dolgokat a felhasználói élmény személyre szabása érdekében. Emellett a webhelyek tárolhatnak az Ön érdeklődési köreivel kapcsolatos információkat a Chrome-ban.</translation>
 <translation id="8669527147644353129">Google Chrome segéd</translation>

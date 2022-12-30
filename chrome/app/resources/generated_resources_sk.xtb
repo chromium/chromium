@@ -1239,6 +1239,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2104166991923847969">Vypínať hotspot automaticky</translation>
 <translation id="2105809836724866556">Skryté: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefónne číslo}few{# telefónne čísla}many{# phone numbers}other{# telefónnych čísiel}}</translation>
+<translation id="2110941575868943054">Môžu vyhľadávať zariadenia s rozhraním Bluetooth</translation>
 <translation id="211144231511833662">Vymazať typy</translation>
 <translation id="2111670510994270194">Nová karta vpravo</translation>
 <translation id="2112554630428445878">Vitajte, <ph name="USERNAME" /></translation>
@@ -3030,6 +3031,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3756485814916578707">Prenáša sa obrazovka</translation>
 <translation id="3756578970075173856">Nastavenie kódu PIN</translation>
 <translation id="3756795331760037744">Povoľte Asistentovi Google pomáhať pomocou informácií na obrazovke dieťaťa <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="3756806135608816820">Weby môžu žiadať o povolenie vyhľadávať zariadenia s rozhraním Bluetooth</translation>
 <translation id="3757733214359997190">Nenašli sa žiadne weby</translation>
 <translation id="375841316537350618">Sťahovanie skriptu servera proxy...</translation>
 <translation id="3758842566811519622">Boli nastavené súbory cookie</translation>
@@ -4529,7 +4531,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5158206172605340248">Ponuka s diakritickými znamienkami bola zavretá.</translation>
 <translation id="5159094275429367735">Nastaviť Crostini</translation>
 <translation id="5159419673777902220">Tvoj rodič deaktivoval povolenia rozšírenia</translation>
-<translation id="5159643365935452998">Skontrolujte automatické vymazávanie údajov</translation>
 <translation id="5160634252433617617">Fyzická klávesnica</translation>
 <translation id="5160857336552977725">Prihláste sa do svojho zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Zariadenia USB od dodávateľa <ph name="VENDOR_NAME" /></translation>
@@ -5004,6 +5005,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5600706100022181951">Aktualizácia bude stiahnutá použitím <ph name="UPDATE_SIZE_MB" /> MB mobilných dát. Chcete pokračovať?</translation>
 <translation id="5601503069213153581">Kód PIN</translation>
 <translation id="5601823921345337195">Nemôže sa pripájať sa k zariadeniam MIDI</translation>
+<translation id="5601833336918638013">Nepovoliť webom vyhľadávať zariadenia s rozhraním Bluetooth</translation>
 <translation id="5602765853043467355">Vymazať záložky, históriu, heslá a ďalší obsah z tohto zariadenia</translation>
 <translation id="5605758115928394442">Do vášho telefónu bolo odoslané upozornenie, ktorým overíte, že ste to vy.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie je blokované}few{Tieto rozšírenia sú blokované}many{Tieto rozšírenia sú blokované}other{Tieto rozšírenia sú blokované}}</translation>
@@ -6465,6 +6467,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6960507406838246615">Vyžaduje sa aktualizácia systému Linux</translation>
 <translation id="6960648667961844909">Súbory s balíkmi reči <ph name="LANGUAGE" /> sa nepodarilo stiahnuť. K pokusu o stiahnutie dôjde neskôr. Než sa sťahovanie dokončí, reč sa odosiela na spracovanie Googlu.</translation>
 <translation id="696103774840402661">Všetky súbory a miestne údaje všetkých používateľov v tomto zariadení <ph name="DEVICE_TYPE" /> boli natrvalo odstránené.</translation>
+<translation id="6961327401577924850">Weby zvyčajne vyhľadávajú zariadenia s rozhraním Bluetooth, aby mohli poskytovať funkcie, ktoré napríklad umožňujú nastavovať alebo synchronizovať majáčiky s nízkou spotrebou energie, nástroje na sledovanie zdravia či kondície alebo žiarovky inteligentných svetiel</translation>
 <translation id="6963872466817251924">Zvýrazňovač textového kurzora</translation>
 <translation id="6964390816189577014">Hrdina</translation>
 <translation id="6964760285928603117">Odstrániť zo skupiny</translation>
@@ -8100,6 +8103,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8465444703385715657">Doplnok <ph name="PLUGIN_NAME" /> potrebuje na spustenie vaše povolenie</translation>
 <translation id="8466417995783206254">Táto karta prehráva video v režime obraz v obraze.</translation>
 <translation id="8467326454809944210">Vybrať iný jazyk</translation>
+<translation id="8468087214092422866">Nemôžu vyhľadávať zariadenia s rozhraním Bluetooth</translation>
 <translation id="8470513973197838199">Uložené heslá pre <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Weby sa zvyčajne pripájajú k zariadeniam USB, aby mohli poskytovať funkcie, ako tlač dokumentu alebo uloženie do zariadenia</translation>
 <translation id="8471959340398751476">Zľavy sú vypnuté. Môžete ich zapnúť v ponuke prispôsobenia.</translation>

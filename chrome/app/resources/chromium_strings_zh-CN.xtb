@@ -282,7 +282,6 @@
 <translation id="718435575166326686">Chromium 需要为此网站授予摄像头权限</translation>
 <translation id="7196312274710523067">无法启动 Chromium。请重试。</translation>
 <translation id="7197677400338048821">Chromium 无法检查您的密码。请过 24 小时再试。</translation>
-<translation id="7218568399872925918">您访问的网站会记住您的信息，直到您关闭 Chromium</translation>
 <translation id="7223968959479464213">任务管理器 - Chromium</translation>
 <translation id="7246575524853130370">Chromium 推测出的您的兴趣</translation>
 <translation id="7309928523159922338">借助 Ad measurement，您访问的网站可向 Chromium 请求信息，以便对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。</translation>
@@ -354,8 +353,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8621669128220841554">未指定的错误导致安装失败。请重新下载 Chromium。</translation>
 <translation id="8697124171261953979">它还能够控制您启动Chromium后或通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="8704119203788522458">这是您的专属Chromium</translation>
-<translation id="8713679423359107094">当您关闭所有 Chromium 窗口时，系统会自动清除 Cookie 和网站数据</translation>
-<translation id="8796443464227412154">关闭 Chromium 时，您会<ph name="BEGIN_BOLD" />自动退出大多数网站<ph name="END_BOLD" />。如果同步功能处于关闭状态，您还会<ph name="BEGIN_BOLD" />自动退出 Google 服务和 Chromium<ph name="END_BOLD" />。</translation>
 <translation id="8796602469536043152">Chromium 需要获得相应权限，才能允许此网站使用您的摄像头和麦克风</translation>
 <translation id="8833697763442816810">Chromium 操作系统</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：您的浏览记录，即您在此设备上使用 Chromium 访问过的网站的记录。</translation>

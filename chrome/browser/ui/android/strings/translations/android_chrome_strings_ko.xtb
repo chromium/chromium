@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">지난 1시간</translation>
 <translation id="1724977129262658800">비밀번호를 수정하려면 잠금 해제하세요</translation>
 <translation id="1726477445370128854">사용자가 방문할 것으로 생각되는 페이지를 Chrome에서 미리 로드하면 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
-<translation id="173522743738009831">개인정보 보호 샌드박스 정보</translation>
 <translation id="1736419249208073774">탐색</translation>
 <translation id="1749561566933687563">북마크 동기화</translation>
 <translation id="1750259112639922169">탭 그룹 - 탭 <ph name="TAB_COUNT" />개</translation>
@@ -264,7 +263,7 @@
 <translation id="250020030759455918">Chrome에서 <ph name="SITE_NAME" /> 로그인 상태, 인터넷 사용 기록, 사이트 데이터를 볼 수 있습니다.</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> 설치 중...</translation>
 <translation id="2513403576141822879">개인정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
-<translation id="2517472476991765520">검색</translation>
+<translation id="2517472476991765520">스캔</translation>
 <translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송</translation>
 <translation id="2527209463677295330">페이지 텍스트를 더 많이 포함하면 더 나은 검색결과를 확인할 수 있습니다.</translation>
 <translation id="2527497042232966453">시크릿 탭으로 전환됨</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" />초 남음</translation>
 <translation id="2779651927720337254">실패</translation>
 <translation id="2781151931089541271">1초 남음</translation>
-<translation id="2788468313014644040">그룹 번호</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> 탭이 닫힙니다.</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
 <translation id="2818669890320396765">어느 기기에서나 내 북마크를 사용하려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="2827278682606527653">피드 카드 메뉴 절반 높이</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">이미지 공유</translation>
 <translation id="3387650086002190359">파일 시스템에 오류가 발생하여 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="3389286852084373014">텍스트가 너무 큼</translation>
-<translation id="3391512812407811893">개인정보 보호 샌드박스 체험판</translation>
 <translation id="3398320232533725830">북마크 관리자 열기</translation>
 <translation id="3407392651057365886">더 많은 페이지가 미리 로드됩니다. 다른 사이트에서 요청하면 Google 서버를 통해 페이지가 미리 로드될 수 있습니다.</translation>
 <translation id="3414952576877147120">크기:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">다시 팔로우</translation>
 <translation id="6002122790816966947">내 기기</translation>
 <translation id="6005538289190791541">추천 비밀번호</translation>
-<translation id="6032091552407840792">이 무료 체험은 <ph name="BEGIN_LINK" />일부 지역<ph name="END_LINK" />에서만 진행됩니다.</translation>
-<translation id="6033245666633565791"><ph name="BEGIN_LINK" />개인 정보 보호 샌드박스<ph name="END_LINK" />를 통해 Chrome은 오픈 웹의 장점을 유지하면서 크로스 사이트 추적으로부터 사용자를 보호하는 새로운 기술을 개발하고 있습니다.
-
-개인 정보 보호 샌드박스 무료 체험은 아직 개발 단계에 있으므로 일부 지역에서만 제공됩니다. 현재 사이트는 타사 쿠키와 같은 기존 웹 기술을 계속 사용하면서 개인 정보 보호 샌드박스를 사용해 볼 수 있습니다.</translation>
 <translation id="6039379616847168523">다음 탭으로 이동</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="604124094241169006">자동</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">추가</translation>
 <translation id="7798392620021911922">탭 <ph name="TAB_COUNT" />개를 복원했습니다.</translation>
 <translation id="780301667611848630">취소</translation>
-<translation id="7805768142964895445">상태</translation>
 <translation id="7808889146555843082">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다. 비밀번호를 변경하거나 <ph name="SITE" /> 계정을 삭제하여 보안을 유지하세요.</translation>
 <translation id="7810647596859435254">연결 프로그램...</translation>
 <translation id="7815484226266492798">긴 스크린샷</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">나만의 동기화 암호로 동기화된 데이터 암호화</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" />이(가) 인터넷에 연결되어 있는지 확인하세요.</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
-<translation id="8481921391193215807">사용 설정하면 사이트가 여기에 표시된 개인 정보 보호 기술을 이용해 콘텐츠와 서비스를 제공할 수 있습니다. 크로스 사이트 추적의 대안이 되는 기술 등이 있습니다. 시간이 지남에 따라 더 많은 무료 체험 기능이 포함될 수 있습니다.
-
-<ph name="BEGIN_LIST_ITEM1" />광고주와 게시자는 FLoC을 사용할 수 있습니다.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />광고주와 게시자는 사이트 전반에서 사용자를 추적하지 않는 방식으로 광고의 효과를 연구할 수 있습니다.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">무료 체험 기능 사용 중</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">방문 기록 페이지 열기</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
 <translation id="8666759526542103597">브라우저 기반 광고 개인 최적화 알아보기</translation>
 <translation id="8676789164135894283">로그인 인증</translation>
-<translation id="867767487203716855">다음 업데이트</translation>
 <translation id="8683039184091909753">이미지</translation>
-<translation id="8683081248374354009">그룹 재설정</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
 <translation id="8712637175834984815">확인</translation>

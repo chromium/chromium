@@ -117,7 +117,6 @@
 <translation id="3038232873781883849">Menunggu untuk menginstal...</translation>
 <translation id="3059710691562604940">Safe Browsing nonaktif. Chrome merekomendasikan untuk mengaktifkannya.</translation>
 <translation id="3065168410429928842">Tab Chrome</translation>
-<translation id="3069821012350118710">Situs yang dibuka akan mengingat informasi Anda hingga Anda menutup Chrome</translation>
 <translation id="3080151273017101988">Terus jalankan apl latar belakang saat Google Chrome ditutup</translation>
 <translation id="3089968997497233615">Tersedia versi Google Chrome yang baru dan lebih aman.</translation>
 <translation id="3100998948628680988">Beri nama profil Chrome Anda</translation>
@@ -245,7 +244,6 @@
 <translation id="5804318322022881572">Tidak dapat meluncurkan Chrome. Harap coba lagi.</translation>
 <translation id="5867197326698922595">Google Chrome mencoba mengedit sandi.</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
-<translation id="5901850848447342934">Anda akan <ph name="BEGIN_BOLD" />logout dari sebagian besar situs<ph name="END_BOLD" /> saat Anda menutup Chrome. Jika sinkronisasi nonaktif, Anda juga akan <ph name="BEGIN_BOLD" />logout dari layanan Google dan Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Login Jaringan</translation>
 <translation id="5924017743176219022">Menghubungkan ke internet...</translation>
 <translation id="5940385492829620908">Web, bookmark, dan file Chrome Anda lainnya tersedia di sini.</translation>
@@ -382,7 +380,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8614913330719544658">Google Chrome tidak merespons. Luncurkan ulang sekarang?</translation>
 <translation id="861702415419836452">Chrome memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome akan diluncurkan ulang dalam 1 menit}other{Chrome akan diluncurkan ulang dalam # menit}}</translation>
-<translation id="8629311577791198377">Jika Anda menutup semua jendela Chrome, cookie dan data situs akan otomatis dihapus</translation>
 <translation id="8641606876632989680">Chrome akan memberi tahu Anda saat Anda login dengan sandi yang telah dibobol</translation>
 <translation id="8649026945479135076">Situs yang Anda buka biasanya mengingat hal-hal yang Anda minati agar dapat mempersonalisasi pengalaman Anda. Situs juga dapat menyimpan informasi tentang minat Anda ke Chrome.</translation>
 <translation id="8669527147644353129">Pembantu Google Chrome</translation>

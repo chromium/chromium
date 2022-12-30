@@ -3814,6 +3814,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kan redigere filer i <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Præferencer for ekstern lagerplads</translation>
 <translation id="4471354919263203780">Downloader talegenkendelsesfiler... <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Du kan bruge dit foretrukne sprog fra din Google-konto (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Vær med til at forbedre Chromes funktioner og ydeevne</translation>
 <translation id="4472575034687746823">Kom godt i gang</translation>
 <translation id="4474155171896946103">Tilføj alle faner som bogmærker...</translation>
@@ -4544,7 +4545,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5158206172605340248">Menuen for accenttegn blev lukket.</translation>
 <translation id="5159094275429367735">Konfigurer Crostini</translation>
 <translation id="5159419673777902220">Din forælder har deaktiveret tilladelserne for udvidelser</translation>
-<translation id="5159643365935452998">Gennemgå automatisk rydning af data</translation>
 <translation id="5160634252433617617">Fysisk tastatur</translation>
 <translation id="5160857336552977725">Log ind på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">USB-enheder fra <ph name="VENDOR_NAME" /></translation>
@@ -6754,6 +6754,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7227458944009118910">De apps, der er angivet nedenfor, kan også håndtere protokollinks. Andre apps beder om tilladelse.</translation>
 <translation id="7228056665272655255">Du kan konfigurere et fingeraftryk ved at få dit barn til at sætte fingeren på fingeraftrykssensoren øverst til højre på tastaturet. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Skærmlås og login</translation>
+<translation id="7228854227189381547">Skift ikke</translation>
 <translation id="7230222852462421043">&amp;Gendan vindue</translation>
 <translation id="7231260028442989757">Se, afvis og reager på notifikationer fra din telefon</translation>
 <translation id="7232750842195536390">Omdøbningen mislykkedes</translation>
@@ -7087,6 +7088,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7545466883021407599">Der kunne ikke oprettes forbindelse til serveren. Tjek din netværksforbindelse, og prøv igen. Hvis du stadig har problemer, kan du prøve at genstarte din Chromebook. Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Advarsel: Dine indstillinger for <ph name="PRODUCT_NAME" /> er gemt på et netværksdrev. Dette resulterer muligvis i forsinkelser, nedbrud eller sågar datatab.</translation>
 <translation id="7548856833046333824">James Bond</translation>
+<translation id="7549434883223124329">Vil du skifte sprog på enheden?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> blev ikke downloadet</translation>
 <translation id="7551643184018910560">Fastgør til hylde</translation>

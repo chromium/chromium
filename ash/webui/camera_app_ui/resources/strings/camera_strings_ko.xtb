@@ -35,7 +35,7 @@
 <translation id="1995951722691075581">기기 저장공간이 부족하여 녹화가 중단되었습니다. 동영상을 더 녹화하려면 기기에서 여유 공간을 확보해야 합니다.</translation>
 <translation id="2022953316617983419">QR 코드</translation>
 <translation id="2036868001356139588">타이머 시간</translation>
-<translation id="2050339315714019657">세로 방향</translation>
+<translation id="2050339315714019657">인물</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> 사용 중</translation>
 <translation id="2134029355740465625">동영상 설정</translation>
 <translation id="2144806332417375165">맞춤 동영상 매개변수</translation>
@@ -47,12 +47,12 @@
 <translation id="2501278716633472235">뒤로 이동</translation>
 <translation id="2501853267655415902">녹화가 중지되었습니다.</translation>
 <translation id="2501953888035679275">카메라로 사진을 찍고 동영상을 녹화합니다.</translation>
-<translation id="2517472476991765520">검색</translation>
+<translation id="2517472476991765520">스캔</translation>
 <translation id="2549985041256363841">녹화 시작</translation>
 <translation id="2577915835281444458">녹음이 곧 중지됩니다. 기기 저장공간으로 이동하여 여유 공간을 확보하세요.</translation>
 <translation id="2599796128805996109">후면 카메라</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" />초</translation>
-<translation id="2761536921376153655">검색 유형</translation>
+<translation id="2761536921376153655">스캔 유형</translation>
 <translation id="28682968802727151">미러링 미리보기</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> 카메라가 연결되었습니다.</translation>
 <translation id="2904654629665923749">문서 스캔 기능 사용 가능</translation>
@@ -71,7 +71,7 @@
 <translation id="3411958449466169012">타이머 사용 안함</translation>
 <translation id="3448774564454087943">동영상이 너무 짧아 저장할 수 없습니다.</translation>
 <translation id="346539236881580388">다시 촬영</translation>
-<translation id="3517926952904427380">세로 모드 사진을 찍을 수 없습니다.</translation>
+<translation id="3517926952904427380">인물 모드 사진을 찍을 수 없습니다.</translation>
 <translation id="3566302376254083266">왼쪽 상단으로 이동</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> 파일을 삭제하시겠습니까?</translation>
 <translation id="3573890771273113519">스캔 모드로 전환</translation>
@@ -83,23 +83,23 @@
 <translation id="4060608699153044055">기기 저장공간이 부족하여 녹화할 수 없습니다. 녹화를 시작하려면 기기에서 여유 공간을 확보해야 합니다.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" />MP</translation>
 <translation id="4118525110028899586">녹화 일시중지</translation>
-<translation id="4121305183798804752">문서 삭제됨</translation>
+<translation id="4121305183798804752">문서 감지됨</translation>
 <translation id="414641094616694804">이 카메라는 해상도를 변경할 수 없습니다.</translation>
 <translation id="4269820728363426813">링크 주소 복사</translation>
 <translation id="4281620174117014503">중간 해상도</translation>
 <translation id="428234092390943511">페이지 썸네일</translation>
-<translation id="4329152592498422850">스퀘어 사진 촬영으로 전환</translation>
-<translation id="4340659173795395806">이제 다중 페이지 PDF를 생성할 수 있습니다.</translation>
-<translation id="4383571725254449280">실적 로그 인쇄</translation>
+<translation id="4329152592498422850">정사각형 사진 촬영 모드로 전환</translation>
+<translation id="4340659173795395806">이제 여러 페이지로 PDF 파일을 생성할 수 있습니다.</translation>
+<translation id="4383571725254449280">성능 로그 인쇄</translation>
 <translation id="4445542136948522167">사진 촬영 중지</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" />메가픽셀</translation>
 <translation id="4570032796877367747">전면 카메라</translation>
 <translation id="4598556348158889687">저장용량 관리</translation>
-<translation id="4620818268515773682">마이크 음소거를 전환합니다. 음소거가 사용 중지되었습니다</translation>
+<translation id="4620818268515773682">마이크 음소거 모드를 변경합니다. 음소거가 중지되었습니다.</translation>
 <translation id="4628948037717959914">사진</translation>
 <translation id="4649291346448517080">파일을 저장할 수 없습니다.</translation>
 <translation id="4695379108709712600">상단으로 이동</translation>
-<translation id="4705093842003735294">전체 해상도</translation>
+<translation id="4705093842003735294">최대 해상도</translation>
 <translation id="4890010094662541459">3x3</translation>
 <translation id="491895758387112773">멀티스트림 동영상 녹화</translation>
 <translation id="4984613436295737187">QHD(1440p)</translation>
@@ -175,7 +175,7 @@
 <translation id="8428213095426709021">설정</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p(<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
-<translation id="8711011893539266636">마이크 음소거를 전환합니다. 음소거가 사용 설정되었습니다</translation>
+<translation id="8711011893539266636">마이크 음소거 모드를 변경합니다. 음소거가 설정되었습니다.</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8732462232047530626">메타데이터 미리보기</translation>

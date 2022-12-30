@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">যোৱা ১ ঘণ্টাৰ</translation>
 <translation id="1724977129262658800">আপোনাৰ পাছৱৰ্ডটো সম্পাদনা কৰিবলৈ আনলক কৰক</translation>
 <translation id="1726477445370128854">আপুনি যাব পৰাৰ সম্ভাৱনা থকা পৃষ্ঠাসমূহ Chromeএ আগতীয়াকৈ ল’ড কৰিলে আপুনি খৰতকীয়াকৈ ব্ৰাউজ আৰু সন্ধান কৰিব পাৰে</translation>
-<translation id="173522743738009831">প্ৰাইভেচি ছেণ্ডবক্সৰ বিষয়ে</translation>
 <translation id="1736419249208073774">অন্বেষণ কৰক</translation>
 <translation id="1749561566933687563">আপোনাৰ বুকমার্কসমূহ ছিংক কৰক</translation>
 <translation id="1750259112639922169">টেবৰ গোট - <ph name="TAB_COUNT" /> টা টেব</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ছেকেণ্ড বাকী আছে</translation>
 <translation id="2779651927720337254">ডাউনল'ড কৰিব পৰা নগ'ল</translation>
 <translation id="2781151931089541271">১ ছেকেণ্ড বাকী আছে</translation>
-<translation id="2788468313014644040">গোটৰ সদস্য</translation>
 <translation id="2800066122460699237">টেবটো <ph name="TAB_TITLE" /> বন্ধ কৰা হ’ব</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">আপোনাৰ <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" />ত ছেভ কৰি থোৱা পাছৱর্ডসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
 <translation id="2818669890320396765">আপোনাৰ সকলো ডিভাইচতে নিজৰ বুকমার্কসমূহ পাবলৈ ছাইন ইন কৰি ছিংক কৰা সুবিধাটো অন কৰক</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">প্ৰতিচ্ছবি শ্বেয়াৰ কৰক</translation>
 <translation id="3387650086002190359">ফাইল ছিষ্টেম সম্পর্কীয় আসোঁৱাহৰ বাবে <ph name="FILE_NAME" /> ডাউনল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="3389286852084373014">পাঠখিনি যথেষ্ট দীঘল</translation>
-<translation id="3391512812407811893">প্ৰাইভেচি ছেণ্ডবক্সৰ ট্ৰায়েল</translation>
 <translation id="3398320232533725830">বুকমাৰ্ক পৰিচালক খোলক</translation>
 <translation id="3407392651057365886">অধিক পৃষ্ঠা আগতীয়াকৈ ল’ড কৰা হৈছে। অন্য ছাইটে অনুৰোধ কৰিলে পৃষ্ঠাসমূহ Googleৰ ছাৰ্ভাৰৰ জৰিয়তে আগতীয়াকৈ ল’ড কৰা হ’ব পাৰে।</translation>
 <translation id="3414952576877147120">আকাৰ:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">পুনৰ ফ’ল’ কৰক</translation>
 <translation id="6002122790816966947">আপোনাৰ ডিভাইচ</translation>
 <translation id="6005538289190791541">পৰামর্শ হিচাপে পোৱা পাছৱর্ড</translation>
-<translation id="6032091552407840792">এই ট্ৰায়েলটো কেৱল <ph name="BEGIN_LINK" />কিছুমান অঞ্চল<ph name="END_LINK" />ত সক্ৰিয়।</translation>
-<translation id="6033245666633565791">Chromeএ <ph name="BEGIN_LINK" />গোপনীয়তা বিষয়ক ছেণ্ডবক্স<ph name="END_LINK" />ৰ জৰিয়তে, আপোনাক মুক্ত ৱেবক সুৰক্ষিত কৰি ৰাখি ক্ৰছ-ছাইট ট্ৰেকিঙৰ পৰা আপোনাক সুৰক্ষা প্ৰদান কৰিবলৈ নতুন প্ৰযুক্তি বিকাশ কৰি আছে।
-
-গোপনীয়তা বিষয়ক ছেণ্ডবক্সৰ ট্ৰায়েলসমূহ এতিয়াও সক্ৰিয়ভাৱে বিকাশ কৰি থকা হৈছে আৰু এইবোৰ বাছনিকৃত কিছুমান অঞ্চলত উপলব্ধ। সদ্যহতে, ছাইটসমূহে তৃতীয় পক্ষৰ কুকিৰ দৰে বৰ্তমানৰ ৱেব প্ৰযুক্তিসমূহ ব্যৱহাৰ কৰি থাকিও গোপনীয়তা বিষয়ক ছেণ্ডবক্স ব্যৱহাৰ কৰি চাব পাৰে।</translation>
 <translation id="6039379616847168523">পৰৱৰ্তী টেবলৈ যাওক</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="604124094241169006">স্বয়ংক্ৰিয়</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">যোগ কৰক</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> টা টেব পুনঃস্থাপন কৰা হ’ল</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
-<translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7808889146555843082">এই পাছৱর্ডটো মচাৰ ফলত <ph name="SITE" />ত থকা আপোনাৰ একাউণ্টটো মচি পেলোৱা নহ’ব। অন্য লোকসকলৰ পৰা আপোনাৰ একাউণ্টটো সুৰক্ষিত কৰিবলৈ আপোনাৰ পাছৱর্ড সলনি কৰক অথবা <ph name="SITE" />ত আপোনাৰ একাউণ্টটো মচক।</translation>
 <translation id="7810647596859435254">ইয়াৰ জৰিয়তে খোলক…</translation>
 <translation id="7815484226266492798">দীঘল স্ক্ৰীনশ্বট</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">আপোনাৰ নিজৰ ছিংক পাছফ্ৰেজৰ সৈতে ছিংক কৰা ডেটা এনক্ৰিপ্ট কৰক।</translation>
 <translation id="8466613982764129868">নিশ্চিত হৈ লওক যে <ph name="TARGET_DEVICE_NAME" /> ইণ্টাৰনেটৰ সৈতে সংযুক্ত হৈ আছে</translation>
 <translation id="8473863474539038330">ঠিকনা আৰু অধিক</translation>
-<translation id="8481921391193215807">অন কৰি থোৱা থাকিলে, ছাইটসমূহে নিজৰ সমল আৰু সেৱা প্ৰদান কৰিবলৈ ইয়াত দেখুওৱা গোপনীয়তা সংৰক্ষণৰ কৌশলসমূহ ব্যৱহাৰ কৰিব পাৰে। এইবিলাকত ক্ৰছ-ছাইট ট্ৰেকিঙৰ বিকল্পসমূহ অন্তৰ্ভুক্ত। সময়ৰ লগে লগে অধিক ট্ৰায়েল যোগ দিয়া হ’ব পাৰে।
-
-<ph name="BEGIN_LIST_ITEM1" />বিজ্ঞাপনদাতা আৰু প্ৰকাশকে FLoC ব্যৱহাৰ কৰিব পাৰে।<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />বিজ্ঞাপনদাতা আৰু প্ৰকাশকে আপোনাক বিভিন্ন ছাইটত ট্ৰেক নকৰাকৈ বিজ্ঞাপনৰ ফলপ্ৰসূতা অধ্যয়ন কৰিব পাৰে।<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">ট্ৰায়েলৰ সুবিধা অন আছে</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ইতিহাস পৃষ্ঠাটো খোলক</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">এই ফাইলৰ নামটো ইতিমধ্যে আছে</translation>
 <translation id="8666759526542103597">ব্ৰাউজাৰ ভিত্তিক বিজ্ঞাপনৰ ব্যক্তিগতকৰণৰ বিষয়ে</translation>
 <translation id="8676789164135894283">ছাইন ইন কৰাৰ সত্যাপন</translation>
-<translation id="867767487203716855">পৰৱৰ্তী আপডে’ট</translation>
 <translation id="8683039184091909753">প্ৰতিচ্ছবি</translation>
-<translation id="8683081248374354009">গোটটো ৰিছেট কৰক</translation>
 <translation id="869891660844655955">ম্যাদ উকলাৰ তাৰিখ</translation>
 <translation id="8699120352855309748">এই ভাষাসমূহ অনুবাদ কৰাৰ সুবিধা প্ৰদান নকৰিব</translation>
 <translation id="8712637175834984815">বুজি পালোঁ</translation>

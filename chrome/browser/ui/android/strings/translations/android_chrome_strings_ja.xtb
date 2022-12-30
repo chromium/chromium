@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">1 時間以内</translation>
 <translation id="1724977129262658800">パスワードを編集するにはロックを解除してください</translation>
 <translation id="1726477445370128854">アクセスが想定されるページを Chrome がプリロードすると、より高速に閲覧と検索を行えます</translation>
-<translation id="173522743738009831">プライバシー サンドボックスについて</translation>
 <translation id="1736419249208073774">詳しく見る</translation>
 <translation id="1749561566933687563">ブックマークの同期</translation>
 <translation id="1750259112639922169">タブグループ - <ph name="TAB_COUNT" /> 個のタブ</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389">残り <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失敗</translation>
 <translation id="2781151931089541271">残り 1 秒</translation>
-<translation id="2788468313014644040">グループ番号</translation>
 <translation id="2800066122460699237">「<ph name="TAB_TITLE" />」タブが閉じられます</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />での保存パスワードの表示と管理</translation>
 <translation id="2818669890320396765">お使いのどのデバイスでも同じブックマークを使用するには、ログインして同期を有効にします</translation>
 <translation id="2827278682606527653">フィードカード メニューが画面の下半分に開いています</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">画像を共有</translation>
 <translation id="3387650086002190359">ファイル システムでエラーが発生したため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
 <translation id="3389286852084373014">テキストが大きすぎます</translation>
-<translation id="3391512812407811893">プライバシー サンドボックス（試用版）</translation>
 <translation id="3398320232533725830">ブックマーク マネージャを開く</translation>
 <translation id="3407392651057365886">プリロードされるページ数が増加します。ページが他のサイトからリクエストされた場合は、Google サーバーを経由してプリロードされる可能性があります。</translation>
 <translation id="3414952576877147120">サイズ:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">再フォロー</translation>
 <translation id="6002122790816966947">他のデバイス</translation>
 <translation id="6005538289190791541">推奨パスワード</translation>
-<translation id="6032091552407840792">この試用版は、<ph name="BEGIN_LINK" />一部の地域<ph name="END_LINK" />でのみ使用できます。</translation>
-<translation id="6033245666633565791">Chrome では、<ph name="BEGIN_LINK" />プライバシー サンドボックス<ph name="END_LINK" />という取り組みを通じて、クロスサイト トラッキングからユーザーを保護しつつ、オープンウェブの理念を支える新しい技術を開発しています。
-
-プライバシー サンドボックスの試用版はまだ開発段階にあり、一部の地域でのみご利用可能です。このため、現時点では多くのサイトでサードパーティ Cookie など現行のウェブ技術を引き続き使用しつつ、プライバシー サンドボックスが試験的に導入されると考えられます。</translation>
 <translation id="6039379616847168523">次のタブに移動する</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="604124094241169006">自動設定</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">追加</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> 個のタブを復元しました</translation>
 <translation id="780301667611848630">いいえ</translation>
-<translation id="7805768142964895445">ステータス</translation>
 <translation id="7808889146555843082">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません。セキュリティを確保するため、パスワードを変更するか、<ph name="SITE" /> のアカウントを削除してください。</translation>
 <translation id="7810647596859435254">アプリで開く…</translation>
 <translation id="7815484226266492798">ロング スクリーンショット</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> がインターネットに接続していることを確認してください</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
-<translation id="8481921391193215807">オンにすると、サイトでコンテンツやサービスを提供する際に、ここで示されているプライバシー保護技術が使用される場合があります。これには、クロスサイト トラッキングの代わりとなる技術も含まれます。今後、試用版の技術がさらに追加される可能性があります。
-
-<ph name="BEGIN_LIST_ITEM1" />広告主やパブリッシャーは FLoC を使用できます。<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />広告主やパブリッシャーは、サイトをまたいでユーザーをトラッキングすることなく、広告の成果を把握できます。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">試用版機能はオンになっています</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">履歴ページを開く</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">同じ名前のファイルが存在します</translation>
 <translation id="8666759526542103597">ブラウザベースの広告のカスタマイズについて</translation>
 <translation id="8676789164135894283">ログイン認証</translation>
-<translation id="867767487203716855">次の更新</translation>
 <translation id="8683039184091909753">画像</translation>
-<translation id="8683081248374354009">グループをリセット</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699120352855309748">これらの言語を翻訳するか尋ねない</translation>
 <translation id="8712637175834984815">閉じる</translation>

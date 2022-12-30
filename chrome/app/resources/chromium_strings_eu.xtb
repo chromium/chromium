@@ -284,7 +284,6 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="718435575166326686">Chromium-ek kamera atzitzeko baimena behar du webgune honetan</translation>
 <translation id="7196312274710523067">Ezin izan da abiarazi Chromium. Saiatu berriro.</translation>
 <translation id="7197677400338048821">Chromium-ek ezin ditu egiaztatu pasahitzak. Saiatu berriro 24 ordu barru.</translation>
-<translation id="7218568399872925918">Bisitatzen dituzun webguneek zure informazioa gogoratzen dute Chromium itxi arte</translation>
 <translation id="7223968959479464213">Ataza-kudeatzailea - Chromium</translation>
 <translation id="7246575524853130370">Chromium-ek estimatu dizkizun interesak</translation>
 <translation id="7309928523159922338">Iragarkien neurketari esker, bisitatzen dituzun webguneek Chromium-i informazioa eska diezaiokete. Informazio horren bidez, webguneek beren iragarkien errendimendua neur dezakete. Webguneen artean ahalik eta informazio gutxien transferituta mugatzen du iragarkien neurketak webguneen arteko jarraipena.</translation>
@@ -356,8 +355,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8621669128220841554">Instalazioak huts egin du zehaztu gabeko errore batengatik. Deskargatu Chromium berriro.</translation>
 <translation id="8697124171261953979">Chromium hasten duzunean edo Omnibox-etik bilaketak egiten dituzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="8704119203788522458">Hau da zure Chromium arakatzailea</translation>
-<translation id="8713679423359107094">Chromium-eko leiho guztiak ixten dituzunean, automatikoki garbituko dira cookieak eta webguneetako datuak</translation>
-<translation id="8796443464227412154"><ph name="BEGIN_BOLD" />Webgune gehienen saioa amaitu egingo da<ph name="END_BOLD" /> Chromium ixtean. Sinkronizazioa desaktibatuta badago, <ph name="BEGIN_BOLD" />Google-ren zerbitzuen eta Chromium-en saioak ere amaituko<ph name="END_BOLD" /> dira.</translation>
 <translation id="8796602469536043152">Chromium-ek webgune honen izenean kamera eta mikrofonoa atzitzeko baimena behar du</translation>
 <translation id="8833697763442816810">Chromium OS sistema</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Zein datu erabiltzen dira?<ph name="END_BOLD" /> Zure arakatze-historia eta gailu hau erabili bitartean Chromium-en bidez bisitatutako webguneen erregistro bat.</translation>

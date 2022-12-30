@@ -139,7 +139,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="1718835860248848330">Afgelopen uur</translation>
 <translation id="1724977129262658800">Ontgrendel om je wachtwoord te bewerken</translation>
 <translation id="1726477445370128854">Je kunt sneller browsen en zoeken als Chrome pagina's vooraf laadt waarvan Chrome denkt dat je ze misschien gaat bezoeken</translation>
-<translation id="173522743738009831">Over Privacy Sandbox</translation>
 <translation id="1736419249208073774">Verkennen</translation>
 <translation id="1749561566933687563">Synchroniseer je bookmarks</translation>
 <translation id="1750259112639922169">Tabbladgroep: <ph name="TAB_COUNT" /> tabbladen</translation>
@@ -318,9 +317,7 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="2777555524387840389"><ph name="SECONDS" /> seconden resterend</translation>
 <translation id="2779651927720337254">mislukt</translation>
 <translation id="2781151931089541271">1 seconde resterend</translation>
-<translation id="2788468313014644040">Groepsnummer</translation>
 <translation id="2800066122460699237">Het tabblad <ph name="TAB_TITLE" /> wordt gesloten</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Bekijk en beheer opgeslagen wachtwoorden in je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Log in en zet de synchronisatie aan om op al je apparaten toegang tot je bookmarks te hebben</translation>
 <translation id="2827278682606527653">Feedkaartmenu halve hoogte</translation>
@@ -441,7 +438,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="3384347053049321195">Afbeelding delen</translation>
 <translation id="3387650086002190359">Downloaden van <ph name="FILE_NAME" /> is mislukt door fouten in het bestandssysteem.</translation>
 <translation id="3389286852084373014">Tekst is te groot</translation>
-<translation id="3391512812407811893">Proeffuncties van Privacy Sandbox</translation>
 <translation id="3398320232533725830">Bookmarkbeheer openen</translation>
 <translation id="3407392651057365886">Er worden meer pagina's vooraf geladen. Pagina's kunnen op verzoek van andere sites vooraf worden geladen via de servers van Google.</translation>
 <translation id="3414952576877147120">Grootte:</translation>
@@ -913,10 +909,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6000203700195075278">Opnieuw volgen</translation>
 <translation id="6002122790816966947">Je apparaten</translation>
 <translation id="6005538289190791541">Voorgesteld wachtwoord</translation>
-<translation id="6032091552407840792">Deze proef is alleen actief in <ph name="BEGIN_LINK" />bepaalde regio's<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Met <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> ontwikkelt Chrome nieuwe technologieën om je te beschermen tegen tracking op verschillende sites terwijl het open web behouden blijft.
-
-Privacy Sandbox-proeven zijn nog actief in ontwikkeling en zijn beschikbaar in bepaalde regio's. Voorlopig kunnen sites Privacy Sandbox uitproberen en tegelijkertijd gebruik blijven maken van huidige webtechnologieën, zoals cookies van derden.</translation>
 <translation id="6039379616847168523">Naar het volgende tabblad gaan</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="604124094241169006">Automatisch</translation>
@@ -1248,7 +1240,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> tabbladen hersteld</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
-<translation id="7805768142964895445">Status</translation>
 <translation id="7808889146555843082">Als je dit wachtwoord verwijdert, wordt je account op <ph name="SITE" /> niet verwijderd. Wijzig je wachtwoord of verwijder je account in <ph name="SITE" /> om het te beschermen.</translation>
 <translation id="7810647596859435254">Openen met…</translation>
 <translation id="7815484226266492798">Lang screenshot</translation>
@@ -1382,11 +1373,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8461694314515752532">Gesynchroniseerde gegevens versleutelen met een eigen wachtwoordzin</translation>
 <translation id="8466613982764129868">Zorg dat <ph name="TARGET_DEVICE_NAME" /> is verbonden met internet</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
-<translation id="8481921391193215807">Als de functie aanstaat, kunnen sites de hier vermelde privacybeschermende technieken gebruiken om hun content en services aan te bieden. Hieronder vallen ook alternatieven voor tracking op verschillende sites. We kunnen in de loop van de tijd meer proeffuncties toevoegen.
-
-<ph name="BEGIN_LIST_ITEM1" />Adverteerders en uitgevers kunnen FLoC gebruiken.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Adverteerders en uitgevers kunnen de effectiviteit van advertenties onderzoeken zonder dat je bezoeken aan verschillende sites worden bijgehouden.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Proeffuncties staan aan</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">De pagina Geschiedenis openen</translation>
@@ -1432,9 +1418,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8664979001105139458">Bestandsnaam bestaat al</translation>
 <translation id="8666759526542103597">Over browsergebaseerde advertentiepersonalisatie</translation>
 <translation id="8676789164135894283">Inlogverificaties</translation>
-<translation id="867767487203716855">Volgende update</translation>
 <translation id="8683039184091909753">afbeelding</translation>
-<translation id="8683081248374354009">Groep resetten</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699120352855309748">Niet aanbieden om deze talen te vertalen</translation>
 <translation id="8712637175834984815">Begrepen</translation>

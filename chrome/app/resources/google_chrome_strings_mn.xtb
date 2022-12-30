@@ -121,7 +121,6 @@
 <translation id="3038232873781883849">Суулгахыг хүлээж байна...</translation>
 <translation id="3059710691562604940">Аюулгүй үзэх онцлог унтраалттай байна. Chrome түүнийг асаахыг зөвлөж байна.</translation>
 <translation id="3065168410429928842">Chrome-н таб</translation>
-<translation id="3069821012350118710">Таны зочилсон сайтууд таныг Chrome-г хаах хүртэл мэдээллийг тань санадаг</translation>
 <translation id="3080151273017101988">Google Chrome хаагдсан үед үндсэн аппликйешнуудыг үргэлжлүүлэн ажиллуул</translation>
 <translation id="3089968997497233615">Google Chrome-ийн шинэ, илүү аюулгүй хувилбар бэлэн боллоо.</translation>
 <translation id="3100998948628680988">Chrome-н профайлаа нэрлэнэ үү</translation>
@@ -253,7 +252,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5804318322022881572">Chrome-г эхлүүлж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="5867197326698922595">Google Chrome нь нууц үгсийг засах гэж оролдож байна.</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
-<translation id="5901850848447342934">Таныг Chrome-г хаах үед <ph name="BEGIN_BOLD" />ихэнх сайтаас гаргана<ph name="END_BOLD" />. Хэрэв синк хийх унтраалттай бол таныг мөн <ph name="BEGIN_BOLD" />Google-н үйлчилгээнүүд болон Chrome<ph name="END_BOLD" />-с гаргана.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх</translation>
 <translation id="5924017743176219022">Интернэтэд холбогдож байна...</translation>
 <translation id="5940385492829620908">Таны веб, хавчуурга, болон Chrome-ийн бусад зүйлс энд хадгалагддаг.</translation>
@@ -390,7 +388,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8614913330719544658">Google Chrome ажиллахгүй байна. Дахин эхүүлэх үү?</translation>
 <translation id="861702415419836452">Орчин тойрны тань 3D газрын зургийг үүсгэхийн тулд таны камерт хандах зөвшөөрөл Chrome-д шаардлагатай</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome-г 1 минутын дотор дахин ажиллуулна}other{Chrome-г # минутын дотор дахин ажиллуулна}}</translation>
-<translation id="8629311577791198377">Таныг Chrome-н бүх цонхыг хаах үед күүки болон сайтын өгөгдлийг автоматаар арилгана</translation>
 <translation id="8641606876632989680">Chrome нь таныг алдагдсан нууц үгээр нэвтрэх үед танд мэдэгдэнэ</translation>
 <translation id="8649026945479135076">Таны зочилсон сайтууд таны сонирхдог зүйлсийг таны туршлагыг хувийн болгохын тулд санах нь түгээмэл юм. Сайтууд мөн Chrome-р таны сонирхлын талаарх мэдээллийг хадгалах боломжтой.</translation>
 <translation id="8669527147644353129">Google Chrome Туслагч</translation>

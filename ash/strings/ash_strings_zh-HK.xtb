@@ -924,6 +924,7 @@
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6043212731627905357">此顯示器與您的 <ph name="DEVICE_TYPE" /> 無法配對 (並不支援該顯示器)。</translation>
 <translation id="6043994281159824495">立即登出</translation>
+<translation id="6045629311476491587">正由 <ph name="APP_COUNT" /> 個應用程式使用</translation>
 <translation id="6047696787498798094">切換到另一個使用者會停止共用畫面，您要繼續嗎？</translation>
 <translation id="6054305421211936131">使用智能卡登入</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>

@@ -139,7 +139,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="1718835860248848330">Darrera hora</translation>
 <translation id="1724977129262658800">Desbloqueja per editar la contrasenya</translation>
 <translation id="1726477445370128854">Pots navegar i fer cerques més ràpidament quan Chrome carrega prèviament les pàgines que considera que podries visitar</translation>
-<translation id="173522743738009831">Sobre Privacy Sandbox</translation>
 <translation id="1736419249208073774">Explora</translation>
 <translation id="1749561566933687563">Sincronitzeu les adreces d'interès</translation>
 <translation id="1750259112639922169">Grup de pestanyes: <ph name="TAB_COUNT" /> pestanyes</translation>
@@ -318,9 +317,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="2777555524387840389">Queden <ph name="SECONDS" /> segons</translation>
 <translation id="2779651927720337254">ha fallat</translation>
 <translation id="2781151931089541271">Queda 1 segon</translation>
-<translation id="2788468313014644040">Número de grup</translation>
 <translation id="2800066122460699237">Es tancarà la pestanya <ph name="TAB_TITLE" /></translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Consulta i gestiona les contrasenyes desades al <ph name="BEGIN_LINK" />Compte de Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Per accedir a les adreces d'interès des de tots els dispositius, inicia la sessió i activa la sincronització</translation>
 <translation id="2827278682606527653">El menú de la targeta del tauler ocupa la meitat inferior de la pantalla</translation>
@@ -441,7 +438,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3384347053049321195">Comparteix la imatge</translation>
 <translation id="3387650086002190359">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'errors amb el sistema de fitxers.</translation>
 <translation id="3389286852084373014">El text és massa llarg</translation>
-<translation id="3391512812407811893">Proves de Privacy Sandbox</translation>
 <translation id="3398320232533725830">Obre el gestor d'adreces d'interès</translation>
 <translation id="3407392651057365886">Es precarreguen més pàgines. És possible que les pàgines estiguin precarregades mitjançant els servidors de Google quan altres llocs web ho sol·licitin.</translation>
 <translation id="3414952576877147120">Mida:</translation>
@@ -913,10 +909,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="6000203700195075278">Torna a seguir</translation>
 <translation id="6002122790816966947">Els teus dispositius</translation>
 <translation id="6005538289190791541">Contrasenya suggerida</translation>
-<translation id="6032091552407840792">Aquesta prova només està activa en <ph name="BEGIN_LINK" />algunes regions<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Amb <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome està desenvolupant noves tecnologies per protegir-te dels mecanismes de seguiment entre llocs web, alhora que preserva el web obert.
-
-Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan disponibles en determinades regions. Per ara, és possible que els llocs web provin Privacy Sandbox mentre continuen utilitzant les tecnologies web actuals, com ara les galetes de tercers.</translation>
 <translation id="6039379616847168523">Ves a la pestanya següent</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="604124094241169006">Automàtic</translation>
@@ -1248,7 +1240,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7791543448312431591">Afegeix</translation>
 <translation id="7798392620021911922">S'han restaurat <ph name="TAB_COUNT" /> pestanyes</translation>
 <translation id="780301667611848630">No, gràcies</translation>
-<translation id="7805768142964895445">Estat</translation>
 <translation id="7808889146555843082">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte de <ph name="SITE" />. Canvia la contrasenya o suprimeix el teu compte de <ph name="SITE" /> per protegir-lo dels altres.</translation>
 <translation id="7810647596859435254">Obre amb…</translation>
 <translation id="7815484226266492798">Captura de pantalla llarga</translation>
@@ -1382,11 +1373,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8461694314515752532">Encripta les dades sincronitzades amb la teva frase de contrasenya de sincronització</translation>
 <translation id="8466613982764129868">Comprova que el dispositiu <ph name="TARGET_DEVICE_NAME" /> estigui connectat a Internet</translation>
 <translation id="8473863474539038330">Adreces i més</translation>
-<translation id="8481921391193215807">Quan està activada, els llocs web poden utilitzar les tècniques de protecció de la privadesa que es mostren aquí per oferir el seu contingut i els seus serveis. Per exemple, alternatives per fer seguiments entre llocs web. Pot ser que més endavant s'hi afegeixin més proves.
-
-<ph name="BEGIN_LIST_ITEM1" />Els anunciants i els editors poden utilitzar la tècnica FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Els anunciants i els editors poden estudiar l'efectivitat dels anuncis sense fer un seguiment del que fas als llocs web.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Les funcions de prova estan activades</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Obre la pàgina de l'historial</translation>
@@ -1432,9 +1418,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8664979001105139458">El nom del fitxer ja existeix</translation>
 <translation id="8666759526542103597">Sobre la personalització d'anuncis basada en el navegador</translation>
 <translation id="8676789164135894283">Verificacions d'inici de sessió</translation>
-<translation id="867767487203716855">Propera actualització</translation>
 <translation id="8683039184091909753">imatge</translation>
-<translation id="8683081248374354009">Restableix el grup</translation>
 <translation id="869891660844655955">Data de caducitat</translation>
 <translation id="8699120352855309748">No proposis traduir aquests idiomes</translation>
 <translation id="8712637175834984815">Entesos</translation>

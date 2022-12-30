@@ -284,7 +284,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="718435575166326686">Chromium needs camera permission for this site</translation>
 <translation id="7196312274710523067">Couldn't launch Chromium. Try again.</translation>
 <translation id="7197677400338048821">Chromium can't check your passwords. Try again after 24 hours.</translation>
-<translation id="7218568399872925918">Sites that you visit remember your information until you close Chromium</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">Your interests as estimated by Chromium</translation>
 <translation id="7309928523159922338">Ad measurement allows sites that you visit to request information from Chromium that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>
@@ -356,8 +355,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8621669128220841554">Installation failed due to unspecified error. Please download Chromium again.</translation>
 <translation id="8697124171261953979">It also controls what page is shown when you start Chromium or search from the Omnibox.</translation>
 <translation id="8704119203788522458">This is your Chromium</translation>
-<translation id="8713679423359107094">When you close all Chromium windows, cookies and site data are automatically cleared</translation>
-<translation id="8796443464227412154">You will be <ph name="BEGIN_BOLD" />signed out of most sites<ph name="END_BOLD" /> when you close Chromium. If sync is off, you will also be <ph name="BEGIN_BOLD" />signed out of Google services and Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium needs permission to access your camera and microphone for this site</translation>
 <translation id="8833697763442816810">Chromium OS system</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your browsing history, a record of sites that you’ve visited using Chromium on this device.</translation>

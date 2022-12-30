@@ -1010,11 +1010,6 @@
 <translation id="1980777339173013601">除非已通过其他方式关闭 ARC，否则当此政策设为 True 或未设置时，用户可以使用 ARC。将此政策设为 False 意味着禁止独立用户使用 ARC。
 
       仅当 ARC 未运行时（例如 Chrome 操作系统启动时），对此政策做出的更改才会生效。</translation>
-<translation id="1982507511322683896">旨在为手动创建的新票据指定建议的 <ph name="KRB5_CONFIG" /> 配置。
-
-      如果“KerberosUseCustomPrefilledConfig”政策已启用：系统会使用此政策的值作为建议的配置，并会将其显示在 Kerberos 身份验证对话框内的“高级”部分中。如果此政策设为空字符串或未设置，系统会删除建议的 <ph name="PRODUCT_OS_NAME" /> 配置。如果此政策未设置，也会发生同样的情况。
-
-      如果“KerberosUseCustomPrefilledConfig”政策已停用：系统不会使用此政策的值。</translation>
 <translation id="1985598967415986700">“用户代理字符串缩短”功能将可通过现场试验和源试用进行控制。</translation>
 <translation id="1987789058026551147">启用设备自助服务终端会话报告功能</translation>
 <translation id="1988345404999458987">提供可用打印服务器的配置。

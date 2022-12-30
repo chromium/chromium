@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">শেষ ঘণ্টা</translation>
 <translation id="1724977129262658800">আপনার পাসওয়ার্ড এডিট করতে আনলক করুন</translation>
 <translation id="1726477445370128854">Chrome-এর মতে আপনি দেখতে পারেন এমন পৃষ্ঠা প্রিলোড করা হলে আরও দ্রুত ব্রাউজ ও সার্চ করতে পারবেন</translation>
-<translation id="173522743738009831">প্রাইভেসি স্যান্ডবক্স সম্পর্কে</translation>
 <translation id="1736419249208073774">ঘুরে দেখুন</translation>
 <translation id="1749561566933687563">আপনার বুকমার্কগুলি সিঙ্ক করুন</translation>
 <translation id="1750259112639922169">ট্যাব গ্রুপ - <ph name="TAB_COUNT" />টি ট্যাব</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> সেকেন্ড বাকি আছে</translation>
 <translation id="2779651927720337254">করা যায়নি</translation>
 <translation id="2781151931089541271">১ সেকেন্ড বাকি আছে</translation>
-<translation id="2788468313014644040">গ্রুপ নম্বর</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> নামের ট্যাবটি বন্ধ করা হবে</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">আপনার <ph name="BEGIN_LINK" />Google অ্যাকাউন্ট<ph name="END_LINK" />-এ সেভ করা পাসওয়ার্ড দেখুন এবং পরিচালনা করুন</translation>
 <translation id="2818669890320396765">আপনার সমস্ত ডিভাইসে বুকমার্কগুলি পেতে সাইন-ইন করে সিঙ্ক বিকল্প চালু করুন</translation>
 <translation id="2827278682606527653">স্ক্রিনের অর্ধেক উচ্চতা পর্যন্ত ফিড কার্ড মেনু খোলা আছে</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">ছবি শেয়ার করুন</translation>
 <translation id="3387650086002190359">ফাইল সিস্টেম ত্রুটির কারণে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="3389286852084373014">টেক্সটটি অনেক বড়</translation>
-<translation id="3391512812407811893">প্রাইভেসি স্যান্ডবক্স ট্রায়াল</translation>
 <translation id="3398320232533725830">বুকমার্কস ম্যানেজার খুলুন</translation>
 <translation id="3407392651057365886">আরও পৃষ্ঠা প্রিলোড করা হয়। অন্য সাইট অনুরোধ করলে Google সার্ভারের মাধ্যমে পৃষ্ঠা প্রিলোড করা হতে পারে।</translation>
 <translation id="3414952576877147120">মাপ:</translation>
@@ -915,10 +911,6 @@
 <translation id="6000203700195075278">আবার ফলো করুন</translation>
 <translation id="6002122790816966947">আপনার ডিভাইসগুলি</translation>
 <translation id="6005538289190791541">প্রস্তাবিত পাসওয়ার্ড</translation>
-<translation id="6032091552407840792">এই ট্রায়াল শুধুমাত্র <ph name="BEGIN_LINK" />কিছু অঞ্চলে<ph name="END_LINK" /> অ্যাক্টিভ আছে।</translation>
-<translation id="6033245666633565791"><ph name="BEGIN_LINK" />প্রাইভেসি স্যান্ডবক্স<ph name="END_LINK" />-এর সাহায্যে 'Chrome' এক নতুন প্রযুক্তি তৈরি করছে। এটি ওপেন ওয়েব সুরক্ষিত করার মাধ্যমে আপনাকে ক্রস-সাইট ট্র্যাক করা থেকে রক্ষা করে।
-
-'প্রাইভেসি স্যান্ডবক্স' ট্রায়াল এখনও তৈরি করা হচ্ছে এবং বাছাই করা অঞ্চলগুলিতেই এটি উপলভ্য। আপাতত, থার্ড-পার্টি কুকির মতো বর্তমান ওয়েব প্রযুক্তি ব্যবহার করা চালিয়ে যাওয়ার সময় সাইটগুলি 'প্রাইভেসি স্যান্ডবক্স' ব্যবহার করে দেখতে পারে।</translation>
 <translation id="6039379616847168523">পরবর্তী ট্যাবে চলে যান</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="604124094241169006">স্বয়ংক্রিয়</translation>
@@ -1250,7 +1242,6 @@
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" />টি ট্যাব ফিরিয়ে আনা হয়েছে</translation>
 <translation id="780301667611848630">না থাক</translation>
-<translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7808889146555843082">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="SITE" />-এ থাকা আপনার অ্যাকাউন্ট মুছে যাবে না। অন্যদের কাছ থেকে গোপন রাখতে, <ph name="SITE" />-এ আপনার দেওয়া পাসওয়ার্ড পরিবর্তন করুন বা অ্যাকাউন্ট মুছে দিন।</translation>
 <translation id="7810647596859435254">এর মাধ্যমে খুলুন...</translation>
 <translation id="7815484226266492798">বড় স্ক্রিনশট নেওয়ার বোতাম</translation>
@@ -1384,11 +1375,6 @@
 <translation id="8461694314515752532">আপনার নিজস্ব সিঙ্ক পাসফ্রেজ দিয়ে সিঙ্ক করা ডেটা এনক্রিপ্ট করুন</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ডিভাইসটি ইন্টারনেটের সাথে কানেক্ট করা আছে কিনা দেখে নিন</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
-<translation id="8481921391193215807">চালু করা থাকলে, সাইটগুলি নিজের কন্টেন্ট এবং পরিষেবা প্রদান করতে এখানে উল্লেখ করা গোপনীয়তা-রক্ষা করার বিভিন্ন কৌশল অবলম্বন করতে পারে। এর মধ্যে ক্রস-সাইট ট্র্যাকিংয়ের বিকল্পও অন্তর্ভুক্ত রয়েছে। সময়ে সময়ে আরও ট্রায়াল যোগ করা হতে পারে।
-
-<ph name="BEGIN_LIST_ITEM1" />বিজ্ঞাপনদাতা এবং প্রকাশকরা FLoC ব্যবহার করতে পারেন।<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />বিজ্ঞাপনদাতা এবং প্রকাশকরা এমন পদ্ধতিতেও কোনও বিজ্ঞাপনের কার্যকারিতা সম্পর্কে সমীক্ষা করতে পারেন যেটি বিভিন্ন সাইট জুড়ে আপনার অ্যাক্টিভি ট্র্যাক করবে না।<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">ট্রায়াল ফিচার চালু আছে</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ইতিহাস পৃষ্ঠাটি খুলুন</translation>
@@ -1434,9 +1420,7 @@
 <translation id="8664979001105139458">ফাইলের নামটি আগে থেকেই আছে</translation>
 <translation id="8666759526542103597">ব্রাউজার ভিত্তিক পছন্দ অনুযায়ী বিজ্ঞাপন বেছে নেওয়া সম্পর্কে</translation>
 <translation id="8676789164135894283">সাইন-ইন করার ক্ষেত্রে যাচাইকরণ</translation>
-<translation id="867767487203716855">পরবর্তী আপডেট</translation>
 <translation id="8683039184091909753">ছবি</translation>
-<translation id="8683081248374354009">গ্রুপ রিসেট করুন</translation>
 <translation id="869891660844655955">মেয়াদকাল সমাপ্তির তারিখ</translation>
 <translation id="8699120352855309748">এইসব ভাষায় অনুবাদ হবে না</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>

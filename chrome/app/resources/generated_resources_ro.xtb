@@ -1238,6 +1238,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2104166991923847969">Dezactivează automat hotspotul</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ascunse</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Număr de telefon}few{# numere de telefon}other{# de numere de telefon}}</translation>
+<translation id="2110941575868943054">Pot căuta dispozitive Bluetooth</translation>
 <translation id="211144231511833662">Șterge tipurile</translation>
 <translation id="2111670510994270194">Filă nouă la dreapta</translation>
 <translation id="2112554630428445878">Bun venit, <ph name="USERNAME" /></translation>
@@ -3029,6 +3030,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3756485814916578707">Se proiectează ecranul</translation>
 <translation id="3756578970075173856">Setează codul PIN</translation>
 <translation id="3756795331760037744">Permite Asistentului Google să folosească ecranul lui <ph name="SUPERVISED_USER_NAME" /> pentru a oferi ajutor</translation>
+<translation id="3756806135608816820">Site-urile pot solicita permisiunea de a căuta dispozitive Bluetooth</translation>
 <translation id="3757733214359997190">Nu a fost găsit niciun site</translation>
 <translation id="375841316537350618">Se descarcă scriptul pentru proxy...</translation>
 <translation id="3758842566811519622">Cookie-uri setate</translation>
@@ -3799,6 +3801,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> poate să modifice fișiere din <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferințe pentru stocarea externă</translation>
 <translation id="4471354919263203780">Se descarcă fișierele pentru recunoașterea vocală... <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Poți folosi limba preferată pentru Contul Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Contribuie la îmbunătățirea funcțiilor și performanței Chrome</translation>
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4474155171896946103">Marchează toate filele...</translation>
@@ -4528,7 +4531,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5158206172605340248">S-a închis meniul cu semne diacritice pentru accent.</translation>
 <translation id="5159094275429367735">Configurează Crostini</translation>
 <translation id="5159419673777902220">Părintele tău a dezactivat permisiunile pentru extensii</translation>
-<translation id="5159643365935452998">Examinează opțiunea de ștergere automată a datelor</translation>
 <translation id="5160634252433617617">Tastatură fizică</translation>
 <translation id="5160857336552977725">Conectează-te la <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Dispozitive USB de la <ph name="VENDOR_NAME" /></translation>
@@ -5003,6 +5005,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5600706100022181951">Actualizarea va fi descărcată folosind <ph name="UPDATE_SIZE_MB" /> MB de date mobile Vrei să continui?</translation>
 <translation id="5601503069213153581">Cod PIN</translation>
 <translation id="5601823921345337195">Nu au permisiunea de a se conecta la dispozitive MIDI</translation>
+<translation id="5601833336918638013">Nu permite site-urilor să caute dispozitive Bluetooth</translation>
 <translation id="5602765853043467355">Șterge marcajele, istoricul, parolele și altele de pe acest dispozitiv</translation>
 <translation id="5605758115928394442">Ți s-a trimis o notificare pe telefon pentru a-ți confirma identitatea.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Extensia este blocată}few{Extensiile sunt blocate}other{Extensiile sunt blocate}}</translation>
@@ -6462,6 +6465,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6960507406838246615">Este necesară o actualizare Linux</translation>
 <translation id="6960648667961844909">Nu s-au putut descărca fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" />. Se va încerca descărcarea mai târziu. Fișierele de redare în scris a vorbirii sunt trimise la Google pentru procesare până la finalizarea descărcării.</translation>
 <translation id="696103774840402661">Toate fișierele și datele locale pentru utilizatorii de pe acest <ph name="DEVICE_TYPE" /> au fost șterse definitiv.</translation>
+<translation id="6961327401577924850">Site-urile caută de obicei dispozitive Bluetooth pentru funcții cum ar fi configurarea sau sincronizarea unui semnalizator cu consum redus de energie, a unui tracker de sănătate sau fitness ori a unui bec inteligent</translation>
 <translation id="6963872466817251924">Evidențiator al cursorului pentru text</translation>
 <translation id="6964390816189577014">Erou</translation>
 <translation id="6964760285928603117">Elimină din grup</translation>
@@ -6738,6 +6742,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7227458944009118910">Și aplicațiile enumerate mai jos pot gestiona linkuri de protocol. Alte aplicații vor solicita permisiunea.</translation>
 <translation id="7228056665272655255">Pentru a configura amprenta, solicită-i copilului tău să atingă senzorul de amprentă în colțul din dreapta sus al tastaturii. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Blocarea ecranului și conectarea</translation>
+<translation id="7228854227189381547">Nu schimba</translation>
 <translation id="7230222852462421043">&amp;Restabilește fereastra</translation>
 <translation id="7231260028442989757">Afișează notificările telefonului, le respinge și răspunde la ele</translation>
 <translation id="7232750842195536390">Redenumirea nu a reușit</translation>
@@ -7071,6 +7076,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7545466883021407599">Nu s-a putut conecta la server. Verifică starea conexiunii la rețea și încearcă din nou. Dacă ai în continuare probleme, repornește Chromebookul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Avertisment: setările <ph name="PRODUCT_NAME" /> sunt stocate pe o unitate de rețea, ceea ce poate duce la încetiniri, blocări sau chiar la pierderi de date.</translation>
 <translation id="7548856833046333824">Limonadă</translation>
+<translation id="7549434883223124329">Schimbi limba dispozitivului?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> a fost descărcat</translation>
 <translation id="7551643184018910560">Fixați în raft</translation>
@@ -8097,6 +8103,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8465444703385715657">Pluginul <ph name="PLUGIN_NAME" /> are nevoie de permisiunea ta pentru a rula</translation>
 <translation id="8466417995783206254">Această filă redă un videoclip în modul picture-in-picture.</translation>
 <translation id="8467326454809944210">Alege altă limbă</translation>
+<translation id="8468087214092422866">Nu au permisiunea de a căuta dispozitive Bluetooth</translation>
 <translation id="8470513973197838199">Parole salvate pentru <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Site-urile se conectează de obicei la dispozitive USB pentru funcții cum ar fi imprimarea unui document sau salvarea pe un dispozitiv de stocare</translation>
 <translation id="8471959340398751476">Reducerile sunt dezactivate. Le poți activa în meniul de personalizare</translation>

@@ -116,7 +116,6 @@
 <translation id="3038232873781883849">Yüklenmesi bekleniyor...</translation>
 <translation id="3059710691562604940">Güvenli Tarama kapalı. Chrome bunun açılmasını öneriyor.</translation>
 <translation id="3065168410429928842">Chrome Sekmesi</translation>
-<translation id="3069821012350118710">Ziyaret ettiğiniz siteler, Chrome'u kapatana kadar bilgilerinizi hatırlar</translation>
 <translation id="3080151273017101988">Google Chrome kapandığında arka plan uygulamaları çalıştırmaya devam et</translation>
 <translation id="3089968997497233615">Google Chrome'un kullanabileceğiniz yeni, daha güvenli bir sürümü var.</translation>
 <translation id="3100998948628680988">Chrome profilinize bir ad verin</translation>
@@ -246,7 +245,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5804318322022881572">Chrome başlatılamadı. Tekrar deneyin.</translation>
 <translation id="5867197326698922595">Google Chrome şifreleri düzenlemeyi deniyor.</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
-<translation id="5901850848447342934">Chrome'u kapattığınızda <ph name="BEGIN_BOLD" />çoğu sitede oturumunuz kapatılır<ph name="END_BOLD" />. Senkronizasyon kapalıysa <ph name="BEGIN_BOLD" />Google hizmetleri ve Chrome oturumunuz da kapatılır<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın</translation>
 <translation id="5924017743176219022">İnternete bağlanılıyor...</translation>
 <translation id="5940385492829620908">Web, yer işaretleri ve diğer Chrome öğeleriniz burada bulunur.</translation>
@@ -383,7 +381,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8614913330719544658">Google Chrome yanıt vermiyor. Yeniden başlatılsın mı?</translation>
 <translation id="861702415419836452">Çevrenizin 3D haritasını oluşturmak için Chrome'un kameranıza erişim iznine ihtiyacı var</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 dakika içinde yeniden başlatılacak}other{Chrome # dakika içinde yeniden başlatılacak}}</translation>
-<translation id="8629311577791198377">Tüm Chrome pencerelerini kapattığınızda çerezler ve site verileri otomatik olarak silinir</translation>
 <translation id="8641606876632989680">Chrome, güvenliği ihlal edilmiş bir şifreyle oturum açtığınızda size haber verir</translation>
 <translation id="8649026945479135076">Ziyaret ettiğiniz sitelerin deneyiminizi kişiselleştirmek için ilgi alanlarınızı hatırlaması olağan bir durumdur. Siteler, ilgi alanlarınız hakkındaki bilgileri Chrome'da da saklayabilir.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

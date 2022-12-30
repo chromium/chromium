@@ -139,7 +139,6 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1724977129262658800">Desbloquea para cambiar tu contraseña</translation>
 <translation id="1726477445370128854">Puedes navegar y buscar más rápido cuando Chrome precarga las páginas que considera que podrías visitar.</translation>
-<translation id="173522743738009831">Información sobre Privacy Sandbox</translation>
 <translation id="1736419249208073774">Más información</translation>
 <translation id="1749561566933687563">Sincronizar marcadores</translation>
 <translation id="1750259112639922169">Grupo de pestañas: <ph name="TAB_COUNT" /> pestañas</translation>
@@ -318,9 +317,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="2777555524387840389">Quedan <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">ha fallado</translation>
 <translation id="2781151931089541271">Queda 1 segundo</translation>
-<translation id="2788468313014644040">Número de grupo</translation>
 <translation id="2800066122460699237">Se cerrará la pestaña <ph name="TAB_TITLE" /></translation>
-<translation id="2806840421670364300">Aprendizaje federado de cohortes (FLoC)</translation>
 <translation id="281504910091592009">Consulta y gestiona las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Inicia sesión y activa la sincronización para ver tus marcadores en todos tus dispositivos</translation>
 <translation id="2827278682606527653">Menú de tarjeta de feed a media altura</translation>
@@ -441,7 +438,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="3384347053049321195">Compartir imagen</translation>
 <translation id="3387650086002190359">No se ha podido descargar <ph name="FILE_NAME" /> debido a problemas con el sistema de archivos.</translation>
 <translation id="3389286852084373014">El texto es demasiado largo</translation>
-<translation id="3391512812407811893">Pruebas de Privacy Sandbox</translation>
 <translation id="3398320232533725830">Abre el administrador de marcadores</translation>
 <translation id="3407392651057365886">Se precargan más páginas. Es posible que las páginas se precarguen a través de los servidores de Google cuando lo soliciten otros sitios.</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
@@ -913,10 +909,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="6000203700195075278">Volver a seguir</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6005538289190791541">Contraseña sugerida</translation>
-<translation id="6032091552407840792">Esta prueba solo está activa en <ph name="BEGIN_LINK" />algunas regiones<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome desarrolla nuevas tecnologías que te protegerán de mecanismos de seguimiento entre sitios y, a la vez, preservarán la Web abierta.
-
-Las pruebas de Privacy Sandbox aún se encuentran en desarrollo y solo están disponibles en algunas regiones. Por ahora, los sitios pueden probar Privacy Sandbox y seguir utilizando tecnologías web actuales, como las cookies de terceros.</translation>
 <translation id="6039379616847168523">Te dirige a la siguiente pestaña</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="604124094241169006">Automático</translation>
@@ -1248,7 +1240,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7791543448312431591">Añadir</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> pestañas restauradas</translation>
 <translation id="780301667611848630">No, gracias</translation>
-<translation id="7805768142964895445">Estado</translation>
 <translation id="7808889146555843082">Aunque quites esta contraseña, no se eliminará tu cuenta de <ph name="SITE" />. Cambia la contraseña o elimina tu cuenta de <ph name="SITE" /> para protegerla de otros.</translation>
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7815484226266492798">Captura de página completa</translation>
@@ -1382,11 +1373,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8461694314515752532">Cifrar datos sincronizados con tu propia frase de contraseña de sincronización</translation>
 <translation id="8466613982764129868">Comprueba que tu <ph name="TARGET_DEVICE_NAME" /> esté conectado a Internet</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
-<translation id="8481921391193215807">Si está habilitado, los sitios podrán utilizar las técnicas de protección de la privacidad que se muestran aquí para ofrecer su contenido y sus servicios. Entre estas técnicas, se incluyen alternativas al seguimiento entre sitios. Es posible que se añadan más pruebas a lo largo del tiempo.
-
-<ph name="BEGIN_LIST_ITEM1" />Los anunciantes y editores pueden usar el aprendizaje federado de cohortes (FLoC).<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Los anunciantes y editores pueden analizar la efectividad de los anuncios sin hacer un seguimiento de los sitios que visitas.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Las funciones de prueba están activadas</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Abre la página Historial</translation>
@@ -1432,9 +1418,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8664979001105139458">El nombre del archivo ya existe</translation>
 <translation id="8666759526542103597">Acerca de la personalización de anuncios basada en el navegador</translation>
 <translation id="8676789164135894283">Verificar inicio de sesión</translation>
-<translation id="867767487203716855">Próxima actualización</translation>
 <translation id="8683039184091909753">imagen</translation>
-<translation id="8683081248374354009">Restablecer grupo</translation>
 <translation id="869891660844655955">Fecha de caducidad</translation>
 <translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>
 <translation id="8712637175834984815">Entendido</translation>

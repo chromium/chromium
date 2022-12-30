@@ -282,7 +282,6 @@
 <translation id="718435575166326686">‏Chromium برای این سایت به اجازه دوربین نیاز دارد</translation>
 <translation id="7196312274710523067">‏Chromium راه‌اندازی نشد. دوباره امتحان کنید.</translation>
 <translation id="7197677400338048821">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعد از ۲۴ ساعت دوباره امتحان کنید.</translation>
-<translation id="7218568399872925918">‏تا زمانی‌که Chromium بسته نشود، سایت‌هایی که بازدید می‌کنید اطلاعاتتان را به‌خاطر می‌سپارند</translation>
 <translation id="7223968959479464213">‏مدیر وظایف - Chromium</translation>
 <translation id="7246575524853130370">‏علایق شما به‌طوری‌که Chromium برآورد کرده است</translation>
 <translation id="7309928523159922338">‏سنجش آگهی به سایت‌هایی که بازدید می‌کنید امکان می‌دهد اطلاعاتی را از Chromium درخواست کنند که به آن‌ها کمک می‌کند عملکرد آگهی‌هایشان را بسنجند. «سنجش آگهی» ردیابی بین‌سایتی را با انتقال حداقل اطلاعات ممکن بین سایت‌ها محدود می‌کند.</translation>
@@ -353,8 +352,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8621669128220841554">‏به دلیل خطای نامشخص، نصب ناموفق بود. لطفاً دوباره Chromium را بارگیری کنید.</translation>
 <translation id="8697124171261953979">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="8704119203788522458">‏این Chromium شماست</translation>
-<translation id="8713679423359107094">‏با بستن همه پنجره‌های Chromium، کوکی‌ها و داده‌های سایت به‌طور خودکار پاک می‌شوند.</translation>
-<translation id="8796443464227412154">‏وقتی Chromium را می‌بندید، <ph name="BEGIN_BOLD" />از سیستم اکثر سایت‌ها خارج می‌شوید<ph name="END_BOLD" />. اگر همگام‌سازی خاموش باشد، از <ph name="BEGIN_BOLD" />از سیستم Chromium و سرویس‌های Google نیز خارج می‌شوید<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">‏Chromium به مجوز دسترسی به دوربین و میکروفون برای این سایت نیاز دارد</translation>
 <translation id="8833697763442816810">‏سیستم ChromiumOS</translation>
 <translation id="8846118132221683440">‏<ph name="BEGIN_BOLD" />انواع داده‌هایی که استفاده می‌شود:<ph name="END_BOLD" /> سابقه مرور شما، سابقه سایت‌هایی که بااستفاده از Chromium در این دستگاه از آن‌ها بازدید کرده‌اید.</translation>

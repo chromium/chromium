@@ -1252,6 +1252,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2104166991923847969">Automatiškai išjungti viešosios interneto prieigos tašką</translation>
 <translation id="2105809836724866556">Paslėpta: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefono numeris}one{# telefono numeris}few{# telefono numeriai}many{# telefono numerio}other{# telefono numerių}}</translation>
+<translation id="2110941575868943054">Leidžiama ieškoti „Bluetooth“ įrenginių</translation>
 <translation id="211144231511833662">Išvalyti tipus</translation>
 <translation id="2111670510994270194">Naujas skirtukas dešinėje</translation>
 <translation id="2112554630428445878">Sveiki, <ph name="USERNAME" />!</translation>
@@ -3046,6 +3047,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3756485814916578707">Perduodamas ekranas</translation>
 <translation id="3756578970075173856">PIN kodo nustatymas</translation>
 <translation id="3756795331760037744">Leidimas „Google“ padėjėjui naudoti informaciją <ph name="SUPERVISED_USER_NAME" /> ekrane, kai reikia pagalbos</translation>
+<translation id="3756806135608816820">Svetainės gali prašyti leisti ieškoti „Bluetooth“ įrenginių</translation>
 <translation id="3757733214359997190">Svetainių nerasta</translation>
 <translation id="375841316537350618">Atsisiunčiamas įgaliotojo serverio scenarijus...</translation>
 <translation id="3758842566811519622">Slapukai nustatyti</translation>
@@ -4546,7 +4548,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5158206172605340248">Atsisakyta kirčio ženklų meniu.</translation>
 <translation id="5159094275429367735">Nustatyti „Crostini“</translation>
 <translation id="5159419673777902220">Vienas iš tėvų išjungė plėtinio leidimus</translation>
-<translation id="5159643365935452998">Automatinio duomenų išvalymo peržiūra</translation>
 <translation id="5160634252433617617">Fizinė klaviatūra</translation>
 <translation id="5160857336552977725">Prisijunkite prie „<ph name="DEVICE_TYPE" />“</translation>
 <translation id="5161251470972801814">USB įrenginiai (teikėjas: „<ph name="VENDOR_NAME" />“)</translation>
@@ -5021,6 +5022,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5600706100022181951">Naujinys bus atsisiųstas naudojant <ph name="UPDATE_SIZE_MB" /> MB mobiliojo ryšio duomenų. Ar norite tęsti?</translation>
 <translation id="5601503069213153581">PIN kodas</translation>
 <translation id="5601823921345337195">Neleidžiama prijungti MIDI įrenginių</translation>
+<translation id="5601833336918638013">Neleisti svetainėms ieškoti „Bluetooth“ įrenginių</translation>
 <translation id="5602765853043467355">Išvalyti žymes, istoriją, slaptažodžius ir kt. iš šio įrenginio</translation>
 <translation id="5605758115928394442">Pranešimas išsiųstas į jūsų telefoną norint patvirtinti, kad tai jūs.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Šis plėtinys užblokuotas}one{Šie plėtiniai užblokuoti}few{Šie plėtiniai užblokuoti}many{Šie plėtiniai užblokuoti}other{Šie plėtiniai užblokuoti}}</translation>
@@ -6485,6 +6487,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6960507406838246615">Reikia atnaujinti „Linux“</translation>
 <translation id="6960648667961844909">Nepavyko atsisiųsti <ph name="LANGUAGE" /> kalbos failų. Atsisiųsti bus bandoma vėliau. Kalba siunčiama į sistemą „Google“ apdoroti, kol bus atsisiųsta.</translation>
 <translation id="696103774840402661">Visam laikui ištrinti visų naudotojų bet kurie failai ir vietiniai duomenys, esantys šiame įrenginyje (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="6961327401577924850">Paprastai svetainės ieško „Bluetooth“ įrenginių, kad būtų galima atlikti tam tikras funkcijas, pvz., nustatyti ar sinchronizuoti žemo energijos lygio signalų siųstuvą, sveikatos ar mankštos stebėjimo priemonę arba išmaniojo šviestuvo lemputę</translation>
 <translation id="6963872466817251924">Teksto žymeklio paryškinimo įrankis</translation>
 <translation id="6964390816189577014">Herojus</translation>
 <translation id="6964760285928603117">Pašalinti iš grupės</translation>
@@ -8120,6 +8123,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8465444703385715657">Norint paleisti „<ph name="PLUGIN_NAME" />“ reikalingas jūsų leidimas</translation>
 <translation id="8466417995783206254">Šiame skirtuke vaizdo įrašas leidžiamas vaizdo vaizde režimu.</translation>
 <translation id="8467326454809944210">Pasirinkti kitą kalbą</translation>
+<translation id="8468087214092422866">Neleidžiama ieškoti „Bluetooth“ įrenginių</translation>
 <translation id="8470513973197838199">Išsaugoti <ph name="ORIGIN" /> slaptažodžiai</translation>
 <translation id="8471525937465764768">Paprastai svetainėse prisijungiama prie USB įrenginių vykdant tam tikras funkcijas, pvz., spausdinant dokumentą ar saugant saugyklos įrenginyje</translation>
 <translation id="8471959340398751476">Nuolaidų funkcija išjungta. Ją galite įjungti tinkinimo meniu</translation>

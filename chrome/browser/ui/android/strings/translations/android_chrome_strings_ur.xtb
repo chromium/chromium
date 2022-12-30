@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">پچھلے گھنٹے</translation>
 <translation id="1724977129262658800">اپنے پاس ورڈ کو ترمیم کرنے کیلئے غیر مقفل کریں</translation>
 <translation id="1726477445370128854">‏آپ تیزی سے براؤز اور تلاش کر سکتے ہیں جب Chrome ایسے صفحات کو پیشگی لوڈ کرتا ہے جن کے بارے میں اسے لگتا ہے کہ آپ ملاحظہ کر سکتے ہیں</translation>
-<translation id="173522743738009831">رازداری سینڈ باکس کے بارے میں</translation>
 <translation id="1736419249208073774">دریافت کریں</translation>
 <translation id="1749561566933687563">اپنے بُک مارکس کی مطابقت پذیری کریں</translation>
 <translation id="1750259112639922169">ٹیب گروپ - <ph name="TAB_COUNT" /> ٹیبز</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> سیکنڈ باقی</translation>
 <translation id="2779651927720337254">ناکام ہو گیا</translation>
 <translation id="2781151931089541271">1 سیکنڈ باقی</translation>
-<translation id="2788468313014644040">گروپ نمبر</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ٹیب کو بند کر دیا جائے گا</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">‏اپنے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> میں محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="2818669890320396765">اپنے سبھی آلات پر اپنے بُک مارکس حاصل کرنے کیلئے، سائن ان کریں اور سِنک کو آن کریں</translation>
 <translation id="2827278682606527653">نصف اونچائی پر فیڈ کارڈ مینو</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">تصویر کا اشتراک کریں</translation>
 <translation id="3387650086002190359">سسٹم کی خرابیوں کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="3389286852084373014">متن کافی بڑا ہے</translation>
-<translation id="3391512812407811893">رازداری سینڈ باکس ٹرائلز</translation>
 <translation id="3398320232533725830">بُک مارکس مینیجر کو کھولیں</translation>
 <translation id="3407392651057365886">‏مزید صفحات پیشگی لوڈ کردہ ہیں۔ دیگر سائٹس کے ذریعے درخواست کیے جانے پر صفحات کو Google سرورز کے ذریعے پیشگی لوڈ کیا جا سکتا ہے۔</translation>
 <translation id="3414952576877147120">سائز:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">دوبارہ پیروی کریں</translation>
 <translation id="6002122790816966947">آپ کے آلات</translation>
 <translation id="6005538289190791541">تجویز کردہ پاس ورڈ</translation>
-<translation id="6032091552407840792">یہ ٹرائل صرف <ph name="BEGIN_LINK" />کچھ علاقوں<ph name="END_LINK" /> میں ہی فعال ہے۔</translation>
-<translation id="6033245666633565791">‏<ph name="BEGIN_LINK" />رازداری سینڈ باکس<ph name="END_LINK" /> کے ساتھ، Chrome آپ کو اوپن ویب کے تحفظ کے دوران کراس سائٹ کی ٹریکنگ سے محفوظ رکھنے کے لیے نئی ٹیکنالوجیز تیار کر رہا ہے۔
-
-رازداری سینڈ باکس ٹرائلز کا ڈیولپمنٹ ابھی بھی جاری ہے اور یہ منتخب علاقوں میں دستیاب ہیں۔ ابھی کے لئے، سائٹس فریق ثالث کوکیز جیسی موجودہ ویب ٹیکنالوجیز کا استعمال جاری رکھتے ہوئے رازداری سینڈ باکس کو آزما کر دیکھ سکتی ہیں۔</translation>
 <translation id="6039379616847168523">اگلے ٹیب پر جائیں</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="604124094241169006">خود کار</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">شامل کریں</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ٹیبز کو بحال کیا گیا</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
-<translation id="7805768142964895445">صورتحال</translation>
 <translation id="7808889146555843082">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="SITE" /> سے حذف نہیں ہوگا۔ اپنا اکاؤنٹ دوسروں سے محفوظ رکھنے کیلئے اپنا پاس ورڈ تبدیل کریں یا <ph name="SITE" /> سے اپنا اکاؤنٹ حذف کریں۔</translation>
 <translation id="7810647596859435254">اس کے ساتھ کھولیں…</translation>
 <translation id="7815484226266492798">طویل اسکرین شاٹ</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">اپنے ذاتی مطابقت پذیر پاس فریز کے ساتھ مطابقت پذیر کردہ ڈیٹا کی مرموزکاری کریں</translation>
 <translation id="8466613982764129868">یہ یقینی بنائیں کہ <ph name="TARGET_DEVICE_NAME" /> انٹرنیٹ سے منسلک ہے</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
-<translation id="8481921391193215807">‏آن ہونے پر، سائٹس اپنے مواد اور سروسز کو فراہم کرنے کے لیے یہاں دکھائی گئی رازداری کے تحفظ کی تکنیکوں کا استعمال کر سکتی ہیں۔ ان میں کراس سائٹ ٹریکنگ کے متبادلات شامل ہیں۔ آنے والے وقت میں مزید ٹرائلز شامل کئے جا سکتے ہیں۔
-
-<ph name="BEGIN_LIST_ITEM1" />مشتہرین اور ناشرین FLoC کا استعمال کر سکتے ہیں۔<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />مشتہرین اور ناشرین اشتہارات کی افادیت کا ایسے طریقے سے مطالعہ کر سکتے ہیں جو آپ کو مختلف سائٹس پر ٹریک نہ کرتا ہو۔<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">ٹرائل خصوصیات آن ہیں</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">سرگزشت صفحہ کھولیں</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">فائل کا نام پہلے سے موجود ہے</translation>
 <translation id="8666759526542103597">براؤزر کی بنیاد اشتہار کی ذاتی نوعیت سازی کے بارے میں</translation>
 <translation id="8676789164135894283">سائن ان کی تصدیقیں</translation>
-<translation id="867767487203716855">اگلا اپ ڈیٹ</translation>
 <translation id="8683039184091909753">تصویر</translation>
-<translation id="8683081248374354009">گروپ ری سیٹ کریں</translation>
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8699120352855309748">ان زبانوں کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>

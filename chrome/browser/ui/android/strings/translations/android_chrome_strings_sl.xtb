@@ -139,7 +139,6 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="1718835860248848330">Zadnja ura</translation>
 <translation id="1724977129262658800">Odklenite, če želite urediti geslo.</translation>
 <translation id="1726477445370128854">Brskanje in iskanje sta hitrejša, ko Chrome vnaprej naloži strani, za katere meni, da jih boste morda obiskali.</translation>
-<translation id="173522743738009831">Zasebni peskovnik</translation>
 <translation id="1736419249208073774">Razišči</translation>
 <translation id="1749561566933687563">Sinhroniziranje zaznamkov</translation>
 <translation id="1750259112639922169">Skupina zavihkov – zavihki (<ph name="TAB_COUNT" />)</translation>
@@ -318,9 +317,7 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="2777555524387840389">Še <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">ni uspelo</translation>
 <translation id="2781151931089541271">Še 1 s</translation>
-<translation id="2788468313014644040">Številka skupine</translation>
 <translation id="2800066122460699237">Zavihek <ph name="TAB_TITLE" /> bo zaprt.</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Shranjena gesla si lahko ogledate in jih upravljate v <ph name="BEGIN_LINK" />Google Računu<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Če želite dostopati do zaznamkov v vseh napravah, se prijavite in vklopite sinhronizacijo</translation>
 <translation id="2827278682606527653">Meni kartice vira je odprt pri pol višine</translation>
@@ -441,7 +438,6 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="3384347053049321195">Skupna raba slike</translation>
 <translation id="3387650086002190359">Prenos datoteke <ph name="FILE_NAME" /> ni uspel zaradi napak v datotečnem sistemu.</translation>
 <translation id="3389286852084373014">Besedilo je preveliko</translation>
-<translation id="3391512812407811893">Preizkusi zasebnega peskovnika</translation>
 <translation id="3398320232533725830">Odpiranje upravitelja zaznamkov</translation>
 <translation id="3407392651057365886">Več strani je vnaprej naloženih. Strani so morda vnaprej naložene prek Googlovih strežnikov, ko tako zahtevajo druga spletna mesta.</translation>
 <translation id="3414952576877147120">Velikost:</translation>
@@ -913,10 +909,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6000203700195075278">Znova spremljaj</translation>
 <translation id="6002122790816966947">Vaše naprave</translation>
 <translation id="6005538289190791541">Predlagano geslo</translation>
-<translation id="6032091552407840792">Ta preizkus je aktiven samo v <ph name="BEGIN_LINK" />nekaterih regijah<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Pri Chromu v okviru pobude <ph name="BEGIN_LINK" />Zasebni peskovnik<ph name="END_LINK" /> razvijamo nove tehnologije, ki vas varujejo pred sledenjem na več spletnih mestih, hkrati pa skrbijo za ohranitev odprtosti spleta.
-
-Preizkusi peskovnika za zasebnost so še vedno v aktivnem razvoju in na voljo le na izbranih območjih. Spletna mesta lahko za zdaj preizkusijo peskovnik za zasebnost, obenem pa še naprej uporabljajo spletne tehnologije, kot so piškotki drugih ponudnikov.</translation>
 <translation id="6039379616847168523">Premik na naslednji zavihek</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="604124094241169006">Samodejno</translation>
@@ -1248,7 +1240,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Število obnovljenih zavihkov: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ne, hvala</translation>
-<translation id="7805768142964895445">Stanje</translation>
 <translation id="7808889146555843082">Če izbrišete to geslo, ne izbrišete računa na <ph name="SITE" />. Če želite račun zaščititi pred drugimi, spremenite geslo ali izbrišite račun na <ph name="SITE" />.</translation>
 <translation id="7810647596859435254">Odpiranje z aplikacijo …</translation>
 <translation id="7815484226266492798">Dolg posnetek zaslona</translation>
@@ -1382,11 +1373,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8461694314515752532">Šifriranje sinhroniziranih podatkov z vašim geslom za sinhronizacijo</translation>
 <translation id="8466613982764129868">Naprava <ph name="TARGET_DEVICE_NAME" /> mora biti povezana v internet</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
-<translation id="8481921391193215807">Če je funkcija vklopljena, lahko spletna mesta uporabljajo tukaj prikazane tehnike za ohranitev zasebnosti zaradi zagotavljanja svoje vsebine in storitev. Mednje sodijo nadomestne rešitve sledenju na več spletnih mestih. Sčasoma bo morda dodanih več preizkusov.
-
-<ph name="BEGIN_LIST_ITEM1" />Oglaševalci in izdajatelji lahko uporabljajo tehniko FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Oglaševalci in izdajatelji lahko preučujejo učinkovitost oglasov na način, ki vam ne sledi na spletnih mestih.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Funkcije preizkusa so omogočene</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /><ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Odpiranje strani z zgodovino</translation>
@@ -1432,9 +1418,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8664979001105139458">Ime datoteke že obstaja</translation>
 <translation id="8666759526542103597">O osebnem prilagajanju oglasov na podlagi dejavnosti v brskalniku</translation>
 <translation id="8676789164135894283">Preverjanja prijave</translation>
-<translation id="867767487203716855">Naslednja posodobitev</translation>
 <translation id="8683039184091909753">slika</translation>
-<translation id="8683081248374354009">Ponastavi skupino</translation>
 <translation id="869891660844655955">Datum izteka</translation>
 <translation id="8699120352855309748">Ne ponudi prevajanja teh jezikov</translation>
 <translation id="8712637175834984815">Razumem</translation>

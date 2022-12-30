@@ -1248,6 +1248,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2104166991923847969">Hotspot automatikus kikapcsolása</translation>
 <translation id="2105809836724866556">A következők el vannak rejtve: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonszám}other{# telefonszám}}</translation>
+<translation id="2110941575868943054">Kereshetnek Bluetooth-eszközöket</translation>
 <translation id="211144231511833662">Típusok törlése</translation>
 <translation id="2111670510994270194">Új lap jobbra</translation>
 <translation id="2112554630428445878">Üdvözöljük, <ph name="USERNAME" />!</translation>
@@ -3042,6 +3043,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3756485814916578707">Képernyőtartalom átküldése</translation>
 <translation id="3756578970075173856">PIN-kód beállítása</translation>
 <translation id="3756795331760037744"><ph name="SUPERVISED_USER_NAME" /> eszközének a képernyőjén található információk használatának engedélyezése a Google Segéd számára segítségnyújtás céljából</translation>
+<translation id="3756806135608816820">A webhelyek engedélyt kérhetnek Bluetooth-eszközök keresésére</translation>
 <translation id="3757733214359997190">A program nem talált egy webhelyet sem</translation>
 <translation id="375841316537350618">Proxyszkript letöltése...</translation>
 <translation id="3758842566811519622">Cookie-k beállítva</translation>
@@ -4541,7 +4543,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5158206172605340248">Ékezetmenü bezárva.</translation>
 <translation id="5159094275429367735">A Crostini beállítása</translation>
 <translation id="5159419673777902220">Szülőd letiltotta a bővítményhez tartozó engedélyeket</translation>
-<translation id="5159643365935452998">Automatikus adattörlés ellenőrzése</translation>
 <translation id="5160634252433617617">Fizikai billentyűzet</translation>
 <translation id="5160857336552977725">Jelentkezzen be <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="5161251470972801814">USB-eszközök a következő gyártótól: <ph name="VENDOR_NAME" /></translation>
@@ -5017,6 +5018,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5600706100022181951">A frissítés letöltése <ph name="UPDATE_SIZE_MB" /> MB mobiladat-forgalmat igényel. Szeretné folytatni?</translation>
 <translation id="5601503069213153581">PIN-kód</translation>
 <translation id="5601823921345337195">Nem csatlakozhatnak a MIDI-eszközökhöz</translation>
+<translation id="5601833336918638013">A webhelyek nem kereshetnek Bluetooth-eszközöket</translation>
 <translation id="5602765853043467355">Könyvjelzők, előzmények, jelszavak és egyebek törlése erről az eszközről</translation>
 <translation id="5605758115928394442">A rendszer értesítést küldött az Ön telefonjára, hogy segítségével igazolhassa személyazonosságát.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ez a bővítmény le van tiltva}other{Ezek a bővítmények le vannak tiltva}}</translation>
@@ -6475,6 +6477,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6960507406838246615">Linux-frissítés szükséges</translation>
 <translation id="6960648667961844909">Nem sikerült letölteni a(z) <ph name="LANGUAGE" /> nyelvű beszédfájlokat. A letöltést később kísérli meg a rendszer. A letöltés befejeződéséig a rendszer elküldi a beszédet a Google-nak feldolgozásra.</translation>
 <translation id="696103774840402661">Az összes felhasználó összes fájlja és helyi adata véglegesen törlődött erről az eszközről (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="6961327401577924850">A webhelyek általában olyan funkciók használatához keresnek Bluetooth-eszközöket, mint például a kevés energiát fogyasztó jelzők, az egészségügyi vagy sportsegédeszközök, illetve az okosizzók beállítása és szinkronizálása.</translation>
 <translation id="6963872466817251924">Szövegkurzor-kiemelő</translation>
 <translation id="6964390816189577014">Hős</translation>
 <translation id="6964760285928603117">Eltávolítás a csoportból</translation>
@@ -8110,6 +8113,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8465444703385715657">A(z) <ph name="PLUGIN_NAME" /> futtatásához az Ön engedélyére van szükség</translation>
 <translation id="8466417995783206254">A videó lejátszása a lapon kép a képben módban történik.</translation>
 <translation id="8467326454809944210">Másik nyelv választása</translation>
+<translation id="8468087214092422866">Nem kereshetnek Bluetooth-eszközöket</translation>
 <translation id="8470513973197838199">A(z) <ph name="ORIGIN" /> mentett jelszavai</translation>
 <translation id="8471525937465764768">A webhelyek általában bizonyos funkciók (például dokumentumok nyomtatásának vagy tárolóeszközön való mentésének) végrehajtása érdekében csatlakoznak USB-eszközökhöz</translation>
 <translation id="8471959340398751476">A kedvezmények keresése ki van kapcsolva. Bekapcsolhatja a személyre szabási menüben.</translation>

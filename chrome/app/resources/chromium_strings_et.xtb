@@ -282,7 +282,6 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="718435575166326686">Chromium vajab selle saidi puhul kaamera kasutamise luba</translation>
 <translation id="7196312274710523067">Chromiumi ei õnnestunud käivitada. Proovige uuesti.</translation>
 <translation id="7197677400338048821">Chromium ei saa teie paroole kontrollida. Proovige uuesti 24 tunni pärast.</translation>
-<translation id="7218568399872925918">Külastatud saidid jätavad teie teabe meelde, kuni Chromiumi sulgete</translation>
 <translation id="7223968959479464213">Tegumihaldur – Chromium</translation>
 <translation id="7246575524853130370">Teie huvid Chromiumi prognooside kohaselt</translation>
 <translation id="7309928523159922338">Reklaamide mõõtmine võimaldab külastatavatel saitidel paluda Chromiumilt teavet, mis aitab saidil oma reklaamide toimivust mõõta. Reklaamide mõõtmine piirab saitidevahelist jälgimist, edastades saitide vahel võimalikult vähe teavet.</translation>
@@ -354,8 +353,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8621669128220841554">Installimine ebaõnnestus tundmatu vea tõttu. Laadige Chromium uuesti alla.</translation>
 <translation id="8697124171261953979">Lisaks juhib see seda, mis leht kuvatakse Chromiumi käivitamisel või omnikastikeses otsingu tegemisel.</translation>
 <translation id="8704119203788522458">See on teie Chromium</translation>
-<translation id="8713679423359107094">Kui sulgete kõik Chromiumi aknad, kustutatakse küpsised ja saidi andmed automaatselt</translation>
-<translation id="8796443464227412154">Kui Chromiumi sulgete, <ph name="BEGIN_BOLD" />logitakse teid enamikult saitidelt välja<ph name="END_BOLD" />. Kui sünkroonimine on välja lülitatud, <ph name="BEGIN_BOLD" />logitakse teid välja ka Google'i teenustest ja Chromiumist<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium vajab selle saidi puhul luba, et teie kaamerale ja mikrofonile juurde pääseda</translation>
 <translation id="8833697763442816810">Chromium OS-i süsteem</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Milliseid andmeid kasutatakse?<ph name="END_BOLD" /> Teie sirvimisajalugu, selles seadmes Chromiumiga külastatud saitide andmed.</translation>

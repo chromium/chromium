@@ -117,7 +117,6 @@
 <translation id="3038232873781883849">בהמתנה להתקנה…</translation>
 <translation id="3059710691562604940">‏הגלישה הבטוחה כבויה. ההמלצה של Chrome היא להפעיל אותה.</translation>
 <translation id="3065168410429928842">‏כרטיסייה של Chrome</translation>
-<translation id="3069821012350118710">‏אתרים שביקרת בהם יזכרו את הפרטים שלך עד לסגירת Chrome</translation>
 <translation id="3080151273017101988">‏המשך הפעלת אפליקציות ברקע כאשר Google Chrome סגור</translation>
 <translation id="3089968997497233615">‏גרסה חדשה ובטוחה יותר של Google Chrome זמינה כעת</translation>
 <translation id="3100998948628680988">‏בחירת שם לפרופיל Chrome שלך</translation>
@@ -245,7 +244,6 @@
 <translation id="5804318322022881572">‏לא ניתן היה להפעיל את Chrome. יש לנסות שוב.</translation>
 <translation id="5867197326698922595">‏Google Chrome מנסה לערוך את הסיסמאות.</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
-<translation id="5901850848447342934">‏המערכת <ph name="BEGIN_BOLD" />תוציא אותך מהחשבון ברוב האתרים<ph name="END_BOLD" /> עם סגירת Chrome. אם הסנכרון כבוי, המערכת <ph name="BEGIN_BOLD" />תוציא אותך מהחשבון גם בשירותי Google וב-Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – כניסה לרשת</translation>
 <translation id="5924017743176219022">מתבצעת התחברות לאינטרנט…</translation>
 <translation id="5940385492829620908">‏היסטוריית האתרים, הסימניות ופריטים נוספים מ-Chrome נמצאים כאן.</translation>
@@ -382,7 +380,6 @@
 <translation id="8614913330719544658">‏Google Chrome אינו מגיב. להפעיל מחדש עכשיו?</translation>
 <translation id="861702415419836452">‏Chrome זקוק להרשאת גישה למצלמה כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏Chrome יופעל מחדש בעוד דקה}one{‏Chrome יופעל מחדש בעוד # דקות}two{‏Chrome יופעל מחדש בעוד # דקות}other{‏Chrome יופעל מחדש בעוד # דקות}}</translation>
-<translation id="8629311577791198377">‏אחרי שסוגרים את כל החלונות של Chrome, קובצי cookie ונתוני אתרים נמחקים אוטומטית</translation>
 <translation id="8641606876632989680">‏אם מערכת Chrome תזהה שנכנסת עם סיסמה שנחשפה, היא תתריע לך על כך</translation>
 <translation id="8649026945479135076">‏באתרים רבים נהוג לשמור את תחומי העניין שלך כדי להתאים אישית את חוויית הגלישה בהם. בנוסף, אתרים יכולים לשמור מידע ב-Chrome לגבי תחומי העניין שלך.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

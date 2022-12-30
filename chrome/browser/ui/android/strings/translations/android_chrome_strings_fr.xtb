@@ -139,7 +139,6 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1724977129262658800">Déverrouillez la session pour modifier votre mot de passe</translation>
 <translation id="1726477445370128854">Le préchargement de pages que vous êtes susceptible de consulter selon Chrome permet de les parcourir et d'effectuer des recherches plus rapidement</translation>
-<translation id="173522743738009831">À propos de Privacy Sandbox</translation>
 <translation id="1736419249208073774">Découvrir</translation>
 <translation id="1749561566933687563">Synchroniser vos favoris</translation>
 <translation id="1750259112639922169">Groupe d'onglets – <ph name="TAB_COUNT" /> onglets</translation>
@@ -318,9 +317,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="2777555524387840389"><ph name="SECONDS" /> secondes restantes</translation>
 <translation id="2779651927720337254">échec</translation>
 <translation id="2781151931089541271">1 seconde restante</translation>
-<translation id="2788468313014644040">Numéro du groupe</translation>
 <translation id="2800066122460699237">L'onglet <ph name="TAB_TITLE" /> sera fermé</translation>
-<translation id="2806840421670364300">FLoC (Federated Learning of Cohorts)</translation>
 <translation id="281504910091592009">Afficher et gérer les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Connectez-vous et activez la synchronisation pour accéder à vos favoris sur tous vos appareils</translation>
 <translation id="2827278682606527653">Le menu de la carte de flux est ouvert à mi-hauteur</translation>
@@ -441,7 +438,6 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="3384347053049321195">Partager l'image</translation>
 <translation id="3387650086002190359">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison d'erreurs liées au système de fichiers.</translation>
 <translation id="3389286852084373014">Volume de texte trop important</translation>
-<translation id="3391512812407811893">Essais Privacy Sandbox</translation>
 <translation id="3398320232533725830">Ouvrir le gestionnaire de favoris</translation>
 <translation id="3407392651057365886">Plus de pages sont préchargées. Elles peuvent l'être via les serveurs de Google à la demande d'autres sites.</translation>
 <translation id="3414952576877147120">Taille :</translation>
@@ -913,10 +909,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6000203700195075278">Se réabonner</translation>
 <translation id="6002122790816966947">Vos appareils</translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
-<translation id="6032091552407840792">Cet essai n'est actif que dans <ph name="BEGIN_LINK" />certaines régions<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Avec <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome développe de nouvelles technologies pour vous protéger contre le suivi intersite tout en préservant le Web ouvert.
-
-Les essais Privacy Sandbox sont encore en développement et ne sont disponibles que dans certaines régions. Pour le moment, les sites peuvent essayer Privacy Sandbox sans désactiver les technologies Web actuelles comme les cookies tiers.</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="604124094241169006">Automatique</translation>
@@ -1248,7 +1240,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> onglets sont restaurés</translation>
 <translation id="780301667611848630">Non, merci</translation>
-<translation id="7805768142964895445">État</translation>
 <translation id="7808889146555843082">La suppression de ce mot de passe n'entraînera pas la suppression de votre compte sur <ph name="SITE" />. Modifiez votre mot de passe ou supprimez votre compte sur <ph name="SITE" /> pour le protéger des autres utilisateurs.</translation>
 <translation id="7810647596859435254">Ouvrir avec…</translation>
 <translation id="7815484226266492798">Capture d'écran étendue</translation>
@@ -1382,11 +1373,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8461694314515752532">Chiffrer les données synchronisées avec votre propre phrase secrète de synchronisation</translation>
 <translation id="8466613982764129868">Assurez-vous que l'appareil <ph name="TARGET_DEVICE_NAME" /> est connecté à Internet</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
-<translation id="8481921391193215807">Lorsque cette option est activée, les sites peuvent utiliser les techniques qui préservent la vie privée présentées ici pour fournir leurs contenus et leurs services. Ces techniques incluent des alternatives au suivi intersite. D'autres essais pourront être ajoutés par la suite.
-
-<ph name="BEGIN_LIST_ITEM1" />Les annonceurs et les éditeurs peuvent utiliser le FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Les annonceurs et les éditeurs peuvent évaluer l'efficacité des annonces sans utiliser le suivi intersite.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Les fonctionnalités à l'essai sont activées</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Ouvrir la page "Historique"</translation>
@@ -1432,9 +1418,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8664979001105139458">Nom de fichier déjà attribué</translation>
 <translation id="8666759526542103597">À propos de la personnalisation des annonces basée sur un navigateur</translation>
 <translation id="8676789164135894283">Validations de connexion</translation>
-<translation id="867767487203716855">Prochaine mise à jour</translation>
 <translation id="8683039184091909753">image</translation>
-<translation id="8683081248374354009">Réinitialiser le groupe</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
 <translation id="8712637175834984815">OK</translation>

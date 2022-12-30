@@ -116,7 +116,6 @@
 <translation id="3038232873781883849">Venter på installering</translation>
 <translation id="3059710691562604940">Safe Browsing er slått av. Chrome anbefaler at du slår det på.</translation>
 <translation id="3065168410429928842">Chrome-fane</translation>
-<translation id="3069821012350118710">Nettsteder du besøker, husker informasjonen din til du lukker Chrome</translation>
 <translation id="3080151273017101988">Fortsett kjøringen av bakgrunnsprogrammer når Google Chrome er lukket</translation>
 <translation id="3089968997497233615">En ny, sikrere versjon av Google Chrome er tilgjengelig</translation>
 <translation id="3100998948628680988">Gi navn til Chrome-profilen din</translation>
@@ -244,7 +243,6 @@
 <translation id="5804318322022881572">Kunne ikke starte Chrome. Prøv på nytt.</translation>
 <translation id="5867197326698922595">Google Chrome prøver å redigere passord.</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
-<translation id="5901850848447342934">Du blir <ph name="BEGIN_BOLD" />logget av de fleste nettsteder<ph name="END_BOLD" /> når du lukker Chrome. Hvis synkronisering er av, blir du også <ph name="BEGIN_BOLD" />logget av Google-tjenester og Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – nettverkspålogging</translation>
 <translation id="5924017743176219022">Kobler til internett …</translation>
 <translation id="5940385492829620908">Her finner du nettinnholdet, bokmerkene og de andre Chrome-tingene dine.</translation>
@@ -381,7 +379,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8614913330719544658">Google Chrome svarer ikke. Vil du starte på nytt nå?</translation>
 <translation id="861702415419836452">Chrome trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome startes på nytt om 1 minutt}other{Chrome startes på nytt om # minutter}}</translation>
-<translation id="8629311577791198377">Når du lukker alle Chrome-vinduer, blir informasjonskapsler og nettstedsdata slettet automatisk</translation>
 <translation id="8641606876632989680">Chrome varsler deg når du logger på med passord som er utsatt for sikkerhetsbrudd</translation>
 <translation id="8649026945479135076">Det er vanlig at nettsteder du besøker, husker ting du er interessert i, for å gi opplevelsen din personlig preg. Nettsteder kan også lagre informasjon om interessene dine i Chrome.</translation>
 <translation id="8669527147644353129">Google Chrome-hjelper</translation>

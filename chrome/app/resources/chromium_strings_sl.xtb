@@ -285,7 +285,6 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="718435575166326686">Chromium potrebuje dovoljenje za fotoaparat za to spletno mesto.</translation>
 <translation id="7196312274710523067">Chromiuma ni bilo mogoče zagnati. Poskusite znova.</translation>
 <translation id="7197677400338048821">Chromium ne more preveriti gesel. Poskusite znova čez 24 ur.</translation>
-<translation id="7218568399872925918">Spletna mesta, ki jih obiščete, si zapomnijo vaše podatke, dokler ne zaprete Chromiuma.</translation>
 <translation id="7223968959479464213">Upravitelj opravil – Chromium</translation>
 <translation id="7246575524853130370">Vaša zanimanja po Chromiumovi oceni</translation>
 <translation id="7309928523159922338">Merjenje oglasov spletnim mestom omogoča, da od Chromiuma zahtevajo podatke, ki jim pomagajo pri merjenju učinkovitosti oglasov. Merjenje oglasov omejuje sledenje na več spletnih mestih s prenašanjem čim manj podatkov med spletnimi mesti.</translation>
@@ -357,8 +356,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8621669128220841554">Namestitev ni uspela zaradi nenavedene napake. Znova prenesite Chromium.</translation>
 <translation id="8697124171261953979">Določa tudi, katera stran je prikazana, ko zaženete Chromium ali iščete v naslovni vrstici.</translation>
 <translation id="8704119203788522458">To je vaš Chromium</translation>
-<translation id="8713679423359107094">Ko zaprete vsa okna Chromiuma, so piškotki in podatki spletnih mest samodejno izbrisani.</translation>
-<translation id="8796443464227412154">Ko zaprete Chromium, boste <ph name="BEGIN_BOLD" />odjavljeni z večine spletnih mest<ph name="END_BOLD" />. Če je sinhronizacija izklopljena, boste prav tako <ph name="BEGIN_BOLD" />odjavljeni iz Googlovih storitev in Chromiuma<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium potrebuje dovoljenje za dostop do fotoaparata in mikrofona za to spletno mesto</translation>
 <translation id="8833697763442816810">Sistem Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Kateri podatki se uporabljajo:<ph name="END_BOLD" /> Zgodovina brskanja, evidenca spletnih mest, ki ste jih obiskali s Chromiumom v tej napravi.</translation>

@@ -139,7 +139,6 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="1718835860248848330">Afgelope uur</translation>
 <translation id="1724977129262658800">Ontsluit om jou wagwoord te wysig</translation>
 <translation id="1726477445370128854">Jy kan vinniger blaai en soek wanneer Chrome bladsye vooraf laai wat dit dink jy dalk gaan besoek</translation>
-<translation id="173522743738009831">Meer oor Privacy Sandbox</translation>
 <translation id="1736419249208073774">Verken</translation>
 <translation id="1749561566933687563">Sinkroniseer jou boekmerke</translation>
 <translation id="1750259112639922169">Oortjiegroep – <ph name="TAB_COUNT" /> oortjies</translation>
@@ -318,9 +317,7 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekondes oor</translation>
 <translation id="2779651927720337254">misluk</translation>
 <translation id="2781151931089541271">1 sekonde oor</translation>
-<translation id="2788468313014644040">Groepgetal</translation>
 <translation id="2800066122460699237">Die oortjie <ph name="TAB_TITLE" /> sal toegemaak word</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Bekyk en bestuur gestoorde wagwoorde in jou <ph name="BEGIN_LINK" />Google-rekening<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Meld aan en skakel sinkronisering aan om jou boekmerke op al jou toestelle te kry</translation>
 <translation id="2827278682606527653">Stroomkaartkieslys teen halwe hoogte</translation>
@@ -441,7 +438,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="3384347053049321195">Deel prent</translation>
 <translation id="3387650086002190359">Kon <ph name="FILE_NAME" /> weens lêerstelselfoute nie aflaai nie.</translation>
 <translation id="3389286852084373014">Teks is te groot</translation>
-<translation id="3391512812407811893">Privacy Sandbox-proeflopies</translation>
 <translation id="3398320232533725830">Maak die boekmerkbestuurder oop</translation>
 <translation id="3407392651057365886">Meer bladsye word vooraf gelaai. Bladsye kan vooraf deur Google-bedieners gelaai word wanneer hulle deur ander werwe versoek word.</translation>
 <translation id="3414952576877147120">Grootte:</translation>
@@ -913,10 +909,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6000203700195075278">Volg weer</translation>
 <translation id="6002122790816966947">Jou toestelle</translation>
 <translation id="6005538289190791541">Voorgestelde wagwoord</translation>
-<translation id="6032091552407840792">Hierdie proeflopie is net in <ph name="BEGIN_LINK" />sommige streke<ph name="END_LINK" /> aktief.</translation>
-<translation id="6033245666633565791">Met <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> ontwikkel Chrome nuwe tegnologieë om jou teen kruiswerfnasporing te beveilig terwyl dit die oop web in stand hou.
-
-Privacy Sandbox-proeflopies word nog aktief ontwikkel en is in uitgesoekte streke beskikbaar. Vir nou kan werwe Privacy Sandbox probeer terwyl hulle steeds huidige webtegnologieë soos derdepartywebkoekies gebruik.</translation>
 <translation id="6039379616847168523">Spring na die volgende oortjie</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="604124094241169006">Outomaties</translation>
@@ -1248,7 +1240,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7791543448312431591">Voeg by</translation>
 <translation id="7798392620021911922">Het <ph name="TAB_COUNT" /> oortjies teruggestel</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
-<translation id="7805768142964895445">Status</translation>
 <translation id="7808889146555843082">As hierdie wagwoord uitgevee word, sal dit nie jou rekening op <ph name="SITE" /> uitvee nie. Verander jou wagwoord of vee jou rekening op <ph name="SITE" /> uit om dit veilig te hou van ander.</translation>
 <translation id="7810647596859435254">Maak oop met …</translation>
 <translation id="7815484226266492798">Lang skermkiekie</translation>
@@ -1382,11 +1373,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8461694314515752532">Enkripteer gesinkroniseerde data met jou eie sinkroniseringwagfrase</translation>
 <translation id="8466613982764129868">Maak seker dat <ph name="TARGET_DEVICE_NAME" /> aan die internet gekoppel is.</translation>
 <translation id="8473863474539038330">Adresse en meer</translation>
-<translation id="8481921391193215807">Wanneer dit aan is, kan werwe die privaatheidinstandhoudingtegnieke wat hier gewys word, gebruik om hul inhoud en dienste te verskaf. Dit sluit alternatiewe vir kruiswerfnasporing in. Nog proeflopies kan oor tyd bygevoeg word.
-
-<ph name="BEGIN_LIST_ITEM1" />Adverteerders en uitgewers kan FLoC gebruik.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Adverteerders en uitgewers kan die doeltreffendheid van advertensies op 'n manier bestudeer wat jou nie oor werwe heen naspoor nie.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Proeflopiekenmerke is aan</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Maak die geskiedenisbladsy oop</translation>
@@ -1432,9 +1418,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8664979001105139458">Lêernaam bestaan reeds</translation>
 <translation id="8666759526542103597">Meer oor advertensiepersonalisering gegrond op blaai-aktiwteit</translation>
 <translation id="8676789164135894283">Aanmeldingverifikasies</translation>
-<translation id="867767487203716855">Volgende opdatering</translation>
 <translation id="8683039184091909753">prent</translation>
-<translation id="8683081248374354009">Stel groep terug</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699120352855309748">Moenie aanbied om hierdie tale te vertaal nie</translation>
 <translation id="8712637175834984815">Het dit</translation>

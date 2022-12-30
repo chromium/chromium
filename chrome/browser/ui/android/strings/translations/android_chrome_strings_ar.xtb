@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">آخر ساعة</translation>
 <translation id="1724977129262658800">عليك فتح قفل الشاشة لتتمكّن من تعديل كلمة المرور.</translation>
 <translation id="1726477445370128854">‏بإمكانك التصفّح والبحث بسرعة عندما يحمّل Chrome مُسبقًا الصفحات التي يتوقّع أن تنتقل إليها.</translation>
-<translation id="173522743738009831">لمحة عن "مبادرة حماية الخصوصية"</translation>
 <translation id="1736419249208073774">استكشاف</translation>
 <translation id="1749561566933687563">مزامنة الإشارات المرجعية</translation>
 <translation id="1750259112639922169">مجموعة علامات التبويب: <ph name="TAB_COUNT" /> علامة تبويب</translation>
@@ -319,9 +318,7 @@
 <translation id="2777555524387840389">عدد الثواني المتبقية: <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">تعذَّر التنزيل</translation>
 <translation id="2781151931089541271">يتبقى ثانية واحدة</translation>
-<translation id="2788468313014644040">رقم المجموعة</translation>
 <translation id="2800066122460699237">سيتم إغلاق علامة التبويب <ph name="TAB_TITLE" />.</translation>
-<translation id="2806840421670364300">‏التعلُّم الموحّد للمجموعات النموذجية (FLoC)</translation>
 <translation id="281504910091592009">‏بإمكانك عرض كلمات المرور المحفوظة وإدارتها في <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="2818669890320396765">للحصول على الإشارات المرجعية على جميع أجهزتك، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -442,7 +439,6 @@
 <translation id="3384347053049321195">مشاركة صورة</translation>
 <translation id="3387650086002190359">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب أخطاء في نظام الملف.</translation>
 <translation id="3389286852084373014">النص كبير جدًا</translation>
-<translation id="3391512812407811893">إصدارات "مبادرة حماية الخصوصية" التجريبية</translation>
 <translation id="3398320232533725830">فتح مدير الإشارات المرجعية</translation>
 <translation id="3407392651057365886">‏يتم تحميل المزيد من صفحات الويب مُسبقًا. قد يتم تحميل صفحات الويب مُسبقًا من خلال خوادم Google عندما تطلب المواقع الإلكترونية الأخرى ذلك.</translation>
 <translation id="3414952576877147120">الحجم:</translation>
@@ -914,10 +910,6 @@
 <translation id="6000203700195075278">المتابعة مجدّدًا</translation>
 <translation id="6002122790816966947">أجهزتك</translation>
 <translation id="6005538289190791541">كلمة المرور المُقترحَة</translation>
-<translation id="6032091552407840792">لا يتوفّر هذا الإصدار التجريبي سوى في <ph name="BEGIN_LINK" />بعض المناطق<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">‏من خلال <ph name="BEGIN_LINK" />مبادرة حماية الخصوصية<ph name="END_LINK" />، نعمل في Chrome على تطوير تقنيات جديدة لحمايتك من آليات التتبُّع في جميع المواقع الإلكترونية مع الحفاظ على محتوى شبكة الإنترنت المفتوحة المتاحة للجميع.
-
-لا تزال إصدارات "مبادرة حماية الخصوصية" التجريبية في مرحلة التطوير المستمر ولا تتوفّر إلا في مناطق محدَّدة. في الوقت الحالي، قد تحاول المواقع الإلكترونية تجربة "مبادرة حماية الخصوصية" أثناء استخدام تقنيات الويب الحالية مثل ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
 <translation id="6039379616847168523">الانتقال السريع إلى علامة التبويب التالية</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="604124094241169006">تلقائي</translation>
@@ -1249,7 +1241,6 @@
 <translation id="7791543448312431591">إضافة</translation>
 <translation id="7798392620021911922">تمت استعادة <ph name="TAB_COUNT" /> علامة تبويب</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>
-<translation id="7805768142964895445">الحالة</translation>
 <translation id="7808889146555843082">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="SITE" />. لذا يُرجى تغيير كلمة المرور أو حذف حسابك على <ph name="SITE" /> لحمايته من الآخرين.</translation>
 <translation id="7810647596859435254">فتح باستخدام...</translation>
 <translation id="7815484226266492798">لقطة شاشة طويلة</translation>
@@ -1383,11 +1374,6 @@
 <translation id="8461694314515752532">ترميز البيانات المتزامنة باستخدام عبارة مرور المزامنة الخاصة بك</translation>
 <translation id="8466613982764129868">يُرجى التأكُّد من اتصال الجهاز <ph name="TARGET_DEVICE_NAME" /> بالإنترنت.</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
-<translation id="8481921391193215807">‏عند تفعيل "مبادرة حماية الخصوصية"، قد تستخدم المواقع الإلكترونية التقنيات الموضحة هنا للحفاظ على خصوصية المستخدمين مع توفير المحتوى والخدمات لهم. وتشمل هذه التقنيات بدائل عن آليات التتبُّع في المواقع الإلكترونية. قد تتم إضافة إصدارات تجريبية بمرور الوقت.
-
-<ph name="BEGIN_LIST_ITEM1" />يمكن للمعلِنين والناشرين استخدام تقنية "التعلُّم الموحّد للمجموعات النموذجية" (FLoC).<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />يمكن للمعلِنين والناشرين تحديد مدى فعالية الإعلانات بدون الحاجة إلى تتبّع نشاطك في المواقع الإلكترونية.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">تم تفعيل ميزات الإصدار التجريبي.</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">فتح صفحة السجل</translation>
@@ -1433,9 +1419,7 @@
 <translation id="8664979001105139458">اسم الملف موجود</translation>
 <translation id="8666759526542103597">لمحة عن تخصيص الإعلانات المستند إلى المتصفِّح</translation>
 <translation id="8676789164135894283">عمليات التحقّق من تسجيل الدخول</translation>
-<translation id="867767487203716855">التحديث التالي</translation>
 <translation id="8683039184091909753">صورة</translation>
-<translation id="8683081248374354009">إعادة تحديد المجموعة</translation>
 <translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
 <translation id="8699120352855309748">عدم اقتراح ترجمة لهذه اللغات</translation>
 <translation id="8712637175834984815">تم</translation>

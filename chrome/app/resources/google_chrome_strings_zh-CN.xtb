@@ -116,7 +116,6 @@
 <translation id="3038232873781883849">正在等待安装…</translation>
 <translation id="3059710691562604940">“安全浏览”功能已关闭。Chrome 建议开启此功能。</translation>
 <translation id="3065168410429928842">Chrome 标签页</translation>
-<translation id="3069821012350118710">您访问的网站会记住您的信息，直到您关闭 Chrome</translation>
 <translation id="3080151273017101988">关闭 Google Chrome 后继续运行后台应用</translation>
 <translation id="3089968997497233615">Google Chrome 浏览器现已推出更安全的新版本。</translation>
 <translation id="3100998948628680988">请为您的 Chrome 个人资料命名</translation>
@@ -244,7 +243,6 @@
 <translation id="5804318322022881572">无法启动 Chrome。请重试。</translation>
 <translation id="5867197326698922595">Google Chrome 正在尝试修改密码。</translation>
 <translation id="5895138241574237353">重新启动</translation>
-<translation id="5901850848447342934">关闭 Chrome 时，您会<ph name="BEGIN_BOLD" />自动退出大多数网站<ph name="END_BOLD" />。如果同步功能处于关闭状态，您还会<ph name="BEGIN_BOLD" />自动退出 Google 服务和 Chrome<ph name="END_BOLD" />。</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 网络登录</translation>
 <translation id="5924017743176219022">正在连接到互联网…</translation>
 <translation id="5940385492829620908">您的上网记录、书签和其他Chrome资料和数据都保存在此处。</translation>
@@ -381,7 +379,6 @@
 <translation id="8614913330719544658">Google Chrome 未响应。是否立即重新启动？</translation>
 <translation id="861702415419836452">Chrome 需要获得相应权限，才能使用您的摄像头为您的周边环境创建 3D 地图</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 将在 1 分钟后重新启动}other{Chrome 将在 # 分钟后重新启动}}</translation>
-<translation id="8629311577791198377">当您关闭所有 Chrome 窗口时，系统会自动清除 Cookie 和网站数据</translation>
 <translation id="8641606876632989680">当您使用已泄露的密码登录时，Chrome 会通知您</translation>
 <translation id="8649026945479135076">您访问的网站经常会记住您感兴趣的内容，以便为您提供个性化体验。网站还可以将您的兴趣信息存储在 Chrome 中。</translation>
 <translation id="8669527147644353129">Google Chrome 浏览器帮助程序</translation>

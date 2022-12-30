@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">शेवटच्या तासामधील</translation>
 <translation id="1724977129262658800">तुमचा पासवर्ड संपादित करण्यासाठी अनलॉक करा</translation>
 <translation id="1726477445370128854">तुम्ही भेट देऊ शकता असे Chrome ला वाटत असलेली पेज ते प्रीलोड करते तेव्हा, तुम्ही आणखी जलद ब्राउझ करू शकता आणि शोधू शकता</translation>
-<translation id="173522743738009831">प्रायव्हसी सॅंडबॉक्स याविषयी</translation>
 <translation id="1736419249208073774">एक्सप्लोर करा</translation>
 <translation id="1749561566933687563">तुमचे बुकमार्क सिंक करा</translation>
 <translation id="1750259112639922169">टॅब गट - <ph name="TAB_COUNT" /> टॅब</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकंद शिल्लक</translation>
 <translation id="2779651927720337254">अयशस्वी झाले</translation>
 <translation id="2781151931089541271">1 सेकंद शिल्लक</translation>
-<translation id="2788468313014644040">गटाचा नंबर</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> टॅब बंद केला जाईल</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">तुमच्या <ph name="BEGIN_LINK" />Google खात्यामध्ये<ph name="END_LINK" /> सेव्ह केलेले पासवर्ड पहा आणि व्यवस्थापित करा</translation>
 <translation id="2818669890320396765">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क मिळवण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="2827278682606527653">फीड कार्ड मेनू अर्ध्या उंचीवर आहे</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">इमेज शेअर करा</translation>
 <translation id="3387650086002190359">फाइल सिस्टम एररमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
 <translation id="3389286852084373014">मजकूर खूप मोठा आहे</translation>
-<translation id="3391512812407811893">प्रायव्हसी सॅंडबॉक्स चाचण्या</translation>
 <translation id="3398320232533725830">बुकमार्क व्यवस्थापक उघडा</translation>
 <translation id="3407392651057365886">अधिक पेज प्रीलोड केलेली आहेत. इतर साइटद्वारे विनंती केल्यावर पेज Google सर्व्हरद्वारे प्रीलोड केली जाऊ शकतात.</translation>
 <translation id="3414952576877147120">आकार:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">पुन्हा फॉलो करा</translation>
 <translation id="6002122790816966947">तुमची डिव्हाइस</translation>
 <translation id="6005538289190791541">सुचवलेला पासवर्ड</translation>
-<translation id="6032091552407840792">ही चाचणी फक्त <ph name="BEGIN_LINK" />काही प्रदेश<ph name="END_LINK" /> यांमध्ये ॲक्टिव्ह आहे.</translation>
-<translation id="6033245666633565791">खुल्या वेबचे संरक्षण करत असताना, क्रॉस-साइट ट्रॅकिंगपासून तुमचे रक्षण करण्यासाठी, <ph name="BEGIN_LINK" />प्रायव्हसी सॅंडबाॅक्स<ph name="END_LINK" /> च्या आधारे Chrome नवीन तंत्रज्ञाने विकसित करत आहे.
-
-प्रायव्हसी सॅंडबाॅक्स च्या चाचण्या अद्याप विकसित केल्या जात आहेत आणि त्या निवडक प्रदेशांमध्ये उपलब्ध आहेत. सध्यासाठी, तृतीय पक्ष कुकी यांसारख्या सध्याच्या वेब तंत्रज्ञानांचा वापर करणे सुरू ठेवून साइट प्रायव्हसी सॅंडबाॅक्स वापरून पाहू शकतात.</translation>
 <translation id="6039379616847168523">पुढील टॅबवर जा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="604124094241169006">स्वयंचलित</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">जोडा</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टॅब रिस्टोअर केले</translation>
 <translation id="780301667611848630">नाही, नको</translation>
-<translation id="7805768142964895445">स्थिती</translation>
 <translation id="7808889146555843082">हा पासवर्ड हटवल्यामुळे तुमचे <ph name="SITE" /> वरील खाते हटवले जाणार नाही. तुमचे खाते इतरांपासून सुरक्षित ठेवण्यासाठी, त्‍याचा <ph name="SITE" /> वरील पासवर्ड बदला किंवा तुमचे त्‍यावरील खाते हटवा.</translation>
 <translation id="7810647596859435254">यासह उघडा...</translation>
 <translation id="7815484226266492798">मोठा स्क्रीनशॉट</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">तुमच्या स्वतःच्या सिंक पासफ्रेजसह सिंक केलेला डेटा एंक्रिप्ट करा</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> इंटरनेटशी कनेक्ट केले असल्याची खात्री करा</translation>
 <translation id="8473863474539038330">पत्ते आणि बरेच काही</translation>
-<translation id="8481921391193215807">सुरू केलेले असते तेव्हा, साइट त्यांचा आशय आणि सेवा देण्यासाठी येथे दाखवलेल्या गोपनीयता संरक्षण तंत्रांचा वापर करू शकतात. यामध्ये सर्व साइट ट्रॅक करण्याच्या पर्यायांचा समावेश आहे. वेळोवेळी आणखी चाचण्या जोडल्या जाऊ शकतात.
-
-<ph name="BEGIN_LIST_ITEM1" />जाहिरातदार आणि प्रकाशक FLoC वापरू शकतात.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />तुम्हाला साइटवर ट्रॅक करणार नाहीत, अशा प्रकारे जाहिरातदार आणि प्रकाशक जाहिरातींच्या परिणामकारकतेचा अभ्यास करू शकतात.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">चाचणी वैशिष्ट्ये सुरू आहेत</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">इतिहास पृष्ठ उघडा</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">फाइलचे नाव आधीपासून अस्तित्वात आहे</translation>
 <translation id="8666759526542103597">ब्राउझरवर आधारित जाहिरात पर्सनलायझेशनविषयी</translation>
 <translation id="8676789164135894283">साइन-इनसंबंधित पडताळणी</translation>
-<translation id="867767487203716855">पुढील अपडेट</translation>
 <translation id="8683039184091909753">इमेज</translation>
-<translation id="8683081248374354009">गट रीसेट करा</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8699120352855309748">या भाषांचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="8712637175834984815">समजले</translation>

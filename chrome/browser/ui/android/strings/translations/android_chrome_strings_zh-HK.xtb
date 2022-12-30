@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">過去一小時</translation>
 <translation id="1724977129262658800">解鎖後即可編輯密碼</translation>
 <translation id="1726477445370128854">Chrome 會預先載入您可能瀏覽的網頁，加快瀏覽及搜尋速度</translation>
-<translation id="173522743738009831">關於 Privacy Sandbox</translation>
 <translation id="1736419249208073774">探索</translation>
 <translation id="1749561566933687563">同步您的書籤</translation>
 <translation id="1750259112639922169">分頁群組 - <ph name="TAB_COUNT" /> 個分頁</translation>
@@ -318,9 +317,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="2777555524387840389">尚餘 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失敗</translation>
 <translation id="2781151931089541271">尚餘 1 秒</translation>
-<translation id="2788468313014644040">群組號碼</translation>
 <translation id="2800066122460699237">即將關閉 <ph name="TAB_TITLE" /> 分頁</translation>
-<translation id="2806840421670364300">群組聯合學習 : FLoC</translation>
 <translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>
 <translation id="2818669890320396765">如要將書籤同步到所有裝置，請登入並開啟同步處理功能</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -441,7 +438,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3389286852084373014">文字過多</translation>
-<translation id="3391512812407811893">試用 Privacy Sandbox</translation>
 <translation id="3398320232533725830">開啟書籤管理員</translation>
 <translation id="3407392651057365886">預先載入更多網頁。當其他網站要求連結網頁時，系統可能會透過 Google 伺服器預先載入這些網頁。</translation>
 <translation id="3414952576877147120">大小：</translation>
@@ -913,10 +909,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6000203700195075278">重新追蹤</translation>
 <translation id="6002122790816966947">您的裝置</translation>
 <translation id="6005538289190791541">建議的密碼</translation>
-<translation id="6032091552407840792">此試用功能只會在<ph name="BEGIN_LINK" />部分地區<ph name="END_LINK" />啟用。</translation>
-<translation id="6033245666633565791">Chrome 透過「<ph name="BEGIN_LINK" />私隱沙箱<ph name="END_LINK" />」開發新的技術，防止有心人士透過跨網站追蹤機制取得您的資料，同時保護開放網絡。
-
-「私隱沙箱」的試用功能仍在開發階段，目前開放地區有限。現在網站可以嘗試使用「私隱沙箱」，亦能繼續使用第三方 Cookie 等現有的網絡技術。</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604124094241169006">自動</translation>
@@ -1248,7 +1240,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798392620021911922">還原咗 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
-<translation id="7805768142964895445">狀態</translation>
 <translation id="7808889146555843082">刪除此密碼不會刪除您在 <ph name="SITE" /> 的帳戶。請變更密碼或刪除您在 <ph name="SITE" /> 的帳戶，以免被他人盜用。</translation>
 <translation id="7810647596859435254">選擇開啟應用程式…</translation>
 <translation id="7815484226266492798">長螢幕截圖</translation>
@@ -1382,11 +1373,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8461694314515752532">使用您的同步密碼短語，加密已同步的資料</translation>
 <translation id="8466613982764129868">請確保 <ph name="TARGET_DEVICE_NAME" /> 已連接互聯網</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
-<translation id="8481921391193215807">開啟後，網站可能會使用此處顯示的私隱保護技術提供內容和服務。這些技術包括替代跨網站追蹤的選項。本服務可能會陸續新增更多試用功能。
-
-<ph name="BEGIN_LIST_ITEM1" />廣告客戶和發佈者可使用 FLoC。<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />廣告客戶和發佈者無需追蹤您的網站瀏覽記錄，就能瞭解廣告成效。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">試用功能已開啟</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">開啟記錄頁面</translation>
@@ -1432,9 +1418,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8664979001105139458">檔案名稱已存在</translation>
 <translation id="8666759526542103597">關於基於瀏覽器的廣告個人化</translation>
 <translation id="8676789164135894283">登入驗證</translation>
-<translation id="867767487203716855">下一個更新項目</translation>
 <translation id="8683039184091909753">圖片</translation>
-<translation id="8683081248374354009">重設群組</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699120352855309748">不要詢問是否翻譯這些語言</translation>
 <translation id="8712637175834984815">我知道了</translation>

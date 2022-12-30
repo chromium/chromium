@@ -3814,6 +3814,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" />-এর কাছে <ph name="FOLDERNAME" /> ফোল্ডারের ফাইল এডিট করার অনুমতি আছে</translation>
 <translation id="4470957202018033307">এক্সটারনাল স্টোরেজের ব্যাপারে অভিরুচি</translation>
 <translation id="4471354919263203780">স্পিচ শনাক্তকরণ ফাইল ডাউনলোড করা হচ্ছে... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">আপনার পছন্দের Google অ্যাকাউন্টের ভাষা ব্যবহার করতে পারেন (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Chrome-এর বৈশিষ্ট্য এবং পারফরম্যান্স আরও ভালো করতে সাহায্য করুন</translation>
 <translation id="4472575034687746823">শুরু করা যাক</translation>
 <translation id="4474155171896946103">সব কটি ট্যাব বুকমার্ক করুন...</translation>
@@ -4545,7 +4546,6 @@
 <translation id="5158206172605340248">অ্যাকসেন্ট চিহ্ন মেনু বাতিল করা হয়েছে।</translation>
 <translation id="5159094275429367735">Crostini সেট আপ করুন</translation>
 <translation id="5159419673777902220">আপনার অভিভাবক এক্সটেনশন ব্যবহারের অনুমতি বন্ধ করে দিয়েছেন।</translation>
-<translation id="5159643365935452998">অটোমেটিক ডেটা মুছে ফেলার সুবিধা পর্যালোচনা করা</translation>
 <translation id="5160634252433617617">ফিজিক্যাল কীবোর্ড</translation>
 <translation id="5160857336552977725">আপনার <ph name="DEVICE_TYPE" />-এ সাইন-ইন করুন</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" />-এর ইউএসবি ডিভাইস</translation>
@@ -6757,6 +6757,7 @@
 <translation id="7227458944009118910">নিচের তালিকাভুক্ত অ্যাপগুলি প্রোটোকল লিঙ্কও ম্যানেজ করতে পারবে। অন্য অ্যাপগুলির ক্ষেত্রে অনুমতি প্রয়োজন হবে।</translation>
 <translation id="7228056665272655255">ফিঙ্গারপ্রিন্ট সেট-আপ করতে, আপনার সন্তানকে কীবোর্ডের উপরের ডানদিকের কোণে থাকা ফিঙ্গারপ্রিন্ট সেন্সর টাচ করতে বলুন। আপনার সন্তানের ফিঙ্গারপ্রিন্ট ডেটা নিরাপদে সেভ করা হয় এবং সবসময় <ph name="DEVICE_TYPE" />-এ থাকে।</translation>
 <translation id="7228523857728654909">স্ক্রিন লক এবং সাইন-ইন করুন</translation>
+<translation id="7228854227189381547">সুইচ করতে চাই না</translation>
 <translation id="7230222852462421043">&amp;উইন্ডো আবার আগের অবস্থায় ফিরিয়ে আনুন</translation>
 <translation id="7231260028442989757">আপনার ফোনের বিজ্ঞপ্তি দেখুন, বাতিল করুন এবং উত্তর দিন</translation>
 <translation id="7232750842195536390">নাম পরিবর্তন করা যায়নি</translation>
@@ -7090,6 +7091,7 @@
 <translation id="7545466883021407599">সার্ভারের সাথে কানেক্ট করা যাচ্ছে না। আপনার নেটওয়ার্ক কানেকশন চেক করে আবার চেষ্টা করুন। এর পরেও সমস্যা হলে, Chromebook রিস্টার্ট করে দেখুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="7547317915858803630">সতর্কবাণী: আপনার <ph name="PRODUCT_NAME" />সেটিংস নেটওয়ার্ক ড্রাইভে সংরক্ষণ করা হয়৷ এর ফলে মন্থরতা, ক্র্যাশ, অথবা এমনকি ডেটা হারিয়ে যেতে পারে৷</translation>
 <translation id="7548856833046333824">লেমনেড</translation>
+<translation id="7549434883223124329">ডিভাইসের ভাষা সুইচ করবেন?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ডাউনলোড করা যায়নি</translation>
 <translation id="7551643184018910560">শেল্ফে পিন করুন</translation>

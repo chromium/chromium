@@ -281,7 +281,6 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="718435575166326686">Chromium bu saytda kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="7196312274710523067">Chromium ishga tushmadi. Qayta urining.</translation>
 <translation id="7197677400338048821">Chromium parollaringizni tekshira olmadi. 24 soatdan keyin qayta urining.</translation>
-<translation id="7218568399872925918">Siz ochgan saytlar maʼlumotlaringizni Chromium yopilmaguncha esda saqlaydi</translation>
 <translation id="7223968959479464213">Vazifalar menejeri – Chromium</translation>
 <translation id="7246575524853130370">Chromium taxmin qilgan qiziqishlaringiz</translation>
 <translation id="7309928523159922338">Reklamani oʻlchash orqali siz kiradigan saytlar oʻzidagi reklama unumdorligini hisoblashga yordam beradigan maʼlumotlarni Chromium ilovasidan soʻray oladi. Reklama statistikasi imkon qadar kam axborotni saytlararo ulashish orqali saytlardagi kuzatuv mexanizmlarini taqiqlaydi.</translation>
@@ -353,8 +352,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8621669128220841554">O‘rnatish vaqtida kutilmagan xatolik yuz berdi. Chromium‘ni qaytadan yuklab oling.</translation>
 <translation id="8697124171261953979">Bundan tashqari kengaytma Chromium boshlash sahifasini va omniboksdagi so‘rovlar uchun foydalaniladigan birlamchi qidiruv tizimini o‘zgartirdi.</translation>
 <translation id="8704119203788522458">Bu sizning shaxsiy Chromium brauzeringiz</translation>
-<translation id="8713679423359107094">Barcha Chromium oynalari yopilganda, cookie fayllar va sayt maʼlumotlari avtomatik ravishda tozalanadi</translation>
-<translation id="8796443464227412154">Chromium yopilganda <ph name="BEGIN_BOLD" />aksar saytlardan chiqib ketasiz<ph name="END_BOLD" />. Agar sinxronizatsiya oʻchiq boʻlsa, <ph name="BEGIN_BOLD" />Google xizmatlari va Chromium hisobingizdan ham chiqib ketasiz<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Bu sayt kamera va mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="8833697763442816810">ChromiumOS tizimi</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Qanday maʼlumotlar ishlatilishi:<ph name="END_BOLD" /> Bu qurilmada Chromium orqali siz kirgan saytlar tarixidagi qaydlar.</translation>

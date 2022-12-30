@@ -139,7 +139,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="1718835860248848330">Awr ddiwethaf</translation>
 <translation id="1724977129262658800">Datglowch i olygu eich cyfrinair</translation>
 <translation id="1726477445370128854">Gallwch bori a chwilio'n gyflymach pan fydd Chrome yn rhaglwytho tudalennau y mae'n credu y byddwch yn ymweld â nhw</translation>
-<translation id="173522743738009831">Ynghylch Privacy Sandbox</translation>
 <translation id="1736419249208073774">Archwilio</translation>
 <translation id="1749561566933687563">Cysonwch eich nodau tudalen</translation>
 <translation id="1750259112639922169">Grŵp tabiau - <ph name="TAB_COUNT" /> o dabiau</translation>
@@ -318,9 +317,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="2777555524387840389"><ph name="SECONDS" /> eiliad ar ôl</translation>
 <translation id="2779651927720337254">wedi methu</translation>
 <translation id="2781151931089541271">1 eiliad ar ôl</translation>
-<translation id="2788468313014644040">Rhif grŵp</translation>
 <translation id="2800066122460699237">Bydd y tab <ph name="TAB_TITLE" /> yn cael ei gau</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Gweld a rheoli cyfrineiriau sydd wedi'u cadw yn eich <ph name="BEGIN_LINK" />Cyfrif Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">I gael eich nodau tudalen ar eich holl ddyfeisiau, mewngofnodwch a throwch gysoni ymlaen</translation>
 <translation id="2827278682606527653">Mae dewislen cardiau'r ffrwd wedi ei hagor ar hanner uchder</translation>
@@ -441,7 +438,6 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="3384347053049321195">Rhannu llun</translation>
 <translation id="3387650086002190359">Methwyd â lawrlwytho <ph name="FILE_NAME" /> oherwydd gwallau system.</translation>
 <translation id="3389286852084373014">Mae'r testun yn rhy fawr</translation>
-<translation id="3391512812407811893">Treialon Privacy Sandbox</translation>
 <translation id="3398320232533725830">Agor y rheolwr nodau tudalen</translation>
 <translation id="3407392651057365886">Mae rhagor o dudalennau'n cael eu rhaglwytho. Gellir rhaglwytho tudalennau drwy weinyddion Google pan ofynnir amdanynt gan wefannau eraill.</translation>
 <translation id="3414952576877147120">Maint:</translation>
@@ -913,10 +909,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="6000203700195075278">Ail-ddilyn</translation>
 <translation id="6002122790816966947">Eich dyfeisiau</translation>
 <translation id="6005538289190791541">Cyfrinair a awgrymir</translation>
-<translation id="6032091552407840792">Mae'r treial hwn yn weithredol mewn <ph name="BEGIN_LINK" />rhai rhanbarthau<ph name="END_LINK" /> yn unig.</translation>
-<translation id="6033245666633565791">Gyda <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, mae Chrome yn datblygu technolegau newydd i'ch amddiffyn rhag olrhain traws-wefan wrth ddiogelu'r we agored.
-
-Mae treialon Privacy Sandbox yn dal i gael eu datblygu ac maent ar gael mewn rhanbarthau penodol. Am y tro, gall gwefannau roi cynnig ar Privacy Sandbox wrth barhau i ddefnyddio technolegau gwe presennol megis cwcis trydydd parti.</translation>
 <translation id="6039379616847168523">Neidio i'r tab nesaf</translation>
 <translation id="6040143037577758943">Cau</translation>
 <translation id="604124094241169006">Awtomatig</translation>
@@ -1248,7 +1240,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7791543448312431591">Ychwanegu</translation>
 <translation id="7798392620021911922">Adferwyd <ph name="TAB_COUNT" /> o dabiau</translation>
 <translation id="780301667611848630">Dim diolch</translation>
-<translation id="7805768142964895445">Statws</translation>
 <translation id="7808889146555843082">Ni fydd dileu'r cyfrinair hwn yn dileu'ch cyfrif ar <ph name="SITE" />. Newidiwch eich cyfrinair neu dilëwch eich cyfrif ar <ph name="SITE" /> i'w gadw'n ddiogel rhag eraill.</translation>
 <translation id="7810647596859435254">Agor gyda…</translation>
 <translation id="7815484226266492798">Sgrinlun hir</translation>
@@ -1382,11 +1373,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8461694314515752532">Amgryptio data sydd wedi'u cysoni gyda'ch cyfrinymadrodd cysoni eich hun</translation>
 <translation id="8466613982764129868">Gwnewch yn siŵr bod <ph name="TARGET_DEVICE_NAME" /> wedi'i gysylltu â'r rhyngrwyd</translation>
 <translation id="8473863474539038330">Cyfeiriadau a rhagor</translation>
-<translation id="8481921391193215807">Pan fydd wedi'i droi ymlaen, gall gwefannau ddefnyddio'r technegau amddiffyn preifatrwydd a ddangosir yma i ddarparu eu cynnwys a'u gwasanaethau. Mae hyn yn cynnwys dewisiadau amgen i olrhain ar draws gwefannau. Gellir ychwanegu rhagor o brofion dros amser.
-
-<ph name="BEGIN_LIST_ITEM1" />Gall hysbysebwyr a chyhoeddwyr ddefnyddio FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Gall hysbysebwyr a chyhoeddwyr astudio effeithiolrwydd hysbysebion mewn ffordd nad yw'n eich olrhain ar draws gwefannau.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Mae nodweddion prawf wedi'u troi ymlaen</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Agor y dudalen hanes</translation>
@@ -1432,9 +1418,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8664979001105139458">Mae'r enw ffeil eisoes yn bodoli</translation>
 <translation id="8666759526542103597">Ynglŷn â phersonoleiddio hysbysebion ar sail Porwr</translation>
 <translation id="8676789164135894283">Gwiriadau mewngofnodi</translation>
-<translation id="867767487203716855">Diweddariad nesaf</translation>
 <translation id="8683039184091909753">llun</translation>
-<translation id="8683081248374354009">Ailosod grŵp</translation>
 <translation id="869891660844655955">Dyddiad darfod</translation>
 <translation id="8699120352855309748">Peidiwch â chynnig cyfieithu'r ieithoedd hyn</translation>
 <translation id="8712637175834984815">Iawn</translation>

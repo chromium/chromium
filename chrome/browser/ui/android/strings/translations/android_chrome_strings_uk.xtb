@@ -139,7 +139,6 @@
 <translation id="1718835860248848330">Остання година</translation>
 <translation id="1724977129262658800">Розблокуйте, щоб змінити пароль</translation>
 <translation id="1726477445370128854">Ви можете шукати й переглядати контент швидше, коли Chrome попередньо завантажує сторінки, які ви, імовірно, захочете відвідати</translation>
-<translation id="173522743738009831">Про Privacy Sandbox</translation>
 <translation id="1736419249208073774">Огляд</translation>
 <translation id="1749561566933687563">Синхронізуйте свої закладки</translation>
 <translation id="1750259112639922169">Група вкладок – <ph name="TAB_COUNT" /> шт.</translation>
@@ -318,9 +317,7 @@
 <translation id="2777555524387840389">Залишилося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не завантажено</translation>
 <translation id="2781151931089541271">Залишилась 1 с</translation>
-<translation id="2788468313014644040">Номер групи</translation>
 <translation id="2800066122460699237">Вкладку "<ph name="TAB_TITLE" />" буде закрито</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Переглядайте збережені паролі й керуйте ними в <ph name="BEGIN_LINK" />обліковому записі Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Щоб мати доступ до закладок на всіх своїх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="2827278682606527653">Меню картки зі стрічки відкрито на половину висоти</translation>
@@ -441,7 +438,6 @@
 <translation id="3384347053049321195">Поділитися зображенням</translation>
 <translation id="3387650086002190359">Файл <ph name="FILE_NAME" /> не завантажено через помилки файлової системи.</translation>
 <translation id="3389286852084373014">SMS-повідомлення завелике</translation>
-<translation id="3391512812407811893">Пробні версії Privacy Sandbox</translation>
 <translation id="3398320232533725830">Відкрити Диспетчер закладок</translation>
 <translation id="3407392651057365886">Більше сторінок будуть попередньо завантажуватися. Сторінки можуть попередньо завантажуватися через сервери Google, коли інші сайти надсилають запити на них.</translation>
 <translation id="3414952576877147120">Розмір:</translation>
@@ -913,10 +909,6 @@
 <translation id="6000203700195075278">Підписатися знову</translation>
 <translation id="6002122790816966947">Ваші пристрої</translation>
 <translation id="6005538289190791541">Запропонований пароль</translation>
-<translation id="6032091552407840792">Ця пробна версія доступна лише в <ph name="BEGIN_LINK" />певних регіонах<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">За допомогою <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> команда Chrome розробляє нові технології, які захистять вас від механізмів відстеження на різних сайтах, зберігаючи відкритість і незалежність мережі Інтернет.
-
-Пробні технології Privacy Sandbox ще перебувають на стадії розробки й доступні лише у вибраних регіонах. Наразі сайти можуть користуватися Privacy Sandbox, продовжуючи застосовувати наявні веб-технології (зокрема сторонні файли cookie).</translation>
 <translation id="6039379616847168523">Перейти до наступної вкладки</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="604124094241169006">Автоматично</translation>
@@ -1248,7 +1240,6 @@
 <translation id="7791543448312431591">Додати</translation>
 <translation id="7798392620021911922">Відновлено стільки вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ні, дякую</translation>
-<translation id="7805768142964895445">Статус</translation>
 <translation id="7808889146555843082">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="SITE" /> залишиться. Змініть пароль або видаліть обліковий запис на сайті <ph name="SITE" />, щоб захистити його.</translation>
 <translation id="7810647596859435254">Відкрити за допомогою…</translation>
 <translation id="7815484226266492798">Довгий знімок екрана</translation>
@@ -1382,11 +1373,6 @@
 <translation id="8461694314515752532">Шифрувати синхронізовані дані за допомогою власної парольної фрази</translation>
 <translation id="8466613982764129868">Переконайтеся, що пристрій <ph name="TARGET_DEVICE_NAME" /> підключено до Інтернету</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
-<translation id="8481921391193215807">Коли ці функції ввімкнено, сайти можуть використовувати зазначені технології, що забезпечують конфіденційність, щоб пропонувати контент і сервіси. Це альтернативні способи вирішення проблеми збору даних про дії користувачів на різних сайтах. З часом з’являтимуться інші пробні функції.
-
-<ph name="BEGIN_LIST_ITEM1" />Рекламодавці й видавці можуть використовувати технологію FLoC.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Рекламодавці й видавці можуть досліджувати ефективність оголошень, не відстежуючи ваші дії на різних сайтах.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Пробні функції ввімкнено</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Відкрити сторінку "Історія"</translation>
@@ -1432,9 +1418,7 @@
 <translation id="8664979001105139458">Файл із такою назвою вже існує</translation>
 <translation id="8666759526542103597">Про персоналізацію реклами на основі даних веб-переглядача</translation>
 <translation id="8676789164135894283">Підтвердження входу</translation>
-<translation id="867767487203716855">Наступне оновлення</translation>
 <translation id="8683039184091909753">зображення</translation>
-<translation id="8683081248374354009">Скинути групу</translation>
 <translation id="869891660844655955">Діє до</translation>
 <translation id="8699120352855309748">Не пропонувати перекладати ці мови</translation>
 <translation id="8712637175834984815">Виконано</translation>

@@ -864,6 +864,7 @@
 
       如果將這項政策設為停用或不設定，則遠端協助主機會以使用者的權限層級執行，且遠端使用者無法在桌面上與權限層級較高的視窗互動。</translation>
 <translation id="1837165432382702436">頁面的高度 (以微米為單位)</translation>
+<translation id="1838910874018595451">Kerberos 票證的預填設定</translation>
 <translation id="1843117931376765605">使用者政策的重新整理頻率</translation>
 <translation id="1844620919405873871">設定快速解鎖相關政策。</translation>
 <translation id="1844972978764975668">允許向 Google 伺服器傳送查詢，以擷取準確的時間戳記</translation>
@@ -883,6 +884,7 @@
       如果不設定這項政策，在已設定 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 政策的情況下，系統將套用該政策，否則系統會套用使用者的個人設定。
 
       這項政策中的網址不得與透過 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策設定的網址產生衝突。如有衝突情況，這項政策的優先順序高於 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策。</translation>
+<translation id="1858775210076906272">Kerberos 預填設定</translation>
 <translation id="1861206724856734193">設定防止資料外洩的規則清單。</translation>
 <translation id="1862267110714201519">停用 ghost 視窗功能。</translation>
 <translation id="1865417998205858223">金鑰權限</translation>
@@ -1257,6 +1259,7 @@
 <translation id="2204753382813641270">控制檔案櫃自動隱藏功能</translation>
 <translation id="2208976000652006649">使用 POST 的搜尋網址參數</translation>
 <translation id="2213059592185933570">啟用漫遊設定檔建立功能</translation>
+<translation id="2213342458177721585">啟用裝置通用的 Hindi Inscript 鍵盤配置。</translation>
 <translation id="2215238871726750562">如果將這項政策設為 True，系統不會在工作階段開始時啟動瀏覽器視窗。
 
       如果將這項政策設為 False 或不設定，系統將可啟動視窗。
@@ -1723,6 +1726,7 @@
 <translation id="2664682171745499686">禁止在網域上顯示相似網域的警告訊息</translation>
 <translation id="2665422249821137126">在登入畫面上啟用大型游標</translation>
 <translation id="2667894101494585925">啟用最佳化指南擷取功能</translation>
+<translation id="2669157090883237118">不要變更 <ph name="PRODUCT_OS_NAME" /> 建議設定。</translation>
 <translation id="2672012807430078509">控管是否要為 SMB 掛接功能啟用 NTLM 驗證通訊協定</translation>
 <translation id="2673363037046384711">使用者可以啟用或停用高效率模式。</translation>
 <translation id="2678503605767349615">必須提供裝置通用用戶端憑證</translation>
@@ -2533,6 +2537,7 @@
       如需可使用的變數清單，請參閱 https://support.google.com/chrome/a?p=Supported_directory_variables。
 
       如果不設定這項政策，系統會使用預設的設定檔路徑，且使用者將可使用「--user-data-dir」指令列旗標覆寫這個路徑。</translation>
+<translation id="3380801667330555918">變更 Kerberos 票證的預填設定</translation>
 <translation id="338149029069528354">不要清除本機使用者資料</translation>
 <translation id="3381968327636295719">根據預設使用主機瀏覽器</translation>
 <translation id="3387211681524224831">如果將這項政策設為啟用，系統不會儲存瀏覽記錄，並會停用分頁同步功能，且使用者無法變更這項設定。
@@ -3892,6 +3897,11 @@
           如果不設定這項政策，系統預設會停用單聲道音訊，但使用者隨時可以啟用這項功能。</translation>
 <translation id="4768446404233019970">在傳輸層安全標準 (TLS) 中啟用 3DES 加密套件</translation>
 <translation id="4770334626033858263">用於產生及驗證家長存取碼的設定。</translation>
+<translation id="4773997835955617342">為手動建立的新票證變更 <ph name="KRB5_CONFIG" /> 建議設定。
+
+      如果啟用這項政策，「KerberosCustomPrefilledConfig」政策的值就會用於建議設定，並顯示在 Kerberos 驗證對話方塊的「進階」部分中。
+
+      如果停用這項政策或未設定，系統就會改用 <ph name="PRODUCT_OS_NAME" /> 建議設定。請注意，這項設定也會顯示在 Kerberos 驗證對話方塊的「進階」部分中。</translation>
 <translation id="4774030790286815890">如果啟用這項設定，使用者可以選擇開啟 Phone Hub 功能，在搭載 Chrome OS 的裝置上與手機互動。
 
       如果停用這項設定，使用者將無法開啟 Phone Hub 功能。
@@ -5987,6 +5997,8 @@
 
       指定要在 <ph name="PRODUCT_NAME" /> 啟動時套用的設定。系統僅會在進入登入畫面時套用指定的設定。透過這個政策所指定的設定不會反映在使用者工作階段中。</translation>
 <translation id="6857240169209507953">禁止在裝置上執行 <ph name="BOREALIS_NAME" /></translation>
+<translation id="6857372417233723544">設定這項政策後，系統就會在 <ph name="PRODUCT_OS_NAME" /> 上啟用北印度文 InScript 鍵盤配置。
+如果設為 False 或未設定，就無法使用該鍵盤配置。裝置必須重新啟動，政策設定才會生效。</translation>
 <translation id="685769593149966548">強制執行 YouTube 高度嚴格篩選模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 以上版本</translation>
 <translation id="68818134518270542">你可以透過這項政策指定應用程式，允許使用者在 <ph name="PRODUCT_OS_NAME" />螢幕鎖定畫面上以筆記應用程式的形式開啟。
@@ -6905,6 +6917,7 @@
 
            如果不設定這項政策，系統會在登入畫面上預設啟用無障礙功能快速鍵。</translation>
 <translation id="7777535871204167559">以唯讀模式處理外部儲存裝置</translation>
+<translation id="7781452670568828399">變更 <ph name="PRODUCT_OS_NAME" /> 建議設定。</translation>
 <translation id="7784062550705119230">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_ALLOWLIST" />，系統會根據 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="7788511847830146438">根據設定檔</translation>
 <translation id="7788632499792081231">你可以透過這項政策設定網址模式清單，指定哪些網站可以使用剪貼簿網站權限。這不包含在符合網址模式的來源網站上執行的所有剪貼簿作業。比方說，使用者仍可使用鍵盤快速鍵貼上內容，因為這項操作並未受到剪貼簿網站權限管制。

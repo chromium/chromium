@@ -139,7 +139,6 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="1718835860248848330">Paskutinė valanda</translation>
 <translation id="1724977129262658800">Atrakinkite, kad galėtumėte redaguoti slaptažodį</translation>
 <translation id="1726477445370128854">Galite sparčiau naršyti ir ieškoti, kai „Chrome“ iš anksto įkelia puslapius, kuriuose, jos manymu, galėtumėte apsilankyti</translation>
-<translation id="173522743738009831">Apie privatumo „sandbox“ (smėlio dėžę)</translation>
 <translation id="1736419249208073774">Naršyti</translation>
 <translation id="1749561566933687563">Sinchronizuokite žymes</translation>
 <translation id="1750259112639922169">Skirtukų grupė – <ph name="TAB_COUNT" /> skirtuk.</translation>
@@ -318,9 +317,7 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="2777555524387840389">Liko <ph name="SECONDS" /> sek.</translation>
 <translation id="2779651927720337254">nepavyko</translation>
 <translation id="2781151931089541271">Liko 1 sek.</translation>
-<translation id="2788468313014644040">Grupės numeris</translation>
 <translation id="2800066122460699237">Skirtukas „<ph name="TAB_TITLE" />“ bus uždarytas</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">Peržiūrėkite ir tvarkykite išsaugotus slaptažodžius <ph name="BEGIN_LINK" />„Google“ paskyroje<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Jei norite pasiekti žymes visuose įrenginiuose, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="2827278682606527653">Sklaidos kanalo kortelės meniu atidarytas iki pusės</translation>
@@ -441,7 +438,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="3384347053049321195">Bendrinti vaizdą</translation>
 <translation id="3387650086002190359">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“ dėl failų sistemos klaidų.</translation>
 <translation id="3389286852084373014">Teksto pranešimas per didelis</translation>
-<translation id="3391512812407811893">Privatumo „sandbox“ (smėlio dėžės) bandomieji laikotarpiai</translation>
 <translation id="3398320232533725830">Atidaryti žymių tvarkytuvę</translation>
 <translation id="3407392651057365886">Daugiau puslapių įkeliama iš anksto. Puslapiai gali būti iš anksto įkelti per „Google“ serverius, gavus kitų svetainių užklausą.</translation>
 <translation id="3414952576877147120">Dydis:</translation>
@@ -913,10 +909,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="6000203700195075278">Stebėti iš naujo</translation>
 <translation id="6002122790816966947">Jūsų įrenginiai</translation>
 <translation id="6005538289190791541">Siūlomas slaptažodis</translation>
-<translation id="6032091552407840792">Ši bandomoji versija aktyvi tik <ph name="BEGIN_LINK" />kai kuriuose regionuose<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Naudodama <ph name="BEGIN_LINK" />privatumo „sandbox“ (smėlio dėžę)<ph name="END_LINK" /> „Chrome“ kuria naujas technologijas, kad apsaugotų jus nuo veiklos skirtingose svetainėse stebėjimo, išlaikydama atvirą žiniatinklį.
-
-Privatumo „sandbox“ (smėlio dėžės) bandomosios versijos vis dar intensyviai kuriamos ir pasiekiamos tam tikruose regionuose. Kol kas svetainėse galima išbandyti privatumo „sandbox“ (smėlio dėžę) toliau naudojant dabartines žiniatinklio technologijas, pvz., trečiųjų šalių slapukus.</translation>
 <translation id="6039379616847168523">Pereiti prie kito skirtuko</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="604124094241169006">Automatinis</translation>
@@ -1248,7 +1240,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7791543448312431591">Pridėti</translation>
 <translation id="7798392620021911922">Atkurta skirtukų: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
-<translation id="7805768142964895445">Būsena</translation>
 <translation id="7808889146555843082">Ištrynus šį slaptažodį jūsų paskyra svetainėje <ph name="SITE" /> nebus ištrinta. Pakeiskite slaptažodį arba ištrinkite paskyrą domene <ph name="SITE" />, kad apsaugotumėte ją nuo kitų.</translation>
 <translation id="7810647596859435254">Atidaryti naudojant...</translation>
 <translation id="7815484226266492798">Ilga ekrano kopija</translation>
@@ -1382,11 +1373,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8461694314515752532">Šifruokite sinchronizuojamus duomenis taikydami savo sinchronizavimo slaptafrazę</translation>
 <translation id="8466613982764129868">Įsitikinkite, kad įrenginys „<ph name="TARGET_DEVICE_NAME" />“ prijungtas prie interneto</translation>
 <translation id="8473863474539038330">Adresai ir dar daugiau</translation>
-<translation id="8481921391193215807">Įjungus svetainėse galima naudoti čia nurodytus privatumą užtikrinančius metodus turiniui ir paslaugoms teikti. Įtraukiami alternatyvūs veiklos skirtingose svetainėse stebėjimo metodai. Per laiką gali būti pridėta daugiau bandomųjų versijų.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklamuotojai ir leidėjai gali naudoti „FLoC“.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklamuotojai ir leidėjai gali tyrinėti skelbimų efektyvumą nestebėdami jūsų svetainėse.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="8481980314595922412">Bandomosios funkcijos įjungtos</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Atidaryti istorijos puslapį</translation>
@@ -1432,9 +1418,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8664979001105139458">Failas pavadinimas jau yra</translation>
 <translation id="8666759526542103597">Apie skelbimų suasmeninimą pagal naršyklę</translation>
 <translation id="8676789164135894283">Prisijungimo patvirtinimai</translation>
-<translation id="867767487203716855">Kitas naujinys</translation>
 <translation id="8683039184091909753">vaizdas</translation>
-<translation id="8683081248374354009">Iš naujo nustatyti grupę</translation>
 <translation id="869891660844655955">Galiojimo data</translation>
 <translation id="8699120352855309748">Nesiūlyti versti šių kalbų</translation>
 <translation id="8712637175834984815">Supratau</translation>
