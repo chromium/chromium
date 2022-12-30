@@ -455,24 +455,13 @@ void PageLoadMetricsTestWaiter::OnPageRenderDataUpdate(
   if (!delegate)
     return;
 
-  double layout_shift_score =
-      (&delegate->GetPageRenderData())->layout_shift_score;
-  if (is_main_frame) {
-    if ((shift_frame_ == ShiftFrame::LayoutShiftOnlyInMainFrame ||
-         shift_frame_ == ShiftFrame::LayoutShiftOnlyInBothFrames) &&
-        last_main_frame_layout_shift_score_ < layout_shift_score &&
-        render_data.layout_shift_delta > 0) {
-      observed_.layout_shift_ = true;
-    }
-    last_main_frame_layout_shift_score_ = layout_shift_score;
-  } else {  // subframe
-    if ((shift_frame_ == ShiftFrame::LayoutShiftOnlyInSubFrame ||
-         shift_frame_ == ShiftFrame::LayoutShiftOnlyInBothFrames) &&
-        last_sub_frame_layout_shift_score_ < layout_shift_score &&
-        render_data.layout_shift_delta > 0) {
-      observed_.layout_shift_ = true;
-    }
-    last_sub_frame_layout_shift_score_ = layout_shift_score;
+  bool is_relevant_frame =
+      is_main_frame ? shift_frame_ == ShiftFrame::LayoutShiftOnlyInMainFrame
+                    : shift_frame_ == ShiftFrame::LayoutShiftOnlyInSubFrame;
+  if ((is_relevant_frame ||
+       shift_frame_ == ShiftFrame::LayoutShiftOnlyInBothFrames) &&
+      render_data.layout_shift_delta > 0) {
+    observed_.layout_shift_ = true;
   }
 
   if (ExpectationsSatisfied() && run_loop_)

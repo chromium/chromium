@@ -363,9 +363,6 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool did_add_observer_ = false;
   bool soft_navigation_count_updated_ = false;
 
-  double last_main_frame_layout_shift_score_ = 0;
-  double last_sub_frame_layout_shift_score_ = 0;
-
   uint64_t current_num_input_events_ = 0;
   uint64_t expected_num_input_events_ = 0;
 
