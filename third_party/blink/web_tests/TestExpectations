@@ -2983,6 +2983,8 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-text/bidi/bidi-lines-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-023.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-align/text-align-match-parent-05.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-022.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-break/word-break-break-all-ethiopic.html [ Failure ]
