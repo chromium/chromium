@@ -102,7 +102,7 @@ two `.size` files, with all unchanged symbols removed.
 Example Usage:
 
 ```bash
-tools/binary_size/supersize size_diff before.size after.size out.sizediff
+tools/binary_size/supersize save_diff before.size after.size out.sizediff
 ```
 
 ### supersize diff
