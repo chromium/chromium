@@ -36,8 +36,8 @@ class MODULES_EXPORT PressureObserverManager final
   PressureObserverManager(const PressureObserverManager&) = delete;
   PressureObserverManager& operator=(const PressureObserverManager&) = delete;
 
-  void AddObserver(V8PressureSource, blink::PressureObserver*);
-  void RemoveObserver(V8PressureSource, blink::PressureObserver*);
+  void AddObserver(V8PressureSource::Enum, blink::PressureObserver*);
+  void RemoveObserver(V8PressureSource::Enum, blink::PressureObserver*);
   void RemoveObserverFromAllSources(blink::PressureObserver*);
 
   // ContextLifecycleStateimplementation.
@@ -69,7 +69,7 @@ class MODULES_EXPORT PressureObserverManager final
   // Called when `receiver_` is disconnected.
   void Reset();
 
-  void DidBindObserver(V8PressureSource, mojom::blink::PressureStatus);
+  void DidBindObserver(V8PressureSource::Enum, mojom::blink::PressureStatus);
 
   constexpr static size_t kPressureSourceSize = V8PressureSource::kEnumSize;
 

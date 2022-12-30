@@ -52,6 +52,8 @@ class PressureObserver final : public ScriptWrappable {
                                   PressureObserverOptions*,
                                   ExceptionState&);
 
+  static size_t ToSourceIndex(V8PressureSource::Enum);
+
   // PressureObserver IDL implementation.
   ScriptPromise observe(ScriptState*, V8PressureSource, ExceptionState&);
   void unobserve(V8PressureSource);
@@ -71,8 +73,8 @@ class PressureObserver final : public ScriptWrappable {
                 V8PressureState::Enum,
                 const Vector<V8PressureFactor>&,
                 DOMHighResTimeStamp);
-  void OnBindingSucceeded(V8PressureSource);
-  void OnBindingFailed(V8PressureSource, DOMExceptionCode);
+  void OnBindingSucceeded(V8PressureSource::Enum);
+  void OnBindingFailed(V8PressureSource::Enum, DOMExceptionCode);
   void OnConnectionError();
 
  private:
@@ -85,8 +87,8 @@ class PressureObserver final : public ScriptWrappable {
                        const Vector<V8PressureFactor>&) const;
 
   // Resolve/reject pending resolvers.
-  void ResolvePendingResolvers(V8PressureSource);
-  void RejectPendingResolvers(V8PressureSource,
+  void ResolvePendingResolvers(V8PressureSource::Enum);
+  void RejectPendingResolvers(V8PressureSource::Enum,
                               DOMExceptionCode,
                               const String&);
 

@@ -26,6 +26,8 @@ namespace blink {
 
 namespace {
 
+constexpr auto ToSourceIndex = &blink::PressureObserver::ToSourceIndex;
+
 V8PressureFactor::Enum PressureFactorToV8PressureFactor(PressureFactor factor) {
   switch (factor) {
     case PressureFactor::kThermal:
@@ -77,10 +79,9 @@ PressureObserverManager::PressureObserverManager(LocalDOMWindow& window)
 
 PressureObserverManager::~PressureObserverManager() = default;
 
-void PressureObserverManager::AddObserver(V8PressureSource source,
+void PressureObserverManager::AddObserver(V8PressureSource::Enum source,
                                           blink::PressureObserver* observer) {
-  const wtf_size_t source_index = static_cast<wtf_size_t>(source.AsEnum());
-  observers_[source_index].insert(observer);
+  observers_[ToSourceIndex(source)].insert(observer);
 
   if (state_ == State::kUninitialized) {
     DCHECK(!receiver_.is_bound());
@@ -101,14 +102,13 @@ void PressureObserverManager::AddObserver(V8PressureSource source,
 }
 
 void PressureObserverManager::RemoveObserver(
-    V8PressureSource source,
+    V8PressureSource::Enum source,
     blink::PressureObserver* observer) {
-  const wtf_size_t source_index = static_cast<wtf_size_t>(source.AsEnum());
-  observers_[source_index].erase(observer);
+  observers_[ToSourceIndex(source)].erase(observer);
 
   // Disconnected from the browser process only when PressureObserverManager is
   // active and there is no other observers.
-  if (receiver_.is_bound() && observers_[source_index].empty()) {
+  if (receiver_.is_bound() && observers_[ToSourceIndex(source)].empty()) {
     // TODO(crbug.com/1342184): Consider other sources.
     // For now, "cpu" is the only source, so disconnect directly.
     Reset();
@@ -119,7 +119,7 @@ void PressureObserverManager::RemoveObserverFromAllSources(
     blink::PressureObserver* observer) {
   // TODO(crbug.com/1342184): Consider other sources.
   // For now, "cpu" is the only source.
-  auto source = V8PressureSource(V8PressureSource::Enum::kCpu);
+  auto source = V8PressureSource::Enum::kCpu;
   RemoveObserver(source, observer);
 }
 
@@ -138,15 +138,13 @@ void PressureObserverManager::OnUpdate(
   if (!PassesPrivacyTest())
     return;
 
-  // TODO(crbug.com/1342184): Consider other sources.
-  // For now, "cpu" is the only source.
-  const wtf_size_t source_index =
-      static_cast<wtf_size_t>(V8PressureSource::Enum::kCpu);
-
   // New observers may be created and added. Take a snapshot so as
   // to safely iterate.
+  //
+  // TODO(crbug.com/1342184): Consider other sources.
+  // For now, "cpu" is the only source.
   HeapVector<Member<blink::PressureObserver>> observers(
-      observers_[source_index]);
+      observers_[ToSourceIndex(V8PressureSource::Enum::kCpu)]);
   for (const auto& observer : observers) {
     Vector<V8PressureFactor> v8_factors;
     for (const auto& factor : update->factors) {
@@ -249,16 +247,15 @@ void PressureObserverManager::Reset() {
 }
 
 void PressureObserverManager::DidBindObserver(
-    V8PressureSource source,
+    V8PressureSource::Enum source,
     mojom::blink::PressureStatus status) {
   DCHECK_EQ(state_, State::kInitializing);
   DCHECK(receiver_.is_bound());
   DCHECK(pressure_service_.is_bound());
 
-  const wtf_size_t source_index = static_cast<wtf_size_t>(source.AsEnum());
   // Take a snapshot so as to safely iterate.
   HeapVector<Member<blink::PressureObserver>> observers(
-      observers_[source_index]);
+      observers_[ToSourceIndex(source)]);
   switch (status) {
     case mojom::blink::PressureStatus::kOk: {
       state_ = State::kInitialized;
