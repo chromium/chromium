@@ -1678,11 +1678,12 @@ void VolumeManager::OnDocumentsProviderRootAdded(
                                          summary, icon_url, read_only, subdir);
 
   // Register the fusebox ADP storage device with chrome::storage.
-  if (!profile_->IsIncognitoProfile()) {
+  const std::string fusebox_fsid =
+      base::StrCat({util::kFuseBoxMountNamePrefix, subdir});
+  if (!FindExternalMountPoint(fusebox_fsid)) {
     bool result = mount_points->RegisterFileSystem(
-        base::StrCat({util::kFuseBoxMountNamePrefix, subdir}),
-        storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
-        fusebox_volume->mount_path());
+        fusebox_fsid, storage::kFileSystemTypeFuseBox,
+        storage::FileSystemMountOption(), fusebox_volume->mount_path());
     DCHECK(result);
   }
 
@@ -1711,8 +1712,9 @@ void VolumeManager::OnDocumentsProviderRootRemoved(
   // Remove the fusebox ADP storage device from chrome::storage.
   std::string subdir = FuseBoxSubdirADP(authority, root_id);
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
-  mount_points->RevokeFileSystem(
-      base::StrCat({util::kFuseBoxMountNamePrefix, subdir}));
+  const std::string fusebox_fsid =
+      base::StrCat({util::kFuseBoxMountNamePrefix, subdir});
+  mount_points->RevokeFileSystem(fusebox_fsid);
 
   // Detach the fusebox ADP storage device from the fusebox daemon.
   fusebox_mounter_.DetachStorage(subdir);
