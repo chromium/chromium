@@ -1396,8 +1396,9 @@ void VolumeManager::OnProvidedFileSystemUnmount(
 
   // Remove the fusebox FSP storage device from chrome::storage.
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
-  mount_points->RevokeFileSystem(base::StrCat(
-      {util::kFuseBoxMountNamePrefix, util::kFuseBoxSubdirPrefixFSP, fsid}));
+  const std::string fusebox_fsid = base::StrCat(
+      {util::kFuseBoxMountNamePrefix, util::kFuseBoxSubdirPrefixFSP, fsid});
+  mount_points->RevokeFileSystem(fusebox_fsid);
 
   // Detach the fusebox FSP storage device from the fusebox daemon.
   fusebox_mounter_.DetachStorage(subdir);
