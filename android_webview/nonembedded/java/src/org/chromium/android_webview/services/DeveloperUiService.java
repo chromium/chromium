@@ -30,7 +30,6 @@ import org.chromium.android_webview.common.FlagOverrideHelper;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.common.services.IDeveloperUiService;
 import org.chromium.android_webview.common.services.ServiceHelper;
-import org.chromium.android_webview.services.ServicesStatsHelper.NonembeddedService;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -108,11 +107,6 @@ public final class DeveloperUiService extends Service {
             }
         }
     };
-
-    @Override
-    public void onCreate() {
-        ServicesStatsHelper.recordServiceLaunch(NonembeddedService.DEVELOPER_UI_SERVICE);
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {

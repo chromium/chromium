@@ -118,7 +118,6 @@ android_library("services_java") {
     "java/src/org/chromium/android_webview/services/MetricsUploadService.java",
     "java/src/org/chromium/android_webview/services/SafeModeContentProvider.java",
     "java/src/org/chromium/android_webview/services/SafeModeService.java",
-    "java/src/org/chromium/android_webview/services/ServicesStatsHelper.java",
     "java/src/org/chromium/android_webview/services/StartupFeatureMetadataHolder.java",
     "java/src/org/chromium/android_webview/services/VariationsSeedHolder.java",
     "java/src/org/chromium/android_webview/services/VariationsSeedServer.java",

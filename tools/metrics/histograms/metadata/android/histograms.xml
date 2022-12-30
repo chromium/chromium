@@ -4256,6 +4256,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.Nonembedded.FirstServiceInProcess"
     enum="WebViewNonembeddedService" expires_after="2022-12-11">
+  <obsolete>
+    We collected the data we need about this, these histograms are no longer
+    needed, see https://crbug.com/1266439#c8. Removed in December 2022.
+  </obsolete>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4269,6 +4273,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.Nonembedded.IsFreshServiceProcessLaunched"
     enum="Boolean" expires_after="2022-12-11">
+  <obsolete>
+    We collected the data we need about this, these histograms are no longer
+    needed, see https://crbug.com/1266439#c8. Removed in December 2022.
+  </obsolete>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

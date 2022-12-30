@@ -25,7 +25,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.services.ISafeModeService;
 import org.chromium.android_webview.services.SafeModeService.TrustedPackage;
-import org.chromium.android_webview.services.ServicesStatsHelper.NonembeddedService;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -222,11 +221,6 @@ public final class SafeModeService extends Service {
             SafeModeService.setSafeMode(actions);
         }
     };
-
-    @Override
-    public void onCreate() {
-        ServicesStatsHelper.recordServiceLaunch(NonembeddedService.SAFE_MODE_SERVICE);
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
