@@ -1026,7 +1026,7 @@ crbug.com/591099 external/wpt/css/css-text/line-breaking/line-breaking-ic-003.ht
 ### external/wpt/css/css-text/overflow-wrap/
 crbug.com/1019695 external/wpt/css/css-text/overflow-wrap/overflow-wrap-shaping-001.html [ Failure ]
 crbug.com/1019695 external/wpt/css/css-text/overflow-wrap/overflow-wrap-shaping-002.html [ Failure ]
-crbug.com/1020749 external/wpt/css/css-text/overflow-wrap/overflow-wrap-anywhere-inline-004.html [ Failure ]
+crbug.com/1020749 external/wpt/css/css-text/overflow-wrap/overflow-wrap-anywhere-inline-004.tentative.html [ Failure ]
 crbug.com/1205334 external/wpt/css/css-text/overflow-wrap/overflow-wrap-min-content-size-009.html [ Failure ]
 
 ### external/wpt/css/css-text/shaping/

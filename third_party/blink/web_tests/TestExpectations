@@ -3485,12 +3485,12 @@ crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-4.html [ Crash Timeo
 # overlay scrollbars have been fixed (crrev.com/c/3455024).
 crbug.com/1296816 [ Win ] virtual/overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html [ Failure ]
 
-crbug.com/964181 external/wpt/css/css-text/overflow-wrap/overflow-wrap-anywhere-inline-002.html [ Failure ]
-crbug.com/964181 external/wpt/css/css-text/overflow-wrap/overflow-wrap-anywhere-inline-003.html [ Failure ]
-crbug.com/964181 external/wpt/css/css-text/word-break/word-break-break-all-inline-004.html [ Failure ]
-crbug.com/964181 external/wpt/css/css-text/word-break/word-break-break-all-inline-007.html [ Failure ]
+crbug.com/964181 external/wpt/css/css-text/overflow-wrap/overflow-wrap-anywhere-inline-002.tentative.html [ Failure ]
+crbug.com/964181 external/wpt/css/css-text/overflow-wrap/overflow-wrap-anywhere-inline-003.tentative.html [ Failure ]
+crbug.com/964181 external/wpt/css/css-text/word-break/word-break-break-all-inline-004.tentative.html [ Failure ]
+crbug.com/964181 external/wpt/css/css-text/word-break/word-break-break-all-inline-007.tentative.html [ Failure ]
 crbug.com/964181 external/wpt/css/css-text/word-break/word-break-break-all-inline-009.html [ Failure ]
-crbug.com/964181 external/wpt/css/css-text/word-break/word-break-break-all-inline-010.html [ Failure ]
+crbug.com/964181 external/wpt/css/css-text/word-break/word-break-break-all-inline-010.tentative.html [ Failure ]
 
 crbug.com/1017164 external/wpt/css/css-text/word-break/word-break-break-all-006.html [ Failure ]
 crbug.com/1017164 external/wpt/css/css-text/word-break/word-break-break-all-007.html [ Failure ]
