@@ -153,11 +153,6 @@ class CardUnmaskPromptControllerImplGenericTest {
   }
 
  protected:
-  void SetImportCheckboxState(bool value) {
-    pref_service_->SetBoolean(prefs::kAutofillWalletImportStorageCheckboxState,
-                              value);
-  }
-
   void SetCreditCardForTesting(CreditCard card) { card_ = card; }
 
   CreditCard card_ = test::GetMaskedServerCard();
@@ -188,8 +183,6 @@ class CardUnmaskPromptControllerImplTest
 
   void SetUp() override {
     CardUnmaskPromptControllerImplGenericTest::SetUp();
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillWalletImportStorageCheckboxState, false);
 #if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
@@ -375,8 +368,6 @@ class LoggingValidationTestForNickname
 
   void SetUp() override {
     CardUnmaskPromptControllerImplGenericTest::SetUp();
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillWalletImportStorageCheckboxState, false);
 #if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
@@ -540,37 +531,6 @@ TEST_P(LoggingValidationTestForNickname, LogUnmaskedCardAfterFailure) {
       card_has_nickname() ? 1 : 0);
 }
 
-TEST_P(LoggingValidationTestForNickname, DontLogForHiddenCheckbox) {
-  ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false);
-  base::HistogramTester histogram_tester;
-  controller_->OnUnmaskDialogClosed();
-
-  histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.ServerCard.Events",
-      AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_OPT_IN, 0);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.ServerCard.Events",
-      AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_NOT_OPT_IN, 0);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.ServerCard.Events",
-      AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_OPT_OUT, 0);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.ServerCard.Events",
-      AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_NOT_OPT_OUT, 0);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events.WithNickname",
-      AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_OPT_IN, 0);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events.WithNickname",
-      AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_NOT_OPT_IN, 0);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events.WithNickname",
-      AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_OPT_OUT, 0);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.UnmaskPrompt.Events.WithNickname",
-      AutofillMetrics::UNMASK_PROMPT_LOCAL_SAVE_DID_NOT_OPT_OUT, 0);
-}
-
 TEST_P(LoggingValidationTestForNickname, LogDurationNoAttempts) {
   ShowPrompt();
   base::HistogramTester histogram_tester;
@@ -722,8 +682,6 @@ class CvcInputValidationTest : public CardUnmaskPromptControllerImplGenericTest,
 
   void SetUp() override {
     CardUnmaskPromptControllerImplGenericTest::SetUp();
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillWalletImportStorageCheckboxState, false);
 #if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
@@ -767,8 +725,6 @@ class CvcInputAmexValidationTest
 
   void SetUp() override {
     CardUnmaskPromptControllerImplGenericTest::SetUp();
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillWalletImportStorageCheckboxState, false);
 #if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
@@ -821,8 +777,6 @@ class ExpirationDateValidationTest
 
   void SetUp() override {
     CardUnmaskPromptControllerImplGenericTest::SetUp();
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillWalletImportStorageCheckboxState, false);
 #if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
@@ -854,8 +808,6 @@ class VirtualCardErrorTest
  public:
   void SetUp() override {
     CardUnmaskPromptControllerImplGenericTest::SetUp();
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kAutofillWalletImportStorageCheckboxState, false);
 #if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);

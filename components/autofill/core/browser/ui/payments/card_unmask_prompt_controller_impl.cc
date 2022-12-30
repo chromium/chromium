@@ -220,20 +220,14 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
 }
 
 std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
-// The prompt for server cards should reference Google Payments, whereas the
-// prompt for local cards should not.
 #if BUILDFLAG(IS_IOS)
   int ids;
   if (card_unmask_prompt_options_.reason ==
           AutofillClient::UnmaskCardReason::kAutofill &&
       ShouldRequestExpirationDate()) {
-    ids = card_.record_type() == CreditCard::LOCAL_CARD
-              ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED_LOCAL_CARD
-              : IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED;
+    ids = IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED;
   } else {
-    ids = card_.record_type() == CreditCard::LOCAL_CARD
-              ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD
-              : IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS;
+    ids = IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS;
   }
   // The iOS UI shows the card details in the instructions text since they
   // don't fit in the title.
@@ -253,9 +247,7 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
             card_unmask_prompt_options_.challenge_option->cvc_position));
   }
   return l10n_util::GetStringUTF16(
-      card_.record_type() == CreditCard::LOCAL_CARD
-          ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD
-          : IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS);
+      IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS);
 #endif
 }
 
@@ -290,11 +282,6 @@ bool CardUnmaskPromptControllerImpl::ShouldRequestExpirationDate() const {
          new_card_link_clicked_;
 }
 
-bool CardUnmaskPromptControllerImpl::GetStoreLocallyStartState() const {
-  return pref_service_->GetBoolean(
-      prefs::kAutofillWalletImportStorageCheckboxState);
-}
-
 #if BUILDFLAG(IS_ANDROID)
 int CardUnmaskPromptControllerImpl::GetGooglePayImageRid() const {
   return IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER;
@@ -308,11 +295,6 @@ bool CardUnmaskPromptControllerImpl::GetWebauthnOfferStartState() const {
   return pref_service_->GetBoolean(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState);
 }
-
-bool CardUnmaskPromptControllerImpl::IsCardLocal() const {
-  return card_.record_type() == CreditCard::LOCAL_CARD;
-}
-
 #endif
 
 bool CardUnmaskPromptControllerImpl::InputCvcIsValid(
@@ -381,9 +363,8 @@ bool CardUnmaskPromptControllerImpl::IsChallengeOptionPresent() const {
 base::TimeDelta CardUnmaskPromptControllerImpl::GetSuccessMessageDuration()
     const {
   return base::Milliseconds(
-      card_.record_type() == CreditCard::LOCAL_CARD ||
-              card_unmask_prompt_options_.reason ==
-                  AutofillClient::UnmaskCardReason::kPaymentRequest
+      card_unmask_prompt_options_.reason ==
+              AutofillClient::UnmaskCardReason::kPaymentRequest
           ? 0
           : 500);
 }

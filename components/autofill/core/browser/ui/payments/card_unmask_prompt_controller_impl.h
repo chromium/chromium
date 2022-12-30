@@ -61,12 +61,10 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   std::u16string GetOkButtonLabel() const override;
   int GetCvcImageRid() const override;
   bool ShouldRequestExpirationDate() const override;
-  bool GetStoreLocallyStartState() const override;
 #if BUILDFLAG(IS_ANDROID)
   int GetGooglePayImageRid() const override;
   bool ShouldOfferWebauthn() const override;
   bool GetWebauthnOfferStartState() const override;
-  bool IsCardLocal() const override;
 #endif
   bool InputCvcIsValid(const std::u16string& input_text) const override;
   bool InputExpirationIsValid(const std::u16string& month,
