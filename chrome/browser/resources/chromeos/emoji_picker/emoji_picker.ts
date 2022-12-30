@@ -23,7 +23,7 @@ import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX} from './metadata_extension.js';
 import {RecentlyUsedStore} from './store.js';
-import {CategoryEnum, EmojiGroupData, EmojiGroupElement, EmojiVariants, SubcategoryData} from './types.js';
+import {CategoryEnum, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, SubcategoryData} from './types.js';
 
 export class EmojiPicker extends PolymerElement {
   static get is() {
@@ -223,7 +223,7 @@ export class EmojiPicker extends PolymerElement {
         await Promise
             .all(
                 [
-                  this.fetchOrderingData(firstResult.url),
+                  this.fetchOrderingData<EmojiGroupData>(firstResult.url),
                   this.apiProxy.getFeatureList().then(
                       (response: {featureList: number[]}) =>
                           this.setActiveFeatures(response.featureList)),
@@ -240,17 +240,14 @@ export class EmojiPicker extends PolymerElement {
     });
 
     if (this.gifSupport) {
-      // TODO (b/263062502): Get data from API instead.
-      const gifCategoriesData = ['excited', 'happy'];
-
-      const gifCategoriesTabs = gifCategoriesData.map(
-          (categoryData: string) => ({name: categoryData}));
-
+      const dataUrl = EmojiPicker.configs().dataUrls.gif[0];
+      const categories: GifSubcategoryData[] = dataUrl ?
+          (await this.fetchOrderingData<GifSubcategoryData[]>(dataUrl)) :
+          (await this.apiProxy.getCategories()).categories;
       const categoryTabs = {
         ...CATEGORY_TABS,
-        gif: gifCategoriesTabs,
+        gif: categories,
       };
-
       this.allCategoryTabs = gifCategoryTabs(categoryTabs);
     }
 
@@ -308,7 +305,7 @@ export class EmojiPicker extends PolymerElement {
     this.gifSupport = featureList.includes(Feature.EMOJI_PICKER_GIF_SUPPORT);
   }
 
-  fetchOrderingData(url: string): Promise<EmojiGroupData> {
+  fetchOrderingData<T>(url: string): Promise<T> {
     return new Promise((resolve) => {
       const xhr = new XMLHttpRequest();
       xhr.onloadend = () => resolve(JSON.parse(xhr.responseText));

@@ -10,7 +10,7 @@
  */
 
 
-import {CategoryEnum, SubcategoryData} from './types.js';
+import {CategoryEnum, GifSubcategoryData, SubcategoryData} from './types.js';
 
 const RECENTLY_USED_NAME = 'Recently used';
 
@@ -173,12 +173,8 @@ export const SUBCATEGORY_TABS = makeGroupTabs(
     CATEGORY_TABS,
 );
 
-export const gifCategoryTabs = (categories: Record<string, Array<{
-                                                     name: string,
-                                                     pagination?: number,
-                                                     icon?: string,
-                                                   }>>) =>
-    makeGroupTabs(
+export const gifCategoryTabs =
+    (categories: Record<string, GifSubcategoryData[]>) => makeGroupTabs(
         GIF_CATEGORY_METADATA.map(item => item.name),
         categories,
     );

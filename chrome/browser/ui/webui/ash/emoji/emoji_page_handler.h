@@ -7,6 +7,8 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
+#include "chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.h"
+#include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
@@ -34,6 +36,7 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
                    int16_t search_length) override;
   void IsIncognitoTextField(IsIncognitoTextFieldCallback callback) override;
   void GetFeatureList(GetFeatureListCallback callback) override;
+  void GetCategories(GetCategoriesCallback callback) override;
 
  private:
   mojo::Receiver<emoji_picker::mojom::PageHandler> receiver_;
@@ -42,6 +45,7 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   EmojiUI* const webui_controller_;
   bool incognito_mode_;
   bool no_text_field_;
+  GifTenorApiFetcher gif_tenor_api_fetcher_;
 };
 
 }  // namespace ash

@@ -47,7 +47,7 @@ export function GifTestSuite(category) {
           ],
           'emoticon': ['/emoticon_test_ordering.json'],
           'symbol': ['/symbol_test_ordering.json'],
-          'gif': [''],
+          'gif': ['/gif_test_ordering.json'],
         },
       });
 

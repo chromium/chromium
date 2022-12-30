@@ -76,6 +76,7 @@ grit("resources") {
     ":emoji_data",
     ":emoji_data_remaining",
     ":emoticon_data",
+    ":gif_test_data",
     ":symbol_data",
     ":symbol_test_data",
   ]
@@ -189,6 +190,11 @@ action("symbol_data") {
 copy("symbol_test_data") {
   sources = [ "./symbol_test_ordering.json" ]
   outputs = [ "$target_gen_dir/symbol_test_ordering.json" ]
+}
+
+copy("gif_test_data") {
+  sources = [ "./gif_test_ordering.json" ]
+  outputs = [ "$target_gen_dir/gif_test_ordering.json" ]
 }
 
 html_to_wrapper("html_wrapper_files") {

@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -161,6 +162,12 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
   }
 
   std::move(callback).Run(enabled_features);
+}
+
+void EmojiPageHandler::GetCategories(GetCategoriesCallback callback) {
+  content::WebUI* web_ui = webui_controller_->web_ui();
+  Profile* profile = Profile::FromWebUI(web_ui);
+  gif_tenor_api_fetcher_.FetchCategories(std::move(callback), profile);
 }
 
 void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,

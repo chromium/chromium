@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.js';
+import {GifSubcategoryData} from './types.js';
 
 /** @interface */
 export interface EmojiPickerApiProxy {
@@ -12,6 +13,16 @@ export interface EmojiPickerApiProxy {
   isIncognitoTextField(): Promise<{incognito: boolean}>;
 
   getFeatureList(): Promise<{featureList: number[]}>;
+
+  getCategories(): Promise<{categories: GifSubcategoryData[]}>;
+}
+
+// https://developers.google.com/tenor/guides/response-objects-and-errors#category-object
+declare interface CategoryObject {
+  searchterm: string;  // the search term that corresponds to the category
+  path: string;        // the search url to request
+  image: string;       // a url to the category's example GIF
+  name: string;        // category name
 }
 
 export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
@@ -39,6 +50,15 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
   /** @override */
   getFeatureList() {
     return this.handler.getFeatureList();
+  }
+
+  /** @override */
+  async getCategories(): Promise<{categories: GifSubcategoryData[]}> {
+    const {categories} = await this.handler.getCategories();
+    return {
+      categories: JSON.parse(categories)
+                      .tags.map((tag: CategoryObject) => ({name: tag.name})),
+    };
   }
 
   static getInstance(): EmojiPickerApiProxy {

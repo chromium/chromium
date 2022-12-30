@@ -62,3 +62,9 @@ export enum CategoryEnum {
   SYMBOL = 'symbol',
   GIF = 'gif',
 }
+
+export interface GifSubcategoryData {
+  name: string;
+  pagination?: number;
+  icon?: string;
+}
