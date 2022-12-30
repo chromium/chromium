@@ -794,6 +794,10 @@ dictionary SearchParams {
 };
 
 dictionary SearchMetadataParams {
+  // Optional root directory from which to start the search. If not present,
+  // the search begins at the local root.
+  [instanceof=DirectoryEntry] object? rootDir;
+
   // Search query. It can be empty. Any filename matches to an empty query.
   DOMString query;
 
@@ -1525,6 +1529,7 @@ interface Functions {
                                   SearchFilesByHashesCallback callback);
 
   // Search files in My Files.
+  [nocompile]
   static void searchFiles(SearchMetadataParams searchParams,
                           SearchFilesCallback callback);
 

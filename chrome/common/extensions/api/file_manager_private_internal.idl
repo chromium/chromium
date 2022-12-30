@@ -23,6 +23,12 @@ namespace fileManagerPrivateInternal {
     DOMString trashInfoFileName;
     double deletionDate;
   };
+  dictionary SearchFilesParams {
+    DOMString? rootUrl;
+    DOMString query;
+    fileManagerPrivate.SearchType types;
+    long maxResults;
+  };
 
   callback SimpleCallback = void();
   callback ResolveIsolatedEntriesCallback = void(EntryDescription[] entries);
@@ -58,7 +64,8 @@ namespace fileManagerPrivateInternal {
   callback GetThumbnailCallback = void(DOMString ThumbnailDataUrl);
   callback BooleanCallback = void(boolean result);
   callback GetVolumeRootCallback = void(EntryDescription rootDir);
-callback ParseTrashInfoFilesCallback = void(ParsedTrashInfoFile[] files);
+  callback ParseTrashInfoFilesCallback = void(ParsedTrashInfoFile[] files);
+  callback SearchFilesCallback = void(EntryDescription[] entries);
 
   interface Functions {
     static void resolveIsolatedEntries(DOMString[] urls,
@@ -94,6 +101,7 @@ callback ParseTrashInfoFilesCallback = void(ParsedTrashInfoFile[] files);
     static void executeTask(fileManagerPrivate.FileTaskDescriptor descriptor,
                             DOMString[] urls,
                             ExecuteTaskCallback callback);
+    static void searchFiles(SearchFilesParams searchParams, SearchFilesCallback callback);
     static void setDefaultTask(fileManagerPrivate.FileTaskDescriptor descriptor,
                                DOMString[] urls,
                                DOMString[] mimeTypes,

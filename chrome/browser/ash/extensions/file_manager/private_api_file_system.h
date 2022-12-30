@@ -463,15 +463,16 @@ class FileManagerPrivateSearchFilesByHashesFunction
                         const std::vector<drive::HashAndFilePath>& results);
 };
 
-class FileManagerPrivateSearchFilesFunction : public LoggedExtensionFunction {
+class FileManagerPrivateInternalSearchFilesFunction
+    : public LoggedExtensionFunction {
  public:
-  FileManagerPrivateSearchFilesFunction();
+  FileManagerPrivateInternalSearchFilesFunction();
 
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.searchFiles",
-                             FILEMANAGERPRIVATE_SEARCHFILES)
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.searchFiles",
+                             FILEMANAGERPRIVATEINTERNAL_SEARCHFILES)
 
  protected:
-  ~FileManagerPrivateSearchFilesFunction() override = default;
+  ~FileManagerPrivateInternalSearchFilesFunction() override = default;
 
  private:
   // ExtensionFunction overrides.

@@ -1372,11 +1372,12 @@ void FileManagerPrivateSearchFilesByHashesFunction::OnSearchByHashes(
   Respond(WithArguments(std::move(result)));
 }
 
-FileManagerPrivateSearchFilesFunction::FileManagerPrivateSearchFilesFunction() =
-    default;
+FileManagerPrivateInternalSearchFilesFunction::
+    FileManagerPrivateInternalSearchFilesFunction() = default;
 
-ExtensionFunction::ResponseAction FileManagerPrivateSearchFilesFunction::Run() {
-  using api::file_manager_private::SearchFiles::Params;
+ExtensionFunction::ResponseAction
+FileManagerPrivateInternalSearchFilesFunction::Run() {
+  using api::file_manager_private_internal::SearchFiles::Params;
   const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1384,21 +1385,34 @@ ExtensionFunction::ResponseAction FileManagerPrivateSearchFilesFunction::Run() {
     return RespondNow(Error("maxResults must be non-negative"));
   }
 
-  base::FilePath root = file_manager::util::GetMyFilesFolderForProfile(
-      Profile::FromBrowserContext(browser_context()));
+  base::FilePath root;
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  const std::string root_url = params->search_params.root_url.value_or("");
+  if (root_url.empty()) {
+    root = file_manager::util::GetMyFilesFolderForProfile(profile);
+  } else {
+    const scoped_refptr<storage::FileSystemContext> file_system_context =
+        file_manager::util::GetFileSystemContextForRenderFrameHost(
+            profile, render_frame_host());
+    const storage::FileSystemURL url =
+        file_system_context->CrackURLInFirstPartyContext(GURL(root_url));
+    root = url.path();
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&SearchByPattern, root, params->search_params.query,
                      base::internal::checked_cast<size_t>(
                          params->search_params.max_results)),
-      base::BindOnce(&FileManagerPrivateSearchFilesFunction::OnSearchByPattern,
-                     this));
+      base::BindOnce(
+          &FileManagerPrivateInternalSearchFilesFunction::OnSearchByPattern,
+          this));
 
   return RespondLater();
 }
 
-void FileManagerPrivateSearchFilesFunction::OnSearchByPattern(
+void FileManagerPrivateInternalSearchFilesFunction::OnSearchByPattern(
     const std::vector<std::pair<base::FilePath, bool>>& results) {
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   auto my_files_path = file_manager::util::GetMyFilesFolderForProfile(profile);
@@ -1429,9 +1443,7 @@ void FileManagerPrivateSearchFilesFunction::OnSearchByPattern(
     entries.Append(std::move(entry));
   }
 
-  base::Value::Dict result;
-  result.Set("entries", std::move(entries));
-  Respond(WithArguments(std::move(result)));
+  Respond(WithArguments(std::move(entries)));
 }
 
 ExtensionFunction::ResponseAction

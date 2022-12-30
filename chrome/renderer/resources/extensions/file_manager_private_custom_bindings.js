@@ -124,6 +124,20 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     fileManagerPrivateInternal.getMimeType(url, callback);
   });
 
+  apiFunctions.setHandleRequest('searchFiles', function(params, callback) {
+    const newParams = {
+      query: params.query,
+      types: params.types,
+      maxResults: params.maxResults,
+    };
+    if (params.rootDir) {
+      newParams.rootUrl = getEntryURL(params.rootDir);
+    }
+    fileManagerPrivateInternal.searchFiles(newParams, function(entryList) {
+      callback((entryList || []).map(e => GetExternalFileEntry(e)));
+    });
+  });
+
   apiFunctions.setHandleRequest('getContentMimeType',
       function(fileEntry, callback) {
     fileEntry.file(blob => {

@@ -699,6 +699,29 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, OpenURL) {
   EXPECT_STREQ(target_url, active_web_contents->GetVisibleURL().spec().c_str());
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, SearchFiles) {
+  const base::FilePath downloads_dir = temp_dir_.GetPath();
+  ASSERT_TRUE(file_manager::VolumeManager::Get(browser()->profile())
+                  ->RegisterDownloadsDirectoryForTesting(downloads_dir));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    base::File root_image_file(
+        downloads_dir.Append("foo.jpg"),
+        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(root_image_file.IsValid());
+
+    ASSERT_TRUE(base::CreateDirectory(downloads_dir.AppendASCII("images")));
+    base::File nested_image_file(
+        downloads_dir.Append("images").Append("foo.jpg"),
+        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(nested_image_file.IsValid());
+  }
+
+  ASSERT_TRUE(RunExtensionTest("file_browser/search_files", {},
+                               {.load_as_component = true}));
+}
+
 class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
  public:
   FileManagerPrivateApiDlpTest() {

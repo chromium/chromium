@@ -579,6 +579,7 @@ chrome.fileManagerPrivate.SearchParams;
 
 /**
  * @typedef {{
+ *   rootDir: (DirectoryEntry|undefined),
  *   query: string,
  *   types: !chrome.fileManagerPrivate.SearchType,
  *   maxResults: number
