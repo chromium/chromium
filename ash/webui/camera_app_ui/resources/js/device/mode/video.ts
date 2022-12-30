@@ -612,6 +612,7 @@ export class Video extends ModeBase {
     // TODO(b/191950622): Grab frames from capture stream when multistream
     // enabled.
     const video = this.video.video;
+    const videoTrack = this.getVideoTrack();
     let {videoWidth: width, videoHeight: height} = video;
     if (width > GIF_MAX_SIDE || height > GIF_MAX_SIDE) {
       const ratio = GIF_MAX_SIDE / Math.max(width, height);
@@ -622,12 +623,21 @@ export class Video extends ModeBase {
     const canvas = new OffscreenCanvas(width, height);
     const context = assertInstanceof(
         canvas.getContext('2d'), OffscreenCanvasRenderingContext2D);
+    if (videoTrack.readyState === 'ended') {
+      throw new NoFrameError();
+    }
     const frames = await new Promise<number>((resolve) => {
       let encodedFrames = 0;
       let writtenFrames = 0;
+      let handle = 0;
+      function stopRecording() {
+        video.cancelVideoFrameCallback(handle);
+        videoTrack.removeEventListener('ended', stopRecording);
+        resolve(writtenFrames);
+      }
       function updateCanvas() {
         if (!state.get(state.State.RECORDING)) {
-          resolve(writtenFrames);
+          stopRecording();
           return;
         }
         encodedFrames++;
@@ -636,9 +646,10 @@ export class Video extends ModeBase {
           context.drawImage(video, 0, 0, width, height);
           gifSaver.write(context.getImageData(0, 0, width, height).data);
         }
-        video.requestVideoFrameCallback(updateCanvas);
+        handle = video.requestVideoFrameCallback(updateCanvas);
       }
-      video.requestVideoFrameCallback(updateCanvas);
+      videoTrack.addEventListener('ended', stopRecording);
+      handle = video.requestVideoFrameCallback(updateCanvas);
     });
     if (frames === 0) {
       throw new NoFrameError();
