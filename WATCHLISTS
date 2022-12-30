@@ -1713,6 +1713,10 @@
     'privacy_budget': {
       'filepath': 'privacy_budget',
     },
+    'privacy_guide_desktop': {
+      'filepath': 'chrome/browser/resources/settings/privacy_page/privacy_guide/' \
+                  '|chrome/test/data/webui/settings/privacy_guide*',
+    },
     'privacy_sandbox': {
       'filepath': 'privacy_sandbox|PrivacySandbox',
     },
@@ -2909,6 +2913,7 @@
     'preview_features': ['chrome-lite-pages+watch@google.com'],
     'print_preview': ['print-reviews+preview@chromium.org'],
     'privacy_budget': ['antoniosartori+watch-privacy_budget@chromium.org'],
+    'privacy_guide_desktop': ['rainhard+watch@chromium.org'],
     'privacy_sandbox': [
       'alimariam+watch-privacy-sandbox@google.com',
       'dullweber+watch-privacy-sandbox@chromium.org',
