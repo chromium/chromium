@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 
 class CORE_EXPORT LongTaskObserver : public GarbageCollectedMixin {
