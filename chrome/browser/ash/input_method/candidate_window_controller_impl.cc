@@ -19,11 +19,11 @@ namespace ash {
 namespace input_method {
 
 CandidateWindowControllerImpl::CandidateWindowControllerImpl() {
-  ui::IMEBridge::Get()->SetCandidateWindowHandler(this);
+  IMEBridge::Get()->SetCandidateWindowHandler(this);
 }
 
 CandidateWindowControllerImpl::~CandidateWindowControllerImpl() {
-  ui::IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
+  IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
   if (candidate_window_view_) {
     candidate_window_view_->RemoveObserver(this);
     candidate_window_view_->GetWidget()->RemoveObserver(this);

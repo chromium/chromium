@@ -13,17 +13,17 @@
 namespace crosapi {
 namespace {
 
-ui::InputMethodAsh* GetInputMethod() {
-  const ui::IMEBridge* bridge = ui::IMEBridge::Get();
+ash::InputMethodAsh* GetInputMethod() {
+  const ash::IMEBridge* bridge = ash::IMEBridge::Get();
   if (!bridge)
     return nullptr;
 
-  ui::TextInputTarget* handler = bridge->GetInputContextHandler();
+  ash::TextInputTarget* handler = bridge->GetInputContextHandler();
   if (!handler)
     return nullptr;
 
-  // Guaranteed to be an ui::InputMethodAsh*.
-  return static_cast<ui::InputMethodAsh*>(handler->GetInputMethod());
+  // Guaranteed to be an ash::InputMethodAsh*.
+  return static_cast<ash::InputMethodAsh*>(handler->GetInputMethod());
 }
 
 }  // namespace

@@ -74,7 +74,7 @@ ui::GestureConsumer* ChromeKeyboardUI::GetGestureConsumer() const {
 }
 
 ui::InputMethod* ChromeKeyboardUI::GetInputMethod() {
-  ui::IMEBridge* bridge = ui::IMEBridge::Get();
+  ash::IMEBridge* bridge = ash::IMEBridge::Get();
   if (!bridge || !bridge->GetInputContextHandler()) {
     // Needed by a handful of browser tests that use MockInputMethod.
     return ash::Shell::GetRootWindowForNewWindows()

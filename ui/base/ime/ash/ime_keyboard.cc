@@ -8,6 +8,7 @@
 
 namespace ash {
 namespace input_method {
+
 namespace {
 
 const char *kISOLevel5ShiftLayoutIds[] = {

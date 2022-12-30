@@ -34,6 +34,7 @@
 
 namespace ash {
 namespace input_method {
+
 namespace {
 
 const char kTestExtensionId[] = "mppnpdlheglhdfmldimlhpnegondlapf";
@@ -92,7 +93,7 @@ class TestObserver : public StubInputMethodEngineObserver {
   }
   void OnFocus(const std::string& engine_id,
                int context_id,
-               const ui::TextInputMethod::InputContext& context) override {
+               const TextInputMethod::InputContext& context) override {
     calls_bitmap_ |= ONFOCUS;
   }
   void OnBlur(const std::string& engine_id, int context_id) override {
@@ -100,7 +101,7 @@ class TestObserver : public StubInputMethodEngineObserver {
   }
   void OnKeyEvent(const std::string& engine_id,
                   const ui::KeyEvent& event,
-                  ui::TextInputMethod::KeyEventDoneCallback callback) override {
+                  TextInputMethod::KeyEventDoneCallback callback) override {
     std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
   }
   void OnCompositionBoundsChanged(
@@ -137,8 +138,8 @@ class InputMethodEngineTest : public testing::Test {
     layouts_.emplace_back("us");
     InitInputMethod();
     mock_ime_input_context_handler_ =
-        std::make_unique<ui::MockIMEInputContextHandler>();
-    ui::IMEBridge::Get()->SetInputContextHandler(
+        std::make_unique<MockIMEInputContextHandler>();
+    IMEBridge::Get()->SetInputContextHandler(
         mock_ime_input_context_handler_.get());
 
     chrome_keyboard_controller_client_test_helper_ =
@@ -149,7 +150,7 @@ class InputMethodEngineTest : public testing::Test {
   InputMethodEngineTest& operator=(const InputMethodEngineTest&) = delete;
 
   ~InputMethodEngineTest() override {
-    ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+    IMEBridge::Get()->SetInputContextHandler(nullptr);
     engine_.reset();
     chrome_keyboard_controller_client_test_helper_.reset();
     Shutdown();
@@ -166,9 +167,9 @@ class InputMethodEngineTest : public testing::Test {
   }
 
   void Focus(ui::TextInputType input_type) {
-    ui::TextInputMethod::InputContext input_context(input_type);
+    TextInputMethod::InputContext input_context(input_type);
     engine_->Focus(input_context);
-    ui::IMEBridge::Get()->SetCurrentInputContext(input_context);
+    IMEBridge::Get()->SetCurrentInputContext(input_context);
   }
 
   std::unique_ptr<InputMethodEngine> engine_;
@@ -180,8 +181,7 @@ class InputMethodEngineTest : public testing::Test {
   GURL input_view_;
 
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ui::MockIMEInputContextHandler>
-      mock_ime_input_context_handler_;
+  std::unique_ptr<MockIMEInputContextHandler> mock_ime_input_context_handler_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
 };

@@ -156,8 +156,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
       &extension_imes);
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
       kTestIMEID, false /* show_message */);
-  ui::TextInputMethod* engine_handler =
-      ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  ash::TextInputMethod* engine_handler =
+      ash::IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
 
   ASSERT_TRUE(activated_listener.WaitUntilSatisfied()) << message_;

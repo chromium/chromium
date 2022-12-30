@@ -111,8 +111,7 @@ class GrammarManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    ui::IMEBridge::Get()->SetInputContextHandler(
-        &mock_ime_input_context_handler_);
+    IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler_);
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
@@ -124,7 +123,7 @@ class GrammarManagerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   chromeos::machine_learning::FakeServiceConnectionImpl
       fake_service_connection_;
-  ui::MockIMEInputContextHandler mock_ime_input_context_handler_;
+  MockIMEInputContextHandler mock_ime_input_context_handler_;
 };
 
 TEST_F(GrammarManagerTest, HandlesSingleGrammarCheckResult) {
@@ -134,7 +133,7 @@ TEST_F(GrammarManagerTest, HandlesSingleGrammarCheckResult) {
                          &mock_suggestion_handler);
   base::HistogramTester histogram_tester;
 
-  manager.OnFocus(1, ui::SpellcheckMode::kUnspecified);
+  manager.OnFocus(1, SpellcheckMode::kUnspecified);
   manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::Milliseconds(2500));
@@ -155,7 +154,7 @@ TEST_F(GrammarManagerTest, RecordsUnderlinesMetricsWithoutDups) {
                          &mock_suggestion_handler);
   base::HistogramTester histogram_tester;
 
-  manager.OnFocus(1, ui::SpellcheckMode::kUnspecified);
+  manager.OnFocus(1, SpellcheckMode::kUnspecified);
   manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error error", 0, 0);
   task_environment_.FastForwardBy(base::Milliseconds(2500));
@@ -175,7 +174,7 @@ TEST_F(GrammarManagerTest, DoesNotRunGrammarCheckOnTextFieldWithSpellcheckOff) {
                          &mock_suggestion_handler);
   base::HistogramTester histogram_tester;
 
-  manager.OnFocus(1, ui::SpellcheckMode::kDisabled);
+  manager.OnFocus(1, SpellcheckMode::kDisabled);
   manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::Milliseconds(2500));

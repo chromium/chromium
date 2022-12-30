@@ -101,8 +101,7 @@ void RecordAppCompatibilityUkm(
 void LogAutocorrectAppCompatibilityUkm(AutocorrectActions action,
                                        base::TimeDelta time_delta,
                                        bool virtual_keyboard_visible) {
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     return;
   }
@@ -390,8 +389,7 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
 
   // TODO(crbug/1111135): call setAutocorrectTime() (for metrics)
   // TODO(crbug/1111135): record metric (coverage)
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     LogAssistiveAutocorrectInternalState(
         AutocorrectInternalStates::kHandleNoInputContext);
@@ -769,8 +767,7 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   }
 
   std::string error;
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
 
   // Null input context invalidates the range so consider the pending
   // range as implicitly rejected/cleared.
@@ -901,8 +898,7 @@ void AutocorrectManager::OnBlur() {
 }
 
 void AutocorrectManager::ProcessTextFieldChange() {
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
 
   // Clear autocorrect range if any.
   if (input_context) {
@@ -925,8 +921,7 @@ void AutocorrectManager::UndoAutocorrect() {
 
   HideUndoWindow();
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   const gfx::Range autocorrect_range = input_context->GetAutocorrectRange();
 
   if (input_context->HasCompositionText()) {
@@ -940,7 +935,7 @@ void AutocorrectManager::UndoAutocorrect() {
     // reflects reality, due to async-ness between IMF and TextInputClient.
     // TODO(crbug/1194424): Work around the issue or fix
     // GetSurroundingTextInfo().
-    const ui::SurroundingTextInfo surrounding_text =
+    const SurroundingTextInfo surrounding_text =
         input_context->GetSurroundingTextInfo();
 
     // Delete the autocorrected text.
@@ -1082,8 +1077,7 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
     return;
   }
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
 
   LogAssistiveAutocorrectInternalState(
       AutocorrectInternalStates::kSuggestionResolved);

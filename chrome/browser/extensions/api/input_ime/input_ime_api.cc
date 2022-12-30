@@ -50,7 +50,7 @@ ui::KeyEvent ConvertKeyboardEventToUIKeyEvent(
   const auto key_code = static_cast<ui::KeyboardCode>(
       event.key_code && *event.key_code != ui::VKEY_UNKNOWN
           ? *event.key_code
-          : ui::DomKeycodeToKeyboardCode(event.code));
+          : ash::DomKeycodeToKeyboardCode(event.code));
 
   int flags = ui::EF_NONE;
   flags |= event.alt_key && *event.alt_key ? ui::EF_ALT_DOWN : ui::EF_NONE;

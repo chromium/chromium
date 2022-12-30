@@ -4,7 +4,7 @@
 
 #include "ui/base/ime/ash/ime_bridge.h"
 
-namespace ui {
+namespace ash {
 
 static IMEBridge* g_ime_bridge = nullptr;
 
@@ -39,30 +39,30 @@ const TextInputMethod::InputContext& IMEBridge::GetCurrentInputContext() const {
   return current_input_context_;
 }
 
-void IMEBridge::AddObserver(ui::IMEBridgeObserver* observer) {
+void IMEBridge::AddObserver(IMEBridgeObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void IMEBridge::RemoveObserver(ui::IMEBridgeObserver* observer) {
+void IMEBridge::RemoveObserver(IMEBridgeObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
 void IMEBridge::SetCandidateWindowHandler(
-    ash::IMECandidateWindowHandlerInterface* handler) {
+    IMECandidateWindowHandlerInterface* handler) {
   candidate_window_handler_ = handler;
 }
 
-ash::IMECandidateWindowHandlerInterface* IMEBridge::GetCandidateWindowHandler()
+IMECandidateWindowHandlerInterface* IMEBridge::GetCandidateWindowHandler()
     const {
   return candidate_window_handler_;
 }
 
 void IMEBridge::SetAssistiveWindowHandler(
-    ash::IMEAssistiveWindowHandlerInterface* handler) {
+    IMEAssistiveWindowHandlerInterface* handler) {
   assistive_window_handler_ = handler;
 }
 
-ash::IMEAssistiveWindowHandlerInterface* IMEBridge::GetAssistiveWindowHandler()
+IMEAssistiveWindowHandlerInterface* IMEBridge::GetAssistiveWindowHandler()
     const {
   return assistive_window_handler_;
 }
@@ -75,4 +75,4 @@ IMEBridge* IMEBridge::Get() {
   return g_ime_bridge;
 }
 
-}  // namespace ui
+}  // namespace ash

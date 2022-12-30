@@ -245,7 +245,7 @@ TEST_F(ImeControllerClientImplTest, ShowImeMenuOnShelf) {
 TEST_F(ImeControllerClientImplTest, InputMethodChanged) {
   auto mock_candidate_window =
       std::make_unique<ash::MockIMECandidateWindowHandler>();
-  ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
+  ash::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
 
   ImeControllerClientImpl client(&input_method_manager_);
   client.Init();

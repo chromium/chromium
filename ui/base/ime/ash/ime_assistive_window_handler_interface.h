@@ -20,6 +20,7 @@ struct SuggestionDetails;
 }  // namespace ui
 
 namespace ash {
+
 namespace input_method {
 struct AssistiveWindowProperties;
 }

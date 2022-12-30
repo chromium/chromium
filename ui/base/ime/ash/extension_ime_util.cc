@@ -9,6 +9,7 @@
 #include "build/branding_buildflags.h"
 
 namespace ash {
+
 namespace {
 
 const char kExtensionIMEPrefix[] = "_ext_ime_";

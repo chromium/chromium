@@ -104,11 +104,4 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIMEManager {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::ComponentExtensionEngine;
-using ::ash::ComponentExtensionIME;
-using ::ash::ComponentExtensionIMEManager;
-}  // namespace chromeos
-
 #endif  // UI_BASE_IME_ASH_COMPONENT_EXTENSION_IME_MANAGER_H_

@@ -18,6 +18,7 @@
 
 namespace ash {
 namespace input_method {
+
 namespace {
 
 class TestObserver : public StubInputMethodEngineObserver {
@@ -29,14 +30,14 @@ class TestObserver : public StubInputMethodEngineObserver {
 
   void OnKeyEvent(const std::string& engine_id,
                   const ui::KeyEvent& event,
-                  ui::TextInputMethod::KeyEventDoneCallback callback) override {
+                  TextInputMethod::KeyEventDoneCallback callback) override {
     std::move(callback).Run(ui::ime::KeyEventHandledState::kNotHandled);
   }
 };
 
 class KeyProcessingWaiter {
  public:
-  ui::TextInputMethod::KeyEventDoneCallback CreateCallback() {
+  TextInputMethod::KeyEventDoneCallback CreateCallback() {
     return base::BindOnce(&KeyProcessingWaiter::OnKeyEventDone,
                           base::Unretained(this));
   }
@@ -78,8 +79,8 @@ class NativeInputMethodEngineWithImeServiceTest
     // TODO(crbug/1197005): Migrate to Tast to avoid reliance on delicate luck.
     engine_ =
         NativeInputMethodEngine::CreateForTesting(/*use_ime_service=*/true);
-    ui::IMEBridge::Get()->SetInputContextHandler(&input_method_);
-    ui::IMEBridge::Get()->SetCurrentEngineHandler(engine_.get());
+    IMEBridge::Get()->SetInputContextHandler(&input_method_);
+    IMEBridge::Get()->SetCurrentEngineHandler(engine_.get());
 
     auto observer = std::make_unique<TestObserver>();
     Profile* profile = browser()->profile();
@@ -95,8 +96,8 @@ class NativeInputMethodEngineWithImeServiceTest
     // observes ChromeKeyboardControllerClient, which is tied to the browser
     // lifetime.
     engine_.reset();
-    ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
-    ui::IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
+    IMEBridge::Get()->SetInputContextHandler(nullptr);
+    IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -129,7 +130,7 @@ class NativeInputMethodEngineWithImeServiceTest
   std::unique_ptr<NativeInputMethodEngine> engine_;
 
  private:
-  ui::InputMethodAsh input_method_;
+  InputMethodAsh input_method_;
 };
 
 // ID is specified in google_xkb_manifest.json.

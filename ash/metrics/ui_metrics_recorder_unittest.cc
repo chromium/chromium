@@ -197,7 +197,7 @@ TEST_F(UiMetricsRecorderTest, Gestures) {
 TEST_F(UiMetricsRecorderTest, TargetDestroyedWithSyncIME) {
   // Setup.
   auto ime_engine = std::make_unique<TestIMEEngineHandler>();
-  ui::IMEBridge::Get()->SetCurrentEngineHandler(ime_engine.get());
+  IMEBridge::Get()->SetCurrentEngineHandler(ime_engine.get());
 
   std::unique_ptr<views::Widget> widget = CreateTestWindowWidget();
   FakeTestView* view =
@@ -215,7 +215,7 @@ TEST_F(UiMetricsRecorderTest, TargetDestroyedWithSyncIME) {
   EXPECT_EQ(destroyer.GetReceivedKeyEvent(), 1);
 
   // Teardown.
-  ui::IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
+  IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
 }
 
 }  // namespace

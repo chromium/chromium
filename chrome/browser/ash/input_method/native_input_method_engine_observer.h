@@ -32,8 +32,6 @@
 namespace ash {
 namespace input_method {
 
-using ui::TextInputMethod;
-
 bool CanRouteToNativeMojoEngine(const std::string& engine_id);
 
 class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
@@ -66,7 +64,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   void OnBlur(const std::string& engine_id, int context_id) override;
   void OnKeyEvent(const std::string& engine_id,
                   const ui::KeyEvent& event,
-                  ui::TextInputMethod::KeyEventDoneCallback callback) override;
+                  TextInputMethod::KeyEventDoneCallback callback) override;
   void OnReset(const std::string& engine_id) override;
   void OnDeactivated(const std::string& engine_id) override;
   void OnCompositionBoundsChanged(

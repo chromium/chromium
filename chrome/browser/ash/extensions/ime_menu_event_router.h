@@ -17,7 +17,7 @@ namespace chromeos {
 // It's owned by InputMethodManager, and its lifetime restricted to the lifetime
 // of the InputMethodManager and the EventRouter.
 class ExtensionImeMenuEventRouter
-    : public input_method::InputMethodManager::ImeMenuObserver {
+    : public ash::input_method::InputMethodManager::ImeMenuObserver {
  public:
   explicit ExtensionImeMenuEventRouter(content::BrowserContext* context);
 
@@ -27,12 +27,12 @@ class ExtensionImeMenuEventRouter
 
   ~ExtensionImeMenuEventRouter() override;
 
-  // input_method::InputMethodManager::ImeMenuObserver:
+  // ash::input_method::InputMethodManager::ImeMenuObserver:
   void ImeMenuActivationChanged(bool activation) override;
   void ImeMenuListChanged() override;
   void ImeMenuItemsChanged(
       const std::string& engine_id,
-      const std::vector<input_method::InputMethodManager::MenuItem>& items)
+      const std::vector<ash::input_method::InputMethodManager::MenuItem>& items)
       override;
 
  private:

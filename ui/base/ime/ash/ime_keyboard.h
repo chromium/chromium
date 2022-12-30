@@ -101,10 +101,4 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboard {
 }  // namespace input_method
 }  // namespace ash
 
-namespace chromeos {
-namespace input_method {
-using ::ash::input_method::AutoRepeatRate;
-}
-}  // namespace chromeos
-
 #endif  // UI_BASE_IME_ASH_IME_KEYBOARD_H_

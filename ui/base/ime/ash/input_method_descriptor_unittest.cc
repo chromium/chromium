@@ -15,8 +15,6 @@ namespace ash {
 namespace input_method {
 namespace {
 
-using ::base::ASCIIToUTF16;
-
 InputMethodDescriptor CreateDesc(const std::string& id,
                                  const std::string& layout,
                                  const std::vector<std::string>& language_codes,

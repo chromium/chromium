@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 
-namespace ui {
+namespace ash {
 
 // A interface to observe changes in the IMEBridge.
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridgeObserver
@@ -18,6 +18,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridgeObserver
   virtual void OnInputContextHandlerChanged() = 0;
 };
 
-}  // namespace ui
+}  // namespace ash
 
 #endif  // UI_BASE_IME_ASH_IME_BRIDGE_OBSERVER_H_

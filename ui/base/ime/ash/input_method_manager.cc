@@ -10,7 +10,9 @@ namespace ash {
 namespace input_method {
 
 namespace {
+
 InputMethodManager* g_input_method_manager = nullptr;
+
 }  // namespace
 
 InputMethodManager::State::~State() = default;

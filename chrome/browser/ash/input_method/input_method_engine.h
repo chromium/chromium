@@ -34,7 +34,6 @@ static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 namespace ui {
 struct CompositionText;
-class TextInputMethod;
 class KeyEvent;
 
 namespace ime {
@@ -45,6 +44,7 @@ struct SuggestionDetails;
 }  // namespace ui
 
 namespace ash {
+
 namespace ime {
 struct AssistiveWindow;
 }  // namespace ime
@@ -53,7 +53,7 @@ namespace input_method {
 
 struct AssistiveWindowProperties;
 
-class InputMethodEngine : virtual public ui::TextInputMethod,
+class InputMethodEngine : virtual public TextInputMethod,
                           public ProfileObserver,
                           public SuggestionHandlerInterface {
  public:
@@ -203,7 +203,7 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
   // Returns the request ID for this key event.
   std::string AddPendingKeyEvent(
       const std::string& component_id,
-      ui::TextInputMethod::KeyEventDoneCallback callback);
+      TextInputMethod::KeyEventDoneCallback callback);
 
   // Resolves all the pending key event callbacks as not handled.
   void CancelPendingKeyEvents();
@@ -219,8 +219,8 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
     return pref_change_registrar_.get();
   }
 
-  // ui::TextInputMethod overrides.
-  void Focus(const ui::TextInputMethod::InputContext& input_context) override;
+  // TextInputMethod overrides.
+  void Focus(const TextInputMethod::InputContext& input_context) override;
   void Blur() override;
   void OnTouch(ui::EventPointerType pointerType) override;
   void Enable(const std::string& component_id) override;
@@ -310,7 +310,7 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
  private:
   struct PendingKeyEvent {
     PendingKeyEvent(const std::string& component_id,
-                    ui::TextInputMethod::KeyEventDoneCallback callback);
+                    TextInputMethod::KeyEventDoneCallback callback);
     PendingKeyEvent(PendingKeyEvent&& other);
 
     PendingKeyEvent(const PendingKeyEvent&) = delete;
@@ -319,7 +319,7 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
     ~PendingKeyEvent();
 
     std::string component_id;
-    ui::TextInputMethod::KeyEventDoneCallback callback;
+    TextInputMethod::KeyEventDoneCallback callback;
   };
 
   // Notifies InputContextHandler that the composition is changed.

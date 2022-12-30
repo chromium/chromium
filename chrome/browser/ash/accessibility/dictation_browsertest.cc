@@ -532,8 +532,8 @@ class DictationTestBase : public InProcessBrowserTest,
   }
 
   void InstallMockInputContextHandler() {
-    input_context_handler_ = std::make_unique<ui::MockIMEInputContextHandler>();
-    ui::IMEBridge::Get()->SetInputContextHandler(input_context_handler_.get());
+    input_context_handler_ = std::make_unique<MockIMEInputContextHandler>();
+    IMEBridge::Get()->SetInputContextHandler(input_context_handler_.get());
   }
 
   // Retrieves the number of times commit text is updated.
@@ -595,7 +595,7 @@ class DictationTestBase : public InProcessBrowserTest,
  private:
   SpeechRecognitionTestHelper test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<ui::MockIMEInputContextHandler> input_context_handler_;
+  std::unique_ptr<MockIMEInputContextHandler> input_context_handler_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 };

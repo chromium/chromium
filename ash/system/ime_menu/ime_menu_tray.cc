@@ -105,7 +105,7 @@ bool IsInLoginOrLockScreen() {
 
 // Returns true if the current input context type is password.
 bool IsInPasswordInputContext() {
-  return ui::IMEBridge::Get()->GetCurrentInputContext().type ==
+  return IMEBridge::Get()->GetCurrentInputContext().type ==
          ui::TEXT_INPUT_TYPE_PASSWORD;
 }
 

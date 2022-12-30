@@ -21,13 +21,13 @@
 
 class Profile;
 
-namespace ui {
-class TextInputMethod;
-}  // namespace ui
-
 namespace ash {
+
 class ComponentExtensionIMEManager;
+class TextInputMethod;
+
 namespace input_method {
+
 class InputMethodUtil;
 class ImeKeyboard;
 
@@ -138,7 +138,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     virtual void AddInputMethodExtension(
         const std::string& extension_id,
         const InputMethodDescriptors& descriptors,
-        ui::TextInputMethod* instance) = 0;
+        TextInputMethod* instance) = 0;
 
     // Removes an input method extension.
     virtual void RemoveInputMethodExtension(
@@ -387,12 +387,5 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 
 }  // namespace input_method
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace input_method {
-using ::ash::input_method::InputMethodManager;
-}
-}  // namespace chromeos
 
 #endif  // UI_BASE_IME_ASH_INPUT_METHOD_MANAGER_H_

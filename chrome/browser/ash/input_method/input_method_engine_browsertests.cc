@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -77,9 +79,9 @@ class InputMethodEngineBrowserTest
 
   void TearDownInProcessBrowserTestFixture() override { extension_ = nullptr; }
 
-  ui::TextInputMethod::InputContext CreateInputContextWithInputType(
+  TextInputMethod::InputContext CreateInputContextWithInputType(
       ui::TextInputType type) {
-    return ui::TextInputMethod::InputContext(type);
+    return TextInputMethod::InputContext(type);
   }
 
  protected:
@@ -194,13 +196,12 @@ INSTANTIATE_TEST_SUITE_P(InputMethodEngineComponentExtensionBrowserTest,
 IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
   LoadTestInputMethod();
 
-  std::unique_ptr<ui::MockIMEInputContextHandler> mock_input_context(
-      new ui::MockIMEInputContextHandler());
+  auto mock_input_context = std::make_unique<MockIMEInputContextHandler>();
   std::unique_ptr<MockIMECandidateWindowHandler> mock_candidate_window(
       new MockIMECandidateWindowHandler());
 
-  ui::IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
-  ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
+  IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
+  IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
 
   // onActivate event should be fired when changing input methods.
   ExtensionTestMessageListener activated_listener("onActivate");
@@ -209,8 +210,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
   ASSERT_TRUE(activated_listener.WaitUntilSatisfied());
   ASSERT_TRUE(activated_listener.was_satisfied());
 
-  ui::TextInputMethod* engine_handler =
-      ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  TextInputMethod* engine_handler = IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
 
   // onFocus event should be fired if Focus function is called.
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
                                                     // consume keys.
   ExtensionTestMessageListener keyevent_listener("onKeyEvent");
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
-  ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
+  TextInputMethod::KeyEventDoneCallback keyevent_callback =
       base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
   engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
   ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -270,8 +270,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
   ASSERT_TRUE(disabled_listener.WaitUntilSatisfied());
   ASSERT_TRUE(disabled_listener.was_satisfied());
 
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
-  ui::IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(nullptr);
+  IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
@@ -284,16 +284,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
       kAPIArgumentIMEID, false /* show_message */);
 
-  std::unique_ptr<ui::MockIMEInputContextHandler> mock_input_context(
-      new ui::MockIMEInputContextHandler());
+  auto mock_input_context = std::make_unique<MockIMEInputContextHandler>();
   std::unique_ptr<MockIMECandidateWindowHandler> mock_candidate_window(
       new MockIMECandidateWindowHandler());
 
-  ui::IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
-  ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
+  IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
+  IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
 
-  ui::TextInputMethod* engine_handler =
-      ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  TextInputMethod* engine_handler = IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
 
   extensions::ExtensionHost* host =
@@ -313,7 +311,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
 
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_NONE);
-    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
+    TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -329,7 +327,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
 
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_CONTROL_DOWN);
-    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
+    TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -345,7 +343,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
 
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_ALT_DOWN);
-    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
+    TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -361,7 +359,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
 
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_SHIFT_DOWN);
-    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
+    TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -377,7 +375,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
 
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_CAPS_LOCK_ON);
-    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
+    TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -393,7 +391,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
 
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
-    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
+    TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -409,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
 
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_SHIFT_DOWN | ui::EF_CAPS_LOCK_ON);
-    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
+    TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -425,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
 
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_ALTGR_DOWN);
-    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
+    TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -473,7 +471,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
         ui::ET_KEY_PRESSED, kMediaKeyCases[i].keycode,
         ui::KeycodeConverter::CodeStringToDomCode(kMediaKeyCases[i].code),
         ui::EF_NONE);
-    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
+    TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -665,7 +663,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
     ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
                                        set_assistive_window_test_script));
     auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
-        ui::IMEBridge::Get()->GetAssistiveWindowHandler());
+        IMEBridge::Get()->GetAssistiveWindowHandler());
 
     ui::ime::UndoWindow* undo_window =
         assistive_window_controller->GetUndoWindowForTesting();
@@ -689,7 +687,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
       });
     )";
     auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
-        ui::IMEBridge::Get()->GetAssistiveWindowHandler());
+        IMEBridge::Get()->GetAssistiveWindowHandler());
     views::test::WidgetDestroyedWaiter waiter(
         assistive_window_controller->GetUndoWindowForTesting()->GetWidget());
     ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
@@ -715,7 +713,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
     ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
                                        set_assistive_window_test_script));
     auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
-        ui::IMEBridge::Get()->GetAssistiveWindowHandler());
+        IMEBridge::Get()->GetAssistiveWindowHandler());
 
     ui::ime::UndoWindow* undo_window =
         assistive_window_controller->GetUndoWindowForTesting();
@@ -760,7 +758,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
         host->host_contents(),
         set_assistive_window_button_highlighted_test_script));
     auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
-        ui::IMEBridge::Get()->GetAssistiveWindowHandler());
+        IMEBridge::Get()->GetAssistiveWindowHandler());
 
     ui::ime::UndoWindow* undo_window =
         assistive_window_controller->GetUndoWindowForTesting();
@@ -798,7 +796,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
         host->host_contents(),
         set_assistive_window_button_highlighted_test_script));
     auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
-        ui::IMEBridge::Get()->GetAssistiveWindowHandler());
+        IMEBridge::Get()->GetAssistiveWindowHandler());
 
     ui::ime::UndoWindow* undo_window =
         assistive_window_controller->GetUndoWindowForTesting();
@@ -1280,8 +1278,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
     EXPECT_EQ(1, mock_input_context->commit_text_call_count());
   }
 
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
-  ui::IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(nullptr);
+  IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
@@ -1290,16 +1288,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
       kAPIArgumentIMEID, false /* show_message */);
 
-  std::unique_ptr<ui::MockIMEInputContextHandler> mock_input_context(
-      new ui::MockIMEInputContextHandler());
+  auto mock_input_context = std::make_unique<MockIMEInputContextHandler>();
   std::unique_ptr<MockIMECandidateWindowHandler> mock_candidate_window(
       new MockIMECandidateWindowHandler());
 
-  ui::IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
-  ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
+  IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
+  IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
 
-  ui::TextInputMethod* engine_handler =
-      ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  TextInputMethod* engine_handler = IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
 
   auto keyboard_config =
@@ -1393,8 +1389,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
     ASSERT_TRUE(focus_listener.was_satisfied());
   }
 
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
-  ui::IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(nullptr);
+  IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, ShouldDoLearning) {
@@ -1403,29 +1399,27 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, ShouldDoLearning) {
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
       kIdentityIMEID, false /* show_message */);
 
-  std::unique_ptr<ui::MockIMEInputContextHandler> mock_input_context(
-      new ui::MockIMEInputContextHandler());
+  auto mock_input_context = std::make_unique<MockIMEInputContextHandler>();
   std::unique_ptr<MockIMECandidateWindowHandler> mock_candidate_window(
       new MockIMECandidateWindowHandler());
 
-  ui::IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
-  ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
+  IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
+  IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
 
-  ui::TextInputMethod* engine_handler =
-      ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  TextInputMethod* engine_handler = IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
 
   // onFocus event should be fired if Focus function is called.
   ExtensionTestMessageListener focus_listener(
       "onFocus:text:true:true:true:true");
   auto context = CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT);
-  context.personalization_mode = ui::PersonalizationMode::kEnabled;
+  context.personalization_mode = PersonalizationMode::kEnabled;
   engine_handler->Focus(context);
   ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
   ASSERT_TRUE(focus_listener.was_satisfied());
 
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
-  ui::IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(nullptr);
+  IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, MojoInteractionTest) {

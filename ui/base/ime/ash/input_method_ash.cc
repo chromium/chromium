@@ -34,8 +34,12 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace ui {
+namespace ash {
+
 namespace {
+
+using ::ui::CompositionText;
+using ::ui::TextInputClient;
 
 template <typename T>
 T ConvertTextInputFlagToEnum(int flags, int flag_on_value, int flag_off_value) {
@@ -62,13 +66,14 @@ AutocapitalizationMode ConvertAutocapitalizationMode(int flags) {
 
 }  // namespace
 
-ui::TextInputMethod* GetEngine() {
-  auto* bridge = ui::IMEBridge::Get();
+TextInputMethod* GetEngine() {
+  auto* bridge = IMEBridge::Get();
   return bridge ? bridge->GetCurrentEngineHandler() : nullptr;
 }
 
 // InputMethodAsh implementation -----------------------------------------
-InputMethodAsh::InputMethodAsh(ImeKeyEventDispatcher* ime_key_event_dispatcher)
+InputMethodAsh::InputMethodAsh(
+    ui::ImeKeyEventDispatcher* ime_key_event_dispatcher)
     : InputMethodBase(ime_key_event_dispatcher),
       typing_session_manager_(base::DefaultClock::GetInstance()) {
   ResetContext();
@@ -79,9 +84,8 @@ InputMethodAsh::~InputMethodAsh() {
   // We are dead, so we need to ask the client to stop relying on us.
   OnInputMethodChanged();
 
-  if (ui::IMEBridge::Get() &&
-      ui::IMEBridge::Get()->GetInputContextHandler() == this) {
-    ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+  if (IMEBridge::Get() && IMEBridge::Get()->GetInputContextHandler() == this) {
+    IMEBridge::Get()->SetInputContextHandler(nullptr);
   }
   typing_session_manager_.EndAndRecordSession();
 }
@@ -110,10 +114,10 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
   // For OS_CHROMEOS build of Chrome running on Linux, the IME keyboard cannot
   // track the Caps Lock state by itself, so need to call SetCapsLockEnabled()
   // method to reflect the Caps Lock state by the key event.
-  auto* manager = ash::input_method::InputMethodManager::Get();
+  auto* manager = input_method::InputMethodManager::Get();
   if (manager) {
-    ash::input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
-    if (keyboard && event->type() == ET_KEY_PRESSED &&
+    input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
+    if (keyboard && event->type() == ui::ET_KEY_PRESSED &&
         event->key_code() != ui::VKEY_CAPITAL &&
         keyboard->CapsLockIsEnabled() != event->IsCapsLockOn()) {
       // Synchronize the keyboard state with event's state if they do not
@@ -127,9 +131,9 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
     // VKEY_CONVERT: Henkan key
     // VKEY_NONCONVERT: Muhenkan key
     // VKEY_DBE_SBCSCHAR/VKEY_DBE_DBCSCHAR: ZenkakuHankaku key
-    ash::input_method::InputMethodManager::State* state =
+    input_method::InputMethodManager::State* state =
         manager->GetActiveIMEState().get();
-    if (event->type() == ET_KEY_PRESSED && state) {
+    if (event->type() == ui::ET_KEY_PRESSED && state) {
       bool language_input_key = true;
       switch (event->key_code()) {
         case ui::VKEY_CONVERT:
@@ -162,7 +166,7 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
   // Note: We need to send the key event to ibus even if the |context_| is not
   // enabled, so that ibus can have a chance to enable the |context_|.
   if (IsPasswordOrNoneInputFieldFocused() || !GetEngine()) {
-    if (event->type() == ET_KEY_PRESSED) {
+    if (event->type() == ui::ET_KEY_PRESSED) {
       if (ExecuteCharacterComposer(*event)) {
         // Treating as PostIME event if character composer handles key event and
         // generates some IME event,
@@ -198,7 +202,7 @@ void InputMethodAsh::ProcessKeyEventDone(
     ui::ime::KeyEventHandledState handled_state) {
   DCHECK(event);
   bool is_handled_by_char_composer = false;
-  if (event->type() == ET_KEY_PRESSED) {
+  if (event->type() == ui::ET_KEY_PRESSED) {
     if (handled_state != ui::ime::KeyEventHandledState::kNotHandled) {
       // IME event has a priority to be handled, so that character composer
       // should be reset.
@@ -209,7 +213,7 @@ void InputMethodAsh::ProcessKeyEventDone(
       is_handled_by_char_composer = ExecuteCharacterComposer(*event);
 
       if (!is_handled_by_char_composer &&
-          !KeycodeConverter::IsDomKeyForModifier(event->GetDomKey())) {
+          !ui::KeycodeConverter::IsDomKeyForModifier(event->GetDomKey())) {
         // If the character composer didn't handle it either, then confirm any
         // composition text before forwarding the key event. We ignore modifier
         // keys because, for example, if the IME handles Shift+A, then we don't
@@ -219,7 +223,8 @@ void InputMethodAsh::ProcessKeyEventDone(
       }
     }
   }
-  if (event->type() == ET_KEY_PRESSED || event->type() == ET_KEY_RELEASED) {
+  if (event->type() == ui::ET_KEY_PRESSED ||
+      event->type() == ui::ET_KEY_RELEASED) {
     ui::ime::KeyEventHandledState handled_state_to_process =
         is_handled_by_char_composer
             ? ui::ime::KeyEventHandledState::kHandledByIME
@@ -236,9 +241,9 @@ void InputMethodAsh::OnTextInputTypeChanged(TextInputClient* client) {
 
   UpdateContextFocusState();
 
-  ui::TextInputMethod* engine = GetEngine();
+  TextInputMethod* engine = GetEngine();
   if (engine) {
-    const ui::TextInputMethod::InputContext context = GetInputContext();
+    const TextInputMethod::InputContext context = GetInputContext();
     // When focused input client is not changed, a text input type change
     // should cause blur/focus events to engine. The focus in to or out from
     // password field should also notify engine.
@@ -264,16 +269,16 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
   DCHECK(client == GetTextInputClient());
   DCHECK(!IsTextInputTypeNone());
 
-  ui::TextInputMethod* engine = GetEngine();
+  TextInputMethod* engine = GetEngine();
   if (engine) {
     engine->SetCompositionBounds(GetCompositionBounds(client));
     engine->SetCaretBounds(client->GetCaretBounds());
   }
 
-  ash::IMECandidateWindowHandlerInterface* candidate_window =
-      ui::IMEBridge::Get()->GetCandidateWindowHandler();
-  ash::IMEAssistiveWindowHandlerInterface* assistive_window =
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
+  IMECandidateWindowHandlerInterface* candidate_window =
+      IMEBridge::Get()->GetCandidateWindowHandler();
+  IMEAssistiveWindowHandlerInterface* assistive_window =
+      IMEBridge::Get()->GetAssistiveWindowHandler();
   if (!candidate_window && !assistive_window)
     return;
 
@@ -291,7 +296,7 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
     candidate_window->SetCursorBounds(caret_rect, composition_head);
 
   if (assistive_window) {
-    ash::Bounds bounds;
+    Bounds bounds;
     bounds.caret = caret_rect;
     bounds.autocorrect = client->GetAutocorrectCharacterBounds();
     assistive_window->SetBounds(bounds);
@@ -342,7 +347,7 @@ bool InputMethodAsh::IsCandidatePopupOpen() const {
   return false;
 }
 
-VirtualKeyboardController* InputMethodAsh::GetVirtualKeyboardController() {
+ui::VirtualKeyboardController* InputMethodAsh::GetVirtualKeyboardController() {
   if (auto* engine = GetEngine()) {
     if (auto* controller = engine->GetVirtualKeyboardController())
       return controller;
@@ -351,7 +356,7 @@ VirtualKeyboardController* InputMethodAsh::GetVirtualKeyboardController() {
 }
 
 void InputMethodAsh::OnFocus() {
-  ui::IMEBridge* bridge = ui::IMEBridge::Get();
+  auto* bridge = IMEBridge::Get();
   if (bridge) {
     bridge->SetInputContextHandler(this);
   }
@@ -362,16 +367,16 @@ void InputMethodAsh::OnTouch(ui::EventPointerType pointerType) {
   if (!client || !IsTextInputClientFocused(client)) {
     return;
   }
-  ui::TextInputMethod* engine = GetEngine();
+  TextInputMethod* engine = GetEngine();
   if (engine) {
     engine->OnTouch(pointerType);
   }
 }
 
 void InputMethodAsh::OnBlur() {
-  if (ui::IMEBridge::Get() &&
-      ui::IMEBridge::Get()->GetInputContextHandler() == this)
-    ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+  if (IMEBridge::Get() && IMEBridge::Get()->GetInputContextHandler() == this) {
+    IMEBridge::Get()->SetInputContextHandler(nullptr);
+  }
 }
 
 void InputMethodAsh::OnWillChangeFocusedClient(TextInputClient* focused_before,
@@ -509,7 +514,8 @@ void InputMethodAsh::SetAutocorrectRange(
   }
 }
 
-absl::optional<GrammarFragment> InputMethodAsh::GetGrammarFragmentAtCursor() {
+absl::optional<ui::GrammarFragment>
+InputMethodAsh::GetGrammarFragmentAtCursor() {
   if (IsTextInputTypeNone())
     return absl::nullopt;
   return GetTextInputClient()->GetGrammarFragmentAtCursor();
@@ -522,7 +528,7 @@ bool InputMethodAsh::ClearGrammarFragments(const gfx::Range& range) {
 }
 
 bool InputMethodAsh::AddGrammarFragments(
-    const std::vector<GrammarFragment>& fragments) {
+    const std::vector<ui::GrammarFragment>& fragments) {
   if (IsTextInputTypeNone())
     return false;
   return GetTextInputClient()->AddGrammarFragments(fragments);
@@ -579,18 +585,18 @@ void InputMethodAsh::UpdateContextFocusState() {
 
   // Propagate the focus event to the candidate window handler which also
   // manages the input method mode indicator.
-  ash::IMECandidateWindowHandlerInterface* candidate_window =
-      ui::IMEBridge::Get()->GetCandidateWindowHandler();
+  IMECandidateWindowHandlerInterface* candidate_window =
+      IMEBridge::Get()->GetCandidateWindowHandler();
   if (candidate_window)
     candidate_window->FocusStateChanged(!IsPasswordOrNoneInputFieldFocused());
 
   // Propagate focus event to assistive window handler.
-  ash::IMEAssistiveWindowHandlerInterface* assistive_window =
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
+  IMEAssistiveWindowHandlerInterface* assistive_window =
+      IMEBridge::Get()->GetAssistiveWindowHandler();
   if (assistive_window)
     assistive_window->FocusStateChanged();
 
-  ui::IMEBridge::Get()->SetCurrentInputContext(GetInputContext());
+  IMEBridge::Get()->SetCurrentInputContext(GetInputContext());
 }
 
 ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
@@ -605,7 +611,7 @@ ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
     return DispatchKeyEventPostIME(event);
   }
 
-  if (event->type() == ET_KEY_PRESSED && handled) {
+  if (event->type() == ui::ET_KEY_PRESSED && handled) {
     bool only_dispatch_vkey_processkey =
         (handled_state ==
          ui::ime::KeyEventHandledState::kHandledByAssistiveSuggester);
@@ -633,11 +639,13 @@ ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
   if (handled)
     return dispatch_details;  // IME handled the key event. do not forward.
 
-  if (event->type() == ET_KEY_PRESSED)
+  if (event->type() == ui::ET_KEY_PRESSED) {
     return ProcessUnfilteredKeyPressEvent(event);
+  }
 
-  if (event->type() == ET_KEY_RELEASED)
+  if (event->type() == ui::ET_KEY_RELEASED) {
     return DispatchKeyEventPostIME(event);
+  }
   return dispatch_details;
 }
 
@@ -647,9 +655,9 @@ ui::EventDispatchDetails InputMethodAsh::ProcessFilteredKeyPressEvent(
   if (!only_dispatch_vkey_processkey && NeedInsertChar())
     return DispatchKeyEventPostIME(event);
 
-  ui::KeyEvent fabricated_event(ET_KEY_PRESSED, VKEY_PROCESSKEY, event->code(),
-                                event->flags(), DomKey::PROCESS,
-                                event->time_stamp());
+  ui::KeyEvent fabricated_event(ui::ET_KEY_PRESSED, ui::VKEY_PROCESSKEY,
+                                event->code(), event->flags(),
+                                ui::DomKey::PROCESS, event->time_stamp());
   ui::EventDispatchDetails dispatch_details =
       DispatchKeyEventPostIME(&fabricated_event);
   if (fabricated_event.stopped_propagation())
@@ -695,7 +703,8 @@ void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
   if (pending_commit_) {
     if (handled && NeedInsertChar()) {
       for (const auto& ch : pending_commit_->text) {
-        KeyEvent ch_event(ET_KEY_PRESSED, VKEY_UNKNOWN, EF_NONE);
+        ui::KeyEvent ch_event(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN,
+                              ui::EF_NONE);
         ch_event.set_character(ch);
         client->InsertChar(ch_event);
       }
@@ -771,7 +780,7 @@ void InputMethodAsh::CommitText(
     const std::u16string& text,
     TextInputClient::InsertTextCursorBehavior cursor_behavior) {
   // We need to receive input method result even if the text input type is
-  // TEXT_INPUT_TYPE_NONE, to make sure we can always send correct
+  // `ui::TEXT_INPUT_TYPE_NONE`, to make sure we can always send correct
   // character for each key event to the focused text input client.
   if (!GetTextInputClient())
     return;
@@ -811,8 +820,8 @@ void InputMethodAsh::UpdateCompositionText(const CompositionText& text,
     return;
 
   if (!GetTextInputClient()->CanComposeInline()) {
-    ash::IMECandidateWindowHandlerInterface* candidate_window =
-        ui::IMEBridge::Get()->GetCandidateWindowHandler();
+    IMECandidateWindowHandlerInterface* candidate_window =
+        IMEBridge::Get()->GetCandidateWindowHandler();
     if (candidate_window)
       candidate_window->UpdatePreeditText(text.text, cursor_pos, visible);
   }
@@ -895,7 +904,7 @@ TextInputMethod::InputContext InputMethodAsh::GetInputContext() const {
   return input_context;
 }
 
-void InputMethodAsh::SendKeyEvent(KeyEvent* event) {
+void InputMethodAsh::SendKeyEvent(ui::KeyEvent* event) {
   ui::EventDispatchDetails details = DispatchKeyEvent(event);
   DCHECK(!details.dispatcher_destroyed);
 }
@@ -932,7 +941,8 @@ bool InputMethodAsh::ExecuteCharacterComposer(const ui::KeyEvent& event) {
   if (!character_composer_.FilterKeyPress(event))
     return false;
 
-  // CharacterComposer consumed the key event. Update the composition text.
+  // `ui::CharacterComposer` consumed the key event. Update the composition
+  // text.
   CompositionText preedit;
   preedit.text = character_composer_.preedit_string();
   UpdateCompositionText(preedit, preedit.text.size(), !preedit.text.empty());
@@ -971,18 +981,18 @@ CompositionText InputMethodAsh::ExtractCompositionText(
 
   composition.selection = gfx::Range(cursor_offset);
 
-  const ImeTextSpans text_ime_text_spans = text.ime_text_spans;
+  const ui::ImeTextSpans text_ime_text_spans = text.ime_text_spans;
   if (!text_ime_text_spans.empty()) {
     for (const auto& text_ime_text_span : text_ime_text_spans) {
       const uint32_t start = text_ime_text_span.start_offset;
       const uint32_t end = text_ime_text_span.end_offset;
       if (start >= end)
         continue;
-      ImeTextSpan ime_text_span(ui::ImeTextSpan::Type::kComposition,
-                                char16_offsets[start], char16_offsets[end],
-                                text_ime_text_span.thickness,
-                                ui::ImeTextSpan::UnderlineStyle::kSolid,
-                                text_ime_text_span.background_color);
+      ui::ImeTextSpan ime_text_span(ui::ImeTextSpan::Type::kComposition,
+                                    char16_offsets[start], char16_offsets[end],
+                                    text_ime_text_span.thickness,
+                                    ui::ImeTextSpan::UnderlineStyle::kSolid,
+                                    text_ime_text_span.background_color);
       ime_text_span.underline_color = text_ime_text_span.underline_color;
       composition.ime_text_spans.push_back(ime_text_span);
     }
@@ -995,7 +1005,7 @@ CompositionText InputMethodAsh::ExtractCompositionText(
         std::min(text.selection.start(), static_cast<size_t>(char_length));
     const size_t end =
         std::min(text.selection.end(), static_cast<size_t>(char_length));
-    ImeTextSpan ime_text_span(
+    ui::ImeTextSpan ime_text_span(
         ui::ImeTextSpan::Type::kComposition, char16_offsets[start],
         char16_offsets[end], ui::ImeTextSpan::Thickness::kThick,
         ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT);
@@ -1015,7 +1025,7 @@ CompositionText InputMethodAsh::ExtractCompositionText(
 
   // Use a thin underline with text color by default.
   if (composition.ime_text_spans.empty()) {
-    composition.ime_text_spans.push_back(ImeTextSpan(
+    composition.ime_text_spans.push_back(ui::ImeTextSpan(
         ui::ImeTextSpan::Type::kComposition, 0, length,
         ui::ImeTextSpan::Thickness::kThin,
         ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT));
@@ -1025,8 +1035,9 @@ CompositionText InputMethodAsh::ExtractCompositionText(
 }
 
 bool InputMethodAsh::IsPasswordOrNoneInputFieldFocused() {
-  TextInputType type = GetTextInputType();
-  return type == TEXT_INPUT_TYPE_NONE || type == TEXT_INPUT_TYPE_PASSWORD;
+  ui::TextInputType type = GetTextInputType();
+  return type == ui::TEXT_INPUT_TYPE_NONE ||
+         type == ui::TEXT_INPUT_TYPE_PASSWORD;
 }
 
 bool InputMethodAsh::HasCompositionText() {
@@ -1053,7 +1064,7 @@ ukm::SourceId InputMethodAsh::GetClientSourceForMetrics() {
   return client ? client->GetClientSourceForMetrics() : ukm::kInvalidSourceId;
 }
 
-InputMethod* InputMethodAsh::GetInputMethod() {
+ui::InputMethod* InputMethodAsh::GetInputMethod() {
   return this;
 }
 
@@ -1075,10 +1086,11 @@ std::vector<gfx::Rect> InputMethodAsh::GetCompositionBounds(
 }
 
 bool InputMethodAsh::SendFakeProcessKeyEvent(bool pressed) const {
-  KeyEvent evt(pressed ? ET_KEY_PRESSED : ET_KEY_RELEASED,
-               pressed ? VKEY_PROCESSKEY : VKEY_UNKNOWN, EF_IME_FABRICATED_KEY);
+  ui::KeyEvent evt(pressed ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED,
+                   pressed ? ui::VKEY_PROCESSKEY : ui::VKEY_UNKNOWN,
+                   ui::EF_IME_FABRICATED_KEY);
   std::ignore = DispatchKeyEventPostIME(&evt);
   return evt.stopped_propagation();
 }
 
-}  // namespace ui
+}  // namespace ash

@@ -36,7 +36,7 @@ class ArcInputMethodManagerService
       public ArcInputMethodManagerBridge::Delegate,
       public ash::input_method::InputMethodManager::ImeMenuObserver,
       public ash::input_method::InputMethodManager::Observer,
-      public ui::IMEBridgeObserver {
+      public ash::IMEBridgeObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -101,7 +101,7 @@ class ArcInputMethodManagerService
                           Profile* profile,
                           bool show_message) override;
 
-  // ui::IMEBridgeObserver overrides:
+  // ash::IMEBridgeObserver overrides:
   void OnInputContextHandlerChanged() override;
 
   // Called when a11y keyboard option changed and disables ARC IME while a11y

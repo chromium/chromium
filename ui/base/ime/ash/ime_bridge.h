@@ -16,7 +16,7 @@
 class IMECandidateWindowHandlerInterface;
 class IMEAssistiveWindowHandlerInterface;
 
-namespace ui {
+namespace ash {
 
 // IMEBridge provides access of each IME related handler. This class
 // is used for IME implementation.
@@ -60,21 +60,19 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
   const TextInputMethod::InputContext& GetCurrentInputContext() const;
 
   // Add or remove observers of events such as switching engines, etc.
-  void AddObserver(ui::IMEBridgeObserver* observer);
-  void RemoveObserver(ui::IMEBridgeObserver* observer);
+  void AddObserver(IMEBridgeObserver* observer);
+  void RemoveObserver(IMEBridgeObserver* observer);
 
   // Returns current CandidateWindowHandler. This function returns nullptr if
   // current candidate window is not ready to use.
-  ash::IMECandidateWindowHandlerInterface* GetCandidateWindowHandler() const;
+  IMECandidateWindowHandlerInterface* GetCandidateWindowHandler() const;
 
   // Updates current CandidatWindowHandler. If there is no active candidate
   // window service, pass nullptr for |handler|. Caller must release |handler|.
-  void SetCandidateWindowHandler(
-      ash::IMECandidateWindowHandlerInterface* handler);
+  void SetCandidateWindowHandler(IMECandidateWindowHandlerInterface* handler);
 
-  ash::IMEAssistiveWindowHandlerInterface* GetAssistiveWindowHandler() const;
-  void SetAssistiveWindowHandler(
-      ash::IMEAssistiveWindowHandlerInterface* handler);
+  IMEAssistiveWindowHandlerInterface* GetAssistiveWindowHandler() const;
+  void SetAssistiveWindowHandler(IMEAssistiveWindowHandlerInterface* handler);
 
  private:
   IMEBridge();
@@ -86,10 +84,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
   base::ObserverList<IMEBridgeObserver> observers_;
   TextInputMethod::InputContext current_input_context_;
 
-  ash::IMECandidateWindowHandlerInterface* candidate_window_handler_ = nullptr;
-  ash::IMEAssistiveWindowHandlerInterface* assistive_window_handler_ = nullptr;
+  IMECandidateWindowHandlerInterface* candidate_window_handler_ = nullptr;
+  IMEAssistiveWindowHandlerInterface* assistive_window_handler_ = nullptr;
 };
 
-}  // namespace ui
+}  // namespace ash
 
 #endif  // UI_BASE_IME_ASH_IME_BRIDGE_H_

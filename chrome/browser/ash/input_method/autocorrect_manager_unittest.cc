@@ -455,8 +455,7 @@ class AutocorrectManagerTest : public testing::Test {
         manager_(&mock_suggestion_handler_, profile_.get()) {
     // Disable ImeRulesConfigs by default.
     feature_list_.InitWithFeatures({}, DisabledFeatures());
-    ui::IMEBridge::Get()->SetInputContextHandler(
-        &mock_ime_input_context_handler_);
+    IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler_);
     keyboard_client_ = ChromeKeyboardControllerClient::CreateForTest();
     keyboard_client_->set_keyboard_visible_for_test(false);
   }
@@ -464,7 +463,7 @@ class AutocorrectManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ::base::test::ScopedFeatureList feature_list_;
-  ui::MockIMEInputContextHandler mock_ime_input_context_handler_;
+  MockIMEInputContextHandler mock_ime_input_context_handler_;
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler_;
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<ChromeKeyboardControllerClient> keyboard_client_;
@@ -489,7 +488,7 @@ TEST_F(AutocorrectManagerTest,
 
 TEST_F(AutocorrectManagerTest,
        HandleAutocorrectDoesNotSetRangeWhenInputContextIsNull) {
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(nullptr);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"cn", u"can");
   EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
             gfx::Range());
@@ -984,8 +983,8 @@ TEST_F(AutocorrectManagerTest,
 
 TEST_F(AutocorrectManagerTest, UndoAutocorrectSingleWordInComposition) {
   ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
-  ui::InputMethodAsh ime(nullptr);
-  ui::IMEBridge::Get()->SetInputContextHandler(&ime);
+  InputMethodAsh ime(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(&ime);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
@@ -1003,8 +1002,8 @@ TEST_F(AutocorrectManagerTest, UndoAutocorrectSingleWordInComposition) {
 
 TEST_F(AutocorrectManagerTest, UndoAutocorrectDoesNotApplyOnRangeNotValidated) {
   ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
-  ui::InputMethodAsh ime(nullptr);
-  ui::IMEBridge::Get()->SetInputContextHandler(&ime);
+  InputMethodAsh ime(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(&ime);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 
   // No OnSurroundingTextChanged is called to validate the suggestion.
@@ -1022,8 +1021,8 @@ TEST_F(AutocorrectManagerTest, UndoAutocorrectDoesNotApplyOnRangeNotValidated) {
 
 TEST_F(AutocorrectManagerTest, UndoAutocorrectMultipleWordInComposition) {
   ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
-  ui::InputMethodAsh ime(nullptr);
-  ui::IMEBridge::Get()->SetInputContextHandler(&ime);
+  InputMethodAsh ime(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(&ime);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 
   manager_.HandleAutocorrect(gfx::Range(0, 11), u"helloworld", u"hello world");
@@ -1223,7 +1222,7 @@ TEST_F(AutocorrectManagerTest,
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // Make Input context null.
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(nullptr);
   // Null input context invalidates the previous range even if rules are
   // triggered to accept the range.
   manager_.OnSurroundingTextChanged(u"the ", 4, 4);
@@ -1247,7 +1246,7 @@ TEST_F(
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // Make Input context null.
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(nullptr);
   // Null input context invalidates the previous range even if rules are
   // triggered to accept the range.
   manager_.OnSurroundingTextChanged(u"the ", 4, 4);
@@ -1443,7 +1442,7 @@ TEST_F(AutocorrectManagerTest,
 TEST_F(AutocorrectManagerTest,
        OnBlurDoesNoRecordMetricsWhenInputContextIsNull) {
   // Make Input context null.
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(nullptr);
   manager_.OnBlur();
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
                               /*window_shown=*/0, /*underlined=*/0,
@@ -1558,7 +1557,7 @@ TEST_F(AutocorrectManagerTest,
   manager_.OnSurroundingTextChanged(u"the ", 4, 4);
 
   // Make Input context null.
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+  IMEBridge::Get()->SetInputContextHandler(nullptr);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // The pending range must be counted as invalid, but `underlined` metric must
@@ -3148,13 +3147,13 @@ class AutocorrectManagerUkmMetricsTest : public AutocorrectManagerTest {
                                    GURL("https://test.example.com/"));
 
     fake_text_input_client_.set_source_id(source_id);
-    ui::IMEBridge::Get()->SetInputContextHandler(&mock_input_method_ash_);
+    IMEBridge::Get()->SetInputContextHandler(&mock_input_method_ash_);
 
     mock_input_method_ash_.SetFocusedTextInputClient(&fake_text_input_client_);
   }
 
   ui::FakeTextInputClient fake_text_input_client_{ui::TEXT_INPUT_TYPE_TEXT};
-  ui::InputMethodAsh mock_input_method_ash_{nullptr};
+  InputMethodAsh mock_input_method_ash_{nullptr};
   ukm::TestAutoSetUkmRecorder test_recorder_;
 };
 

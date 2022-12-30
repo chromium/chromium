@@ -107,13 +107,4 @@ bool COMPONENT_EXPORT(UI_BASE_IME_ASH)
 }  // namespace extension_ime_util
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace extension_ime_util {
-using ::ash::extension_ime_util::GetInputMethodIDByEngineID;
-using ::ash::extension_ime_util::kMozcExtensionId;
-using ::ash::extension_ime_util::kXkbExtensionId;
-}  // namespace extension_ime_util
-}  // namespace chromeos
-
 #endif  // UI_BASE_IME_ASH_EXTENSION_IME_UTIL_H_

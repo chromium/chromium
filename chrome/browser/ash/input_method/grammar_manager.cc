@@ -82,8 +82,7 @@ bool GrammarManager::IsOnDeviceGrammarEnabled() {
   return base::FeatureList::IsEnabled(features::kOnDeviceGrammarCheck);
 }
 
-void GrammarManager::OnFocus(int context_id,
-                             ui::SpellcheckMode spellcheck_mode) {
+void GrammarManager::OnFocus(int context_id, SpellcheckMode spellcheck_mode) {
   if (context_id != context_id_) {
     current_text_ = u"";
     last_sentence_ = Sentence();
@@ -155,8 +154,9 @@ bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
 bool GrammarManager::HandleSurroundingTextChange(const std::u16string& text,
                                                  int cursor_pos,
                                                  int anchor_pos) {
-  if (spellcheck_mode_ == ui::SpellcheckMode::kDisabled)
+  if (spellcheck_mode_ == SpellcheckMode::kDisabled) {
     return false;
+  }
 
   bool text_updated = text != current_text_;
   current_text_ = text;
@@ -168,8 +168,7 @@ bool GrammarManager::HandleSurroundingTextChange(const std::u16string& text,
   }
 
   if (text_updated) {
-    ui::TextInputTarget* input_context =
-        ui::IMEBridge::Get()->GetInputContextHandler();
+    TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
     if (!input_context)
       return false;
 
@@ -196,8 +195,7 @@ bool GrammarManager::HandleSurroundingTextChange(const std::u16string& text,
   if (cursor_pos != anchor_pos)
     return false;
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return false;
 
@@ -275,8 +273,7 @@ void GrammarManager::OnGrammarCheckDone(
     }
   }
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;
 
@@ -313,8 +310,7 @@ void GrammarManager::AcceptSuggestion() {
 
   DismissSuggestion();
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     LOG(ERROR) << "Failed to commit grammar suggestion.";
   }
@@ -331,7 +327,7 @@ void GrammarManager::AcceptSuggestion() {
     // TextInputClient.
     // TODO(crbug/1194424): Work around the issue or fix
     // GetSurroundingTextInfo().
-    const ui::SurroundingTextInfo surrounding_text =
+    const SurroundingTextInfo surrounding_text =
         input_context->GetSurroundingTextInfo();
 
     // Delete the incorrect grammar fragment.
@@ -357,8 +353,7 @@ void GrammarManager::IgnoreSuggestion() {
 
   DismissSuggestion();
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;
 

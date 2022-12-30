@@ -160,9 +160,10 @@ gfx::Point GetBoundedPosition(const gfx::Point& location_in_screen,
 }
 
 ui::InputMethod* GetCurrentInputMethod() {
-  if (auto* bridge = ui::IMEBridge::Get())
+  if (auto* bridge = IMEBridge::Get()) {
     if (auto* handler = bridge->GetInputContextHandler())
       return handler->GetInputMethod();
+  }
   return nullptr;
 }
 

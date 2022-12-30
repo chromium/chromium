@@ -27,7 +27,7 @@ class TypingSessionManagerTest : public testing::Test {
   TypingSessionManagerTest() : typing_session_manager_(&test_clock_) {}
 
   base::SimpleTestClock test_clock_;
-  ui::TypingSessionManager typing_session_manager_;
+  TypingSessionManager typing_session_manager_;
 };
 
 TEST_F(TypingSessionManagerTest, RecordMetricsForSimpleTypingSession) {

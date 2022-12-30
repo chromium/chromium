@@ -170,8 +170,7 @@ bool InputMethodEngine::CommitText(int context_id,
 }
 
 void InputMethodEngine::ConfirmComposition(bool reset_engine) {
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (input_context)
     input_context->ConfirmComposition(reset_engine);
 }
@@ -193,8 +192,7 @@ bool InputMethodEngine::DeleteSurroundingText(int context_id,
 
   // TODO(nona): Return false if there is ongoing composition.
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (input_context) {
     const uint32_t before =
         offset >= 0 ? 0U : static_cast<uint32_t>(-1 * offset);
@@ -243,8 +241,7 @@ bool InputMethodEngine::SendKeyEvents(int context_id,
         static_cast<uint8_t>(screen_projection_change_monitor_.is_mirroring());
     event_copy.SetProperties(properties);
 
-    ui::TextInputTarget* input_context =
-        ui::IMEBridge::Get()->GetInputContextHandler();
+    TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
     if (input_context) {
       input_context->SendKeyEvent(&event_copy);
       continue;
@@ -380,8 +377,7 @@ bool InputMethodEngine::SetCompositionRange(
     return false;
   }
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     return false;
   }
@@ -442,8 +438,7 @@ bool InputMethodEngine::SetComposingRange(
     return false;
   }
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     return false;
   }
@@ -465,8 +460,7 @@ gfx::Rect InputMethodEngine::GetTextFieldBounds(int context_id,
     return gfx::Rect();
   }
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     return gfx::Rect();
   }
@@ -505,7 +499,7 @@ void InputMethodEngine::KeyEventHandled(const std::string& extension_id,
 
 std::string InputMethodEngine::AddPendingKeyEvent(
     const std::string& component_id,
-    ui::TextInputMethod::KeyEventDoneCallback callback) {
+    TextInputMethod::KeyEventDoneCallback callback) {
   std::string request_id = base::NumberToString(next_request_id_);
   ++next_request_id_;
 
@@ -524,7 +518,7 @@ void InputMethodEngine::CancelPendingKeyEvents() {
 }
 
 void InputMethodEngine::Focus(
-    const ui::TextInputMethod::InputContext& input_context) {
+    const TextInputMethod::InputContext& input_context) {
   current_input_type_ = input_context.type;
 
   if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
@@ -557,8 +551,8 @@ void InputMethodEngine::OnTouch(ui::EventPointerType pointerType) {
 void InputMethodEngine::Enable(const std::string& component_id) {
   active_component_id_ = component_id;
   observer_->OnActivate(component_id);
-  const ui::TextInputMethod::InputContext& input_context =
-      ui::IMEBridge::Get()->GetCurrentInputContext();
+  const TextInputMethod::InputContext& input_context =
+      IMEBridge::Get()->GetCurrentInputContext();
   current_input_type_ = input_context.type;
   Focus(input_context);
 
@@ -697,7 +691,7 @@ bool InputMethodEngine::SetButtonHighlighted(
     return false;
   }
   IMEAssistiveWindowHandlerInterface* aw_handler =
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
+      IMEBridge::Get()->GetAssistiveWindowHandler();
   if (aw_handler)
     aw_handler->SetButtonHighlighted(button, highlighted);
   return true;
@@ -730,7 +724,7 @@ bool InputMethodEngine::AcceptSuggestionCandidate(
   CommitText(context_id, suggestion, error);
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
+      IMEBridge::Get()->GetAssistiveWindowHandler();
   if (aw_handler)
     aw_handler->AcceptSuggestion(suggestion);
   return true;
@@ -767,7 +761,7 @@ void InputMethodEngine::SetCandidateWindowProperty(
 
   if (IsActive()) {
     IMECandidateWindowHandlerInterface* cw_handler =
-        ui::IMEBridge::Get()->GetCandidateWindowHandler();
+        IMEBridge::Get()->GetCandidateWindowHandler();
     if (cw_handler) {
       if (window_visible_) {
         cw_handler->UpdateLookupTable(candidate_window_);
@@ -787,7 +781,7 @@ bool InputMethodEngine::SetCandidateWindowVisible(bool visible,
 
   window_visible_ = visible;
   IMECandidateWindowHandlerInterface* cw_handler =
-      ui::IMEBridge::Get()->GetCandidateWindowHandler();
+      IMEBridge::Get()->GetCandidateWindowHandler();
   if (cw_handler) {
     if (window_visible_) {
       cw_handler->UpdateLookupTable(candidate_window_);
@@ -830,7 +824,7 @@ bool InputMethodEngine::SetCandidates(int context_id,
   }
   if (IsActive()) {
     IMECandidateWindowHandlerInterface* cw_handler =
-        ui::IMEBridge::Get()->GetCandidateWindowHandler();
+        IMEBridge::Get()->GetCandidateWindowHandler();
     if (cw_handler) {
       if (window_visible_) {
         cw_handler->UpdateLookupTable(candidate_window_);
@@ -864,7 +858,7 @@ bool InputMethodEngine::SetCursorPosition(int context_id,
 
   candidate_window_.set_cursor_position(position->second);
   IMECandidateWindowHandlerInterface* cw_handler =
-      ui::IMEBridge::Get()->GetCandidateWindowHandler();
+      IMEBridge::Get()->GetCandidateWindowHandler();
   if (cw_handler) {
     if (window_visible_) {
       cw_handler->UpdateLookupTable(candidate_window_);
@@ -888,7 +882,7 @@ bool InputMethodEngine::SetSuggestion(int context_id,
   }
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
+      IMEBridge::Get()->GetAssistiveWindowHandler();
   if (aw_handler)
     aw_handler->ShowSuggestion(details);
   return true;
@@ -905,7 +899,7 @@ bool InputMethodEngine::DismissSuggestion(int context_id, std::string* error) {
   }
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
+      IMEBridge::Get()->GetAssistiveWindowHandler();
   if (aw_handler)
     aw_handler->HideSuggestion();
   return true;
@@ -927,7 +921,7 @@ bool InputMethodEngine::AcceptSuggestion(int context_id, std::string* error) {
   }
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
+      IMEBridge::Get()->GetAssistiveWindowHandler();
   if (aw_handler) {
     std::u16string suggestion_text = aw_handler->GetSuggestionText();
     if (suggestion_text.empty()) {
@@ -959,7 +953,7 @@ bool InputMethodEngine::SetAssistiveWindowProperties(
   }
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
+      IMEBridge::Get()->GetAssistiveWindowHandler();
   if (aw_handler)
     aw_handler->SetAssistiveWindowProperties(assistive_window);
   return true;
@@ -967,7 +961,7 @@ bool InputMethodEngine::SetAssistiveWindowProperties(
 
 void InputMethodEngine::Announce(const std::u16string& message) {
   IMEAssistiveWindowHandlerInterface* aw_handler =
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
+      IMEBridge::Get()->GetAssistiveWindowHandler();
   if (aw_handler)
     aw_handler->Announce(message);
 }
@@ -1030,8 +1024,7 @@ void InputMethodEngine::UpdateComposition(
     const ui::CompositionText& composition_text,
     uint32_t cursor_pos,
     bool is_visible) {
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (input_context) {
     input_context->UpdateCompositionText(composition_text, cursor_pos,
                                          is_visible);
@@ -1040,8 +1033,7 @@ void InputMethodEngine::UpdateComposition(
 
 void InputMethodEngine::CommitTextToInputContext(int context_id,
                                                  const std::u16string& text) {
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;
 
@@ -1085,7 +1077,7 @@ void InputMethodEngine::NotifyInputMethodExtensionReadyForTesting() {
 
 InputMethodEngine::PendingKeyEvent::PendingKeyEvent(
     const std::string& component_id,
-    ui::TextInputMethod::KeyEventDoneCallback callback)
+    TextInputMethod::KeyEventDoneCallback callback)
     : component_id(component_id), callback(std::move(callback)) {}
 
 InputMethodEngine::PendingKeyEvent::PendingKeyEvent(PendingKeyEvent&& other) =

@@ -75,7 +75,7 @@ keyboard::ContainerType ConvertKeyboardModeToContainerType(int mode) {
 // Returns the ui::TextInputClient of the active InputMethod or nullptr.
 ui::TextInputClient* GetFocusedTextInputClient() {
   ui::InputMethod* input_method =
-      ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+      ash::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
   if (!input_method)
     return nullptr;
 

@@ -19,7 +19,7 @@ scoped_refptr<InputMethodManager::State> MockInputMethodManager::State::Clone()
 void MockInputMethodManager::State::AddInputMethodExtension(
     const std::string& extension_id,
     const InputMethodDescriptors& descriptors,
-    ui::TextInputMethod* instance) {}
+    TextInputMethod* instance) {}
 
 void MockInputMethodManager::State::RemoveInputMethodExtension(
     const std::string& extension_id) {}

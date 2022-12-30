@@ -118,7 +118,7 @@ void ImeControllerClientImpl::ShowModeIndicator() {
   const std::u16string short_name = descriptor.GetIndicator();
 
   ash::IMECandidateWindowHandlerInterface* cw_handler =
-      ui::IMEBridge::Get()->GetCandidateWindowHandler();
+      ash::IMEBridge::Get()->GetCandidateWindowHandler();
   if (!cw_handler)
     return;
 

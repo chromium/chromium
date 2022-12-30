@@ -13,6 +13,7 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace ash {
+
 namespace {
 
 // Gets the input method category according to the given input method id.

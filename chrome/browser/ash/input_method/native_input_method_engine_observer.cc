@@ -172,10 +172,10 @@ mojom::InputFieldType TextInputTypeToMojoType(ui::TextInputType type) {
 }
 
 mojom::AutocorrectMode GetAutocorrectMode(
-    ui::AutocorrectionMode autocorrection_mode,
-    ui::SpellcheckMode spellcheck_mode) {
-  return autocorrection_mode == ui::AutocorrectionMode::kDisabled ||
-                 spellcheck_mode == ui::SpellcheckMode::kDisabled
+    AutocorrectionMode autocorrection_mode,
+    SpellcheckMode spellcheck_mode) {
+  return autocorrection_mode == AutocorrectionMode::kDisabled ||
+                 spellcheck_mode == SpellcheckMode::kDisabled
              ? mojom::AutocorrectMode::kDisabled
              : mojom::AutocorrectMode::kEnabled;
 }
@@ -485,19 +485,18 @@ std::string MojomLayoutToXkbLayout(mojom::PinyinLayout layout) {
   }
 }
 
-mojom::PersonalizationMode GetPersonalizationMode(
-    ui::PersonalizationMode mode) {
+mojom::PersonalizationMode GetPersonalizationMode(PersonalizationMode mode) {
   switch (mode) {
-    case ui::PersonalizationMode::kEnabled:
+    case PersonalizationMode::kEnabled:
       return mojom::PersonalizationMode::kEnabled;
-    case ui::PersonalizationMode::kDisabled:
+    case PersonalizationMode::kDisabled:
       return mojom::PersonalizationMode::kDisabled;
   }
 }
 
 mojom::InputFieldInfoPtr CreateInputFieldInfo(
     const std::string& engine_id,
-    const ui::TextInputMethod::InputContext& context,
+    const TextInputMethod::InputContext& context,
     const InputFieldContext& input_field_context,
     PrefService* prefs,
     bool is_normal_screen) {
@@ -529,7 +528,7 @@ void OverrideXkbLayoutIfNeeded(ImeKeyboard* keyboard,
 
 void UpdateCandidatesWindowSync(ime::mojom::CandidatesWindowPtr window) {
   IMECandidateWindowHandlerInterface* candidate_window_handler =
-      ui::IMEBridge::Get()->GetCandidateWindowHandler();
+      IMEBridge::Get()->GetCandidateWindowHandler();
   if (!candidate_window_handler) {
     return;
   }
@@ -863,7 +862,7 @@ void NativeInputMethodEngineObserver::OnBlur(const std::string& engine_id,
 void NativeInputMethodEngineObserver::OnKeyEvent(
     const std::string& engine_id,
     const ui::KeyEvent& event,
-    ui::TextInputMethod::KeyEventDoneCallback callback) {
+    TextInputMethod::KeyEventDoneCallback callback) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     if (assistive_suggester_->OnKeyEvent(event)) {
       std::move(callback).Run(
@@ -916,7 +915,7 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
       }
 
       auto process_key_event_callback = base::BindOnce(
-          [](ui::TextInputMethod::KeyEventDoneCallback original_callback,
+          [](TextInputMethod::KeyEventDoneCallback original_callback,
              mojom::KeyEventResult result) {
             std::move(original_callback)
                 .Run((result == mojom::KeyEventResult::kConsumedByIme)
@@ -1110,7 +1109,7 @@ void NativeInputMethodEngineObserver::CommitText(
     mojom::CommitTextCursorBehavior cursor_behavior) {
   if (!IsTextClientActive())
     return;
-  ui::IMEBridge::Get()->GetInputContextHandler()->CommitText(
+  IMEBridge::Get()->GetInputContextHandler()->CommitText(
       text,
       cursor_behavior == mojom::CommitTextCursorBehavior::kMoveCursorBeforeText
           ? ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText
@@ -1142,7 +1141,7 @@ void NativeInputMethodEngineObserver::SetComposition(
     composition.ime_text_spans.push_back(CompositionSpanToImeTextSpan(*span));
   }
 
-  ui::IMEBridge::Get()->GetInputContextHandler()->UpdateCompositionText(
+  IMEBridge::Get()->GetInputContextHandler()->UpdateCompositionText(
       std::move(composition),
       /*cursor_pos=*/new_cursor_position,
       /*visible=*/true);
@@ -1155,7 +1154,7 @@ void NativeInputMethodEngineObserver::SetCompositionRange(uint32_t start_index,
 
   const auto ordered_range = std::minmax(start_index, end_index);
   // TODO(b/151884011): Turn on underlining for composition-based languages.
-  ui::IMEBridge::Get()->GetInputContextHandler()->SetComposingRange(
+  IMEBridge::Get()->GetInputContextHandler()->SetComposingRange(
       ordered_range.first, ordered_range.second,
       {ui::ImeTextSpan(
           ui::ImeTextSpan::Type::kComposition, /*start_offset=*/0,
@@ -1168,8 +1167,7 @@ void NativeInputMethodEngineObserver::FinishComposition() {
   if (!IsTextClientActive())
     return;
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
 
   input_context->ConfirmComposition(/*reset_engine=*/false);
 
@@ -1195,7 +1193,7 @@ void NativeInputMethodEngineObserver::DeleteSurroundingText(
     uint32_t num_after_cursor) {
   if (!IsTextClientActive())
     return;
-  ui::IMEBridge::Get()->GetInputContextHandler()->DeleteSurroundingText(
+  IMEBridge::Get()->GetInputContextHandler()->DeleteSurroundingText(
       num_before_cursor, num_after_cursor);
 }
 
@@ -1233,10 +1231,8 @@ void NativeInputMethodEngineObserver::UpdateCandidatesWindow(
 
 void NativeInputMethodEngineObserver::RecordUkm(mojom::UkmEntryPtr entry) {
   if (entry->is_non_compliant_api()) {
-    ui::RecordUkmNonCompliantApi(
-        ui::IMEBridge::Get()
-            ->GetInputContextHandler()
-            ->GetClientSourceForMetrics(),
+    RecordUkmNonCompliantApi(
+        IMEBridge::Get()->GetInputContextHandler()->GetClientSourceForMetrics(),
         entry->get_non_compliant_api()->non_compliant_operation);
   }
 }

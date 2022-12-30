@@ -74,7 +74,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
     accessibility_view_ = std::make_unique<TestAccessibilityView>();
     controller_ = std::make_unique<AssistiveWindowController>(
         delegate_.get(), profile_.get(), accessibility_view_.get());
-    ui::IMEBridge::Get()->SetAssistiveWindowHandler(controller_.get());
+    IMEBridge::Get()->SetAssistiveWindowHandler(controller_.get());
 
     // TODO(crbug/1102283): Create MockSuggestionWindowView to be independent of
     // SuggestionWindowView's implementation.

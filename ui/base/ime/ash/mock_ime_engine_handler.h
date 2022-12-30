@@ -14,17 +14,18 @@
 #include "ui/events/event.h"
 
 namespace ash {
+
 namespace ime {
 struct AssistiveWindow;
 }  // namespace ime
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
-    : public ui::TextInputMethod {
+    : public TextInputMethod {
  public:
   MockIMEEngineHandler();
   ~MockIMEEngineHandler() override;
 
-  // ui::TextInputMethod:
+  // TextInputMethod:
   void Focus(const InputContext& input_context) override;
   void Blur() override;
   void OnTouch(ui::EventPointerType pointerType) override;

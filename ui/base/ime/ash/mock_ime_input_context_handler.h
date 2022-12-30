@@ -17,12 +17,15 @@
 
 namespace ui {
 class InputMethod;
+}
+
+namespace ash {
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
     : public TextInputTarget {
  public:
   struct UpdateCompositionTextArg {
-    CompositionText composition_text;
+    ui::CompositionText composition_text;
     gfx::Range selection;
     bool is_visible;
   };
@@ -37,8 +40,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
 
   void CommitText(
       const std::u16string& text,
-      TextInputClient::InsertTextCursorBehavior cursor_behavior) override;
-  void UpdateCompositionText(const CompositionText& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) override;
+  void UpdateCompositionText(const ui::CompositionText& text,
                              uint32_t cursor_pos,
                              bool visible) override;
 
@@ -56,20 +59,20 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
   void SetAutocorrectRange(const gfx::Range& range,
                            SetAutocorrectRangeDoneCallback callback) override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
-  absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() override;
+  absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor() override;
   bool AddGrammarFragments(
-      const std::vector<GrammarFragment>& fragments) override;
+      const std::vector<ui::GrammarFragment>& fragments) override;
   void DeleteSurroundingText(uint32_t num_char16s_before_cursor,
                              uint32_t num_char16s_after_cursor) override;
   SurroundingTextInfo GetSurroundingTextInfo() override;
-  void SendKeyEvent(KeyEvent* event) override;
-  InputMethod* GetInputMethod() override;
+  void SendKeyEvent(ui::KeyEvent* event) override;
+  ui::InputMethod* GetInputMethod() override;
   void ConfirmComposition(bool reset_engine) override;
   bool HasCompositionText() override;
   std::u16string GetCompositionText() override;
   ukm::SourceId GetClientSourceForMetrics() override;
 
-  std::vector<GrammarFragment> get_grammar_fragments() const {
+  std::vector<ui::GrammarFragment> get_grammar_fragments() const {
     return grammar_fragments_;
   }
 
@@ -119,9 +122,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
   DeleteSurroundingTextArg last_delete_surrounding_text_arg_;
   gfx::Range autocorrect_range_;
   bool autocorrect_enabled_ = true;
-  std::vector<GrammarFragment> grammar_fragments_;
+  std::vector<ui::GrammarFragment> grammar_fragments_;
   gfx::Range cursor_range_;
 };
-}  // namespace ui
+
+}  // namespace ash
 
 #endif  // UI_BASE_IME_ASH_MOCK_IME_INPUT_CONTEXT_HANDLER_H_

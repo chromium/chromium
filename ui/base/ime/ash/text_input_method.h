@@ -23,14 +23,7 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
-namespace ash {
-namespace ime {
-struct AssistiveWindow;
-}  // namespace ime
-}  // namespace ash
-
 namespace ui {
-
 class VirtualKeyboardController;
 class KeyEvent;
 
@@ -42,6 +35,13 @@ enum class KeyEventHandledState {
   kHandledByAssistiveSuggester = 2,
 };
 }  // namespace ime
+}  // namespace ui
+
+namespace ash {
+
+namespace ime {
+struct AssistiveWindow;
+}
 
 enum class PersonalizationMode {
   // The input method MUST not use anything from the input field to update any
@@ -81,10 +81,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
   // A type of each member is based on the html spec, but InputContext can be
   // used to specify about a non html text field like Omnibox.
   struct InputContext {
-    explicit InputContext(TextInputType type) : type(type) {}
+    explicit InputContext(ui::TextInputType type) : type(type) {}
 
-    TextInputType type = ui::TEXT_INPUT_TYPE_NONE;
-    TextInputMode mode = ui::TEXT_INPUT_MODE_DEFAULT;
+    ui::TextInputType type = ui::TEXT_INPUT_TYPE_NONE;
+    ui::TextInputMode mode = ui::TEXT_INPUT_MODE_DEFAULT;
     AutocompletionMode autocompletion_mode = AutocompletionMode::kUnspecified;
     AutocorrectionMode autocorrection_mode = AutocorrectionMode::kUnspecified;
     SpellcheckMode spellcheck_mode = SpellcheckMode::kUnspecified;
@@ -92,8 +92,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
         AutocapitalizationMode::kUnspecified;
     bool has_been_password = false;
     // How this input field was focused.
-    TextInputClient::FocusReason focus_reason =
-        TextInputClient::FOCUS_REASON_NONE;
+    ui::TextInputClient::FocusReason focus_reason =
+        ui::TextInputClient::FOCUS_REASON_NONE;
     // Whether text entered in this field should be used to improve typing
     // suggestions for the user.
     PersonalizationMode personalization_mode = PersonalizationMode::kDisabled;
@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
 
   // Called when the key event is received.
   // Actual implementation must call |callback| after key event handling.
-  virtual void ProcessKeyEvent(const KeyEvent& key_event,
+  virtual void ProcessKeyEvent(const ui::KeyEvent& key_event,
                                KeyEventDoneCallback callback) = 0;
 
   // Called when a new surrounding text is set. The |text| is surrounding text
@@ -157,13 +157,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
       const ui::ime::AssistiveWindowButton& button) {}
 
   // Called when an input's assistive window state is updated.
-  virtual void AssistiveWindowChanged(
-      const ash::ime::AssistiveWindow& window) = 0;
+  virtual void AssistiveWindowChanged(const ime::AssistiveWindow& window) = 0;
 
   // Returns whether the IME is ready to accept key events for testing.
   virtual bool IsReadyForTesting() = 0;
 };
 
-}  // namespace ui
+}  // namespace ash
 
 #endif  // UI_BASE_IME_ASH_TEXT_INPUT_METHOD_H_

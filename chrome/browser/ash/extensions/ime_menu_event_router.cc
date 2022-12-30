@@ -13,6 +13,9 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 
+namespace chromeos {
+
+namespace input_method = ::ash::input_method;
 namespace input_method_private = extensions::api::input_method_private;
 namespace OnImeMenuActivationChanged =
     extensions::api::input_method_private::OnImeMenuActivationChanged;
@@ -20,8 +23,6 @@ namespace OnImeMenuListChanged =
     extensions::api::input_method_private::OnImeMenuListChanged;
 namespace OnImeMenuItemsChanged =
     extensions::api::input_method_private::OnImeMenuItemsChanged;
-
-namespace chromeos {
 
 ExtensionImeMenuEventRouter::ExtensionImeMenuEventRouter(
     content::BrowserContext* context)

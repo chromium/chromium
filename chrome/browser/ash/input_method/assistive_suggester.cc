@@ -55,14 +55,13 @@ constexpr auto kDefaultLongpressEnabledKeys = base::MakeFixedFlatSet<char>(
 void RecordAssistiveMatch(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Match", type);
 
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;
 
   auto sourceId = input_context->GetClientSourceForMetrics();
   if (sourceId != ukm::kInvalidSourceId) {
-    ui::RecordUkmAssistiveMatch(sourceId, static_cast<int>(type));
+    RecordUkmAssistiveMatch(sourceId, static_cast<int>(type));
   }
 }
 
@@ -556,8 +555,7 @@ void AssistiveSuggester::RecordAssistiveMatchMetrics(
 }
 
 bool AssistiveSuggester::WithinGrammarFragment(int cursor_pos, int anchor_pos) {
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return false;
 

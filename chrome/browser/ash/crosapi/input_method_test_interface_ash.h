@@ -40,7 +40,7 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
 
  private:
-  ui::InputMethodAsh* input_method_;
+  ash::InputMethodAsh* input_method_;
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       input_method_observation_{this};
   base::OnceClosureList focus_callbacks_;

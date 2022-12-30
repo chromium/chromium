@@ -15,7 +15,7 @@ namespace chromeos {
 
 // Event router class for the input method events.
 class ExtensionInputMethodEventRouter
-    : public input_method::InputMethodManager::Observer {
+    : public ash::input_method::InputMethodManager::Observer {
  public:
   explicit ExtensionInputMethodEventRouter(content::BrowserContext* context);
 
@@ -26,8 +26,8 @@ class ExtensionInputMethodEventRouter
 
   ~ExtensionInputMethodEventRouter() override;
 
-  // Implements input_method::InputMethodManager::Observer:
-  void InputMethodChanged(input_method::InputMethodManager* manager,
+  // Implements ash::input_method::InputMethodManager::Observer:
+  void InputMethodChanged(ash::input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
 

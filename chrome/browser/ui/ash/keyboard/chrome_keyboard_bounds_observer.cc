@@ -39,7 +39,7 @@ content::RenderWidgetHostView* GetHostViewForWindow(aura::Window* window) {
 }
 
 ui::InputMethod* GetCurrentInputMethod() {
-  ui::IMEBridge* bridge = ui::IMEBridge::Get();
+  ash::IMEBridge* bridge = ash::IMEBridge::Get();
   if (bridge && bridge->GetInputContextHandler())
     return bridge->GetInputContextHandler()->GetInputMethod();
   return nullptr;

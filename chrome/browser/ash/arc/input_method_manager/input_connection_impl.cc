@@ -48,9 +48,9 @@ bool IsControlChar(const std::u16string& text) {
 }
 
 ui::TextInputClient* GetTextInputClient() {
-  ui::IMEBridge* bridge = ui::IMEBridge::Get();
+  ash::IMEBridge* bridge = ash::IMEBridge::Get();
   DCHECK(bridge);
-  ui::TextInputTarget* handler = bridge->GetInputContextHandler();
+  ash::TextInputTarget* handler = bridge->GetInputContextHandler();
   if (!handler)
     return nullptr;
   ui::TextInputClient* client = handler->GetInputMethod()->GetTextInputClient();

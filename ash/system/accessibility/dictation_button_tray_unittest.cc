@@ -115,8 +115,8 @@ class DictationButtonTrayTest : public AshTestBase {
     // Focus some input text so the Dictation button will be enabled.
     fake_text_input_client_ =
         std::make_unique<ui::FakeTextInputClient>(ui::TEXT_INPUT_TYPE_TEXT);
-    ui::InputMethodAsh ime(nullptr);
-    ui::IMEBridge::Get()->SetInputContextHandler(&ime);
+    InputMethodAsh ime(nullptr);
+    IMEBridge::Get()->SetInputContextHandler(&ime);
     AshTestBase::SetUp();
     FocusTextInputClient();
   }

@@ -4,9 +4,6 @@
 
 #include "ui/base/ime/ash/typing_session_manager.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/time/clock.h"
-
 #include <stddef.h>
 
 #include <algorithm>
@@ -14,7 +11,10 @@
 #include <set>
 #include <utility>
 
-namespace ui {
+#include "base/metrics/histogram_functions.h"
+#include "base/time/clock.h"
+
+namespace ash {
 
 const uint64_t INACTIVITY_TIMEOUT_FOR_SESSION_IN_MS = 3000;
 const uint64_t MIN_CHARACTERS_COMMITTED = 10;
@@ -83,4 +83,4 @@ void TypingSessionManager::EndAndRecordSession() {
   last_user_action_time_ = clock_->Now();
 }
 
-}  // namespace ui
+}  // namespace ash

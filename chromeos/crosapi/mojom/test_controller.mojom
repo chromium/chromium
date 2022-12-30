@@ -151,11 +151,11 @@ interface InputMethodTestInterface {
   // Calls the callback when the input method has focused on some input field.
   WaitForFocus@0() => ();
 
-  // Calls ui::InputMethodAsh::CommitText with
+  // Calls `ash::InputMethodAsh::CommitText` with
   // InsertTextCursorBehavior::kMoveCursorAfterText.
   CommitText@1(string text) => ();
 
-  // Calls ui::InputMethodAsh::UpdateComposition.
+  // Calls `ash::InputMethodAsh::UpdateComposition`.
   [MinVersion=1] SetComposition@2(string text, uint32 index) => ();
 };
 

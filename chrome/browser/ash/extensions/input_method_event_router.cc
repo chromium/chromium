@@ -24,15 +24,15 @@ namespace chromeos {
 ExtensionInputMethodEventRouter::ExtensionInputMethodEventRouter(
     content::BrowserContext* context)
     : context_(context) {
-  input_method::InputMethodManager::Get()->AddObserver(this);
+  ash::input_method::InputMethodManager::Get()->AddObserver(this);
 }
 
 ExtensionInputMethodEventRouter::~ExtensionInputMethodEventRouter() {
-  input_method::InputMethodManager::Get()->RemoveObserver(this);
+  ash::input_method::InputMethodManager::Get()->RemoveObserver(this);
 }
 
 void ExtensionInputMethodEventRouter::InputMethodChanged(
-    input_method::InputMethodManager* manager,
+    ash::input_method::InputMethodManager* manager,
     Profile* profile,
     bool show_message) {
   // If an event is recieved from a different profile, e.g. while switching

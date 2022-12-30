@@ -229,16 +229,17 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
   }
   void OnFocus(const std::string& engine_id,
                int context_id,
-               const ui::TextInputMethod::InputContext& context) override {
+               const ash::TextInputMethod::InputContext& context) override {
     owner_->Focus(context_id);
   }
   void OnTouch(ui::EventPointerType pointerType) override {}
   void OnBlur(const std::string& engine_id, int context_id) override {
     owner_->Blur();
   }
-  void OnKeyEvent(const std::string& engine_id,
-                  const ui::KeyEvent& event,
-                  ui::TextInputMethod::KeyEventDoneCallback key_data) override {
+  void OnKeyEvent(
+      const std::string& engine_id,
+      const ui::KeyEvent& event,
+      ash::TextInputMethod::KeyEventDoneCallback key_data) override {
     if (event.key_code() == ui::VKEY_BROWSER_BACK &&
         event.type() == ui::ET_KEY_PRESSED &&
         owner_->IsVirtualKeyboardShown()) {
@@ -401,8 +402,8 @@ ArcInputMethodManagerService::ArcInputMethodManagerService(
             base::Unretained(this)));
   }
 
-  DCHECK(ui::IMEBridge::Get());
-  ui::IMEBridge::Get()->AddObserver(this);
+  DCHECK(ash::IMEBridge::Get());
+  ash::IMEBridge::Get()->AddObserver(this);
 }
 
 ArcInputMethodManagerService::~ArcInputMethodManagerService() = default;
@@ -437,8 +438,9 @@ void ArcInputMethodManagerService::Shutdown() {
     input_method_ = nullptr;
   }
 
-  if (ui::IMEBridge::Get())
-    ui::IMEBridge::Get()->RemoveObserver(this);
+  if (ash::IMEBridge::Get()) {
+    ash::IMEBridge::Get()->RemoveObserver(this);
+  }
 
   if (ash::TabletMode::Get())
     ash::TabletMode::Get()->RemoveObserver(tablet_mode_observer_.get());
@@ -564,7 +566,7 @@ void ArcInputMethodManagerService::InputMethodChanged(
 }
 
 void ArcInputMethodManagerService::OnInputContextHandlerChanged() {
-  if (ui::IMEBridge::Get()->GetInputContextHandler() == nullptr) {
+  if (ash::IMEBridge::Get()->GetInputContextHandler() == nullptr) {
     if (input_method_)
       input_method_->RemoveObserver(input_method_observer_.get());
     input_method_ = nullptr;
@@ -574,7 +576,7 @@ void ArcInputMethodManagerService::OnInputContextHandlerChanged() {
   if (input_method_)
     input_method_->RemoveObserver(input_method_observer_.get());
   input_method_ =
-      ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+      ash::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
   if (input_method_)
     input_method_->AddObserver(input_method_observer_.get());
 }

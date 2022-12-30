@@ -22,13 +22,12 @@ class StubInputMethodEngineObserver : public InputMethodEngineObserver {
   void OnDeactivated(const std::string& engine_id) override {}
   void OnFocus(const std::string& engine_id,
                int context_id,
-               const ui::TextInputMethod::InputContext& context) override {}
+               const TextInputMethod::InputContext& context) override {}
   void OnTouch(ui::EventPointerType pointerType) override {}
   void OnBlur(const std::string& engine_id, int context_id) override {}
   void OnKeyEvent(const std::string& engine_id,
                   const ui::KeyEvent& event,
-                  ui::TextInputMethod::KeyEventDoneCallback callback) override {
-  }
+                  TextInputMethod::KeyEventDoneCallback callback) override {}
   void OnCandidateClicked(const std::string& engine_id,
                           int candidate_id,
                           MouseButtonEvent button) override {}

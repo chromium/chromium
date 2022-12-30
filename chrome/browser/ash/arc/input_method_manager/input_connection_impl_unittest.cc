@@ -36,13 +36,13 @@ class DummyInputMethodEngineObserver
   void OnActivate(const std::string& engine_id) override {}
   void OnFocus(const std::string& engine_id,
                int context_id,
-               const ui::TextInputMethod::InputContext& context) override {}
+               const ash::TextInputMethod::InputContext& context) override {}
   void OnTouch(ui::EventPointerType pointerType) override {}
   void OnBlur(const std::string& engine_id, int context_id) override {}
-  void OnKeyEvent(const std::string& engine_id,
-                  const ui::KeyEvent& event,
-                  ui::TextInputMethod::KeyEventDoneCallback key_data) override {
-  }
+  void OnKeyEvent(
+      const std::string& engine_id,
+      const ui::KeyEvent& event,
+      ash::TextInputMethod::KeyEventDoneCallback key_data) override {}
   void OnReset(const std::string& engine_id) override {}
   void OnDeactivated(const std::string& engine_id) override {}
   void OnCompositionBoundsChanged(
@@ -85,7 +85,7 @@ class TestInputMethodManager
   scoped_refptr<State> state_;
 };
 
-class TestIMEInputContextHandler : public ui::MockIMEInputContextHandler {
+class TestIMEInputContextHandler : public ash::MockIMEInputContextHandler {
  public:
   explicit TestIMEInputContextHandler(ui::InputMethod* input_method)
       : input_method_(input_method) {}
@@ -99,7 +99,7 @@ class TestIMEInputContextHandler : public ui::MockIMEInputContextHandler {
   ui::InputMethod* GetInputMethod() override { return input_method_; }
 
   void SendKeyEvent(ui::KeyEvent* event) override {
-    ui::MockIMEInputContextHandler::SendKeyEvent(event);
+    ash::MockIMEInputContextHandler::SendKeyEvent(event);
     ++send_key_event_call_count_;
   }
 
@@ -107,14 +107,14 @@ class TestIMEInputContextHandler : public ui::MockIMEInputContextHandler {
       uint32_t before,
       uint32_t after,
       const std::vector<ui::ImeTextSpan>& text_spans) override {
-    ui::MockIMEInputContextHandler::SetCompositionRange(before, after,
-                                                        text_spans);
+    ash::MockIMEInputContextHandler::SetCompositionRange(before, after,
+                                                         text_spans);
     composition_range_history_.push_back(std::make_tuple(before, after));
     return true;
   }
 
   void Reset() {
-    ui::MockIMEInputContextHandler::Reset();
+    ash::MockIMEInputContextHandler::Reset();
     send_key_event_call_count_ = 0;
     composition_range_history_.clear();
   }
@@ -188,8 +188,8 @@ class InputConnectionImplTest : public testing::Test {
 
   MockTextInputClient* client() { return &text_input_client_; }
 
-  ui::TextInputMethod::InputContext context() {
-    return ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT);
+  ash::TextInputMethod::InputContext context() {
+    return ash::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT);
   }
 
   void SetUp() override {
@@ -203,14 +203,14 @@ class InputConnectionImplTest : public testing::Test {
         ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
 
     // Enable InputMethodEngine.
-    ui::IMEBridge::Get()->SetInputContextHandler(&context_handler_);
+    ash::IMEBridge::Get()->SetInputContextHandler(&context_handler_);
     input_method_.SetFocusedTextInputClient(&text_input_client_);
     engine()->Enable("test_component_id");
   }
 
   void TearDown() override {
     chrome_keyboard_controller_client_test_helper_.reset();
-    ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+    ash::IMEBridge::Get()->SetInputContextHandler(nullptr);
     engine_.reset();
     bridge_.reset();
     ash::input_method::InputMethodManager::Shutdown();
@@ -410,7 +410,7 @@ TEST_F(InputConnectionImplTest, SetCompositionRange) {
 
 TEST_F(InputConnectionImplTest, InputContextHandlerIsNull) {
   auto connection = CreateNewConnection(1);
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+  ash::IMEBridge::Get()->SetInputContextHandler(nullptr);
 
   connection->CommitText(u"text", 1);
   connection->DeleteSurroundingText(1, 1);

@@ -4217,13 +4217,13 @@ AutotestPrivateShowVirtualKeyboardIfEnabledFunction::
 
 ExtensionFunction::ResponseAction
 AutotestPrivateShowVirtualKeyboardIfEnabledFunction::Run() {
-  if (!ui::IMEBridge::Get() ||
-      !ui::IMEBridge::Get()->GetInputContextHandler() ||
-      !ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod()) {
+  if (!ash::IMEBridge::Get() ||
+      !ash::IMEBridge::Get()->GetInputContextHandler() ||
+      !ash::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod()) {
     return RespondNow(NoArguments());
   }
 
-  ui::IMEBridge::Get()
+  ash::IMEBridge::Get()
       ->GetInputContextHandler()
       ->GetInputMethod()
       ->SetVirtualKeyboardVisibilityIfEnabled(true);
@@ -6233,7 +6233,8 @@ AutotestPrivateIsInputMethodReadyForTestingFunction::
 
 ExtensionFunction::ResponseAction
 AutotestPrivateIsInputMethodReadyForTestingFunction::Run() {
-  ui::TextInputMethod* engine = ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  ash::TextInputMethod* engine =
+      ash::IMEBridge::Get()->GetCurrentEngineHandler();
   return RespondNow(
       WithArguments(engine && engine->IsReadyForTesting()));  // IN-TEST
 }

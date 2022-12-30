@@ -24,10 +24,6 @@
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/ime/ash/text_input_method.h"
 
-namespace ui {
-class TextInputMethod;
-}  // namespace ui
-
 namespace ash {
 
 class ComponentExtensionIMEManager;
@@ -74,7 +70,7 @@ class InputMethodManagerImpl : public InputMethodManager,
     scoped_refptr<InputMethodManager::State> Clone() const override;
     void AddInputMethodExtension(const std::string& extension_id,
                                  const InputMethodDescriptors& descriptors,
-                                 ui::TextInputMethod* instance) override;
+                                 TextInputMethod* instance) override;
     void RemoveInputMethodExtension(const std::string& extension_id) override;
     void ChangeInputMethod(const std::string& input_method_id,
                            bool show_message) override;
@@ -317,7 +313,7 @@ class InputMethodManagerImpl : public InputMethodManager,
   uint32_t features_enabled_state_;
 
   // The engine map from extension_id to an engine.
-  using EngineMap = std::map<std::string, ui::TextInputMethod*>;
+  using EngineMap = std::map<std::string, TextInputMethod*>;
   using ProfileEngineMap = std::map<Profile*, EngineMap, ProfileCompare>;
   ProfileEngineMap engine_map_;
 

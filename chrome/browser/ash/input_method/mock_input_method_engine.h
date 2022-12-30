@@ -15,9 +15,8 @@
 #include "ui/base/ime/ash/text_input_method.h"
 
 namespace ui {
-class TextInputMethod;
 class KeyEvent;
-}  // namespace ui
+}
 
 namespace ash {
 namespace ime {
@@ -26,7 +25,7 @@ struct AssistiveWindow;
 
 namespace input_method {
 
-class MockInputMethodEngine : public ui::TextInputMethod {
+class MockInputMethodEngine : public TextInputMethod {
  public:
   MockInputMethodEngine();
   ~MockInputMethodEngine() override;

@@ -10,14 +10,13 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/ime/text_input_type.h"
 
-namespace ui {
+namespace ash {
 
 // Records an event in UKM, under the InputMethod.NonCompliantApi metric.
 // Ignores invalid sources.
 COMPONENT_EXPORT(UI_BASE_IME_ASH)
-void RecordUkmNonCompliantApi(
-    ukm::SourceId source,
-    ash::ime::mojom::InputMethodApiOperation operation);
+void RecordUkmNonCompliantApi(ukm::SourceId source,
+                              ime::mojom::InputMethodApiOperation operation);
 
 // Records an event in UKM, under the InputMethod.Assistive.Match metric.
 // Ignores invalid sources.
@@ -25,6 +24,6 @@ void RecordUkmNonCompliantApi(
 COMPONENT_EXPORT(UI_BASE_IME_ASH)
 void RecordUkmAssistiveMatch(ukm::SourceId source, int64_t type);
 
-}  // namespace ui
+}  // namespace ash
 
 #endif  // UI_BASE_IME_ASH_INPUT_METHOD_UKM_H_

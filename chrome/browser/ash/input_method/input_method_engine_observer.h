@@ -49,7 +49,7 @@ class InputMethodEngineObserver {
   // `context_id` is a unique ID given to this focus session.
   virtual void OnFocus(const std::string& engine_id,
                        int context_id,
-                       const ui::TextInputMethod::InputContext& context) = 0;
+                       const TextInputMethod::InputContext& context) = 0;
 
   // Called on a touch within a text field. Allows for features like changing
   // virtual keyboard layout based on touch type after onfocus (since
@@ -60,10 +60,9 @@ class InputMethodEngineObserver {
   virtual void OnBlur(const std::string& engine_id, int context_id) = 0;
 
   // Called when the user pressed a key with a text field focused.
-  virtual void OnKeyEvent(
-      const std::string& engine_id,
-      const ui::KeyEvent& event,
-      ui::TextInputMethod::KeyEventDoneCallback key_data) = 0;
+  virtual void OnKeyEvent(const std::string& engine_id,
+                          const ui::KeyEvent& event,
+                          TextInputMethod::KeyEventDoneCallback key_data) = 0;
 
   // Called when Chrome terminates on-going text input session.
   virtual void OnReset(const std::string& engine_id) = 0;

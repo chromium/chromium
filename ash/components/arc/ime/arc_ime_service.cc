@@ -59,7 +59,7 @@ bool IsCharacterKeyEvent(const ui::KeyEvent* event) {
 }
 
 // Return true if the given key event is used for language switching by IME.
-// Please refer to ui::InputMethodAsh::DispatchKeyEvent for details.
+// Please refer to `ash::InputMethodAsh::DispatchKeyEvent` for details.
 bool IsLanguageInputKey(const ui::KeyEvent* event) {
   switch (event->key_code()) {
     case ui::VKEY_CONVERT:
@@ -674,7 +674,7 @@ void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
 
   // Do not forward the key event from virtual keyboard if it's sent via
   // InsertChar(). By the special logic in
-  // `ui::InputMethodAsh::DispatchKeyEvent`, both of InsertChar() and
+  // `ash::InputMethodAsh::DispatchKeyEvent`, both of InsertChar() and
   // DispatchKeyEventPostIME() are called for a key event injected by the
   // virtual keyboard. The below logic stops key event propagation through
   // DispatchKeyEventPostIME() to prevent from inputting two characters.
@@ -685,7 +685,7 @@ void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
     event->SetHandled();
 
   // Do not forward the language input key event from virtual keyboard because
-  // it's already handled by ui::InputMethodAsh.
+  // it's already handled by `ash::InputMethodAsh`.
   if (from_vk && IsLanguageInputKey(event))
     event->SetHandled();
 
