@@ -193,8 +193,11 @@ void RandBytes(void* output, size_t output_length, bool avoid_allocation) {
     // On Android it is mandatory to check that the kernel _version_ has the
     // support for a syscall before calling. The same check is made on Linux and
     // ChromeOS to avoid making a syscall that predictably returns ENOSYS.
+    // Disable this test when recording/replaying as in some cases when replaying
+    // we might not think there is kernel support for getrandom for an unknown reason.
     static const bool kernel_has_support = KernelSupportsGetRandom();
-    if (kernel_has_support && GetRandomSyscall(output, output_length))
+    (void)kernel_has_support;
+    if (/*kernel_has_support && */GetRandomSyscall(output, output_length))
       return;
   }
 #elif BUILDFLAG(IS_MAC)
