@@ -156,6 +156,7 @@ DictationE2ETestBase = class extends E2ETestBase {
               `Expected 'application/wasm'.`,
           'falling back to ArrayBuffer instantiation',
           'Pumpkin module loaded.',
+          `Unchecked runtime.lastError: Couldn't retrieve Pumpkin data.`,
         ]);
   }
 
