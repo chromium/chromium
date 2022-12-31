@@ -3157,7 +3157,6 @@ static_library("ui") {
       "//chrome/browser/ash/login/oobe_quick_start",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/video_conference",
-      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/chromeos/launcher_search:search_util",
@@ -3320,6 +3319,8 @@ static_library("ui") {
       "//ui/base/ime/ash",
       "//ui/chromeos",
       "//ui/chromeos/events",
+      "//ui/chromeos/resources",
+      "//ui/chromeos/strings",
       "//ui/chromeos/strings:strings_provider",
       "//ui/compositor_extra",
       "//ui/display/manager",
@@ -3336,7 +3337,6 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
-      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/extensions/wm",
     ]
 
@@ -3365,6 +3365,7 @@ static_library("ui") {
   }
 
   if (is_chromeos) {
+    allow_circular_includes_from += [ "//chrome/browser/chromeos" ]
     sources += [
       "platform_keys_certificate_selector_chromeos.h",
       "tabs/existing_window_sub_menu_model_chromeos.cc",
@@ -3400,6 +3401,7 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/app:generated_resources",
+      "//chrome/browser/chromeos",
       "//chromeos/components/security_token_pin",
       "//chromeos/constants",
       "//chromeos/dbus/power",

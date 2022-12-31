@@ -17,7 +17,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_checker.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
@@ -37,7 +36,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 
