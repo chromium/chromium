@@ -184,9 +184,6 @@ void ProxyMain::BeginMainFrame(
                        false /* scroll_and_viewport_changes_synced */));
     layer_tree_host_->GetSwapPromiseManager()->BreakSwapPromises(
         SwapPromise::COMMIT_FAILS);
-
-    // https://linear.app/replay/issue/RUN-980
-    recordreplay::Diagnostic("ProxyMain::BeginMainFrame NotVisible");
     return;
   }
 
@@ -220,9 +217,6 @@ void ProxyMain::BeginMainFrame(
         std::max(final_pipeline_stage_, deferred_final_pipeline_stage_);
     layer_tree_host_->GetSwapPromiseManager()->BreakSwapPromises(
         SwapPromise::COMMIT_FAILS);
-
-    // https://linear.app/replay/issue/RUN-980
-    recordreplay::Diagnostic("ProxyMain::BeginMainFrame DeferredCommit");
     return;
   }
 
@@ -332,19 +326,12 @@ void ProxyMain::BeginMainFrame(
     deferred_final_pipeline_stage_ = final_pipeline_stage_;
     layer_tree_host_->GetSwapPromiseManager()->BreakSwapPromises(
         SwapPromise::COMMIT_FAILS);
-
-    // https://linear.app/replay/issue/RUN-980
-    recordreplay::Diagnostic("ProxyMain::BeginMainFrame SkippedCommit");
     return;
   }
 
   // If UI resources were evicted on the impl thread, we need a commit.
   if (begin_main_frame_state->evicted_ui_resources)
     final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
-
-  // https://linear.app/replay/issue/RUN-980
-  recordreplay::Diagnostic("ProxyMain::BeginMainFrame ForceCommit %d",
-                           recordreplay::HasDivergedFromRecording());
 
   // When repainting, force a commit to occur so that a paint will happen even if
   // nothing has changed since the last one.
@@ -426,9 +413,6 @@ void ProxyMain::BeginMainFrame(
         begin_main_frame_start_time,
         begin_main_frame_state->active_sequence_trackers);
     commit_trace_.reset();
-
-    // https://linear.app/replay/issue/RUN-980
-    recordreplay::Diagnostic("ProxyMain::BeginMainFrame NoUpdates");
     return;
   }
 

@@ -199,9 +199,6 @@ static std::atomic<size_t> gCurrentPaintBookmark;
 static size_t gLastCommitBookmark;
 
 void OnCommitPaint() {
-  // https://linear.app/replay/issue/RUN-980
-  Diagnostic("OnCommitPaint");
-
   // Record/replay state has to be initialized before the first paint
   // starts, as a checkpoint must have been taken.
   if (blink::RecordReplayStateEnsureInitialized()) {
@@ -247,11 +244,6 @@ void OnPaintFinished(const SkPixmap& pixmap) {
     char* encoded = EncodeBitmapContents(gRepaintMimeType, gRepaintJPEGQuality);
     CHECK(!gRepaintResult);
     gRepaintResult = encoded;
-
-    // https://linear.app/replay/issue/RUN-980
-    Diagnostic("OnPaintFinished SignalRepaintEvent");
-
-    gRepaintEvent->Signal();
   } else {
     size_t bookmark = gLastCommitBookmark;
     if (bookmark) {
@@ -262,6 +254,12 @@ void OnPaintFinished(const SkPixmap& pixmap) {
   gCurrentPixmap = nullptr;
 }
 
+void OnRepaintFinished() {
+  CHECK(gCompositorRepainting);
+  CHECK(HasDivergedFromRecording());
+  gRepaintEvent->Signal();
+}
+
 static cc::ProxyMain* gCurrentCompositorProxy;
 
 void SetCompositorProxy(cc::ProxyMain* proxy) {
@@ -269,11 +267,9 @@ void SetCompositorProxy(cc::ProxyMain* proxy) {
 }
 
 static char* PaintWhenDiverged(const char* mime_type, int jpeg_quality) {
-  // https://linear.app/replay/issue/RUN-980
-  Diagnostic("PaintWhenDiverged");
-
   gRepaintMimeType = mime_type;
   gRepaintJPEGQuality = jpeg_quality;
+  gRepaintResult = nullptr;
 
   base::WaitableEvent event;
   gRepaintEvent = &event;
