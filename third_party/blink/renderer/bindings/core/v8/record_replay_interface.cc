@@ -104,6 +104,7 @@ const {
   fromJsGetBoxModel,
   fromJsGetMatchedStylesForNode,
   fromJsCssGetStylesheetByCpdId,
+  fromJsCollectEventListeners,
   fromJsDomPerformSearch,
 
   // network
@@ -1659,37 +1660,32 @@ function DOM_getBoxModel({ node: nodeRrpId }) {
  * ##########################################################################*/
 
 function DOM_getEventListeners({ node }) {
+  const nodeObject = getPlainObjectByRrpId(node);
+  assert(nodeObject);
+
+  const listenerInfos = fromJsCollectEventListeners(nodeObject);
+
+  if (nodeObject.nodeName && nodeObject.nodeName == "HTML") {
+    // Add event listeners for the document and window as well.
+    // TODO: figure out ownerGlobal for chromium - https://linear.app/replay/issue/RUN-1041
+    listenerInfos.push(
+      ...fromJsCollectEventListeners(nodeObject.parentNode)   // document
+      // ...fromJsCollectEventListeners(nodeObject.ownerGlobal)  // window
+    );
+  }
+
   const listeners = [];
-
-  // TODO: ↓ adopt from gecko code - https://linear.app/replay/issue/RUN-1034
-
-  // const nodeObj = getObjectFromId(node).unsafeDereference();
-  // const listenerInfo = Services.els.getListenerInfoFor(nodeObj) || [];
-  // if (nodeObj.nodeName && nodeObj.nodeName == "HTML") {
-  //   // Add event listeners for the document and window as well.
-  //   listenerInfo.push(
-  //     ...Services.els.getListenerInfoFor(nodeObj.parentNode),
-  //     ...Services.els.getListenerInfoFor(nodeObj.ownerGlobal)
-  //   );
-  // }
-
-  // for (const { type, listenerObject, capturing } of listenerInfo) {
-  //   const handler = unwrapXray(listenerObject);
-  //   if (!handler) {
-  //     continue;
-  //   }
-  //   const dbgHandler = makeDebuggeeValue(handler);
-  //   if (dbgHandler.className != "Function") {
-  //     continue;
-  //   }
-  //   const id = getObjectId(dbgHandler);
-  //   listeners.push({
-  //     node,
-  //     handler: id,
-  //     type,
-  //     capture: capturing,
-  //   });
-  // }
+  for (const { type, handler, capture } of listenerInfos) {
+    if (!handler) {
+      continue;
+    }
+    listeners.push({
+      node,
+      handler: registerPlainObject(handler),
+      type,
+      capture,
+    });
+  }
 
   return { listeners, data: {} };
 }
@@ -3889,6 +3885,40 @@ static void fromJsDomPerformSearch(
   }
 }
 
+static void fromJsCollectEventListeners(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsObject() &&
+        "[RuntimeError] must be called with a single plain object (DOM node)");
+
+  v8::Isolate* isolate = args.GetIsolate();
+  auto context = isolate->GetCurrentContext();
+  auto nodeObject = args[0].As<v8::Object>();
+  auto* node = V8Node::ToImpl(nodeObject);
+
+  v8::Local<v8::Array> result = v8::Array::New(isolate);
+  if (!node) {
+    P("[RuntimeError] fromJsCollectEventListeners invalid argument is not blink Node");
+  }
+  else {
+    auto report_for_all_contexts = true;
+    V8EventListenerInfoList eventListenerInfos;
+    InspectorDOMDebuggerAgent::CollectEventListeners(
+        isolate, node, nodeObject, node, report_for_all_contexts,
+        &eventListenerInfos);
+
+    uint32_t i = 0;
+    for (const auto& info : eventListenerInfos) {
+      auto v8Info = v8::Object::New(isolate);
+      SetDataProperty(isolate, v8Info, "type",
+                      V8String(isolate, info.event_type));
+      SetDataProperty(isolate, v8Info, "capture",
+                      v8::Boolean::New(isolate, info.use_capture));
+      SetDataProperty(isolate, v8Info, "handler", info.effective_function);
+      result->Set(context, i++, v8Info).Check();
+    }
+  }
+  args.GetReturnValue().Set(result);
+}
+
 /** ###########################################################################
  * misc
  * ##########################################################################*/
@@ -4025,6 +4055,8 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
                       fromJsGetMatchedStylesForNode);
   SetFunctionProperty(isolate, args, "fromJsCssGetStylesheetByCpdId",
                       fromJsCssGetStylesheetByCpdId);
+  SetFunctionProperty(isolate, args, "fromJsCollectEventListeners",
+                      fromJsCollectEventListeners);
   SetFunctionProperty(isolate, args, "fromJsDomPerformSearch",
                       fromJsDomPerformSearch);
 
