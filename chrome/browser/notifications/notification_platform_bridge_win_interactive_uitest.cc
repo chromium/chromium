@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <wrl/client.h>
+#include <wrl/implements.h>
+
 #include <memory>
 #include <set>
 #include <string>
 #include <vector>
-
-#include <wrl/client.h>
-#include <wrl/implements.h>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -22,7 +22,6 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/win/scoped_hstring.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -51,12 +50,6 @@ const char kLaunchIdButtonClick[] =
     "1|0|0|Default|0|https://example.com/|notification_id";
 const char kLaunchIdSettings[] =
     "2|0|Default|0|https://example.com/|notification_id";
-
-// Windows native notification have a dependency on WinRT (Win 8+) and the
-// built in Notification Center. Although native notifications in Chrome are
-// only available in Win 10+ we keep the minimum test coverage at Win 8 in case
-// we decide to backport.
-constexpr base::win::Version kMinimumWindowsVersion = base::win::Version::WIN8;
 
 Profile* CreateTestingProfile(const base::FilePath& path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -225,9 +218,6 @@ class FakeIToastActivatedEventArgs
 };
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleEvent) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   const wchar_t kXmlDoc[] =
       LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id">
  <visual>
@@ -269,9 +259,6 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleEvent) {
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleActivation) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   base::RunLoop run_loop;
   display_service_tester_->SetProcessNotificationOperationDelegate(
       base::BindRepeating(&NotificationPlatformBridgeWinUITest::HandleOperation,
@@ -296,9 +283,6 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleActivation) {
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleSettings) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   const wchar_t kXmlDoc[] =
       LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id">
  <visual>
@@ -340,9 +324,6 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleSettings) {
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleClose) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   base::RunLoop run_loop;
   display_service_tester_->SetProcessNotificationOperationDelegate(
       base::BindRepeating(&NotificationPlatformBridgeWinUITest::HandleOperation,
@@ -367,9 +348,6 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleClose) {
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, GetDisplayed) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   NotificationPlatformBridgeWin* bridge = GetBridge();
   ASSERT_TRUE(bridge);
 
@@ -462,9 +440,6 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, GetDisplayed) {
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
                        SynchronizeNotifications) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   NotificationPlatformBridgeWin* bridge = GetBridge();
   ASSERT_TRUE(bridge);
 
@@ -524,9 +499,6 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
                        SynchronizeNotificationsAfterClose) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   NotificationPlatformBridgeWin* bridge = GetBridge();
   ASSERT_TRUE(bridge);
   FakeIToastNotifier notifier;
@@ -572,9 +544,6 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
 // Test calling Display with a fake implementation of the Action Center
 // and validate it gets the values expected.
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, DisplayWithFakeAC) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   NotificationPlatformBridgeWin* bridge = GetBridge();
   ASSERT_TRUE(bridge);
 
@@ -608,9 +577,6 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, DisplayWithFakeAC) {
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, CmdLineClick) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   ASSERT_NO_FATAL_FAILURE(ProcessLaunchIdViaCmdLine(kLaunchId, /*reply=*/""));
 
   // Validate the click values.
@@ -625,9 +591,6 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, CmdLineClick) {
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
                        CmdLineInlineReply) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   ASSERT_NO_FATAL_FAILURE(
       ProcessLaunchIdViaCmdLine(kLaunchIdButtonClick, "Inline reply"));
 
@@ -642,9 +605,6 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, CmdLineButton) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   ASSERT_NO_FATAL_FAILURE(
       ProcessLaunchIdViaCmdLine(kLaunchIdButtonClick, /*reply=*/""));
 
@@ -659,9 +619,6 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, CmdLineButton) {
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, CmdLineSettings) {
-  if (base::win::GetVersion() < kMinimumWindowsVersion)
-    return;
-
   ASSERT_NO_FATAL_FAILURE(
       ProcessLaunchIdViaCmdLine(kLaunchIdSettings, /*reply=*/""));
 

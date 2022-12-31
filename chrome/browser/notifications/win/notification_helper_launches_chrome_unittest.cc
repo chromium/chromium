@@ -31,7 +31,6 @@
 #include "base/process/process_iterator.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_com_initializer.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/install_worker.h"
@@ -251,11 +250,6 @@ class NotificationHelperLaunchesChrome : public testing::Test {
 };
 
 TEST_F(NotificationHelperLaunchesChrome, ChromeLaunchTest) {
-  // This test requires WinRT core functions, which are not available in
-  // older versions of Windows.
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   // There isn't a way to directly correlate the notification_helper.exe server
   // to this test. So we need to hunt for the server.
   base::Process notification_helper_process =
