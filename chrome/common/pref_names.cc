@@ -765,6 +765,16 @@ const char kKeyPermissionsOneTimeMigrationDone[] =
 const char kUnifiedDesktopEnabledByDefault[] =
     "settings.display.unified_desktop_enabled_by_default";
 
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the Bluetooth revamp experience survey.
+const char kHatsBluetoothRevampCycleEndTs[] =
+    "hats_bluetooth_revamp_cycle_end_timestamp";
+
+// A boolean pref. Indicates if the device is selected for the HaTS Bluetooth
+// revamp experience survey.
+const char kHatsBluetoothRevampIsSelected[] =
+    "hats_bluetooth_revamp_is_selected";
+
 // An int64 pref. This is a timestamp, microseconds after epoch, of the most
 // recent time the profile took or dismissed HaTS (happiness-tracking) survey.
 const char kHatsLastInteractionTimestamp[] = "hats_last_interaction_timestamp";

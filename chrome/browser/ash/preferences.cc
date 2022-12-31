@@ -465,6 +465,10 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsGeneralCameraIsSelected, false);
 
+  registry->RegisterInt64Pref(::prefs::kHatsBluetoothRevampCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(::prefs::kHatsBluetoothRevampIsSelected, false);
+
   // Personalization HaTS survey prefs for avatar, screensaver, and wallpaper
   // features.
   registry->RegisterInt64Pref(

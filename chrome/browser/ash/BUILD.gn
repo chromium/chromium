@@ -635,6 +635,8 @@ source_set("ash") {
     "bluetooth/debug_logs_manager.h",
     "bluetooth/debug_logs_manager_factory.cc",
     "bluetooth/debug_logs_manager_factory.h",
+    "bluetooth/hats_bluetooth_revamp_trigger_impl.cc",
+    "bluetooth/hats_bluetooth_revamp_trigger_impl.h",
     "boot_times_recorder.cc",
     "boot_times_recorder.h",
     "borealis/borealis_app_launcher.cc",

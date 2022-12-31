@@ -130,6 +130,8 @@ component("cpp") {
     "fwupd_download_client.cc",
     "fwupd_download_client.h",
     "gesture_action_type.h",
+    "hats_bluetooth_revamp_trigger.cc",
+    "hats_bluetooth_revamp_trigger.h",
     "holding_space/holding_space_client.h",
     "holding_space/holding_space_constants.h",
     "holding_space/holding_space_controller.cc",

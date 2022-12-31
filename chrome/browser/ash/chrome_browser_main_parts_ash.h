@@ -75,6 +75,7 @@ class EventRewriterDelegateImpl;
 class FastTransitionObserver;
 class FwupdDownloadClientImpl;
 class GnubbyNotification;
+class HatsBluetoothRevampTriggerImpl;
 class IdleActionWarningObserver;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
@@ -183,6 +184,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<NetworkThrottlingObserver> network_throttling_observer_;
   std::unique_ptr<NetworkChangeManagerClient> network_change_manager_client_;
   std::unique_ptr<DebugdNotificationHandler> debugd_notification_handler_;
+  std::unique_ptr<HatsBluetoothRevampTriggerImpl>
+      hats_bluetooth_revamp_trigger_;
 
   std::unique_ptr<internal::DBusServices> dbus_services_;
 

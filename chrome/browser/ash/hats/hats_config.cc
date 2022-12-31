@@ -169,4 +169,13 @@ const HatsConfig kHatsGeneralCameraSurvey = {
     prefs::kHatsGeneralCameraSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
+// Bluetooth revamp experience survey -- shown 5 mins after interacting with new
+// Bluetooth UI surfaces.
+const HatsConfig kHatsBluetoothRevampSurvey = {
+    ::features::kHappinessTrackingSystemBluetoothRevamp,  // feature
+    base::Days(1),                          // new_device_threshold
+    prefs::kHatsBluetoothRevampIsSelected,  // is_selected_pref_name
+    prefs::kHatsBluetoothRevampCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
 }  // namespace ash

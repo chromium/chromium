@@ -548,6 +548,11 @@ const base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kHappinessTrackingSystem,
              "HappinessTrackingSystem",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables or disables the Happiness Tracking System for Bluetooth revamp
+// survey.
+BASE_FEATURE(kHappinessTrackingSystemBluetoothRevamp,
+             "HappinessTrackingSystemBluetoothRevamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables the Happiness Tracking System for the Ent survey.
 BASE_FEATURE(kHappinessTrackingSystemEnt,
              "HappinessTrackingSystemEnt",

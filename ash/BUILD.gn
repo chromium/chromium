@@ -3695,6 +3695,8 @@ static_library("test_support") {
     "projector/test/mock_projector_metadata_controller.h",
     "projector/test/mock_projector_ui_controller.cc",
     "projector/test/mock_projector_ui_controller.h",
+    "public/cpp/fake_hats_bluetooth_revamp_trigger_impl.cc",
+    "public/cpp/fake_hats_bluetooth_revamp_trigger_impl.h",
     "system/diagnostics/log_test_helpers.cc",
     "system/diagnostics/log_test_helpers.h",
     "system/geolocation/test_geolocation_url_loader_factory.cc",
