@@ -173,6 +173,9 @@ void CompositorFrameReportingController::BeginMainFrameAborted(
     const viz::BeginFrameId& id,
     CommitEarlyOutReason reason) {
   auto& reporter = reporters_[PipelineStage::kBeginMainFrame];
+  // The reporter can be missing while repainting when replaying.
+  if (!reporter)
+    return;
   DCHECK(reporter);
   DCHECK_EQ(reporter->frame_id(), id);
   reporter->OnAbortBeginMainFrame(Now());

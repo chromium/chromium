@@ -96,7 +96,7 @@ bool InterfacePtrStateBase::InitializeEndpointClient(
     MessageToMethodInfoCallback method_info_callback,
     MessageToMethodNameCallback method_name_callback) {
   // https://linear.app/replay/issue/RUN-999
-  CHECK(!recordreplay::AreEventsDisallowed());
+  CHECK(!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording());
 
   // The object hasn't been bound.
   if (!handle_.is_valid())

@@ -164,7 +164,7 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
                             "MessageHeaderValidator"},
                            "")) {
   // https://linear.app/replay/issue/RUN-999
-  CHECK(!recordreplay::AreEventsDisallowed());
+  CHECK(!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording());
 
   recordreplay::RegisterPointer("Connector", this);
 

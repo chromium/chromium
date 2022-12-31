@@ -1548,6 +1548,10 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
 }
 
 void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
+  // After diverging from the recording we can't access system resources anymore.
+  if (recordreplay::HasDivergedFromRecording())
+    return;
+
   DCHECK(loader_);
   if (CanHandleDataURLRequestLocally(request)) {
     DCHECK(!code_cache_request_);
