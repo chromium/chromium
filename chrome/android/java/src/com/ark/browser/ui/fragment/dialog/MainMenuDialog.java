@@ -20,6 +20,7 @@ import com.ark.browser.ui.widget.DrawableTintTextView;
 import com.ark.browser.utils.SkinChangeAnimation;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.skin.SkinEngine;
+import com.zpj.toast.ZToast;
 import com.zpj.utils.ClickHelper;
 
 import org.chromium.chrome.R;
@@ -118,13 +119,14 @@ public class MainMenuDialog extends OverDragBottomDialogFragment<MainMenuDialog>
         } else if (R.id.ib_setting == id) {
             start(new SettingsFragment());
         } else if (R.id.tv_offline == id) {
-//            CollectionFragment2.start(context, 2);
+            start(CollectionFragment.newInstance(2));
         } else if (R.id.tv_night_mode == id) {
-//            boolean isNightMode = AppConfig.isNightMode();
-//            AppConfig.toggleThemeMode();
-//            DrawableTintTextView tvNightMode = (DrawableTintTextView) v;
-//            tvNightMode.setTint(getResources().getColor(isNightMode ? R.color.google_black_400 : R.color.colorPrimary));
+            boolean isNightMode = AppConfig.isNightMode();
+            AppConfig.toggleThemeMode();
+            DrawableTintTextView tvNightMode = (DrawableTintTextView) v;
+            tvNightMode.setTint(getResources().getColor(isNightMode ? R.color.google_black_400 : R.color.colorPrimary));
         } else if (R.id.tv_private_mode == id) {
+            ZToast.warning("TODO 隐身模式");
 //            if (!TabListManager.getInstance().getCurrentTabList().isIncognito()) {
 //                if (TabListManager.getInstance().getTabList(true).getCount() > 0) {
 //                    TabListManager.getInstance().selectTabList(true);

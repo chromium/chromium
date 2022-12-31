@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp">
+
+    <TextView
+        android:id="@android:id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
+
+    <RelativeLayout
+        android:id="@+id/signed_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@android:id/message"
+        android:layout_marginTop="16dp">
+        <ImageView
+            android:id="@+id/signed_out_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_person_24dp"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/signed_out_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@android:id/message"
+            android:layout_toEndOf="@id/signed_out_icon"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="12dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/signed_out"
+        android:layout_marginTop="12dp">
+        <ImageView
+            android:id="@+id/offline_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_offline_pin_24dp_on_light_bg"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/offline_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/offline_icon"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="12dp" />
+    </RelativeLayout>
+</RelativeLayout>

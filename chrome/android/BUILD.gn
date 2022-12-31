@@ -213,6 +213,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/main.xml",
     "//chrome/android/java/res_app/layout/activity_browser.xml",
 
+    "//chrome/android/java/res_app/layout/fragment_certificate_view.xml",
     "//chrome/android/java/res_app/layout/fragment_collections.xml",
     "//chrome/android/java/res_app/layout/fragment_collections_bookmark.xml",
     "//chrome/android/java/res_app/layout/fragment_collections_child.xml",

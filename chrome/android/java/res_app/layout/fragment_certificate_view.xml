@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColorAccent"
+    >
+
+    <include layout="@layout/layout_header"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        >
+
+        <!--        <com.lihang.ShadowLayout-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="8dp"-->
+        <!--            android:layout_marginEnd="8dp"-->
+        <!--            app:hl_shadowLimit="8dp"-->
+        <!--            app:hl_cornerRadius="8dp"-->
+        <!--            app:hl_shadowColor="#80cccccc"-->
+        <!--            app:hl_shadowBackColor="?attr/backgroundColorCard"-->
+        <!--            >-->
+
+        <!--            <LinearLayout-->
+        <!--                android:id="@+id/ll_container"-->
+        <!--                android:orientation="vertical"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="wrap_content">-->
+
+
+
+
+        <!--            </LinearLayout>-->
+
+        <!--        </com.lihang.ShadowLayout>-->
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:cardBackgroundColor="?attr/backgroundColor"
+            app:cardCornerRadius="16dp"
+            app:cardUseCompatPadding="false"
+            app:cardElevation="0dp"
+            >
+
+            <LinearLayout
+                android:id="@+id/ll_container"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+    </ScrollView>
+
+
+
+</LinearLayout>

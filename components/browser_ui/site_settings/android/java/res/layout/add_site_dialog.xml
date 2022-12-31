@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+ -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    style="@style/AlertDialogContent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/website_settings_add_site_site_url" />
+    <org.chromium.components.browser_ui.widget.text.AlertDialogEditText
+        android:id="@+id/site"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/example_url"
+        android:inputType="textNoSuggestions" />
+
+    <!-- A checkbox to decide if this exception applies for third-party cookies. -->
+    <CheckBox android:id="@+id/third_parties_exception_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/website_settings_third_party_cookies_exception_label" />
+
+</LinearLayout>

@@ -108,6 +108,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/dialog/UserAgentSelector.java",
 
   "java/src/com/ark/browser/ui/fragment/ArkMainFragment.java",
+  "java/src/com/ark/browser/ui/fragment/CertificateViewFragment.java",
   "java/src/com/ark/browser/ui/fragment/base/BaseFragment.java",
   "java/src/com/ark/browser/ui/fragment/base/BaseSwipeBackFragment.java",
   "java/src/com/ark/browser/ui/fragment/base/SkinFragment.java",

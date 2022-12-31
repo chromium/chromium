@@ -27,6 +27,8 @@ public class PermissionInfo implements Serializable {
 
     public PermissionInfo(
             @ContentSettingsType int type, String origin, String embedder, boolean isEmbargoed) {
+        assert WebsitePermissionsFetcher.getPermissionsType(type)
+                == WebsitePermissionsFetcher.WebsitePermissionsType.PERMISSION_INFO;
         mOrigin = origin;
         mEmbedder = embedder;
         mContentSettingsType = type;
