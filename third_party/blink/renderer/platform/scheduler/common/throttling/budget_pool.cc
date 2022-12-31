@@ -18,7 +18,7 @@ using base::sequence_manager::TaskQueue;
 
 BudgetPool::BudgetPool(const char* name) : name_(name), is_enabled_(true) {
   // https://linear.app/replay/issue/RUN-1045
-  recordreplay::RegisterPointer(this);
+  recordreplay::RegisterPointer("BudgetPool", this);
 }
 
 BudgetPool::~BudgetPool() {

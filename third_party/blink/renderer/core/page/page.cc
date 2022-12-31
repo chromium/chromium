@@ -543,7 +543,7 @@ void Page::SetVisibilityState(
 
   HeapVector<Member<PageVisibilityObserver>> observers;
   page_visibility_observer_set_.ForEachObserver(
-      [](PageVisibilityObserver* observer) {
+      [&](PageVisibilityObserver* observer) {
         observers.push_back(observer);
       });
   std::sort(observers.begin(), observers.end(),
