@@ -338,6 +338,9 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     bool scroll_and_viewport_changes_synced,
     CommitTimestamps* commit_timestamps,
     bool commit_timeout) {
+  // https://linear.app/replay/issue/RUN-980
+  recordreplay::Diagnostic("ProxyImpl::NotifyReadyToCommitOnImpl");
+
   if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
     recordreplay::OnReadyToCommit();
   }
@@ -920,6 +923,10 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
     result = DRAW_ABORTED_CANT_DRAW;
   }
 
+  // https://linear.app/replay/issue/RUN-980
+  recordreplay::Diagnostic("ProxyImpl::DrawInternal %zu",
+                           (size_t)frame.begin_frame_ack.frame_id.sequence_number);
+
   if (recordreplay::HasDivergedFromRecording() &&
       frame.begin_frame_ack.frame_id.sequence_number == RepaintSequenceNumber) {
     recordreplay::OnCompositorRepainting();
@@ -1020,7 +1027,7 @@ bool ProxyImpl::DataForCommit::IsValid() const {
 
 void ProxyImpl::RecordReplayRepaint() {
   // https://linear.app/replay/issue/RUN-980
-  recordreplay::Diagnostic("ProxyImpl::RecordReplayRepaint");
+  recordreplay::Diagnostic("ProxyImpl::RecordReplayRepaint Start");
 
   // When repainting, the main thread has already updated the layout tree and committed
   // any changes, but the OnBeginFrame IPC message instructing the compositor to do
@@ -1037,6 +1044,9 @@ void ProxyImpl::RecordReplayRepaint() {
                                                          viz::BeginFrameArgs::DefaultInterval(),
                                                          viz::BeginFrameArgs::NORMAL);
   scheduler_->OnBeginFrameDerivedImpl(args);
+
+  // https://linear.app/replay/issue/RUN-980
+  recordreplay::Diagnostic("ProxyImpl::RecordReplayRepaint Done");
 }
 
 }  // namespace cc
