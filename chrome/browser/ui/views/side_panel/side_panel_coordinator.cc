@@ -599,9 +599,29 @@ void SidePanelCoordinator::OnEntryRegistered(SidePanelEntry* entry) {
   }
 }
 
-void SidePanelCoordinator::OnEntryWillDeregister(SidePanelEntry* entry) {
+void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
+                                                 SidePanelEntry* entry) {
   absl::optional<SidePanelEntry::Key> selected_key = GetSelectedKey();
-  combobox_model_->RemoveItem(entry->key());
+  if (entry->key().id() == SidePanelEntry::Id::kExtension) {
+    // Remove the extension entry from the combobox if one of these conditions
+    // are met:
+    //  - The entry will be deregistered from the global registry and there's no
+    //    entry for the extension in the active contextual registry.
+    //  - The entry will be deregistered from a contextual registry and there's
+    //    no entry for the extension in the global registry.
+    bool remove_if_global =
+        registry == global_registry_ &&
+        (!GetActiveContextualRegistry() ||
+         !GetActiveContextualRegistry()->GetEntryForKey(entry->key()));
+    bool remove_if_contextual = registry != global_registry_ &&
+                                !global_registry_->GetEntryForKey(entry->key());
+    if (remove_if_global || remove_if_contextual) {
+      combobox_model_->RemoveItem(entry->key());
+    }
+  } else {
+    combobox_model_->RemoveItem(entry->key());
+  }
+
   if (GetContentView()) {
     header_combobox_->SetSelectedIndex(combobox_model_->GetIndexForKey(
         GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry))));
@@ -646,7 +666,17 @@ void SidePanelCoordinator::OnTabStripModelChanged(
       SidePanelRegistry::Get(selection.old_contents);
   if (old_contextual_registry) {
     old_contextual_registry->RemoveObserver(this);
-    combobox_model_->RemoveItems(old_contextual_registry->entries());
+    std::vector<SidePanelEntry::Key> contextual_keys_to_remove;
+
+    // Only remove the previous tab's contextual entries from the combobox if
+    // they are not in the global registry.
+    for (auto const& entry : old_contextual_registry->entries()) {
+      if (!global_registry_->GetEntryForKey(entry->key())) {
+        contextual_keys_to_remove.push_back(entry->key());
+      }
+    }
+
+    combobox_model_->RemoveItems(contextual_keys_to_remove);
   }
 
   // Add the current tab's contextual registry and update the combobox.

@@ -93,7 +93,8 @@ class ExtensionSidePanelRegistryWaiter : public SidePanelRegistryObserver {
     }
   }
 
-  void OnEntryWillDeregister(SidePanelEntry* entry) override {
+  void OnEntryWillDeregister(SidePanelRegistry* registry,
+                             SidePanelEntry* entry) override {
     if (entry->key() == GetKey(extension_id_)) {
       deregistration_run_loop_.QuitWhenIdle();
     }

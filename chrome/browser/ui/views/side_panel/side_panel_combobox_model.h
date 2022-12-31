@@ -40,15 +40,22 @@ class SidePanelComboboxModel : public ui::ComboboxModel {
   void AddItem(SidePanelEntry* entry);
   void RemoveItem(const SidePanelEntry::Key& entry_key);
   void AddItems(const std::vector<std::unique_ptr<SidePanelEntry>>& entries);
-  void RemoveItems(const std::vector<std::unique_ptr<SidePanelEntry>>& entries);
+  void RemoveItems(const std::vector<SidePanelEntry::Key>& keys);
   SidePanelEntry::Key GetKeyAt(int index) const;
 
   // If the entry is in |entries_|, update the icon.
   void UpdateIconForEntry(SidePanelEntry* entry);
 
-  // Returns the index for the given side panel entry id, if the id doesn't
-  // exist in entries_ then default to 0.
+  // Returns the index for the given side panel entry key, if the key doesn't
+  // exist in `entries_` then default to 0.
   int GetIndexForKey(const SidePanelEntry::Key& key);
+
+  // Returns if the given side panel entry key exists in `entries_`.
+  bool HasKey(const SidePanelEntry::Key& key) const;
+
+  // Returns the number of `entries` with the given `key`. This should only be
+  // used to sanity check that a given extension key occurs at most once.
+  int GetKeyCountForTesting(const SidePanelEntry::Key& key) const;
 
   // ui::ComboboxModel:
   size_t GetItemCount() const override;

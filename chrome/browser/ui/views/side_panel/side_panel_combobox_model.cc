@@ -28,6 +28,10 @@ SidePanelComboboxModel::SidePanelComboboxModel() = default;
 SidePanelComboboxModel::~SidePanelComboboxModel() = default;
 
 void SidePanelComboboxModel::AddItem(SidePanelEntry* entry) {
+  if (HasKey(entry->key())) {
+    return;
+  }
+
   entries_.emplace_back(entry->key(), entry->name(), entry->icon());
   std::sort(entries_.begin(), entries_.end(), [](const auto& a, const auto& b) {
     return a.key.id() < b.key.id();
@@ -38,35 +42,49 @@ void SidePanelComboboxModel::AddItem(SidePanelEntry* entry) {
 }
 
 void SidePanelComboboxModel::RemoveItem(const SidePanelEntry::Key& entry_key) {
-  base::EraseIf(entries_,
-                [entry_key](Item entry) { return entry.key == entry_key; });
-  for (auto& observer : observers()) {
-    observer.OnComboboxModelChanged(this);
+  if (base::EraseIf(entries_, [entry_key](Item entry) {
+        return entry.key == entry_key;
+      })) {
+    for (auto& observer : observers()) {
+      observer.OnComboboxModelChanged(this);
+    }
   }
 }
 
 void SidePanelComboboxModel::AddItems(
     const std::vector<std::unique_ptr<SidePanelEntry>>& entries) {
+  bool items_added = false;
   for (auto const& entry : entries) {
-    entries_.emplace_back(entry->key(), entry->name(), entry->icon());
+    if (!HasKey(entry->key())) {
+      items_added = true;
+      entries_.emplace_back(entry->key(), entry->name(), entry->icon());
+    }
   }
-  std::sort(entries_.begin(), entries_.end(),
-            [](const auto& a, const auto& b) { return a.key < b.key; });
-  for (auto& observer : observers()) {
-    observer.OnComboboxModelChanged(this);
+
+  if (items_added) {
+    std::sort(entries_.begin(), entries_.end(),
+              [](const auto& a, const auto& b) { return a.key < b.key; });
+    for (auto& observer : observers()) {
+      observer.OnComboboxModelChanged(this);
+    }
   }
 }
 
 void SidePanelComboboxModel::RemoveItems(
-    const std::vector<std::unique_ptr<SidePanelEntry>>& entries) {
-  for (auto const& current_entry : entries) {
-    SidePanelEntry::Key key = current_entry.get()->key();
+    const std::vector<SidePanelEntry::Key>& keys) {
+  bool items_erased = false;
+  for (const auto& key : keys) {
     auto position = base::ranges::find(entries_, key, &Item::key);
-    if (position != entries_.end())
+    if (position != entries_.end()) {
+      items_erased = true;
       entries_.erase(position);
+    }
   }
-  for (auto& observer : observers()) {
-    observer.OnComboboxModelChanged(this);
+
+  if (items_erased) {
+    for (auto& observer : observers()) {
+      observer.OnComboboxModelChanged(this);
+    }
   }
 }
 
@@ -92,6 +110,15 @@ int SidePanelComboboxModel::GetIndexForKey(const SidePanelEntry::Key& key) {
   }
   // Default to the first entry if the id doesn't exist.
   return 0;
+}
+
+bool SidePanelComboboxModel::HasKey(const SidePanelEntry::Key& key) const {
+  return base::ranges::find(entries_, key, &Item::key) != entries_.end();
+}
+
+int SidePanelComboboxModel::GetKeyCountForTesting(
+    const SidePanelEntry::Key& key) const {
+  return base::ranges::count(entries_, key, &Item::key);
 }
 
 size_t SidePanelComboboxModel::GetItemCount() const {

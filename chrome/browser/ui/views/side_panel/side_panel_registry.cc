@@ -78,7 +78,7 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
     active_entry_.reset();
   }
   for (SidePanelRegistryObserver& observer : observers_) {
-    observer.OnEntryWillDeregister(entry);
+    observer.OnEntryWillDeregister(this, entry);
   }
   RemoveEntry(entry);
   return true;
