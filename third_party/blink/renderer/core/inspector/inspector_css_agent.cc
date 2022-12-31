@@ -1933,6 +1933,10 @@ InspectorStyleSheet* InspectorCSSAgent::ViaInspectorStyleSheet(
 }
 
 Response InspectorCSSAgent::AssertEnabled() {
+  if (recordreplay::HasDivergedFromRecording()) {
+    // [replay] act as though it is enabled
+    return Response::Success();
+  }
   return enable_completed_ ? Response::Success()
                            : Response::ServerError("CSS agent was not enabled");
 }
@@ -1940,10 +1944,10 @@ Response InspectorCSSAgent::AssertEnabled() {
 Response InspectorCSSAgent::AssertInspectorStyleSheetForId(
     const String& style_sheet_id,
     InspectorStyleSheet*& result) {
-  // [recordreplay] allow this to work without being enabled?
-  // Response response = AssertEnabled();
-  // if (!response.IsSuccess())
-  //   return response;
+  Response response = AssertEnabled();
+  if (!response.IsSuccess())
+    return response;
+
   IdToInspectorStyleSheet::iterator it =
       id_to_inspector_style_sheet_.find(style_sheet_id);
   if (it == id_to_inspector_style_sheet_.end())
