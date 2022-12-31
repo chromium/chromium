@@ -759,7 +759,7 @@ class CookieTreeCacheStorageNode : public CookieTreeNode {
           AccessContextAuditDatabase::StorageAPIType::kCacheStorage);
 
       container->cache_storage_helper_->DeleteCacheStorage(
-          usage_info_->storage_key.origin());
+          usage_info_->storage_key);
       container->cache_storage_info_list_.erase(usage_info_);
     }
   }

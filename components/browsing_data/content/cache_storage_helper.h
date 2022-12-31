@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "url/origin.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 class StoragePartition;
@@ -44,8 +44,8 @@ class CacheStorageHelper
   // Starts the fetching process, which will notify its completion via
   // |callback|. This must be called only in the UI thread.
   virtual void StartFetching(FetchCallback callback);
-  // Requests the Cache Storage data for an origin be deleted.
-  virtual void DeleteCacheStorage(const url::Origin& origin);
+  // Requests the Cache Storage data for a storage key be deleted.
+  virtual void DeleteCacheStorage(const blink::StorageKey& storage_key);
 
  protected:
   virtual ~CacheStorageHelper();
@@ -70,7 +70,7 @@ class CannedCacheStorageHelper : public CacheStorageHelper {
 
   // Add a Cache Storage to the set of canned Cache Storages that is
   // returned by this helper.
-  void Add(const url::Origin& origin);
+  void Add(const blink::StorageKey& storage_key);
 
   // Clear the list of canned Cache Storages.
   void Reset();
@@ -82,16 +82,16 @@ class CannedCacheStorageHelper : public CacheStorageHelper {
   size_t GetCount() const;
 
   // Returns the current list of Cache Storages.
-  const std::set<url::Origin>& GetOrigins() const;
+  const std::set<blink::StorageKey>& GetStorageKeys() const;
 
   // CacheStorageHelper methods.
   void StartFetching(FetchCallback callback) override;
-  void DeleteCacheStorage(const url::Origin& origin) override;
+  void DeleteCacheStorage(const blink::StorageKey& storage_key) override;
 
  private:
   ~CannedCacheStorageHelper() override;
 
-  std::set<url::Origin> pending_origins_;
+  std::set<blink::StorageKey> pending_storage_key_;
 };
 
 }  // namespace browsing_data

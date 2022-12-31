@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -57,13 +58,10 @@ void CacheStorageHelper::StartFetching(FetchCallback callback) {
       &GetAllStorageKeysInfoForCacheStorageCallback, std::move(callback)));
 }
 
-void CacheStorageHelper::DeleteCacheStorage(const url::Origin& origin) {
+void CacheStorageHelper::DeleteCacheStorage(
+    const blink::StorageKey& storage_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
-  // function directly.
-  partition_->GetCacheStorageControl()->DeleteForStorageKey(
-      blink::StorageKey(origin));
+  partition_->GetCacheStorageControl()->DeleteForStorageKey(storage_key);
 }
 
 CannedCacheStorageHelper::CannedCacheStorageHelper(
@@ -72,27 +70,29 @@ CannedCacheStorageHelper::CannedCacheStorageHelper(
 
 CannedCacheStorageHelper::~CannedCacheStorageHelper() {}
 
-void CannedCacheStorageHelper::Add(const url::Origin& origin) {
-  if (!HasWebScheme(origin.GetURL()))
+void CannedCacheStorageHelper::Add(const blink::StorageKey& storage_key) {
+  if (!HasWebScheme(storage_key.origin().GetURL())) {
     return;  // Non-websafe state is not considered browsing data.
+  }
 
-  pending_origins_.insert(origin);
+  pending_storage_key_.insert(storage_key);
 }
 
 void CannedCacheStorageHelper::Reset() {
-  pending_origins_.clear();
+  pending_storage_key_.clear();
 }
 
 bool CannedCacheStorageHelper::empty() const {
-  return pending_origins_.empty();
+  return pending_storage_key_.empty();
 }
 
 size_t CannedCacheStorageHelper::GetCount() const {
-  return pending_origins_.size();
+  return pending_storage_key_.size();
 }
 
-const std::set<url::Origin>& CannedCacheStorageHelper::GetOrigins() const {
-  return pending_origins_;
+const std::set<blink::StorageKey>& CannedCacheStorageHelper::GetStorageKeys()
+    const {
+  return pending_storage_key_;
 }
 
 void CannedCacheStorageHelper::StartFetching(FetchCallback callback) {
@@ -100,16 +100,18 @@ void CannedCacheStorageHelper::StartFetching(FetchCallback callback) {
   DCHECK(!callback.is_null());
 
   std::list<StorageUsageInfo> result;
-  for (const auto& origin : pending_origins_)
-    result.emplace_back(blink::StorageKey(origin), 0, base::Time());
+  for (const auto& storage_key : pending_storage_key_) {
+    result.emplace_back(storage_key, 0, base::Time());
+  }
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-void CannedCacheStorageHelper::DeleteCacheStorage(const url::Origin& origin) {
-  pending_origins_.erase(origin);
-  CacheStorageHelper::DeleteCacheStorage(origin);
+void CannedCacheStorageHelper::DeleteCacheStorage(
+    const blink::StorageKey& storage_key) {
+  pending_storage_key_.erase(storage_key);
+  CacheStorageHelper::DeleteCacheStorage(storage_key);
 }
 
 }  // namespace browsing_data

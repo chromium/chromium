@@ -712,7 +712,7 @@ void AddToContainer(browsing_data::LocalSharedObjectsContainer& container,
       container.indexed_dbs()->Add(blink::StorageKey(origin));
       return;
     case StorageType::CACHE:
-      container.cache_storages()->Add(origin);
+      container.cache_storages()->Add(blink::StorageKey(origin));
       return;
     case StorageType::FILE_SYSTEM:
       container.file_systems()->Add(origin);
