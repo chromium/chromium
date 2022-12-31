@@ -16,9 +16,14 @@ namespace scheduler {
 
 using base::sequence_manager::TaskQueue;
 
-BudgetPool::BudgetPool(const char* name) : name_(name), is_enabled_(true) {}
+BudgetPool::BudgetPool(const char* name) : name_(name), is_enabled_(true) {
+  // https://linear.app/replay/issue/RUN-1045
+  recordreplay::RegisterPointer(this);
+}
 
 BudgetPool::~BudgetPool() {
+  recordreplay::UnregisterPointer(this);
+
   for (auto* throttler : associated_throttlers_) {
     throttler->RemoveBudgetPool(this);
   }
@@ -86,12 +91,20 @@ void BudgetPool::Close() {
 }
 
 void BudgetPool::UpdateStateForAllThrottlers(base::TimeTicks now) {
+  // https://linear.app/replay/issue/RUN-1045
+  recordreplay::Assert("[RUN-1045] BudgetPool::UpdateStateForAllThrottlers %d",
+                       recordreplay::PointerId(this));
+
   std::vector<TaskQueueThrottler*> throttlers;
   for (TaskQueueThrottler* throttler : associated_throttlers_)
     throttlers.push_back(throttler);
   std::sort(throttlers.begin(), throttlers.end(), recordreplay::CompareByPointerId());
-  for (TaskQueueThrottler* throttler : throttlers)
+  for (TaskQueueThrottler* throttler : throttlers) {
+    // https://linear.app/replay/issue/RUN-1045
+    recordreplay::Assert("[RUN-1045] BudgetPool::UpdateStateForAllThrottlers #1 %d",
+                         recordreplay::PointerId(throttler));
     throttler->UpdateQueueState(now);
+  }
 }
 
 }  // namespace scheduler

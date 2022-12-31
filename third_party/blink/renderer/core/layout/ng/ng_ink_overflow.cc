@@ -356,7 +356,7 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
     const NGInlinePaintContext* inline_context,
     PhysicalRect* ink_overflow_out) {
   // https://linear.app/replay/issue/RUN-826
-  recordreplay::Assert("NGInkOverflow::SetTextInkOverflow");
+  recordreplay::Assert("[RUN-826] NGInkOverflow::SetTextInkOverflow");
 
   CheckType(type);
   DCHECK(type == Type::kNotSet || type == Type::kInvalidated);

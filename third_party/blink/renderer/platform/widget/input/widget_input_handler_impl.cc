@@ -145,6 +145,9 @@ void WidgetInputHandlerImpl::RequestCompositionUpdates(bool immediate_request,
 void WidgetInputHandlerImpl::DispatchEvent(
     std::unique_ptr<WebCoalescedInputEvent> event,
     DispatchEventCallback callback) {
+  // https://linear.app/replay/issue/RUN-550
+  recordreplay::Assert("[RUN-550] WidgetInputHandlerImpl::DispatchEvent");
+
   TRACE_EVENT0("input", "WidgetInputHandlerImpl::DispatchEvent");
   input_handler_manager_->DispatchEvent(std::move(event), std::move(callback));
 }

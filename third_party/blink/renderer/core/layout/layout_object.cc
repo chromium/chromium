@@ -4574,6 +4574,11 @@ void LayoutObject::SetShouldCheckForPaintInvalidationWithoutGeometryChange() {
   NOT_DESTROYED();
   if (ShouldCheckForPaintInvalidation())
     return;
+
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] LayoutObject::SetShouldCheckForPaintInvalidationWithoutGeometryChange %d",
+                       RecordReplayId());
+
   GetFrameView()->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 
   bitfields_.SetShouldCheckForPaintInvalidation(true);

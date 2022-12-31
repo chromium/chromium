@@ -2390,6 +2390,9 @@ RecalcLayoutOverflowResult LayoutBlock::RecalcLayoutOverflow() {
 }
 
 void LayoutBlock::RecalcVisualOverflow() {
+  // https://linear.app/replay/issue/RUN-826
+  recordreplay::Assert("[RUN-826] LayoutBlock::RecalcVisualOverflow %d", RecordReplayId());
+
   NOT_DESTROYED();
   RecalcChildVisualOverflow();
   RecalcSelfVisualOverflow();

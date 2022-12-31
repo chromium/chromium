@@ -397,7 +397,7 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
                                            const String& stack_trace) {
   if (!message.IsNull()) {
     // https://linear.app/replay/issue/RUN-824
-    recordreplay::Assert("ChromeClientImpl::AddMessageToConsole %u %u %u",
+    recordreplay::Assert("[RUN-824] ChromeClientImpl::AddMessageToConsole %u %u %u",
                          message.length(), source_id.length(), stack_trace.length());
 
     local_frame->GetLocalFrameHostRemote().DidAddMessageToConsole(
@@ -507,7 +507,7 @@ void ChromeClientImpl::InvalidateContainer() {
 void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
                                          base::TimeDelta delay) {
   // https://linear.app/replay/issue/RUN-966
-  recordreplay::Assert("ChromeClientImpl::ScheduleAnimation");
+  recordreplay::Assert("[RUN-966] ChromeClientImpl::ScheduleAnimation");
 
   LocalFrame& frame = frame_view->GetFrame();
   // If the frame is still being created, it might not yet have a WebWidget.

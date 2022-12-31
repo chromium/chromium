@@ -3964,6 +3964,9 @@ StyleRecalcChange Element::RecalcStyle(
   DCHECK(!GetForceReattachLayoutTree() || GetComputedStyle())
       << "No need to force a layout tree reattach if we had no computed style";
 
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] Element::RecalcOwnStyle %d", RecordReplayId());
+
   DisplayLockStyleScope display_lock_style_scope(this);
   if (HasCustomStyleCallbacks())
     WillRecalcStyle(change);
@@ -5823,6 +5826,9 @@ bool Element::IsBaseElementFocusable() const {
 }
 
 bool Element::IsFocusable() const {
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] Element::IsFocusable %d", RecordReplayId());
+
   return IsMouseFocusable() || IsKeyboardFocusable();
 }
 

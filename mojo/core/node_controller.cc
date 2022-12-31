@@ -651,6 +651,9 @@ void NodeController::DropPeer(const ports::NodeName& node_name,
     auto it = peers_.find(name);
 
     if (it != peers_.end()) {
+      // https://linear.app/replay/issue/RUN-1050
+      recordreplay::Assert("[RUN-1050] NodeController::DropPeer #1");
+
       ports::NodeName peer = it->first;
       peers_.erase(it);
       dropped_peers_.Insert(peer);
@@ -667,11 +670,17 @@ void NodeController::DropPeer(const ports::NodeName& node_name,
     base::AutoLock lock(reserved_ports_lock_);
     auto it = reserved_ports_.find(name);
     if (it != reserved_ports_.end()) {
+      // https://linear.app/replay/issue/RUN-1050
+      recordreplay::Assert("[RUN-1050] NodeController::DropPeer #2");
+
       for (auto& entry : it->second)
         ports_to_close.emplace_back(entry.second);
       reserved_ports_.erase(it);
     }
   }
+
+  // https://linear.app/replay/issue/RUN-1050
+  recordreplay::Assert("[RUN-1050] NodeController::DropPeer #3");
 
   bool is_inviter;
   {

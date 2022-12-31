@@ -1004,6 +1004,9 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
             }
           }
 
+          // https://linear.app/replay/issue/RUN-1046
+          recordreplay::Assert("[RUN-1046] CSSAnimations::CalculateAnimationUpdate #10");
+
           update.UpdateAnimation(
               existing_animation_index, animation,
               *MakeGarbageCollected<InertEffect>(
@@ -1031,6 +1034,10 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
             inherited_time = timeline->CurrentTime();
           }
         }
+
+        // https://linear.app/replay/issue/RUN-1046
+        recordreplay::Assert("[RUN-1046] CSSAnimations::CalculateAnimationUpdate #15");
+
         update.StartAnimation(
             name, name_index, i,
             *MakeGarbageCollected<InertEffect>(
@@ -1666,6 +1673,10 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   if (!state.cloned_style) {
     state.cloned_style = ComputedStyle::Clone(state.style);
   }
+
+  // https://linear.app/replay/issue/RUN-1046
+  recordreplay::Assert("[RUN-1046] CSSAnimations::CalculateTransitionUpdateForPropertyHandle #10");
+
   state.update.StartTransition(
       property, state.before_change_style, state.cloned_style,
       reversing_adjusted_start_value, reversing_shortening_factor,
@@ -1862,6 +1873,9 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
       auto* effect = DynamicTo<KeyframeEffect>(animation->effect());
       if (!effect)
         continue;
+
+      // https://linear.app/replay/issue/RUN-1046
+      recordreplay::Assert("[RUN-1046] CSSAnimations::CalculateBeforeChangeStyle #5");
 
       auto* inert_animation_for_sampling = MakeGarbageCollected<InertEffect>(
           effect->Model(), effect->SpecifiedTiming(), false, current_time,

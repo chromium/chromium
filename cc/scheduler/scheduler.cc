@@ -703,6 +703,9 @@ void Scheduler::BeginImplFrame(const viz::BeginFrameArgs& args,
 }
 
 void Scheduler::ScheduleBeginImplFrameDeadline() {
+  // https://linear.app/replay/issue/RUN-980
+  recordreplay::Diagnostic("Scheduler::ScheduleBeginImplFrameDeadline");
+
   using DeadlineMode = SchedulerStateMachine::BeginImplFrameDeadlineMode;
   deadline_mode_ = state_machine_.CurrentBeginImplFrameDeadlineMode();
 
@@ -782,6 +785,9 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
 }
 
 void Scheduler::OnBeginImplFrameDeadline() {
+  // https://linear.app/replay/issue/RUN-980
+  recordreplay::Diagnostic("Scheduler::OnBeginImplFrameDeadline");
+
   {
     TRACE_EVENT0("cc,benchmark", "Scheduler::OnBeginImplFrameDeadline");
     begin_impl_frame_deadline_timer_.Stop();
@@ -877,6 +883,9 @@ void Scheduler::SetMainThreadWantsBeginMainFrameNotExpected(bool new_state) {
 }
 
 void Scheduler::ProcessScheduledActions() {
+  // https://linear.app/replay/issue/RUN-980
+  recordreplay::Diagnostic("Scheduler::ProcessScheduledActions");
+
   // Do not perform actions during compositor shutdown.
   if (stopped_)
     return;

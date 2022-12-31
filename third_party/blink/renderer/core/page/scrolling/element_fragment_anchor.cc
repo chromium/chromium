@@ -133,6 +133,9 @@ bool ElementFragmentAnchor::Invoke() {
 void ElementFragmentAnchor::Installed() {
   DCHECK(frame_->GetDocument());
 
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] ElementFragmentAnchor::Installed");
+
   // If rendering isn't ready yet, we'll focus and scroll as part of the
   // document lifecycle.
   if (frame_->GetDocument()->HaveRenderBlockingResourcesLoaded())

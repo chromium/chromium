@@ -1019,6 +1019,9 @@ bool ProxyImpl::DataForCommit::IsValid() const {
 }
 
 void ProxyImpl::RecordReplayRepaint() {
+  // https://linear.app/replay/issue/RUN-980
+  recordreplay::Diagnostic("ProxyImpl::RecordReplayRepaint");
+
   // When repainting, the main thread has already updated the layout tree and committed
   // any changes, but the OnBeginFrame IPC message instructing the compositor to do
   // the resulting paint will not be received, because we're diverged from the recording

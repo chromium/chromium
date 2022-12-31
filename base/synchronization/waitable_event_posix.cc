@@ -51,7 +51,7 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
     : kernel_(new WaitableEventKernel(reset_policy, initial_state)) {
   // Pointer registration is needed for sorting in WaitSet.user_events_
-  if (!recordreplay::AreEventsDisallowed())
+  if (!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording())
     recordreplay::RegisterPointer("WaitableEvent", this);
 }
 

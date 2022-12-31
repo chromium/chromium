@@ -199,6 +199,12 @@ bool StorageArea::CanAccessStorage() const {
 
   if (did_check_can_access_storage_)
     return can_access_storage_cached_result_;
+
+  // We can't perform synchronous IPC calls after diverging from the recording,
+  // as the calls will never complete.
+  if (recordreplay::HasDivergedFromRecording())
+    return false;
+
   can_access_storage_cached_result_ = StorageController::CanAccessStorageArea(
       DomWindow()->GetFrame(), storage_type_);
   did_check_can_access_storage_ = true;

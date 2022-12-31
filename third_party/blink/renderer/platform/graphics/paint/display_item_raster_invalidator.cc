@@ -9,6 +9,9 @@
 namespace blink {
 
 void DisplayItemRasterInvalidator::Generate() {
+  // https://linear.app/replay/issue/RUN-657
+  recordreplay::Assert("[RUN-657] DisplayItemRasterInvalidator::Generate");
+
   struct OldAndNewDisplayItems {
     // Union of visual rects of all old display items of the client.
     gfx::Rect old_visual_rect;
@@ -138,7 +141,7 @@ void DisplayItemRasterInvalidator::AddRasterInvalidation(
   gfx::Rect r = invalidator_.ClipByLayerBounds(mapper_.MapVisualRect(rect));
 
   // https://linear.app/replay/issue/RUN-657
-  recordreplay::Assert("DisplayItemRasterInvalidator::AddRasterInvalidation %s %d %d %d %d %d",
+  recordreplay::Assert("[RUN-657] DisplayItemRasterInvalidator::AddRasterInvalidation %s %d %d %d %d %d",
                        why, r.x(), r.y(), r.width(), r.height(), r.IsEmpty());
 
   if (r.IsEmpty())

@@ -2149,6 +2149,9 @@ void LocalFrameView::ScheduleVisualUpdateForPaintInvalidationIfNeeded() {
   // We need a full lifecycle update to clear pending paint invalidations.
   if (local_frame_root.View()->target_state_ < DocumentLifecycle::kPaintClean ||
       Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean) {
+    // https://linear.app/replay/issue/RUN-966
+    recordreplay::Assert("[RUN-966] LocalFrameView::ScheduleVisualUpdateForPaintInvalidationIfNeeded #1");
+
     // Schedule visual update to process the paint invalidation in the next
     // cycle.
     local_frame_root.ScheduleVisualUpdateUnlessThrottled();
