@@ -2982,10 +2982,14 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/url/a-element.html?exclude=(file|javascript|mailto) [ Crash Failure ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-ligatures-001.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-text/letter-spacing/letter-spacing-ligatures-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-ligatures-003.html [ Failure ]
-crbug.com/626703 [ Mac11 ] external/wpt/resource-timing/response-status-code.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/resource-timing/response-status-code.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_disconnect_immediately.tentative.https.window.html [ Crash ]
 crbug.com/626703 external/wpt/css/css-text/bidi/bidi-lines-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-023.html [ Failure ]

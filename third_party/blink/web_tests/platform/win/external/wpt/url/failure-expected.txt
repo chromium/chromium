@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1043 tests; 700 PASS, 343 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1055 tests; 710 PASS, 345 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL's constructor's base argument: file://example:1/ should throw
 PASS URL's href: file://example:1/ should throw
@@ -1043,5 +1043,17 @@ PASS XHR: http://💩.123/ should throw
 PASS sendBeacon(): http://💩.123/ should throw
 FAIL Location's href: http://💩.123/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://💩.123/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 PASS window.open(): http://💩.123/ should throw
+PASS URL's constructor's base argument: https://\0y should throw
+PASS URL's href: https://\0y should throw
+PASS XHR: https://\0y should throw
+PASS sendBeacon(): https://\0y should throw
+FAIL Location's href: https://\0y should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://\0y' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://\0y should throw
+PASS URL's constructor's base argument: https://￿y should throw
+PASS URL's href: https://￿y should throw
+PASS XHR: https://￿y should throw
+PASS sendBeacon(): https://￿y should throw
+FAIL Location's href: https://￿y should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://￿y' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://￿y should throw
 Harness: the test ran to completion.
 
