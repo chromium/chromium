@@ -86,6 +86,8 @@ constexpr auto P = recordreplay::Print; // because we are lazy?
 const char* gReplayScript = R""""(
 (() => {
 
+const EmptyArray = Object.freeze([]); // reduce unnecessary mem churn
+
 const Verbose = 1;
 const VerboseCommands = Verbose;
 
@@ -1950,13 +1952,12 @@ function convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles) {
   const appliedRules = [];
 
   const {
-    matchedRules = [],
-    inheritedEntries = []
+    matchedRules = EmptyArray,
+    inheritedEntries = EmptyArray,
+    pseudoIdMatches = EmptyArray
   } = cdpMatchedStyles;
 
-  function addCdpRule(cdpRule) {
-    // TODO: add pseudoElement support - https://linear.app/replay/issue/RUN-953
-    const pseudoElement = undefined;
+  function addCdpRule(cdpRule, pseudoElement = undefined) {
     const rrpRuleId = registerCdpAsRrpCssRule(nodeObj, cdpRule);
     const appliedRule = {
       rule: rrpRuleId,
@@ -1976,9 +1977,21 @@ function convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles) {
       matchedCSSRules  // inherited non-inline rules
     } = cdpInheritedEntry;
 
-    for (const matchedRule of matchedCSSRules) {
-      // matchedRule.matchingSelectors
-      addCdpRule(matchedRule.rule);
+    for (const match of matchedCSSRules) {
+      // match.matchingSelectors
+      addCdpRule(match.rule);
+    }
+  }
+
+  for (const pseudoMatch of pseudoIdMatches) {
+    const {
+      // see: https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-PseudoType
+      pseudoType,
+      // pseudoIdentifier,
+      matches
+    } = pseudoMatch;
+    for (const match of matches) {
+      addCdpRule(match.rule, pseudoType);
     }
   }
 
