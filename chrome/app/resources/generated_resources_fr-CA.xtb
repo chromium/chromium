@@ -3802,6 +3802,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> peut modifier les fichiers dans le dossier <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Préférences de stockage externe</translation>
 <translation id="4471354919263203780">Téléchargement des fichiers de reconnaissance vocale en cours… <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Vous pouvez utiliser la langue préférée de votre compte Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Nous aider à améliorer les fonctionnalités et les performances de Chrome</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4474155171896946103">Ajouter tous les onglets aux favoris...</translation>
@@ -6742,6 +6743,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7227458944009118910">Les applications énumérées ci-dessous peuvent également prendre en charge les liens des protocoles. Les autres applications demanderont l'autorisation pour le faire.</translation>
 <translation id="7228056665272655255">Pour configurer l'empreinte digitale, demandez à votre enfant de toucher le capteur d'empreintes digitales dans le coin supérieur droit du clavier. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Verrouillage de l'écran et connexion</translation>
+<translation id="7228854227189381547">Ne pas changer</translation>
 <translation id="7230222852462421043">&amp;Restaurer la fenêtre</translation>
 <translation id="7231260028442989757">Affichez et ignorez les notifications de votre téléphone, et répondez-y</translation>
 <translation id="7232750842195536390">Échec du changement de nom</translation>
@@ -7075,6 +7077,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7545466883021407599">Impossible de se connecter au serveur. Vérifiez votre connexion réseau et réessayez. Si vous rencontrez toujours des problèmes, essayez de redémarrer votre Chromebook. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Avertissement : vos paramètres de <ph name="PRODUCT_NAME" /> sont enregistrés sur un lecteur réseau, ce qui peut entraîner des ralentissements, des plantages et même la perte de données.</translation>
 <translation id="7548856833046333824">Martini</translation>
+<translation id="7549434883223124329">Changer la langue de l'appareil?</translation>
 <translation id="7550830279652415241">favoris_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Échec du téléchargement de <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>

@@ -925,6 +925,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6043212731627905357">Aquest monitor i el teu <ph name="DEVICE_TYPE" /> no s'entenen (el monitor no és compatible).</translation>
 <translation id="6043994281159824495">Tanca la sessió ara</translation>
+<translation id="6045629311476491587">Utilitzats per <ph name="APP_COUNT" /> aplicacions</translation>
 <translation id="6047696787498798094">La compartició de pantalla s'aturarà quan canviïs d'usuari. Vols continuar?</translation>
 <translation id="6054305421211936131">Inicia la sessió amb la targeta intel·ligent</translation>
 <translation id="6059276912018042191">Pestanyes de Chrome recents</translation>

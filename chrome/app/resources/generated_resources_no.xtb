@@ -1243,6 +1243,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2104166991923847969">Slå av wifi-sonen automatisk</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> er skjult</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# telefonnumre}}</translation>
+<translation id="2110941575868943054">Nettsteder som har lov til å se etter Bluetooth-enheter</translation>
 <translation id="211144231511833662">Nullstill typer</translation>
 <translation id="2111670510994270194">Ny fane til høyre</translation>
 <translation id="2112554630428445878">Velkommen, <ph name="USERNAME" /></translation>
@@ -3037,6 +3038,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3756485814916578707">Caster skjermen</translation>
 <translation id="3756578970075173856">Angi PIN-kode</translation>
 <translation id="3756795331760037744">La Google-assistenten bruke informasjon på skjermen til <ph name="SUPERVISED_USER_NAME" /> for å hjelpe</translation>
+<translation id="3756806135608816820">Nettsteder kan be om å få se etter Bluetooth-enheter</translation>
 <translation id="3757733214359997190">Fant ingen nettsteder</translation>
 <translation id="375841316537350618">Laster ned mellomtjenerskript ...</translation>
 <translation id="3758842566811519622">Informasjonskapsler er angitt</translation>
@@ -5008,6 +5010,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5600706100022181951"><ph name="UPDATE_SIZE_MB" /> MB mobildata blir brukt under nedlastingen av oppdateringen. Vil du fortsette?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Nettsteder som ikke har lov til å koble til MIDI-enheter</translation>
+<translation id="5601833336918638013">Ikke la nettsteder se etter Bluetooth-enheter</translation>
 <translation id="5602765853043467355">Slett bokmerker, logger, passord og annet fra denne enheten</translation>
 <translation id="5605758115928394442">Vi har sendt et varsel til telefonen din for å bekrefte at det er deg.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen er blokkert}other{Disse utvidelsene er blokkert}}</translation>
@@ -6465,6 +6468,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6960507406838246615">Linux-oppdatering kreves</translation>
 <translation id="6960648667961844909">Kunne ikke laste ned talefiler for <ph name="LANGUAGE" />. Vi forsøker å laste ned filene senere. Tale blir sendt til Google for behandling frem til nedlastingen er fullført.</translation>
 <translation id="696103774840402661">Alle filer og lokale data for alle brukerne på denne <ph name="DEVICE_TYPE" />-enheten er slettet permanent.</translation>
+<translation id="6961327401577924850">Nettsteder ser vanligvis etter Bluetooth-enheter for å kunne tilby funksjoner som å konfigurere eller synkronisere lavenergi-beacons, helse- eller treningsarmbånd eller smartlyspærer</translation>
 <translation id="6963872466817251924">Tekstmarkørfremheving</translation>
 <translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppen</translation>
@@ -8102,6 +8106,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8465444703385715657">Du må gi tillatelse for at <ph name="PLUGIN_NAME" /> skal kunne kjøre</translation>
 <translation id="8466417995783206254">Denne fanen spiller av en video i bilde-i-bilde-modus.</translation>
 <translation id="8467326454809944210">Velg et annet språk</translation>
+<translation id="8468087214092422866">Nettsteder som ikke har lov til å se etter Bluetooth-enheter</translation>
 <translation id="8470513973197838199">Lagrede passord for <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Nettsteder kobler vanligvis til USB-enheter for å kunne tilby funksjoner som å skrive ut dokumenter eller lagre filer på lagringsenheter</translation>
 <translation id="8471959340398751476">Rabatter er avslått. Du kan slå dem på i tilpasningsmenyen</translation>

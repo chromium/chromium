@@ -3798,6 +3798,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" />માં ફાઇલોમાં ફેરફાર કરી શકતા નથી</translation>
 <translation id="4470957202018033307">બાહ્ય સ્ટોરેજ માટેની પસંદગીઓ</translation>
 <translation id="4471354919263203780">વાણી ઓળખની ફાઇલો ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">તમે તમારી પસંદગીની Google એકાઉન્ટની ભાષા (<ph name="NEW_LOCALE_FROM_GAIA" />)નો ઉપયોગ કરી શકો છો</translation>
 <translation id="447252321002412580">Chromeની સુવિધાઓ અને પ્રદર્શનને સુધારવામાં સહાય કરો</translation>
 <translation id="4472575034687746823">શરૂ કરો</translation>
 <translation id="4474155171896946103">બધા ટૅબ્સ બુકમાર્ક  કરો...</translation>
@@ -6740,6 +6741,7 @@ USB ડિવાઇસ</translation>
 <translation id="7227458944009118910">અહીં નીચે સૂચિબદ્ધ કરેલી ઍપ પ્રોટોકૉલ લિંક પણ હૅન્ડલ કરી શકે છે. અન્ય ઍપ પરવાનગી માટે પૂછશે.</translation>
 <translation id="7228056665272655255">ફિંગરપ્રિન્ટનું સેટઅપ કરવા માટે, તમારા બાળકને કીબોર્ડના સૌથી ઉપરના જમણા ખૂણાના ફિંગરપ્રિન્ટ સેન્સરને ટચ કરવાનું કહો. તમારા બાળકની ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને તે હંમેશાં આ <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
 <translation id="7228523857728654909">સ્ક્રીન લૉક અને સાઇન ઇન</translation>
+<translation id="7228854227189381547">સ્વિચ કરશો નહીં</translation>
 <translation id="7230222852462421043">&amp;વિન્ડો રિસ્ટોર કરો</translation>
 <translation id="7231260028442989757">તમારા ફોનના નોટિફિકેશન જુઓ, છોડી દો અને તેમનો જવાબ આપો</translation>
 <translation id="7232750842195536390">નામ બદલવામાં નિષ્ફળ થયાં</translation>
@@ -7073,6 +7075,7 @@ USB ડિવાઇસ</translation>
 <translation id="7545466883021407599">સર્વર સાથે કનેક્ટ કરી શકાયું નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો. જો તમને હજી પણ મુશ્કેલી આવી રહી હોય, તો તમારી Chromebookને ફરી શરૂ કરવાનો પ્રયાસ કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">ચેતવણી: <ph name="PRODUCT_NAME" /> સેટિંગ નેટવર્ક ડ્રાઇવ પર સ્ટોર કર્યું છે. આનું પરિણામ ધીમી ગતિ, ક્રૅશ અથવા ડેટાનું નુકસાન પણ હોઈ શકે છે.</translation>
 <translation id="7548856833046333824">લેમોનેડ</translation>
+<translation id="7549434883223124329">ડિવાઇસની ભાષા સ્વિચ કરીએ?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ડાઉનલોડ અસફળ થયું</translation>
 <translation id="7551643184018910560">શેલ્ફ પર પિન કરો</translation>

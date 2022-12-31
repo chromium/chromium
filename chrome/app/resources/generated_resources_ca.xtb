@@ -1237,6 +1237,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2104166991923847969">Desactiva el punt d'accés Wi-Fi automàticament</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> s'ha amagat</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de telèfon}other{# números de telèfon}}</translation>
+<translation id="2110941575868943054">Amb permís per cercar dispositius Bluetooth</translation>
 <translation id="211144231511833662">Desmarca tots els tipus de dispositius</translation>
 <translation id="2111670510994270194">Pestanya nova a la dreta</translation>
 <translation id="2112554630428445878">Et donem la benvinguda, <ph name="USERNAME" /></translation>
@@ -3028,6 +3029,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3756485814916578707">S'està emetent la pantalla</translation>
 <translation id="3756578970075173856">Defineix el PIN</translation>
 <translation id="3756795331760037744">Permet que l'Assistent de Google utilitzi informació de la pantalla del teu fill o filla (<ph name="SUPERVISED_USER_NAME" />) per ajudar-los</translation>
+<translation id="3756806135608816820">Els llocs web poden demanar permís per cercar dispositius Bluetooth</translation>
 <translation id="3757733214359997190">No s'ha trobat cap lloc web</translation>
 <translation id="375841316537350618">S'està baixant l'script de servidor intermediari...</translation>
 <translation id="3758842566811519622">S'han establert les galetes</translation>
@@ -5002,6 +5004,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5600706100022181951">Per baixar l'actualització s'utilitzaran <ph name="UPDATE_SIZE_MB" /> MB de dades mòbils. Vols continuar?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Sense permís per connectar-se a dispositius MIDI</translation>
+<translation id="5601833336918638013">No permetis que els llocs web cerquin dispositius Bluetooth</translation>
 <translation id="5602765853043467355">Esborra les adreces d'interès, l'historial, les contrasenyes i altres dades d'aquest dispositiu</translation>
 <translation id="5605758115928394442">S'ha enviat una notificació al teu telèfon per confirmar la teva identitat.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Aquesta extensió està bloquejada}other{Aquestes extensions estan bloquejades}}</translation>
@@ -6457,6 +6460,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6960507406838246615">Cal actualitzar Linux</translation>
 <translation id="6960648667961844909">No s'han pogut baixar els fitxers de parla en <ph name="LANGUAGE" />. La baixada s'intentarà més tard. Fins que es completi, s'envia la parla a Google perquè la processi.</translation>
 <translation id="696103774840402661">Tots els fitxers i totes les dades locals de tots els usuaris d'aquest dispositiu <ph name="DEVICE_TYPE" /> s'han suprimit permanentment.</translation>
+<translation id="6961327401577924850">Els llocs web solen cercar dispositius Bluetooth per a funcions com ara configurar o sincronitzar una balisa de baix consum, una aplicació de seguiment de fitnes o salut, o una bombeta intel·ligent</translation>
 <translation id="6963872466817251924">Marcador del cursor de text</translation>
 <translation id="6964390816189577014">Heroi</translation>
 <translation id="6964760285928603117">Suprimeix del grup</translation>
@@ -8095,6 +8099,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> necessita el teu permís per executar-se</translation>
 <translation id="8466417995783206254">En aquesta pestanya s'està reproduint un vídeo en mode de pantalla en pantalla.</translation>
 <translation id="8467326454809944210">Tria un altre idioma</translation>
+<translation id="8468087214092422866">Sense permís per cercar dispositius Bluetooth</translation>
 <translation id="8470513973197838199">Contrasenyes desades per a <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Els llocs web solen connectar-se a dispositius USB per a funcions com ara desar dades en un dispositiu d'emmagatzematge o imprimir un document</translation>
 <translation id="8471959340398751476">Els descomptes estan desactivats. Pots activar-los al menú de personalització.</translation>

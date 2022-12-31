@@ -925,6 +925,7 @@
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6043212731627905357">Монитор не совместим с устройством <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6043994281159824495">Выйти</translation>
+<translation id="6045629311476491587">Используется в нескольких приложениях (<ph name="APP_COUNT" />)</translation>
 <translation id="6047696787498798094">Если перейти к другому пользователю, доступ к экрану будет закрыт. Продолжить?</translation>
 <translation id="6054305421211936131">Войти с помощью смарт-карты</translation>
 <translation id="6059276912018042191">Недавние вкладки в Chrome</translation>

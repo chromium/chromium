@@ -1248,6 +1248,7 @@
 <translation id="2104166991923847969">हॉटस्पॉट आपोआप बंद करा</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> लपवले आहे</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{फोन नंबर}other{# फोन नंबर}}</translation>
+<translation id="2110941575868943054">ब्लूटूथ डिव्हाइस शोधण्याची अनुमती आहे</translation>
 <translation id="211144231511833662">प्रकार साफ करा</translation>
 <translation id="2111670510994270194">उजवीकडील नवीन टॅब</translation>
 <translation id="2112554630428445878">स्वागत आहे, <ph name="USERNAME" /></translation>
@@ -3042,6 +3043,7 @@
 <translation id="3756485814916578707">स्‍क्रीन कास्‍ट करत आहे</translation>
 <translation id="3756578970075173856">पिन सेट करा</translation>
 <translation id="3756795331760037744">मदत करण्यासाठी Google Assistant ला <ph name="SUPERVISED_USER_NAME" /> च्या स्क्रीनवरील माहिती वापरण्याची अनुमती द्या</translation>
+<translation id="3756806135608816820">साइट या ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकतात</translation>
 <translation id="3757733214359997190">कोणत्याही साइट आढळल्या नाहीत</translation>
 <translation id="375841316537350618">प्रॉक्सी स्क्रिप्ट डाउनलोड करत आहे...</translation>
 <translation id="3758842566811519622">कुकीज सेट केल्या</translation>
@@ -3810,6 +3812,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> मधील फाइल संपादित करू शकते</translation>
 <translation id="4470957202018033307">बाह्य स्टोरेज प्राधान्ये</translation>
 <translation id="4471354919263203780">स्पीच रेकग्निशन फाइल डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">तुम्ही तुमची प्राधान्य असलेली Google खाते भाषा वापरू शकता (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्स सुधारण्यात मदत करा</translation>
 <translation id="4472575034687746823">सुरुवात करा</translation>
 <translation id="4474155171896946103">सर्व टॅब बुकमार्क करा...</translation>
@@ -5014,6 +5017,7 @@
 <translation id="5600706100022181951">अपडेट <ph name="UPDATE_SIZE_MB" /> MB मोबाइल डेटा वापरून डाउनलोड केले जाईल. तुम्हाला सुरू ठेवायचे आहे का?</translation>
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5601823921345337195">MIDI डिव्हाइसशी कनेक्ट करण्याची अनुमती नाही</translation>
+<translation id="5601833336918638013">साइटना ब्लूटूथ डिव्हाइस शोधण्याची अनुमती देऊ नका</translation>
 <translation id="5602765853043467355">या डिव्हाइसमधून बुकमार्क, इतिहास, पासवर्ड आणि बरेच काही साफ करा</translation>
 <translation id="5605758115928394442">ते तुम्हीच आहात हे निश्चित करण्यासाठी तुमच्या फोनवर सूचना पाठवली होती.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{हे एक्स्टेंशन ब्लॉक केले आहे}other{ही एक्स्टेंशन ब्लॉक केली आहेत}}</translation>
@@ -6472,6 +6476,7 @@
 <translation id="6960507406838246615">Linux अपडेट करण्याची आवश्यकता आहे</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड करता आल्या नाहीत. नंतर डाउनलोड करण्याचा प्रयत्न केला जाईल. डाउनलोड पूर्ण होईपर्यंत प्रक्रिया करण्यासाठी स्पीच Google ला पाठवली आहे.</translation>
 <translation id="696103774840402661">या <ph name="DEVICE_TYPE" /> वरील सर्व वापरकर्त्यांसाठी सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला गेला आहे.</translation>
+<translation id="6961327401577924850">कमी ऊर्जेचे बीकन, आरोग्य किंवा फिटनेस ट्रॅकर अथवा स्मार्ट लाइट बल्ब सेट करणे किंवा सिंक करणे यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे ब्लूटूथ डिव्‍हाइस शोधतात</translation>
 <translation id="6963872466817251924">मजकूर कर्सर हायलाइटर</translation>
 <translation id="6964390816189577014">नायक</translation>
 <translation id="6964760285928603117">गटामधून काढून टाका</translation>
@@ -6748,6 +6753,7 @@
 <translation id="7227458944009118910">खाली सूचीबद्ध केलेली ॲप्स ही प्रोटोकॉल लिंकदेखील हाताळू शकतात. इतर ॲप्स परवानगीची विनंती करतील.</translation>
 <translation id="7228056665272655255">फिंगरप्रिंट सेट करण्यासाठी, तुमच्या लहान मुलाला कीबोर्डच्या सर्वात वरच्या उजव्या कोपऱ्यातील फिंगरप्रिंट सेन्सरला स्पर्श करण्यास सांगा. तुमच्या लहान मुलाचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला जातो आणि तो या <ph name="DEVICE_TYPE" /> मध्येच राहतो.</translation>
 <translation id="7228523857728654909">स्क्रीन लॉक आणि साइन इन</translation>
+<translation id="7228854227189381547">स्विच करू नका</translation>
 <translation id="7230222852462421043">&amp;विंडो रिस्टोअर करा</translation>
 <translation id="7231260028442989757">तुमच्या फोनमधील सूचना पहा, डिसमिस करा आणि उत्तर द्या</translation>
 <translation id="7232750842195536390">नाव बदलण्यात अयशस्वी</translation>
@@ -7081,6 +7087,7 @@
 <translation id="7545466883021407599">सर्व्हरशी कनेक्ट करता आले नाही. तुमचे नेटवर्क कनेक्शन तपासा आणि पुन्हा प्रयत्न करा. तुम्हाला तरीही समस्या येत असल्यास, तुमचे Chromebook रीस्टार्ट करून पाहा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">चेतावणी: तुमची <ph name="PRODUCT_NAME" /> सेटिंग्ज एका नेटवर्क ड्राइव्हवर संचयित करण्यात आली आहेत. यामुळे वेग मंदावणे, क्रॅश किंवा डेटा गमावणे हे परिणाम देखील होऊ शकतात.</translation>
 <translation id="7548856833046333824">लेमोनेड</translation>
+<translation id="7549434883223124329">डिव्हाइस भाषा स्विच करायची का?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> डाउनलोड करणे अयशस्वी</translation>
 <translation id="7551643184018910560">शेल्फवर पिन करा</translation>
@@ -8105,6 +8112,7 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ला रन करण्यासाठी तुमची परवानगी आवश्यक आहे.</translation>
 <translation id="8466417995783206254">हा टॅब चित्रात-चित्र मोडमध्ये व्हिडिओ प्ले करत आहे.</translation>
 <translation id="8467326454809944210">दुसरी भाषा निवडा</translation>
+<translation id="8468087214092422866">ब्लूटूथ डिव्हाइस शोधण्याची अनुमती नाही</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> साठी सेव्ह केलेले पासवर्ड</translation>
 <translation id="8471525937465764768">दस्तऐवज प्रिंट करणे किंवा स्टोरेज डिव्हाइसमध्ये सेव्ह करणे यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे USB डिव्हाइसशी कनेक्ट करतात</translation>
 <translation id="8471959340398751476">सवलती बंद आहेत. तुम्ही कस्टमाइझ करा मेनूमधून त्या सुरू करू शकता</translation>
