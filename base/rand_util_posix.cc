@@ -35,6 +35,28 @@
 #include "third_party/boringssl/src/include/openssl/rand.h"
 #endif
 
+#include <dlfcn.h>
+
+static void* gRecordReplayDiagnosticFn;
+
+static void RecordReplayDiagnostic(const char* aFormat, ...) {
+  if (!gRecordReplayDiagnosticFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayDiagnostic");
+    if (!fnptr) {
+      gRecordReplayDiagnosticFn = reinterpret_cast<void*>(1);
+      return;
+    }
+    gRecordReplayDiagnosticFn = fnptr;
+  }
+
+  if (gRecordReplayDiagnosticFn != reinterpret_cast<void*>(1)) {
+    va_list ap;
+    va_start(ap, aFormat);
+    reinterpret_cast<void(*)(const char*, va_list)>(gRecordReplayDiagnosticFn)(aFormat, ap);
+    va_end(ap);
+  }
+}
+
 namespace base {
 
 namespace {
@@ -196,6 +218,7 @@ void RandBytes(void* output, size_t output_length, bool avoid_allocation) {
     static const bool kernel_has_support = KernelSupportsGetRandom();
     if (kernel_has_support && GetRandomSyscall(output, output_length))
       return;
+    RecordReplayDiagnostic("RandBytes #1 %d", kernel_has_support);
   }
 #elif BUILDFLAG(IS_MAC)
   // TODO(crbug.com/995996): Enable this on iOS too, when sys/random.h arrives
@@ -213,6 +236,9 @@ void RandBytes(void* output, size_t output_length, bool avoid_allocation) {
   const int urandom_fd = GetUrandomFD();
   const bool success =
       ReadFromFD(urandom_fd, static_cast<char*>(output), output_length);
+
+  RecordReplayDiagnostic("RandBytes #2 %d", success);
+
   CHECK(success);
 }
 
