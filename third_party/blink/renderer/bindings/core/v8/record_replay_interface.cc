@@ -67,6 +67,7 @@ extern void RecordReplayConfirmObjectHasId(v8::Isolate* isolate, v8::Local<v8::C
 } // namespace v8
 
 namespace blink {
+
 // using RemoteObjectIdTypeRaw = v8_inspector::String16;
 // The actual type for RemoteObjectId
 using RemoteObjectIdTypeRaw = std::u16string;
@@ -74,17 +75,12 @@ using RemoteObjectIdTypeRaw = std::u16string;
 // The more convenient type that we use
 using RemoteObjectIdType = WTF::String;
 
-constexpr auto P = recordreplay::Print; // because we are lazy?
-
-// // Shorthand for "print debug"
-// void PD(args) {
-// TODO
-// }
-
 // Script which defines handlers for recorder commands, and is only loaded while
 // replaying.
 const char* gReplayScript = R""""(
 (() => {
+
+const EmptyArray = Object.freeze([]); // reduce unnecessary mem churn
 
 const Verbose = false;
 const VerboseCommands = Verbose;
@@ -104,6 +100,8 @@ const {
   fromJsGetBoxModel,
   fromJsGetMatchedStylesForNode,
   fromJsCssGetStylesheetByCpdId,
+  fromJsCollectEventListeners,
+  fromJsDomPerformSearch,
 
   // network
   getCurrentNetworkRequestEvent,
@@ -263,6 +261,7 @@ const CommandCallbacks = {
   "DOM.getBoxModel": DOM_getBoxModel,
   "DOM.getEventListeners": DOM_getEventListeners,
   "DOM.querySelector": DOM_querySelector,
+  "DOM.performSearch": DOM_performSearch,
   "CSS.getComputedStyle": CSS_getComputedStyle,
   "CSS.getAppliedRules": CSS_getAppliedRules
 };
@@ -525,10 +524,8 @@ function isInstanceOfNative(x, target) {
    * @see https://github.com/replayio/chromium-v8/blob/51140a440949dbbeea7a4e6c2185ccdeb8b6276e/src/objects/objects.cc#L929
    * @see https://github.com/replayio/chromium-v8/blob/51140a440949dbbeea7a4e6c2185ccdeb8b6276e/src/objects/js-objects.cc#170
    */
-  // old sln: check assortment of props
-  // if (plainObject?.nodeType > 0 && plainObject.nodeType <= 11 && plainObject.appendChild && plainObject.cloneNode) {
 
-  // new sln (also a hackfix): check if its native, and has `name` in inheritance chain
+  // hackfix: check if its native, and has `name` in inheritance chain
   const name = target?.name;
   return name &&
     x?.constructor?.toString()?.includes('() { [native code] }') &&
@@ -1153,18 +1150,6 @@ function previewBlinkObject(cdpObject, allProperties) {
       style: previewBlinkStyle(plainObject)
     }
   }
-  
-  // if (isInstanceOfNative(plainObject, CSSRule)) {
-  //   return {
-  //     rule: previewBlinkRule(plainObject)
-  //   }
-  // }
-  // if (isInstanceOfNative(plainObject, CSSStyleSheet)) {
-  //   return {
-  //     styleSheet: previewBlinkStyleSheet(plainObject)
-  //   }
-  // }
-
 }
 
 function previewBlinkNode(node) {
@@ -1233,9 +1218,6 @@ function previewBlinkNode(node) {
 function previewBlinkStyle(style) {
   // NOTE: this is for inline styles, where there is no parentRule
   let parentRule = undefined;
-  // if (style.parentRule) {
-  //   parentRule = registerPlainObject(style.parentRule);
-  // }
 
   const properties = [];
   for (let i = 0; i < style.length; i++) {
@@ -1674,37 +1656,32 @@ function DOM_getBoxModel({ node: nodeRrpId }) {
  * ##########################################################################*/
 
 function DOM_getEventListeners({ node }) {
+  const nodeObject = getPlainObjectByRrpId(node);
+  assert(nodeObject);
+
+  const listenerInfos = fromJsCollectEventListeners(nodeObject);
+
+  if (nodeObject.nodeName && nodeObject.nodeName == "HTML") {
+    // Add event listeners for the document and window as well.
+    // TODO: figure out ownerGlobal for chromium - https://linear.app/replay/issue/RUN-1041
+    listenerInfos.push(
+      ...fromJsCollectEventListeners(nodeObject.parentNode)   // document
+      // ...fromJsCollectEventListeners(nodeObject.ownerGlobal)  // window
+    );
+  }
+
   const listeners = [];
-
-  // TODO: adopt from gecko code ↓
-
-  // const nodeObj = getObjectFromId(node).unsafeDereference();
-  // const listenerInfo = Services.els.getListenerInfoFor(nodeObj) || [];
-  // if (nodeObj.nodeName && nodeObj.nodeName == "HTML") {
-  //   // Add event listeners for the document and window as well.
-  //   listenerInfo.push(
-  //     ...Services.els.getListenerInfoFor(nodeObj.parentNode),
-  //     ...Services.els.getListenerInfoFor(nodeObj.ownerGlobal)
-  //   );
-  // }
-
-  // for (const { type, listenerObject, capturing } of listenerInfo) {
-  //   const handler = unwrapXray(listenerObject);
-  //   if (!handler) {
-  //     continue;
-  //   }
-  //   const dbgHandler = makeDebuggeeValue(handler);
-  //   if (dbgHandler.className != "Function") {
-  //     continue;
-  //   }
-  //   const id = getObjectId(dbgHandler);
-  //   listeners.push({
-  //     node,
-  //     handler: id,
-  //     type,
-  //     capture: capturing,
-  //   });
-  // }
+  for (const { type, handler, capture } of listenerInfos) {
+    if (!handler) {
+      continue;
+    }
+    listeners.push({
+      node,
+      handler: registerPlainObject(handler),
+      type,
+      capture,
+    });
+  }
 
   return { listeners, data: {} };
 }
@@ -1723,6 +1700,21 @@ function DOM_querySelector({ node, selector }) {
   const result = registerPlainObject(resultObj);
   return { result, data: {} };
 }
+
+/** ###########################################################################
+ * {@link DOM_performSearch}
+ * ##########################################################################*/
+
+function DOM_performSearch({ query }) {
+  query = query.trim();
+  const nodeObjects = fromJsDomPerformSearch(query);
+  const nodeRrpIds = nodeObjects
+    ?.map(registerPlainObject)
+   || [];
+
+  return { nodes: nodeRrpIds, data: {} };
+}
+
 
 /** ###########################################################################
  * {@link CSS_getComputedStyle}
@@ -1954,13 +1946,12 @@ function convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles) {
   const appliedRules = [];
 
   const {
-    matchedRules = [],
-    inheritedEntries = []
+    matchedRules = EmptyArray,
+    inheritedEntries = EmptyArray,
+    pseudoIdMatches = EmptyArray
   } = cdpMatchedStyles;
 
-  function addCdpRule(cdpRule) {
-    // TODO: add pseudoElement support - https://linear.app/replay/issue/RUN-953
-    const pseudoElement = undefined;
+  function addCdpRule(cdpRule, pseudoElement = undefined) {
     const rrpRuleId = registerCdpAsRrpCssRule(nodeObj, cdpRule);
     const appliedRule = {
       rule: rrpRuleId,
@@ -1980,9 +1971,21 @@ function convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles) {
       matchedCSSRules  // inherited non-inline rules
     } = cdpInheritedEntry;
 
-    for (const matchedRule of matchedCSSRules) {
-      // matchedRule.matchingSelectors
-      addCdpRule(matchedRule.rule);
+    for (const match of matchedCSSRules) {
+      // match.matchingSelectors
+      addCdpRule(match.rule);
+    }
+  }
+
+  for (const pseudoMatch of pseudoIdMatches) {
+    const {
+      // see: https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-PseudoType
+      pseudoType,
+      // pseudoIdentifier,
+      matches
+    } = pseudoMatch;
+    for (const match of matches) {
+      addCdpRule(match.rule, pseudoType);
     }
   }
 
@@ -2001,16 +2004,6 @@ function CSS_getAppliedRules({ node: nodeRrpId }) {
     // NOTE: CSS domain commands are not accessible via `sendMessage`, so we have to get the data indirectly.
     // const cdpMatchedStyles = sendMessage('CSS.getMatchedStylesForNode', { nodeId });
     const cdpMatchedStyles = fromJsGetMatchedStylesForNode(nodeId);
-
-
-    // NOTE: we don't seem to need `inlineStyle` for now, as its taken care of separately in 
-    //   `Pause.getObjectPreview`.
-    // if (inlineStyle.isJust()) {
-    //   auto rulesJs = convertCborToJS(isolate, inlineStyle.fromJust());
-    //   if (!rulesJs.IsEmpty()) {
-    //     SetDataProperty(isolate, result, "inlineStyle", rulesJs.ToLocalChecked());
-    //   }
-    // }
     rules = convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles);
     gCssRulesByNodeRrpId.set(nodeRrpId, rules);
   }
@@ -3086,7 +3079,8 @@ static InspectedFrames* getOrCreateInspectedFrames() {
 }
 
 // NOTE: we need to instantiate all inspectors indivudally because we 
-//    are not fully hooked up with a `DevToolsSession` + `UberDispatcher`
+//    are not fully hooked up with a `DevToolsSession` + `UberDispatcher`.
+//    We also cannot enable them for the same reason.
 InspectorDOMAgent* getOrCreateInspectorDOMAgent(v8::Isolate* isolate) {
   if (!gInspectorDomAgent) {
     // NOTE: based on WebDevToolsAgentImpl::AttachSession
@@ -3094,8 +3088,8 @@ InspectorDOMAgent* getOrCreateInspectorDOMAgent(v8::Isolate* isolate) {
     InspectedFrames* inspectedFrames = getOrCreateInspectedFrames();
     gInspectorDomAgent = MakeGarbageCollected<InspectorDOMAgent>(
         isolate, inspectedFrames, gInspectorSession);
-    // NOTE: we cannot easily enable without a full session active
-    // gInspectorDomAgent->enable();
+
+    gInspectorDomAgent->FrameDocumentUpdated(gLocalFrame);
   }
   return gInspectorDomAgent;
 }
@@ -3155,6 +3149,26 @@ getObjectByCdpId(v8::Isolate* isolate,
 }
 
 /**
+ * Returns the matching object or null.
+ * Should generally never return null.
+ */
+static bool getV8FromBlinkObject(
+    v8::Isolate* isolate,
+    ScriptWrappable* blinkObject,
+    v8::Local<v8::Value>& result) {
+  ScriptState* scriptState = ScriptState::Current(isolate);
+  v8::Local<v8::Value> v8Object;
+  if (blinkObject->Wrap(scriptState).ToLocal(&v8Object)) {
+    result = v8Object;
+    return true;
+  }
+
+  // weird
+  recordreplay::Print("[RuntimeError] getV8FromBlinkObject failed");
+  return false;
+}
+
+/**
  * NOTE: Since the `RemoteObject` type is not publicly exposed, we cannot easily
  * access it in CPP space. We thus only use it in JS. This basically emulates
  * gecko's `makeDebuggeeValue`.
@@ -3211,7 +3225,6 @@ static void fromJsGetObjectByCdpId(
         "[RuntimeError] must be called with a single string");
 
   v8::Isolate* isolate = args.GetIsolate();
-  auto context = isolate->GetCurrentContext();
 
   // convert v8::String → v8::String::Utf8Value → v8_inspector::StringView
   // future-work: can this be improved?
@@ -3219,15 +3232,11 @@ static void fromJsGetObjectByCdpId(
   const uint8_t* cdpIdPtr = reinterpret_cast<const uint8_t*>(*cdpId);
   v8_inspector::StringView cdpIdV8(cdpIdPtr, cdpId.length());
 
-  v8::Local<v8::Value> plainObject;
-  std::unique_ptr<v8_inspector::StringBuffer> error;
-  if (!gInspectorSession->unwrapObject(&error, cdpIdV8, &plainObject, &context,
-                                       nullptr)) {
-    recordreplay::Print("[RuntimError] could not lookup cdpId: %s",
-                        ToCoreString(error->string()).Ascii().c_str());
-    args.GetReturnValue().SetNull();
-  } else {
+  v8::Local<v8::Object> plainObject;
+  if (getObjectByCdpId(isolate, cdpIdV8, plainObject)) {
     args.GetReturnValue().Set(plainObject);
+  } else {
+    args.GetReturnValue().SetNull();
   }
 }
 
@@ -3674,6 +3683,23 @@ static void HandleNetworkDidReceiveDataEvent(const base::DictionaryValue& info) 
  * @see https://chromedevtools.github.io/devtools-protocol/tot/DOM/
  * ##########################################################################*/
 
+static bool checkCDPResponse(const char* label,
+                             const protocol::Response& response,
+                             const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (!response.IsSuccess()) {
+    recordreplay::Print(
+        "[RuntimeError] CDP call \"%s\" failed (Code: %d): %s",
+        label,
+        response.Code(),
+        response.Message().c_str());
+
+    // result is null
+    args.GetReturnValue().SetNull();
+    return false;
+  }
+  return true;
+}
+
 static void fromJsGetNodeId(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
         "[RuntimeError] must be called with a single string");
@@ -3692,12 +3718,12 @@ static void fromJsGetNodeId(const v8::FunctionCallbackInfo<v8::Value>& args) {
     Node* node = V8Node::ToImpl(nodeObj);
     if (node) {
       // hackfix: bind node here
-      //   (if the DOMAgent was enabled, it would track DOM automatically)
+      //   (if the DOMAgent was enabled, it would track nodes automatically)
       int nodeId = domAgent->BindDocumentNode(node);
       args.GetReturnValue().Set(v8::Number::New(isolate, nodeId));
       return;
     } else {
-      P("[RuntimeError] fromJsGetNodeId failed for cdpId: \"%s\"", *cdpId);
+      recordreplay::Print("[RuntimeError] fromJsGetNodeId failed for cdpId: \"%s\"", *cdpId);
     }
   } else { /* already reported */
   }
@@ -3803,7 +3829,7 @@ static void fromJsGetMatchedStylesForNode(
 static void fromJsCssGetStylesheetByCpdId(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
-        "[RuntimeError] must be called with a single number");
+        "[RuntimeError] must be called with a single string");
 
   v8::Isolate* isolate = args.GetIsolate();
 
@@ -3811,15 +3837,94 @@ static void fromJsCssGetStylesheetByCpdId(
   auto* cssAgent = getOrCreateInspectorCSSAgent(isolate);
 
   CSSStyleSheet* styleSheet = cssAgent->getStyleSheet(sheetId);
-  if (styleSheet) {
-    v8::Local<v8::Value> jsStyleSheet;
-    ScriptState* scriptState = ScriptState::Current(isolate);
-    if (styleSheet->Wrap(scriptState).ToLocal(&jsStyleSheet)) {
-      args.GetReturnValue().Set(jsStyleSheet);
-      return;
+  v8::Local<v8::Value> v8StyleSheet;
+  if (styleSheet && getV8FromBlinkObject(isolate, styleSheet, v8StyleSheet)) {
+    args.GetReturnValue().Set(v8StyleSheet);
+  } else {
+    args.GetReturnValue().SetNull();
+  }
+}
+
+static void fromJsDomPerformSearch(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString() &&
+        "[RuntimeError] must be called with a single string");
+
+  v8::Isolate* isolate = args.GetIsolate();
+
+  auto query = ToCoreString(args[0].As<v8::String>());
+  auto* domAgent = getOrCreateInspectorDOMAgent(isolate);
+
+  bool includeUserAgentShadowDom = true;
+  String searchId;
+  int resultCount;
+  auto response = domAgent->performSearch(query, includeUserAgentShadowDom,
+                                          &searchId, &resultCount);
+  if (checkCDPResponse("DOM.performSearch", response, args)) {
+    if (resultCount) {
+      int fromIndex = 0;
+      int toIndex = resultCount;
+      std::unique_ptr<protocol::Array<int>> nodeIds;
+      response =
+          domAgent->getSearchResults(searchId, fromIndex, toIndex, &nodeIds);
+      if (checkCDPResponse("DOM.getSearchResults", response, args)) {
+        v8::Local<v8::Array> result = v8::Array::New(isolate);
+        uint32_t nWritten = 0;
+        for (uint32_t i = 0; i < nodeIds->size(); ++i) {
+          int nodeId = (*nodeIds)[i];
+          auto* node = domAgent->NodeForId(nodeId);
+          v8::Local<v8::Value> v8Node;
+          recordreplay::Print("DDBG performSearch %d %d", i, !!node);
+          if (node && getV8FromBlinkObject(isolate, node, v8Node)) {
+            recordreplay::Print("DDBG performSearch2 %d %d", i, !!node);
+            v8::Local<v8::Context> context = isolate->GetCurrentContext();
+            result->Set(context, nWritten++, v8Node).Check();
+          }
+        }
+        args.GetReturnValue().Set(result);
+      }
+    } else {
+      v8::Local<v8::Array> result = v8::Array::New(isolate);
+      args.GetReturnValue().Set(result);
+    }
+
+    // clean up
+    domAgent->discardSearchResults(searchId);
+  }
+}
+
+static void fromJsCollectEventListeners(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsObject() &&
+        "[RuntimeError] must be called with a single plain object (DOM node)");
+
+  v8::Isolate* isolate = args.GetIsolate();
+  auto context = isolate->GetCurrentContext();
+  auto nodeObject = args[0].As<v8::Object>();
+  auto* node = V8Node::ToImpl(nodeObject);
+
+  v8::Local<v8::Array> result = v8::Array::New(isolate);
+  if (!node) {
+    recordreplay::Print("[RuntimeError] fromJsCollectEventListeners invalid argument is not blink Node");
+  }
+  else {
+    auto report_for_all_contexts = true;
+    V8EventListenerInfoList eventListenerInfos;
+    InspectorDOMDebuggerAgent::CollectEventListeners(
+        isolate, node, nodeObject, node, report_for_all_contexts,
+        &eventListenerInfos);
+
+    uint32_t i = 0;
+    for (const auto& info : eventListenerInfos) {
+      auto v8Info = v8::Object::New(isolate);
+      SetDataProperty(isolate, v8Info, "type",
+                      V8String(isolate, info.event_type));
+      SetDataProperty(isolate, v8Info, "capture",
+                      v8::Boolean::New(isolate, info.use_capture));
+      SetDataProperty(isolate, v8Info, "handler", info.effective_function);
+      result->Set(context, i++, v8Info).Check();
     }
   }
-  args.GetReturnValue().SetNull();
+  args.GetReturnValue().Set(result);
 }
 
 /** ###########################################################################
@@ -3958,6 +4063,10 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
                       fromJsGetMatchedStylesForNode);
   SetFunctionProperty(isolate, args, "fromJsCssGetStylesheetByCpdId",
                       fromJsCssGetStylesheetByCpdId);
+  SetFunctionProperty(isolate, args, "fromJsCollectEventListeners",
+                      fromJsCollectEventListeners);
+  SetFunctionProperty(isolate, args, "fromJsDomPerformSearch",
+                      fromJsDomPerformSearch);
 
   // unsorted RR stuff
   SetFunctionProperty(

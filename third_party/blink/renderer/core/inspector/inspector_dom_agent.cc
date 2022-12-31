@@ -840,9 +840,15 @@ int InspectorDOMAgent::PushNodePathToFrontend(Node* node_to_push,
   // InspectorDOMAgent might have been resetted already. See crbug.com/450491
   if (!document_)
     return 0;
-  if (!BoundNodeId(document_))
-    return 0;
 
+  if (!enabled_.Get() && recordreplay::HasDivergedFromRecording()) {
+    // [replay] hackfix: track node if `DevToolsSession` is not active
+    //    TODO: This might not handle dangling nodes properly - https://linear.app/replay/issue/RUN-1005/
+    return BindDocumentNode(node_to_push);
+  }
+
+  if (!document_node_to_id_map_->Contains(document_))
+    return 0;
   // Return id in case the node is known.
   if (auto it = node_map->find(node_to_push); it != node_map->end())
     return it->value;
@@ -1152,8 +1158,13 @@ Response InspectorDOMAgent::performSearch(
     Maybe<bool> optional_include_user_agent_shadow_dom,
     String* search_id,
     int* result_count) {
-  if (!enabled_.Get())
-    return Response::ServerError("DOM agent is not enabled");
+  
+  if (!recordreplay::HasDivergedFromRecording()) {
+    // [replay] act as though it is enabled
+    if (!enabled_.Get()) {
+      return Response::ServerError("DOM agent is not enabled");
+    }
+  }
 
   // FIXME: Few things are missing here:
   // 1) Search works with node granularity - number of matches within node is
@@ -1312,8 +1323,9 @@ Response InspectorDOMAgent::getSearchResults(
     return Response::ServerError("Invalid search result range");
 
   *node_ids = std::make_unique<protocol::Array<int>>();
-  for (int i = from_index; i < to_index; ++i)
+  for (int i = from_index; i < to_index; ++i) {
     (*node_ids)->emplace_back(PushNodePathToFrontend((*it->value)[i].Get()));
+  }
   return Response::Success();
 }
 
