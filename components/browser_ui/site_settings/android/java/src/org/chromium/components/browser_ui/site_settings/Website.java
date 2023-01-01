@@ -64,6 +64,11 @@ public final class Website implements Serializable {
         return getMainAddress().getTitle();
     }
 
+    public String getSummary() {
+        if (mEmbedder == null) return null;
+        return mEmbedder.getTitle();
+    }
+
     public boolean representsThirdPartiesOnSite() {
         return mOrigin.getTitle().equals(SITE_WILDCARD) && mEmbedder != null
                 && !mEmbedder.getTitle().equals(SITE_WILDCARD);
@@ -295,4 +300,38 @@ public final class Website implements Serializable {
     public List<ChosenObjectInfo> getChosenObjectInfo() {
         return new ArrayList<ChosenObjectInfo>(mObjectInfo);
     }
+
+
+    /**
+     * Clears the data of the specified site.
+     * @param finishCallback is called when finished.
+     */
+    public void clearData(
+            BrowserContextHandle browserContextHandle, Runnable finishCallback) {
+        String origin = getAddress().getOrigin();
+        WebsitePreferenceBridgeJni.get().clearCookieData(browserContextHandle, origin);
+        WebsitePreferenceBridgeJni.get().clearBannerData(browserContextHandle, origin);
+        WebsitePreferenceBridgeJni.get().clearMediaLicenses(browserContextHandle, origin);
+        clearAllStoredData(browserContextHandle, finishCallback::run);
+    }
+
+    /**
+     * Resets the permissions of the specified site.
+     */
+    public void resetPermissions(BrowserContextHandle browserContextHandle) {
+        // Clear the permissions.
+        for (ContentSettingException exception : getContentSettingExceptions()) {
+            setContentSetting(browserContextHandle, exception.getContentSettingType(),
+                    ContentSettingValues.DEFAULT);
+        }
+        for (PermissionInfo info : getPermissionInfos()) {
+            setContentSetting(browserContextHandle, info.getContentSettingsType(),
+                    ContentSettingValues.DEFAULT);
+        }
+
+        for (ChosenObjectInfo info : getChosenObjectInfo()) {
+            info.revoke(browserContextHandle);
+        }
+    }
+
 }

@@ -1,6 +1,8 @@
 package com.ark.browser.ui.fragment.settings.accessibility;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.SeekBar;
@@ -12,9 +14,12 @@ import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
 import com.zpj.toast.ZToast;
 import com.zpj.widget.setting.SwitchSettingItem;
 
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.chrome.R;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.text.NumberFormat;
 
@@ -35,7 +40,7 @@ public class AccessibilityFragment extends BaseSwipeBackFragment
 
         @Override
         public void onForceEnableZoomChanged(boolean enabled) {
-//            forceEnableZoomItem.setChecked(enabled);
+            forceEnableZoomItem.setChecked(enabled);
         }
     };
 
@@ -85,9 +90,23 @@ public class AccessibilityFragment extends BaseSwipeBackFragment
         forceEnableZoomItem.setOnItemClickListener(item -> mFontSizePrefs.setForceEnableZoomFromUser(item.isChecked()));
 
         SwitchSettingItem readerForAccessibilityItem = view.findViewById(R.id.item_reader_for_accessibility);
-//        readerForAccessibilityItem.setChecked(PrefServiceBridge.getInstance().getBoolean(Pref.READER_FOR_ACCESSIBILITY_ENABLED));
-//        readerForAccessibilityItem.setOnItemClickListener(item -> PrefServiceBridge.getInstance().setBoolean(
-//                Pref.READER_FOR_ACCESSIBILITY_ENABLED, item.isChecked()));
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        readerForAccessibilityItem.setChecked(prefService.getBoolean(Pref.READER_FOR_ACCESSIBILITY));
+        readerForAccessibilityItem.setOnItemClickListener(item -> prefService.setBoolean(
+                Pref.READER_FOR_ACCESSIBILITY, item.isChecked()));
+
+
+        findViewById(R.id.item_captions).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Settings.ACTION_CAPTIONING_SETTINGS);
+                // Open the activity in a new task because the back button on the caption
+                // settings page navigates to the previous settings page instead of Chrome.
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override

@@ -18,7 +18,9 @@ import com.ark.browser.ui.fragment.dialog.AboutMeDialog;
 import com.ark.browser.ui.fragment.dialog.SearchEngineSelectDialog;
 import com.ark.browser.ui.fragment.dialog.UserAgentSelectDialog;
 import com.ark.browser.ui.fragment.settings.accessibility.AccessibilityFragment;
+import com.ark.browser.ui.fragment.settings.password.PasswordSettingsFragment;
 import com.ark.browser.ui.fragment.settings.privacy.PrivacyFragment;
+import com.ark.browser.ui.fragment.settings.website.WebSiteSettingsFragment;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
@@ -29,8 +31,12 @@ import com.zpj.widget.setting.OnCommonItemClickListener;
 import com.zpj.widget.setting.SwitchSettingItem;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.user_prefs.UserPrefs;
 
 public class SettingsFragment extends BaseSwipeBackFragment
         implements OnCommonItemClickListener, OnCheckableItemClickListener {
@@ -81,13 +87,14 @@ public class SettingsFragment extends BaseSwipeBackFragment
         itemUserAgent.setInfoText(UserAgentManager.getDefaultUserAgent().getName());
 
         SwitchSettingItem translateItem = findViewById(R.id.item_translate);
-//        translateItem.setChecked(PrefServiceBridge.getInstance().isTranslateEnabled());
-//        translateItem.setOnItemClickListener(new OnCheckableItemClickListener() {
-//            @Override
-//            public void onItemClick(CheckableSettingItem item) {
-//                PrefServiceBridge.getInstance().setTranslateEnabled(item.isChecked());
-//            }
-//        });
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        translateItem.setChecked(prefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED));
+        translateItem.setOnItemClickListener(new OnCheckableItemClickListener() {
+            @Override
+            public void onItemClick(CheckableSettingItem item) {
+                prefService.setBoolean(Pref.OFFER_TRANSLATE_ENABLED, item.isChecked());
+            }
+        });
 
         CommonSettingItem itemAutoFill = view.findViewById(R.id.item_auto_fill);
         itemAutoFill.setOnItemClickListener(this);
@@ -166,15 +173,15 @@ public class SettingsFragment extends BaseSwipeBackFragment
         } else if (id == R.id.item_auto_fill) {
 //            _mActivity.start(new AutofillAndPaymentsFragment());
         } else if (id == R.id.item_save_password) {
-//            _mActivity.start(new SavePasswordsFragment());
+            start(new PasswordSettingsFragment());
         } else if (id == R.id.item_notification) {
             goNotificationSetting();
         } else if (id == R.id.item_privacy) {
-            _mActivity.start(new PrivacyFragment());
+            start(new PrivacyFragment());
         } else if (id == R.id.item_accessibility) {
-            _mActivity.start(new AccessibilityFragment());
+            start(new AccessibilityFragment());
         } else if (id == R.id.item_website) {
-//            _mActivity.start(new WebSiteSettingsFragment());
+            start(new WebSiteSettingsFragment());
         } else if (id == R.id.item_data_reduction) {
 //            _mActivity.start(new DataReductionFragment());
         } else if (id == R.id.item_about_me) {

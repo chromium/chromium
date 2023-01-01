@@ -123,8 +123,8 @@ public class PageInfoCookiesController
         if (isDeletionDisabled()) return;
         if (mWebsite == null) return;
 
-        new SiteDataCleaner().clearData(
-                mMainController.getBrowserContext(), mWebsite, mMainController::exitSubpage);
+        mWebsite.clearData(
+                mMainController.getBrowserContext(), mMainController::exitSubpage);
     }
 
     @Override

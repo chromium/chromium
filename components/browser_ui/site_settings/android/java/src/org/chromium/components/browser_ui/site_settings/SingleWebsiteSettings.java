@@ -181,8 +181,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     // The callback to be run after this site is reset.
     private Observer mWebsiteSettingsObserver;
 
-    private final SiteDataCleaner mSiteDataCleaner = new SiteDataCleaner();
-
     // The website this page is displaying details about.
     private Website mSite;
 
@@ -1108,9 +1106,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                         .setPositiveButton(buttonResId,
                                 (dialog, which) -> {
                                     if (mHideNonPermissionPreferences) {
-                                        mSiteDataCleaner.resetPermissions(
-                                                getSiteSettingsDelegate().getBrowserContextHandle(),
-                                                mSite);
+                                        mSite.resetPermissions(
+                                                getSiteSettingsDelegate().getBrowserContextHandle());
                                     } else {
                                         resetSite();
                                     }
@@ -1148,10 +1145,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         boolean finishActivityImmediately =
                 mSite.getTotalUsage() == 0 && mObjectPolicyPermissionCount == 0;
 
-        mSiteDataCleaner.resetPermissions(
-                getSiteSettingsDelegate().getBrowserContextHandle(), mSite);
-        mSiteDataCleaner.clearData(
-                getSiteSettingsDelegate().getBrowserContextHandle(), mSite, mDataClearedCallback);
+        mSite.resetPermissions(
+                getSiteSettingsDelegate().getBrowserContextHandle());
+        mSite.clearData(
+                getSiteSettingsDelegate().getBrowserContextHandle(), mDataClearedCallback);
 
         int navigationSource = getArguments().getInt(
                 SettingsNavigationSource.EXTRA_KEY, SettingsNavigationSource.OTHER);

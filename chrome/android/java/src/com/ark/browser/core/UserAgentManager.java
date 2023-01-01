@@ -10,6 +10,8 @@ import com.ark.browser.utils.PrefsHelper;
 
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +81,18 @@ public class UserAgentManager {
 
     private static int sDefaultUserAgentIndex = -1;
 
+    public static List<UserAgent> getUserAgentListWithDefault() {
+        List<UserAgent> list = new ArrayList<>();
+
+        UserAgent userAgent = getDefaultUserAgent();
+        UserAgent defaultUserAgent = new UserAgent("default", "默认UA",
+                userAgent.getString(), userAgent.isMobile());
+
+        list.add(defaultUserAgent);
+        list.addAll(Arrays.asList(ARRAY_USER_AGENT));
+        return list;
+    }
+
     public static UserAgent[] getUserAgentArray() {
         return ARRAY_USER_AGENT;
     }
@@ -138,9 +152,9 @@ public class UserAgentManager {
                 sDefaultUserAgentIndex = index;
             } else {
                 index = PrefsHelper.with("user_agent_manager").getInt(host, -1);
-                if (index < 0) {
-                    index = getDefaultUserAgentIndex();
-                }
+//                if (index < 0) {
+//                    index = getDefaultUserAgentIndex();
+//                }
             }
             HOST_UA_MAPPING.put(host, index);
         }
@@ -150,8 +164,11 @@ public class UserAgentManager {
     }
 
     public static UserAgent getUserAgentByUrl(@NonNull GURL url) {
+        return getUserAgentByUrl(url.getHost());
+    }
+
+    public static UserAgent getUserAgentByUrl(String host) {
         long start = System.currentTimeMillis();
-        String host = url.getHost();
         if (TextUtils.isEmpty(host)) {
             return getDefaultUserAgent();
         }

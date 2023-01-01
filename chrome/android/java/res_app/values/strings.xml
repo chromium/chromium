@@ -10,6 +10,8 @@
     <string name="text_edit">编辑</string>
     <string name="text_save">保存</string>
     <string name="text_delete">删除</string>
+    <string name="text_name">"名称"</string>
+    <string name="text_site">"网址"</string>
 
     <string name="text_download">下载</string>
 
@@ -47,5 +49,19 @@
     <string name="password_entry_editor_set_lock_screen">"要想在此处查看或复制您的密码，请在此设备上设置屏幕锁定。"</string>
 <!--    <string name="password_export_set_lock_screen">"需在“设置”部分中开启屏幕锁定功能，才能从此设备中导出您的密码"</string>-->
 <!--    <string name="password_generation_popup_content_description">"目前显示的是密码生成弹出式窗口"</string>-->
+
+
+    <string name="text_ads">"广告"</string>
+    <string name="text_autoplay">"自动播放"</string>
+    <string name="text_camera_permission">"使用您的摄像头"</string>
+
+    <string name="text_missing_title">"必须提供标题"</string>
+    <string name="text_missing_url">"必须提供网址"</string>
+
+    <string name="text_clear_and_reset">"清除并重置"</string>
+    <string name="text_geolocation_permission">"位置信息使用权"</string>
+    <string name="text_mic_permission">"使用您的麦克风"</string>
+
+    <string name="website_settings_embedded_in">"嵌入位置：%1$s"</string>
 
 </resources>

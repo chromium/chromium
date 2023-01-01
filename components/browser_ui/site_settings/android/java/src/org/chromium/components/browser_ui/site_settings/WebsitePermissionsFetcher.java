@@ -152,6 +152,16 @@ public class WebsitePermissionsFetcher {
         queue.next();
     }
 
+    public void fetchPreferences(WebsiteAddress websiteAddress, WebsitePermissionsCallback callback) {
+        TaskQueue queue = new TaskQueue();
+        addFetcherForStorage(queue);
+        for (@ContentSettingsType int type = 0; type < ContentSettingsType.NUM_TYPES; type++) {
+            addFetcherForContentSettingsType(queue, type);
+        }
+        queue.add(new PermissionsAvailableCallbackRunner(callback));
+        queue.next();
+    }
+
     /**
      * Fetches all preferences within a specific category.
      *
@@ -175,6 +185,21 @@ public class WebsitePermissionsFetcher {
             assert getPermissionsType(category.getContentSettingsType()) != null;
             addFetcherForContentSettingsType(queue, category.getContentSettingsType());
         }
+        queue.add(new PermissionsAvailableCallbackRunner(callback));
+        queue.next();
+    }
+
+    public void fetchPreferencesForCategory(
+            @ContentSettingsType int contentSettingsType, WebsitePermissionsCallback callback) {
+        TaskQueue queue = new TaskQueue();
+        addFetcherForContentSettingsType(queue, contentSettingsType);
+        queue.add(new PermissionsAvailableCallbackRunner(callback));
+        queue.next();
+    }
+
+    public void fetchPreferencesForStorage(WebsitePermissionsCallback callback) {
+        TaskQueue queue = new TaskQueue();
+        addFetcherForStorage(queue);
         queue.add(new PermissionsAvailableCallbackRunner(callback));
         queue.next();
     }

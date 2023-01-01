@@ -16,7 +16,7 @@ public class SiteDataCleaner {
      * Clears the data of the specified site.
      * @param finishCallback is called when finished.
      */
-    public void clearData(
+    public static void clearData(
             BrowserContextHandle browserContextHandle, Website site, Runnable finishCallback) {
         String origin = site.getAddress().getOrigin();
         WebsitePreferenceBridgeJni.get().clearCookieData(browserContextHandle, origin);
@@ -28,7 +28,7 @@ public class SiteDataCleaner {
     /**
      * Resets the permissions of the specified site.
      */
-    public void resetPermissions(BrowserContextHandle browserContextHandle, Website site) {
+    public static void resetPermissions(BrowserContextHandle browserContextHandle, Website site) {
         // Clear the permissions.
         for (ContentSettingException exception : site.getContentSettingExceptions()) {
             site.setContentSetting(browserContextHandle, exception.getContentSettingType(),

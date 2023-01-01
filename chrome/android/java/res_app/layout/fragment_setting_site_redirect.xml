@@ -1,0 +1,35 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/backgroundColor"
+    >
+
+    <include
+        layout="@layout/layout_header"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/btn_add_redirect"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:focusable="false"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="24dp"
+        android:textColor="@android:color/white"
+        app:buttonColor="@color/colorPrimary"
+        android:text="添加链接重定向"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="40dp"
+        />
+
+</LinearLayout>

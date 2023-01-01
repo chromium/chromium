@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColorAccent"
+    >
+
+    <include layout="@layout/layout_header"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        >
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="?attr/backgroundColor"
+            app:cardUseCompatPadding="false"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            android:layout_margin="16dp">
+
+            <LinearLayout
+                android:id="@+id/ll_container"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_all_sites"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="所有网站"
+                    app:z_setting_leftIcon="@drawable/ic_favicon"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_site_redirect"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="链接重定向"
+                    app:z_setting_leftIcon="@drawable/ic_link_black_24dp"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_storage"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="存储空间"
+                    app:z_setting_leftIcon="@drawable/ic_save"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_cookies"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="Cookie"
+                    app:z_setting_leftIcon="@drawable/permission_cookie"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_location"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="定位"
+                    app:z_setting_leftIcon="@drawable/permission_location"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_camera"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="摄像头"
+                    app:z_setting_leftIcon="@drawable/ic_videocam"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_microphone"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="麦克风"
+                    app:z_setting_leftIcon="@drawable/permission_mic"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_notification"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="通知"
+                    app:z_setting_leftIcon="@drawable/permission_push_notification"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_javascript"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="JavaScript"
+                    app:z_setting_leftIcon="@drawable/permission_javascript"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_popups"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="弹出式窗口"
+                    app:z_setting_leftIcon="@drawable/permission_popups"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_ads"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="广告"
+                    app:z_setting_leftIcon="@drawable/permission_ad"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_background_sync"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="后台同步"
+                    app:z_setting_leftIcon="@drawable/permission_background_sync"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_protected_content"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="受保护内容"
+                    app:z_setting_leftIcon="@drawable/permission_protected_media"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_auto_play"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="自动播放"
+                    app:z_setting_leftIcon="@drawable/permission_autoplay"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_sound"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="声音"
+                    app:z_setting_leftIcon="@drawable/ic_volume"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_usb"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="USB"
+                    app:z_setting_leftIcon="@drawable/permission_usb"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+                <com.ark.browser.ui.widget.TintSettingItem
+                    android:id="@+id/item_midi"
+                    style="@style/setting_item_style"
+                    app:z_setting_titleText="MIDI"
+                    app:z_setting_leftIcon="@drawable/permission_midi"
+                    app:z_setting_leftIconTint="?attr/textColorMajor"
+                    />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </ScrollView>
+
+
+
+</LinearLayout>
