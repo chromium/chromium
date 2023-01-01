@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 
@@ -20,7 +21,7 @@ namespace web_app {
 
 ExternalInstallOptions::ExternalInstallOptions(
     const GURL& install_url,
-    absl::optional<UserDisplayMode> user_display_mode,
+    absl::optional<mojom::UserDisplayMode> user_display_mode,
     ExternalInstallSource install_source)
     : install_url(install_url),
       user_display_mode(user_display_mode),

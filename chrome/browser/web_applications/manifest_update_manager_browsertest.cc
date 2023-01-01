@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -50,7 +51,6 @@
 #include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -461,7 +461,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     const GURL app_url = GetAppURL();
     base::RunLoop run_loop;
     ExternalInstallOptions install_options(
-        app_url, UserDisplayMode::kStandalone,
+        app_url, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kInternalDefault);
     install_options.add_to_applications_menu = false;
     install_options.add_to_desktop = false;
@@ -488,7 +488,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     const GURL app_url = GetAppURL();
     base::RunLoop run_loop;
     ExternalInstallOptions install_options(
-        app_url, UserDisplayMode::kStandalone,
+        app_url, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kExternalPolicy);
     install_options.add_to_applications_menu = false;
     install_options.add_to_desktop = false;
@@ -514,8 +514,9 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   AppId InstallKioskApp() {
     const GURL app_url = GetAppURL();
     base::RunLoop run_loop;
-    ExternalInstallOptions install_options(
-        app_url, UserDisplayMode::kStandalone, ExternalInstallSource::kKiosk);
+    ExternalInstallOptions install_options(app_url,
+                                           mojom::UserDisplayMode::kStandalone,
+                                           ExternalInstallSource::kKiosk);
     install_options.install_placeholder = true;
     GetProvider().externally_managed_app_manager().Install(
         std::move(install_options),
@@ -544,7 +545,8 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
       synced_specifics_data->SetStartUrl(start_url);
 
       synced_specifics_data->AddSource(WebAppManagement::kSync);
-      synced_specifics_data->SetUserDisplayMode(UserDisplayMode::kBrowser);
+      synced_specifics_data->SetUserDisplayMode(
+          mojom::UserDisplayMode::kBrowser);
       synced_specifics_data->SetName("Name From Sync");
 
       WebApp::SyncFallbackData sync_fallback_data;
@@ -1688,7 +1690,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate, {"standalone", kInstallableIconList});
   AppId app_id = InstallWebApp();
   GetProvider().sync_bridge_unsafe().SetAppUserDisplayMode(
-      app_id, UserDisplayMode::kStandalone, /*is_user_action=*/false);
+      app_id, mojom::UserDisplayMode::kStandalone, /*is_user_action=*/false);
 
   OverrideManifest(kManifestTemplate, {"browser", kInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
@@ -1701,7 +1703,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   // We don't touch the user's launch preference even if the app display mode
   // changes. Instead the effective display mode changes.
   EXPECT_EQ(GetProvider().registrar_unsafe().GetAppUserDisplayMode(app_id),
-            UserDisplayMode::kStandalone);
+            mojom::UserDisplayMode::kStandalone);
   EXPECT_EQ(GetProvider().registrar_unsafe().GetAppEffectiveDisplayMode(app_id),
             DisplayMode::kMinimalUi);
 }

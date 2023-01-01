@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -60,7 +60,7 @@ OsUrlHandlerSystemWebAppDelegate::GetWebAppInfo() const {
   info->dark_mode_theme_color =
       web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/true);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
 
   return info;
 }

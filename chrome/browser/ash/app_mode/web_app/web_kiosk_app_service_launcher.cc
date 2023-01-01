@@ -88,7 +88,8 @@ void WebKioskAppServiceLauncher::InstallApp() {
   delegate_->OnAppInstalling();
 
   web_app::ExternalInstallOptions options(
-      GetCurrentApp()->install_url(), web_app::UserDisplayMode::kStandalone,
+      GetCurrentApp()->install_url(),
+      web_app::mojom::UserDisplayMode::kStandalone,
       web_app::ExternalInstallSource::kKiosk);
   // When the install URL redirects to another URL a placeholder will be
   // installed. This happens if a web app requires authentication.

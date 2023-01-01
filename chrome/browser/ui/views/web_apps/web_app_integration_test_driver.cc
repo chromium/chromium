@@ -67,6 +67,7 @@
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -75,7 +76,6 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -673,7 +673,7 @@ AppState::AppState(web_app::AppId app_id,
                    GURL app_scope,
                    apps::RunOnOsLoginMode run_on_os_login_mode,
                    blink::mojom::DisplayMode effective_display_mode,
-                   absl::optional<UserDisplayMode> user_display_mode,
+                   absl::optional<mojom::UserDisplayMode> user_display_mode,
                    std::string manifest_launcher_icon_filename,
                    bool installed_locally,
                    bool shortcut_created)
@@ -1767,7 +1767,8 @@ void WebAppIntegrationTestDriver::SetOpenInTab(Site site) {
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge =
       WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
-  sync_bridge.SetAppUserDisplayMode(app_id, UserDisplayMode::kBrowser, true);
+  sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kBrowser,
+                                    true);
   AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kBrowser).Await();
 #else
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
@@ -1787,7 +1788,8 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(Site site) {
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge =
       WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
-  sync_bridge.SetAppUserDisplayMode(app_id, UserDisplayMode::kStandalone, true);
+  sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kStandalone,
+                                    true);
   AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow).Await();
 #else
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
@@ -2133,7 +2135,7 @@ void WebAppIntegrationTestDriver::CheckAppInListTabbed(Site site) {
   absl::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state.has_value());
-  EXPECT_EQ(app_state->user_display_mode, UserDisplayMode::kBrowser);
+  EXPECT_EQ(app_state->user_display_mode, mojom::UserDisplayMode::kBrowser);
   AfterStateCheckAction();
 }
 
@@ -2144,7 +2146,7 @@ void WebAppIntegrationTestDriver::CheckAppInListWindowed(Site site) {
   absl::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state.has_value());
-  EXPECT_EQ(app_state->user_display_mode, UserDisplayMode::kStandalone);
+  EXPECT_EQ(app_state->user_display_mode, mojom::UserDisplayMode::kStandalone);
   AfterStateCheckAction();
 }
 
@@ -2564,7 +2566,7 @@ void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLogin(Site site) {
 }
 
 void WebAppIntegrationTestDriver::CheckUserDisplayModeInternal(
-    UserDisplayMode user_display_mode) {
+    mojom::UserDisplayMode user_display_mode) {
   if (!BeforeStateCheckAction(__FUNCTION__))
     return;
   absl::optional<AppState> app_state = GetStateForAppId(

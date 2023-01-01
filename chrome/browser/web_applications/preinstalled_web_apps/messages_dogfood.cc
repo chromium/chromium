@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_apps/messages_dogfood.h"
 
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 
 namespace web_app {
@@ -12,7 +12,7 @@ namespace web_app {
 ExternalInstallOptions GetConfigForMessagesDogfood() {
   ExternalInstallOptions options(
       /*install_url=*/GURL("https://messages.google.com/web/authentication"),
-      /*user_display_mode=*/UserDisplayMode::kStandalone,
+      /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.uninstall_and_replace = {kMessagesDogfoodDeprecatedAppId};

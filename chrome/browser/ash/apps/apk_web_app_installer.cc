@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -107,7 +107,7 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
   }
   web_app_install_info_->display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app_install_info_->user_display_mode =
-      web_app::UserDisplayMode::kStandalone;
+      web_app::mojom::UserDisplayMode::kStandalone;
 
   is_web_only_twa_ = web_app_info->is_web_only_twa;
   sha256_fingerprint_ = web_app_info->certificate_sha256_fingerprint;

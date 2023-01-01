@@ -22,12 +22,12 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -295,7 +295,7 @@ TEST_P(SystemWebAppManagerTest_PrefMigrationEnabled,
 
   // We should only try to install the app in the System App list.
   web_app::ExternalInstallOptions options(
-      AppUrl1(), web_app::UserDisplayMode::kStandalone,
+      AppUrl1(), web_app::mojom::UserDisplayMode::kStandalone,
       web_app::ExternalInstallSource::kSystemInstalled);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;

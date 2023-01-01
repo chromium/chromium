@@ -17,6 +17,7 @@
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"

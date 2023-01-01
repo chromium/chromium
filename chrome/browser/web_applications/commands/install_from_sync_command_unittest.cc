@@ -115,7 +115,7 @@ class InstallFromSyncTest : public WebAppTest {
     return InstallFromSyncCommand::Params(
         app_id, /*manifest_id=*/absl::nullopt, url, kFallbackTitle,
         url.GetWithoutFilename(), /*theme_color=*/absl::nullopt,
-        UserDisplayMode::kStandalone, /*icons=*/
+        mojom::UserDisplayMode::kStandalone, /*icons=*/
         {apps::IconInfo(kFallbackIconUrl, kIconSize)});
   }
 

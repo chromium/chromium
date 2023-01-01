@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/locks/full_system_lock.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"

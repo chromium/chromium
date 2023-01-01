@@ -27,10 +27,10 @@
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_source.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -120,22 +120,22 @@ void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
 
 #endif  // BUILDFLAG(IS_WIN)
 
-UserDisplayMode GetExtensionUserDisplayMode(
+mojom::UserDisplayMode GetExtensionUserDisplayMode(
     Profile* profile,
     const extensions::Extension* extension) {
   // Platform apps always open in an app window and their user preference is
   // meaningless.
   if (extension->is_platform_app())
-    return UserDisplayMode::kStandalone;
+    return mojom::UserDisplayMode::kStandalone;
 
   switch (extensions::GetLaunchContainer(
       extensions::ExtensionPrefs::Get(profile), extension)) {
     case apps::LaunchContainer::kLaunchContainerWindow:
     case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
-      return UserDisplayMode::kStandalone;
+      return mojom::UserDisplayMode::kStandalone;
     case apps::LaunchContainer::kLaunchContainerTab:
     case apps::LaunchContainer::kLaunchContainerNone:
-      return UserDisplayMode::kBrowser;
+      return mojom::UserDisplayMode::kBrowser;
   }
 }
 

@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
     install_info->start_url = start_url;
     install_info->scope = start_url.GetWithoutFilename();
     install_info->title = u"App Name";
-    install_info->user_display_mode = UserDisplayMode::kStandalone;
+    install_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
     {
       SkBitmap bitmap;

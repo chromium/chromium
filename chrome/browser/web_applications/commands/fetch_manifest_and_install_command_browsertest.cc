@@ -11,8 +11,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
 
   {
     ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
-    web_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+    web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
     web_app->SetIsLocallyInstalled(false);
     update->CreateApp(std::move(web_app));
   }
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   EXPECT_FALSE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
   EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
   EXPECT_EQ(provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value(),
-            UserDisplayMode::kStandalone);
+            mojom::UserDisplayMode::kStandalone);
 
   EXPECT_FALSE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
 
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   // Install defaults to `kBrowser` because `CreateDialogCallback` doesn't set
   // `open_as_window` to true.
   EXPECT_EQ(provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value(),
-            UserDisplayMode::kBrowser);
+            mojom::UserDisplayMode::kBrowser);
 }
 
 }  // namespace web_app

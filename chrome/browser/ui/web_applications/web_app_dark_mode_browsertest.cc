@@ -8,8 +8,8 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/embedder_support/switches.h"
@@ -40,7 +40,7 @@ class WebAppDarkModeBrowserTest : public WebAppControllerBrowserTest {
     web_app_info->start_url = https_server()->GetURL("/hung");
     web_app_info->title = u"A Web App";
     web_app_info->display_mode = DisplayMode::kStandalone;
-    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     web_app_info->theme_color = SK_ColorBLUE;
     web_app_info->background_color = SK_ColorBLUE;
     web_app_info->dark_mode_theme_color = SK_ColorRED;

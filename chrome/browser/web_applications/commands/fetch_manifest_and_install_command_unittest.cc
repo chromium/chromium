@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -113,9 +113,10 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 
   WebAppInstallDialogCallback CreateDialogCallback(
       bool accept = true,
-      UserDisplayMode user_display_mode = UserDisplayMode::kBrowser) {
+      mojom::UserDisplayMode user_display_mode =
+          mojom::UserDisplayMode::kBrowser) {
     return base::BindOnce(
-        [](bool accept, UserDisplayMode user_display_mode,
+        [](bool accept, mojom::UserDisplayMode user_display_mode,
            content::WebContents* initiator_web_contents,
            std::unique_ptr<WebAppInstallInfo> web_app_info,
            WebAppInstallationAcceptanceCallback acceptance_callback) {
@@ -206,11 +207,11 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 };
 
 TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
-  EXPECT_EQ(
-      InstallAndWait(kWebAppId, SetupDefaultFakeDataRetriever(),
-                     webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                     CreateDialogCallback(true, UserDisplayMode::kStandalone)),
-      webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_EQ(InstallAndWait(kWebAppId, SetupDefaultFakeDataRetriever(),
+                           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                           CreateDialogCallback(
+                               true, mojom::UserDisplayMode::kStandalone)),
+            webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(1, fake_ui_manager()->num_reparent_tab_calls());
 }
@@ -223,45 +224,45 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithFallbackInstall) {
   web_app_info->start_url = kWebAppUrl;
   web_app_info->title = u"test app";
   web_app_info->scope = kWebAppUrl;
-  web_app_info->user_display_mode = UserDisplayMode::kBrowser;
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
   data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
-  EXPECT_EQ(
-      InstallAndWait(kWebAppId, std::move(data_retriever),
-                     webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
-                     CreateDialogCallback(true, UserDisplayMode::kStandalone),
-                     /*use_fallback=*/true),
-      webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_EQ(InstallAndWait(
+                kWebAppId, std::move(data_retriever),
+                webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
+                CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
+                /*use_fallback=*/true),
+            webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(1, fake_ui_manager()->num_reparent_tab_calls());
 }
 
 TEST_F(FetchManifestAndInstallCommandTest,
        FallbackInstallWithFailToGetInstallInfo) {
-  EXPECT_EQ(
-      InstallAndWait(kWebAppId, std::make_unique<FakeDataRetriever>(),
-                     webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
-                     CreateDialogCallback(true, UserDisplayMode::kStandalone),
-                     /*use_fallback=*/true),
-      webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
+  EXPECT_EQ(InstallAndWait(
+                kWebAppId, std::make_unique<FakeDataRetriever>(),
+                webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
+                CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
+                /*use_fallback=*/true),
+            webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
   EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(0, fake_ui_manager()->num_reparent_tab_calls());
 }
 
 TEST_F(FetchManifestAndInstallCommandTest, SuccessWithoutReparent) {
-  EXPECT_EQ(
-      InstallAndWait(kWebAppId, SetupDefaultFakeDataRetriever(),
-                     webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                     CreateDialogCallback(true, UserDisplayMode::kBrowser)),
-      webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_EQ(InstallAndWait(
+                kWebAppId, SetupDefaultFakeDataRetriever(),
+                webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                CreateDialogCallback(true, mojom::UserDisplayMode::kBrowser)),
+            webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_EQ(0, fake_ui_manager()->num_reparent_tab_calls());
 }
 
 TEST_F(FetchManifestAndInstallCommandTest, UserInstallDeclined) {
-  EXPECT_EQ(
-      InstallAndWait(kWebAppId, SetupDefaultFakeDataRetriever(),
-                     webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                     CreateDialogCallback(false, UserDisplayMode::kStandalone)),
-      webapps::InstallResultCode::kUserInstallDeclined);
+  EXPECT_EQ(InstallAndWait(kWebAppId, SetupDefaultFakeDataRetriever(),
+                           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                           CreateDialogCallback(
+                               false, mojom::UserDisplayMode::kStandalone)),
+            webapps::InstallResultCode::kUserInstallDeclined);
   EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(0, fake_ui_manager()->num_reparent_tab_calls());
 }

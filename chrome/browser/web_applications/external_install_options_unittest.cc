@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,7 +60,7 @@ TEST(WebAppExternalInstallOptions,
      ConvertExternalInstallOptionsToParams_DefaultConstructor) {
   ExternalInstallOptions install_options(
       /*install_url=*/GURL{"https://example.org"},
-      /*user_display_mode=*/UserDisplayMode::kStandalone,
+      /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   WebAppInstallParams install_params =
@@ -76,14 +76,14 @@ TEST(WebAppExternalInstallOptions,
      ConvertExternalInstallOptionsToParams_NotDefaultConstructor) {
   ExternalInstallOptions install_options(
       /*install_url=*/GURL{"https://example.com"},
-      /*user_display_mode=*/UserDisplayMode::kStandalone,
+      /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   // The values below are deliberately different from default
   // ExternalInstallOptions constructor values.
 
   install_options.force_reinstall = true;
-  install_options.user_display_mode = UserDisplayMode::kStandalone;
+  install_options.user_display_mode = mojom::UserDisplayMode::kStandalone;
   install_options.fallback_app_name = "Fallback App Name";
 
   install_options.add_to_applications_menu = false;

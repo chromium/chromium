@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -48,7 +48,7 @@ void OnWebAppInstallShowInstallDialog(
 
   switch (flow) {
     case WebAppInstallFlow::kInstallSite:
-      web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+      web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
       if (base::FeatureList::IsEnabled(
               webapps::features::kDesktopPWAsDetailedInstallDialog) &&
           webapps::AppBannerManager::FromWebContents(initiator_web_contents)

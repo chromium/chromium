@@ -63,10 +63,10 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -1287,24 +1287,25 @@ apps::WindowMode WebAppPublisherHelper::GetWindowMode(
 
 void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
                                           apps::WindowMode window_mode) {
-  auto user_display_mode = UserDisplayMode::kStandalone;
+  auto user_display_mode = mojom::UserDisplayMode::kStandalone;
   switch (window_mode) {
     case apps::WindowMode::kBrowser:
-      user_display_mode = UserDisplayMode::kBrowser;
+      user_display_mode = mojom::UserDisplayMode::kBrowser;
       break;
     case apps::WindowMode::kUnknown:
     case apps::WindowMode::kWindow:
-      user_display_mode = UserDisplayMode::kStandalone;
+      user_display_mode = mojom::UserDisplayMode::kStandalone;
       break;
     case apps::WindowMode::kTabbedWindow:
-      user_display_mode = UserDisplayMode::kTabbed;
+      user_display_mode = mojom::UserDisplayMode::kTabbed;
       break;
   }
   provider_->scheduler().ScheduleCallbackWithLock(
       "WebAppPublisherHelper::SetWindowMode",
       std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id}),
       base::BindOnce(
-          [](AppId app_id, UserDisplayMode user_display_mode, AppLock& lock) {
+          [](AppId app_id, mojom::UserDisplayMode user_display_mode,
+             AppLock& lock) {
             lock.sync_bridge().SetAppUserDisplayMode(app_id, user_display_mode,
                                                      /*is_user_action=*/true);
           },
@@ -1495,7 +1496,7 @@ void WebAppPublisherHelper::OnWebAppLastLaunchTimeChanged(
 
 void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
     const AppId& app_id,
-    UserDisplayMode user_display_mode) {
+    mojom::UserDisplayMode user_display_mode) {
   PublishWindowModeUpdate(app_id,
                           registrar().GetAppEffectiveDisplayMode(app_id));
 }

@@ -16,12 +16,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -123,7 +123,7 @@ class ExternallyManagedAppManagerTest
     install_options_list.reserve(urls.size());
     for (const auto& url : urls) {
       install_options_list.emplace_back(
-          url, UserDisplayMode::kStandalone,
+          url, mojom::UserDisplayMode::kStandalone,
           ExternalInstallSource::kInternalDefault);
     }
 
@@ -192,10 +192,10 @@ class ExternallyManagedAppManagerTest
 TEST_P(ExternallyManagedAppManagerTest, DestroyDuringInstallInSynchronize) {
   std::vector<ExternalInstallOptions> install_options_list;
   install_options_list.emplace_back(GURL("https://foo.example"),
-                                    UserDisplayMode::kStandalone,
+                                    mojom::UserDisplayMode::kStandalone,
                                     ExternalInstallSource::kInternalDefault);
   install_options_list.emplace_back(GURL("https://bar.example"),
-                                    UserDisplayMode::kStandalone,
+                                    mojom::UserDisplayMode::kStandalone,
                                     ExternalInstallSource::kInternalDefault);
 
   externally_managed_app_manager().SynchronizeInstalledApps(
@@ -215,7 +215,7 @@ TEST_P(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
   {
     std::vector<ExternalInstallOptions> install_options_list;
     install_options_list.emplace_back(GURL("https://foo.example"),
-                                      UserDisplayMode::kStandalone,
+                                      mojom::UserDisplayMode::kStandalone,
                                       ExternalInstallSource::kInternalDefault);
     base::RunLoop run_loop;
     externally_managed_app_manager().SynchronizeInstalledApps(

@@ -25,9 +25,9 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -335,7 +335,8 @@ class FeaturePromoDialogIntentChipTest : public FeaturePromoDialogTest {
     web_app_info->title = base::UTF8ToUTF16(app_name);
     web_app_info->start_url = url;
     web_app_info->scope = url;
-    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
     auto app_id = web_app::test::InstallWebApp(browser()->profile(),
                                                std::move(web_app_info));
     web_app::AppReadinessWaiter(browser()->profile(), app_id).Await();

@@ -41,9 +41,9 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -214,7 +214,8 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
       auto web_app_info = std::make_unique<WebAppInstallInfo>();
       web_app_info->start_url = start_url;
       web_app_info->scope = start_url.GetWithoutFilename();
-      web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+      web_app_info->user_display_mode =
+          web_app::mojom::UserDisplayMode::kStandalone;
       app_id_ =
           web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 

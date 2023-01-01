@@ -74,8 +74,8 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -527,7 +527,8 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     if (!launch_in_browser)
-      web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+      web_app_info->user_display_mode =
+          web_app::mojom::UserDisplayMode::kStandalone;
     web_app_info->title = u"A Web App";
     const web_app::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));

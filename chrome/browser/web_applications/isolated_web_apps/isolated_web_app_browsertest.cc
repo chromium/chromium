@@ -24,9 +24,9 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -287,7 +287,8 @@ IN_PROC_BROWSER_TEST_F(
 
   WebAppProvider::GetForTest(browser()->profile())
       ->sync_bridge_unsafe()
-      .SetAppUserDisplayMode(url_info.app_id(), UserDisplayMode::kBrowser,
+      .SetAppUserDisplayMode(url_info.app_id(),
+                             mojom::UserDisplayMode::kBrowser,
                              /*is_user_action=*/false);
 
   GURL app_url = url_info.origin().GetURL().Resolve("/index.html");

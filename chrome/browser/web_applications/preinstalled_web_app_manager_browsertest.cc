@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -135,7 +135,7 @@ void ExpectInitialManifestFieldsFromBasicWebApp(WebAppIconManager& icon_manager,
             SK_ColorBLACK);
 
   // User preferences:
-  EXPECT_EQ(web_app->user_display_mode(), UserDisplayMode::kStandalone);
+  EXPECT_EQ(web_app->user_display_mode(), mojom::UserDisplayMode::kStandalone);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -881,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), kAppStartUrl);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), kAppScope);
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
-            UserDisplayMode::kStandalone);
+            mojom::UserDisplayMode::kStandalone);
   EXPECT_EQ(registrar().GetAppDisplayMode(app_id), DisplayMode::kMinimalUi);
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
@@ -937,7 +937,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), install_url);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), scope);
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
-            UserDisplayMode::kStandalone);
+            mojom::UserDisplayMode::kStandalone);
   EXPECT_EQ(registrar().GetAppDisplayMode(app_id), DisplayMode::kStandalone);
 }
 
@@ -979,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), kAppStartUrl);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), kAppScope);
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
-            UserDisplayMode::kStandalone);
+            mojom::UserDisplayMode::kStandalone);
   EXPECT_EQ(registrar().GetAppDisplayMode(app_id), DisplayMode::kMinimalUi);
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
@@ -1031,7 +1031,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), scope);
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
-            UserDisplayMode::kStandalone);
+            mojom::UserDisplayMode::kStandalone);
   EXPECT_EQ(registrar().GetAppDisplayMode(app_id), DisplayMode::kMinimalUi);
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),

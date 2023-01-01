@@ -511,7 +511,7 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
       app_lock_->install_finalizer().CanReparentTab(app_id, !error);
 
   if (can_reparent_tab &&
-      (web_app_info_->user_display_mode != UserDisplayMode::kBrowser)) {
+      (web_app_info_->user_display_mode != mojom::UserDisplayMode::kBrowser)) {
     app_lock_->install_finalizer().ReparentTab(app_id, !error,
                                                web_contents_.get());
   }

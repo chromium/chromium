@@ -9,7 +9,7 @@
 #include "ash/webui/grit/ash_print_management_resources.h"
 #include "ash/webui/print_management/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,7 +34,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForPrintManagementApp() {
   info->dark_mode_background_color = info->dark_mode_theme_color;
 
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
 
   return info;
 }

@@ -44,9 +44,9 @@
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -347,7 +347,8 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
     web_app_info->title = base::UTF8ToUTF16(app_name);
     web_app_info->start_url = kAppUrl;
     web_app_info->scope = kAppUrl;
-    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
 
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }

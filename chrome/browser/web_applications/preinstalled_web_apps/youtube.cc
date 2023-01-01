@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
@@ -21,9 +21,9 @@ ExternalInstallOptions GetConfigForYouTube() {
       /*install_url=*/GURL(
           "https://www.youtube.com/s/notifications/manifest/cr_install.html"),
 #if BUILDFLAG(IS_CHROMEOS)
-      /*user_display_mode=*/UserDisplayMode::kStandalone,
+      /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
 #else
-      /*user_display_mode=*/UserDisplayMode::kBrowser,
+      /*user_display_mode=*/mojom::UserDisplayMode::kBrowser,
 #endif  // BUILDFLAG(IS_CHROMEOS)
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 

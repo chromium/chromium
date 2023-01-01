@@ -14,11 +14,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -59,7 +59,7 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
   AppId InstallWebApp(const GURL& start_url) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
-    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 

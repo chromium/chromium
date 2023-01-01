@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 source_set("web_applications") {
   sources = [
@@ -452,6 +453,7 @@ source_set("web_applications") {
   }
 
   public_deps = [
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_applications/proto",
     "//components/permissions:permissions",
     "//components/services/app_service/public/cpp:app_share_target",

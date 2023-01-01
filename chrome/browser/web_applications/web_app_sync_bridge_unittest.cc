@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -104,7 +104,7 @@ std::unique_ptr<WebApp> CreateWebAppWithSyncOnlyFields(const std::string& url) {
   web_app->AddSource(WebAppManagement::kSync);
   web_app->SetStartUrl(start_url);
   web_app->SetName("Name");
-  web_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   return web_app;
 }
 
@@ -577,7 +577,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_AddUpdateDelete) {
   for (int i = 0; i < 5; ++i) {
     auto app_to_update = std::make_unique<WebApp>(*merged_apps[i]);
     // Update user display mode field.
-    app_to_update->SetUserDisplayMode(UserDisplayMode::kBrowser);
+    app_to_update->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
     ConvertAppToEntityChange(
         *app_to_update, syncer::EntityChange::ACTION_UPDATE, &entity_changes);
     // Override the app in the expected registry.
@@ -716,7 +716,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_UpdateOnly) {
   // Update last 5 initial apps.
   for (int i = 5; i < 10; ++i) {
     auto app_to_update = std::make_unique<WebApp>(*merged_apps[i]);
-    app_to_update->SetUserDisplayMode(UserDisplayMode::kStandalone);
+    app_to_update->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
 
     WebApp::SyncFallbackData sync_fallback_data;
     sync_fallback_data.name = "Sync Name";
@@ -808,7 +808,7 @@ TEST_F(WebAppSyncBridgeTest,
   AppsList apps_to_update;
   for (int i = 0; i < 5; ++i) {
     auto app_to_update = std::make_unique<WebApp>(*policy_and_sync_apps[i]);
-    app_to_update->SetUserDisplayMode(UserDisplayMode::kBrowser);
+    app_to_update->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
 
     WebApp::SyncFallbackData sync_fallback_data;
     sync_fallback_data.name = "Updated Sync Name";
@@ -992,7 +992,7 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_UpdateSyncApp) {
     sync_fallback_data.name = "Updated Sync Name";
     sync_fallback_data.theme_color = SK_ColorBLACK;
     sync_app->SetSyncFallbackData(std::move(sync_fallback_data));
-    sync_app->SetUserDisplayMode(UserDisplayMode::kBrowser);
+    sync_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
 
     // Override the app in the expected registry.
     registry[sync_app->app_id()] = std::make_unique<WebApp>(*sync_app);
@@ -1191,7 +1191,7 @@ TEST_F(WebAppSyncBridgeTest, InstallAppsFromSyncAndPendingInstallation) {
 TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_OnWebAppsWillBeUpdatedFromSync) {
   AppsList initial_registry_apps = CreateAppsList("https://example.com/", 10);
   for (std::unique_ptr<WebApp>& app : initial_registry_apps)
-    app->SetUserDisplayMode(UserDisplayMode::kBrowser);
+    app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   InitSyncBridgeFromAppList(initial_registry_apps);
 
   WebAppTestRegistryObserverAdapter observer{&registrar()};
@@ -1207,14 +1207,14 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_OnWebAppsWillBeUpdatedFromSync) {
           EXPECT_NE(*old_app_state, *new_app_state);
 
           EXPECT_EQ(old_app_state->user_display_mode(),
-                    UserDisplayMode::kBrowser);
+                    mojom::UserDisplayMode::kBrowser);
           EXPECT_EQ(new_app_state->user_display_mode(),
-                    UserDisplayMode::kStandalone);
+                    mojom::UserDisplayMode::kStandalone);
 
           // new and old states must be equal if diff fixed:
           auto old_app_state_no_diff = std::make_unique<WebApp>(*old_app_state);
           old_app_state_no_diff->SetUserDisplayMode(
-              UserDisplayMode::kStandalone);
+              mojom::UserDisplayMode::kStandalone);
           EXPECT_EQ(*old_app_state_no_diff, *new_app_state);
 
           RemoveWebAppFromAppsList(&initial_registry_apps,
@@ -1229,7 +1229,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_OnWebAppsWillBeUpdatedFromSync) {
   // Update first 5 apps: change user_display_mode field only.
   for (int i = 0; i < 5; ++i) {
     auto app_server_state = std::make_unique<WebApp>(*initial_registry_apps[i]);
-    app_server_state->SetUserDisplayMode(UserDisplayMode::kStandalone);
+    app_server_state->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
     apps_server_state.push_back(std::move(app_server_state));
   }
 
@@ -1240,7 +1240,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_OnWebAppsWillBeUpdatedFromSync) {
   // 5 other apps left unchanged:
   EXPECT_EQ(5u, initial_registry_apps.size());
   for (int i = 0; i < 5; ++i) {
-    EXPECT_EQ(UserDisplayMode::kBrowser,
+    EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
               initial_registry_apps[i]->user_display_mode());
   }
 }
@@ -1249,7 +1249,7 @@ TEST_F(WebAppSyncBridgeTest, RetryIncompleteUninstalls) {
   AppsList initial_registry_apps = CreateAppsList("https://example.com/", 5);
   std::vector<AppId> initial_app_ids;
   for (std::unique_ptr<WebApp>& app : initial_registry_apps) {
-    app->SetUserDisplayMode(UserDisplayMode::kBrowser);
+    app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
     app->SetIsUninstalling(true);
     initial_app_ids.push_back(app->app_id());
   }

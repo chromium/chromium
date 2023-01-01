@@ -10,7 +10,7 @@
 #include "ash/webui/grit/ash_camera_app_resources.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/prefs/pref_service.h"
@@ -47,7 +47,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForCameraSystemWebApp() {
       cros_styles::ColorName::kGoogleGrey900, /*is_dark_mode=*/true,
       /*use_debug_colors=*/false);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
   return info;
 }
 

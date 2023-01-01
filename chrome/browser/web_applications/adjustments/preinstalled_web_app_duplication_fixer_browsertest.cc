@@ -20,7 +20,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -94,7 +94,8 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
     InProcessBrowserTest::SetUpOnMainThread();
     test::WaitUntilReady(provider_);
 
-    ExternalInstallOptions options(install_url(), UserDisplayMode::kStandalone,
+    ExternalInstallOptions options(install_url(),
+                                   mojom::UserDisplayMode::kStandalone,
                                    ExternalInstallSource::kExternalDefault);
     options.user_type_allowlist = {"unmanaged"};
     options.uninstall_and_replace = {chrome_app_id()};

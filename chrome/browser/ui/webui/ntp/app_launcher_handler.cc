@@ -54,8 +54,8 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -945,16 +945,16 @@ void AppLauncherHandler::HandleSetLaunchType(const base::Value::List& args) {
   if (web_app_provider_->registrar_unsafe().IsInstalled(app_id)) {
     // Don't update the page; it already knows about the launch type change.
     base::AutoReset<bool> auto_reset(&ignore_changes_, true);
-    web_app::UserDisplayMode user_display_mode =
-        web_app::UserDisplayMode::kBrowser;
+    web_app::mojom::UserDisplayMode user_display_mode =
+        web_app::mojom::UserDisplayMode::kBrowser;
     switch (launch_type) {
       case extensions::LAUNCH_TYPE_FULLSCREEN:
       case extensions::LAUNCH_TYPE_WINDOW:
-        user_display_mode = web_app::UserDisplayMode::kStandalone;
+        user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
         break;
       case extensions::LAUNCH_TYPE_PINNED:
       case extensions::LAUNCH_TYPE_REGULAR:
-        user_display_mode = web_app::UserDisplayMode::kBrowser;
+        user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
         break;
       case extensions::LAUNCH_TYPE_INVALID:
       case extensions::NUM_LAUNCH_TYPES:

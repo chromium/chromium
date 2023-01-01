@@ -9,7 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/office_web_app/office_web_app.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -86,7 +86,8 @@ void WebAppProviderBridgeLacros::WebAppInstalledInArcImpl(
   install_info->title = arc_install_info->title;
   install_info->start_url = arc_install_info->start_url;
   install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  install_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  install_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
   install_info->theme_color = arc_install_info->theme_color;
   const SkBitmap& bitmap = *arc_install_info->icon.bitmap();
   install_info->icon_bitmaps.any[bitmap.width()] = bitmap;

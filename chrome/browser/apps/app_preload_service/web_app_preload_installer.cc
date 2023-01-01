@@ -9,7 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -106,7 +106,8 @@ WebAppPreloadInstaller::ManifestToWebAppInstallInfo(
 
   // Display mode
   install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  install_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  install_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
 
   return install_info;
 }

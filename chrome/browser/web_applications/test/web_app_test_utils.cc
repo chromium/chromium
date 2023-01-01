@@ -38,9 +38,9 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -345,7 +345,7 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
   web_app->AddSource(source_type);
-  web_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetName("Name");
 
   return web_app;
@@ -444,9 +444,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetIsLocallyInstalled(random.next_bool());
   app->SetIsFromSyncAndPendingInstallation(random.next_bool());
 
-  const UserDisplayMode user_display_modes[3] = {UserDisplayMode::kBrowser,
-                                                 UserDisplayMode::kStandalone,
-                                                 UserDisplayMode::kTabbed};
+  const mojom::UserDisplayMode user_display_modes[3] = {
+      mojom::UserDisplayMode::kBrowser, mojom::UserDisplayMode::kStandalone,
+      mojom::UserDisplayMode::kTabbed};
   app->SetUserDisplayMode(user_display_modes[random.next_uint(3)]);
 
   const base::Time last_badging_time =

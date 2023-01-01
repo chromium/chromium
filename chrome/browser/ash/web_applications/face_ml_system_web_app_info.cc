@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -53,7 +53,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFaceMLApp() {
   }
 
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
   return info;
 }
 

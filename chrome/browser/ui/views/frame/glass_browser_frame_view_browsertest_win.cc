@@ -23,8 +23,8 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -290,7 +290,8 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
-    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
     web_app_info->title = u"A Web App";
     web_app_info->display_override = display_overrides;
 

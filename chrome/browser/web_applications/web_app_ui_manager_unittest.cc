@@ -9,8 +9,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -43,9 +43,9 @@ class WebAppUiManagerTest : public testing::Test {
     auto web_app = std::make_unique<WebApp>(kTestAppId);
     web_app->SetDisplayMode(display_mode);
     if (display_mode == DisplayMode::kBrowser) {
-      web_app->SetUserDisplayMode(UserDisplayMode::kBrowser);
+      web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
     } else {
-      web_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+      web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
     }
     Registry map;
     map[kTestAppId] = std::move(web_app);

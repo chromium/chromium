@@ -20,8 +20,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -209,7 +209,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   absl::optional<GURL> GetAppScopeInternal(const AppId& app_id) const;
 
   DisplayMode GetAppDisplayMode(const AppId& app_id) const;
-  absl::optional<UserDisplayMode> GetAppUserDisplayMode(
+  absl::optional<mojom::UserDisplayMode> GetAppUserDisplayMode(
       const AppId& app_id) const;
   std::vector<DisplayMode> GetAppDisplayModeOverride(const AppId& app_id) const;
 
@@ -360,8 +360,9 @@ class WebAppRegistrar : public ProfileManagerObserver {
                                          const base::Time& time);
   void NotifyWebAppInstallTimeChanged(const AppId& app_id,
                                       const base::Time& time);
-  void NotifyWebAppUserDisplayModeChanged(const AppId& app_id,
-                                          UserDisplayMode user_display_mode);
+  void NotifyWebAppUserDisplayModeChanged(
+      const AppId& app_id,
+      mojom::UserDisplayMode user_display_mode);
   void NotifyWebAppRunOnOsLoginModeChanged(
       const AppId& app_id,
       RunOnOsLoginMode run_on_os_login_mode);

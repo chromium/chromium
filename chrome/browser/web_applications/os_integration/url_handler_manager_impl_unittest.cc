@@ -12,13 +12,13 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/url_handler_prefs.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -95,7 +95,7 @@ class UrlHandlerManagerImplTest : public WebAppTest {
     auto web_app = std::make_unique<WebApp>(app_id);
     web_app->AddSource(WebAppManagement::kDefault);
     web_app->SetDisplayMode(DisplayMode::kStandalone);
-    web_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+    web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
     web_app->SetName("Name");
     web_app->SetStartUrl(app_url);
     web_app->SetUrlHandlers(url_handlers);

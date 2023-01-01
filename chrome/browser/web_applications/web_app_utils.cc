@@ -26,8 +26,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -227,16 +227,16 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
 }
 
 absl::optional<DisplayMode> TryResolveUserDisplayMode(
-    UserDisplayMode user_display_mode) {
+    mojom::UserDisplayMode user_display_mode) {
   switch (user_display_mode) {
-    case UserDisplayMode::kBrowser:
+    case mojom::UserDisplayMode::kBrowser:
       return DisplayMode::kBrowser;
-    case UserDisplayMode::kTabbed:
+    case mojom::UserDisplayMode::kTabbed:
       if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings))
         return DisplayMode::kTabbed;
       // Treat as standalone.
       [[fallthrough]];
-    case UserDisplayMode::kStandalone:
+    case mojom::UserDisplayMode::kStandalone:
       break;
   }
 
@@ -260,7 +260,7 @@ absl::optional<DisplayMode> TryResolveOverridesDisplayMode(
 DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& display_mode_overrides,
-    UserDisplayMode user_display_mode) {
+    mojom::UserDisplayMode user_display_mode) {
   const absl::optional<DisplayMode> resolved_display_mode =
       TryResolveUserDisplayMode(user_display_mode);
   if (resolved_display_mode.has_value()) {
@@ -611,7 +611,7 @@ bool IsInScope(const GURL& url, const GURL& scope) {
 DisplayMode ResolveEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& app_display_mode_overrides,
-    UserDisplayMode user_display_mode,
+    mojom::UserDisplayMode user_display_mode,
     bool is_isolated) {
   const DisplayMode resolved_display_mode =
       ResolveNonIsolatedEffectiveDisplayMode(

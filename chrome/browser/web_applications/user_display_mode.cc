@@ -5,62 +5,50 @@
 #include <string>
 #include <type_traits>
 
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 
 namespace web_app {
 
-bool operator==(UserDisplayMode lhs, UserDisplayMode rhs) {
-  return static_cast<std::underlying_type<UserDisplayMode>::type>(lhs) ==
-         static_cast<std::underlying_type<UserDisplayMode>::type>(rhs);
-}
-
-bool operator!=(UserDisplayMode lhs, UserDisplayMode rhs) {
-  return !(lhs == rhs);
-}
-
-std::ostream& operator<<(std::ostream& os, UserDisplayMode user_display_mode) {
-  return os << ConvertUserDisplayModeToString(user_display_mode);
-}
-
-std::string ConvertUserDisplayModeToString(UserDisplayMode user_display_mode) {
+std::string ConvertUserDisplayModeToString(
+    mojom::UserDisplayMode user_display_mode) {
   switch (user_display_mode) {
-    case UserDisplayMode::kBrowser:
+    case mojom::UserDisplayMode::kBrowser:
       return "browser";
-    case UserDisplayMode::kStandalone:
+    case mojom::UserDisplayMode::kStandalone:
       return "standalone";
-    case UserDisplayMode::kTabbed:
+    case mojom::UserDisplayMode::kTabbed:
       return "tabbed";
   }
 }
 
 ::sync_pb::WebAppSpecifics::UserDisplayMode
 ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
-    UserDisplayMode user_display_mode) {
+    mojom::UserDisplayMode user_display_mode) {
   switch (user_display_mode) {
-    case UserDisplayMode::kBrowser:
+    case mojom::UserDisplayMode::kBrowser:
       return ::sync_pb::WebAppSpecifics::BROWSER;
-    case UserDisplayMode::kTabbed:
+    case mojom::UserDisplayMode::kTabbed:
       return ::sync_pb::WebAppSpecifics::TABBED;
-    case UserDisplayMode::kStandalone:
+    case mojom::UserDisplayMode::kStandalone:
       return ::sync_pb::WebAppSpecifics::STANDALONE;
   }
 }
 
-UserDisplayMode CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+mojom::UserDisplayMode CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
     ::sync_pb::WebAppSpecifics::UserDisplayMode display_mode) {
   switch (display_mode) {
     case ::sync_pb::WebAppSpecifics::BROWSER:
-      return UserDisplayMode::kBrowser;
+      return mojom::UserDisplayMode::kBrowser;
     case ::sync_pb::WebAppSpecifics::TABBED:
-      return UserDisplayMode::kTabbed;
+      return mojom::UserDisplayMode::kTabbed;
     case ::sync_pb::WebAppSpecifics::STANDALONE:
-      return UserDisplayMode::kStandalone;
+      return mojom::UserDisplayMode::kStandalone;
     case ::sync_pb::WebAppSpecifics::UNSPECIFIED:
       // The same as `ToMojomDisplayMode`.
-      return UserDisplayMode::kStandalone;
+      return mojom::UserDisplayMode::kStandalone;
   }
 }
 

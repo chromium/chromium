@@ -22,8 +22,8 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -157,7 +157,8 @@ IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplWebAppBrowserTest,
   web_app_info->scope =
       https_server().GetURL(GetAppUrlHost(), GetAppScopePath());
   web_app_info->title = base::UTF8ToUTF16(GetAppName());
-  web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  web_app_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
   apps::ShareTarget share_target;
   share_target.method = apps::ShareTarget::Method::kGet;
   share_target.action = app_url;

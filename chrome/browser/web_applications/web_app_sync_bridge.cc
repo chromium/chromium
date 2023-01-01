@@ -18,6 +18,7 @@
 #include "base/types/pass_key.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -209,19 +210,20 @@ void WebAppSyncBridge::Init(base::OnceClosure callback) {
                                          std::move(callback)));
 }
 
-void WebAppSyncBridge::SetAppUserDisplayMode(const AppId& app_id,
-                                             UserDisplayMode user_display_mode,
-                                             bool is_user_action) {
+void WebAppSyncBridge::SetAppUserDisplayMode(
+    const AppId& app_id,
+    mojom::UserDisplayMode user_display_mode,
+    bool is_user_action) {
   if (is_user_action) {
     switch (user_display_mode) {
-      case UserDisplayMode::kStandalone:
+      case mojom::UserDisplayMode::kStandalone:
         base::RecordAction(
             base::UserMetricsAction("WebApp.SetWindowMode.Window"));
         break;
-      case UserDisplayMode::kBrowser:
+      case mojom::UserDisplayMode::kBrowser:
         base::RecordAction(base::UserMetricsAction("WebApp.SetWindowMode.Tab"));
         break;
-      case UserDisplayMode::kTabbed:
+      case mojom::UserDisplayMode::kTabbed:
         base::RecordAction(
             base::UserMetricsAction("WebApp.SetWindowMode.Tabbed"));
         break;

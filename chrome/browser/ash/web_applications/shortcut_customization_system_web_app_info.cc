@@ -10,7 +10,7 @@
 #include "ash/webui/grit/ash_shortcut_customization_app_resources.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -36,7 +36,7 @@ CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
         IDR_ASH_SHORTCUT_CUSTOMIZATION_APP_APP_ICON_192_PNG}},
       *info);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
 
   return info;
 }

@@ -16,12 +16,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -311,7 +311,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   EXPECT_EQ(app_id, app->app_id());
   EXPECT_EQ(start_url, app->start_url());
   EXPECT_EQ(name, app->untranslated_name());
-  EXPECT_EQ(UserDisplayMode::kBrowser, app->user_display_mode());
+  EXPECT_EQ(mojom::UserDisplayMode::kBrowser, app->user_display_mode());
   EXPECT_EQ(is_locally_installed, app->is_locally_installed());
   EXPECT_TRUE(app->IsSynced());
   EXPECT_FALSE(app->IsPreinstalledApp());
@@ -339,7 +339,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   // Required fields:
   app->SetStartUrl(start_url);
   app->SetName(name);
-  app->SetUserDisplayMode(UserDisplayMode::kBrowser);
+  app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   app->SetIsLocallyInstalled(false);
   // chromeos_data should always be set on ChromeOS.
   if (IsChromeOsDataMandatory())
@@ -401,7 +401,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_EQ(app_id, app_copy->app_id());
   EXPECT_EQ(start_url, app_copy->start_url());
   EXPECT_EQ(name, app_copy->untranslated_name());
-  EXPECT_EQ(UserDisplayMode::kBrowser, app_copy->user_display_mode());
+  EXPECT_EQ(mojom::UserDisplayMode::kBrowser, app_copy->user_display_mode());
   EXPECT_FALSE(app_copy->is_locally_installed());
 
   auto& chromeos_data = app_copy->chromeos_data();
@@ -584,7 +584,7 @@ class WebAppDatabaseProtoDataTest : public ::testing::Test {
     AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
     auto web_app = std::make_unique<WebApp>(app_id);
     web_app->SetStartUrl(start_url);
-    web_app->SetUserDisplayMode(UserDisplayMode::kBrowser);
+    web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
     web_app->AddSource(WebAppManagement::Type::kDefault);
     return web_app;
   }

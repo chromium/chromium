@@ -87,7 +87,7 @@ class SubAppInstallCommandTest : public WebAppTest {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = parent_url_;
     web_app_info->scope = parent_url_.GetWithoutFilename();
-    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     web_app_info->title = u"Web App";
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
@@ -97,7 +97,7 @@ class SubAppInstallCommandTest : public WebAppTest {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = url;
     web_app_info->scope = url.GetWithoutFilename();
-    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     web_app_info->title = u"Sub App";
     return web_app_info;
   }

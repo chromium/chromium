@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -140,7 +140,8 @@ class WebKioskTest : public OobeBaseTest {
           auto* provider =
               web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
           web_app::ExternalInstallOptions install_options(
-              GURL(kAppInstallUrl), web_app::UserDisplayMode::kStandalone,
+              GURL(kAppInstallUrl),
+              web_app::mojom::UserDisplayMode::kStandalone,
               web_app::ExternalInstallSource::kKiosk);
           install_options.install_placeholder = true;
           provider->externally_managed_app_manager().InstallNow(

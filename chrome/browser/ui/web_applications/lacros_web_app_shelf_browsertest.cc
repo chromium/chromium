@@ -19,11 +19,11 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
         app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
     waiter.PinOrUnpinItemInShelf(app1_id, /*pin=*/true);
     CloseAndWait(app_browser1);
-    sync_bridge.SetAppUserDisplayMode(app1_id, UserDisplayMode::kBrowser,
+    sync_bridge.SetAppUserDisplayMode(app1_id, mojom::UserDisplayMode::kBrowser,
                                       /*is_user_action=*/true);
     AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser).Await();
 
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
         app2_id, static_cast<uint32_t>(ShelfItemState::kActive)));
     waiter.PinOrUnpinItemInShelf(app2_id, /*pin=*/true);
     CloseAndWait(app_browser2);
-    sync_bridge.SetAppUserDisplayMode(app2_id, UserDisplayMode::kBrowser,
+    sync_bridge.SetAppUserDisplayMode(app2_id, mojom::UserDisplayMode::kBrowser,
                                       /*is_user_action=*/true);
     AppWindowModeWaiter(profile(), app2_id, apps::WindowMode::kBrowser).Await();
   }
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
 
   // Launch app1 in a browser tab (only).
   {
-    sync_bridge.SetAppUserDisplayMode(app1_id, UserDisplayMode::kBrowser,
+    sync_bridge.SetAppUserDisplayMode(app1_id, mojom::UserDisplayMode::kBrowser,
                                       /*is_user_action=*/false);
     AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser).Await();
 

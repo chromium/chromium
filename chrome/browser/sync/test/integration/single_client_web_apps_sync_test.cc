@@ -6,8 +6,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
@@ -78,7 +78,7 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
     WebApp app(app_id);
     app.SetName(app_id);
     app.SetStartUrl(url);
-    app.SetUserDisplayMode(UserDisplayMode::kBrowser);
+    app.SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
     app.SetManifestId(manifest_id);
 
     WebApp::SyncFallbackData sync_fallback_data;

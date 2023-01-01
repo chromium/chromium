@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_P(
   web_app_install_info->start_url = url;
   web_app_install_info->title = u"App Title";
   web_app_install_info->display_mode = DisplayMode::kBrowser;
-  web_app_install_info->user_display_mode = UserDisplayMode::kStandalone;
+  web_app_install_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   web_app_install_info->install_url = url;
 
   AppId app_id =
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_P(
   web_app_install_info->start_url = url;
   web_app_install_info->title = u"App Title";
   web_app_install_info->display_mode = DisplayMode::kBrowser;
-  web_app_install_info->user_display_mode = UserDisplayMode::kStandalone;
+  web_app_install_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   web_app_install_info->install_url = url;
 
   AppId app_id =
@@ -543,7 +543,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
     web_app_install_info->start_url = url;
     web_app_install_info->title = u"App Title";
     web_app_install_info->display_mode = DisplayMode::kBrowser;
-    web_app_install_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_install_info->user_display_mode =
+        mojom::UserDisplayMode::kStandalone;
     AppId app_id =
         test::InstallWebApp(profile(), std::move(web_app_install_info),
                             /*overwrite_existing_manifest_fields=*/true,
@@ -587,7 +588,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
     web_app_install_info->start_url = url;
     web_app_install_info->title = u"App Title";
     web_app_install_info->display_mode = DisplayMode::kBrowser;
-    web_app_install_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_install_info->user_display_mode =
+        mojom::UserDisplayMode::kStandalone;
     web_app_install_info->install_url = url;
     app_id = test::InstallWebApp(profile(), std::move(web_app_install_info),
                                  /*overwrite_existing_manifest_fields=*/true,

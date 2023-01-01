@@ -34,7 +34,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
@@ -443,7 +443,8 @@ class WebAppFrameToolbarBrowserTest_Borderless
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"A borderless app";
     web_app_info->display_mode = web_app::DisplayMode::kStandalone;
-    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
 
     if (uses_borderless) {
       web_app_info->display_override = {web_app::DisplayMode::kBorderless};
@@ -665,7 +666,8 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"A window-controls-overlay app";
     web_app_info->display_mode = web_app::DisplayMode::kStandalone;
-    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
     web_app_info->display_override = display_overrides;
 
     return helper()->InstallAndLaunchCustomWebApp(

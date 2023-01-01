@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -771,7 +771,7 @@ void WebAppInstallTask::OnInstallFinalizedMaybeReparentTab(
         install_finalizer_->CanReparentTab(app_id, !error);
 
     if (can_reparent_tab &&
-        (web_app_info->user_display_mode != UserDisplayMode::kBrowser)) {
+        (web_app_info->user_display_mode != mojom::UserDisplayMode::kBrowser)) {
       install_finalizer_->ReparentTab(app_id, !error, web_contents());
     }
   }

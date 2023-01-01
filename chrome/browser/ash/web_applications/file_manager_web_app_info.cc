@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
@@ -75,7 +75,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   info->background_color = info->theme_color;
   info->dark_mode_background_color = info->dark_mode_theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
 
   // NOTE: when adding new formats to the extension list below, don't
   // forget to also update file_manager/manifest.json.

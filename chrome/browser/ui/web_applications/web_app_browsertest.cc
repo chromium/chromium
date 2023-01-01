@@ -58,10 +58,10 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -215,8 +215,8 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
     web_app_info->scope = app_url;
     web_app_info->display_mode = display_mode;
     web_app_info->user_display_mode = open_as_window
-                                          ? UserDisplayMode::kStandalone
-                                          : UserDisplayMode::kBrowser;
+                                          ? mojom::UserDisplayMode::kStandalone
+                                          : mojom::UserDisplayMode::kBrowser;
     if (display_override_mode)
       web_app_info->display_override.push_back(*display_override_mode);
 
@@ -1073,7 +1073,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 
   // Installed PWAs should launch in their own window.
   EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(app_id),
-            web_app::UserDisplayMode::kStandalone);
+            web_app::mojom::UserDisplayMode::kStandalone);
 
   // Installed PWAs should have install time set.
   EXPECT_TRUE(provider->registrar_unsafe().GetAppInstallTime(app_id) >=
@@ -1096,7 +1096,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   // Change display mode to open in tab.
   auto* provider = WebAppProvider::GetForTest(profile());
   provider->sync_bridge_unsafe().SetAppUserDisplayMode(
-      app_id, web_app::UserDisplayMode::kBrowser, /*is_user_action=*/false);
+      app_id, web_app::mojom::UserDisplayMode::kBrowser,
+      /*is_user_action=*/false);
 
   Browser* const new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
@@ -1130,7 +1131,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NoOpenInAppForBrowserTabPwa) {
   // Change display mode to open in tab.
   auto* provider = WebAppProvider::GetForTest(profile());
   provider->sync_bridge_unsafe().SetAppUserDisplayMode(
-      app_id, web_app::UserDisplayMode::kBrowser, /*is_user_action=*/false);
+      app_id, web_app::mojom::UserDisplayMode::kBrowser,
+      /*is_user_action=*/false);
 
   NavigateToURLAndWait(browser(), app_url);
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
@@ -1715,7 +1717,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
   web_app_info->start_url = app_url;
   web_app_info->scope = app_url.GetWithoutFilename();
   web_app_info->display_mode = DisplayMode::kBrowser;
-  web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   web_app_info->title = u"A Shortcut App";
   const AppId app_id = InstallWebApp(std::move(web_app_info));
 
@@ -1735,7 +1737,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
 
   auto* provider = WebAppProvider::GetForTest(profile());
   EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(app_id),
-            UserDisplayMode::kStandalone);
+            mojom::UserDisplayMode::kStandalone);
   EXPECT_EQ(provider->registrar_unsafe().GetAppEffectiveDisplayMode(app_id),
             DisplayMode::kMinimalUi);
   EXPECT_FALSE(
@@ -1943,7 +1945,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
 
   WebAppProvider::GetForTest(profile())
       ->sync_bridge_unsafe()
-      .SetAppUserDisplayMode(app_id, web_app::UserDisplayMode::kBrowser,
+      .SetAppUserDisplayMode(app_id, web_app::mojom::UserDisplayMode::kBrowser,
                              /*is_user_action=*/false);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_TRUE(chrome::ExecuteCommand(app_browser, IDC_NEW_WINDOW));

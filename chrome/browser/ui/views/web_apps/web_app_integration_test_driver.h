@@ -149,7 +149,7 @@ struct AppState {
            GURL app_scope,
            apps::RunOnOsLoginMode run_on_os_login_mode,
            blink::mojom::DisplayMode effective_display_mode,
-           absl::optional<UserDisplayMode> user_display_mode,
+           absl::optional<mojom::UserDisplayMode> user_display_mode,
            std::string manifest_launcher_icon_filename,
            bool is_installed_locally,
            bool is_shortcut_created);
@@ -162,7 +162,7 @@ struct AppState {
   GURL scope;
   apps::RunOnOsLoginMode run_on_os_login_mode;
   blink::mojom::DisplayMode effective_display_mode;
-  absl::optional<UserDisplayMode> user_display_mode;
+  absl::optional<mojom::UserDisplayMode> user_display_mode;
   std::string manifest_launcher_icon_filename;
   bool is_installed_locally;
   bool is_shortcut_created;
@@ -319,7 +319,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckSiteHandlesFile(Site site, FileExtension file_extension);
   void CheckSiteNotHandlesFile(Site site, FileExtension file_extension);
   void CheckUserCannotSetRunOnOsLogin(Site site);
-  void CheckUserDisplayModeInternal(UserDisplayMode user_display_mode);
+  void CheckUserDisplayModeInternal(mojom::UserDisplayMode user_display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
   void CheckWindowNotCreated();

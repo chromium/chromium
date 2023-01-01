@@ -80,7 +80,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = app_url();
     web_app_info->scope = app_url().GetWithoutFilename();
-    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     web_app_info->title = u"Foo Bar";
     return test::InstallWebApp(profile(), std::move(web_app_info));
   }
@@ -89,7 +89,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
     WebAppInstallInfo info;
     info.start_url = app_url();
     info.scope = app_url().GetWithoutFilename();
-    info.user_display_mode = UserDisplayMode::kStandalone;
+    info.user_display_mode = mojom::UserDisplayMode::kStandalone;
     info.title = new_title;
     return info;
   }

@@ -22,12 +22,12 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -179,7 +179,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
                    web_app::ExternallyManagedAppManager::InstallResult>
             install_result;
         web_app::ExternalInstallOptions install_options(
-            GURL(kAppInstallUrl), web_app::UserDisplayMode::kStandalone,
+            GURL(kAppInstallUrl), web_app::mojom::UserDisplayMode::kStandalone,
             web_app::ExternalInstallSource::kKiosk);
 
         externally_managed_app_manager().Install(install_options,

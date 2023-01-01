@@ -18,9 +18,9 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -34,8 +34,9 @@
 
 class WebAppShelfBrowserTest : public InProcessBrowserTest {
  public:
-  web_app::AppId InstallTestWebApp(const GURL& start_url,
-                                   web_app::UserDisplayMode user_display_mode) {
+  web_app::AppId InstallTestWebApp(
+      const GURL& start_url,
+      web_app::mojom::UserDisplayMode user_display_mode) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->user_display_mode = user_display_mode;
@@ -72,11 +73,11 @@ IN_PROC_BROWSER_TEST_F(WebAppShelfBrowserTest, SwitchingBetweenApps) {
   const GURL start_d = embedded_test_server()->GetURL("/simple.html");
 
   const web_app::AppId app_a =
-      InstallTestWebApp(start_a, web_app::UserDisplayMode::kBrowser);
+      InstallTestWebApp(start_a, web_app::mojom::UserDisplayMode::kBrowser);
   const web_app::AppId app_b =
-      InstallTestWebApp(start_b, web_app::UserDisplayMode::kBrowser);
+      InstallTestWebApp(start_b, web_app::mojom::UserDisplayMode::kBrowser);
   const web_app::AppId app_c =
-      InstallTestWebApp(start_c, web_app::UserDisplayMode::kStandalone);
+      InstallTestWebApp(start_c, web_app::mojom::UserDisplayMode::kStandalone);
 
   auto* const proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
 

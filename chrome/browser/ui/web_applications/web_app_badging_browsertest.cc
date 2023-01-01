@@ -15,9 +15,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -54,7 +54,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     auto sub_app_info = std::make_unique<WebAppInstallInfo>();
     sub_app_info->start_url = sub_start_url;
     sub_app_info->scope = sub_start_url;
-    sub_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    sub_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     sub_app_id_ = InstallWebApp(std::move(sub_app_info));
 
     AppReadinessWaiter(profile(), cross_site_app_id_).Await();

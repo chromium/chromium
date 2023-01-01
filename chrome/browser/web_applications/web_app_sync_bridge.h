@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -91,7 +91,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void Init(base::OnceClosure callback);
 
   void SetAppUserDisplayMode(const AppId& app_id,
-                             UserDisplayMode user_display_mode,
+                             mojom::UserDisplayMode user_display_mode,
                              bool is_user_action);
 
   void SetAppIsDisabled(AppLock& lock, const AppId& app_id, bool is_disabled);

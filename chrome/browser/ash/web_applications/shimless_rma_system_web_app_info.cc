@@ -11,7 +11,7 @@
 #include "ash/webui/grit/ash_shimless_rma_resources.h"
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,7 +29,7 @@ CreateWebAppInfoForShimlessRMASystemWebApp() {
   info->theme_color = 0xFFFFFFFF;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
 
   return info;
 }

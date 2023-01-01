@@ -12,7 +12,7 @@
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -40,17 +40,17 @@ blink::mojom::DisplayMode WindowModeToDisplayMode(
   }
 }
 
-web_app::UserDisplayMode WindowModeToUserDisplayMode(
+web_app::mojom::UserDisplayMode WindowModeToUserDisplayMode(
     apps::WindowMode window_mode) {
   switch (window_mode) {
     case apps::WindowMode::kBrowser:
-      return web_app::UserDisplayMode::kBrowser;
+      return web_app::mojom::UserDisplayMode::kBrowser;
     case apps::WindowMode::kTabbedWindow:
-      return web_app::UserDisplayMode::kTabbed;
+      return web_app::mojom::UserDisplayMode::kTabbed;
     case apps::WindowMode::kWindow:
-      return web_app::UserDisplayMode::kStandalone;
+      return web_app::mojom::UserDisplayMode::kStandalone;
     case apps::WindowMode::kUnknown:
-      return web_app::UserDisplayMode::kBrowser;
+      return web_app::mojom::UserDisplayMode::kBrowser;
   }
 }
 

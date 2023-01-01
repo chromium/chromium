@@ -24,9 +24,9 @@
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   // Change launch container to open in tab.
   web_app::WebAppProvider::GetForTest(browser()->profile())
       ->sync_bridge_unsafe()
-      .SetAppUserDisplayMode(app_id, web_app::UserDisplayMode::kBrowser,
+      .SetAppUserDisplayMode(app_id, web_app::mojom::UserDisplayMode::kBrowser,
                              /*is_user_action=*/false);
 
   // Use a new tab because installed app may have opened in new window.

@@ -27,10 +27,10 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -466,14 +466,14 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
     LOG(WARNING) << "Policy-installed web app has invalid URL " << *install_url;
   }
 
-  UserDisplayMode user_display_mode;
+  mojom::UserDisplayMode user_display_mode;
   if (!default_launch_container) {
-    user_display_mode = UserDisplayMode::kBrowser;
+    user_display_mode = mojom::UserDisplayMode::kBrowser;
   } else if (default_launch_container->GetString() ==
              kDefaultLaunchContainerTabValue) {
-    user_display_mode = UserDisplayMode::kBrowser;
+    user_display_mode = mojom::UserDisplayMode::kBrowser;
   } else {
-    user_display_mode = UserDisplayMode::kStandalone;
+    user_display_mode = mojom::UserDisplayMode::kStandalone;
   }
 
   ExternalInstallOptions install_options{

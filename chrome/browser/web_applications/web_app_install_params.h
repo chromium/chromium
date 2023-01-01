@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -56,7 +56,7 @@ struct WebAppInstallParams {
   bool force_reinstall = false;
 
   // See `WebAppInstallTask::ApplyParamsToWebAppInstallInfo`
-  absl::optional<UserDisplayMode> user_display_mode = absl::nullopt;
+  absl::optional<mojom::UserDisplayMode> user_display_mode = absl::nullopt;
 
   // URL to be used as start_url if manifest is unavailable.
   GURL fallback_start_url;

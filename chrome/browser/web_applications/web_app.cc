@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -251,7 +252,7 @@ void WebApp::SetDisplayMode(DisplayMode display_mode) {
   display_mode_ = display_mode;
 }
 
-void WebApp::SetUserDisplayMode(UserDisplayMode user_display_mode) {
+void WebApp::SetUserDisplayMode(mojom::UserDisplayMode user_display_mode) {
   user_display_mode_ = user_display_mode;
 }
 

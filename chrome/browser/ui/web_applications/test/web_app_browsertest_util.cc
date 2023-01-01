@@ -35,9 +35,9 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -98,7 +98,7 @@ void AutoAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
-  web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   std::move(acceptance_callback)
       .Run(
           /*user_accepted=*/true, std::move(web_app_info));
@@ -285,8 +285,8 @@ Browser* LaunchWebAppToURL(Profile* profile,
 ExternalInstallOptions CreateInstallOptions(
     const GURL& url,
     const ExternalInstallSource& source) {
-  ExternalInstallOptions install_options(url, UserDisplayMode::kStandalone,
-                                         source);
+  ExternalInstallOptions install_options(
+      url, mojom::UserDisplayMode::kStandalone, source);
   // Avoid creating real shortcuts in tests.
   install_options.add_to_applications_menu = false;
   install_options.add_to_desktop = false;

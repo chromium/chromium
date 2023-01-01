@@ -15,7 +15,7 @@
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -199,7 +199,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
                            const base::FilePath& dir,
                            const base::FilePath& file,
                            const base::Value& app_config) {
-  ExternalInstallOptions options(GURL(), UserDisplayMode::kStandalone,
+  ExternalInstallOptions options(GURL(), mojom::UserDisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalDefault);
   options.require_manifest = true;
   options.force_reinstall = false;
@@ -325,9 +325,9 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   }
   std::string launch_container_str = *string;
   if (launch_container_str == kLaunchContainerTab) {
-    options.user_display_mode = UserDisplayMode::kBrowser;
+    options.user_display_mode = mojom::UserDisplayMode::kBrowser;
   } else if (launch_container_str == kLaunchContainerWindow) {
-    options.user_display_mode = UserDisplayMode::kStandalone;
+    options.user_display_mode = mojom::UserDisplayMode::kStandalone;
   } else {
     return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
                          kLaunchContainer, ": ", launch_container_str});

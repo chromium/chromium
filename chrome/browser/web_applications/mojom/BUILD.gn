@@ -1,0 +1,7 @@
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom_web_apps_enum") {
+  sources = [ "user_display_mode.mojom" ]
+
+  public_deps = []
+}

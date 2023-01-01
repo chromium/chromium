@@ -36,8 +36,8 @@
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -213,7 +213,8 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest,
     web_app_info->title = base::UTF8ToUTF16(app_name);
     web_app_info->start_url = url;
     web_app_info->scope = url;
-    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
     auto app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     return app_id;

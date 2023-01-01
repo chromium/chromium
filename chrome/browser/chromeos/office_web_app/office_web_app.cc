@@ -9,7 +9,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -43,7 +43,8 @@ void InstallMicrosoft365(
   DCHECK(provider);
 
   web_app::ExternalInstallOptions options(
-      GURL(kMicrosoft365WebAppUrl), web_app::UserDisplayMode::kStandalone,
+      GURL(kMicrosoft365WebAppUrl),
+      web_app::mojom::UserDisplayMode::kStandalone,
       web_app::ExternalInstallSource::kInternalMicrosoft365Setup);
   options.fallback_app_name = kMicrosoft365FallbackName;
   options.add_to_quick_launch_bar = false;

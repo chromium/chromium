@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -185,8 +185,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigatePrerenderingBrowserTest,
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
-  web_app_info->user_display_mode =
-      absl::make_optional<UserDisplayMode>(UserDisplayMode::kStandalone);
+  web_app_info->user_display_mode = absl::make_optional<mojom::UserDisplayMode>(
+      mojom::UserDisplayMode::kStandalone);
   AppId app_id = InstallWebApp(std::move(web_app_info));
 
   Browser* app_browser = LaunchWebAppBrowser(app_id);

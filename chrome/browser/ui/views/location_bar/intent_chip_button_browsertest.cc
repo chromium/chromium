@@ -21,9 +21,9 @@
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -163,7 +163,8 @@ class IntentChipButtonBrowserTest
     web_app_info->scope = https_server().GetURL(app_host, "/");
     web_app_info->title = base::UTF8ToUTF16(GetAppName());
     web_app_info->description = u"Test description";
-    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
 
     overlapping_app_id_ =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));

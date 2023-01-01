@@ -18,10 +18,10 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -45,7 +45,8 @@ AppId InstallTestWebApp(Profile* profile) {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
-  web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  web_app_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
   return web_app::test::InstallWebApp(profile, std::move(web_app_info));
 }
 

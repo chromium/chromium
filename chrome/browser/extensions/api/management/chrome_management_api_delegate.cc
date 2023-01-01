@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -275,7 +275,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     web_app_info->title = base::UTF8ToUTF16(title);
     web_app_info->start_url = launch_url;
     web_app_info->display_mode = web_app::DisplayMode::kBrowser;
-    web_app_info->user_display_mode = web_app::UserDisplayMode::kBrowser;
+    web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
 
     if (!image_result.image.IsEmpty()) {
       web_app_info->icon_bitmaps.any[image_result.image.Width()] =
@@ -360,11 +360,12 @@ void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
   // add a "default" launch container enum value.
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
-  absl::optional<web_app::UserDisplayMode> display_mode =
+  absl::optional<web_app::mojom::UserDisplayMode> display_mode =
       provider->registrar_unsafe().GetAppUserDisplayMode(app_id);
   auto launch_container = apps::LaunchContainer::kLaunchContainerWindow;
-  if (display_mode == web_app::UserDisplayMode::kBrowser)
+  if (display_mode == web_app::mojom::UserDisplayMode::kBrowser) {
     launch_container = apps::LaunchContainer::kLaunchContainerTab;
+  }
 
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     // If the profile doesn't have an App Service Proxy available, that means

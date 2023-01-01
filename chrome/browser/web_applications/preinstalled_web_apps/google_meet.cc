@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
 
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 
 namespace web_app {
@@ -13,7 +13,7 @@ ExternalInstallOptions GetConfigForGoogleMeet() {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://meet.google.com/download/webapp?usp=chrome_default"),
-      /*user_display_mode=*/UserDisplayMode::kStandalone,
+      /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   // Exclude managed users until we have a way for admins to block the app.

@@ -6,8 +6,8 @@
 
 #include "base/test/bind.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
   InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
       id, absl::nullopt, test_url, "Test Title",
       https_server()->GetURL("/banners/"), absl::nullopt,
-      UserDisplayMode::kStandalone,
+      mojom::UserDisplayMode::kStandalone,
       {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
                       96)});
   provider->command_manager().ScheduleCommand(
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
     InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
         id, absl::nullopt, test_url, "Test Title",
         https_server()->GetURL("/banners/"), absl::nullopt,
-        UserDisplayMode::kStandalone,
+        mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
                         96)});
     provider->command_manager().ScheduleCommand(
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
     InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
         other_id, absl::nullopt, other_test_url, "Test Title",
         https_server()->GetURL("/banners/"), absl::nullopt,
-        UserDisplayMode::kStandalone,
+        mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
                         96)});
     provider->command_manager().ScheduleCommand(

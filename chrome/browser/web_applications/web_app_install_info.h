@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -267,8 +267,8 @@ struct WebAppInstallInfo {
   // User preference for whether the app should be opened as a tab or in an app
   // window. Must be either kBrowser or kStandalone, this will be checked by
   // WebApp::SetUserDisplayMode().
-  absl::optional<web_app::UserDisplayMode> user_display_mode =
-      web_app::UserDisplayMode::kBrowser;
+  absl::optional<web_app::mojom::UserDisplayMode> user_display_mode =
+      web_app::mojom::UserDisplayMode::kBrowser;
 
   // The extensions and mime types the app can handle.
   apps::FileHandlers file_handlers;

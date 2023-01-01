@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -31,7 +31,8 @@ void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->title = u"A minimal-ui app";
   web_app_info->display_mode = web_app::DisplayMode::kMinimalUi;
-  web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  web_app_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
 
   web_app::AppId app_id =
       web_app::test::InstallWebApp(browser->profile(), std::move(web_app_info));

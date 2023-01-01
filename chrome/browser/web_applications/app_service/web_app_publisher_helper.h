@@ -24,7 +24,7 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -349,7 +349,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       const base::Time& last_launch_time) override;
   void OnWebAppUserDisplayModeChanged(
       const AppId& app_id,
-      UserDisplayMode user_display_mode) override;
+      mojom::UserDisplayMode user_display_mode) override;
   void OnWebAppRunOnOsLoginModeChanged(
       const AppId& app_id,
       RunOnOsLoginMode run_on_os_login_mode) override;

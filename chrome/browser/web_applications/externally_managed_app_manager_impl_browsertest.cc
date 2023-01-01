@@ -15,12 +15,12 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/external_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -580,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   std::vector<ExternalInstallOptions> desired_apps_install_options;
   {
     ExternalInstallOptions install_options(
-        app_url, UserDisplayMode::kStandalone,
+        app_url, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kExternalPolicy);
     install_options.add_to_applications_menu = false;
     install_options.add_to_desktop = false;
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   DCHECK(app_id.has_value());
   EXPECT_EQ(registrar().GetAppDisplayMode(*app_id), DisplayMode::kBrowser);
   EXPECT_EQ(registrar().GetAppUserDisplayMode(*app_id),
-            UserDisplayMode::kStandalone);
+            mojom::UserDisplayMode::kStandalone);
   EXPECT_EQ(registrar().GetAppEffectiveDisplayMode(*app_id),
             DisplayMode::kMinimalUi);
   EXPECT_FALSE(registrar().GetAppThemeColor(*app_id).has_value());
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
 
   // Install policy app
   ExternalInstallOptions install_options(
-      url, UserDisplayMode::kStandalone,
+      url, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   InstallApp(install_options);
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall,

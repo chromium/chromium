@@ -14,12 +14,12 @@
 #include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
@@ -155,7 +155,7 @@ class ExternallyManagedInstallCommandTest : public WebAppTest {
 
 TEST_F(ExternallyManagedInstallCommandTest, Success) {
   ExternalInstallOptions install_options(
-      kWebAppUrl, UserDisplayMode::kStandalone,
+      kWebAppUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalDefault);
 
   auto data_retriever = std::make_unique<FakeDataRetriever>();
@@ -170,7 +170,7 @@ TEST_F(ExternallyManagedInstallCommandTest, Success) {
 
 TEST_F(ExternallyManagedInstallCommandTest, GetWebAppInstallInfoFailed) {
   ExternalInstallOptions install_options(
-      kWebAppUrl, UserDisplayMode::kStandalone,
+      kWebAppUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalDefault);
 
   auto data_retriever = std::make_unique<FakeDataRetriever>();
@@ -190,7 +190,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     data_retriever->BuildDefaultDataToRetrieve(url, url);
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->user_display_mode = UserDisplayMode::kBrowser;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
     ExternalInstallOptions install_options(
@@ -198,7 +198,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
         ExternalInstallSource::kExternalDefault);
     auto result = InstallAndWait(install_options, std::move(data_retriever));
 
-    EXPECT_EQ(UserDisplayMode::kBrowser,
+    EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
               provider()
                   ->registrar_unsafe()
                   .GetAppById(result.installed_app_id)
@@ -210,7 +210,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     data_retriever->BuildDefaultDataToRetrieve(url, url);
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
     ExternalInstallOptions install_options(
@@ -218,7 +218,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
         ExternalInstallSource::kExternalDefault);
     auto result = InstallAndWait(install_options, std::move(data_retriever));
 
-    EXPECT_EQ(UserDisplayMode::kStandalone,
+    EXPECT_EQ(mojom::UserDisplayMode::kStandalone,
               provider()
                   ->registrar_unsafe()
                   .GetAppById(result.installed_app_id)
@@ -234,15 +234,15 @@ TEST_F(ExternallyManagedInstallCommandTest,
     data_retriever->BuildDefaultDataToRetrieve(url, url);
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
     ExternalInstallOptions install_options(
-        url, UserDisplayMode::kBrowser,
+        url, mojom::UserDisplayMode::kBrowser,
         ExternalInstallSource::kExternalDefault);
     auto result = InstallAndWait(install_options, std::move(data_retriever));
 
-    EXPECT_EQ(UserDisplayMode::kBrowser,
+    EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
               provider()
                   ->registrar_unsafe()
                   .GetAppById(result.installed_app_id)
@@ -254,15 +254,15 @@ TEST_F(ExternallyManagedInstallCommandTest,
     data_retriever->BuildDefaultDataToRetrieve(url, url);
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->user_display_mode = UserDisplayMode::kBrowser;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
     ExternalInstallOptions install_options(
-        url, UserDisplayMode::kStandalone,
+        url, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kExternalDefault);
     auto result = InstallAndWait(install_options, std::move(data_retriever));
 
-    EXPECT_EQ(UserDisplayMode::kStandalone,
+    EXPECT_EQ(mojom::UserDisplayMode::kStandalone,
               provider()
                   ->registrar_unsafe()
                   .GetAppById(result.installed_app_id)
@@ -272,7 +272,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
 
 TEST_F(ExternallyManagedInstallCommandTest, UpgradeLock) {
   ExternalInstallOptions install_options(
-      kWebAppUrl, UserDisplayMode::kStandalone,
+      kWebAppUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalDefault);
 
   auto data_retriever = std::make_unique<FakeDataRetriever>();
@@ -344,11 +344,11 @@ TEST_F(ExternallyManagedInstallCommandTest,
     data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope);
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
     ExternalInstallOptions install_options(
-        kWebAppUrl, UserDisplayMode::kStandalone,
+        kWebAppUrl, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kExternalDefault);
     auto result = InstallAndWait(install_options, std::move(data_retriever));
 
@@ -383,7 +383,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     new_data_retriever->SetEmptyRendererWebAppInstallInfo();
 
     ExternalInstallOptions new_install_options(
-        kWebAppUrl, UserDisplayMode::kStandalone,
+        kWebAppUrl, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kExternalPolicy);
     auto result =
         InstallAndWait(new_install_options, std::move(new_data_retriever));
@@ -419,7 +419,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     }
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
     auto data_retriever = std::make_unique<FakeDataRetriever>();
     data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope);
@@ -431,7 +431,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
     ExternalInstallOptions install_options(
-        kWebAppUrl, UserDisplayMode::kStandalone,
+        kWebAppUrl, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kExternalDefault);
     auto result = InstallAndWait(install_options, std::move(data_retriever));
     const AppId& installed_app_id = result.installed_app_id;
@@ -472,7 +472,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     new_data_retriever->SetEmptyRendererWebAppInstallInfo();
 
     ExternalInstallOptions new_install_options(
-        kWebAppUrl, UserDisplayMode::kStandalone,
+        kWebAppUrl, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kExternalPolicy);
     auto updated_result =
         InstallAndWait(new_install_options, std::move(new_data_retriever));
@@ -508,7 +508,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     }
 
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
     auto data_retriever = std::make_unique<FakeDataRetriever>();
     data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope);
@@ -520,7 +520,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
     ExternalInstallOptions install_options(
-        kWebAppUrl, UserDisplayMode::kStandalone,
+        kWebAppUrl, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kExternalDefault);
     auto result = InstallAndWait(install_options, std::move(data_retriever));
     const AppId& installed_app_id = result.installed_app_id;
@@ -562,7 +562,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     new_data_retriever->SetEmptyRendererWebAppInstallInfo();
 
     ExternalInstallOptions new_install_options(
-        kWebAppUrl, UserDisplayMode::kStandalone,
+        kWebAppUrl, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kExternalPolicy);
     auto updated_result =
         InstallAndWait(new_install_options, std::move(new_data_retriever));

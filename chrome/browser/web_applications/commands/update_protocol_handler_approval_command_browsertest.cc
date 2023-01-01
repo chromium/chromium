@@ -81,7 +81,7 @@ class UpdateProtocolHandlerApprovalCommandTest
         std::make_unique<WebAppInstallInfo>();
     info->start_url = GURL(kTestAppUrl);
     info->title = kAppName;
-    info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+    info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->protocol_handlers = protocol_handlers;
     base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because

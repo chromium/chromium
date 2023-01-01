@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -259,7 +259,7 @@ class WebAppTabStripLinkCapturingBrowserTest
   void InstallTestTabbedApp() {
     WebAppLinkCapturingBrowserTest::InstallTestApp("/web_apps/basic.html");
     provider().sync_bridge_unsafe().SetAppUserDisplayMode(
-        app_id_, UserDisplayMode::kTabbed, /*is_user_action=*/false);
+        app_id_, mojom::UserDisplayMode::kTabbed, /*is_user_action=*/false);
   }
 
  private:

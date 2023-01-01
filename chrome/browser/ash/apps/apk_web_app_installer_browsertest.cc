@@ -27,10 +27,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -72,7 +72,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInstallInfo(const GURL& url) {
   web_app_install_info->scope = url.Resolve("scope");
   web_app_install_info->display_mode = web_app::DisplayMode::kBrowser;
   web_app_install_info->user_display_mode =
-      web_app::UserDisplayMode::kStandalone;
+      web_app::mojom::UserDisplayMode::kStandalone;
 
   const std::vector<SquareSizePx> sizes_px{web_app::icon_size::k256,
                                            web_app::icon_size::k512};
@@ -136,7 +136,7 @@ void ExpectInitialManifestFieldsFromWebAppInstallInfo(
 
   // User preferences:
   EXPECT_EQ(web_app->user_display_mode(),
-            web_app::UserDisplayMode::kStandalone);
+            web_app::mojom::UserDisplayMode::kStandalone);
 }
 
 }  // namespace

@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -102,7 +102,7 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
   // PWAs should always be configured not to open in a browser tab.
   if (web_app_info_->user_display_mode.has_value()) {
     DCHECK_NE(*web_app_info_->user_display_mode,
-              web_app::UserDisplayMode::kBrowser);
+              web_app::mojom::UserDisplayMode::kBrowser);
   }
 
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
@@ -140,8 +140,9 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
     tabbed_window_checkbox_ = labels->AddChildView(
         std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
             IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TABBED_WINDOW)));
-    tabbed_window_checkbox_->SetChecked(web_app_info_->user_display_mode ==
-                                        web_app::UserDisplayMode::kTabbed);
+    tabbed_window_checkbox_->SetChecked(
+        web_app_info_->user_display_mode ==
+        web_app::mojom::UserDisplayMode::kTabbed);
   }
 
   SetHighlightedButton(highlight_icon_button_);
@@ -190,8 +191,8 @@ bool PWAConfirmationBubbleView::Accept() {
   DCHECK(web_app_info_);
   web_app_info_->user_display_mode =
       tabbed_window_checkbox_ && tabbed_window_checkbox_->GetChecked()
-          ? web_app::UserDisplayMode::kTabbed
-          : web_app::UserDisplayMode::kStandalone;
+          ? web_app::mojom::UserDisplayMode::kTabbed
+          : web_app::mojom::UserDisplayMode::kStandalone;
 
   if (iph_state_ == chrome::PwaInProductHelpState::kShown) {
     web_app::AppId app_id = web_app::GenerateAppId(web_app_info_->manifest_id,

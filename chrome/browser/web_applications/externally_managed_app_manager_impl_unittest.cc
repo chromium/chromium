@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/external_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -59,7 +59,8 @@ ExternalInstallOptions GetInstallOptions(
     const GURL& url,
     absl::optional<bool> override_previous_user_uninstall =
         absl::optional<bool>()) {
-  ExternalInstallOptions options(std::move(url), UserDisplayMode::kBrowser,
+  ExternalInstallOptions options(std::move(url),
+                                 mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
 
   if (override_previous_user_uninstall.has_value())
@@ -82,7 +83,7 @@ ExternalInstallOptions GetInstallOptionsWithWebAppInfo(
     const GURL& url,
     absl::optional<bool> override_previous_user_uninstall =
         absl::optional<bool>()) {
-  ExternalInstallOptions options(url, UserDisplayMode::kBrowser,
+  ExternalInstallOptions options(url, mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.only_use_app_info_factory = true;
   // Static to ensure re-use across multiple function calls for
@@ -1076,7 +1077,8 @@ TEST_P(ExternallyManagedAppManagerImplTest, Install_AlwaysUpdate) {
       kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
 
   auto get_force_reinstall_info = [kFooWebAppUrl]() {
-    ExternalInstallOptions options(kFooWebAppUrl, UserDisplayMode::kStandalone,
+    ExternalInstallOptions options(kFooWebAppUrl,
+                                   mojom::UserDisplayMode::kStandalone,
                                    ExternalInstallSource::kExternalPolicy);
     options.force_reinstall = true;
     return options;
@@ -1735,7 +1737,7 @@ TEST_P(ExternallyManagedAppManagerImplTest,
     externally_managed_app_manager_impl().SetNextInstallationLaunchURL(
         install_url);
     ExternalInstallOptions install_option(
-        install_url, UserDisplayMode::kStandalone,
+        install_url, mojom::UserDisplayMode::kStandalone,
         ExternalInstallSource::kSystemInstalled);
     const auto& url_and_result =
         InstallAndWait(&externally_managed_app_manager_impl(), install_option);

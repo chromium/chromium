@@ -180,8 +180,9 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
                            WindowOpenDisposition::NEW_BACKGROUND_TAB);
   }
 
-  web_app::AppId InstallWebApp(const std::string& start_url,
-                               web_app::UserDisplayMode user_display_mode) {
+  web_app::AppId InstallWebApp(
+      const std::string& start_url,
+      web_app::mojom::UserDisplayMode user_display_mode) {
     auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = GURL(start_url);
     info->user_display_mode = user_display_mode;
@@ -191,11 +192,12 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   web_app::AppId InstallWebAppOpeningAsTab(const std::string& start_url) {
-    return InstallWebApp(start_url, web_app::UserDisplayMode::kBrowser);
+    return InstallWebApp(start_url, web_app::mojom::UserDisplayMode::kBrowser);
   }
 
   web_app::AppId InstallWebAppOpeningAsWindow(const std::string& start_url) {
-    return InstallWebApp(start_url, web_app::UserDisplayMode::kStandalone);
+    return InstallWebApp(start_url,
+                         web_app::mojom::UserDisplayMode::kStandalone);
   }
 
   void VerifyUrlInfo(const GURL& url,
