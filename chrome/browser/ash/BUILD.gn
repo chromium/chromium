@@ -3993,7 +3993,10 @@ source_set("ash") {
     "//ui/wm",
   ]
 
-  data_deps = [ ":mojo_service_manager_policy" ]
+  data_deps = [
+    ":dbus_service_files",
+    ":mojo_service_manager_policy",
+  ]
 
   if (enable_hibernate) {
     deps += [ "//chromeos/ash/components/dbus/hiberman" ]
@@ -4071,6 +4074,42 @@ source_set("ash") {
       "printing/printer_info_stub.cc",
     ]
   }
+}
+
+action("dbus_service_files") {
+  sources = [
+    "dbus/org.chromium.ChromeFeaturesService.conf",
+    "dbus/org.chromium.ComponentUpdaterService.conf",
+    "dbus/org.chromium.CryptohomeKeyDelegate.conf",
+    "dbus/org.chromium.DlpFilesPolicyService.conf",
+    "dbus/org.chromium.DriveFileStreamService.conf",
+    "dbus/org.chromium.EncryptedReportingUploadService.conf",
+    "dbus/org.chromium.FuseBoxService.conf",
+    "dbus/org.chromium.KioskAppService.conf",
+    "dbus/org.chromium.LibvdaService.conf",
+    "dbus/org.chromium.LockToSingleUser.conf",
+    "dbus/org.chromium.MachineLearningDecisionService.conf",
+    "dbus/org.chromium.MetricsEventService.conf",
+    "dbus/org.chromium.MojoConnectionService.conf",
+    "dbus/org.chromium.NetworkProxyService.conf",
+    "dbus/org.chromium.PrintersService.conf",
+    "dbus/org.chromium.ProfilerStatusService.conf",
+    "dbus/org.chromium.ScreenLockService.conf",
+    "dbus/org.chromium.SmbFsService.conf",
+    "dbus/org.chromium.VirtualFileRequestService.conf",
+    "dbus/vm/org.chromium.PluginVmService.conf",
+    "dbus/vm/org.chromium.VmApplicationsService.conf",
+    "dbus/vm/org.chromium.VmDiskManagementService.conf",
+    "dbus/vm/org.chromium.VmLaunchService.conf",
+    "dbus/vm/org.chromium.VmPermissionService.conf",
+    "dbus/vm/org.chromium.VmSKForwardingService.conf",
+  ]
+  output_conf_file = "$root_out_dir/dbus/chrome_dbus_services.conf"
+  outputs = [ output_conf_file ]
+
+  script = "//chromeos/tools/concat_dbus_conf_files.py"
+  args = [ rebase_path(output_conf_file, root_build_dir) ]
+  args += rebase_path(sources, root_build_dir)
 }
 
 copy("mojo_service_manager_policy") {

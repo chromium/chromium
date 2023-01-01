@@ -250,7 +250,6 @@ source_set("chromeos") {
     "//ui/message_center/public/cpp",
     "//ui/native_theme",
   ]
-  data_deps = [ ":dbus_service_files" ]
 
   if (enable_plugins) {
     sources += [
@@ -347,42 +346,6 @@ source_set("chromeos") {
       "//printing:printing_base",
     ]
   }
-}
-
-action("dbus_service_files") {
-  sources = [
-    "../ash/dbus/org.chromium.ChromeFeaturesService.conf",
-    "../ash/dbus/org.chromium.ComponentUpdaterService.conf",
-    "../ash/dbus/org.chromium.CryptohomeKeyDelegate.conf",
-    "../ash/dbus/org.chromium.DlpFilesPolicyService.conf",
-    "../ash/dbus/org.chromium.DriveFileStreamService.conf",
-    "../ash/dbus/org.chromium.EncryptedReportingUploadService.conf",
-    "../ash/dbus/org.chromium.FuseBoxService.conf",
-    "../ash/dbus/org.chromium.KioskAppService.conf",
-    "../ash/dbus/org.chromium.LibvdaService.conf",
-    "../ash/dbus/org.chromium.LockToSingleUser.conf",
-    "../ash/dbus/org.chromium.MachineLearningDecisionService.conf",
-    "../ash/dbus/org.chromium.MetricsEventService.conf",
-    "../ash/dbus/org.chromium.MojoConnectionService.conf",
-    "../ash/dbus/org.chromium.NetworkProxyService.conf",
-    "../ash/dbus/org.chromium.PrintersService.conf",
-    "../ash/dbus/org.chromium.ProfilerStatusService.conf",
-    "../ash/dbus/org.chromium.ScreenLockService.conf",
-    "../ash/dbus/org.chromium.SmbFsService.conf",
-    "../ash/dbus/org.chromium.VirtualFileRequestService.conf",
-    "../ash/dbus/vm/org.chromium.PluginVmService.conf",
-    "../ash/dbus/vm/org.chromium.VmApplicationsService.conf",
-    "../ash/dbus/vm/org.chromium.VmDiskManagementService.conf",
-    "../ash/dbus/vm/org.chromium.VmLaunchService.conf",
-    "../ash/dbus/vm/org.chromium.VmPermissionService.conf",
-    "../ash/dbus/vm/org.chromium.VmSKForwardingService.conf",
-  ]
-  output_conf_file = "$root_out_dir/dbus/chrome_dbus_services.conf"
-  outputs = [ output_conf_file ]
-
-  script = "//chromeos/tools/concat_dbus_conf_files.py"
-  args = [ rebase_path(output_conf_file, root_build_dir) ]
-  args += rebase_path(sources, root_build_dir)
 }
 
 static_library("test_support") {
