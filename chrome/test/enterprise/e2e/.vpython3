@@ -188,3 +188,9 @@ wheel: <
   name: "infra/python/wheels/wheel-py2_py3"
   version: "version:0.33.1"
 >
+
+# attrs for simple dataclass
+wheel: <
+  name: "infra/python/wheels/attrs-py2_py3"
+  version: "version:21.4.0"
+>
