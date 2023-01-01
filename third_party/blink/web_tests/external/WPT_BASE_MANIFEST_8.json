@@ -260934,16 +260934,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "451ee19c84a0ebf9af974eb3566e49380a1833ee",
-     []
-    ],
-    "mtime.json": [
-     "7463e73554cdc3e29156573eed1fde080b92c257",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -435089,7 +435079,7 @@
        ]
       ],
       "unsupported-axis.html": [
-       "caee4bc39cdd021a0d59f85214d8539eb6487d72",
+       "308de2f4245937e8bc014e703395e08f37abd64b",
        [
         null,
         {}
