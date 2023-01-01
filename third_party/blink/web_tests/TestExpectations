@@ -208,7 +208,6 @@ crbug.com/881555 external/wpt/css/css-position/sticky/position-sticky-fixed-ance
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
 crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]
 crbug.com/1124352 external/wpt/picture-in-picture/exit-picture-in-picture.html [ Crash Pass ]
-crbug.com/1124352 external/wpt/picture-in-picture/shadow-dom.html [ Crash Pass ]
 
 # These fail due to subtle anti-aliasing differences cause by the fact that
 # <canvas> renders via IOSurface and OffscreenCanvas does not.
@@ -485,7 +484,6 @@ crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-aft
 crbug.com/936891 virtual/threaded-prefer-compositing/fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Pass ]
 crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
 crbug.com/1095540 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/resize-corner-tracking-touch.html [ Crash Failure Pass Timeout ]
-crbug.com/1279758 [ Win10.20h2 ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-animation-on-by-default.html [ Failure Pass ]
 crbug.com/1279758 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-animation-on-by-default.html [ Failure Pass ]
 crbug.com/1058244 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass Timeout ]
 crbug.com/1058244 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass ]
@@ -3063,7 +3061,6 @@ crbug.com/626703 [ Linux ] virtual/abort-signal-remove/external/wpt/web-nfc/NDEF
 crbug.com/626703 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/forms/file/file-input-webkitdirectory-key-enter-prevent-keypress.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/storage/quota/partitioned-webkitStorageInfo-persistent-quota-usage-details.tentative.sub.html [ Timeout ]
-crbug.com/626703 [ Linux ] wpt_internal/vibration/vibration.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webmidi/loopback-receive.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webmidi/send-system-messages.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webxr/ar/ar_anchor_getAnchors_null.https.html [ Timeout ]
@@ -6057,7 +6054,6 @@ crbug.com/1352607 external/wpt/css/css-transitions/transition-base-response-002.
 crbug.com/1340167 fast/loader/iframe-navigation-stealing-focus.html [ Pass Timeout ]
 
 # Sheriff 2022-08-18
-crbug.com/1354013 virtual/threaded-no-composited-antialiasing/animations/sample-on-last-keyframe.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2022-08-19
 crbug.com/1354433 [ Mac ] external/wpt/html/browsers/the-window-object/window-properties.https.html [ Failure Pass ]
