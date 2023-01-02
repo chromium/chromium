@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_MANAGER_TEST_HELPER_H_
 
 #include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"

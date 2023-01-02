@@ -351,16 +351,35 @@ source_set("chromeos") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "extensions/login_screen/login/cleanup/mock_cleanup_handler.cc",
+    "extensions/login_screen/login/cleanup/mock_cleanup_handler.h",
     "policy/dlp/dlp_content_manager_test_helper.cc",
     "policy/dlp/dlp_content_manager_test_helper.h",
+    "policy/dlp/dlp_reporting_manager_test_helper.cc",
+    "policy/dlp/dlp_reporting_manager_test_helper.h",
+    "policy/dlp/dlp_rules_manager_test_utils.cc",
+    "policy/dlp/dlp_rules_manager_test_utils.h",
     "policy/dlp/mock_dlp_content_manager.cc",
     "policy/dlp/mock_dlp_content_manager.h",
+    "policy/dlp/mock_dlp_content_observer.cc",
+    "policy/dlp/mock_dlp_content_observer.h",
+    "policy/dlp/mock_dlp_rules_manager.cc",
+    "policy/dlp/mock_dlp_rules_manager.h",
+    "policy/dlp/mock_dlp_warn_notifier.cc",
+    "policy/dlp/mock_dlp_warn_notifier.h",
   ]
   public_deps = [
     ":chromeos",
     "//base",
     "//build:chromeos_buildflags",
     "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views",
+    "//url",
+  ]
+  deps = [
+    ":dlp_policy_event_proto",
+    "//components/reporting/client:test_support",
   ]
 
   if (is_chromeos_ash) {
@@ -374,11 +393,14 @@ source_set("unit_tests") {
 
   sources = [
     "app_mode/app_session_policies_unittest.cc",
+    "arc/arc_external_protocol_dialog_unittest.cc",
+    "arc/open_with_menu_unittest.cc",
+    "extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",
     "extensions/desk_api/desk_api_extension_manager_unittest.cc",
     "extensions/file_system_provider/service_worker_lifetime_manager_unittest.cc",
     "extensions/login_screen/login/cleanup/cleanup_manager_unittest.cc",
-    "extensions/login_screen/login/cleanup/mock_cleanup_handler.cc",
-    "extensions/login_screen/login/cleanup/mock_cleanup_handler.h",
+    "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
+    "extensions/login_screen/login_state/login_state_api_unittest.cc",
     "policy/dlp/data_transfer_dlp_controller_unittest.cc",
     "policy/dlp/dlp_clipboard_notifier_unittest.cc",
     "policy/dlp/dlp_confidential_contents_unittest.cc",
@@ -387,19 +409,10 @@ source_set("unit_tests") {
     "policy/dlp/dlp_copy_or_move_hook_delegate_unittest.cc",
     "policy/dlp/dlp_drag_drop_notifier_unittest.cc",
     "policy/dlp/dlp_file_access_copy_or_move_delegate_factory_unittest.cc",
-    "policy/dlp/dlp_reporting_manager_test_helper.cc",
-    "policy/dlp/dlp_reporting_manager_test_helper.h",
     "policy/dlp/dlp_reporting_manager_unittest.cc",
     "policy/dlp/dlp_rules_manager_impl_unittest.cc",
-    "policy/dlp/dlp_rules_manager_test_utils.cc",
-    "policy/dlp/dlp_rules_manager_test_utils.h",
     "policy/dlp/dlp_scoped_file_access_delegate_unittest.cc",
-    "policy/dlp/mock_dlp_content_observer.cc",
-    "policy/dlp/mock_dlp_content_observer.h",
-    "policy/dlp/mock_dlp_rules_manager.cc",
-    "policy/dlp/mock_dlp_rules_manager.h",
-    "policy/dlp/mock_dlp_warn_notifier.cc",
-    "policy/dlp/mock_dlp_warn_notifier.h",
+    "reporting/network/network_bandwidth_sampler_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
@@ -410,32 +423,45 @@ source_set("unit_tests") {
   deps = [
     ":chromeos",
     ":dlp_policy_event_proto",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sharing/proto",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
+    "//chrome/common/extensions/api",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",
     "//chromeos/dbus/dlp",
     "//components/account_id",
+    "//components/arc/common",
+    "//components/arc/common:arc_intent_helper_constants",
+    "//components/arc/common:arc_test_support",
     "//components/file_access",
     "//components/keyed_service/core",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
+    "//components/renderer_context_menu",
     "//components/reporting/client:test_support",
+    "//components/reporting/proto:metric_data_proto",
     "//components/reporting/util:status",
+    "//components/reporting/util:test_callbacks_support",
     "//components/strings:components_strings",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/browser",
+    "//extensions/browser:test_support",
     "//extensions/common",
     "//extensions/common:common_constants",
     "//storage/browser",
@@ -444,8 +470,13 @@ source_set("unit_tests") {
     "//third_party/abseil-cpp:absl",
     "//ui/base",
     "//ui/base/data_transfer_policy",
+    "//ui/gfx",
     "//ui/views",
     "//url",
+
+    # Unit tests from subdirectories.
+    "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
+    "//chrome/browser/chromeos/launcher_search:unit_tests",
   ]
 
   if (enable_plugins) {
@@ -460,25 +491,31 @@ source_set("unit_tests") {
       "extensions/login_screen/login/cleanup/extension_cleanup_handler_unittest.cc",
       "extensions/login_screen/login/cleanup/lacros_cleanup_handler_unittest.cc",
       "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler_unittest.cc",
+      "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_unittest.cc",
       "extensions/login_screen/login/login_api_ash_unittest.cc",
+      "extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
+      "extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_unittest.cc",
       "tablet_mode/chrome_content_browser_client_tablet_mode_part_unittest.cc",
     ]
     deps += [
       "//ash:test_support",
       "//ash/constants",
-      "//chrome/browser",
-      "//chrome/browser:browser_process",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/ash",
       "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/extensions:test_support",
+      "//chromeos/ash/components/dbus/session_manager",
       "//chromeos/ash/components/login/auth/public:authpublic",
+      "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/settings",
       "//chromeos/dbus/power",
       "//components/history/core/test",
       "//components/prefs:test_support",
       "//components/services/app_service/public/cpp:app_types",
       "//components/session_manager:base",
+      "//components/session_manager/core",
       "//components/sync_preferences:test_support",
       "//components/user_manager",
       "//content/public/common",
@@ -499,9 +536,15 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos_lacros) {
+    sources += [
+      "reporting/device_reporting_settings_lacros_unittest.cc",
+      "reporting/metric_reporting_manager_lacros_unittest.cc",
+    ]
     deps += [
       "//chromeos/lacros",
       "//chromeos/startup",
+      "//components/reporting/metrics:metrics_data_collection",
+      "//components/reporting/metrics/fakes:test_support",
     ]
   }
 }
