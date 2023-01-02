@@ -30,15 +30,6 @@ static_assert(sizeof(PartitionIndexEntry) == 12U,
 extern PartitionIndexEntry __part_index_begin[] __attribute__((weak_import));
 extern PartitionIndexEntry __part_index_end[] __attribute__((weak_import));
 
-extern "C" {
-// Marked as weak_import because this symbol is either supplied by the system
-// (on Android N+), or by Crazy Linker (Android M and prior).
-extern void* android_dlopen_ext(const char* __filename,
-                                int __flags,
-                                const android_dlextinfo* __info)
-    __attribute__((weak_import));
-}  // extern "C"
-
 namespace base {
 namespace android {
 
@@ -94,8 +85,13 @@ void* BundleUtils::DlOpenModuleLibraryPartition(const std::string& library_name,
       info.reserved_addr = const_cast<void*>(ReadRelPtr(&part->addr_relptr));
       info.reserved_size = part->size;
 
-      DCHECK(android_dlopen_ext != nullptr);
+#if __ANDROID_API__ >= 24
       return android_dlopen_ext(library_path.c_str(), RTLD_LOCAL, &info);
+#else
+      // When targeting pre-N, such as for Cronet, android_dlopen_ext() might
+      // not be available on the system.
+      CHECK(0) << "android_dlopen_ext not available";
+#endif
     }
   }
 
