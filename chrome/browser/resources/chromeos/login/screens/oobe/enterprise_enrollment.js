@@ -18,6 +18,7 @@ import '../../components/dialogs/oobe_modal_dialog.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {Authenticator, AuthFlow, AuthMode, AuthParams, SUPPORTED_PARAMS} from '../../../../gaia_auth_host/authenticator.js';
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
@@ -28,11 +29,11 @@ import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
-import {KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_for_injection.js';
+import {InjectedKeyboardUtils} from '../../components/keyboard_utils.js';
+import {globalOobeKeyboard, KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_oobe.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 import {DisplayManager, invokePolymerMethod} from '../../display_manager.js';
-import {keyboard} from '../../components/keyboard_utils.m.js';
 import {ActiveDirectoryErrorState, ADLoginStep, JoinConfigType} from '../common/offline_ad_login.js';
 
 
@@ -237,17 +238,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       // Could be null in tests.
       if (e.target && e.target.contentWindow) {
         e.target.contentWindow.postMessage(
-            'initialMessage', this.authView_.src);
-      }
-    });
-
-    // When we get the advancing focus command message from injected content
-    // script, we can execute it on host script context.
-    window.addEventListener('message', function(e) {
-      if (e.data == 'forwardFocus') {
-        keyboard.onAdvanceFocus(false);
-      } else if (e.data == 'backwardFocus') {
-        keyboard.onAdvanceFocus(true);
+            InjectedKeyboardUtils.INITIAL_MSG, this.authView_.src);
       }
     });
 
@@ -290,6 +281,8 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     }
 
     if (Oobe.getInstance().forceKeyboardFlow) {
+      assert(KEYBOARD_UTILS_FOR_INJECTION.DATA);
+      globalOobeKeyboard.enableHandlingOfInjectedKeyboardUtilsMessages();
       // We run the tab remapping logic inside of the webview so that the
       // simulated tab events will use the webview tab-stops. Simulated tab
       // events created from the webui treat the entire webview as one tab
@@ -297,7 +290,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       this.authView_.addContentScripts([{
         name: 'injectedTabHandler',
         matches: ['http://*/*', 'https://*/*'],
-        js: {code: KEYBOARD_UTILS_FOR_INJECTION},
+        js: {code: KEYBOARD_UTILS_FOR_INJECTION.DATA},
         run_at: 'document_start',
       }]);
     }

@@ -57,6 +57,7 @@ function prepareGlobalValues(globalValue) {
   // JavaScript directly into the renderer.
   window.$ = $;
 
+  // Expose MultiTapDetector class on window for tests to set static methods.
   window.MultiTapDetector = MultiTapDetector;
 
   // TODO(crbug.com/1229130) - Remove the necessity for these global objects.

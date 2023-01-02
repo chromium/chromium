@@ -7,11 +7,6 @@
     <output filename="oobe_conditional_resources.pak" type="data_package" />
   </outputs>
   <release seq="1">
-    <structures>
-      <!-- Resources in this section still depend on flattenhtml -->
-      <structure name="IDR_KEYBOARD_UTILS_FOR_INJECTION_JS" file="components/keyboard_utils_for_injection.js" flattenhtml="true" type="chrome_html" />
-
-    </structures>
     <includes>
       <part file="oobe_image_resources.grdp" />
       <part file="oobe_animation_resources.grdp" />

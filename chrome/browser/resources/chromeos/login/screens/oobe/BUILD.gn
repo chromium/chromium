@@ -95,8 +95,8 @@ js_library("enterprise_enrollment") {
   deps = [
     "../../components:display_manager_types",
     "../../components:gaia_dialog",
-    "../../components:keyboard_utils.m",
-    "../../components:keyboard_utils_for_injection",
+    "../../components:keyboard_utils",
+    "../../components:keyboard_utils_oobe",
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
     "../../components/buttons:oobe_back_button",

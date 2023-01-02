@@ -13,7 +13,7 @@ import {OobeTypes} from './components/oobe_types.js';
 
 import {DISPLAY_TYPE, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.js';
 import {MultiTapDetector} from './multi_tap_detector.js';
-import {keyboard} from './components/keyboard_utils.m.js';
+import {globalOobeKeyboard} from './components/keyboard_utils_oobe.js';
 
   /**
    * Maximum time in milliseconds to wait for step transition to finish.
@@ -170,7 +170,7 @@ import {keyboard} from './components/keyboard_utils.m.js';
     set forceKeyboardFlow(value) {
       this.forceKeyboardFlow_ = value;
       if (value) {
-        keyboard.initializeKeyboardFlow(false);
+        globalOobeKeyboard.initializeKeyboardFlow();
       }
     }
 
