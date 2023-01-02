@@ -86,7 +86,6 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-hdpi/ic_account_child_20dp.png",
     "java/res/drawable-mdpi/ic_account_child_20dp.png",
-    "java/res/drawable-night/sync_promo_illustration.xml",
     "java/res/drawable-xhdpi/ic_account_child_20dp.png",
     "java/res/drawable-xxhdpi/ic_account_child_20dp.png",
     "java/res/drawable-xxxhdpi/ic_account_child_20dp.png",
@@ -94,7 +93,6 @@ android_resources("java_resources") {
     "java/res/drawable/chrome_sync_logo.xml",
     "java/res/drawable/devices_icon.xml",
     "java/res/drawable/ic_expand_more_in_circle_24dp.xml",
-    "java/res/drawable/sync_promo_illustration.xml",
     "java/res/layout/account_picker_bottom_sheet_continue_button.xml",
     "java/res/layout/account_picker_bottom_sheet_header.xml",
     "java/res/layout/account_picker_bottom_sheet_view.xml",
@@ -122,9 +120,7 @@ android_resources("java_resources") {
     "java/res/layout/sync_promo_view_content_suggestions.xml",
     "java/res/layout/sync_promo_view_recent_tabs.xml",
     "java/res/layout/sync_promo_view_settings.xml",
-    "java/res/values-sw320dp/styles.xml",
     "java/res/values/dimens.xml",
-    "java/res/values/styles.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",

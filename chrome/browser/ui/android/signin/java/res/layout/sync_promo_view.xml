@@ -29,17 +29,6 @@ found in the LICENSE file.
             android:layout_marginEnd="4dp">
 
             <ImageView
-                android:id="@+id/sync_promo_illustration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
-                android:importantForAccessibility="no"
-                app:srcCompat="@drawable/sync_promo_illustration"
-                style="@style/SyncPromoIllustrationVisibility"/>
-
-            <ImageView
                 android:id="@+id/sync_promo_image"
                 android:layout_width="@dimen/sync_promo_account_image_size"
                 android:layout_height="@dimen/sync_promo_account_image_size"

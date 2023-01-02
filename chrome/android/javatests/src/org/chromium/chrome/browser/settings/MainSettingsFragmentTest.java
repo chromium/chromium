@@ -184,7 +184,6 @@ public class MainSettingsFragmentTest {
     @DisableFeatures({
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE,
     })
@@ -216,12 +215,8 @@ public class MainSettingsFragmentTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
-    })
-    public void
-    testStartupWithSyncPromoFeaturesDisabled() {
+    @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)
+    public void testStartupWithSyncPromoFeaturesDisabled() {
         launchSettingsActivity();
 
         // For non-signed-in users, the section contains the generic header.
@@ -274,12 +269,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
-    })
-    public void
-    testStartupWithSyncPromoFeaturesEnabled() {
+    @EnableFeatures(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)
+    public void testStartupWithSyncPromoFeaturesEnabled() {
         launchSettingsActivity();
 
         // For non-signed-in users, the section contains the generic header.
@@ -450,12 +441,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
-    })
-    public void
-    testAccountSignInWithNewPromo() throws InterruptedException {
+    @EnableFeatures(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)
+    public void testAccountSignInWithNewPromo() throws InterruptedException {
         launchSettingsActivity();
 
         SyncPromoPreference syncPromoPreference =
@@ -488,12 +475,8 @@ public class MainSettingsFragmentTest {
      */
     @Test
     @SmallTest
-    @DisableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
-    })
-    public void
-    testAccountSignIn() throws InterruptedException {
+    @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)
+    public void testAccountSignIn() throws InterruptedException {
         launchSettingsActivity();
 
         SyncPromoPreference syncPromoPreference =

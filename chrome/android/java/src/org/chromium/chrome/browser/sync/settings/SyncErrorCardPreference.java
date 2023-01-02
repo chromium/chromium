@@ -119,7 +119,6 @@ public class SyncErrorCardPreference extends Preference
         Drawable accountImage =
                 mProfileDataCache.getProfileDataOrDefault(signedInAccount).getImage();
         errorCardView.getImage().setImageDrawable(accountImage);
-        errorCardView.getIllustration().setVisibility(View.GONE);
 
         errorCardView.getDismissButton().setVisibility(View.GONE);
         if (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE) {

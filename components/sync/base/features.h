@@ -51,7 +51,6 @@ inline constexpr base::FeatureParam<int> kSyncAndroidNTPPromoMaxImpressions{
     &kSyncAndroidLimitNTPPromoImpressions, "SyncAndroidNTPPromoMaxImpressions",
     5};
 BASE_DECLARE_FEATURE(kSyncAndroidPromosWithAlternativeTitle);
-BASE_DECLARE_FEATURE(kSyncAndroidPromosWithIllustration);
 BASE_DECLARE_FEATURE(kSyncAndroidPromosWithTitle);
 #endif  // BUILDFLAG(IS_ANDROID)
 

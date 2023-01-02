@@ -55,7 +55,6 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({
         ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE,
-        ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
         ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
 })
 public class SyncPromoControllerRenderTest {
@@ -125,24 +124,6 @@ public class SyncPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testBookmarkSyncPromoViewSignedOutAndNoAccountAvailableWithIllustration() throws Throwable {
-        ProfileDataCache profileDataCache = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                    mActivityTestRule.getActivity());
-        });
-        View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
-                R.layout.sync_promo_view_bookmarks);
-        mRenderTestRule.render(
-                view, "bookmark_sync_promo_illustration_signed_out_and_no_account_available");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
@@ -172,22 +153,6 @@ public class SyncPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testBookmarkSyncPromoViewSignedOutAndAccountAvailableWithIllustration() throws Throwable {
-        mSigninTestRule.addAccount(TEST_EMAIL);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
-                R.layout.sync_promo_view_bookmarks);
-        mRenderTestRule.render(
-                view, "bookmark_sync_promo_illustration_signed_out_and_account_available");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
@@ -209,22 +174,6 @@ public class SyncPromoControllerRenderTest {
         View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
                 R.layout.sync_promo_view_bookmarks);
         mRenderTestRule.render(view, "bookmark_sync_promo_view_signed_in_and_not_syncing");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testBookmarkSyncPromoViewSignedInAndNotSyncingWithIllustration() throws Throwable {
-        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
-        SigninTestUtil.signin(coreAccountInfo);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
-                R.layout.sync_promo_view_bookmarks);
-        mRenderTestRule.render(view, "bookmark_sync_promo_illustration_signed_in_and_not_syncing");
     }
 
     @Test
@@ -280,24 +229,6 @@ public class SyncPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testSettingsSyncPromoViewSignedOutAndNoAccountAvailableWithIllustration() throws Throwable {
-        ProfileDataCache profileDataCache = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                    mActivityTestRule.getActivity());
-        });
-        View view = setUpSyncPromoView(
-                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
-        mRenderTestRule.render(
-                view, "settings_sync_promo_illustration_signed_out_and_no_account_available");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
@@ -344,22 +275,6 @@ public class SyncPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testSettingsSyncPromoViewSignedOutAndAccountAvailableWithIllustration() throws Throwable {
-        mSigninTestRule.addAccount(TEST_EMAIL);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(
-                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
-        mRenderTestRule.render(
-                view, "settings_sync_promo_illustration_signed_out_and_account_available");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
@@ -399,22 +314,6 @@ public class SyncPromoControllerRenderTest {
                 SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
         mRenderTestRule.render(
                 view, "settings_sync_promo_alternative_title_signed_in_and_not_syncing");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testSettingsSyncPromoViewSignedInAndNotSyncingWithIllustration() throws Throwable {
-        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
-        SigninTestUtil.signin(coreAccountInfo);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(
-                SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
-        mRenderTestRule.render(view, "settings_sync_promo_illustration_signed_in_and_not_syncing");
     }
 
     @Test
@@ -471,24 +370,6 @@ public class SyncPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testRecentTabsSyncPromoViewSignedOutAndNoAccountAvailableWithIllustration() throws Throwable {
-        ProfileDataCache profileDataCache = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                    mActivityTestRule.getActivity());
-        });
-        View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
-                R.layout.sync_promo_view_recent_tabs);
-        mRenderTestRule.render(
-                view, "recent_tabs_sync_promo_illustration_signed_out_and_no_account_available");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
@@ -536,22 +417,6 @@ public class SyncPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testRecentTabsSyncPromoViewSignedOutAndAccountAvailableWithIllustration() throws Throwable {
-        mSigninTestRule.addAccount(TEST_EMAIL);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
-                R.layout.sync_promo_view_recent_tabs);
-        mRenderTestRule.render(
-                view, "recent_tabs_sync_promo_illustration_signed_out_and_account_available");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
@@ -592,23 +457,6 @@ public class SyncPromoControllerRenderTest {
                 R.layout.sync_promo_view_recent_tabs);
         mRenderTestRule.render(
                 view, "recent_tabs_sync_promo_alternative_title_signed_in_and_not_syncing");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testRecentTabsSyncPromoViewSignedInAndNotSyncingWithIllustration() throws Throwable {
-        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
-        SigninTestUtil.signin(coreAccountInfo);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
-                R.layout.sync_promo_view_recent_tabs);
-        mRenderTestRule.render(
-                view, "recent_tabs_sync_promo_illustration_signed_in_and_not_syncing");
     }
 
     @Test
@@ -664,24 +512,6 @@ public class SyncPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testNTPSyncPromoViewSignedOutAndNoAccountAvailableWithIllustration() throws Throwable {
-        ProfileDataCache profileDataCache = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                    mActivityTestRule.getActivity());
-        });
-        View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
-                R.layout.sync_promo_view_content_suggestions);
-        mRenderTestRule.render(view,
-                "ntp_content_suggestions_sync_promo_illustration_signed_out_and_no_account_available");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
@@ -729,22 +559,6 @@ public class SyncPromoControllerRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testNTPSyncPromoViewSignedOutAndAccountAvailableWithIllustration() throws Throwable {
-        mSigninTestRule.addAccount(TEST_EMAIL);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
-                R.layout.sync_promo_view_content_suggestions);
-        mRenderTestRule.render(view,
-                "ntp_content_suggestions_sync_promo_illustration_signed_out_and_account_available");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
@@ -786,23 +600,6 @@ public class SyncPromoControllerRenderTest {
                 R.layout.sync_promo_view_content_suggestions);
         mRenderTestRule.render(view,
                 "ntp_content_suggestions_sync_promo_alternative_title_signed_in_and_not_syncing");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-    })
-    public void
-    testNTPSyncPromoViewSignedInAndNotSyncingWithIllustration() throws Throwable {
-        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
-        SigninTestUtil.signin(coreAccountInfo);
-        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
-                R.layout.sync_promo_view_content_suggestions);
-        mRenderTestRule.render(
-                view, "ntp_content_suggestions_sync_promo_illustration_signed_in_and_not_syncing");
     }
 
     @Test

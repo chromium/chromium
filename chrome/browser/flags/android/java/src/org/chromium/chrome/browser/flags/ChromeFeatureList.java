@@ -287,8 +287,6 @@ public abstract class ChromeFeatureList {
             "SyncAndroidLimitNTPPromoImpressions";
     public static final String SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE =
             "SyncAndroidPromosWithAlternativeTitle";
-    public static final String SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION =
-            "SyncAndroidPromosWithIllustration";
     public static final String SYNC_ANDROID_PROMOS_WITH_TITLE = "SyncAndroidPromosWithTitle";
     public static final String CRITICAL_PERSISTED_TAB_DATA = "CriticalPersistedTabData";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =

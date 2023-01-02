@@ -21,7 +21,6 @@ import org.chromium.ui.widget.ButtonCompat;
  * Container view for personalized signin promos.
  */
 public class PersonalizedSigninPromoView extends FrameLayout {
-    private ImageView mIllustration;
     private ImageView mImage;
     private ImageButton mDismissButton;
     private TextView mTitle;
@@ -38,7 +37,6 @@ public class PersonalizedSigninPromoView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mIllustration = findViewById(R.id.sync_promo_illustration);
         mImage = findViewById(R.id.sync_promo_image);
         mDismissButton = findViewById(R.id.sync_promo_close_button);
         mPrimaryButton = findViewById(R.id.sync_promo_signin_button);
@@ -56,13 +54,6 @@ public class PersonalizedSigninPromoView extends FrameLayout {
             mDescription = findViewById(R.id.signin_promo_description);
             findViewById(R.id.new_sync_promo_description).setVisibility(View.GONE);
         }
-    }
-
-    /**
-     * @return A reference to the illustration of the promo.
-     */
-    public ImageView getIllustration() {
-        return mIllustration;
     }
 
     /**
