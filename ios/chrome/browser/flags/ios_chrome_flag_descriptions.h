@@ -466,10 +466,6 @@ extern const char kNewOverflowMenuAlternateIPHDescription[];
 extern const char kNTPViewHierarchyRepairName[];
 extern const char kNTPViewHierarchyRepairDescription[];
 
-// Title and description for dynamic spacing in Omnibox Carousel.
-extern const char kOmniboxCarouselDynamicSpacingName[];
-extern const char kOmniboxCarouselDynamicSpacingDescription[];
-
 // Title and description for fuzzy URL suggestions feature.
 extern const char kOmniboxFuzzyUrlSuggestionsName[];
 extern const char kOmniboxFuzzyUrlSuggestionsDescription[];

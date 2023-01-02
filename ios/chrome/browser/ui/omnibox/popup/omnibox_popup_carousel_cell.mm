@@ -202,13 +202,10 @@ CAGradientLayer* CarouselGradientLayer() {
     [control setCarouselItem:item];
   }
 
-  if (base::FeatureList::IsEnabled(kOmniboxCarouselDynamicSpacing)) {
-    if (static_cast<NSInteger>(carouselItems.count) >
-        self.visibleTilesCapacity) {
-      self.suggestionsStackView.spacing = self.dynamicSpacing;
-    } else {
-      self.suggestionsStackView.spacing = kMinStackSpacing;
-    }
+  if (static_cast<NSInteger>(carouselItems.count) > self.visibleTilesCapacity) {
+    self.suggestionsStackView.spacing = self.dynamicSpacing;
+  } else {
+    self.suggestionsStackView.spacing = kMinStackSpacing;
   }
 }
 
