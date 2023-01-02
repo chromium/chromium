@@ -7054,12 +7054,15 @@ RecalcLayoutOverflowResult LayoutBox::RecalcLayoutOverflowNG() {
       // changed, or if we are marked as dirty.
       if (should_recalculate_layout_overflow) {
         const PhysicalRect old_layout_overflow = fragment.LayoutOverflow();
+        const bool has_block_fragmentation =
+            layout_result->GetConstraintSpaceForCaching()
+                .HasBlockFragmentation();
 #if DCHECK_IS_ON()
         NGPhysicalBoxFragment::AllowPostLayoutScope allow_post_layout_scope;
 #endif
         const PhysicalRect new_layout_overflow =
             NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
-                fragment);
+                fragment, has_block_fragmentation);
 
         // Set the appropriate flags if the layout-overflow changed.
         if (old_layout_overflow != new_layout_overflow) {

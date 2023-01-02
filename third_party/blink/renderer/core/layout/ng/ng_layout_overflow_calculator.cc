@@ -23,7 +23,8 @@ namespace blink {
 
 // static
 PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
-    const NGPhysicalBoxFragment& fragment) {
+    const NGPhysicalBoxFragment& fragment,
+    bool has_block_fragmentation) {
   DCHECK(!fragment.IsLegacyLayoutRoot() ||
          fragment.GetLayoutObject()->IsMedia());
   const NGBlockNode node(const_cast<LayoutBox*>(
@@ -40,8 +41,8 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
   }
 
   NGLayoutOverflowCalculator calculator(
-      node, fragment.IsCSSBox(), fragment.Borders(), scrollbar,
-      fragment.Padding(), fragment.Size(), writing_direction);
+      node, fragment.IsCSSBox(), has_block_fragmentation, fragment.Borders(),
+      scrollbar, fragment.Padding(), fragment.Size(), writing_direction);
 
   if (const NGFragmentItems* items = fragment.Items())
     calculator.AddItems(fragment, *items);
@@ -56,8 +57,8 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
       // When this function is called nothing has updated the layout-overflow
       // of any fragmentainers (as they are not directly associated with a
       // layout-object). Recalculate their layout-overflow directly.
-      PhysicalRect child_overflow =
-          RecalculateLayoutOverflowForFragment(*box_fragment);
+      PhysicalRect child_overflow = RecalculateLayoutOverflowForFragment(
+          *box_fragment, has_block_fragmentation);
       child_overflow.offset += child.offset;
       calculator.AddOverflow(child_overflow, /* child_is_fragmentainer */ true);
     } else {
@@ -74,6 +75,7 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
 NGLayoutOverflowCalculator::NGLayoutOverflowCalculator(
     const NGBlockNode& node,
     bool is_css_box,
+    bool has_block_fragmentation,
     const NGPhysicalBoxStrut& borders,
     const NGPhysicalBoxStrut& scrollbar,
     const NGPhysicalBoxStrut& padding,
@@ -86,6 +88,7 @@ NGLayoutOverflowCalculator::NGLayoutOverflowCalculator(
       has_left_overflow_(is_css_box && node_.HasLeftOverflow()),
       has_top_overflow_(is_css_box && node_.HasTopOverflow()),
       has_non_visible_overflow_(is_css_box && node_.HasNonVisibleOverflow()),
+      has_block_fragmentation_(has_block_fragmentation),
       padding_(padding),
       size_(size) {
   const auto border_scrollbar = borders + scrollbar;
@@ -278,6 +281,38 @@ PhysicalRect NGLayoutOverflowCalculator::LayoutOverflowForPropagation(
           node_.GetTransformForChildFragment(child_fragment, size_)) {
     overflow =
         PhysicalRect::EnclosingRect(transform->MapRect(gfx::RectF(overflow)));
+  }
+
+  if (has_block_fragmentation_ && child_fragment.IsOutOfFlowPositioned()) {
+    // If the containing block of an out-of-flow positioned box is inside a
+    // clipped-overflow container inside a fragmentation context, we shouldn't
+    // propagate overflow. Nothing will be painted on the outside of the clipped
+    // ancestor anyway, and we don't need to worry about scrollable area
+    // contribution, since scrollable containers are monolithic.
+    LayoutObject::AncestorSkipInfo skip_info(node_.GetLayoutBox());
+    OverflowClipAxes clipped_axes = kNoOverflowClip;
+    for (const LayoutObject* walker =
+             child_fragment.GetLayoutObject()->ContainingBlock(&skip_info);
+         walker != node_.GetLayoutBox() && !skip_info.AncestorSkipped();
+         walker = walker->ContainingBlock(&skip_info)) {
+      if (OverflowClipAxes axes_to_clip = walker->GetOverflowClipAxes()) {
+        // Shrink the overflow rectangle to be at most 1px large along the axes
+        // to be clipped. Unconditionally setting it to 0 would prevent us from
+        // propagating overflow along any non-clipped axis.
+        if (axes_to_clip & kOverflowClipX) {
+          overflow.offset.left = LayoutUnit();
+          overflow.size.width = std::min(overflow.size.width, LayoutUnit(1));
+        }
+        if (axes_to_clip & kOverflowClipY) {
+          overflow.offset.top = LayoutUnit();
+          overflow.size.height = std::min(overflow.size.height, LayoutUnit(1));
+        }
+        clipped_axes |= axes_to_clip;
+        if (clipped_axes == kOverflowClipBothAxis) {
+          break;
+        }
+      }
+    }
   }
 
   return overflow;
