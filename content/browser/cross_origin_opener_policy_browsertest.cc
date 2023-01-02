@@ -3518,14 +3518,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 }
 
 // This test is a reproducer for https://crbug.com/1305394.
-// This test is flaky on Mac: https://crbug.com/1319301
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CrossOriginIframeCoopBypass DISABLED_CrossOriginIframeCoopBypass
-#else
-#define MAYBE_CrossOriginIframeCoopBypass CrossOriginIframeCoopBypass
-#endif
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       MAYBE_CrossOriginIframeCoopBypass) {
+                       CrossOriginIframeCoopBypass) {
   // This test requires that a cross-origin iframe be placed in its own
   // process. It is irrelevant without strict site isolation.
   if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
@@ -3538,12 +3532,12 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
       "a.test", "/set-header?cross-origin-opener-policy: same-origin"));
 
   // Get an initial non-COOP page with an empty popup.
-  EXPECT_TRUE(NavigateToURL(shell(), non_coop_page));
-  RenderFrameHostImpl* initial_main_rfh = current_frame_host();
+  ASSERT_TRUE(NavigateToURL(shell(), non_coop_page));
+  RenderFrameHostImplWrapper initial_main_rfh(current_frame_host());
 
   ShellAddedObserver shell_observer;
-  EXPECT_TRUE(
-      ExecJs(initial_main_rfh, JsReplace("window.open($1)", non_coop_page)));
+  ASSERT_TRUE(ExecJs(initial_main_rfh.get(),
+                     JsReplace("window.open($1)", non_coop_page)));
   WebContentsImpl* popup =
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
   RenderFrameHostImpl* popup_rfh = popup->GetPrimaryMainFrame();
@@ -3552,28 +3546,27 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // the same-site popup.
   SiteInstanceImpl* initial_main_si = initial_main_rfh->GetSiteInstance();
   SiteInstanceImpl* popup_si = popup_rfh->GetSiteInstance();
-  EXPECT_EQ(initial_main_si, popup_si);
+  ASSERT_EQ(initial_main_si, popup_si);
   RenderProcessHost* process_A = initial_main_si->GetProcess();
 
   // The popup then navigates the opener to a COOP page.
-  EXPECT_TRUE(ExecJs(popup_rfh, JsReplace("opener.location = $1", coop_page)));
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(ExecJs(popup_rfh, JsReplace("opener.location = $1", coop_page)));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(initial_main_rfh.WaitUntilRenderFrameDeleted());
 
   // This should trigger a BrowsingInstance swap. The main frame gets a new
-  // unrelated BrowsingInstance, and clears the opener.
-  // Note: We need to wait for the `blink::WebView` deletion to be propagated in
-  // the renderer for window.opener to be cleared. To avoid flakes, we check the
-  // opener at the end of this test.
+  // unrelated BrowsingInstance.
   RenderFrameHostImpl* main_rfh = current_frame_host();
   SiteInstanceImpl* main_si = main_rfh->GetSiteInstance();
   RenderProcessHost* process_B = main_si->GetProcess();
-  EXPECT_FALSE(popup_si->IsRelatedSiteInstance(main_si));
+  ASSERT_FALSE(popup_si->IsRelatedSiteInstance(main_si));
 
   // The popup still uses process A, but the main page now uses a different
-  // process. No proxy should remain between the two site instances as the
-  // opener link has been cut.
+  // process. The opener link should be cut and no proxy should remain between
+  // the two site instances.
   EXPECT_EQ(process_A, popup_si->GetProcess());
   EXPECT_NE(process_B, process_A);
+  EXPECT_FALSE(popup_rfh->frame_tree_node()->opener());
   EXPECT_TRUE(popup_rfh->frame_tree_node()
                   ->render_manager()
                   ->GetAllProxyHostsForTesting()
@@ -3615,9 +3608,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                     ->GetAllProxyHostsForTesting()
                     .size());
 
-  // The opener should not be reachable either from the popup main frame nor the
-  // popup iframe.
-  EXPECT_EQ(true, EvalJs(popup_rfh, "opener == null"));
+  // The opener should not be reachable from the popup iframe.
   EXPECT_EQ(true, EvalJs(iframe_rfh, "parent.opener == null"));
 }
 
