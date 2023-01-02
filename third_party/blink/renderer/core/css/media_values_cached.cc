@@ -121,6 +121,12 @@ float MediaValuesCached::ChFontSize(float zoom) const {
   return data_.ch_size;
 }
 
+float MediaValuesCached::RchFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
+  // For media queries rch and ch units are both based on the initial font.
+  return data_.ch_size;
+}
+
 float MediaValuesCached::IcFontSize(float zoom) const {
   DCHECK_EQ(1.0f, zoom);
   return data_.ic_size;

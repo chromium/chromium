@@ -565,7 +565,9 @@ unsigned MediaQueryExpValue::GetUnitFlags() const {
   }
 
   if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootFontSize) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootFontXSize)) {
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootFontXSize) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeRootFontZeroCharacterWidth)) {
     unit_flags |= UnitFlags::kRootFontRelative;
   }
 

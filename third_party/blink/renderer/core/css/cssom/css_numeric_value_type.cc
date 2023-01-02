@@ -61,6 +61,7 @@ CSSNumericValueType::BaseType UnitTypeToBaseType(
     case UnitType::kContainerMax:
     case UnitType::kRems:
     case UnitType::kRexs:
+    case UnitType::kRchs:
     case UnitType::kChs:
     case UnitType::kIcs:
     case UnitType::kLhs:

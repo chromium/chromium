@@ -215,6 +215,10 @@
       unit_type: "kRexs",
     },
     {
+      name: "rch",
+      unit_type: "kRchs",
+    },
+    {
       name: "fr",
       unit_type: "kFraction",
     },

@@ -123,6 +123,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
 
     kRems,
     kRexs,
+    kRchs,
     kChs,
     kIcs,
     kLhs,
@@ -161,6 +162,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kUnitTypeFontXSize,
     kUnitTypeRootFontSize,
     kUnitTypeRootFontXSize,
+    kUnitTypeRootFontZeroCharacterWidth,
     kUnitTypeZeroCharacterWidth,
     kUnitTypeViewportWidth,
     kUnitTypeViewportHeight,
@@ -222,6 +224,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     static_assert(kUnitTypeRootFontSize < kSize, "rem unit supported");
     static_assert(kUnitTypeRootFontXSize < kSize, "rex unit supported");
     static_assert(kUnitTypeZeroCharacterWidth < kSize, "ch unit supported");
+    static_assert(kUnitTypeRootFontZeroCharacterWidth < kSize,
+                  "rch unit supported");
     static_assert(kUnitTypeViewportWidth < kSize, "vw unit supported");
     static_assert(kUnitTypeViewportHeight < kSize, "vh unit supported");
     static_assert(kUnitTypeViewportInlineSize < kSize, "vi unit supported");
@@ -293,7 +297,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
            type == UnitType::kExs || type == UnitType::kRems ||
            type == UnitType::kChs || type == UnitType::kIcs ||
            type == UnitType::kLhs || type == UnitType::kRexs ||
-           IsViewportPercentageLength(type) ||
+           type == UnitType::kRchs || IsViewportPercentageLength(type) ||
            IsContainerPercentageLength(type);
   }
   bool IsLength() const;

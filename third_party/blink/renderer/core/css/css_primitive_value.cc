@@ -545,6 +545,9 @@ bool CSSPrimitiveValue::UnitTypeToLengthUnitType(UnitType unit_type,
     case CSSPrimitiveValue::UnitType::kRexs:
       length_type = kUnitTypeRootFontXSize;
       return true;
+    case CSSPrimitiveValue::UnitType::kRchs:
+      length_type = kUnitTypeRootFontZeroCharacterWidth;
+      return true;
     case CSSPrimitiveValue::UnitType::kChs:
       length_type = kUnitTypeZeroCharacterWidth;
       return true;
@@ -665,6 +668,8 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::LengthUnitTypeToUnitType(
       return CSSPrimitiveValue::UnitType::kRems;
     case kUnitTypeRootFontXSize:
       return CSSPrimitiveValue::UnitType::kRexs;
+    case kUnitTypeRootFontZeroCharacterWidth:
+      return CSSPrimitiveValue::UnitType::kRchs;
     case kUnitTypeZeroCharacterWidth:
       return CSSPrimitiveValue::UnitType::kChs;
     case kUnitTypeIdeographicFullWidth:
@@ -759,6 +764,8 @@ const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
       return "rem";
     case UnitType::kChs:
       return "ch";
+    case UnitType::kRchs:
+      return "rch";
     case UnitType::kIcs:
       return "ic";
     case UnitType::kLhs:

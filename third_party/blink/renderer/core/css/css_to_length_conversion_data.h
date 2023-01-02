@@ -70,6 +70,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     float Ex(float zoom) const;
     float Rex(float zoom) const;
     float Ch(float zoom) const;
+    float Rch(float zoom) const;
     float Ic(float zoom) const;
 
    private:
@@ -193,10 +194,11 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   enum class Flag : Flags {
     // em
     kEm = 1u << 0,
-    // rem, rex
+    // rem
     kRootFontRelative = 1u << 1,
     // ex, ch, ic, lh
     kGlyphRelative = 1u << 2,
+    // rex, rch have both kRootFontRelative and kGlyphRelative
     // lh
     kLineHeightRelative = 1u << 3,
     // sv*, lv*, v*
@@ -228,6 +230,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   float ExFontSize(float zoom) const override;
   float RexFontSize(float zoom) const override;
   float ChFontSize(float zoom) const override;
+  float RchFontSize(float zoom) const override;
   float IcFontSize(float zoom) const override;
   float LineHeight(float zoom) const override;
   double ViewportWidth() const override;

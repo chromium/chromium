@@ -158,6 +158,36 @@ static float ConvertValueFromEXSToUserUnits(const ComputedStyle* style,
          ceilf(font_data->GetFontMetrics().XHeight() / style->EffectiveZoom());
 }
 
+static float ConvertValueFromUserUnitsToCHS(const ComputedStyle* style,
+                                            float value) {
+  if (!style) {
+    return 0;
+  }
+  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
+  if (!font_data) {
+    return 0;
+  }
+  float zero_width =
+      font_data->GetFontMetrics().ZeroWidth() / style->EffectiveZoom();
+  if (!zero_width) {
+    return 0;
+  }
+  return value / zero_width;
+}
+
+static float ConvertValueFromCHSToUserUnits(const ComputedStyle* style,
+                                            float value) {
+  if (!style) {
+    return 0;
+  }
+  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
+  if (!font_data) {
+    return 0;
+  }
+  return value * font_data->GetFontMetrics().ZeroWidth() /
+         style->EffectiveZoom();
+}
+
 static inline float ViewportLengthPercent(const float width_or_height) {
   return width_or_height / 100;
 }
@@ -383,7 +413,12 @@ float SVGLengthContext::ConvertValueToUserUnits(
           ConvertValueFromEXSToUserUnits(RootElementStyle(context_), value);
       break;
     case CSSPrimitiveValue::UnitType::kChs:
-      user_units = ConvertValueFromCHSToUserUnits(value);
+      user_units = ConvertValueFromCHSToUserUnits(
+          ComputedStyleForLengthResolving(context_), value);
+      break;
+    case CSSPrimitiveValue::UnitType::kRchs:
+      user_units =
+          ConvertValueFromCHSToUserUnits(RootElementStyle(context_), value);
       break;
     case CSSPrimitiveValue::UnitType::kIcs:
       user_units = ConvertValueFromICSToUserUnits(value);
@@ -450,7 +485,10 @@ float SVGLengthContext::ConvertValueFromUserUnits(
     case CSSPrimitiveValue::UnitType::kRexs:
       return ConvertValueFromUserUnitsToEXS(RootElementStyle(context_), value);
     case CSSPrimitiveValue::UnitType::kChs:
-      return ConvertValueFromUserUnitsToCHS(value);
+      return ConvertValueFromUserUnitsToCHS(
+          ComputedStyleForLengthResolving(context_), value);
+    case CSSPrimitiveValue::UnitType::kRchs:
+      return ConvertValueFromUserUnitsToCHS(RootElementStyle(context_), value);
     case CSSPrimitiveValue::UnitType::kIcs:
       return ConvertValueFromUserUnitsToICS(value);
     case CSSPrimitiveValue::UnitType::kLhs:
@@ -486,36 +524,6 @@ float SVGLengthContext::ConvertValueFromUserUnits(
 
   NOTREACHED();
   return 0;
-}
-
-float SVGLengthContext::ConvertValueFromUserUnitsToCHS(float value) const {
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
-  if (!style) {
-    return 0;
-  }
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-  if (!font_data) {
-    return 0;
-  }
-  float zero_width =
-      font_data->GetFontMetrics().ZeroWidth() / style->EffectiveZoom();
-  if (!zero_width) {
-    return 0;
-  }
-  return value / zero_width;
-}
-
-float SVGLengthContext::ConvertValueFromCHSToUserUnits(float value) const {
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
-  if (!style) {
-    return 0;
-  }
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-  if (!font_data) {
-    return 0;
-  }
-  return value * font_data->GetFontMetrics().ZeroWidth() /
-         style->EffectiveZoom();
 }
 
 float SVGLengthContext::ConvertValueFromUserUnitsToICS(float value) const {
