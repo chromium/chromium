@@ -37,6 +37,12 @@
     padding-inline-start: 40px;
   }
 
+  #blockedSitesDescription {
+    min-height: auto;
+    padding-block-end: 16px;
+    padding-block-start: 16px;
+  }
+
   #footer {
     padding-block-end: 16px;
     padding-block-start: 16px;
@@ -87,6 +93,17 @@
     </div>
   </div>
 </div>
+<cr-expand-button id="blockedSitesRow" class="cr-row"
+    expanded="{{blockedSitesExpanded_}}">
+  $i18n{fledgePageBlockedSitesHeading}
+</cr-expand-button>
+<iron-collapse opened="[[blockedSitesExpanded_]]">
+  <div id="blockedSitesDescription"
+      class="cr-row continuation cr-secondary-text">
+    [[computeBlockedSitesDescription_(blockedSitesList_.length)]]
+  </div>
+  <!-- TODO(b/254411463): Add blocked sites list. -->
+</iron-collapse>
 <!-- TODO(b/254412043): Add links to footer. -->
 <div id="footer" class="cr-row cr-secondary-text">
   $i18n{fledgePageFooter}

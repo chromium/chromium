@@ -4,10 +4,13 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
@@ -23,7 +26,7 @@ export interface SettingsPrivacySandboxFledgeSubpageElement {
 }
 
 const SettingsPrivacySandboxFledgeSubpageElementBase =
-    PrefsMixin(PolymerElement);
+    I18nMixin(PrefsMixin(PolymerElement));
 
 export class SettingsPrivacySandboxFledgeSubpageElement extends
     SettingsPrivacySandboxFledgeSubpageElementBase {
@@ -52,6 +55,13 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
         },
       },
 
+      blockedSitesList_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
       /**
        * Used to determine that the Sites list was already fetched and to
        * display the current sites description only after the list is loaded,
@@ -68,12 +78,19 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
         type: Boolean,
         value: false,
       },
+
+      blockedSitesExpanded_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private sitesList_: PrivacySandboxInterest[];
+  private blockedSitesList_: PrivacySandboxInterest[];
   private isSitesListLoaded_: boolean;
   private isLearnMoreDialogOpen_: boolean;
+  private blockedSitesExpanded_: boolean;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
 
@@ -88,6 +105,9 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
     this.sitesList_ = state.joiningSites.map(site => {
       return {site, removed: false};
     });
+    this.blockedSitesList_ = state.blockedSites.map(site => {
+      return {site, removed: true};
+    });
     this.isSitesListLoaded_ = true;
   }
 
@@ -98,6 +118,13 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
 
   private isSitesListEmpty_(): boolean {
     return this.sitesList_.length === 0;
+  }
+
+  private computeBlockedSitesDescription_(): string {
+    return this.i18n(
+        this.blockedSitesList_.length === 0 ?
+            'fledgePageBlockedSitesDescriptionEmpty' :
+            'fledgePageBlockedSitesDescription');
   }
 
   private onLearnMoreClick_() {

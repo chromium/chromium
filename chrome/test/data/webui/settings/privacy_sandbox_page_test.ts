@@ -480,6 +480,36 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     await waitAfterNextRender(page);
     assertEquals(learnMoreButton, page.shadowRoot!.activeElement);
   });
+
+  // TODO(crbug.com/1378703): Add test for empty blocked sites list description
+  // when `getFledgeState()` returns an empty list.
+  test('blockedSitesDescriptionNotEmpty', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', false);
+    const blockedSitesRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#blockedSitesRow')!;
+    let blockedSitesDescription = page.shadowRoot!.querySelector<HTMLElement>(
+        '#blockedSitesDescription')!;
+    assertTrue(isVisible(blockedSitesRow));
+    assertFalse(isVisible(blockedSitesDescription));
+    blockedSitesRow.click();
+    await flushTasks();
+
+    blockedSitesDescription = page.shadowRoot!.querySelector<HTMLElement>(
+        '#blockedSitesDescription')!;
+    assertTrue(isVisible(blockedSitesDescription));
+    assertEquals(
+        loadTimeData.getString('fledgePageBlockedSitesDescription'),
+        blockedSitesDescription.innerText);
+
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
+    await flushTasks();
+    blockedSitesDescription = page.shadowRoot!.querySelector<HTMLElement>(
+        '#blockedSitesDescription')!;
+    assertTrue(isVisible(blockedSitesDescription));
+    assertEquals(
+        loadTimeData.getString('fledgePageBlockedSitesDescription'),
+        blockedSitesDescription.innerText);
+  });
 });
 
 suite('PrivacySandboxAdMeasurementSubpageTests', function() {

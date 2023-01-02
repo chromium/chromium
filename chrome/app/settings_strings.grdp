@@ -1947,6 +1947,15 @@
   <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the current sites list when the sites list is empty in the FLEDGE preferences page.">
     Morbi quis orci in mauris tempus rutrum. Curabitur blandit orci tortor, pellentesque tempor turpis lacinia ac.
   </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_HEADING" translateable="false" desc="Section title for the blocked sites list in the FLEDGE preferences page.">
+    Curabitur a pharetra
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION" translateable="false" desc="Section description for the blocked sites list in the FLEDGE preferences page.">
+    Vivamus ultrices libero purus, quis gravida risus tristique eu. Integer nunc mi, feugiat a pharetra et.
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION_EMTPY" translateable="false" desc="Section description for the blocked sites list when there are no blocked sites in the FLEDGE preferences page.">
+    Vivamus non urna sit amet turpis euismod semper. Phasellus sodales turpis ipsum.
+  </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_FOOTER" translateable="false" desc="Footer with more information at the bottom of the FLEDGE preferences page.">
     Pellentesque sollicitudin purus sit amet felis fringilla blandit. Donec a eleifend ligula, et fringilla nunc. Vivamus sit amet cursus quam. Etiam ultricies rutrum orci, eget accumsan purus mattis in.
   </message>
