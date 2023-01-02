@@ -219,6 +219,10 @@
       unit_type: "kRchs",
     },
     {
+      name: "ric",
+      unit_type: "kRics",
+    },
+    {
       name: "fr",
       unit_type: "kFraction",
     },

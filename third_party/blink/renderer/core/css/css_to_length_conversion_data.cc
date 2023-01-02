@@ -160,6 +160,20 @@ float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
   return full_width.value() / font_zoom_ * zoom;
 }
 
+float CSSToLengthConversionData::FontSizes::Ric(float zoom) const {
+  DCHECK(root_font_);
+  const SimpleFontData* font_data = root_font_->PrimaryFont();
+  DCHECK(font_data);
+  absl::optional<float> full_width =
+      font_data->GetFontMetrics().IdeographicFullWidth();
+  if (!full_width.has_value()) {
+    return Rem(zoom);
+  }
+  // Font-metrics-based units are pre-zoomed with a factor of `font_zoom_`,
+  // we need to unzoom using that factor before applying the target zoom.
+  return full_width.value() / root_font_zoom_ * zoom;
+}
+
 CSSToLengthConversionData::LineHeightSize::LineHeightSize(
     const ComputedStyle& style)
     : LineHeightSize(style.LineHeight(),
@@ -319,6 +333,18 @@ float CSSToLengthConversionData::RchFontSize(float zoom) const {
 float CSSToLengthConversionData::IcFontSize(float zoom) const {
   SetFlag(Flag::kGlyphRelative);
   return font_sizes_.Ic(zoom);
+}
+
+float CSSToLengthConversionData::RicFontSize(float zoom) const {
+  // Need to mark the current element's ComputedStyle as having glyph relative
+  // styles, even if it is not relative to the current element's font because
+  // the invalidation that happens when a web font finishes loading for the root
+  // element does not necessarily cause a style difference for the root element,
+  // hence will not cause an invalidation of root font relative dependent
+  // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
+  SetFlag(Flag::kGlyphRelative);
+  SetFlag(Flag::kRootFontRelative);
+  return font_sizes_.Ric(zoom);
 }
 
 float CSSToLengthConversionData::LineHeight(float zoom) const {

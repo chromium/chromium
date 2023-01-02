@@ -980,6 +980,7 @@ CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange& range,
         break;
       case CSSPrimitiveValue::UnitType::kRexs:
       case CSSPrimitiveValue::UnitType::kRchs:
+      case CSSPrimitiveValue::UnitType::kRics:
         if (!RuntimeEnabledFeatures::CSSNewRootFontUnitsEnabled()) {
           return nullptr;
         }

@@ -38,6 +38,7 @@ TEST_F(MediaValuesTest, Basic) {
       {40.0, CSSPrimitiveValue::UnitType::kChs, 16, 300, 300, true, 320},
       {40.0, CSSPrimitiveValue::UnitType::kRchs, 16, 300, 300, true, 320},
       {40.0, CSSPrimitiveValue::UnitType::kIcs, 16, 300, 300, true, 640},
+      {40.0, CSSPrimitiveValue::UnitType::kRics, 16, 300, 300, true, 640},
       {40.0, CSSPrimitiveValue::UnitType::kLhs, 16, 300, 300, true, 800},
       {43.0, CSSPrimitiveValue::UnitType::kViewportWidth, 16, 848, 976, true,
        364.64},
@@ -103,6 +104,7 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   double ch = 0;
   double rch = 0;
   double ic = 0;
+  double ric = 0;
   double lh = 0;
 
   using UnitType = CSSPrimitiveValue::UnitType;
@@ -114,6 +116,7 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kChs, ch));
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kRchs, rch));
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kIcs, ic));
+  EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kRics, ric));
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kLhs, lh));
 
   EXPECT_DOUBLE_EQ(10.0, em);
@@ -123,6 +126,7 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   EXPECT_DOUBLE_EQ(10.0, ch);
   EXPECT_DOUBLE_EQ(10.0, rch);
   EXPECT_DOUBLE_EQ(10.0, ic);
+  EXPECT_DOUBLE_EQ(10.0, ric);
   EXPECT_DOUBLE_EQ(10.0, lh);
 }
 

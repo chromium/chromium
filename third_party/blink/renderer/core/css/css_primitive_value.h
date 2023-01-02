@@ -124,6 +124,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kRems,
     kRexs,
     kRchs,
+    kRics,
     kChs,
     kIcs,
     kLhs,
@@ -197,6 +198,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kUnitTypeContainerMin,
     kUnitTypeContainerMax,
     kUnitTypeIdeographicFullWidth,
+    kUnitTypeRootFontIdeographicFullWidth,
     kUnitTypeLineHeight,
 
     // This value must come after the last length unit type to enable iteration
@@ -297,7 +299,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
            type == UnitType::kExs || type == UnitType::kRems ||
            type == UnitType::kChs || type == UnitType::kIcs ||
            type == UnitType::kLhs || type == UnitType::kRexs ||
-           type == UnitType::kRchs || IsViewportPercentageLength(type) ||
+           type == UnitType::kRchs || type == UnitType::kRics ||
+           IsViewportPercentageLength(type) ||
            IsContainerPercentageLength(type);
   }
   bool IsLength() const;

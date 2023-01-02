@@ -62,6 +62,7 @@ CSSNumericValueType::BaseType UnitTypeToBaseType(
     case UnitType::kRems:
     case UnitType::kRexs:
     case UnitType::kRchs:
+    case UnitType::kRics:
     case UnitType::kChs:
     case UnitType::kIcs:
     case UnitType::kLhs:

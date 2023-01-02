@@ -548,6 +548,9 @@ bool CSSPrimitiveValue::UnitTypeToLengthUnitType(UnitType unit_type,
     case CSSPrimitiveValue::UnitType::kRchs:
       length_type = kUnitTypeRootFontZeroCharacterWidth;
       return true;
+    case CSSPrimitiveValue::UnitType::kRics:
+      length_type = kUnitTypeRootFontIdeographicFullWidth;
+      return true;
     case CSSPrimitiveValue::UnitType::kChs:
       length_type = kUnitTypeZeroCharacterWidth;
       return true;
@@ -670,6 +673,8 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::LengthUnitTypeToUnitType(
       return CSSPrimitiveValue::UnitType::kRexs;
     case kUnitTypeRootFontZeroCharacterWidth:
       return CSSPrimitiveValue::UnitType::kRchs;
+    case kUnitTypeRootFontIdeographicFullWidth:
+      return CSSPrimitiveValue::UnitType::kRics;
     case kUnitTypeZeroCharacterWidth:
       return CSSPrimitiveValue::UnitType::kChs;
     case kUnitTypeIdeographicFullWidth:
@@ -768,6 +773,8 @@ const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
       return "rch";
     case UnitType::kIcs:
       return "ic";
+    case UnitType::kRics:
+      return "ric";
     case UnitType::kLhs:
       return "lh";
     case UnitType::kPixels:

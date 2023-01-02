@@ -60,6 +60,10 @@ float CSSContainerValues::IcFontSize(float zoom) const {
   return font_sizes_.Ic(zoom);
 }
 
+float CSSContainerValues::RicFontSize(float zoom) const {
+  return font_sizes_.Ric(zoom);
+}
+
 float CSSContainerValues::LineHeight(float zoom) const {
   return line_height_size_.Lh(zoom);
 }

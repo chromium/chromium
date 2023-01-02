@@ -55,6 +55,10 @@ class CSSUnitValues {
     return CSSUnitValue::Create(value, CSSPrimitiveValue::UnitType::kRchs);
   }
 
+  static CSSUnitValue* ric(double value) {
+    return CSSUnitValue::Create(value, CSSPrimitiveValue::UnitType::kRics);
+  }
+
   static CSSUnitValue* vw(double value) {
     return CSSUnitValue::Create(value,
                                 CSSPrimitiveValue::UnitType::kViewportWidth);

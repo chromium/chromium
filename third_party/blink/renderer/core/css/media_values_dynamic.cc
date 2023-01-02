@@ -84,6 +84,12 @@ float MediaValuesDynamic::IcFontSize(float zoom) const {
   return CalculateIcSize(frame_);
 }
 
+float MediaValuesDynamic::RicFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
+  // For media queries ric and ic units are both based on the initial font.
+  return CalculateIcSize(frame_);
+}
+
 float MediaValuesDynamic::LineHeight(float zoom) const {
   DCHECK_EQ(1.0f, zoom);
   return CalculateLineHeight(frame_);

@@ -72,6 +72,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     float Ch(float zoom) const;
     float Rch(float zoom) const;
     float Ic(float zoom) const;
+    float Ric(float zoom) const;
 
    private:
     float em_ = 0;
@@ -198,7 +199,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     kRootFontRelative = 1u << 1,
     // ex, ch, ic, lh
     kGlyphRelative = 1u << 2,
-    // rex, rch have both kRootFontRelative and kGlyphRelative
+    // rex, rch, ric have both kRootFontRelative and kGlyphRelative
     // lh
     kLineHeightRelative = 1u << 3,
     // sv*, lv*, v*
@@ -232,6 +233,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   float ChFontSize(float zoom) const override;
   float RchFontSize(float zoom) const override;
   float IcFontSize(float zoom) const override;
+  float RicFontSize(float zoom) const override;
   float LineHeight(float zoom) const override;
   double ViewportWidth() const override;
   double ViewportHeight() const override;

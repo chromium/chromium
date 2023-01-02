@@ -132,6 +132,12 @@ float MediaValuesCached::IcFontSize(float zoom) const {
   return data_.ic_size;
 }
 
+float MediaValuesCached::RicFontSize(float zoom) const {
+  DCHECK_EQ(1.0f, zoom);
+  // For media queries ric and ic units are both based on the initial font.
+  return data_.ic_size;
+}
+
 float MediaValuesCached::LineHeight(float zoom) const {
   DCHECK_EQ(1.0f, zoom);
   return data_.line_height;

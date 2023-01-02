@@ -31,6 +31,7 @@ class CORE_EXPORT CSSLengthResolver {
   virtual float ChFontSize(float zoom) const = 0;
   virtual float RchFontSize(float zoom) const = 0;
   virtual float IcFontSize(float zoom) const = 0;
+  virtual float RicFontSize(float zoom) const = 0;
   virtual float LineHeight(float zoom) const = 0;
 
   // Other sizes are not pre-zoomed.
