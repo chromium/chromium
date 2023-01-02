@@ -12,7 +12,7 @@ namespace switches {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAccountIdMigration,
              "AccountIdMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
