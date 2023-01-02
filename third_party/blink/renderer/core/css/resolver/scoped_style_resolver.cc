@@ -122,6 +122,7 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
     AddFontFaceRules(rule_set);
     AddCounterStyleRules(rule_set);
     AddPositionFallbackRules(rule_set);
+    AddFontFeatureValuesRules(rule_set);
   }
 }
 
@@ -146,6 +147,7 @@ void ScopedStyleResolver::ResetStyle() {
   media_query_result_flags_.Clear();
   keyframes_rule_map_.clear();
   position_fallback_rule_map_.clear();
+  font_feature_values_storage_map_.clear();
   if (counter_style_map_) {
     counter_style_map_->Dispose();
   }
@@ -319,6 +321,35 @@ void ScopedStyleResolver::AddPositionFallbackRules(const RuleSet& rule_set) {
   }
 }
 
+void ScopedStyleResolver::AddFontFeatureValuesRules(const RuleSet& rule_set) {
+  // TODO(https://crbug.com/1382722): Support @font-feature-values in shadow
+  // trees and support scoping correctly. See CSSFontSelector::GetFontData: In
+  // that function we would need to look for parent TreeScopes, but currently,
+  // we only check the Document-level TreeScope.
+  if (!GetTreeScope().RootNode().IsDocumentNode()) {
+    return;
+  }
+
+  const HeapVector<Member<StyleRuleFontFeatureValues>>
+      font_feature_values_rules = rule_set.FontFeatureValuesRules();
+  for (auto& rule : font_feature_values_rules) {
+    for (auto& font_family : rule->GetFamilies()) {
+      unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
+      if (cascade_layer_map_) {
+        layer_order =
+            cascade_layer_map_->GetLayerOrder(*rule->GetCascadeLayer());
+      }
+      auto add_result = font_feature_values_storage_map_.insert(
+          String(font_family).FoldCase(), rule->Storage());
+      if (add_result.is_new_entry) {
+        add_result.stored_value->value.SetLayerOrder(layer_order);
+      } else {
+        add_result.stored_value->value.FuseUpdate(rule->Storage(), layer_order);
+      }
+    }
+  }
+}
+
 StyleRulePositionFallback* ScopedStyleResolver::PositionFallbackForName(
     const AtomicString& fallback_name) {
   DCHECK(fallback_name);
@@ -327,6 +358,21 @@ StyleRulePositionFallback* ScopedStyleResolver::PositionFallbackForName(
     return iter->value;
   }
   return nullptr;
+}
+
+const FontFeatureValuesStorage* ScopedStyleResolver::FontFeatureValuesForFamily(
+    AtomicString font_family) {
+  if (font_feature_values_storage_map_.empty() || font_family.empty()) {
+    return nullptr;
+  }
+
+  auto it =
+      font_feature_values_storage_map_.find(String(font_family).FoldCase());
+  if (it == font_feature_values_storage_map_.end()) {
+    return nullptr;
+  }
+
+  return &(it->value);
 }
 
 void ScopedStyleResolver::Trace(Visitor* visitor) const {

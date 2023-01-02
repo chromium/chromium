@@ -90,10 +90,10 @@ String CSSFontFeatureValuesRule::cssText() const {
         // appended if numbers are specified. In CSSOM
         // (CSSFontFeatureValuesMap::set) an empty or type-incompatible
         // argument is coerced into a number 0 and appended.
-        DCHECK_GT(alias.value.size(), 0u);
+        DCHECK_GT(alias.value.indices.size(), 0u);
         SerializeIdentifier(alias.key, result);
         result.Append(":");
-        for (uint32_t value : alias.value) {
+        for (uint32_t value : alias.value.indices) {
           result.Append(' ');
           result.AppendNumber(value);
         }

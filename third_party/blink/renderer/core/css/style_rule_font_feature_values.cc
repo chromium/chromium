@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
+#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+
+#include <limits>
 
 namespace blink {
 
@@ -22,7 +25,9 @@ void StyleRuleFontFeature::TraceAfterDispatch(blink::Visitor* visitor) const {
 
 void StyleRuleFontFeature::UpdateAlias(AtomicString alias,
                                        const Vector<uint32_t>& features) {
-  feature_aliases_.Set(alias, features);
+  feature_aliases_.Set(
+      alias, FeatureIndicesWithPriority{features,
+                                        std::numeric_limits<unsigned>::max()});
 }
 
 void StyleRuleFontFeature::OverrideAliasesIn(FontFeatureAliases& destination) {
@@ -74,12 +79,36 @@ Vector<uint32_t> FontFeatureValuesStorage::ResolveAnnotation(
   return ResolveInternal(annotation_, alias);
 }
 
-void FontFeatureValuesStorage::FuseUpdate(
-    const FontFeatureValuesStorage& other) {
-  auto merge_maps = [](FontFeatureAliases& own,
-                       const FontFeatureAliases& other) {
+void FontFeatureValuesStorage::SetLayerOrder(unsigned layer_order) {
+  auto set_layer_order = [layer_order](FontFeatureAliases& aliases) {
+    for (auto& entry : aliases) {
+      entry.value.layer_order = layer_order;
+    }
+  };
+
+  set_layer_order(stylistic_);
+  set_layer_order(styleset_);
+  set_layer_order(character_variant_);
+  set_layer_order(swash_);
+  set_layer_order(ornaments_);
+  set_layer_order(annotation_);
+}
+
+void FontFeatureValuesStorage::FuseUpdate(const FontFeatureValuesStorage& other,
+                                          unsigned other_layer_order) {
+  auto merge_maps = [other_layer_order](FontFeatureAliases& own,
+                                        const FontFeatureAliases& other) {
     for (auto entry : other) {
-      own.Set(entry.key, entry.value);
+      FeatureIndicesWithPriority entry_updated_order(entry.value);
+      entry_updated_order.layer_order = other_layer_order;
+      auto insert_result = own.insert(entry.key, entry_updated_order);
+      if (!insert_result.is_new_entry) {
+        unsigned existing_layer_order =
+            insert_result.stored_value->value.layer_order;
+        if (other_layer_order >= existing_layer_order) {
+          insert_result.stored_value->value = entry_updated_order;
+        }
+      }
     }
   };
 
@@ -99,7 +128,7 @@ Vector<uint32_t> FontFeatureValuesStorage::ResolveInternal(
   if (find_result == aliases.end()) {
     return {};
   }
-  return find_result->value;
+  return find_result->value.indices;
 }
 
 StyleRuleFontFeatureValues::StyleRuleFontFeatureValues(
@@ -142,6 +171,7 @@ String StyleRuleFontFeatureValues::FamilyAsString() const {
 void StyleRuleFontFeatureValues::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
+  visitor->Trace(layer_);
 }
 
 }  // namespace blink

@@ -534,8 +534,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       AddFontPaletteValuesRule(font_palette_values_rule);
     } else if (auto* font_feature_values_rule =
                    DynamicTo<StyleRuleFontFeatureValues>(rule)) {
-      // TODO(crbug.com/1394327): Handle cascade layers for
-      // @font-feature-values.
+      font_feature_values_rule->SetCascadeLayer(cascade_layer);
       AddFontFeatureValuesRule(font_feature_values_rule);
     } else if (auto* keyframes_rule = DynamicTo<StyleRuleKeyframes>(rule)) {
       keyframes_rule->SetCascadeLayer(cascade_layer);

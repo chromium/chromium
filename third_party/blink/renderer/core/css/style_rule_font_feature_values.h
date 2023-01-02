@@ -10,7 +10,12 @@
 
 namespace blink {
 
-using FontFeatureAliases = HashMap<AtomicString, Vector<uint32_t>>;
+struct FeatureIndicesWithPriority {
+  Vector<uint32_t> indices;
+  unsigned layer_order = std::numeric_limits<unsigned>::max();
+};
+
+using FontFeatureAliases = HashMap<AtomicString, FeatureIndicesWithPriority>;
 
 class CORE_EXPORT StyleRuleFontFeature : public StyleRuleBase {
  public:
@@ -69,16 +74,17 @@ class CORE_EXPORT FontFeatureValuesStorage {
   Vector<uint32_t> ResolveOrnaments(AtomicString) const;
   Vector<uint32_t> ResolveAnnotation(AtomicString) const;
 
+  void SetLayerOrder(unsigned layer_order);
+
   // Update and extend this FontFeatureValuesStorage with information from
-  // `other`. Intended to be used in `StyleEngine::AddFontFeatureValuesRules`
-  // to merge multiple at-rules in a document so that their maps became
-  // unified, compare
+  // `other`. Intended to be used for fusing multiple at-rules in a document and
+  // across cascade layers so that their maps became unified, compare
   // https://drafts.csswg.org/css-fonts-4/#font-feature-values-syntax: If
   // multiple @font-feature-values rules are defined for a given family, the
   // resulting values definitions are the union of the definitions contained
-  // within these rules.
-  // Updates FontFeatureAliases from other without checking families overlap.
-  void FuseUpdate(const FontFeatureValuesStorage& other);
+  // within these rules. If `other` is passed in with a higher `layer_order`,
+  // existing alias keys are overridden with the values from `other`.
+  void FuseUpdate(const FontFeatureValuesStorage& other, unsigned layer_order);
 
  private:
   // TODO(https://crbug.com/716567): Only styleset and character variant take
@@ -137,11 +143,15 @@ class CORE_EXPORT StyleRuleFontFeatureValues : public StyleRuleBase {
     return &feature_values_storage_.annotation_;
   }
 
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   Vector<AtomicString> families_;
   FontFeatureValuesStorage feature_values_storage_;
+  Member<const CascadeLayer> layer_;
 };
 
 template <>

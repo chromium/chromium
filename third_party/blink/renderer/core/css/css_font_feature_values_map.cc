@@ -27,7 +27,7 @@ class FontFeatureValuesMapIterationSource final
       return false;
     }
     map_key = iterator_->key;
-    map_value = iterator_->value;
+    map_value = iterator_->value.indices;
     ++iterator_;
     return true;
   }
@@ -62,7 +62,7 @@ bool CSSFontFeatureValuesMap::GetMapEntry(ScriptState*,
   if (it == aliases_->end()) {
     return false;
   }
-  value = it->value;
+  value = it->value.indices;
   return true;
 }
 
@@ -75,12 +75,14 @@ CSSFontFeatureValuesMap* CSSFontFeatureValuesMap::set(
   switch (value->GetContentType()) {
     case V8UnionUnsignedLongOrUnsignedLongSequence::ContentType::
         kUnsignedLong: {
-      aliases_->Set(key_atomic, Vector<uint32_t>({value->GetAsUnsignedLong()}));
+      aliases_->Set(key_atomic, FeatureIndicesWithPriority{Vector<uint32_t>(
+                                    {value->GetAsUnsignedLong()})});
       break;
     }
     case V8UnionUnsignedLongOrUnsignedLongSequence::ContentType::
         kUnsignedLongSequence: {
-      aliases_->Set(key_atomic, value->GetAsUnsignedLongSequence());
+      aliases_->Set(key_atomic, FeatureIndicesWithPriority{
+                                    value->GetAsUnsignedLongSequence()});
       break;
     }
   }

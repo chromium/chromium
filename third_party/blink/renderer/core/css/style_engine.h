@@ -96,7 +96,6 @@ class StyleResolver;
 class StyleResolverStats;
 class StyleRuleFontFace;
 class StyleRuleFontPaletteValues;
-class FontFeatureValuesStorage;
 class StyleRuleKeyframes;
 class StyleRuleUsageTracker;
 class StyleSheet;
@@ -540,9 +539,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       AtomicString palette_name,
       AtomicString font_family);
 
-  const FontFeatureValuesStorage* FontFeatureValuesForFamily(
-      AtomicString font_family);
-
   CounterStyleMap* GetUserCounterStyleMap() { return user_counter_style_map_; }
   const CounterStyle& FindCounterStyleAcrossScopes(const AtomicString&,
                                                    const TreeScope*) const;
@@ -758,8 +754,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                   bool is_user_style);
   void AddFontPaletteValuesRulesFromSheets(
       const ActiveStyleSheetVector& sheets);
-  void AddFontFeatureValuesRulesFromSheets(
-      const ActiveStyleSheetVector& sheets);
 
   // Returns true if any @font-face rules are added.
   bool AddUserFontFaceRules(const RuleSet&);
@@ -939,18 +933,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       HeapHashMap<std::pair<AtomicString, String>,
                   Member<StyleRuleFontPaletteValues>>;
   FontPaletteValuesRuleMap font_palette_values_rule_map_;
-
-  // Multiple entries are created pointing to the same
-  // StyleRuleFontFeatureValues for each mentioned family name in the
-  // comma-separated list of font families in the @font-feature-values at-rule
-  // prelude.
-  // TODO(https://crbug.com/716567): Needs ability to store multiple entries per
-  // family https://drafts.csswg.org/css-fonts-4/#font-feature-values-syntax: If
-  // multiple @font-feature-values rules are defined for a given family, the
-  // resulting values definitions are the union of the definitions contained
-  // within these rules.
-  using FontFeatureValuesRuleMap = HashMap<String, FontFeatureValuesStorage>;
-  FontFeatureValuesRuleMap font_feature_values_storage_map_;
 
   Member<CounterStyleMap> user_counter_style_map_;
 

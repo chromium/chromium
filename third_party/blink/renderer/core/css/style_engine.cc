@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/css/shadow_tree_style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -2463,11 +2464,8 @@ void StyleEngine::ApplyUserRuleSetChanges(
       MarkFontsNeedUpdate();
     }
 
-    if (changed_rule_flags & kFontFeatureValuesRules) {
-      font_feature_values_storage_map_.clear();
-      AddFontFeatureValuesRulesFromSheets(new_style_sheets);
-      MarkFontsNeedUpdate();
-    }
+    // TODO(https://crbug.com/1402199): kFontFeatureValuesRules changes not
+    // handled in user sheets.
 
     // We just cleared all the rules, which includes any author rules. They
     // must be forcibly re-added.
@@ -2593,16 +2591,8 @@ void StyleEngine::ApplyRuleSetChanges(
     }
   }
 
-  if ((changed_rule_flags & kFontFeatureValuesRules) ||
-      rebuild_at_font_palette_values_map) {
-    // TODO(https://crbug.com/1382722): Support @font-feature-values in shadow
-    // trees and support scoping correctly.
-    if (tree_scope.RootNode().IsDocumentNode()) {
-      font_feature_values_storage_map_.clear();
-      AddFontFeatureValuesRulesFromSheets(active_user_style_sheets_);
-      AddFontFeatureValuesRulesFromSheets(new_style_sheets);
-    }
-  }
+  // The kFontFeatureValuesRules case is handled in
+  // tree_scope.EnsureScopedStyleResolver().AppendActiveStyleSheets below.
 
   if (tree_scope.RootNode().IsDocumentNode()) {
     bool has_rebuilt_font_face_cache = false;
@@ -2811,15 +2801,6 @@ void StyleEngine::AddFontPaletteValuesRulesFromSheets(
   }
 }
 
-void StyleEngine::AddFontFeatureValuesRulesFromSheets(
-    const ActiveStyleSheetVector& sheets) {
-  for (const ActiveStyleSheet& active_sheet : sheets) {
-    if (RuleSet* rule_set = active_sheet.second) {
-      AddFontFeatureValuesRules(*rule_set);
-    }
-  }
-}
-
 bool StyleEngine::AddUserFontFaceRules(const RuleSet& rule_set) {
   if (!font_selector_) {
     return false;
@@ -2880,20 +2861,6 @@ void StyleEngine::AddFontPaletteValuesRules(const RuleSet& rule_set) {
   }
 }
 
-void StyleEngine::AddFontFeatureValuesRules(const RuleSet& rule_set) {
-  const HeapVector<Member<StyleRuleFontFeatureValues>>
-      font_feature_values_rules = rule_set.FontFeatureValuesRules();
-  for (auto& rule : font_feature_values_rules) {
-    for (auto& font_family : rule->GetFamilies()) {
-      auto add_result = font_feature_values_storage_map_.insert(
-          String(font_family).FoldCase(), rule->Storage());
-      if (!add_result.is_new_entry) {
-        add_result.stored_value->value.FuseUpdate(rule->Storage());
-      }
-    }
-  }
-}
-
 void StyleEngine::AddPropertyRules(AtRuleCascadeMap& cascade_map,
                                    const RuleSet& rule_set,
                                    bool is_user_style) {
@@ -2949,21 +2916,6 @@ StyleRuleFontPaletteValues* StyleEngine::FontPaletteValuesForNameAndFamily(
   }
 
   return it->value.Get();
-}
-
-const FontFeatureValuesStorage* StyleEngine::FontFeatureValuesForFamily(
-    AtomicString font_family) {
-  if (font_feature_values_storage_map_.empty() || font_family.empty()) {
-    return nullptr;
-  }
-
-  auto it =
-      font_feature_values_storage_map_.find(String(font_family).FoldCase());
-  if (it == font_feature_values_storage_map_.end()) {
-    return nullptr;
-  }
-
-  return &(it->value);
 }
 
 DocumentStyleEnvironmentVariables& StyleEngine::EnsureEnvironmentVariables() {

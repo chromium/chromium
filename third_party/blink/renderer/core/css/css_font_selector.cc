@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/css_segmented_font_face.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
+#include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -125,8 +126,14 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
   }
 
   if (request_description.GetFontVariantAlternates()) {
+    // TODO(https://crbug.com/1382722): For scoping to work correctly, we'd need
+    // to traverse the TreeScopes here and fuse / override values of
+    // @font-feature-values from these.
     const FontFeatureValuesStorage* feature_values_storage =
-        document.GetStyleEngine().FontFeatureValuesForFamily(family_name);
+        document.GetScopedStyleResolver()
+            ? document.GetScopedStyleResolver()->FontFeatureValuesForFamily(
+                  family_name)
+            : nullptr;
     scoped_refptr<FontVariantAlternates> new_alternates = nullptr;
     if (feature_values_storage) {
       new_alternates = request_description.GetFontVariantAlternates()->Resolve(
