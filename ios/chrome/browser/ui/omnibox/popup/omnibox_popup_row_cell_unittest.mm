@@ -21,7 +21,6 @@
 @property(nonatomic, assign) BOOL isURL;
 @property(nonatomic, assign) BOOL isAppendable;
 @property(nonatomic, assign) BOOL isTabMatch;
-@property(nonatomic, assign) BOOL isClipboardMatch;
 @property(nonatomic, strong) NSAttributedString* text;
 @property(nonatomic, strong) NSAttributedString* detailText;
 @property(nonatomic, assign) NSInteger numberOfLines;

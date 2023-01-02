@@ -42,9 +42,6 @@
 - (BOOL)isTabMatch {
   return NO;
 }
-- (BOOL)isClipboardMatch {
-  return NO;
-}
 - (NSNumber*)suggestionGroupId {
   return nil;
 }

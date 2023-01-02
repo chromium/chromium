@@ -238,12 +238,6 @@ UIColor* DimColorIncognito() {
   return _match.has_tab_match.value_or(false);
 }
 
-- (BOOL)isClipboardMatch {
-  return _match.type == AutocompleteMatchType::CLIPBOARD_URL ||
-         _match.type == AutocompleteMatchType::CLIPBOARD_TEXT ||
-         _match.type == AutocompleteMatchType::CLIPBOARD_IMAGE;
-}
-
 - (id<OmniboxPedal>)pedal {
   return self.pedalData;
 }
