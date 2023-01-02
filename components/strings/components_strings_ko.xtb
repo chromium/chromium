@@ -808,7 +808,6 @@
 <translation id="299990983510665749">해치백</translation>
 <translation id="3002501248619246229">입력 트레이 미디어 확인</translation>
 <translation id="3005723025932146533">저장된 사본 표시</translation>
-<translation id="3008447029300691911"><ph name="CREDIT_CARD" /> 카드의 CVC를 입력하세요. 카드를 확인하면 카드 세부정보가 이 사이트와 공유됩니다.</translation>
 <translation id="3013291976881901233">MIDI 기기</translation>
 <translation id="301521992641321250">자동으로 차단됨</translation>
 <translation id="3016780570757425217">내 위치 확인</translation>
@@ -2460,7 +2459,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{#개 일치}other{#개 일치}}</translation>
 <translation id="724691107663265825">다음 사이트에 멀웨어가 있습니다.</translation>
-<translation id="724975217298816891">카드 세부정보를 업데이트하려면 <ph name="CREDIT_CARD" /> 카드의 만료일과 CVC를 입력하세요. 카드를 확인하면 카드 세부정보가 이 사이트와 공유됩니다.</translation>
 <translation id="7251437084390964440">네트워크 설정이 ONC 표준을 준수하지 않습니다. 일부 설정을 가져오지 못했을 수도 있습니다.
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>
@@ -2588,7 +2586,6 @@
 <translation id="7534987659046836932">봉투 C7</translation>
 <translation id="7535087603100972091">값</translation>
 <translation id="7537536606612762813">필수</translation>
-<translation id="7542403920425041731">확인하면 카드 세부정보가 이 사이트와 공유됩니다.</translation>
 <translation id="7542995811387359312">양식에 보안 연결이 사용되지 않아 신용카드 자동 채우기가 사용 중지되었습니다.</translation>
 <translation id="7543525346216957623">부모님께 물어보세요.</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> 시작</translation>

@@ -1250,6 +1250,7 @@
 <translation id="2104166991923847969">হটস্পট অটোমেটিক বন্ধ করুন</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> লুকানো আছে</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ফোন নম্বর}one{#টি ফোন নম্বর}other{#টি ফোন নম্বর}}</translation>
+<translation id="2110941575868943054">ব্লুটুথ ডিভাইস খোঁজার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="211144231511833662">টাইপগুলি মুছে দিন</translation>
 <translation id="2111670510994270194">ডানদিকে নতুন ট্যাব</translation>
 <translation id="2112554630428445878">স্বাগতম, <ph name="USERNAME" /></translation>
@@ -3044,6 +3045,7 @@
 <translation id="3756485814916578707">স্ক্রিন কাস্ট করা হচ্ছে</translation>
 <translation id="3756578970075173856">পিন সেট করুন</translation>
 <translation id="3756795331760037744"><ph name="SUPERVISED_USER_NAME" />-এর স্ক্রিনে দেখতে পাওয়া তথ্য ব্যবহার করে সাহায্য করতে Google Assistant-কে অনুমতি দিন</translation>
+<translation id="3756806135608816820">সাইট ব্লুটুথ ডিভাইস খোঁজার জন্য় বলতে পারে</translation>
 <translation id="3757733214359997190">কোনও সাইট পাওয়া যায়নি</translation>
 <translation id="375841316537350618">প্রক্সি স্ক্রিপ্ট ডাউনলোড হচ্ছে...</translation>
 <translation id="3758842566811519622">কুকিজ সেট করা হয়েছে</translation>
@@ -5020,6 +5022,7 @@
 <translation id="5600706100022181951">আপডেটটি ডাউনলোড করতে <ph name="UPDATE_SIZE_MB" /> এমবি মোবাইল ডেটা খরচ হবে। ডাউনলোড করতে চান?</translation>
 <translation id="5601503069213153581">পিন</translation>
 <translation id="5601823921345337195">MIDI ডিভাইসের সাথে কানেক্ট করার অনুমতি দেওয়া হয়নি</translation>
+<translation id="5601833336918638013">সাইটকে ব্লুটুথ ডিভাইস খোঁজার জন্য অনুমতি দেবেন না</translation>
 <translation id="5602765853043467355">এই ডিভাইসের বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু খালি করুন</translation>
 <translation id="5605758115928394442">এটি যে আপনি তা কনফার্ম করতে আপনার ফোনে একটি বিজ্ঞপ্তি পাঠানো হয়েছে।</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশন ব্লক করা আছে}one{এই এক্সটেনশন ব্লক করা আছে}other{এই এক্সটেনশন ব্লক করা আছে}}</translation>
@@ -6481,6 +6484,7 @@
 <translation id="6960507406838246615">Linux আপডেট করা দরকার</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা যায়নি। পরে ডাউনলোড করার চেষ্টা করা হবে। ডাউনলোড সম্পূর্ণ না হওয়া পর্যন্ত স্পিচ Google-কে পাঠানো হয়।</translation>
 <translation id="696103774840402661">এই <ph name="DEVICE_TYPE" /> থেকে সব ব্যবহারকারীর সমস্ত ফাইল ও স্থানীয় ডেটা স্থায়ীভাবে মুছে ফেলা হয়েছে।</translation>
+<translation id="6961327401577924850">সাইট সাধারণত লো-এনার্জি বিকন, স্বাস্থ্য বা ফিটনেস ট্র্যাকার অথবা স্মার্ট আলোর বাল্বের মতো ফিচার সেট-আপ অথবা সিঙ্ক করতে ব্লুটুথ ডিভাইস খোঁজে</translation>
 <translation id="6963872466817251924">টেক্সট কার্সর হাইলাইটার</translation>
 <translation id="6964390816189577014">হিরো</translation>
 <translation id="6964760285928603117">গ্রুপ থেকে সরান</translation>
@@ -8117,6 +8121,7 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> চালানোর জন্য আপনার অনুমতি প্রয়োজন</translation>
 <translation id="8466417995783206254">এই ট্যাবটি ছবির-মধ্যে-ছবি মোডে ভিডিওটি চালাচ্ছে।</translation>
 <translation id="8467326454809944210">অন্য ভাষা বেছে নিন</translation>
+<translation id="8468087214092422866">ব্লুটুথ ডিভাইস খোঁজার অনুমতি নেই</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> এর জন্য সেভ করা পাসওয়ার্ডগুলি</translation>
 <translation id="8471525937465764768">ডকুমেন্ট প্রিন্ট করা অথবা স্টোরেজ ডিভাইসে সেভ করার মতো ফিচারের জন্য সাইট সাধারণত USB ডিভাইসের সাথে কানেক্ট করে</translation>
 <translation id="8471959340398751476">ছাড়ের সুবিধা বন্ধ করা আছে। আপনি কাস্টমাইজ মেনু থেকে এই সুবিধা চালু করতে পারবেন</translation>

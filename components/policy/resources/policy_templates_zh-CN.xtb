@@ -997,6 +997,11 @@
 <translation id="1962864958436828230">设定数据大小下限以与旨在预防数据泄露的剪贴板限制规则搭配使用</translation>
 <translation id="1964634611280150550">隐身模式已停用</translation>
 <translation id="1964802606569741174">此政策对 Android 版 YouTube 应用没有任何影响。如果应在 YouTube 中强制启用安全模式，则应禁止安装 Android 版 YouTube 应用。</translation>
+<translation id="1964985353230379667">此政策旨在为手动创建的新票据指定建议的 <ph name="KRB5_CONFIG" /> 配置。
+
+      如果“KerberosUseCustomPrefilledConfig”政策已启用：系统会使用此政策的值作为建议的配置，并会将其显示在 Kerberos 身份验证对话框内的“高级”部分中。如果此政策设为空字符串或未设置，系统会删除建议的 <ph name="PRODUCT_OS_NAME" /> 配置。
+
+      如果“KerberosUseCustomPrefilledConfig”政策已停用：系统不会使用此政策的值。</translation>
 <translation id="1969212217917526199">覆盖与远程访问主机的调试版本号相关的政策。
 
           此政策的值会被解析为“政策名称-政策值”对应关系的 JSON 字典条目。</translation>

@@ -1248,6 +1248,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2104166991923847969">Laita hotspot pois päältä automaattisesti</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> piilotettu</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Puhelinnumero}other{# puhelinnumeroa}}</translation>
+<translation id="2110941575868943054">Bluetooth-laitteiden etsiminen sallittu</translation>
 <translation id="211144231511833662">Tyhjennä valinnat</translation>
 <translation id="2111670510994270194">Uusi välilehti oikealle</translation>
 <translation id="2112554630428445878">Tervetuloa, <ph name="USERNAME" /></translation>
@@ -3042,6 +3043,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3756485814916578707">Striimataan näyttöä</translation>
 <translation id="3756578970075173856">Aseta PIN-koodi</translation>
 <translation id="3756795331760037744">Salli Google Assistantin käyttää lapsen (<ph name="SUPERVISED_USER_NAME" />) näytöllä olevia tietoja auttamiseen</translation>
+<translation id="3756806135608816820">Sivustot voivat pyytää lupaa etsiä Bluetooth-laitteita</translation>
 <translation id="3757733214359997190">Sivustoja ei löytynyt</translation>
 <translation id="375841316537350618">Ladataan välityspalvelinohjelmaa…</translation>
 <translation id="3758842566811519622">Evästeet asetettu</translation>
@@ -5014,6 +5016,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5600706100022181951">Päivityksen lataukseen käytetään <ph name="UPDATE_SIZE_MB" /> Mt mobiilidataa. Haluatko jatkaa?</translation>
 <translation id="5601503069213153581">PIN-koodi</translation>
 <translation id="5601823921345337195">MIDI-laitteisiin yhdistäminen kielletty</translation>
+<translation id="5601833336918638013">Älä salli sivustojen etsiä Bluetooth-laitteita</translation>
 <translation id="5602765853043467355">Poista kirjanmerkit, historia, salasanat ja muuta tältä laitteelta</translation>
 <translation id="5605758115928394442">Puhelimeesi lähetettiin ilmoitus henkilöllisyytesi vahvistamiseksi.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Tämä laajennus on estetty}other{Nämä laajennukset on estetty}}</translation>
@@ -6471,6 +6474,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6960507406838246615">Linux-päivitys vaaditaan</translation>
 <translation id="6960648667961844909">Puhetiedostojen (<ph name="LANGUAGE" />) lataaminen epäonnistui. Lataamista yritetään myöhemmin. Puhe lähetetään Googlelle käsittelyyn, kunnes lataus on valmis.</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> on tyhjennetty, joten kaikkien käyttäjien tiedostot ja paikallinen data on poistettu pysyvästi.</translation>
+<translation id="6961327401577924850">Sivustot etsivät yleensä Bluetooth-laitteita esimerkiksi ottaakseen käyttöön tai synkronoidakseen vähän virtaa käyttävän majakan, terveys- tai liikuntaseurannan tai älylampun</translation>
 <translation id="6963872466817251924">Tekstikohdistimen korostus</translation>
 <translation id="6964390816189577014">Sankari</translation>
 <translation id="6964760285928603117">Poista ryhmästä</translation>
@@ -8107,6 +8111,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> tarvitsee suoritusluvan.</translation>
 <translation id="8466417995783206254">Tämä välilehti toistaa videota kuva kuvassa ‑tilassa.</translation>
 <translation id="8467326454809944210">Valitse toinen kieli</translation>
+<translation id="8468087214092422866">Bluetooth-laitteiden etsiminen ei ole sallittua</translation>
 <translation id="8470513973197838199">Tallennetut salasanat: <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sivustot yhdistävät yleensä USB-laitteisiin tulostaakseen dokumentteja tai lisätäkseen niitä tallennustilaan</translation>
 <translation id="8471959340398751476">Alennukset ovat pois käytöstä. Voit ottaa ne takaisin käyttöön muokkausvalikosta.</translation>

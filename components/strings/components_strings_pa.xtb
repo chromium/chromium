@@ -808,7 +808,6 @@
 <translation id="299990983510665749">ਹੈਚਬੈਕ</translation>
 <translation id="3002501248619246229">ਇਨਪੁੱਟ ਟ੍ਰੇਅ ਮੀਡੀਆ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="3005723025932146533">ਰੱਖਿਅਤ ਕੀਤੀ ਕਾਪੀ ਦਿਖਾਓ</translation>
-<translation id="3008447029300691911"><ph name="CREDIT_CARD" /> ਦਾ CVC ਦਾਖਲ ਕਰੋ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਪੁਸ਼ਟੀ ਕੀਤੇ ਜਾਣ 'ਤੇ, ਤੁਹਾਡੇ ਕਾਰਡ ਵੇਰਵੇ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="3013291976881901233">MIDI ਡੀਵਾਈਸਾਂ</translation>
 <translation id="301521992641321250">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਲੌਕ ਕੀਤੀ ਗਈ</translation>
 <translation id="3016780570757425217">ਆਪਣੇ ਨਿਰਧਾਰਿਤ ਸਥਾਨ ਬਾਰੇ ਜਾਣੋ</translation>
@@ -2456,7 +2455,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# ਮਿਲਾਨ}one{# ਮਿਲਾਨ}other{# ਮਿਲਾਨ}}</translation>
 <translation id="724691107663265825">ਸਾਈਟ ਵਿੱਚ ਅੱਗੇ ਮਲਵੇਅਰ ਹੈ</translation>
-<translation id="724975217298816891">ਆਪਣੇ ਕਾਰਡ ਵੇਰਵਿਆਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ <ph name="CREDIT_CARD" /> ਦੀ ਮਿਆਦ ਸਮਾਪਤੀ ਦੀ ਤਾਰੀਖ ਅਤੇ CVC ਦਾਖਲ ਕਰੋ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਪੁਸ਼ਟੀ ਕੀਤੇ ਜਾਣ 'ਤੇ, ਤੁਹਾਡੇ ਕਾਰਡ ਵੇਰਵੇ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="7251437084390964440">ਨੈੱਟਵਰਕ ਸੰਰੂਪਣ ONC ਮਿਆਰ ਦੀ ਪਾਲਣਾ ਨਹੀਂ ਕਰਦਾ। ਸ਼ਾਇਦ ਸੰਰੂਪਣ ਦੇ ਭਾਗ ਆਯਾਤ ਨਾ ਕੀਤੇ ਗਏ ਹੋਣ।
 ਵਧੀਕ ਵੇਰਵੇ:
 <ph name="DEBUG_INFO" /></translation>
@@ -2585,7 +2583,6 @@
 <translation id="7534987659046836932">C7 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="7535087603100972091">ਵੈਲਯੂ</translation>
 <translation id="7537536606612762813">ਲਾਜ਼ਮੀ</translation>
-<translation id="7542403920425041731">ਤੁਹਾਡੇ ਵੱਲੋਂ ਪੁਸ਼ਟੀ ਕੀਤੇ ਜਾਣ 'ਤੇ, ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਵੇਰਵੇ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="7542995811387359312">ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਦੀ ਜਾਣਕਾਰੀ ਨੂੰ ਸਵੈਚਲਿਤ ਢੰਗ ਨਾਲ ਭਰਨ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਬੰਦ ਹੈ ਕਿਉਂਕਿ ਇਹ ਫ਼ਾਰਮ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="7543525346216957623">ਆਪਣੇ ਮਾਤਾ-ਪਿਤਾ ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ਐਪ ਸ਼ੁਰੂ ਹੋ ਰਹੀ ਹੈ</translation>

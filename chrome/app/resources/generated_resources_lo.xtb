@@ -1247,6 +1247,7 @@
 <translation id="2104166991923847969">ປິດຮັອດສະປອດໂດຍອັດຕະໂນມັດ</translation>
 <translation id="2105809836724866556">ເຊື່ອງ <ph name="MODULE_TITLE" /> ໄວ້ແລ້ວ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ເບີໂທລະສັບ}other{ເບີໂທລະສັບ # ເບີ}}</translation>
+<translation id="2110941575868943054">ອະນຸຍາດໃຫ້ຊອກຫາອຸປະກອນ Bluetooth</translation>
 <translation id="211144231511833662">ລຶບລ້າງປະພດ</translation>
 <translation id="2111670510994270194">ແຖບໃໝ່ຢູ່ເບື້ອງຂວາ</translation>
 <translation id="2112554630428445878">ຍິນດີຕ້ອນຮັບ, <ph name="USERNAME" /></translation>
@@ -3042,6 +3043,7 @@
 <translation id="3756485814916578707">ກຳລັງສົ່ງສັນຍານໜ້າຈໍ</translation>
 <translation id="3756578970075173856">ຕັ້ງຄ່າ PIN</translation>
 <translation id="3756795331760037744">ອະນຸຍາດໃຫ້ຜູ້ຊ່ວຍ Google ໃຊ້ຂໍ້ມູນຢູ່ໜ້າຈໍຂອງ <ph name="SUPERVISED_USER_NAME" /> ເພື່ອຊ່ວຍເຫຼືອ</translation>
+<translation id="3756806135608816820">ເວັບໄຊຕ່າງໆສາມາດຂໍໃຫ້ຊອກຫາອຸປະກອນ Bluetooth ໄດ້</translation>
 <translation id="3757733214359997190">ບໍ່ເຫັນເວັບໄຊໃດ</translation>
 <translation id="375841316537350618">ກໍາລັງດາວ​ໂຫຼດບົດຂຽນພຣັອກຊີ...</translation>
 <translation id="3758842566811519622">ຕັ້ງຄ່າຄຸກກີ້ແລ້ວ</translation>
@@ -3812,6 +3814,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂໄຟລ໌ໃນ <ph name="FOLDERNAME" /> ໄດ້</translation>
 <translation id="4470957202018033307">ການຕັ້ງຄ່າບ່ອນຈັດເກັບຂໍ້ມູນພາຍນອກ</translation>
 <translation id="4471354919263203780">ກຳລັງດາວໂຫຼດໄຟລ໌ການຈຳແນກສຽງເວົ້າ... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">ທ່ານສາມາດນຳໃຊ້ພາສາບັນຊີ Google ທີ່ທ່ານຕ້ອງການໄດ້ (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chrome</translation>
 <translation id="4472575034687746823">ເລີ່ມຕົ້ນ</translation>
 <translation id="4474155171896946103">ໃສ່ບຸກມາກຄ໌ທຸກແຖບ...</translation>
@@ -5015,6 +5018,7 @@
 <translation id="5600706100022181951">ການອັບເດດຈະຖືກດາວໂຫຼດໂດຍໃຊ້ຂໍ້ມູນມືຖື <ph name="UPDATE_SIZE_MB" /> MB. ທ່ານຕ້ອງການສືບຕໍ່ບໍ?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຊື່ອມຕໍ່ກັບອຸປະກອນ MIDI</translation>
+<translation id="5601833336918638013">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຕ່າງໆຊອກຫາອຸປະກອນ Bluetooth</translation>
 <translation id="5602765853043467355">ລຶບລ້າງບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ອື່ນໆອີກຈາກອຸປະກອນນີ້</translation>
 <translation id="5605758115928394442">ລະບົບໄດ້ສົ່ງການແຈ້ງເຕືອນຫາໂທລະສັບຂອງທ່ານແລ້ວເພື່ອຢືນຢັນວ່າແມ່ນທ່ານ.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ສ່ວນຂະຫຍາຍນີ້ຖືກບລັອກໄວ້}other{ສ່ວນຂະຫຍາຍເຫຼົ່ານີ້ຖືກບລັອກໄວ້}}</translation>
@@ -6472,6 +6476,7 @@
 <translation id="6960507406838246615">ຈຳເປັນຕ້ອງອັບເດດ Linux</translation>
 <translation id="6960648667961844909">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ການເວົ້າ <ph name="LANGUAGE" /> ໄດ້. ຈະລອງດາວໂຫຼດໃນພາຍຫຼັງ. ການເວົ້າຖືກສົ່ງໄປໃຫ້ Google ເພື່ອການປະມວນຜົນຈົນກວ່າການດາວໂຫຼດຈະສຳເລັດ.</translation>
 <translation id="696103774840402661">ໄຟລ໌ ແລະ ຂໍ້ມູນໃນເຄື່ອງທັງໝົດສຳລັບຜູ້ໃຊ້ທັງໝົດໃນ <ph name="DEVICE_TYPE" /> ໄດ້ຖືກລຶບຖາວອນແລ້ວ.</translation>
+<translation id="6961327401577924850">ໂດຍປົກກະຕິເວັບໄຊຕ່າງໆຈະຊອກຫາອຸປະກອນ Bluetooth ສຳລັບຄຸນສົມບັດຕ່າງໆເຊັ່ນ: ການຕັ້ງຄ່າ ຫຼື ການຊິ້ງຂໍ້ມູນບີຄອນທີ່ໃຊ້ພະລັງງານຕ່ຳ, ຕົວຕິດຕາມສຸຂະພາບ ຫຼື ການອອກກຳລັງກາຍ ຫຼື ດອກໄຟອັດສະລິຍະ</translation>
 <translation id="6963872466817251924">ຕົວໄຮໄລ້ເຄີເຊີຂໍ້ຄວາມ</translation>
 <translation id="6964390816189577014">ພະເອກ</translation>
 <translation id="6964760285928603117">ລຶບອອກຈາກກຸ່ມ</translation>
@@ -6748,6 +6753,7 @@
 <translation id="7227458944009118910">ແອັບທີ່ມີລາຍຊື່ທາງລຸ່ມສາມາດຈັດການລິ້ງໂປຣໂຕຄໍໄດ້ເຊັ່ນກັນ. ແອັບອື່ນໆຈະຖາມຫາການອະນຸຍາດ.</translation>
 <translation id="7228056665272655255">ເພື່ອຕັ້ງຄ່າລາຍນິ້ວມື, ໃຫ້ລູກຂອງທ່ານແຕະໃສ່ເຊັນເຊີລາຍນິ້ວມືຢູ່ມຸມຂວາເທິງສຸດຂອງແປ້ນພິມ. ຂໍ້ມູນລາຍນິ້ວມືຂອງລູກທ່ານແມ່ນຖືກເກັບໄວ້ຢ່າງປອດໄພ ແລະ ຢູ່ໃນ <ph name="DEVICE_TYPE" /> ນີ້ສະເໝີ.</translation>
 <translation id="7228523857728654909">ການລັອກໜ້າຈໍ ແລະ ການເຂົ້າສູ່ລະບົບ</translation>
+<translation id="7228854227189381547">ຢ່າສະຫຼັບ</translation>
 <translation id="7230222852462421043">&amp;ກູ້ໜ້າຈໍຄືນມາ</translation>
 <translation id="7231260028442989757">ເບິ່ງ, ປິດໄວ້ ແລະ ຕອບກັບຫາການແຈ້ງເຕືອນຂອງໂທລະສັບທ່ານ</translation>
 <translation id="7232750842195536390">ການປ່ຽນຊື່ບໍ່ສຳເລັດ</translation>
@@ -7081,6 +7087,7 @@
 <translation id="7545466883021407599">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຊີບເວີໄດ້. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານແລ້ວລອງໃໝ່. ຫາກທ່ານຍັງຄົງພົບບັນຫາຢູ່, ໃຫ້ລອງຣີສະຕາດ Chromebook ຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">ຄໍາເຕືອນ: ການຕັ້ງຄ່າ <ph name="PRODUCT_NAME" /> ຂອງທ່ານຖືກເກັບໄວ້ຢູ່ໃນດຣາຍເຄືອຂ່າຍ. ອັນນີ້ອາດຈະສົ່ງຜົນໃຫ້ມີການຊ້າລົງ, ເກີດການຂັດຂ້ອງ, ຫຼືແມ້ແຕ່ການສູນເສຍຂໍ້ມູນ.</translation>
 <translation id="7548856833046333824">ນໍ້າໝາກນາວ</translation>
+<translation id="7549434883223124329">ສະຫຼັບພາສາຂອງອຸປະກອນບໍ?</translation>
 <translation id="7550830279652415241">ບຸກມາກ_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ດາວ​ນ​໌​ໂຫລດ​ບໍ່​ສໍາ​ເລັດ</translation>
 <translation id="7551643184018910560">ປັກໝຸດໃສ່ຖ້ານ</translation>
@@ -8105,6 +8112,7 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ຕ້ອງການການອະນຸຍາດຂອງທ່ານເພື່ອເປີດໃຊ້</translation>
 <translation id="8466417995783206254">ແຖບນີ້ກຳລັງຫຼິ້ນວິດີໂອໃນໂໝດສະແດງຜົນຊ້ອນກັນ.</translation>
 <translation id="8467326454809944210">ເລືອກພາສາອື່ນ</translation>
+<translation id="8468087214092422866">ບໍ່ອະນຸຍາດໃຫ້ຊອກຫາອຸປະກອນ Bluetooth</translation>
 <translation id="8470513973197838199">ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">ໂດຍປົກກະຕິ ເວັບໄຊຈະເຊື່ອມຕໍ່ກັບອຸປະກອນ USB ສຳລັບຄຸນສົມບັດ ເຊັ່ນ: ການພິມເອກະສານ ຫຼື ການບັນທຶກໄວ້ໃນອຸປະກອນຈັດເກັບຂໍ້ມູນ</translation>
 <translation id="8471959340398751476">ສ່ວນຫຼຸດຖືກປິດການນຳໃຊ້ຢູ່. ທ່ານສາມາດເປີດໃຊ້ພວກມັນໄດ້ໃນເມນູປັບແຕ່ງ</translation>

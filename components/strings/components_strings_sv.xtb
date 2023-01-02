@@ -808,7 +808,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="299990983510665749">Halvkombi</translation>
 <translation id="3002501248619246229">Kontrollera inmatningsfack för media</translation>
 <translation id="3005723025932146533">Visa sparad kopia</translation>
-<translation id="3008447029300691911">Ange CVC-koden för <ph name="CREDIT_CARD" />. När du bekräftar delas kortinformationen med den här webbplatsen.</translation>
 <translation id="3013291976881901233">MIDI-enheter</translation>
 <translation id="301521992641321250">Blockerades automatiskt</translation>
 <translation id="3016780570757425217">Veta din plats</translation>
@@ -2460,7 +2459,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# träff}other{# träffar}}</translation>
 <translation id="724691107663265825">Det förekommer skadlig programvara på följande sida</translation>
-<translation id="724975217298816891">Ange utgångsdatum och CVC-kod för <ph name="CREDIT_CARD" /> om du vill uppdatera kortinformationen. När du bekräftar delas kortinformationen med den här webbplatsen.</translation>
 <translation id="7251437084390964440">Nätverkskonfigurationen uppfyller inte ONC-standarden. Det kan hända att delar av konfigurationen inte kan importeras.
 Mer information.
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Mer information.
 <translation id="7534987659046836932">C7-kuvert</translation>
 <translation id="7535087603100972091">Värde</translation>
 <translation id="7537536606612762813">Obligatorisk</translation>
-<translation id="7542403920425041731">När du bekräftar delas kortuppgifterna med den här webbplatsen.</translation>
 <translation id="7542995811387359312">Automatisk ifyllning av kreditkort har inaktiverats eftersom formulärets anslutning inte är säker.</translation>
 <translation id="7543525346216957623">Fråga en förälder</translation>
 <translation id="7546409722674205727">Startar <ph name="APP_NAME" /></translation>

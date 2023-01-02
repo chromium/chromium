@@ -1000,6 +1000,11 @@
 <translation id="1962864958436828230">設定防止資料外洩的剪貼簿資料大小最低限制</translation>
 <translation id="1964634611280150550">無痕模式已停用</translation>
 <translation id="1964802606569741174">這項政策對 Android YouTube 應用程式沒有影響。如要強制採用 YouTube 安全模式，則必須禁止下載 Android YouTube 應用程式。</translation>
+<translation id="1964985353230379667">為手動建立的新票證指定 <ph name="KRB5_CONFIG" /> 建議設定。
+
+      如果啟用「KerberosUseCustomPrefilledConfig」政策，這項政策的值就會用於建議設定，並顯示在 Kerberos 驗證對話方塊的「進階」部分中。如果將這項政策留空或未設定，系統將刪除建議的 <ph name="PRODUCT_OS_NAME" /> 設定。
+
+      如果停用「KerberosUseCustomPrefilledConfig」政策，系統就不會使用這項政策的值。</translation>
 <translation id="1969212217917526199">覆寫遠端存取主機的偵錯版本政策。
 
           系統會以政策名稱 JSON 字典形式剖析這個值，以對應政策值。</translation>

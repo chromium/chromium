@@ -808,7 +808,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="299990983510665749">Ötajtós autók</translation>
 <translation id="3002501248619246229">Bemeneti tálca hordozójának ellenőrzése</translation>
 <translation id="3005723025932146533">Mentett másolat megjelenítése</translation>
-<translation id="3008447029300691911">Adja meg a(z) <ph name="CREDIT_CARD" /> kártya CVC-kódját. Az ellenőrzést követően a böngésző megosztja kártyaadatait ezzel a webhellyel.</translation>
 <translation id="3013291976881901233">MIDI-eszközök</translation>
 <translation id="301521992641321250">Automatikusan letiltva</translation>
 <translation id="3016780570757425217">Az Ön tartózkodási helyének megismerése</translation>
@@ -2458,7 +2457,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# találat}other{# találat}}</translation>
 <translation id="724691107663265825">A megnyíló oldal rosszindulatú programot tartalmaz</translation>
-<translation id="724975217298816891">Adja meg a(z) <ph name="CREDIT_CARD" /> kártya lejárati dátumát és CVC-kódját. Az ellenőrzést követően a böngésző megosztja kártyaadatait ezzel a webhellyel.</translation>
 <translation id="7251437084390964440">A hálózati konfiguráció nem felel meg az ONC szabványnak. A konfiguráció egyes részeit nem lehet importálni.
 További részletek:
 <ph name="DEBUG_INFO" /></translation>
@@ -2587,7 +2585,6 @@ További részletek:
 <translation id="7534987659046836932">C7 boríték</translation>
 <translation id="7535087603100972091">Érték</translation>
 <translation id="7537536606612762813">Kötelező</translation>
-<translation id="7542403920425041731">Az igazolást követően a böngésző megosztja kártyaadatait a webhellyel.</translation>
 <translation id="7542995811387359312">Az automatikus bankkártya-kitöltés le van tiltva, mivel ez az űrlap nem biztonságos kapcsolatot használ.</translation>
 <translation id="7543525346216957623">Kérd a szülő segítségét</translation>
 <translation id="7546409722674205727">A(z) <ph name="APP_NAME" /> elindul…</translation>

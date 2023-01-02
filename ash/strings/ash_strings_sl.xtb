@@ -925,6 +925,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6043212731627905357">Ta monitor se ne ujema z napravo <ph name="DEVICE_TYPE" /> (monitor ni podprt).</translation>
 <translation id="6043994281159824495">Odjava</translation>
+<translation id="6045629311476491587">Uporablja toliko aplikacij: <ph name="APP_COUNT" /></translation>
 <translation id="6047696787498798094">Ko preklopite na drugega uporabnika, bo skupna raba zaslona ustavljena. Ali želite nadaljevati?</translation>
 <translation id="6054305421211936131">Prijava s pametno kartico</translation>
 <translation id="6059276912018042191">Nedavni Chromovi zavihki</translation>

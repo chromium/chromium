@@ -1245,6 +1245,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2104166991923847969">Zima mtandaopepe kiotomatiki</translation>
 <translation id="2105809836724866556">Umeficha <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Nambari ya simu}other{Nambari # za simu}}</translation>
+<translation id="2110941575868943054">Zimeruhusiwa kutafuta vifaa vyenye Bluetooth</translation>
 <translation id="211144231511833662">Futa Aina</translation>
 <translation id="2111670510994270194">Kichupo kipya kulia</translation>
 <translation id="2112554630428445878">Karibu, <ph name="USERNAME" /></translation>
@@ -3040,6 +3041,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3756485814916578707">Inatuma maudhui yaliyo kwenye skrini</translation>
 <translation id="3756578970075173856">Weka PIN</translation>
 <translation id="3756795331760037744">Iruhusu programu ya Mratibu wa Google itumie maelezo yaliyo kwenye skrini ya <ph name="SUPERVISED_USER_NAME" /> ili iweze kumsaidia</translation>
+<translation id="3756806135608816820">Tovuti zinaweza kuomba ruhusa ya kutafuta vifaa vyenye Bluetooth</translation>
 <translation id="3757733214359997190">Hakuna tovuti zilizopatikana</translation>
 <translation id="375841316537350618">Inapakua hati ya proksi...</translation>
 <translation id="3758842566811519622">Imeweka vidakuzi</translation>
@@ -3808,6 +3810,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> inaweza kubadilisha faili katika <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Mapendeleo ya hifadhi ya nje</translation>
 <translation id="4471354919263203780">Inapakua faili za utambuzi wa matamshi... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Unaweza kutumia lugha yako unayopendelea ya Akaunti ya Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Tusaidie tuboreshe utendaji na vipengele vya Chrome</translation>
 <translation id="4472575034687746823">Anza</translation>
 <translation id="4474155171896946103">Alamisha vichupo vyote...</translation>
@@ -5012,6 +5015,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5600706100022181951">Sasisho litapakuliwa kwa kutumia MB <ph name="UPDATE_SIZE_MB" /> za data ya simu. Je, ungependa kuendelea?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Zisizoruhusiwa kuunganisha kwenye vifaa vya MIDI</translation>
+<translation id="5601833336918638013">Usiruhusu tovuti zitafute vifaa vyenye Bluetooth</translation>
 <translation id="5602765853043467355">Futa alamisho, historia, manenosiri na mengineyo kwenye kifaa hiki</translation>
 <translation id="5605758115928394442">Arifa imetumwa kwenye simu yako ili kuthibitisha ni wewe.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Kiendelezi hiki kimezuiwa}other{Viendelezi hivi vimezuiwa}}</translation>
@@ -6469,6 +6473,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6960507406838246615">Linux inahitaji kusasishwa</translation>
 <translation id="6960648667961844909">Imeshindwa kupakua faili za matamshi za <ph name="LANGUAGE" />. Itajaribu kupakua baadaye. Matamshi yatatumwa kwa Google ili yachakatwe hadi upakuaji utakapokamilika.</translation>
 <translation id="696103774840402661">Faili na data yote ya watumiaji wote iliyo kwenye <ph name="DEVICE_TYPE" /> imefutwa kabisa.</translation>
+<translation id="6961327401577924850">Tovuti hutafuta vifaa vyenye Bluetooth kwa vipengele kama vile kuweka mipangilio au kusawazisha kiashiria chenye nishati ya kiwango cha chini, kifuatiliaji cha afya au siha au balbu ya taa mahiri</translation>
 <translation id="6963872466817251924">Kiangazia kiteuzi cha matini</translation>
 <translation id="6964390816189577014">Shujaa</translation>
 <translation id="6964760285928603117">Ondoa Kwenye Kikundi</translation>
@@ -6745,6 +6750,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7227458944009118910">Programu zilizoorodheshwa hapo chini zinaweza kudhibiti viungo vya itifaki pia. Programu zingine zitaomba ruhusa.</translation>
 <translation id="7228056665272655255">Ili uweke mipangilio ya alama bainifu, weka kidole cha mtoto wako kwenye kitambuzi cha alama ya kidole katika kona ya juu kulia mwa kibodi yako. Data ya alama ya kidole ya mtoto wako inahifadhiwa kwa usalama na itasalia kwenye <ph name="DEVICE_TYPE" /> hii.</translation>
 <translation id="7228523857728654909">Kufunga programu na kuingia katika akaunti</translation>
+<translation id="7228854227189381547">Usibadilishe</translation>
 <translation id="7230222852462421043">&amp;Rejesha Dirisha</translation>
 <translation id="7231260028442989757">Tazama, ondoa na ujibu arifa za simu yako</translation>
 <translation id="7232750842195536390">Imeshindwa kubadilisha jina</translation>
@@ -7078,6 +7084,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7545466883021407599">Imeshindwa kuunganisha kwenye seva. Kagua muunganisho wako wa mtandao kisha ujaribu tena. Iwapo bado unatatizika, jaribu kuzima kisha uwashe Chromebook yako. Msimbo wa hitilafu: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Ilani: mipangilio yako ya <ph name="PRODUCT_NAME" /> imeakibishwa kwenye hifadhi ya mtandao. Huenda hii ikasababisha kushuka, mivurugo, au hata upotezaji wa data.</translation>
 <translation id="7548856833046333824">Limau</translation>
+<translation id="7549434883223124329">Ungependa kubadilisha lugha ya kifaa?</translation>
 <translation id="7550830279652415241">vialamisho_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Upakuaji wa <ph name="FILE_NAME" /> haujafaulu</translation>
 <translation id="7551643184018910560">Bandika kwenye rafu</translation>
@@ -8105,6 +8112,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> inahitaji ruhusa yako ili kutumia</translation>
 <translation id="8466417995783206254">Kichupo hiki kinacheza video katika hali ya picha ndani ya picha.</translation>
 <translation id="8467326454809944210">Chagua lugha nyingine</translation>
+<translation id="8468087214092422866">Hazijaruhusiwa kutafuta vifaa vyenye Bluetooth</translation>
 <translation id="8470513973197838199">Manenosiri yaliyohifadhiwa ya <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Tovuti huunganisha kwenye vifaa vya USB kwa ajili ya vipengele kama vile kuchapisha hati au kuweka faili kwenye kifaa cha kuhifadhi</translation>
 <translation id="8471959340398751476">Kipengele cha punguzo kimezimwa. Unaweza kukiwasha kwenye menyu ya kuweka mapendeleo</translation>

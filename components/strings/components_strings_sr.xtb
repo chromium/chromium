@@ -808,7 +808,6 @@
 <translation id="299990983510665749">Хечбек возила</translation>
 <translation id="3002501248619246229">Проверите медије улазне фиоке</translation>
 <translation id="3005723025932146533">Прикажи сачувану копију</translation>
-<translation id="3008447029300691911">Унесите CVC за картицу <ph name="CREDIT_CARD" />. Када будете потврдили, подаци о картици ће бити послати овом сајту.</translation>
 <translation id="3013291976881901233">MIDI уређаји</translation>
 <translation id="301521992641321250">Аутоматски је блокирано</translation>
 <translation id="3016780570757425217">зна вашу локацију</translation>
@@ -2459,7 +2458,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# подударање}one{# подударање}few{# подударања}other{# подударања}}</translation>
 <translation id="724691107663265825">Сајт који ћете посетити садржи малвер</translation>
-<translation id="724975217298816891">Унесите рок трајања и CVC за картицу <ph name="CREDIT_CARD" /> да бисте ажурирали податке о картици. Када будете потврдили, подаци о картици ће бити послати овом сајту.</translation>
 <translation id="7251437084390964440">Конфигурација мреже није у складу са ONC стандардом. Делови конфигурације можда нису увезени.
 Додатни детаљи:
 <ph name="DEBUG_INFO" /></translation>
@@ -2588,7 +2586,6 @@
 <translation id="7534987659046836932">Коверта C7</translation>
 <translation id="7535087603100972091">Вредност</translation>
 <translation id="7537536606612762813">Обавезно</translation>
-<translation id="7542403920425041731">Када будете потврдили, подаци о картици ће бити послати овом сајту.</translation>
 <translation id="7542995811387359312">Онемогућено је аутоматско попуњавање кредитне картице зато што овај образац не користи безбедну везу.</translation>
 <translation id="7543525346216957623">Питај родитеља</translation>
 <translation id="7546409722674205727">Покреће се <ph name="APP_NAME" /></translation>

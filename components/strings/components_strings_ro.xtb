@@ -808,7 +808,6 @@
 <translation id="299990983510665749">Hatchbackuri</translation>
 <translation id="3002501248619246229">Verifică suportul din tava de intrare</translation>
 <translation id="3005723025932146533">Afișați o copie salvată</translation>
-<translation id="3008447029300691911">Introdu codul CVC pentru <ph name="CREDIT_CARD" />. După ce confirmi, acest site va avea acces la detaliile cardului tău.</translation>
 <translation id="3013291976881901233">Dispozitive MIDI</translation>
 <translation id="301521992641321250">Blocată automat</translation>
 <translation id="3016780570757425217">Afle locația</translation>
@@ -2460,7 +2459,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# potrivire}few{# potriviri}other{# de potriviri}}</translation>
 <translation id="724691107663265825">Site-ul pe care urmează să îl accesezi conține programe malware</translation>
-<translation id="724975217298816891">Introdu data de expirare și codul CVC pentru <ph name="CREDIT_CARD" />, pentru a actualiza detaliile cardului. După ce confirmi, acest site va avea acces la detaliile cardului tău.</translation>
 <translation id="7251437084390964440">Configurația rețelei nu respectă standardul ONC. Este posibil ca anumite părți ale configurației să nu fie importate.
 Detalii suplimentare:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Detalii suplimentare:
 <translation id="7534987659046836932">Plic C7</translation>
 <translation id="7535087603100972091">Valoare</translation>
 <translation id="7537536606612762813">Obligatorie</translation>
-<translation id="7542403920425041731">După ce confirmi, acest site va avea acces la detaliile cardului tău.</translation>
 <translation id="7542995811387359312">Completarea automată a cardului de credit este dezactivată, deoarece acest formular nu utilizează o conexiune sigură.</translation>
 <translation id="7543525346216957623">Roagă-ți părintele</translation>
 <translation id="7546409722674205727">Începe <ph name="APP_NAME" /></translation>

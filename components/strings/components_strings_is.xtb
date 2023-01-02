@@ -808,7 +808,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="299990983510665749">Hlaðbakar</translation>
 <translation id="3002501248619246229">Athuga miðil í innbakka</translation>
 <translation id="3005723025932146533">Sýna vistað afrit</translation>
-<translation id="3008447029300691911">Sláðu inn CVC-númerið fyrir <ph name="CREDIT_CARD" />. Greiðslukortaupplýsingum verður deilt með þessu vefsvæði eftir að þú hefur staðfest.</translation>
 <translation id="3013291976881901233">MIDI-tæki</translation>
 <translation id="301521992641321250">Sjálfkrafa lokað á</translation>
 <translation id="3016780570757425217">Komast að staðsetningunni þinni</translation>
@@ -2460,7 +2459,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# samsvörun}one{# samsvörun}other{# samsvaranir}}</translation>
 <translation id="724691107663265825">Vefsvæðið framundan inniheldur spilliforrit</translation>
-<translation id="724975217298816891">Sláðu inn gildistíma og CVC-númerið fyrir <ph name="CREDIT_CARD" /> til að uppfæra kortaupplýsingar. Greiðslukortaupplýsingum verður deilt með vefsvæðinu eftir að þú hefur staðfest.</translation>
 <translation id="7251437084390964440">Netstillingar eru ekki í samræmi við ONC-staðalinn. Ef til vill verða hlutar grunnstillingarinnar ekki fluttir inn.
 Ítarlegar upplýsingar:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7534987659046836932">Umslag: C7</translation>
 <translation id="7535087603100972091">Gildi</translation>
 <translation id="7537536606612762813">Áskilin</translation>
-<translation id="7542403920425041731">Greiðslukortaupplýsingum verður deilt með þessu vefsvæði eftir að þú hefur staðfest.</translation>
 <translation id="7542995811387359312">Sjálfvirk útfylling kreditkortaupplýsinga er óvirk vegna þess að eyðublaðið notast ekki við örugga tengingu.</translation>
 <translation id="7543525346216957623">Spyrðu foreldri þitt</translation>
 <translation id="7546409722674205727">Ræsir <ph name="APP_NAME" /></translation>

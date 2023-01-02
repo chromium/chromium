@@ -809,7 +809,6 @@
 <translation id="299990983510665749">سيارات هاتشباك</translation>
 <translation id="3002501248619246229">التحقق من دُرج وسائل الإعلام</translation>
 <translation id="3005723025932146533">عرض نسخة محفوظة</translation>
-<translation id="3008447029300691911">‏أدخِل رمز التحقّق (CVC) لبطاقة <ph name="CREDIT_CARD" />. بعد تأكيدك، ستتم مشاركة تفاصيل بطاقتك مع هذا الموقع.</translation>
 <translation id="3013291976881901233">‏أجهزة MIDI</translation>
 <translation id="301521992641321250">تم الحظر تلقائيًا</translation>
 <translation id="3016780570757425217">معرفة موقعك</translation>
@@ -2463,7 +2462,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{مجموعة متطابقة واحدة}zero{# مجموعة متطابقة}two{مجموعتان متطابقتان}few{# مجموعات متطابقة}many{# مجموعة متطابقة}other{# مجموعة متطابقة}}</translation>
 <translation id="724691107663265825">يحتوي الموقع الإلكتروني المقصود على برامج ضارة</translation>
-<translation id="724975217298816891">‏أدخل تاريخ انتهاء الصلاحية ورمز التحقّق (CVC) لبطاقة <ph name="CREDIT_CARD" /> لتحديث تفاصيل بطاقتك. بعد التأكيد، ستتم مشاركة تفاصيل بطاقتك مع هذا الموقع.</translation>
 <translation id="7251437084390964440">‏لا يتوافق إعداد الشبكة مع معيار ONC. وقد لا تُستورَد أجزاء من الإعداد.
 التفاصيل الإضافية:
 <ph name="DEBUG_INFO" /></translation>
@@ -2592,7 +2590,6 @@
 <translation id="7534987659046836932">‏ظرف C7</translation>
 <translation id="7535087603100972091">القيمة</translation>
 <translation id="7537536606612762813">إلزامية</translation>
-<translation id="7542403920425041731">بعد تأكيدك، ستتم مشاركة تفاصيل بطاقتك مع الموقع الإلكتروني هذا.</translation>
 <translation id="7542995811387359312">تم إيقاف الملء التلقائي لبطاقة الائتمان لأن هذا النموذج لا يستخدم اتصالاً آمنًا.</translation>
 <translation id="7543525346216957623">اسأل والديك</translation>
 <translation id="7546409722674205727">جارٍ تشغيل "<ph name="APP_NAME" />"</translation>

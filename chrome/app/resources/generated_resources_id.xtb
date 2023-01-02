@@ -1249,6 +1249,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2104166991923847969">Otomatis nonaktifkan hotspot</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> tersembunyi</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Nomor telepon}other{# nomor telepon}}</translation>
+<translation id="2110941575868943054">Diizinkan mencari perangkat Bluetooth</translation>
 <translation id="211144231511833662">Hapus Jenis</translation>
 <translation id="2111670510994270194">Tab baru di sebelah kanan</translation>
 <translation id="2112554630428445878">Selamat datang, <ph name="USERNAME" /></translation>
@@ -3043,6 +3044,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3756485814916578707">Mentransmisikan layar</translation>
 <translation id="3756578970075173856">Setel PIN</translation>
 <translation id="3756795331760037744">Izinkan Asisten Google menggunakan info di layar <ph name="SUPERVISED_USER_NAME" /> agar bisa membantu</translation>
+<translation id="3756806135608816820">Situs dapat meminta untuk mencari perangkat Bluetooth</translation>
 <translation id="3757733214359997190">Tidak ada situs yang ditemukan</translation>
 <translation id="375841316537350618">Mendownload skrip proxy...</translation>
 <translation id="3758842566811519622">Cookie disetel</translation>
@@ -5018,6 +5020,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5600706100022181951">Update akan didownload menggunakan data seluler sebesar <ph name="UPDATE_SIZE_MB" /> MB. Ingin melanjutkan?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Tidak diizinkan terhubung ke perangkat MIDI</translation>
+<translation id="5601833336918638013">Jangan izinkan situs mencari perangkat Bluetooth</translation>
 <translation id="5602765853043467355">Hapus bookmark, histori, sandi, dan lainnya dari perangkat ini.</translation>
 <translation id="5605758115928394442">Notifikasi telah dikirim ke ponsel Anda untuk mengonfirmasi bahwa ini memang Anda.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ekstensi ini diblokir}other{Ekstensi ini diblokir}}</translation>
@@ -6475,6 +6478,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6960507406838246615">Update Linux diwajibkan</translation>
 <translation id="6960648667961844909">Tidak dapat mendownload file ucapan bahasa <ph name="LANGUAGE" />. Download akan dicoba nanti. Ucapan akan dikirim ke Google untuk diproses hingga download selesai.</translation>
 <translation id="696103774840402661">Semua file dan data lokal untuk semua pengguna di <ph name="DEVICE_TYPE" /> ini telah dihapus secara permanen.</translation>
+<translation id="6961327401577924850">Situs biasanya mencari perangkat Bluetooth untuk fitur seperti penyiapan atau sinkronisasi beacon hemat energi, pelacak kesehatan atau kebugaran, atau bohlam lampu smart</translation>
 <translation id="6963872466817251924">Penanda kursor teks</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Hapus dari Grup</translation>
@@ -8112,6 +8116,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> memerlukan izin Anda untuk dijalankan</translation>
 <translation id="8466417995783206254">Tab ini diputar dalam mode picture-in-picture.</translation>
 <translation id="8467326454809944210">Pilih bahasa lain</translation>
+<translation id="8468087214092422866">Tidak diizinkan mencari perangkat Bluetooth</translation>
 <translation id="8470513973197838199">Sandi yang tersimpan untuk <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Situs biasanya terhubung ke perangkat USB untuk fitur seperti pencetakan dokumen atau penyimpanan ke perangkat penyimpanan</translation>
 <translation id="8471959340398751476">Diskon nonaktif. Anda dapat mengaktifkannya di menu sesuaikan</translation>

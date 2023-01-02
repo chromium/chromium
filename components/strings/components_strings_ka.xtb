@@ -808,7 +808,6 @@
 <translation id="299990983510665749">ჰეტჩბეკები</translation>
 <translation id="3002501248619246229">შეამოწმეთ შეყვანის ლანგრის მედია</translation>
 <translation id="3005723025932146533">შენახული ასლის ჩვენება</translation>
-<translation id="3008447029300691911">შეიყვანეთ <ph name="CREDIT_CARD" />-ის CVC. დადასტურების შემდეგ, თქვენი ბარათის დეტალები ამ საიტთან გაზიარდება.</translation>
 <translation id="3013291976881901233">MIDI მოწყობილობები</translation>
 <translation id="301521992641321250">დაბლოკილია ავტომატურად</translation>
 <translation id="3016780570757425217">თქვენი მდებარეობის ცოდნა</translation>
@@ -2460,7 +2459,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# დამთხვევა}other{# დამთხვევა}}</translation>
 <translation id="724691107663265825">საიტი მოიცავს საზიანო პროგრამებს</translation>
-<translation id="724975217298816891">თქვენი ბარათის დეტალების გასაახლებლად, შეიყვანეთ <ph name="CREDIT_CARD" />-ის მოქმედების ვადა და CVC. დადასტურების შემდეგ, თქვენი ბარათის დეტალები ამ საიტთან გაზიარდება.</translation>
 <translation id="7251437084390964440">ქსელის კონფიგურაცია არ შეესაბამება ONC სტანდარტს. კონფიგურაციის ნაწილის იმპორტი შეიძლება ვერ მოხერხდეს.
 დამატებითი დეტალები:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@
 <translation id="7534987659046836932">კონვერტი C7</translation>
 <translation id="7535087603100972091">მნიშვნელობა</translation>
 <translation id="7537536606612762813">სავალდებულო</translation>
-<translation id="7542403920425041731">დადასტურების შემდეგ თქვენი ბარათის დეტალები გაზიარდება ამ საიტთან.</translation>
 <translation id="7542995811387359312">საკრედიტო ბარათის ავტომატურად შევსება გამორთულია, რადგან ეს ფორმა არ იყენებს უსაფრთხო კავშირს.</translation>
 <translation id="7543525346216957623">სთხოვეთ მშობელს</translation>
 <translation id="7546409722674205727">მიმდინარეობს <ph name="APP_NAME" />-ის გაშვება</translation>

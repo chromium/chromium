@@ -808,7 +808,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="299990983510665749">Hatchbacky</translation>
 <translation id="3002501248619246229">Zkontrolujte média ve vstupní přihrádce</translation>
 <translation id="3005723025932146533">Zobrazit uloženou kopii</translation>
-<translation id="3008447029300691911">Zadejte kód CVC karty <ph name="CREDIT_CARD" />. Po ověření budou údaje o kartě sdíleny s tímto webem.</translation>
 <translation id="3013291976881901233">Zařízení MIDI</translation>
 <translation id="301521992641321250">Automaticky blokováno</translation>
 <translation id="3016780570757425217">Přístup k údajům o vaší poloze</translation>
@@ -2455,7 +2454,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# shoda}few{# shody}many{# shody}other{# shod}}</translation>
 <translation id="724691107663265825">Webové stránky, které chcete otevřít, obsahují malware</translation>
-<translation id="724975217298816891">Chcete-li aktualizovat údaje o kartě, zadejte datum vypršení platnosti a kód CVC karty <ph name="CREDIT_CARD" />. Po ověření budou údaje o kartě sdíleny s tímto webem.</translation>
 <translation id="7251437084390964440">Konfigurace sítě neodpovídá standardu ONC. Může se stát, že některé části konfigurace nebudou importovány. Další podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Zadní zásobník</translation>
@@ -2583,7 +2581,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7534987659046836932">Obálka C7</translation>
 <translation id="7535087603100972091">Hodnota</translation>
 <translation id="7537536606612762813">Povinná</translation>
-<translation id="7542403920425041731">Po ověření budou údaje o kartě sdíleny s tímto webem.</translation>
 <translation id="7542995811387359312">Automatické vyplňování údajů platební karty je deaktivováno, protože tento formulář nepoužívá zabezpečené připojení.</translation>
 <translation id="7543525346216957623">Požádej rodiče</translation>
 <translation id="7546409722674205727">Spouštění aplikace <ph name="APP_NAME" /></translation>

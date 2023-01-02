@@ -808,7 +808,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="299990983510665749">Car cefn codi</translation>
 <translation id="3002501248619246229">Gwiriwch y cyfryngau hambwrdd mewnbwn</translation>
 <translation id="3005723025932146533">Dangos y copi sydd wedi'i gadw</translation>
-<translation id="3008447029300691911">Rhowch y CVC ar gyfer <ph name="CREDIT_CARD" />. Ar ôl i chi gadarnhau, bydd manylion eich cerdyn yn cael eu rhannu â'r wefan hon.</translation>
 <translation id="3013291976881901233">Dyfeisiau MIDI</translation>
 <translation id="301521992641321250">Rhwystrwyd yn awtomatig</translation>
 <translation id="3016780570757425217">Gwybod eich lleoliad</translation>
@@ -2460,7 +2459,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# canlyniad sy'n cyfateb}zero{# canlyniad sy'n cyfateb}two{# ganlyniad sy'n cyfateb}few{# chanlyniad sy'n cyfateb}many{# chanlyniad sy'n cyfateb}other{# canlyniad sy'n cyfateb}}</translation>
 <translation id="724691107663265825">Mae'r wefan o'ch blaen yn cynnwys meddalwedd faleisus</translation>
-<translation id="724975217298816891">Rhowch y dyddiad darfod a'r CVC ar gyfer <ph name="CREDIT_CARD" /> i ddiweddaru manylion eich cerdyn. Ar ôl i chi gadarnhau, bydd manylion eich cerdyn yn cael eu rhannu â'r wefan hon.</translation>
 <translation id="7251437084390964440">Nid yw ffurfweddiad y rhwydwaith yn cydymffurfio â safon ONC. Ni chaniateir mewnforio rhannau o'r ffurfweddiad.
 Manylion ychwanegol:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Manylion ychwanegol:
 <translation id="7534987659046836932">Amlen C7</translation>
 <translation id="7535087603100972091">Gwerth</translation>
 <translation id="7537536606612762813">Gorfodol</translation>
-<translation id="7542403920425041731">Ar ôl i chi gadarnhau, bydd manylion eich cerdyn yn cael eu rhannu â'r wefan hon.</translation>
 <translation id="7542995811387359312">Mae llenwi cardiau credyd yn awtomatig wedi'i analluogi oherwydd nad yw'r ffurflen hon yn defnyddio cysylltiad diogel.</translation>
 <translation id="7543525346216957623">Gofyn i'ch rhiant</translation>
 <translation id="7546409722674205727">Yn dechrau <ph name="APP_NAME" /></translation>

@@ -808,7 +808,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="299990983510665749">Hatchback vozila</translation>
 <translation id="3002501248619246229">Provjerite medije na ulaznoj ladici</translation>
 <translation id="3005723025932146533">Prikaži spremljenu kopiju</translation>
-<translation id="3008447029300691911">Unesite CVC kartice <ph name="CREDIT_CARD" />. Nakon potvrde podaci vaše kartice će se dijeliti s ovom web lokacijom.</translation>
 <translation id="3013291976881901233">MIDI uređaji</translation>
 <translation id="301521992641321250">Automatski blokirano</translation>
 <translation id="3016780570757425217">Poznavanje vaše lokacije</translation>
@@ -2460,7 +2459,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# podudaranje}one{# podudaranje}few{# podudaranja}other{# podudaranja}}</translation>
 <translation id="724691107663265825">Web lokacija koju želite posjetiti sadrži zlonamjerni softver</translation>
-<translation id="724975217298816891">Unesite datum isteka i CVC za karticu <ph name="CREDIT_CARD" /> da biste ažurirali podatke o kartici. Nakon što ih potvrdite, podaci o kartici dijelit će se s ovom web-lokacijom.</translation>
 <translation id="7251437084390964440">Konfiguracija mreže nije u skladu s ONC standardom. Dijelovi konfiguracije možda nisu uvezeni.
 Dodatni detalji:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Dodatni detalji:
 <translation id="7534987659046836932">Koverta C7</translation>
 <translation id="7535087603100972091">Vrijednost</translation>
 <translation id="7537536606612762813">Obavezno</translation>
-<translation id="7542403920425041731">Nakon što potvrdite, detalji o vašoj kartici će se dijeliti s ovom web lokacijom.</translation>
 <translation id="7542995811387359312">Automatsko popunjavanje kreditne kartice je onemogućeno jer ovaj obrazac ne koristi sigurnu vezu.</translation>
 <translation id="7543525346216957623">Pitaj roditelja</translation>
 <translation id="7546409722674205727">Pokretanje aplikacije <ph name="APP_NAME" /></translation>

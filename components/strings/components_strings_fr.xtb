@@ -808,7 +808,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="299990983510665749">Voitures à hayon</translation>
 <translation id="3002501248619246229">Vérifier le support du bac d'alimentation</translation>
 <translation id="3005723025932146533">Afficher la copie enregistrée</translation>
-<translation id="3008447029300691911">Saisissez le code CVC de la carte <ph name="CREDIT_CARD" />. Une fois la validation terminée, les informations relatives à la carte seront partagées avec ce site.</translation>
 <translation id="3013291976881901233">Appareils MIDI</translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3016780570757425217">Connaître votre position</translation>
@@ -2461,7 +2460,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# correspondance}one{# correspondance}other{# correspondances}}</translation>
 <translation id="724691107663265825">Le site que vous allez ouvrir contient des logiciels malveillants</translation>
-<translation id="724975217298816891">Saisissez la date d'expiration et le code CVC de la carte <ph name="CREDIT_CARD" /> pour mettre à jour les informations relatives à celle-ci. Une fois la validation effectuée, les informations seront partagées avec ce site.</translation>
 <translation id="7251437084390964440">La configuration du réseau ne respecte pas les normes de l'ONC. Il est possible que des parties de la configuration ne soient pas importées.
 Informations supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
@@ -2590,7 +2588,6 @@ Informations supplémentaires :
 <translation id="7534987659046836932">Enveloppe C7</translation>
 <translation id="7535087603100972091">Valeur</translation>
 <translation id="7537536606612762813">Obligatoire</translation>
-<translation id="7542403920425041731">Une fois la validation terminée, les informations relatives à votre carte seront partagées avec ce site.</translation>
 <translation id="7542995811387359312">La saisie automatique des numéros de carte de paiement est désactivée, car la connexion utilisée par ce formulaire n'est pas sécurisée.</translation>
 <translation id="7543525346216957623">Demande à tes parents</translation>
 <translation id="7546409722674205727">Lancement de <ph name="APP_NAME" />…</translation>

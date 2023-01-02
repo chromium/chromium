@@ -808,7 +808,6 @@
 <translation id="299990983510665749">掀背车</translation>
 <translation id="3002501248619246229">检查进纸匣媒体</translation>
 <translation id="3005723025932146533">显示已保存的版本</translation>
-<translation id="3008447029300691911">输入“<ph name="CREDIT_CARD" />”的银行卡验证码 (CVC)。在您确认后，您的信用卡详情将与此网站共享。</translation>
 <translation id="3013291976881901233">MIDI 设备</translation>
 <translation id="301521992641321250">已被自动禁止</translation>
 <translation id="3016780570757425217">获取您的位置</translation>
@@ -2455,7 +2454,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# 个匹配项}other{# 个匹配项}}</translation>
 <translation id="724691107663265825">您要访问的网站包含恶意软件</translation>
-<translation id="724975217298816891">输入“<ph name="CREDIT_CARD" />”的过期日期和银行卡验证码 (CVC) 以更新您的信用卡详情。在您确认后，您的信用卡详情将与此网站共享。</translation>
 <translation id="7251437084390964440">网络配置不符合 ONC 标准，因此它的某些部分可能会无法导入。
 更多详情：
 <ph name="DEBUG_INFO" /></translation>
@@ -2584,7 +2582,6 @@
 <translation id="7534987659046836932">C7 信封</translation>
 <translation id="7535087603100972091">值</translation>
 <translation id="7537536606612762813">强制</translation>
-<translation id="7542403920425041731">一旦您予以确认，系统便会将您的信用卡详情共享给此网站。</translation>
 <translation id="7542995811387359312">由于该表单不使用安全连接，因此自动填写信用卡信息的功能已停用。</translation>
 <translation id="7543525346216957623">请先征得您父亲/母亲的许可</translation>
 <translation id="7546409722674205727">正在启动<ph name="APP_NAME" /></translation>

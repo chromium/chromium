@@ -1250,6 +1250,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2104166991923847969">Deaktiver hotspot automatisk</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> er skjult</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}one{# telefonnummer}other{# telefonnumre}}</translation>
+<translation id="2110941575868943054">Har tilladelse til at søge efter Bluetooth-enheder</translation>
 <translation id="211144231511833662">Ryd typer</translation>
 <translation id="2111670510994270194">Ny fane til højre</translation>
 <translation id="2112554630428445878">Velkommen, <ph name="USERNAME" /></translation>
@@ -3044,6 +3045,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3756485814916578707">Skærmen castes</translation>
 <translation id="3756578970075173856">Angiv pinkode</translation>
 <translation id="3756795331760037744">Giv Google Assistent tilladelse til at bruge oplysninger på skærmen, der tilhører <ph name="SUPERVISED_USER_NAME" />, som hjælp</translation>
+<translation id="3756806135608816820">Websites kan anmode om at søge efter Bluetooth-enheder</translation>
 <translation id="3757733214359997190">Der blev ikke fundet nogen websites</translation>
 <translation id="375841316537350618">Downloader proxyscript...</translation>
 <translation id="3758842566811519622">Cookies er angivet</translation>
@@ -5019,6 +5021,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5600706100022181951">Opdateringen downloades ved brug af <ph name="UPDATE_SIZE_MB" /> MB mobildata. Vil du fortsætte?</translation>
 <translation id="5601503069213153581">Pinkode</translation>
 <translation id="5601823921345337195">Har ikke tilladelse til at oprette forbindelse til MIDI-enheder</translation>
+<translation id="5601833336918638013">Tillad ikke, at websites søger efter Bluetooth-enheder</translation>
 <translation id="5602765853043467355">Ryd bogmærker, historik, adgangskoder osv. fra denne enhed</translation>
 <translation id="5605758115928394442">Der blev sendt en notifikation til din telefon til bekræftelse af din identitet.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Denne udvidelse er blokeret}one{Denne udvidelse er blokeret}other{Disse udvidelser er blokeret}}</translation>
@@ -6478,6 +6481,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6960507406838246615">Kræver Linux-opdatering</translation>
 <translation id="6960648667961844909">Talefilerne på <ph name="LANGUAGE" /> kunne ikke downloades. Downloaden forsøges senere. Tale sendes til behandling hos Google, indtil downloaden er fuldført.</translation>
 <translation id="696103774840402661">Alle filer og lokale data for alle brugere på denne <ph name="DEVICE_TYPE" /> er blevet slettet permanent.</translation>
+<translation id="6961327401577924850">Websites søger normalt efter Bluetooth-enheder i forbindelse med funktioner som f.eks. konfiguration eller synkronisering af en lavenergibeacon, en sundheds- eller motionstracker eller en smartpære</translation>
 <translation id="6963872466817251924">Fremhævning af tekstmarkør</translation>
 <translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppe</translation>
@@ -8114,6 +8118,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> kræver din tilladelse for at køre</translation>
 <translation id="8466417995783206254">Denne fane afspiller en video i tilstanden med integreret billede.</translation>
 <translation id="8467326454809944210">Vælg et andet sprog</translation>
+<translation id="8468087214092422866">Har ikke tilladelse til at søge efter Bluetooth-enheder</translation>
 <translation id="8470513973197838199">Gemte adgangskoder til <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Websites opretter normalt forbindelse til USB-enheder for at kunne udskrive dokumenter eller gemme filer på en lagerenhed</translation>
 <translation id="8471959340398751476">Rabatter er slået fra. Du kan slå rabatter til i menuen for tilpasning</translation>

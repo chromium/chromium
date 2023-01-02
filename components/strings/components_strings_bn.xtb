@@ -809,7 +809,6 @@
 <translation id="299990983510665749">হ্যাচব্যাক</translation>
 <translation id="3002501248619246229">ইনপুট ট্রে মিডিয়া চেক করুন</translation>
 <translation id="3005723025932146533">সেভ করা কপি দেখুন</translation>
-<translation id="3008447029300691911"><ph name="CREDIT_CARD" />-এর CVC লিখুন। আপনি নিশ্চিত করলে, আপনার কার্ডের বিবরণ এই সাইটের সাথে শেয়ার করা হবে।</translation>
 <translation id="3013291976881901233">MIDI ডিভাইসগুলি</translation>
 <translation id="301521992641321250">স্বয়ংক্রিয়ভাবে ব্লক করা হয়েছে</translation>
 <translation id="3016780570757425217">আপনার লোকেশন জানুন</translation>
@@ -2460,7 +2459,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{#টি মিলেছে}one{#টি মিলেছে}other{#টি মিলেছে}}</translation>
 <translation id="724691107663265825">এই সাইটটিতে ম্যালওয়্যার আছে</translation>
-<translation id="724975217298816891">Enter the expiration date and CVC for <ph name="CREDIT_CARD" /> to update your card details. Once you confirm, your card details will be shared with this site.</translation>
 <translation id="7251437084390964440">নেটওয়ার্ক কনফিগারেশন ONC মানদণ্ড মেনে চলছে না। কনফিগারেশনের কিছু অংশ ইমপোর্ট করা নাও হতে পারে৷
 অতিরিক্ত বিবরণ:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@
 <translation id="7534987659046836932">এনভেলপ C7</translation>
 <translation id="7535087603100972091">মান</translation>
 <translation id="7537536606612762813">বাধ্যতামূলক</translation>
-<translation id="7542403920425041731">আপনি নিশ্চিত করলে আপনার কার্ডের বিবরণ এই সাইটের সাথে শেয়ার করা হবে।</translation>
 <translation id="7542995811387359312">স্বয়ংক্রিয় ক্রেডিট কার্ড পূরণটি অক্ষম রয়েছে কারণ এই ফর্মটি কোনও সুরক্ষিত সংযোগ ব্যবহার করে না৷</translation>
 <translation id="7543525346216957623">আপনার বাবা-মাকে জিজ্ঞাসা করুন</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> শুরু হচ্ছে</translation>

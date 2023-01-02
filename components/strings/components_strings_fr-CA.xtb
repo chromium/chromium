@@ -808,7 +808,6 @@
 <translation id="299990983510665749">Véhicules bicorps</translation>
 <translation id="3002501248619246229">Vérifier le support du bac d'alimentation</translation>
 <translation id="3005723025932146533">Afficher une copie sauvegardée</translation>
-<translation id="3008447029300691911">Entrez le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" />. Après confirmation, les détails de votre carte seront partagés avec ce site.</translation>
 <translation id="3013291976881901233">Appareils MIDI</translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3016780570757425217">Connaître votre emplacement</translation>
@@ -2460,7 +2459,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# correspondance}one{# correspondance}other{# correspondances}}</translation>
 <translation id="724691107663265825">Le site Web vers lequel vous naviguez contient un logiciel malveillant</translation>
-<translation id="724975217298816891">Afin de mettre à jour les détails de votre carte, entrez la date d'expiration et le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" />. Après confirmation, les détails de votre carte seront partagés avec ce site.</translation>
 <translation id="7251437084390964440">La configuration du réseau ne respecte pas la norme de l'ONC. Il est possible que des parties de la configuration ne soient pas importées.
 Détails supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Détails supplémentaires :
 <translation id="7534987659046836932">Enveloppe C7</translation>
 <translation id="7535087603100972091">Valeur</translation>
 <translation id="7537536606612762813">Obligatoire</translation>
-<translation id="7542403920425041731">Après confirmation de votre part, les détails de votre carte seront partagés avec ce site.</translation>
 <translation id="7542995811387359312">Le remplissage automatique des numéros de carte de crédit est désactivé, car la connexion utilisée par ce formulaire n'est pas sécurisée.</translation>
 <translation id="7543525346216957623">Demande à l'un de tes parents</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> en cours de démarrage…</translation>

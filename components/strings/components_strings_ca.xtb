@@ -808,7 +808,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="299990983510665749">Cotxes amb porta posterior</translation>
 <translation id="3002501248619246229">Comprova el suport de la safata d'entrada</translation>
 <translation id="3005723025932146533">Mostra la còpia desada</translation>
-<translation id="3008447029300691911">Introdueix el CVC de la targeta <ph name="CREDIT_CARD" />. Un cop confirmada, els detalls de la targeta es compartiran amb aquest lloc.</translation>
 <translation id="3013291976881901233">Dispositius MIDI</translation>
 <translation id="301521992641321250">Bloquejada automàticament</translation>
 <translation id="3016780570757425217">Saber la vostra ubicació</translation>
@@ -2460,7 +2459,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# coincidència}other{# coincidències}}</translation>
 <translation id="724691107663265825">Aquest lloc web conté programari maliciós</translation>
-<translation id="724975217298816891">Introdueix la data de caducitat i el CVC de la targeta <ph name="CREDIT_CARD" /> per actualitzar-ne els detalls. Un cop confirmada, els detalls de la targeta es compartiran amb aquest lloc.</translation>
 <translation id="7251437084390964440">La configuració de la xarxa no compleix l'estàndard ONC. Pot ser que algunes opcions de configuració no s'hagin importat.
 Detalls addicionals:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Detalls addicionals:
 <translation id="7534987659046836932">Sobre C7</translation>
 <translation id="7535087603100972091">Valor</translation>
 <translation id="7537536606612762813">Obligatòria</translation>
-<translation id="7542403920425041731">Un cop confirmada, els detalls de la targeta es compartiran amb aquest lloc web.</translation>
 <translation id="7542995811387359312">L'emplenament automàtic de targetes de crèdit està desactivat perquè el formulari no utilitza una connexió segura.</translation>
 <translation id="7543525346216957623">Demana-ho al teu pare o a la teva mare</translation>
 <translation id="7546409722674205727">S'està iniciant <ph name="APP_NAME" /></translation>

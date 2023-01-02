@@ -3799,6 +3799,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pode editar os ficheiros de <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferencias para o almacenamento externo</translation>
 <translation id="4471354919263203780">Descargando ficheiros de recoñecemento de voz… <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Podes usar o idioma preferido da túa Conta de Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Axudar a mellorar o rendemento e as funcións de Chrome</translation>
 <translation id="4472575034687746823">Comezar</translation>
 <translation id="4474155171896946103">Engadir todas as pestanas a marcadores...</translation>
@@ -6734,6 +6735,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7227458944009118910">As aplicacións que se enumeran a continuación tamén poden xestionar as ligazóns do protocolo. As demais aplicacións solicitarán permiso.</translation>
 <translation id="7228056665272655255">Para configurar a impresión dixital, pídelle ao teu fillo ou filla que toque o sensor correspondente situado na esquina superior dereita do teclado. Os datos da súa impresión dixital almacenaranse de maneira segura neste dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla e inicio de sesión</translation>
+<translation id="7228854227189381547">Non cambiar</translation>
 <translation id="7230222852462421043">&amp;Restaurar ventá</translation>
 <translation id="7231260028442989757">Consulta as notificacións do teu teléfono, ignóraas ou respóndeas</translation>
 <translation id="7232750842195536390">Produciuse un erro ao cambiar o nome</translation>
@@ -7067,6 +7069,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7545466883021407599">Non se puido establecer a conexión co servidor. Comproba a conexión de rede e téntao de novo. Se segues tendo problemas, proba a reiniciar o Chromebook. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Advertencia: A túa configuración de <ph name="PRODUCT_NAME" /> almacenouse nunha unidade de rede. É posible que isto provoque reducións de velocidade, erros ou incluso a perda de datos.</translation>
 <translation id="7548856833046333824">Limoada</translation>
+<translation id="7549434883223124329">Queres cambiar o idioma do dispositivo?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Non se puido descargar <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Fixar no estante</translation>

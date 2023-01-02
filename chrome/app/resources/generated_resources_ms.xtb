@@ -3813,6 +3813,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4469762931504673593"><ph name="ORIGIN" /> boleh mengedit fail dalam <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Pilihan storan luar</translation>
 <translation id="4471354919263203780">Memuat turun fail pengecaman pertuturan... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Anda boleh menggunakan bahasa Google Account pilihan anda (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Bantu meningkatkan ciri dan prestasi Chrome</translation>
 <translation id="4472575034687746823">Bermula</translation>
 <translation id="4474155171896946103">Tanda halaman semua tab...</translation>
@@ -6750,6 +6751,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7227458944009118910">Apl yang disenaraikan di bawah dapat mengendalikan pautan protokol juga. Apl lain akan meminta kebenaran.</translation>
 <translation id="7228056665272655255">Untuk menyediakan cap jari, minta anak anda menyentuh penderia cap jari di penjuru kanan sebelah atas papan kekunci. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="7228523857728654909">Kunci skrin dan log masuk</translation>
+<translation id="7228854227189381547">Jangan tukar</translation>
 <translation id="7230222852462421043">&amp;Pulihkan Tetingkap</translation>
 <translation id="7231260028442989757">Lihat, ketepikan dan balas pemberitahuan telefon anda</translation>
 <translation id="7232750842195536390">Penamaan semula gagal</translation>
@@ -7083,6 +7085,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7545466883021407599">Tidak dapat menyambung kepada pelayan. Semak sambungan rangkaian anda, kemudian cuba lagi. Jika anda masih menghadapi masalah, cuba mulakan semula Chromebook anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Amaran: tetapan <ph name="PRODUCT_NAME" /> anda disimpan pada pemacu rangkaian. Perkara ini mungkin mengakibatkan keperlahanan, keranapan, malah kehilangan data.</translation>
 <translation id="7548856833046333824">Lemonad</translation>
+<translation id="7549434883223124329">Tukar bahasa peranti?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> muat turun tidak berjaya</translation>
 <translation id="7551643184018910560">Sematkan pada rak</translation>

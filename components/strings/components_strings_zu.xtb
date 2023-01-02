@@ -808,7 +808,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="299990983510665749">Ama-hatchback</translation>
 <translation id="3002501248619246229">Hlola ithileyi lemidiya yokufakwayo</translation>
 <translation id="3005723025932146533">Bonisa ikhophi elondoloziwe</translation>
-<translation id="3008447029300691911">Faka i-CVC ye-<ph name="CREDIT_CARD" />. Uma usuqinisekile, imininingwane yekhadi lakho izokwabiwa naleli sayithi.</translation>
 <translation id="3013291976881901233">Amadivayisi e-MIDI</translation>
 <translation id="301521992641321250">Kuvinjelwe ngokuzenzakalelayo</translation>
 <translation id="3016780570757425217">Yazi indawo yakho</translation>
@@ -2457,7 +2456,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="7243771829620208687">I-RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{Umeshi o-#}one{Amameshi angu-#}other{Amameshi angu-#}}</translation>
 <translation id="724691107663265825">Isayithi engaphambili iqukethe i-malware</translation>
-<translation id="724975217298816891">Faka idethi yokuphelelwa isikhathi kanye ne-CVC ye-<ph name="CREDIT_CARD" /> ukuze ubuyekeze imininingwane yekhadi lakho. Uma usuqinisekisile, imininingwane yekhadi lakho izokwabiwa naleli sayithi.</translation>
 <translation id="7251437084390964440">Ukulungiselelwa kwenethiwekhi akuthobelani nokujwayelekile kwe-ONC. Izingxenye zokulungiselelwa kungenzeka zingangenizwa.
 Imininingwane engeziwe:
 <ph name="DEBUG_INFO" /></translation>
@@ -2586,7 +2584,6 @@ Imininingwane engeziwe:
 <translation id="7534987659046836932">Imvilophu ye-C7</translation>
 <translation id="7535087603100972091">Inani</translation>
 <translation id="7537536606612762813">Iyadingeka</translation>
-<translation id="7542403920425041731">Uma usuqinisekisile, imininingwane yekhadi lakho izokwabiwa naleli sayithi.</translation>
 <translation id="7542995811387359312">Ukugcwaliswa kwekhadi lesikweletu okuzenzakalelayo kukhutshaziwe ngoba leli fomu alisebenzisi ukuxhumeka okuvikelekile.</translation>
 <translation id="7543525346216957623">Buza umzali wakho</translation>
 <translation id="7546409722674205727">I-<ph name="APP_NAME" /> iyaqalisa</translation>

@@ -1239,6 +1239,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2104166991923847969">Hotspot automaticky vypínat</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> – skryto</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonní číslo}few{# telefonní čísla}many{# telefonního čísla}other{# telefonních čísel}}</translation>
+<translation id="2110941575868943054">Je povoleno vyhledávat zařízení Bluetooth</translation>
 <translation id="211144231511833662">Vymazat typy</translation>
 <translation id="2111670510994270194">Nová karta napravo</translation>
 <translation id="2112554630428445878">Vítejte, <ph name="USERNAME" /></translation>
@@ -3030,6 +3031,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3756485814916578707">Odesílání obsahu obrazovky</translation>
 <translation id="3756578970075173856">Nastavit PIN</translation>
 <translation id="3756795331760037744">Povolte Asistentovi Google používat informace na obrazovce uživatele <ph name="SUPERVISED_USER_NAME" />, aby mu mohl pomáhat</translation>
+<translation id="3756806135608816820">Weby mohou žádat o vyhledání zařízení Bluetooth</translation>
 <translation id="3757733214359997190">Nebyly nalezeny žádné weby</translation>
 <translation id="375841316537350618">Stahování skriptu proxy...</translation>
 <translation id="3758842566811519622">Byly nastaveny soubory cookie</translation>
@@ -5002,6 +5004,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5600706100022181951">Ke stažení aktualizace bude použito <ph name="UPDATE_SIZE_MB" /> MB mobilních dat. Chcete pokračovat?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Zákaz připojovat se k zařízením MIDI</translation>
+<translation id="5601833336918638013">Nepovolovat webům vyhledávat zařízení Bluetooth</translation>
 <translation id="5602765853043467355">Vymazat z tohoto zařízení záložky, historii, hesla a další údaje</translation>
 <translation id="5605758115928394442">Odeslali jsme vám na telefon oznámení, abychom si ověřili, zda jste to skutečně vy.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Toto rozšíření je blokováno}few{Tato rozšíření jsou blokována}many{Tato rozšíření jsou blokována}other{Tato rozšíření jsou blokována}}</translation>
@@ -6460,6 +6463,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6960507406838246615">Je vyžadována aktualizace Linuxu</translation>
 <translation id="6960648667961844909">Řečové soubory pro jazyk <ph name="LANGUAGE" /> se nepodařilo stáhnout. Zkusíme je stáhnout později. Dokud soubory nebudou staženy, bude se řeč ke zpracování odesílat do Googlu.</translation>
 <translation id="696103774840402661">Ze zařízení <ph name="DEVICE_TYPE" /> byly trvale smazány všechny soubory a místní data všech uživatelů.</translation>
+<translation id="6961327401577924850">Weby vyhledávají zařízení Bluetooth obvykle kvůli funkcím, jako je nastavení nebo synchronizace nízkoenergetických lokátorů, zařízení ke sledování kondice a zdraví nebo chytrých žárovek</translation>
 <translation id="6963872466817251924">Zvýrazňovač textového kurzoru</translation>
 <translation id="6964390816189577014">Hrdina</translation>
 <translation id="6964760285928603117">Odebrat ze skupiny</translation>
@@ -8095,6 +8099,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8465444703385715657">Plugin <ph name="PLUGIN_NAME" /> potřebuje ke spuštění vaše povolení</translation>
 <translation id="8466417995783206254">Na této kartě se přehrává video v režimu obrazu v obraze</translation>
 <translation id="8467326454809944210">Vybrat jiný jazyk</translation>
+<translation id="8468087214092422866">Není povoleno vyhledávat zařízení Bluetooth</translation>
 <translation id="8470513973197838199">Uložená hesla z webu <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Weby se obvykle připojují k zařízením USB kvůli funkcím, jako je tisk dokumentu nebo uložení obsahu na paměťové zařízení</translation>
 <translation id="8471959340398751476">Slevy jsou vypnuté. Můžete je zapnout v nabídce přizpůsobení</translation>

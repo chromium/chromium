@@ -808,7 +808,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="299990983510665749">Kombilimuzine</translation>
 <translation id="3002501248619246229">Preverite medije na vhodnem pladnju</translation>
 <translation id="3005723025932146533">Pokaži shranjeno kopijo</translation>
-<translation id="3008447029300691911">Vnesite CVC za <ph name="CREDIT_CARD" />. Ko potrdite, bodo temu spletnemu mestu razkriti podatki o vaši kartici.</translation>
 <translation id="3013291976881901233">Naprave MIDI</translation>
 <translation id="301521992641321250">Samodejno blokirano</translation>
 <translation id="3016780570757425217">podatke o vaši lokaciji</translation>
@@ -2460,7 +2459,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# ujemanje}one{# ujemanje}two{# ujemanji}few{# ujemanja}other{# ujemanj}}</translation>
 <translation id="724691107663265825">Spletno mesto z zlonamerno programsko opremo</translation>
-<translation id="724975217298816891">Vnesite datum poteka in CVC za <ph name="CREDIT_CARD" />, da posodobite podatke o kartici. Ko potrdite, bodo temu spletnemu mestu razkriti podatki o kartici.</translation>
 <translation id="7251437084390964440">Omrežna konfiguracija ne ustreza standardu ONC. Deli konfiguracije morda niso bili uvoženi.
 Dodatne podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Dodatne podrobnosti:
 <translation id="7534987659046836932">Kuverta C7</translation>
 <translation id="7535087603100972091">Vrednost</translation>
 <translation id="7537536606612762813">Obvezen</translation>
-<translation id="7542403920425041731">Ko potrdite, bodo temu spletnemu mestu razkriti podatki o kartici.</translation>
 <translation id="7542995811387359312">Samodejno izpolnjevanje podatkov o kreditni kartici je onemogočeno, ker ta obrazec ne uporablja varne povezave.</translation>
 <translation id="7543525346216957623">Prosi starša</translation>
 <translation id="7546409722674205727">Zagon aplikacije <ph name="APP_NAME" /></translation>

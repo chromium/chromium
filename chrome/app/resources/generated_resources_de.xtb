@@ -1234,6 +1234,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2104166991923847969">Hotspot automatisch deaktivieren</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ausgeblendet</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# Telefonnummern}}</translation>
+<translation id="2110941575868943054">Suchen nach Bluetooth-Geräten erlauben</translation>
 <translation id="211144231511833662">Häkchen für Typen entfernen</translation>
 <translation id="2111670510994270194">Neuer Tab rechts</translation>
 <translation id="2112554630428445878">Willkommen, <ph name="USERNAME" /></translation>
@@ -3025,6 +3026,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3756485814916578707">Bildschirm wird gestreamt</translation>
 <translation id="3756578970075173856">PIN festlegen</translation>
 <translation id="3756795331760037744">Google Assistant erlauben, Informationen auf dem Bildschirm von <ph name="SUPERVISED_USER_NAME" /> zu verwenden, um besser helfen zu können</translation>
+<translation id="3756806135608816820">Websites dürfen darum bitten, nach Bluetooth-Geräten zu suchen</translation>
 <translation id="3757733214359997190">Keine Websites gefunden</translation>
 <translation id="375841316537350618">Proxy-Skript wird heruntergeladen...</translation>
 <translation id="3758842566811519622">Cookies gesetzt</translation>
@@ -3795,6 +3797,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kann Dateien in "<ph name="FOLDERNAME" />" bearbeiten</translation>
 <translation id="4470957202018033307">Einstellungen für externe Speichergeräte</translation>
 <translation id="4471354919263203780">Spracherkennungsdateien werden heruntergeladen... <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Du kannst deine bevorzugte Sprache für dein Google-Konto verwenden (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Helfen, die Funktionen und die Leistung von Chrome zu verbessern</translation>
 <translation id="4472575034687746823">Jetzt starten</translation>
 <translation id="4474155171896946103">Alle Tabs als Lesezeichen speichern...</translation>
@@ -4998,6 +5001,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5600706100022181951">Der Download des Updates verbraucht <ph name="UPDATE_SIZE_MB" /> MB an mobilen Daten. Möchtest du fortfahren?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Dürfen keine Verbindung mit MIDI-Geräten herstellen</translation>
+<translation id="5601833336918638013">Websites dürfen nicht darum bitten, nach Bluetooth-Geräten zu suchen</translation>
 <translation id="5602765853043467355">Lesezeichen, Verlauf, Passwörter und weitere Daten von diesem Gerät löschen</translation>
 <translation id="5605758115928394442">An dein Smartphone wurde eine Benachrichtigung gesendet, um deine Identität zu bestätigen.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung ist blockiert}other{Diese Erweiterungen sind blockiert}}</translation>
@@ -6452,6 +6456,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6960507406838246615">Linux-Update erforderlich</translation>
 <translation id="6960648667961844909">Sprachdateien auf <ph name="LANGUAGE" /> konnten nicht heruntergeladen werden. Der Download wird später versucht. Sprachaufnahmen werden zur Verarbeitung an Google gesendet, bis der Download abgeschlossen ist.</translation>
 <translation id="696103774840402661">Alle Dateien und lokalen Daten für alle Nutzer auf diesem <ph name="DEVICE_TYPE" /> wurden dauerhaft gelöscht.</translation>
+<translation id="6961327401577924850">Websites verwenden Bluetooth-Geräte normalerweise für Funktionen wie das Einrichten oder Synchronisieren eines LE-Beacons, eines Gesundheits- oder Fitnesstrackers oder einer intelligenten Lampe</translation>
 <translation id="6963872466817251924">Textcursor hervorheben</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Aus Gruppe entfernen</translation>
@@ -6728,6 +6733,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7227458944009118910">Die unten aufgeführten Apps können auch Protokolllinks verarbeiten. Für andere Apps ist eine Berechtigung erforderlich.</translation>
 <translation id="7228056665272655255">Bitte dein Kind, seinen Finger auf den Fingerabdrucksensor rechts oben an der Tastatur zu legen, um den Fingerabdruck einzurichten. Sein Fingerabdruck wird sicher gespeichert und verlässt dieses <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="7228523857728654909">Bildschirmsperre und Anmeldung</translation>
+<translation id="7228854227189381547">Nicht wechseln</translation>
 <translation id="7230222852462421043">Fenster wiederherstellen</translation>
 <translation id="7231260028442989757">Smartphone-Benachrichtigungen ansehen, schließen und beantworten</translation>
 <translation id="7232750842195536390">Fehler beim Umbenennen</translation>
@@ -7061,6 +7067,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7545466883021407599">Keine Verbindung mit dem Server möglich. Prüfe deine Netzwerkverbindung und versuche es noch einmal. Falls weiterhin Probleme auftreten, versuche, dein Chromebook neu zu starten. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Warnung: Deine <ph name="PRODUCT_NAME" />-Einstellungen werden auf einem Netzlaufwerk gespeichert. Dies kann zu einer Verlangsamung, zu Abstürzen oder sogar zu Datenverlust führen.</translation>
 <translation id="7548856833046333824">Cocktail</translation>
+<translation id="7549434883223124329">Gerätesprache ändern?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Fehler beim Download von <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">An Ablage anpinnen</translation>
@@ -8087,6 +8094,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8465444703385715657">Zum Ausführen von <ph name="PLUGIN_NAME" /> ist deine Genehmigung erforderlich</translation>
 <translation id="8466417995783206254">Auf diesem Tab wird ein Video im Bild-im-Bild-Modus abgespielt.</translation>
 <translation id="8467326454809944210">Andere Sprache auswählen</translation>
+<translation id="8468087214092422866">Suchen nach Bluetooth-Geräten nicht erlauben</translation>
 <translation id="8470513973197838199">Gespeicherte Passwörter für <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Websites verwenden normalerweise USB-Geräte für Funktionen wie das Drucken eines Dokuments oder das Speichern auf einem Speichergerät</translation>
 <translation id="8471959340398751476">Rabatte sind deaktiviert. Du kannst diese im Anpassungsmenü aktivieren.</translation>

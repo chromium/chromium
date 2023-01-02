@@ -808,7 +808,6 @@
 <translation id="299990983510665749">Автомобили типа "хетчбэк"</translation>
 <translation id="3002501248619246229">Проверить данные входного лотка</translation>
 <translation id="3005723025932146533">Открыть сохраненную копию</translation>
-<translation id="3008447029300691911">Введите CVC-код карты <ph name="CREDIT_CARD" />. После этого ее данные будут переданы сайту.</translation>
 <translation id="3013291976881901233">MIDI-устройства</translation>
 <translation id="301521992641321250">Заблокировано автоматически</translation>
 <translation id="3016780570757425217">доступ к данным о вашем местоположении</translation>
@@ -2459,7 +2458,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# совпадение}one{# совпадение}few{# совпадения}many{# совпадений}other{# совпадения}}</translation>
 <translation id="724691107663265825">Осторожно, вредоносное ПО!</translation>
-<translation id="724975217298816891">Введите срок действия и CVC-код карты <ph name="CREDIT_CARD" />. После этого ее данные будут переданы сайту.</translation>
 <translation id="7251437084390964440">Некоторые элементы сетевой конфигурации невозможно импортировать, поскольку она не соответствует стандарту ONC.
 Подробнее:
 <ph name="DEBUG_INFO" /></translation>
@@ -2588,7 +2586,6 @@
 <translation id="7534987659046836932">Конверт C7</translation>
 <translation id="7535087603100972091">Значение</translation>
 <translation id="7537536606612762813">Обязательная</translation>
-<translation id="7542403920425041731">После этого данные вашей карты будут переданы сайту.</translation>
 <translation id="7542995811387359312">Автозаполнение отключено – незащищенное подключение.</translation>
 <translation id="7543525346216957623">Обратитесь за помощью к родителю</translation>
 <translation id="7546409722674205727">Запуск приложения "<ph name="APP_NAME" />"…</translation>

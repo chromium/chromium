@@ -3798,6 +3798,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4469762931504673593"><ph name="ORIGIN" /> puede editar los archivos que haya en <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferencias de almacenamiento externo</translation>
 <translation id="4471354919263203780">Descargando archivos de reconocimiento de voz... <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Puedes usar el idioma preferido de tu cuenta de Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
 <translation id="4472575034687746823">Empezar</translation>
 <translation id="4474155171896946103">Añadir todas las pestañas a marcadores...</translation>
@@ -6734,6 +6735,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7227458944009118910">Las aplicaciones que se indican abajo también pueden procesar enlaces de protocolo. Otras aplicaciones pedirán permiso.</translation>
 <translation id="7228056665272655255">Para configurar la huella digital, pídele a tu hijo/a que toque el sensor de huellas digitales, que está en la esquina superior derecha del teclado. Los datos de la huella digital de tu hijo/a se almacenan de forma segura y nunca salen de este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla e inicio de sesión</translation>
+<translation id="7228854227189381547">No cambiar</translation>
 <translation id="7230222852462421043">&amp;Restaurar ventana</translation>
 <translation id="7231260028442989757">Consulta, descarta y responde notificaciones de tu teléfono</translation>
 <translation id="7232750842195536390">No se ha podido cambiar el nombre</translation>
@@ -7067,6 +7069,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7545466883021407599">No se ha podido conectar con el servidor. Revisa tu conexión de red e inténtalo de nuevo. Si sigues teniendo problemas, prueba a reiniciar tu Chromebook. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Advertencia: la configuración de <ph name="PRODUCT_NAME" /> se almacena en una unidad de red, lo que puede provocar ralentizaciones, fallos e incluso pérdidas de datos.</translation>
 <translation id="7548856833046333824">Cóctel</translation>
+<translation id="7549434883223124329">¿Cambiar idioma del dispositivo?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> descargado correctamente</translation>
 <translation id="7551643184018910560">Fijar en la estantería</translation>

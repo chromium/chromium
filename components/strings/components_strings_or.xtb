@@ -808,7 +808,6 @@
 <translation id="299990983510665749">ହାଚବ୍ୟାକ</translation>
 <translation id="3002501248619246229">ଇନପୁଟ୍ ଟ୍ରେ ମିଡିଆ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3005723025932146533">ସେଭ୍ ହୋଇଥିବା କପି ଦେଖାନ୍ତୁ</translation>
-<translation id="3008447029300691911"><ph name="CREDIT_CARD" />ର CVC ଲେଖନ୍ତୁ। ଆପଣ ଥରେ ସୁନିଶ୍ଚିତ କରିବା ପରେ, ଆପଣଙ୍କର କାର୍ଡର ବିବରଣୀ ଏହି ସାଇଟ୍‌ ସହିତ ସେୟାର୍‌ କରାଯିବ।</translation>
 <translation id="3013291976881901233">MIDI ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="301521992641321250">ସ୍ୱଚାଳିତ ଭାବେ ବ୍ଲକ୍ କରାଗଲା</translation>
 <translation id="3016780570757425217">ଆପଣଙ୍କର ଲୋକେସନ୍‌ ଜାଣନ୍ତୁ</translation>
@@ -2457,7 +2456,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{#ଟି ମେଳ}other{#ଟି ମେଳ}}</translation>
 <translation id="724691107663265825">ସାଇଟ୍‌ରେ ମାଲୱେର୍ ଅଛି</translation>
-<translation id="724975217298816891">ଆପଣଙ୍କର କ୍ରେଡିଟ୍ କାର୍ଡ ବିବରଣୀ ଅପ୍‌ଡେଟ୍ କରିବାକୁ <ph name="CREDIT_CARD" /> ପାଇଁ ମିଆଦ ସମାପ୍ତି ତାରିଖ ଏବଂ CVC ଲେଖନ୍ତୁ। ଆପଣ ଥରେ ସୁନିଶ୍ଚିତ କରିବା ପରେ ଆପଣଙ୍କର କାର୍ଡ ବିବରଣୀ ଏହି ସାଇଟ୍ ସହ ସେୟାର୍ କରାଯିବ।</translation>
 <translation id="7251437084390964440">ନେଟ୍‍ୱର୍କ କନ୍‍ଫିଗରେସନ୍‌ ONC ମାନାଙ୍କ ଅନୁୟାୟୀ ନାହିଁ। କନ୍‍ଫିଗରେସନ୍‌ର କିଛି ଅଂଶ ଇମ୍ପୋର୍ଟ କରାଯାଇନପାରେ।
 ଅତିରିକ୍ତ ବିବରଣୀ:
 <ph name="DEBUG_INFO" /></translation>
@@ -2586,7 +2584,6 @@
 <translation id="7534987659046836932">ଏନଭେଲପ C7</translation>
 <translation id="7535087603100972091">ମୂଲ୍ୟ</translation>
 <translation id="7537536606612762813">ବାଧ୍ୟତାମୂଳକ</translation>
-<translation id="7542403920425041731">ଆପଣ ଥରେ ସୁନିଶ୍ଚିତ କରିବାମାତ୍ରେ, ଆପଣଙ୍କର କାର୍ଡ ବିବରଣୀ ଏହି ସାଇଟ୍‌ରେ ସେୟାର୍‌ କରାଯିବ।</translation>
 <translation id="7542995811387359312">ସ୍ଵଚାଳିତ ଭାବେ କ୍ରେଡିଟ୍ କାର୍ଡ ପୂରଣକୁ ଅକ୍ଷମ କରନ୍ତୁ କାରଣ ଏହି ଫର୍ମ ଏକ ସୁରକ୍ଷିତ ସଂଯୋଗ ବ୍ୟବହାର କରେ ନାହିଁ।</translation>
 <translation id="7543525346216957623">ନିଜର ଅଭିଭାବକଙ୍କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ଆରମ୍ଭ ହେଉଛି</translation>

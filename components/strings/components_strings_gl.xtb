@@ -808,7 +808,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="299990983510665749">Vehículos compactos</translation>
 <translation id="3002501248619246229">Comproba o soporte da bandexa de entrada</translation>
 <translation id="3005723025932146533">Mostrar copia gardada</translation>
-<translation id="3008447029300691911">Introduce o código CVC da tarxeta <ph name="CREDIT_CARD" />. Unha vez que confirmes os datos, os detalles da tarxeta compartiranse con este sitio.</translation>
 <translation id="3013291976881901233">Dispositivos MIDI</translation>
 <translation id="301521992641321250">Bloqueado automaticamente</translation>
 <translation id="3016780570757425217">Coñecer a túa localización</translation>
@@ -2460,7 +2459,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# coincidencia}other{# coincidencias}}</translation>
 <translation id="724691107663265825">O sitio ao que te dirixes contén software malicioso</translation>
-<translation id="724975217298816891">Introduce a data de caducidade e o código CVC da tarxeta <ph name="CREDIT_CARD" /> para actualizar os datos. Unha vez confirmados, os detalles da tarxeta compartiranse con este sitio.</translation>
 <translation id="7251437084390964440">A configuración da rede non cumpre co estándar ONC. É posible que non se importen partes da configuración.
 Detalles adicionais:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Detalles adicionais:
 <translation id="7534987659046836932">Sobre C7</translation>
 <translation id="7535087603100972091">Valor</translation>
 <translation id="7537536606612762813">Obrigatoria</translation>
-<translation id="7542403920425041731">Unha vez que confirmes a información, os datos da tarxeta compartiranse con este sitio.</translation>
 <translation id="7542995811387359312">A opción de autocompletado da tarxeta de crédito está desactivada porque este formulario non utiliza unha conexión segura.</translation>
 <translation id="7543525346216957623">Pregunta ao teu pai ou nai</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>

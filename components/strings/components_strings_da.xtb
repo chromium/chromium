@@ -808,7 +808,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="299990983510665749">Hatchbacks</translation>
 <translation id="3002501248619246229">Tjek det, der er lagt i papirbakken</translation>
 <translation id="3005723025932146533">Vis gemt kopi</translation>
-<translation id="3008447029300691911">Angiv kontrolkoden for <ph name="CREDIT_CARD" />. Når du bekræfter, deles dine kortoplysninger med dette website.</translation>
 <translation id="3013291976881901233">MIDI-enheder</translation>
 <translation id="301521992641321250">Automatisk blokering</translation>
 <translation id="3016780570757425217">Kende din lokation</translation>
@@ -2460,7 +2459,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# resultat}one{# resultat}other{# resultater}}</translation>
 <translation id="724691107663265825">Det website, du er på vej til, indeholder malware</translation>
-<translation id="724975217298816891">Opdater dine kortoplysninger ved at indtaste udløbsdatoen og kontrolkoden for <ph name="CREDIT_CARD" />. Når du bekræfter, deles dine kortoplysninger med dette website.</translation>
 <translation id="7251437084390964440">Netværkskonfigurationen overholder ikke ONC-standarden. Dele af konfiguration kan muligvis ikke importeres.
 Yderligere oplysninger:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Yderligere oplysninger:
 <translation id="7534987659046836932">Konvolut C7</translation>
 <translation id="7535087603100972091">Værdi</translation>
 <translation id="7537536606612762813">Obligatorisk</translation>
-<translation id="7542403920425041731">Når du har bekræftet, deles dine kortoplysninger med dette website.</translation>
 <translation id="7542995811387359312">Automatisk udfyldning af kreditkort er deaktiveret, fordi formularen ikke bruger en sikker forbindelse.</translation>
 <translation id="7543525346216957623">Spørg en af dine forældre</translation>
 <translation id="7546409722674205727">Starter <ph name="APP_NAME" /></translation>

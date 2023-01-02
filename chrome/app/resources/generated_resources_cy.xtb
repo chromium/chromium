@@ -1252,6 +1252,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2104166991923847969">Diffodd y poethfan yn awtomatig</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> wedi'i guddio</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Rhif ffôn}zero{# rhif ffôn}two{# rif ffôn}few{# rhif ffôn}many{# rhif ffôn}other{# rhif ffôn}}</translation>
+<translation id="2110941575868943054">Caniateir i chwilio am ddyfeisiau Bluetooth</translation>
 <translation id="211144231511833662">Clirio Mathau</translation>
 <translation id="2111670510994270194">Tab newydd i'r dde</translation>
 <translation id="2112554630428445878">Croeso, <ph name="USERNAME" /></translation>
@@ -3046,6 +3047,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3756485814916578707">Wrthi'n castio'r sgrîn</translation>
 <translation id="3756578970075173856">Gosod PIN</translation>
 <translation id="3756795331760037744">Caniatáu i Google Assistant ddefnyddio'r wybodaeth ar sgrîn <ph name="SUPERVISED_USER_NAME" /> i helpu</translation>
+<translation id="3756806135608816820">Gall gwefannau ofyn i edrych am ddyfeisiau Bluetooth</translation>
 <translation id="3757733214359997190">Ni chanfuwyd unrhyw wefannau</translation>
 <translation id="375841316537350618">Wrthi'n lawrlwytho sgript dirprwy weinydd...</translation>
 <translation id="3758842566811519622">Mae cwcis wedi'u gosod</translation>
@@ -5021,6 +5023,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5600706100022181951">Bydd diweddariad yn cael ei lawrlwytho gan ddefnyddio <ph name="UPDATE_SIZE_MB" /> MB o ddata symudol. Hoffech chi barhau?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Ni chaniateir cysylltu â dyfeisiau MIDI</translation>
+<translation id="5601833336918638013">Peidio â chaniatáu i wefannau chwilio am ddyfeisiau Bluetooth</translation>
 <translation id="5602765853043467355">Clirio nodau tudalen, hanes, cyfrineiriau a rhagor o'r ddyfais hon</translation>
 <translation id="5605758115928394442">Anfonwyd hysbysiad i'ch ffôn i gadarnhau mai chi sydd yno.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Mae'r estyniad hwn wedi'i rwystro}zero{Mae'r estyniadau hyn wedi'u rhwystro}two{Mae'r estyniadau hyn wedi'u rhwystro}few{Mae'r estyniadau hyn wedi'u rhwystro}many{Mae'r estyniadau hyn wedi'u rhwystro}other{Mae'r estyniadau hyn wedi'u rhwystro}}</translation>
@@ -6486,6 +6489,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6960507406838246615">Angen diweddariad Linux</translation>
 <translation id="6960648667961844909">Methu â lawrlwytho ffeiliau lleferydd <ph name="LANGUAGE" />. Ceisir lawrlwytho yn nes ymlaen. Anfonir lleferydd at Google i'w brosesu nes bod y lawrlwythiad wedi'i gwblhau.</translation>
 <translation id="696103774840402661">Mae'r holl ffeiliau a data lleol ar gyfer yr holl ddefnyddwyr ar y <ph name="DEVICE_TYPE" /> hwn wedi'u dileu yn barhaol.</translation>
+<translation id="6961327401577924850">Mae gwefannau fel arfer yn chwilio am ddyfeisiau Bluetooth ar gyfer nodweddion megis gosod neu gysoni golau ynni isel, olrheiniwr iechyd neu ffitrwydd, neu fwlb golau smart</translation>
 <translation id="6963872466817251924">Amlygwr cyrchwr testun</translation>
 <translation id="6964390816189577014">Arwr</translation>
 <translation id="6964760285928603117">Tynnu o'r Grŵp</translation>
@@ -8122,6 +8126,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8465444703385715657">Mae angen eich caniatâd ar <ph name="PLUGIN_NAME" /> i redeg</translation>
 <translation id="8466417995783206254">Mae'r tab hwn yn chwarae fideo yn y modd llun mewn llun.</translation>
 <translation id="8467326454809944210">Dewis iaith arall</translation>
+<translation id="8468087214092422866">Ni chaniateir i chwilio am ddyfeisiau Bluetooth</translation>
 <translation id="8470513973197838199">Mae cyfrineiriau wedi'u cadw ar gyfer <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Mae gwefannau fel arfer yn cysylltu â dyfeisiau USB ar gyfer nodweddion megis argraffu dogfen neu gynilo i ddyfais storio</translation>
 <translation id="8471959340398751476">Mae gostyngiadau wedi'u ddiffodd. Gallwch eu troi ymlaen yn y ddewislen personoleiddio</translation>

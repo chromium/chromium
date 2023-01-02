@@ -808,7 +808,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="299990983510665749">Mga hatchback</translation>
 <translation id="3002501248619246229">Suriin ang input tray media</translation>
 <translation id="3005723025932146533">Ipakita ang naka-save na kopya</translation>
-<translation id="3008447029300691911">Ilagay ang CVC para sa <ph name="CREDIT_CARD" />. Kapag nagkumpirma ka na, ibabahagi ang mga detalye ng iyong card sa site na ito.</translation>
 <translation id="3013291976881901233">Mga MIDI device</translation>
 <translation id="301521992641321250">Awtomatikong na-block</translation>
 <translation id="3016780570757425217">Alamin ang iyong lokasyon</translation>
@@ -2460,7 +2459,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# tugma}one{# tugma}other{# na tugma}}</translation>
 <translation id="724691107663265825">Naglalaman ng malware ang site</translation>
-<translation id="724975217298816891">Ilagay ang petsa ng expiration at CVC para sa <ph name="CREDIT_CARD" /> upang i-update ang mga detalye ng iyong card. Kapag nagkumpirma ka na, ibabahagi ang mga detalye ng iyong card sa site na ito.</translation>
 <translation id="7251437084390964440">Hindi sumusunod ang configuration ng network sa pamantayan ng ONC. Hindi maaaring i-import ang mga bahagi ng configuration.
 Mga karagdagang detalye:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Mga karagdagang detalye:
 <translation id="7534987659046836932">Envelope C7</translation>
 <translation id="7535087603100972091">Value</translation>
 <translation id="7537536606612762813">Kinakailangan</translation>
-<translation id="7542403920425041731">Kapag nagkumpirma ka, ibabahagi ang mga detalye ng iyong card sa site na ito.</translation>
 <translation id="7542995811387359312">Hindi pinagana ang awtomatikong pagpuno ng credit card dahil ang form na ito ay hindi gumagamit ng secure na koneksyon.</translation>
 <translation id="7543525346216957623">Hilingin sa iyong magulang</translation>
 <translation id="7546409722674205727">Magsisimula <ph name="APP_NAME" /></translation>

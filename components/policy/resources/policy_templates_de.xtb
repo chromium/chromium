@@ -867,6 +867,7 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, läuft der Host für Remote-Unterstützung nur im Nutzerbereich. Remote-Nutzer können nicht mit geöffneten Fenstern auf dem Desktop arbeiten.</translation>
 <translation id="1837165432382702436">Seitenhöhe in Mikrometern</translation>
+<translation id="1838910874018595451">Voreingestellte Konfiguration für Kerberos-Tickets</translation>
 <translation id="1843117931376765605">Aktualisierungsrate für Nutzerrichtlinien</translation>
 <translation id="1844620919405873871">Konfiguriert Richtlinien zum schnellen Entsperren.</translation>
 <translation id="1844972978764975668">Anfragen an einen Google-Server zulassen, um einen exakten Zeitstempel abzufragen</translation>
@@ -886,6 +887,7 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />“, sofern sie konfiguriert ist. Andernfalls wird die persönliche Einstellung des Nutzers verwendet.
 
       URLs in dieser Richtlinie dürfen nicht im Widerspruch zu denen stehen, die über „<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />“ konfiguriert wurden. Sonst hat diese Richtlinie Vorrang vor „<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />“.</translation>
+<translation id="1858775210076906272">Voreingestellte Kerberos-Konfiguration</translation>
 <translation id="1861206724856734193">Legt eine Liste mit Regeln zur Vermeidung von Datenlecks fest.</translation>
 <translation id="1862267110714201519">Funktion für ghost-Dialogfelder deaktivieren.</translation>
 <translation id="1865417998205858223">Hauptberechtigungen</translation>
@@ -1262,6 +1264,7 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
 <translation id="2204753382813641270">Automatisches Ausblenden der Ablage verwalten</translation>
 <translation id="2208976000652006649">Parameter für URL der Suche, die POST verwendet</translation>
 <translation id="2213059592185933570">Erstellung von Roaming-Profilen aktivieren</translation>
+<translation id="2213342458177721585">Dadurch wird das Hindi-Inscript-Layout auf dem Gerät aktiviert.</translation>
 <translation id="2215238871726750562">Wenn die Richtlinie auf "True" gesetzt ist, wird verhindert, dass das Browserfenster zu Beginn der Sitzung geöffnet wird.
 
       Ist sie auf "False" gesetzt oder nicht konfiguriert, wird das Browserfenster geöffnet.
@@ -1727,6 +1730,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2664682171745499686">Warnungen zu nachgeahmten URLs auf Domains unterdrücken</translation>
 <translation id="2665422249821137126">Großen Cursor auf der Anmeldeseite aktivieren</translation>
 <translation id="2667894101494585925">Abruf von Daten zur Optimierung aktivieren</translation>
+<translation id="2669157090883237118">Dadurch wird die empfohlene Konfiguration von <ph name="PRODUCT_OS_NAME" /> nicht geändert.</translation>
 <translation id="2672012807430078509">Steuerung, durch die NTLM als Authentifizierungsprotokoll für SMB-Bereitstellungen aktiviert wird</translation>
 <translation id="2673363037046384711">Der Endnutzer kann den Modus für hohe Effizienz aktivieren oder deaktivieren.</translation>
 <translation id="2678503605767349615">Erforderliche geräteübergreifende Clientzertifikate</translation>
@@ -2577,6 +2581,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Unter https://support.google.com/chrome/a?p=Supported_directory_variables findest du eine Liste mit Variablen, aus denen du wählen kannst.
 
       Sollte diese Richtlinie nicht konfiguriert sein, kommt der Standardprofilpfad zum Einsatz, wobei der Nutzer dies mit dem Befehlszeilenparameter "--user-data-dir" ändern kann.</translation>
+<translation id="3380801667330555918">Voreingestellte Konfiguration für Kerberos-Tickets ändern</translation>
 <translation id="338149029069528354">Lokale Nutzerdaten nicht löschen</translation>
 <translation id="3381968327636295719">Standardmäßig Host-Browser verwenden</translation>
 <translation id="3387211681524224831">Wenn die Richtlinie aktiviert ist, wird der Browserverlauf nicht gespeichert, die Tab-Synchronisierung ist deaktiviert und Nutzer können diese Einstellung nicht ändern.
@@ -3947,6 +3952,11 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
           Ist die Richtlinie nicht konfiguriert, ist "Mono-Audio" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="4768446404233019970">Cipher Suites von 3DES in TLS aktivieren</translation>
 <translation id="4770334626033858263">Konfigurationseinstellungen, die bestimmen, wie der Eltern-Zugangscode generiert und bestätigt wird.</translation>
+<translation id="4773997835955617342">Ändert die vorgeschlagene <ph name="KRB5_CONFIG" />-Konfiguration für die neuen, manuell erstellten Tickets.
+
+      Wenn diese Richtlinie aktiviert ist, wird der Wert der Richtlinie „KerberosCustomPrefilledConfig“ als vorgeschlagene Konfiguration angewendet und im Authentifizierungsdialogfeld von Kerberos unter „Erweitert“ angezeigt.
+
+      Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird stattdessen die empfohlene <ph name="PRODUCT_OS_NAME" />-Konfiguration angewendet. Sie wird auch im Authentifizierungsdialogfeld von Kerberos im Bereich „Erweitert“ angezeigt.</translation>
 <translation id="4774030790286815890">Wenn diese Einstellung aktiviert ist, können Nutzer der Verwendung von Phone Hub zustimmen. Dadurch können sie auf einem Chrome OS-Gerät mit ihrem Smartphone interagieren.
 
       Ist diese Einstellung deaktiviert, können Nutzer der Verwendung von Phone Hub nicht zustimmen.
@@ -6062,6 +6072,8 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 
       Hiermit werden die Parameter angegeben, die beim Starten von <ph name="PRODUCT_NAME" /> angewendet werden sollen. Sie gelten nur auf dem Anmeldebildschirm. Über diese Richtlinie festgelegte Parameter haben keine Auswirkungen auf Nutzersitzungen.</translation>
 <translation id="6857240169209507953">Ausführung von <ph name="BOREALIS_NAME" /> auf einem Gerät verhindern</translation>
+<translation id="6857372417233723544">Ist diese Richtlinie festgelegt, wird das InScript-Layout für Hindi unter <ph name="PRODUCT_OS_NAME" /> aktiviert.
+Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verfügbar. Damit die Änderungen wirksam werden, ist ein Neustart erforderlich.</translation>
 <translation id="685769593149966548">Strikt eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 oder höher</translation>
 <translation id="68818134518270542">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
@@ -6983,6 +6995,7 @@ werden abgelehnt.</translation>
 
           Wird sie nicht konfiguriert, werden die Tastenkombinationen für Bedienungshilfen auf dem Anmeldebildschirm standardmäßig aktiviert.</translation>
 <translation id="7777535871204167559">Externe Speichergeräte nur schreibgeschützt verwenden</translation>
+<translation id="7781452670568828399">Dadurch wird die empfohlene <ph name="PRODUCT_OS_NAME" />-Konfiguration geändert.</translation>
 <translation id="7784062550705119230">Wenn <ph name="PRINTERS_ALLOWLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer verwenden können. Den Nutzern stehen nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.</translation>
 <translation id="7788511847830146438">Nach Profil</translation>
 <translation id="7788632499792081231">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, in der Websites angegeben werden, denen die Berechtigung zur Verwendung der Zwischenablage gewährt wird. Das umfasst nicht alle Aktionen in der Zwischenablage, die auf Websites erfolgen, deren URL-Muster mit den angegebenen übereinstimmen. Nutzer können z. B. dennoch Inhalte über Tastenkombinationen kopieren, weil sich die Berechtigung zur Verwendung der Zwischenablage nicht auf diesen Vorgang bezieht.

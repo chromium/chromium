@@ -1245,6 +1245,7 @@
 <translation id="2104166991923847969">Сүлжээний цэгийг автоматаар унтраана</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" />-г нуусан</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Утасны дугаар}other{# утасны дугаар}}</translation>
+<translation id="2110941575868943054">Bluetooth төхөөрөмж хайхыг зөвшөөрсөн</translation>
 <translation id="211144231511833662">Төхөөрөмжийн төрлүүдийг арилгах</translation>
 <translation id="2111670510994270194">Шинэ табыг баруун тийш нь</translation>
 <translation id="2112554630428445878">Тавтай морилно уу, <ph name="USERNAME" /></translation>
@@ -3039,6 +3040,7 @@
 <translation id="3756485814916578707">Дэлгэцийг дамжуулж байна</translation>
 <translation id="3756578970075173856">ПИН тохируулах</translation>
 <translation id="3756795331760037744">Google Туслахад <ph name="SUPERVISED_USER_NAME" />-н дэлгэц дээрх мэдээллийг ашиглан туслахыг зөвшөөрнө үү</translation>
+<translation id="3756806135608816820">Сайтууд Bluetooth төхөөрөмж хайхыг хүсэх боломжтой</translation>
 <translation id="3757733214359997190">Сайт олдсонгүй</translation>
 <translation id="375841316537350618">Прокси бичвэрийг татаж авч байна...</translation>
 <translation id="3758842566811519622">Күүкийг тохируулсан</translation>
@@ -5013,6 +5015,7 @@
 <translation id="5600706100022181951">Шинэчлэлтийг <ph name="UPDATE_SIZE_MB" /> МБ эсвэл мобайл датагаар татна. Та үргэлжлүүлэх үү?</translation>
 <translation id="5601503069213153581">ПИН</translation>
 <translation id="5601823921345337195">MIDI төхөөрөмжүүдэд холбогдохыг зөвшөөрөөгүй</translation>
+<translation id="5601833336918638013">Сайтуудад Bluetooth төхөөрөмж хайхыг бүү зөвшөөр</translation>
 <translation id="5602765853043467355">Энэ төхөөрөмжөөс хавчуурга, түүх, нууц үг болон бусад зүйлийг устгах</translation>
 <translation id="5605758115928394442">Таныг мөн эсэхийг баталгаажуулах зорилгоор таны утсанд мэдэгдэл илгээсэн болно.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Энэ өргөтгөлийг блоклосон байна}other{Эдгээр өргөтгөлийг блоклосон байна}}</translation>
@@ -6470,6 +6473,7 @@
 <translation id="6960507406838246615">Linux-н шинэчлэлт шаардлагатай</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татаж чадсангүй. Таталтыг дараа оролдоно. Таталтыг дуусах хүртэл яриаг Google-д боловсруулахаар илгээсэн.</translation>
 <translation id="696103774840402661">Энэ <ph name="DEVICE_TYPE" /> дээрх бүх хэрэглэгчийн бүх файл болон дотоод өгөгдлийг бүрмөсөн устгасан.</translation>
+<translation id="6961327401577924850">Сайтууд ихэвчлэн бага эрчим хүчний дохионы цамхаг, эрүүл мэнд, фитнесийн хянагч эсвэл ухаалаг гэрлийн чийдэн тохируулах, синк хийх зэрэг онцлогуудад зориулж Bluetooth төхөөрөмжийг хайдаг</translation>
 <translation id="6963872466817251924">Текстийн курсор тодруулагч</translation>
 <translation id="6964390816189577014">Баатар</translation>
 <translation id="6964760285928603117">Бүлгээс хасах</translation>
@@ -8104,6 +8108,7 @@
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" />-г ажиллуулахын тулд таны зөвшөөрөл шаардлагатай</translation>
 <translation id="8466417995783206254">Энэ таб видеог дэлгэцэн доторх дэлгэц горимд тоглуулж байна.</translation>
 <translation id="8467326454809944210">Өөр хэл сонгох</translation>
+<translation id="8468087214092422866">Bluetooth төхөөрөмж хайхыг зөвшөөрөөгүй</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />-н хадгалсан нууц үг</translation>
 <translation id="8471525937465764768">Сайтууд ихэвчлэн документ хэвлэх эсвэл хадгалах сангийн төхөөрөмжид хадгалах зэрэг онцлогуудад зориулж USB төхөөрөмжид холбогддог</translation>
 <translation id="8471959340398751476">Хөнгөлөлт унтраалттай байна. Та үүнийг өөрчлөх цэсэд асаах боломжтой</translation>

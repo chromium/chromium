@@ -1252,6 +1252,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2104166991923847969">Samodejni izklop dostopne točke</translation>
 <translation id="2105809836724866556">Modul <ph name="MODULE_TITLE" /> je skrit.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonska številka}one{# telefonska številka}two{# telefonski številki}few{# telefonske številke}other{# telefonskih številk}}</translation>
+<translation id="2110941575868943054">Dovoljeno je iskanje naprav Bluetooth.</translation>
 <translation id="211144231511833662">Počisti vrste</translation>
 <translation id="2111670510994270194">Novi zavihek na desni</translation>
 <translation id="2112554630428445878">Pozdravljeni, <ph name="USERNAME" /></translation>
@@ -3046,6 +3047,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3756485814916578707">Predvajanje vsebine zaslona</translation>
 <translation id="3756578970075173856">Nastavitev kode PIN</translation>
 <translation id="3756795331760037744">Dovolite, da Pomočnik Google uporablja zaslon otroka <ph name="SUPERVISED_USER_NAME" /> za pomoč</translation>
+<translation id="3756806135608816820">Spletna mesta lahko zahtevajo iskanje naprav Bluetooth.</translation>
 <translation id="3757733214359997190">Ni spletnih mest</translation>
 <translation id="375841316537350618">Prenašanje skripta namestniškega strežnika ...</translation>
 <translation id="3758842566811519622">Piškotki so nastavljeni</translation>
@@ -3816,6 +3818,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4469762931504673593">Spletno mesto <ph name="ORIGIN" /> lahko ureja datoteke v mapi <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Nastavitve zunanjih naprav za shranjevanje</translation>
 <translation id="4471354919263203780">Prenašanje datotek za prepoznavanje govora … <ph name="PERCENT" /> %</translation>
+<translation id="4472298120638043495">Uporabite lahko prednostni jezik računa Google (<ph name="NEW_LOCALE_FROM_GAIA" />).</translation>
 <translation id="447252321002412580">Pomagajte izboljšati funkcije in delovanje Chroma</translation>
 <translation id="4472575034687746823">Kako začeti</translation>
 <translation id="4474155171896946103">Dodaj vse zavihke med zaznamke ...</translation>
@@ -5021,6 +5024,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5600706100022181951">Posodobitev bo prenesena v mobilnem omrežju, pri čimer bo prenesenih toliko podatkov: <ph name="UPDATE_SIZE_MB" /> MB. Ali želite nadaljevati?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Ni dovoljena povezava z napravami MIDI</translation>
+<translation id="5601833336918638013">Spletnim mestom ni dovoljeno iskanje naprav Bluetooth.</translation>
 <translation id="5602765853043467355">Počistite zaznamke, zgodovino, gesla in drugo v tej napravi</translation>
 <translation id="5605758115928394442">V vaš telefon smo poslali obvestilo, da potrdite, da ste to res vi.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ta razširitev je blokirana}one{Te razširitve so blokirane}two{Te razširitve so blokirane}few{Te razširitve so blokirane}other{Te razširitve so blokirane}}</translation>
@@ -6485,6 +6489,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6960507406838246615">Potrebna je posodobitev Linuxa</translation>
 <translation id="6960648667961844909">Ni bilo mogoče prenesti datotek za govor za jezik <ph name="LANGUAGE" />. Poskus prenosa bo izveden pozneje. Govor je poslan Googlu v obdelavo, dokler prenos ni dokončan.</translation>
 <translation id="696103774840402661">Vse datoteke in lokalni podatki za vse uporabnike v tej napravi <ph name="DEVICE_TYPE" /> so bili trajno izbrisani.</translation>
+<translation id="6961327401577924850">Spletna mesta običajno iščejo naprave Bluetooth zaradi funkcij, kot sta nastavitev ali sinhroniziranje nizkoenergijskega svetilnika, naprave za spremljanje zdravja oziroma telesne pripravljenosti ali pametne sijalke.</translation>
 <translation id="6963872466817251924">Označevalnik kazalca v besedilu</translation>
 <translation id="6964390816189577014">Junak</translation>
 <translation id="6964760285928603117">Odstranitev iz skupine</translation>
@@ -6761,6 +6766,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7227458944009118910">Spodaj navedene aplikacije lahko obravnavajo tudi povezave za protokol. Druge aplikacije bodo zahtevale dovoljenje.</translation>
 <translation id="7228056665272655255">Če želite nastaviti prstni odtis, naj se otrok dotakne tipala prstnih odtisov v zgornjem desnem kotu tipkovnice. Podatki o prstnih odtisih otroka so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Zaklepanje zaslona in prijava</translation>
+<translation id="7228854227189381547">Ne preklopi</translation>
 <translation id="7230222852462421043">&amp;Obnovi okno</translation>
 <translation id="7231260028442989757">Ogled obvestil telefona, njihovo opuščanje in odgovarjanje nanje.</translation>
 <translation id="7232750842195536390">Preimenovanje ni uspelo</translation>
@@ -7094,6 +7100,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7545466883021407599">Ni se bilo mogoče povezati s strežnikom. Preverite omrežno povezavo in poskusite znova. Če imate še vedno težave, poskusite znova zagnati Chromebook. Koda napake: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Opozorilo: Nastavitve za <ph name="PRODUCT_NAME" /> so shranjene v omrežnem pogonu, zaradi česa lahko pride do upočasnitev, zrušitev ali celo izgube podatkov.</translation>
 <translation id="7548856833046333824">Limonada</translation>
+<translation id="7549434883223124329">Želite preklopiti jezik naprave?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Prenos datoteke <ph name="FILE_NAME" /> ni uspel</translation>
 <translation id="7551643184018910560">Pripenjanje na polico</translation>
@@ -8120,6 +8127,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8465444703385715657">Vtičnik <ph name="PLUGIN_NAME" /> potrebuje vaše dovoljenje za izvajanje</translation>
 <translation id="8466417995783206254">Na tem zavihku se predvaja videoposnetek v načinu slike v sliki.</translation>
 <translation id="8467326454809944210">Izberi drug jezik</translation>
+<translation id="8468087214092422866">Ni dovoljeno iskanje naprav Bluetooth.</translation>
 <translation id="8470513973197838199">Shranjena gesla za <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Spletna mesta običajno vzpostavijo povezavo z napravami USB zaradi funkcij, kot sta tiskanje dokumenta ali shranjevanje podatkov v napravo za shranjevanje.</translation>
 <translation id="8471959340398751476">Popusti so izklopljeni. Vklopite jih lahko v meniju za prilagajanje.</translation>

@@ -808,7 +808,6 @@
 <translation id="299990983510665749">হেচ্চবেক</translation>
 <translation id="3002501248619246229">ইনপুট ট্ৰে’ মিডিয়া পৰীক্ষা কৰক</translation>
 <translation id="3005723025932146533">ছে’ভ কৰা প্ৰতিলিপি দেখুৱাওক</translation>
-<translation id="3008447029300691911"><ph name="CREDIT_CARD" />ৰ CVC দিয়ক। এবাৰ আপুনি নিশ্চিত কৰাৰ পাছত আপোনাৰ কাৰ্ডৰ সবিশেষ এই ছাইটবোৰৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
 <translation id="3013291976881901233">MIDI ডিভাইচবোৰ</translation>
 <translation id="301521992641321250">স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
 <translation id="3016780570757425217">আপোনাৰ অৱস্থান জানক</translation>
@@ -2455,7 +2454,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# টা মিল}one{# টা মিল}other{# টা মিল}}</translation>
 <translation id="724691107663265825">এই ছাইটোত মালৱেৰ আছে</translation>
-<translation id="724975217298816891">আপোনাৰ কার্ডৰ সবিশেষ আপডে'ট কৰিবলৈ <ph name="CREDIT_CARD" />ৰ ম্যাদ উকলা তাৰিখ আৰু CVC দিয়ক। আপুনি নিশ্চিত কৰাৰ পাছত আপোনাৰ কার্ডৰ সবিশেষ এই ছাইটৰ সৈতে শ্বেয়াৰ কৰা হ'ব।</translation>
 <translation id="7251437084390964440">নেটৱৰ্ক কনফিগাৰেশ্বনটোৱে ONC নীতি মানি নচলে। কনফিগাৰেশ্বনটোৰ কিছু অংশ হয়তো আমদানি কৰা হ’ব।
 অতিৰিক্ত বিৱৰণ:
 <ph name="DEBUG_INFO" /></translation>
@@ -2584,7 +2582,6 @@
 <translation id="7534987659046836932">এনভেল’প C7</translation>
 <translation id="7535087603100972091">মান</translation>
 <translation id="7537536606612762813">বাধ্যতামূলক</translation>
-<translation id="7542403920425041731">আপুনি নিশ্চিত কৰাৰ পাছত আপোনাৰ কার্ডৰ সবিশেষ এই ছাইটৰ সৈতে শ্বেয়াৰ কৰা হ'ব।</translation>
 <translation id="7542995811387359312">স্বয়ংক্ৰিয়ভাৱে ক্ৰেডিট কাৰ্ডৰ তথ্য পূৰ হোৱা সুবিধাটো অক্ষম কৰি থোৱা আছে কাৰণ এই ফৰ্মখনে সুৰক্ষিত সংযোগ ব্যৱহাৰ নকৰে।</translation>
 <translation id="7543525346216957623">আপোনাৰ অভিভাৱকক সোধক</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ষ্টাৰ্ট কৰি থকা হৈছে</translation>

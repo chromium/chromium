@@ -1250,6 +1250,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2104166991923847969">Awtomatikong i-off ang hotspot</translation>
 <translation id="2105809836724866556">Naitago na ang <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numero ng telepono}one{# numero ng telepono}other{# na numero ng telepono}}</translation>
+<translation id="2110941575868943054">Pinapayagang maghanap ng mga Bluetooth device</translation>
 <translation id="211144231511833662">I-clear ang Mga Uri</translation>
 <translation id="2111670510994270194">Bagong tab sa kanan</translation>
 <translation id="2112554630428445878">Welcome, <ph name="USERNAME" /></translation>
@@ -3044,6 +3045,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3756485814916578707">Kina-cast ang screen</translation>
 <translation id="3756578970075173856">Magtakda ng PIN</translation>
 <translation id="3756795331760037744">Payagan ang Google Assistant na gamitin ang impormasyon tungkol sa screen ni <ph name="SUPERVISED_USER_NAME" /> para makatulong</translation>
+<translation id="3756806135608816820">Puwedeng hilingin ng mga site na maghanap ng mga Bluetooth device</translation>
 <translation id="3757733214359997190">Walang nakitang site</translation>
 <translation id="375841316537350618">Dina-download ang script ng proxy...</translation>
 <translation id="3758842566811519622">Naitakda ang cookies</translation>
@@ -3814,6 +3816,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4469762931504673593">Puwedeng i-edit ng <ph name="ORIGIN" /> ang mga file sa <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Mga kagustuhan sa external na storage</translation>
 <translation id="4471354919263203780">Dina-download ang mga file ng pagkilala sa speech... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Puwede mong gamitin ang iyong gustong wika ng Google Account (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Tumulong sa pagpapahusay sa mga feature at performance ng Chrome</translation>
 <translation id="4472575034687746823">Magsimula</translation>
 <translation id="4474155171896946103">I-bookmark ang lahat ng tab...</translation>
@@ -5018,6 +5021,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5600706100022181951">Ida-download ang update gamit ang <ph name="UPDATE_SIZE_MB" /> MB ng mobile data. Gusto mo bang magpatuloy?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Hindi pinapayagang kumonekta sa mga MIDI device</translation>
+<translation id="5601833336918638013">Huwag payagan ang mga site na maghanap ng mga Bluetooth device</translation>
 <translation id="5602765853043467355">I-clear ang mga bookmark, history, mga password, at higit pa sa device na ito</translation>
 <translation id="5605758115928394442">Nagpadala ng notification sa iyong telepono para kumpirmahing ikaw nga ito.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Naka-block ang extension na ito}one{Naka-block ang mga extension na ito}other{Naka-block ang mga extension na ito}}</translation>
@@ -6477,6 +6481,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6960507406838246615">Kinakailangang i-update ang Linux</translation>
 <translation id="6960648667961844909">Hindi ma-download ang mga <ph name="LANGUAGE" /> na speech file. Susubukan mamaya ang pag-download. Ipinadala ang speech sa Google para sa pagpoproseso hanggang sa makumpleto ang pag-download.</translation>
 <translation id="696103774840402661">Permanenteng na-delete ang lahat ng file at lokal na data para sa lahat ng user sa <ph name="DEVICE_TYPE" /> na ito.</translation>
+<translation id="6961327401577924850">Karaniwang naghahanap ang mga site ng mga Bluetooth device para sa mga feature tulad ng pag-set up o pag-sync ng low-energy beacon, tracker ng kalusugan o fitness, o smart light bulb</translation>
 <translation id="6963872466817251924">Highlighter ng cursor ng text</translation>
 <translation id="6964390816189577014">Bayani</translation>
 <translation id="6964760285928603117">Alisin Sa Grupo</translation>
@@ -6753,6 +6758,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7227458944009118910">Puwede ring mangasiwa ng mga link ng protocol ang mga app na nakalista sa ibaba. Hihingi ng pahintulot ang iba pang app.</translation>
 <translation id="7228056665272655255">Para i-set up ang fingerprint, ipapindot sa iyong anak ang sensor para sa fingerprint sa kanang sulok sa itaas ng keyboard. Secure na sino-store ang data ng fingerprint ng iyong anak at hindi ito kailanman lalabas sa <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="7228523857728654909">Lock ng screen at pag-sign in</translation>
+<translation id="7228854227189381547">Huwag magpalit</translation>
 <translation id="7230222852462421043">&amp;I-restore ang Window</translation>
 <translation id="7231260028442989757">Tingnan, i-dismiss, at sagutin ang mga notification ng iyong telepono</translation>
 <translation id="7232750842195536390">Hindi napalitan ang pangalan</translation>
@@ -7086,6 +7092,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7545466883021407599">Hindi makakonekta sa server. Suriin ang iyong koneksyon sa network at subukan ulit. Kung nagkakaproblema ka pa rin, subukang i-restart ang iyong Chromebook. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Babala: ang mga setting sa iyong <ph name="PRODUCT_NAME" /> ay nakatago sa isang network drive. Maaari itong magresulta sa mga pagbagal, pag-crash o pati na rin pagkawala ng data.</translation>
 <translation id="7548856833046333824">Lemonade</translation>
+<translation id="7549434883223124329">Magpalit ng wika ng device?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Hindi matagumpay ang pag-download ng <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">I-pin sa shelf</translation>
@@ -8113,6 +8120,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8465444703385715657">Kailangan ng <ph name="PLUGIN_NAME" /> ng iyong pahintulot upang tumakbo</translation>
 <translation id="8466417995783206254">Nagpe-play ang tab na ito ng video sa picture-in-picture mode.</translation>
 <translation id="8467326454809944210">Pumili ng iba pang wika</translation>
+<translation id="8468087214092422866">Hindi pinapayagang maghanap ng mga Bluetooth device</translation>
 <translation id="8470513973197838199">Mga naka-save na password para sa <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Karaniwang kumokonekta ang mga site sa mga USB device para sa mga feature gaya ng pag-print ng dokumento o pag-save sa storage device</translation>
 <translation id="8471959340398751476">Naka-off ang mga diskwento. Puwede mong i-on ang mga ito sa menu na i-customize</translation>

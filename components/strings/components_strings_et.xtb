@@ -808,7 +808,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="299990983510665749">Luukpäraga autod</translation>
 <translation id="3002501248619246229">Kontrolli sisestussalve meediat</translation>
 <translation id="3005723025932146533">Kuva salvestatud koopia</translation>
-<translation id="3008447029300691911">Sisestage krediitkaardi <ph name="CREDIT_CARD" /> CVC. Kui selle kinnitate, jagatakse teie kaardi üksikasju selle saidiga.</translation>
 <translation id="3013291976881901233">MIDI-seadmed</translation>
 <translation id="301521992641321250">Automaatselt blokeeritud</translation>
 <translation id="3016780570757425217">Teada teie asukohta</translation>
@@ -2460,7 +2459,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# vaste}other{# vastet}}</translation>
 <translation id="724691107663265825">Avatav veebisait sisaldab pahavara</translation>
-<translation id="724975217298816891">Kaardi üksikasjade värskendamiseks sisestage krediitkaardi <ph name="CREDIT_CARD" /> aegumiskuupäev ja CVC. Kui selle kinnitate, jagatakse teie kaardi üksikasju selle saidiga.</translation>
 <translation id="7251437084390964440">Võrgu seadistus ei vasta ONC standardile. On võimalik, et seadistuse mõnd osa ei saa importida.
 Lisateave:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ Lisateave:
 <translation id="7534987659046836932">Ümbrik C7</translation>
 <translation id="7535087603100972091">Väärtus</translation>
 <translation id="7537536606612762813">Kohustuslik</translation>
-<translation id="7542403920425041731">Kui selle kinnitate, jagatakse teie kaardi üksikasju selle saidiga.</translation>
 <translation id="7542995811387359312">Automaatne krediitkaardi täide on keelatud, sest see vorm ei kasuta turvalist ühendust.</translation>
 <translation id="7543525346216957623">Küsige vanematelt abi</translation>
 <translation id="7546409722674205727">Rakenduse <ph name="APP_NAME" /> käivitamine</translation>

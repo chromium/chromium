@@ -808,7 +808,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="299990983510665749">Luikrugmotors</translation>
 <translation id="3002501248619246229">Gaan invoerlaaimedia na</translation>
 <translation id="3005723025932146533">Wys die kopie wat gestoor is</translation>
-<translation id="3008447029300691911">Voer die CVC vir <ph name="CREDIT_CARD" /> in. Nadat jy bevestig het, sal jou kaartbesonderhede met hierdie werf gedeel word.</translation>
 <translation id="3013291976881901233">MIDI-toestelle</translation>
 <translation id="301521992641321250">Outomaties geblokkeer</translation>
 <translation id="3016780570757425217">Jou ligging ken</translation>
@@ -2460,7 +2459,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# passing}other{# passings}}</translation>
 <translation id="724691107663265825">Die werf hier voor bevat wanware</translation>
-<translation id="724975217298816891">Voer die vervaldatum en CVC vir <ph name="CREDIT_CARD" /> in om jou kaartbesonderhede op te dateer. Nadat jy bevestig het, sal jou besonderhede met hierdie werf gedeel word.</translation>
 <translation id="7251437084390964440">Die netwerkopstelling voldoen nie aan die ONC-standaard nie. Dele van die opstelling sal dalk nie ingevoer word nie.
 Bykomende besonderhede:
 <ph name="DEBUG_INFO" /></translation>
@@ -2589,7 +2587,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7534987659046836932">Koevert C7</translation>
 <translation id="7535087603100972091">Waarde</translation>
 <translation id="7537536606612762813">Verplig</translation>
-<translation id="7542403920425041731">Nadat jy bevestig het, sal jou kaartbesonderhede met hierdie werf gedeel word.</translation>
 <translation id="7542995811387359312">Outomatiese kredietkaart-invul is gedeaktiveer omdat hierdie vorm nie 'n beveiligde verbinding gebruik nie.</translation>
 <translation id="7543525346216957623">Vra jou ouer</translation>
 <translation id="7546409722674205727">Begin <ph name="APP_NAME" /></translation>

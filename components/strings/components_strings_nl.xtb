@@ -808,7 +808,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="299990983510665749">Hatchbacks</translation>
 <translation id="3002501248619246229">Materiaal in de invoerlade controleren</translation>
 <translation id="3005723025932146533">Opgeslagen kopie bekijken</translation>
-<translation id="3008447029300691911">Geef de CVC-code voor <ph name="CREDIT_CARD" /> op. Zodra je bevestigt, worden je creditcardgegevens gedeeld met deze site.</translation>
 <translation id="3013291976881901233">MIDI-apparaten</translation>
 <translation id="301521992641321250">Automatisch geblokkeerd</translation>
 <translation id="3016780570757425217">Je locatie weten</translation>
@@ -2454,7 +2453,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# overeenkomst}other{# overeenkomsten}}</translation>
 <translation id="724691107663265825">De volgende website bevat malware</translation>
-<translation id="724975217298816891">Geef de vervaldatum en CVC-code voor <ph name="CREDIT_CARD" /> op om je creditcardgegevens te updaten. Zodra je bevestigt, worden je creditcardgegevens gedeeld met deze site.</translation>
 <translation id="7251437084390964440">De netwerkconfiguratie voldoet niet aan de ONC-standaard. Delen van de configuratie worden mogelijk niet geïmporteerd.
 Aanvullende informatie:
 <ph name="DEBUG_INFO" /></translation>
@@ -2583,7 +2581,6 @@ Aanvullende informatie:
 <translation id="7534987659046836932">Envelop C7</translation>
 <translation id="7535087603100972091">Waarde</translation>
 <translation id="7537536606612762813">Verplicht</translation>
-<translation id="7542403920425041731">Zodra je bevestigt, worden je creditcardgegevens gedeeld met deze site.</translation>
 <translation id="7542995811387359312">Het automatisch invullen van creditcardnummers staat uit omdat dit formulier geen beveiligde verbinding gebruikt.</translation>
 <translation id="7543525346216957623">Vraag het aan je ouder of voogd</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> starten</translation>

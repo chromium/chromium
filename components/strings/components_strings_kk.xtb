@@ -808,7 +808,6 @@
 <translation id="299990983510665749">Хэтчбектер</translation>
 <translation id="3002501248619246229">Кіріс науасының деректерін тексеру</translation>
 <translation id="3005723025932146533">Сақталған көшірмені көрсету</translation>
-<translation id="3008447029300691911"><ph name="CREDIT_CARD" /> картасының CVC кодын енгізіңіз. Карта мәліметтері расталғаннан кейін сайтқа беріледі.</translation>
 <translation id="3013291976881901233">MIDI құрылғылары</translation>
 <translation id="301521992641321250">Автоматты түрде бөгелген</translation>
 <translation id="3016780570757425217">Орналасқан жеріңізді білу</translation>
@@ -2459,7 +2458,6 @@
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# сәйкестік}other{# сәйкестік}}</translation>
 <translation id="724691107663265825">Алдағы сайтта зиянды бағдарлама бар</translation>
-<translation id="724975217298816891">Карта мәліметтерін жаңарту үшін <ph name="CREDIT_CARD" /> картасының жарамдылық мерзімі мен CVC кодын енгізіңіз. Карта мәліметтері расталғаннан кейін сайтқа беріледі.</translation>
 <translation id="7251437084390964440">Желі конфигурациясы ONC стандартына сәйкес келмейді. Конфигурацияның кей бөліктері импортталмаған болуы мүмкін.
 Қосымша мәліметтер:
 <ph name="DEBUG_INFO" /></translation>
@@ -2588,7 +2586,6 @@
 <translation id="7534987659046836932">C7 хатқалтасы</translation>
 <translation id="7535087603100972091">Мәні</translation>
 <translation id="7537536606612762813">Міндетті</translation>
-<translation id="7542403920425041731">Картаңыздың мәліметтері расталғаннан кейін сайтқа беріледі.</translation>
 <translation id="7542995811387359312">Автоматты несие картасын толтыру өшірілді, себебі бұл нысанда қауіпсіз байланыс пайдаланылмаған.</translation>
 <translation id="7543525346216957623">Ата-анаңыздан сұраңыз</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> бастап</translation>

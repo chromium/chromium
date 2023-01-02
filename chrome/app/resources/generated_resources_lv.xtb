@@ -1239,6 +1239,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2104166991923847969">Automātiski izslēgt tīklāju</translation>
 <translation id="2105809836724866556">Modulis “<ph name="MODULE_TITLE" />” ir paslēpts.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Tālruņa numurs}zero{# tālruņa numuru}one{# tālruņa numurs}other{# tālruņa numuri}}</translation>
+<translation id="2110941575868943054">Atļauts meklēt Bluetooth ierīces</translation>
 <translation id="211144231511833662">Notīrīt veidus</translation>
 <translation id="2111670510994270194">Jauna cilne pa labi</translation>
 <translation id="2112554630428445878">Laipni lūdzam, <ph name="USERNAME" />!</translation>
@@ -3030,6 +3031,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3756485814916578707">Notiek ekrāna apraide</translation>
 <translation id="3756578970075173856">PIN iestatīšana</translation>
 <translation id="3756795331760037744">Atļaujiet Google asistentam palīdzības sniegšanai izmantot informāciju lietotāja <ph name="SUPERVISED_USER_NAME" /> ekrānā.</translation>
+<translation id="3756806135608816820">Atļaut vietnēm pieprasīt atļauju meklēt Bluetooth ierīces</translation>
 <translation id="3757733214359997190">Neviena vietne netika atrasta</translation>
 <translation id="375841316537350618">Notiek starpniekservera skripta lejupielāde...</translation>
 <translation id="3758842566811519622">Sīkfaili iestatīti</translation>
@@ -3800,6 +3802,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4469762931504673593">Vietne <ph name="ORIGIN" /> var rediģēt direktorijā <ph name="FOLDERNAME" /> glabātos failus</translation>
 <translation id="4470957202018033307">Ārējās atmiņas preferences</translation>
 <translation id="4471354919263203780">Notiek runas atpazīšanas failu lejupielāde... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">Varat izmantot vēlamo Google konta valodu (<ph name="NEW_LOCALE_FROM_GAIA" />).</translation>
 <translation id="447252321002412580">Palīdzēt uzlabot Chrome funkcijas un veiktspēju</translation>
 <translation id="4472575034687746823">Sākt darbu</translation>
 <translation id="4474155171896946103">Saglabāt visas cilnes kā grāmatzīmes...</translation>
@@ -5003,6 +5006,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5600706100022181951">Atjauninājuma lejupielādei tiks izmantoti <ph name="UPDATE_SIZE_MB" /> MB mobilo datu. Vai vēlaties turpināt?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Nedrīkst izveidot savienojumu ar MIDI ierīcēm</translation>
+<translation id="5601833336918638013">Neatļaut vietnēm meklēt Bluetooth ierīces</translation>
 <translation id="5602765853043467355">Notīrīt grāmatzīmes, vēsturi, paroles un citu saturu šajā ierīcē</translation>
 <translation id="5605758115928394442">Uz jūsu tālruni tika nosūtīts paziņojums, lai apstiprinātu, ka tas esat jūs.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Šis paplašinājums ir bloķēts}zero{Šie paplašinājumi ir bloķēti}one{Šie paplašinājumi ir bloķēti}other{Šie paplašinājumi ir bloķēti}}</translation>
@@ -6461,6 +6465,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6960507406838246615">Nepieciešama Linux atjaunināšana</translation>
 <translation id="6960648667961844909">Nevarēja lejupielādēt runas failus šādā valodā: <ph name="LANGUAGE" />. Tiks mēģināts veikt lejupielādi vēlāk. Uzņēmumam Google tiks nosūtīta runa apstrādei, līdz lejupielāde tiks pabeigta.</translation>
 <translation id="696103774840402661">No šīs ierīces (<ph name="DEVICE_TYPE" />) ir pilnīgi un neatgriezeniski izdzēsti visu lietotāju faili un lokālie dati.</translation>
+<translation id="6961327401577924850">Parasti vietnes meklē Bluetooth ierīces, lai nodrošinātu noteiktas funkcijas, piemēram, iestatītu vai sinhronizētu samazināta enerģijas patēriņa signālierīci, veselības uzraudzības vai fizisko aktivitāšu uzskaites ierīci vai viedā apgaismojuma ierīces spuldzīti.</translation>
 <translation id="6963872466817251924">Teksta kursora izcelšana</translation>
 <translation id="6964390816189577014">Varonis</translation>
 <translation id="6964760285928603117">Noņemt no grupas</translation>
@@ -6737,6 +6742,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7227458944009118910">Tālāk norādītās lietotnes var apstrādāt arī protokolu saites. Citas lietotnes lūgs atļauju.</translation>
 <translation id="7228056665272655255">Lai iestatītu pirksta nospiedumu, bērnam ir jāpieskaras pirksta nospieduma sensoram tastatūras augšējā labajā stūrī. Bērna pirksta nospieduma dati tiek glabāti drošībā un vienmēr atrodas tikai šajā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7228523857728654909">Ekrāna bloķēšana un pierakstīšanās</translation>
+<translation id="7228854227189381547">Nepārslēgt</translation>
 <translation id="7230222852462421043">&amp;Atjaunot logu</translation>
 <translation id="7231260028442989757">Skatiet un noraidiet tālruņa paziņojumus, kā arī atbildiet uz tiem.</translation>
 <translation id="7232750842195536390">Pārdēvēšana neizdevās</translation>
@@ -7070,6 +7076,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7545466883021407599">Nevarēja izveidot savienojumu ar serveri. Pārbaudiet tīkla savienojumu un mēģiniet vēlreiz. Ja problēma nav novērsta, restartējiet Chromebook datoru. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Brīdinājums: <ph name="PRODUCT_NAME" /> iestatījumi ir saglabāti tīkla diskā. Tādējādi var tikt palēnināta darbība, notikt avārijas vai tikt zaudēti dati.</translation>
 <translation id="7548856833046333824">Limonāde</translation>
+<translation id="7549434883223124329">Vai pārslēgt ierīces valodu?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Neizdevās lejupielādēt failu <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Piespraust plauktam</translation>
@@ -8095,6 +8102,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8465444703385715657">Spraudņa <ph name="PLUGIN_NAME" /> izpildīšanai ir nepieciešama jūsu atļauja</translation>
 <translation id="8466417995783206254">Šajā cilnē videoklips tiek atskaņots režīmā “Attēls attēlā”.</translation>
 <translation id="8467326454809944210">Izvēlēties citu valodu</translation>
+<translation id="8468087214092422866">Nav atļauts meklēt Bluetooth ierīces</translation>
 <translation id="8470513973197838199">Saglabātās paroles vietnei <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Parasti vietnēs savienojums ar USB ierīcēm tiek veidots, lai nodrošinātu noteiktas funkcijas, piemēram, dokumentu drukāšanu vai saglabāšanu atmiņas ierīcē.</translation>
 <translation id="8471959340398751476">Atlaides ir izslēgtas. Varat tās ieslēgt pielāgošanas izvēlnē.</translation>

@@ -808,7 +808,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="299990983510665749">Due volumi</translation>
 <translation id="3002501248619246229">Controlla contenuti multimediali cassetto di input</translation>
 <translation id="3005723025932146533">Mostra copia salvata</translation>
-<translation id="3008447029300691911">Inserisci il codice CVC della carta <ph name="CREDIT_CARD" />. Dopo essere stati confermati, i dettagli della carta saranno condivisi con questo sito.</translation>
 <translation id="3013291976881901233">Dispositivi MIDI</translation>
 <translation id="301521992641321250">Bloccata automaticamente</translation>
 <translation id="3016780570757425217">Conoscere la tua posizione</translation>
@@ -2456,7 +2455,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# corrispondenza}other{# corrispondenze}}</translation>
 <translation id="724691107663265825">Il sito che stai per visitare contiene malware</translation>
-<translation id="724975217298816891">Inserisci la data di scadenza e il codice CVC della carta <ph name="CREDIT_CARD" /> per aggiornare i relativi dettagli. Dopo essere stati confermati, i dettagli della carta saranno condivisi con questo sito.</translation>
 <translation id="7251437084390964440">La configurazione di rete non è conforme allo standard ONC. Parti della configurazione potrebbero non essere importate.
 Ulteriori dettagli:
 <ph name="DEBUG_INFO" /></translation>
@@ -2585,7 +2583,6 @@ Ulteriori dettagli:
 <translation id="7534987659046836932">Busta C7</translation>
 <translation id="7535087603100972091">Valore</translation>
 <translation id="7537536606612762813">Obbligatorio</translation>
-<translation id="7542403920425041731">Dopo essere stati confermati, i dati della carta saranno condivisi con questo sito.</translation>
 <translation id="7542995811387359312">La compilazione automatica della carta di credito è disattivata perché questo modulo non utilizza una connessione sicura.</translation>
 <translation id="7543525346216957623">Chiedi a uno dei tuoi genitori</translation>
 <translation id="7546409722674205727">Avvio dell'app <ph name="APP_NAME" /> in corso…</translation>

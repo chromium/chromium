@@ -1245,6 +1245,7 @@
 <translation id="2104166991923847969">መገናኛ ነጥብን በራስ ሰር አጥፋ</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ተደብቋል</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ስልክ ቁጥር}one{# ስልክ ቁጥሮች}other{# ስልክ ቁጥሮች}}</translation>
+<translation id="2110941575868943054">የብሉቱዝ መሣሪያዎችን ለመፈለግ ይፈቀዳል</translation>
 <translation id="211144231511833662">ዓይነቶችን አጽዳ</translation>
 <translation id="2111670510994270194">በቀኝ በኩል አዲስ ትር</translation>
 <translation id="2112554630428445878">እንኳን በደህና መጡ <ph name="USERNAME" /></translation>
@@ -3037,6 +3038,7 @@
 <translation id="3756485814916578707">ማያ ገጽን Cast በማድረግ ላይ</translation>
 <translation id="3756578970075173856">ፒን ያዘጋጁ</translation>
 <translation id="3756795331760037744">Google ረዳት ለማገዝ በ<ph name="SUPERVISED_USER_NAME" /> ማያ ገጽ ላይ ያለ መረጃን እንዲጠቀም ይፍቀዱለት</translation>
+<translation id="3756806135608816820">ጣቢያዎች የብሉቱዝ መሣሪያዎችን ለመፈለግ መጠየቅ ይችላሉ</translation>
 <translation id="3757733214359997190">ምንም ጣቢያዎች አልተገኙም</translation>
 <translation id="375841316537350618">ተኪ ስክሪፕትን በማውረድ ላይ...</translation>
 <translation id="3758842566811519622">ኩኪዎች ተቀናብረዋል</translation>
@@ -3805,6 +3807,7 @@
 <translation id="4469762931504673593"><ph name="ORIGIN" /> በ<ph name="FOLDERNAME" /> ውስጥ ፋይሎችን ማርትዕ ይችላል</translation>
 <translation id="4470957202018033307">የውጫዊ ማከማቻ ምርጫዎች</translation>
 <translation id="4471354919263203780">የንግግር ማወቂያ ፋይሎችን በማውረድ ላይ... <ph name="PERCENT" />%</translation>
+<translation id="4472298120638043495">እርስዎ የሚመርጡትን የGoogle መለያ ቋንቋ መጠቀም ይችላሉ (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">የChrome ባህሪያት እና አፈጻጸም እንዲሻሻል ያግዙ</translation>
 <translation id="4472575034687746823">ይጀምሩ</translation>
 <translation id="4474155171896946103">ለሁሉም ትሮች ዕልባት አብጅ...</translation>
@@ -5008,6 +5011,7 @@
 <translation id="5600706100022181951">ዝማኔው ከሞባይል ውሂብ <ph name="UPDATE_SIZE_MB" /> ሜባ በመጠቀም ይወርዳል። መቀጠል ይፈልጋሉ?</translation>
 <translation id="5601503069213153581">ፒን</translation>
 <translation id="5601823921345337195">ከMIDI መሣሪያዎች ጋር እንዲገናኝ አልተፈቀደም</translation>
+<translation id="5601833336918638013">ጣቢያዎች የብሉቱዝ መሣሪያዎችን እንዲፈልጉ አይፍቀዱ</translation>
 <translation id="5602765853043467355">ዕልባቶችን፣ ታሪክ፣ የይለፍ ቃላት እና ተጨማሪ ነገሮችን ከዚህ መሣሪያ ላይ አጽዳ</translation>
 <translation id="5605758115928394442">እርስዎ መሆንዎን ለማረጋገጥ አንድ ማሳወቂያ ወደ ስልክዎ ተልኳል።</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ይህ ቅጥያ ታግዷል}one{እነዚህ ቅጥያዎች ታግደዋል}other{እነዚህ ቅጥያዎች ታግደዋል}}</translation>
@@ -6467,6 +6471,7 @@
 <translation id="6960507406838246615">የLinux ዝማኔ ያስፈልጋል</translation>
 <translation id="6960648667961844909">የ<ph name="LANGUAGE" /> የንግግር ፋይሎችን ማውረድ አልተቻለም። ማውረድ በኋላ ላይ ይሞከራል። ማውረድ እስኪጠናቀቅ ድረስ ንግግር ለመሰናዳት ወደ Google ተልኳል።</translation>
 <translation id="696103774840402661">በዚህ <ph name="DEVICE_TYPE" /> ላይ ለሁሉም ተጠቃሚዎች ያሉ ሁሉም ፋይሎች እና አካባቢያዊ ውሂብ እስከመጨረሻው ተሰርዘዋል።</translation>
+<translation id="6961327401577924850">ጣቢያዎች እንደ ዝቅተኛ ኃይል ያለው የምልክት ምንጭ፣ የጤና ወይም የአካል ብቃት መከታተያ ወይም የዘመናዊ መብራት አምፖል ማቀናበር ወይም ማስመር ያሉ ባህሪያትን ለማግኘት አብዛኛውን ጊዜ የብሉቱዝ መሣሪያዎችን ይፈልጋሉ</translation>
 <translation id="6963872466817251924">የጽሑፍ ጠቋሚ አድማቂ</translation>
 <translation id="6964390816189577014">ጀግና</translation>
 <translation id="6964760285928603117">ከቡድን አስወግድ</translation>
@@ -6743,6 +6748,7 @@
 <translation id="7227458944009118910">ከዚህ በታች የተዘረዘሩት መተግበሪያዎች የፕሮቶኮል አገናኞችንም ማስተናገድ ይችላሉ። ሌሎች መተግበሪያዎች ፈቃድ ይጠይቃሉ።</translation>
 <translation id="7228056665272655255">የጣት አሻራን ለማዋቀር በቁልፍ ሰሌዳው ከላይ በስተቀኝ ጥግ የሚገኘውን የጣት አሻራ ዳሳሽ ልጅዎ እንዲነኩት ያድርጉ። የልጅዎ የጣት አሻራ ውሂብ ደህንነቱ በተጠበቀ ሁኔታ ይከማቻል እና በጭራሽ ከዚህ <ph name="DEVICE_TYPE" /> አይወጣም።</translation>
 <translation id="7228523857728654909">ማያ ገጽ መቆለፊያ እና በመለያ መግባት</translation>
+<translation id="7228854227189381547">አትቀይር</translation>
 <translation id="7230222852462421043">መስኮትን &amp;ወደነበረበት መልስ</translation>
 <translation id="7231260028442989757">የስልክዎን ማሳወቂያዎች ይመልከቱ፣ ያሰናብቱ እና ምላሽ ይስጡ</translation>
 <translation id="7232750842195536390">ዳግም መሰየም አልተሳካም</translation>
@@ -7076,6 +7082,7 @@
 <translation id="7545466883021407599">ከአገልጋዩ ጋር መገናኘት አልተቻለም። የአውታረ መረብ ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ። አሁንም ችግር እያጋጠምዎት ከሆነ የእርስዎን Chromebook እንደገና ለመጀመር ይሞክሩ። የስህተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="7547317915858803630">ማስጠንቀቂያ፦ የ<ph name="PRODUCT_NAME" /> ቅንብሮችዎ በአውታረ መረብ አንጻፊ ላይ ነው የተከማቹት። ይሄ ማንቀራፈፍ፣ ብልሽቶች እና እንዲያውም የውሂብ መጥፋት ሊያስከትል ይችላል።</translation>
 <translation id="7548856833046333824">የሎሚ ጭማቂ</translation>
+<translation id="7549434883223124329">የመሣሪያ ቋንቋ ይቀየር?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ማውረድ አልተሳካም</translation>
 <translation id="7551643184018910560">መደርደሪያ ላይ ሰካ</translation>
@@ -8107,6 +8114,7 @@ nil</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> ለማሄድ የእርስዎ ፍቃድ ያስፈልገዋል</translation>
 <translation id="8466417995783206254">ይህ ትር አንድ ቪዲዮ በሥዕል-ውስጥ-ሥዕል ሁነታ ላይ እያጫወተ ነው።</translation>
 <translation id="8467326454809944210">ሌላ ቋንቋ ይምረጡ</translation>
+<translation id="8468087214092422866">የብሉቱዝ መሣሪያዎችን ለመፈለግ አይፈቀድም</translation>
 <translation id="8470513973197838199">የተቀመጡ የ<ph name="ORIGIN" /> የይለፍ ቃላት</translation>
 <translation id="8471525937465764768">ጣቢያዎች እንደ ሰነድ ማተም ወይም ወደ የማከማቻ መሣሪያ ማስቀመጥ ያሉ ባህሪያትን ለማግኘት አብዛኛው ጊዜ ከዩኤስቢ መሣሪያዎች ጋር ይገናኛሉ</translation>
 <translation id="8471959340398751476">ቅናሾች ጠፍተዋል። በአብጅ ምናሌ ውስጥ ሊያበሩዋቸው ይችላሉ</translation>
