@@ -6,6 +6,7 @@ import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 group("closure_compile") {
   deps = [
@@ -22,8 +23,8 @@ group("closure_compile") {
     ":gaia_header",
     ":gaia_input_form",
     ":hd_iron_icon",
+    ":keyboard_utils.m",
     ":keyboard_utils_for_injection",
-    ":keyboard_utils_for_injection.m",
     ":long_touch_detector",
     ":network_select_login",
     ":notification_card",
@@ -52,6 +53,7 @@ group("polymer3_elements") {
                   ":oobe_icons_module",
                   ":oobe_icons_module",
                   ":oobe_network_icons_module",
+                  ":modulize",
                 ]
 }
 
@@ -114,10 +116,13 @@ js_library("hd_iron_icon") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("keyboard_utils_for_injection.m") {
+js_library("keyboard_utils_for_injection") {
 }
 
-js_library("keyboard_utils_for_injection") {
+js_library("keyboard_utils.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/keyboard_utils.m.js" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("long_touch_detector") {
@@ -307,4 +312,8 @@ html_to_js("web_components") {
     "security_token_pin.js",
     "throbber_notice.js",
   ]
+}
+
+js_modulizer("modulize") {
+  input_files = [ "keyboard_utils.js" ]
 }

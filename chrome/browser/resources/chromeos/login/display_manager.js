@@ -13,7 +13,7 @@ import {OobeTypes} from './components/oobe_types.js';
 
 import {DISPLAY_TYPE, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.js';
 import {MultiTapDetector} from './multi_tap_detector.js';
-import {keyboard} from './keyboard_utils.m.js';
+import {keyboard} from './components/keyboard_utils.m.js';
 
   /**
    * Maximum time in milliseconds to wait for step transition to finish.

@@ -98,8 +98,6 @@ constexpr char kStringsJsPath[] = "strings.js";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-constexpr char kKeyboardUtilsPath[] = "keyboard_utils.js";
-
 constexpr char kTerminaCreditsPath[] = "about_os_credits.html";
 
 // APAC region name.
@@ -303,13 +301,6 @@ class ChromeOSCreditsHandler
 
   void StartOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (path_ == kKeyboardUtilsPath) {
-      contents_ =
-          ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-              IDR_KEYBOARD_UTILS_JS);
-      ResponseOnUIThread();
-      return;
-    }
     // Load local Chrome OS credits from the disk.
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -329,7 +320,7 @@ class ChromeOSCreditsHandler
   void ResponseOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // If we fail to load Chrome OS credits from disk, load it from resources.
-    if (contents_.empty() && path_ != kKeyboardUtilsPath) {
+    if (contents_.empty()) {
       contents_ =
           ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
               IDR_OS_CREDITS_HTML);
@@ -389,14 +380,6 @@ class CrostiniCreditsHandler
 
   void StartOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (path_ == kKeyboardUtilsPath) {
-      contents_ =
-          ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-              IDR_KEYBOARD_UTILS_JS);
-      RespondOnUIThread();
-      return;
-    }
-
     if (crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
       crostini::CrostiniManager::GetForProfile(profile_)->GetInstallLocation(
           base::BindOnce(&CrostiniCreditsHandler::LoadCredits, this));
@@ -435,7 +418,7 @@ class CrostiniCreditsHandler
   void RespondOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // If we fail to load Linux credits from disk, use the placeholder.
-    if (contents_.empty() && path_ != kKeyboardUtilsPath) {
+    if (contents_.empty()) {
       contents_ = l10n_util::GetStringUTF8(IDS_CROSTINI_CREDITS_PLACEHOLDER);
     }
     std::move(callback_).Run(
@@ -668,10 +651,6 @@ void AboutUIHTMLSource::StartDataRequest(
       idr = IDR_ABOUT_UI_CREDITS_JS;
     else if (path == kCreditsCssPath)
       idr = IDR_ABOUT_UI_CREDITS_CSS;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    else if (path == kKeyboardUtilsPath)
-      idr = IDR_KEYBOARD_UTILS_JS;
-#endif
     if (idr == IDR_ABOUT_UI_CREDITS_HTML) {
       response = about_ui::GetCredits(true /*include_scripts*/);
     } else {
@@ -728,11 +707,7 @@ void AboutUIHTMLSource::FinishDataRequest(
 
 std::string AboutUIHTMLSource::GetMimeType(const GURL& url) {
   const base::StringPiece path = url.path_piece().substr(1);
-  if (path == kCreditsJsPath ||
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      path == kKeyboardUtilsPath ||
-#endif
-      path == kStatsJsPath || path == kStringsJsPath) {
+  if (path == kCreditsJsPath || path == kStatsJsPath || path == kStringsJsPath) {
     return "application/javascript";
   }
 

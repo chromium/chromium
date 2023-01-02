@@ -164,9 +164,8 @@ constexpr char kArcPlaystoreJSPath[] = "arc_support/playstore.js";
 constexpr char kArcPlaystoreLogoPath[] = "arc_support/icon/playstore.svg";
 constexpr char kArcSupervisionIconPath[] = "supervision_icon.png";
 constexpr char kDebuggerMJSPath[] = "debug/debug.m.js";
-constexpr char kKeyboardUtilsJSPath[] = "keyboard_utils.js";
 constexpr char kKeyboardUtilsForInjectionModulePath[] =
-    "components/keyboard_utils_for_injection.m.js";
+    "components/keyboard_utils_for_injection.js";
 
 constexpr char kProductLogoPath[] = "product-logo.png";
 constexpr char kTestAPIJsMPath[] = "test_api/test_api.m.js";
@@ -302,9 +301,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   AddDebuggerResources(source);
   AddTestAPIResources(source);
 
-  source->AddResourcePath(kKeyboardUtilsJSPath, IDR_KEYBOARD_UTILS_JS);
   source->AddResourcePath(kKeyboardUtilsForInjectionModulePath,
-                          IDR_KEYBOARD_UTILS_FOR_INJECTION_M_JS);
+                          IDR_KEYBOARD_UTILS_FOR_INJECTION_JS);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src chrome:;");
   source->DisableTrustedTypesCSP();

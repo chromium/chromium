@@ -28,11 +28,11 @@ import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
-import {KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_for_injection.m.js';
+import {KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_for_injection.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 import {DisplayManager, invokePolymerMethod} from '../../display_manager.js';
-import {keyboard} from '../../keyboard_utils.m.js';
+import {keyboard} from '../../components/keyboard_utils.m.js';
 import {ActiveDirectoryErrorState, ADLoginStep, JoinConfigType} from '../common/offline_ad_login.js';
 
 
