@@ -23,6 +23,10 @@
   testRunner.log('Target id should match: ' + (attachedEvent.targetInfo.targetId === detachedEvent.targetId));
 
   testRunner.log('Navigating back to out-of-process iframe...');
+  // Wait for a little while before continuing, to ensure that the new
+  // navigation won't get cancelled by the previous navigation's commit in the
+  // browser process.
+  await new Promise(resolve => setTimeout(resolve, 100));
 
   const attachedPromise2 = dp.Target.onceAttachedToTarget();
   dp.Page.navigate({frameId, url: 'http://devtools.oopif.test:8000/inspector-protocol/resources/iframe.html'});
