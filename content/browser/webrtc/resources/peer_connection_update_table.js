@@ -124,8 +124,8 @@ export class PeerConnectionUpdateTable {
       const numberOfEvents = el.textContent.split(' => ').length;
       if (numberOfEvents < MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED) {
         el.textContent += ' => ' + update.value;
-      } else if (numberOfEvents === MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED) {
-        el.textContent += ' ...';
+      } else if (numberOfEvents >= MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED) {
+        el.textContent += ' => ...';
       }
     }
 
