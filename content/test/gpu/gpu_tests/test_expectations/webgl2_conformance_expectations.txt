@@ -433,7 +433,6 @@ crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-bl
 crbug.com/1037650 [ mac nvidia-0xfe9 ] conformance2/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
 
 crbug.com/1338004 [ mac nvidia-0xfe9 passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ RetryOnFailure ]
-crbug.com/1338004 [ mac nvidia-0xfe9 passthrough ] deqp/functional/gles3/multisample/fbo_max_samples.html [ RetryOnFailure ]
 
 # Mac AMD Retina
 # AMD Radeon HD 8870M (1002:6821)
@@ -563,7 +562,6 @@ crbug.com/1081978 [ linux intel angle-opengl passthrough ] conformance2/textures
 # Linux NVIDIA
 crbug.com/angleproject/5783 [ linux nvidia angle-opengl passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
-crbug.com/1372694 [ linux nvidia-0x2184 angle-opengl passthrough ] conformance2/samplers/sampler-drawing-test.html [ RetryOnFailure ]
 
 # Linux AMD RX 5500 XT
 crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
