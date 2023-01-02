@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Promise;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
@@ -349,11 +350,13 @@ public class TrustedVaultClient {
             int requestId, CoreAccountInfo accountInfo, byte[] publicKey, int methodTypeHint) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
-        Consumer<Void> responseCallback = unused -> {
+        Consumer<Void> responseCallback = completion -> {
             if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
                 // Native already unregistered, no response needed.
                 return;
             }
+            RecordHistogram.recordBooleanHistogram(
+                    "Sync.TrustedVaultJavascriptAddRecoveryMethodSucceeded", completion != null);
             TrustedVaultClientJni.get().addTrustedRecoveryMethodCompleted(
                     nativeTrustedVaultClientAndroid, requestId);
         };

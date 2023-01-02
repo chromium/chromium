@@ -1489,6 +1489,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.TrustedVaultJavascriptAddRecoveryMethodSucceeded"
+    enum="BooleanSuccess" expires_after="2023-06-18">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records whether invocations to the Javascript API
+    chrome.addTrustedSyncEncryptionRecoveryMethod() completed successfully.
+    Instrumented on Android only.
+  </summary>
+</histogram>
+
+<histogram name="Sync.TrustedVaultJavascriptAddRecoveryMethodUserKnown"
+    enum="BooleanKnown" expires_after="2023-06-18">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records whether invocations to the Javascript API
+    chrome.addTrustedSyncEncryptionRecoveryMethod() specify a user ID that is
+    known by IdentityManager. Instrumented on Android only.
+  </summary>
+</histogram>
+
+<histogram name="Sync.TrustedVaultJavascriptAddRecoveryMethodValidArgs"
+    enum="BooleanValid" expires_after="2023-06-18">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records invocations to the Javascript API
+    chrome.addTrustedSyncEncryptionRecoveryMethod() and whether the passed
+    arguments could be successfully parsed (which doesn't imply the function
+    actually succeeded).
+  </summary>
+</histogram>
+
 <histogram name="Sync.TrustedVaultKeyRetrievalTrigger"
     enum="TrustedVaultUserActionTrigger" expires_after="2023-06-11">
   <owner>mmoskvitin@google.com</owner>
