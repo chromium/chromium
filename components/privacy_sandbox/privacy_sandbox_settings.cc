@@ -384,6 +384,18 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
   return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
 }
 
+void PrivacySandboxSettings::SetAllPrivacySandboxAllowedForTesting() {
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                              true);
+    return;
+  }
+
+  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
+}
+
 void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {
   pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, enabled);
 }

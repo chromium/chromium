@@ -6559,7 +6559,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   ASSERT_TRUE(https_server()->Start());
 
   PrivacySandboxSettingsFactory::GetForProfile(profile())
-      ->SetPrivacySandboxEnabled(true);
+      ->SetAllPrivacySandboxAllowedForTesting();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("/interest_group/fenced_frame.html")));

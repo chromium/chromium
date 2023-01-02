@@ -47,7 +47,7 @@ class InterestGroupPermissionsBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_server_->Start());
 
     PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
-        ->SetPrivacySandboxEnabled(true);
+        ->SetAllPrivacySandboxAllowedForTesting();
     // Prime the interest groups if the API is enabled.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
     if (HasInterestGroupApi(web_contents()) &&

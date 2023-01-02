@@ -441,7 +441,7 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
 
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings =
         PrivacySandboxSettingsFactory::GetForProfile(profile);
-    privacy_sandbox_settings->SetPrivacySandboxEnabled(true);
+    privacy_sandbox_settings->SetAllPrivacySandboxAllowedForTesting();
 
     history::HistoryService* history_service =
         HistoryServiceFactory::GetForProfile(

@@ -693,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
       /*incognito=*/browser()->profile()->IsIncognitoProfile());
   privacy_sandbox_settings->SetDelegateForTesting(
       std::move(privacy_sandbox_delegate));
-  privacy_sandbox_settings->SetPrivacySandboxEnabled(true);
+  privacy_sandbox_settings->SetAllPrivacySandboxAllowedForTesting();
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kOff));

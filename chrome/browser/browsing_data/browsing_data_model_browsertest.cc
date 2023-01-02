@@ -120,7 +120,7 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
-        ->SetPrivacySandboxEnabled(true);
+        ->SetAllPrivacySandboxAllowedForTesting();
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::test_server::EmbeddedTestServer::TYPE_HTTPS);

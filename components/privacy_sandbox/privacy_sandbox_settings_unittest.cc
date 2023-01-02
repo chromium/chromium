@@ -926,7 +926,7 @@ TEST_F(PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn,
 
 TEST_F(PrivacySandboxSettingsTest, DisabledInIncognito) {
   mock_delegate()->SetUpIsIncognitoProfileResponse(/*incognito=*/true);
-  privacy_sandbox_settings()->SetPrivacySandboxEnabled(true);
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
 }
 
@@ -941,7 +941,7 @@ class PrivacySandboxSettingsMockDelegateTest
 TEST_F(PrivacySandboxSettingsMockDelegateTest, IsPrivacySandboxRestricted) {
   // When the sandbox is otherwise enabled, the delegate returning true for
   // IsPrivacySandboxRestricted() should disable the sandbox.
-  privacy_sandbox_settings()->SetPrivacySandboxEnabled(true);
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
   EXPECT_CALL(*mock_delegate(), IsPrivacySandboxRestricted())
       .Times(1)
       .WillOnce(testing::Return(true));
