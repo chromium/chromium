@@ -205,7 +205,13 @@ class ImageTransferCacheEntryTest
   gl::DisableNullDrawGLBindings enable_pixel_output_;
 };
 
-TEST_P(ImageTransferCacheEntryTest, Deserialize) {
+// Disabled on Linux MSan Tests due to consistent segfault; crbug.com/1404443.
+#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_LINUX)
+#define MAYBE_Deserialize DISABLED_Deserialize
+#else
+#define MAYBE_Deserialize Deserialize
+#endif
+TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
   // Create a client-side entry from YUV planes. Use a different stride than the
   // width to test that alignment works correctly.
   const int image_width = 12;
