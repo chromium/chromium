@@ -8,7 +8,6 @@
 #import "base/check_op.h"
 #import "base/ios/block_types.h"
 #import "base/notreached.h"
-#import "components/signin/ios/browser/features.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
@@ -311,14 +310,10 @@ enum AuthenticationState {
                 break;
             }
           };
-      if (base::FeatureList::IsEnabled(signin::kEnableUnicornAccountSupport)) {
-        ios::ChromeIdentityService* identity_service =
-            ios::GetChromeBrowserProvider().GetChromeIdentityService();
-        identity_service->IsSubjectToParentalControls(_identityToSignIn,
-                                                      callback);
-      } else {
-        callback(SystemIdentityCapabilityResult::kFalse);
-      }
+      ios::ChromeIdentityService* identity_service =
+          ios::GetChromeBrowserProvider().GetChromeIdentityService();
+      identity_service->IsSubjectToParentalControls(_identityToSignIn,
+                                                    callback);
       return;
     }
     case SHOW_MANAGED_CONFIRMATION:

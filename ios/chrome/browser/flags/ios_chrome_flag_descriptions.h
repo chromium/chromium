@@ -326,10 +326,6 @@ extern const char kForceStartupSigninPromoDescription[];
 extern const char kIdentityStatusConsistencyName[];
 extern const char kIdentityStatusConsistencyDescription[];
 
-// Title and description for the flag to enable sign-in with a Unicorn account.
-extern const char kEnableUnicornAccountSupportName[];
-extern const char kEnableUnicornAccountSupportDescription[];
-
 // Title and description for the flag to enable displaying fullscreen promos via
 // the Fullscreen Promos Manager.
 extern const char kFullscreenPromosManagerName[];

@@ -637,15 +637,6 @@ GREYLayoutConstraint* BelowConstraint() {
 // Checks that a supervised user is signed in and that sync is turned on after
 // the user chooses to turn on sync.
 - (void)testSignInAndTurnOnSyncForSupervisedUser {
-  AppLaunchConfiguration configToSetSupervision =
-      self.appConfigurationForTestCase;
-  configToSetSupervision.features_enabled.push_back(
-      signin::kEnableUnicornAccountSupport);
-
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:configToSetSupervision];
-
   // Add a fake supervised identity to the device.
   FakeSystemIdentity* fakeSupervisedIdentity =
       [FakeSystemIdentity fakeIdentity1];

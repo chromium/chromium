@@ -9,7 +9,6 @@
 #import "base/time/time.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
-#import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
@@ -186,7 +185,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(signin::kEnableUnicornAccountSupport);
   if ([self isRunningTest:@selector(testOpenSignInFromNTP)]) {
     config.features_enabled.push_back(switches::kIdentityStatusConsistency);
   }

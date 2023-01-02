@@ -320,11 +320,6 @@ const char kEnableRefineDataSourceReloadReportingDescription[] =
     "Enable refining data source reload reporting when having a very short "
     "attention log";
 
-const char kEnableUnicornAccountSupportName[] =
-    "Enable Unicorn account support";
-const char kEnableUnicornAccountSupportDescription[] =
-    "Allows users to sign-in with their Unicorn account.";
-
 const char kEnableWebPageAnnotationsName[] = "Enable Web Page Intent Detection";
 const char kEnableWebPageAnnotationsDescription[] =
     "Prototype to detect and highlight data with possible intent in a web "

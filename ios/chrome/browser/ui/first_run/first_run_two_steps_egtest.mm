@@ -828,15 +828,6 @@ void DismissDefaultBrowserPromo() {
 
 // Tests FRE with UMA default value and with sign-in for a supervised user.
 - (void)testWithUMACheckedAndSigninSupervised {
-  AppLaunchConfiguration configToSetSupervision =
-      self.appConfigurationForTestCase;
-  configToSetSupervision.features_enabled.push_back(
-      signin::kEnableUnicornAccountSupport);
-
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:configToSetSupervision];
-
   // Add a fake supervised identity to the device.
   FakeSystemIdentity* fakeSupervisedIdentity =
       [FakeSystemIdentity fakeIdentity1];
