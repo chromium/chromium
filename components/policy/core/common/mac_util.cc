@@ -41,7 +41,7 @@ void ArrayEntryToValue(const void* value, void* context) {
   std::unique_ptr<base::Value> converted =
       PropertyToValue(static_cast<CFPropertyListRef>(value));
   if (converted) {
-    static_cast<base::ListValue*>(context)->GetList().Append(
+    static_cast<base::Value::List*>(context)->Append(
         base::Value::FromUniquePtrValue(std::move(converted)));
   }
 }
@@ -85,12 +85,10 @@ std::unique_ptr<base::Value> PropertyToValue(CFPropertyListRef property) {
   }
 
   if (CFArrayRef array = CFCast<CFArrayRef>(property)) {
-    std::unique_ptr<base::ListValue> list_value(new base::ListValue());
-    CFArrayApplyFunction(array,
-                         CFRangeMake(0, CFArrayGetCount(array)),
-                         ArrayEntryToValue,
-                         list_value.get());
-    return std::move(list_value);
+    base::Value::List list_value;
+    CFArrayApplyFunction(array, CFRangeMake(0, CFArrayGetCount(array)),
+                         ArrayEntryToValue, &list_value);
+    return std::make_unique<base::Value>(std::move(list_value));
   }
 
   return nullptr;

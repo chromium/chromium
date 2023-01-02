@@ -906,7 +906,7 @@ TEST(SchemaTest, Validate) {
   {
     Schema subschema = schema.GetProperty("ArrayOfObjectOfArray");
     ASSERT_TRUE(subschema.valid());
-    base::Value root(base::Value::Type::LIST);
+    base::Value root{base::Value::List()};
 
     base::Value::Dict dict_value;
     base::Value* list_value = dict_value.Set("List", base::Value::List());
