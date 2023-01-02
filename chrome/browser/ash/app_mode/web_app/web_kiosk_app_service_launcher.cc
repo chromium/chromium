@@ -12,9 +12,11 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
+#include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "url/origin.h"
 
 namespace ash {
 
@@ -41,6 +43,8 @@ void WebKioskAppServiceLauncher::Initialize() {
       apps::AppType::kWeb,
       base::BindOnce(&WebKioskAppServiceLauncher::OnWebAppInitializled,
                      weak_ptr_factory_.GetWeakPtr()));
+  profile_->GetExtensionSpecialStoragePolicy()->AddOriginWithUnlimitedStorage(
+      url::Origin::Create(GetCurrentApp()->install_url()));
 }
 
 void WebKioskAppServiceLauncher::OnWebAppInitializled() {

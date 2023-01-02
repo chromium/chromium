@@ -41,9 +41,7 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
   class PolicyChangeObserver : public SpecialStoragePolicy::Observer {
    public:
     PolicyChangeObserver()
-        : expected_type_(NOTIFICATION_TYPE_NONE),
-          expected_change_flags_(0) {
-    }
+        : expected_type_(NOTIFICATION_TYPE_NONE), expected_change_flags_(0) {}
 
     PolicyChangeObserver(const PolicyChangeObserver&) = delete;
     PolicyChangeObserver& operator=(const PolicyChangeObserver&) = delete;
@@ -67,27 +65,21 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
       expected_type_ = NOTIFICATION_TYPE_NONE;
     }
 
-    void ExpectGrant(const std::string& extension_id,
-                     int change_flags) {
+    void ExpectGrant(const std::string& extension_id, int change_flags) {
       expected_type_ = NOTIFICATION_TYPE_GRANT;
       expected_origin_ = Extension::GetBaseURLFromExtensionId(extension_id);
       expected_change_flags_ = change_flags;
     }
 
-    void ExpectRevoke(const std::string& extension_id,
-                      int change_flags) {
+    void ExpectRevoke(const std::string& extension_id, int change_flags) {
       expected_type_ = NOTIFICATION_TYPE_REVOKE;
       expected_origin_ = Extension::GetBaseURLFromExtensionId(extension_id);
       expected_change_flags_ = change_flags;
     }
 
-    void ExpectClear() {
-      expected_type_ = NOTIFICATION_TYPE_CLEAR;
-    }
+    void ExpectClear() { expected_type_ = NOTIFICATION_TYPE_CLEAR; }
 
-    bool IsCompleted() {
-      return expected_type_ == NOTIFICATION_TYPE_NONE;
-    }
+    bool IsCompleted() { return expected_type_ == NOTIFICATION_TYPE_NONE; }
 
    private:
     enum {
@@ -260,6 +252,28 @@ TEST_F(ExtensionSpecialStoragePolicyTest, AppWithUnlimitedStorage) {
   EXPECT_FALSE(policy_->IsStorageUnlimited(GURL("https://bar.wildcards/")));
 }
 
+TEST_F(ExtensionSpecialStoragePolicyTest,
+       StorageForExplicitlyGrantedOriginsShouldBeUnlimited) {
+  policy_->AddOriginWithUnlimitedStorage(
+      url::Origin::Create(GURL("http://unlimited/")));
+
+  EXPECT_TRUE(policy_->IsStorageUnlimited(GURL("http://unlimited/")));
+  EXPECT_FALSE(policy_->IsStorageUnlimited(GURL("http://other/")));
+}
+
+TEST_F(ExtensionSpecialStoragePolicyTest,
+       ExplicitlyUnlimitedOriginsShouldNotInterferWithExtensions) {
+  scoped_refptr<Extension> extension(CreateUnlimitedApp());
+  policy_->GrantRightsForExtension(extension.get());
+
+  policy_->AddOriginWithUnlimitedStorage(
+      url::Origin::Create(GURL("http://unlimited/")));
+
+  EXPECT_TRUE(policy_->IsStorageUnlimited(GURL("http://unlimited/")));
+  EXPECT_TRUE(policy_->IsStorageUnlimited(extension->url()));
+  EXPECT_FALSE(policy_->IsStorageUnlimited(GURL("http://other/")));
+}
+
 TEST_F(ExtensionSpecialStoragePolicyTest, HasIsolatedStorage) {
   const GURL kHttpUrl("http://foo");
   const GURL kExtensionUrl("chrome-extension://bar");
@@ -360,15 +374,15 @@ TEST_F(ExtensionSpecialStoragePolicyTest, NotificationTest) {
   policy_->AddObserver(&observer);
 
   scoped_refptr<Extension> apps[] = {
-    CreateProtectedApp(),
-    CreateUnlimitedApp(),
+      CreateProtectedApp(),
+      CreateUnlimitedApp(),
   };
 
   int change_flags[] = {
-    SpecialStoragePolicy::STORAGE_PROTECTED,
+      SpecialStoragePolicy::STORAGE_PROTECTED,
 
-    SpecialStoragePolicy::STORAGE_PROTECTED |
-    SpecialStoragePolicy::STORAGE_UNLIMITED,
+      SpecialStoragePolicy::STORAGE_PROTECTED |
+          SpecialStoragePolicy::STORAGE_UNLIMITED,
   };
 
   ASSERT_EQ(std::size(apps), std::size(change_flags));

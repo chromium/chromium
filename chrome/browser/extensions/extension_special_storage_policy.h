@@ -15,6 +15,7 @@
 #include "extensions/common/extension_set.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content_settings {
 class CookieSettings;
@@ -54,6 +55,10 @@ class ExtensionSpecialStoragePolicy : public storage::SpecialStoragePolicy {
   const extensions::ExtensionSet* ExtensionsProtectingOrigin(
       const GURL& origin);
 
+  // Marks an origin as having unlimited storage. This is currently used by web
+  // kiosk to give unlimited storage to the kiosk origin.
+  void AddOriginWithUnlimitedStorage(const url::Origin& origin);
+
  protected:
   ~ExtensionSpecialStoragePolicy() override;
 
@@ -89,6 +94,8 @@ class ExtensionSpecialStoragePolicy : public storage::SpecialStoragePolicy {
   SpecialCollection file_handler_extensions_ GUARDED_BY_CONTEXT(lock_);
   SpecialCollection isolated_extensions_ GUARDED_BY_CONTEXT(lock_);
   SpecialCollection content_capabilities_unlimited_extensions_
+      GUARDED_BY_CONTEXT(lock_);
+  std::set<url::Origin> origins_with_unlimited_storage_
       GUARDED_BY_CONTEXT(lock_);
 
   // GUARDED_BY_CONTEXT() not needed because the data member is thread-safe. The
