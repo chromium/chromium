@@ -384,8 +384,7 @@ void InputMethodAsh::OnWillChangeFocusedClient(TextInputClient* focused_before,
   ConfirmComposition(/* reset_engine */ true);
 
   // Remove any autocorrect range in the unfocused TextInputClient.
-  gfx::Range text_range;
-  if (focused_before && focused_before->GetTextRange(&text_range)) {
+  if (focused_before) {
     focused_before->SetAutocorrectRange(gfx::Range());
   }
 
