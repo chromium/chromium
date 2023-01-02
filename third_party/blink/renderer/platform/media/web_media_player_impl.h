@@ -52,6 +52,7 @@
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/learning_experiment_helper.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
 #include "third_party/blink/renderer/platform/media/smoothness_helper.h"
@@ -928,7 +929,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // used for, for example, data URLs.
   // Used for HLS playback and in certain fallback paths (e.g. on older devices
   // that can't support the unified media pipeline).
-  GURL loaded_url_;
+  GURL loaded_url_ ALLOW_DISCOURAGED_TYPE("Avoids conversion in media code");
 
   // NOTE: |using_media_player_renderer_| is set based on the usage of a
   // MediaResource::Type::URL in StartPipeline(). This works because

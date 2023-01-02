@@ -158,6 +158,15 @@ config("blink_platform_config") {
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
   ]
+  cflags = []
+  if (is_clang && clang_use_chrome_plugins) {
+    cflags += [
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "check-blink-data-member-type",
+    ]
+  }
 }
 
 # Deps and configs required to include platform headers. Applied to all
@@ -269,6 +278,13 @@ source_set("platform_export") {
     "//mojo/public/cpp/bindings:wtf_support",
     "//third_party/blink/renderer/platform/*",
   ]
+}
+
+source_set("allow_discouraged_type") {
+  sources = [ "allow_discouraged_type.h" ]
+
+  visibility = []  # Allow re-assignment of list.
+  visibility = [ "//third_party/blink/renderer/platform/*" ]
 }
 
 component("platform") {
@@ -1653,6 +1669,7 @@ component("platform") {
   ]
 
   public_deps = [
+    ":allow_discouraged_type",
     ":blink_platform_public_deps",
     ":platform_export",
     "//gpu/command_buffer/client:raster_interface",

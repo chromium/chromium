@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_LINEAR_HISTOGRAM_H_
 
 #include <cstddef>
-#include <vector>
 
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -18,7 +18,9 @@ class PLATFORM_EXPORT LinearHistogram {
   // The resolution/width of each bucket is (max_value - min_value) /
   // number_of_buckets. In addition to the specified number of buckets, there
   // will be two more buckets to track under- and overflow.
-  LinearHistogram(float min_value, float max_value, size_t number_of_buckets);
+  LinearHistogram(float min_value,
+                  float max_value,
+                  wtf_size_t number_of_buckets);
 
   // Add a value to the histogram.
   void Add(float value);
@@ -31,14 +33,14 @@ class PLATFORM_EXPORT LinearHistogram {
   float GetPercentile(float probability) const;
 
   // How many values that make up this histogram.
-  size_t NumValues() const;
+  wtf_size_t NumValues() const;
 
  private:
   const float min_value_;
   const float resolution_;
-  std::vector<size_t> buckets_;
-  size_t count_;
-  float max_observed_value_;
+  Vector<size_t> buckets_;
+  wtf_size_t count_ = 0;
+  float max_observed_value_ = 0;
 };
 
 }  // namespace blink

@@ -18,6 +18,7 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "url/gurl.h"
 
@@ -109,14 +110,14 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
 
   // The origin for the initial request.
   // const to make it obvious that redirects cannot change it.
-  const GURL origin_;
+  const GURL origin_ ALLOW_DISCOURAGED_TYPE("Avoids conversion in media code");
 
   // Keeps track of an active WebAssociatedURLLoader.
   // Only valid while loading resource.
   std::unique_ptr<WebAssociatedURLLoader> active_loader_;
 
   // When we encounter a redirect, this is the source of the redirect.
-  GURL redirects_to_;
+  GURL redirects_to_ ALLOW_DISCOURAGED_TYPE("Avoids conversion in media code");
 
   // If the server tries to gives us more bytes than we want, this how
   // many bytes we need to discard before we get to the right place.

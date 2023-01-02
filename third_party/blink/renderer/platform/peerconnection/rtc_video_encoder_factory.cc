@@ -13,6 +13,7 @@
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
 #include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
@@ -167,9 +168,12 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
 
 struct SupportedFormats {
   bool unknown = true;
-  std::vector<media::VideoCodecProfile> profiles;
-  std::vector<std::vector<media::SVCScalabilityMode>> scalability_modes;
-  std::vector<webrtc::SdpVideoFormat> sdp_formats;
+  std::vector<media::VideoCodecProfile> profiles
+      ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
+  std::vector<std::vector<media::SVCScalabilityMode>> scalability_modes
+      ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
+  std::vector<webrtc::SdpVideoFormat> sdp_formats
+      ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
 };
 
 SupportedFormats GetSupportedFormatsInternal(

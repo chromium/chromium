@@ -248,6 +248,7 @@ String TransferredMediaStreamComponent::ToString() const {
 
 void TransferredMediaStreamComponent::Trace(Visitor* visitor) const {
   visitor->Trace(component_);
+  visitor->Trace(observers_);
   MediaStreamComponent::Trace(visitor);
 }
 

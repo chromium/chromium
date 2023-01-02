@@ -41,6 +41,7 @@
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
@@ -396,7 +397,8 @@ struct FrameInfo {
   const base::TimeDelta media_timestamp_;
   const int32_t rtp_timestamp_;
   const int64_t capture_time_ms_;
-  const std::vector<gfx::Size> resolutions_;
+  const std::vector<gfx::Size> resolutions_ ALLOW_DISCOURAGED_TYPE(
+      "Matches media::Vp9Metadata::spatial_layer_resolutions etc");
   size_t produced_frames_ = 0;
 };
 
@@ -655,7 +657,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // The reslutions of active spatial layer, only used when |Vp9Metadata| is
   // contained in |BitstreamBufferMetadata|. it will be updated when key frame
   // is produced.
-  std::vector<gfx::Size> current_spatial_layer_resolutions_;
+  std::vector<gfx::Size> current_spatial_layer_resolutions_
+      ALLOW_DISCOURAGED_TYPE(
+          "Matches media::Vp9Metadata::spatial_layer_resolutions etc");
 
   // Index of the highest spatial layer with bandwidth allocated for it.
   size_t highest_active_spatial_index_{0};

@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/feature_list.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/input/prediction/predictor_factory.h"
 #include "ui/base/prediction/input_filter.h"
@@ -47,7 +48,7 @@ struct FilterParamMapKeyHash {
 };
 
 using FilterParams = std::unordered_map<std::string, double>;
-using FilterParamsMap =
+using FilterParamsMap ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327)") =
     std::unordered_map<FilterParamMapKey, FilterParams, FilterParamMapKeyHash>;
 
 // FilterFactory is a class containing methods to create filters.

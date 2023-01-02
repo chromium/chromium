@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/peerconnection/gpu_codec_support_waiter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
@@ -50,7 +51,8 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
 
   // List of profiles that RTCVideoEncoderFactory will refuse to create an
   // encoder for even if the underlying GPU factories has support.
-  std::vector<media::VideoCodecProfile> disabled_profiles_;
+  std::vector<media::VideoCodecProfile> disabled_profiles_
+      ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
 };
 
 }  // namespace blink

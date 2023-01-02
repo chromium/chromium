@@ -14,6 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/disk_allocator.mojom-blink.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
@@ -95,19 +96,20 @@ class PLATFORM_EXPORT DiskDataAllocator : public mojom::blink::DiskAllocator {
 
  protected:  // For testing.
   base::Lock lock_;
-  // Using a std::map because we rely on |{lower,upper}_bound()|.
-  std::map<int64_t, size_t> free_chunks_ GUARDED_BY(lock_);
-  size_t free_chunks_size_ GUARDED_BY(lock_);
+  std::map<int64_t, size_t> free_chunks_ GUARDED_BY(lock_)
+      ALLOW_DISCOURAGED_TYPE("We rely on |{lower,upper}_bound()|");
+  size_t free_chunks_size_ GUARDED_BY(lock_) = 0;
 
  private:
-  int64_t file_tail_ GUARDED_BY(lock_);
+  int64_t file_tail_ GUARDED_BY(lock_) = 0;
   // Whether writing is possible now. This can be true if:
   // - |set_may_write_for_testing()| was called, or
   // - |file_.IsValid()| and no write error occurred (which would set
   //   |may_write_| to false).
-  bool may_write_ GUARDED_BY(lock_);
+  bool may_write_ GUARDED_BY(lock_) = false;
 #if DCHECK_IS_ON()
-  std::map<int64_t, size_t> allocated_chunks_ GUARDED_BY(lock_);
+  std::map<int64_t, size_t> allocated_chunks_ GUARDED_BY(lock_)
+      ALLOW_DISCOURAGED_TYPE("We rely on |{lower,upper}_bound()|");
 #endif
 
   FRIEND_TEST_ALL_PREFIXES(DiskDataAllocatorTest, ProvideInvalidFile);

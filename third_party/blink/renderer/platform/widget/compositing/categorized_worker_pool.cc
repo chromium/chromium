@@ -6,7 +6,6 @@
 
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -28,6 +27,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 namespace {
@@ -93,7 +93,7 @@ class CategorizedWorkerPoolThread : public base::SimpleThread {
 
  private:
   CategorizedWorkerPoolImpl* const pool_;
-  const std::vector<cc::TaskCategory> categories_;
+  const Vector<cc::TaskCategory> categories_;
   base::ConditionVariable* const has_ready_to_run_tasks_cv_;
 
   base::OnceCallback<void(base::PlatformThreadId)> backgrounding_callback_;
@@ -207,7 +207,7 @@ void CategorizedWorkerPoolImpl::Start(int max_concurrency_foreground) {
 
   // |max_concurrency_foreground| normal threads and 1 background threads are
   // created.
-  const size_t num_threads = max_concurrency_foreground + 1;
+  const wtf_size_t num_threads = max_concurrency_foreground + 1;
   threads_.reserve(num_threads);
 
   // Start |max_concurrency_foreground| normal priority threads, which run
@@ -314,7 +314,7 @@ bool CategorizedWorkerPoolImpl::PostDelayedTask(const base::Location& from_here,
 }
 
 void CategorizedWorkerPoolImpl::Run(
-    const std::vector<cc::TaskCategory>& categories,
+    const Vector<cc::TaskCategory>& categories,
     base::ConditionVariable* has_ready_to_run_tasks_cv) {
   base::AutoLock lock(lock_);
 
@@ -373,7 +373,7 @@ void CategorizedWorkerPoolImpl::ScheduleTasksWithLockAcquired(
 }
 
 bool CategorizedWorkerPoolImpl::RunTaskWithLockAcquired(
-    const std::vector<cc::TaskCategory>& categories) {
+    const Vector<cc::TaskCategory>& categories) {
   for (const auto& category : categories) {
     if (ShouldRunTaskForCategoryWithLockAcquired(category)) {
       RunTaskInCategoryWithLockAcquired(category);

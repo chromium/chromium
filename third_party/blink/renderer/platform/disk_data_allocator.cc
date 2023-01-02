@@ -16,9 +16,7 @@
 
 namespace blink {
 
-DiskDataAllocator::DiskDataAllocator()
-    : free_chunks_size_(0), file_tail_(0), may_write_(false) {}
-
+DiskDataAllocator::DiskDataAllocator() = default;
 DiskDataAllocator::~DiskDataAllocator() = default;
 
 bool DiskDataAllocator::may_write() {

@@ -15,7 +15,7 @@ namespace {
 // Histogram parameters.
 constexpr float kProcessingTimeHistogramMinValue_ms = 1.0;
 constexpr float kProcessingTimeHistogramMaxValue_ms = 35;
-constexpr size_t kProcessingTimeHistogramBuckets = 80;
+constexpr wtf_size_t kProcessingTimeHistogramBuckets = 80;
 constexpr float kProcessingTimePercentileToReport = 0.99;
 
 // Report intermediate results every 15 seconds.

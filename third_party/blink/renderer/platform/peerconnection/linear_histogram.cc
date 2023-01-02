@@ -13,18 +13,16 @@ namespace blink {
 
 LinearHistogram::LinearHistogram(float min_value,
                                  float max_value,
-                                 size_t number_of_buckets)
+                                 wtf_size_t number_of_buckets)
     : min_value_(min_value),
       resolution_((max_value - min_value) / number_of_buckets),
-      buckets_(number_of_buckets + 2),
-      count_(0),
-      max_observed_value_(0) {
+      buckets_(number_of_buckets + 2) {
   DCHECK_GT(number_of_buckets, 0u);
   DCHECK_GT(max_value, min_value);
 }
 
 void LinearHistogram::Add(float value) {
-  size_t ix = 0;
+  wtf_size_t ix = 0;
   if (value > min_value_) {
     ix = std::ceil((value - min_value_) / resolution_);
     ix = std::min(ix, buckets_.size() - 1);
@@ -45,7 +43,7 @@ float LinearHistogram::GetPercentile(float probability) const {
   DCHECK_LE(probability, 1.f);
   DCHECK_GT(count_, 0ul);
 
-  size_t bucket = 0;
+  wtf_size_t bucket = 0;
   float accumulated_probability = 0;
   while (accumulated_probability < probability && bucket < buckets_.size()) {
     accumulated_probability += static_cast<float>(buckets_[bucket]) / count_;
@@ -60,7 +58,7 @@ float LinearHistogram::GetPercentile(float probability) const {
   }
 }
 
-size_t LinearHistogram::NumValues() const {
+wtf_size_t LinearHistogram::NumValues() const {
   return count_;
 }
 

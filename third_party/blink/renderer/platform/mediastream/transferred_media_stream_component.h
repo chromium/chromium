@@ -9,10 +9,12 @@
 
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -85,7 +87,7 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
   Member<MediaStreamComponent> component_;
   TransferredValues data_;
 
-  std::vector<MediaStreamSource::Observer*> observers_;
+  HeapVector<Member<MediaStreamSource::Observer>> observers_;
   Vector<AddSinkArgs> add_video_sink_calls_;
   Vector<WebMediaStreamAudioSink*> add_audio_sink_calls_;
 };

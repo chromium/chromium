@@ -11,6 +11,7 @@
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/scheduler/common/back_forward_cache_disabling_feature_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
@@ -104,9 +105,10 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
   scoped_refptr<NonMainThreadTaskQueue> pausable_task_queue_;
   scoped_refptr<NonMainThreadTaskQueue> unpausable_task_queue_;
 
-  using TaskQueueVoterMap = std::map<
-      scoped_refptr<NonMainThreadTaskQueue>,
-      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>>;
+  using TaskQueueVoterMap ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327)") =
+      std::map<scoped_refptr<NonMainThreadTaskQueue>,
+               std::unique_ptr<
+                   base::sequence_manager::TaskQueue::QueueEnabledVoter>>;
 
   TaskQueueVoterMap task_runners_;
 

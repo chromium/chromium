@@ -34,6 +34,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -581,7 +582,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // current origin which it is already partitioned by).
   // TODO(crbug.com/1127971): Remove this once the decision is made to partition
   // the cache using either Network Isolation Key or scoped to per-document.
-  std::set<net::SchemefulSite> existing_top_frame_sites_in_cache_;
+  std::set<net::SchemefulSite> existing_top_frame_sites_in_cache_
+      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327)");
 };
 
 class ResourceFactory {

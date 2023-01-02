@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_TRACING_HELPER_H_
 
 #include <string>
-#include <unordered_set>
 
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
@@ -15,6 +14,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -73,7 +73,7 @@ class PLATFORM_EXPORT TraceableVariableController {
   void OnTraceLogEnabled();
 
  private:
-  std::unordered_set<TraceableVariable*> traceable_variables_;
+  HashSet<TraceableVariable*> traceable_variables_;
 };
 
 class TraceableVariable {

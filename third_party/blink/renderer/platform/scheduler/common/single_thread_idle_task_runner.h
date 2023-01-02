@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -105,7 +106,8 @@ class SingleThreadIdleTaskRunner
 
   scoped_refptr<base::SingleThreadTaskRunner> idle_priority_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> control_task_runner_;
-  std::multimap<base::TimeTicks, DelayedIdleTask> delayed_idle_tasks_;
+  std::multimap<base::TimeTicks, DelayedIdleTask> delayed_idle_tasks_
+      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327)");
   Delegate* delegate_;  // NOT OWNED
   base::WeakPtr<SingleThreadIdleTaskRunner> weak_scheduler_ptr_;
   base::WeakPtrFactory<SingleThreadIdleTaskRunner> weak_factory_{this};

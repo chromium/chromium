@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -48,7 +49,7 @@ struct BLINK_PLATFORM_EXPORT SyncLoadResponse {
   // the case of a server redirect.
   // Use GURL to avoid extra conversion between KURL and GURL because non-blink
   // types are allowed for loader here.
-  GURL url;
+  GURL url ALLOW_DISCOURAGED_TYPE("Avoids conversion in loading code");
 
   // The response data.
   WebData data;

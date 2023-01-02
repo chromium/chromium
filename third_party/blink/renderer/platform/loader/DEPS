@@ -15,6 +15,7 @@ include_rules = [
     "+net/url_request/redirect_info.h",
     "+services/metrics/public", # for UKM API
     "+services/network/public",  # for Fetch API and CORS
+    "+third_party/blink/renderer/platform/allow_discouraged_type.h",
     "+third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h",
     "+third_party/blink/renderer/platform/back_forward_cache_utils.h",
     "+third_party/blink/renderer/platform/bindings/dom_wrapper_world.h",

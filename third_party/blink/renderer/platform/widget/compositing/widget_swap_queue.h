@@ -8,6 +8,7 @@
 #include <map>
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom-blink.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -52,7 +53,8 @@ class WidgetSwapQueue {
 
  private:
   base::Lock lock_;
-  std::map<int, Vector<VisualStateRequestCallback>> queue_;
+  std::map<int, Vector<VisualStateRequestCallback>> queue_
+      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327)");
   Vector<VisualStateRequestCallback> next_callbacks_;
 };
 

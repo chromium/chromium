@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_WEBRTC_VIDEO_FRAME_ADAPTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_WEBRTC_VIDEO_FRAME_ADAPTER_H_
 
-#include <vector>
-
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -21,6 +19,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -65,7 +64,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
       std::unique_ptr<std::vector<uint8_t>> buffer;
     };
     base::Lock buffer_lock_;
-    std::vector<BufferEntry> free_buffers_ GUARDED_BY(buffer_lock_);
+    Vector<BufferEntry> free_buffers_ GUARDED_BY(buffer_lock_);
     const base::TickClock* tick_clock_;
   };
 
@@ -263,11 +262,11 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
   base::Lock adapted_frames_lock_;
   const scoped_refptr<media::VideoFrame> frame_;
-  const std::vector<scoped_refptr<media::VideoFrame>> scaled_frames_;
+  const Vector<scoped_refptr<media::VideoFrame>> scaled_frames_;
   const scoped_refptr<SharedResources> shared_resources_;
   const ScaledBufferSize full_size_;
   // Frames that have been adapted, i.e. that were "hard-applied" and mapped.
-  std::vector<AdaptedFrame> adapted_frames_ GUARDED_BY(adapted_frames_lock_);
+  Vector<AdaptedFrame> adapted_frames_ GUARDED_BY(adapted_frames_lock_);
 };
 
 }  // namespace blink

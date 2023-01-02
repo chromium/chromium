@@ -18,6 +18,7 @@
 #include "cc/raster/task_graph_work_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -127,7 +128,7 @@ class PLATFORM_EXPORT CategorizedWorkerPoolImpl : public CategorizedWorkerPool {
 
   // Runs a task from one of the provided categories. Categories listed first
   // have higher priority.
-  void Run(const std::vector<cc::TaskCategory>& categories,
+  void Run(const Vector<cc::TaskCategory>& categories,
            base::ConditionVariable* has_ready_to_run_tasks_cv);
 
   // Overridden from CategorizedWorkerPool:
@@ -141,7 +142,7 @@ class PLATFORM_EXPORT CategorizedWorkerPoolImpl : public CategorizedWorkerPool {
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   // Runs a task from one of the provided categories. Categories listed first
   // have higher priority. Returns false if there were no tasks to run.
-  bool RunTaskWithLockAcquired(const std::vector<cc::TaskCategory>& categories)
+  bool RunTaskWithLockAcquired(const Vector<cc::TaskCategory>& categories)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Run next task for the given category. Caller must acquire |lock_| prior to
@@ -154,7 +155,7 @@ class PLATFORM_EXPORT CategorizedWorkerPoolImpl : public CategorizedWorkerPool {
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // The actual threads where work is done.
-  std::vector<std::unique_ptr<base::SimpleThread>> threads_;
+  Vector<std::unique_ptr<base::SimpleThread>> threads_;
 
   // Condition variables for foreground and background threads.
   base::ConditionVariable has_task_for_normal_priority_thread_cv_;

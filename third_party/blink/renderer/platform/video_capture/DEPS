@@ -10,6 +10,7 @@ include_rules = [
     "+base/token.h",
     "+media/base",
     "+media/capture",
+    "+third_party/blink/renderer/platform/allow_discouraged_type.h",
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/wtf",
 

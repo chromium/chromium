@@ -128,12 +128,12 @@ void WebRtcVideoFrameAdapter::VectorBufferPool::Return(
     std::unique_ptr<std::vector<uint8_t>> buffer) {
   base::AutoLock autolock(buffer_lock_);
   const base::TimeTicks now = tick_clock_->NowTicks();
-  free_buffers_.push_back({now, std::move(buffer)});
+  free_buffers_.push_back(BufferEntry{now, std::move(buffer)});
 
   // After this loop, |stale_index| is pointing to the first non-stale buffer.
   // Such an index must exist because |buffer| is never stale.
   constexpr base::TimeDelta kStaleBufferLimit = base::Seconds(10);
-  for (size_t stale_index = 0; stale_index < free_buffers_.size();
+  for (wtf_size_t stale_index = 0; stale_index < free_buffers_.size();
        ++stale_index) {
     if (now - free_buffers_[stale_index].last_use_time < kStaleBufferLimit) {
       DCHECK_LT(stale_index, free_buffers_.size());

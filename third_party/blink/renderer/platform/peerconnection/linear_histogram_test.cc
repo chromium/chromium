@@ -13,7 +13,7 @@ namespace {
 
 constexpr float kMinValue = 0.0f;
 constexpr float kMaxValue = 10.0f;
-constexpr size_t kNumBuckets = 10;
+constexpr wtf_size_t kNumBuckets = 10;
 
 class LinearHistogramTest : public ::testing::Test {
  protected:

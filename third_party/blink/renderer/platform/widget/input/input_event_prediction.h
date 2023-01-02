@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/input/prediction/predictor_factory.h"
 #include "ui/base/prediction/input_predictor.h"
@@ -85,7 +86,8 @@ class PLATFORM_EXPORT InputEventPrediction {
   void ResetSinglePredictor(const WebPointerProperties& event);
 
   std::unordered_map<PointerId, std::unique_ptr<ui::InputPredictor>>
-      pointer_id_predictor_map_;
+      pointer_id_predictor_map_
+          ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327)");
   std::unique_ptr<ui::InputPredictor> mouse_predictor_;
 
   // Store the field trial parameter used for choosing different types of

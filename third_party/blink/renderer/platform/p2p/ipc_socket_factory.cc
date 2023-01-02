@@ -222,8 +222,8 @@ class AsyncAddressResolverImpl : public rtc::AsyncResolverInterface {
 
   THREAD_CHECKER(thread_checker_);
 
-  rtc::SocketAddress addr_;                // Address to resolve.
-  std::vector<rtc::IPAddress> addresses_;  // Resolved addresses.
+  rtc::SocketAddress addr_;           // Address to resolve.
+  Vector<rtc::IPAddress> addresses_;  // Resolved addresses.
 
   base::WeakPtrFactory<AsyncAddressResolverImpl> weak_factory_{this};
 };
@@ -654,13 +654,10 @@ bool AsyncAddressResolverImpl::GetResolvedAddress(
     rtc::SocketAddress* addr) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (addresses_.empty())
-    return false;
-
-  for (size_t i = 0; i < addresses_.size(); ++i) {
-    if (family == addresses_[i].family()) {
+  for (auto& address : addresses_) {
+    if (family == address.family()) {
       *addr = addr_;
-      addr->SetResolvedIP(addresses_[i]);
+      addr->SetResolvedIP(address);
       return true;
     }
   }

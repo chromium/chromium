@@ -10,6 +10,7 @@ include_rules = [
     "+cc/base/math_util.h",
     "+cc/paint/image_animation_count.h",
     "+media",
+    "+third_party/blink/renderer/platform/allow_discouraged_type.h",
     "+third_party/blink/renderer/platform/geometry",
     "+third_party/blink/renderer/platform/graphics",
     "+third_party/blink/renderer/platform/instrumentation/histogram.h",

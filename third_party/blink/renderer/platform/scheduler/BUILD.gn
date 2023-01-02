@@ -185,6 +185,7 @@ blink_platform_sources("scheduler") {
     "//device/base/synchronization",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",
+    "//third_party/blink/renderer/platform:allow_discouraged_type",
     "//third_party/blink/renderer/platform:make_platform_generated",
     "//third_party/blink/renderer/platform/heap:heap",
     "//third_party/blink/renderer/platform/instrumentation",

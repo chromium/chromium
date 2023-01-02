@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +18,7 @@
 #include "media/base/tuneable.h"
 #include "third_party/blink/public/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -198,7 +198,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
   // Places we might want to seek to. After each read we add another
   // location here, and when SeekTask() is called, it picks the best
   // position and then clears it out.
-  std::vector<int64_t> seek_positions_;
+  Vector<int64_t> seek_positions_;
 
   // This value will be true if this data source can only support streaming.
   // i.e. range request is not supported.
