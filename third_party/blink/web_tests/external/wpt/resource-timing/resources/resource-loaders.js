@@ -136,7 +136,11 @@ const load = {
       object.type = type;
     }
     document.body.appendChild(object);
-    await loaded;
+    const timeout = new Promise(r => step_timeout(() => {
+      console.log("Timeout was reached before load or error events fired");
+      r();
+    }, 2000));
+    await Promise.race([loaded, timeout]);
     document.body.removeChild(object);
   },
 
