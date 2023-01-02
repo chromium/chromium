@@ -180,6 +180,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     const NGInlineContainer<LogicalOffset> fixedpos_inline_container;
     bool inline_container = false;
     bool requires_content_before_breaking = false;
+    bool is_fragmented_inside_clipped_container = false;
 
     NodeInfo(NGBlockNode node,
              const NGConstraintSpace constraint_space,
@@ -191,7 +192,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
              const NGContainingBlock<LogicalOffset>& fixedpos_containing_block,
              const NGInlineContainer<LogicalOffset>& fixedpos_inline_container,
              bool inline_container,
-             bool requires_content_before_breaking)
+             bool requires_content_before_breaking,
+             bool is_fragmented_inside_clipped_container)
         : node(node),
           constraint_space(constraint_space),
           static_position(static_position),
@@ -201,7 +203,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
           fixedpos_containing_block(fixedpos_containing_block),
           fixedpos_inline_container(fixedpos_inline_container),
           inline_container(inline_container),
-          requires_content_before_breaking(requires_content_before_breaking) {}
+          requires_content_before_breaking(requires_content_before_breaking),
+          is_fragmented_inside_clipped_container(
+              is_fragmented_inside_clipped_container) {}
 
     void Trace(Visitor* visitor) const;
   };
@@ -319,7 +323,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       NodeToLayout& oof_node_to_layout,
       const LayoutBox* only_layout,
       const NGConstraintSpace* fragmentainer_constraint_space = nullptr,
-      bool is_known_to_be_last_fragmentainer = false);
+      bool is_last_fragmentainer_so_far = false,
+      bool is_known_to_be_very_last_fragmentainer = false);
 
   // TODO(almaher): We are calculating more than just the offset. Consider
   // changing this to a more accurate name.
@@ -343,13 +348,14 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   const NGLayoutResult* Layout(
       const NodeToLayout& oof_node_to_layout,
       const NGConstraintSpace* fragmentainer_constraint_space,
-      bool is_known_to_be_last_fragmentainer);
+      bool is_last_fragmentainer_so_far,
+      bool is_known_to_be_very_last_fragmentainer);
 
   bool IsContainingBlockForCandidate(const NGLogicalOutOfFlowPositionedNode&);
 
   const NGLayoutResult* GenerateFragment(
-      NGBlockNode node,
-      const LogicalSize& container_content_size_in_child_writing_mode,
+      const NodeToLayout& oof_node_to_layout,
+      const LogicalSize& container_content_size_in_candidate_writing_mode,
       const absl::optional<LayoutUnit>& block_estimate,
       const NGLogicalOutOfFlowDimensions& node_dimensions,
       const LayoutUnit block_offset,
@@ -357,6 +363,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const NGConstraintSpace* fragmentainer_constraint_space,
       bool should_use_fixed_block_size,
       bool requires_content_before_breaking,
+      bool is_last_fragmentainer_so_far,
       RepeatMode repeat_mode);
 
   // Performs layout on the OOFs stored in |pending_descendants| and
@@ -378,7 +385,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
                              const NGConstraintSpace* fragmentainer_space,
                              LogicalOffset fragmentainer_offset,
                              wtf_size_t index,
-                             bool is_known_to_be_last_fragmentainer,
+                             bool is_last_fragmentainer_so_far,
+                             bool is_known_to_be_very_last_fragmentainer,
                              NGSimplifiedOOFLayoutAlgorithm* algorithm,
                              HeapVector<NodeToLayout>* fragmented_descendants);
   void ReplaceFragmentainer(wtf_size_t index,

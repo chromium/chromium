@@ -1048,14 +1048,17 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
               containing_block_offset, containing_block_rel_offset,
               containing_block_fragment,
               descendant.containing_block.IsInsideColumnSpanner(),
-              descendant.containing_block.RequiresContentBeforeBreaking()),
+              descendant.containing_block.RequiresContentBeforeBreaking(),
+              descendant.containing_block.IsFragmentedInsideClippedContainer()),
           NGContainingBlock<LogicalOffset>(
               fixedpos_containing_block_offset,
               fixedpos_containing_block_rel_offset,
               fixedpos_containing_block_fragment,
               descendant.fixedpos_containing_block.IsInsideColumnSpanner(),
               descendant.fixedpos_containing_block
-                  .RequiresContentBeforeBreaking()),
+                  .RequiresContentBeforeBreaking(),
+              descendant.fixedpos_containing_block
+                  .IsFragmentedInsideClippedContainer()),
           fixedpos_inline_container};
       oof_nodes_to_layout.push_back(node);
     }
@@ -1434,12 +1437,15 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
   // case, we also need to adjust the offset to account for this.
   NGLogicalStaticPosition static_position = oof_node.static_position;
   static_position.offset -= container_info.rect.offset;
+  bool is_fragmented_inside_clipped_container = false;
   if (containing_block_fragment) {
     const auto& containing_block_for_fragmentation =
         To<NGLogicalOOFNodeForFragmentation>(oof_node).containing_block;
     static_position.offset += containing_block_for_fragmentation.Offset();
     requires_content_before_breaking =
         containing_block_for_fragmentation.RequiresContentBeforeBreaking();
+    is_fragmented_inside_clipped_container =
+        containing_block_for_fragmentation.IsFragmentedInsideClippedContainer();
   }
 
   NGLogicalStaticPosition oof_static_position =
@@ -1480,14 +1486,16 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   fixedpos_containing_block, fixedpos_inline_container,
                   oof_node.inline_container.container,
-                  requires_content_before_breaking);
+                  requires_content_before_breaking,
+                  is_fragmented_inside_clipped_container);
 }
 
 const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
     NodeToLayout& oof_node_to_layout,
     const LayoutBox* only_layout,
     const NGConstraintSpace* fragmentainer_constraint_space,
-    bool is_known_to_be_last_fragmentainer) {
+    bool is_last_fragmentainer_so_far,
+    bool is_known_to_be_very_last_fragmentainer) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   OffsetInfo& offset_info = oof_node_to_layout.offset_info;
   if (offset_info.has_cached_layout_result) {
@@ -1497,9 +1505,9 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
 
   NGBoxStrut scrollbars_before =
       ComputeScrollbarsForNonAnonymous(node_info.node);
-  const NGLayoutResult* layout_result =
-      Layout(oof_node_to_layout, fragmentainer_constraint_space,
-             is_known_to_be_last_fragmentainer);
+  const NGLayoutResult* layout_result = Layout(
+      oof_node_to_layout, fragmentainer_constraint_space,
+      is_last_fragmentainer_so_far, is_known_to_be_very_last_fragmentainer);
 
   // Since out-of-flow positioning sets up a constraint space with fixed
   // inline-size, the regular layout code (|NGBlockNode::Layout()|) cannot
@@ -1564,7 +1572,8 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
       }
 
       layout_result = Layout(oof_node_to_layout, fragmentainer_constraint_space,
-                             is_known_to_be_last_fragmentainer);
+                             is_last_fragmentainer_so_far,
+                             is_known_to_be_very_last_fragmentainer);
 
       scrollbars_after = ComputeScrollbarsForNonAnonymous(node_info.node);
       DCHECK(!freeze_horizontal || !freeze_vertical ||
@@ -1796,7 +1805,8 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
 const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
     const NodeToLayout& oof_node_to_layout,
     const NGConstraintSpace* fragmentainer_constraint_space,
-    bool is_known_to_be_last_fragmentainer) {
+    bool is_last_fragmentainer_so_far,
+    bool is_known_to_be_very_last_fragmentainer) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   const WritingDirectionMode candidate_writing_direction =
       node_info.node.Style().GetWritingDirection();
@@ -1832,18 +1842,20 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
       // Fixed-positioned elements are repeated when paginated, if contained by
       // the initial containing block (i.e. when not contained by a transformed
       // element or similar).
-      if (is_known_to_be_last_fragmentainer)
+      if (is_known_to_be_very_last_fragmentainer) {
         repeat_mode = kRepeatedLast;
-      else
+      } else {
         repeat_mode = kMayRepeatAgain;
+      }
     }
 
     layout_result = GenerateFragment(
-        node_info.node, container_content_size_in_candidate_writing_mode,
+        oof_node_to_layout, container_content_size_in_candidate_writing_mode,
         offset_info.block_estimate, offset_info.node_dimensions,
         offset.block_offset, oof_node_to_layout.break_token,
         fragmentainer_constraint_space, should_use_fixed_block_size,
-        node_info.requires_content_before_breaking, repeat_mode);
+        node_info.requires_content_before_breaking,
+        is_last_fragmentainer_so_far, repeat_mode);
   }
 
   if (layout_result->Status() != NGLayoutResult::kSuccess) {
@@ -1899,7 +1911,9 @@ bool NGOutOfFlowLayoutPart::IsContainingBlockForCandidate(
 // 2. To compute final fragment, when block size is known from the absolute
 //    position calculation.
 const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
-    NGBlockNode node,
+    // TODO(mstensho): Reduce the number of arguments. Now that we pass
+    // NodeToLayout, many of the others are redundant.
+    const NodeToLayout& oof_node_to_layout,
     const LogicalSize& container_content_size_in_candidate_writing_mode,
     const absl::optional<LayoutUnit>& block_estimate,
     const NGLogicalOutOfFlowDimensions& node_dimensions,
@@ -1908,7 +1922,10 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
     const NGConstraintSpace* fragmentainer_constraint_space,
     bool should_use_fixed_block_size,
     bool requires_content_before_breaking,
+    bool is_last_fragmentainer_so_far,
     RepeatMode repeat_mode) {
+  const NodeInfo& node_info = oof_node_to_layout.node_info;
+  const NGBlockNode& node = node_info.node;
   const auto& style = node.Style();
 
   LayoutUnit inline_size = node_dimensions.size.inline_size;
@@ -1946,6 +1963,24 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
       SetupSpaceBuilderForFragmentation(
           *fragmentainer_constraint_space, node, block_offset, &builder,
           /* is_new_fc */ true, requires_content_before_breaking);
+
+      // Out-of-flow positioned elements whose containing block is inside
+      // clipped overflow shouldn't generate any additional fragmentainers. Just
+      // place everything in the last fragmentainer. This is similar to what
+      // NGLayoutAlgorithm::RelayoutWithoutFragmentation() does for in-flow
+      // content overflowing a clipped ancestor, except that in this case we
+      // know up front that we should disable fragmentation.
+      //
+      // Note that this approach isn't perfect. We don't know where (in which
+      // fragmentainer) the clipped container ends. It may have ended in some
+      // fragmentainer earlier than the last one, in which case we should have
+      // finished this OOF there. But we have no (easy) way of telling where
+      // that might be. But as long as the OOF doesn't contribute to any
+      // additional fragmentainers, we should be (pretty) good.
+      if (is_last_fragmentainer_so_far &&
+          node_info.is_fragmented_inside_clipped_container) {
+        builder.DisableFurtherFragmentation();
+      }
     }
   } else if (container_builder_->IsInitialColumnBalancingPass()) {
     SetupSpaceBuilderForFragmentation(
@@ -1969,6 +2004,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   auto& children = FragmentationContextChildren();
   wtf_size_t num_children = children.size();
   bool is_new_fragment = index >= num_children;
+  bool is_last_fragmentainer_so_far = index + 1 == num_children;
   bool is_known_to_have_more_fragmentainers =
       index + 1 < num_children || !is_last_fragmentainer_with_oof_descendants;
 
@@ -2019,7 +2055,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
                                  previous_break_token,
                                  /* early_break */ nullptr);
 
-  bool is_known_to_be_last_fragmentainer = false;
+  bool is_known_to_be_very_last_fragmentainer = false;
 
   do {
     // |algorithm| corresponds to the "mutable copy" of our original
@@ -2030,7 +2066,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     // Layout any OOF elements that are a continuation of layout first.
     for (auto& descendant : descendants_continued) {
       AddOOFToFragmentainer(descendant, &space, fragmentainer_offset, index,
-                            is_known_to_be_last_fragmentainer, &algorithm,
+                            is_last_fragmentainer_so_far,
+                            is_known_to_be_very_last_fragmentainer, &algorithm,
                             fragmented_descendants);
     }
     // Once we've laid out the OOF elements that are a continuation of layout,
@@ -2038,7 +2075,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     // fragmentainer.
     for (auto& descendant : pending_descendants) {
       AddOOFToFragmentainer(descendant, &space, fragmentainer_offset, index,
-                            is_known_to_be_last_fragmentainer, &algorithm,
+                            is_last_fragmentainer_so_far,
+                            is_known_to_be_very_last_fragmentainer, &algorithm,
                             fragmented_descendants);
     }
 
@@ -2061,7 +2099,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
         // repeat break token. But they are not going to repeat any further, so
         // we now need a re-layout with that in mind (so that they don't get
         // outgoing break tokens).
-        is_known_to_be_last_fragmentainer = true;
+        is_known_to_be_very_last_fragmentainer = true;
         fragmented_descendants->clear();
         continue;
       }
@@ -2079,12 +2117,13 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     const NGConstraintSpace* fragmentainer_space,
     LogicalOffset fragmentainer_offset,
     wtf_size_t index,
-    bool is_known_to_be_last_fragmentainer,
+    bool is_last_fragmentainer_so_far,
+    bool is_known_to_be_very_last_fragmentainer,
     NGSimplifiedOOFLayoutAlgorithm* algorithm,
     HeapVector<NodeToLayout>* fragmented_descendants) {
-  const NGLayoutResult* result =
-      LayoutOOFNode(descendant, /* only_layout */ nullptr, fragmentainer_space,
-                    is_known_to_be_last_fragmentainer);
+  const NGLayoutResult* result = LayoutOOFNode(
+      descendant, /* only_layout */ nullptr, fragmentainer_space,
+      is_last_fragmentainer_so_far, is_known_to_be_very_last_fragmentainer);
 
   if (result->Status() != NGLayoutResult::kSuccess) {
     DCHECK_EQ(result->Status(), NGLayoutResult::kOutOfFragmentainerSpace);
@@ -2148,7 +2187,7 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   const NGBlockBreakToken* break_token = physical_fragment.BreakToken();
   if (break_token) {
-    DCHECK(!is_known_to_be_last_fragmentainer);
+    DCHECK(!is_known_to_be_very_last_fragmentainer);
     // We must continue layout in the next fragmentainer. Update any information
     // in NodeToLayout, and add the node to |fragmented_descendants|.
     NodeToLayout fragmented_descendant = descendant;

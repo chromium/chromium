@@ -157,9 +157,7 @@ class CORE_EXPORT NGConstraintSpace final {
   NGConstraintSpace CloneWithoutFragmentation() const {
     DCHECK(HasBlockFragmentation());
     NGConstraintSpace copy = *this;
-    DCHECK(copy.rare_data_);
-    copy.rare_data_->block_direction_fragmentation_type = kFragmentNone;
-    copy.rare_data_->is_block_fragmentation_forced_off = true;
+    copy.DisableFurtherFragmentation();
     return copy;
   }
 
@@ -1675,6 +1673,12 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     return rare_data_;
+  }
+
+  void DisableFurtherFragmentation() {
+    DCHECK(rare_data_);
+    rare_data_->block_direction_fragmentation_type = kFragmentNone;
+    rare_data_->is_block_fragmentation_forced_off = true;
   }
 
   LogicalSize available_size_;

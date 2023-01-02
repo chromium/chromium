@@ -344,6 +344,21 @@ class CORE_EXPORT NGPhysicalFragment
     return IsCSSBox() && layout_object_->HasNonVisibleOverflow();
   }
 
+  OverflowClipAxes GetOverflowClipAxes() const {
+    if (!IsCSSBox()) {
+      return kNoOverflowClip;
+    }
+    return layout_object_->GetOverflowClipAxes();
+  }
+
+  bool HasNonVisibleBlockOverflow() const {
+    OverflowClipAxes clip_axes = GetOverflowClipAxes();
+    if (Style().IsHorizontalWritingMode()) {
+      return clip_axes & kOverflowClipY;
+    }
+    return clip_axes & kOverflowClipX;
+  }
+
   // True if this is considered a scroll-container. See
   // ComputedStyle::IsScrollContainer() for details.
   bool IsScrollContainer() const {
