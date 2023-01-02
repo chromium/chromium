@@ -143,9 +143,9 @@
     },
 
     'chromium.cft': {
-      'linux-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_no_nacl_reclient',
-      'mac-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_no_nacl_reclient',
-      'win-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_no_nacl_reclient',
+      'linux-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient',
+      'mac-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient',
+      'win-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient',
     },
 
     'chromium.chromiumos': {
@@ -2711,8 +2711,8 @@
       'gpu_tests', 'release_bot', 'minimal_symbols',
     ],
 
-    'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_no_nacl_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'minimal_symbols', 'disable_nacl',
+    'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient': [
+      'gpu_tests', 'release_bot_reclient', 'minimal_symbols',
       'chrome_for_testing',
     ],
 

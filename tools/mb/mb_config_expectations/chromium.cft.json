@@ -2,7 +2,6 @@
   "linux-rel-cft": {
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_for_testing_branded": true,
       "is_component_build": false,
@@ -15,7 +14,6 @@
   "mac-rel-cft": {
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_for_testing_branded": true,
       "is_component_build": false,
@@ -28,7 +26,6 @@
   "win-rel-cft": {
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_for_testing_branded": true,
       "is_component_build": false,
