@@ -74,6 +74,7 @@ class ModelTypeController : public DataTypeController {
   void OnDelegateStarted(
       std::unique_ptr<DataTypeActivationResponse> activation_response);
   void TriggerCompletionCallbacks(const SyncError& error);
+  void ClearMetadataWhileStopped();
 
   base::flat_map<SyncMode, std::unique_ptr<ModelTypeControllerDelegate>>
       delegate_map_;

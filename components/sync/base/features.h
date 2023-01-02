@@ -166,6 +166,9 @@ BASE_DECLARE_FEATURE(kSyncIgnoreAccountWithoutRefreshToken);
 // notified about browser shutdown.
 BASE_DECLARE_FEATURE(kSyncDoNotPropagateBrowserShutdownToDataTypes);
 
+// Enables codepath to allow clearing metadata when the data type is stopped.
+BASE_DECLARE_FEATURE(kSyncAllowClearingMetadataWhenDataTypeIsStopped);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

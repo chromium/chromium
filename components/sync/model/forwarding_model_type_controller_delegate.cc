@@ -44,4 +44,8 @@ void ForwardingModelTypeControllerDelegate::
   other_->RecordMemoryUsageAndCountsHistograms();
 }
 
+void ForwardingModelTypeControllerDelegate::ClearMetadataWhileStopped() {
+  other_->ClearMetadataWhileStopped();
+}
+
 }  // namespace syncer

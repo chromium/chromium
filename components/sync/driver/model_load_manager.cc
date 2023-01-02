@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_error.h"
 
@@ -104,8 +105,12 @@ void ModelLoadManager::StopDatatype(ModelType type,
   preferred_types_without_errors_.Remove(type);
 
   DataTypeController* dtc = controllers_->find(type)->second.get();
-  if (dtc->state() != DataTypeController::NOT_RUNNING &&
-      dtc->state() != DataTypeController::STOPPING) {
+  // If the feature flag is enabled, call stop on data types even if they are
+  // already stopped since we may still want to clear the metadata.
+  if (base::FeatureList::IsEnabled(
+          kSyncAllowClearingMetadataWhenDataTypeIsStopped) ||
+      (dtc->state() != DataTypeController::NOT_RUNNING &&
+       dtc->state() != DataTypeController::STOPPING)) {
     StopDatatypeImpl(error, shutdown_reason, dtc, base::DoNothing());
   }
 
@@ -120,7 +125,9 @@ void ModelLoadManager::StopDatatypeImpl(
     DataTypeController::StopCallback callback) {
   loaded_types_.Remove(dtc->type());
 
-  DCHECK(error.IsSet() || (dtc->state() != DataTypeController::NOT_RUNNING));
+  DCHECK(base::FeatureList::IsEnabled(
+             syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped) ||
+         error.IsSet() || (dtc->state() != DataTypeController::NOT_RUNNING));
 
   delegate_->OnSingleDataTypeWillStop(dtc->type(), error);
 
@@ -153,10 +160,14 @@ void ModelLoadManager::Stop(ShutdownReason shutdown_reason) {
   // Ignore callbacks from controllers.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  // Stop started data types.
+  // Stop all data types. Note that if the feature flag is enabled, we are also
+  // calling stop on data types that are already stopped since we may still want
+  // to clear the metadata.
   for (const auto& [type, dtc] : *controllers_) {
-    if (dtc->state() != DataTypeController::NOT_RUNNING &&
-        dtc->state() != DataTypeController::STOPPING) {
+    if (base::FeatureList::IsEnabled(
+            kSyncAllowClearingMetadataWhenDataTypeIsStopped) ||
+        (dtc->state() != DataTypeController::NOT_RUNNING &&
+         dtc->state() != DataTypeController::STOPPING)) {
       // We don't really wait until all datatypes have been fully stopped, which
       // is only required (and in fact waited for) when Initialize() is called.
       StopDatatypeImpl(SyncError(), shutdown_reason, dtc.get(),

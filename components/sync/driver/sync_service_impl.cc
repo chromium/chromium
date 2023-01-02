@@ -493,6 +493,14 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
     if (shutdown_reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
       sync_client_->GetSyncApiComponentFactory()->ClearAllTransportData();
     }
+    // If enabled, call controller's Stop() to inform them to clear the
+    // metadata.
+    if (base::FeatureList::IsEnabled(
+            kSyncAllowClearingMetadataWhenDataTypeIsStopped)) {
+      for (auto& [type, controller] : data_type_controllers_) {
+        controller->Stop(shutdown_reason, base::DoNothing());
+      }
+    }
     return;
   }
 

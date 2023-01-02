@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/features.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -123,6 +124,7 @@ std::unique_ptr<DataTypeActivationResponse> ModelTypeController::Connect() {
 
 void ModelTypeController::Stop(ShutdownReason reason, StopCallback callback) {
   DCHECK(CalledOnValidThread());
+  DCHECK(delegate_ || state() == NOT_RUNNING || state() == FAILED);
 
   // Leave metadata if we do not disable sync completely.
   SyncStopMetadataFate metadata_fate = KEEP_METADATA;
@@ -139,10 +141,14 @@ void ModelTypeController::Stop(ShutdownReason reason, StopCallback callback) {
   switch (state()) {
     case NOT_RUNNING:
     case FAILED:
-      // Nothing to stop. |metadata_fate| might require CLEAR_METADATA,
-      // which could lead to leaking sync metadata, but it doesn't seem a
-      // realistic scenario (disable sync during shutdown?).
+      // Nothing to stop.
       std::move(callback).Run();
+      // Clear metadata if needed.
+      if (base::FeatureList::IsEnabled(
+              kSyncAllowClearingMetadataWhenDataTypeIsStopped) &&
+          metadata_fate == CLEAR_METADATA) {
+        ClearMetadataWhileStopped();
+      }
       return;
 
     case STOPPING:
@@ -150,6 +156,8 @@ void ModelTypeController::Stop(ShutdownReason reason, StopCallback callback) {
       model_stop_metadata_fate_ =
           TakeStrictestMetadataFate(model_stop_metadata_fate_, metadata_fate);
       model_stop_callbacks_.push_back(std::move(callback));
+      // This just means stopping was requested while starting the data type.
+      // Metadata will cleared (if CLEAR_METADATA) in OnSyncStopping.
       break;
 
     case MODEL_STARTING:
@@ -318,6 +326,13 @@ void ModelTypeController::TriggerCompletionCallbacks(const SyncError& error) {
     for (StopCallback& stop_callback : model_stop_callbacks) {
       std::move(stop_callback).Run();
     }
+  }
+}
+
+void ModelTypeController::ClearMetadataWhileStopped() {
+  DCHECK(state_ == NOT_RUNNING || state_ == FAILED);
+  for (auto& [sync_mode, delegate] : delegate_map_) {
+    delegate->ClearMetadataWhileStopped();
   }
 }
 

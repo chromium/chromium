@@ -15,8 +15,10 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/sync/base/features.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -33,6 +35,7 @@ namespace {
 
 using testing::_;
 using testing::DoAll;
+using testing::InSequence;
 using testing::NiceMock;
 using testing::NotNull;
 using testing::SaveArg;
@@ -68,6 +71,7 @@ class MockDelegate : public ModelTypeControllerDelegate {
               (base::OnceCallback<void(const TypeEntitiesCount&)> callback),
               (const override));
   MOCK_METHOD(void, RecordMemoryUsageAndCountsHistograms, (), (override));
+  MOCK_METHOD(void, ClearMetadataWhileStopped, (), (override));
 };
 
 // Class used to expose ReportModelError() publicly.
@@ -626,6 +630,58 @@ TEST_F(ModelTypeControllerTest, ReportErrorAfterRegisteredWithBackend) {
   histogram_tester.ExpectBucketCount(kRunFailuresHistogram,
                                      ModelTypeHistogramValue(kTestModelType),
                                      /*count=*/1);
+}
+
+TEST_F(ModelTypeControllerTest, ClearMetadataWhenDatatypeNotRunning) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped);
+
+  {
+    InSequence s;
+    EXPECT_CALL(*delegate(), OnSyncStopping(KEEP_METADATA));
+    EXPECT_CALL(*delegate(), ClearMetadataWhileStopped);
+  }
+
+  // Start sync and then stop it(without clearing the metadata) to bring it
+  // to NOT_RUNNING state.
+  ASSERT_TRUE(LoadModels());
+  controller()->Connect();
+  controller()->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
+                     base::DoNothing());
+  ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
+
+  // ClearMetadataWhileStopped() should be called on Stop() even if state is
+  // NOT_RUNNING.
+  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+                     base::DoNothing());
+  ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
+}
+
+TEST_F(ModelTypeControllerTest, ClearMetadataWhenDatatypeInFailedState) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped);
+
+  EXPECT_CALL(*delegate(), ClearMetadataWhileStopped);
+  EXPECT_CALL(*delegate(), OnSyncStopping(CLEAR_METADATA)).Times(0);
+
+  // Start sync and simulate an error to bring it to a FAILED state.
+  DataTypeActivationRequest activation_request;
+  EXPECT_CALL(*delegate(), OnSyncStarting)
+      .WillOnce(SaveArg<0>(&activation_request));
+
+  controller()->LoadModels(MakeConfigureContext(), base::DoNothing());
+  ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
+  ASSERT_TRUE(activation_request.error_handler);
+  // Mimic completion for OnSyncStarting(), with an error.
+  activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
+  base::RunLoop().RunUntilIdle();
+
+  // ClearMetadataWhileStopped() should be called on Stop() even if state is
+  // FAILED.
+  ASSERT_EQ(DataTypeController::FAILED, controller()->state());
+  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+                     base::DoNothing());
+  ASSERT_EQ(DataTypeController::FAILED, controller()->state());
 }
 
 }  // namespace syncer
