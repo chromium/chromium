@@ -29,7 +29,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -39,8 +38,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -241,54 +238,6 @@ public class RecentTabsPageTest {
                 mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         Assert.assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(eventString);
-    }
-
-    // TODO(crbug.com/1334912): This test should be removed, since we have a similar test in
-    // SyncPromoControllerRenderTest.
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @DisableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE,
-    })
-    public void
-    testPersonalizedSigninPromoInRecentTabsPage() throws Exception {
-        Assert.assertEquals(0,
-                SharedPreferencesManager.getInstance().readInt(
-                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        mPage = loadRecentTabsPage();
-        mRenderTestRule.render(mPage.getView(), "personalized_signin_promo_recent_tabs_page");
-        Assert.assertEquals(1,
-                SharedPreferencesManager.getInstance().readInt(
-                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
-    }
-
-    // TODO(crbug.com/1334912): This test should be removed, since we have a similar test in
-    // SyncPromoControllerRenderTest.
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @DisableFeatures({
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE,
-    })
-    public void
-    testPersonalizedSyncPromoInRecentTabsPage() throws Exception {
-        Assert.assertEquals(0,
-                SharedPreferencesManager.getInstance().readInt(
-                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
-        mSigninTestRule.addTestAccountThenSignin();
-        mPage = loadRecentTabsPage();
-        mRenderTestRule.render(mPage.getView(), "personalized_sync_promo_recent_tabs_page");
-        Assert.assertEquals(1,
-                SharedPreferencesManager.getInstance().readInt(
-                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
     }
 
     /**

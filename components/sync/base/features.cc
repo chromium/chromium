@@ -34,9 +34,6 @@ BASE_FEATURE(kSyncAndroidPromosWithAlternativeTitle,
 BASE_FEATURE(kSyncAndroidPromosWithIllustration,
              "SyncAndroidPromosWithIllustration",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kSyncAndroidPromosWithSingleButton,
-             "SyncAndroidPromosWithSingleButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSyncAndroidPromosWithTitle,
              "SyncAndroidPromosWithTitle",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -406,8 +406,6 @@ public class MainSettings extends PreferenceFragmentCompat
 
     private void onSyncPromoPreferenceStateChanged() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION)
-                || ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
             // For promo experiments, we want to have mSignInPreference and
             // PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION visible even if the personalized promo is

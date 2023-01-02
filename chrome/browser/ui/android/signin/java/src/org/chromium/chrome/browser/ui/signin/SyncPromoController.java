@@ -485,11 +485,7 @@ public class SyncPromoController {
         }
         view.getDescription().setText(mDescriptionStringIdNoAccount);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON)) {
-            view.getPrimaryButton().setText(R.string.sync_promo_continue);
-        } else {
-            view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
-        }
+        view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
         view.getPrimaryButton().setOnClickListener(v -> signinWithNewAccount(context));
 
         view.getSecondaryButton().setVisibility(View.GONE);
@@ -512,11 +508,6 @@ public class SyncPromoController {
         view.getDescription().setText(mDescriptionStringId);
 
         view.getPrimaryButton().setOnClickListener(v -> signinWithDefaultAccount(context));
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON)) {
-            view.getPrimaryButton().setText(R.string.sync_promo_continue);
-            view.getSecondaryButton().setVisibility(View.GONE);
-            return;
-        }
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {

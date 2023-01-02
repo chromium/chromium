@@ -185,7 +185,6 @@ public class MainSettingsFragmentTest {
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE,
     })
@@ -219,7 +218,6 @@ public class MainSettingsFragmentTest {
     @SmallTest
     @DisableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
@@ -278,7 +276,6 @@ public class MainSettingsFragmentTest {
     @SmallTest
     @EnableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
@@ -335,7 +332,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON)
+    @EnableFeatures(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)
     public void testSigninRowLaunchesSignInFlowForSignedOutAccounts() {
         // When there are no accounts, sync promo and the signin preference shows the same text.
         mSyncTestRule.addTestAccount();
@@ -350,8 +347,8 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    @EnableFeatures(
+            {ChromeFeatureList.TANGIBLE_SYNC, ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
     public void
     testSigninRowLaunchesTangibleSignInFlowForSignedOutAccounts() {
         // When there are no accounts, sync promo and the signin preference shows the same text.
@@ -455,7 +452,6 @@ public class MainSettingsFragmentTest {
     @SmallTest
     @EnableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
@@ -494,7 +490,6 @@ public class MainSettingsFragmentTest {
     @SmallTest
     @DisableFeatures({
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
     })
     public void
