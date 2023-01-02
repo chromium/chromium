@@ -25,17 +25,18 @@ interface BookmarksPageHandler {
   // Bookmarks the current active tab in the given folder.
   BookmarkCurrentTabInFolder(int64 folder_id);
 
-  // Opens the bookmark specified by node_id in a new background tab, using the
-  // same logic as the native bookmarks context menu.
-  ExecuteOpenInNewTabCommand(int64 node_id, ActionSource source);
-
-  // Opens the bookmark specified by node_id in a new window, using the same
-  // logic as the native bookmarks context menu.
-  ExecuteOpenInNewWindowCommand(int64 node_id, ActionSource source);
-
-  // Opens the bookmark specified by node_id in a new incognito window, using
+  // Opens the bookmarks specified by node_ids in a new background tab, using
   // the same logic as the native bookmarks context menu.
-  ExecuteOpenInIncognitoWindowCommand(int64 node_id, ActionSource source);
+  ExecuteOpenInNewTabCommand(array<int64> node_ids, ActionSource source);
+
+  // Opens the bookmarks specified by node_ids in a new window, using the same
+  // logic as the native bookmarks context menu.
+  ExecuteOpenInNewWindowCommand(array<int64> node_ids, ActionSource source);
+
+  // Opens the bookmarks specified by node_ids in a new incognito window, using
+  // the same logic as the native bookmarks context menu.
+  ExecuteOpenInIncognitoWindowCommand(array<int64> node_ids,
+                                      ActionSource source);
 
   // Deletes bookmark specified by node_id, using the same logic as the native
   // bookmarks context menu.

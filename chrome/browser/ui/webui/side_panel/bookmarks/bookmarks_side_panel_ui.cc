@@ -52,6 +52,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"sidePanelTitle", IDS_SIDE_PANEL_TITLE},
       {"tooltipClose", IDS_CLOSE},
       {"tooltipDelete", IDS_DELETE},
+      {"tooltipMore", IDS_BOOKMARKS_EDIT_MORE},
       {"shoppingListFolderTitle", IDS_SIDE_PANEL_TRACKED_PRODUCTS},
       {"shoppingListTrackPriceButtonDescription",
        IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY},
@@ -81,8 +82,14 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"clearSearch", IDS_BOOKMARK_MANAGER_CLEAR_SEARCH},
       {"selectedBookmarkCount", IDS_BOOKMARK_MANAGER_ITEMS_SELECTED},
       {"menuOpenNewTab", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB},
+      {"menuOpenNewTabWithCount",
+       IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_WITH_COUNT},
       {"menuOpenNewWindow", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_WINDOW},
+      {"menuOpenNewWindowWithCount",
+       IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_NEW_WINDOW_WITH_COUNT},
       {"menuOpenIncognito", IDS_BOOKMARK_MANAGER_MENU_OPEN_INCOGNITO},
+      {"menuOpenIncognitoWithCount",
+       IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO_WITH_COUNT},
       {"newFolderTitle", IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME},
   };
   for (const auto& str : kLocalizedStrings)

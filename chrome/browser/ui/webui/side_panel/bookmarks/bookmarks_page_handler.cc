@@ -47,7 +47,7 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
   explicit BookmarkContextMenu(
       Browser* browser,
       base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder,
-      const bookmarks::BookmarkNode* bookmark,
+      std::vector<const bookmarks::BookmarkNode*> bookmarks,
       const side_panel::mojom::ActionSource& source)
       : ui::SimpleMenuModel(this),
         embedder_(embedder),
@@ -57,14 +57,14 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
             browser,
             browser->profile(),
             BookmarkLaunchLocation::kSidePanelContextMenu,
-            bookmark->parent(),
-            {bookmark}))),
+            bookmarks.front()->parent(),
+            bookmarks))),
         shopping_list_controller_(
             base::WrapUnique(new commerce::ShoppingListContextMenuController(
                 BookmarkModelFactory::GetForBrowserContext(browser->profile()),
                 commerce::ShoppingServiceFactory::GetForBrowserContext(
                     browser->profile()),
-                bookmark,
+                bookmarks.front(),
                 this))) {
     if (source == side_panel::mojom::ActionSource::kPriceTracking) {
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
@@ -82,8 +82,9 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
     AddSeparator(ui::NORMAL_SEPARATOR);
 
-    AddItem(bookmark->is_folder() ? IDC_BOOKMARK_BAR_RENAME_FOLDER
-                                  : IDC_BOOKMARK_BAR_EDIT);
+    AddItem(bookmarks.size() == 1 && bookmarks.front()->is_folder()
+                ? IDC_BOOKMARK_BAR_RENAME_FOLDER
+                : IDC_BOOKMARK_BAR_EDIT);
     AddSeparator(ui::NORMAL_SEPARATOR);
 
     AddItem(IDC_CUT);
@@ -133,8 +134,8 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
       shopping_list_controller_;
 };
 
-std::unique_ptr<BookmarkContextMenu> ContextMenuFromNode(
-    int64_t node_id,
+std::unique_ptr<BookmarkContextMenu> ContextMenuFromNodes(
+    const std::vector<int64_t> node_ids,
     base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder,
     side_panel::mojom::ActionSource source) {
   Browser* browser = chrome::FindLastActive();
@@ -144,13 +145,16 @@ std::unique_ptr<BookmarkContextMenu> ContextMenuFromNode(
 
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser->profile());
-  const bookmarks::BookmarkNode* bookmark =
-      bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
-  if (!bookmark) {
-    return nullptr;
+  std::vector<const bookmarks::BookmarkNode*> bookmarks = {};
+  for (const int64_t id : node_ids) {
+    const bookmarks::BookmarkNode* bookmark =
+        bookmarks::GetBookmarkNodeByID(bookmark_model, id);
+    if (bookmark) {
+      bookmarks.push_back(bookmark);
+    }
   }
 
-  return std::make_unique<BookmarkContextMenu>(browser, embedder, bookmark,
+  return std::make_unique<BookmarkContextMenu>(browser, embedder, bookmarks,
                                                source);
 }
 
@@ -177,36 +181,36 @@ void BookmarksPageHandler::BookmarkCurrentTabInFolder(int64_t folder_id) {
 }
 
 void BookmarksPageHandler::ExecuteOpenInNewTabCommand(
-    int64_t node_id,
+    const std::vector<int64_t>& node_ids,
     side_panel::mojom::ActionSource source) {
   auto embedder =
       bookmarks_ui_ ? bookmarks_ui_->embedder() : reading_list_ui_->embedder();
   std::unique_ptr<BookmarkContextMenu> contextMenu =
-      ContextMenuFromNode(node_id, embedder, source);
+      ContextMenuFromNodes(node_ids, embedder, source);
   if (contextMenu) {
     contextMenu->ExecuteCommand(IDC_BOOKMARK_BAR_OPEN_ALL, 0);
   }
 }
 
 void BookmarksPageHandler::ExecuteOpenInNewWindowCommand(
-    int64_t node_id,
+    const std::vector<int64_t>& node_ids,
     side_panel::mojom::ActionSource source) {
   auto embedder =
       bookmarks_ui_ ? bookmarks_ui_->embedder() : reading_list_ui_->embedder();
   std::unique_ptr<BookmarkContextMenu> contextMenu =
-      ContextMenuFromNode(node_id, embedder, source);
+      ContextMenuFromNodes(node_ids, embedder, source);
   if (contextMenu) {
     contextMenu->ExecuteCommand(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW, 0);
   }
 }
 
 void BookmarksPageHandler::ExecuteOpenInIncognitoWindowCommand(
-    int64_t node_id,
+    const std::vector<int64_t>& node_ids,
     side_panel::mojom::ActionSource source) {
   auto embedder =
       bookmarks_ui_ ? bookmarks_ui_->embedder() : reading_list_ui_->embedder();
   std::unique_ptr<BookmarkContextMenu> contextMenu =
-      ContextMenuFromNode(node_id, embedder, source);
+      ContextMenuFromNodes(node_ids, embedder, source);
   if (contextMenu) {
     contextMenu->ExecuteCommand(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO, 0);
   }
@@ -218,7 +222,7 @@ void BookmarksPageHandler::ExecuteDeleteCommand(
   auto embedder =
       bookmarks_ui_ ? bookmarks_ui_->embedder() : reading_list_ui_->embedder();
   std::unique_ptr<BookmarkContextMenu> contextMenu =
-      ContextMenuFromNode(node_id, embedder, source);
+      ContextMenuFromNodes({node_id}, embedder, source);
   if (contextMenu) {
     contextMenu->ExecuteCommand(IDC_BOOKMARK_BAR_REMOVE, 0);
   }
@@ -267,10 +271,9 @@ void BookmarksPageHandler::ShowContextMenu(
 
   if (embedder) {
     std::unique_ptr<BookmarkContextMenu> contextMenu =
-        ContextMenuFromNode(id, embedder, source);
+        ContextMenuFromNodes({id}, embedder, source);
     if (contextMenu) {
-      embedder->ShowContextMenu(point,
-                                ContextMenuFromNode(id, embedder, source));
+      embedder->ShowContextMenu(point, std::move(contextMenu));
     }
   }
 }

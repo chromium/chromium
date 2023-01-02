@@ -13,9 +13,9 @@ export interface BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
   bookmarkCurrentTabInFolder(folderId: string): void;
   cutBookmark(id: string): void;
-  contextMenuOpenBookmarkInNewTab(id: string, source: ActionSource): void;
-  contextMenuOpenBookmarkInNewWindow(id: string, source: ActionSource): void;
-  contextMenuOpenBookmarkInIncognitoWindow(id: string, source: ActionSource):
+  contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource): void;
+  contextMenuOpenBookmarkInNewWindow(ids: string[], source: ActionSource): void;
+  contextMenuOpenBookmarkInIncognitoWindow(ids: string[], source: ActionSource):
       void;
   contextMenuDelete(id: string, source: ActionSource): void;
   copyBookmark(id: string): Promise<void>;
@@ -62,16 +62,19 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     chrome.bookmarkManagerPrivate.cut([id]);
   }
 
-  contextMenuOpenBookmarkInNewTab(id: string, source: ActionSource) {
-    this.handler.executeOpenInNewTabCommand(BigInt(id), source);
+  contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource) {
+    this.handler.executeOpenInNewTabCommand(ids.map(id => BigInt(id)), source);
   }
 
-  contextMenuOpenBookmarkInNewWindow(id: string, source: ActionSource) {
-    this.handler.executeOpenInNewWindowCommand(BigInt(id), source);
+  contextMenuOpenBookmarkInNewWindow(ids: string[], source: ActionSource) {
+    this.handler.executeOpenInNewWindowCommand(
+        ids.map(id => BigInt(id)), source);
   }
 
-  contextMenuOpenBookmarkInIncognitoWindow(id: string, source: ActionSource) {
-    this.handler.executeOpenInIncognitoWindowCommand(BigInt(id), source);
+  contextMenuOpenBookmarkInIncognitoWindow(
+      ids: string[], source: ActionSource) {
+    this.handler.executeOpenInIncognitoWindowCommand(
+        ids.map(id => BigInt(id)), source);
   }
 
   contextMenuDelete(id: string, source: ActionSource) {

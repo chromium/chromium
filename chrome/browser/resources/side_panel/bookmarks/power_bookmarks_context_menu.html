@@ -11,7 +11,7 @@
 </style>
 
 <cr-action-menu id="menu">
-  <template is="dom-repeat" items="[[getMenuItemsForBookmark_(bookmark_)]]">
+  <template is="dom-repeat" items="[[getMenuItemsForBookmarks_(bookmarks_)]]">
     <template is="dom-if" if="[[!showDivider_(item)]]" restamp>
       <button class="dropdown-item" on-click="onMenuItemClicked_">
         [[item.label]]

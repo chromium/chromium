@@ -76,16 +76,17 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     this.folders_ = folders;
   }
 
-  contextMenuOpenBookmarkInNewTab(id: string, source: ActionSource) {
-    this.methodCalled('contextMenuOpenBookmarkInNewTab', id, source);
+  contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource) {
+    this.methodCalled('contextMenuOpenBookmarkInNewTab', ids, source);
   }
 
-  contextMenuOpenBookmarkInNewWindow(id: string, source: ActionSource) {
-    this.methodCalled('contextMenuOpenBookmarkInNewWindow', id, source);
+  contextMenuOpenBookmarkInNewWindow(ids: string[], source: ActionSource) {
+    this.methodCalled('contextMenuOpenBookmarkInNewWindow', ids, source);
   }
 
-  contextMenuOpenBookmarkInIncognitoWindow(id: string, source: ActionSource) {
-    this.methodCalled('contextMenuOpenBookmarkInIncognitoWindow', id, source);
+  contextMenuOpenBookmarkInIncognitoWindow(
+      ids: string[], source: ActionSource) {
+    this.methodCalled('contextMenuOpenBookmarkInIncognitoWindow', ids, source);
   }
 
   contextMenuDelete(id: string, source: ActionSource) {

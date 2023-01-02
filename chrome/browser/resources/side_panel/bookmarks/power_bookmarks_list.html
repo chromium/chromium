@@ -92,6 +92,11 @@
     padding: 14px;
   }
 
+  .edit-icons {
+    display: flex;
+    gap: 16px;
+  }
+
   .empty {
     align-items: center;
     display: flex;
@@ -263,6 +268,7 @@
         <iron-icon icon="bookmarks:filter-list"></iron-icon>
       </cr-button>
       <cr-icon-button iron-icon="bookmarks:create-new-folder"
+          disabled="[[editing_]]"
           aria-label="$i18n{createNewFolderA11yLabel}"
           on-click="onAddNewFolderClicked_"></cr-icon-button>
       <cr-icon-button class="icon-edit" disabled="[[!shownBookmarks_.length]]"
@@ -335,7 +341,13 @@
       <div class="edit-icons">
         <cr-icon-button iron-icon="bookmarks:delete"
             disabled="[[!selectedBookmarks_.length]]"
-            aria-label="$i18n{tooltipDelete}" on-click="onDeleteClicked_">
+            title="$i18n{tooltipDelete}" aria-label="$i18n{tooltipDelete}"
+            on-click="onDeleteClicked_">
+        </cr-icon-button>
+        <cr-icon-button iron-icon="cr:more-vert"
+            disabled="[[!selectedBookmarks_.length]]"
+            title="$i18n{tooltipMore}" aria-label="$i18n{tooltipMore}"
+            on-click="onEditMenuClicked_">
         </cr-icon-button>
       </div>
     </div>

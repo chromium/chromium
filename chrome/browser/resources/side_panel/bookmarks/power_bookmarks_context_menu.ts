@@ -46,57 +46,62 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
 
   static get properties() {
     return {
-      bookmark_: Object,
-
-      depth_: Number,
+      bookmarks_: Array,
     };
   }
 
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private bookmark_: chrome.bookmarks.BookmarkTreeNode;
-  private depth_: number;
+  private bookmarks_: chrome.bookmarks.BookmarkTreeNode[];
 
-  showAt(
-      event: MouseEvent, bookmark: chrome.bookmarks.BookmarkTreeNode,
-      depth: number) {
-    this.bookmark_ = bookmark;
-    this.depth_ = depth;
+  showAt(event: MouseEvent, bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
+    this.bookmarks_ = bookmarks;
     this.$.menu.showAt(event.target as HTMLElement);
   }
 
   showAtPosition(
-      event: MouseEvent, bookmark: chrome.bookmarks.BookmarkTreeNode,
-      depth: number) {
-    this.bookmark_ = bookmark;
-    this.depth_ = depth;
+      event: MouseEvent, bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
+    this.bookmarks_ = bookmarks;
     this.$.menu.showAtPosition({top: event.clientY, left: event.clientX});
   }
 
-  private getMenuItemsForBookmark_(): MenuItem[] {
-    let menuItems: MenuItem[] = [
+  private getMenuItemsForBookmarks_(): MenuItem[] {
+    const menuItems: MenuItem[] = [
       {
         id: MenuItemId.OPEN_NEW_TAB,
-        label: loadTimeData.getString('menuOpenNewTab'),
+        label: this.bookmarks_.length === 1 ?
+            loadTimeData.getString('menuOpenNewTab') :
+            loadTimeData.getStringF(
+                'menuOpenNewTabWithCount', this.bookmarks_.length),
       },
       {
         id: MenuItemId.OPEN_NEW_WINDOW,
-        label: loadTimeData.getString('menuOpenNewWindow'),
+        label: this.bookmarks_.length === 1 ?
+            loadTimeData.getString('menuOpenNewWindow') :
+            loadTimeData.getStringF(
+                'menuOpenNewWindowWithCount', this.bookmarks_.length),
       },
     ];
 
     if (!loadTimeData.getBoolean('incognitoMode')) {
       menuItems.push({
         id: MenuItemId.OPEN_INCOGNITO,
-        label: loadTimeData.getString('menuOpenIncognito'),
+        label: this.bookmarks_.length === 1 ?
+            loadTimeData.getString('menuOpenIncognito') :
+            loadTimeData.getStringF(
+                'menuOpenIncognitoWithCount', this.bookmarks_.length),
       });
     }
 
-    if (this.bookmark_.id !== loadTimeData.getString('bookmarksBarId')) {
-      menuItems = menuItems.concat([
-        {id: MenuItemId.DIVIDER},
-        {id: MenuItemId.DELETE, label: loadTimeData.getString('tooltipDelete')},
-      ]);
+    if (this.bookmarks_.length === 1 &&
+        this.bookmarks_[0]!.id !== loadTimeData.getString('bookmarksBarId')) {
+      menuItems.push(
+          {id: MenuItemId.DIVIDER},
+          {
+            id: MenuItemId.DELETE,
+            label: loadTimeData.getString('tooltipDelete'),
+          },
+      );
     }
 
     return menuItems;
@@ -112,19 +117,24 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
     switch (event.model.item.id) {
       case MenuItemId.OPEN_NEW_TAB:
         this.bookmarksApi_.contextMenuOpenBookmarkInNewTab(
-            this.bookmark_!.id, ActionSource.kBookmark);
+            this.bookmarks_.map(bookmark => bookmark.id),
+            ActionSource.kBookmark);
         break;
       case MenuItemId.OPEN_NEW_WINDOW:
         this.bookmarksApi_.contextMenuOpenBookmarkInNewWindow(
-            this.bookmark_!.id, ActionSource.kBookmark);
+            this.bookmarks_.map(bookmark => bookmark.id),
+            ActionSource.kBookmark);
         break;
       case MenuItemId.OPEN_INCOGNITO:
         this.bookmarksApi_.contextMenuOpenBookmarkInIncognitoWindow(
-            this.bookmark_!.id, ActionSource.kBookmark);
+            this.bookmarks_.map(bookmark => bookmark.id),
+            ActionSource.kBookmark);
         break;
       case MenuItemId.DELETE:
+        // Not expected to ever be called when this.bookmarks_ has more than
+        // one entry.
         this.bookmarksApi_.contextMenuDelete(
-            this.bookmark_!.id, ActionSource.kBookmark);
+            this.bookmarks_[0]!.id, ActionSource.kBookmark);
         break;
     }
     this.$.menu.close();

@@ -684,12 +684,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.stopPropagation();
     if (event.detail.event.button === 0) {
       this.$.contextMenu.get().showAt(
-          event.detail.event, event.detail.bookmark,
-          this.activeFolderPath_.length);
+          event.detail.event, [event.detail.bookmark]);
     } else {
       this.$.contextMenu.get().showAtPosition(
-          event.detail.event, event.detail.bookmark,
-          this.activeFolderPath_.length);
+          event.detail.event, [event.detail.bookmark]);
     }
   }
 
@@ -733,6 +731,12 @@ export class PowerBookmarksListElement extends PolymerElement {
           this.selectedBookmarks_ = [];
           this.editing_ = false;
         });
+  }
+
+  private onEditMenuClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.$.contextMenu.get().showAt(event, this.selectedBookmarks_.slice());
   }
 
   private onSortTypeClicked_(event: DomRepeatEvent<string>) {
