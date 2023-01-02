@@ -37,6 +37,11 @@
     padding-inline-start: 40px;
   }
 
+  #footer {
+    padding-block-end: 16px;
+    padding-block-start: 16px;
+  }
+
   #dialog p {
     margin: 0;
     padding-block-end: 16px;
@@ -81,6 +86,10 @@
       $i18n{fledgePageCurrentSitesDescriptionDisabled}
     </div>
   </div>
+</div>
+<!-- TODO(b/254412043): Add links to footer. -->
+<div id="footer" class="cr-row cr-secondary-text">
+  $i18n{fledgePageFooter}
 </div>
 
 <template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
