@@ -150,8 +150,10 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     auto animation = ProgressRingAnimation::CreateOfType(type);
     animation->AddUnsafeAnimationUpdatedCallback(base::BindRepeating(
         &ProgressIndicatorAnimationDelegate::OnRingAnimationUpdatedForKey,
-        base::Unretained(this), base::UnsafeDanglingUntriaged(key),
-        animation.get()));
+        base::Unretained(this),
+        // This is safe, for all the usages the lifetime of `key` extends beyond
+        // that of the registry/observer.
+        key, animation.get()));
 
     registry_->SetProgressRingAnimationForKey(key, std::move(animation))
         ->Start();
@@ -290,8 +292,13 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
               if (registry->GetProgressRingAnimationForKey(key) == animation)
                 registry->SetProgressRingAnimationForKey(key, nullptr);
             },
-            weak_factory_.GetWeakPtr(), base::UnsafeDanglingUntriaged(key),
-            base::UnsafeDanglingUntriaged(animation)));
+            weak_factory_.GetWeakPtr(),
+            // This is safe. For all usages, `key` has a longer lifetime than
+            // the delegate.
+            key,
+            // This is safe. `animation` is owned by the registry and has
+            // at least the same lifetime as the delegate.
+            animation));
   }
 
   ProgressIndicatorAnimationRegistry* const registry_;
