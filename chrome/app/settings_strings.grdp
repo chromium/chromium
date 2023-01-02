@@ -1947,6 +1947,18 @@
   <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the current sites list when the sites list is empty in the FLEDGE preferences page.">
     Morbi quis orci in mauris tempus rutrum. Curabitur blandit orci tortor, pellentesque tempor turpis lacinia ac.
   </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_HEADING" translateable="false" desc="Heading on 'Learn more' dialog in the FLEDGE preferences page.">
+    Nam a ornare ligula, nec auctor enim
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_1" translateable="false" desc="First bullet on 'Learn more' dialog in the FLEDGE preferences page.">
+    Nullam egestas neque felis, ut tincidunt sapien hendrerit eget. Mauris nec nisi id sapien tristique condimentum.
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_2" translateable="false" desc="Second bullet on 'Learn more' dialog in the FLEDGE preferences page.">
+    Phasellus tincidunt magna leo, pulvinar mollis mi finibus id. Aliquam suscipit porta dui id tincidunt. Aenean lacus est, venenatis eget mi quis, consequat tincidunt mauris.
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_3" translateable="false" desc="Third bullet on 'Learn more' dialog in the FLEDGE preferences page.">
+    In hac habitasse platea dictumst. Mauris sit amet nibh sollicitudin, fermentum quam vel, pharetra nisi. Nam a ornare ligula, nec auctor enim. Quisque dictum convallis nibh, non dictum nunc efficitur vitae.
+  </message>
 
   <!-- Privacy Sandbox Settings 4 - Ad Measurement Page -->
   <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE" translateable="false" desc="Title for the Ad Measurement preferences page.">

@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
@@ -61,11 +63,17 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
         type: Boolean,
         value: false,
       },
+
+      isLearnMoreDialogOpen_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private sitesList_: PrivacySandboxInterest[];
   private isSitesListLoaded_: boolean;
+  private isLearnMoreDialogOpen_: boolean;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
 
@@ -93,7 +101,16 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
   }
 
   private onLearnMoreClick_() {
-    // TODO(b/254411472): Open Learn More dialog.
+    this.isLearnMoreDialogOpen_ = true;
+  }
+
+  private onCloseDialog_() {
+    this.isLearnMoreDialogOpen_ = false;
+    afterNextRender(this, async () => {
+      // `learnMoreLink` might be null if the toggle was disabled after the
+      // dialog was opened.
+      this.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')?.focus();
+    });
   }
 }
 

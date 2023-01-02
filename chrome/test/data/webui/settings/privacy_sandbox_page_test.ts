@@ -394,6 +394,17 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
+  function assertLearnMoreDialogClosed() {
+    const dialog = page.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertFalse(!!dialog);
+  }
+
+  function assertLearnMoreDialogOpened() {
+    const dialog = page.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+  }
+
   test('enableFledgeToggle', async function() {
     page.setPrefValue('privacy_sandbox.m1.fledge_enabled', false);
     await flushTasks();
@@ -446,6 +457,28 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     assertFalse(isChildVisible(page, '#currentSitesDescription'));
     assertFalse(isChildVisible(page, '#currentSitesDescriptionEmpty'));
     assertTrue(isChildVisible(page, '#currentSitesDescriptionDisabled'));
+  });
+
+  test('learnMoreDialog', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
+    await flushTasks();
+
+    assertLearnMoreDialogClosed();
+    const learnMoreButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')!;
+    assertTrue(isVisible(learnMoreButton));
+    learnMoreButton.click();
+    await flushTasks();
+
+    assertLearnMoreDialogOpened();
+    const closeButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#closeButton')!;
+    assertTrue(isVisible(closeButton));
+    closeButton.click();
+    await flushTasks();
+    assertLearnMoreDialogClosed();
+    await waitAfterNextRender(page);
+    assertEquals(learnMoreButton, page.shadowRoot!.activeElement);
   });
 });
 

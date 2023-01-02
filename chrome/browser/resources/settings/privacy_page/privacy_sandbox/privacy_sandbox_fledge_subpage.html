@@ -36,6 +36,12 @@
     padding-block-start: 16px;
     padding-inline-start: 40px;
   }
+
+  #dialog p {
+    margin: 0;
+    padding-block-end: 16px;
+    padding-block-start: 4px;
+  }
 </style>
 
 <settings-toggle-button
@@ -76,3 +82,20 @@
     </div>
   </div>
 </div>
+
+<template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
+  <cr-dialog id="dialog" on-close="onCloseDialog_" show-on-attach>
+    <div slot="title">$i18n{fledgePageLearnMoreHeading}</div>
+    <div slot="body">
+      <p>$i18n{fledgePageLearnMoreBullet1}</p>
+      <p>$i18n{fledgePageLearnMoreBullet2}</p>
+      <p>$i18n{fledgePageLearnMoreBullet3}</p>
+    </div>
+    <div slot="button-container">
+      <cr-button id="closeButton" class="cancel-button" autofocus
+          on-click="onCloseDialog_">
+        $i18n{close}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>
