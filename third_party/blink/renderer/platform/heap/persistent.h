@@ -31,39 +31,6 @@ using Persistent = cppgc::Persistent<T>;
 template <typename T>
 using WeakPersistent = cppgc::WeakPersistent<T>;
 
-// CrossThreadPersistent allows retaining objects from threads other than the
-// thread that owns the heap of the corresponding object.
-//
-// Strongly prefer using `CrossThreadHandle` if the use case allows.
-//
-// Caveats:
-// - Does not protect the heap owning an object from terminating. E.g., posting
-//   a task with a CrossThreadPersistent for `this` will result in a
-//   use-after-free in case the heap owning `this` is terminated before the task
-//   is invoked.
-// - Reaching transitively through the graph is unsupported as objects may be
-//   moved concurrently on the thread owning the object.
-// template <typename T>
-// using CrossThreadPersistent = cppgc::subtle::CrossThreadPersistent<T>;
-
-// CrossThreadWeakPersistent allows weakly retaining objects from threads other
-// than the thread that owns the heap of the corresponding object.
-//
-// Strongly prefer using `CrossThreadWeakHandle` if the use case allows.
-//
-// Caveats:
-// - Does not protect the heap owning an object from termination, as the
-//   reference is weak.
-// - In order to access the underlying object
-//   `CrossThreadWeakPersistent<T>::Lock()` must be used which returns a
-//   `CrossThreadPersistent<T>` which in turn also does not protect the heap
-//   owning the object from terminating (see above).
-// - Reaching transitively through the graph is unsupported as objects may be
-//   moved concurrently on the thread owning the object.
-// template <typename T>
-// using CrossThreadWeakPersistent =
-// cppgc::subtle::WeakCrossThreadPersistent<T>;
-
 using PersistentLocation = cppgc::SourceLocation;
 
 template <typename T>
@@ -79,20 +46,6 @@ WeakPersistent<T> WrapWeakPersistent(
     const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE) {
   return WeakPersistent<T>(value, loc);
 }
-
-// template <typename T>
-// CrossThreadPersistent<T> WrapCrossThreadPersistent(
-//     T* value,
-//     const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE) {
-//   return CrossThreadPersistent<T>(value, loc);
-// }
-
-// template <typename T>
-// CrossThreadWeakPersistent<T> WrapCrossThreadWeakPersistent(
-//     T* value,
-//     const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE) {
-//   return CrossThreadWeakPersistent<T>(value, loc);
-// }
 
 template <typename U, typename T, typename weakness>
 cppgc::internal::BasicPersistent<U, weakness> DownCast(
@@ -134,14 +87,6 @@ struct VectorTraits<blink::Persistent<T>>
 template <typename T>
 struct VectorTraits<blink::WeakPersistent<T>>
     : PersistentVectorTraitsBase<blink::WeakPersistent<T>> {};
-
-// template <typename T>
-// struct VectorTraits<blink::CrossThreadPersistent<T>>
-//     : PersistentVectorTraitsBase<blink::CrossThreadPersistent<T>> {};
-
-// template <typename T>
-// struct VectorTraits<blink::CrossThreadWeakPersistent<T>>
-//     : PersistentVectorTraitsBase<blink::CrossThreadWeakPersistent<T>> {};
 
 template <typename T, typename PersistentType>
 struct BasePersistentHashTraits : SimpleClassHashTraits<PersistentType> {
@@ -188,14 +133,6 @@ template <typename T>
 struct HashTraits<blink::WeakPersistent<T>>
     : BasePersistentHashTraits<T, blink::WeakPersistent<T>> {};
 
-// template <typename T>
-// struct HashTraits<blink::CrossThreadPersistent<T>>
-//     : BasePersistentHashTraits<T, blink::CrossThreadPersistent<T>> {};
-
-// template <typename T>
-// struct HashTraits<blink::CrossThreadWeakPersistent<T>>
-//     : BasePersistentHashTraits<T, blink::CrossThreadWeakPersistent<T>> {};
-
 // Default hash for hash tables with Persistent<>-derived elements.
 template <typename T>
 struct PersistentHashBase : PtrHash<T> {
@@ -218,27 +155,6 @@ struct DefaultHash<blink::Persistent<T>> : PersistentHashBase<T> {};
 template <typename T>
 struct DefaultHash<blink::WeakPersistent<T>> : PersistentHashBase<T> {};
 
-// template <typename T>
-// struct DefaultHash<blink::CrossThreadPersistent<T>> : PersistentHashBase<T>
-// {};
-
-// template <typename T>
-// struct DefaultHash<blink::CrossThreadWeakPersistent<T>> :
-// PersistentHashBase<T> {};
-
-// template <typename T>
-// struct CrossThreadCopier<blink::CrossThreadPersistent<T>>
-//     : public CrossThreadCopierPassThrough<blink::CrossThreadPersistent<T>> {
-//   STATIC_ONLY(CrossThreadCopier);
-// };
-
-// template <typename T>
-// struct CrossThreadCopier<blink::CrossThreadWeakPersistent<T>>
-//     : public
-//     CrossThreadCopierPassThrough<blink::CrossThreadWeakPersistent<T>> {
-//   STATIC_ONLY(CrossThreadCopier);
-// };
-
 }  // namespace WTF
 
 namespace base {
@@ -249,18 +165,6 @@ struct IsWeakReceiver;
 template <typename T>
 struct IsWeakReceiver<blink::WeakPersistent<T>> : std::true_type {};
 
-// template <typename T>
-// struct IsWeakReceiver<blink::CrossThreadWeakPersistent<T>> : std::true_type
-// {};
-
-// template <typename T>
-// struct BindUnwrapTraits<blink::CrossThreadWeakPersistent<T>> {
-//   static blink::CrossThreadPersistent<T> Unwrap(
-//       const blink::CrossThreadWeakPersistent<T>& wrapped) {
-//     return wrapped.Lock();
-//   }
-// };
-
 template <typename>
 struct MaybeValidTraits;
 
@@ -270,13 +174,6 @@ template <typename T>
 struct MaybeValidTraits<blink::WeakPersistent<T>> {
   static bool MaybeValid(const blink::WeakPersistent<T>& p) { return true; }
 };
-
-// template <typename T>
-// struct MaybeValidTraits<blink::CrossThreadWeakPersistent<T>> {
-//   static bool MaybeValid(const blink::CrossThreadWeakPersistent<T>& p) {
-//     return true;
-//   }
-// };
 
 }  // namespace base
 
