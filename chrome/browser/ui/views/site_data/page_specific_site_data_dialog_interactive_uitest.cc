@@ -9,6 +9,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -22,9 +24,13 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/page_info/core/features.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -53,10 +59,6 @@ class PageSpecificSiteDataDialogInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   PageSpecificSiteDataDialogInteractiveUiTest() {
-    feature_list_.InitWithFeatures({page_info::kPageSpecificSiteDataDialog,
-                                    page_info::kPageInfoCookiesSubpage,
-                                    net::features::kPartitionedCookies},
-                                   {});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
@@ -72,6 +74,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
 
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(https_server()->InitializeAndListen());
+    SetUpFeatureList();
     InteractiveBrowserTest::SetUp();
   }
 
@@ -82,11 +85,11 @@ class PageSpecificSiteDataDialogInteractiveUiTest
     https_server()->StartAcceptingConnections();
     histograms_ = std::make_unique<base::HistogramTester>();
     histograms_->ExpectTotalCount(kCookiesDialogHistogramName, 0);
-    incognito_browser_ = CreateIncognitoBrowser();
+    SetUpCookieControlMode();
+    SetUpPrivacySandboxState();
   }
 
   void TearDownOnMainThread() override {
-    incognito_browser_ = nullptr;
     histograms_.reset();
     EXPECT_TRUE(https_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
@@ -104,8 +107,8 @@ class PageSpecificSiteDataDialogInteractiveUiTest
 
   // Returns a common sequence of setup steps for all tests.
   MultiStep NavigateAndOpenDialog(ui::ElementIdentifier section_id) {
-    const GURL third_party_cookie_page_url = https_server()->GetURL(
-        "a.test", "/third_party_partitioned_cookies.html");
+    const GURL third_party_cookie_page_url =
+        https_server()->GetURL("a.test", GetTestPageRelativeURL());
     return Steps(
         InstrumentTab(kWebContentsElementId),
         NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
@@ -147,11 +150,30 @@ class PageSpecificSiteDataDialogInteractiveUiTest
 
   const base::HistogramTester& histograms() const { return *histograms_; }
   ui::ElementContext context() const {
-    return incognito_browser_->window()->GetElementContext();
+    return browser()->window()->GetElementContext();
   }
 
- private:
-  base::raw_ptr<Browser> incognito_browser_ = nullptr;
+ protected:
+  virtual void SetUpFeatureList() {
+    feature_list_.InitWithFeatures({page_info::kPageSpecificSiteDataDialog,
+                                    page_info::kPageInfoCookiesSubpage,
+                                    net::features::kPartitionedCookies},
+                                   {});
+  }
+
+  virtual void SetUpCookieControlMode() {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
+  }
+
+  virtual void SetUpPrivacySandboxState() {}
+
+  virtual std::string GetTestPageRelativeURL() {
+    return "/third_party_partitioned_cookies.html";
+  }
+
   std::unique_ptr<base::HistogramTester> histograms_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -292,4 +314,70 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       CheckRowLabel(kMixedPartitionedRow,
                     IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE),
       Do(ExpectActionCount(PageSpecificSiteDataDialogAction::kSiteAllowed, 1)));
+}
+
+class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
+    : public PageSpecificSiteDataDialogInteractiveUiTest {
+ public:
+  PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest() = default;
+  ~PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest() override =
+      default;
+
+ protected:
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeatures(
+        {page_info::kPageSpecificSiteDataDialog,
+         page_info::kPageInfoCookiesSubpage, blink::features::kSharedStorageAPI,
+         blink::features::kFencedFrames,
+         features::kPrivacySandboxAdsAPIsOverride},
+        {});
+  }
+
+  void SetUpCookieControlMode() override {}
+
+  void SetUpPrivacySandboxState() override {
+    PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
+        ->SetAllPrivacySandboxAllowedForTesting();
+  }
+
+  std::string GetTestPageRelativeURL() override {
+    return "/shared_storage_first_party_data.html";
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest,
+    FirstPartyAllowed) {
+  RunTestSequenceInContext(
+      context(),
+      NavigateAndOpenDialog(kPageSpecificSiteDataDialogFirstPartySection),
+      // Name the first row in the first-party section.
+      InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
+                                 kFirstPartyAllowedRow, 0)),
+      // Verify no empty state label is present.
+      EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel,
+                       /*in_any_context=*/true),
+      // Verify the row label and open the row menu.
+      CheckRowLabel(kFirstPartyAllowedRow,
+                    IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE),
+      OpenRowMenu(kFirstPartyAllowedRow),
+      // Verify that the menu has "Block" and "Clear on exit" menu items.
+      InAnyContext(WaitForShow(SiteDataRowView::kBlockMenuItem)),
+      InAnyContext(WaitForShow(SiteDataRowView::kClearOnExitMenuItem)),
+      // Verify that "Allow" is not present as it is already allowed.
+      EnsureNotPresent(SiteDataRowView::kAllowMenuItem,
+                       /*in_any_context=*/true),
+      // Verify that the site can be deleted.
+      DeleteRow(kFirstPartyAllowedRow),
+      // Verify that UI has updated as a result of clicking on a menu item and
+      // the correct histogram was logged.
+      AfterHide(
+          kFirstPartyAllowedRow,
+          ExpectActionCount(PageSpecificSiteDataDialogAction::kSiteDeleted, 1)),
+      // Verify that after deleting the last (and only) row in a section, a
+      // label explaining the empty state is shown.
+      InAnyContext(CheckViewProperty(
+          kPageSpecificSiteDataDialogEmptyStateLabel, &views::Label::GetText,
+          l10n_util::GetStringUTF16(
+              IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_EMPTY_STATE_LABEL))));
 }

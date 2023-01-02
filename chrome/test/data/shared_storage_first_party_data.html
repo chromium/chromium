@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <title>shared storage first party data</title>
+    <script>
+      async function setSharedStorage() {
+        try {
+          await window.sharedStorage.set('age-group', 1);
+        } catch {
+          console.error('Failed to add shared storage entry.');
+        }
+      }
+      </script>
+  </head>
+<body onload="setSharedStorage();">
+</body></html>
