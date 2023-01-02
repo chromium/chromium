@@ -1271,6 +1271,8 @@ source_set("ash") {
     "fusebox/fusebox_errno.h",
     "fusebox/fusebox_moniker.cc",
     "fusebox/fusebox_moniker.h",
+    "fusebox/fusebox_read_writer.cc",
+    "fusebox/fusebox_read_writer.h",
     "fusebox/fusebox_server.cc",
     "fusebox/fusebox_server.h",
     "game_mode/game_mode_controller.cc",

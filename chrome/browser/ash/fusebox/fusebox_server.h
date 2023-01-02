@@ -17,15 +17,14 @@
 #include "chrome/browser/ash/fusebox/fusebox.pb.h"
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 #include "chrome/browser/ash/fusebox/fusebox_staging.pb.h"
-#include "net/base/io_buffer.h"
 #include "storage/browser/file_system/async_file_util.h"
-#include "storage/browser/file_system/file_stream_reader.h"
-#include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_system_context.h"
 
 class Profile;
 
 namespace fusebox {
+
+class ReadWriter;
 
 class Server {
  public:
@@ -198,49 +197,6 @@ class Server {
 
   using PendingRead2 = std::pair<Read2RequestProto, Read2Callback>;
   using PendingWrite2 = std::pair<Write2RequestProto, Write2Callback>;
-
-  // Lives entirely on the I/O thread, as enforced by base::SequenceBound.
-  struct ReadWriter {
-    explicit ReadWriter(const storage::FileSystemURL& fs_url);
-    ~ReadWriter();
-
-    void Read(scoped_refptr<storage::FileSystemContext> fs_context,
-              int64_t offset,
-              int64_t length,
-              Server::Read2Callback callback);
-    void OnRead(Server::Read2Callback callback,
-                scoped_refptr<storage::FileSystemContext> fs_context,
-                std::unique_ptr<storage::FileStreamReader> fs_reader,
-                scoped_refptr<net::IOBuffer> buffer,
-                int64_t offset,
-                int length);
-
-    void Write(scoped_refptr<storage::FileSystemContext> fs_context,
-               scoped_refptr<net::StringIOBuffer> buffer,
-               int64_t offset,
-               int length,
-               Server::Write2Callback callback);
-    void OnWrite(Server::Write2Callback callback,
-                 scoped_refptr<storage::FileSystemContext> fs_context,
-                 std::unique_ptr<storage::FileStreamWriter> fs_writer,
-                 scoped_refptr<net::IOBuffer> buffer,
-                 int64_t offset,
-                 int length);
-
-    const storage::FileSystemURL fs_url_;
-
-    std::unique_ptr<storage::FileStreamReader> fs_reader_;
-    // Unused whenever fs_reader_ is nullptr.
-    int64_t read_offset_ = -1;
-
-    std::unique_ptr<storage::FileStreamWriter> fs_writer_;
-    // Unused whenever fs_writer_ is nullptr.
-    int64_t write_offset_ = -1;
-
-    // TODO(b/255703917): snapshot management.
-
-    base::WeakPtrFactory<ReadWriter> weak_ptr_factory_{this};
-  };
 
   struct FuseFileMapEntry {
     FuseFileMapEntry(scoped_refptr<storage::FileSystemContext> fs_context_arg,

@@ -18,9 +18,11 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_errno.h"
+#include "chrome/browser/ash/fusebox/fusebox_read_writer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/io_buffer.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -292,31 +294,6 @@ void RunMkDirCallback(
           metadata_fields, std::move(outer_callback)));
 }
 
-void RunRead2CallbackFailure(Server::Read2Callback callback,
-                             base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  Read2ResponseProto response_proto;
-  response_proto.set_posix_error_code(FileErrorToErrno(error_code));
-  std::move(callback).Run(response_proto);
-}
-
-void RunRead2CallbackTypical(Server::Read2Callback callback,
-                             scoped_refptr<net::IOBuffer> buffer,
-                             int length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  Read2ResponseProto response_proto;
-  if (length < 0) {
-    response_proto.set_posix_error_code(NetErrorToErrno(length));
-  } else {
-    *response_proto.mutable_data() = std::string(buffer->data(), length);
-  }
-  std::move(callback).Run(response_proto);
-
-  content::GetIOThreadTaskRunner({})->ReleaseSoon(FROM_HERE, std::move(buffer));
-}
-
 void RunRmDirCallback(
     Server::RmDirCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
@@ -409,25 +386,6 @@ void RunUnlinkCallback(
   std::move(callback).Run(response_proto);
 }
 
-void RunWrite2CallbackFailure(Server::Write2Callback callback,
-                              base::File::Error error_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  Write2ResponseProto response_proto;
-  response_proto.set_posix_error_code(FileErrorToErrno(error_code));
-  std::move(callback).Run(response_proto);
-}
-
-void RunWrite2CallbackTypical(Server::Write2Callback callback, int length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  Write2ResponseProto response_proto;
-  if (length < 0) {
-    response_proto.set_posix_error_code(NetErrorToErrno(length));
-  }
-  std::move(callback).Run(response_proto);
-}
-
 void RunStat2Callback(
     Server::Stat2Callback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
@@ -459,146 +417,6 @@ std::string SubdirForTempDir(base::ScopedTempDir& scoped_temp_dir) {
 
 }  // namespace
 
-Server::ReadWriter::ReadWriter(const storage::FileSystemURL& fs_url)
-    : fs_url_(fs_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-}
-
-Server::ReadWriter::~ReadWriter() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-}
-
-void Server::ReadWriter::Read(
-    scoped_refptr<storage::FileSystemContext> fs_context,
-    int64_t offset,
-    int64_t length,
-    Server::Read2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  // See if we can re-use the previous storage::FileStreamReader.
-  std::unique_ptr<storage::FileStreamReader> fs_reader;
-  if (fs_reader_ && (read_offset_ == offset)) {
-    fs_reader = std::move(fs_reader_);
-    read_offset_ = -1;
-  } else {
-    fs_reader = fs_context->CreateFileStreamReader(fs_url_, offset, INT64_MAX,
-                                                   base::Time());
-    if (!fs_reader) {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&RunRead2CallbackFailure, std::move(callback),
-                         base::File::Error::FILE_ERROR_INVALID_URL));
-      return;
-    }
-  }
-
-  constexpr int64_t min_length = 256;
-  constexpr int64_t max_length = 262144;  // 256 KiB.
-  scoped_refptr<net::IOBuffer> buffer = base::MakeRefCounted<net::IOBuffer>(
-      std::max(min_length, std::min(max_length, length)));
-
-  // Save the pointer before we std::move fs_reader into a base::OnceCallback.
-  // The std::move keeps the underlying storage::FileStreamReader alive while
-  // any network I/O is pending. Without the std::move, the underlying
-  // storage::FileStreamReader would get destroyed at the end of this function.
-  auto* saved_fs_reader = fs_reader.get();
-
-  auto pair = base::SplitOnceCallback(base::BindOnce(
-      &Server::ReadWriter::OnRead, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), fs_context, std::move(fs_reader), buffer, offset));
-
-  int result =
-      saved_fs_reader->Read(buffer.get(), length, std::move(pair.first));
-  if (result != net::ERR_IO_PENDING) {  // The read was synchronous.
-    std::move(pair.second).Run(result);
-  }
-}
-
-void Server::ReadWriter::OnRead(
-    Server::Read2Callback callback,
-    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
-    std::unique_ptr<storage::FileStreamReader> fs_reader,
-    scoped_refptr<net::IOBuffer> buffer,
-    int64_t offset,
-    int length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  if (length >= 0) {
-    fs_reader_ = std::move(fs_reader);
-    read_offset_ = offset + length;
-  } else {
-    fs_reader_.reset();
-    read_offset_ = -1;
-  }
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&RunRead2CallbackTypical, std::move(callback),
-                                std::move(buffer), length));
-}
-
-void Server::ReadWriter::Write(
-    scoped_refptr<storage::FileSystemContext> fs_context,
-    scoped_refptr<net::StringIOBuffer> buffer,
-    int64_t offset,
-    int length,
-    Server::Write2Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  // See if we can re-use the previous storage::FileStreamWriter.
-  std::unique_ptr<storage::FileStreamWriter> fs_writer;
-  if (fs_writer_ && (write_offset_ == offset)) {
-    fs_writer = std::move(fs_writer_);
-    write_offset_ = -1;
-  } else {
-    fs_writer = fs_context->CreateFileStreamWriter(fs_url_, offset);
-    if (!fs_writer) {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&RunWrite2CallbackFailure, std::move(callback),
-                         base::File::Error::FILE_ERROR_INVALID_URL));
-      return;
-    }
-  }
-
-  // Save the pointer before we std::move fs_writer into a base::OnceCallback.
-  // The std::move keeps the underlying storage::FileStreamWriter alive while
-  // any network I/O is pending. Without the std::move, the underlying
-  // storage::FileStreamWriter would get destroyed at the end of this function.
-  auto* saved_fs_writer = fs_writer.get();
-
-  auto pair = base::SplitOnceCallback(base::BindOnce(
-      &Server::ReadWriter::OnWrite, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), fs_context, std::move(fs_writer), buffer, offset));
-
-  int result =
-      saved_fs_writer->Write(buffer.get(), length, std::move(pair.first));
-  if (result != net::ERR_IO_PENDING) {  // The write was synchronous.
-    std::move(pair.second).Run(result);
-  }
-}
-
-void Server::ReadWriter::OnWrite(
-    Server::Write2Callback callback,
-    scoped_refptr<storage::FileSystemContext> fs_context,
-    std::unique_ptr<storage::FileStreamWriter> fs_writer,
-    scoped_refptr<net::IOBuffer> buffer,
-    int64_t offset,
-    int length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  if (length >= 0) {
-    fs_writer_ = std::move(fs_writer);
-    write_offset_ = offset + length;
-  } else {
-    fs_writer_.reset();
-    write_offset_ = -1;
-  }
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RunWrite2CallbackTypical, std::move(callback), length));
-}
-
 Server::FuseFileMapEntry::FuseFileMapEntry(
     scoped_refptr<storage::FileSystemContext> fs_context_arg,
     storage::FileSystemURL fs_url_arg,
@@ -617,7 +435,7 @@ void Server::FuseFileMapEntry::DoRead2(const Read2RequestProto& request,
                                        Server::Read2Callback callback) {
   int64_t offset = request.has_offset() ? request.offset() : 0;
   int64_t length = request.has_length() ? request.length() : 0;
-  seqbnd_read_writer_.AsyncCall(&Server::ReadWriter::Read)
+  seqbnd_read_writer_.AsyncCall(&ReadWriter::Read)
       .WithArgs(fs_context_, offset, length, std::move(callback));
 }
 
@@ -631,7 +449,7 @@ void Server::FuseFileMapEntry::DoWrite2(const Write2RequestProto& request,
   scoped_refptr<net::StringIOBuffer> buffer =
       base::MakeRefCounted<net::StringIOBuffer>(request.data());
   int64_t offset = request.has_offset() ? request.offset() : 0;
-  seqbnd_read_writer_.AsyncCall(&Server::ReadWriter::Write)
+  seqbnd_read_writer_.AsyncCall(&ReadWriter::Write)
       .WithArgs(fs_context_, std::move(buffer), offset,
                 static_cast<int>(request.data().size()), std::move(callback));
 }
