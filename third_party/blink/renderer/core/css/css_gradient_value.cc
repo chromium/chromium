@@ -1449,8 +1449,10 @@ gfx::SizeF RadiusToSide(const gfx::PointF& point,
 inline gfx::SizeF EllipseRadius(const gfx::Vector2dF& offset_from_center,
                                 float aspect_ratio) {
   // If the aspectRatio is 0 or infinite, the ellipse is completely flat.
+  // (If it is NaN, the ellipse is 0x0, and should be handled as zero width.)
   // TODO(sashab): Implement Degenerate Radial Gradients, see crbug.com/635727.
-  if (aspect_ratio == 0 || std::isinf(aspect_ratio)) {
+  if (aspect_ratio == 0 || std::isinf(aspect_ratio) ||
+      std::isnan(aspect_ratio)) {
     return gfx::SizeF(0, 0);
   }
 
