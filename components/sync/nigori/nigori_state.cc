@@ -243,13 +243,9 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
     UpdateSpecificsFromKeyDerivationParams(
         *custom_passphrase_key_derivation_params, &specifics);
   }
-  // TODO(crbug.com/1020084): populate |keystore_decryptor_token| for trusted
-  // vault passphrase to allow rollbacks.
   if (passphrase_type == sync_pb::NigoriSpecifics::KEYSTORE_PASSPHRASE) {
-    // TODO(crbug.com/922900): it seems possible to have corrupted
-    // |pending_keystore_decryptor_token| and an ability to recover it in case
-    // |pending_keys| isn't set and |keystore_keys| contains some keys.
     if (pending_keystore_decryptor_token.has_value()) {
+      DCHECK(pending_keys.has_value());
       *specifics.mutable_keystore_decryptor_token() =
           *pending_keystore_decryptor_token;
     } else {

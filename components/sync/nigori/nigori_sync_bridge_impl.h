@@ -96,7 +96,7 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   // |encryption_keybag| from remote NigoriSpecifics. Its content depends on
   // current passphrase type and available keys: it contains current default
   // encryption key, for KEYSTORE_PASSPHRASE it additionally contains key
-  // obtained from |keystore_decryptor_token|.
+  // obtained from |keystore_decryptor_token| and all keystore keys.
   NigoriKeyBag BuildDecryptionKeyBagForRemoteKeybag() const;
 
   // Uses |key_bag| to try to decrypt pending keys as represented in

@@ -760,6 +760,14 @@ NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag()
     }
   }
 
+  if (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
+    // Allow decryption using keystore keys directly: while using
+    // |keystore_decryptor_token| should be sufficient, this supports future
+    // case when |keystore_decryptor_token| is not passed.
+    decryption_key_bag.AddAllUnknownKeysFrom(
+        state_.keystore_keys_cryptographer->GetKeystoreKeybag());
+  }
+
   if (state_.cryptographer->CanEncrypt()) {
     decryption_key_bag.AddKeyFromProto(
         state_.cryptographer->ExportDefaultKey());

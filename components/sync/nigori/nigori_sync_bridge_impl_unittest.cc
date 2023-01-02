@@ -615,6 +615,33 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_FALSE(bridge()->NeedKeystoreKey());
 }
 
+// Tests that bridge is able to decrypt keystore nigori, when
+// |keystore_decryptor_token| is corrupted, but |encryption_keybag| is
+// decryptable using keystore keys.
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldDecryptKeystoreNigoriWithCorruptedKeystoreDecryptor) {
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(kRawKeystoreKey);
+
+  EntityData entity_data;
+  // |keystore_decryptor_token| will be undecryptable.
+  *entity_data.specifics.mutable_nigori() = BuildKeystoreNigoriSpecifics(
+      /*keybag_keys_params=*/{kKeystoreKeyParams},
+      /*keystore_decryptor_params=*/kKeystoreKeyParams,
+      /*keystore_key_params=*/Pbkdf2PassphraseKeyParamsForTesting("wrong_key"));
+
+  ASSERT_THAT(bridge()->MergeSyncData(std::move(entity_data)),
+              Eq(absl::nullopt));
+
+  EXPECT_CALL(*observer(), OnCryptographerStateChanged(
+                               NotNull(), /*has_pending_keys=*/false));
+  EXPECT_CALL(*observer(), OnPassphraseAccepted());
+  bridge()->SetKeystoreKeys({kRawKeystoreKey});
+
+  EXPECT_THAT(*cryptographer(), CanDecryptWith(kKeystoreKeyParams));
+  EXPECT_FALSE(bridge()->NeedKeystoreKey());
+}
+
 // Tests that unsuccessful attempt of |pending_keys| decryption ends up in
 // additional OnPassphraseRequired() call. This is allowed because of possible
 // change of |pending_keys| in keystore mode or due to transition from keystore
@@ -809,7 +836,7 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldFailOnInvalidKeystoreDecryption) {
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
 
   // Don't populate |kKeystoreKeyParams| in |keybag_keys_params|, so encryption
-  // keybag isn't valid. Put fake key params in |keybage_keys_params|, because
+  // keybag isn't valid. Put fake key params in |keybag_keys_params|, because
   // they must be non-empty.
   EntityData entity_data;
   *entity_data.specifics.mutable_nigori() = BuildKeystoreNigoriSpecifics(

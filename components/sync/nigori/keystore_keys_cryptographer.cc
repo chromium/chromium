@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/cryptographer_impl.h"
+#include "components/sync/nigori/nigori_key_bag.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 
@@ -19,7 +20,8 @@ namespace syncer {
 std::unique_ptr<KeystoreKeysCryptographer>
 KeystoreKeysCryptographer::CreateEmpty() {
   return base::WrapUnique(new KeystoreKeysCryptographer(
-      CryptographerImpl::CreateEmpty(),
+      NigoriKeyBag::CreateEmpty(),
+      /*last_keystore_key_name=*/std::string(),
       /*keystore_keys=*/std::vector<std::string>()));
 }
 
@@ -31,41 +33,38 @@ KeystoreKeysCryptographer::FromKeystoreKeys(
     return CreateEmpty();
   }
 
-  std::unique_ptr<CryptographerImpl> cryptographer =
-      CryptographerImpl::CreateEmpty();
-
+  NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
   std::string last_key_name;
 
   for (const std::string& key : keystore_keys) {
-    last_key_name =
-        cryptographer->EmplaceKey(key, KeyDerivationParams::CreateForPbkdf2());
-    // TODO(crbug.com/922900): possible behavioral change. Old implementation
-    // fails only if we failed to add current keystore key. Failing to add any
-    // of these keys doesn't seem valid. This line seems to be a good candidate
-    // for UMA, as it's not a normal situation, if we fail to add any key.
+    last_key_name = key_bag.AddKey(Nigori::CreateByDerivation(
+        KeyDerivationParams::CreateForPbkdf2(), key));
+
     if (last_key_name.empty()) {
+      // TODO(crbug.com/1368018): this shouldn't be possible, clean up once
+      // lower-level Nigori code explicitly guarantees that.
       return nullptr;
     }
   }
 
   DCHECK(!last_key_name.empty());
-  cryptographer->SelectDefaultEncryptionKey(last_key_name);
 
-  return base::WrapUnique(
-      new KeystoreKeysCryptographer(std::move(cryptographer), keystore_keys));
+  return base::WrapUnique(new KeystoreKeysCryptographer(
+      std::move(key_bag), last_key_name, keystore_keys));
 }
 
 KeystoreKeysCryptographer::KeystoreKeysCryptographer(
-    std::unique_ptr<CryptographerImpl> cryptographer,
+    NigoriKeyBag key_bag,
+    const std::string& last_keystore_key_name,
     const std::vector<std::string>& keystore_keys)
-    : cryptographer_(std::move(cryptographer)), keystore_keys_(keystore_keys) {
-  DCHECK(cryptographer_);
-}
+    : key_bag_(std::move(key_bag)),
+      last_keystore_key_name_(last_keystore_key_name),
+      keystore_keys_(keystore_keys) {}
 
 KeystoreKeysCryptographer::~KeystoreKeysCryptographer() = default;
 
 std::string KeystoreKeysCryptographer::GetLastKeystoreKeyName() const {
-  return cryptographer_->GetDefaultEncryptionKeyName();
+  return last_keystore_key_name_;
 }
 
 bool KeystoreKeysCryptographer::IsEmpty() const {
@@ -74,13 +73,19 @@ bool KeystoreKeysCryptographer::IsEmpty() const {
 
 std::unique_ptr<KeystoreKeysCryptographer> KeystoreKeysCryptographer::Clone()
     const {
-  return base::WrapUnique(
-      new KeystoreKeysCryptographer(cryptographer_->Clone(), keystore_keys_));
+  return base::WrapUnique(new KeystoreKeysCryptographer(
+      key_bag_.Clone(), last_keystore_key_name_, keystore_keys_));
 }
 
 std::unique_ptr<CryptographerImpl>
 KeystoreKeysCryptographer::ToCryptographerImpl() const {
-  return cryptographer_->Clone();
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  cryptographer->EmplaceKeysFrom(key_bag_);
+  if (!last_keystore_key_name_.empty()) {
+    cryptographer->SelectDefaultEncryptionKey(last_keystore_key_name_);
+  }
+  return cryptographer;
 }
 
 bool KeystoreKeysCryptographer::EncryptKeystoreDecryptorToken(
@@ -90,15 +95,26 @@ bool KeystoreKeysCryptographer::EncryptKeystoreDecryptorToken(
   if (IsEmpty()) {
     return false;
   }
-  return cryptographer_->EncryptString(
-      keystore_decryptor_key.SerializeAsString(), keystore_decryptor_token);
+
+  return key_bag_.EncryptWithKey(last_keystore_key_name_,
+                                 keystore_decryptor_key.SerializeAsString(),
+                                 keystore_decryptor_token);
 }
 
 bool KeystoreKeysCryptographer::DecryptKeystoreDecryptorToken(
     const sync_pb::EncryptedData& keystore_decryptor_token,
     sync_pb::NigoriKey* keystore_decryptor_key) const {
-  return cryptographer_->Decrypt(keystore_decryptor_token,
-                                 keystore_decryptor_key);
+  std::string serialized_keystore_decryptor_key;
+  if (!key_bag_.Decrypt(keystore_decryptor_token,
+                        &serialized_keystore_decryptor_key)) {
+    return false;
+  }
+  return keystore_decryptor_key->ParseFromString(
+      serialized_keystore_decryptor_key);
+}
+
+const NigoriKeyBag& KeystoreKeysCryptographer::GetKeystoreKeybag() const {
+  return key_bag_;
 }
 
 }  // namespace syncer
