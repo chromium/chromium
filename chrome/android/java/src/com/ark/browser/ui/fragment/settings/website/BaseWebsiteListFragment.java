@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 
@@ -148,35 +149,31 @@ public abstract class BaseWebsiteListFragment extends BaseSwipeBackFragment
     }
 
     private String getPermissionString(@ContentSettingValues @Nullable Integer value) {
-        return getString(ContentSettingsResources.getSiteSummary(value));
+        return getString(ContentSettingsResources.getCategorySummary(value));
     }
 
     protected String getContentStr(Website website) {
         return null;
     }
 
-    protected void showSelectDialog(TextView contentView, Website item) {
+    protected void showSelectDialog(TextView contentView, Website website) {
 
         List<Integer> list = new ArrayList<>(3);
-//        String category = getSiteSettingsCategoryStr();
-//        if (category.equals(SiteSettingsCategory.CATEGORY_DEVICE_LOCATION)
-//                || category.equals(SiteSettingsCategory.CATEGORY_CAMERA)
-//                || category.equals(SiteSettingsCategory.CATEGORY_MICROPHONE)
-//                || category.equals(SiteSettingsCategory.CATEGORY_NOTIFICATIONS)
-//                || category.equals(SiteSettingsCategory.CATEGORY_PROTECTED_MEDIA)
-//                || category.equals(SiteSettingsCategory.CATEGORY_MIDI)) {
-//            list.add(ContentSetting.ASK);
-//        }
-//        list.add(ContentSetting.ALLOW);
-//        list.add(ContentSetting.BLOCK);
 
-        list.add(ContentSettingValues.ASK);
-        list.add(ContentSettingValues.ALLOW);
-        list.add(ContentSettingValues.BLOCK);
+        int contentType = getContentSettingsType();
+        boolean requiresTriStateSetting =
+                WebsitePreferenceBridge.requiresTriStateContentSetting(contentType);
+        if (requiresTriStateSetting) {
+            list.add(ContentSettingValues.ASK);
+            list.add(ContentSettingValues.ALLOW);
+            list.add(ContentSettingValues.BLOCK);
+        } else {
+            ContentSettingsResources.ResourceItem resourceItem = ContentSettingsResources.getResourceItem(contentType);
+            list.add(resourceItem.getDefaultEnabledValue());
+            list.add(resourceItem.getDefaultDisabledValue());
+        }
 
-
-
-        Integer contentSetting = getContentSetting(item);
+        Integer contentSetting = getContentSetting(website);
         int selected = 0;
         for (int i = 0; i < list.size(); i++) {
             if (Objects.equals(list.get(i), contentSetting)) {
@@ -190,11 +187,11 @@ public abstract class BaseWebsiteListFragment extends BaseSwipeBackFragment
                 .setSelected(selected)
                 .onSingleSelect((dialog, position, setting) -> {
                     contentView.setText(getPermissionString(setting));
-                    setContentSetting(item, setting);
+                    setContentSetting(website, setting);
                 })
                 .setShowButtons(true)
                 .setData(list)
-                .setTitle(item.getTitle())
+                .setTitle(website.getTitle())
                 .show(context);
 
     }
@@ -214,7 +211,38 @@ public abstract class BaseWebsiteListFragment extends BaseSwipeBackFragment
 
     @Nullable
     protected @ContentSettingValues Integer getContentSetting(Website website) {
-        return website.getContentSetting(Profile.getLastUsedRegularProfile(), getContentSettingsType());
+//        return website.getContentSetting(Profile.getLastUsedRegularProfile(), getContentSettingsType());
+        int contentType = getContentSettingsType();
+        Integer contentSetting = website.getContentSetting(Profile.getLastUsedRegularProfile(), contentType);
+        if (contentSetting == null) {
+            contentSetting = getDefaultContentSetting(contentType);
+        }
+        return contentSetting;
+    }
+
+    @ContentSettingValues
+    private int getDefaultContentSetting(@ContentSettingsType int contentType) {
+        boolean requiresTriStateSetting =
+                WebsitePreferenceBridge.requiresTriStateContentSetting(contentType);
+
+        boolean checked;
+        if (contentType == ContentSettingsType.GEOLOCATION) {
+            checked = WebsitePreferenceBridge.areAllLocationSettingsEnabled(
+                    Profile.getLastUsedRegularProfile());
+        } else if (requiresTriStateSetting) {
+            return WebsitePreferenceBridge.getDefaultContentSetting(
+                    Profile.getLastUsedRegularProfile(), contentType);
+        } else {
+            checked = WebsitePreferenceBridge.isCategoryEnabled(
+                    Profile.getLastUsedRegularProfile(), contentType);
+        }
+
+        ContentSettingsResources.ResourceItem resourceItem = ContentSettingsResources.getResourceItem(contentType);
+        if (checked) {
+            return resourceItem.getDefaultEnabledValue();
+        } else {
+            return resourceItem.getDefaultDisabledValue();
+        }
     }
 
     protected void setContentSetting(Website website, @ContentSettingValues int contentSetting) {

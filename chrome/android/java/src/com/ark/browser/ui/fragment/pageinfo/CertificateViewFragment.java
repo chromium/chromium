@@ -1,4 +1,4 @@
-package com.ark.browser.ui.fragment;
+package com.ark.browser.ui.fragment.pageinfo;
 
 import android.graphics.Typeface;
 import android.net.http.SslCertificate;
@@ -15,6 +15,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.ark.browser.core.ArkWebContents;
+import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.settings.Keys;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
@@ -49,15 +51,15 @@ public class CertificateViewFragment extends BaseSwipeBackFragment {
 
     private int mPadding;
 
-    private Tab tab;
+    private ArkWebContents mArkWeb;
 
     private CertificateFactory mCertificateFactory;
 
     private LinearLayout llContainer;
 
-    public static CertificateViewFragment newInstance(int tabId) {
+    public static CertificateViewFragment newInstance(int pageId) {
         Bundle args = new Bundle();
-        args.putInt(Keys.KEY_ID, tabId);
+        args.putInt(Keys.KEY_ID, pageId);
         CertificateViewFragment fragment = new CertificateViewFragment();
         fragment.setArguments(args);
         return fragment;
@@ -66,16 +68,16 @@ public class CertificateViewFragment extends BaseSwipeBackFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int tabId = Tab.INVALID_PAGE_ID;
+        int pageId = Tab.INVALID_PAGE_ID;
         if (savedInstanceState == null) {
             if (getArguments() != null) {
-                tabId = getArguments().getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
+                pageId = getArguments().getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
             }
         } else {
-            tabId = savedInstanceState.getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
+            pageId = savedInstanceState.getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
         }
-        tab = TabCacheManager.getInstance().findTab(tabId);
-        if (tab == null) {
+        mArkWeb = ArkWebManager.get(pageId);
+        if (mArkWeb == null) {
             popThis();
         }
     }
@@ -83,8 +85,8 @@ public class CertificateViewFragment extends BaseSwipeBackFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (tab != null) {
-            outState.putInt(Keys.KEY_ID, tab.getId());
+        if (mArkWeb != null) {
+            outState.putInt(Keys.KEY_ID, mArkWeb.getId());
         }
     }
 
@@ -95,7 +97,11 @@ public class CertificateViewFragment extends BaseSwipeBackFragment {
 
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
-        byte[][] certChain = CertificateChainHelper.getCertificateChain(tab.getWebContents());
+        if (mArkWeb == null) {
+            popThis();
+            return;
+        }
+        byte[][] certChain = CertificateChainHelper.getCertificateChain(mArkWeb.getWebContents());
         if (certChain == null) {
             // The WebContents may have been destroyed/invalidated. If so,
             // ignore this request.

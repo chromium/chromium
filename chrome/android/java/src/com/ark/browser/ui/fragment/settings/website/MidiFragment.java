@@ -40,7 +40,7 @@ public class MidiFragment extends BaseWebsiteListFragment {
 
     @Override
     protected int getContentSettingsType() {
-        return ContentSettingsType.MIDI;
+        return ContentSettingsType.MIDI_SYSEX;
     }
 
 }

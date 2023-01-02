@@ -118,4 +118,8 @@
         <item name="app:hl_shadowBackColor">@color/white_alpha_70</item>
     </style>
 
+    <style name="RobotoMediumStyle">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
 </resources>

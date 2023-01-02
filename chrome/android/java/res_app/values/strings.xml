@@ -63,5 +63,6 @@
     <string name="text_mic_permission">"使用您的麦克风"</string>
 
     <string name="website_settings_embedded_in">"嵌入位置：%1$s"</string>
+    <string name="text_url_copied">"已复制网址。"</string>
 
 </resources>

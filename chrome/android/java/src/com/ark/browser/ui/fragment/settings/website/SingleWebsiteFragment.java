@@ -1,5 +1,7 @@
 package com.ark.browser.ui.fragment.settings.website;
 
+import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -18,6 +20,7 @@ import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
 import com.ark.browser.ui.widget.TintSettingItem;
+import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ColorPool;
 import com.ark.browser.utils.FaviconUtil;
 import com.zpj.fragmentation.dialog.ZDialog;
@@ -34,13 +37,17 @@ import org.chromium.components.browser_ui.site_settings.ChosenObjectInfo;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.StorageInfo;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.ArrayList;
@@ -214,7 +221,7 @@ public class SingleWebsiteFragment extends BaseSwipeBackFragment
         soundPermissionItem.setKey(ContentSettingsType.SOUND);
 
         midiSysexPermissionItem = findViewById(R.id.item_midi_sysex_permission);
-        midiSysexPermissionItem.setKey(ContentSettingsType.MIDI);
+        midiSysexPermissionItem.setKey(ContentSettingsType.MIDI_SYSEX);
 
 //        usbPermissionItem = view.getView(R.id.item_usb_permission);
 //        usbPermissionItem.setOnItemClickListener(this);
@@ -314,23 +321,29 @@ public class SingleWebsiteFragment extends BaseSwipeBackFragment
         userAgentItem.setInfoText(userAgent.getName()); // UserAgentUtil.getCurrentUserAgent().getUserAgentName()
         siteUsageItem.setInfoText(getString(R.string.origin_settings_storage_usage_brief,
                 Formatter.formatShortFileSize(getContext(), website.getTotalUsage())));
-        cookiesPermissionItem.setInfoText(getPermissionString(ContentSettingsType.COOKIES));
-        locationAccessItem.setInfoText(getPermissionString(ContentSettingsType.GEOLOCATION));
 
         boolean hasCameraPermission = permissionOnInAndroid(android.Manifest.permission.CAMERA);
-        cameraPermissionItem.setInfoText(hasCameraPermission ?
-                getPermissionString(ContentSettingsType.MEDIASTREAM_CAMERA) : "浏览器未授予相机权限");
+        if (hasCameraPermission) {
+            setPermissionText(cameraPermissionItem);
+        } else {
+            cameraPermissionItem.setInfoText("浏览器未授予相机权限");
+        }
         cameraPermissionItem.setLeftIcon(getResources().getDrawable(hasCameraPermission
                 ? R.drawable.ic_videocam : R.drawable.exclamation_triangle));
         cameraPermissionItem.setTag(hasCameraPermission);
 
         boolean hasRecordPermission = permissionOnInAndroid(android.Manifest.permission.RECORD_AUDIO);
-        microphonePermissionItem.setInfoText(hasRecordPermission ?
-                getPermissionString(ContentSettingsType.MEDIASTREAM_MIC) : "浏览器未授予录音权限");
+        if (hasRecordPermission) {
+            setPermissionText(microphonePermissionItem);
+        } else {
+            microphonePermissionItem.setInfoText("浏览器未授予录音权限");
+        }
         microphonePermissionItem.setLeftIcon(getResources().getDrawable(hasRecordPermission ?
                 R.drawable.permission_mic : R.drawable.exclamation_triangle));
         microphonePermissionItem.setTag(hasRecordPermission);
 
+        setPermissionText(cookiesPermissionItem);
+        setPermissionText(locationAccessItem);
         setPermissionText(pushNotificationsItem);
         setPermissionText(javascriptPermissionItem);
         setPermissionText(popupPermissionItem);
@@ -342,20 +355,115 @@ public class SingleWebsiteFragment extends BaseSwipeBackFragment
         setPermissionText(midiSysexPermissionItem);
     }
 
+    @ContentSettingValues
+    private int getDefaultContentSetting(@ContentSettingsType int contentType) {
+        boolean requiresTriStateSetting =
+                WebsitePreferenceBridge.requiresTriStateContentSetting(contentType);
+
+        boolean checked = false;
+//        @ContentSettingValues
+//        int setting = ContentSettingValues.DEFAULT;
+
+
+
+        if (contentType == ContentSettingsType.GEOLOCATION) {
+            checked = WebsitePreferenceBridge.areAllLocationSettingsEnabled(
+                    Profile.getLastUsedRegularProfile());
+        } else if (requiresTriStateSetting) {
+            return WebsitePreferenceBridge.getDefaultContentSetting(
+                    Profile.getLastUsedRegularProfile(), contentType);
+        } else {
+            checked = WebsitePreferenceBridge.isCategoryEnabled(
+                    Profile.getLastUsedRegularProfile(), contentType);
+        }
+
+        ContentSettingsResources.ResourceItem resourceItem = ContentSettingsResources.getResourceItem(contentType);
+        if (checked) {
+            return resourceItem.getDefaultEnabledValue();
+        } else {
+            return resourceItem.getDefaultDisabledValue();
+        }
+    }
+
     private void setPermissionText(TintSettingItem item) {
+
+//        int contentType = (int) item.getKey();
+//
+//        boolean requiresTriStateSetting =
+//                WebsitePreferenceBridge.requiresTriStateContentSetting(contentType);
+//
+//        boolean checked = false;
+//        @ContentSettingValues
+//        int setting = ContentSettingValues.DEFAULT;
+//
+//        if (contentType == ContentSettingsType.GEOLOCATION) {
+//            checked = WebsitePreferenceBridge.areAllLocationSettingsEnabled(
+//                    Profile.getLastUsedRegularProfile());
+//        } else if (requiresTriStateSetting) {
+//            setting = WebsitePreferenceBridge.getDefaultContentSetting(
+//                    Profile.getLastUsedRegularProfile(), contentType);
+//        } else {
+//            checked = WebsitePreferenceBridge.isCategoryEnabled(
+//                    Profile.getLastUsedRegularProfile(), contentType);
+//        }
+//
+////        item.setTitleText(getString(ContentSettingsResources.getTitle(contentType)));
+//
+//        if ((ContentSettingsType.MEDIASTREAM_CAMERA == contentType
+//                || ContentSettingsType.MEDIASTREAM_MIC == contentType
+//                || ContentSettingsType.NOTIFICATIONS == contentType
+//                || ContentSettingsType.AR == contentType)) {
+//            // Show 'disabled' message when permission is not granted in Android.
+//            item.setInfoText(getString(ContentSettingsResources.getCategorySummary(contentType, false)));
+//        } else if (ContentSettingsType.COOKIES == contentType && checked
+//                && UserPrefs.get(Profile.getLastUsedRegularProfile()).getInteger(COOKIE_CONTROLS_MODE)
+//                == CookieControlsMode.BLOCK_THIRD_PARTY) {
+//            item.setInfoText(getString(ContentSettingsResources.getCookieAllowedExceptThirdPartySummary()));
+//        } else if (ContentSettingsType.GEOLOCATION == contentType && checked
+//                && WebsitePreferenceBridge.isLocationAllowedByPolicy(Profile.getLastUsedRegularProfile())) {
+//            item.setInfoText(getString(ContentSettingsResources.getGeolocationAllowedSummary()));
+//        } else if (ContentSettingsType.CLIPBOARD_READ_WRITE == contentType && !checked) {
+//            item.setInfoText(getString(ContentSettingsResources.getClipboardBlockedListSummary()));
+//        } else if (ContentSettingsType.ADS == contentType && !checked) {
+//            item.setInfoText(getString(ContentSettingsResources.getAdsBlockedListSummary()));
+//        } else if (ContentSettingsType.SOUND == contentType && !checked) {
+//            item.setInfoText(getString(ContentSettingsResources.getSoundBlockedListSummary()));
+//        } else if (ContentSettingsType.REQUEST_DESKTOP_SITE == contentType) {
+//            item.setInfoText(getString(ContentSettingsResources.getDesktopSiteListSummary(checked)));
+//        } else if (ContentSettingsType.AUTO_DARK_WEB_CONTENT == contentType) {
+//            item.setInfoText(getString(ContentSettingsResources.getAutoDarkWebContentListSummary(checked)));
+//        } else if (requiresTriStateSetting) {
+//            item.setInfoText(getString(ContentSettingsResources.getCategorySummary(setting)));
+//        } else {
+//            item.setInfoText(getString(ContentSettingsResources.getCategorySummary(contentType, checked)));
+//        }
+
+
+
         item.setInfoText(getPermissionString((int) item.getKey()));
     }
 
     private String getPermissionString(@ContentSettingsType int type) {
-        Integer contentSetting = website.getContentSetting(Profile.getLastUsedRegularProfile(), type);
-        if (contentSetting == null) {
-            return "null";
-        }
-        return getString(ContentSettingsResources.getSiteSummary(contentSetting));
+        int contentSetting = getContentSetting(type);
+        return getString(ContentSettingsResources.getCategorySummary(contentSetting));
+//        if (contentSetting == null) {
+//            return "null";
+//        }
+//
+//        boolean requiresTriStateSetting =
+//                WebsitePreferenceBridge.requiresTriStateContentSetting((int) contentSetting);
+//        ArkLogger.e(this, "getPermissionString contentSetting=" + contentSetting
+//                + " requiresTriStateSetting=" + requiresTriStateSetting);
+//        if (requiresTriStateSetting) {
+//            return getString(ContentSettingsResources.getCategorySummary(contentSetting));
+//        }
+//
+//
+//        return getString(ContentSettingsResources.getSiteSummary(contentSetting));
     }
 
     private String getPermissionString(@ContentSettingValues Integer contentSetting) {
-        return getString(ContentSettingsResources.getSiteSummary(contentSetting));
+        return getString(ContentSettingsResources.getCategorySummary(contentSetting));
     }
 
     public void showUserAgentSelector() {
@@ -395,13 +503,33 @@ public class SingleWebsiteFragment extends BaseSwipeBackFragment
 
     }
 
+    @ContentSettingValues
+    private int getContentSetting(@ContentSettingsType int contentType) {
+        Integer contentSetting = website.getContentSetting(Profile.getLastUsedRegularProfile(), contentType);
+        if (contentSetting == null) {
+            contentSetting = getDefaultContentSetting(contentType);
+        }
+        return contentSetting;
+    }
+
     private void showSelectDialog(TintSettingItem item) {
         List<Integer> list = new ArrayList<>(3);
-        list.add(ContentSettingValues.ASK);
-        list.add(ContentSettingValues.ALLOW);
-        list.add(ContentSettingValues.BLOCK);
 
-        Integer contentSetting = website.getContentSetting(Profile.getLastUsedRegularProfile(), (int) item.getKey());;
+        int contentType = (int) item.getKey();
+
+        boolean requiresTriStateSetting =
+                WebsitePreferenceBridge.requiresTriStateContentSetting(contentType);
+        if (requiresTriStateSetting) {
+            list.add(ContentSettingValues.ASK);
+            list.add(ContentSettingValues.ALLOW);
+            list.add(ContentSettingValues.BLOCK);
+        } else {
+            ContentSettingsResources.ResourceItem resourceItem = ContentSettingsResources.getResourceItem(contentType);
+            list.add(resourceItem.getDefaultEnabledValue());
+            list.add(resourceItem.getDefaultDisabledValue());
+        }
+
+        Integer contentSetting = getContentSetting(contentType);
         int selected = 0;
         for (int i = 0; i < list.size(); i++) {
             if (Objects.equals(list.get(i), contentSetting)) {
@@ -466,7 +594,7 @@ public class SingleWebsiteFragment extends BaseSwipeBackFragment
         } else if (item == soundPermissionItem) {
             website.setContentSetting(profile, ContentSettingsType.SOUND, contentSetting);
         } else if (item == midiSysexPermissionItem) {
-            website.setContentSetting(profile, ContentSettingsType.MIDI, contentSetting);
+            website.setContentSetting(profile, ContentSettingsType.MIDI_SYSEX, contentSetting);
         }
 //        else if (item == usbPermissionItem) {
 //

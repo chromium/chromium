@@ -14,12 +14,17 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ark.browser.core.ArkWebContents;
+import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
+import com.ark.browser.ui.fragment.pageinfo.PageInfoFragment2;
+import com.ark.browser.ui.fragment.settings.website.SingleWebsiteFragment;
 import com.ark.browser.ui.widget.DialogHeaderLayout;
 import com.ark.browser.ui.widget.FitWidthImageView;
 import com.zpj.fragmentation.dialog.DialogAnimator;
@@ -61,13 +66,12 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
     private ITab mTab;
 
     public static HistoryStackDialogFragment newInstance(PageInfo pageInfo) {
-        ITab tab = TabListManager.getInstance().getTabInfo(pageInfo);
-        return newInstance(tab == null ? Tab.INVALID_TAB_ID : tab.getId());
+        return newInstance(pageInfo.getTabId());
     }
 
-    public static HistoryStackDialogFragment newInstance(int tabInfoId) {
+    public static HistoryStackDialogFragment newInstance(int tabId) {
         Bundle args = new Bundle();
-        args.putInt(KEY_ID, tabInfoId);
+        args.putInt(KEY_ID, tabId);
         HistoryStackDialogFragment fragment = new HistoryStackDialogFragment();
         fragment.setArguments(args);
         return fragment;
@@ -256,14 +260,12 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
                                 ZToast.success("链接复制成功");
                                 break;
                             case 6:
-                                // TODO
-//                                Tab tab = PageCacheManager.getInstance().findPage(pageInfo);
-//                                if (tab == null || tab.isFrozen()) {
-//                                    SingleWebsiteFragment.start(pageInfo);
-//                                } else {
-//                                    PageInfoFragment.newInstance(pageInfo.getPageId())
-//                                            .show(context);
-//                                }
+                                ArkWebContents arkWeb = ArkWebManager.get(pageInfo.getId());
+                                if (arkWeb == null) {
+                                    start(SingleWebsiteFragment.newInstance(pageInfo));
+                                } else {
+                                    start(PageInfoFragment2.newInstance(pageInfo.getId()));
+                                }
                                 break;
                             default:
                                 break;

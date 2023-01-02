@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 
 import com.ark.browser.core.bookmark.BookmarkBridge;
 import com.ark.browser.core.bookmark.BookmarkModel;
+import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.ui.fragment.dialog.CollectionEditorDialog;
 import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
 import com.ark.browser.ui.fragment.dialog.TabActionDialog;
@@ -81,7 +82,7 @@ public class BottomController {
 
         toolButton = view.findViewById(R.id.btn_tools);
         toolButton.setOnClickListener(v -> {
-            ToolsDialog.start(mContext, mTab);
+            ToolsDialog.start(mContext, (ArkTabImpl) mTab);
         });
 
         starButton = view.findViewById(R.id.btn_star);

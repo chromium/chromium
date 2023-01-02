@@ -38,7 +38,7 @@ public class ContentSettingsResources {
     /**
      * An inner class contains all the resources for a ContentSettingsType
      */
-    private static class ResourceItem {
+    public static class ResourceItem {
         private final int mIcon;
         private final int mTitle;
         private final @ContentSettingValues @Nullable Integer mDefaultEnabledValue;
@@ -66,11 +66,11 @@ public class ContentSettingsResources {
             return mTitle;
         }
 
-        private @ContentSettingValues @Nullable Integer getDefaultEnabledValue() {
+        public @ContentSettingValues @Nullable Integer getDefaultEnabledValue() {
             return mDefaultEnabledValue;
         }
 
-        private @ContentSettingValues @Nullable Integer getDefaultDisabledValue() {
+        public @ContentSettingValues @Nullable Integer getDefaultDisabledValue() {
             return mDefaultDisabledValue;
         }
 
@@ -88,7 +88,7 @@ public class ContentSettingsResources {
     /**
      * Returns the ResourceItem for a ContentSettingsType.
      */
-    private static ResourceItem getResourceItem(int contentType) {
+    public static ResourceItem getResourceItem(int contentType) {
         switch (contentType) {
             case ContentSettingsType.ADS:
                 return new ResourceItem(R.drawable.web_asset, R.string.ads_permission_title,
@@ -103,8 +103,14 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.AUTOMATIC_DOWNLOADS:
                 return new ResourceItem(R.drawable.infobar_downloading,
-                        R.string.automatic_downloads_permission_title, ContentSettingValues.ASK,
+                        R.string.automatic_downloads_permission_title, ContentSettingValues.ALLOW,
                         ContentSettingValues.BLOCK, R.string.website_settings_category_ask, 0);
+
+            case ContentSettingsType.AUTOPLAY:
+                return new ResourceItem(R.drawable.infobar_downloading,
+                        R.string.automatic_downloads_permission_title, ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_allowed_recommended, 0);
 
             case ContentSettingsType.AUTO_DARK_WEB_CONTENT:
                 return new ResourceItem(R.drawable.ic_brightness_medium_24dp,
@@ -195,7 +201,9 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.MIDI_SYSEX:
                 return new ResourceItem(R.drawable.gm_filled_piano_24,
-                        R.string.midi_sysex_permission_title, null, null, 0, 0);
+                        R.string.midi_sysex_permission_title,
+                        ContentSettingValues.ASK, ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_mic_ask, 0);
 
             case ContentSettingsType.NFC:
                 return new ResourceItem(R.drawable.gm_filled_nfc_24, R.string.nfc_permission_title,

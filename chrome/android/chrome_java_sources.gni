@@ -108,7 +108,6 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/dialog/UserAgentSelector.java",
 
   "java/src/com/ark/browser/ui/fragment/ArkMainFragment.java",
-  "java/src/com/ark/browser/ui/fragment/CertificateViewFragment.java",
   "java/src/com/ark/browser/ui/fragment/base/BaseFragment.java",
   "java/src/com/ark/browser/ui/fragment/base/BaseSwipeBackFragment.java",
   "java/src/com/ark/browser/ui/fragment/base/SkinFragment.java",
@@ -151,6 +150,9 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/manager/adblock/AdblockManagerFragment.java",
   "java/src/com/ark/browser/ui/fragment/manager/extension/ExtensionManagerFragment.java",
   "java/src/com/ark/browser/ui/fragment/manager/script/ScriptManagerFragment.java",
+
+  "java/src/com/ark/browser/ui/fragment/pageinfo/CertificateViewFragment.java",
+  "java/src/com/ark/browser/ui/fragment/pageinfo/PageInfoFragment2.java",
 
   "java/src/com/ark/browser/ui/fragment/search/FlowHeaderMultiData.java",
   "java/src/com/ark/browser/ui/fragment/search/SearchFragment.java",

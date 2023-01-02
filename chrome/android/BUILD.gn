@@ -236,6 +236,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/fragment_manager.xml",
     "//chrome/android/java/res_app/layout/fragment_manager_adblock.xml",
     "//chrome/android/java/res_app/layout/fragment_manager_script.xml",
+    "//chrome/android/java/res_app/layout/fragment_page_info.xml",
     "//chrome/android/java/res_app/layout/fragment_search.xml",
     "//chrome/android/java/res_app/layout/fragment_setting_accessibility.xml",
     "//chrome/android/java/res_app/layout/fragment_setting_privacy.xml",

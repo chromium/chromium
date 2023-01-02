@@ -10,12 +10,15 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
+import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.core.utils.TabPrinter;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.settings.AppConfig;
-import com.ark.browser.settings.Keys;
 import com.ark.browser.tab.ArkTabImpl;
+import com.ark.browser.tab.TabCacheManager;
+import com.ark.browser.ui.fragment.pageinfo.PageInfoFragment2;
+import com.ark.browser.ui.fragment.settings.website.SingleWebsiteFragment;
 import com.ark.browser.ui.widget.DrawableTintTextView;
 import com.ark.browser.ui.widget.TextCircleImageView;
 import com.ark.browser.utils.ThreadPool;
@@ -46,7 +49,7 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
 
     private TextCircleImageView color_1, color_2, color_3, color_4, color_5;
 
-    private Tab mPage;
+    private ArkWebContents mArkWeb;
 
     private boolean smartNoImageMode = false;
     private boolean incognitoMode = false;
@@ -55,9 +58,9 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
     private boolean refreshTiming = false;
     private boolean mEditMode;
 
-    public static void start(Context context, Tab page) {
+    public static void start(Context context, ArkTabImpl tab) {
         ToolsDialog toolsDialog = new ToolsDialog();
-        toolsDialog.mPage = page;
+        toolsDialog.mArkWeb = tab.getArkWeb();
         toolsDialog.show(context);
     }
 
@@ -80,7 +83,7 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
 //        } else {
 //            pageId = savedInstanceState.getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
 //        }
-        if (mPage == null) {
+        if (mArkWeb == null) {
             popThis();
         }
     }
@@ -97,6 +100,9 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
 
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
+        if (mArkWeb == null) {
+            popThis();
+        }
         super.initView(view, savedInstanceState);
         smartNoImageMode = AppConfig.isSmartNoImageMode();
         incognitoMode = AppConfig.isIncognitoMode();
@@ -219,10 +225,10 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         changeHeight(textCircleImageView, 38);
     }
 
-    private void changeHtmlColor(Tab page, TextCircleImageView textCircleImageView, int id) {
+    private void changeHtmlColor(TextCircleImageView textCircleImageView, int id) {
         onChangeColorClicked(textCircleImageView);
         PrefsHelper.with().applyInt("current_html_backgroundcolor", id);
-        page.evaluateJavaScript("javascript:changeColor(" + PrefsHelper.with().getInt("current_html_backgroundcolor", 0) + ");", null);
+        mArkWeb.evaluateJavaScript("javascript:changeColor(" + PrefsHelper.with().getInt("current_html_backgroundcolor", 0) + ");", null);
     }
 
     private boolean shouldShowPageMenu() {
@@ -239,26 +245,26 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
-        Tab page = mPage;
+
         int id = v.getId();
         if (id == R.id.color_1) {
-            changeHtmlColor(page, color_1, 0);
+            changeHtmlColor(color_1, 0);
         } else if (id == R.id.color_2) {
-            changeHtmlColor(page, color_2, 1);
+            changeHtmlColor(color_2, 1);
         } else if (id == R.id.color_3) {
-            changeHtmlColor(page, color_3, 2);
+            changeHtmlColor(color_3, 2);
         } else if (id == R.id.color_4) {
-            changeHtmlColor(page, color_4, 3);
+            changeHtmlColor(color_4, 3);
         } else if (id == R.id.color_5) {
-            changeHtmlColor(page, color_5, 4);
+            changeHtmlColor(color_5, 4);
         } else if (id == R.id.ib_share) {
             ShareDialog.start(context);
         } else if (id == R.id.ib_info) {
-//            PageInfoFragment.newInstance(mPageInfo.getPageId()).show(context);
+            start(PageInfoFragment2.newInstance(mArkWeb.getId()));
         } else if (id == R.id.tv_website_settings) {
-//            SingleWebsiteFragment.start(mPageInfo);
+            start(SingleWebsiteFragment.newInstance(mArkWeb.getPageInfo()));
         } else if (id == R.id.tv_history_stack) {
-            HistoryStackDialogFragment.newInstance(mPage).show(context);
+            HistoryStackDialogFragment.newInstance(mArkWeb.getPageInfo()).show(context);
         } else if (id == R.id.tv_fullscreen) {
             boolean tag = !fullscreenMode;
             AppConfig.toggleFullscreenMode();
@@ -274,17 +280,18 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         } else if (id == R.id.tv_page_search) {
 //            GetLauncherEvent.post(LauncherFragment::showFindInPageToolbar);
         } else if (id == R.id.tv_save_html) {
-            OfflinePageOrigin origin = new OfflinePageOrigin(getContext(), page);
-            if (page.isShowingErrorPage()) {
+            Tab tab = TabCacheManager.getInstance().findTab(mArkWeb.getPageInfo().getTabId());
+            OfflinePageOrigin origin = new OfflinePageOrigin(getContext(), tab);
+            if (tab.isShowingErrorPage()) {
                 // The download needs to be scheduled to happen at later time due to current network
                 // error.
                 final OfflinePageBridge bridge = OfflinePageBridge.getForProfile(Profile.getLastUsedRegularProfile());
-                bridge.scheduleDownload(page.getWebContents(), OfflinePageBridge.ASYNC_NAMESPACE,
-                        page.getUrl().getSpec(), DownloadUiActionFlags.PROMPT_DUPLICATE, origin);
+                bridge.scheduleDownload(tab.getWebContents(), OfflinePageBridge.ASYNC_NAMESPACE,
+                        tab.getUrl().getSpec(), DownloadUiActionFlags.PROMPT_DUPLICATE, origin);
             } else {
                 // Otherwise, the download can be started immediately.
                 // TODO 先申请读写权限
-                OfflinePageDownloadBridge.startDownload(page, origin);
+                OfflinePageDownloadBridge.startDownload(tab, origin);
 //                                    DownloadUtils.recordDownloadPageMetrics(mTab);
             }
         } else if (id == R.id.tv_console) {
@@ -305,9 +312,9 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         } else if (id == R.id.tv_edit_mode) {
             boolean tag = !mEditMode;
             if (tag) {
-                page.evaluateJavaScript("javascript:document.body.contentEditable = 'true'; document.designMode='on'; void 0", null);
+                mArkWeb.evaluateJavaScript("javascript:document.body.contentEditable = 'true'; document.designMode='on'; void 0", null);
             } else {
-                page.evaluateJavaScript("javascript:document.body.contentEditable = 'false'; document.designMode='off'; void 0", null);
+                mArkWeb.evaluateJavaScript("javascript:document.body.contentEditable = 'false'; document.designMode='off'; void 0", null);
             }
             AppConfig.toggleEditMode();
             DrawableTintTextView tvEditMode = (DrawableTintTextView) v;
@@ -315,24 +322,22 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         } else if (id == R.id.tv_resource) {
             PrintingController printingController = PrintingControllerImpl.getInstance();
             if (printingController != null && !printingController.isBusy()) {
-                printingController.startPrint(new TabPrinter(page),
+                Tab tab = TabCacheManager.getInstance().findTab(mArkWeb.getPageInfo().getTabId());
+                printingController.startPrint(new TabPrinter(tab),
                         new PrintManagerDelegateImpl(_mActivity));
                 RecordUserAction.record("MobileMenuPrint");
             }
         } else if (id == R.id.tv_log) {
-            page.evaluateJavaScript("javascript:window.touchblock=!window.touchblock;setTimeout(function(){JsInterface.blocktoggle(window.touchblock)}, 100);", null);
+            mArkWeb.evaluateJavaScript("javascript:window.touchblock=!window.touchblock;setTimeout(function(){JsInterface.blocktoggle(window.touchblock)}, 100);", null);
         } else if (id == R.id.tv_see_html) {
-            LoadUrlEvent.post("view-source:" + page.getUrl(), true);
+            LoadUrlEvent.post("view-source:" + mArkWeb.getUrl(), true);
         } else if (id == R.id.tv_translate) {
 
         } else if (id == R.id.tv_smart_no_img) {
             boolean tag = !smartNoImageMode;
             ContentUtils.setImagesEnabled(Profile.getLastUsedRegularProfile(), !tag);
             ThreadPool.postOnUIThread(() -> {
-                WebContents webContents = page.getWebContents();
-                if (webContents != null) {
-                    webContents.notifyRendererPreferenceUpdate();
-                }
+                mArkWeb.notifyRendererPreferenceUpdate();
             });
 
 
@@ -341,14 +346,10 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
             tvSmartNoImg.setTint(getResources().getColor(tag ? R.color.colorPrimary : R.color.google_black_400));
         } else if (id == R.id.tv_reader_mode) {
             String distillerUrl = DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
-                    ReaderModeManager.DOM_DISTILLER_SCHEME, page.getUrl().getSpec(), page.getTitle());
+                    ReaderModeManager.DOM_DISTILLER_SCHEME, mArkWeb.getUrl().getSpec(), mArkWeb.getTitle());
 
-            if (page instanceof ArkTabImpl) {
-                LoadUrlEvent.post(((ArkTabImpl) page).getPageInfo(),
-                        distillerUrl, true, page.isIncognito());
-            } else {
-                LoadUrlEvent.post(distillerUrl, true);
-            }
+            LoadUrlEvent.post(mArkWeb.getPageInfo(),
+                    distillerUrl, true, mArkWeb.isIncognito());
         }
         dismiss();
     }
@@ -370,18 +371,18 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
                 "console.info('欢迎使用 vConsole。vConsole 是一个由微信公众平台前端团队研发的 Web 前端开发者面板，可用于展示 console 日志，方便开发、调试。');";
 //                "var div = document.querySelector('div.vc-switch');" +
 //                "div.setAttribute('style', 'display:none;');";
-        mPage.evaluateJavaScript(js, null);
+        mArkWeb.evaluateJavaScript(js, null);
     }
 
     public void showVConsole(boolean flag) {
         if (flag) {
-            mPage.evaluateJavaScript("javascript:" +
+            mArkWeb.evaluateJavaScript("javascript:" +
                     "var div = document.querySelectorAll('div.vc-switch')[0];" +
                     "if (div) {" +
                     "   div.removeAttribute('style');" +
                     "}", null);
         } else {
-            mPage.evaluateJavaScript("javascript:" +
+            mArkWeb.evaluateJavaScript("javascript:" +
                     "var div = document.querySelector('div.vc-switch');" +
                     "if (div) {" +
                     "   div.setAttribute('style', 'display:none;');" +

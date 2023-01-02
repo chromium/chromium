@@ -8,6 +8,7 @@ import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteSchemeClassifier.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeader.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationTracker.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/PlatformNetworksManager.java",
@@ -84,6 +85,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteSchemeClassifier.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeader.java",
   ]
 }

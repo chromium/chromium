@@ -763,6 +763,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
         break;
       case ContentSettingsType::ADS:
       case ContentSettingsType::AUTO_DARK_WEB_CONTENT:
+      case ContentSettingsType::AUTOPLAY:
       case ContentSettingsType::BACKGROUND_SYNC:
       case ContentSettingsType::COOKIES:
       case ContentSettingsType::FEDERATED_IDENTITY_API:

@@ -33,6 +33,7 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsObserverProxy;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
+import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
@@ -125,6 +126,10 @@ public class ArkWebContents {
 //        });
     }
 
+    public PageInfo getPageInfo() {
+        return mPageInfo;
+    }
+
     public int getId() {
         return mPageInfo.getId();
     }
@@ -150,6 +155,10 @@ public class ArkWebContents {
         return mWebContents;
     }
 
+    public Profile getProfile() {
+        return Profile.fromWebContents(mWebContents);
+    }
+
     public void reload() {
         if (OfflinePageUtils.isOfflinePage(mWebContents)) {
             // If current page is an offline page, reload it with custom behavior defined in extra
@@ -169,6 +178,10 @@ public class ArkWebContents {
     public void loadUrl(LoadUrlParams params) {
         mPageInfo.setUrl(params.getUrl());
         mWebContents.getNavigationController().loadUrl(params);
+    }
+
+    public void evaluateJavaScript(String script, @Nullable JavaScriptCallback callback) {
+        mWebContents.evaluateJavaScript(script, callback);
     }
 
     public boolean canGoBack() {

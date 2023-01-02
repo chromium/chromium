@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 
 import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
 import com.zpj.toast.ZToast;
+import com.zpj.widget.setting.CommonSettingItem;
+import com.zpj.widget.setting.OnCommonItemClickListener;
 import com.zpj.widget.setting.SwitchSettingItem;
 
 import org.chromium.chrome.browser.preferences.Pref;
@@ -96,15 +98,13 @@ public class AccessibilityFragment extends BaseSwipeBackFragment
                 Pref.READER_FOR_ACCESSIBILITY, item.isChecked()));
 
 
-        findViewById(R.id.item_captions).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Settings.ACTION_CAPTIONING_SETTINGS);
-                // Open the activity in a new task because the back button on the caption
-                // settings page navigates to the previous settings page instead of Chrome.
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
+        CommonSettingItem captionsItem = findViewById(R.id.item_captions);
+        captionsItem.setOnItemClickListener(commonSettingItem -> {
+            Intent intent = new Intent(Settings.ACTION_CAPTIONING_SETTINGS);
+            // Open the activity in a new task because the back button on the caption
+            // settings page navigates to the previous settings page instead of Chrome.
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         });
 
     }

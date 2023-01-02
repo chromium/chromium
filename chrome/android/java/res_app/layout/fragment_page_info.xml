@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColorAccent"
+    >
+
+    <include layout="@layout/layout_header"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            >
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardBackgroundColor="?attr/backgroundColor"
+                app:cardCornerRadius="16dp"
+                app:cardUseCompatPadding="false"
+                app:cardElevation="0dp"
+                >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/iv_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@mipmap/app_icon"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="10dp"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_toEndOf="@id/iv_icon"
+                        android:layout_centerVertical="true"
+                        >
+                        <org.chromium.components.page_info.ElidedUrlTextView
+                            android:id="@+id/tv_url"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:maxLines="2"
+                            android:ellipsize="end"
+                            android:text="www.baidu.com"/>
+
+                        <TextView
+                            android:id="@+id/tv_info"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:text="xx\n\n\n\ndfkgjfh"
+                            android:paddingTop="1dp"
+                            android:paddingBottom="1dp"
+                            android:textColor="?attr/textColorNormal"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+
+
+                </RelativeLayout>
+
+
+
+            </androidx.cardview.widget.CardView>
+
+            <!--            <com.lihang.ShadowLayout-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginStart="8dp"-->
+            <!--                android:layout_marginEnd="8dp"-->
+            <!--                app:hl_shadowLimit="8dp"-->
+            <!--                app:hl_cornerRadius="8dp"-->
+            <!--                app:hl_shadowColor="#80cccccc"-->
+            <!--                app:hl_shadowBackColor="?attr/backgroundColorCard"-->
+            <!--                >-->
+
+            <!--            </com.lihang.ShadowLayout>-->
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardBackgroundColor="?attr/backgroundColor"
+                app:cardCornerRadius="16dp"
+                app:cardUseCompatPadding="false"
+                app:cardElevation="0dp"
+                >
+
+                <LinearLayout
+                    android:id="@+id/ll_sections"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    >
+
+
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardBackgroundColor="?attr/backgroundColor"
+                app:cardCornerRadius="16dp"
+                app:cardUseCompatPadding="false"
+                app:cardElevation="0dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/tv_certificate"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="56dp"-->
+                    <!--                        android:text="证书信息"-->
+                    <!--                        android:gravity="center_vertical"-->
+                    <!--                        android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"-->
+                    <!--                        android:textColor="?attr/textColorMajor"-->
+                    <!--                        android:textStyle="bold"-->
+                    <!--                        android:layout_marginStart="16dp"-->
+                    <!--                        android:layout_marginEnd="16dp"-->
+                    <!--                        />-->
+
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/tv_permission"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="56dp"-->
+                    <!--                        android:text="权限管理"-->
+                    <!--                        android:gravity="center_vertical"-->
+                    <!--                        android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"-->
+                    <!--                        android:textColor="?attr/textColorMajor"-->
+                    <!--                        android:textStyle="bold"-->
+                    <!--                        android:layout_marginStart="16dp"-->
+                    <!--                        android:layout_marginEnd="16dp"-->
+                    <!--                        />-->
+
+                    <com.zpj.widget.setting.SimpleSettingItem
+                        android:id="@+id/tv_certificate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:z_setting_titleTextColor="?attr/textColorMajor"
+                        app:z_setting_rightIconTint="?attr/textColorMajor"
+                        app:z_setting_titleText="证书信息"
+                        />
+
+                    <com.zpj.widget.setting.SimpleSettingItem
+                        android:id="@+id/tv_permission"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:z_setting_titleTextColor="?attr/textColorMajor"
+                        app:z_setting_titleText="权限管理"
+                        app:z_setting_rightIconTint="?attr/textColorMajor"
+                        />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+
+</LinearLayout>
