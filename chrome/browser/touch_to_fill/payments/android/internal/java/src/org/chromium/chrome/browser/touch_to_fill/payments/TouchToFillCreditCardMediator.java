@@ -28,6 +28,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Contains the logic for the TouchToFillCreditCard component. It sets the state of the model and
@@ -54,11 +56,18 @@ class TouchToFillCreditCardMediator {
     }
     @VisibleForTesting
     static final String TOUCH_TO_FILL_OUTCOME_HISTOGRAM = "Autofill.TouchToFill.CreditCard.Outcome";
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_INDEX_SELECTED =
+            "Autofill.TouchToFill.CreditCard.SelectedIndex";
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN =
+            "Autofill.TouchToFill.CreditCard.NumberOfCardsShown";
 
     // TODO(crbug/1383487): Remove the Context from the Mediator.
     private Context mContext;
     private TouchToFillCreditCardComponent.Delegate mDelegate;
     private PropertyModel mModel;
+    private List<CreditCard> mCards;
 
     void initialize(Context context, TouchToFillCreditCardComponent.Delegate delegate,
             PropertyModel model) {
@@ -70,6 +79,7 @@ class TouchToFillCreditCardMediator {
 
     void showSheet(CreditCard[] cards, boolean shouldShowScanCreditCard) {
         assert cards != null;
+        mCards = Arrays.asList(cards);
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
@@ -89,6 +99,8 @@ class TouchToFillCreditCardMediator {
 
         mModel.set(VISIBLE, true);
         mModel.set(SHOULD_SHOW_SCAN_CREDIT_CARD, shouldShowScanCreditCard);
+
+        RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, cards.length);
     }
 
     void hideSheet() {
@@ -120,11 +132,12 @@ class TouchToFillCreditCardMediator {
                 TouchToFillCreditCardOutcome.MAX_VALUE + 1);
     }
 
-    public void onSelectedCreditCard(String uniqueId) {
-        mDelegate.suggestionSelected(uniqueId);
+    public void onSelectedCreditCard(CreditCard card) {
+        mDelegate.suggestionSelected(card.getGUID());
         RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
                 TouchToFillCreditCardOutcome.CREDIT_CARD,
                 TouchToFillCreditCardOutcome.MAX_VALUE + 1);
+        RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_INDEX_SELECTED, mCards.indexOf(card));
     }
 
     private PropertyModel createCardModel(CreditCard card) {
@@ -140,7 +153,7 @@ class TouchToFillCreditCardMediator {
                         mContext.getString(
                                         R.string.autofill_credit_card_two_line_label_from_card_number)
                                 .replace("$1", card.getFormattedExpirationDate(mContext)))
-                .with(ON_CLICK_ACTION, () -> { this.onSelectedCreditCard(card.getGUID()); })
+                .with(ON_CLICK_ACTION, () -> { this.onSelectedCreditCard(card); })
                 .build();
     }
 

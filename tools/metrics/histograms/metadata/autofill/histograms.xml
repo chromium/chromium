@@ -4013,6 +4013,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.TouchToFill.CreditCard.NumberOfCardsShown"
+    units="cards" expires_after="2023-06-01">
+  <owner>atsvirhckova@google.com</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    The number of credit cards shown in the Touch To Fill bottom sheet. Recorded
+    when showing the bottom sheet.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.TouchToFill.CreditCard.Outcome"
     enum="TouchToFill.CreditCard.Outcome" expires_after="2023-06-01">
   <owner>atsvirhckova@google.com</owner>
@@ -4025,6 +4036,17 @@ chromium-metrics-reviews@google.com.
     has done the action: the credit card selection or some other option (which
     always leads to the bottom sheet being closed) or swiped the sheet to close
     it. See the TouchToFillCreditCardMediator.java for details.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.TouchToFill.CreditCard.SelectedIndex" units="index"
+    expires_after="2023-06-01">
+  <owner>atsvirhckova@google.com</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    The index of the selected credit card in the Touch To Fill bottom sheet.
+    Recorded when user selects a credit card from the list.
   </summary>
 </histogram>
 

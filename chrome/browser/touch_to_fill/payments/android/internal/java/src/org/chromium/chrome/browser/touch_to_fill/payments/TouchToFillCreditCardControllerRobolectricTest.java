@@ -14,6 +14,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TOUCH_TO_FILL_INDEX_SELECTED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TOUCH_TO_FILL_OUTCOME_HISTOGRAM;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER;
@@ -109,6 +111,9 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     public void testShowCreditCardsWithOneEntry() throws TimeoutException {
         mCoordinator.showSheet(new CreditCard[] {VISA}, false);
 
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, 1));
         ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(1));
 
@@ -125,6 +130,9 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     public void testShowCreditCardsWithTwoEntries() throws TimeoutException {
         mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, false);
 
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, 2));
         ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(2));
 
@@ -177,6 +185,8 @@ public class TouchToFillCreditCardControllerRobolectricTest {
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         TOUCH_TO_FILL_OUTCOME_HISTOGRAM, TouchToFillCreditCardOutcome.CREDIT_CARD));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(TOUCH_TO_FILL_INDEX_SELECTED, 0));
     }
 
     @Test
