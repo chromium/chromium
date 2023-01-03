@@ -583,22 +583,22 @@ class RenderViewContextMenuDlpPrefsTest
       const RenderViewContextMenuDlpPrefsTest&) = delete;
 
   void SetDlpClipboardRestriction() {
-    base::Value rules(base::Value::Type::LIST);
-    base::Value src_urls(base::Value::Type::LIST);
+    base::Value::List rules;
+    base::Value::List src_urls;
     src_urls.Append(PAGE_URL);
 
-    base::Value dst_urls(base::Value::Type::LIST);
+    base::Value::List dst_urls;
     dst_urls.Append(RESTRICTED_URL);
 
-    base::Value restrictions(base::Value::Type::LIST);
+    base::Value::List restrictions;
     restrictions.Append(policy::dlp_test_util::CreateRestrictionWithLevel(
         policy::dlp::kClipboardRestriction, policy::dlp::kBlockLevel));
 
     rules.Append(policy::dlp_test_util::CreateRule(
         "Rule #1", "Block", std::move(src_urls), std::move(dst_urls),
-        /*dst_components=*/base::Value(base::Value::Type::LIST),
-        std::move(restrictions)));
-    local_state()->Set(policy::policy_prefs::kDlpRulesList, std::move(rules));
+        /*dst_components=*/base::Value::List(), std::move(restrictions)));
+    local_state()->SetList(policy::policy_prefs::kDlpRulesList,
+                           std::move(rules));
   }
 
   static constexpr char PAGE_URL[] = "http://www.foo.com/";

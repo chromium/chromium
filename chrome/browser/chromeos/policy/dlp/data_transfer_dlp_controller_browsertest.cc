@@ -291,30 +291,28 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
     ScopedListPrefUpdate update(g_browser_process->local_state(),
                                 policy_prefs::kDlpRulesList);
 
-    base::Value src_urls1(base::Value::Type::LIST);
+    base::Value::List src_urls1;
     src_urls1.Append(kMailUrl);
-    base::Value dst_urls1(base::Value::Type::LIST);
+    base::Value::List dst_urls1;
     dst_urls1.Append("*");
-    base::Value restrictions1(base::Value::Type::LIST);
+    base::Value::List restrictions1;
     restrictions1.Append(dlp_test_util::CreateRestrictionWithLevel(
         dlp::kClipboardRestriction, dlp::kBlockLevel));
     update->Append(dlp_test_util::CreateRule(
         "rule #1", "Block Gmail", std::move(src_urls1), std::move(dst_urls1),
-        /*dst_components=*/base::Value(base::Value::Type::LIST),
-        std::move(restrictions1)));
+        /*dst_components=*/base::Value::List(), std::move(restrictions1)));
 
-    base::Value src_urls2(base::Value::Type::LIST);
+    base::Value::List src_urls2;
     src_urls2.Append(kMailUrl);
-    base::Value dst_urls2(base::Value::Type::LIST);
+    base::Value::List dst_urls2;
     dst_urls2.Append(kDocsUrl);
-    base::Value restrictions2(base::Value::Type::LIST);
+    base::Value::List restrictions2;
     restrictions2.Append(dlp_test_util::CreateRestrictionWithLevel(
         dlp::kClipboardRestriction, dlp::kAllowLevel));
     update->Append(dlp_test_util::CreateRule(
         "rule #2", "Allow Gmail for work purposes", std::move(src_urls2),
         std::move(dst_urls2),
-        /*dst_components=*/base::Value(base::Value::Type::LIST),
-        std::move(restrictions2)));
+        /*dst_components=*/base::Value::List(), std::move(restrictions2)));
   }
 
   SetClipboardText(

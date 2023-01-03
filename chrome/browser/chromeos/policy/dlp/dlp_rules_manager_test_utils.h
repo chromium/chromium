@@ -15,19 +15,21 @@ namespace dlp_test_util {
 // For testing purposes, the following functions are used for creating the value
 // object of DataLeakPreventionRulesList policy.
 
-base::Value CreateSources(base::Value urls);
+base::Value::Dict CreateSources(base::Value::List urls);
 
-base::Value CreateDestinations(base::Value urls, base::Value components);
+base::Value::Dict CreateDestinations(
+    absl::optional<base::Value::List> urls,
+    absl::optional<base::Value::List> components);
 
-base::Value CreateRestrictionWithLevel(const std::string& restriction,
-                                       const std::string& level);
+base::Value::Dict CreateRestrictionWithLevel(const std::string& restriction,
+                                             const std::string& level);
 
-base::Value CreateRule(const std::string& name,
-                       const std::string& desc,
-                       base::Value src_urls,
-                       absl::optional<base::Value> dst_urls,
-                       absl::optional<base::Value> dst_components,
-                       base::Value restrictions);
+base::Value::Dict CreateRule(const std::string& name,
+                             const std::string& desc,
+                             base::Value::List src_urls,
+                             absl::optional<base::Value::List> dst_urls,
+                             absl::optional<base::Value::List> dst_components,
+                             base::Value::List restrictions);
 
 }  // namespace dlp_test_util
 

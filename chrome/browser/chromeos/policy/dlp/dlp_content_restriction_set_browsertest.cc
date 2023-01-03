@@ -76,49 +76,45 @@ IN_PROC_BROWSER_TEST_F(DlpContentRestrictionSetBrowserTest,
     ScopedListPrefUpdate update(g_browser_process->local_state(),
                                 policy_prefs::kDlpRulesList);
 
-    base::Value src_urls1(base::Value::Type::LIST);
+    base::Value::List src_urls1;
     src_urls1.Append(kUrl1);
-    base::Value restrictions1(base::Value::Type::LIST);
+    base::Value::List restrictions1;
     restrictions1.Append(dlp_test_util::CreateRestrictionWithLevel(
         dlp::kScreenshotRestriction, dlp::kBlockLevel));
     update->Append(dlp_test_util::CreateRule(
         "rule #1", "Block", std::move(src_urls1),
-        /*dst_urls=*/base::Value(base::Value::Type::LIST),
-        /*dst_components=*/base::Value(base::Value::Type::LIST),
-        std::move(restrictions1)));
+        /*dst_urls=*/base::Value::List(),
+        /*dst_components=*/base::Value::List(), std::move(restrictions1)));
 
-    base::Value src_urls2(base::Value::Type::LIST);
+    base::Value::List src_urls2;
     src_urls2.Append(kUrl2);
-    base::Value restrictions2(base::Value::Type::LIST);
+    base::Value::List restrictions2;
     restrictions2.Append(dlp_test_util::CreateRestrictionWithLevel(
         dlp::kPrivacyScreenRestriction, dlp::kBlockLevel));
     update->Append(dlp_test_util::CreateRule(
         "rule #2", "Block", std::move(src_urls2),
-        /*dst_urls=*/base::Value(base::Value::Type::LIST),
-        /*dst_components=*/base::Value(base::Value::Type::LIST),
-        std::move(restrictions2)));
+        /*dst_urls=*/base::Value::List(),
+        /*dst_components=*/base::Value::List(), std::move(restrictions2)));
 
-    base::Value src_urls3(base::Value::Type::LIST);
+    base::Value::List src_urls3;
     src_urls3.Append(kUrl3);
-    base::Value restrictions3(base::Value::Type::LIST);
+    base::Value::List restrictions3;
     restrictions3.Append(dlp_test_util::CreateRestrictionWithLevel(
         dlp::kPrintingRestriction, dlp::kBlockLevel));
     update->Append(dlp_test_util::CreateRule(
         "rule #3", "Block", std::move(src_urls3),
-        /*dst_urls=*/base::Value(base::Value::Type::LIST),
-        /*dst_components=*/base::Value(base::Value::Type::LIST),
-        std::move(restrictions3)));
+        /*dst_urls=*/base::Value::List(),
+        /*dst_components=*/base::Value::List(), std::move(restrictions3)));
 
-    base::Value src_urls4(base::Value::Type::LIST);
+    base::Value::List src_urls4;
     src_urls4.Append(kUrl4);
-    base::Value restrictions4(base::Value::Type::LIST);
+    base::Value::List restrictions4;
     restrictions4.Append(dlp_test_util::CreateRestrictionWithLevel(
         dlp::kScreenShareRestriction, dlp::kBlockLevel));
     update->Append(dlp_test_util::CreateRule(
         "rule #4", "Block", std::move(src_urls4),
-        /*dst_urls=*/base::Value(base::Value::Type::LIST),
-        /*dst_components=*/base::Value(base::Value::Type::LIST),
-        std::move(restrictions4)));
+        /*dst_urls=*/base::Value::List(),
+        /*dst_components=*/base::Value::List(), std::move(restrictions4)));
   }
 
   EXPECT_EQ(kScreenshotRestricted,

@@ -26,49 +26,46 @@ const char kLevel[] = "level";
 
 }  // namespace
 
-base::Value CreateSources(base::Value urls) {
-  base::Value srcs(base::Value::Type::DICTIONARY);
-  srcs.SetKey(kUrls, std::move(urls));
+base::Value::Dict CreateSources(base::Value::List urls) {
+  base::Value::Dict srcs;
+  srcs.Set(kUrls, std::move(urls));
   return srcs;
 }
 
-base::Value CreateDestinations(absl::optional<base::Value> urls,
-                               absl::optional<base::Value> components) {
-  base::Value dsts(base::Value::Type::DICTIONARY);
+base::Value::Dict CreateDestinations(
+    absl::optional<base::Value::List> urls,
+    absl::optional<base::Value::List> components) {
+  base::Value::Dict dsts;
   if (urls.has_value()) {
-    DCHECK(urls->is_list());
-    dsts.SetKey(kUrls, std::move(urls.value()));
+    dsts.Set(kUrls, std::move(urls.value()));
   }
   if (components.has_value()) {
-    DCHECK(components->is_list());
-    dsts.SetKey(kComponents, std::move(components.value()));
+    dsts.Set(kComponents, std::move(components.value()));
   }
   return dsts;
 }
 
-base::Value CreateRestrictionWithLevel(const std::string& restriction,
-                                       const std::string& level) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey(kClass, restriction);
-  dict.SetStringKey(kLevel, level);
+base::Value::Dict CreateRestrictionWithLevel(const std::string& restriction,
+                                             const std::string& level) {
+  base::Value::Dict dict;
+  dict.Set(kClass, restriction);
+  dict.Set(kLevel, level);
   return dict;
 }
 
-base::Value CreateRule(const std::string& name,
-                       const std::string& desc,
-                       base::Value src_urls,
-                       absl::optional<base::Value> dst_urls,
-                       absl::optional<base::Value> dst_components,
-                       base::Value restrictions) {
-  base::Value rule(base::Value::Type::DICTIONARY);
-  rule.SetStringKey(kName, name);
-  rule.SetStringKey(kDescription, desc);
-  DCHECK(src_urls.is_list());
-  rule.SetKey(kSources, CreateSources(std::move(src_urls)));
-  rule.SetKey(kDestinations, CreateDestinations(std::move(dst_urls),
-                                                std::move(dst_components)));
-  DCHECK(restrictions.is_list());
-  rule.SetKey(kRestrictions, std::move(restrictions));
+base::Value::Dict CreateRule(const std::string& name,
+                             const std::string& desc,
+                             base::Value::List src_urls,
+                             absl::optional<base::Value::List> dst_urls,
+                             absl::optional<base::Value::List> dst_components,
+                             base::Value::List restrictions) {
+  base::Value::Dict rule;
+  rule.Set(kName, name);
+  rule.Set(kDescription, desc);
+  rule.Set(kSources, CreateSources(std::move(src_urls)));
+  rule.Set(kDestinations,
+           CreateDestinations(std::move(dst_urls), std::move(dst_components)));
+  rule.Set(kRestrictions, std::move(restrictions));
   return rule;
 }
 
