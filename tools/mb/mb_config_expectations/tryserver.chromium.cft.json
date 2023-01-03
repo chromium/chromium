@@ -9,7 +9,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_clang_coverage": true,
       "use_dummy_lastchange": true,
       "use_goma": true
     }
@@ -23,7 +22,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_clang_coverage": true,
       "use_goma": true
     }
   },
@@ -37,7 +35,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_clang_coverage": true,
       "use_goma": true
     }
   }
