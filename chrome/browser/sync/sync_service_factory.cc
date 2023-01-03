@@ -119,7 +119,6 @@ std::unique_ptr<KeyedService> BuildSyncService(
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   syncer::SyncPrefs prefs(profile->GetPrefs());
   local_sync_backend_enabled = prefs.IsLocalSyncEnabled();
-  base::UmaHistogramBoolean("Sync.Local.Enabled", local_sync_backend_enabled);
   if (init_params.is_regular_profile_for_uma) {
     base::UmaHistogramBoolean("Sync.Local.Enabled2",
                               local_sync_backend_enabled);
@@ -131,8 +130,6 @@ std::unique_ptr<KeyedService> BuildSyncService(
 
     // If the user has not specified a folder and we can't get the default
     // roaming profile location the sync service will not be created.
-    base::UmaHistogramBoolean("Sync.Local.RoamingProfileUnavailable",
-                              local_sync_backend_folder.empty());
     if (init_params.is_regular_profile_for_uma) {
       base::UmaHistogramBoolean("Sync.Local.RoamingProfileUnavailable2",
                                 local_sync_backend_folder.empty());

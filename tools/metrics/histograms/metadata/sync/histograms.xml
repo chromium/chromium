@@ -533,7 +533,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.InitialState" enum="SyncInitialState"
-    expires_after="2023-05-07">
+    expires_after="M110">
+  <obsolete>
+    Replaced in M108 by Sync.InitialState2.
+  </obsolete>
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -597,8 +600,10 @@ chromium-metrics-reviews@google.com.
   <summary>The reason for a failure decrypting the keystore Nigori.</summary>
 </histogram>
 
-<histogram name="Sync.Local.Enabled" enum="BooleanEnabled"
-    expires_after="2023-06-25">
+<histogram name="Sync.Local.Enabled" enum="BooleanEnabled" expires_after="M110">
+  <obsolete>
+    Replaced in M108 by Sync.Local.Enabled2.
+  </obsolete>
   <owner>igorruvinov@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -646,7 +651,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Local.RoamingProfileUnavailable" enum="BooleanError"
-    expires_after="2023-08-01">
+    expires_after="M110">
+  <obsolete>
+    Replaced in M108 by Sync.Local.RoamingProfileUnavailable2.
+  </obsolete>
   <owner>igorruvinov@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>

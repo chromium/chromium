@@ -57,7 +57,7 @@ BASE_FEATURE(kListenForInvalidationsInLocalSync,
              "ListenForInvalidationsInLocalSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// The initial state of sync, for the Sync.InitialState histogram. Even if
+// The initial state of sync, for the Sync.InitialState2 histogram. Even if
 // this value is CAN_START, sync startup might fail for reasons that we may
 // want to consider logging in the future, such as a passphrase needed for
 // decryption, or the version of Chrome being too old. This enum is used to
@@ -92,7 +92,6 @@ void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
   } else if (!first_setup_complete) {
     sync_state = NEEDS_CONFIRMATION;
   }
-  base::UmaHistogramEnumeration("Sync.InitialState", sync_state);
   if (is_regular_profile_for_uma) {
     base::UmaHistogramEnumeration("Sync.InitialState2", sync_state);
   }
