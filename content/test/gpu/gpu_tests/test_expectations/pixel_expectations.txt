@@ -291,8 +291,14 @@ crbug.com/974380 [ mac ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorke
 # Times out on Pixel 4s in webview.
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation renderer-skia-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
-# WebGL drawingBufferStorage does not work on Pixel 4 yet.
-crbug.com/1230619 [ android-pixel-4 ] Pixel_WebGLFloat [ Failure ]
+# WebGL drawingBufferStorage does not work on Google Pixel devices, Samsung
+# devices or Lacros FYI x64 Release (Intel) yet.
+crbug.com/1230619 [ android android-pixel-2 ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android android-pixel-4 ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android android-pixel-6 ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android android-SM-A135M ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android android-SM-A235M ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ linux intel display-server-wayland  ] Pixel_WebGLFloat [ Failure ]
 
 # HDR rendering with PQ color space appears to be broken on Windows RS2.
 # TODO(sunnyps): Revert this temporary suppression after ensuring pixel tests
