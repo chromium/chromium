@@ -8,10 +8,10 @@
  */
 
 import {LocalStorage} from '../../common/local_storage.js';
-import {AbstractEarcons} from '../common/abstract_earcons.js';
 import {EarconId} from '../common/earcon_id.js';
 import {LogType} from '../common/log_types.js';
 
+import {AbstractEarcons} from './abstract_earcons.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {EarconEngine} from './earcon_engine.js';
 import {LogStore} from './logging/log_store.js';
