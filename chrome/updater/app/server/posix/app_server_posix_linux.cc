@@ -9,11 +9,6 @@
 
 namespace updater {
 
-bool AppServerPosix::SwapInNewVersion() {
-  // TODO(crbug.com/1276117): Install systemd units.
-  return true;
-}
-
 bool AppServerPosix::MigrateLegacyUpdaters(
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {

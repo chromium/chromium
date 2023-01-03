@@ -61,10 +61,9 @@ absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
 
 absl::optional<base::FilePath> GetUpdateServiceLauncherPath(
     UpdaterScope scope) {
-  // TODO(crbug.com/1400679): This is not correct, since this is always the
-  // executable associated with kUpdaterVersion, but a different version may be
-  // active.
-  return GetUpdaterExecutablePath(scope);
+  absl::optional<base::FilePath> path = GetBaseInstallDirectory(scope);
+  return path ? absl::optional<base::FilePath>(path->AppendASCII("launcher"))
+              : absl::nullopt;
 }
 
 }  // namespace updater
