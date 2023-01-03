@@ -13,7 +13,7 @@ namespace internal {
 UnserializedMessageContext::UnserializedMessageContext(const Tag* tag,
                                                        uint32_t message_name,
                                                        uint32_t message_flags)
-    : tag_(tag) {
+    : tag_(reinterpret_cast<uintptr_t>(tag)) {
   header_.interface_id = 0;
   header_.version = 1;
   header_.name = message_name;
