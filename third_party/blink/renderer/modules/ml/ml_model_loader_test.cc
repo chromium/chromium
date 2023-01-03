@@ -236,6 +236,16 @@ class FakeMLModel : public blink_mojom::Model {
         ml_output);
   }
 
+  void SetComputeFailure(const blink_mojom::ComputeResult result) {
+    compute_ = WTF::BindOnce(
+        [](const blink_mojom::ComputeResult result,
+           const WTF::HashMap<WTF::String, WTF::Vector<uint8_t>>&,
+           blink_mojom::Model::ComputeCallback callback) {
+          std::move(callback).Run(result, {});
+        },
+        result);
+  }
+
  private:
   blink_mojom::ModelInfoPtr info_;
   ComputeFn compute_;
@@ -469,6 +479,111 @@ TEST_F(MLModelLoaderTest, InputMismatch) {
     EXPECT_TRUE(compute_tester.IsRejected());
     EXPECT_EQ(ScriptValueToDOMExceptionName(compute_tester.Value()),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
+  }
+}
+
+TEST_F(MLModelLoaderTest, ComputeFailures) {
+  V8TestingScope scope;
+  ScopedSetMLServiceBinder scoped_setup_binder(&service_, scope);
+  service_.SetCreateModelLoader(loader_.CreateFromThis());
+  loader_.SetLoad(model_.CreateFromInfo(
+      {{"in",
+        TensorInfo{
+            .byte_size = 16,
+            .data_type = blink_mojom::DataType::kUint8,
+            .dimensions = WTF::Vector<uint32_t>{4, 4},
+        }}},
+      {{"out", TensorInfo{
+                   .byte_size = 4,
+                   .data_type = blink_mojom::DataType::kFloat32,
+                   .dimensions = WTF::Vector<uint32_t>{1},
+               }}}));
+
+  auto* ml_model_loader = CreateTestLoader(scope);
+  ASSERT_TRUE(ml_model_loader);
+
+  auto promise = ml_model_loader->load(scope.GetScriptState(),
+                                       DOMArrayBuffer::Create(1u, 1u),
+                                       scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  auto tester = ScriptPromiseTester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  auto* ml_model = ScriptValueToMLModel(tester.Value());
+  EXPECT_TRUE(ml_model);
+
+  HeapVector<std::pair<String, Member<MLTensor>>> inputs;
+  inputs.emplace_back(WTF::String("in"),
+                      TensorInfo{.byte_size = 16,
+                                 .data_type = blink_mojom::DataType::kUint8,
+                                 .dimensions = WTF::Vector<uint32_t>{4, 4}}
+                          .ToMLTensor());
+
+  {
+    // No computation result (e.g. due to a backend failure).
+    model_.SetComputeFailure(blink_mojom::ComputeResult::kUnknownError);
+
+    auto compute_promise = ml_model->compute(scope.GetScriptState(), inputs,
+                                             scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+    auto compute_tester =
+        ScriptPromiseTester(scope.GetScriptState(), compute_promise);
+    compute_tester.WaitUntilSettled();
+    EXPECT_TRUE(compute_tester.IsRejected());
+    EXPECT_EQ(ScriptValueToDOMExceptionName(compute_tester.Value()),
+              DOMException::GetErrorName(DOMExceptionCode::kOperationError));
+  }
+
+  {
+    // Output tensor count mismatch.
+    model_.SetComputeResult(
+        {{"out1", CreateByteVector(4)}, {"out2", CreateByteVector(4)}});
+
+    auto compute_promise = ml_model->compute(scope.GetScriptState(), inputs,
+                                             scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+    auto compute_tester =
+        ScriptPromiseTester(scope.GetScriptState(), compute_promise);
+    compute_tester.WaitUntilSettled();
+    EXPECT_TRUE(compute_tester.IsRejected());
+    EXPECT_EQ(ScriptValueToDOMExceptionName(compute_tester.Value()),
+              DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
+  }
+
+  {
+    // Output tensor name mismatch.
+    model_.SetComputeResult({{"a_different_out_name", CreateByteVector(4)}});
+
+    auto compute_promise = ml_model->compute(scope.GetScriptState(), inputs,
+                                             scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+    auto compute_tester =
+        ScriptPromiseTester(scope.GetScriptState(), compute_promise);
+    compute_tester.WaitUntilSettled();
+    EXPECT_TRUE(compute_tester.IsRejected());
+    EXPECT_EQ(ScriptValueToDOMExceptionName(compute_tester.Value()),
+              DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
+  }
+
+  {
+    // Output tensor byteLength mismatch.
+    model_.SetComputeResult({{"out", CreateByteVector(8)}});
+
+    auto compute_promise = ml_model->compute(scope.GetScriptState(), inputs,
+                                             scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+    auto compute_tester =
+        ScriptPromiseTester(scope.GetScriptState(), compute_promise);
+    compute_tester.WaitUntilSettled();
+    EXPECT_TRUE(compute_tester.IsRejected());
+    EXPECT_EQ(ScriptValueToDOMExceptionName(compute_tester.Value()),
+              DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
   }
 }
 
