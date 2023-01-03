@@ -968,6 +968,23 @@ async def test_scriptGetRealms(websocket, context_id):
             }])
         }, result)
 
+    # Assert closing browsing context destroys its realms.
+    await execute_command(websocket, {
+        "method": "browsingContext.close",
+        "params": {
+            "context": context_id
+        }})
+
+    result = await execute_command(websocket, {
+        "method": "script.getRealms",
+        "params": {}
+    })
+
+    # Assert no more realms existed.
+    recursive_compare({
+        "realms": []
+    }, result)
+
 
 @pytest.mark.asyncio
 async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):

@@ -153,6 +153,10 @@ export class BrowsingContextImpl {
   public async delete() {
     await this.#removeChildContexts();
 
+    Realm.findRealms({browsingContextId: this.contextId}).forEach((realm) =>
+      realm.delete()
+    );
+
     // Remove context from the parent.
     if (this.parentId !== null) {
       const parent = BrowsingContextStorage.getKnownContext(this.parentId);
