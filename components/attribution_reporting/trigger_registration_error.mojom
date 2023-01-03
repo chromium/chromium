@@ -4,6 +4,8 @@
 
 module attribution_reporting.mojom;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum TriggerRegistrationError {
   kInvalidJson,
   kRootWrongType,
@@ -22,6 +24,8 @@ enum TriggerRegistrationError {
   kAggregatableValuesValueWrongType,
   kAggregatableValuesValueOutOfRange,
 
+  kAggregatableTriggerDataListWrongType,
+  kAggregatableTriggerDataListTooLong,
   kAggregatableTriggerDataWrongType,
   kAggregatableTriggerDataKeyPieceMissing,
   kAggregatableTriggerDataKeyPieceWrongType,
@@ -31,13 +35,9 @@ enum TriggerRegistrationError {
   kAggregatableTriggerDataSourceKeysKeyWrongType,
   kAggregatableTriggerDataSourceKeysKeyTooLong,
 
-  kEventTriggerDataWrongType,
-
   kEventTriggerDataListWrongType,
   kEventTriggerDataListTooLong,
-
-  kAggregatableTriggerDataListWrongType,
-  kAggregatableTriggerDataListTooLong,
+  kEventTriggerDataWrongType,
 
   kAggregationCoordinatorWrongType,
   kAggregationCoordinatorUnknownValue,

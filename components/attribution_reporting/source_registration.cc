@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -70,6 +71,10 @@ base::expected<SuitableOrigin, SourceRegistrationError> ParseDestination(
 }
 
 }  // namespace
+
+void RecordSourceRegistrationError(mojom::SourceRegistrationError error) {
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError", error);
+}
 
 SourceRegistration::SourceRegistration() = default;
 
@@ -134,15 +139,25 @@ SourceRegistration::Parse(base::Value::Dict registration) {
 // static
 base::expected<SourceRegistration, SourceRegistrationError>
 SourceRegistration::Parse(base::StringPiece json) {
+  base::expected<SourceRegistration, SourceRegistrationError> source =
+      base::unexpected(SourceRegistrationError::kInvalidJson);
+
   absl::optional<base::Value> value =
       base::JSONReader::Read(json, base::JSON_PARSE_RFC);
-  if (!value)
-    return base::unexpected(SourceRegistrationError::kInvalidJson);
 
-  if (!value->is_dict())
-    return base::unexpected(SourceRegistrationError::kRootWrongType);
+  if (value) {
+    if (value->is_dict()) {
+      source = Parse(std::move(*value).TakeDict());
+    } else {
+      source = base::unexpected(SourceRegistrationError::kRootWrongType);
+    }
+  }
 
-  return Parse(std::move(*value).TakeDict());
+  if (!source.has_value()) {
+    RecordSourceRegistrationError(source.error());
+  }
+
+  return source;
 }
 
 base::Value::Dict SourceRegistration::ToJson() const {

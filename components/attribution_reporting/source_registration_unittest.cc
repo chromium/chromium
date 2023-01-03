@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/invoke.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -231,9 +232,21 @@ TEST(SourceRegistrationTest, Parse) {
       },
   };
 
+  static constexpr char kSourceRegistrationErrorMetric[] =
+      "Conversions.SourceRegistrationError";
+
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected, SourceRegistration::Parse(test_case.json))
-        << test_case.desc;
+    base::HistogramTester histograms;
+
+    auto source = SourceRegistration::Parse(test_case.json);
+    EXPECT_EQ(test_case.expected, source) << test_case.desc;
+
+    if (source.has_value()) {
+      histograms.ExpectTotalCount(kSourceRegistrationErrorMetric, 0);
+    } else {
+      histograms.ExpectUniqueSample(kSourceRegistrationErrorMetric,
+                                    source.error(), 1);
+    }
   }
 }
 

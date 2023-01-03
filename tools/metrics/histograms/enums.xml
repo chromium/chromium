@@ -19276,6 +19276,27 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="External non-200 HTTP error"/>
 </enum>
 
+<enum name="ConversionSourceRegistrationError">
+  <int value="0" label="Invalid JSON"/>
+  <int value="1" label="Root JSON value has wrong type"/>
+  <int value="2" label="destination missing"/>
+  <int value="3" label="destination has wrong type"/>
+  <int value="4" label="destination not potentially trustworthy"/>
+  <int value="5" label="filter_data has wrong type"/>
+  <int value="6" label="filter_data has too many keys"/>
+  <int value="7" label="filter_data has a source_type key"/>
+  <int value="8" label="filter_data key too long"/>
+  <int value="9" label="filter_data value has wrong type"/>
+  <int value="10" label="filter_data list too long"/>
+  <int value="11" label="filer_data list value has wrong type"/>
+  <int value="12" label="filter_data list value too long"/>
+  <int value="13" label="aggregation_keys has wrong type"/>
+  <int value="14" label="aggregation_keys has too many keys"/>
+  <int value="15" label="aggregation_keys key too long"/>
+  <int value="16" label="aggregation_keys value has wrong type"/>
+  <int value="17" label="aggregation_keys value has wrong format"/>
+</enum>
+
 <enum name="ConversionStorageCreateReportStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Success, but dropped lower-priority report"/>
@@ -19319,6 +19340,44 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Enqueued"/>
   <int value="3" label="Processed with delay"/>
   <int value="4" label="Flushed"/>
+</enum>
+
+<enum name="ConversionTriggerRegistrationError">
+  <int value="0" label="Invalid JSON"/>
+  <int value="1" label="Root JSON value has wrong type"/>
+  <int value="2" label="Filters has wrong type"/>
+  <int value="3" label="Filters has too many keys"/>
+  <int value="4" label="Filters key too long"/>
+  <int value="5" label="Filters value has wrong type"/>
+  <int value="6" label="Filters list too long"/>
+  <int value="7" label="Filters list value has wrong type"/>
+  <int value="8" label="Filters list value too long"/>
+  <int value="9" label="aggregatable_values has wrong type"/>
+  <int value="10" label="aggregatable_values has too many keys"/>
+  <int value="11" label="aggregatable_values key too long"/>
+  <int value="12" label="aggregatable_values value has wrong type"/>
+  <int value="13" label="aggregatable_values value out of range"/>
+  <int value="14" label="aggregatable_trigger_data has wrong type"/>
+  <int value="15" label="aggregatable_trigger_data too long"/>
+  <int value="16" label="aggregatable_trigger_data value has wrong type"/>
+  <int value="17" label="aggregatable_trigger_data value key_piece missing"/>
+  <int value="18"
+      label="aggregatable_trigger_data value key_piece has wrong type"/>
+  <int value="19"
+      label="aggregatable_trigger_data value key_piece has wrong format"/>
+  <int value="20"
+      label="aggregatable_trigger_data value source_keys has wrong type"/>
+  <int value="21"
+      label="aggregatable_trigger_data value source_keys has too many keys"/>
+  <int value="22"
+      label="aggregatable_trigger_data value source_keys key has wrong type"/>
+  <int value="23"
+      label="aggregatable_trigger_data value source_keys key too long"/>
+  <int value="24" label="event_trigger_data has wrong type"/>
+  <int value="25" label="event_trigger_data too long"/>
+  <int value="26" label="event_trigger_data value has wrong type"/>
+  <int value="27" label="aggregation_coordinator_identifier has wrong type"/>
+  <int value="28" label="aggregation_coordinator_identifier has unknown value"/>
 </enum>
 
 <enum name="CookieAccessType">

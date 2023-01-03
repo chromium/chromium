@@ -3983,6 +3983,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Conversions.SourceRegistrationError"
+    enum="ConversionSourceRegistrationError" expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often source registration parsing failed and why. Recorded only
+    when parsing failed; not recorded when parsing succeeded.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.SourceStoredStatus2"
     enum="ConversionStorageSourceStatus" expires_after="M117">
   <owner>anthonygarant@chromium.org</owner>
@@ -4094,6 +4105,17 @@ chromium-metrics-reviews@google.com.
     Records events for triggers that may be delayed using a queue by
     AttributionDataHostManagerImpl. A single trigger may emit multiple events if
     it is part of the queue.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TriggerRegistrationError"
+    enum="ConversionTriggerRegistrationError" expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often trigger registration parsing failed and why. Recorded
+    only when parsing failed; not recorded when parsing succeeded.
   </summary>
 </histogram>
 

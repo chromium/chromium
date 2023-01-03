@@ -4,6 +4,8 @@
 
 module attribution_reporting.mojom;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum SourceRegistrationError {
   kInvalidJson,
   kRootWrongType,

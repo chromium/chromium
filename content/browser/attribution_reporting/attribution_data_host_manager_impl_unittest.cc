@@ -777,6 +777,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationRedirectSource_ParsingFailsBeforeAndSucceedsAfterNav) {
+  base::HistogramTester histograms;
+
   EXPECT_CALL(mock_manager_, HandleSource).Times(1);
 
   auto reporter = *SuitableOrigin::Deserialize("https://report.test");
@@ -802,6 +804,9 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
+
+  histograms.ExpectUniqueSample("Conversions.SourceRegistrationError",
+                                SourceRegistrationError::kInvalidJson, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,

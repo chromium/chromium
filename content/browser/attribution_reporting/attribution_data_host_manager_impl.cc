@@ -563,8 +563,6 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     std::string header_value,
     AttributionNavigationType nav_type,
     data_decoder::DataDecoder::ValueOrError result) {
-  // TODO(johnidel): Add metrics regarding parsing failures / misconfigured
-  // headers.
   auto it = redirect_registrations_.find(attribution_src_token);
 
   // The registration may no longer be tracked in the event the navigation
@@ -599,6 +597,7 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     attribution_manager_->NotifyFailedSourceRegistration(
         header_value, registrations.source_origin, reporting_origin,
         source.error());
+    attribution_reporting::RecordSourceRegistrationError(source.error());
   }
 
   if (registrations.pending_source_data == 0u &&

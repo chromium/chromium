@@ -148,15 +148,26 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
 // static
 base::expected<TriggerRegistration, TriggerRegistrationError>
 TriggerRegistration::Parse(base::StringPiece json) {
+  base::expected<TriggerRegistration, TriggerRegistrationError> trigger =
+      base::unexpected(TriggerRegistrationError::kInvalidJson);
+
   absl::optional<base::Value> value =
       base::JSONReader::Read(json, base::JSON_PARSE_RFC);
-  if (!value)
-    return base::unexpected(TriggerRegistrationError::kInvalidJson);
 
-  if (!value->is_dict())
-    return base::unexpected(TriggerRegistrationError::kRootWrongType);
+  if (value) {
+    if (value->is_dict()) {
+      trigger = Parse(std::move(*value).TakeDict());
+    } else {
+      trigger = base::unexpected(TriggerRegistrationError::kRootWrongType);
+    }
+  }
 
-  return Parse(std::move(*value).TakeDict());
+  if (!trigger.has_value()) {
+    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError",
+                                  trigger.error());
+  }
+
+  return trigger;
 }
 
 TriggerRegistration::TriggerRegistration() = default;

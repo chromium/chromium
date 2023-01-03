@@ -245,9 +245,21 @@ TEST(TriggerRegistrationTest, Parse) {
       },
   };
 
+  static constexpr char kTriggerRegistrationErrorMetric[] =
+      "Conversions.TriggerRegistrationError";
+
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(TriggerRegistration::Parse(test_case.json), test_case.expected)
-        << test_case.description;
+    base::HistogramTester histograms;
+
+    auto trigger = TriggerRegistration::Parse(test_case.json);
+    EXPECT_EQ(trigger, test_case.expected) << test_case.description;
+
+    if (trigger.has_value()) {
+      histograms.ExpectTotalCount(kTriggerRegistrationErrorMetric, 0);
+    } else {
+      histograms.ExpectUniqueSample(kTriggerRegistrationErrorMetric,
+                                    trigger.error(), 1);
+    }
   }
 }
 
