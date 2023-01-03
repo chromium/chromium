@@ -39,3 +39,31 @@ ci.builder(
         "repo_name": "chromium",
     },
 )
+
+ci.builder(
+    name = "win-presubmit",
+    executable = "recipe:presubmit",
+    builderless = True,
+    cores = 32,
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        console_view = "checks",
+        category = "presubmit",
+        short_name = "win",
+    ),
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+
+    # TODO(crbug.com/1370463): remove this.
+    omit_python2 = False,
+    properties = {
+        "$depot_tools/presubmit": {
+            "runhooks": True,
+            "timeout_s": 480000,
+        },
+        "repo_name": "chromium",
+    },
+
+    # Adding sheriff rotations to none for the time being until we confirm
+    # this works
+    sheriff_rotations = None,
+)
