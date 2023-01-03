@@ -5983,6 +5983,12 @@ const char kLauncherFuzzyMatchForOmniboxDescription[] =
     "To evaluate the viability of a Fuzzy match on Omnibox results to "
     "downweight search sugestions";
 
+const char kLauncherSystemInfoAnswerCardsName[] =
+    "System Info Answer Cards in launcher";
+const char kLauncherSystemInfoAnswerCardsDescription[] =
+    "Enables System info answer cards in the launcher to provide system "
+    "performance metrics";
+
 const char kMacAddressRandomizationName[] = "MAC address randomization";
 const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "

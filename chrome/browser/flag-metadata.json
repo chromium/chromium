@@ -4468,6 +4468,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "launcher-system-info-answer-cards",
+    "owners": ["laurencom", "wrong", "amandadeacon"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "layout-extraction",
     "owners": [ "rhalavati", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120

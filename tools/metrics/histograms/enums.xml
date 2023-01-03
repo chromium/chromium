@@ -60978,6 +60978,7 @@ from previous Chrome versions.
   <int value="103932290" label="show-autofill-type-predictions"/>
   <int value="105046382" label="ParallelDownloading:disabled"/>
   <int value="105284154" label="PromiseIcons:enabled"/>
+  <int value="106235373" label="LauncherSystemInfoAnswerCards:enabled"/>
   <int value="106744400" label="OmniboxModernizeVisualUpdate:enabled"/>
   <int value="106840653" label="mus"/>
   <int value="107358678" label="GalleryAppPdfEditNotification:enabled"/>
@@ -62612,6 +62613,7 @@ from previous Chrome versions.
   <int value="1073699828" label="ScrollUpdateOptimizations:enabled"/>
   <int value="1074359194" label="UseSuggestionsEvenIfFew:enabled"/>
   <int value="1074427701" label="NewPrintPreviewLayout:enabled"/>
+  <int value="1075191614" label="LauncherSystemInfoAnswerCards:disabled"/>
   <int value="1075637651" label="disable-tablet-splitview"/>
   <int value="1075862390" label="LauncherItemSuggest:enabled"/>
   <int value="1076335895" label="CrosPrivacyHubV0:enabled"/>
