@@ -73,10 +73,9 @@ void StatusIconButtonLinux::OnSetDelegate() {
 
   widget_->Init(std::move(params));
 
-  auto* window = widget_->GetNativeWindow();
-  DCHECK(window);
-  host_ = window->GetHost();
-  if (host_->GetAcceleratedWidget() == gfx::kNullAcceleratedWidget) {
+  // The window and host are non-null because the widget was just initialized.
+  auto* host = widget_->GetNativeWindow()->GetHost();
+  if (host->GetAcceleratedWidget() == gfx::kNullAcceleratedWidget) {
     delegate_->OnImplInitializationFailed();
     // |this| might be destroyed.
     return;
@@ -98,8 +97,9 @@ void StatusIconButtonLinux::ShowContextMenuForViewImpl(
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
   ui::MenuModel* menu = delegate_->GetMenuModel();
-  if (!menu)
+  if (!menu) {
     return;
+  }
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu, views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU |
                 views::MenuRunner::FIXED_ANCHOR);
@@ -111,7 +111,7 @@ void StatusIconButtonLinux::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::ScopedCanvas scoped_canvas(canvas);
   canvas->UndoDeviceScaleFactor();
 
-  gfx::Rect bounds = host_->GetBoundsInPixels();
+  gfx::Rect bounds = widget_->GetNativeWindow()->GetHost()->GetBoundsInPixels();
   const gfx::ImageSkia& image = delegate_->GetImage();
 
   // If the image fits in the window, center it.  But if it won't fit, downscale

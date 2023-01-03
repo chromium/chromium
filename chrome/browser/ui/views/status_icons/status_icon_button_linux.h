@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/linux/status_icon_linux.h"
 #include "ui/views/context_menu_controller.h"
@@ -15,11 +14,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 
-namespace aura {
-class WindowTreeHost;
-}
-
-// A button that is internally mapped as a status icon if the underlaying
+// A button that is internally mapped as a status icon if the underlying
 // platform supports that kind of windows. Otherwise, calls
 // OnImplInitializationFailed.
 class StatusIconButtonLinux : public ui::StatusIconLinux,
@@ -49,8 +44,6 @@ class StatusIconButtonLinux : public ui::StatusIconLinux,
 
  private:
   std::unique_ptr<views::Widget> widget_;
-
-  raw_ptr<aura::WindowTreeHost, DanglingUntriaged> host_ = nullptr;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
 };
