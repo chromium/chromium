@@ -1393,10 +1393,8 @@ void HTMLElement::showPopover(ExceptionState& exception_state) {
 
   SetPopoverFocusOnShow();
 
-  // Only restore focus (later) if focus changed as a result of showing the
-  // popover.
-  if (should_restore_focus && HasPopoverAttribute() &&
-      originally_focused_element != document.FocusedElement()) {
+  // Store the element to focus when this popover closes.
+  if (should_restore_focus && HasPopoverAttribute()) {
     GetPopoverData()->setPreviouslyFocusedElement(originally_focused_element);
   }
 }
