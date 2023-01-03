@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CONTROLLER_EMITTER_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CONTROLLER_EMITTER_H_
+#ifndef COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CONTROLLER_EMITTER_H_
+#define COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CONTROLLER_EMITTER_H_
 
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -18,18 +18,19 @@
 // instances and forward the notifications to its own observers.
 // Its main purpose is to act as a bridge between the chrome://omnibox WebUI
 // handler, and the many usages of AutocompleteController (Views, NTP, Android).
-class OmniboxControllerEmitter : public KeyedService,
-                                 public AutocompleteController::Observer {
+class AutocompleteControllerEmitter : public KeyedService,
+                                      public AutocompleteController::Observer {
  public:
 #if !BUILDFLAG(IS_IOS)
-  static OmniboxControllerEmitter* GetForBrowserContext(
+  static AutocompleteControllerEmitter* GetForBrowserContext(
       content::BrowserContext* browser_context);
 #endif  // !BUILDFLAG(IS_IOS)
 
-  OmniboxControllerEmitter();
-  ~OmniboxControllerEmitter() override;
-  OmniboxControllerEmitter(const OmniboxControllerEmitter&) = delete;
-  OmniboxControllerEmitter& operator=(const OmniboxControllerEmitter&) = delete;
+  AutocompleteControllerEmitter();
+  ~AutocompleteControllerEmitter() override;
+  AutocompleteControllerEmitter(const AutocompleteControllerEmitter&) = delete;
+  AutocompleteControllerEmitter& operator=(
+      const AutocompleteControllerEmitter&) = delete;
 
   // Add/remove observer.
   void AddObserver(AutocompleteController::Observer* observer);
@@ -45,4 +46,4 @@ class OmniboxControllerEmitter : public KeyedService,
   base::ObserverList<AutocompleteController::Observer> observers_;
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CONTROLLER_EMITTER_H_
+#endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CONTROLLER_EMITTER_H_

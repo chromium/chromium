@@ -33,7 +33,7 @@ class Image;
 struct VectorIcon;
 }
 
-class OmniboxControllerEmitter;
+class AutocompleteControllerEmitter;
 
 using BitmapFetchedCallback =
     base::RepeatingCallback<void(int result_index, const SkBitmap& bitmap)>;
@@ -87,7 +87,7 @@ class OmniboxClient {
       omnibox::mojom::NavigationPredictor navigation_predictor) {}
 
   virtual bookmarks::BookmarkModel* GetBookmarkModel();
-  virtual OmniboxControllerEmitter* GetOmniboxControllerEmitter();
+  virtual AutocompleteControllerEmitter* GetAutocompleteControllerEmitter();
   virtual TemplateURLService* GetTemplateURLService();
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier();

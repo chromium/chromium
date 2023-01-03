@@ -42,6 +42,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/browser_ui/util/android/url_constants.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -49,7 +50,6 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/omnibox/browser/omnibox_controller_emitter.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
@@ -131,8 +131,8 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
           AutocompleteClassifier::DefaultOmniboxProviders())} {
   autocomplete_controller_->AddObserver(this);
 
-  OmniboxControllerEmitter* emitter =
-      OmniboxControllerEmitter::GetForBrowserContext(profile_);
+  AutocompleteControllerEmitter* emitter =
+      AutocompleteControllerEmitter::GetForBrowserContext(profile_);
   if (emitter)
     autocomplete_controller_->AddObserver(emitter);
 }

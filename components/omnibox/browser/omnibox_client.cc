@@ -41,7 +41,8 @@ bookmarks::BookmarkModel* OmniboxClient::GetBookmarkModel() {
   return nullptr;
 }
 
-OmniboxControllerEmitter* OmniboxClient::GetOmniboxControllerEmitter() {
+AutocompleteControllerEmitter*
+OmniboxClient::GetAutocompleteControllerEmitter() {
   return nullptr;
 }
 

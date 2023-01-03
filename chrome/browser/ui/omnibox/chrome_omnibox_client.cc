@@ -53,11 +53,11 @@
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/location_bar_model.h"
-#include "components/omnibox/browser/omnibox_controller_emitter.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -158,8 +158,9 @@ bookmarks::BookmarkModel* ChromeOmniboxClient::GetBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
 
-OmniboxControllerEmitter* ChromeOmniboxClient::GetOmniboxControllerEmitter() {
-  return OmniboxControllerEmitter::GetForBrowserContext(profile_);
+AutocompleteControllerEmitter*
+ChromeOmniboxClient::GetAutocompleteControllerEmitter() {
+  return AutocompleteControllerEmitter::GetForBrowserContext(profile_);
 }
 
 TemplateURLService* ChromeOmniboxClient::GetTemplateURLService() {
