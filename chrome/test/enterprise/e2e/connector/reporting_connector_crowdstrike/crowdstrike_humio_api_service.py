@@ -7,9 +7,10 @@
 
 import logging
 import requests
+from .. import Verifyable, VerifyContent
 
 
-class CrowdStrikeHumioApiService(object):
+class CrowdStrikeHumioApiService(Verifyable):
 
   def __init__(self, user_token):
     '''Inits the api client with base url, user auth token and repo name.'''
@@ -17,22 +18,17 @@ class CrowdStrikeHumioApiService(object):
     self.user_token = user_token
     self.repository = 'demo'
 
-  def queryEvent(self, device_id):
+  def TryVerify(self, content: VerifyContent) -> bool:
     '''Makes HTTP POST call with user token and search device_id from humio.
 
-    API reference: https://library.humio.com/humio-server/api-search.html
-
-    Args:
-      device_id: A device ID be searched in Humio
-
-    '''
+    API reference: https://library.humio.com/humio-server/api-search.html'''
     headers = {
         "Authorization": "Bearer " + self.user_token,
         "Content-Type": "application/json",
         "Accept": "application/json"
     }
     data = {
-        "queryString": device_id,
+        "queryString": content.device_id,
         "start": "1h",
         "showQueryEventDistribution": True,
         "isLive": False

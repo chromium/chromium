@@ -6,9 +6,10 @@ from datetime import datetime, timedelta
 import json
 from google.oauth2 import service_account
 from googleapiclient import _auth
+from .. import Verifyable, VerifyContent
 
 
-class ChronicleApiService(object):
+class ChronicleApiService(Verifyable):
   """This class handles retrieving and verifying chronicle messages"""
   messages = []
   serviceAccountInfo = None
@@ -24,14 +25,11 @@ class ChronicleApiService(object):
     except json.JSONDecodeError:
       print('Decoding PubsubApiService credentials JSON has failed')
 
-  def doesEventExist(self, deviceId, eventName):
-    """Verifies if a specific message was sent. Lazy loads messages
-
-    Args:
-      deviceId: A GUID device id that made the action.
-      eventName: A string containing the event name we're looking for
-    """
-    return eventName in json.dumps(self.messages)
+  def TryVerify(self, content: VerifyContent) -> bool:
+    """This method will be called repeatedly until
+        success or timeout. Returns boolean"""
+    self.loadEvents(content.timestamp, content.device_id)
+    return content.device_id in json.dumps(self.messages)
 
   def _datetimeToIso(self, date):
     return date.strftime('%Y-%m-%dT%H:%M:%S.%f%zZ')

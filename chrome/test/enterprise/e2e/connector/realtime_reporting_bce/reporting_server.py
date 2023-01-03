@@ -6,9 +6,10 @@ import os
 
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
+from .. import Verifyable, VerifyContent
 
 
-class RealTimeReportingServer():
+class RealTimeReportingServer(Verifyable):
   SCOPES = ['https://www.googleapis.com/auth/admin.reports.audit.readonly']
   USER_EMAIL = 'admin@beyondcorp.bigr.name'
 
@@ -31,21 +32,24 @@ class RealTimeReportingServer():
 
     return build('admin', 'reports_v1', credentials=delegatedCreds)
 
-  def lookupevents(self, eventName, startTime, deviceId):
+  def TryVerify(self, content: VerifyContent) -> bool:
+    """This method will be called repeatedly until
+        success or timeout. Returns boolean"""
     containsEvent = False
     reportService = self.create_reports_service(self.USER_EMAIL)
     results = reportService.activities().list(
         userKey='all',
         applicationName='chrome',
         customerId='C029rpj4z',
-        eventName=eventName,
-        startTime=startTime).execute()
+        eventName='MALWARE_TRANSFER',
+        startTime=content.timestamp.strftime(
+            '%Y-%m-%dT%H:%M:%S.%fZ')).execute()
     activities = results.get('items', [])
     for activity in activities:
       for event in activity.get('events', []):
         for parameter in event.get('parameters', []):
           if parameter['name'] == 'DEVICE_ID' and \
-          parameter['value'] in deviceId:
+          parameter['value'] in content.device_id:
             containsEvent = True
             break
     return containsEvent

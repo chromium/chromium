@@ -5,9 +5,10 @@
 import json
 
 from google.cloud import pubsub_v1
+from .. import Verifyable, VerifyContent
 
 
-class PubsubApiService(object):
+class PubsubApiService(Verifyable):
   """This class handles retrieving and verifying pubsub messages"""
   project = ''
   subscription = ''
@@ -28,18 +29,23 @@ class PubsubApiService(object):
     self.project = credentialsJson['project']
     self.subscription = credentialsJson['subscription']
 
-  def doesEventExist(self, deviceId, eventName):
+  def TryVerify(self, content: VerifyContent) -> bool:
+    """This method will be called repeatedly until
+        success or timeout. Returns boolean"""
+    self.loadEvents()
+    return self.doesEventExist(content.device_id)
+
+  def doesEventExist(self, deviceId):
     """Verifies if a specific message was sent. Lazy loads messages
 
     Args:
       deviceId: A GUID device id that made the action.
-      eventName: A string containing the event name we're looking for
     """
     if self.messages is None:
       self.loadEvents()
     for msg in self.messages:
       msdData = msg
-      if deviceId in msdData and eventName in msdData:
+      if deviceId in msdData in msdData:
         return True
     return False
 

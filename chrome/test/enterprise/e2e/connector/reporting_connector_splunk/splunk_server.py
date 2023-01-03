@@ -9,9 +9,10 @@ import time
 
 from datetime import datetime
 import xml.etree.ElementTree as ET
+from .. import Verifyable, VerifyContent
 
 
-class SplunkApiService(object):
+class SplunkApiService(Verifyable):
   baseurl = ''
   userName = ''
   password = ''
@@ -60,12 +61,14 @@ class SplunkApiService(object):
     print("All: " + str(len(events)))
     return events
 
-  def lookupEvents(self, startTime, deviceId, eventName):
+  def TryVerify(self, content: VerifyContent) -> bool:
+    """This method Verify event entry existence on the splunk instance"""
     searchQuery = "sourcetype=google:chrome:json"
-    minutes = int(((datetime.utcnow() - startTime).total_seconds() / 60) + 2)
+    minutes = int((
+        (datetime.utcnow() - content.timestamp).total_seconds() / 60) + 2)
     searchQuery += ' earliest=-' + str(minutes) + 'm'
-    searchQuery += ' device_id="' + deviceId + '"'
-    searchQuery += ' event="' + eventName + '"'
+    searchQuery += ' device_id="' + content.device_id + '"'
+    searchQuery += ' event="dangerousDownloadEvent"'
     # Remove leading and trailing whitespace from the search
     searchQuery = searchQuery.strip()
     print(searchQuery)
