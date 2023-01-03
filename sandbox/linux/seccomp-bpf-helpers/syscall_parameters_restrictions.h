@@ -123,6 +123,9 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPkeyAllocFlags();
 // Restrict the which argument to getitimer() and setitimer().
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictGoogle3Threading(int sysno);
 
+// Restrict the flags of pipe2().
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPipe2();
+
 }  // namespace sandbox.
 
 #endif  // SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_PARAMETERS_RESTRICTIONS_H_

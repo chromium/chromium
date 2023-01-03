@@ -43,7 +43,6 @@ class SANDBOX_EXPORT SyscallSets {
   // It's difficult to restrict those, but there is attack surface here.
   static bool IsAllowedFutex(int sysno);
   static bool IsAllowedEpoll(int sysno);
-  static bool IsAllowedGetOrModifySocket(int sysno);
   static bool IsDeniedGetOrModifySocket(int sysno);
 
 #if defined(__i386__) || \

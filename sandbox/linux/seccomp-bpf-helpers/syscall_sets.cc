@@ -496,22 +496,6 @@ bool SyscallSets::IsAllowedEpoll(int sysno) {
   }
 }
 
-bool SyscallSets::IsAllowedGetOrModifySocket(int sysno) {
-  switch (sysno) {
-#if !defined(__aarch64__)
-    case __NR_pipe:
-#endif
-    case __NR_pipe2:
-      return true;
-    default:
-#if defined(__x86_64__) || defined(__arm__) || defined(__mips__) || \
-    defined(__aarch64__)
-    case __NR_socketpair:  // We will want to inspect its argument.
-#endif
-      return false;
-  }
-}
-
 bool SyscallSets::IsDeniedGetOrModifySocket(int sysno) {
   switch (sysno) {
 #if defined(__x86_64__) || defined(__arm__) || defined(__mips__) || \

@@ -471,4 +471,10 @@ ResultExpr RestrictGoogle3Threading(int sysno) {
   return If(which == ITIMER_PROF, Allow()).Else(Error(EPERM));
 }
 
+ResultExpr RestrictPipe2() {
+  const Arg<int> flags(1);
+  return If((flags & ~(O_CLOEXEC|O_DIRECT|O_NONBLOCK)) == 0, Allow())
+      .Else(CrashSIGSYS());
+}
+
 }  // namespace sandbox.
