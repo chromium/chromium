@@ -172,8 +172,8 @@ class ObjectPermissionContextBase : public KeyedService {
   base::ObserverList<PermissionObserver> permission_observer_list_;
 
  private:
-  base::Value GetWebsiteSetting(const url::Origin& origin,
-                                content_settings::SettingInfo* info);
+  base::Value::Dict GetWebsiteSetting(const url::Origin& origin,
+                                      content_settings::SettingInfo* info);
   void SaveWebsiteSetting(const url::Origin& origin);
   void ScheduleSaveWebsiteSetting(const url::Origin& origin);
   virtual std::vector<std::unique_ptr<Object>> GetWebsiteSettingObjects();

@@ -236,14 +236,15 @@ void ObjectPermissionContextBase::NotifyPermissionRevoked(
   }
 }
 
-base::Value ObjectPermissionContextBase::GetWebsiteSetting(
+base::Value::Dict ObjectPermissionContextBase::GetWebsiteSetting(
     const url::Origin& origin,
     content_settings::SettingInfo* info) {
   base::Value value = host_content_settings_map_->GetWebsiteSetting(
       origin.GetURL(), GURL(), data_content_settings_type_, info);
-  if (value.is_none())
-    return base::Value(base::Value::Type::DICTIONARY);
-  return value;
+  if (!value.is_dict()) {
+    return base::Value::Dict();
+  }
+  return std::move(value.GetDict());
 }
 
 void ObjectPermissionContextBase::SaveWebsiteSetting(
@@ -269,11 +270,11 @@ void ObjectPermissionContextBase::SaveWebsiteSetting(
   for (const auto& object : origin_objects_it->second) {
     objects_list.Append(object.second->value.Clone());
   }
-  base::Value website_setting_value(base::Value::Type::DICTIONARY);
-  website_setting_value.SetKey(kObjectListKey, std::move(objects_list));
+  base::Value::Dict website_setting_value;
+  website_setting_value.Set(kObjectListKey, std::move(objects_list));
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), data_content_settings_type_,
-      std::move(website_setting_value));
+      base::Value(std::move(website_setting_value)));
 }
 
 void ObjectPermissionContextBase::ScheduleSaveWebsiteSetting(
@@ -315,12 +316,12 @@ ObjectPermissionContextBase::GetWebsiteSettingObjects() {
       continue;
 
     content_settings::SettingInfo info;
-    base::Value setting = GetWebsiteSetting(origin, &info);
-    base::Value* objects = setting.FindListKey(kObjectListKey);
+    base::Value::Dict setting = GetWebsiteSetting(origin, &info);
+    base::Value::List* objects = setting.FindList(kObjectListKey);
     if (!objects)
       continue;
 
-    for (auto& object : objects->GetList()) {
+    for (auto& object : *objects) {
       if (!IsValidObject(object)) {
         continue;
       }
