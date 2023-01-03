@@ -107,7 +107,7 @@ public class NotificationPermissionRequestActivity extends Activity {
         // running on and targeting >= T. Check whether notifications are actually enabled, perhaps
         // because the system displayed a permission dialog after the first notification channel was
         // created and the user approved it.
-        if (!enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (!enabled) {
             enabled = getNotificationManager().areNotificationsEnabled();
         }
 

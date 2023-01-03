@@ -127,10 +127,8 @@ public class WebApkServiceImplWrapper extends IWebApkApi.Stub {
     @Override
     @PermissionStatus
     public int checkNotificationPermission() {
-        boolean enabled = true;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            enabled = getNotificationManager().areNotificationsEnabled();
-        }
+        boolean enabled = getNotificationManager().areNotificationsEnabled();
+
         @PermissionStatus
         int status = enabled ? PermissionStatus.ALLOW : PermissionStatus.BLOCK;
         if (status == PermissionStatus.BLOCK

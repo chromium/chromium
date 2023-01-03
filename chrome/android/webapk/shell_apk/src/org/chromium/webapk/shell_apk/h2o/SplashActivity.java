@@ -85,9 +85,8 @@ public class SplashActivity extends Activity {
         // - Both the WebAPK and Chrome have been killed by the Android out-of-memory killer
         // both the SplashActivity and the browser activity are created when the user selects the
         // WebAPK in Android Recents.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && !new ComponentName(this, SplashActivity.class)
-                            .equals(WebApkUtils.fetchTopActivityComponent(this, getTaskId()))) {
+        if (!new ComponentName(this, SplashActivity.class)
+                        .equals(WebApkUtils.fetchTopActivityComponent(this, getTaskId()))) {
             return;
         }
 

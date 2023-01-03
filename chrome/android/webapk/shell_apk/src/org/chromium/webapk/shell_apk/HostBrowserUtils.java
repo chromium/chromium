@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.os.Build;
 import android.text.TextUtils;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
@@ -173,8 +172,7 @@ public class HostBrowserUtils {
                 && !params.getHostBrowserPackageName().equals(ARC_INTENT_HELPER_BROWSER)
                 && !params.getHostBrowserPackageName().equals(ARC_WEBAPK_BROWSER)
                 && params.getHostBrowserMajorChromiumVersion()
-                >= MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+                >= MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH;
     }
 
     /**
