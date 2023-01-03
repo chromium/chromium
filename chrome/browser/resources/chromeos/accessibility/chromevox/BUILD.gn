@@ -457,7 +457,6 @@ if (is_chromeos_ash) {
       "../common/testing/callback_helper.js",
       "../common/testing/documents.js",
       "../common/testing/e2e_test_base.js",
-      "testing/chromevox_e2e_test_base.js",
       "testing/chromevox_next_e2e_test_base.js",
       "testing/mock_feedback.js",
     ]

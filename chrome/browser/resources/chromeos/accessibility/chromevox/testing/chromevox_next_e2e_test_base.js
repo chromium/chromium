@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['chromevox_e2e_test_base.js']);
+GEN_INCLUDE(['../../common/testing/e2e_test_base.js']);
+GEN_INCLUDE(['../../common/testing/assert_additions.js']);
+GEN_INCLUDE(['common.js']);
 GEN_INCLUDE(['mock_feedback.js']);
 
 /**
- * Base test fixture for ChromeVox Next end to end tests.
- * These tests are identical to ChromeVoxE2ETests except for performing the
- * necessary setup to run ChromeVox Next.
+ * Base test fixture for ChromeVox end to end tests.
+ * These tests run against production ChromeVox inside of the extension's
+ * background context.
  */
-ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
-  /** @param {boolean=} opt_isCommonClass Disables ChromeVox specific code */
-  constructor(opt_isCommonClass) {
+ChromeVoxNextE2ETest = class extends E2ETestBase {
+  constructor() {
     super();
-    this.isCommonClass = opt_isCommonClass || false;
 
     if (this.runtimeDeps.length > 0) {
       chrome.extension.getViews().forEach(view => {
@@ -40,6 +40,30 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     window.Gesture = chrome.accessibilityPrivate.Gesture;
 
     super.setUp();
+  }
+
+  /** @override */
+  testGenCppIncludes() {
+    super.testGenCppIncludes();
+    GEN(`
+  #include "extensions/common/extension_l10n_util.h"
+      `);
+  }
+
+  /** @override */
+  testGenPreamble() {
+    super.testGenPreamble();
+    GEN(`
+    auto allow = extension_l10n_util::AllowGzippedMessagesAllowedForTest();
+    base::OnceClosure load_cb =
+        base::BindOnce(&ash::AccessibilityManager::EnableSpokenFeedback,
+            base::Unretained(ash::AccessibilityManager::Get()),
+            true);
+      `);
+
+    super.testGenPreambleCommon(
+        'kChromeVoxExtensionId',
+        ChromeVoxNextE2ETest.prototype.failOnConsoleError);
   }
 
   /** @return {!MockFeedback} */
@@ -108,40 +132,49 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    if (!this.isCommonClass) {
-      // Alphabetical based on file path.
-      await importModule(
-          'BaseAutomationHandler',
-          '/chromevox/background/base_automation_handler.js');
-      await importModule(
-          'CommandHandler', '/chromevox/background/command_handler.js');
-      await importModule(
-          'CommandHandlerInterface',
-          '/chromevox/background/command_handler_interface.js');
-      await importModule(
-          'GestureCommandHandler',
-          '/chromevox/background/gesture_command_handler.js');
-      await importModule(
-          'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
-      await importModule(
-          'OutputContextOrder', '/chromevox/background/output/output_types.js');
+    // Alphabetical based on file path.
+    await importModule(
+        'BaseAutomationHandler',
+        '/chromevox/background/base_automation_handler.js');
+    await importModule(
+        'BrailleInterface',
+        '/chromevox/background/braille/braille_interface.js');
+    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule(
+        'CommandHandler', '/chromevox/background/command_handler.js');
+    await importModule(
+        'CommandHandlerInterface',
+        '/chromevox/background/command_handler_interface.js');
+    await importModule(
+        'GestureCommandHandler',
+        '/chromevox/background/gesture_command_handler.js');
+    await importModule(
+        'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
+    await importModule(
+        'OutputContextOrder', '/chromevox/background/output/output_types.js');
+    await importModule(
+        'NavBraille', '/chromevox/common/braille/nav_braille.js');
+    await importModule(
+        ['AbstractEarcons', 'Earcon'], '/chromevox/common/abstract_earcons.js');
+    await importModule('TtsInterface', '/chromevox/common/tts_interface.js');
+    await importModule('QueueMode', '/chromevox/common/tts_types.js');
 
-      // For tests, enable announcement of events we trigger via automation.
-      BaseAutomationHandler.announceActions = true;
+    // For tests, enable announcement of events we trigger via automation.
+    BaseAutomationHandler.announceActions = true;
 
-      for (const role in OutputRoleInfo) {
-        this.originalOutputContextValues_[role] =
-            OutputRoleInfo[role]['contextOrder'];
-      }
+    for (const role in OutputRoleInfo) {
+      this.originalOutputContextValues_[role] =
+          OutputRoleInfo[role]['contextOrder'];
     }
+    await ChromeVoxState.ready();
   }
 
   /** @override */
   async runWithLoadedTree(doc, opt_params = {}) {
     const rootWebArea = await super.runWithLoadedTree(doc, opt_params);
-    if (!this.isCommonClass) {
-      CommandHandlerInterface.instance.onCommand('nextObject');
-    }
+    CommandHandlerInterface.instance.onCommand('nextObject');
     return rootWebArea;
   }
 
@@ -172,3 +205,8 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     }
   }
 };
+
+// TODO: wasm logs errors if it takes too long to load (e.g. liblouis wasm).
+// Separately, LibLouis also logs errors.
+// See https://crbug.com/1170991.
+ChromeVoxNextE2ETest.prototype.failOnConsoleError = false;
