@@ -70,7 +70,8 @@ ci.builder(
     ),
     # Higher build timeout since dbg ASAN builds can take a while on a clobber
     # build.
-    execution_timeout = 5 * time.hour,
+    # TODO(crbug.com/1395760): Check why the compile takes longer time.
+    execution_timeout = 8 * time.hour,
 )
 
 ci.thin_tester(
