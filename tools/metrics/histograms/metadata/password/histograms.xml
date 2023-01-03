@@ -726,7 +726,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AffiliationFetcher.FailedToParseResponse"
-    enum="Boolean" expires_after="2023-02-26">
+    enum="Boolean" expires_after="M115">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -768,7 +768,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AffiliationFetcher.FetchTime.{Status}"
-    units="ms" expires_after="M112">
+    units="ms" expires_after="M115">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -783,7 +783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AffiliationFetcher.ResponseSize.{Status}"
-    units="bytes" expires_after="M112">
+    units="bytes" expires_after="M115">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -920,7 +920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.BiometricAuthBeforeFillingEnabled2"
-    enum="BooleanEnabled" expires_after="M112">
+    enum="BooleanEnabled" expires_after="M115">
   <owner>kazinova@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
@@ -1156,7 +1156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CompromisedCredentials2.{Issue}"
-    units="credentials" expires_after="M110">
+    units="credentials" expires_after="M115">
   <obsolete>
     Obsolete in M110 after PasswordStore is no longer created for non-regular,
     guest, system and incognito profiles.
@@ -3635,7 +3635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.{Location}.AuthenticationResult"
-    enum="BooleanSuccess" expires_after="2023-02-12">
+    enum="BooleanSuccess" expires_after="M115">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -3650,7 +3650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.{Location}.AuthenticationTime" units="ms"
-    expires_after="M111">
+    expires_after="M115">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>Records the time it takes user to authenticate {Location}.</summary>
