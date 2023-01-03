@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ORDER_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ORDER_ITERATOR_H_
 
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -77,7 +78,8 @@ class OrderIterator {
 
   Member<LayoutBox> current_child_;
 
-  using OrderValues = std::set<int>;
+  using OrderValues ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327") =
+      std::set<int>;
   OrderValues order_values_;
   OrderValues::const_iterator order_values_iterator_;
   // Set by |Reset()|, triggers iteration to start from the beginning.

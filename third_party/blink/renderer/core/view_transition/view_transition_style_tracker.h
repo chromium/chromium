@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/view_transition_shared_element_id.h"
@@ -304,7 +305,8 @@ class ViewTransitionStyleTracker
 
   // This vector is passed as constructed to cc's view transition request,
   // so this uses the std::vector for that reason, instead of WTF::Vector.
-  std::vector<viz::ViewTransitionElementResourceId> capture_resource_ids_;
+  std::vector<viz::ViewTransitionElementResourceId> capture_resource_ids_
+      ALLOW_DISCOURAGED_TYPE("cc API uses STL types");
 };
 
 }  // namespace blink

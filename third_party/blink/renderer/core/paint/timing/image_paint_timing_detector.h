@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -105,7 +106,7 @@ class CORE_EXPORT ImageRecordsManager {
 
   using NodesQueueComparator = bool (*)(const base::WeakPtr<ImageRecord>&,
                                         const base::WeakPtr<ImageRecord>&);
-  using ImageRecordSet =
+  using ImageRecordSet ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327") =
       std::set<base::WeakPtr<ImageRecord>, NodesQueueComparator>;
 
  public:

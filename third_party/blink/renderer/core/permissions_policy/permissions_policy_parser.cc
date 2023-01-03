@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -115,7 +116,8 @@ class ParsingContext {
       const OriginWithPossibleWildcards::NodeType type);
 
   struct ParsedAllowlist {
-    std::vector<blink::OriginWithPossibleWildcards> allowed_origins;
+    std::vector<blink::OriginWithPossibleWildcards> allowed_origins
+        ALLOW_DISCOURAGED_TYPE("Permission policy uses STL for code sharing");
     bool matches_all_origins{false};
     bool matches_opaque_src{false};
 

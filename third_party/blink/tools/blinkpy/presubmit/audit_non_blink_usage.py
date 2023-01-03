@@ -1750,6 +1750,12 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h'
+        ],
+        'allowed': ['viz::ViewTransitionElementResourceId'],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/',
         ],
         'allowed': ['ui::k200Percent'],

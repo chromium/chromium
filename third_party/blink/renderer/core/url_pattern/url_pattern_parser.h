@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/types/strong_alias.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -171,7 +172,8 @@ class Parser final {
 
   // The list of Tokens produced by calling `liburlpattern::Tokenize()` on
   // `input_`.
-  std::vector<liburlpattern::Token> token_list_;
+  std::vector<liburlpattern::Token> token_list_
+      ALLOW_DISCOURAGED_TYPE("liburlpattern uses STL types");
 
   // The index of the first Token to include in the component string.
   size_t component_start_ = 0;

@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SCREEN_METRICS_EMULATOR_H_
 
 #include <memory>
+#include <vector>
 
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/widget/device_emulation_params.mojom-blink.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -95,7 +97,8 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
   gfx::Size original_visible_viewport_size_;
   gfx::Rect original_view_screen_rect_;
   gfx::Rect original_window_screen_rect_;
-  std::vector<gfx::Rect> original_root_window_segments_;
+  std::vector<gfx::Rect> original_root_window_segments_ ALLOW_DISCOURAGED_TYPE(
+      "WebFrameWidgetImpl::SetWindowSegments() uses STL");
 };
 
 }  // namespace blink

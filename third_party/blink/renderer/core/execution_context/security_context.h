@@ -50,9 +50,6 @@ class ExecutionContext;
 class PermissionsPolicy;
 class PolicyValue;
 class SecurityOrigin;
-struct ParsedPermissionsPolicyDeclaration;
-
-using ParsedPermissionsPolicy = std::vector<ParsedPermissionsPolicyDeclaration>;
 
 enum class SecureContextMode { kInsecureContext, kSecureContext };
 
