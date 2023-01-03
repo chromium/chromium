@@ -459,7 +459,7 @@ class DriveIntegrationService::PreferenceWatcher
         pref_service_->GetBoolean(prefs::kDriveFsBulkPinningEnabled);
     integration_service_->GetDriveFsPinManager()->SetBulkPinningEnabled(
         enabled);
-
+    integration_service_->GetDriveFsHost()->SetAlwaysEnableDocsOffline(enabled);
     if (enabled) {
       VLOG(1) << "Starting bulk pinning";
       pin_manager->Start(base::DoNothing());
@@ -1020,6 +1020,7 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
     pin_manager_->Stop();
     GetDriveFsHost()->RemoveObserver(pin_manager_.get());
     pin_manager_.reset();
+    GetDriveFsHost()->SetAlwaysEnableDocsOffline(false);
   }
 }
 

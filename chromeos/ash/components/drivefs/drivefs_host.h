@@ -122,6 +122,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
     dialog_handler_ = dialog_handler;
   }
 
+  void SetAlwaysEnableDocsOffline(bool enabled) {
+    always_enable_docs_offline_ = enabled;
+  }
+
+  bool ShouldAlwaysEnableDocsOffline() { return always_enable_docs_offline_; }
+
  private:
   class AccountTokenDelegate;
   class MountState;
@@ -141,6 +147,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
   std::unique_ptr<base::OneShotTimer> timer_;
 
   std::unique_ptr<DriveFsAuth> account_token_delegate_;
+
+  // When user intent to enable docs offline has been captured in some other
+  // form (e.g. from enabling bulk pinning) don't show the enable docs offline
+  // notification.
+  bool always_enable_docs_offline_ = false;
 
   // State specific to the current mount, or null if not mounted.
   std::unique_ptr<MountState> mount_state_;

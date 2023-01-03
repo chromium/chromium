@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -657,6 +658,31 @@ TEST_F(DriveFsHostTest, DisplayConfirmDialogImpl_IgnoreUnknownReasonTypes) {
       }));
   delegate_.FlushForTesting();
   EXPECT_TRUE(called);
+}
+
+TEST_F(DriveFsHostTest, DisplayConfirmDialog_AlwaysEnableIfTrue) {
+  ASSERT_NO_FATAL_FAILURE(DoMount());
+  auto reason = mojom::DialogReason::New(
+      mojom::DialogReason::Type::kEnableDocsOffline, base::FilePath());
+
+  // Set the dialog handler to always dismiss the dialog, this should get
+  // ignored if the "always enable" option is toggled.
+  host_->set_dialog_handler(base::BindLambdaForTesting(
+      [](const mojom::DialogReason& reason,
+         base::OnceCallback<void(mojom::DialogResult)> callback) {
+        std::move(callback).Run(mojom::DialogResult::kDismiss);
+      }));
+
+  host_->SetAlwaysEnableDocsOffline(true);
+  base::RunLoop run_loop;
+  base::MockCallback<DriveFsSession::DisplayConfirmDialogCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(mojom::DialogResult::kAccept))
+      .Times(1)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+
+  delegate_->DisplayConfirmDialog(std::move(reason), mock_callback.Get());
+  delegate_.FlushForTesting();
 }
 
 TEST_F(DriveFsHostTest, TeamDriveTracking) {
