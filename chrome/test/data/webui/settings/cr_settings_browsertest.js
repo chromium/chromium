@@ -1062,7 +1062,8 @@ function registerTest(testName, module, caseName) {
 ].forEach(test => registerTestSuites(...test));
 
 // TODO(crbug.com/1403969): SecurityPage_SafeBrowsing suite is flaky on Mac.
-GEN('#if !BUILDFLAG(IS_MAC)');
+// TODO(crbug.com/1404109): SecurityPage_SafeBrowsing suite is flaky on Linux.
+GEN('#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)');
 registerTestSuites(
     'SecurityPage', 'security_page_test.js', ['SecurityPage_SafeBrowsing']);
 GEN('#endif');
