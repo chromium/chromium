@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
@@ -86,9 +87,22 @@ VideoConferenceManagerClientImpl::~VideoConferenceManagerClientImpl() {
 
 void VideoConferenceManagerClientImpl::RemoveMediaApp(
     const base::UnguessableToken& id) {
-  if (id_to_webcontents_.erase(id)) {
-    HandleMediaUsageUpdate();
+  DCHECK(base::Contains(id_to_webcontents_, id));
+  auto it = id_to_webcontents_.find(id);
+  raw_ptr<content::WebContents> web_contents = it->second;
+
+  // If an associated `WebContentsUserData` exists for this `web_contents`,
+  // remove it. This is the case on a primary page change. We don't want to
+  // persist the old `WebContentsUserData` but rather create a new one if/when
+  // the new page begins capturing camera/mic/screen.
+  if (content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
+          web_contents)) {
+    web_contents->RemoveUserData(
+        content::WebContentsUserData<VideoConferenceWebApp>::UserDataKey());
   }
+
+  id_to_webcontents_.erase(it);
+  HandleMediaUsageUpdate();
 }
 
 VideoConferenceWebApp*
@@ -105,7 +119,7 @@ VideoConferenceManagerClientImpl::CreateVideoConferenceWebApp(
   content::WebContentsUserData<VideoConferenceWebApp>::CreateForWebContents(
       web_contents, id, std::move(remove_media_app_callback));
 
-  id_to_webcontents_.try_emplace(id, web_contents);
+  id_to_webcontents_.insert({id, web_contents});
 
   return content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
       web_contents);

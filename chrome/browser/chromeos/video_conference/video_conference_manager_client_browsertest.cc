@@ -18,6 +18,7 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -143,6 +144,11 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
   vc_app->ActivateApp();
   // Navigate to a different URL and trigger a primary page change event.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTestURL2)));
+  // There should no longer be a WebContentsUserData associated with this
+  // `web_contents`.
+  EXPECT_FALSE(
+      content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
+          web_contents));
 
   EXPECT_EQ(client->id_to_webcontents().size(), 0u);
 }

@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/video_conference/video_conference_client_wrapper.h"
@@ -75,13 +76,7 @@ void VideoConferenceManagerAsh::GetMediaApps(
 
 void VideoConferenceManagerAsh::ReturnToApp(const base::UnguessableToken& id) {
   for (auto& [_, client_wrapper] : client_id_to_wrapper_) {
-    client_wrapper.ReturnToApp(
-        id, base::BindOnce([](bool success) {
-          if (!success) {
-            LOG(ERROR)
-                << "VideoConferenceClient::ReturnToApp was unsuccessful.";
-          }
-        }));
+    client_wrapper.ReturnToApp(id, base::DoNothing());
   }
 }
 
