@@ -984,10 +984,17 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
                                net::ERR_CERT_DATE_INVALID, storage_partition));
   EXPECT_TRUE(state->HasAllowException(kWWWGoogleHost, storage_partition));
 
+  // Test that the exception is not carried over to the guest's embedder.
+  EXPECT_EQ(
+      content::SSLHostStateDelegate::DENIED,
+      state->QueryPolicy(kWWWGoogleHost, *cert, net::ERR_CERT_DATE_INVALID,
+                         tab->GetPrimaryMainFrame()->GetStoragePartition()));
+  EXPECT_FALSE(state->HasAllowException(
+      kWWWGoogleHost, tab->GetPrimaryMainFrame()->GetStoragePartition()));
+
   // Navigate to a non-app page and test that the exception is not carried over.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "/extensions/isolated_apps/non_app/main.html")));
+      browser(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_EQ(
       content::SSLHostStateDelegate::DENIED,
       state->QueryPolicy(kWWWGoogleHost, *cert, net::ERR_CERT_DATE_INVALID,
@@ -1032,10 +1039,15 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
   EXPECT_TRUE(state->IsHttpAllowedForHost(kWWWGoogleHost, storage_partition));
   EXPECT_TRUE(state->HasAllowException(kWWWGoogleHost, storage_partition));
 
+  // Test that the exception is not carried over to the guest's embedder.
+  EXPECT_FALSE(state->IsHttpAllowedForHost(
+      kWWWGoogleHost, tab->GetPrimaryMainFrame()->GetStoragePartition()));
+  EXPECT_FALSE(state->HasAllowException(
+      kWWWGoogleHost, tab->GetPrimaryMainFrame()->GetStoragePartition()));
+
   // Navigate to a non-app page and test that the exception is not carried over.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "/extensions/isolated_apps/non_app/main.html")));
+      browser(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_FALSE(state->IsHttpAllowedForHost(
       kWWWGoogleHost, tab->GetPrimaryMainFrame()->GetStoragePartition()));
   EXPECT_FALSE(state->HasAllowException(
