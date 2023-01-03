@@ -65,9 +65,9 @@ public class DuplicateDownloadClickableSpan extends ClickableSpan {
         @Override
         protected void onPostExecute(String filePath) {
             if (mRunnable != null) mRunnable.run();
-            if (mFilePath != null) {
+            if (filePath != null) {
                 DownloadUtils.openDownload(
-                        mFilePath, mMimeType, null, mOTRProfileID, null, null, mSource);
+                        filePath, mMimeType, null, mOTRProfileID, null, null, mSource);
             } else {
                 DownloadManagerService.openDownloadsPage(mOTRProfileID, mSource);
             }
