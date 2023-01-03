@@ -974,7 +974,8 @@ void AuthorizeKAnon(const blink::InterestGroup::Ad& ad,
 
 // BidderWorklet that holds onto passed in callbacks, to let the test fixture
 // invoke them.
-class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
+class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
+                          auction_worklet::mojom::GenerateBidFinalizer {
  public:
   explicit MockBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
@@ -1006,52 +1007,56 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
 
   // auction_worklet::mojom::BidderWorklet implementation:
 
-  void GenerateBid(
+  void BeginGenerateBid(
       auction_worklet::mojom::BidderWorkletNonSharedParamsPtr
           bidder_worklet_non_shared_params,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const url::Origin& interest_group_join_origin,
-      const absl::optional<std::string>& auction_signals_json,
-      const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
       const absl::optional<GURL>& direct_from_seller_auction_signals,
-      const absl::optional<base::TimeDelta> per_buyer_timeout,
       const url::Origin& browser_signal_seller_origin,
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       uint64_t trace_id,
       mojo::PendingAssociatedRemote<auction_worklet::mojom::GenerateBidClient>
-          generate_bid_client) override {
+          generate_bid_client,
+      mojo::PendingAssociatedReceiver<
+          auction_worklet::mojom::GenerateBidFinalizer> bid_finalizer)
+      override {
     generate_bid_called_ = true;
     // While the real BidderWorklet implementation supports multiple pending
     // callbacks, this class does not.
     DCHECK(!generate_bid_client_);
 
-    // per_buyer_timeout passed to GenerateBid() should not be empty, because
-    // auction_config's all_buyers_timeout (which is the key of '*' in
-    // perBuyerTimeouts) is set in the AuctionRunnerTest.
-    ASSERT_TRUE(per_buyer_timeout.has_value());
+    // per_buyer_timeout passed that will be passed to FinishGenerateBid()
+    // should not be empty, because auction_config's all_buyers_timeout (which
+    // is the key of '*' in perBuyerTimeouts) is set in the AuctionRunnerTest.
+    // Figure out what it should expect here (and save it into the receiver set
+    // as context info) since the bidder name isn't easily available at
+    // FinishGenerateBid time.
+    base::TimeDelta expected_per_buyer_timeout;
     if (bidder_worklet_non_shared_params->name == kBidder1Name) {
       // Any per buyer timeout in auction_config higher than 500 ms should be
       // clamped to 500 ms by the AuctionRunner before passed to GenerateBid(),
       // and kBidder1's per buyer timeout is 1000 ms in auction_config so it
       // should be 500 ms here.
-      EXPECT_EQ(per_buyer_timeout.value(), base::Milliseconds(500));
+      expected_per_buyer_timeout = base::Milliseconds(500);
     } else {
       // Any other bidder's per buyer timeout should be 150 ms, since
       // auction_config's all_buyers_timeout is set to 150 ms in the
       // AuctionRunnerTest.
-      EXPECT_EQ(per_buyer_timeout.value(), base::Milliseconds(150));
+      expected_per_buyer_timeout = base::Milliseconds(150);
     }
 
     // Single auctions should invoke all GenerateBid() calls on a worklet
     // before invoking SendPendingSignalsRequests().
     EXPECT_FALSE(send_pending_signals_requests_called_);
 
+    finalizer_receiver_set_.Add(this, std::move(bid_finalizer),
+                                expected_per_buyer_timeout);
+
     generate_bid_client_.Bind(std::move(generate_bid_client));
-    if (generate_bid_run_loop_)
-      generate_bid_run_loop_->Quit();
   }
 
   void SendPendingSignalsRequests() override {
@@ -1089,6 +1094,26 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       override {
     ADD_FAILURE()
         << "ConnectDevToolsAgent should not be called on MockBidderWorklet";
+  }
+
+  // mojom::GenerateBidFinalizer implementation.
+  void FinishGenerateBid(
+      const absl::optional<std::string>& auction_signals_json,
+      const absl::optional<std::string>& per_buyer_signals_json,
+      const absl::optional<base::TimeDelta> per_buyer_timeout) override {
+    // per_buyer_timeout passed to GenerateBid() should not be empty, because
+    // auction_config's all_buyers_timeout (which is the key of '*' in
+    // perBuyerTimeouts) is set in the AuctionRunnerTest.
+    ASSERT_TRUE(per_buyer_timeout.has_value());
+
+    // The actual expected value is stashed by BeginGenerateBid into the
+    // context.
+    EXPECT_EQ(per_buyer_timeout.value(),
+              finalizer_receiver_set_.current_context());
+
+    if (generate_bid_run_loop_) {
+      generate_bid_run_loop_->Quit();
+    }
   }
 
   void WaitForGenerateBid() {
@@ -1186,6 +1211,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
 
   mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidClient>
       generate_bid_client_;
+  mojo::AssociatedReceiverSet<auction_worklet::mojom::GenerateBidFinalizer,
+                              base::TimeDelta>
+      finalizer_receiver_set_;
 
   bool pipe_closed_ = false;
 

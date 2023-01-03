@@ -30,6 +30,7 @@
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -66,7 +67,8 @@ class ContextRecycler;
 // to both be used for two generateBid() calls for different interest groups
 // with the same owner in the same auction, and to be used to bid for the same
 // interest group in different auctions.
-class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
+class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
+                                     public mojom::GenerateBidFinalizer {
  public:
   // Deletes the worklet immediately and resets the BidderWorklet's Mojo pipe
   // with the provided description. See mojo::Receiver::ResetWithReason().
@@ -115,22 +117,21 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
                       const mojom::BidderWorkletBidPtr& bid);
 
   // mojom::BidderWorklet implementation:
-  void GenerateBid(
+  void BeginGenerateBid(
       mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
       mojom::KAnonymityBidMode kanon_mode,
       const url::Origin& interest_group_join_origin,
-      const absl::optional<std::string>& auction_signals_json,
-      const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
       const absl::optional<GURL>& direct_from_seller_auction_signals,
-      const absl::optional<base::TimeDelta> per_buyer_timeout,
       const url::Origin& browser_signal_seller_origin,
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       uint64_t trace_id,
       mojo::PendingAssociatedRemote<mojom::GenerateBidClient>
-          generate_bid_client) override;
+          generate_bid_client,
+      mojo::PendingAssociatedReceiver<mojom::GenerateBidFinalizer>
+          bid_finalizer) override;
   void SendPendingSignalsRequests() override;
   void ReportWin(
       const std::string& interest_group_name,
@@ -152,6 +153,12 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
   void ConnectDevToolsAgent(
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
       override;
+
+  // mojom::GenerateBidFinalizer implementation.
+  void FinishGenerateBid(
+      const absl::optional<std::string>& auction_signals_json,
+      const absl::optional<std::string>& per_buyer_signals_json,
+      const absl::optional<base::TimeDelta> per_buyer_timeout) override;
 
  private:
   struct GenerateBidTask {
@@ -187,6 +194,13 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
     // method of `generate_bid_client` has been invoked. the Javascript
     // generateBid() method will not be run until that happens.
     bool signals_received_callback_invoked = false;
+
+    // Set to true once FinishGenerateBid bound to this task is called.
+    bool finalize_generate_bid_called = false;
+
+    // Which receiver id the GenerateBidFinalizer pipe bound to this task
+    // is registered under.
+    absl::optional<mojo::ReceiverId> finalize_generate_bid_receiver_id;
 
     // Set while loading is in progress.
     std::unique_ptr<DirectFromSellerSignalsRequester::Request>
@@ -549,6 +563,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
   // to the v8 thread, so these need to be std::lists rather than std::vectors.
   GenerateBidTaskList generate_bid_tasks_;
   ReportWinTaskList report_win_tasks_;
+
+  // Binds finalization of GenerateBid calls to `this`.
+  mojo::AssociatedReceiverSet<mojom::GenerateBidFinalizer,
+                              GenerateBidTaskList::iterator>
+      finalize_receiver_set_;
 
   ClosePipeCallback close_pipe_callback_;
 

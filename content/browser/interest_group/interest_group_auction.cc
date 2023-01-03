@@ -631,6 +631,8 @@ class InterestGroupAuction::BuyerHelper
 
     mojo::PendingAssociatedRemote<auction_worklet::mojom::GenerateBidClient>
         pending_remote;
+    mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
+        bid_finalizer;
     bid_state->generate_bid_client_receiver_id =
         generate_bid_client_receiver_set_.Add(
             this, pending_remote.InitWithNewEndpointAndPassReceiver(),
@@ -638,7 +640,7 @@ class InterestGroupAuction::BuyerHelper
     auction_worklet::mojom::KAnonymityBidMode kanon_mode =
         auction_->kanon_mode();
     bid_state->kanon_render_urls = ComputeKAnon(*bid_state->bidder, kanon_mode);
-    bid_state->worklet_handle->GetBidderWorklet()->GenerateBid(
+    bid_state->worklet_handle->GetBidderWorklet()->BeginGenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
             interest_group.name,
             interest_group.enable_bidding_signals_prioritization,
@@ -648,24 +650,22 @@ class InterestGroupAuction::BuyerHelper
             interest_group.user_bidding_signals, interest_group.ads,
             interest_group.ad_components, bid_state->kanon_render_urls),
         kanon_mode, bid_state->bidder->joining_origin,
-        auction_->config_->non_shared_params.auction_signals.maybe_json(),
-        GetPerBuyerSignals(*auction_->config_,
-                           bid_state->bidder->interest_group.owner),
         GetDirectFromSellerPerBuyerSignals(
             *auction_->subresource_url_builder_,
             bid_state->bidder->interest_group.owner),
         GetDirectFromSellerAuctionSignals(*auction_->subresource_url_builder_),
-        auction_->PerBuyerTimeout(bid_state), auction_->config_->seller,
+        auction_->config_->seller,
         auction_->parent_ ? auction_->parent_->config_->seller
                           : absl::optional<url::Origin>(),
         bid_state->bidder->bidding_browser_signals.Clone(),
         auction_->auction_start_time_, *bid_state->trace_id,
-        std::move(pending_remote));
+        std::move(pending_remote),
+        bid_finalizer.BindNewEndpointAndPassReceiver());
 
     // Invoke SendPendingSignalsRequests() asynchronously, if necessary. Do this
-    // asynchronously so that all GenerateBid() calls that share a BidderWorklet
-    // will have been invoked before the first SendPendingSignalsRequests()
-    // call.
+    // asynchronously so that all BeginGenerateBid() calls that share a
+    // BidderWorklet will have been invoked before the first
+    // SendPendingSignalsRequests() call.
     //
     // This relies on AuctionWorkletManager::Handle invoking all the callbacks
     // listening for creation of the same BidderWorklet synchronously.
@@ -675,6 +675,12 @@ class InterestGroupAuction::BuyerHelper
           base::BindOnce(&BuyerHelper::SendPendingSignalsRequestsForBidder,
                          weak_ptr_factory_.GetWeakPtr(), bid_state));
     }
+
+    bid_finalizer->FinishGenerateBid(
+        auction_->config_->non_shared_params.auction_signals.maybe_json(),
+        GetPerBuyerSignals(*auction_->config_,
+                           bid_state->bidder->interest_group.owner),
+        auction_->PerBuyerTimeout(bid_state));
   }
 
   // Invoked when OnBiddingSignalsReceived() has been called for `state`, or

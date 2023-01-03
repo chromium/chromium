@@ -228,6 +228,34 @@ interface GenerateBidClient {
       array<string> errors);
 };
 
+// This interface is used to provide the arguments to generateBid() that may
+// come in via promise once available. This is a separate step so that the work
+// of figuring them out can overlap other work the bidder worklet does (e.g.
+// fetching trusted signals).
+interface GenerateBidFinalizer {
+  // Provides potentially late-coming arguments to go along with those
+  // provided to BeginGenerateBid with connected `bid_finalizer`.
+  //
+  // `auction_signals_json` The JSON representation of the auction signals for
+  //  the auction, specified by the publisher page and provided to bidder
+  //  worklets competing in an auction.
+  //
+  // `per_buyer_signals_json` The JSON representation of the auction signals
+  //  for the specific owner of this interest group, specified by the
+  //  publisher page and provided to all interest groups with the same owner
+  //  as the one specified `interest_group`.
+  //
+  // `per_buyer_timeout` Restrict the runtime of particular buyer's bidding
+  //  scripts. Any timeout higher than 500 ms will be clamped to 500 ms before
+  //  passing in as `per_buyer_timeout`. Null if not provided by the publisher
+  //  page. Null will be passed to the worklet in that case.
+  //
+  FinishGenerateBid(
+      string? auction_signals_json,
+      string? per_buyer_signals_json,
+      mojo_base.mojom.TimeDelta? per_buyer_timeout);
+};
+
 // Manages the auction workflow for one loaded FLEDGE bidder worklet.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 //
@@ -243,9 +271,10 @@ interface GenerateBidClient {
 // complete in the order they are invoked.
 interface BidderWorklet {
   // Loads the same-origin realtime bidding signals URL (if necessary), and
-  // invokes the worklet's generateBid() method, returning the generated bid
-  // and associated data. Waits for the worklet script to be loaded first, if
-  // needed.
+  // after the rest of the arguments for it have been provided via
+  // `bid_finalizer`, invokes the worklet's generateBid() method, returning the
+  // generated bid and associated data. Waits for the worklet script to be
+  // loaded first, if needed.
   //
   // Arguments:
   // `bidder_worklet_non_shared_params` values that can vary in the
@@ -259,15 +288,6 @@ interface BidderWorklet {
   //
   // `interest_group_join_origin` is the origin from which the interest group
   //  was joined; can affect context reuse in certain execution modes.
-  //
-  // `auction_signals_json` The JSON representation of the auction signals for
-  //  the auction, specified by the publisher page and provided to bidder
-  //  worklets competing in an auction.
-  //
-  // `per_buyer_signals_json` The JSON representation of the auction signals
-  //  for the specific owner of this interest group, specified by the
-  //  publisher page and provided to all interest groups with the same owner
-  //  as the one specified `interest_group`.
   //
   // `direct_from_seller_per_buyer_signals` The subresource URL of the
   // DirectFromSellerSignals for the specific owner of this interest group, as
@@ -283,11 +303,6 @@ interface BidderWorklet {
   // runAdAuction() with "?auctionSignals". Since this is fetched from a
   // subresource bundle, it may only be fetched using the URLLoaderFactory
   // passed in when creating the worklet.
-  //
-  // `per_buyer_timeout` Restrict the runtime of particular buyer's bidding
-  //  scripts. Any timeout higher than 500 ms will be clamped to 500 ms before
-  //  passing in as `per_buyer_timeout`. Null if not provided by the publisher
-  //  page. Null will be passed to the worklet in that case.
   //
   // `browser_signal_seller_origin` The origin of the seller script running
   //  the auction. Typically a valid, non-opaque HTTPS origin.
@@ -306,21 +321,22 @@ interface BidderWorklet {
   //
   // `generate_bid_client` Client that receives callbacks as GenerateBid()
   //  progresses. Associated to retain priority ordering of calls.
-  GenerateBid(
+  //
+  // `bid_finalizer` should be used to provide the arguments to generateBid()
+  //  that may be delivered later (via JS promises).
+  BeginGenerateBid(
       BidderWorkletNonSharedParams bidder_worklet_non_shared_params,
       KAnonymityBidMode kanon_mode,
       url.mojom.Origin interest_group_join_origin,
-      string? auction_signals_json,
-      string? per_buyer_signals_json,
       url.mojom.Url? direct_from_seller_per_buyer_signals,
       url.mojom.Url? direct_from_seller_auction_signals,
-      mojo_base.mojom.TimeDelta? per_buyer_timeout,
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
       BiddingBrowserSignals bidding_browser_signals,
       mojo_base.mojom.Time auction_start_time,
       uint64 trace_id,
-      pending_associated_remote<GenerateBidClient> generate_bid_client);
+      pending_associated_remote<GenerateBidClient> generate_bid_client,
+      pending_associated_receiver<GenerateBidFinalizer> bid_finalizer);
 
   // Sends pending bidding signals URL requests, if any. Unlike with
   // SellerWorklets, this must be called for BidderWorklets that need to send

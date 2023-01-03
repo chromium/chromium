@@ -66,23 +66,22 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
                                 std::move(pending_receiver));
   }
 
-  void GenerateBid(
+  void BeginGenerateBid(
       auction_worklet::mojom::BidderWorkletNonSharedParamsPtr
           bidder_worklet_non_shared_params,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const url::Origin& interest_group_join_origin,
-      const absl::optional<std::string>& auction_signals_json,
-      const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
       const absl::optional<GURL>& direct_from_seller_auction_signals,
-      const absl::optional<base::TimeDelta> per_buyer_timeout,
       const url::Origin& browser_signal_seller_origin,
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       uint64_t trace_id,
       mojo::PendingAssociatedRemote<mojom::GenerateBidClient>
-          generate_bid_client) override {
+          generate_bid_client,
+      mojo::PendingAssociatedReceiver<mojom::GenerateBidFinalizer>
+          bid_finalizer) override {
     ADD_FAILURE() << "GenerateBid shouldn't be called on DebugConnector";
   }
 

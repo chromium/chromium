@@ -186,22 +186,20 @@ bool BidderWorklet::IsKAnon(
   return true;
 }
 
-void BidderWorklet::GenerateBid(
+void BidderWorklet::BeginGenerateBid(
     mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
     mojom::KAnonymityBidMode kanon_mode,
     const url::Origin& interest_group_join_origin,
-    const absl::optional<std::string>& auction_signals_json,
-    const absl::optional<std::string>& per_buyer_signals_json,
     const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
     const absl::optional<GURL>& direct_from_seller_auction_signals,
-    const absl::optional<base::TimeDelta> per_buyer_timeout,
     const url::Origin& browser_signal_seller_origin,
     const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
     uint64_t trace_id,
-    mojo::PendingAssociatedRemote<mojom::GenerateBidClient>
-        generate_bid_client) {
+    mojo::PendingAssociatedRemote<mojom::GenerateBidClient> generate_bid_client,
+    mojo::PendingAssociatedReceiver<mojom::GenerateBidFinalizer>
+        bid_finalizer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   generate_bid_tasks_.emplace_front();
@@ -210,9 +208,6 @@ void BidderWorklet::GenerateBid(
       std::move(bidder_worklet_non_shared_params);
   generate_bid_task->kanon_mode = kanon_mode;
   generate_bid_task->interest_group_join_origin = interest_group_join_origin;
-  generate_bid_task->auction_signals_json = auction_signals_json;
-  generate_bid_task->per_buyer_signals_json = per_buyer_signals_json;
-  generate_bid_task->per_buyer_timeout = per_buyer_timeout;
   generate_bid_task->browser_signal_seller_origin =
       browser_signal_seller_origin;
   generate_bid_task->browser_signal_top_level_seller_origin =
@@ -228,6 +223,11 @@ void BidderWorklet::GenerateBid(
   generate_bid_task->generate_bid_client.set_disconnect_handler(
       base::BindOnce(&BidderWorklet::OnGenerateBidClientDestroyed,
                      base::Unretained(this), generate_bid_task));
+
+  // Listen to call to FinalizeGenerateBid completing arguments.
+  generate_bid_task->finalize_generate_bid_receiver_id =
+      finalize_receiver_set_.Add(this, std::move(bid_finalizer),
+                                 generate_bid_task);
 
   if (direct_from_seller_per_buyer_signals) {
     // Deleting `generate_bid_task` will destroy
@@ -278,6 +278,9 @@ void BidderWorklet::GenerateBid(
     return;
   }
 
+  // TODO(morlovich): This is inaccurate if we're waiting for
+  // FinalizeGenerateBid, or for direct-from-seller signals. A different
+  // approach is probably needed for how many things we have to wait for now.
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_bidder_script",
                                     trace_id);
   // Deleting `generate_bid_task` will destroy `generate_bid_client` and thus
@@ -380,6 +383,20 @@ void BidderWorklet::ConnectDevToolsAgent(
       FROM_HERE,
       base::BindOnce(&V8State::ConnectDevToolsAgent,
                      base::Unretained(v8_state_.get()), std::move(agent)));
+}
+
+void BidderWorklet::FinishGenerateBid(
+    const absl::optional<std::string>& auction_signals_json,
+    const absl::optional<std::string>& per_buyer_signals_json,
+    const absl::optional<base::TimeDelta> per_buyer_timeout) {
+  GenerateBidTaskList::iterator task = finalize_receiver_set_.current_context();
+  task->auction_signals_json = auction_signals_json;
+  task->per_buyer_signals_json = per_buyer_signals_json;
+  task->per_buyer_timeout = per_buyer_timeout;
+  task->finalize_generate_bid_called = true;
+  finalize_receiver_set_.Remove(*task->finalize_generate_bid_receiver_id);
+  task->finalize_generate_bid_receiver_id = absl::nullopt;
+  GenerateBidIfReady(task);
 }
 
 BidderWorklet::GenerateBidTask::GenerateBidTask() = default;
@@ -1168,7 +1185,7 @@ void BidderWorklet::OnGenerateBidClientDestroyed(
   // deleted, as everything else, including fetching trusted bidding signals,
   // can be safely cancelled.
   if (!IsReadyToGenerateBid(*task)) {
-    generate_bid_tasks_.erase(task);
+    CleanUpBidTaskOnUserThread(task);
   } else {
     // Otherwise, there should be a pending V8 call. Try to cancel that, but if
     // it already started, it will just run and invoke the GenerateBidClient's
@@ -1210,6 +1227,7 @@ void BidderWorklet::OnDirectFromSellerAuctionSignalsDownloadedGenerateBid(
 
 bool BidderWorklet::IsReadyToGenerateBid(const GenerateBidTask& task) const {
   return task.signals_received_callback_invoked &&
+         task.finalize_generate_bid_called &&
          !task.direct_from_seller_request_per_buyer_signals &&
          !task.direct_from_seller_request_auction_signals && IsCodeReady();
 }
@@ -1354,12 +1372,18 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
       debug_win_report_url, set_priority.value_or(0), set_priority.has_value(),
       std::move(update_priority_signals_overrides), std::move(pa_requests),
       error_msgs);
-  generate_bid_tasks_.erase(task);
+  CleanUpBidTaskOnUserThread(task);
 }
 
 void BidderWorklet::CleanUpBidTaskOnUserThread(
     GenerateBidTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  // Disconnect the FinalizeGenerateBid pipe, if any, since that refers
+  // to `task` (it generally will be closed already, but may not be if
+  // GenerateBidClient disconnected before FinalizeGenerateBid was called).
+  if (task->finalize_generate_bid_receiver_id.has_value()) {
+    finalize_receiver_set_.Remove(*task->finalize_generate_bid_receiver_id);
+  }
   generate_bid_tasks_.erase(task);
 }
 
