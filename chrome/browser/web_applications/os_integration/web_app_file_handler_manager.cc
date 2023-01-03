@@ -60,14 +60,6 @@ void WebAppFileHandlerManager::SetSubsystems(WebAppSyncBridge* sync_bridge) {
 
 void WebAppFileHandlerManager::Start() {
   DCHECK(sync_bridge_);
-
-  // Don't compete for resources during browser startup.
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(base::IgnoreResult(
-                             &WebAppFileHandlerManager::SyncOsIntegrationState),
-                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 // static
