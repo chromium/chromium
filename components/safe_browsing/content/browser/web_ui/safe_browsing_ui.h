@@ -15,7 +15,7 @@
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
-#include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#include "components/safe_browsing/core/browser/url_realtime_mechanism.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
@@ -303,7 +303,7 @@ class SafeBrowsingUI : public content::WebUIController {
   ~SafeBrowsingUI() override;
 };
 
-class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate,
+class WebUIInfoSingleton : public UrlRealTimeMechanism::WebUIDelegate,
                            public PingManager::WebUIDelegate {
  public:
   WebUIInfoSingleton();

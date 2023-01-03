@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -203,13 +204,13 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
     std::string url = gurl.spec();
-    DCHECK(base::Contains(urls_threat_type_, url));
+    DCHECK(base::Contains(url_details_, url));
     auto response = std::make_unique<RTLookupResponse>();
     RTLookupResponse::ThreatInfo* new_threat_info = response->add_threat_info();
     RTLookupResponse::ThreatInfo threat_info;
     RTLookupResponse::ThreatInfo::ThreatType threat_type;
     RTLookupResponse::ThreatInfo::VerdictType verdict_type;
-    SBThreatType sb_threat_type = urls_threat_type_[url];
+    SBThreatType sb_threat_type = url_details_[url].threat_type;
     switch (sb_threat_type) {
       case SB_THREAT_TYPE_URL_PHISHING:
         threat_type = RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING;
@@ -235,11 +236,13 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
     threat_info.set_threat_type(threat_type);
     threat_info.set_verdict_type(verdict_type);
     *new_threat_info = threat_info;
-    callback_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(response_callback),
-                                  /*is_rt_lookup_successful=*/true,
-                                  /*is_cached_response=*/is_cached_response_,
-                                  std::move(response)));
+    if (url_details_[url].should_complete_lookup) {
+      callback_task_runner->PostTask(
+          FROM_HERE, base::BindOnce(std::move(response_callback),
+                                    /*is_rt_lookup_successful=*/true,
+                                    /*is_cached_response=*/is_cached_response_,
+                                    std::move(response)));
+    }
   }
 
   void SendSampledRequest(
@@ -249,8 +252,14 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       RTLookupRequestCallback request_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
 
-  void SetThreatTypeForUrl(const GURL& gurl, SBThreatType threat_type) {
-    urls_threat_type_[gurl.spec()] = threat_type;
+  // |should_complete_lookup| should generally be true, unless you specifically
+  // want to test time-sensitive things like timeouts. Setting it to false will
+  // avoid calling into |response_callback| in |StartLookup|.
+  void SetThreatTypeForUrl(const GURL& gurl,
+                           SBThreatType threat_type,
+                           bool should_complete_lookup) {
+    url_details_[gurl.spec()].threat_type = threat_type;
+    url_details_[gurl.spec()].should_complete_lookup = should_complete_lookup;
   }
 
   void SetIsCachedResponse(bool is_cached_response) {
@@ -267,6 +276,11 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool CanSendRTSampleRequest() const override { return true; }
 
  private:
+  struct UrlDetail {
+    SBThreatType threat_type;
+    bool should_complete_lookup;
+  };
+
   // RealTimeUrlLookupServiceBase:
   GURL GetRealTimeLookupUrl() const override { return GURL(); }
   net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const override {
@@ -289,7 +303,7 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool ShouldIncludeCredentials() const override { return false; }
   double GetMinAllowedTimestampForReferrerChains() const override { return 0; }
 
-  base::flat_map<std::string, SBThreatType> urls_threat_type_;
+  base::flat_map<std::string, UrlDetail> url_details_;
   bool is_cached_response_ = false;
 };
 
@@ -343,7 +357,8 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager_;
   scoped_refptr<MockUrlCheckerDelegate> url_checker_delegate_;
   std::unique_ptr<MockRealTimeUrlLookupService> url_lookup_service_;
@@ -504,7 +519,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrl) {
 
   GURL url("https://example.test/");
   database_manager_->SetAllowlistResultForUrl(url, false);
-  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE);
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
+                                           /*should_complete_lookup=*/true);
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -536,7 +552,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrlFromCache) {
   database_manager_->SetAllowlistResultForUrl(url, false);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                          /*delayed_callback=*/false);
-  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE);
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
+                                           /*should_complete_lookup=*/true);
   url_lookup_service_->SetIsCachedResponse(true);
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
@@ -566,7 +583,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   database_manager_->SetAllowlistResultForUrl(url, false);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
-  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE);
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
+                                           /*should_complete_lookup=*/true);
   url_lookup_service_->SetIsCachedResponse(true);
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
@@ -592,8 +610,8 @@ TEST_F(
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
 
   GURL url("https://example.test/");
-  url_lookup_service_->SetThreatTypeForUrl(url,
-                                           SB_THREAT_TYPE_MANAGED_POLICY_WARN);
+  url_lookup_service_->SetThreatTypeForUrl(
+      url, SB_THREAT_TYPE_MANAGED_POLICY_WARN, /*should_complete_lookup=*/true);
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -615,8 +633,8 @@ TEST_F(
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
 
   GURL url("https://example.test/");
-  url_lookup_service_->SetThreatTypeForUrl(url,
-                                           SB_THREAT_TYPE_MANAGED_POLICY_WARN);
+  url_lookup_service_->SetThreatTypeForUrl(
+      url, SB_THREAT_TYPE_MANAGED_POLICY_WARN, /*should_complete_lookup=*/true);
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -640,7 +658,8 @@ TEST_F(
 
   GURL url("https://example.test/");
   url_lookup_service_->SetThreatTypeForUrl(url,
-                                           SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
+                                           SB_THREAT_TYPE_MANAGED_POLICY_BLOCK,
+                                           /*should_complete_lookup=*/true);
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -663,7 +682,8 @@ TEST_F(
 
   GURL url("https://example.test/");
   url_lookup_service_->SetThreatTypeForUrl(url,
-                                           SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
+                                           SB_THREAT_TYPE_MANAGED_POLICY_BLOCK,
+                                           /*should_complete_lookup=*/true);
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -684,7 +704,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
 
   GURL url("https://example.test/");
-  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING);
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                           /*should_complete_lookup=*/true);
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -705,7 +726,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
 
   GURL url("https://example.test/");
-  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE);
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
+                                           /*should_complete_lookup=*/true);
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -728,7 +750,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
 
     GURL url("https://example.test/");
     database_manager_->SetAllowlistResultForUrl(url, false);
-    url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING);
+    url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                             /*should_complete_lookup=*/true);
 
     base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
     safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
@@ -766,22 +789,21 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
   {
     base::HistogramTester histograms;
     auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-        /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/true);
-    auto timer = std::make_unique<base::MockOneShotTimer>();
-    auto* timer_ptr = timer.get();
-    safe_browsing_url_checker->SetTimerForTesting(std::move(timer));
+        /*real_time_lookup_enabled=*/true,
+        /*can_check_safe_browsing_db=*/true);
 
     GURL url("https://example.test/");
     database_manager_->SetAllowlistResultForUrl(url, false);
-    url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING);
-
+    url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                             /*should_complete_lookup=*/false);
     base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
-    EXPECT_CALL(cb, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+    EXPECT_CALL(cb, Run(_, /*proceed=*/true,
+                        /*showed_interstitial=*/false,
                         /*did_perform_real_time_check=*/true,
                         /*did_check_allowlist=*/true));
     safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
     EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
-    timer_ptr->Fire();
+    task_environment_.FastForwardBy(base::Seconds(5));
     EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
     task_environment_.RunUntilIdle();
     histograms.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
@@ -794,13 +816,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
     auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
         /*real_time_lookup_enabled=*/false,
         /*can_check_safe_browsing_db=*/true);
-    auto timer = std::make_unique<base::MockOneShotTimer>();
-    auto* timer_ptr = timer.get();
-    safe_browsing_url_checker->SetTimerForTesting(std::move(timer));
 
     GURL url("https://example.test/");
     database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
-                                           /*delayed_callback=*/false);
+                                           /*delayed_callback=*/true);
 
     SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback callback =
         base::BindOnce(&SafeBrowsingUrlCheckerTest::
@@ -812,7 +831,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
                     /*did_check_allowlist=*/false));
     safe_browsing_url_checker->CheckUrl(url, "GET", std::move(callback));
     EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
-    timer_ptr->Fire();
+    task_environment_.FastForwardBy(base::Seconds(5));
     EXPECT_TRUE(database_manager_->HasCalledCancelCheck());
     task_environment_.RunUntilIdle();
     histograms.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",

@@ -6,11 +6,19 @@ import("//build/config/features.gni")
 
 source_set("browser") {
   sources = [
+    "hash_database_mechanism.cc",
+    "hash_database_mechanism.h",
     "ping_manager.cc",
     "ping_manager.h",
+    "safe_browsing_lookup_mechanism.cc",
+    "safe_browsing_lookup_mechanism.h",
+    "safe_browsing_lookup_mechanism_runner.cc",
+    "safe_browsing_lookup_mechanism_runner.h",
     "safe_browsing_url_checker_impl.cc",
     "safe_browsing_url_checker_impl.h",
     "url_checker_delegate.h",
+    "url_realtime_mechanism.cc",
+    "url_realtime_mechanism.h",
     "user_population.cc",
     "user_population.h",
   ]
