@@ -166,7 +166,8 @@ SkiaOutputDeviceDComp::~SkiaOutputDeviceDComp() = default;
 
 void SkiaOutputDeviceDComp::SwapBuffers(BufferPresentedCallback feedback,
                                         OutputSurfaceFrame frame) {
-  NOTREACHED();
+  PostSubBuffer(gfx::Rect(GetRootSurfaceSize()), std::move(feedback),
+                std::move(frame));
 }
 
 void SkiaOutputDeviceDComp::PostSubBuffer(const gfx::Rect& rect,
