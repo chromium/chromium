@@ -719,9 +719,7 @@ void SynchronousCompositorHost::SendBeginFramePaused() {
 }
 
 void SynchronousCompositorHost::SendBeginFrame(viz::BeginFrameArgs args) {
-  static bool enable_thorttling = base::FeatureList::IsEnabled(
-      ::features::kWebViewThrottleBackgroundBeginFrame);
-  if (enable_thorttling && num_invalidates_since_last_draw_ > 5u) {
+  if (num_invalidates_since_last_draw_ > 5u) {
     // Throttle begin frames if there has been no draws in response to
     // invalidates. This can happen if webview is detached or offscreen. There
     // are cases where renderer is still expected to make progress. In this

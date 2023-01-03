@@ -1489,11 +1489,6 @@ BASE_FEATURE(kWarmUpNetworkProcess,
 // https://w3c.github.io/web-nfc/
 BASE_FEATURE(kWebNfc, "WebNFC", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Throttle begin frame if Android WebView isn't getting draws.
-BASE_FEATURE(kWebViewThrottleBackgroundBeginFrame,
-             "WebViewThrottleBackgroundBeginFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

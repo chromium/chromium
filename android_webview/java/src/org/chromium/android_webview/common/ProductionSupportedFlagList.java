@@ -314,8 +314,6 @@ public final class ProductionSupportedFlagList {
                             + " each forced context switch."),
             Flag.baseFeature(AccessibilityFeatures.ABLATE_SEND_PENDING_ACCESSIBILITY_EVENTS,
                     "Enable to increase the cost of SendPendingAccessibilityEvents"),
-            Flag.baseFeature(ContentFeatures.WEBVIEW_THROTTLE_BACKGROUND_BEGIN_FRAME,
-                    "Enable to throttle begin frames when webview is not being drawn"),
             Flag.baseFeature(BlinkFeatures.RUN_TEXT_INPUT_UPDATE_POST_LIFECYCLE,
                     "Runs code to update IME state at the end of a lifecycle update "
                             + "rather than the beginning."),
