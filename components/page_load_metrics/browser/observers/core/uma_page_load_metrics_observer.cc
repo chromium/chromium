@@ -267,11 +267,6 @@ const char kHistogramFirstEligibleToPaint[] =
 const char kHistogramFirstEligibleToPaintToFirstPaint[] =
     "PageLoad.Experimental.PaintTiming.FirstEligibleToPaintToFirstPaint";
 
-const char kHistogramFirstNonScrollInputAfterFirstPaint[] =
-    "PageLoad.InputTiming.NavigationToFirstNonScroll.AfterPaint";
-const char kHistogramFirstScrollInputAfterFirstPaint[] =
-    "PageLoad.InputTiming.NavigationToFirstScroll.AfterPaint";
-
 const char kHistogramPageLoadTotalBytes[] =
     "PageLoad.Experimental.Bytes.Total2";
 const char kHistogramPageLoadNetworkBytes[] =
@@ -849,33 +844,11 @@ void UmaPageLoadMetricsObserver::OnLoadedResource(
 void UmaPageLoadMetricsObserver::OnUserInput(
     const blink::WebInputEvent& event,
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  base::TimeTicks now;
-
   if (first_paint_.is_null())
     return;
 
   // Track clicks after first paint for possible click burst.
   click_tracker_.OnUserInput(event);
-
-  if (!received_non_scroll_input_after_first_paint_) {
-    if (event.GetType() == blink::WebInputEvent::Type::kGestureTap ||
-        event.GetType() == blink::WebInputEvent::Type::kMouseUp) {
-      received_non_scroll_input_after_first_paint_ = true;
-      if (now.is_null())
-        now = base::TimeTicks::Now();
-      PAGE_LOAD_HISTOGRAM(
-          internal::kHistogramFirstNonScrollInputAfterFirstPaint,
-          now - first_paint_);
-    }
-  }
-  if (!received_scroll_input_after_first_paint_ &&
-      event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
-    received_scroll_input_after_first_paint_ = true;
-    if (now.is_null())
-      now = base::TimeTicks::Now();
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstScrollInputAfterFirstPaint,
-                        now - first_paint_);
-  }
 }
 
 void UmaPageLoadMetricsObserver::OnResourceDataUseObserved(

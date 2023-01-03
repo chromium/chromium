@@ -266,13 +266,6 @@ class UmaPageLoadMetricsObserver
   // Size of the redirect chain, which excludes the first URL.
   int redirect_chain_size_;
 
-  // True if we've received a non-scroll input (touch tap or mouse up)
-  // after first paint has happened.
-  bool received_non_scroll_input_after_first_paint_ = false;
-
-  // True if we've received a scroll input after first paint has happened.
-  bool received_scroll_input_after_first_paint_ = false;
-
   base::TimeTicks first_paint_;
 
   // Tracks user input clicks for possible click burst.

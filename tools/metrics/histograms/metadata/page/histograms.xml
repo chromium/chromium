@@ -2067,23 +2067,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.InputTiming.NavigationToFirstNonScroll.AfterPaint"
-    units="ms" expires_after="M77">
-  <owner>sullivan@chromium.org</owner>
-  <summary>
-    Measures the time to first non-scroll input after the first paint.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.InputTiming.NavigationToFirstScroll.AfterPaint"
-    units="ms" expires_after="2021-08-22">
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Measures the time to first scroll input after the first paint.
-  </summary>
-</histogram>
-
 <histogram
     name="PageLoad.InteractiveTiming.FirstInputDelay.AfterBackForwardCacheRestore"
     units="ms" expires_after="never">
