@@ -183,12 +183,6 @@ bool TopRowKeysAreFunctionKeys() {
   return pref_service->GetBoolean(prefs::kSendFunctionKeys);
 }
 
-// TODO(zhangwenyu): Remove this and use member function in ui::accelerator
-// class.
-bool IsModifierSet(const ui::Accelerator accelerator, int modifier) {
-  return accelerator.modifiers() & modifier;
-}
-
 }  // namespace
 
 namespace shortcut_ui {
@@ -384,8 +378,7 @@ mojom::AcceleratorInfoPtr
 AcceleratorConfigurationProvider::CreateRemappedTopRowAcceleratorInfo(
     const ui::Accelerator& accelerator) const {
   // Avoid remapping if [Search] is part of original accelerator.
-  if (IsModifierSet(accelerator, ui::EF_COMMAND_DOWN) ||
-      !TopRowKeysAreFunctionKeys() ||
+  if (accelerator.IsCmdDown() || !TopRowKeysAreFunctionKeys() ||
       !ui::kLayout2TopRowKeyToFKeyMap.contains(accelerator.key_code())) {
     // No remapping is done.
     return nullptr;
@@ -403,7 +396,7 @@ AcceleratorConfigurationProvider::CreateRemappedSixPackAcceleratorInfo(
     const ui::Accelerator& accelerator) const {
   // For all six-pack-keys, avoid remapping if [Search] is part of
   // original accelerator.
-  if (IsModifierSet(accelerator, ui::EF_COMMAND_DOWN) ||
+  if (accelerator.IsCmdDown() ||
       !::features::IsImprovedKeyboardShortcutsEnabled() ||
       !ui::kSixPackKeyToSystemKeyMap.contains(accelerator.key_code())) {
     return nullptr;
@@ -413,7 +406,7 @@ AcceleratorConfigurationProvider::CreateRemappedSixPackAcceleratorInfo(
   // [Back] (aka, Insert).
   // 2. For [Insert], avoid remapping if [Shift] is part of original
   // accelerator.
-  if (IsModifierSet(accelerator, ui::EF_SHIFT_DOWN) &&
+  if (accelerator.IsShiftDown() &&
       (accelerator.key_code() == ui::KeyboardCode::VKEY_DELETE ||
        accelerator.key_code() == ui::KeyboardCode::VKEY_INSERT)) {
     return nullptr;
