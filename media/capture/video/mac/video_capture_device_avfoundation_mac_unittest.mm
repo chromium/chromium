@@ -419,8 +419,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
-TEST(VideoCaptureDeviceAVFoundationMacTest, DISABLED_TakePhoto) {
+TEST(VideoCaptureDeviceAVFoundationMacTest, TakePhoto) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -447,9 +446,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, DISABLED_TakePhoto) {
   }));
 }
 
-// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
-TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_StopCaptureWhileTakingPhoto) {
+TEST(VideoCaptureDeviceAVFoundationMacTest, StopCaptureWhileTakingPhoto) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -480,9 +477,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
-TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_MultiplePendingTakePhotos) {
+TEST(VideoCaptureDeviceAVFoundationMacTest, MultiplePendingTakePhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -517,9 +512,8 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_StopCaptureWhileMultiplePendingTakePhotos) {
+     StopCaptureWhileMultiplePendingTakePhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -558,9 +552,8 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_StopStillImageOutputWhenNoLongerTakingPhotos) {
+     StopStillImageOutputWhenNoLongerTakingPhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -595,10 +588,8 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-// TODO(https://crbug.com/1383901): Fix and re-enable these tests.// This test
-// ensures we don't crash even if we leave operations pending.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     DISABLED_TakePhotoAndShutDownWithoutWaiting) {
+     TakePhotoAndShutDownWithoutWaiting) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {

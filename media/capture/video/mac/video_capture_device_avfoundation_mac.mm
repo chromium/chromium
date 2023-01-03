@@ -197,11 +197,14 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 }
 
 - (void)dealloc {
+  // Stopping a running still image output takes `_lock`. To avoid this
+  // happening inside stopCapture() below which would deadlock, we ensure that
+  // still image output is already stopped before taking `_lock`.
+  [self stopStillImageOutput];
   {
     // To avoid races with concurrent callbacks, grab the lock before stopping
     // capture and clearing all the variables.
     base::AutoLock lock(_lock);
-    [self stopStillImageOutput];
     [self stopCapture];
     _frameReceiver = nullptr;
     _sampleBufferTransformer.reset();
@@ -645,6 +648,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   char* baseAddress = 0;
   size_t frameSize = 0;
   _lock.AssertAcquired();
+  DCHECK(_frameReceiver);
   const bool sample_buffer_addressable = media::ExtractBaseAddressAndLength(
       &baseAddress, &frameSize, sampleBuffer);
   DCHECK(sample_buffer_addressable);
@@ -766,6 +770,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
 
   _lock.AssertAcquired();
+  DCHECK(_frameReceiver);
   _frameReceiver->ReceiveFrame(
       packedBufferCopy.empty() ? pixelBufferAddresses[0]
                                : packedBufferCopy.data(),
@@ -831,6 +836,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                                           colorSpace:colorSpace]);
   }
 
+  DCHECK(_frameReceiver);
   _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
       std::move(externalBuffer), std::move(scaledExternalBuffers), timestamp);
 }
@@ -885,8 +891,12 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
       nextFailedCheckCount = 0;
 
     // If we captured a frame since last check, then we aren't stalled.
-    if (_capturedFrameSinceLastStallCheck)
+    // We're also not considered stalled if takePhoto() is pending, avoiding
+    // excessive capture restarts in unit tests with mock time.
+    if (_capturedFrameSinceLastStallCheck ||
+        _takePhotoStartedCount != _takePhotoCompletedCount) {
       nextFailedCheckCount = 0;
+    }
     _capturedFrameSinceLastStallCheck = NO;
   }
 
@@ -935,8 +945,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   base::AutoLock destructionLock(_destructionLock);
   base::AutoLock lock(_lock);
   _capturedFrameSinceLastStallCheck = YES;
-  if (!_frameReceiver)
+  if (!_frameReceiver || !_sampleBufferTransformer) {
     return;
+  }
 
   const base::TimeDelta pres_timestamp =
       GetCMSampleBufferTimestamp(sampleBuffer);
