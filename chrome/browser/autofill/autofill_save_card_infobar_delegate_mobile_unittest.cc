@@ -124,10 +124,10 @@ AutofillSaveCardInfoBarDelegateMobileTest::
         CreditCard credit_card) {
   LegalMessageLines legal_message_lines;
   if (!legal_message_string.empty()) {
-    std::unique_ptr<base::Value> value(
-        base::JSONReader::ReadDeprecated(legal_message_string));
+    absl::optional<base::Value> value =
+        base::JSONReader::Read(legal_message_string);
     EXPECT_TRUE(value);
-    LegalMessageLine::Parse(*value, &legal_message_lines,
+    LegalMessageLine::Parse(value->GetDict(), &legal_message_lines,
                             /*escape_apostrophes=*/true);
   }
   if (is_uploading) {

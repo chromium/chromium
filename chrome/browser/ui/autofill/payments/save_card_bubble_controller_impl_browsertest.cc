@@ -52,7 +52,7 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
         "}"));
     EXPECT_TRUE(value->is_dict());
     LegalMessageLines legal_message_lines;
-    LegalMessageLine::Parse(*value, &legal_message_lines,
+    LegalMessageLine::Parse(value->GetDict(), &legal_message_lines,
                             /*escape_apostrophes=*/true);
     return legal_message_lines;
   }

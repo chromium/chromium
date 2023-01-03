@@ -53,8 +53,8 @@ std::string GetUnmaskDetailsRequest::GetRequestContent() {
   return request_content;
 }
 
-void GetUnmaskDetailsRequest::ParseResponse(const base::Value& response) {
-  const auto* method = response.FindStringKey("authentication_method");
+void GetUnmaskDetailsRequest::ParseResponse(const base::Value::Dict& response) {
+  const auto* method = response.FindString("authentication_method");
   if (method) {
     if (*method == "CVC") {
       unmask_details_.unmask_auth_method =
@@ -65,20 +65,20 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::Value& response) {
     }
   }
 
-  const auto* offer_fido_opt_in =
-      response.FindKeyOfType("offer_fido_opt_in", base::Value::Type::BOOLEAN);
+  const absl::optional<bool> offer_fido_opt_in =
+      response.FindBool("offer_fido_opt_in");
   unmask_details_.offer_fido_opt_in =
-      offer_fido_opt_in && offer_fido_opt_in->GetBool();
+      offer_fido_opt_in.has_value() && *offer_fido_opt_in;
 
-  const auto* dictionary_value = response.FindKeyOfType(
-      "fido_request_options", base::Value::Type::DICTIONARY);
+  const base::Value::Dict* dictionary_value =
+      response.FindDict("fido_request_options");
   if (dictionary_value)
     unmask_details_.fido_request_options = dictionary_value->Clone();
 
   const auto* fido_eligible_card_ids =
-      response.FindKeyOfType("fido_eligible_card_id", base::Value::Type::LIST);
+      response.FindList("fido_eligible_card_id");
   if (fido_eligible_card_ids) {
-    for (const base::Value& result : fido_eligible_card_ids->GetList()) {
+    for (const base::Value& result : *fido_eligible_card_ids) {
       unmask_details_.fido_eligible_card_ids.insert(result.GetString());
     }
   }

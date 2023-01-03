@@ -40,18 +40,18 @@ constexpr size_t kDefaultCvcLength = 3U;
 // Parses the `defined_challenge_option` as an SMS OTP challenge option, and
 // sets the appropriate fields in `parsed_challenge_option`.
 void ParseAsSmsOtpChallengeOption(
-    const base::Value* defined_challenge_option,
+    const base::Value::Dict* defined_challenge_option,
     CardUnmaskChallengeOption* parsed_challenge_option) {
   parsed_challenge_option->type = CardUnmaskChallengeOptionType::kSmsOtp;
   const auto* challenge_id =
-      defined_challenge_option->FindStringKey("challenge_id");
+      defined_challenge_option->FindString("challenge_id");
   DCHECK(challenge_id);
   parsed_challenge_option->id = *challenge_id;
 
   // For SMS OTP challenge, masked phone number is the challenge_info for
   // display.
   const auto* masked_phone_number =
-      defined_challenge_option->FindStringKey("masked_phone_number");
+      defined_challenge_option->FindString("masked_phone_number");
   DCHECK(masked_phone_number);
   parsed_challenge_option->challenge_info =
       base::UTF8ToUTF16(*masked_phone_number);
@@ -60,7 +60,7 @@ void ParseAsSmsOtpChallengeOption(
   // in the OTP input dialog so that the user knows how many digits the OTP
   // should be.
   absl::optional<int> otp_length =
-      defined_challenge_option->FindIntKey("otp_length");
+      defined_challenge_option->FindInt("otp_length");
   parsed_challenge_option->challenge_input_length =
       otp_length ? *otp_length : kDefaultOtpLength;
 }
@@ -68,7 +68,7 @@ void ParseAsSmsOtpChallengeOption(
 // Parses the `defined_challenge_option` as a CVC challenge option, and sets the
 // appropriate fields in `parsed_challenge_option`.
 void ParseAsCvcChallengeOption(
-    const base::Value* defined_challenge_option,
+    const base::Value::Dict* defined_challenge_option,
     CardUnmaskChallengeOption* parsed_challenge_option) {
   parsed_challenge_option->type = CardUnmaskChallengeOptionType::kCvc;
 
@@ -76,7 +76,7 @@ void ParseAsCvcChallengeOption(
   // option. The payments server will need this challenge id to know which
   // challenge option was selected.
   const auto* challenge_id =
-      defined_challenge_option->FindStringKey("challenge_id");
+      defined_challenge_option->FindString("challenge_id");
   DCHECK(challenge_id);
   parsed_challenge_option->id = *challenge_id;
 
@@ -84,7 +84,7 @@ void ParseAsCvcChallengeOption(
   // but it is possible for this to be 4 digits, for example in the case of
   // the Card Identification Number on the front of an American Express card.
   absl::optional<int> cvc_length =
-      defined_challenge_option->FindIntKey("cvc_length");
+      defined_challenge_option->FindInt("cvc_length");
   parsed_challenge_option->challenge_input_length =
       cvc_length ? *cvc_length : kDefaultCvcLength;
 
@@ -96,7 +96,7 @@ void ParseAsCvcChallengeOption(
   // end up displaying the authentication selection dialog.
   std::u16string challenge_info_position_string;
   const auto* cvc_position =
-      defined_challenge_option->FindStringKey("cvc_position");
+      defined_challenge_option->FindString("cvc_position");
   if (cvc_position) {
     if (*cvc_position == "CVC_POSITION_FRONT") {
       parsed_challenge_option->cvc_position = CvcPosition::kFrontOfCard;
@@ -125,15 +125,15 @@ void ParseAsCvcChallengeOption(
 }
 
 CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
-    const base::Value& challenge_option) {
-  const base::Value* defined_challenge_option;
+    const base::Value::Dict& challenge_option) {
+  const base::Value::Dict* defined_challenge_option;
   CardUnmaskChallengeOption parsed_challenge_option;
 
   // Check if it's an SMS OTP challenge option, and if it is, set
   // `defined_challenge_option` to the defined challenge option found, parse the
   // challenge option, and return it.
-  if ((defined_challenge_option = challenge_option.FindKeyOfType(
-           "sms_otp_challenge_option", base::Value::Type::DICTIONARY))) {
+  if ((defined_challenge_option =
+           challenge_option.FindDict("sms_otp_challenge_option"))) {
     ParseAsSmsOtpChallengeOption(defined_challenge_option,
                                  &parsed_challenge_option);
   }
@@ -142,8 +142,8 @@ CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
   // challenge option, and return it.
   else if (base::FeatureList::IsEnabled(
                features::kAutofillEnableCvcForVcnYellowPath) &&
-           (defined_challenge_option = challenge_option.FindKeyOfType(
-                "cvc_challenge_option", base::Value::Type::DICTIONARY))) {
+           (defined_challenge_option =
+                challenge_option.FindDict("cvc_challenge_option"))) {
     ParseAsCvcChallengeOption(defined_challenge_option,
                               &parsed_challenge_option);
   }
@@ -302,37 +302,36 @@ std::string UnmaskCardRequest::GetRequestContent() {
   return request_content;
 }
 
-void UnmaskCardRequest::ParseResponse(const base::Value& response) {
-  const std::string* pan = response.FindStringKey("pan");
+void UnmaskCardRequest::ParseResponse(const base::Value::Dict& response) {
+  const std::string* pan = response.FindString("pan");
   response_details_.real_pan = pan ? *pan : std::string();
 
-  const std::string* dcvv = response.FindStringKey("dcvv");
+  const std::string* dcvv = response.FindString("dcvv");
   response_details_.dcvv = dcvv ? *dcvv : std::string();
 
-  const base::Value* expiration =
-      response.FindKeyOfType("expiration", base::Value::Type::DICTIONARY);
+  const base::Value::Dict* expiration = response.FindDict("expiration");
   if (expiration) {
-    if (absl::optional<int> month = expiration->FindIntKey("month")) {
+    if (absl::optional<int> month = expiration->FindInt("month")) {
       response_details_.expiration_month = base::NumberToString(month.value());
     }
 
-    if (absl::optional<int> year = expiration->FindIntKey("year"))
+    if (absl::optional<int> year = expiration->FindInt("year")) {
       response_details_.expiration_year = base::NumberToString(year.value());
+    }
   }
 
-  const base::Value* request_options = response.FindKeyOfType(
-      "fido_request_options", base::Value::Type::DICTIONARY);
+  const base::Value::Dict* request_options =
+      response.FindDict("fido_request_options");
   if (request_options)
     response_details_.fido_request_options = request_options->Clone();
 
-  const base::Value* challenge_option_list =
-      response.FindKeyOfType("idv_challenge_options", base::Value::Type::LIST);
+  const base::Value::List* challenge_option_list =
+      response.FindList("idv_challenge_options");
   if (challenge_option_list) {
     std::vector<CardUnmaskChallengeOption> card_unmask_challenge_options;
-    for (const base::Value& challenge_option :
-         challenge_option_list->GetList()) {
+    for (const base::Value& challenge_option : *challenge_option_list) {
       CardUnmaskChallengeOption parsed_challenge_option =
-          ParseCardUnmaskChallengeOption(challenge_option);
+          ParseCardUnmaskChallengeOption(challenge_option.GetDict());
       // Only return successfully parsed challenge option.
       if (parsed_challenge_option.type !=
           CardUnmaskChallengeOptionType::kUnknownType) {
@@ -344,15 +343,15 @@ void UnmaskCardRequest::ParseResponse(const base::Value& response) {
   }
 
   const std::string* card_authorization_token =
-      response.FindStringKey("card_authorization_token");
+      response.FindString("card_authorization_token");
   response_details_.card_authorization_token =
       card_authorization_token ? *card_authorization_token : std::string();
 
-  const std::string* context_token = response.FindStringKey("context_token");
+  const std::string* context_token = response.FindString("context_token");
   response_details_.context_token =
       context_token ? *context_token : std::string();
 
-  const std::string* flow_status = response.FindStringKey("flow_status");
+  const std::string* flow_status = response.FindString("flow_status");
   response_details_.flow_status = flow_status ? *flow_status : std::string();
 
   if (request_details_.card.record_type() == CreditCard::VIRTUAL_CARD) {
@@ -368,20 +367,20 @@ void UnmaskCardRequest::ParseResponse(const base::Value& response) {
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableMerchantOptOutErrorDialog)) {
-    const base::Value* decline_details = response.FindKeyOfType(
-        "decline_details", base::Value::Type::DICTIONARY);
+    const base::Value::Dict* decline_details =
+        response.FindDict("decline_details");
     if (decline_details) {
       AutofillErrorDialogContext autofill_error_dialog_context;
 
       const std::string* user_message_title =
-          decline_details->FindStringKey("user_message_title");
+          decline_details->FindString("user_message_title");
       if (user_message_title && !user_message_title->empty()) {
         autofill_error_dialog_context.server_returned_title =
             *user_message_title;
       }
 
       const std::string* user_message_description =
-          decline_details->FindStringKey("user_message_description");
+          decline_details->FindString("user_message_description");
       if (user_message_description && !user_message_description->empty()) {
         autofill_error_dialog_context.server_returned_description =
             *user_message_description;

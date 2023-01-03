@@ -85,7 +85,7 @@ TEST_P(GetDetailsForEnrollmentRequestTest, ParseResponse) {
       "{ \"google_legal_message\": {}, \"external_legal_message\": {}, "
       "\"context_token\": \"some_token\" }");
   ASSERT_TRUE(response.has_value());
-  GetRequest()->ParseResponse(response.value());
+  GetRequest()->ParseResponse(response->GetDict());
 
   EXPECT_EQ(GetParsedResponse().vcn_context_token, "some_token");
   EXPECT_TRUE(GetParsedResponse().issuer_legal_message.empty());

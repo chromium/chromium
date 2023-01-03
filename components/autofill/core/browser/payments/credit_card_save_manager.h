@@ -190,7 +190,7 @@ class CreditCardSaveManager {
   void OnDidGetUploadDetails(
       AutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
-      std::unique_ptr<base::Value> legal_message,
+      std::unique_ptr<base::Value::Dict> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges);
 
   // Logs the number of strikes that a card had when save succeeded.

@@ -204,7 +204,7 @@ class PaymentsClientTest : public testing::Test {
   void OnDidGetUploadDetails(
       AutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
-      std::unique_ptr<base::Value> legal_message,
+      std::unique_ptr<base::Value::Dict> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges) {
     result_ = result;
     legal_message_ = std::move(legal_message);
@@ -274,8 +274,7 @@ class PaymentsClientTest : public testing::Test {
 
     request_details.risk_data = "some risk data";
     if (options.use_fido) {
-      request_details.fido_assertion_info =
-          base::Value(base::Value::Type::DICTIONARY);
+      request_details.fido_assertion_info = base::Value::Dict();
     }
     if (options.use_cvc)
       request_details.user_response.cvc = base::ASCIIToUTF16(options.cvc);
@@ -483,7 +482,7 @@ class PaymentsClientTest : public testing::Test {
   raw_ptr<PaymentsClient::UnmaskResponseDetails> unmask_response_details_ =
       nullptr;
   // The legal message returned from a GetDetails upload save preflight call.
-  std::unique_ptr<base::Value> legal_message_;
+  std::unique_ptr<base::Value::Dict> legal_message_;
   // A list of card BIN ranges supported by Google Payments, returned from a
   // GetDetails upload save preflight call.
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
@@ -729,9 +728,9 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse_CvcFlagOff) {
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("fake_context_token", unmask_response_details_->context_token);
   // Verify the FIDO request challenge is correctly parsed.
-  EXPECT_EQ("fake_fido_challenge",
-            *unmask_response_details_->fido_request_options->FindStringKey(
-                "challenge"));
+  EXPECT_EQ(
+      "fake_fido_challenge",
+      *unmask_response_details_->fido_request_options->FindString("challenge"));
   // Verify the two idv challenge options are both sms challenge and fields can
   // be correctly parsed.
   ASSERT_EQ(2u, unmask_response_details_->card_unmask_challenge_options.size());
@@ -769,9 +768,9 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse_CvcFlagOn) {
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("fake_context_token", unmask_response_details_->context_token);
   // Verify the FIDO request challenge is correctly parsed.
-  EXPECT_EQ("fake_fido_challenge",
-            *unmask_response_details_->fido_request_options->FindStringKey(
-                "challenge"));
+  EXPECT_EQ(
+      "fake_fido_challenge",
+      *unmask_response_details_->fido_request_options->FindString("challenge"));
   // Verify the three challenge options are two sms challenge options and one
   // cvc challenge option, and fields can be correctly parsed.
   ASSERT_EQ(3u, unmask_response_details_->card_unmask_challenge_options.size());
@@ -825,9 +824,9 @@ TEST_F(PaymentsClientTest,
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("fake_context_token", unmask_response_details_->context_token);
   // Verify the FIDO request challenge is correctly parsed.
-  EXPECT_EQ("fake_fido_challenge",
-            *unmask_response_details_->fido_request_options->FindStringKey(
-                "challenge"));
+  EXPECT_EQ(
+      "fake_fido_challenge",
+      *unmask_response_details_->fido_request_options->FindString("challenge"));
   // Verify that the unknow new challenge option type won't break the parsing.
   // We ignore the unknown new type, and only return the supported challenge
   // option.
@@ -1128,7 +1127,7 @@ TEST_F(PaymentsClientTest, EnrollAttemptReturnsCreationOptions) {
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_FALSE(opt_change_response_.user_is_opted_in.value());
   EXPECT_EQ("google.com",
-            *opt_change_response_.fido_creation_options->FindStringKey(
+            *opt_change_response_.fido_creation_options->FindString(
                 "relying_party_id"));
 }
 

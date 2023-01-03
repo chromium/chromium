@@ -61,15 +61,14 @@ std::string UpdateVirtualCardEnrollmentRequest::GetRequestContent() {
 }
 
 void UpdateVirtualCardEnrollmentRequest::ParseResponse(
-    const base::Value& response) {
+    const base::Value::Dict& response) {
   // Only enroll requests have a response to parse, unenroll request responses
   // are empty except for possible errors which are parsed in PaymentsClient.
   if (request_details_.virtual_card_enrollment_request_type ==
       VirtualCardEnrollmentRequestType::kEnroll) {
-    auto* enroll_result =
-        response.FindKeyOfType("enroll_result", base::Value::Type::STRING);
+    auto* enroll_result = response.FindString("enroll_result");
     if (enroll_result) {
-      enroll_result_ = enroll_result->GetString();
+      enroll_result_ = *enroll_result;
     }
   }
 }

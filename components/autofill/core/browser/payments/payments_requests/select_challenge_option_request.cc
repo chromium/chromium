@@ -74,9 +74,10 @@ std::string SelectChallengeOptionRequest::GetRequestContent() {
   return request_content;
 }
 
-void SelectChallengeOptionRequest::ParseResponse(const base::Value& response) {
+void SelectChallengeOptionRequest::ParseResponse(
+    const base::Value::Dict& response) {
   const std::string* updated_context_token =
-      response.FindStringKey("context_token");
+      response.FindString("context_token");
   updated_context_token_ =
       updated_context_token ? *updated_context_token : std::string();
 }

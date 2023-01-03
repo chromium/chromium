@@ -330,25 +330,22 @@ class CreditCardAccessManagerTest : public testing::Test {
         ->GetStrikes();
   }
 
-  base::Value GetTestRequestOptions() {
-    base::Value request_options = base::Value(base::Value::Type::DICTIONARY);
-    request_options.SetKey("challenge", base::Value(kTestChallenge));
-    request_options.SetKey("relying_party_id",
-                           base::Value(kGooglePaymentsRpid));
+  base::Value::Dict GetTestRequestOptions() {
+    base::Value::Dict request_options;
+    request_options.Set("challenge", base::Value(kTestChallenge));
+    request_options.Set("relying_party_id", base::Value(kGooglePaymentsRpid));
 
-    base::Value key_info(base::Value::Type::DICTIONARY);
-    key_info.SetKey("credential_id", base::Value(kCredentialId));
-    request_options.SetKey("key_info", base::Value(base::Value::Type::LIST));
-    request_options.FindKeyOfType("key_info", base::Value::Type::LIST)
-        ->Append(std::move(key_info));
+    base::Value::Dict key_info;
+    key_info.Set("credential_id", base::Value(kCredentialId));
+    request_options.Set("key_info", base::Value(base::Value::Type::LIST));
+    request_options.FindList("key_info")->Append(std::move(key_info));
     return request_options;
   }
 
-  base::Value GetTestCreationOptions() {
-    base::Value creation_options = base::Value(base::Value::Type::DICTIONARY);
-    creation_options.SetKey("challenge", base::Value(kTestChallenge));
-    creation_options.SetKey("relying_party_id",
-                            base::Value(kGooglePaymentsRpid));
+  base::Value::Dict GetTestCreationOptions() {
+    base::Value::Dict creation_options;
+    creation_options.Set("challenge", base::Value(kTestChallenge));
+    creation_options.Set("relying_party_id", base::Value(kGooglePaymentsRpid));
     return creation_options;
   }
 

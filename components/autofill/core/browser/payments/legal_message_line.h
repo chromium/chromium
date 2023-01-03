@@ -9,12 +9,9 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/values.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
 
 namespace autofill {
 
@@ -67,9 +64,7 @@ class LegalMessageLine {
   //    text in MessageFormat, "'{0}" gets treated as a literal.  To avoid
   //    situations like these, setting |escape_apostrophes| to true will escape
   //    all ASCII apostrophes by doubling them up.
-  //
-  // |legal_message| must be a base::Value of type DICTIONARY.
-  static bool Parse(const base::Value& legal_message,
+  static bool Parse(const base::Value::Dict& legal_message,
                     LegalMessageLines* out,
                     bool escape_apostrophes = false);
 

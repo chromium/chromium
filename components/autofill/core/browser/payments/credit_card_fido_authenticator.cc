@@ -79,7 +79,7 @@ CreditCardFIDOAuthenticator::~CreditCardFIDOAuthenticator() {
 void CreditCardFIDOAuthenticator::Authenticate(
     const CreditCard* card,
     base::WeakPtr<Requester> requester,
-    base::Value request_options,
+    base::Value::Dict request_options,
     absl::optional<std::string> context_token) {
   card_ = card;
   requester_ = requester;
@@ -98,14 +98,14 @@ void CreditCardFIDOAuthenticator::Authenticate(
 }
 
 void CreditCardFIDOAuthenticator::Register(std::string card_authorization_token,
-                                           base::Value creation_options) {
+                                           base::Value::Dict creation_options) {
   // Cancel any previous pending WebAuthn requests.
   authenticator()->Cancel();
 
   // If |creation_options| is set, then must enroll a new credential. Otherwise
   // directly send request to payments for opting in.
   card_authorization_token_ = card_authorization_token;
-  if (creation_options.is_dict()) {
+  if (!creation_options.empty()) {
     if (IsValidCreationOptions(creation_options)) {
       current_flow_ = OPT_IN_WITH_CHALLENGE_FLOW;
       MakeCredential(ParseCreationOptions(creation_options));
@@ -119,7 +119,7 @@ void CreditCardFIDOAuthenticator::Register(std::string card_authorization_token,
 void CreditCardFIDOAuthenticator::Authorize(
     base::WeakPtr<Requester> requester,
     std::string card_authorization_token,
-    base::Value request_options) {
+    base::Value::Dict request_options) {
   requester_ = requester;
   card_authorization_token_ = card_authorization_token;
 
@@ -329,7 +329,7 @@ void CreditCardFIDOAuthenticator::MakeCredential(
 }
 
 void CreditCardFIDOAuthenticator::OptChange(
-    base::Value authenticator_response) {
+    base::Value::Dict authenticator_response) {
   payments::PaymentsClient::OptChangeRequestDetails request_details;
   request_details.app_locale =
       autofill_client_->GetPersonalDataManager()->app_locale();
@@ -363,11 +363,11 @@ void CreditCardFIDOAuthenticator::OptChange(
   // the subsequent OptChange call.
   autofill_metrics::WebauthnOptInParameters opt_change_metric;
   bool is_checkout_flow = !card_authorization_token_.empty();
-  if (authenticator_response.is_dict()) {
+  if (!authenticator_response.empty()) {
     request_details.fido_authenticator_response =
         std::move(authenticator_response);
     opt_change_metric =
-        request_details.fido_authenticator_response->FindKey(
+        request_details.fido_authenticator_response->contains(
             "fido_assertion_info")
             ? autofill_metrics::WebauthnOptInParameters::kWithRequestChallenge
             : autofill_metrics::WebauthnOptInParameters::kWithCreationChallenge;
@@ -505,27 +505,24 @@ void CreditCardFIDOAuthenticator::OnFullCardRequestFailed(
 
 blink::mojom::PublicKeyCredentialRequestOptionsPtr
 CreditCardFIDOAuthenticator::ParseRequestOptions(
-    const base::Value& request_options) {
+    const base::Value::Dict& request_options) {
   auto options = blink::mojom::PublicKeyCredentialRequestOptions::New();
 
-  const auto* rpid = request_options.FindStringKey("relying_party_id");
+  const auto* rpid = request_options.FindString("relying_party_id");
   options->relying_party_id = rpid ? *rpid : std::string(kGooglePaymentsRpid);
 
-  const auto* challenge = request_options.FindStringKey("challenge");
+  const auto* challenge = request_options.FindString("challenge");
   DCHECK(challenge);
   options->challenge = Base64ToBytes(*challenge);
 
-  const auto* timeout = request_options.FindKeyOfType(
-      "timeout_millis", base::Value::Type::INTEGER);
-  options->timeout =
-      base::Milliseconds(timeout ? timeout->GetInt() : kWebAuthnTimeoutMs);
+  const absl::optional<int> timeout = request_options.FindInt("timeout_millis");
+  options->timeout = base::Milliseconds(timeout.value_or(kWebAuthnTimeoutMs));
 
   options->user_verification = device::UserVerificationRequirement::kRequired;
 
-  const auto* key_info_list =
-      request_options.FindKeyOfType("key_info", base::Value::Type::LIST);
+  const auto* key_info_list = request_options.FindList("key_info");
   DCHECK(key_info_list);
-  for (const base::Value& key_info : key_info_list->GetList()) {
+  for (const base::Value& key_info : *key_info_list) {
     options->allow_credentials.push_back(ParseCredentialDescriptor(key_info));
   }
 
@@ -534,14 +531,14 @@ CreditCardFIDOAuthenticator::ParseRequestOptions(
 
 blink::mojom::PublicKeyCredentialCreationOptionsPtr
 CreditCardFIDOAuthenticator::ParseCreationOptions(
-    const base::Value& creation_options) {
+    const base::Value::Dict& creation_options) {
   auto options = blink::mojom::PublicKeyCredentialCreationOptions::New();
 
-  const auto* rpid = creation_options.FindStringKey("relying_party_id");
+  const auto* rpid = creation_options.FindString("relying_party_id");
   options->relying_party.id = rpid ? *rpid : kGooglePaymentsRpid;
 
   const auto* relying_party_name =
-      creation_options.FindStringKey("relying_party_name");
+      creation_options.FindString("relying_party_name");
   options->relying_party.name =
       relying_party_name ? *relying_party_name : kGooglePaymentsRpName;
 
@@ -560,14 +557,14 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
               ->GetAccountInfoForPaymentsServer());
   options->user.display_name = account_info.given_name;
 
-  const auto* challenge = creation_options.FindStringKey("challenge");
+  const auto* challenge = creation_options.FindString("challenge");
   DCHECK(challenge);
   options->challenge = Base64ToBytes(*challenge);
 
-  const auto* identifier_list = creation_options.FindKeyOfType(
-      "algorithm_identifier", base::Value::Type::LIST);
+  const auto* identifier_list =
+      creation_options.FindList("algorithm_identifier");
   if (identifier_list) {
-    for (const base::Value& algorithm_identifier : identifier_list->GetList()) {
+    for (const base::Value& algorithm_identifier : *identifier_list) {
       device::PublicKeyCredentialParams::CredentialInfo parameter;
       parameter.type = device::CredentialType::kPublicKey;
       parameter.algorithm = algorithm_identifier.GetInt();
@@ -575,13 +572,12 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
     }
   }
 
-  const auto* timeout = creation_options.FindKeyOfType(
-      "timeout_millis", base::Value::Type::INTEGER);
-  options->timeout =
-      base::Milliseconds(timeout ? timeout->GetInt() : kWebAuthnTimeoutMs);
+  const absl::optional<int> timeout =
+      creation_options.FindInt("timeout_millis");
+  options->timeout = base::Milliseconds(timeout.value_or(kWebAuthnTimeoutMs));
 
   const auto* attestation =
-      creation_options.FindStringKey("attestation_conveyance_preference");
+      creation_options.FindString("attestation_conveyance_preference");
   if (!attestation || base::EqualsCaseInsensitiveASCII(*attestation, "NONE")) {
     options->attestation = device::AttestationConveyancePreference::kNone;
   } else if (base::EqualsCaseInsensitiveASCII(*attestation, "INDIRECT")) {
@@ -600,10 +596,9 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
 
   // List of keys that Payments already knows about, and so should not make a
   // new credential.
-  const auto* excluded_keys_list =
-      creation_options.FindKeyOfType("key_info", base::Value::Type::LIST);
+  const auto* excluded_keys_list = creation_options.FindList("key_info");
   if (excluded_keys_list) {
-    for (const base::Value& key_info : excluded_keys_list->GetList()) {
+    for (const base::Value& key_info : *excluded_keys_list) {
       options->exclude_credentials.push_back(
           ParseCredentialDescriptor(key_info));
     }
@@ -638,29 +633,28 @@ CreditCardFIDOAuthenticator::ParseCredentialDescriptor(
       authenticator_transports);
 }
 
-base::Value CreditCardFIDOAuthenticator::ParseAssertionResponse(
+base::Value::Dict CreditCardFIDOAuthenticator::ParseAssertionResponse(
     blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response) {
-  base::Value response = base::Value(base::Value::Type::DICTIONARY);
-  response.SetKey("credential_id",
-                  BytesToBase64(assertion_response->info->raw_id));
-  response.SetKey("authenticator_data",
-                  BytesToBase64(assertion_response->info->authenticator_data));
-  response.SetKey("client_data",
-                  BytesToBase64(assertion_response->info->client_data_json));
-  response.SetKey("signature", BytesToBase64(assertion_response->signature));
+  base::Value::Dict response;
+  response.Set("credential_id",
+               BytesToBase64(assertion_response->info->raw_id));
+  response.Set("authenticator_data",
+               BytesToBase64(assertion_response->info->authenticator_data));
+  response.Set("client_data",
+               BytesToBase64(assertion_response->info->client_data_json));
+  response.Set("signature", BytesToBase64(assertion_response->signature));
   return response;
 }
 
-base::Value CreditCardFIDOAuthenticator::ParseAttestationResponse(
+base::Value::Dict CreditCardFIDOAuthenticator::ParseAttestationResponse(
     blink::mojom::MakeCredentialAuthenticatorResponsePtr attestation_response) {
-  base::Value response = base::Value(base::Value::Type::DICTIONARY);
+  base::Value::Dict response;
 
-  base::Value fido_attestation_info =
-      base::Value(base::Value::Type::DICTIONARY);
-  fido_attestation_info.SetKey(
+  base::Value::Dict fido_attestation_info;
+  fido_attestation_info.Set(
       "client_data",
       BytesToBase64(attestation_response->info->client_data_json));
-  fido_attestation_info.SetKey(
+  fido_attestation_info.Set(
       "attestation_object",
       BytesToBase64(attestation_response->attestation_object));
 
@@ -672,28 +666,27 @@ base::Value CreditCardFIDOAuthenticator::ParseAttestationResponse(
         base::Value(base::ToUpperASCII(device::ToString(protocol))));
   }
 
-  response.SetKey("fido_attestation_info", std::move(fido_attestation_info));
-  response.SetKey("authenticator_transport",
-                  std::move(authenticator_transport_list));
+  response.Set("fido_attestation_info", std::move(fido_attestation_info));
+  response.Set("authenticator_transport",
+               std::move(authenticator_transport_list));
 
   return response;
 }
 
 bool CreditCardFIDOAuthenticator::IsValidRequestOptions(
-    const base::Value& request_options) {
-  if (!request_options.is_dict() || request_options.DictEmpty() ||
-      !request_options.FindStringKey("challenge") ||
-      !request_options.FindKeyOfType("key_info", base::Value::Type::LIST)) {
+    const base::Value::Dict& request_options) {
+  if (request_options.empty() || !request_options.contains("challenge") ||
+      !request_options.contains("key_info")) {
     return false;
   }
 
-  const auto* key_info_list =
-      request_options.FindKeyOfType("key_info", base::Value::Type::LIST);
+  const auto* key_info_list = request_options.FindList("key_info");
 
-  if (key_info_list->GetList().empty())
+  if (key_info_list->empty()) {
     return false;
+  }
 
-  for (const base::Value& key_info : key_info_list->GetList()) {
+  for (const base::Value& key_info : *key_info_list) {
     if (!key_info.is_dict() || !key_info.FindStringKey("credential_id"))
       return false;
   }
@@ -702,9 +695,8 @@ bool CreditCardFIDOAuthenticator::IsValidRequestOptions(
 }
 
 bool CreditCardFIDOAuthenticator::IsValidCreationOptions(
-    const base::Value& creation_options) {
-  return creation_options.is_dict() &&
-         creation_options.FindStringKey("challenge");
+    const base::Value::Dict& creation_options) {
+  return creation_options.contains("challenge");
 }
 
 void CreditCardFIDOAuthenticator::LogWebauthnResult(
@@ -752,7 +744,7 @@ void CreditCardFIDOAuthenticator::HandleGetAssertionSuccess(
     blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response) {
   switch (current_flow_) {
     case AUTHENTICATION_FLOW: {
-      base::Value response =
+      base::Value::Dict response =
           ParseAssertionResponse(std::move(assertion_response));
       full_card_request_ = std::make_unique<payments::FullCardRequest>(
           autofill_client_, autofill_client_->GetPaymentsClient(),
@@ -810,9 +802,9 @@ void CreditCardFIDOAuthenticator::HandleGetAssertionSuccess(
     }
   }
 
-  base::Value response = base::Value(base::Value::Type::DICTIONARY);
-  response.SetKey("fido_assertion_info",
-                  ParseAssertionResponse(std::move(assertion_response)));
+  base::Value::Dict response;
+  response.Set("fido_assertion_info",
+               ParseAssertionResponse(std::move(assertion_response)));
   OptChange(std::move(response));
 }
 

@@ -89,7 +89,7 @@ class PaymentsClient {
     bool offer_fido_opt_in = false;
     // Public Key Credential Request Options required for authentication.
     // https://www.w3.org/TR/webauthn/#dictdef-publickeycredentialrequestoptions
-    absl::optional<base::Value> fido_request_options;
+    absl::optional<base::Value::Dict> fido_request_options;
     // Set of credit cards ids that are eligible for FIDO Authentication.
     std::set<std::string> fido_eligible_card_ids;
   };
@@ -106,7 +106,7 @@ class PaymentsClient {
     CreditCard card;
     std::string risk_data;
     CardUnmaskDelegate::UserProvidedUnmaskDetails user_response;
-    absl::optional<base::Value> fido_assertion_info;
+    absl::optional<base::Value::Dict> fido_assertion_info;
     std::u16string otp;
     // An opaque token used to chain consecutive payments requests together.
     std::string context_token;
@@ -147,7 +147,7 @@ class PaymentsClient {
     std::string expiration_year;
     // Challenge required for authorizing user for FIDO authentication for
     // future card unmasking.
-    absl::optional<base::Value> fido_request_options;
+    absl::optional<base::Value::Dict> fido_request_options;
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
     std::string card_authorization_token;
@@ -196,7 +196,7 @@ class PaymentsClient {
     Reason reason;
     // Signature required for enrolling user into FIDO authentication for future
     // card unmasking.
-    absl::optional<base::Value> fido_authenticator_response;
+    absl::optional<base::Value::Dict> fido_authenticator_response;
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
     std::string card_authorization_token = std::string();
@@ -213,10 +213,10 @@ class PaymentsClient {
     absl::optional<bool> user_is_opted_in;
     // Challenge required for enrolling user into FIDO authentication for future
     // card unmasking.
-    absl::optional<base::Value> fido_creation_options;
+    absl::optional<base::Value::Dict> fido_creation_options;
     // Challenge required for authorizing user for FIDO authentication for
     // future card unmasking.
-    absl::optional<base::Value> fido_request_options;
+    absl::optional<base::Value::Dict> fido_request_options;
   };
 
   // A collection of the information required to make local credit cards
@@ -463,7 +463,7 @@ class PaymentsClient {
       const std::string& app_locale,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const std::u16string&,
-                              std::unique_ptr<base::Value>,
+                              std::unique_ptr<base::Value::Dict>,
                               std::vector<std::pair<int, int>>)> callback,
       const int billable_service_number,
       const int64_t billing_customer_number,

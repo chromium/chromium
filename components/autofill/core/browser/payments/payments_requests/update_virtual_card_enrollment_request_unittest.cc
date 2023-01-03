@@ -123,7 +123,7 @@ TEST_P(UpdateVirtualCardEnrollmentRequestTest, ParseResponse) {
     absl::optional<base::Value> response =
         base::JSONReader::Read("{ \"enroll_result\": \"ENROLL_SUCCESS\" }");
     ASSERT_TRUE(response.has_value());
-    GetRequest()->ParseResponse(response.value());
+    GetRequest()->ParseResponse(response->GetDict());
 
     EXPECT_TRUE(GetRequest()->IsResponseComplete());
     return;
@@ -135,7 +135,7 @@ TEST_P(UpdateVirtualCardEnrollmentRequestTest, ParseResponse) {
   if (std::get<1>(GetParam()) == VirtualCardEnrollmentSource::kSettingsPage) {
     absl::optional<base::Value> response = base::JSONReader::Read("{}");
     ASSERT_TRUE(response.has_value());
-    GetRequest()->ParseResponse(response.value());
+    GetRequest()->ParseResponse(response->GetDict());
 
     EXPECT_TRUE(GetRequest()->IsResponseComplete());
   }

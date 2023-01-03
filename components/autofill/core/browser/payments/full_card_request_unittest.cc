@@ -271,8 +271,7 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForMaskedServerCardViaFido) {
   request()->GetFullCardViaFIDO(
       CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
       AutofillClient::UnmaskCardReason::kAutofill,
-      result_delegate()->AsWeakPtr(),
-      base::Value(base::Value::Type::DICTIONARY));
+      result_delegate()->AsWeakPtr(), base::Value::Dict());
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
 }
 

@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 
 namespace autofill::payments {
 
@@ -26,7 +27,7 @@ GetUploadDetailsRequest::GetUploadDetailsRequest(
     const std::string& app_locale,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const std::u16string&,
-                            std::unique_ptr<base::Value>,
+                            std::unique_ptr<base::Value::Dict>,
                             std::vector<std::pair<int, int>>)> callback,
     const int billable_service_number,
     const int64_t billing_customer_number,
@@ -117,18 +118,19 @@ std::string GetUploadDetailsRequest::GetRequestContent() {
   return request_content;
 }
 
-void GetUploadDetailsRequest::ParseResponse(const base::Value& response) {
-  const auto* context_token = response.FindStringKey("context_token");
+void GetUploadDetailsRequest::ParseResponse(const base::Value::Dict& response) {
+  const auto* context_token = response.FindString("context_token");
   context_token_ =
       context_token ? base::UTF8ToUTF16(*context_token) : std::u16string();
 
-  const base::Value* dictionary_value =
-      response.FindKeyOfType("legal_message", base::Value::Type::DICTIONARY);
+  const base::Value::Dict* dictionary_value =
+      response.FindDict("legal_message");
   if (dictionary_value)
-    legal_message_ = std::make_unique<base::Value>(dictionary_value->Clone());
+    legal_message_ =
+        std::make_unique<base::Value::Dict>(dictionary_value->Clone());
 
   const auto* supported_card_bin_ranges_string =
-      response.FindStringKey("supported_card_bin_ranges_string");
+      response.FindString("supported_card_bin_ranges_string");
   supported_card_bin_ranges_ = ParseSupportedCardBinRangesString(
       supported_card_bin_ranges_string ? *supported_card_bin_ranges_string
                                        : base::EmptyString());

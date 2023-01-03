@@ -8,13 +8,10 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/values.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace autofill::payments {
 
@@ -28,7 +25,7 @@ class GetUploadDetailsRequest : public PaymentsRequest {
       const std::string& app_locale,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const std::u16string&,
-                              std::unique_ptr<base::Value>,
+                              std::unique_ptr<base::Value::Dict>,
                               std::vector<std::pair<int, int>>)> callback,
       const int billable_service_number,
       const int64_t billing_customer_number,
@@ -41,7 +38,7 @@ class GetUploadDetailsRequest : public PaymentsRequest {
   std::string GetRequestUrlPath() override;
   std::string GetRequestContentType() override;
   std::string GetRequestContent() override;
-  void ParseResponse(const base::Value& response) override;
+  void ParseResponse(const base::Value::Dict& response) override;
   bool IsResponseComplete() override;
   void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
 
@@ -60,11 +57,11 @@ class GetUploadDetailsRequest : public PaymentsRequest {
   std::string app_locale_;
   base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                           const std::u16string&,
-                          std::unique_ptr<base::Value>,
+                          std::unique_ptr<base::Value::Dict>,
                           std::vector<std::pair<int, int>>)>
       callback_;
   std::u16string context_token_;
-  std::unique_ptr<base::Value> legal_message_;
+  std::unique_ptr<base::Value::Dict> legal_message_;
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   const int billable_service_number_;
   PaymentsClient::UploadCardSource upload_card_source_;

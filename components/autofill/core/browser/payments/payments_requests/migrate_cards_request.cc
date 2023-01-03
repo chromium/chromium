@@ -88,15 +88,14 @@ std::string MigrateCardsRequest::GetRequestContent() {
   return request_content;
 }
 
-void MigrateCardsRequest::ParseResponse(const base::Value& response) {
-  const auto* found_list =
-      response.FindKeyOfType("save_result", base::Value::Type::LIST);
+void MigrateCardsRequest::ParseResponse(const base::Value::Dict& response) {
+  const auto* found_list = response.FindList("save_result");
   if (!found_list)
     return;
 
   save_result_ =
       std::make_unique<std::unordered_map<std::string, std::string>>();
-  for (const base::Value& result : found_list->GetList()) {
+  for (const base::Value& result : *found_list) {
     if (result.is_dict()) {
       const std::string* unique_id = result.FindStringKey("unique_id");
       const std::string* status = result.FindStringKey("status");
@@ -107,7 +106,7 @@ void MigrateCardsRequest::ParseResponse(const base::Value& response) {
   }
 
   const std::string* display_text =
-      response.FindStringKey("value_prop_display_text");
+      response.FindString("value_prop_display_text");
   display_text_ = display_text ? *display_text : std::string();
 }
 

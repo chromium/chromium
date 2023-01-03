@@ -23,7 +23,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Run tested code.
   autofill::LegalMessageLines lines;
-  autofill::LegalMessageLine::Parse(*legal_message, &lines, escape_apostrophes);
+  autofill::LegalMessageLine::Parse(legal_message->GetDict(), &lines,
+                                    escape_apostrophes);
 
   return 0;
 }

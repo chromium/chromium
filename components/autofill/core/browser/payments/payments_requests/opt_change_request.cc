@@ -85,24 +85,23 @@ std::string OptChangeRequest::GetRequestContent() {
   return request_content;
 }
 
-void OptChangeRequest::ParseResponse(const base::Value& response) {
-  const auto* fido_authentication_info = response.FindKeyOfType(
-      "fido_authentication_info", base::Value::Type::DICTIONARY);
+void OptChangeRequest::ParseResponse(const base::Value::Dict& response) {
+  const auto* fido_authentication_info =
+      response.FindDict("fido_authentication_info");
   if (!fido_authentication_info)
     return;
 
-  const auto* user_status =
-      fido_authentication_info->FindStringKey("user_status");
+  const auto* user_status = fido_authentication_info->FindString("user_status");
   if (user_status && *user_status != "UNKNOWN_USER_STATUS")
     response_details_.user_is_opted_in = (*user_status == "FIDO_AUTH_ENABLED");
 
-  const auto* fido_creation_options = fido_authentication_info->FindKeyOfType(
-      "fido_creation_options", base::Value::Type::DICTIONARY);
+  const auto* fido_creation_options =
+      fido_authentication_info->FindDict("fido_creation_options");
   if (fido_creation_options)
     response_details_.fido_creation_options = fido_creation_options->Clone();
 
-  const auto* fido_request_options = fido_authentication_info->FindKeyOfType(
-      "fido_request_options", base::Value::Type::DICTIONARY);
+  const auto* fido_request_options =
+      fido_authentication_info->FindDict("fido_request_options");
   if (fido_request_options)
     response_details_.fido_request_options = fido_request_options->Clone();
 }

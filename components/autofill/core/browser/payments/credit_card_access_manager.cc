@@ -211,11 +211,11 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
   // Set delay as fido request timeout if available, otherwise set to default.
   int delay_ms = kDelayForGetUnmaskDetails;
   if (unmask_details_.fido_request_options.has_value()) {
-    const auto* request_timeout =
-        unmask_details_.fido_request_options->FindKeyOfType(
-            "timeout_millis", base::Value::Type::INTEGER);
-    if (request_timeout)
-      delay_ms = request_timeout->GetInt();
+    const absl::optional<int> request_timeout =
+        unmask_details_.fido_request_options->FindInt("timeout_millis");
+    if (request_timeout.has_value()) {
+      delay_ms = *request_timeout;
+    }
   }
 
 #if !BUILDFLAG(IS_IOS)
@@ -470,7 +470,7 @@ void CreditCardAccessManager::Authenticate(
       // For virtual cards the |fido_request_option| comes from the
       // UnmaskResponseDetails while for masked server cards, it comes from the
       // UnmaskDetails.
-      base::Value fido_request_options;
+      base::Value::Dict fido_request_options;
       absl::optional<std::string> context_token;
       if (card_->record_type() == CreditCard::VIRTUAL_CARD) {
         context_token = virtual_card_unmask_response_details_.context_token;
@@ -568,7 +568,7 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
     unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
   } else if (should_register_card_with_fido) {
 #if !BUILDFLAG(IS_IOS)
-    absl::optional<base::Value> request_options = absl::nullopt;
+    absl::optional<base::Value::Dict> request_options = absl::nullopt;
     if (unmask_details_.fido_request_options.has_value()) {
       // For opted-in user (CVC then FIDO case), request options are returned in
       // unmask detail response.

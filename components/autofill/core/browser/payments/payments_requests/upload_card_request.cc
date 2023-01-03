@@ -119,9 +119,9 @@ std::string UploadCardRequest::GetRequestContent() {
   return request_content;
 }
 
-void UploadCardRequest::ParseResponse(const base::Value& response) {
+void UploadCardRequest::ParseResponse(const base::Value::Dict& response) {
   const std::string* response_instrument_id =
-      response.FindStringKey("instrument_id");
+      response.FindString("instrument_id");
   if (response_instrument_id) {
     int64_t instrument_id;
     if (base::StringToInt64(base::StringPiece(*response_instrument_id),
@@ -130,15 +130,15 @@ void UploadCardRequest::ParseResponse(const base::Value& response) {
     }
   }
 
-  const std::string* card_art_url = response.FindStringKey("card_art_url");
+  const std::string* card_art_url = response.FindString("card_art_url");
   upload_card_response_details_.card_art_url =
       card_art_url ? GURL(*card_art_url) : GURL();
 
-  const auto* virtual_card_metadata = response.FindKeyOfType(
-      "virtual_card_metadata", base::Value::Type::DICTIONARY);
+  const auto* virtual_card_metadata =
+      response.FindDict("virtual_card_metadata");
   if (virtual_card_metadata) {
     const std::string* virtual_card_enrollment_status =
-        virtual_card_metadata->FindStringKey("status");
+        virtual_card_metadata->FindString("status");
     if (virtual_card_enrollment_status) {
       if (*virtual_card_enrollment_status == "ENROLLED") {
         upload_card_response_details_.virtual_card_enrollment_state =
@@ -155,14 +155,12 @@ void UploadCardRequest::ParseResponse(const base::Value& response) {
     if (upload_card_response_details_.virtual_card_enrollment_state ==
         CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
       const auto* virtual_card_enrollment_data =
-          virtual_card_metadata->FindKeyOfType("virtual_card_enrollment_data",
-                                               base::Value::Type::DICTIONARY);
+          virtual_card_metadata->FindDict("virtual_card_enrollment_data");
       if (virtual_card_enrollment_data) {
         PaymentsClient::GetDetailsForEnrollmentResponseDetails
             get_details_for_enrollment_response_details;
-        const base::Value* google_legal_message =
-            virtual_card_enrollment_data->FindKeyOfType(
-                "google_legal_message", base::Value::Type::DICTIONARY);
+        const base::Value::Dict* google_legal_message =
+            virtual_card_enrollment_data->FindDict("google_legal_message");
         if (google_legal_message) {
           LegalMessageLine::Parse(
               *google_legal_message,
@@ -170,9 +168,8 @@ void UploadCardRequest::ParseResponse(const base::Value& response) {
               /*escape_apostrophes=*/true);
         }
 
-        const base::Value* external_legal_message =
-            virtual_card_enrollment_data->FindKeyOfType(
-                "external_legal_message", base::Value::Type::DICTIONARY);
+        const base::Value::Dict* external_legal_message =
+            virtual_card_enrollment_data->FindDict("external_legal_message");
         if (external_legal_message) {
           LegalMessageLine::Parse(
               *external_legal_message,
@@ -181,7 +178,7 @@ void UploadCardRequest::ParseResponse(const base::Value& response) {
         }
 
         const auto* context_token =
-            virtual_card_enrollment_data->FindStringKey("context_token");
+            virtual_card_enrollment_data->FindString("context_token");
         get_details_for_enrollment_response_details.vcn_context_token =
             context_token ? *context_token : std::string();
 

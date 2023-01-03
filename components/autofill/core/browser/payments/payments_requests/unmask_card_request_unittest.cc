@@ -137,15 +137,14 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
         "\"cvc_challenge_option\":{ \"challenge_id\": \"fake_challenge_id_4\", "
         "\"cvc_length\": 4, \"cvc_position\": \"CVC_POSITION_FRONT\"}}]}");
     ASSERT_TRUE(response.has_value());
-    GetRequest()->ParseResponse(response.value());
+    GetRequest()->ParseResponse(response->GetDict());
 
     const PaymentsClient::UnmaskResponseDetails& response_details =
         GetParsedResponse();
     EXPECT_EQ("fake_context_token", response_details.context_token);
     // Verify the FIDO request challenge is correctly parsed.
-    EXPECT_EQ(
-        "fake_fido_challenge",
-        *response_details.fido_request_options->FindStringKey("challenge"));
+    EXPECT_EQ("fake_fido_challenge",
+              *response_details.fido_request_options->FindString("challenge"));
     // Verify the three challenge options are two sms challenge options and one
     // cvc challenge option, and fields can be correctly parsed.
     ASSERT_EQ(enable_cvc_challenge_option ? 4u : 2u,
@@ -196,7 +195,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest, IsRetryableFailure) {
     absl::optional<base::Value> response = base::JSONReader::Read(
         "{\"flow_status\": \"FLOW_STATUS_INCORRECT_ACCOUNT_SECURITY_CODE\"}");
     ASSERT_TRUE(response);
-    GetRequest()->ParseResponse(*response);
+    GetRequest()->ParseResponse(response->GetDict());
     EXPECT_TRUE(GetRequest()->IsRetryableFailure(""));
 
     // The next several tests ensure that `IsRetryableFailure()` returns false
@@ -208,7 +207,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest, IsRetryableFailure) {
         "\"\", \"user_message_description\": "
         "\"\"}}");
     ASSERT_TRUE(response);
-    GetRequest()->ParseResponse(*response);
+    GetRequest()->ParseResponse(response->GetDict());
     EXPECT_FALSE(GetRequest()->IsRetryableFailure(""));
 
     response = base::JSONReader::Read(
@@ -218,12 +217,12 @@ TEST_P(VirtualCardUnmaskCardRequestTest, IsRetryableFailure) {
         "\"\", \"user_message_description\": "
         "\"\"}}");
     ASSERT_TRUE(response);
-    GetRequest()->ParseResponse(*response);
+    GetRequest()->ParseResponse(response->GetDict());
     EXPECT_FALSE(GetRequest()->IsRetryableFailure(""));
 
     response = base::JSONReader::Read("{ \"pan\": \"1234\" }");
     ASSERT_TRUE(response);
-    GetRequest()->ParseResponse(*response);
+    GetRequest()->ParseResponse(response->GetDict());
     EXPECT_FALSE(GetRequest()->IsRetryableFailure(""));
   }
 }

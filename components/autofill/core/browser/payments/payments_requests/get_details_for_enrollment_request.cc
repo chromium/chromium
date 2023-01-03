@@ -100,24 +100,24 @@ std::string GetDetailsForEnrollmentRequest::GetRequestContent() {
 }
 
 void GetDetailsForEnrollmentRequest::ParseResponse(
-    const base::Value& response) {
-  const base::Value* google_legal_message = response.FindKeyOfType(
-      "google_legal_message", base::Value::Type::DICTIONARY);
+    const base::Value::Dict& response) {
+  const base::Value::Dict* google_legal_message =
+      response.FindDict("google_legal_message");
   if (google_legal_message) {
     LegalMessageLine::Parse(*google_legal_message,
                             &response_details_.google_legal_message,
                             /*escape_apostrophes=*/true);
   }
 
-  const base::Value* external_legal_message = response.FindKeyOfType(
-      "external_legal_message", base::Value::Type::DICTIONARY);
+  const base::Value::Dict* external_legal_message =
+      response.FindDict("external_legal_message");
   if (external_legal_message) {
     LegalMessageLine::Parse(*external_legal_message,
                             &response_details_.issuer_legal_message,
                             /*escape_apostrophes=*/true);
   }
 
-  const auto* context_token = response.FindStringKey("context_token");
+  const auto* context_token = response.FindString("context_token");
   response_details_.vcn_context_token =
       context_token ? *context_token : std::string();
 }

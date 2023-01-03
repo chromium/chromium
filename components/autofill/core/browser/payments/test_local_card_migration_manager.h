@@ -69,7 +69,7 @@ class TestLocalCardMigrationManager : public LocalCardMigrationManager {
       bool is_from_settings_page,
       AutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
-      std::unique_ptr<base::Value> legal_message,
+      std::unique_ptr<base::Value::Dict> legal_message,
       std::vector<std::pair<int, int>> supported_bin_ranges) override;
 
   bool local_card_migration_was_triggered_ = false;

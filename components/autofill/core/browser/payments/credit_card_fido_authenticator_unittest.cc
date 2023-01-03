@@ -156,10 +156,10 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
     return masked_server_card;
   }
 
-  base::Value GetTestRequestOptions(std::string challenge,
-                                    std::string relying_party_id,
-                                    std::string credential_id) {
-    base::Value request_options = base::Value(base::Value::Type::DICTIONARY);
+  base::Value::Dict GetTestRequestOptions(std::string challenge,
+                                          std::string relying_party_id,
+                                          std::string credential_id) {
+    base::Value::Dict request_options;
 
     // Building the following JSON structure--
     // request_options = {
@@ -170,27 +170,23 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
     //       "credential_id": credential_id,
     //       "authenticator_transport_support": ["INTERNAL"]
     // }]}
-    request_options.SetKey("challenge", base::Value(challenge));
-    request_options.SetKey("relying_party_id", base::Value(relying_party_id));
+    request_options.Set("challenge", base::Value(challenge));
+    request_options.Set("relying_party_id", base::Value(relying_party_id));
 
-    base::Value key_info(base::Value::Type::DICTIONARY);
-    key_info.SetKey("credential_id", base::Value(credential_id));
-    key_info.SetKey("authenticator_transport_support",
-                    base::Value(base::Value::Type::LIST));
-    key_info
-        .FindKeyOfType("authenticator_transport_support",
-                       base::Value::Type::LIST)
-        ->Append("INTERNAL");
+    base::Value::Dict key_info;
+    key_info.Set("credential_id", base::Value(credential_id));
+    key_info.Set("authenticator_transport_support",
+                 base::Value(base::Value::Type::LIST));
+    key_info.FindList("authenticator_transport_support")->Append("INTERNAL");
 
-    request_options.SetKey("key_info", base::Value(base::Value::Type::LIST));
-    request_options.FindKeyOfType("key_info", base::Value::Type::LIST)
-        ->Append(std::move(key_info));
+    request_options.Set("key_info", base::Value(base::Value::Type::LIST));
+    request_options.FindList("key_info")->Append(std::move(key_info));
     return request_options;
   }
 
-  base::Value GetTestCreationOptions(std::string challenge,
-                                     std::string relying_party_id) {
-    base::Value creation_options = base::Value(base::Value::Type::DICTIONARY);
+  base::Value::Dict GetTestCreationOptions(std::string challenge,
+                                           std::string relying_party_id) {
+    base::Value::Dict creation_options;
 
     // Building the following JSON structure--
     // request_options = {
@@ -198,8 +194,8 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
     //   "relying_party_id": relying_party_id,
     // }]}
     if (!challenge.empty())
-      creation_options.SetKey("challenge", base::Value(challenge));
-    creation_options.SetKey("relying_party_id", base::Value(relying_party_id));
+      creation_options.Set("challenge", base::Value(challenge));
+    creation_options.Set("relying_party_id", base::Value(relying_party_id));
     return creation_options;
   }
 
@@ -345,7 +341,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, IsUserVerifiable_False) {
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest, ParseRequestOptions) {
-  base::Value request_options_json = GetTestRequestOptions(
+  base::Value::Dict request_options_json = GetTestRequestOptions(
       kTestChallenge, kTestRelyingPartyId, kTestCredentialId);
 
   blink::mojom::PublicKeyCredentialRequestOptionsPtr request_options_ptr =
@@ -363,17 +359,16 @@ TEST_F(CreditCardFIDOAuthenticatorTest, ParseAssertionResponse) {
   assertion_response_ptr->info->raw_id = Base64ToBytes(kTestCredentialId);
   assertion_response_ptr->signature = Base64ToBytes(kTestSignature);
 
-  base::Value assertion_response_json =
+  base::Value::Dict assertion_response_json =
       fido_authenticator_->ParseAssertionResponse(
           std::move(assertion_response_ptr));
   EXPECT_EQ(kTestCredentialId,
-            *assertion_response_json.FindStringKey("credential_id"));
-  EXPECT_EQ(kTestSignature,
-            *assertion_response_json.FindStringKey("signature"));
+            *assertion_response_json.FindString("credential_id"));
+  EXPECT_EQ(kTestSignature, *assertion_response_json.FindString("signature"));
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest, ParseCreationOptions) {
-  base::Value creation_options_json =
+  base::Value::Dict creation_options_json =
       GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId);
 
   blink::mojom::PublicKeyCredentialCreationOptionsPtr creation_options_ptr =
@@ -398,10 +393,10 @@ TEST_F(CreditCardFIDOAuthenticatorTest, ParseAttestationResponse) {
   attestation_response_ptr->info = blink::mojom::CommonCredentialInfo::New();
   attestation_response_ptr->attestation_object = Base64ToBytes(kTestSignature);
 
-  base::Value attestation_response_json =
+  base::Value::Dict attestation_response_json =
       fido_authenticator_->ParseAttestationResponse(
           std::move(attestation_response_ptr));
-  EXPECT_EQ(kTestSignature, *attestation_response_json.FindStringPath(
+  EXPECT_EQ(kTestSignature, *attestation_response_json.FindStringByDottedPath(
                                 "fido_attestation_info.attestation_object"));
 }
 
@@ -409,7 +404,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, AuthenticateCard_BadRequestOptions) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   fido_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
-                                    base::Value(base::Value::Type::DICTIONARY));
+                                    base::Value::Dict());
   EXPECT_FALSE((*requester_->did_succeed()));
 }
 

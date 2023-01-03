@@ -75,10 +75,9 @@ void FullCardRequest::GetFullCardViaFIDO(
     const CreditCard& card,
     AutofillClient::UnmaskCardReason reason,
     base::WeakPtr<ResultDelegate> result_delegate,
-    base::Value fido_assertion_info,
+    base::Value::Dict fido_assertion_info,
     absl::optional<GURL> last_committed_primary_main_frame_origin,
     absl::optional<std::string> context_token) {
-  DCHECK(fido_assertion_info.is_dict());
   GetFullCardImpl(
       card, reason, result_delegate, nullptr, std::move(fido_assertion_info),
       std::move(last_committed_primary_main_frame_origin),
@@ -90,7 +89,7 @@ void FullCardRequest::GetFullCardImpl(
     AutofillClient::UnmaskCardReason reason,
     base::WeakPtr<ResultDelegate> result_delegate,
     base::WeakPtr<UIDelegate> ui_delegate,
-    absl::optional<base::Value> fido_assertion_info,
+    absl::optional<base::Value::Dict> fido_assertion_info,
     absl::optional<GURL> last_committed_primary_main_frame_origin,
     absl::optional<std::string> context_token,
     absl::optional<CardUnmaskChallengeOption> selected_challenge_option) {

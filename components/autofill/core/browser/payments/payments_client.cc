@@ -282,7 +282,7 @@ void PaymentsClient::GetUploadDetails(
     const std::string& app_locale,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const std::u16string&,
-                            std::unique_ptr<base::Value>,
+                            std::unique_ptr<base::Value::Dict>,
                             std::vector<std::pair<int, int>>)> callback,
     const int billable_service_number,
     const int64_t billing_customer_number,
@@ -433,7 +433,7 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
         if (found_error_reason)
           error_api_error_reason = found_error_reason->GetString();
 
-        request_->ParseResponse(*message_value);
+        request_->ParseResponse(message_value->GetDict());
       }
 
       if (base::EqualsCaseInsensitiveASCII(error_api_error_reason,

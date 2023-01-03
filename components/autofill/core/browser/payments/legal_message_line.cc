@@ -77,16 +77,14 @@ LegalMessageLine::LegalMessageLine(const LegalMessageLine& other) = default;
 LegalMessageLine::~LegalMessageLine() {}
 
 // static
-bool LegalMessageLine::Parse(const base::Value& legal_message,
+bool LegalMessageLine::Parse(const base::Value::Dict& legal_message,
                              LegalMessageLines* out,
                              bool escape_apostrophes) {
-  DCHECK(legal_message.is_dict());
-  const base::Value* lines_list =
-      legal_message.FindKeyOfType("line", base::Value::Type::LIST);
+  const base::Value::List* lines_list = legal_message.FindList("line");
   if (lines_list) {
     LegalMessageLines lines;
-    lines.reserve(lines_list->GetList().size());
-    for (const base::Value& single_line : lines_list->GetList()) {
+    lines.reserve(lines_list->size());
+    for (const base::Value& single_line : *lines_list) {
       lines.emplace_back();
       if (!single_line.is_dict() ||
           !lines.back().ParseLine(single_line, escape_apostrophes))

@@ -23,7 +23,7 @@ TestCreditCardFIDOAuthenticator::~TestCreditCardFIDOAuthenticator() = default;
 void TestCreditCardFIDOAuthenticator::Authenticate(
     const CreditCard* card,
     base::WeakPtr<Requester> requester,
-    base::Value request_options,
+    base::Value::Dict request_options,
     absl::optional<std::string> context_token) {
   authenticate_invoked_ = true;
   card_ = *card;
