@@ -116,9 +116,6 @@ crbug.com/887140 [ Linux ] virtual/hdr/color-jpeg-with-color-profile.html [ Skip
 crbug.com/887140 [ Linux ] virtual/hdr/color-profile-video.html [ Skip ]
 crbug.com/887140 [ Linux ] virtual/hdr/video-canvas-alpha.html [ Skip ]
 
-# Sheriff 2022-10-06, use-of-uninitialized-value
-crbug.com/1372356 [ Linux ] virtual/oopr-canvas2d/fast/canvas/* [ Skip ]
-
 # Sheriff 2022-10-25
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html [ Timeout ]
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.sharedworker.html [ Timeout ]
