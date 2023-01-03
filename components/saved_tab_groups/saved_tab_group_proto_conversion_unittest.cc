@@ -95,8 +95,8 @@ TEST_F(SavedTabGroupConversionTest, TabToSpecificRetainsData) {
   // Create a tab.
   SavedTabGroupTab tab(GURL("chrome://hidden_link"), u"Hidden Title",
                        base::GUID::GenerateRandomV4(), nullptr,
-                       base::GUID::GenerateRandomV4(), absl::nullopt, time_,
-                       time_);
+                       base::GUID::GenerateRandomV4(), absl::nullopt,
+                       absl::nullopt, time_, time_);
 
   // Create a STGSpecific using `tab`.
   std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specific = tab.ToSpecifics();

@@ -88,8 +88,9 @@ void SavedTabGroupModel::Add(SavedTabGroup saved_group) {
 
   InsertGroupImpl(std::move(saved_group));
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupAddedLocally(Get(group_guid)->saved_guid());
+  }
 }
 
 void SavedTabGroupModel::Remove(const tab_groups::TabGroupId tab_group_id) {
@@ -99,9 +100,10 @@ void SavedTabGroupModel::Remove(const tab_groups::TabGroupId tab_group_id) {
   const int index = GetIndexOf(tab_group_id).value();
   base::GUID removed_guid = Get(tab_group_id)->saved_guid();
   std::unique_ptr<SavedTabGroup> removed_group = RemoveImpl(index);
-  UpdatePositionsImpl();
-  for (auto& observer : observers_)
+  UpdateGroupPositionsImpl();
+  for (auto& observer : observers_) {
     observer.SavedTabGroupRemovedLocally(removed_group.get());
+  }
 }
 
 void SavedTabGroupModel::Remove(const base::GUID& id) {
@@ -111,9 +113,10 @@ void SavedTabGroupModel::Remove(const base::GUID& id) {
   const int index = GetIndexOf(id).value();
   base::GUID removed_guid = Get(id)->saved_guid();
   std::unique_ptr<SavedTabGroup> removed_group = RemoveImpl(index);
-  UpdatePositionsImpl();
-  for (auto& observer : observers_)
+  UpdateGroupPositionsImpl();
+  for (auto& observer : observers_) {
     observer.SavedTabGroupRemovedLocally(removed_group.get());
+  }
 }
 
 void SavedTabGroupModel::UpdateVisualData(
@@ -125,8 +128,9 @@ void SavedTabGroupModel::UpdateVisualData(
   const absl::optional<int> index = GetIndexOf(tab_group_id);
   UpdateVisualDataImpl(index.value(), visual_data);
   base::GUID updated_guid = Get(tab_group_id)->saved_guid();
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(updated_guid);
+  }
 }
 
 void SavedTabGroupModel::UpdateVisualData(
@@ -137,8 +141,9 @@ void SavedTabGroupModel::UpdateVisualData(
 
   const absl::optional<int> index = GetIndexOf(id);
   UpdateVisualDataImpl(index.value(), visual_data);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(id);
+  }
 }
 
 void SavedTabGroupModel::AddedFromSync(SavedTabGroup saved_group) {
@@ -148,8 +153,9 @@ void SavedTabGroupModel::AddedFromSync(SavedTabGroup saved_group) {
 
   InsertGroupImpl(std::move(saved_group));
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupAddedFromSync(Get(group_guid)->saved_guid());
+  }
 }
 
 void SavedTabGroupModel::RemovedFromSync(
@@ -160,8 +166,9 @@ void SavedTabGroupModel::RemovedFromSync(
   const absl::optional<int> index = GetIndexOf(tab_group_id);
   base::GUID removed_guid = Get(tab_group_id)->saved_guid();
   std::unique_ptr<SavedTabGroup> removed_group = RemoveImpl(index.value());
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupRemovedFromSync(removed_group.get());
+  }
 }
 
 void SavedTabGroupModel::RemovedFromSync(const base::GUID& id) {
@@ -171,8 +178,9 @@ void SavedTabGroupModel::RemovedFromSync(const base::GUID& id) {
   const absl::optional<int> index = GetIndexOf(id);
   base::GUID removed_guid = Get(id)->saved_guid();
   std::unique_ptr<SavedTabGroup> removed_group = RemoveImpl(index.value());
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupRemovedFromSync(removed_group.get());
+  }
 }
 
 void SavedTabGroupModel::UpdatedVisualDataFromSync(
@@ -184,8 +192,9 @@ void SavedTabGroupModel::UpdatedVisualDataFromSync(
   const absl::optional<int> index = GetIndexOf(tab_group_id);
   UpdateVisualDataImpl(index.value(), visual_data);
   base::GUID updated_guid = Get(tab_group_id)->saved_guid();
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedFromSync(updated_guid);
+  }
 }
 
 void SavedTabGroupModel::UpdatedVisualDataFromSync(
@@ -196,8 +205,9 @@ void SavedTabGroupModel::UpdatedVisualDataFromSync(
 
   const absl::optional<int> index = GetIndexOf(id);
   UpdateVisualDataImpl(index.value(), visual_data);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedFromSync(id);
+  }
 }
 
 SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
@@ -222,16 +232,23 @@ SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
 
 void SavedTabGroupModel::AddTabToGroup(const base::GUID& group_id,
                                        SavedTabGroupTab tab,
-                                       int index) {
+                                       bool update_tab_positions) {
   if (!Contains(group_id))
     return;
 
   const base::GUID tab_id = tab.saved_tab_guid();
   absl::optional<int> group_index = GetIndexOf(group_id);
-  saved_tab_groups_[group_index.value()].AddTab(index, tab);
+  saved_tab_groups_[group_index.value()].AddTab(tab, update_tab_positions);
 
-  for (auto& observer : observers_)
-    observer.SavedTabGroupUpdatedLocally(group_id, tab_id);
+  if (!update_tab_positions) {
+    for (auto& observer : observers_) {
+      observer.SavedTabGroupUpdatedFromSync(group_id);
+    }
+  } else {
+    for (auto& observer : observers_) {
+      observer.SavedTabGroupUpdatedLocally(group_id, tab_id);
+    }
+  }
 }
 
 void SavedTabGroupModel::UpdateTabInGroup(const base::GUID& group_id,
@@ -246,7 +263,8 @@ void SavedTabGroupModel::UpdateTabInGroup(const base::GUID& group_id,
 }
 
 void SavedTabGroupModel::RemoveTabFromGroup(const base::GUID& group_id,
-                                            const base::GUID& tab_id) {
+                                            const base::GUID& tab_id,
+                                            bool update_tab_positions) {
   if (!Contains(group_id))
     return;
 
@@ -264,11 +282,20 @@ void SavedTabGroupModel::RemoveTabFromGroup(const base::GUID& group_id,
   }
 
   // Copy `tab_id` to prevent uaf when ungrouping a saved tab: crbug/1401965.
-  base::GUID copy_tab_id = tab_id;
-  saved_tab_groups_[index.value()].RemoveTab(tab_id);
+  const base::GUID copy_tab_id = tab_id;
+  saved_tab_groups_[index.value()].RemoveTab(tab_id, update_tab_positions);
 
-  for (auto& observer : observers_)
-    observer.SavedTabGroupUpdatedLocally(group_id, copy_tab_id);
+  // TODO(dljames): Update to use SavedTabGroupRemoveLocally and update the API
+  // to pass a group_id and an optional tab_id.
+  if (!update_tab_positions) {
+    for (auto& observer : observers_) {
+      observer.SavedTabGroupUpdatedFromSync(group_id);
+    }
+  } else {
+    for (auto& observer : observers_) {
+      observer.SavedTabGroupUpdatedLocally(group_id, copy_tab_id);
+    }
+  }
 }
 
 void SavedTabGroupModel::ReplaceTabInGroupAt(const base::GUID& group_id,
@@ -277,10 +304,10 @@ void SavedTabGroupModel::ReplaceTabInGroupAt(const base::GUID& group_id,
   if (!Contains(group_id))
     return;
 
+  // Copy `tab_id` to prevent uaf when ungrouping a saved tab: crbug/1401965.
+  const base::GUID copy_tab_id = tab_id;
   const base::GUID guid = new_tab.saved_tab_guid();
   absl::optional<int> index = GetIndexOf(group_id);
-  // Copy `tab_id` to prevent uaf when ungrouping a saved tab: crbug/1401965.
-  base::GUID copy_tab_id = tab_id;
   saved_tab_groups_[index.value()].ReplaceTabAt(tab_id, new_tab);
 
   for (auto& observer : observers_) {
@@ -295,13 +322,14 @@ void SavedTabGroupModel::MoveTabInGroupTo(const base::GUID& group_id,
   if (!Contains(group_id))
     return;
 
-  absl::optional<int> index = GetIndexOf(group_id);
   // Copy `tab_id` to prevent uaf when ungrouping a saved tab: crbug/1401965.
-  base::GUID copy_tab_id = tab_id;
+  const base::GUID copy_tab_id = tab_id;
+  absl::optional<int> index = GetIndexOf(group_id);
   saved_tab_groups_[index.value()].MoveTab(tab_id, new_index);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(group_id, copy_tab_id);
+  }
 }
 
 std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeGroup(
@@ -318,8 +346,9 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeGroup(
     Reorder(group_id, preferred_index);
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedFromSync(group_id);
+  }
 
   return Get(group_id)->ToSpecifics();
 }
@@ -337,8 +366,9 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeTab(
 
   tab->MergeTab(std::move(sync_specific));
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedFromSync(group_id, tab->saved_group_guid());
+  }
 
   return tab->ToSpecifics();
 }
@@ -357,13 +387,14 @@ void SavedTabGroupModel::Reorder(const base::GUID& id, int new_index) {
   saved_tab_groups_.emplace(saved_tab_groups_.begin() + new_index,
                             std::move(group));
 
-  UpdatePositionsImpl();
+  UpdateGroupPositionsImpl();
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupReorderedLocally();
+  }
 }
 
-void SavedTabGroupModel::UpdatePositionsImpl() {
+void SavedTabGroupModel::UpdateGroupPositionsImpl() {
   for (size_t i = 0; i < saved_tab_groups_.size(); ++i)
     saved_tab_groups_[i].SetPosition(i);
 }
@@ -426,7 +457,7 @@ SavedTabGroupModel::LoadStoredEntries(
       tabs.emplace_back(SavedTabGroupTab::FromSpecifics(proto));
   }
 
-  UpdatePositionsImpl();
+  UpdateGroupPositionsImpl();
 
   for (const SavedTabGroupTab& tab : tabs) {
     absl::optional<int> index = GetIndexOf(tab.saved_group_guid());
@@ -434,7 +465,7 @@ SavedTabGroupModel::LoadStoredEntries(
       tabs_missing_groups.emplace_back(std::move(*tab.ToSpecifics()));
     } else {
       base::GUID group_id = tab.saved_group_guid();
-      AddTabToGroup(group_id, std::move(tab), 0);
+      AddTabToGroup(group_id, std::move(tab), /*update_tab_positions=*/false);
     }
   }
 
@@ -450,8 +481,9 @@ void SavedTabGroupModel::OnGroupClosedInTabStrip(
   SavedTabGroup& saved_group = saved_tab_groups_[index.value()];
   saved_group.SetLocalGroupId(absl::nullopt);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(saved_group.saved_guid());
+  }
 }
 
 void SavedTabGroupModel::OnGroupOpenedInTabStrip(
@@ -464,8 +496,9 @@ void SavedTabGroupModel::OnGroupOpenedInTabStrip(
   SavedTabGroup& saved_group = saved_tab_groups_[index.value()];
   saved_group.SetLocalGroupId(tab_group_id);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(saved_group.saved_guid());
+  }
 }
 
 std::unique_ptr<SavedTabGroup> SavedTabGroupModel::RemoveImpl(int index) {

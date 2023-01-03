@@ -23,12 +23,16 @@ class SavedTabGroup;
 // A SavedTabGroupTab stores the url, title, and favicon of a tab.
 class SavedTabGroupTab {
  public:
+  // Used to denote groups that have not been given a position.
+  static constexpr int kUnsetPosition = -1;
+
   SavedTabGroupTab(const GURL& url,
                    const std::u16string& title,
                    const base::GUID& group_guid,
                    SavedTabGroup* group = nullptr,
                    absl::optional<base::GUID> saved_tab_guid = absl::nullopt,
                    absl::optional<base::Token> local_tab_id = absl::nullopt,
+                   absl::optional<int> position = absl::nullopt,
                    absl::optional<base::Time>
                        creation_time_windows_epoch_micros = absl::nullopt,
                    absl::optional<base::Time> update_time_windows_epoch_micros =
@@ -43,6 +47,7 @@ class SavedTabGroupTab {
   const absl::optional<base::Token> local_tab_id() const {
     return local_tab_id_;
   }
+  int position() const { return position_; }
   SavedTabGroup* saved_tab_group() const { return saved_tab_group_; }
   const GURL& url() const { return url_; }
   const std::u16string& title() const { return title_; }
@@ -80,6 +85,11 @@ class SavedTabGroupTab {
     SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
+  SavedTabGroupTab& SetPosition(int position) {
+    position_ = position;
+    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+    return *this;
+  }
   SavedTabGroupTab& SetUpdateTimeWindowsEpochMicros(
       base::Time update_time_windows_epoch_micros) {
     update_time_windows_epoch_micros_ = update_time_windows_epoch_micros;
@@ -113,6 +123,11 @@ class SavedTabGroupTab {
 
   // The ID used to represent the tab in reference to the web_contents locally.
   absl::optional<base::Token> local_tab_id_;
+
+  // The current position of the tab in relation to all other tabs in the group.
+  // A value of kUnsetPosition means that the group was not assigned a position
+  // and will be assigned one when it is added into its saved group.
+  int position_;
 
   // The Group which owns this tab, this can be null if sync hasn't sent the
   // group over yet.
