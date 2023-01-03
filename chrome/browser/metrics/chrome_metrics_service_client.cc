@@ -962,6 +962,11 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<PrivacyBudgetMetricsProvider>(
           identifiability_study_state_.get()));
+
+  ukm_service_->RegisterMetricsProvider(
+      std::make_unique<metrics::ComponentMetricsProvider>(
+          std::make_unique<ChromeComponentMetricsProviderDelegate>(
+              g_browser_process->component_updater())));
 }
 
 void ChromeMetricsServiceClient::CollectFinalHistograms() {

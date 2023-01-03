@@ -157,11 +157,11 @@ TEST_F(ChromeMetricsServiceClientTest, FilterFiles) {
 
 TEST_F(ChromeMetricsServiceClientTest, TestRegisterUKMProviders) {
   // Test that UKM service has initialized its metrics providers. Currently
-  // there are 7 providers for all platform except ChromeOS.
+  // there are 8 providers for all platform except ChromeOS.
   // NetworkMetricsProvider, GPUMetricsProvider, CPUMetricsProvider
   // ScreenInfoMetricsProvider, FormFactorMetricsProvider, FieldTrialsProvider,
-  // and PrivacyBudgetMetricsProvider.
-  size_t expected_providers = 7;
+  // PrivacyBudgetMetricsProvider, and ComponentMetricsProvider.
+  size_t expected_providers = 8;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOSMetricsProvider
   expected_providers++;
