@@ -69,37 +69,28 @@ SystemInfoProvider::~SystemInfoProvider() {
 void SystemInfoProvider::GetSystemInfo(
     base::OnceCallback<void(const std::string&)> callback) {
   PA_LOG(INFO) << "echeapi SystemInfoProvider GetSystemInfo";
-  base::DictionaryValue json_dictionary;
-  json_dictionary.SetStringKey(kJsonDeviceNameKey,
-                               system_info_->GetDeviceName());
-  json_dictionary.SetStringKey(kJsonBoardNameKey, system_info_->GetBoardName());
-  json_dictionary.SetBoolKey(kJsonTabletModeKey,
-                             TabletMode::Get()->InTabletMode());
-  json_dictionary.SetStringKey(kJsonGaiaIdKey, system_info_->GetGaiaId());
-  json_dictionary.SetStringKey(kJsonDeviceTypeKey,
-                               system_info_->GetDeviceType());
+  base::Value::Dict json_dictionary;
+  json_dictionary.Set(kJsonDeviceNameKey, system_info_->GetDeviceName());
+  json_dictionary.Set(kJsonBoardNameKey, system_info_->GetBoardName());
+  json_dictionary.Set(kJsonTabletModeKey, TabletMode::Get()->InTabletMode());
+  json_dictionary.Set(kJsonGaiaIdKey, system_info_->GetGaiaId());
+  json_dictionary.Set(kJsonDeviceTypeKey, system_info_->GetDeviceType());
   auto found_type = CONNECTION_STATE_TYPE.find(wifi_connection_state_);
   std::string connecton_state_string =
       found_type == CONNECTION_STATE_TYPE.end() ? "" : found_type->second;
-  json_dictionary.SetStringKey(kJsonWifiConnectionStateKey,
-                               connecton_state_string);
-  json_dictionary.SetBoolKey(
-      kJsonDebugModeKey,
-      base::FeatureList::IsEnabled(features::kEcheSWADebugMode));
-
-  json_dictionary.SetBoolKey(
+  json_dictionary.Set(kJsonWifiConnectionStateKey, connecton_state_string);
+  json_dictionary.Set(kJsonDebugModeKey, base::FeatureList::IsEnabled(
+                                             features::kEcheSWADebugMode));
+  json_dictionary.Set(
       kJsonMeasureLatencyKey,
       base::FeatureList::IsEnabled(features::kEcheSWAMeasureLatency));
-
-  json_dictionary.SetBoolKey(
+  json_dictionary.Set(
       kJsonSendStartSignalingKey,
       base::FeatureList::IsEnabled(features::kEcheSWASendStartSignaling));
-
-  json_dictionary.SetBoolKey(
+  json_dictionary.Set(
       kJsonDisableStunServerKey,
       base::FeatureList::IsEnabled(features::kEcheSWADisableStunServer));
-
-  json_dictionary.SetBoolKey(
+  json_dictionary.Set(
       kJsonCheckAndroidNetworkInfoKey,
       base::FeatureList::IsEnabled(features::kEcheSWACheckAndroidNetworkInfo));
 
