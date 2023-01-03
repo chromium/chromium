@@ -931,11 +931,17 @@
   if (self.feedHeaderViewController) {
     [self cleanUpCollectionViewConstraints];
 
+    NSLayoutConstraint* headerWidthConstraint =
+        [self.feedHeaderViewController.view.widthAnchor
+            constraintEqualToAnchor:self.collectionView.widthAnchor];
+    headerWidthConstraint.priority = UILayoutPriorityDefaultHigh;
+
     [NSLayoutConstraint activateConstraints:@[
-      [self.feedHeaderViewController.view.leftAnchor
-          constraintEqualToAnchor:self.collectionView.leftAnchor],
+      [self.feedHeaderViewController.view.centerXAnchor
+          constraintEqualToAnchor:self.collectionView.centerXAnchor],
       [self.feedHeaderViewController.view.widthAnchor
-          constraintEqualToAnchor:self.collectionView.widthAnchor],
+          constraintLessThanOrEqualToConstant:kDiscoverFeedContentWidth],
+      headerWidthConstraint,
       [self.collectionView.centerXAnchor
           constraintEqualToAnchor:[self containerView].centerXAnchor],
       [self.collectionView.widthAnchor
