@@ -1,0 +1,17 @@
+<style include="cr-hidden-style">
+  :host {
+    display: block;
+  }
+
+  #label {
+    color: var(--cr-primary-text-color);
+  }
+
+  #labelDescription {
+    color: var(--cr-secondary-text-color)
+  }
+</style>
+<div id="label">[[label]]</div>
+<div id="labelDescription" hidden="[[!labelDescription]]">
+  [[labelDescription]]
+</div>

@@ -18,6 +18,7 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = [
+    "button_label_test.ts",
     "cards_test.ts",
     "shortcuts_test.ts",
     "test_support.ts",

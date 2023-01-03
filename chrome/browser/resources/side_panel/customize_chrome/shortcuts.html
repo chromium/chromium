@@ -13,15 +13,12 @@
   #options {
     align-items: center;
     display: flex;
+    line-height: 20px;
+    margin: 0 16px;
   }
 
   iron-collapse {
     --iron-collapse-transition-duration: 300ms;
-  }
-
-  #options {
-    line-height: 20px;
-    margin: 0 16px;
   }
 
   cr-radio-group {
@@ -35,17 +32,9 @@
     float: right;
   }
 
-  .option-container {
+  customize-chrome-button-label {
     margin-bottom: 16px;
     margin-inline-start: 24px;
-  }
-
-  .option-label {
-    color: var(--cr-primary-text-color);
-  }
-
-  .option-description {
-    color: var(--cr-secondary-text-color);
   }
 
   hr {
@@ -69,16 +58,14 @@
       on-selected-changed="onShortcutsRadioSelectionChanged_">
       <cr-radio-button id="customLinksButton" name="customLinksOption">
       </cr-radio-button>
-      <div class="option-container">
-        <div class="option-label">$i18n{myShortcuts}</div>
-        <div class="option-description">$i18n{shortcutsCurated}</div>
-      </div>
+      <customize-chrome-button-label label="$i18n{myShortcuts}"
+          label-description="$i18n{shortcutsCurated}">
+      </customize-chrome-button-label>
       <cr-radio-button id="mostVisitedButton" name="mostVisitedOption">
       </cr-radio-button>
-      <div class="option-container">
-        <div>$i18n{mostVisited}</div>
-        <div class="option-description">$i18n{shortcutsSuggested}</div>
-      </div>
+      <customize-chrome-button-label label="$i18n{mostVisited}"
+          label-description="$i18n{shortcutsSuggested}">
+      </customize-chrome-button-label>
     </cr-radio-group>
   </iron-collapse>
 </div>
