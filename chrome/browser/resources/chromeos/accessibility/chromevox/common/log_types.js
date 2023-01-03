@@ -9,8 +9,11 @@
 import {TreeDumper} from './tree_dumper.js';
 import {QueueMode} from './tts_types.js';
 
+const AutomationEvent = chrome.automation.AutomationEvent;
+const EventType = chrome.automation.EventType;
+
 /**
- * List of all types of logs supported.
+ * Supported log types.
  * Note that filter type checkboxes are shown in this order at the log page.
  * @enum {string}
  */
@@ -36,14 +39,10 @@ export let SerializableLog;
 
 export class BaseLog {
   constructor(logType) {
-    /**
-     * @type {!LogType}
-     */
+    /** @public {!LogType} */
     this.logType = logType;
 
-    /**
-     * @type {!Date}
-     */
+    /** @public {!Date} */
     this.date = new Date();
   }
 
@@ -59,36 +58,21 @@ export class BaseLog {
   }
 }
 
-
 export class EventLog extends BaseLog {
-  /**
-   * @param {!chrome.automation.AutomationEvent} event
-   */
+  /** @param {!AutomationEvent} event */
   constructor(event) {
     super(LogType.EVENT);
 
-    /**
-     * @type {chrome.automation.EventType}
-     * @private
-     */
+    /** @private {EventType} */
     this.type_ = event.type;
 
-    /**
-     * @type {string | undefined}
-     * @private
-     */
+    /** @private {string|undefined} */
     this.targetName_ = event.target.name;
 
-    /**
-     * @type {string | undefined}
-     * @private
-     */
+    /** @private {string|undefined} */
     this.rootName_ = event.target.root.name;
 
-    /**
-     * @type {string | undefined}
-     * @private
-     */
+    /** @private {string|undefined} */
     this.docUrl_ = event.target.docUrl;
   }
 
@@ -99,7 +83,6 @@ export class EventLog extends BaseLog {
   }
 }
 
-
 export class SpeechLog extends BaseLog {
   /**
    * @param {!string} textString
@@ -109,22 +92,13 @@ export class SpeechLog extends BaseLog {
   constructor(textString, queueMode, category) {
     super(LogType.SPEECH);
 
-    /**
-     * @type {string}
-     * @private
-     */
+    /** @private {string} */
     this.textString_ = textString;
 
-    /**
-     * @type {QueueMode}
-     * @private
-     */
+    /** @private {QueueMode} */
     this.queueMode_ = queueMode;
 
-    /**
-     * @type {?string}
-     * @private
-     */
+    /** @private {?string} */
     this.category_ = category;
   }
 
@@ -148,7 +122,6 @@ export class SpeechLog extends BaseLog {
   }
 }
 
-
 export class TextLog extends BaseLog {
   /**
    * @param {string} logStr
@@ -157,10 +130,7 @@ export class TextLog extends BaseLog {
   constructor(logStr, logType) {
     super(logType);
 
-    /**
-     * @type {string}
-     * @private
-     */
+    /** @private {string} */
     this.logStr_ = logStr;
   }
 
@@ -170,23 +140,17 @@ export class TextLog extends BaseLog {
   }
 }
 
-
 export class TreeLog extends BaseLog {
-  /**
-   * @param {!TreeDumper} logTree
-   */
-  constructor(logTree) {
+  /** @param {!TreeDumper} tree */
+  constructor(tree) {
     super(LogType.TREE);
 
-    /**
-     * @type {!TreeDumper}
-     * @private
-     */
-    this.logTree_ = logTree;
+    /** @private {!TreeDumper} */
+    this.tree_ = tree;
   }
 
   /** @override */
   toString() {
-    return this.logTree_.treeToString();
+    return this.tree_.treeToString();
   }
 }
