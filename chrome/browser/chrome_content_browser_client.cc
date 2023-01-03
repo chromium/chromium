@@ -2023,17 +2023,19 @@ bool ChromeContentBrowserClient::DoesSiteRequireDedicatedProcess(
   return false;
 }
 
-bool ChromeContentBrowserClient::DoesWebUISchemeRequireProcessLock(
-    base::StringPiece scheme) {
+bool ChromeContentBrowserClient::DoesWebUIUrlRequireProcessLock(
+    const GURL& url) {
   // Note: This method can be called from multiple threads. It is not safe to
   // assume it runs only on the UI thread.
 
-  // chrome-search: documents commit only in the NTP instant process and are not
-  // locked to chrome-search: origin.  Locking to chrome-search would kill
-  // processes upon legitimate requests for cookies from the search engine's
-  // domain.
-  if (scheme == chrome::kChromeSearchScheme)
+  // We only allow the most visited tiles on third-party NTPs to not require a
+  // process lock. Everything else, including the actual third-party NTP which
+  // embeds those tiles, should be locked.  This allows most visited tiles to
+  // stay in their parent (i.e., third-party NTP's) process.
+  if (url.SchemeIs(chrome::kChromeSearchScheme) &&
+      url.host() == chrome::kChromeSearchMostVisitedHost) {
     return false;
+  }
 
   // All other WebUIs must be locked to origin.
   return true;
@@ -2201,12 +2203,21 @@ void ChromeContentBrowserClient::OverrideNavigationParams(
 
 bool ChromeContentBrowserClient::ShouldStayInParentProcessForNTP(
     const GURL& url,
-    SiteInstance* parent_site_instance) {
-  // While using SiteInstance::GetSiteURL() is unreliable and the wrong thing to
-  // use for making security decisions 99.44% of the time, for detecting the NTP
-  // it is reliable and the correct way. See http://crbug.com/624410.
-  return url.SchemeIs(chrome::kChromeSearchScheme) && parent_site_instance &&
-         search::IsNTPURL(parent_site_instance->GetSiteURL());
+    const GURL& parent_site_url) {
+  // Allow most visited iframes to stay in the parent process but only if that
+  // process is for NTP.
+  //
+  // TODO(alexmos): Consider further tightening this exception to just the
+  // third-party remote NTP in the parent, rather than any NTP.
+  //
+  // TODO(crbug.com/566091): place those iframes into OOPIFs and remove this
+  // exception. Relaxing site isolation like this is a bad idea and should be
+  // avoided.
+  //
+  // TODO(crbug.com/624410): clean up the logic for detecting NTP.
+  return url.SchemeIs(chrome::kChromeSearchScheme) &&
+         url.host() == chrome::kChromeSearchMostVisitedHost &&
+         search::IsNTPURL(parent_site_url);
 }
 
 bool ChromeContentBrowserClient::IsSuitableHost(

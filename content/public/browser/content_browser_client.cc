@@ -171,8 +171,7 @@ bool ContentBrowserClient::ShouldLockProcessToSite(
   return true;
 }
 
-bool ContentBrowserClient::DoesWebUISchemeRequireProcessLock(
-    base::StringPiece scheme) {
+bool ContentBrowserClient::DoesWebUIUrlRequireProcessLock(const GURL& url) {
   return true;
 }
 
@@ -236,7 +235,7 @@ bool ContentBrowserClient::CanCommitURL(RenderProcessHost* process_host,
 
 bool ContentBrowserClient::ShouldStayInParentProcessForNTP(
     const GURL& url,
-    SiteInstance* parent_site_instance) {
+    const GURL& parent_site_url) {
   return false;
 }
 

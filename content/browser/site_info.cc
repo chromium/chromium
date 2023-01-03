@@ -686,8 +686,8 @@ bool SiteInfo::ShouldLockProcessToSite(
   // is NTP, handled via the separate callout to the embedder.
   const auto& webui_schemes = URLDataManagerBackend::GetWebUISchemes();
   if (base::Contains(webui_schemes, site_url_.scheme())) {
-    return GetContentClient()->browser()->DoesWebUISchemeRequireProcessLock(
-        site_url_.scheme());
+    return GetContentClient()->browser()->DoesWebUIUrlRequireProcessLock(
+        site_url_);
   }
 
   // Allow the embedder to prevent process locking so that multiple sites

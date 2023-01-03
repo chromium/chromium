@@ -196,15 +196,29 @@ TEST_F(ChromeContentBrowserClientWindowTest, ShouldStayInParentProcessForNTP) {
       content::SiteInstance::CreateForURL(browser()->profile(),
                                           GURL("chrome-search://remote-ntp"));
   EXPECT_TRUE(client.ShouldStayInParentProcessForNTP(
-      GURL("chrome-search://remote-ntp"), site_instance.get()));
+      GURL("chrome-search://most-visited/title.html"),
+      site_instance->GetSiteURL()));
+
+  // Only the most visited tiles host is allowed to stay in the 3P NTP.
+  EXPECT_FALSE(client.ShouldStayInParentProcessForNTP(
+      GURL("chrome-search://foo/"), site_instance->GetSiteURL()));
+  EXPECT_FALSE(client.ShouldStayInParentProcessForNTP(
+      GURL("chrome://new-tab-page"), site_instance->GetSiteURL()));
 
   site_instance = content::SiteInstance::CreateForURL(
       browser()->profile(), GURL("chrome://new-tab-page"));
+
   // chrome://new-tab-page is an NTP replacing local-ntp and supports OOPIFs.
   // ShouldStayInParentProcessForNTP() should only return true for NTPs hosted
   // under the chrome-search: scheme.
   EXPECT_FALSE(client.ShouldStayInParentProcessForNTP(
-      GURL("chrome://new-tab-page"), site_instance.get()));
+      GURL("chrome://new-tab-page"), site_instance->GetSiteURL()));
+
+  // For now, we also allow chrome-search://most-visited to stay in 1P NTP,
+  // chrome://new-tab-page.  We should consider tightening this to only allow
+  // most-visited tiles to stay in 3P NTP.
+  EXPECT_TRUE(client.ShouldStayInParentProcessForNTP(
+      GURL("chrome-search://most-visited"), site_instance->GetSiteURL()));
 }
 
 TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {

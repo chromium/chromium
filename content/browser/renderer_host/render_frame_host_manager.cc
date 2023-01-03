@@ -2434,7 +2434,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     SiteInstance* parent_site_instance =
         frame_tree_node_->parent()->GetSiteInstance();
     if (GetContentClient()->browser()->ShouldStayInParentProcessForNTP(
-            dest_url_info.url, parent_site_instance)) {
+            dest_url_info.url, parent_site_instance->GetSiteURL())) {
       // NTP is considered non-isolated.
       DCHECK(!dest_url_info.IsIsolated());
       AppendReason(reason,
