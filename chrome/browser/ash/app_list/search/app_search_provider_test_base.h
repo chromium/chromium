@@ -15,8 +15,6 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 
-class FakeAppListModelUpdater;
-
 namespace test {
 class TestAppListControllerDelegate;
 }
@@ -87,7 +85,6 @@ class AppSearchProviderTestBase : public AppListTestBase {
 
   base::SimpleTestClock clock_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<TestSearchController> search_controller_;
   std::unique_ptr<AppSearchDataSource> data_source_;
   SearchProvider* app_search_ = nullptr;

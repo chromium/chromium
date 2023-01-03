@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
@@ -158,14 +157,6 @@ ChromeAppListItem* FakeAppListModelUpdater::FindFolderItem(
     const std::string& folder_id) {
   ChromeAppListItem* item = FindItem(folder_id);
   return (item && item->is_folder()) ? item : nullptr;
-}
-
-void FakeAppListModelUpdater::GetIdToAppListIndexMap(
-    GetIdToAppListIndexMapCallback callback) {
-  base::flat_map<std::string, uint16_t> id_to_app_list_index;
-  for (uint16_t i = 0; i < items_.size(); ++i)
-    id_to_app_list_index[items_[i]->id()] = i;
-  std::move(callback).Run(id_to_app_list_index);
 }
 
 syncer::StringOrdinal FakeAppListModelUpdater::GetPositionBeforeFirstItem()

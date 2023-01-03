@@ -533,15 +533,6 @@ bool ChromeAppListModelUpdater::SearchEngineIsGoogle() {
   return search_engine_is_google_;
 }
 
-void ChromeAppListModelUpdater::GetIdToAppListIndexMap(
-    GetIdToAppListIndexMapCallback callback) {
-  base::flat_map<std::string, uint16_t> id_to_app_list_index;
-  for (size_t i = 0; i < model_.top_level_item_list()->item_count(); ++i) {
-    id_to_app_list_index[model_.top_level_item_list()->item_at(i)->id()] = i;
-  }
-  std::move(callback).Run(id_to_app_list_index);
-}
-
 size_t ChromeAppListModelUpdater::BadgedItemCount() {
   return item_manager_->BadgedItemCount();
 }

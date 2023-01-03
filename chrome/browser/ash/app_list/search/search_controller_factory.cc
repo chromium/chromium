@@ -70,7 +70,7 @@ std::unique_ptr<SearchController> CreateSearchController(
   controller->AddProvider(std::make_unique<AppSearchProvider>(
       controller->GetAppSearchDataSource()));
   controller->AddProvider(std::make_unique<AppZeroStateProvider>(
-      controller->GetAppSearchDataSource(), model_updater));
+      controller->GetAppSearchDataSource()));
 
   if (crosapi::browser_util::IsLacrosEnabled()) {
     controller->AddProvider(std::make_unique<OmniboxLacrosProvider>(

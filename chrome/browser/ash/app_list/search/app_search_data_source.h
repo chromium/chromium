@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
@@ -58,8 +57,7 @@ class AppSearchDataSource : public apps::AppRegistryCache::Observer {
   void RefreshIfNeeded();
 
   // Returns app recommendations (zero-state search results).
-  SearchProvider::Results GetRecommendations(
-      const base::flat_map<std::string, uint16_t>& id_to_app_list_index);
+  SearchProvider::Results GetRecommendations();
 
   // Returns app results that match `query`. It uses exact matching algorithm.
   SearchProvider::Results GetExactMatches(const std::u16string& query);

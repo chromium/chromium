@@ -94,7 +94,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   ChromeAppListItem* FindFolderItem(const std::string& folder_id) override;
   bool FindItemIndexForTest(const std::string& id, size_t* index) override;
   bool SearchEngineIsGoogle() override;
-  void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) override;
   size_t BadgedItemCount() override;
   void GetContextMenuModel(const std::string& id,
                            ash::AppListItemContext item_context,

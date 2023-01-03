@@ -269,8 +269,7 @@ void AppSearchDataSource::RefreshIfNeeded() {
   Refresh();
 }
 
-SearchProvider::Results AppSearchDataSource::GetRecommendations(
-    const base::flat_map<std::string, uint16_t>& id_to_app_list_index) {
+SearchProvider::Results AppSearchDataSource::GetRecommendations() {
   SearchProvider::Results recommendations;
   std::set<std::string> handled_results;
 

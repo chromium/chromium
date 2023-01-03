@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/app_list/search/app_zero_state_provider.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
-#include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/test/base/testing_profile.h"
@@ -45,8 +44,6 @@ AppSearchProviderTestBase::~AppSearchProviderTestBase() = default;
 void AppSearchProviderTestBase::SetUp() {
   AppListTestBase::SetUp();
 
-  model_updater_ = std::make_unique<FakeAppListModelUpdater>(
-      /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
   controller_ = std::make_unique<::test::TestAppListControllerDelegate>();
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 }
@@ -58,8 +55,7 @@ void AppSearchProviderTestBase::InitializeSearchProvider() {
 
   std::unique_ptr<SearchProvider> app_search;
   if (zero_state_provider_) {
-    app_search = std::make_unique<AppZeroStateProvider>(data_source_.get(),
-                                                        model_updater_.get());
+    app_search = std::make_unique<AppZeroStateProvider>(data_source_.get());
   } else {
     app_search = std::make_unique<AppSearchProvider>(data_source_.get());
   }

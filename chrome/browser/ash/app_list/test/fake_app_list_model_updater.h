@@ -62,7 +62,6 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   ChromeAppListItem* ItemAtForTest(size_t index) override;
   ChromeAppListItem* FindFolderItem(const std::string& folder_id) override;
   bool FindItemIndexForTest(const std::string& id, size_t* index) override;
-  void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) override;
   syncer::StringOrdinal GetPositionBeforeFirstItem() const override;
   void GetContextMenuModel(const std::string& id,
                            ash::AppListItemContext item_context,

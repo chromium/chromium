@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater_observer.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
@@ -103,10 +102,6 @@ class AppListModelUpdater {
   virtual ChromeAppListItem* ItemAtForTest(size_t index) = 0;
   virtual ChromeAppListItem* FindFolderItem(const std::string& folder_id) = 0;
   virtual bool FindItemIndexForTest(const std::string& id, size_t* index) = 0;
-  using GetIdToAppListIndexMapCallback =
-      base::OnceCallback<void(const base::flat_map<std::string, uint16_t>&)>;
-  virtual void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) {
-  }
   // Returns a position which is before the first item in the item list.
   virtual syncer::StringOrdinal GetPositionBeforeFirstItem() const = 0;
 
